@@ -37,6 +37,19 @@ public enum Hull: String, Sendable, Codable, CaseIterable {
 public struct Mesh: Sendable {
   public let vertices: [Vector3]
   public let faces: [[Int]]
+  public init(vertices: [Vector3], faces: [[Int]]) {
+    self.vertices = vertices
+    let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
+    // A consistent outward winding is essential to preserve silhouette edges.
+    self.faces = faces.map { face in
+      let a = vertices[face[0]]
+      let b = vertices[face[1]]
+      let c = vertices[face[2]]
+      let faceCenter =
+        face.reduce(Vector3(0, 0, 0)) { $0 + vertices[$1] } * (1 / Double(face.count))
+      return (b - a).cross(c - a).dot(faceCenter - center) < 0 ? Array(face.reversed()) : face
+    }
+  }
   public static func hull(_ kind: Hull) -> Mesh {
     switch kind {
     case .station:

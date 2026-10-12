@@ -12,9 +12,7 @@ import Testing
   let keys: [(UInt16, String, String)] = [
     (36, "\r", "return"), (48, "\t", "tab"), (53, "", "escape"),
     (119, "", "copy"), (123, "", "left"), (124, "", "right"), (125, "", "down"), (126, "", "up"),
-    (122, "", "f1"), (120, "", "f2"), (99, "", "f3"), (118, "", "f4"), (96, "", "f5"),
-    (97, "", "f6"),
-    (98, "", "f7"), (100, "", "f8"), (101, "", "f9"), (109, "", "f10"), (0, "a", "a"),
+    (0, "a", "a"),
   ]
   for (code, text, expected) in keys {
     let event = try #require(
@@ -44,4 +42,33 @@ import Testing
     #expect(released != nil)
   }
   #expect(released == nil)
+}
+
+@MainActor @Test func smoothWireframesPreservePixelTextAndShiftedKeyRelease() throws {
+  var game = Game(executive: false)
+  game.time = 1.3
+  let frame = Display.render(game, rasterizeShips: false)
+  let smooth = try #require(imageFor(frame, scale: 3))
+  #expect(smooth.width == 768 && smooth.height == 768)
+  let data = try #require(smooth.dataProvider?.data)
+  let bytes = CFDataGetBytePtr(data)!
+  let count = CFDataGetLength(data)
+  let intermediate = stride(from: 0, to: count, by: 4).filter { bytes[$0] > 0 && bytes[$0] < 255 }
+    .count
+  #expect(intermediate > 100)
+  let view = GameView()
+  let down = try #require(
+    NSEvent.keyEvent(
+      with: .keyDown, location: .zero, modifierFlags: .shift, timestamp: 0,
+      windowNumber: 0, context: nil, characters: "<", charactersIgnoringModifiers: ",",
+      isARepeat: false, keyCode: 43))
+  let up = try #require(
+    NSEvent.keyEvent(
+      with: .keyUp, location: .zero, modifierFlags: [], timestamp: 0,
+      windowNumber: 0, context: nil, characters: ",", charactersIgnoringModifiers: ",",
+      isARepeat: false, keyCode: 43))
+  view.keyDown(with: down)
+  #expect(view.controls.roll == 1)
+  view.keyUp(with: up)
+  #expect(view.controls.roll == 0 && view.held.isEmpty)
 }

@@ -7,8 +7,8 @@ The requested target is the 6502 Second Processor Executive version, retaining t
 | Galaxy | Eight seeded 256-system galaxies | Lave, Zaonce and Diso fixtures and repeatability tests |
 | Markets | Original economy, gradient and fluctuation calculations | Exhaustive bounds over eight economies and 256 fluctuation values |
 | Commander | Firebud, 100 million credits, fitted equipment | Executive default tests; JSON save format rather than DFS commander files |
-| Controls | Disc function keys, held pitch/roll/throttle/laser, weapon and drive keys | Native NSEvent translation tests; Mac F10 substitutes for BBC f0 |
-| Graphics | 256-square bitmap renderer, clipped wireframes, hidden faces, scanner and bars | Deterministic screen rendering; independently drawn meshes and glyphs need original-frame comparison |
+| Controls | Disc function keys, held pitch/roll/throttle/laser, weapon and drive keys | Native NSEvent translation tests; number keys 0-9 replace function keys by user preference |
+| Graphics | 256-square bitmap renderer, clipped wireframes, hidden faces, scanner and bars | Deterministic rendering, closed-mesh/outward-normal regression tests and antialiased subpixel ship strokes; independently drawn meshes and glyphs need original-frame comparison |
 | Executive demo | Automatic wireframe/demo scroll then rotating title | Independent short script rather than the full original text and sequence |
 | Executive options | Pause/@ infinite range and fuel; optional Mac speech | Travel and persistence tests; speech timbre differs from Watford hardware |
 | Trading | Buy/sell, stock/cash/capacity checks, equipment purchases | Transaction and resource-boundary tests |

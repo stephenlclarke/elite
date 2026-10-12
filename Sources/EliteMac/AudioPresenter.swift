@@ -24,7 +24,7 @@ final class AudioPresenter {
       }
     } else {
       lastSpoken = ""
-      speech.stopSpeaking(at: .immediate)
+      if previous.commander.speech { speech.stopSpeaking(at: .immediate) }
     }
     previous = game
   }

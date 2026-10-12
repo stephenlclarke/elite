@@ -182,8 +182,8 @@ public struct Game: Sendable {
       }
       return
     }
-    if let function = Int(key.replacingOccurrences(of: "f", with: "")), key.hasPrefix("f") {
-      functionKey(function)
+    if key.count == 1, let number = Int(key), (0...9).contains(number) {
+      functionKey(number)
       return
     }
     switch key {

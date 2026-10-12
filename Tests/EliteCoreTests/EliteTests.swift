@@ -81,14 +81,14 @@ import Testing
   ]
   // Screen zero launches, so verify docked screens before it.
   for i in 1..<10 {
-    game.key("f\(i)")
+    game.key("\(i)")
     #expect(game.screen == docked[i])
   }
-  game.key("f99")
+  game.key("99")
   #expect(game.screen == .inventory)
-  game.key("f10")
+  game.key("0")
   #expect(!game.docked && game.screen == .front)
-  for (key, screen) in [("f1", Screen.rear), ("f2", .left), ("f3", .right), ("f0", .front)] {
+  for (key, screen) in [("1", Screen.rear), ("2", .left), ("3", .right), ("0", .front)] {
     game.key(key)
     #expect(game.screen == screen)
   }
@@ -186,7 +186,7 @@ import Testing
 @Test func chartSelectionAndHyperspace() {
   var game = Game(executive: false)
   game.key(" ")
-  game.key("f4")
+  game.key("4")
   game.key("right")
   #expect(game.selectedSystem == 8)
   game.key("left")
@@ -433,7 +433,7 @@ import Testing
   }
   let final = await restored.snapshot()
   #expect(abs(final.time - 2) < 0.00001)
-  await restored.key("f10")
+  await restored.key("0")
   await restored.setControls(Controls())
   await restored.selectSystem(x: 20, y: 173)
   #expect(await restored.snapshot().selectedSystem == 7)
@@ -621,4 +621,33 @@ import Testing
   _ = Display.render(game)
   game.screen = .market
   _ = Display.render(game)
+}
+
+@Test func hullFacesHaveOutwardNormalsAndClosedEdges() {
+  for hull in Hull.allCases {
+    let mesh = Mesh.hull(hull)
+    let center = mesh.vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(mesh.vertices.count))
+    var adjacency: [String: Int] = [:]
+    for face in mesh.faces {
+      let a = mesh.vertices[face[0]]
+      let b = mesh.vertices[face[1]]
+      let c = mesh.vertices[face[2]]
+      let midpoint =
+        face.reduce(Vector3(0, 0, 0)) { $0 + mesh.vertices[$1] } * (1 / Double(face.count))
+      #expect((b - a).cross(c - a).dot(midpoint - center) > 0)
+      for index in face.indices {
+        let i = face[index]
+        let j = face[(index + 1) % face.count]
+        adjacency["\(min(i,j)):\(max(i,j))", default: 0] += 1
+      }
+    }
+    #expect(adjacency.values.allSatisfy { $0 == 2 })
+  }
+  for step in 0..<72 {
+    var game = Game(executive: false)
+    game.time = Double(step) * .pi / 18
+    let frame = Display.render(game, rasterizeShips: false)
+    #expect(frame.shipLines.count >= 5)
+    #expect(frame.shipLines.allSatisfy { [$0.x0, $0.y0, $0.x1, $0.y1].allSatisfy(\.isFinite) })
+  }
 }

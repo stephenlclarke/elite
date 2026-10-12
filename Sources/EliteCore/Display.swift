@@ -9,7 +9,16 @@ public enum Ink: UInt32, Sendable {
   case cyan = 0x00ff_ffff
 }
 
+public struct WireLine: Sendable, Equatable {
+  public let x0: Double
+  public let y0: Double
+  public let x1: Double
+  public let y1: Double
+}
+
 public struct Frame: Sendable, Equatable {
+  public var rasterizeShips = true
+  public var shipLines: [WireLine] = []
   public static let width = 256
   public static let height = 256
   public var pixels = [UInt32](repeating: Ink.black.rawValue, count: width * height)
@@ -68,6 +77,15 @@ public struct Frame: Sendable, Equatable {
     }
     return (x0 + start * dx, y0 + start * dy, x0 + end * dx, y0 + end * dy)
   }
+  public mutating func wire(_ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double) {
+    guard let ends = clipped(x0, y0, x1, y1, 12, 175) else { return }
+    shipLines.append(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3))
+    if rasterizeShips {
+      line(
+        Int(ends.0.rounded()), Int(ends.1.rounded()), Int(ends.2.rounded()), Int(ends.3.rounded()),
+        clipTop: 12, clipBottom: 175)
+    }
+  }
   public mutating func box(_ x: Int, _ y: Int, _ w: Int, _ h: Int, _ ink: Ink = .white) {
     line(x, y, x + w, y, ink)
     line(x + w, y, x + w, y + h, ink)
@@ -124,8 +142,9 @@ private enum Glyph {
 }
 
 public enum Display {
-  public static func render(_ game: Game) -> Frame {
+  public static func render(_ game: Game, rasterizeShips: Bool = true) -> Frame {
     var frame = Frame()
+    frame.rasterizeShips = rasterizeShips
     switch game.screen {
     case .demo: demo(game, into: &frame)
     case .title: title(game, into: &frame)
@@ -236,7 +255,7 @@ public enum Display {
           continue
         }
         // The viewport ends above the colour dashboard.
-        frame.line(points.0, points.1, points.2, points.3, clipTop: 12, clipBottom: 175)
+        frame.wire(points.0, points.1, points.2, points.3)
       }
     }
     if body.hull == .station {
@@ -248,7 +267,8 @@ public enum Display {
       }
     }
   }
-  public static func project(_ start: Vector3, _ end: Vector3) -> (Int, Int, Int, Int)? {
+  public static func project(_ start: Vector3, _ end: Vector3) -> (Double, Double, Double, Double)?
+  {
     var a = start
     var b = end
     guard a.z >= 1 || b.z >= 1 else { return nil }
@@ -258,7 +278,7 @@ public enum Display {
       128 + a.x * 256 / a.z, 96 - a.y * 256 / a.z, 128 + b.x * 256 / b.z, 96 - b.y * 256 / b.z,
     ]
     guard coordinates.allSatisfy({ $0.isFinite && abs($0) < 1_000_000 }) else { return nil }
-    return (Int(coordinates[0]), Int(coordinates[1]), Int(coordinates[2]), Int(coordinates[3]))
+    return (coordinates[0], coordinates[1], coordinates[2], coordinates[3])
   }
   private static func chart(_ game: Game, into frame: inout Frame) {
     let local = game.screen == .shortChart

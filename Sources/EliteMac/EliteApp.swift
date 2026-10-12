@@ -8,13 +8,18 @@ final class GameView: NSView {
   var game = Game()
   let audio = AudioPresenter()
   var held: Set<String> = []
+  var pressedKeys: [UInt16: String] = [:]
   var pending: [String] = []
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
-    guard let image = imageFor(Display.render(game)) else { return }
+    guard
+      let image = imageFor(
+        Display.render(game, rasterizeShips: false),
+        scale: max(1, Int(min(bounds.width, bounds.height) / 256)))
+    else { return }
     let side = min(bounds.width, bounds.height)
     let rect = NSRect(
       x: (bounds.width - side) / 2, y: (bounds.height - side) / 2, width: side, height: side)
@@ -29,9 +34,12 @@ final class GameView: NSView {
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
     held.insert(key)
+    pressedKeys[event.keyCode] = key
     if !event.isARepeat { pending.append(key) }
   }
-  override func keyUp(with event: NSEvent) { held.remove(Self.key(event)) }
+  override func keyUp(with event: NSEvent) {
+    held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
+  }
   override func mouseDown(with event: NSEvent) {
     guard game.screen == .chart else { return }
     let point = convert(event.locationInWindow, from: nil)
@@ -61,31 +69,47 @@ final class GameView: NSView {
     case 124: return "right"
     case 125: return "down"
     case 126: return "up"
-    case 122: return "f1"
-    case 120: return "f2"
-    case 99: return "f3"
-    case 118: return "f4"
-    case 96: return "f5"
-    case 97: return "f6"
-    case 98: return "f7"
-    case 100: return "f8"
-    case 101: return "f9"
-    case 109: return "f10"
     default: return event.characters?.lowercased() ?? ""
     }
   }
 }
 
 @MainActor
-func imageFor(_ frame: Frame) -> CGImage? {
+func imageFor(_ frame: Frame, scale: Int = 1) -> CGImage? {
   let rgba = frame.pixels.map { $0.bigEndian }
   let data = rgba.withUnsafeBytes { Data($0) }
   guard let provider = CGDataProvider(data: data as CFData) else { return nil }
-  return CGImage(
-    width: 256, height: 256, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: 1024,
-    space: CGColorSpaceCreateDeviceRGB(),
-    bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
-    provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+  guard
+    let bitmap = CGImage(
+      width: 256, height: 256, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: 1024,
+      space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
+      provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+  else { return nil }
+  guard !frame.rasterizeShips else { return bitmap }
+  let size = 256 * max(1, min(scale, 8))
+  guard
+    let context = CGContext(
+      data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: size * 4,
+      space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+  else { return nil }
+  context.interpolationQuality = .none
+  context.draw(bitmap, in: CGRect(x: 0, y: 0, width: size, height: size))
+  context.translateBy(x: 0, y: Double(size))
+  context.scaleBy(x: Double(size) / 256, y: -Double(size) / 256)
+  context.setShouldAntialias(true)
+  context.setAllowsAntialiasing(true)
+  context.setStrokeColor(CGColor(gray: 1, alpha: 1))
+  context.setLineWidth(0.75)
+  context.setLineJoin(.round)
+  context.setLineCap(.round)
+  context.beginPath()
+  for line in frame.shipLines {
+    context.move(to: CGPoint(x: line.x0, y: line.y0))
+    context.addLine(to: CGPoint(x: line.x1, y: line.y1))
+  }
+  context.strokePath()
+  return context.makeImage()
 }
 
 @MainActor
@@ -113,6 +137,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     NSApp.activate(ignoringOtherApps: true)
     let runtime = self.runtime
     loop = Task { [weak view] in
+      var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
         let events = view.pending
@@ -128,10 +153,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
           }
         }
         await runtime.setControls(view.controls)
-        view.game = await runtime.advance(delta: 0.02)
+        let now = ContinuousClock.now
+        let elapsed = previousTick.duration(to: now).components
+        previousTick = now
+        view.game = await runtime.advance(
+          delta: Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18)
         view.audio.update(view.game)
         view.needsDisplay = true
-        do { try await Task.sleep(for: .milliseconds(20)) } catch { return }
+        do { try await Task.sleep(for: .milliseconds(16)) } catch { return }
       }
     }
   }
@@ -145,6 +174,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   }
   func windowDidResignKey(_ _: Notification) {
     (window?.contentView as? GameView)?.held.removeAll()
+    (window?.contentView as? GameView)?.pressedKeys.removeAll()
   }
   private func installMenu() {
     let menu = NSMenu()
@@ -202,7 +232,7 @@ struct EliteApp {
     var game = Game()
     game.launch()
     game.bodies[1].position = .init(-35, 10, 320)
-    guard let image = imageFor(Display.render(game)),
+    guard let image = imageFor(Display.render(game, rasterizeShips: false), scale: 3),
       let png = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/elite.png") as CFURL, UTType.png.identifier as CFString, 1, nil)
     else { throw SaveError.invalidCommander }
@@ -225,7 +255,9 @@ struct EliteApp {
         game.bodies[1].position = .init(-35, 10, 320)
         game.time = Double(index) / 6
       }
-      guard let image = imageFor(Display.render(game)) else { throw SaveError.invalidCommander }
+      guard let image = imageFor(Display.render(game, rasterizeShips: false), scale: 3) else {
+        throw SaveError.invalidCommander
+      }
       CGImageDestinationAddImage(
         gif, image,
         [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 0.16]] as CFDictionary)
@@ -243,7 +275,7 @@ struct EliteApp {
       await runtime.key("return")
       for _ in 0..<121 { _ = await runtime.advance(delta: 0.1) }
       await runtime.key(" ")
-      await runtime.key("f10")
+      await runtime.key("0")
       for _ in 0..<100 {
         let state = await runtime.advance(delta: 0.02)
         _ = await imageFor(Display.render(state))

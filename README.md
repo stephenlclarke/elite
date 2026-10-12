@@ -35,34 +35,50 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. The project has no external game assets or package dependencies. It starts with an automatic Executive demo, then a rotating ship title screen. Press Space to enter the commander screen and F10 to launch.
+The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. The project has no external game assets or package dependencies. It starts with an automatic Executive demo, then a rotating ship title screen. Press Space to enter the commander screen and 0 to launch.
 
 ## Controls
 
-BBC f0 is mapped to Mac F10; use Fn with the function keys if macOS reserves them for brightness or media controls.
+Number keys select the main game screens. Inside the secret menu they select secret options instead. No function keys are required.
 
 | Key | Action |
 | --- | --- |
-| F10 | Launch / front view |
-| F1 / F2 / F3, docked | Buy / sell / equip ship |
-| F1 / F2 / F3, in flight | Rear / left / right view |
-| F4 / F5 | Galactic / short range chart |
-| F6 / F7 / F8 / F9 | System data / market / status / inventory |
-| Space / ? | Accelerate / slow down |
+| Space / Return, title | Enter the commander screen |
+| 0 | Launch when docked / front view in flight |
+| 1 / 2 / 3, docked | Buy cargo / sell cargo / equip ship |
+| 1 / 2 / 3, in flight | Rear / left / right view |
+| 4 / 5 | Galactic chart / short range chart |
+| 6 / 7 / 8 / 9 | System data / market prices / commander status / inventory |
+| Space / ? or /, in flight | Accelerate / slow down |
 | X / S | Pull up / pitch down |
-| < / > | Roll left / right |
-| A | Fire laser |
+| < or comma / > or full stop | Roll left / right |
+| A | Fire laser (hold for repeated fire) |
 | T / U / M | Arm / disarm / fire missile |
-| E / Tab / Escape | ECM / energy bomb / escape pod |
-| H / G / J | Hyperspace / galactic hyperdrive / in-system jump |
-| C / P | Engage / disengage docking computer |
-| Arrows / Return | Select and transact on trading and equipment screens |
-| Left / Right, chart | Select previous / next system |
-| Click, galactic chart | Select nearest system |
-| O / D, chart | Reset target / show distance |
+| E | Activate ECM, if fitted |
+| Tab | Detonate energy bomb, if fitted |
+| Escape, in flight | Launch escape pod, if fitted |
+| H | Begin hyperspace countdown to selected system |
+| G | Use galactic hyperdrive to enter the next galaxy, if fitted |
+| J | In-system jump, when not mass locked |
+| C / P | Engage / disengage docking computer, if fitted |
+| Up / Down, trading/equipment | Select product or equipment |
+| Return, buying/selling/equipment | Buy selected cargo / sell selected cargo / purchase selected equipment |
+| Right / Left, buying or selling | Buy / sell one unit of the selected product |
+| Right / Left, chart | Select next / previous system |
+| Click, galactic chart | Select the system nearest the pointer |
+| O / D, chart | Reset target to current system / show distance |
 | End (BBC COPY) | Pause / resume |
-| @ / :, paused | Executive infinite range and fuel / speech toggle |
+| @, paused | Toggle Executive infinite jump range and free jump fuel together |
+| :, paused | Toggle speech |
+| Escape, paused | Resume |
+| X Y Z Z Y, typed in sequence | Open secret menu |
+| 1-9, secret menu | Select options in the XYZZY table below |
+| Return / Escape, secret menu | Close secret menu and return to previous screen |
+| Space / Return, game over | Start a new commander |
 | Command-S / Command-O | Save / load commander |
+| Command-Q | Quit the app |
+
+Held flight controls are cleared when the game loses focus. Number keys on the main keyboard or numeric keypad select the same screens.
 
 Commander saves, including secret options, live at `~/.xyzzy/elite/commander.json`. Saving is atomic; loading validates the entire commander before replacing actor state.
 
@@ -88,7 +104,7 @@ Auto-trade runs when enabled while docked and on subsequent docking. It sells th
 
 `EliteCore` contains the deterministic simulation, original galaxy and commodity calculations, commander persistence, raster graphics and sound synthesis. `GameRuntime` is a Swift actor owning the game and controls. The Mac app sends commands to that actor and draws immutable snapshots on the main actor. Ships and markets are value types within the simulation actor, avoiding a task per object and preserving update order. The window loop is cancelled on close; losing focus clears held controls.
 
-`EliteMac` is the native AppKit window, keyboard adapter, pixel presentation and audio/speech output. Rendering preserves the 256 by 256 logical display with nearest-neighbour scaling. Speech and sound are independent native reproductions, not recordings or ROM playback.
+`EliteMac` is the native AppKit window, keyboard adapter, pixel presentation and audio/speech output. Rendering preserves the 256 by 256 logical layout. Bitmap text and cockpit instruments use nearest-neighbour scaling; ship wireframes retain subpixel coordinates and use antialiased native-resolution strokes. Speech and sound are independent native reproductions, not recordings or ROM playback.
 
 ## Validation and SonarQube
 
@@ -109,6 +125,8 @@ GitHub CI runs on pushes to `main`. SonarQube analysis verifies the remote main 
 The README screenshot and animated tape are generated from deterministic scenes using the same raster renderer as the live game, following the Pacman and Defender README media convention. Regenerate both with `make readme-media`.
 
 ## Fidelity and references
+
+The [cross-version research reference](docs/research/README.md) contains separate deduplicated mission, ship and alien catalogues, version mappings, source provenance and mission replication specifications. It distinguishes documented historical behaviour from implementation recommendations and explicitly lists unresolved fidelity requirements.
 
 This is an independent implementation, and exact historical parity has not yet been established. The procedural galaxy and economy have reference fixtures; ship meshes, raster font, physics, AI, docking sequence, demo text and audio are independent approximations. Full mission scripting, all original ship blueprints, original goat-soup descriptions, witchspace encounters and binary commander-file interoperability remain outside the currently implemented parity boundary. See [COMPATIBILITY.md](COMPATIBILITY.md) for the explicit comparison checklist.
 
