@@ -47,8 +47,8 @@ import Testing
 @MainActor @Test func smoothWireframesPreservePixelTextAndShiftedKeyRelease() throws {
   var game = Game(executive: false)
   game.time = 1.3
-  let frame = Display.render(game, rasterizeShips: false)
-  let smooth = try #require(imageFor(frame, scale: 3))
+  let frame = Display.render(game, rasterizeGraphics: false)
+  let smooth = try #require(imageFor(frame, pixelSize: 768))
   #expect(smooth.width == 768 && smooth.height == 768)
   let data = try #require(smooth.dataProvider?.data)
   let bytes = CFDataGetBytePtr(data)!
@@ -108,9 +108,10 @@ import Testing
   var game = Game(executive: false)
   game.time = 2.3
   game.commander.shipDisplayStyle = .colourWireframe
-  let wire = try #require(imageFor(Display.render(game, rasterizeShips: false), scale: 2))
+  let wire = try #require(imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 512))
   game.commander.shipDisplayStyle = .shadedPanels
-  let shaded = try #require(imageFor(Display.render(game, rasterizeShips: false), scale: 2))
+  let shaded = try #require(
+    imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 512))
   func colouredPixels(_ image: CGImage) throws -> Int {
     let data = try #require(image.dataProvider?.data)
     let bytes = try #require(CFDataGetBytePtr(data))
@@ -122,4 +123,65 @@ import Testing
   let panels = try colouredPixels(shaded)
   #expect(lines > 100 && panels > lines * 3)
   #expect(shaded.width == 512 && shaded.height == 512)
+}
+
+@MainActor @Test func planetCurveUsesNativeAntialiasing() throws {
+  var game = Game(executive: false)
+  game.screen = .front
+  game.bodies = []
+  let image = try #require(imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768))
+  let data = try #require(image.dataProvider?.data)
+  let bytes = try #require(CFDataGetBytePtr(data))
+  var shades = 0
+  for y in (18 * 3)..<(92 * 3) {
+    for x in (155 * 3)..<(230 * 3) {
+      let value = bytes[y * image.bytesPerRow + x * 4]
+      if value > 0 && value < 255 { shades += 1 }
+    }
+  }
+  #expect(shades > 100)
+}
+
+@MainActor @Test func changingThrottleCannotTeleportStarsOrAddTails() throws {
+  var game = Game(executive: false)
+  game.screen = .front
+  game.bodies = []
+  game.time = 100
+  game.speed = 20
+  let before = try #require(
+    imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768))
+  game.speed = 32
+  let after = try #require(imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768))
+  let first = try #require(before.dataProvider?.data)
+  let second = try #require(after.dataProvider?.data)
+  // The cockpit speed gauge changes, but space must not move until the next tick.
+  let space = (12 * 3 * before.bytesPerRow)..<(176 * 3 * before.bytesPerRow)
+  let firstSpace = Data(bytes: CFDataGetBytePtr(first)! + space.lowerBound, count: space.count)
+  let secondSpace = Data(bytes: CFDataGetBytePtr(second)! + space.lowerBound, count: space.count)
+  #expect(firstSpace == secondSpace)
+}
+
+@MainActor @Test func nativeGraphicsRenderAtExactOutputSizeAndKeepOriginalGlyphs() throws {
+  var game = Game(executive: false)
+  game.key("k")
+  let frame = Display.render(game, rasterizeGraphics: false)
+  let image = try #require(imageFor(frame, pixelSize: 768))
+  let data = try #require(image.dataProvider?.data)
+  let bytes = try #require(CFDataGetBytePtr(data))
+  for y in 8..<15 {
+    for x in 0..<256 {
+      let expected = UInt8((frame.pixels[y * 256 + x] >> 24) & 255)
+      for dy in 0..<3 {
+        for dx in 0..<3 {
+          #expect(bytes[(y * 3 + dy) * image.bytesPerRow + (x * 3 + dx) * 4] == expected)
+        }
+      }
+    }
+  }
+  let resized = try #require(imageFor(frame, pixelSize: 1379))
+  #expect(resized.width == 1379 && resized.height == 1379)
+  let retina = try #require(imageFor(frame, pixelSize: 3072))
+  #expect(retina.width == 3072 && retina.height == 3072)
+  #expect(imageFor(frame, pixelSize: 0) == nil)
+  #expect(imageFor(frame, pixelSize: 8193) == nil)
 }

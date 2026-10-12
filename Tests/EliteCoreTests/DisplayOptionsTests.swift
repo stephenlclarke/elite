@@ -56,9 +56,9 @@ import Testing
       body.rotation = angle
       game.bodies = [body]
       game.commander.shipDisplayStyle = .whiteWireframe
-      let white = Display.render(game, rasterizeShips: false)
+      let white = Display.render(game, rasterizeGraphics: false)
       game.commander.shipDisplayStyle = .colourWireframe
-      let colour = Display.render(game, rasterizeShips: false)
+      let colour = Display.render(game, rasterizeGraphics: false)
       #expect(white.shipLines.count == colour.shipLines.count && colour.shipPanels.isEmpty)
       #expect(colour.shipLines.allSatisfy { $0.ink == hull.ink })
       #expect(

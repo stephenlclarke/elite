@@ -85,8 +85,8 @@ extension Frame {
     clipped = Self.clipPolygon(clipped, axis: \.y, limit: 12, above: true)
     clipped = Self.clipPolygon(clipped, axis: \.y, limit: 175, above: false)
     guard clipped.count >= 3 else { return }
-    shipPanels.append(ShipPanel(vertices: clipped, colour: colour))
-    if rasterizeShips { fillPanel(clipped, colour: colour) }
+    graphics.append(.panel(ShipPanel(vertices: clipped, colour: colour)))
+    if rasterizeGraphics { fillPanel(clipped, colour: colour) }
   }
 
   private static func clipPolygon(

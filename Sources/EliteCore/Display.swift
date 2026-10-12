@@ -20,9 +20,8 @@ public struct WireLine: Sendable, Equatable {
 }
 
 public struct Frame: Sendable, Equatable {
-  public var rasterizeShips = true
-  public var shipLines: [WireLine] = []
-  public var shipPanels: [ShipPanel] = []
+  public var rasterizeGraphics = true
+  public var graphics: [Graphic] = []
   public static let width = 256
   public static let height = 256
   public var pixels = [UInt32](repeating: Ink.black.rawValue, count: width * height)
@@ -40,6 +39,10 @@ public struct Frame: Sendable, Equatable {
       let ends = clipped(
         Double(x0), Double(y0), Double(x1), Double(y1), Double(clipTop), Double(clipBottom))
     else { return }
+    graphics.append(.line(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink)))
+    if rasterizeGraphics { rasterLine(ends, ink) }
+  }
+  private mutating func rasterLine(_ ends: (Double, Double, Double, Double), _ ink: Ink) {
     var x = Int(ends.0.rounded())
     var y = Int(ends.1.rounded())
     let tx = Int(ends.2.rounded())
@@ -85,13 +88,8 @@ public struct Frame: Sendable, Equatable {
     _ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ ink: Ink = .white
   ) {
     guard let ends = clipped(x0, y0, x1, y1, 12, 175) else { return }
-    shipLines.append(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink))
-    if rasterizeShips {
-      line(
-        Int(ends.0.rounded()), Int(ends.1.rounded()), Int(ends.2.rounded()), Int(ends.3.rounded()),
-        ink,
-        clipTop: 12, clipBottom: 175)
-    }
+    graphics.append(.wire(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink)))
+    if rasterizeGraphics { rasterLine(ends, ink) }
   }
   public mutating func box(_ x: Int, _ y: Int, _ w: Int, _ h: Int, _ ink: Ink = .white) {
     line(x, y, x + w, y, ink)
@@ -99,12 +97,19 @@ public struct Frame: Sendable, Equatable {
     line(x + w, y + h, x, y + h, ink)
     line(x, y + h, x, y, ink)
   }
-  public mutating func ellipse(_ x: Int, _ y: Int, _ rx: Int, _ ry: Int, _ ink: Ink = .white) {
+  public mutating func ellipse(
+    _ x: Double, _ y: Double, _ rx: Double, _ ry: Double, _ ink: Ink = .white
+  ) {
+    graphics.append(
+      .ellipse(center: ScreenPoint(x, y), radiusX: rx, radiusY: ry, ink: ink))
+    guard rasterizeGraphics else { return }
     var previous = (x + rx, y)
     for step in 1...96 {
       let angle = Double(step) * .pi / 48
-      let next = (x + Int(Double(rx) * cos(angle)), y + Int(Double(ry) * sin(angle)))
-      line(previous.0, previous.1, next.0, next.1, ink)
+      let next = (x + rx * cos(angle), y + ry * sin(angle))
+      if let ends = clipped(previous.0, previous.1, next.0, next.1, 0, 255) {
+        rasterLine(ends, ink)
+      }
       previous = next
     }
   }
@@ -149,9 +154,9 @@ private enum Glyph {
 }
 
 public enum Display {
-  public static func render(_ game: Game, rasterizeShips: Bool = true) -> Frame {
+  public static func render(_ game: Game, rasterizeGraphics: Bool = true) -> Frame {
     var frame = Frame()
-    frame.rasterizeShips = rasterizeShips
+    frame.rasterizeGraphics = rasterizeGraphics
     switch game.screen {
     case .demo: demo(game, into: &frame)
     case .title: title(game, into: &frame)
@@ -212,13 +217,15 @@ public enum Display {
   }
   private static func flight(_ game: Game, into frame: inout Frame) {
     frame.centered(game.screen.rawValue + " VIEW", 4)
-    for index in 0..<40 {
-      let z = Double((index * 137) % 3000 + 100)
-      let motion = Int(game.time * game.speed * 10 / z * 80)
-      let x = ((index * 73 + motion) % 254) + 1
-      let y = ((index * 47 + motion) % 162) + 14
-      frame.pixel(x, y)
-      if game.speed > 20 { frame.line(x, y, x + 1, y + 2) }
+    for star in game.starfield.positions {
+      let position = game.viewPosition(star)
+      guard position.z > 100 else { continue }
+      let x = 128 + position.x * 256 / position.z
+      let y = 96 - position.y * 256 / position.z
+      guard x >= 1, x <= 254, y >= 13, y <= 174 else { continue }
+      let proximity = max(0, 1 - position.length / 9000)
+      let fade = min(1, (position.length - 300) / 300)
+      frame.point(x, y, radius: 0.18 + proximity * 0.14, opacity: (0.5 + proximity * 0.45) * fade)
     }
     if game.screen == .front {
       frame.ellipse(192, 55, 35, 35)
@@ -239,7 +246,7 @@ public enum Display {
     if let countdown = game.jumpCountdown {
       frame.centered("HYPERSPACE " + String(Int(ceil(countdown))), 156)
       for ring in 0..<6 {
-        let radius = (Int(game.time * 90) + ring * 20) % 128
+        let radius = (game.time * 90 + Double(ring * 20)).truncatingRemainder(dividingBy: 128)
         frame.ellipse(128, 96, radius, max(1, radius / 2))
       }
     }
@@ -324,7 +331,7 @@ public enum Display {
       let x = local ? 128 + (star.x - current.x) * 4 : star.x
       let y = local ? 90 + (star.y - current.y) * 2 : 30 + star.y / 2
       guard (22..<160).contains(y), (1..<255).contains(x) else { continue }
-      frame.pixel(x, y)
+      frame.point(Double(x), Double(y))
       if local { frame.text(star.name, x + 3, y - 7) }
       if star.id == game.selectedSystem {
         frame.line(x - 4, y, x + 4, y)
@@ -334,7 +341,7 @@ public enum Display {
     let x = local ? 128 : current.x
     let y = local ? 90 : 30 + current.y / 2
     let radius = local ? game.commander.fuel : game.commander.fuel / 4
-    frame.ellipse(x, y, radius, max(1, radius / 2))
+    frame.ellipse(Double(x), Double(y), Double(radius), Double(max(1, radius / 2)))
     frame.text(game.targetSystem.name, 4, 162)
     frame.text(
       String(format: "DISTANCE %.1f LIGHT YEARS", current.distance(to: game.targetSystem)), 4, 172)

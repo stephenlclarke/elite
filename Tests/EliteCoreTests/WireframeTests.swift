@@ -72,7 +72,7 @@ private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
       var body = SpaceBody(id: 0, hull: hull, position: .init(0, 0, 800))
       body.rotation = rotation
       game.bodies = [body]
-      let frame = Display.render(game, rasterizeShips: false)
+      let frame = Display.render(game, rasterizeGraphics: false)
       #expect(
         hasCompleteOutline(body, in: frame),
         "Missing silhouette for \(hull) at rotation step \(step)")
@@ -86,7 +86,7 @@ private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
   for step in 0..<720 {
     let rotation = Double(step) * .pi / 72
     game.time = rotation / 0.6
-    let frame = Display.render(game, rasterizeShips: false)
+    let frame = Display.render(game, rasterizeGraphics: false)
     let joined = frame.shipLines.indices.allSatisfy { index in
       let line = frame.shipLines[index]
       return [(line.x0, line.y0), (line.x1, line.y1)].allSatisfy { x, y in

@@ -96,6 +96,7 @@ public struct Game: Sendable {
   public var selection = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
+  public var starfield = Starfield()
   public var speed = 0.0
   public var pitch = 0.0
   public var roll = 0.0
@@ -570,6 +571,7 @@ public struct Game: Sendable {
       if remaining <= dt { arrive() }
     }
     moveBodies(dt: dt)
+    starfield.advance(delta: dt, speed: speed, pitch: pitch, roll: roll)
     resolveDestroyed()
     spawnClock += dt
     if spawnClock > 18 && bodies.count < (commander.executive ? 18 : 10) {

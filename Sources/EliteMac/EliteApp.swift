@@ -15,21 +15,12 @@ final class GameView: NSView {
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
-    guard
-      let image = imageFor(
-        Display.render(game, rasterizeShips: false),
-        scale: max(1, Int(min(bounds.width, bounds.height) / 256)))
-    else { return }
     let side = min(bounds.width, bounds.height)
     let rect = NSRect(
       x: (bounds.width - side) / 2, y: (bounds.height - side) / 2, width: side, height: side)
     guard let context = NSGraphicsContext.current?.cgContext else { return }
-    context.interpolationQuality = .none
-    context.saveGState()
-    context.translateBy(x: rect.minX, y: rect.maxY)
-    context.scaleBy(x: 1, y: -1)
-    context.draw(image, in: CGRect(x: 0, y: 0, width: side, height: side))
-    context.restoreGState()
+    // Draw into the window's Retina context instead of enlarging an offscreen image.
+    drawFrame(Display.render(game, rasterizeGraphics: false), context: context, rect: rect)
   }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
@@ -72,63 +63,6 @@ final class GameView: NSView {
     default: return event.characters?.lowercased() ?? ""
     }
   }
-}
-
-@MainActor
-func imageFor(_ frame: Frame, scale: Int = 1) -> CGImage? {
-  let rgba = frame.pixels.map { $0.bigEndian }
-  let data = rgba.withUnsafeBytes { Data($0) }
-  guard let provider = CGDataProvider(data: data as CFData) else { return nil }
-  guard
-    let bitmap = CGImage(
-      width: 256, height: 256, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: 1024,
-      space: CGColorSpaceCreateDeviceRGB(),
-      bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
-      provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
-  else { return nil }
-  guard !frame.rasterizeShips else { return bitmap }
-  let size = 256 * max(1, min(scale, 8))
-  guard
-    let context = CGContext(
-      data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: size * 4,
-      space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-  else { return nil }
-  context.interpolationQuality = .none
-  context.draw(bitmap, in: CGRect(x: 0, y: 0, width: size, height: size))
-  context.translateBy(x: 0, y: Double(size))
-  context.scaleBy(x: Double(size) / 256, y: -Double(size) / 256)
-  context.setShouldAntialias(true)
-  context.setAllowsAntialiasing(true)
-  context.setLineWidth(0.75)
-  context.setLineJoin(.round)
-  context.setLineCap(.round)
-  for panel in frame.shipPanels {
-    guard let first = panel.vertices.first else { continue }
-    context.setFillColor(shipColour(panel.colour))
-    // Overlap adjoining fills slightly so antialiasing cannot leave dark cracks.
-    context.setStrokeColor(shipColour(panel.colour))
-    context.setLineWidth(0.35)
-    context.beginPath()
-    context.move(to: CGPoint(x: first.x, y: first.y))
-    for point in panel.vertices.dropFirst() { context.addLine(to: CGPoint(x: point.x, y: point.y)) }
-    context.closePath()
-    context.drawPath(using: .fillStroke)
-  }
-  context.setLineWidth(0.75)
-  for line in frame.shipLines {
-    context.setStrokeColor(shipColour(line.ink.rawValue))
-    context.beginPath()
-    context.move(to: CGPoint(x: line.x0, y: line.y0))
-    context.addLine(to: CGPoint(x: line.x1, y: line.y1))
-    context.strokePath()
-  }
-  return context.makeImage()
-}
-
-private func shipColour(_ rgba: UInt32) -> CGColor {
-  CGColor(
-    red: Double((rgba >> 24) & 255) / 255, green: Double((rgba >> 16) & 255) / 255,
-    blue: Double((rgba >> 8) & 255) / 255, alpha: 1)
 }
 
 @MainActor
@@ -261,7 +195,7 @@ struct EliteApp {
     var game = Game()
     game.launch()
     game.bodies[1].position = .init(-35, 10, 320)
-    guard let image = imageFor(Display.render(game, rasterizeShips: false), scale: 3),
+    guard let image = imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768),
       let png = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/elite.png") as CFURL, UTType.png.identifier as CFString, 1, nil)
     else { throw SaveError.invalidCommander }
@@ -284,7 +218,8 @@ struct EliteApp {
         game.bodies[1].position = .init(-35, 10, 320)
         game.time = Double(index) / 6
       }
-      guard let image = imageFor(Display.render(game, rasterizeShips: false), scale: 3) else {
+      guard let image = imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768)
+      else {
         throw SaveError.invalidCommander
       }
       CGImageDestinationAddImage(
@@ -309,7 +244,7 @@ struct EliteApp {
       for frame in 0..<100 {
         if frame == 40 || frame == 50 { await runtime.key("k") }
         let state = await runtime.advance(delta: 0.02)
-        _ = await imageFor(Display.render(state, rasterizeShips: false), scale: 2)
+        _ = await imageFor(Display.render(state, rasterizeGraphics: false), pixelSize: 512)
       }
     }
     print("Actor simulation and frame lifecycle probe passed")
