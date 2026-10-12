@@ -254,10 +254,11 @@ public enum Display {
       return rotated + center
     }
     var drawn: Set<String> = []
-    let faces = mesh.faces.sorted {
-      $0.reduce(0.0) { $0 + vertices[$1].z } / Double($0.count)
-        > $1.reduce(0.0) { $0 + vertices[$1].z } / Double($1.count)
+    let depths = mesh.faces.map { face -> (indices: [Int], distance: Double) in
+      let sum = face.reduce(0.0) { total, index in total + vertices[index].z }
+      return (face, sum / Double(face.count))
     }
+    let faces = depths.sorted { $0.distance > $1.distance }.map(\.indices)
     for face in faces {
       let a = vertices[face[0]]
       let b = vertices[face[1]]
