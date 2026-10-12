@@ -453,9 +453,9 @@ import Testing
 
 @Test func executiveDefaultsDemoAndPauseOptions() {
   var game = Game()
-  #expect(game.screen == .demo && game.commander.name == "FIREBUD")
-  #expect(game.commander.credits == 1_000_000_000 && game.commander.capacity == 35)
-  #expect(game.commander.equipment.contains("Docking Computers"))
+  #expect(game.screen == .demo && game.commander.name == "JAMESON")
+  #expect(game.commander.credits == 1000 && game.commander.capacity == 20)
+  #expect(game.commander.equipment == ["Pulse Laser"])
   #expect(game.commander.valid)
   game.key(" ")
   #expect(game.screen == .demo)
@@ -468,7 +468,7 @@ import Testing
   game.tick(delta: 0.1)
   #expect(game.time == time)
   game.key("@")
-  #expect(game.commander.unlimitedJumps && game.commander.unlimitedFuel)
+  #expect(!game.commander.unlimitedJumps && !game.commander.unlimitedFuel)
   game.key(":")
   #expect(game.commander.speech)
   _ = Display.render(game)
@@ -476,7 +476,7 @@ import Testing
   #expect(!game.paused)
   game.screen = .gameOver
   game.key("return")
-  #expect(game.commander.name == "FIREBUD")
+  #expect(game.commander.name == "JAMESON")
 }
 
 @Test func unlimitedFuelAndRangePersistAndAllowDistantJumps() async throws {

@@ -2,7 +2,7 @@ import Foundation
 
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
-    equipment, buy, sell, secret, gameOver
+    equipment, buy, sell, secret, help, gameOver
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
@@ -25,16 +25,13 @@ public struct Commander: Sendable, Equatable, Codable {
   public var autoTrade = false
   public var speech = false
   public var executive = false
-  public init() {}
-  public static var firebud: Commander {
-    var value = Commander()
-    value.name = "FIREBUD"
-    value.credits = 1_000_000_000
-    value.equipment = Set(Equipment.all.map(\.name))
-    value.missiles = 4
-    value.executive = true
-    return value
+  // Optional storage preserves compatibility with commanders saved before display styles existed.
+  private var displayStyle: ShipDisplayStyle?
+  public var shipDisplayStyle: ShipDisplayStyle {
+    get { displayStyle ?? .whiteWireframe }
+    set { displayStyle = newValue }
   }
+  public init() {}
   public var availableCredits: Int { unlimitedCash ? Int.max : credits }
   public var capacity: Int {
     let standard = equipment.contains("Large Cargo Bay") ? 35 : 20
@@ -117,13 +114,15 @@ public struct Game: Sendable {
   public var time = 0.0
   public var secretBuffer = ""
   public var secretReturn: Screen = .status
+  public var helpReturn: Screen = .title
+  public var helpPage = 0
   private var fireCooldown = 0.0
   private var spawnClock = 0.0
   private var nextBodyID = 10
   private var randomState: UInt64 = 0x45_4c49_5445
   public init(executive: Bool = true) {
     if executive {
-      commander = .firebud
+      commander.executive = true
       screen = .demo
     }
   }
@@ -147,9 +146,28 @@ public struct Game: Sendable {
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    if key == "k" {
+      if screen == .help {
+        screen = helpReturn
+      } else {
+        helpReturn = screen
+        helpPage = 0
+        screen = .help
+      }
+      return
+    }
+    if screen == .help {
+      if key == "return" || key == "escape" { screen = helpReturn }
+      let lastPage = PlayerHelp.pages(for: self).count - 1
+      if key == "right" || key == "down" { helpPage = min(lastPage, helpPage + 1) }
+      if key == "left" || key == "up" { helpPage = max(0, helpPage - 1) }
+      return
+    }
     if key.count == 1 {
       secretBuffer = String((secretBuffer + key).suffix(5))
       if secretBuffer == "xyzzy" {
+        commander.name = "CLARKE"
+        fitMaximumHardware()
         secretReturn = screen
         screen = .secret
         selection = 0
@@ -166,10 +184,6 @@ public struct Game: Sendable {
       return
     }
     if paused {
-      if key == "@" {
-        commander.unlimitedJumps.toggle()
-        commander.unlimitedFuel = commander.unlimitedJumps
-      }
       if key == ":" { commander.speech.toggle() }
       if key == "escape" { paused = false }
       return
@@ -226,16 +240,14 @@ public struct Game: Sendable {
   }
   private mutating func secretKey(_ key: String) {
     switch key {
+    case "0":
+      commander.shipDisplayStyle = commander.shipDisplayStyle.next
+      notify(commander.shipDisplayStyle.label)
     case "1":
       commander.equipment.insert("Docking Computers")
       notify("DOCKING COMPUTER FITTED")
     case "2":
-      commander.equipment = Set(Equipment.all.map(\.name))
-      commander.fuel = 70
-      commander.missiles = 4
-      energy = 256
-      frontShield = 255
-      rearShield = 255
+      fitMaximumHardware()
       notify("MAXIMUM HARDWARE FITTED")
     case "3":
       commander.unlimitedMissiles.toggle()
@@ -270,6 +282,14 @@ public struct Game: Sendable {
     case "escape", "return": screen = secretReturn
     default: break
     }
+  }
+  private mutating func fitMaximumHardware() {
+    commander.equipment = Set(Equipment.all.map(\.name))
+    commander.fuel = 70
+    commander.missiles = 4
+    energy = 256
+    frontShield = 255
+    rearShield = 255
   }
   private mutating func functionKey(_ number: Int) {
     selection = 0
@@ -526,7 +546,7 @@ public struct Game: Sendable {
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
-    if paused { return }
+    if paused || screen == .help { return }
     time += dt
     if screen == .demo && time >= 12 {
       screen = .title
@@ -535,7 +555,7 @@ public struct Game: Sendable {
     if commander.unlimitedFuel { commander.fuel = 70 }
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
-    guard !docked, screen != .gameOver, screen != .secret else { return }
+    guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
     speed = min(32, max(0, speed + controls.throttle * dt * 12))
     pitch = controls.pitch
     roll = controls.roll

@@ -7,6 +7,8 @@ public enum Ink: UInt32, Sendable {
   case red = 0xff00_00ff
   case green = 0x00ff_00ff
   case cyan = 0x00ff_ffff
+  case blue = 0x4488_ffff
+  case orange = 0xffaa_44ff
 }
 
 public struct WireLine: Sendable, Equatable {
@@ -14,11 +16,13 @@ public struct WireLine: Sendable, Equatable {
   public let y0: Double
   public let x1: Double
   public let y1: Double
+  public let ink: Ink
 }
 
 public struct Frame: Sendable, Equatable {
   public var rasterizeShips = true
   public var shipLines: [WireLine] = []
+  public var shipPanels: [ShipPanel] = []
   public static let width = 256
   public static let height = 256
   public var pixels = [UInt32](repeating: Ink.black.rawValue, count: width * height)
@@ -77,12 +81,15 @@ public struct Frame: Sendable, Equatable {
     }
     return (x0 + start * dx, y0 + start * dy, x0 + end * dx, y0 + end * dy)
   }
-  public mutating func wire(_ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double) {
+  public mutating func wire(
+    _ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ ink: Ink = .white
+  ) {
     guard let ends = clipped(x0, y0, x1, y1, 12, 175) else { return }
-    shipLines.append(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3))
+    shipLines.append(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink))
     if rasterizeShips {
       line(
         Int(ends.0.rounded()), Int(ends.1.rounded()), Int(ends.2.rounded()), Int(ends.3.rounded()),
+        ink,
         clipTop: 12, clipBottom: 175)
     }
   }
@@ -156,13 +163,17 @@ public enum Display {
     case .status: status(game, into: &frame)
     case .inventory: inventory(game, into: &frame)
     case .secret: secret(game, into: &frame)
+    case .help: help(game, into: &frame)
     case .gameOver:
       frame.centered("GAME OVER", 85)
       frame.centered("PRESS SPACE COMMANDER", 130)
     }
-    if game.screen != .title && game.screen != .demo { dashboard(game, into: &frame) }
-    if game.messageTime > 0 && game.screen != .secret { frame.centered(game.message, 178) }
-    if game.paused { frame.centered("PAUSED", 168) }
+    if ![Screen.title, .demo, .help].contains(game.screen) { dashboard(game, into: &frame) }
+    if game.messageTime > 0 && ![Screen.secret, .help].contains(game.screen) {
+      frame.centered(game.message, 178)
+    }
+    if game.paused && game.screen != .help { frame.centered("PAUSED", 168) }
+    if game.screen != .help { frame.text("K:HELP", 216, 184, .cyan) }
     return frame
   }
   private static func header(_ title: String, into frame: inout Frame) {
@@ -191,7 +202,7 @@ public enum Display {
     }
     for body in demonstration.bodies { draw(body, game: demonstration, into: &frame) }
     let lines = [
-      "PIZZASOFT PRESENTS", "THE EXECUTIVE VERSION", "WELCOME COMMANDER FIREBUD",
+      "PIZZASOFT PRESENTS", "THE EXECUTIVE VERSION", "WELCOME COMMANDER " + game.commander.name,
       "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
     ]
     for (index, line) in lines.enumerated() {
@@ -243,11 +254,23 @@ public enum Display {
       return rotated + center
     }
     var drawn: Set<String> = []
-    for face in mesh.faces {
+    let faces = mesh.faces.sorted {
+      $0.reduce(0.0) { $0 + vertices[$1].z } / Double($0.count)
+        > $1.reduce(0.0) { $0 + vertices[$1].z } / Double($1.count)
+    }
+    for face in faces {
       let a = vertices[face[0]]
       let b = vertices[face[1]]
       let c = vertices[face[2]]
-      guard (b - a).cross(c - a).dot(a) < 0 else { continue }
+      let normal = (b - a).cross(c - a)
+      guard normal.dot(a) < 0 else { continue }
+      if game.commander.shipDisplayStyle == .shadedPanels {
+        frame.panel(
+          ShipProjection.polygon(face.map { vertices[$0] }),
+          colour: ShipProjection.shade(body.hull.ink, normal: normal))
+        continue
+      }
+      let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
       for edge in face.indices {
         let i = face[edge]
         let j = face[(edge + 1) % face.count]
@@ -256,18 +279,29 @@ public enum Display {
           continue
         }
         // The viewport ends above the colour dashboard.
-        frame.wire(points.0, points.1, points.2, points.3)
+        frame.wire(points.0, points.1, points.2, points.3, ink)
       }
     }
     if body.hull == .station {
-      let size = Int(256 * 30 / center.z)
-      let x = Int(128 + center.x * 256 / center.z)
-      let y = Int(96 - center.y * 256 / center.z)
-      if (12..<170).contains(y), size < 100 {
-        frame.box(x - size, y - size / 3, size * 2, max(2, size * 2 / 3))
+      let hatch = [
+        Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
+        Vector3(-30, 10, -90),
+      ].map { $0.rotated(pitch: body.rotation * 0.4, roll: body.rotation) + center }
+      let normal = Vector3(0, 0, -1).rotated(pitch: body.rotation * 0.4, roll: body.rotation)
+      guard normal.dot(hatch[0]) < 0 else { return }
+      if game.commander.shipDisplayStyle == .shadedPanels {
+        frame.panel(ShipProjection.polygon(hatch), colour: Ink.black.rawValue)
+      } else {
+        let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
+        for index in hatch.indices {
+          if let line = project(hatch[index], hatch[(index + 1) % hatch.count]) {
+            frame.wire(line.0, line.1, line.2, line.3, ink)
+          }
+        }
       }
     }
   }
+
   public static func project(_ start: Vector3, _ end: Vector3) -> (Double, Double, Double, Double)?
   {
     var a = start
@@ -315,7 +349,7 @@ public enum Display {
     for (i, line) in lines.enumerated() { frame.text(line, 8, 30 + i * 16) }
     if game.commander.executive && game.docked {
       if star.name == "LAVE" { frame.text("EXECUTIVE EDITION HOME PORT", 8, 150) }
-      if star.name == "RIEDQUAT" { frame.text("PAUSE AND @: INFINITE RANGE", 8, 150) }
+      if star.name == "RIEDQUAT" { frame.text("XYZZY: INFINITE RANGE", 8, 150) }
     }
   }
   private static func market(_ game: Game, into frame: inout Frame) {
@@ -385,6 +419,7 @@ public enum Display {
     header("XYZZY", into: &frame)
     frame.centered("A HOLLOW VOICE SAYS...", 28)
     let choices = [
+      "0 DISPLAY: " + game.commander.shipDisplayStyle.label,
       "1 DOCKING COMPUTER",
       "2 MAXIMUM HARDWARE",
       "3 MISSILES: " + (game.commander.unlimitedMissiles ? "UNLIMITED" : "NORMAL"),
@@ -397,6 +432,16 @@ public enum Display {
     ]
     for (index, choice) in choices.enumerated() { frame.text(choice, 10, 46 + index * 13) }
     frame.text("RETURN TO RESUME", 10, 177)
+  }
+  private static func help(_ game: Game, into frame: inout Frame) {
+    header("PLAYER KEY GUIDE", into: &frame)
+    let pages = PlayerHelp.pages(for: game)
+    let index = max(0, min(game.helpPage, pages.count - 1))
+    let page = pages[index]
+    frame.centered(page.title, 30, .yellow)
+    for (row, text) in page.rows.enumerated() { frame.text(text, 8, 48 + row * 10) }
+    frame.centered("PAGE \(index + 1) OF \(pages.count)", 220, .yellow)
+    frame.centered("ARROWS: MORE   K/ESC: BACK", 238, .cyan)
   }
   private static func dashboard(_ game: Game, into frame: inout Frame) {
     frame.box(0, 191, 255, 64, .yellow)

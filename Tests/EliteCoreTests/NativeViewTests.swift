@@ -90,9 +90,36 @@ import Testing
   }
   #expect(view.pending.isEmpty)
   #expect(view.game.time > 0)
+  let guideMenu = try #require(NSApp.mainMenu?.item(withTitle: "Help")?.submenu)
+  guideMenu.performActionForItem(at: 0)
+  let helpDeadline = ContinuousClock.now.advanced(by: .seconds(5))
+  while view.game.screen != .help && ContinuousClock.now < helpDeadline {
+    try await Task.sleep(for: .milliseconds(10))
+  }
+  #expect(view.game.screen == .help)
   delegate.windowDidResignKey(notification)
   #expect(view.held.isEmpty && view.pressedKeys.isEmpty)
   delegate.windowWillClose(notification)
   #expect(delegate.loop == nil)
   window.orderOut(nil)
+}
+
+@MainActor @Test func nativePresentationDrawsColouredLinesAndShadedFaces() throws {
+  var game = Game(executive: false)
+  game.time = 2.3
+  game.commander.shipDisplayStyle = .colourWireframe
+  let wire = try #require(imageFor(Display.render(game, rasterizeShips: false), scale: 2))
+  game.commander.shipDisplayStyle = .shadedPanels
+  let shaded = try #require(imageFor(Display.render(game, rasterizeShips: false), scale: 2))
+  func colouredPixels(_ image: CGImage) throws -> Int {
+    let data = try #require(image.dataProvider?.data)
+    let bytes = try #require(CFDataGetBytePtr(data))
+    return stride(from: 0, to: CFDataGetLength(data), by: 4).filter {
+      bytes[$0 + 1] > 20 && bytes[$0 + 2] > 20 && bytes[$0] < bytes[$0 + 1] / 2
+    }.count
+  }
+  let lines = try colouredPixels(wire)
+  let panels = try colouredPixels(shaded)
+  #expect(lines > 100 && panels > lines * 3)
+  #expect(shaded.width == 512 && shaded.height == 512)
 }

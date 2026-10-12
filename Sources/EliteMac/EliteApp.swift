@@ -99,17 +99,36 @@ func imageFor(_ frame: Frame, scale: Int = 1) -> CGImage? {
   context.scaleBy(x: Double(size) / 256, y: -Double(size) / 256)
   context.setShouldAntialias(true)
   context.setAllowsAntialiasing(true)
-  context.setStrokeColor(CGColor(gray: 1, alpha: 1))
   context.setLineWidth(0.75)
   context.setLineJoin(.round)
   context.setLineCap(.round)
-  context.beginPath()
+  for panel in frame.shipPanels {
+    guard let first = panel.vertices.first else { continue }
+    context.setFillColor(shipColour(panel.colour))
+    // Overlap adjoining fills slightly so antialiasing cannot leave dark cracks.
+    context.setStrokeColor(shipColour(panel.colour))
+    context.setLineWidth(0.35)
+    context.beginPath()
+    context.move(to: CGPoint(x: first.x, y: first.y))
+    for point in panel.vertices.dropFirst() { context.addLine(to: CGPoint(x: point.x, y: point.y)) }
+    context.closePath()
+    context.drawPath(using: .fillStroke)
+  }
+  context.setLineWidth(0.75)
   for line in frame.shipLines {
+    context.setStrokeColor(shipColour(line.ink.rawValue))
+    context.beginPath()
     context.move(to: CGPoint(x: line.x0, y: line.y0))
     context.addLine(to: CGPoint(x: line.x1, y: line.y1))
+    context.strokePath()
   }
-  context.strokePath()
   return context.makeImage()
+}
+
+private func shipColour(_ rgba: UInt32) -> CGColor {
+  CGColor(
+    red: Double((rgba >> 24) & 255) / 255, green: Double((rgba >> 16) & 255) / 255,
+    blue: Double((rgba >> 8) & 255) / 255, alpha: 1)
 }
 
 @MainActor
@@ -193,7 +212,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let load = commander.submenu?.addItem(
       withTitle: "Load Commander", action: #selector(loadCommander), keyEquivalent: "o")
     load?.target = self
+    let help = NSMenuItem()
+    help.title = "Help"
+    menu.addItem(help)
+    help.submenu = NSMenu(title: "Help")
+    let guide = help.submenu?.addItem(
+      withTitle: "Player Key Guide", action: #selector(showHelp), keyEquivalent: "k")
+    guide?.target = self
     NSApp.mainMenu = menu
+  }
+  @objc private func showHelp() {
+    (window?.contentView as? GameView)?.pending.append("k")
   }
   @objc private func saveCommander() {
     Task { [weak self] in
@@ -265,20 +294,22 @@ struct EliteApp {
     guard CGImageDestinationFinalize(gif) else { throw SaveError.invalidCommander }
   }
   private static func diagnostics() async throws {
-    for _ in 0..<10 {
+    for cycle in 0..<10 {
       let runtime = GameRuntime()
       await runtime.key("x")
       await runtime.key("y")
       await runtime.key("z")
       await runtime.key("z")
       await runtime.key("y")
+      for _ in 0..<(cycle % 3) { await runtime.key("0") }
       await runtime.key("return")
       for _ in 0..<121 { _ = await runtime.advance(delta: 0.1) }
       await runtime.key(" ")
       await runtime.key("0")
-      for _ in 0..<100 {
+      for frame in 0..<100 {
+        if frame == 40 || frame == 50 { await runtime.key("k") }
         let state = await runtime.advance(delta: 0.02)
-        _ = await imageFor(Display.render(state))
+        _ = await imageFor(Display.render(state, rasterizeShips: false), scale: 2)
       }
     }
     print("Actor simulation and frame lifecycle probe passed")

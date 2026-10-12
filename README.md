@@ -15,7 +15,7 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_elite&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=stephenlclarke_elite)
 ![Repo Visitors](https://visitor-badge.laobi.icu/badge?page_id=stephenlclarke.elite)
 
-A native Swift macOS space trading game targeting the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, monochrome wireframe ships, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Firebud begins with a fully equipped ship and 100,000,000 credits.
+A native Swift macOS space trading game targeting the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke with maximum hardware; coloured wireframes and shaded panels are optional display modes.
 
 ![Elite gameplay](docs/elite.png)
 
@@ -68,12 +68,14 @@ Number keys select the main game screens. Inside the secret menu they select sec
 | Click, galactic chart | Select the system nearest the pointer |
 | O / D, chart | Reset target to current system / show distance |
 | End (BBC COPY) | Pause / resume |
-| @, paused | Toggle Executive infinite jump range and free jump fuel together |
 | :, paused | Toggle speech |
 | Escape, paused | Resume |
 | X Y Z Z Y, typed in sequence | Open secret menu |
-| 1-9, secret menu | Select options in the XYZZY table below |
+| 0-9, secret menu | Select options in the XYZZY table below |
 | Return / Escape, secret menu | Close secret menu and return to previous screen |
+| K / Command-K | Open or close the context-sensitive player key guide |
+| Left / Right or Up / Down, help | Previous / next help page |
+| Return / Escape, help | Close help and return to the previous screen |
 | Space / Return, game over | Start a new commander |
 | Command-S / Command-O | Save / load commander |
 | Command-Q | Quit the app |
@@ -84,10 +86,11 @@ Commander saves, including secret options, live at `~/.xyzzy/elite/commander.jso
 
 ## XYZZY
 
-Type `xyzzy` in the game to open the secret menu. Press Return or Escape to return to the previous screen.
+Type `xyzzy` in the game to become Commander Clarke and open the secret menu. Your Cobra Mk III receives every equipment upgrade, a full missile rack and fuel, and restored shields and energy. Existing cargo, cash, location and progress are retained. Press Return or Escape to return to the previous screen with those upgrades. A new game starts as Jameson again.
 
 | Key | Option |
 | --- | --- |
+| 0 | Cycle white wireframe → coloured wireframe → shaded panels → white wireframe |
 | 1 | Fit docking computers |
 | 2 | Fit maximum hardware and restore shields, energy, fuel and missile rack |
 | 3 | Unlimited missiles |
@@ -98,13 +101,17 @@ Type `xyzzy` in the game to open the secret menu. Press Return or Escape to retu
 | 8 | Unlimited cargo capacity |
 | 9 | Unlimited cash: purchases do not debit the balance |
 
+White wireframes are the default. Coloured wireframes identify hulls by colour; shaded panels draw opaque faces with flat directional lighting. The chosen display is saved with the commander. Old saves without a display choice load with white wireframes. Unlimited fuel and hyperspace distance are controlled here with 4 and 5; the paused-game @ shortcut has been removed.
+
+Press K, use Command-K, or choose **Help → Player Key Guide** for the controls relevant to your current activity. The guide covers flight, station screens, trading, equipment, charts, pause, the title/demo and XYZZY. Arrow keys change pages; K, Return or Escape closes it. The simulation pauses while the guide is open and resumes on the same screen.
+
 Auto-trade runs when enabled while docked and on subsequent docking. It sells the hold, refuels, and buys profitable exports for the selected destination. If the target is the current system, it chooses a reachable route using profit, distance and government risk. Pricing follows the original economy calculation; it evaluates all possible destination market fluctuations and buys only goods with a positive conservative margin. Slaves, narcotics and firearms are included when profitable, and illegal cargo affects legal status on launch. Cash, local stock and hold capacity constrain purchases unless the corresponding secret option is enabled. Unlimited cargo cannot be disabled while the hold exceeds the normal bay capacity; sell excess cargo first.
 
 ## Architecture
 
 `EliteCore` contains the deterministic simulation, original galaxy and commodity calculations, commander persistence, raster graphics and sound synthesis. `GameRuntime` is a Swift actor owning the game and controls. The Mac app sends commands to that actor and draws immutable snapshots on the main actor. Ships and markets are value types within the simulation actor, avoiding a task per object and preserving update order. The window loop is cancelled on close; losing focus clears held controls.
 
-`EliteMac` is the native AppKit window, keyboard adapter, pixel presentation and audio/speech output. Rendering preserves the 256 by 256 logical layout. Bitmap text and cockpit instruments use nearest-neighbour scaling; ship wireframes retain subpixel coordinates and use antialiased native-resolution strokes. Speech and sound are independent native reproductions, not recordings or ROM playback.
+`EliteMac` is the native AppKit window, keyboard adapter, pixel presentation and audio/speech output. Rendering preserves the 256 by 256 logical layout. Bitmap text and cockpit instruments use nearest-neighbour scaling; ship wireframes retain subpixel coordinates and use antialiased strokes. Shaded faces clip against the near plane and viewport and draw from back to front. Display preferences and contextual help remain value state owned by the game actor. Speech and sound are independent native reproductions, not recordings or ROM playback.
 
 ## Validation and SonarQube
 
@@ -118,7 +125,7 @@ make readme-media
 make sonar
 ```
 
-Coverage is measured across every Swift source file, including the Mac adapter, with an 80% minimum and no source exclusions. Tests cover original Lave/Zaonce/Diso galaxy fixtures, market invariants, economy-based and illegal auto-trading, unlimited resources, combat, navigation, native key translation, frame conversion, actor concurrency and commander save validation. `make threads` runs Thread Sanitizer; `make address` runs Address Sanitizer; `make leaks` runs a repeated actor and raster lifecycle probe under macOS `leaks`, saving evidence in `reports/leaks.txt`. These tools detect problems in exercised paths and do not prove the absence of defects in every possible session.
+Coverage is measured across every Swift source file, including the Mac adapter, with an 80% minimum and no source exclusions. Tests cover original Lave/Zaonce/Diso galaxy fixtures, market invariants, economy-based and illegal auto-trading, unlimited resources, combat, navigation, native key translation, frame conversion, actor concurrency and commander save validation. Wireframe regressions check flat, outward-facing hull surfaces, every projected silhouette segment across 5,760 hull orientations, and unclipped title-screen rotations. `make threads` runs Thread Sanitizer; `make address` runs Address Sanitizer; `make leaks` runs a repeated actor and raster lifecycle probe under macOS `leaks`, saving evidence in `reports/leaks.txt`. These tools detect problems in exercised paths and do not prove the absence of defects in every possible session.
 
 GitHub CI runs on pushes to `main`. SonarQube analysis verifies the remote main branch and Previous version new-code definition, then uses the exact 40-character commit SHA as `sonar.projectVersion`. Analysis fails if the token or required settings are missing. Configure `SONAR_TOKEN` locally; the repository's Actions secret is already configured. Badges above link to the project's SonarQube metrics.
 
