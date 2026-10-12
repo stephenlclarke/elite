@@ -37,7 +37,8 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   public var availableCredits: Int { unlimitedCash ? Int.max : credits }
   public var capacity: Int {
-    unlimitedCargo ? Int.max / 17 : equipment.contains("Large Cargo Bay") ? 35 : 20
+    let standard = equipment.contains("Large Cargo Bay") ? 35 : 20
+    return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
     zip(cargo, Commodity.all).reduce(0) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }

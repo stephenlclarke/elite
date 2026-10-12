@@ -11,7 +11,7 @@ final class GameView: NSView {
   var pending: [String] = []
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
-  override func draw(_ dirtyRect: NSRect) {
+  override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
     guard let image = imageFor(Display.render(game)) else { return }
@@ -95,7 +95,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   var loop: Task<Void, Never>?
   let saveURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
     ".xyzzy/elite/commander.json")
-  func applicationDidFinishLaunching(_ notification: Notification) {
+  func applicationDidFinishLaunching(_ _: Notification) {
     let view = GameView(frame: NSRect(x: 0, y: 0, width: 768, height: 768))
     let window = NSWindow(
       contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -135,16 +135,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       }
     }
   }
-  func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+  func applicationShouldTerminateAfterLastWindowClosed(_ _: NSApplication) -> Bool { true }
   func applicationWillTerminate(_ notification: Notification) {
+    windowWillClose(notification)
+  }
+  func windowWillClose(_ _: Notification) {
     loop?.cancel()
     loop = nil
   }
-  func windowWillClose(_ notification: Notification) {
-    loop?.cancel()
-    loop = nil
-  }
-  func windowDidResignKey(_ notification: Notification) {
+  func windowDidResignKey(_ _: Notification) {
     (window?.contentView as? GameView)?.held.removeAll()
   }
   private func installMenu() {

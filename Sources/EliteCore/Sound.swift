@@ -34,9 +34,9 @@ public enum SoundEffect: Sendable, CaseIterable {
       let progress = Double(index) / Double(count)
       phase += frequency(progress) / Double(rate)
       noise = noise &* 1_664_525 &+ 1_013_904_223
-      let sign: Double =
-        self == .explosion
-        ? (noise & 1 == 0 ? -1 : 1) : (phase.truncatingRemainder(dividingBy: 1) < 0.5 ? -1 : 1)
+      let noiseSign: Double = noise & 1 == 0 ? -1 : 1
+      let squareSign: Double = phase.truncatingRemainder(dividingBy: 1) < 0.5 ? -1 : 1
+      let sign = self == .explosion ? noiseSign : squareSign
       samples.append(Int16(sign * 5000 * (1 - progress)))
     }
     var data = Data("RIFF".utf8)

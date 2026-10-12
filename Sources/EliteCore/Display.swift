@@ -298,9 +298,8 @@ public enum Display {
     }
   }
   private static func market(_ game: Game, into frame: inout Frame) {
-    header(
-      game.screen == .buy ? "BUY CARGO" : (game.screen == .sell ? "SELL CARGO" : "MARKET PRICES"),
-      into: &frame)
+    let marketTitle = game.screen == .sell ? "SELL CARGO" : "MARKET PRICES"
+    header(game.screen == .buy ? "BUY CARGO" : marketTitle, into: &frame)
     frame.text("PRODUCT       PRICE STOCK HOLD", 4, 24)
     for (i, item) in Commodity.all.enumerated() {
       let y = 34 + i * 8
@@ -333,8 +332,8 @@ public enum Display {
   }
   private static func status(_ game: Game, into frame: inout Frame) {
     header("COMMANDER " + game.commander.name, into: &frame)
-    let legal =
-      game.commander.legal == 0 ? "CLEAN" : (game.commander.legal < 50 ? "OFFENDER" : "FUGITIVE")
+    let criminalStatus = game.commander.legal < 50 ? "OFFENDER" : "FUGITIVE"
+    let legal = game.commander.legal == 0 ? "CLEAN" : criminalStatus
     let lines =
       [
         "PRESENT SYSTEM: " + game.currentSystem.name, "HYPERSPACE: " + game.targetSystem.name,
@@ -412,9 +411,8 @@ public enum Display {
       frame.line(sx, sy, sx, sy - height, body.hostile ? .red : .green)
       frame.line(sx - 1, sy - height, sx + 1, sy - height, body.hostile ? .red : .green)
     }
-    frame.text(
-      game.docked ? "S" : (game.bodies.contains(where: \.hostile) ? "RED" : "GREEN"), 82, 246,
-      .yellow)
+    let flightCondition = game.bodies.contains(where: \.hostile) ? "RED" : "GREEN"
+    frame.text(game.docked ? "S" : flightCondition, 82, 246, .yellow)
     frame.text(
       String(repeating: "M", count: game.commander.missiles), 134, 246,
       game.missileArmed ? .red : .green)

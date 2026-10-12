@@ -69,7 +69,8 @@ public struct Mesh: Sendable {
         faces: [Array((0..<8).reversed()), Array(8..<16)]
           + (0..<8).map { [$0, ($0 + 1) % 8, ($0 + 1) % 8 + 8, $0 + 8] })
     case .cobra, .viper, .sidewinder, .missile:
-      let width: Double = kind == .missile ? 8 : (kind == .cobra ? 64 : 40)
+      let standardWidth: Double = kind == .cobra ? 64 : 40
+      let width: Double = kind == .missile ? 8 : standardWidth
       return Mesh(
         vertices: [
           .init(-width, 0, -25), .init(width, 0, -25), .init(30, 12, 30),
