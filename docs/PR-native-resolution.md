@@ -14,6 +14,8 @@ The native app is inspected in flight at normal and full throttle, including win
 
 Local validation passed with 38 tests, 93.35% line coverage, clean thread/address sanitizer runs and zero detected leaks. Native export checks include 1379-square resizing and 3072-square output, while font checks preserve each original glyph pixel.
 
+Native AppKit tests run sequentially because they share one application and event loop. This prevents large export checks from delaying the window's first frame during sanitizer validation; the startup assertion and its bounded wait remain in place.
+
 ## Compatibility
 
 This is an intentional display improvement over the historical BBC renderer. Commander saves, game rules and keys are unchanged. Star positions are transient simulation state, not a commander-save format change. The deterministic low-resolution raster remains available for core rendering tests; normal play uses native drawing.
