@@ -89,7 +89,12 @@ public struct Mesh: Sendable {
           .init(-width, 0, -25), .init(width, 0, -25), .init(30, 12, 30),
           .init(-30, 12, 30), .init(0, -18, -20), .init(22, -10, 30), .init(-22, -10, 30),
         ],
-        faces: [[0, 3, 2, 1], [0, 4, 6, 3], [1, 2, 5, 4], [0, 1, 4], [3, 6, 5, 2], [4, 5, 6]])
+        // The wing sides bend along 0-6 and 1-5. Treating either pair of
+        // triangles as a flat quad incorrectly culls its visible outer edges.
+        faces: [
+          [0, 3, 2, 1], [0, 4, 6], [0, 6, 3], [1, 2, 5], [1, 5, 4],
+          [0, 1, 4], [3, 6, 5, 2], [4, 5, 6],
+        ])
     }
   }
 }

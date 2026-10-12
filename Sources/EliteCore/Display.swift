@@ -171,7 +171,8 @@ public enum Display {
   }
   private static func title(_ game: Game, into frame: inout Frame) {
     frame.centered("E L I T E", 22)
-    var ship = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 220))
+    // Keep the complete rotating hull between the title and version text.
+    var ship = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 280))
     ship.rotation = game.time * 0.6
     draw(ship, game: game, into: &frame)
     frame.centered(

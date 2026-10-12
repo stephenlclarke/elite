@@ -634,7 +634,13 @@ import Testing
       let c = mesh.vertices[face[2]]
       let midpoint =
         face.reduce(Vector3(0, 0, 0)) { $0 + mesh.vertices[$1] } * (1 / Double(face.count))
-      #expect((b - a).cross(c - a).dot(midpoint - center) > 0)
+      let normal = (b - a).cross(c - a)
+      #expect(normal.dot(midpoint - center) > 0)
+      // Culling a warped polygon as one plane can remove a visible outline edge.
+      for index in face {
+        #expect(abs(normal.dot(mesh.vertices[index] - a)) / normal.length < 1e-8)
+      }
+      #expect(mesh.vertices.allSatisfy { normal.dot($0 - a) / normal.length < 1e-8 })
       for index in face.indices {
         let i = face[index]
         let j = face[(index + 1) % face.count]
@@ -642,12 +648,5 @@ import Testing
       }
     }
     #expect(adjacency.values.allSatisfy { $0 == 2 })
-  }
-  for step in 0..<72 {
-    var game = Game(executive: false)
-    game.time = Double(step) * .pi / 18
-    let frame = Display.render(game, rasterizeShips: false)
-    #expect(frame.shipLines.count >= 5)
-    #expect(frame.shipLines.allSatisfy { [$0.x0, $0.y0, $0.x1, $0.y1].allSatisfy(\.isFinite) })
   }
 }

@@ -83,7 +83,11 @@ import Testing
   view.pending = ["return", "0", "chart:20:30"]
   view.held = ["x"]
   view.pressedKeys = [7: "x"]
-  try await Task.sleep(for: .milliseconds(150))
+  // Sanitizers can delay the actor's first frame while other tests run.
+  let deadline = ContinuousClock.now.advanced(by: .seconds(5))
+  while view.game.time == 0 && ContinuousClock.now < deadline {
+    try await Task.sleep(for: .milliseconds(10))
+  }
   #expect(view.pending.isEmpty)
   #expect(view.game.time > 0)
   delegate.windowDidResignKey(notification)
