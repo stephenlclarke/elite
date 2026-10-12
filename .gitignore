@@ -1,0 +1,9 @@
+.build/
+dist/
+.scannerwork/
+coverage.lcov
+coverage.xml
+.DS_Store
+reports/
+
+.vscode/
