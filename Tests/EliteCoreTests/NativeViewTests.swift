@@ -72,3 +72,23 @@ import Testing
   view.keyUp(with: up)
   #expect(view.controls.roll == 0 && view.held.isEmpty)
 }
+
+@MainActor @Test func nativeWindowLoopProcessesNumberKeysAndClearsFocus() async throws {
+  _ = NSApplication.shared
+  let delegate = AppDelegate()
+  let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+  delegate.applicationDidFinishLaunching(notification)
+  let window = try #require(delegate.window)
+  let view = try #require(window.contentView as? GameView)
+  view.pending = ["return", "0", "chart:20:30"]
+  view.held = ["x"]
+  view.pressedKeys = [7: "x"]
+  try await Task.sleep(for: .milliseconds(150))
+  #expect(view.pending.isEmpty)
+  #expect(view.game.time > 0)
+  delegate.windowDidResignKey(notification)
+  #expect(view.held.isEmpty && view.pressedKeys.isEmpty)
+  delegate.windowWillClose(notification)
+  #expect(delegate.loop == nil)
+  window.orderOut(nil)
+}
