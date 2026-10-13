@@ -4,7 +4,7 @@ Research readiness, receipt and playable implementation are separate. Apply the 
 
 | Packet | Receipt | Implementation |
 | --- | --- | --- |
-| P05 Blackjack's Bullion 1.2.9 | Received 13 October 2026; complete bounded space/station specification | Implemented on `blackjack-bullion-mission`; 155 tests pass; 94.91% overall coverage, clean sanitizers and 0 leaks; publication pending |
+| P05 Blackjack's Bullion 1.2.9 | Received 13 October 2026; complete bounded space/station specification | Implemented in [PR #4](https://github.com/stephenlclarke/elite/pull/4); 155 tests pass; 94.91% overall coverage, clean sanitizers and 0 leaks; protected-main publication pending |
 | P22 Localhero I 1.05 | Received 13 October 2026; 31-assignment profile and 58 selected source checks | Queued; not yet playable |
 | P16 GalCop's Most Wanted 0.16 / BountySystem 0.19 | Received 13 October 2026; repeatable tracking profile and 31 selected source checks | Queued; not yet playable |
 | P21 LinkG7 0.1 | Received 13 October 2026; space-trial profile, 16 selected source checks and explicit midpoint repair | Queued; not yet playable |

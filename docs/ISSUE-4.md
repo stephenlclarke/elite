@@ -6,4 +6,6 @@ Required behaviour: Galaxy 2 automatic Telace contact, unique Bolts and witness 
 
 Validation includes campaign and persistence regressions, native contact/help/Gallery checks, coverage, both sanitizers and the leak lifecycle probe. Document the researched repairs and existing native AI/mesh limitations. Later delivered packets belong in the implementation queue.
 
-Implementation: [PR-blackjack-bullion-mission.md](PR-blackjack-bullion-mission.md).
+Implementation: [PR-4.md](PR-4.md).
+
+Pull request: <https://github.com/stephenlclarke/elite/pull/4>.
