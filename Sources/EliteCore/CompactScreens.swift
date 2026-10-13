@@ -35,7 +35,7 @@ extension Display {
       "Page \(page + 1) of \(pages.count)", layout.left, height - 44,
       scale: layout.font, ink: .yellow)
     frame.label(
-      "Arrows: more  K/Return/Esc: back", layout.left, height - 24,
+      "Arrows: help pages  Esc: back", layout.left, height - 24,
       scale: layout.font, ink: .cyan)
     return frame
   }
@@ -47,7 +47,7 @@ extension Display {
       frame.compactTitle("STATION RUMOURS / GALAXY \(game.commander.galaxy + 1)", layout: layout)
       frame.compactRows([(game.stationRumour, .white)], layout: layout, top: 56)
       frame.label(
-        "Return / Escape: back  K: help", layout.left, layout.bottom - 22, scale: layout.font,
+        "Esc: back  K: help", layout.left, layout.bottom - 22, scale: layout.font,
         ink: .cyan)
       return frame
     case .secret:
@@ -62,7 +62,7 @@ extension Display {
       frame.label("Press Space / Return for a new commander", layout.left, 60, scale: layout.font)
     default: break
     }
-    let footer = game.screen == .secret ? "Return / Escape: resume  K: help" : "K: help"
+    let footer = game.screen == .secret ? "Esc: back  K: help" : "K: help"
     frame.label(footer, layout.left, layout.bottom - 22, scale: layout.font, ink: .cyan)
     if game.messageTime > 0 && !game.paused {
       frame.label(game.message, layout.left, layout.bottom - 44, scale: layout.font, ink: .orange)
@@ -123,7 +123,7 @@ extension Display {
     frame.compactRows(
       notice.pages[page].map { ($0, .white) }, layout: layout,
       top: notice.showsShip ? 132 : 56)
-    let text = game.paused ? "Command-P: resume" : "Space / Return / Esc: continue"
+    let text = game.paused ? "Command-P: resume" : "Return: next  Esc: close"
     frame.label(text, layout.left, layout.bottom - 22, scale: layout.font, ink: .cyan)
     let counter = "\(page + 1)/\(notice.pages.count)"
     frame.label(

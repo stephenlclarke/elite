@@ -18,7 +18,7 @@ extension Display {
       frame.label(row.0, x, y + Double(index) * GameTypography.row, scale: layout.font, ink: row.1)
     }
     frame.label(
-      "Fn-Up/Down: data \(offset + 1)/\(wrapped.count)", x, bottom - 14, scale: layout.font,
+      "Option-Up/Down: data \(offset + 1)/\(wrapped.count)", x, bottom - 14, scale: layout.font,
       ink: .cyan)
     let planetSize =
       layout.wide

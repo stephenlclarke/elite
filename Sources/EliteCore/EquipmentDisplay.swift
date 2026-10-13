@@ -95,7 +95,7 @@ extension Display {
       } else if !game.equipmentAvailable(item) {
         description += "Unavailable: requires tech level \(item.technology + 1)."
       } else {
-        description += "Up/Down: select. Return: buy. Scroll: browse."
+        description += "Arrows: select. Return: buy. Esc: back."
       }
       let lines = MissionNotice.wrap(
         description, width: Int(layout.contentWidth / (6 * layout.font)))

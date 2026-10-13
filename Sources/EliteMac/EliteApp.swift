@@ -14,9 +14,8 @@ final class GameView: NSView {
           pressedKeys.removeAll()
         }
       }
-      if game.screen == .gallery || oldValue.screen == .gallery || game.screen == .navigation
-        || oldValue.screen == .navigation
-        || game.mapSearch.active != oldValue.mapSearch.active
+      if game.screen != oldValue.screen || game.paused != oldValue.paused
+        || game.acceptsTextInput != oldValue.acceptsTextInput
       {
         held.removeAll()
         pressedKeys.removeAll()
@@ -70,17 +69,34 @@ final class GameView: NSView {
     drawGame(game, context: context, rect: bounds)
   }
   private func clearSteeringInput() {
-    held.subtract(["x", "s", ",", "<", ".", ">", "left", "right"])
+    held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])
     trackpad.reset()
+  }
+  override func performKeyEquivalent(with event: NSEvent) -> Bool {
+    if event.modifierFlags.contains(.command), event.keyCode == 51, game.acceptsTextInput {
+      pending.append("search-clear")
+      return true
+    }
+    return super.performKeyEquivalent(with: event)
   }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
-    if key == "r" && !event.isARepeat && game.screen.isFlight { clearSteeringInput() }
-    held.insert(key)
-    pressedKeys[event.keyCode] = key
-    if !event.isARepeat || (game.screen == .equipment && ["up", "down"].contains(key)) {
-      pending.append(key)
+    if event.modifierFlags.contains(.command), event.keyCode == 51, game.acceptsTextInput {
+      pending.append("search-clear")
+      return
     }
+    if !event.modifierFlags.intersection([.command, .control]).isEmpty { return }
+    if ["r", "tab"].contains(key) && !event.isARepeat && game.screen.isFlight {
+      clearSteeringInput()
+    }
+    if game.screen.isFlight && !game.paused {
+      held.insert(key)
+      pressedKeys[event.keyCode] = key
+    }
+    let repeatNavigation =
+      !game.screen.isFlight && ["up", "down", "left", "right", "pageup", "pagedown"].contains(key)
+    let repeatText = game.acceptsTextInput && (key.count == 1 || key == "backspace")
+    if !event.isARepeat || repeatNavigation || repeatText { pending.append(key) }
   }
   override func keyUp(with event: NSEvent) {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
@@ -89,6 +105,7 @@ final class GameView: NSView {
     if game.screen == .showroom {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("showroom-click:\(point.x):\(point.y)")
+      if event.clickCount >= 2 { pending.append("return") }
       return
     }
     if game.screen == .handoff {
@@ -132,16 +149,21 @@ final class GameView: NSView {
   }
   var controls: Controls {
     var controls = Controls()
-    if !game.screen.isFlight {
+    if !game.screen.isFlight || game.paused {
       return controls
     }
-    controls.pitch = (held.contains("x") ? 1 : 0) - (held.contains("s") ? 1 : 0)
+    controls.pitch =
+      (held.contains("up") || held.contains("x") ? 1 : 0)
+      - (held.contains("down") || held.contains("s") ? 1 : 0)
     controls.roll =
-      (held.contains(",") || held.contains("<") ? 1 : 0)
-      - (held.contains(".") || held.contains(">") ? 1 : 0)
+      (held.contains(",") || held.contains("<") || (!game.spin.mode && held.contains("left"))
+        ? 1 : 0)
+      - (held.contains(".") || held.contains(">") || (!game.spin.mode && held.contains("right"))
+        ? 1 : 0)
     controls.throttle =
-      (held.contains(" ") ? 1 : 0) - (held.contains("/") || held.contains("?") ? 1 : 0)
-    controls.fire = held.contains("a")
+      (held.contains(" ") ? 1 : 0)
+      - (held.contains("backspace") || held.contains("/") || held.contains("?") ? 1 : 0)
+    controls.fire = held.contains("return") || held.contains("a")
     if acceptsTrackpadFlight {
       let touch = game.spin.mode ? trackpad.spinControls : trackpad.controls
       controls.pitch = max(-1, min(1, controls.pitch + touch.pitch))
@@ -164,6 +186,10 @@ final class GameView: NSView {
     return controls
   }
   private static func key(_ event: NSEvent) -> String {
+    if event.modifierFlags.contains(.option) {
+      if event.keyCode == 126 { return "pageup" }
+      if event.keyCode == 125 { return "pagedown" }
+    }
     switch event.keyCode {
     case 51: return "backspace"
     case 36: return "return"
@@ -183,7 +209,9 @@ final class GameView: NSView {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMenuDelegate,
+  NSMenuItemValidation
+{
   var window: NSWindow?
   let runtime = GameRuntime()
   var loop: Task<Void, Never>?
@@ -289,10 +317,51 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       withTitle: "Ship Showroom", action: #selector(showShipShowroom), keyEquivalent: "w")
     showroom?.keyEquivalentModifierMask = [.command, .shift]
     showroom?.target = self
+    let screens = NSMenuItem()
+    screens.title = "Screens"
+    menu.addItem(screens)
+    screens.submenu = NSMenu(title: "Screens")
+    screens.submenu?.delegate = self
+    for number in 0...9 {
+      let item = screens.submenu?.addItem(
+        withTitle: Game.screenTitle(number, docked: true),
+        action: #selector(gameAction(_:)), keyEquivalent: String(number))
+      item?.representedObject = "screen:\(number)"
+      item?.tag = number
+      item?.target = self
+    }
+    let flight = NSMenuItem()
+    flight.title = "Flight"
+    menu.addItem(flight)
+    flight.submenu = NSMenu(title: "Flight")
+    let flightActions = [
+      ("Next Target", "tab"), ("Cancel Automatic Guidance", "q"),
+      ("Hyperspace to Selected System", "h"), ("In-system Jump", "j"),
+      ("Galactic Hyperdrive", "g"), ("Activate ECM", "e"),
+      ("Arm Missile", "t"), ("Disarm Missile", "u"), ("Fire Missile", "m"),
+      ("Detonate Energy Bomb", "energy-bomb"), ("Launch Escape Pod", "escape-pod"),
+    ]
+    for (title, command) in flightActions {
+      let item = flight.submenu?.addItem(
+        withTitle: title, action: #selector(gameAction(_:)),
+        keyEquivalent: command == "escape-pod" ? "e" : "")
+      if command == "escape-pod" { item?.keyEquivalentModifierMask = [.command, .shift] }
+      item?.representedObject = command
+      item?.target = self
+    }
     let game = NSMenuItem()
     game.title = "Game"
     menu.addItem(game)
     game.submenu = NSMenu(title: "Game")
+    for (title, command) in [
+      ("Mission Gallery", "gallery-open"), ("Mission Contacts", "contacts-open"),
+      ("Station Rumours", "rumours-open"),
+    ] {
+      let item = game.submenu?.addItem(
+        withTitle: title, action: #selector(gameAction(_:)), keyEquivalent: "")
+      item?.representedObject = command
+      item?.target = self
+    }
     let pause = game.submenu?.addItem(
       withTitle: "Pause / Resume", action: #selector(togglePause), keyEquivalent: "p")
     pause?.target = self
@@ -310,6 +379,41 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       withTitle: "Player Key Guide", action: #selector(showHelp), keyEquivalent: "k")
     guide?.target = self
     NSApp.mainMenu = menu
+  }
+  func menuNeedsUpdate(_ menu: NSMenu) {
+    guard menu.title == "Screens", let view = window?.contentView as? GameView else { return }
+    for item in menu.items {
+      item.title = "\(item.tag): " + Game.screenTitle(item.tag, docked: view.game.docked)
+    }
+  }
+  func validateMenuItem(_ item: NSMenuItem) -> Bool {
+    guard let game = (window?.contentView as? GameView)?.game else { return false }
+    if let command = item.representedObject as? String {
+      if command.hasPrefix("screen:") {
+        return !game.paused
+          && ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(
+            game.screen)
+      }
+      if item.menu?.title == "Flight" {
+        return !game.docked && game.screen.isFlight && !game.paused
+      }
+      if command == "contacts-open" || command == "rumours-open" || command == "gallery-open" {
+        return !game.paused && !game.acceptsTextInput
+          && ![
+            Screen.demo, .title, .gameOver, .secret, .help, .mission, .handoff, .showroom, .gallery,
+          ].contains(game.screen)
+          && (command == "gallery-open" || game.docked)
+      }
+    }
+    if item.action == #selector(toggleSpin) || item.action == #selector(stopSpin) {
+      return !game.docked && game.screen.isFlight && !game.paused
+    }
+    if item.action == #selector(showShipShowroom) { return game.docked && !game.paused }
+    return true
+  }
+  @objc private func gameAction(_ sender: NSMenuItem) {
+    guard let command = sender.representedObject as? String else { return }
+    (window?.contentView as? GameView)?.pending.append(command)
   }
   @objc private func showShipShowroom() {
     (window?.contentView as? GameView)?.pending.append("showroom-open")

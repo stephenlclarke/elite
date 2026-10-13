@@ -52,9 +52,9 @@ extension Display {
       }
     }
     frame.label(
-      "Up/Down: route  Enter: set  C: clear  Esc: back", 16, height - 34, scale: font, ink: .cyan)
+      "Arrows: route  Return: set  C: clear  Esc: back", 16, height - 34, scale: font, ink: .cyan)
     frame.label(
-      "Fn-Up/Fn-Down: scroll  H still starts each jump manually", 16, height - 17, scale: font,
+      "Option-Up/Down: scroll  H: start each jump", 16, height - 17, scale: font,
       ink: .cyan)
     return frame
   }

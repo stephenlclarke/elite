@@ -55,7 +55,7 @@ extension Display {
         game.message, layout.facts.x, layout.bottom - 44, scale: GameTypography.scale, ink: .orange)
     }
     frame.label(
-      game.paused ? "PAUSED - COMMAND-P TO RESUME" : "K: help", layout.facts.x,
+      game.paused ? "PAUSED - COMMAND-P TO RESUME" : "Esc: back  K: help", layout.facts.x,
       layout.bottom - 22, scale: GameTypography.scale, ink: .cyan)
     return frame
   }

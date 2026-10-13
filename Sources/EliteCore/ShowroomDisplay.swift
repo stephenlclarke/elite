@@ -1,6 +1,7 @@
 import Foundation
 
 public struct ShowroomLayout: Sendable {
+  public static let actionKeys = ["tab", "b", "r", "c", "v", ",", ".", " "]
   public let wide: Bool
   public let listVisible: Bool
   public let search: CanvasRect
@@ -22,18 +23,20 @@ public struct ShowroomLayout: Sendable {
     search = .init(x: 16, y: 42, width: min(680, width - 184), height: 24)
     clearSearch = .init(x: search.maxX + 8, y: 42, width: 144, height: 24)
     close = .init(x: width - 106, y: 8, width: 90, height: 24)
-    buttons = (0..<5).map { index in
-      .init(x: left + Double(index) * available / 5, y: 72, width: available / 5 - 4, height: 24)
+    buttons = Self.actionKeys.indices.map { index in
+      .init(
+        x: left + Double(index % 4) * available / 4, y: 72 + Double(index / 4) * 28,
+        width: available / 4 - 4, height: 24)
     }
     list = .init(
-      x: 16, y: 108, width: wide ? 240 : width - 32,
-      height: wide ? height - 148 : min(160, height * 0.30))
-    let modelTop = wide || detail ? 108 : list.maxY + 14
-    let modelHeight = wide || detail ? min(260, height * 0.30) : max(80, height - modelTop - 40)
+      x: 16, y: 148, width: wide ? 240 : width - 32,
+      height: wide ? height - 208 : min(160, height * 0.30))
+    let modelTop = wide || detail ? 148 : list.maxY + 14
+    let modelHeight = wide || detail ? min(260, height * 0.30) : max(80, height - modelTop - 60)
     model = .init(x: left, y: modelTop, width: available, height: modelHeight)
     details = .init(
       x: left, y: model.maxY + 18, width: available,
-      height: max(0, height - model.maxY - 60))
+      height: max(0, height - model.maxY - 80))
   }
 }
 
@@ -96,7 +99,7 @@ extension Display {
     let layout = ShowroomLayout(width: width, height: height, detail: game.showroom.detail)
     let font = GameTypography.scale
     frame.label("SHIP SHOWROOM", 16, 12, scale: font, ink: .yellow)
-    frame.label("W: Close", layout.close.x + 8, 12, scale: font, ink: .cyan)
+    frame.label("Esc: Back", layout.close.x + 4, 12, scale: font, ink: .cyan)
     let countText =
       game.showroom.query.isEmpty
       ? "\(game.showroomShips.count)/\(ShipCatalogue.all.count) ships"
@@ -105,21 +108,41 @@ extension Display {
       countText + " | You own: Cobra Mk III", 16, 28, scale: font,
       ink: game.showroom.query.isEmpty ? .white : .orange)
     frame.label(
-      game.showroom.searching ? "Fn-Del: Clear" : "X: Clear filter", layout.clearSearch.x + 4,
+      game.showroom.searching ? "Clear search" : "Clear filter", layout.clearSearch.x + 4,
       layout.clearSearch.y + 8, scale: font, ink: .cyan)
     let query = game.showroom.query.isEmpty ? "Name / class / source / ID" : game.showroom.query
     frame.label(
       (game.showroom.searching ? "> " : "/: ") + query,
       layout.search.x + 8, layout.search.y + 8, scale: font, ink: .cyan)
     let buttonTitles = [
-      "B: Pin", "R: Your ship", "C: Compare",
-      game.showroom.rotationPaused ? "Space:Spin" : "Space:Stop",
-      game.showroom.sourceProfiles ? "V: Refit" : "V: Source",
+      game.showroom.detail ? "Ships" : "Specifications", "Pin baseline", "Cobra baseline",
+      game.showroom.compare ? "Compare: on" : "Compare: off",
+      game.showroom.sourceProfiles ? "Show refits" : "Show sources",
+      "Prev profile", "Next profile",
+      game.showroom.rotationPaused ? "Rotate model" : "Pause model",
     ]
     for (index, bounds) in layout.buttons.enumerated() {
-      frame.label(buttonTitles[index], bounds.x + 4, bounds.y + 8, scale: font, ink: .cyan)
+      frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, .blue)
+      let title = buttonTitles[index]
+      let columns = max(1, Int((bounds.width - 8) / (6 * font)))
+      frame.label(
+        String(title.prefix(columns)), bounds.x + 4, bounds.y + 8, scale: font, ink: .cyan)
     }
-    if layout.listVisible { showroomList(game, layout: layout, into: &frame) }
+    let focus =
+      game.showroom.searching
+      ? "Search: type / arrows / Return"
+      : (game.showroom.detail ? "Specifications: arrows / scroll" : "Ships: arrows / Return")
+    frame.label(focus, 16, height - 42, scale: font, ink: .yellow)
+    if layout.listVisible {
+      frame.label(
+        game.showroom.detail ? "Ships" : "> Ships", layout.list.x, 130, scale: font, ink: .cyan)
+      showroomList(game, layout: layout, into: &frame)
+    }
+    if layout.wide || game.showroom.detail {
+      frame.label(
+        game.showroom.detail ? "> Specifications" : "Specifications", layout.details.x,
+        layout.details.y - 14, scale: font, ink: .cyan)
+    }
     if let selected = game.showroomShip {
       if layout.wide && game.showroom.compare, let baseline = game.showroomBaseline {
         let half = (layout.model.width - 16) / 2
@@ -147,12 +170,10 @@ extension Display {
       }
     } else {
       frame.label(
-        "Catalogue unavailable", layout.model.x, layout.model.y + 40, scale: font, ink: .orange)
+        "No matches - clear or edit search", layout.model.x, layout.model.y + 40, scale: font,
+        ink: .orange)
     }
-    let help =
-      layout.wide || game.showroom.detail
-      ? "Fn-Up/Down: specs  ,/.: variant  Esc: back  K: help"
-      : "Up/Down: ship  Return: specs  /: search  K: help"
+    let help = "Tab: ships/specs  /: search  Esc: back  K: help"
     frame.label(help, 16, height - 24, scale: font, ink: .cyan)
     return frame
   }
@@ -220,6 +241,13 @@ extension Display {
     }
   }
 
+  static func showroomMaximumScroll(_ game: Game) -> Int {
+    let layout = ShowroomLayout(
+      width: game.viewportWidth, height: game.viewportHeight, detail: game.showroom.detail)
+    let rows = showroomDetailRows(game, width: layout.details.width, modelAligned: layout.wide)
+    return max(0, rows.count - max(1, Int(layout.details.height / GameTypography.row)))
+  }
+
   private static func showroomDetails(
     _ game: Game, bounds: CanvasRect, modelAligned: Bool, into frame: inout Frame
   ) {
@@ -247,7 +275,8 @@ extension Display {
       "Dimensions: "
         + (ship.dimensions.map { $0.map { String(format: "%.4g", $0) }.joined(separator: " x ") }
           ?? "Unavailable"),
-      "Profile: " + (game.showroomProfile?.title ?? "Unavailable"),
+      "Profile \(game.showroom.profileIndex + 1)/\(game.showroomProfiles.count): "
+        + (game.showroomProfile?.title ?? "Unavailable"),
       game.showroomProfile?.context ?? "No numerical profile for this object.",
     ]
     var rows = [metadata[0], metadata[6], metadata[7]].flatMap {

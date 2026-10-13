@@ -149,8 +149,8 @@ extension Display {
       scale: layout.font, ink: .orange)
     frame.label(
       game.screen == .market
-        ? "Read-only prices  1: buy  2: sell  K: help"
-        : "Up/Down: select  Return: trade  K: help", layout.left, layout.bottom + 74,
+        ? "Prices  1: buy  2: sell  Esc: back  K: help"
+        : "Arrows: select  Return: trade  Esc: back  K: help", layout.left, layout.bottom + 74,
       scale: layout.font, ink: .cyan)
     return frame
   }
@@ -167,7 +167,7 @@ extension Display {
         row.0, layout.left, 56 + Double(index) * layout.row, scale: layout.font, ink: row.1)
     }
     frame.label(
-      "Up/Down: more  U: rumours  W: showroom  K: help", layout.left, layout.bottom,
+      "Arrows: more  6: showroom  Esc: back  K: help", layout.left, layout.bottom,
       scale: layout.font,
       ink: .cyan
     )

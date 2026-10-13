@@ -234,15 +234,23 @@ extension Game {
       missionPage = min(last, missionPage + 1)
       return
     }
-    if key == " " || key == "return" || key == "escape" {
+    if key == "escape" {
+      closeMissionMessage()
+      return
+    }
+    if key == " " || key == "return" {
       if missionPage < last {
         missionPage += 1
       } else {
-        missionNotice = nil
-        screen = .status
-        offerBlackjackHandoff()
+        closeMissionMessage()
       }
     }
+  }
+
+  private mutating func closeMissionMessage() {
+    missionNotice = nil
+    screen = .status
+    offerBlackjackHandoff()
   }
 
   mutating func missionTargetRemoved(_ body: SpaceBody) {

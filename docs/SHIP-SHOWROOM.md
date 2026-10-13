@@ -1,28 +1,27 @@
 # Docked ship showroom
 
-Press W while docked or choose Commander > Ship Showroom (Command-Shift-W). Browsing pauses gameplay and cannot buy or replace a hull, transfer equipment, change missions or award money. W closes; Escape returns from detail before closing. The previous station screen and equipment selection are retained.
+Press **6** while docked, or choose Screens > Ship Showroom. Browsing pauses gameplay and cannot buy or replace a hull, transfer equipment, change missions or award money. Escape leaves search first, then specifications, then the showroom. The previous station screen and equipment selection are retained.
 
 The snapshot contains 167 distinct canonical ships/objects and 158 labelled common project refits. It retains classic, Frontier, First Encounters, Elite Dangerous, Oolite and expansion appearances, crew evidence and source mappings. The 158 refits are comparison data, not 158 flyable native hulls. Search by name, class, source/edition or SH identifier. Reopening clears filters and selects your Cobra. The filter banner shows matching/total records and identifies the owned Cobra; selected ships are catalogue previews, not purchases. Source facts take priority. Missing values receive a defensible estimate when possible, with basis and confidence; engine-defined omitted fields use the pinned Oolite initialization defaults. Estimated GBA player hold capacities borrow the same canonical project refit with low confidence, separately from NPC dropped cargo. Single-pilot narrative complements are labelled medium-confidence estimates. Life-support/passenger accommodation stays a capacity fact, never minimum operating crew. Estimated or borrowed fields stay labelled; edition units and flight seats are not silently converted into native performance or minimum crew.
 
 Seventy-four records have inspected corresponding shaded geometry: 25 Oolite core models, Vector SE, the distinct GC Inspection Team craft, Arafura Rescue Boat and 46 additional expansion renditions. The additional models include complete source-defined nacelles, wings, turrets and docks, with distinct Hydra I/II assemblies. The Imperial Courier rendition follows Frontier-inspired Oolite geometry and is not an Elite Dangerous model. The source-model inventory is a dated research snapshot; imported runtime status is recorded here. Other records show Model unavailable; they never borrow a generic Cobra or a bounding-box surrogate. Geometry has original vertex/face topology with source normals, Z reflection and winding reconciliation; station source subentities are assembled and flashers omitted. Both comparison models share rotation. Textures are not included. Source envelopes are model units, not proven internal volume, SI dimensions or docking clearance. The current fitted Cobra, catalogue Cobra, flight and startup now share the same Oolite source geometry; actual fitted performance remains native game data. The app icon uses the same detailed Oolite Cobra, framed as shaded panels for small-size legibility.
 
-| Key | Action |
+| Action | How |
 | --- | --- |
-| Up / Down | Select ship; scroll specs in narrow detail view |
-| / | Search name, class, source or ID |
-| Return / Escape while searching | Finish search |
-| Backspace | Delete search character |
-| Return | Toggle detail view |
-| Space | Pause / resume model rotation |
-| X / Fn-Delete / Clear | Clear the filter and show all ships (X after leaving search) |
-| B / R | Pin selected baseline / reset to actual current Cobra fit |
-| C | Toggle comparison / individual specs |
-| V | Toggle common project refit / edition source profiles |
-| Comma / full stop | Previous / next profile variant |
-| Fn-Up / Fn-Down | Page specifications |
-| Click / scroll | Select ships and buttons / browse list or specifications |
-| K / Command-K | Context help |
-| W / Escape | Close / back |
+| Browse ships | Up/Down, scroll the list or click a row |
+| Search | Slash or click search; type a name, class, source or ID |
+| Choose a search result | Up/Down; Return chooses and opens specifications |
+| Edit / clear search | Delete removes one letter; Command-Delete or the visible Clear filter action clears it |
+| Read specifications | Return, Specifications button or double-click a ship |
+| Switch active pane | Tab or Ships/Specifications button; the footer names the active pane |
+| Scroll | Arrows in specifications, trackpad over that pane or Option-Up/Option-Down |
+| Compare | Click Pin baseline, choose another ship, and use Compare; Cobra baseline restores your actual fitted ship as the baseline |
+| Change profile | Click Prev profile / Next profile; Show sources / Show refits changes the profile set |
+| Stop rotation | Click Pause model / Rotate model |
+| Go back | Escape or the visible Back action: search, specifications, ship list, station |
+| Help | K |
+
+Keyboard and pointer actions share the same state. Clicking a ship returns arrow control to the list; clicking specifications focuses that pane. Selection stays visible, the active filter shows its result count, and an empty search shows no stale ship or model. Profile cycling uses the currently displayed set. All metadata and the original comparison columns remain available. [Complete keyboard reference](CONTROLS.md).
 
 The comparison label column is measured from the longest displayed label at the fixed bitmap scale, with separate 16-point gutters. Wide selected-value headers and rows align beneath the right model caption, using the full remaining pane width independently of the current-fit column. Narrow windows wrap values and, only when needed, labels; all cells share the actual wrapped row height. Long source identifiers split across lines instead of overlapping a neighbour. Comparison aligns matching fields and only subtracts compatible units/profile groups. Current-native physical capacities and counts can compare to source/project values; native speed, energy and shield pools cannot. Capacity, speed, crew burden, pylons and jump reach produce descriptive tradeoffs when comparable. Neither price nor hull size is treated as an automatic advantage.
 

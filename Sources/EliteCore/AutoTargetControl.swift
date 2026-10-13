@@ -207,7 +207,7 @@ extension Game {
   }
   public var autoHUDLines: [String] {
     guard targetingEnabled || dockingComputer || autoPilot.manualEngagement else { return [] }
-    guard let target = autoTargetBody else { return ["AUTO: R SELECT TARGET / Q OFF"] }
+    guard let target = autoTargetBody else { return ["AUTO: TAB SELECT TARGET / Q OFF"] }
     return [
       "AUTO: \(information(for: target)?.identifier ?? "Target #\(target.id)") - \(autoPilot.status)"
     ]

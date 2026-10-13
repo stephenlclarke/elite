@@ -213,6 +213,9 @@ public struct Game: Sendable {
   public var galacticBrowse = GalaxyBrowseState()
   public var systemInspection: SystemInspection?
   public var rumourReturn: Screen = .status
+  public var blackjackReturn: Screen = .status
+  var screenHistory: [Screen] = []
+  var flightReturn: Screen = .front
   public var selectedSystem = 7
   public var selection = 0
   public var informationScroll = 0
@@ -323,6 +326,7 @@ public struct Game: Sendable {
     spin.stop(immediate: true)
     cancelAutoTarget()
     screen = .status
+    screenHistory.removeAll()
     speed = 0
     reconcileEliteReward()
     navigationDocked()
@@ -330,181 +334,10 @@ public struct Game: Sendable {
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
-    if key == "showroom-open" {
-      openShowroom()
-      return
-    }
-    if key == "help-open" {
-      if ![Screen.gallery, .handoff, .showroom].contains(screen) { spin.stop(immediate: true) }
-      if screen == .help {
-        screen = helpReturn
-      } else {
-        helpReturn = screen
-        helpPage = 0
-        screen = .help
-      }
-      return
-    }
-    if screen == .rumour {
-      if key == "k" {
-        helpReturn = .rumour
-        helpPage = 0
-        screen = .help
-      } else if ["return", "escape", "u"].contains(key) {
-        screen = rumourReturn
-      }
-      return
-    }
-    if screen == .showroom {
-      if key == "k" && !showroom.searching {
-        helpReturn = .showroom
-        helpPage = 0
-        screen = .help
-      } else {
-        showroomKey(key)
-      }
-      return
-    }
-    if screen == .handoff {
-      if key == "k" {
-        helpReturn = .handoff
-        helpPage = 0
-        screen = .help
-      } else {
-        blackjackHandoffKey(key)
-      }
-      return
-    }
-    if screen == .gallery {
-      if key == "k" {
-        helpReturn = .gallery
-        helpPage = 0
-        screen = .help
-      } else {
-        galleryKey(key)
-      }
-      return
-    }
-    if screen == .navigation {
-      navigationKey(key)
-      return
-    }
-    if screen == .chart && ["[", "]"].contains(key) {
-      viewGalaxy(viewedGalaxy + (key == "]" ? 1 : -1))
-      return
-    }
-    if screen == .chart && mapSearch.active {
-      searchKey(key)
-      return
-    }
-    if docked && (screen == .chart || screen == .shortChart)
-      && ["pageup", "pagedown"].contains(key)
-    {
-      chartInformationScroll = max(0, chartInformationScroll + (key == "pageup" ? -8 : 8))
-      return
-    }
-    if key == "w" && screen != .help && screen != .secret {
-      openShowroom()
-      return
-    }
-    if key == "u" && docked {
-      openStationRumour()
-      return
-    }
-    if (screen == .chart || screen == .shortChart) && key == "n" {
-      openNavigation()
-      return
-    }
-    if screen == .chart && key == "/" {
-      mapSearch.active = true
-      return
-    }
-    if (screen == .chart || screen == .shortChart) && key == "m" {
-      mapColour = mapColour.next
-      return
-    }
-    if (screen == .status || screen == .inventory)
-      && ["up", "down", "pageup", "pagedown"].contains(key)
-    {
-      informationScroll = max(
-        0,
-        informationScroll + ((key == "up" || key == "pageup") ? -1 : 1)
-          * (key.hasPrefix("page") ? 8 : 1))
-      informationScroll = min(informationScroll, max(0, informationRows.count - 1))
-      return
-    }
-    if screen == .equipment && key.hasPrefix("equipment-scroll:"),
-      let amount = Int(key.dropFirst(17))
-    {
-      moveEquipmentSelection(amount)
-      return
-    }
-    if key == "l" {
-      openGallery()
-      return
-    }
-    if key == "spin-cancel" {
-      if screen == .help && helpReturn == .gallery { return }
-      spin.stop(immediate: true)
-      cancelAutoTarget()
-      return
-    }
-    if key == "k" {
-      if screen == .help {
-        screen = helpReturn
-      } else {
-        spin.stop(immediate: true)
-        helpReturn = screen
-        helpPage = 0
-        screen = .help
-      }
-      return
-    }
-    if screen == .help {
-      if key == "return" || key == "escape" { screen = helpReturn }
-      let lastPage = PlayerHelp.pages(for: self).count - 1
-      if key == "right" || key == "down" { helpPage = min(lastPage, helpPage + 1) }
-      if key == "left" || key == "up" { helpPage = max(0, helpPage - 1) }
-      return
-    }
-    if key.count == 1 {
-      secretBuffer = String((secretBuffer + key).suffix(5))
-      if secretBuffer == "xyzzy" {
-        spin.stop(immediate: true)
-        commander.name = "CLARKE"
-        if !commander.xyzzyActive { enableXYZzy() }
-        fitMaximumHardware()
-        secretReturn = screen
-        screen = .secret
-        selection = 0
-        secretBuffer = ""
-        return
-      }
-    }
-    if key == "pause" || key == "copy" {
-      paused.toggle()
-      if paused {
-        spin.stop(immediate: true)
-        cancelAutoTarget()
-      }
-      return
-    }
-    if screen == .secret {
-      secretKey(key)
-      return
-    }
-    if paused {
-      if key == ":" { commander.speech.toggle() }
-      if key == "escape" { paused = false }
-      return
-    }
-    if screen == .mission {
-      missionKey(key)
-      return
-    }
+    if interfaceKey(key) { return }
     if !docked && screen.isFlight {
       switch key {
-      case "r":
+      case "r", "tab":
         cycleAutoTarget()
         return
       case "i":
@@ -595,12 +428,12 @@ public struct Game: Sendable {
     case "m": fireMissile()
     case "e": ecm()
     case "p": cancelAutoTarget()
-    case "tab": energyBomb()
-    case "escape": escapePod()
+    case "energy-bomb": energyBomb()
+    case "escape-pod": escapePod()
     default: break
     }
   }
-  private mutating func secretKey(_ key: String) {
+  mutating func secretKey(_ key: String) {
     switch key {
     case "0":
       commander.shipDisplayStyle = commander.shipDisplayStyle.next
@@ -658,7 +491,7 @@ public struct Game: Sendable {
     default: break
     }
   }
-  private mutating func enableXYZzy() {
+  mutating func enableXYZzy() {
     commander.xyzzyActive = true
     commander.shipDisplayStyle = .shadedPanels
     commander.retaliationEnabled = true
@@ -674,7 +507,7 @@ public struct Game: Sendable {
     fitMaximumHardware()
     if docked { autoTrade() }
   }
-  private mutating func fitMaximumHardware() {
+  mutating func fitMaximumHardware() {
     commander.equipment = Equipment.maximumHardware
     commander.laserMounts = LaserMounts(front: .naval, left: .naval, right: .naval, rear: .naval)
     commander.fuelStorageUnits = FuelStorage.maximumCount
@@ -684,37 +517,27 @@ public struct Game: Sendable {
     frontShield = commander.shieldCapacity
     rearShield = commander.shieldCapacity
   }
-  private mutating func functionKey(_ number: Int) {
-    selection = 0
-    informationScroll = 0
-    chartInformationScroll = 0
-    if (4...9).contains(number) {
-      spin.stop(immediate: true)
-      cancelAutoTarget()
+  mutating func functionKey(_ number: Int) {
+    if number == 6 && docked {
+      openShowroom()
+      return
     }
-    switch number {
-    case 0, 10: if docked { launch() } else { screen = .front }
-    case 1: screen = docked ? .buy : .rear
-    case 2: screen = docked ? .sell : .left
-    case 3: screen = docked ? .equipment : .right
-    case 4: screen = .chart
-    case 5: screen = .shortChart
-    case 6:
+    if number == 0 && docked {
+      launch()
+      return
+    }
+    guard let destination = Self.numberedScreen(number, docked: docked) else { return }
+    if destination == .system {
       systemInspection =
         screen == .chart ? .init(galaxy: viewedGalaxy, system: viewedSystemID) : nil
-      let dockedScreen: Screen = screen == .chart ? .chart : .shortChart
-      screen = docked ? dockedScreen : .system
       let variation = commander.missionStage.rawValue & 1 == 1 ? randomByte() % 5 : 0
       missionClue =
         inspectedGalaxy == commander.galaxy
         ? MissionRules.clue(
-          stage: commander.missionStage, galaxy: inspectedGalaxy, system: inspectedSystem.id,
-          variation: variation) : nil
-    case 7: screen = .market
-    case 8: screen = .status
-    case 9: screen = .inventory
-    default: break
+          stage: commander.missionStage, galaxy: inspectedGalaxy,
+          system: inspectedSystem.id, variation: variation) : nil
     }
+    navigatePrimary(to: destination)
   }
   public mutating func selectNeighbour(direction: Int) {
     let known = knownSystems
@@ -923,6 +746,8 @@ public struct Game: Sendable {
     cancelAutoTarget()
     docked = false
     screen = .front
+    screenHistory.removeAll()
+    flightReturn = .front
     speed = 8
     dockingComputer = false
     bodies = [
@@ -945,6 +770,7 @@ public struct Game: Sendable {
     cancelAutoTarget()
     docked = true
     screen = .status
+    screenHistory.removeAll()
     speed = 0
     dockingComputer = false
     bodies = []
@@ -1006,6 +832,8 @@ public struct Game: Sendable {
     market = MarketItem.at(currentSystem, fluctuation: randomByte())
     jumpCountdown = nil
     screen = .front
+    screenHistory.removeAll()
+    flightReturn = .front
     dockingComputer = false
     bodies = [
       SpaceBody(id: 0, hull: .station, position: .init(0, 0, 16000)),
@@ -1308,13 +1136,14 @@ public actor GameRuntime {
   public func key(_ key: String) {
     let old = game.screen
     game.key(key)
-    if key.lowercased() == "r", game.screen.isFlight, game.autoPilot.targetID != nil {
+    if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
+    {
       controls.pitch = 0
       controls.yaw = 0
       controls.roll = 0
       if game.dockingComputer { controls = Controls() }
     }
-    if [.gallery, .handoff, .showroom].contains(old)
+    if old != game.screen || key == "pause"
       || [.gallery, .handoff, .showroom].contains(game.screen)
     {
       controls = Controls()

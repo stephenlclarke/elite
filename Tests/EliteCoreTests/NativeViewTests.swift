@@ -93,7 +93,7 @@ struct NativeViewTests {
           windowNumber: 0, context: nil, characters: text, charactersIgnoringModifiers: text,
           isARepeat: false, keyCode: code))
       view.keyDown(with: event)
-      #expect(view.pending.last == expected && view.held.contains(expected))
+      #expect(view.pending.last == expected && view.held.isEmpty)
       view.keyUp(with: event)
       #expect(!view.held.contains(expected))
     }
@@ -169,13 +169,13 @@ struct NativeViewTests {
     let gameMenu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
     let pauseItem = try #require(gameMenu.item(withTitle: "Pause / Resume"))
     #expect(pauseItem.keyEquivalent == "p" && pauseItem.keyEquivalentModifierMask == .command)
-    gameMenu.performActionForItem(at: 0)
+    gameMenu.performActionForItem(at: gameMenu.index(of: pauseItem))
     let pauseDeadline = ContinuousClock.now.advanced(by: .seconds(5))
     while !view.game.paused && ContinuousClock.now < pauseDeadline {
       try await Task.sleep(for: .milliseconds(10))
     }
     #expect(view.game.paused)
-    gameMenu.performActionForItem(at: 0)
+    gameMenu.performActionForItem(at: gameMenu.index(of: pauseItem))
     let resumeDeadline = ContinuousClock.now.advanced(by: .seconds(5))
     while view.game.paused && ContinuousClock.now < resumeDeadline {
       try await Task.sleep(for: .milliseconds(10))
@@ -372,7 +372,7 @@ extension NativeViewTests {
     view.mouseDown(with: click)
     #expect(view.pending.first?.hasPrefix("handoff-click:") == true)
     view.game.key("k")
-    #expect(PlayerHelp.pages(for: view.game).first?.title == "BLACKJACK STATION HANDOFF")
+    #expect(PlayerHelp.pages(for: view.game).first?.title == "MISSION DIALOG")
   }
 }
 
@@ -449,4 +449,51 @@ extension NativeViewTests {
     view.mouseDown(with: event)
     #expect(view.pending.first?.hasPrefix("showroom-click:") == true)
   }
+  @MainActor @Test func macBookControlsUseArrowsDeleteReturnAndSafeModifierCommands() throws {
+    let view = GameView()
+    view.game.launch()
+    func event(
+      _ code: UInt16, _ text: String = "", flags: NSEvent.ModifierFlags = [], repeated: Bool = false
+    ) throws -> NSEvent {
+      try #require(
+        NSEvent.keyEvent(
+          with: .keyDown, location: .zero, modifierFlags: flags,
+          timestamp: 0, windowNumber: 0, context: nil, characters: text,
+          charactersIgnoringModifiers: text, isARepeat: repeated, keyCode: code))
+    }
+    for (code, text) in [(UInt16(126), ""), (123, ""), (49, " "), (36, "\r")] {
+      view.keyDown(with: try event(code, text))
+    }
+    #expect(view.controls.pitch == 1 && view.controls.roll == 1)
+    #expect(view.controls.throttle == 1 && view.controls.fire)
+    view.game.key("4")
+    #expect(view.held.isEmpty && view.controls.throttle == 0 && !view.controls.fire)
+    view.keyDown(with: try event(125, flags: .option))
+    #expect(view.pending.last == "pagedown")
+    view.keyDown(with: try event(126, flags: .option))
+    #expect(view.pending.last == "pageup")
+    view.game.key("/")
+    view.game.key("a")
+    #expect(view.performKeyEquivalent(with: try event(51, flags: .command)))
+    #expect(view.pending.last == "search-clear")
+    view.game.key(view.pending.removeLast())
+    #expect(view.game.mapSearch.query.isEmpty)
+    view.keyDown(with: try event(0, "a", flags: .command))
+    #expect(!view.held.contains("a"))
+    view.keyDown(with: try event(8, "c", repeated: true))
+    #expect(view.pending.last == "c")
+    view.game.key("escape")
+    view.game.key("0")
+    view.keyDown(with: try event(51))
+    #expect(view.controls.throttle == -1)
+    view.keyUp(with: try event(51))
+    #expect(view.controls.throttle == 0)
+    view.game.commander.equipment.insert("Energy Bomb")
+    view.game.commander.installTargetingComputer(.basic)
+    view.game.key("tab")
+    #expect(view.game.commander.equipment.contains("Energy Bomb"))
+    view.game.paused = true
+    #expect(view.held.isEmpty && !view.controls.fire)
+  }
+
 }

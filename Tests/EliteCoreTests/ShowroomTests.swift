@@ -140,6 +140,7 @@ private func showroomGame() -> Game {
   game.key(",")
   game.key("c")
   #expect(!game.showroom.compare)
+  game.key("return")
   game.key("pagedown")
   #expect(game.showroom.scroll == 8)
   game.key("pageup")
@@ -187,6 +188,8 @@ private func showroomGame() -> Game {
     #expect(game.commander == commander)
   }
   let layout = ShowroomLayout(width: game.viewportWidth, height: 768, detail: false)
+  game.showroomClick(x: layout.close.x + 2, y: layout.close.y + 2)
+  #expect(game.screen == .showroom && !game.showroom.detail)
   game.showroomClick(x: layout.close.x + 2, y: layout.close.y + 2)
   #expect(game.screen == .equipment && game.commander == commander)
 }
@@ -381,7 +384,7 @@ private func showroomGame() -> Game {
       frame.labels.contains {
         $0.text.contains("FILTER ACTIVE: 1/167 ships") && $0.text.contains("You own: Cobra Mk III")
       })
-    #expect(frame.labels.contains { $0.text == "X: Clear filter" })
+    #expect(frame.labels.contains { $0.text == "Clear filter" })
   }
   game.key("x")
   #expect(game.showroomShips.count == 167)
