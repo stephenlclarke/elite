@@ -148,7 +148,7 @@ private func finishMessage(_ game: inout Game) {
   #expect(commander.energyRechargeMultiplier == 2)
   commander.equipment.insert(Equipment.navalEnergyUnit)
   #expect(commander.energyRechargeMultiplier == 3)
-  #expect(!Equipment.all.contains(where: { $0.name == Equipment.navalEnergyUnit }))
+  #expect(Equipment.isReward(Equipment.navalEnergyUnit))
 }
 
 @Test func missionFlagsSurviveOldAndNewCommanderSavesAndCannotPayTwice() async throws {
@@ -245,7 +245,7 @@ private func finishMessage(_ game: inout Game) {
   commander.equipment.insert("Beam Laser")
   commander.equipment.insert("Mining Laser")
   #expect(commander.laserDamage(against: .constrictor) == 0)
-  #expect(commander.laserDamage(against: .cobra) == 50)
+  #expect(commander.laserDamage(against: .cobra) == 15)
   commander.equipment.insert("Military Laser")
   #expect(commander.laserDamage(against: .constrictor) == 5)
   #expect(commander.laserDamage(against: .cobra) == 23)

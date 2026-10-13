@@ -6,6 +6,8 @@ case "$MODE" in run|--debug|--logs|--telemetry|--verify|--build-only) ;; *) prin
 swift build
 APP_BUNDLE="$PWD/dist/Elite.app"
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
+mkdir -p "$APP_BUNDLE/Contents/Resources"
+cp Resources/Elite.icns "$APP_BUNDLE/Contents/Resources/Elite.icns"
 cp "$(swift build --show-bin-path)/Elite" "$APP_BUNDLE/Contents/MacOS/Elite"
 cat > "$APP_BUNDLE/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -14,6 +16,7 @@ cat > "$APP_BUNDLE/Contents/Info.plist" <<'PLIST'
 <key>CFBundleExecutable</key><string>Elite</string>
 <key>CFBundleIdentifier</key><string>io.xyzzy.elite</string>
 <key>CFBundleName</key><string>Elite</string>
+<key>CFBundleIconFile</key><string>Elite.icns</string>
 <key>CFBundleDisplayName</key><string>XYZZY Elite - Right-On Commander</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>

@@ -96,6 +96,7 @@ struct NativeViewTests {
       view.keyUp(with: event)
       #expect(!view.held.contains(expected))
     }
+    view.game.launch()
     view.held = ["x", ",", " ", "a"]
     #expect(
       view.controls.pitch == 1 && view.controls.roll == 1 && view.controls.throttle == 1
@@ -118,6 +119,8 @@ struct NativeViewTests {
   @MainActor @Test func smoothWireframesPreservePixelTextAndShiftedKeyRelease() throws {
     var game = Game(executive: false)
     game.time = 1.3
+    game.screen = .front
+    game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 280))]
     let frame = Display.render(game, rasterizeGraphics: false)
     let smooth = try #require(imageFor(frame, pixelSize: 768))
     #expect(smooth.width == 768 && smooth.height == 768)
@@ -128,6 +131,7 @@ struct NativeViewTests {
       .count
     #expect(intermediate > 100)
     let view = GameView()
+    view.game.launch()
     let down = try #require(
       NSEvent.keyEvent(
         with: .keyDown, location: .zero, modifierFlags: .shift, timestamp: 0,
@@ -197,6 +201,8 @@ struct NativeViewTests {
   @MainActor @Test func nativePresentationDrawsColouredLinesAndShadedFaces() throws {
     var game = Game(executive: false)
     game.time = 2.3
+    game.screen = .front
+    game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 280))]
     game.commander.shipDisplayStyle = .colourWireframe
     let wire = try #require(
       imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 512))
@@ -216,22 +222,20 @@ struct NativeViewTests {
     #expect(shaded.width == 512 && shaded.height == 512)
   }
 
-  @MainActor @Test func planetCurveUsesNativeAntialiasing() throws {
+  @MainActor @Test func flightHasNoDecorativePlanetAndUsesNativeWindowSize() throws {
     var game = Game(executive: false)
-    game.screen = .front
+    game.launch()
     game.bodies = []
-    let image = try #require(
-      imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768))
-    let data = try #require(image.dataProvider?.data)
-    let bytes = try #require(CFDataGetBytePtr(data))
-    var shades = 0
-    for y in (18 * 3)..<(92 * 3) {
-      for x in (155 * 3)..<(230 * 3) {
-        let value = bytes[y * image.bytesPerRow + x * 4]
-        if value > 0 && value < 255 { shades += 1 }
-      }
-    }
-    #expect(shades > 100)
+    let frame = Display.cockpit(game, width: 1379, height: 800)
+    #expect(
+      !frame.worldGraphics.contains {
+        if case .ellipse = $0 { return true }
+        return false
+      })
+    let image = try #require(imageForGame(game, width: 1379, height: 800, scale: 2))
+    #expect(image.width == 2758 && image.height == 1600)
+    #expect(imageForGame(game, width: 0, height: 800) == nil)
+    #expect(imageForGame(game, width: 5000, height: 800) == nil)
   }
 
   @MainActor @Test func changingThrottleCannotTeleportStarsOrAddTails() throws {
@@ -278,4 +282,68 @@ struct NativeViewTests {
     #expect(imageFor(frame, pixelSize: 0) == nil)
     #expect(imageFor(frame, pixelSize: 8193) == nil)
   }
+}
+
+extension NativeViewTests {
+  @MainActor @Test func nativeTargetCameraAndEquipmentRenderResponsiveFrames() throws {
+    var game = Game(executive: false)
+    game.launch()
+    game.speed = 0
+    for key in "xyzzy" { game.key(String(key)) }
+    game.key("return")
+    game.bodies = [.init(id: 1, hull: .constrictor, position: .init(0, 0, 1000))]
+    game.key("r")
+    game.targetPanelExpanded = true
+    for width in [512, 1512] {
+      for style in ShipDisplayStyle.allCases {
+        game.commander.shipDisplayStyle = style
+        let image = try #require(imageForGame(game, width: width, height: 768))
+        #expect(image.width == width && image.height == 768)
+      }
+      game.screen = .equipment
+      game.selection = Equipment.all.count - 1
+      let image = try #require(imageForGame(game, width: width, height: 768))
+      #expect(image.width == width)
+      game.screen = .front
+    }
+  }
+}
+
+extension NativeViewTests {
+  @MainActor @Test func nativeMapsAndSearchRenderWithNoFlightInputLeakage() throws {
+    let view = GameView()
+    view.game.launch()
+    view.game.key("4")
+    view.game.key("/")
+    view.held = ["a", "x", " "]
+    #expect(!view.controls.fire && view.controls.pitch == 0 && view.controls.throttle == 0)
+    for width in [512, 1512] {
+      for mode in MapColourMode.allCases {
+        view.game.mapColour = mode
+        let image = try #require(imageForGame(view.game, width: width, height: 768))
+        #expect(image.width == width)
+      }
+      view.game.key("escape")
+      view.game.key("5")
+      let image = try #require(imageForGame(view.game, width: width, height: 768))
+      #expect(image.width == width)
+      view.game.key("4")
+      view.game.key("/")
+    }
+  }
+  @MainActor @Test func responsiveStationScreensRenderMarketColoursMountsAndScrollableInformation()
+    throws
+  {
+    var game = Game(executive: false)
+    game.commander.installLaser(.military, on: .rear)
+    for screen in [Screen.market, .buy, .sell, .status, .inventory, .equipment] {
+      game.screen = screen
+      for width in [512, 1024, 2560] {
+        let image = try #require(imageForGame(game, width: width, height: 518))
+        #expect(image.width == width && image.height == 518)
+        #expect(image.dataProvider?.data != nil)
+      }
+    }
+  }
+
 }

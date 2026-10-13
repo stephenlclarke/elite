@@ -2,7 +2,7 @@ import Foundation
 
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
-    equipment, buy, sell, secret, help, mission, gameOver
+    equipment, buy, sell, secret, help, mission, gallery, navigation, gameOver
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
@@ -28,6 +28,51 @@ public struct Commander: Sendable, Equatable, Codable {
   // Optional storage preserves compatibility with commanders saved before display styles existed.
   private var displayStyle: ShipDisplayStyle?
   private var navalMission: NavalMissionStage?
+  private var xyzzyEnabled: Bool?
+  private var automaticECM: Bool?
+  private var automaticTargeting: Bool?
+  private var returnFireEnabled: Bool?
+  private var capitalReward: Bool?
+  private var navigationRoute: NavigationPlan?
+  private var storageUnitCount: Int?
+  private var mountedLasers: LaserMounts?
+  public var laserMounts: LaserMounts {
+    get { mountedLasers ?? LaserMounts(front: legacyLaser) }
+    set { mountedLasers = newValue }
+  }
+  private var finiteXYZzyCash: Bool?
+  public var xyzzyCashGranted: Bool {
+    get { finiteXYZzyCash ?? false }
+    set { finiteXYZzyCash = newValue }
+  }
+  public var fuelStorageUnits: Int {
+    get { storageUnitCount ?? 0 }
+    set { storageUnitCount = newValue }
+  }
+  public var navigationPlan: NavigationPlan? {
+    get { navigationRoute }
+    set { navigationRoute = newValue }
+  }
+  public var capitalRewardClaimed: Bool {
+    get { capitalReward ?? false }
+    set { capitalReward = newValue }
+  }
+  public var retaliationEnabled: Bool {
+    get { returnFireEnabled ?? true }
+    set { returnFireEnabled = newValue }
+  }
+  public var xyzzyActive: Bool {
+    get { xyzzyEnabled ?? false }
+    set { xyzzyEnabled = newValue }
+  }
+  public var autoECM: Bool {
+    get { automaticECM ?? false }
+    set { automaticECM = newValue }
+  }
+  public var autoTarget: Bool {
+    get { automaticTargeting ?? false }
+    set { automaticTargeting = newValue }
+  }
   public var missionStage: NavalMissionStage {
     get { navalMission ?? .notStarted }
     set { navalMission = newValue }
@@ -35,6 +80,12 @@ public struct Commander: Sendable, Equatable, Codable {
   public var shipDisplayStyle: ShipDisplayStyle {
     get { displayStyle ?? .whiteWireframe }
     set { displayStyle = newValue }
+  }
+  mutating func migrateLegacyXYZzyMounts() {
+    if mountedLasers == nil && xyzzyActive {
+      mountedLasers = LaserMounts(front: .naval, left: .naval, right: .naval, rear: .naval)
+      equipment.insert(Equipment.navalLaser)
+    }
   }
   public init() {}
   public var availableCredits: Int { unlimitedCash ? Int.max : credits }
@@ -46,7 +97,7 @@ public struct Commander: Sendable, Equatable, Codable {
     zip(cargo, Commodity.all).reduce(0) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
   }
   public var rank: String {
-    let thresholds = [8, 16, 32, 64, 128, 512, 2560, 6400]
+    let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
     return [
       "Harmless", "Mostly Harmless", "Poor", "Average", "Above Average", "Competent", "Dangerous",
       "Deadly", "ELITE",
@@ -55,36 +106,70 @@ public struct Commander: Sendable, Equatable, Codable {
   public var valid: Bool {
     cargo.count == 17 && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
-      && (0..<256).contains(system) && (0..<8).contains(galaxy) && (0...70).contains(fuel)
+      && (0..<256).contains(system) && (0..<8).contains(galaxy)
+      && (0...FuelStorage.maximumCount).contains(fuelStorageUnits)
+      && (0...fuelCapacity).contains(fuel)
       && (0...4).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
+      && (navigationPlan?.valid ?? true)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
   }
 }
 
 public struct Equipment: Sendable {
+  public static let legacyDockingComputer = "Docking Computers"
   public static let navalEnergyUnit = "Naval Energy Unit"
-  public static var validNames: Set<String> { Set(all.map(\.name)).union([navalEnergyUnit]) }
-  public static var maximumHardware: Set<String> { validNames.subtracting(["Extra Energy Unit"]) }
+  public static let navalLaser = "Naval Laser"
+  public static var validNames: Set<String> {
+    Set(all.map(\.name)).subtracting([FuelStorage.equipmentName]).union([
+      navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
+    ])
+  }
+  public static var maximumHardware: Set<String> {
+    validNames.subtracting(
+      [legacyDockingComputer, "Extra Energy Unit", "Pulse Laser", "Beam Laser", "Military Laser"]
+        + TargetingTier.allCases.map(\.equipmentName) + NavigationTier.allCases.map(\.equipmentName)
+        + ShieldBooster.allCases.map(\.equipmentName)
+    )
+    .union([
+      TargetingTier.military.equipmentName, NavigationTier.military.equipmentName,
+      ShieldBooster.capital.equipmentName,
+    ])
+  }
   public let name: String
   public let price: Int
   public let technology: Int
-  public static let all: [Equipment] = [
-    .init(name: "Fuel", price: 2, technology: 0),
-    .init(name: "Missile", price: 300, technology: 0),
-    .init(name: "Large Cargo Bay", price: 4000, technology: 0),
-    .init(name: "E.C.M. System", price: 6000, technology: 2),
-    .init(name: "Pulse Laser", price: 4000, technology: 3),
-    .init(name: "Beam Laser", price: 10000, technology: 4),
-    .init(name: "Fuel Scoops", price: 5250, technology: 5),
-    .init(name: "Escape Pod", price: 10000, technology: 6),
-    .init(name: "Energy Bomb", price: 9000, technology: 7),
-    .init(name: "Extra Energy Unit", price: 15000, technology: 8),
-    .init(name: "Docking Computers", price: 15000, technology: 9),
-    .init(name: "Galactic Hyperdrive", price: 50000, technology: 10),
-    .init(name: "Mining Laser", price: 8000, technology: 10),
-    .init(name: "Military Laser", price: 60000, technology: 10),
-  ]
+  public static let base: [Equipment] =
+    [
+      .init(name: "Fuel", price: 2, technology: 0),
+      .init(name: "Missile", price: 300, technology: 0),
+      .init(name: "Large Cargo Bay", price: 4000, technology: 0),
+      .init(name: "E.C.M. System", price: 6000, technology: 2),
+      .init(name: "Pulse Laser", price: 4000, technology: 3),
+      .init(name: "Beam Laser", price: 10000, technology: 4),
+      .init(name: "Fuel Scoops", price: 5250, technology: 5),
+      .init(name: "Escape Pod", price: 10000, technology: 6),
+      .init(name: "Energy Bomb", price: 9000, technology: 7),
+      .init(name: "Extra Energy Unit", price: 15000, technology: 8),
+      .init(name: "Galactic Hyperdrive", price: 50000, technology: 10),
+      .init(name: "Mining Laser", price: 8000, technology: 10),
+      .init(name: "Military Laser", price: 60000, technology: 10),
+    ]
+  public static let all =
+    base
+    + TargetingTier.allCases.map {
+      .init(name: $0.equipmentName, price: $0.price, technology: $0.technology)
+    }
+    + NavigationTier.allCases.map {
+      .init(name: $0.equipmentName, price: $0.price, technology: $0.technology)
+    } + [
+      .init(name: FuelStorage.equipmentName, price: FuelStorage.price, technology: 0),
+      .init(name: navalLaser, price: 0, technology: 0),
+      .init(name: navalEnergyUnit, price: 0, technology: 0),
+    ]
+    + ShieldBooster.allCases.compactMap(\.shopItem) + [
+      .init(name: ShieldBooster.capital.equipmentName, price: 0, technology: 0)
+    ]
 }
 
 public struct Controls: Sendable {
@@ -108,6 +193,7 @@ public struct Game: Sendable {
   public var docked = true
   public var selectedSystem = 7
   public var selection = 0
+  public var informationScroll = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
   public var starfield = Starfield()
@@ -116,6 +202,11 @@ public struct Game: Sendable {
   public var roll = 0.0
   public var yaw = 0.0
   public var spin = SpinControl()
+  public var autoPilot = AutoTargetControl()
+  public var viewportWidth = 768.0
+  public var viewportHeight = 768.0
+  public var targetPanelExpanded: Bool?
+  public var weaponsTargetID: Int?
   public var energy = 256.0
   public var frontShield = 255.0
   public var rearShield = 255.0
@@ -123,6 +214,7 @@ public struct Game: Sendable {
   public var laserFlash = 0.0
   public var altitude = 1.0
   public var cabinTemperature = 0.0
+  public var equipmentMount: LaserMount = .front
   public var dockingComputer = false
   public var missileArmed = false
   public var message = ""
@@ -133,6 +225,14 @@ public struct Game: Sendable {
   public var secretReturn: Screen = .status
   public var helpReturn: Screen = .title
   public var helpPage = 0
+  public var gallery = MissionGalleryState()
+  public var mapColour: MapColourMode = .economy
+  public var mapZoom: MapZoom = .jump
+  public var mapSearch = PlanetSearchState()
+  public var navigationOptions: [RouteAlternative] = []
+  public var navigationSelection = 0
+  public var navigationScroll = 0
+  public var navigationReturn: Screen = .chart
   public var missionNotice: MissionNotice?
   public var missionPage = 0
   public var missionClue: String?
@@ -142,6 +242,10 @@ public struct Game: Sendable {
   var missionLoopCounter: UInt8 = 0
   var missionSpawnDelay = 0
   var ecmFrames = 0
+  var enemyECMSource: Int?
+  public var ecmControl = ECMControl()
+  public var retaliation = RetaliationControl()
+  var missileCooldown = 0.0
   var nextBodyID = 10
   private var randomState: UInt64 = 0x45_4c49_5445
   public init(executive: Bool = true) {
@@ -153,13 +257,23 @@ public struct Game: Sendable {
   public var currentSystem: StarSystem { systems[commander.system] }
   public var targetSystem: StarSystem { systems[selectedSystem] }
 
-  public mutating func notify(_ text: String) {
+  public mutating func notify(_ text: String, voiced: Bool = true) {
+    if voiced { ecmControl.emit(.gameplay(text)) }
     message = text
     messageTime = 4
   }
   public mutating func load(_ value: Commander) -> Bool {
     guard value.valid else { return false }
     commander = value
+    commander.migrateXYZzyPolicy()
+    commander.migrateLegacyXYZzyMounts()
+    mapSearch = PlanetSearchState()
+    if let tier = commander.targetingTier { commander.installTargetingComputer(tier) }
+    if let tier = commander.navigationTier { commander.installNavigationComputer(tier) }
+    if let booster = commander.shieldBooster { commander.installShieldBooster(booster) }
+    frontShield = commander.shieldCapacity
+    rearShield = commander.shieldCapacity
+    targetPanelExpanded = nil
     systems = Universe.galaxy(number: value.galaxy)
     selectedSystem = value.system
     market = MarketItem.generate(economy: currentSystem.economy, fluctuation: 0)
@@ -172,15 +286,75 @@ public struct Game: Sendable {
     missionLoopCounter = 0
     missionSpawnDelay = 0
     ecmFrames = 0
+    ecmControl = ECMControl()
+    retaliation.clear()
+    weaponsTargetID = nil
+    missileCooldown = 0
     paused = false
     spin.stop(immediate: true)
+    cancelAutoTarget()
     screen = .status
+    speed = 0
+    reconcileEliteReward()
+    navigationDocked()
     return true
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    if screen == .gallery {
+      if key == "k" {
+        helpReturn = .gallery
+        helpPage = 0
+        screen = .help
+      } else {
+        galleryKey(key)
+      }
+      return
+    }
+    if screen == .navigation {
+      navigationKey(key)
+      return
+    }
+    if screen == .chart && mapSearch.active {
+      searchKey(key)
+      return
+    }
+    if (screen == .chart || screen == .shortChart) && key == "n" {
+      openNavigation()
+      return
+    }
+    if screen == .chart && key == "/" {
+      mapSearch.active = true
+      return
+    }
+    if (screen == .chart || screen == .shortChart) && key == "m" {
+      mapColour = mapColour.next
+      return
+    }
+    if screen == .status || screen == .inventory {
+      if ["up", "down", "pageup", "pagedown"].contains(key) {
+        informationScroll = max(
+          0,
+          informationScroll + ((key == "up" || key == "pageup") ? -1 : 1)
+            * (key.hasPrefix("page") ? 8 : 1))
+        informationScroll = min(informationScroll, max(0, informationRows.count - 1))
+        return
+      }
+    }
+    if screen == .equipment && key.hasPrefix("equipment-scroll:"),
+      let amount = Int(key.dropFirst(17))
+    {
+      moveEquipmentSelection(amount)
+      return
+    }
+    if key == "l" {
+      openGallery()
+      return
+    }
     if key == "spin-cancel" {
+      if screen == .help && helpReturn == .gallery { return }
       spin.stop(immediate: true)
+      cancelAutoTarget()
       return
     }
     if key == "k" {
@@ -206,6 +380,7 @@ public struct Game: Sendable {
       if secretBuffer == "xyzzy" {
         spin.stop(immediate: true)
         commander.name = "CLARKE"
+        if !commander.xyzzyActive { enableXYZzy() }
         fitMaximumHardware()
         secretReturn = screen
         screen = .secret
@@ -216,7 +391,10 @@ public struct Game: Sendable {
     }
     if key == "pause" || key == "copy" {
       paused.toggle()
-      if paused { spin.stop(immediate: true) }
+      if paused {
+        spin.stop(immediate: true)
+        cancelAutoTarget()
+      }
       return
     }
     if screen == .secret {
@@ -234,16 +412,29 @@ public struct Game: Sendable {
     }
     if !docked && screen.isFlight {
       switch key {
+      case "r":
+        cycleAutoTarget()
+        return
+      case "i":
+        targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))
+        return
+      case "q":
+        cancelAutoTarget()
+        return
       case "v":
+        if autoTargetBody?.hull == .station { cancelAutoTarget() }
         spin.toggleMode()
         return
       case "b":
+        if autoTargetBody?.hull == .station { cancelAutoTarget() }
         spin.stop()
         return
       case "]", "spin:cw":
+        if autoTargetBody?.hull == .station { cancelAutoTarget() }
         spin.begin(.clockwise)
         return
       case "[", "spin:ccw":
+        if autoTargetBody?.hull == .station { cancelAutoTarget() }
         spin.begin(.anticlockwise)
         return
       default: break
@@ -262,12 +453,22 @@ public struct Game: Sendable {
       return
     }
     switch key {
-    case "up": selection = max(0, selection - 1)
+    case "up":
+      if screen == .equipment {
+        moveEquipmentSelection(-1)
+      } else {
+        selection = max(0, selection - 1)
+      }
     case "down":
-      selection = min(
-        (screen == .equipment ? Equipment.all.count : Commodity.all.count) - 1, selection + 1)
+      if screen == .equipment {
+        moveEquipmentSelection(1)
+      } else {
+        selection = min(Commodity.all.count - 1, selection + 1)
+      }
     case "left", "right":
-      if screen == .chart || screen == .shortChart {
+      if screen == .equipment {
+        equipmentMount = key == "right" ? equipmentMount.next : equipmentMount.previous
+      } else if screen == .chart || screen == .shortChart {
         selectNeighbour(direction: key == "left" ? -1 : 1)
       } else if screen == .buy || screen == .sell {
         trade(buy: key == "right")
@@ -275,7 +476,9 @@ public struct Game: Sendable {
     case "return":
       if screen == .buy || screen == .sell { trade(buy: screen == .buy) }
       if screen == .equipment { purchase() }
-    case "o": if screen == .chart || screen == .shortChart { selectedSystem = commander.system }
+    case "z": if screen == .shortChart { mapZoom = mapZoom.next }
+    case "o":
+      if screen == .chart || screen == .shortChart { manuallySelectSystem(commander.system) }
     case "d":
       if screen == .chart || screen == .shortChart {
         notify(
@@ -284,17 +487,15 @@ public struct Game: Sendable {
     case "h": beginHyperspace()
     case "g": galacticJump()
     case "j": inSystemJump()
-    case "t": missileArmed = !docked && commander.missiles > 0
-    case "u": missileArmed = false
+    case "t": missileArmed = !docked && (commander.missiles > 0 || commander.unlimitedMissiles)
+    case "u":
+      missileArmed = false
+      retaliation.clear()
+      weaponsTargetID = nil
     case "m": fireMissile()
     case "e": ecm()
-    case "c":
-      if !docked && commander.equipment.contains("Docking Computers") {
-        spin.stop(immediate: true)
-        dockingComputer = true
-        screen = .front
-      }
-    case "p": dockingComputer = false
+    case "c": engageDockingComputer()
+    case "p": cancelAutoTarget()
     case "tab": energyBomb()
     case "escape": escapePod()
     default: break
@@ -306,8 +507,8 @@ public struct Game: Sendable {
       commander.shipDisplayStyle = commander.shipDisplayStyle.next
       notify(commander.shipDisplayStyle.label)
     case "1":
-      commander.equipment.insert("Docking Computers")
-      notify("DOCKING COMPUTER FITTED")
+      commander.installTargetingComputer(.docking)
+      notify("DOCKING TARGETING COMPUTER FITTED")
     case "2":
       fitMaximumHardware()
       notify("MAXIMUM HARDWARE FITTED")
@@ -317,11 +518,11 @@ public struct Game: Sendable {
       notify("MISSILE SUPPLY UPDATED")
     case "4":
       commander.unlimitedFuel.toggle()
-      if commander.unlimitedFuel { commander.fuel = 70 }
+      if commander.unlimitedFuel { commander.fuel = commander.fuelCapacity }
       notify("FUEL SUPPLY UPDATED")
     case "5":
-      commander.unlimitedJumps.toggle()
-      notify("HYPERSPACE RANGE UPDATED")
+      notify(
+        String(format: "JUMP LIMIT %.1f LY - FUEL AND NAV COMPUTER", commander.maximumJumpDistance))
     case "6":
       commander.autoTrade.toggle()
       if commander.autoTrade { autoTrade() }
@@ -339,23 +540,58 @@ public struct Game: Sendable {
         notify("CARGO CAPACITY UPDATED")
       }
     case "9":
-      commander.unlimitedCash.toggle()
-      notify("CASH UPDATED")
+      notify(String(format: "CASH %.1f CR", Double(commander.credits) / 10))
+    case "b":
+      commander.retaliationEnabled.toggle()
+      if !commander.retaliationEnabled { retaliation.clear() }
+      notify("MILITARY RETURN FIRE UPDATED")
+    case "f":
+      commander.equipment.insert("Fuel Scoops")
+      notify("FUEL SCOOPS FITTED")
+    case "e":
+      commander.autoECM.toggle()
+      notify("AUTOMATIC ECM UPDATED")
+    case "a":
+      commander.autoTarget.toggle()
+      if !commander.autoTarget { cancelAutoTarget() }
+      notify("AUTO TARGET UPDATED")
     case "escape", "return": screen = secretReturn
     default: break
     }
   }
+  private mutating func enableXYZzy() {
+    commander.xyzzyActive = true
+    commander.shipDisplayStyle = .shadedPanels
+    commander.retaliationEnabled = true
+    commander.unlimitedMissiles = true
+    commander.unlimitedFuel = true
+    commander.unlimitedJumps = false
+    commander.unlimitedCargo = true
+    commander.startXYZzyCash()
+    commander.autoTrade = true
+    commander.speech = true
+    commander.autoECM = true
+    commander.autoTarget = true
+    fitMaximumHardware()
+    if docked { autoTrade() }
+  }
   private mutating func fitMaximumHardware() {
     commander.equipment = Equipment.maximumHardware
-    commander.fuel = 70
+    commander.laserMounts = LaserMounts(front: .naval, left: .naval, right: .naval, rear: .naval)
+    commander.fuelStorageUnits = FuelStorage.maximumCount
+    commander.fuel = commander.fuelCapacity
     commander.missiles = 4
     energy = 256
-    frontShield = 255
-    rearShield = 255
+    frontShield = commander.shieldCapacity
+    rearShield = commander.shieldCapacity
   }
   private mutating func functionKey(_ number: Int) {
     selection = 0
-    if (4...9).contains(number) { spin.stop(immediate: true) }
+    informationScroll = 0
+    if (4...9).contains(number) {
+      spin.stop(immediate: true)
+      cancelAutoTarget()
+    }
     switch number {
     case 0, 10: if docked { launch() } else { screen = .front }
     case 1: screen = docked ? .buy : .rear
@@ -376,15 +612,16 @@ public struct Game: Sendable {
     }
   }
   public mutating func selectNeighbour(direction: Int) {
-    selectedSystem = (selectedSystem + direction + systems.count) % systems.count
+    manuallySelectSystem((selectedSystem + direction + systems.count) % systems.count)
   }
   public mutating func selectSystem(x: Int, y: Int) {
-    selectedSystem =
+    let selected =
       systems.min { left, right in
         let ld = pow(Double(left.x - x), 2) + pow(Double(left.y - y), 2)
         let rd = pow(Double(right.x - x), 2) + pow(Double(right.y - y), 2)
         return ld < rd
       }?.id ?? selectedSystem
+    manuallySelectSystem(selected)
   }
   public mutating func trade(buy: Bool) {
     guard docked, market.indices.contains(selection) else { return }
@@ -413,17 +650,61 @@ public struct Game: Sendable {
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
     let item = Equipment.all[selection]
+    if item.name == FuelStorage.equipmentName {
+      guard commander.fuelStorageUnits < FuelStorage.maximumCount else {
+        notify("FUEL STORAGE FULL")
+        return
+      }
+      let price = FuelStorage.price
+      guard commander.availableCredits >= price else {
+        notify("NOT ENOUGH CASH")
+        return
+      }
+      if !commander.unlimitedCash { commander.credits -= price }
+      commander.fuelStorageUnits += 1
+      notify("FUEL STORAGE UNIT FITTED - REFUEL SEPARATELY")
+      return
+    }
+    if Equipment.isReward(item.name) {
+      notify(Equipment.rewardLabel(item.name).uppercased() + " - NOT FOR SALE")
+      return
+    }
     if item.name == "Extra Energy Unit" && commander.equipment.contains(Equipment.navalEnergyUnit) {
       notify("NAVAL ENERGY UNIT FITTED")
       return
     }
-    let cost = item.name == "Fuel" ? (70 - commander.fuel) * item.price : item.price
+    if let tier = TargetingTier.from(item.name), let fitted = commander.targetingTier,
+      fitted >= tier
+    {
+      notify("TARGETING COMPUTER ALREADY FITTED")
+      return
+    }
+    if let tier = NavigationTier.from(item.name), let fitted = commander.navigationTier,
+      fitted >= tier
+    {
+      notify("NAVIGATIONAL COMPUTER ALREADY FITTED")
+      return
+    }
+    if let booster = ShieldBooster.from(item.name), let fitted = commander.shieldBooster,
+      fitted >= booster
+    {
+      notify(
+        booster.multiplier < fitted.multiplier
+          ? "WOULD REDUCE SHIELD CAPACITY" : "SHIELD BOOSTER ALREADY FITTED")
+      return
+    }
+    if let kind = LaserKind.from(item.name) {
+      purchaseLaser(kind, item: item)
+      return
+    }
+    let cost =
+      item.name == "Fuel" ? (commander.fuelCapacity - commander.fuel) * item.price : item.price
     guard currentSystem.technology >= item.technology, commander.availableCredits >= cost else {
       notify("NOT AVAILABLE")
       return
     }
     if item.name == "Fuel" {
-      commander.fuel = 70
+      commander.fuel = commander.fuelCapacity
     } else if item.name == "Missile" {
       guard commander.missiles < 4 else {
         notify("MISSILE RACK FULL")
@@ -435,7 +716,18 @@ public struct Game: Sendable {
         notify("ALREADY FITTED")
         return
       }
-      commander.equipment.insert(item.name)
+      if let tier = TargetingTier.from(item.name) {
+        commander.installTargetingComputer(tier)
+      } else if let tier = NavigationTier.from(item.name) {
+        commander.installNavigationComputer(tier)
+      } else if let booster = ShieldBooster.from(item.name) {
+        let oldCapacity = commander.shieldCapacity
+        commander.installShieldBooster(booster)
+        frontShield = frontShield / oldCapacity * commander.shieldCapacity
+        rearShield = rearShield / oldCapacity * commander.shieldCapacity
+      } else {
+        commander.equipment.insert(item.name)
+      }
     }
     if !commander.unlimitedCash { commander.credits -= cost }
     notify("EQUIPMENT FITTED")
@@ -454,26 +746,30 @@ public struct Game: Sendable {
       market[index].quantity += commander.cargo[index]
       commander.cargo[index] = 0
     }
-    let refuelCost = (70 - commander.fuel) * Equipment.all[0].price
+    let refuelCost = (commander.fuelCapacity - commander.fuel) * Equipment.base[0].price
     if commander.unlimitedFuel {
-      commander.fuel = 70
+      commander.fuel = commander.fuelCapacity
     } else if commander.availableCredits >= refuelCost {
       if !commander.unlimitedCash { commander.credits -= refuelCost }
-      commander.fuel = 70
+      commander.fuel = commander.fuelCapacity
+    } else {
+      notify("INSUFFICIENT FUNDS FOR FULL FUEL")
+      return
     }
-    if selectedSystem == commander.system {
+    let routeDestination = commander.navigationPlan?.nextSystem
+    if routeDestination == nil && selectedSystem == commander.system {
       let candidates = systems.filter {
         $0.id != commander.system
-          && (commander.unlimitedJumps
-            || currentSystem.distance(to: $0) <= Double(commander.fuel) / 10)
+          && currentSystem.distance(to: $0) <= commander.maximumJumpDistance
       }
       selectedSystem = candidates.max { routeScore($0) < routeScore($1) }?.id ?? commander.system
     }
-    guard selectedSystem != commander.system else {
+    guard (routeDestination ?? selectedSystem) != commander.system else {
       notify("NO TRADE ROUTE")
       return
     }
-    let exports = profitableExports(to: targetSystem)
+    let destination = routeDestination.map { systems[$0] } ?? targetSystem
+    let exports = profitableExports(to: destination)
     for item in exports {
       selection = item.index
       let unit = Commodity.all[item.index].unit
@@ -486,7 +782,7 @@ public struct Game: Sendable {
       market[item.index].quantity -= count
     }
     selection = oldSelection
-    notify("AUTO TRADE TO " + targetSystem.name)
+    notify("AUTO TRADE TO " + destination.name)
   }
   public func profitableExports(to destination: StarSystem) -> [(index: Int, profit: Int)] {
     Commodity.all.indices.filter { $0 != 16 }.compactMap { index in
@@ -504,7 +800,11 @@ public struct Game: Sendable {
     return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    retaliation.clear()
+    weaponsTargetID = nil
+    missileCooldown = 0
     spin.stop(immediate: true)
+    cancelAutoTarget()
     docked = false
     screen = .front
     speed = 8
@@ -516,31 +816,36 @@ public struct Game: Sendable {
     ]
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     notify("LAUNCHING FROM " + currentSystem.name)
+    preloadNavigation()
   }
   public mutating func dock() {
+    retaliation.clear()
+    weaponsTargetID = nil
+    missileCooldown = 0
     spin.stop(immediate: true)
+    cancelAutoTarget()
     docked = true
     screen = .status
     speed = 0
     dockingComputer = false
     bodies = []
     energy = 256
-    frontShield = 255
-    rearShield = 255
+    frontShield = commander.shieldCapacity
+    rearShield = commander.shieldCapacity
     laserHeat = 0
     jumpCountdown = nil
     missileArmed = false
     notify("DOCKED")
+    navigationDocked()
     if commander.autoTrade { autoTrade() }
     progressNavalMissions()
+    reconcileEliteReward()
   }
   public mutating func beginHyperspace() {
     guard !docked, jumpCountdown == nil, selectedSystem != commander.system else { return }
     let distance = currentSystem.distance(to: targetSystem)
     guard
-      commander.unlimitedJumps
-        || (distance <= 7
-          && (commander.unlimitedFuel || Int((distance * 10).rounded()) <= commander.fuel))
+      distance <= commander.maximumJumpDistance
     else {
       notify("FUEL TOO LOW")
       return
@@ -554,12 +859,20 @@ public struct Game: Sendable {
   }
   public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
   public mutating func arrive() {
+    retaliation.clear()
+    weaponsTargetID = nil
+    missileCooldown = 0
     spin.stop(immediate: true)
+    cancelAutoTarget()
     let cost = Int((currentSystem.distance(to: targetSystem) * 10).rounded())
-    if !commander.unlimitedFuel && !commander.unlimitedJumps {
+    if !commander.unlimitedFuel {
       commander.fuel = max(0, commander.fuel - cost)
     }
     commander.system = selectedSystem
+    if let plan = commander.navigationPlan, plan.nextSystem != commander.system {
+      commander.navigationPlan = nil
+      notify("ROUTE CANCELLED - OFF ROUTE")
+    }
     market = MarketItem.generate(economy: currentSystem.economy, fluctuation: randomByte())
     jumpCountdown = nil
     screen = .front
@@ -575,11 +888,13 @@ public struct Game: Sendable {
   }
   public mutating func galacticJump() {
     guard !docked, commander.equipment.remove("Galactic Hyperdrive") != nil else { return }
+    mapSearch = PlanetSearchState()
+    commander.navigationPlan = nil
     commander.galaxy = (commander.galaxy + 1) & 7
     systems = Universe.galaxy(number: commander.galaxy)
     selectedSystem = commander.system
     arrive()
-    commander.fuel = 70
+    commander.fuel = commander.fuelCapacity
   }
   public mutating func inSystemJump() {
     guard !docked, !massLocked else {
@@ -588,40 +903,58 @@ public struct Game: Sendable {
     }
     for index in bodies.indices { bodies[index].position.z -= 3000 }
   }
-  public mutating func fireMissile() {
-    guard !docked, missileArmed, commander.missiles > 0,
-      let target = bodies.firstIndex(where: { $0.hull != .station && $0.position.z > 0 })
-    else { return }
+  @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
+    guard !docked, missileArmed, missileCooldown == 0,
+      commander.missiles > 0 || commander.unlimitedMissiles,
+      let target = bodies.firstIndex(where: { body in
+        body.hull != .station && body.energy > 0 && body.position.z > 0
+          && (weaponsTargetID == nil || body.id == weaponsTargetID)
+      })
+    else { return false }
     if !commander.unlimitedMissiles { commander.missiles -= 1 }
+    missileCooldown = 1
     if bodies[target].ecmEnabled {
       var missile = SpaceBody(id: nextBodyID, hull: .missile, position: .init(0, 0, 24))
       missile.playerMissileTarget = bodies[target].id
       bodies.append(missile)
       nextBodyID += 1
-      notify("MISSILE AWAY")
     } else {
       bodies[target].energy = 0
-      notify("MISSILE AWAY")
+      bodies[target].destroyedByPlayer = true
     }
+    notify("MISSILE AWAY", voiced: !retaliating)
     missileArmed = false
+    return true
   }
   public mutating func ecm() {
-    guard !docked, commander.equipment.contains("E.C.M. System"), energy > 10 else { return }
+    guard !docked, commander.equipment.contains("E.C.M. System"), energy > 10, ecmFrames == 0 else {
+      return
+    }
+    _ = ecmControl.detect(bodies)
+    detectRetaliationSources()
+    ecmControl.activate(destroyed: bodies.filter { $0.hull == .missile && $0.energy > 0 }.count)
+    for missile in bodies where missile.hull == .missile && missile.energy > 0 {
+      confirmRetaliation(missile)
+    }
     bodies.removeAll { $0.hull == .missile }
     ecmFrames = 32
+    enemyECMSource = nil
     energy -= 10
-    notify("E.C.M.")
+    notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
     guard !docked, commander.equipment.remove("Energy Bomb") != nil else { return }
-    for index in bodies.indices where !bodies[index].hull.bombImmune { bodies[index].energy = 0 }
+    for index in bodies.indices where !bodies[index].hull.bombImmune {
+      bodies[index].energy = 0
+      bodies[index].destroyedByPlayer = true
+    }
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
     guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
     commander.cargo = Array(repeating: 0, count: 17)
     commander.legal = 0
-    commander.fuel = 70
+    commander.fuel = commander.fuelCapacity
     dock()
   }
   mutating func randomByte() -> Int {
@@ -631,7 +964,7 @@ public struct Game: Sendable {
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
-    if paused || screen == .help { return }
+    if paused || screen == .help || screen == .gallery || screen == .navigation { return }
     time += dt
     if screen == .mission {
       missionElapsed += dt
@@ -641,34 +974,51 @@ public struct Game: Sendable {
       screen = .title
       time = 0
     }
-    if commander.unlimitedFuel { commander.fuel = 70 }
+    if commander.unlimitedFuel { commander.fuel = commander.fuelCapacity }
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
     guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
     speed = min(32, max(0, speed + controls.throttle * dt * 12))
     pitch = controls.pitch
-    yaw = spin.mode ? controls.yaw : 0
+    yaw = controls.yaw
     let previousSpinRate = spin.actualRate
     spin.advance(delta: dt, controls: controls)
     roll =
       spin.mode || spin.actualRate != 0 || previousSpinRate != 0
       ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll
+    applyAutoTarget(delta: dt, controls: controls)
     laserHeat = max(0, laserHeat - dt * 12)
     fireCooldown = max(0, fireCooldown - dt)
+    missileCooldown = max(0, missileCooldown - dt)
     energy = min(256, energy + dt * 2 * commander.energyRechargeMultiplier)
-    frontShield = min(255, frontShield + dt)
-    rearShield = min(255, rearShield + dt)
+    frontShield = min(commander.shieldCapacity, frontShield + dt)
+    rearShield = min(commander.shieldCapacity, rearShield + dt)
     if controls.fire && screen.isFlight { fireLaser() }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
       if remaining <= dt { arrive() }
     }
     moveBodies(dt: dt)
+    if docked {
+      reconcileEliteReward()
+      return
+    }
+    scoopCargo()
     if missionLoopCounter & 7 == 0 { navalTactics() }
+    detectIncomingMissiles()
     advanceNavalMissiles(delta: dt)
+    ecmControl.advance()
     ecmFrames = max(0, ecmFrames - 1)
-    starfield.advance(delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw)
+    if ecmFrames == 0 { enemyECMSource = nil }
+    advanceRetaliation()
+    starfield.advance(
+      delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity)
     resolveDestroyed()
+    if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {
+      weaponsTargetID = nil
+      notify("WEAPON LOCK LOST")
+    }
+    reconcileEliteReward()
     missionLoopCounter &-= 1
     if missionLoopCounter == 0 { spawnNavalEncounter() }
     spawnClock += dt
@@ -686,9 +1036,10 @@ public struct Game: Sendable {
   }
   private mutating func fireLaser() {
     guard fireCooldown <= 0, laserHeat < 240, energy > 1 else { return }
-    fireCooldown =
-      commander.equipment.contains("Beam Laser") || commander.equipment.contains("Military Laser")
-      ? 0.1 : 0.3
+    guard let mount = LaserMount.from(screen), let laser = commander.laser(on: mount) else {
+      return
+    }
+    fireCooldown = laser.firingInterval
     laserHeat += 10
     energy -= 1
     laserFlash = 0.08
@@ -696,8 +1047,9 @@ public struct Game: Sendable {
       let p = viewPosition($0.position)
       return $0.hull != .station && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
     }) {
-      bodies[index].energy -= commander.laserDamage(against: bodies[index].hull)
+      bodies[index].energy -= commander.laserDamage(against: bodies[index].hull, mount: mount)
       bodies[index].hostile = true
+      if bodies[index].energy <= 0 { bodies[index].destroyedByPlayer = true }
     }
   }
   public func viewPosition(_ p: Vector3) -> Vector3 {
@@ -709,33 +1061,29 @@ public struct Game: Sendable {
     }
   }
   private mutating func moveBodies(dt: Double) {
+    autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
     for index in bodies.indices {
       bodies[index].position = bodies[index].position.rotated(
         pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+      bodies[index].orientation.rotate(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+      bodies[index].position = bodies[index].position - autoPilot.velocity * dt
       bodies[index].position.z -= speed * dt * 18
-      bodies[index].rotation += dt * (bodies[index].hull == .station ? 0.3 : 0.5)
+      bodies[index].rotation += dt * bodies[index].rotationRate
       if bodies[index].hostile { enemyAction(index: index, dt: dt) }
     }
-    if dockingComputer, let station = bodies.first(where: { $0.hull == .station }) {
-      let step = station.position * min(1, dt * 0.5)
-      for index in bodies.indices { bodies[index].position = bodies[index].position - step }
-      if station.position.length < 220 {
+    if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
+      if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
         dock()
         return
       }
-    }
-    if let station = bodies.first(where: { $0.hull == .station }), station.position.length < 100 {
-      if abs(station.position.x) < 25 && abs(station.position.y) < 20 && speed < 8
-        && abs(roll) < 0.15
-      {
-        dock()
-      } else {
-        energy -= dt * 100
-        notify("DOCKING COLLISION")
-      }
+      applyDamage(dt * 100, front: true)
+      if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
     let departing = bodies.filter { $0.leavesLocalBubble }
-    for body in departing { missionTargetRemoved(body) }
+    for body in departing {
+      clearRemovedTarget(body)
+      missionTargetRemoved(body)
+    }
     bodies.removeAll { $0.leavesLocalBubble }
   }
   private mutating func enemyAction(index: Int, dt: Double) {
@@ -752,22 +1100,26 @@ public struct Game: Sendable {
     }
     if bodies[index].position.length < 1500 {
       let damage = dt * (bodies[index].hull.navalLaserDamage ?? 6) * 2
-      let unshielded = max(0, damage - frontShield)
-      frontShield = max(0, frontShield - damage)
-      energy -= unshielded * 2
+      applyDamage(damage, front: bodies[index].position.z >= 0, energyMultiplier: 2)
     }
   }
   private mutating func resolveDestroyed() {
     let destroyed = bodies.filter { $0.energy <= 0 }
     for body in destroyed
-    where body.hull != .cargo && body.hull != .asteroid && body.playerMissileTarget == nil
+    where body.destroyedByPlayer == true && body.hull != .cargo && body.hull != .asteroid
+      && body.playerMissileTarget == nil
       && !body.enemyMissile
     {
+      let previousRank = commander.rank
       commander.kills = (commander.kills + 1) & 0xffff
+      if commander.rank != previousRank { notify("RIGHT ON, COMMANDER") }
       commander.credits =
         (commander.credits + (body.hull.navalBounty ?? (body.hostile ? 50 : 0))) & 0xffff_ffff
       if !body.hostile { commander.legal += 8 }
+    }
+    for body in destroyed {
       missionTargetRemoved(body)
+      clearRemovedTarget(body)
     }
     bodies.removeAll { $0.energy <= 0 }
     if !bodies.contains(where: { $0.hull == .thargoid }) {
@@ -779,7 +1131,7 @@ public struct Game: Sendable {
   }
   private mutating func spawn() {
     let hostile = randomByte() & 7 > currentSystem.government
-    let kind: Hull = hostile ? .sidewinder : .cobra
+    let kind: Hull = hostile ? .sidewinder : (nextBodyID % 4 == 0 ? .cargo : .cobra)
     bodies.append(
       SpaceBody(
         id: nextBodyID, hull: kind,
@@ -797,8 +1149,19 @@ public actor GameRuntime {
   private var controls = Controls()
   public init(game: Game = Game()) { self.game = game }
   public func snapshot() -> Game { game }
-  public func key(_ key: String) { game.key(key) }
+  public func key(_ key: String) {
+    let old = game.screen
+    game.key(key)
+    if old == .gallery || game.screen == .gallery { controls = Controls() }
+  }
+  public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
+  public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
+  public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
   public func setControls(_ value: Controls) { controls = value }
+  public func setViewport(width: Double, height: Double) {
+    game.viewportWidth = width
+    game.viewportHeight = height
+  }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
     game.tick(delta: delta, controls: controls)
@@ -816,6 +1179,7 @@ public actor GameRuntime {
     guard data.count < 65536 else { throw SaveError.invalidCommander }
     let commander = try JSONDecoder().decode(Commander.self, from: data)
     guard game.load(commander) else { throw SaveError.invalidCommander }
+    if game.commander != commander { try save(to: url) }
   }
 }
 

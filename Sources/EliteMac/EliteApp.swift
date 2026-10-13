@@ -7,6 +7,14 @@ import UniformTypeIdentifiers
 final class GameView: NSView {
   var game = Game() {
     didSet {
+      if game.screen == .gallery || oldValue.screen == .gallery || game.screen == .navigation
+        || oldValue.screen == .navigation
+        || game.mapSearch.active != oldValue.mapSearch.active
+      {
+        held.removeAll()
+        pressedKeys.removeAll()
+        trackpad.reset()
+      }
       if !acceptsTrackpadFlight || game.spin.mode != oldValue.spin.mode { trackpad.reset() }
     }
   }
@@ -51,32 +59,52 @@ final class GameView: NSView {
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
-    let side = min(bounds.width, bounds.height)
-    let rect = NSRect(
-      x: (bounds.width - side) / 2, y: (bounds.height - side) / 2, width: side, height: side)
     guard let context = NSGraphicsContext.current?.cgContext else { return }
-    // Draw into the window's Retina context instead of enlarging an offscreen image.
-    drawFrame(Display.render(game, rasterizeGraphics: false), context: context, rect: rect)
+    drawGame(game, context: context, rect: bounds)
   }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
     held.insert(key)
     pressedKeys[event.keyCode] = key
-    if !event.isARepeat { pending.append(key) }
+    if !event.isARepeat || (game.screen == .equipment && ["up", "down"].contains(key)) {
+      pending.append(key)
+    }
   }
   override func keyUp(with event: NSEvent) {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
-    guard game.screen == .chart else { return }
+    if game.screen == .equipment {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("equipment-click:\(point.x):\(point.y)")
+      return
+    }
+    if game.screen == .gallery {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("gallery-click:\(point.x):\(point.y)")
+      return
+    }
+    guard game.screen == .chart || game.screen == .shortChart else { return }
     let point = convert(event.locationInWindow, from: nil)
-    let side = min(bounds.width, bounds.height)
-    let x = Int((point.x - (bounds.width - side) / 2) / side * 256)
-    let y = Int(((point.y - (bounds.height - side) / 2) / side * 256 - 30) * 2)
-    pending.append("chart:\(x):\(y)")
+    pending.append("map-click:\(point.x):\(point.y)")
+  }
+  override func scrollWheel(with event: NSEvent) {
+    if [.status, .inventory, .market, .buy, .sell].contains(game.screen) {
+      pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
+    }
+    if game.screen == .equipment {
+      pending.append("equipment-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+    }
+    if game.mapSearch.active { pending.append("map-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)") }
+    if game.screen == .gallery {
+      pending.append("gallery-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+    }
   }
   var controls: Controls {
     var controls = Controls()
+    if !game.screen.isFlight {
+      return controls
+    }
     controls.pitch = (held.contains("x") ? 1 : 0) - (held.contains("s") ? 1 : 0)
     controls.roll =
       (held.contains(",") || held.contains("<") ? 1 : 0)
@@ -107,10 +135,13 @@ final class GameView: NSView {
   }
   private static func key(_ event: NSEvent) -> String {
     switch event.keyCode {
+    case 51: return "backspace"
     case 36: return "return"
     case 48: return "tab"
     case 53: return "escape"
     case 119: return "copy"
+    case 116: return "pageup"
+    case 121: return "pagedown"
     case 123: return "left"
     case 124: return "right"
     case 125: return "down"
@@ -134,7 +165,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
       backing: .buffered, defer: false)
     window.title = "XYZZY Elite - Right-On Commander"
     window.contentView = view
-    window.contentAspectRatio = NSSize(width: 1, height: 1)
     window.minSize = NSSize(width: 512, height: 540)
     window.delegate = self
     window.center()
@@ -151,7 +181,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let events = view.pending
         view.pending.removeAll()
         for event in events {
-          if event.hasPrefix("chart:") {
+          if event.hasPrefix("equipment-click:") {
+            let values = event.dropFirst(16).split(separator: ":").compactMap { Double($0) }
+            if values.count == 2 { await runtime.equipmentClick(y: values[1], x: values[0]) }
+          } else if event.hasPrefix("map-click:") {
+            let parts = event.split(separator: ":")
+            if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
+              await runtime.mapClick(x: x, y: y)
+            }
+          } else if event.hasPrefix("gallery-click:") {
+            let parts = event.split(separator: ":")
+            if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
+              await runtime.galleryClick(x: x, y: y)
+            }
+          } else if event.hasPrefix("chart:") {
             let parts = event.split(separator: ":")
             if let x = Int(parts[1]), let y = Int(parts[2]) {
               await runtime.selectSystem(x: x, y: y)
@@ -161,6 +204,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
           }
         }
         if !events.isEmpty { view.game = await runtime.snapshot() }
+        await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
         await runtime.setControls(view.controls)
         let now = ContinuousClock.now
         let elapsed = previousTick.duration(to: now).components
@@ -271,11 +315,12 @@ struct EliteApp {
     withExtendedLifetime(delegate) { app.run() }
   }
   @MainActor private static func media() throws {
+    try exportAppIcon()
     try FileManager.default.createDirectory(atPath: "docs", withIntermediateDirectories: true)
     var game = Game()
     game.launch()
     game.bodies[1].position = .init(-35, 10, 320)
-    guard let image = imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768),
+    guard let image = imageForGame(game, width: 1024, height: 768),
       let png = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/elite.png") as CFURL, UTType.png.identifier as CFString, 1, nil)
     else { throw SaveError.invalidCommander }
@@ -298,7 +343,7 @@ struct EliteApp {
         game.bodies[1].position = .init(-35, 10, 320)
         game.time = Double(index) / 6
       }
-      guard let image = imageFor(Display.render(game, rasterizeGraphics: false), pixelSize: 768)
+      guard let image = imageForGame(game, width: 1024, height: 768)
       else {
         throw SaveError.invalidCommander
       }
@@ -339,7 +384,7 @@ struct EliteApp {
         }
         await runtime.setControls(spinMode ? trackpad.spinControls : trackpad.controls)
         let state = await runtime.advance(delta: 0.02)
-        _ = await imageFor(Display.render(state, rasterizeGraphics: false), pixelSize: 512)
+        _ = await imageForGame(state, width: cycle % 2 == 0 ? 1280 : 512, height: 720)
       }
     }
     for stage in NavalMissionStage.allCases {
@@ -360,7 +405,7 @@ struct EliteApp {
       for frame in 0..<120 {
         if frame == 115 { await runtime.key("return") }
         let state = await runtime.advance(delta: 0.02)
-        _ = await imageFor(Display.render(state, rasterizeGraphics: false), pixelSize: 512)
+        _ = await imageForGame(state, width: 1024, height: 720)
       }
     }
     print("Actor simulation and frame lifecycle probe passed")

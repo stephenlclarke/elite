@@ -1,6 +1,7 @@
-import EliteCore
 import Foundation
 import Testing
+
+@testable import EliteCore
 
 private struct Point2 {
   let x: Double
@@ -53,7 +54,10 @@ private func covered(_ a: Point2, _ b: Point2, by lines: [WireLine]) -> Bool {
 
 private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
   let points = Mesh.hull(body.hull).vertices.map { vertex -> Point2 in
-    let p = vertex.rotated(pitch: body.rotation * 0.4, roll: body.rotation) + body.position
+    let p =
+      body.orientation.apply(
+        vertex.rotated(pitch: body.hull == .station ? 0 : body.rotation * 0.4, roll: body.rotation))
+      + body.position
     return Point2(x: 128 + p.x * 256 / p.z, y: 96 - p.y * 256 / p.z)
   }
   let boundary = outline(points)
@@ -87,18 +91,18 @@ private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
     let rotation = Double(step) * .pi / 72
     game.time = rotation / 0.6
     let frame = Display.render(game, rasterizeGraphics: false)
-    let joined = frame.shipLines.indices.allSatisfy { index in
-      let line = frame.shipLines[index]
-      return [(line.x0, line.y0), (line.x1, line.y1)].allSatisfy { x, y in
-        frame.shipLines.indices.contains { other in
-          guard index != other else { return false }
-          let next = frame.shipLines[other]
-          return hypot(x - next.x0, y - next.y0) < 1e-6
-            || hypot(x - next.x1, y - next.y1) < 1e-6
-        }
+    #expect(!frame.shipPanels.isEmpty && frame.shipLines.isEmpty)
+    var edges = frame
+    for panel in frame.shipPanels {
+      for index in panel.vertices.indices {
+        let a = panel.vertices[index]
+        let b = panel.vertices[(index + 1) % panel.vertices.count]
+        edges.graphics.append(.wire(WireLine(x0: a.x, y0: a.y, x1: b.x, y1: b.y, ink: .white)))
+        #expect(a.y > 29 && a.y < 163)
       }
     }
-    #expect(joined, "Open title outline at rotation step \(step)")
-    #expect(frame.shipLines.allSatisfy { min($0.y0, $0.y1) > 29 && max($0.y0, $0.y1) < 163 })
+    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 280))
+    body.rotation = rotation
+    #expect(hasCompleteOutline(body, in: edges), "Missing shaded title outline at \(step)")
   }
 }

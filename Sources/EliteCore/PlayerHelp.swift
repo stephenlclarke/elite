@@ -8,7 +8,9 @@ public enum PlayerHelp {
     let screen = game.screen == .help ? game.helpReturn : game.screen
     let context = context(for: screen, paused: game.paused)
     var pages = paginate(context)
-    if !game.paused && ![Screen.demo, .title, .gameOver, .secret, .mission].contains(screen) {
+    if !game.paused
+      && ![Screen.demo, .title, .gameOver, .secret, .mission, .gallery].contains(screen)
+    {
       let screens = HelpPage(
         title: game.docked ? "AT THE STATION" : "IN SPACE: SCREENS",
         rows: [
@@ -20,6 +22,12 @@ public enum PlayerHelp {
         ])
       if [Screen.status, .inventory, .market, .system].contains(screen) {
         pages = [screens]
+        if screen != .system {
+          pages.append(
+            .init(
+              title: "BROWSE STATION INFORMATION",
+              rows: ["UP / DOWN / SCROLL - MORE ROWS", "FN-UP/FN-DOWN - PAGE STATUS / INVENTORY"]))
+        }
       } else {
         pages.append(screens)
       }
@@ -52,6 +60,7 @@ public enum PlayerHelp {
         title: "COMMON KEYS",
         rows: [
           "K / COMMAND-K - CONTEXT KEY GUIDE",
+          "L - MISSION GALLERY (PAUSES FLIGHT)",
           "COMMAND-P - PAUSE / RESUME",
           "X Y Z Z Y - CLARKE AND SECRET MENU",
           "COMMAND-S / COMMAND-O - SAVE / LOAD",
@@ -77,15 +86,17 @@ public enum PlayerHelp {
         title: "XYZZY: COMMANDER CLARKE",
         rows: [
           "0 - WHITE / COLOUR / SHADED SHIPS",
-          "1 - FIT DOCKING COMPUTERS",
+          "1 - FIT DOCKING TARGETING TIER",
           "2 - MAXIMUM HARDWARE / RESTORE SHIP",
           "3 - UNLIMITED MISSILES",
           "4 - UNLIMITED FUEL",
-          "5 - UNLIMITED HYPERSPACE DISTANCE",
+          "5 - SHOW FUEL / NAV JUMP LIMIT",
           "6 - AUTO TRADE (INCLUDING ILLEGAL)",
           "7 - SPEECH",
           "8 - UNLIMITED CARGO",
-          "9 - UNLIMITED CASH",
+          "9 - SHOW CASH (STARTS AT 1M CR)",
+          "A - AUTO TARGET ASSIST", "E - AUTOMATIC ECM", "F - FIT FUEL SCOOPS",
+          "B - MILITARY RETURN FIRE",
           "RETURN / ESC - RETURN TO GAME",
         ])
     }
@@ -107,6 +118,11 @@ public enum PlayerHelp {
           "J - IN-SYSTEM JUMP",
           "C / P - DOCKING COMPUTER ON / OFF",
           "WEAPONS AND DRIVES REQUIRE EQUIPMENT",
+          "R - CYCLE TARGET (FITTED COMPUTER)",
+          "Q - DISENGAGE AUTO / MANUAL STEER",
+          "I - TARGET CAMERA DETAILS / HIDE",
+          "STATION AUTO COMPLETES DOCKING",
+          "SCOOPS: PASS CARGO BELOW YOUR NOSE",
           "TRACKPAD: 2 FINGERS - STEER / CRUISE",
           "1 FINGER - SLOW; 3 FINGERS - SPEED UP",
           "HOLD OFF CENTRE TO KEEP TURNING",
@@ -117,7 +133,8 @@ public enum PlayerHelp {
       return HelpPage(
         title: screen == .buy ? "STATION: BUY CARGO" : "STATION: SELL CARGO",
         rows: [
-          "UP / DOWN - SELECT PRODUCT",
+          "UP / DOWN / SCROLL - SELECT PRODUCT",
+          "COLOUR: CATEGORY; ACTION: AVAILABILITY",
           screen == .buy ? "RETURN - BUY ONE UNIT" : "RETURN - SELL ONE UNIT",
           "RIGHT / LEFT - BUY / SELL ONE UNIT",
         ])
@@ -125,14 +142,26 @@ public enum PlayerHelp {
       return HelpPage(
         title: "STATION: EQUIPMENT",
         rows: [
-          "UP / DOWN - SELECT EQUIPMENT", "RETURN - PURCHASE / REFUEL",
+          "UP / DOWN - SELECT ITEM (SKIP HEADINGS)", "RETURN - PURCHASE / REFUEL",
+          "LEFT / RIGHT - SELECT LASER MOUNT",
+          "CLICK FRONT/LEFT/RIGHT/REAR - MOUNT",
+          "CLICK - SELECT; TRACKPAD SCROLL - BROWSE", "REWARD ITEMS ARE NOT FOR SALE",
         ])
     case .chart, .shortChart:
       var rows = [
         "LEFT / RIGHT - PREV / NEXT SYSTEM", "O - TARGET CURRENT SYSTEM", "D - SHOW DISTANCE",
         "H - HYPERSPACE WHEN IN FLIGHT",
+        "M - ECONOMY / GOVERNMENT / TECHNOLOGY",
+        "N - NAVIGATION ROUTES (FITTED COMPUTER)",
       ]
-      if screen == .chart { rows.append("CLICK CHART - SELECT SYSTEM") }
+      rows.append("CLICK CHART - SELECT SYSTEM")
+      if screen == .shortChart { rows.append("Z - ZOOM MAX JUMP / SEARCH / FUEL") }
+      if screen == .chart {
+        rows += [
+          "SLASH - SEARCH ALL GALAXY PLANETS", "TYPE - FILTER; UP/DOWN - SELECT",
+          "RETURN - CHOOSE; ESC - CLOSE SEARCH", "BACKSPACE / CLICK CLEAR - CLEAR SEARCH",
+        ]
+      }
       return HelpPage(title: "NAVIGATION CHART", rows: rows)
     case .demo:
       return HelpPage(
@@ -144,6 +173,22 @@ public enum PlayerHelp {
         rows: ["SPACE / RETURN - COMMANDER SCREEN", "NEW COMMANDER: JAMESON"])
     case .gameOver:
       return HelpPage(title: "GAME OVER", rows: ["SPACE / RETURN - NEW COMMANDER JAMESON"])
+    case .navigation:
+      return HelpPage(
+        title: "NAVIGATION ROUTES",
+        rows: [
+          "UP/DOWN - SELECT ALTERNATIVE", "RETURN - SET ROUTE (NO AUTOMATIC JUMP)",
+          "C - CLEAR ROUTE", "N / ESC - RETURN TO CHART", "FN-UP/FN-DOWN - SCROLL ROUTE DETAILS",
+          "DOCK AT EACH STOP; LAUNCH PRELOADS NEXT", "H - START EACH JUMP MANUALLY",
+        ])
+    case .gallery:
+      return HelpPage(
+        title: "MISSION GALLERY",
+        rows: [
+          "UP / DOWN - SELECT MISSION", "RETURN - DETAILS", "PAGE UP / PAGE DOWN - SCROLL DETAILS",
+          "CLICK - SELECT MISSION", "TRACKPAD SCROLL - SCROLL DETAILS",
+          "ESC - BACK / CLOSE; L - CLOSE", "READ ONLY; FLIGHT IS PAUSED",
+        ])
     case .mission:
       return HelpPage(
         title: "NAVAL MESSAGE",

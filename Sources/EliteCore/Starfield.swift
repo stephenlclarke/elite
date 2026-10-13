@@ -10,11 +10,13 @@ public struct Starfield: Sendable, Equatable {
   }
 
   public mutating func advance(
-    delta: Double, speed: Double, pitch: Double, roll: Double, yaw: Double = 0
+    delta: Double, speed: Double, pitch: Double, roll: Double, yaw: Double = 0,
+    translation: Vector3 = .init(0, 0, 0)
   ) {
     for index in positions.indices {
       var star = positions[index].rotated(
         pitch: pitch * delta, roll: roll * delta, yaw: yaw * delta)
+      star = star - translation * delta
       star.z -= speed * delta * 18
       if star.length < 300 || star.length > 9000 { star = makeStar(distance: 7000) }
       positions[index] = star
