@@ -2,7 +2,7 @@ import Foundation
 
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
-    equipment, buy, sell, secret, help, mission, gallery, navigation, gameOver
+    equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, gameOver
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
@@ -25,7 +25,12 @@ public struct Commander: Sendable, Equatable, Codable {
   public var autoTrade = false
   public var speech = false
   public var executive = false
-  // Optional storage preserves compatibility with commanders saved before display styles existed.
+  // Optional storage preserves compatibility with commanders saved before each feature existed.
+  private var blackjackMission: BlackjackMission?
+  public var blackjack: BlackjackMission {
+    get { blackjackMission ?? BlackjackMission() }
+    set { blackjackMission = newValue }
+  }
   private var displayStyle: ShipDisplayStyle?
   private var navalMission: NavalMissionStage?
   private var xyzzyEnabled: Bool?
@@ -111,7 +116,8 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...fuelCapacity).contains(fuel)
       && (0...4).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
-      && (navigationPlan?.valid ?? true)
+      && (navigationPlan?.valid ?? true) && blackjack.valid
+      && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
   }
 }
@@ -191,6 +197,8 @@ public struct Game: Sendable {
   public var screen: Screen = .title
   public var paused = false
   public var docked = true
+  public var dockedAtMainStation = true
+  public var blackjackOffer: BlackjackOffer?
   public var selectedSystem = 7
   public var selection = 0
   public var informationScroll = 0
@@ -265,6 +273,9 @@ public struct Game: Sendable {
   public mutating func load(_ value: Commander) -> Bool {
     guard value.valid else { return false }
     commander = value
+    blackjackOffer = nil
+    dockedAtMainStation = true
+    enforceBlackjackWanted()
     commander.migrateXYZzyPolicy()
     commander.migrateLegacyXYZzyMounts()
     mapSearch = PlanetSearchState()
@@ -301,6 +312,16 @@ public struct Game: Sendable {
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    if screen == .handoff {
+      if key == "k" {
+        helpReturn = .handoff
+        helpPage = 0
+        screen = .help
+      } else {
+        blackjackHandoffKey(key)
+      }
+      return
+    }
     if screen == .gallery {
       if key == "k" {
         helpReturn = .gallery
@@ -484,6 +505,7 @@ public struct Game: Sendable {
         notify(
           String(format: "DISTANCE %.1f LIGHT YEARS", currentSystem.distance(to: targetSystem)))
       }
+    case "b": if docked { offerBlackjackHandoff() }
     case "h": beginHyperspace()
     case "g": galacticJump()
     case "j": inSystemJump()
@@ -638,8 +660,9 @@ public struct Game: Sendable {
       commander.cargo[index] += 1
       market[index].quantity -= 1
     } else {
-      guard commander.cargo[index] > 0 else {
-        notify("NO CARGO")
+      guard commander.sellableCargo(index) > 0 else {
+        notify(
+          index == 10 && commander.markedFirearms > 0 ? "MISSION FIREARM RESERVED" : "NO CARGO")
         return
       }
       commander.credits = min(4_294_967_295, commander.credits + item.price)
@@ -737,14 +760,15 @@ public struct Game: Sendable {
   public mutating func autoTrade() {
     guard docked else { return }
     let oldSelection = selection
-    for index in commander.cargo.indices where commander.cargo[index] > 0 {
-      let (revenue, overflow) = commander.cargo[index].multipliedReportingOverflow(
+    for index in commander.cargo.indices where commander.sellableCargo(index) > 0 {
+      let saleQuantity = commander.sellableCargo(index)
+      let (revenue, overflow) = saleQuantity.multipliedReportingOverflow(
         by: market[index].price)
       commander.credits =
         overflow
         ? 4_294_967_295 : min(4_294_967_295, commander.credits + min(revenue, 4_294_967_295))
-      market[index].quantity += commander.cargo[index]
-      commander.cargo[index] = 0
+      market[index].quantity += saleQuantity
+      commander.cargo[index] -= saleQuantity
     }
     let refuelCost = (commander.fuelCapacity - commander.fuel) * Equipment.base[0].price
     if commander.unlimitedFuel {
@@ -800,6 +824,7 @@ public struct Game: Sendable {
     return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
     missileCooldown = 0
@@ -817,8 +842,11 @@ public struct Game: Sendable {
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
+    restoreBlackjackEncounter()
   }
-  public mutating func dock() {
+  public mutating func dock(atMainStation: Bool = true) {
+    persistBlackjackTargets()
+    dockedAtMainStation = atMainStation
     retaliation.clear()
     weaponsTargetID = nil
     missileCooldown = 0
@@ -840,6 +868,7 @@ public struct Game: Sendable {
     if commander.autoTrade { autoTrade() }
     progressNavalMissions()
     reconcileEliteReward()
+    offerBlackjackHandoff()
   }
   public mutating func beginHyperspace() {
     guard !docked, jumpCountdown == nil, selectedSystem != commander.system else { return }
@@ -859,6 +888,7 @@ public struct Game: Sendable {
   }
   public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
   public mutating func arrive() {
+    persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
     missileCooldown = 0
@@ -885,11 +915,13 @@ public struct Game: Sendable {
     ]
     altitude = 1
     notify(currentSystem.name)
+    restoreBlackjackEncounter()
   }
   public mutating func galacticJump() {
     guard !docked, commander.equipment.remove("Galactic Hyperdrive") != nil else { return }
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
+    persistBlackjackTargets()
     commander.galaxy = (commander.galaxy + 1) & 7
     systems = Universe.galaxy(number: commander.galaxy)
     selectedSystem = commander.system
@@ -953,6 +985,7 @@ public struct Game: Sendable {
   public mutating func escapePod() {
     guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
     commander.cargo = Array(repeating: 0, count: 17)
+    commander.cargo[10] = commander.markedFirearms
     commander.legal = 0
     commander.fuel = commander.fuelCapacity
     dock()
@@ -964,7 +997,11 @@ public struct Game: Sendable {
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
-    if paused || screen == .help || screen == .gallery || screen == .navigation { return }
+    if paused || screen == .help || screen == .gallery || screen == .navigation
+      || screen == .handoff
+    {
+      return
+    }
     time += dt
     if screen == .mission {
       missionElapsed += dt
@@ -1014,6 +1051,7 @@ public struct Game: Sendable {
     starfield.advance(
       delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity)
     resolveDestroyed()
+    persistBlackjackTargets()
     if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {
       weaponsTargetID = nil
       notify("WEAPON LOCK LOST")
@@ -1069,24 +1107,30 @@ public struct Game: Sendable {
       bodies[index].position = bodies[index].position - autoPilot.velocity * dt
       bodies[index].position.z -= speed * dt * 18
       bodies[index].rotation += dt * bodies[index].rotationRate
-      if bodies[index].hostile { enemyAction(index: index, dt: dt) }
+      if bodies[index].hostile && bodies[index].energy > 0 { enemyAction(index: index, dt: dt) }
     }
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
-        dock()
+        dock(atMainStation: station.id == 0)
         return
       }
       applyDamage(dt * 100, front: true)
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
+    persistBlackjackTargets()
     let departing = bodies.filter { $0.leavesLocalBubble }
     for body in departing {
       clearRemovedTarget(body)
       missionTargetRemoved(body)
+      blackjackTargetDestroyed(body)
     }
     bodies.removeAll { $0.leavesLocalBubble }
   }
   private mutating func enemyAction(index: Int, dt: Double) {
+    if bodies[index].blackjackRole != nil {
+      advanceBlackjackNPC(index: index, delta: dt)
+      return
+    }
     if let maximumSpeed = bodies[index].hull.navalSpeed {
       let distance = bodies[index].position.length
       if distance > 0 {
@@ -1103,7 +1147,7 @@ public struct Game: Sendable {
       applyDamage(damage, front: bodies[index].position.z >= 0, energyMultiplier: 2)
     }
   }
-  private mutating func resolveDestroyed() {
+  mutating func resolveDestroyed() {
     let destroyed = bodies.filter { $0.energy <= 0 }
     for body in destroyed
     where body.destroyedByPlayer == true && body.hull != .cargo && body.hull != .asteroid
@@ -1114,12 +1158,16 @@ public struct Game: Sendable {
       commander.kills = (commander.kills + 1) & 0xffff
       if commander.rank != previousRank { notify("RIGHT ON, COMMANDER") }
       commander.credits =
-        (commander.credits + (body.hull.navalBounty ?? (body.hostile ? 50 : 0))) & 0xffff_ffff
+        (commander.credits
+          + (body.blackjackRole.map { $0.bountyCredits * 10 } ?? body.hull.navalBounty
+            ?? (body.hostile ? 50 : 0)))
+        & 0xffff_ffff
       if !body.hostile { commander.legal += 8 }
     }
     for body in destroyed {
       missionTargetRemoved(body)
       clearRemovedTarget(body)
+      blackjackTargetDestroyed(body)
     }
     bodies.removeAll { $0.energy <= 0 }
     if !bodies.contains(where: { $0.hull == .thargoid }) {
@@ -1153,8 +1201,11 @@ public actor GameRuntime {
   public func key(_ key: String) {
     let old = game.screen
     game.key(key)
-    if old == .gallery || game.screen == .gallery { controls = Controls() }
+    if [.gallery, .handoff].contains(old) || [.gallery, .handoff].contains(game.screen) {
+      controls = Controls()
+    }
   }
+  public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
   public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
@@ -1169,6 +1220,8 @@ public actor GameRuntime {
     return game
   }
   public func save(to url: URL) throws {
+    game.resolveDestroyed()
+    game.persistBlackjackTargets()
     guard game.commander.valid else { throw SaveError.invalidCommander }
     let data = try JSONEncoder().encode(game.commander)
     try FileManager.default.createDirectory(

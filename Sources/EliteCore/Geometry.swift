@@ -112,7 +112,7 @@ public struct Mesh: Sendable {
 }
 
 public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
-  public let id: Int
+  public var id: Int
   public var hull: Hull
   public var position: Vector3
   public var rotation: Double = 0
@@ -126,6 +126,9 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var enemyMissile = false
   public var missileSourceID: Int?
   public var destroyedByPlayer: Bool?
+  public var blackjackIdentity: UUID?
+  public var blackjackRole: BlackjackTarget?
+  public var blackjackLaserCooldown: Double?
   public var ecmEnabled = false
   public init(id: Int, hull: Hull, position: Vector3, hostile: Bool = false) {
     self.id = id

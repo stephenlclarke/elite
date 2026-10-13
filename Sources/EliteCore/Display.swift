@@ -190,6 +190,7 @@ public enum Display {
     case .equipment: equipment(game, into: &frame)
     case .status: status(game, into: &frame)
     case .inventory: inventory(game, into: &frame)
+    case .handoff: return blackjackHandoff(game, width: 768, height: 768)
     case .secret: secret(game, into: &frame)
     case .help: help(game, into: &frame)
     case .gallery: return gallery(game, width: 768, height: 768)
@@ -328,10 +329,12 @@ public enum Display {
       if game.commander.shipDisplayStyle == .shadedPanels {
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
-          colour: ShipProjection.shade(body.hull.ink, normal: normal))
+          colour: ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
         continue
       }
-      let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
+      let ink: Ink =
+        game.commander.shipDisplayStyle == .whiteWireframe
+        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
       for edge in face.indices {
         let i = face[edge]
         let j = face[(edge + 1) % face.count]
@@ -346,7 +349,9 @@ public enum Display {
       }
     }
     if game.commander.shipDisplayStyle != .shadedPanels {
-      let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
+      let ink: Ink =
+        game.commander.shipDisplayStyle == .whiteWireframe
+        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
       for detail in mesh.details where visibleFaces.contains(detail.face) {
         if let line = project(vertices[detail.start], vertices[detail.end], projection: projection)
         {
@@ -365,7 +370,9 @@ public enum Display {
         frame.panel(
           ShipProjection.polygon(hatch, projection: projection), colour: Ink.black.rawValue)
       } else {
-        let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
+        let ink: Ink =
+          game.commander.shipDisplayStyle == .whiteWireframe
+          ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
         for index in hatch.indices {
           if let line = project(
             hatch[index], hatch[(index + 1) % hatch.count], projection: projection)

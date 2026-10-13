@@ -240,6 +240,7 @@ extension Game {
       } else {
         missionNotice = nil
         screen = .status
+        offerBlackjackHandoff()
       }
     }
   }

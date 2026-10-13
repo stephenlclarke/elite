@@ -97,6 +97,9 @@ Number keys select the main game screens. Inside the secret menu they select sec
 | 0-9 / A / B / E / F, secret menu | Select options in the XYZZY table below |
 | R / Q, fitted targeting computer | Cycle AUTO target / disengage AUTO |
 | I, target locked | Expand / collapse target camera and details |
+| B, docked | Reopen an eligible Blackjack station contact |
+| Arrows / Return / Escape, Blackjack handoff | Choose Confirm or Back / select / Back without transfer |
+| Click, Blackjack handoff | Confirm / Continue or Back |
 | L, flight or station | Open / close the Mission Gallery |
 | Up / Down, Mission Gallery | Select mission; scroll in narrow detail view |
 | Return / Escape, Mission Gallery | Open detail / back or close |
@@ -185,7 +188,7 @@ Normal games default to white wireframes; XYZZY activation defaults to shaded pa
 
 Press K, use Command-K, or choose **Help → Player Key Guide** for the controls relevant to your current activity. The guide covers flight, station screens, trading, equipment, charts, pause, the title/demo and XYZZY. Arrow keys change pages; K, Return or Escape closes it. The simulation pauses while the guide is open and resumes on the same screen.
 
-Auto-trade runs when enabled while docked and on subsequent docking. It sells the hold, refuels, and buys profitable exports for the selected destination. If the target is the current system, it chooses a reachable route using profit, distance and government risk. Pricing follows the original economy calculation; it evaluates all possible destination market fluctuations and buys only goods with a positive conservative margin. Slaves, narcotics and firearms are included when profitable, and illegal cargo affects legal status on launch. Cash and local stock always constrain XYZZY purchases; hold capacity is unlimited while its switch is on. Auto-trade pays for a full tank before buying exports when fuel replenishment is off; insufficient cash stops export purchases with an explanation. Unlimited cargo cannot be disabled while the hold exceeds the normal bay capacity; sell excess cargo first.
+Auto-trade runs when enabled while docked and on subsequent docking. It sells tradable cargo while retaining marked mission items, refuels, and buys profitable exports for the selected destination. If the target is the current system, it chooses a reachable route using profit, distance and government risk. Pricing follows the original economy calculation; it evaluates all possible destination market fluctuations and buys only goods with a positive conservative margin. Slaves, narcotics and firearms are included when profitable, and illegal cargo affects legal status on launch. Cash and local stock always constrain XYZZY purchases; hold capacity is unlimited while its switch is on. Auto-trade pays for a full tank before buying exports when fuel replenishment is off; insufficient cash stops export purchases with an explanation. Unlimited cargo cannot be disabled while the hold exceeds the normal bay capacity; sell excess cargo first.
 
 ## Cockpit and AUTO assistance
 
@@ -216,7 +219,7 @@ Military identifies the actual craft that launched a player-targeted missile and
 
 ## Trading colours
 
-Buy Cargo, Sell Cargo and Market Prices use consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
+Buy Cargo, Sell Cargo and Market Prices use consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
 
 ## Navigation, fuel storage and charts
 
@@ -264,11 +267,19 @@ Every gameplay notification uses a shared event queue for its on-screen text and
 
 Automatic ECM requires active XYZZY mode, its E switch, fitted ECM and enough energy. It respects the 32-update field cooldown. Speech announces **Missile Detected**, **ECM Activated**, then the actual count of missiles destroyed by that activation, with singular/plural wording. It never announces a successful zero count or credits enemy ECM. Repeated speech waves are queued and coalesced. Secret key 7 controls speech; flight key E still activates ECM manually. Fuel Scoops are fitted by default and can be refitted with secret F. Pass a cargo canister below the forward nose within 85 native units to collect it; a full finite hold leaves it in space. Inactive Thargons can be scooped as Alien Items. Native canisters currently contain one Food unit; solar fuel collection is not implemented. Unlimited fuel remains independently controlled by 4.
 
+## Blackjack's Bullion expansion
+
+Blackjack's Bullion 1.2.9 is now playable alongside the two BBC naval missions. Dock at **Telace in Galaxy 2** for automatic enrolment, with no score prerequisite or deadline. Follow the Gallery objectives through Gerebied, Tegete, Ceinerxe, Edater and Esdi. Bolts' destruction earns 20 kg gold directly; the final Esdi report pays 9,500 CR and clears your bounty once. Any killer counts for the two unique mission targets.
+
+Station transfers use **Confirm / Back**: arrows choose, Return selects, Escape backs out, and buttons can be clicked. **B while docked** reopens an eligible contact; **K** shows the handoff keys. Tegete needs one free tonne for a marked firearm. It stays reserved during sales and auto-trade until its Ceinerxe transfer. Saved targets retain identity, damage and finite missiles across visits; repeat contacts cannot repeat rewards.
+
+This is an Oolite expansion adaptation with documented custody, wanted-level and witness-callback repairs. Its S.T.E targets currently use the native Cobra mesh and simplified combat. See the [pinned source profile and fidelity limits](docs/BLACKJACK-BULLION.md). [The implementation queue](docs/MISSION-IMPLEMENTATION.md) distinguishes research packets from playable campaigns.
+
 ## Mission Gallery
 
 Press **L** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show a mission list and detail side by side; narrow windows open a detail page with Escape to go back. Use arrows and Return, click a mission, and scroll with the trackpad or **Fn-Up/Fn-Down** on a MacBook. L closes directly.
 
-The gallery shows Active, Available and Complete counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. Each BBC mission has three required milestones. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
+The gallery shows Active, Available and Complete counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. The two BBC missions each have three required milestones; Blackjack's Bullion has seven. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
 
 Browsing is read-only. Flight time, movement, combat, AUTO and Spin Hold freeze while the gallery is open. Closing restores the exact prior screen and paused state and clears held weapon, keyboard and touch input. A pending naval briefing must be completed before opening the gallery. Older commander saves remain compatible.
 

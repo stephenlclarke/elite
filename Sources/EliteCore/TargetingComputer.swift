@@ -128,6 +128,8 @@ extension Game {
         ]
       }
     }
-    return .init(id: body.id, model: body.hull.modelName, status: status, fields: fields)
+    return .init(
+      id: body.id, model: body.blackjackRole?.name ?? body.hull.modelName, status: status,
+      fields: fields)
   }
 }

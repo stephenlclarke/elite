@@ -9,7 +9,7 @@ public enum PlayerHelp {
     let context = context(for: screen, paused: game.paused)
     var pages = paginate(context)
     if !game.paused
-      && ![Screen.demo, .title, .gameOver, .secret, .mission, .gallery].contains(screen)
+      && ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff, .gallery].contains(screen)
     {
       let screens = HelpPage(
         title: game.docked ? "AT THE STATION" : "IN SPACE: SCREENS",
@@ -61,6 +61,7 @@ public enum PlayerHelp {
         rows: [
           "K / COMMAND-K - CONTEXT KEY GUIDE",
           "L - MISSION GALLERY (PAUSES FLIGHT)",
+          "B (DOCKED) - BLACKJACK CONTACT",
           "COMMAND-P - PAUSE / RESUME",
           "X Y Z Z Y - CLARKE AND SECRET MENU",
           "COMMAND-S / COMMAND-O - SAVE / LOAD",
@@ -188,6 +189,13 @@ public enum PlayerHelp {
           "UP / DOWN - SELECT MISSION", "RETURN - DETAILS", "PAGE UP / PAGE DOWN - SCROLL DETAILS",
           "CLICK - SELECT MISSION", "TRACKPAD SCROLL - SCROLL DETAILS",
           "ESC - BACK / CLOSE; L - CLOSE", "READ ONLY; FLIGHT IS PAUSED",
+        ])
+    case .handoff:
+      return HelpPage(
+        title: "BLACKJACK STATION HANDOFF",
+        rows: [
+          "ARROWS - CONFIRM / BACK", "RETURN - SELECT", "ESC - BACK WITHOUT TRANSFER",
+          "B (DOCKED) - REOPEN CONTACT", "INITIAL CONTACT ENROLS AUTOMATICALLY",
         ])
     case .mission:
       return HelpPage(
