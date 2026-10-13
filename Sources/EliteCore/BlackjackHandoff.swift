@@ -36,7 +36,7 @@ public struct BlackjackOffer: Sendable {
 }
 extension Game {
   mutating func enforceBlackjackWanted() {
-    if commander.galaxy == 1 && commander.blackjack.stage.wanted {
+    if commander.galaxy == 1 && commander.blackjack.stage.wanted && !commander.xyzzyWantedAmnesty {
       commander.legal = max(commander.legal, 64)
     }
   }

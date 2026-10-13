@@ -1,0 +1,162 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH062"
+name = "Imperial Clipper"
+shipClass = "Ship"
+appearances = "ED-LEGACY, ED-LIVE"
+evidence = "D06"
+refit = true
+model = "ROC-SH062"
+modelSource = "Right-On Commander"
+dimensions = [170.0, 46.0, 110.0]
+geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
+
+[game]
+cargo = 74
+speed = 34.286
+acceleration = 12.0
+energy = 576.0
+recharge = 2.0
+roll = 0.698
+pitch = 0.698
+yaw = 0.314
+shield = 573.75
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 4
+facings = 1
+cargoExpansion = 15
+price = 271000
+
+[design]
+vertices = [
+  [-49.3831, 3.93215, 22.41724],
+  [48.00512, 3.93215, 22.41724],
+  [-28.93158, 23.0, 43.62069],
+  [27.5536, 23.0, 43.62069],
+  [-0.68899, 10.6059, -55.0],
+  [-0.68899, -15.1357, -30.34483],
+  [-28.93158, -5.60178, 43.62069],
+  [27.5536, -5.60178, 43.62069],
+  [-58.55277, -4.41004, -36.03448],
+  [-63.79087, 10.49745, -36.03448],
+  [-75.56093, 14.17993, -36.03448],
+  [-85.0, 3.86303, -36.03448],
+  [-85.0, -12.6831, -36.03448],
+  [-75.56093, -23.0, -36.03448],
+  [-63.79087, -19.31752, -36.03448],
+  [-58.55277, -4.41004, 55.0],
+  [-63.79087, 10.49745, 55.0],
+  [-75.56093, 14.17993, 55.0],
+  [-85.0, 3.86303, 55.0],
+  [-85.0, -12.6831, 55.0],
+  [-75.56093, -23.0, 55.0],
+  [-63.79087, -19.31752, 55.0],
+  [-3.85095, 3.93215, 5.68966],
+  [-32.30854, 9.89085, 5.68966],
+  [-60.76614, 3.93215, 5.68966],
+  [-32.30854, -2.02656, 5.68966],
+  [-3.85095, 3.93215, 20.86207],
+  [-32.30854, 9.89085, 20.86207],
+  [-60.76614, 3.93215, 20.86207],
+  [-32.30854, -2.02656, 20.86207],
+  [85.0, -4.41004, -36.03448],
+  [79.7619, 10.49745, -36.03448],
+  [67.99184, 14.17993, -36.03448],
+  [58.55277, 3.86303, -36.03448],
+  [58.55277, -12.6831, -36.03448],
+  [67.99184, -23.0, -36.03448],
+  [79.7619, -19.31752, -36.03448],
+  [85.0, -4.41004, 55.0],
+  [79.7619, 10.49745, 55.0],
+  [67.99184, 14.17993, 55.0],
+  [58.55277, 3.86303, 55.0],
+  [58.55277, -12.6831, 55.0],
+  [67.99184, -23.0, 55.0],
+  [79.7619, -19.31752, 55.0],
+  [59.38816, 3.93215, 5.68966],
+  [30.93056, 9.89085, 5.68966],
+  [2.47297, 3.93215, 5.68966],
+  [30.93056, -2.02656, 5.68966],
+  [59.38816, 3.93215, 20.86207],
+  [30.93056, 9.89085, 20.86207],
+  [2.47297, 3.93215, 20.86207],
+  [30.93056, -2.02656, 20.86207],
+]
+faces = [
+  [1, 3, 2, 0],
+  [2, 4, 0],
+  [4, 3, 1],
+  [3, 4, 2],
+  [4, 5, 0],
+  [5, 4, 1],
+  [5, 6, 0],
+  [6, 2, 0],
+  [7, 5, 1],
+  [3, 7, 1],
+  [6, 7, 3, 2],
+  [7, 6, 5],
+  [14, 13, 12, 11, 10, 9, 8],
+  [15, 16, 17, 18, 19, 20, 21],
+  [8, 9, 16, 15],
+  [9, 10, 17, 16],
+  [10, 11, 18, 17],
+  [11, 12, 19, 18],
+  [12, 13, 20, 19],
+  [13, 14, 21, 20],
+  [14, 8, 15, 21],
+  [25, 24, 23, 22],
+  [26, 27, 28, 29],
+  [22, 23, 27, 26],
+  [23, 24, 28, 27],
+  [24, 25, 29, 28],
+  [25, 22, 26, 29],
+  [36, 35, 34, 33, 32, 31, 30],
+  [37, 38, 39, 40, 41, 42, 43],
+  [30, 31, 38, 37],
+  [31, 32, 39, 38],
+  [32, 33, 40, 39],
+  [33, 34, 41, 40],
+  [34, 35, 42, 41],
+  [35, 36, 43, 42],
+  [36, 30, 37, 43],
+  [47, 46, 45, 44],
+  [48, 49, 50, 51],
+  [44, 45, 49, 48],
+  [45, 46, 50, 49],
+  [46, 47, 51, 50],
+  [47, 44, 48, 51],
+]
+license = "MIT"
+source = "Right-On Commander original geometry"
+custody = {  }
+recipe = { "family" = "outrigger", "variant" = 62, "dimensions" = [170.0, 46.0, 110.0], "sweep" = 0.57, "pods" = 4, "sections" = 7 }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH062"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "74 t", "number" = 74, "unit" = "t", "status" = "borrowed", "basis" = "D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "375.0 project units/s", "number" = 375.0, "unit" = "project units/s", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "576.0 project units", "number" = 576.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "288.0 project units", "number" = 288.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "288.0 project units", "number" = 288.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "4 project units/s", "number" = 4, "unit" = "project units/s", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "1.3963 rad/s", "number" = 1.3963, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "0.6981 rad/s", "number" = 0.6981, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "0.3142 rad/s", "number" = 0.3142, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "160 project units/s2", "number" = 160, "unit" = "project units/s2", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "1 bit mask", "number" = 1, "unit" = "bit mask", "status" = "estimated", "basis" = "D23 imperial_clipper outfitting hull inputs, translated into O08-like project units; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "4 pylons", "number" = 4, "unit" = "pylons", "status" = "estimated", "basis" = "Project pylon count chosen from number of positive-size D23 hardpoints, bounded1..16. Native missile rack ammunition is separate. This does not assert a native pylon layout." }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "22 project slots", "number" = 22, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project adoption of solo-operated ED profile", "basis" = "ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths." }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "74 t", "number" = 74, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]
+
+[[profiles]]
+id = "D23-imperial_clipper"
+title = "ED Coriolis Imperial Clipper"
+group = "ed-coriolis"
+context = "D23 0db9234b: community outfitting snapshot; equipped FSD/shield results not inferred."
+fields = [{ "key" = "speed", "label" = "Base speed", "text" = "300 m/s", "number" = 300, "unit" = "m/s", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "boost", "label" = "Boost", "text" = "380 m/s", "number" = 380, "unit" = "m/s", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "pitch", "label" = "Pitch", "text" = "40 deg/s", "number" = 40, "unit" = "deg/s", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "roll", "label" = "Roll", "text" = "80 deg/s", "number" = 80, "unit" = "deg/s", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "yaw", "label" = "Yaw", "text" = "18 deg/s", "number" = 18, "unit" = "deg/s", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "hullMass", "label" = "Hull mass", "text" = "400 t", "number" = 400, "unit" = "t", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "baseShieldStrength", "label" = "Shield input", "text" = "180 ED raw", "number" = 180, "unit" = "ED raw", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "baseArmour", "label" = "Armour input", "text" = "270 ED raw", "number" = 270, "unit" = "ED raw", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "hullCost", "label" = "Hull price", "text" = "21116895 CR", "number" = 21116895, "unit" = "CR", "status" = "source", "basis" = "D23 imperial_clipper" }, { "key" = "retail_cost", "label" = "Retail loadout", "text" = "22295860 CR", "number" = 22295860, "unit" = "CR", "status" = "source", "basis" = "" }, { "key" = "hardpoints", "label" = "Hardpoint sizes", "text" = "3, 3, 2, 2, 0, 0, 0, 0", "unit" = "", "status" = "source", "basis" = "" }, { "key" = "internal", "label" = "Internal slots", "text" = "7, 6, 4, 4, 3, 3, 2, 2, 1, {'class': 1, 'name': 'PlanetaryApproachSuite', 'eligible': {'pas': 1}}", "unit" = "", "status" = "source", "basis" = "" }]
+
+[[profiles]]
+id = "CREW-SH062-0"
+title = "ED-HORIZONS-2.3-GUIDE crew"
+group = "crew-ED-HORIZONS-2.3-GUIDE-totalsupportedflightcrewseats"
+context = "total supported flight crew seats; CREW04; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Maximum flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }]
+
+[[profiles]]
+id = "CREW-SH062-1"
+title = "ED-D23-PINNED crew"
+group = "crew-ED-D23-PINNED-datasetflightcrewseatsnotrequiredstaffing"
+context = "dataset flight crew seats, not required staffing; D23; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Maximum flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }]

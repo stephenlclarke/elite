@@ -1,6 +1,32 @@
 import Foundation
 
 extension Display {
+  static func navigationSummary(_ game: Game, width: Double) -> [String] {
+    guard game.navigationOptions.indices.contains(game.navigationSelection) else { return [] }
+    let route = game.navigationOptions[game.navigationSelection]
+    let summary = [
+      String(
+        format: "%d jumps  %.1f ly  Fuel estimate %.1f CR", route.plan.path.count - 1,
+        route.distance, Double(route.fuelUnits * 2) / 10),
+      String(
+        format: "Risk index %.2f  Cargo sale estimate %.1f CR", route.risk, route.cargoSale / 10),
+      String(
+        format: "Trade opportunities estimate %.1f CR (not guaranteed)", route.tradeEstimate / 10),
+      "Dock at every stop; launch preloads the next leg.",
+      "Route: " + route.plan.path.map { game.systems[$0].name }.joined(separator: " > "),
+    ]
+    return summary.flatMap {
+      MissionNotice.wrap($0, width: Int((width - 32) / (6 * GameTypography.scale)))
+    }
+  }
+  static func navigationWindow(_ game: Game, width: Double, height: Double) -> ScrollWindow {
+    let row = ceil(GameTypography.scale * 7) + 8
+    let top = 88 + Double(game.navigationOptions.count * 3) * row
+    return .init(
+      count: navigationSummary(game, width: width).count,
+      visible: max(1, Int((height - top - 52) / row)), offset: game.navigationScroll)
+  }
+
   public static func navigation(_ game: Game, width: Double, height: Double) -> Frame {
     var frame = Frame()
     frame.responsive = true
@@ -31,22 +57,11 @@ extension Display {
       }
     }
     if game.navigationOptions.indices.contains(game.navigationSelection) {
-      let route = game.navigationOptions[game.navigationSelection]
       let top = 88 + Double(game.navigationOptions.count * 3) * row
-      let summary = [
-        String(
-          format: "%d jumps  %.1f ly  Fuel estimate %.1f CR", route.plan.path.count - 1,
-          route.distance, Double(route.fuelUnits * 2) / 10),
-        String(
-          format: "Risk index %.2f  Cargo sale estimate %.1f CR", route.risk, route.cargoSale / 10),
-        String(
-          format: "Trade opportunities estimate %.1f CR (not guaranteed)", route.tradeEstimate / 10),
-        "Dock at every stop; launch preloads the next leg.",
-        "Route: " + route.plan.path.map { game.systems[$0].name }.joined(separator: " > "),
-      ]
-      let lines = summary.flatMap { MissionNotice.wrap($0, width: Int((width - 32) / (6 * font))) }
+      let lines = navigationSummary(game, width: width)
       let visible = max(1, Int((height - top - 52) / row))
-      let offset = min(game.navigationScroll, max(0, lines.count - visible))
+      let window = ScrollWindow(count: lines.count, visible: visible, offset: game.navigationScroll)
+      let offset = window.offset
       for (index, line) in lines.dropFirst(offset).prefix(visible).enumerated() {
         frame.label(line, 16, top + Double(index) * row, scale: font)
       }
@@ -54,7 +69,8 @@ extension Display {
     frame.label(
       "Arrows: route  Return: set  C: clear  Esc: back", 16, height - 34, scale: font, ink: .cyan)
     frame.label(
-      "Option-Up/Down: scroll  H: start each jump", 16, height - 17, scale: font,
+      navigationWindow(game, width: width, height: height).hint.map { "Option-" + $0 }
+        ?? "Set route, then launch; H starts a jump in flight", 16, height - 17, scale: font,
       ink: .cyan)
     return frame
   }

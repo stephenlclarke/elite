@@ -186,3 +186,22 @@ import Testing
   game.key("screen:99")
   #expect(game.screen == .chart)
 }
+
+@Test func helpUsesTheUnderlyingInformationScreenAndExchangeContext() {
+  var game = Game(executive: false)
+  game.fitMaximumHardware()
+  game.viewportHeight = 518
+  game.screen = .inventory
+  game.key("k")
+  #expect(PlayerHelp.pages(for: game).first!.rows.contains("ALL ROWS VISIBLE"))
+  game.key("escape")
+  game.key("8")
+  game.key("k")
+  #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
+  game.key("escape")
+  game.key("6")
+  game.key("showroom-trade")
+  game.key("k")
+  #expect(PlayerHelp.pages(for: game).first!.title == "SHIP EXCHANGE")
+  #expect(!PlayerHelp.pages(for: game).contains { $0.title == "STATION SCREENS" })
+}

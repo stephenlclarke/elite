@@ -35,7 +35,15 @@ extension Display {
       "Page \(page + 1) of \(pages.count)", layout.left, height - 44,
       scale: layout.font, ink: .yellow)
     frame.label(
-      "Arrows: help pages  Esc: back", layout.left, height - 24,
+      [
+        pages.count > 1
+          ? (page == 0
+            ? "Right/Down: next page"
+            : (page == pages.count - 1 ? "Left/Up: previous page" : "Arrows: help pages")) : nil,
+        "Esc: back",
+      ].compactMap {
+        $0
+      }.joined(separator: "  "), layout.left, height - 24,
       scale: layout.font, ink: .cyan)
     return frame
   }
@@ -53,7 +61,18 @@ extension Display {
     case .secret:
       frame.compactTitle("XYZZY", layout: layout)
       frame.label("A hollow voice says...", layout.left, 50, scale: layout.font, ink: .cyan)
-      frame.compactRows(game.secretChoices.map { ($0, .white) }, layout: layout, top: 76)
+      var positioned = game
+      positioned.viewportWidth = width
+      positioned.viewportHeight = height
+      let window = positioned.secretWindow
+      for (index, row) in positioned.secretRows.dropFirst(window.offset).prefix(window.visible)
+        .enumerated()
+      {
+        frame.label(row.1, layout.left, 76 + Double(index) * layout.row, scale: layout.font)
+      }
+      if let hint = window.hint {
+        frame.label(hint, layout.left, layout.bottom - 62, scale: layout.font, ink: .cyan)
+      }
     case .mission:
       compactMission(game, layout: layout, into: &frame)
       return frame

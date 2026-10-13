@@ -92,7 +92,7 @@ Open with 6 while docked. Use arrows or click to choose a ship; Return or the Sp
 
 Slash or clicking the search field begins a filter. Up/Down works immediately on the results, Return opens the selected specifications, Delete erases a letter, and Command-Delete clears the search. Clear filter is also clickable. No matches means no stale model. Escape leaves search, then specifications, then the showroom, preserving selection while you move between panes and help. Reopening the showroom starts unfiltered on your Cobra.
 
-Click **Pin baseline**, select another ship and use **Compare**. **Cobra baseline** restores your actual fitted ship as the comparison baseline. **Prev profile / Next profile** cycle the current source/refit set. **Show sources / Show refits** switches the data set; **Pause model / Rotate model** controls movement. No purchases occur here. See [source units, estimates and attribution](SHIP-SHOWROOM.md).
+Click **Pin baseline**, select another ship and use **Compare**. **Your ship** restores your actual fitted ship as the comparison baseline. **Prev profile / Next profile** cycle the current source/refit set. **Show sources / Show refits** switches the data set; **Pause model / Rotate model** controls movement. No purchases occur here. See [source units, estimates and attribution](SHIP-SHOWROOM.md).
 
 ## Help and MacBook keys
 
@@ -126,3 +126,7 @@ Type XYZZY outside a search to become Commander Clarke and open the secret menu.
 Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; R for targeting; P for cancelling guidance. Left/Right in buy/sell screens still buys/sells one unit. W and Command-Shift-W still open the docked showroom; B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
 
 Existing browser-specific close aliases (W, L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
+
+Shipyard: click Trade ship, review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
+
+XYZZY L (or clicking its row) resets legal status to Clean. Saved mission progress is preserved. Save/Save As: Command-S / Command-Shift-S. Reload/Open: Command-O / Command-Shift-O. The last successful save restores automatically on launch, docked at the saved system.

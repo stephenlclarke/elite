@@ -13,8 +13,12 @@ public enum PlayerHelp {
           rows: ["ESC / COMMAND-P - RESUME", "K - CLOSE HELP", ": - SPEECH ON/OFF"])
       ]
     }
-    var pages = paginate(context(for: screen))
-    if ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff].contains(screen) {
+    var contextGame = game
+    contextGame.screen = screen
+    var pages = paginate(context(for: screen, game: contextGame))
+    if ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff].contains(screen)
+      && !(screen == .showroom && game.showroom.trading)
+    {
       pages.append(
         .init(
           title: game.docked ? "STATION SCREENS" : "SCREENS IN SPACE",
@@ -45,7 +49,7 @@ public enum PlayerHelp {
             "COMMAND-Q - QUIT",
           ]))
       if !game.docked {
-        if !screen.isFlight { pages.append(context(for: .front)) }
+        if !screen.isFlight { pages.append(context(for: .front, game: game)) }
         pages.append(contentsOf: flightReference)
       }
     }
@@ -70,7 +74,7 @@ public enum PlayerHelp {
     }
   }
 
-  private static func context(for screen: Screen) -> HelpPage {
+  private static func context(for screen: Screen, game: Game) -> HelpPage {
     switch screen {
     case .front, .rear, .left, .right:
       .init(
@@ -90,6 +94,10 @@ public enum PlayerHelp {
           "CENTRE 2 FINGERS - STOP TURNING",
           "LIFT ALL - CENTRE YOKE / KEEP SPEED",
         ])
+    case .system:
+      .init(
+        title: "SYSTEM DATA",
+        rows: ["UP / DOWN / SCROLL - LONG PLANET DATA", "ESC - PREVIOUS SCREEN", "K - HELP"])
     case .buy, .sell:
       .init(
         title: screen == .buy ? "BUY CARGO" : "SELL CARGO",
@@ -117,7 +125,7 @@ public enum PlayerHelp {
         title: "CHARTS AND PLANET DATA",
         rows: [
           "LEFT / RIGHT OR CLICK - SELECT PLANET",
-          "OPTION-UP/DOWN - SCROLL DOCKED DATA",
+          game.docked ? "UP / DOWN / SCROLL - PLANET DATA" : "PLANET DATA: 6",
           "SLASH (GALACTIC CHART) - SEARCH",
           "TYPE - FILTER; UP / DOWN - RESULT",
           "RETURN - CHOOSE; ESC - END SEARCH",
@@ -141,6 +149,14 @@ public enum PlayerHelp {
           "C - CLEAR ROUTE",
           "DOCK AT EACH STOP; H STARTS EACH JUMP",
         ])
+    case .showroom where game.showroom.trading:
+      .init(
+        title: "SHIP EXCHANGE",
+        rows: [
+          "REVIEW PRICE, TRADE-IN AND FITTING", "LEFT / RIGHT / TAB - BACK OR CONFIRM",
+          "RETURN / CLICK - SELECT", "UP / DOWN / SCROLL - LONG QUOTES",
+          "ESC - CANCEL WITHOUT CHANGES", "BLOCKED TRADES EXPLAIN EACH CONFLICT",
+        ])
     case .showroom:
       .init(
         title: "SHIP SHOWROOM",
@@ -154,13 +170,16 @@ public enum PlayerHelp {
           "RETURN - SPECS; ESC - FINISH SEARCH",
           "DELETE - ERASE; COMMAND-DELETE - CLEAR",
           "CLICK CLEAR FILTER - SHOW ALL SHIPS",
-          "CLICK PIN BASE / COBRA BASE / COMPARE",
+          "CLICK PIN BASE / YOUR SHIP / COMPARE",
           "CLICK PREV / NEXT TO CHANGE PROFILE",
-          "CLICK SOURCES / REFITS TO CHANGE DATA",
+          "CLICK SOURCE NOTES / GAME VALUES",
           "CLICK PAUSE / ROTATE TO STOP MOTION",
           "OPTION-UP/DOWN - PAGE ACTIVE PANE",
           "ESC - SEARCH, THEN LIST, THEN STATION",
-          "BROWSING CANNOT BUY OR REPLACE SHIPS",
+          "CLICK TRADE SHIP - REVIEW EXCHANGE",
+          "LEFT / RIGHT, RETURN - CONFIRM / BACK",
+          "CLICK SORT: A-Z / POWER (STRONGEST)",
+          "POWER: ENERGY + SHIELDS + WEAPONS",
         ])
     case .gallery:
       .init(
@@ -211,6 +230,7 @@ public enum PlayerHelp {
           "5 - SHOW FUEL / NAV JUMP LIMIT", "6 - AUTO TRADE (INCLUDING ILLEGAL)", "7 - SPEECH",
           "8 - UNLIMITED CARGO", "9 - SHOW CASH (STARTS AT 1M CR)",
           "A - AUTO TARGET; E - AUTO ECM", "F - FUEL SCOOPS; B - RETURN FIRE",
+          "L - RESET LEGAL STATUS TO CLEAN",
           "ESC - RETURN TO GAME",
         ])
     case .demo:
@@ -227,7 +247,10 @@ public enum PlayerHelp {
       .init(
         title: "STATION / SHIP INFORMATION",
         rows: [
-          "UP / DOWN / SCROLL - MORE ROWS", "OPTION-UP/DOWN - PAGE LONG LISTS",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          game.informationWindow.hint == nil
+            ? "NUMBER KEYS - CHOOSE SCREEN" : "OPTION-UP/DOWN - PAGE LONG LISTS",
           "NUMBER KEYS - CHOOSE SCREEN", "ESC - PREVIOUS SCREEN",
         ])
     }

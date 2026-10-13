@@ -196,7 +196,7 @@ extension Display {
       (
         "Speed",
         (game.autoTargetBody?.hull == .station ? game.autoPilot.velocity.length / 18 : game.speed)
-          / 32
+          / game.commander.performance.speed
       ), ("Roll", game.roll), ("Pitch", game.pitch),
     ]
     .enumerated() {
@@ -213,7 +213,13 @@ extension Display {
     let barEnd = min(x + instrumentWidth, barX + 160)
     for bank in 0..<4 {
       let length =
-        (barEnd - barX) * max(0, min(1, (game.energy - Double(bank) * 64) / 64))
+        (barEnd - barX)
+        * max(
+          0,
+          min(
+            1,
+            (game.energy - Double(bank) * game.commander.performance.energy / 4)
+              / (game.commander.performance.energy / 4)))
       let by = y + Double(bank) * 3
       frame.stroke(barX, by, barEnd, by, .blue)
       if length > 0 { frame.stroke(barX, by, barX + length, by, .yellow) }

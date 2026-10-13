@@ -8,6 +8,16 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var wantedAmnesty: Bool?
+  public var xyzzyWantedAmnesty: Bool {
+    get { wantedAmnesty ?? false }
+    set { wantedAmnesty = newValue }
+  }
+  private var ownedShipID: String?
+  public var shipID: String {
+    get { ownedShipID ?? "SH023" }
+    set { ownedShipID = newValue }
+  }
   public var name = "JAMESON"
   public var credits = 1000
   public var fuel = 70
@@ -101,7 +111,7 @@ public struct Commander: Sendable, Equatable, Codable {
   public init() {}
   public var availableCredits: Int { unlimitedCash ? Int.max : credits }
   public var capacity: Int {
-    let standard = equipment.contains("Large Cargo Bay") ? 35 : 20
+    let standard = standardCargoCapacity
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
@@ -115,7 +125,8 @@ public struct Commander: Sendable, Equatable, Codable {
     ][thresholds.filter { kills >= $0 }.count]
   }
   public var valid: Bool {
-    cargo.count == 17 && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
+    ShipCatalogue.ship(shipID)?.game != nil && cargo.count == 17
+      && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
       && (0...256).contains(system) && (0..<8).contains(galaxy)
       && (0...255).contains(plughDiscoveryMask)
@@ -124,7 +135,7 @@ public struct Commander: Sendable, Equatable, Codable {
         || hasDiscoveredPlugh(in: galaxy))
       && (0...FuelStorage.maximumCount).contains(fuelStorageUnits)
       && (0...fuelCapacity).contains(fuel)
-      && (0...4).contains(missiles) && (0...65535).contains(kills) && legal >= 0
+      && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
@@ -233,6 +244,7 @@ public struct Game: Sendable {
   public var viewportHeight = 768.0
   public var targetPanelExpanded: Bool?
   public var weaponsTargetID: Int?
+  public var secretScroll = 0
   public var energy = 256.0
   public var frontShield = 255.0
   public var rearShield = 255.0
@@ -303,6 +315,7 @@ public struct Game: Sendable {
     if let tier = commander.targetingTier { commander.installTargetingComputer(tier) }
     if let tier = commander.navigationTier { commander.installNavigationComputer(tier) }
     if let booster = commander.shieldBooster { commander.installShieldBooster(booster) }
+    energy = commander.performance.energy
     frontShield = commander.shieldCapacity
     rearShield = commander.shieldCapacity
     targetPanelExpanded = nil
@@ -434,6 +447,10 @@ public struct Game: Sendable {
     }
   }
   mutating func secretKey(_ key: String) {
+    if ["up", "down", "pageup", "pagedown"].contains(key) {
+      secretScroll = secretWindow.moved(key == "up" || key == "pageup" ? -1 : 1)
+      return
+    }
     switch key {
     case "0":
       commander.shipDisplayStyle = commander.shipDisplayStyle.next
@@ -446,7 +463,7 @@ public struct Game: Sendable {
       notify("MAXIMUM HARDWARE FITTED")
     case "3":
       commander.unlimitedMissiles.toggle()
-      commander.missiles = 4
+      commander.missiles = commander.missileCapacity
       notify("MISSILE SUPPLY UPDATED")
     case "4":
       commander.unlimitedFuel.toggle()
@@ -464,7 +481,7 @@ public struct Game: Sendable {
       notify("SPEECH UPDATED")
     case "8":
       if commander.unlimitedCargo
-        && commander.cargoTonnes > (commander.equipment.contains("Large Cargo Bay") ? 35 : 20)
+        && commander.cargoTonnes > commander.standardCargoCapacity
       {
         notify("SELL EXCESS CARGO FIRST")
       } else {
@@ -483,6 +500,10 @@ public struct Game: Sendable {
     case "e":
       commander.autoECM.toggle()
       notify("AUTOMATIC ECM UPDATED")
+    case "l":
+      commander.legal = 0
+      commander.xyzzyWantedAmnesty = commander.blackjack.stage.wanted
+      notify("LEGAL STATUS RESET TO CLEAN")
     case "a":
       commander.autoTarget.toggle()
       if !commander.autoTarget { cancelAutoTarget() }
@@ -509,11 +530,14 @@ public struct Game: Sendable {
   }
   mutating func fitMaximumHardware() {
     commander.equipment = Equipment.maximumHardware
-    commander.laserMounts = LaserMounts(front: .naval, left: .naval, right: .naval, rear: .naval)
+    for mount in LaserMount.allCases where commander.performance.supports(mount) {
+      commander.installLaser(.naval, on: mount)
+    }
+    if commander.performance.cargoExpansion == 0 { commander.equipment.remove("Large Cargo Bay") }
     commander.fuelStorageUnits = FuelStorage.maximumCount
     commander.fuel = commander.fuelCapacity
-    commander.missiles = 4
-    energy = 256
+    commander.missiles = commander.missileCapacity
+    energy = commander.performance.energy
     frontShield = commander.shieldCapacity
     rearShield = commander.shieldCapacity
   }
@@ -631,6 +655,10 @@ public struct Game: Sendable {
       purchaseLaser(kind, item: item)
       return
     }
+    if item.name == "Large Cargo Bay" && commander.performance.cargoExpansion == 0 {
+      notify("THIS HULL CANNOT FIT A CARGO EXPANSION")
+      return
+    }
     let cost =
       item.price
     guard equipmentAvailable(item), commander.availableCredits >= cost else {
@@ -640,7 +668,7 @@ public struct Game: Sendable {
     if item.name == "Fuel" {
       commander.fuel = commander.fuelCapacity
     } else if item.name == "Missile" {
-      guard commander.missiles < 4 else {
+      guard commander.missiles < commander.missileCapacity else {
         notify("MISSILE RACK FULL")
         return
       }
@@ -774,7 +802,7 @@ public struct Game: Sendable {
     speed = 0
     dockingComputer = false
     bodies = []
-    energy = 256
+    energy = commander.performance.energy
     frontShield = commander.shieldCapacity
     rearShield = commander.shieldCapacity
     laserHeat = 0
@@ -809,7 +837,7 @@ public struct Game: Sendable {
       notify("MASS LOCKED")
       return
     }
-    jumpCountdown = 15
+    jumpCountdown = commander.performance.spool
     notify("HYPERSPACE")
   }
   public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
@@ -950,21 +978,22 @@ public struct Game: Sendable {
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
     guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
-    speed = min(32, max(0, speed + controls.throttle * dt * 12))
-    pitch = controls.pitch
-    yaw = controls.yaw
+    let craft = commander.performance
+    speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
+    pitch = controls.pitch * craft.pitch
+    yaw = controls.yaw * craft.yaw
     let previousSpinRate = spin.actualRate
     spin.advance(delta: dt, controls: controls)
     roll =
       spin.mode || spin.actualRate != 0 || previousSpinRate != 0
-      ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll
+      ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll * craft.roll
     applyAutoTarget(delta: dt, controls: controls)
     laserHeat = max(0, laserHeat - dt * 12)
     fireCooldown = max(0, fireCooldown - dt)
     missileCooldown = max(0, missileCooldown - dt)
-    energy = min(256, energy + dt * 2 * commander.energyRechargeMultiplier)
-    frontShield = min(commander.shieldCapacity, frontShield + dt)
-    rearShield = min(commander.shieldCapacity, rearShield + dt)
+    energy = min(craft.energy, energy + dt * craft.recharge * commander.energyRechargeMultiplier)
+    frontShield = min(commander.shieldCapacity, frontShield + dt * craft.shieldRecharge)
+    rearShield = min(commander.shieldCapacity, rearShield + dt * craft.shieldRecharge)
     if controls.fire && screen.isFlight { fireLaser() }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
@@ -1003,7 +1032,7 @@ public struct Game: Sendable {
       spin.stop(immediate: true)
       screen = .gameOver
       notify("GAME OVER")
-    } else if energy < 64 && messageTime <= 0 {
+    } else if energy < commander.performance.energy / 4 && messageTime <= 0 {
       notify("ENERGY LOW,SIR")
     }
   }
@@ -1150,6 +1179,7 @@ public actor GameRuntime {
     }
   }
   public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
+  public func secretClick(x: Double, y: Double) { game.secretClick(x: x, y: y) }
   public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
   public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
@@ -1173,12 +1203,12 @@ public actor GameRuntime {
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
   }
-  public func load(from url: URL) throws {
+  public func load(from url: URL, persistMigrations: Bool = true) throws {
     let data = try Data(contentsOf: url)
     guard data.count < 65536 else { throw SaveError.invalidCommander }
     let commander = try JSONDecoder().decode(Commander.self, from: data)
     guard game.load(commander) else { throw SaveError.invalidCommander }
-    if game.commander != commander { try save(to: url) }
+    if persistMigrations && game.commander != commander { try save(to: url) }
   }
 }
 

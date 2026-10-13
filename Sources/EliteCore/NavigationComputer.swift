@@ -35,7 +35,8 @@ public struct NavigationPlan: Sendable, Codable, Equatable {
     (0..<8).contains(galaxy) && (2...257).contains(path.count)
       && path.allSatisfy { (0...256).contains($0) }
       && Set(path).count == path.count && path.indices.contains(stopIndex)
-      && [70, 140, 210, 280, 350].contains(capacityAtPlanning)
+      && (1...(10000 + FuelStorage.maximumCount * FuelStorage.unitCapacity)).contains(
+        capacityAtPlanning)
       && (0...capacityAtPlanning).contains(originFuel)
   }
 }
@@ -251,8 +252,10 @@ extension Game {
     case "down":
       navigationSelection = min(navigationOptions.count - 1, navigationSelection + 1)
       navigationScroll = 0
-    case "pageup": navigationScroll = max(0, navigationScroll - 4)
-    case "pagedown": navigationScroll += 4
+    case "pageup", "pagedown":
+      navigationScroll = Display.navigationWindow(
+        self, width: viewportWidth, height: viewportHeight
+      ).moved(key == "pageup" ? -4 : 4)
     case "c":
       cancelNavigation()
       screen = navigationReturn
@@ -262,7 +265,12 @@ extension Game {
       if let next = commander.navigationPlan?.nextSystem { selectedSystem = next }
       screen = navigationReturn
       notify("ROUTE SET TO " + systems[commander.navigationPlan!.destination].name)
-    default: break
+    default:
+      if key.hasPrefix("route-scroll:"), let amount = Int(key.dropFirst(13)) {
+        navigationScroll = Display.navigationWindow(
+          self, width: viewportWidth, height: viewportHeight
+        ).moved(amount)
+      }
     }
   }
   public mutating func cancelNavigation() {

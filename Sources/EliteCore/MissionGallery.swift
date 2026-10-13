@@ -287,7 +287,9 @@ extension Display {
         scale: layout.font, ink: .yellow)
     }
     frame.label(
-      "Arrows: move  Return: details  Tab: list/details  Esc: back", 16, height - 20,
+      game.gallery.detail
+        ? "Up/Down: read  Tab: list  Esc: back  K: help"
+        : "Up/Down: mission  Return: details  Esc: back  K: help", 16, height - 20,
       scale: layout.font,
       ink: .cyan)
     return frame

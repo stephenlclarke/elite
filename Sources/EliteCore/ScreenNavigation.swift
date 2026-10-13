@@ -108,7 +108,9 @@ extension Game {
       return true
     }
     if key == "contacts-open" {
+      let previous = screen
       offerBlackjackHandoff()
+      if screen == previous { notify("NO MISSION CONTACT AT THIS STATION") }
       return true
     }
     if key == "rumours-open" {
@@ -121,6 +123,10 @@ extension Game {
     }
     if key == "showroom-open" {
       openShowroom()
+      return true
+    }
+    if key == "search-clear", screen == .chart {
+      searchKey(key)
       return true
     }
     if acceptsTextInput {
@@ -180,15 +186,17 @@ extension Game {
       return true
     }
     if chartKey(key) { return true }
+    if screen == .system, ["up", "down", "pageup", "pagedown"].contains(key) {
+      let direction = key == "up" || key == "pageup" ? -1 : 1
+      informationScroll = Display.systemWindow(self, width: viewportWidth, height: viewportHeight)
+        .moved(direction * (key.hasPrefix("page") ? 8 : 1))
+      return true
+    }
     if screen == .status || screen == .inventory,
       ["up", "down", "pageup", "pagedown"].contains(key)
     {
       let direction = key == "up" || key == "pageup" ? -1 : 1
-      informationScroll = max(
-        0,
-        min(
-          max(0, informationRows.count - 1),
-          informationScroll + direction * (key.hasPrefix("page") ? 8 : 1)))
+      informationScroll = informationWindow.moved(direction * (key.hasPrefix("page") ? 8 : 1))
       return true
     }
     if screen == .equipment && key.hasPrefix("equipment-scroll:"),
@@ -205,6 +213,7 @@ extension Game {
         if !commander.xyzzyActive { enableXYZzy() }
         fitMaximumHardware()
         secretReturn = screen
+        secretScroll = 0
         screen = .secret
         selection = 0
         secretBuffer = ""
@@ -215,7 +224,7 @@ extension Game {
   }
 
   mutating func openNumberedScreen(_ number: Int) {
-    guard !paused,
+    guard !paused, !showroom.trading,
       ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(screen)
     else { return }
     if number == 6 && screen == .showroom { return }
@@ -241,8 +250,10 @@ extension Game {
       mapColour = mapColour.next
       return true
     }
-    if docked && ["pageup", "pagedown"].contains(key) {
-      chartInformationScroll = max(0, chartInformationScroll + (key == "pageup" ? -8 : 8))
+    if docked && ["up", "down", "pageup", "pagedown"].contains(key) {
+      let direction = key == "up" || key == "pageup" ? -1 : 1
+      chartInformationScroll = Display.chartDataWindow(self).moved(
+        direction * (key.hasPrefix("page") ? 8 : 1))
       return true
     }
     guard screen == .chart else { return false }

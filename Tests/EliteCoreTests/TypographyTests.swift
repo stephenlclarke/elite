@@ -88,8 +88,15 @@ import Testing
   }
   #expect(data.labels.contains { $0.text.contains("A CLUE") })
   game.screen = .secret
-  let secret = Display.presentation(game, width: 512, height: 518)
-  #expect(game.secretChoices.allSatisfy { choice in secret.labels.contains { $0.text == choice } })
+  game.viewportWidth = 512
+  game.viewportHeight = 518
+  var visible = Set<String>()
+  for _ in 0..<game.secretChoices.count {
+    let secret = Display.presentation(game, width: 512, height: 518)
+    visible.formUnion(secret.labels.map(\.text))
+    game.key("down")
+  }
+  #expect(game.secretChoices.allSatisfy { visible.contains($0) })
   game.screen = .help
   for screen in Screen.allCases {
     game.helpReturn = screen

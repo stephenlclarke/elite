@@ -73,7 +73,9 @@ final class GameView: NSView {
     trackpad.reset()
   }
   override func performKeyEquivalent(with event: NSEvent) -> Bool {
-    if event.modifierFlags.contains(.command), event.keyCode == 51, game.acceptsTextInput {
+    if event.modifierFlags.contains(.command), event.keyCode == 51,
+      [.chart, .showroom].contains(game.screen)
+    {
       pending.append("search-clear")
       return true
     }
@@ -81,7 +83,9 @@ final class GameView: NSView {
   }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
-    if event.modifierFlags.contains(.command), event.keyCode == 51, game.acceptsTextInput {
+    if event.modifierFlags.contains(.command), event.keyCode == 51,
+      [.chart, .showroom].contains(game.screen)
+    {
       pending.append("search-clear")
       return
     }
@@ -102,10 +106,21 @@ final class GameView: NSView {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
+    if game.screen == .secret {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("secret-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .showroom {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("showroom-click:\(point.x):\(point.y)")
-      if event.clickCount >= 2 { pending.append("return") }
+      let layout = ShowroomLayout(
+        width: bounds.width, height: bounds.height, detail: game.showroom.detail)
+      if !game.showroom.trading && layout.list.contains(.init(point.x, point.y))
+        && event.clickCount >= 2
+      {
+        pending.append("return")
+      }
       return
     }
     if game.screen == .handoff {
@@ -128,8 +143,12 @@ final class GameView: NSView {
     pending.append("map-click:\(point.x):\(point.y)")
   }
   override func scrollWheel(with event: NSEvent) {
-    if [.status, .inventory, .market, .buy, .sell].contains(game.screen) {
+    if [.secret, .system, .status, .inventory, .market, .buy, .sell].contains(game.screen) {
       pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
+    }
+    if game.screen == .showroom && game.showroom.trading {
+      pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
+      return
     }
     if game.screen == .showroom {
       let point = convert(event.locationInWindow, from: nil)
@@ -141,6 +160,12 @@ final class GameView: NSView {
     }
     if game.screen == .equipment {
       pending.append("equipment-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+    }
+    if game.screen == .navigation {
+      pending.append("route-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+    }
+    if game.docked && [.chart, .shortChart].contains(game.screen) && !game.mapSearch.active {
+      pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
     }
     if game.mapSearch.active { pending.append("map-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)") }
     if game.screen == .gallery {
@@ -215,10 +240,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   var window: NSWindow?
   let runtime = GameRuntime()
   var loop: Task<Void, Never>?
-  let saveURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
-    ".xyzzy/elite/commander.json")
+  let saves: CommanderSaveSession
+  let windowSize: NSSize
+  let restoreOnLaunch: Bool
+  var saveURL: URL { saves.activeURL }
+  init(
+    restoreOnLaunch: Bool = true, saves: CommanderSaveSession? = nil,
+    windowSize: NSSize = .init(width: 768, height: 768)
+  ) {
+    self.windowSize = windowSize
+    self.restoreOnLaunch = restoreOnLaunch
+    self.saves = saves ?? CommanderSaveSession()
+    super.init()
+  }
   func applicationDidFinishLaunching(_ _: Notification) {
-    let view = GameView(frame: NSRect(x: 0, y: 0, width: 768, height: 768))
+    let view = GameView(frame: NSRect(origin: .zero, size: windowSize))
     let window = NSWindow(
       contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered, defer: false)
@@ -233,14 +269,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     installMenu()
     NSApp.activate(ignoringOtherApps: true)
     let runtime = self.runtime
-    loop = Task { [weak view] in
+    loop = Task { [weak view, weak self] in
+      if let self, self.restoreOnLaunch, let url = self.saves.startupURL {
+        do {
+          try await runtime.load(from: url, persistMigrations: false)
+          view?.game = await runtime.snapshot()
+        } catch { await self.recoverStartup(error, url: url) }
+      }
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
         let events = view.pending
         view.pending.removeAll()
         for event in events {
-          if event.hasPrefix("showroom-click:") {
+          if event.hasPrefix("secret-click:") {
+            let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
+            if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
+          } else if event.hasPrefix("showroom-click:") {
             let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
             if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }
           } else if event.hasPrefix("handoff-click:") {
@@ -313,6 +358,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let load = commander.submenu?.addItem(
       withTitle: "Load Commander", action: #selector(loadCommander), keyEquivalent: "o")
     load?.target = self
+    let open = commander.submenu?.addItem(
+      withTitle: "Open Commander...", action: #selector(chooseCommander), keyEquivalent: "o")
+    open?.keyEquivalentModifierMask = [.command, .shift]
+    open?.target = self
+    let saveAs = commander.submenu?.addItem(
+      withTitle: "Save Commander As...", action: #selector(saveCommanderAs), keyEquivalent: "s")
+    saveAs?.keyEquivalentModifierMask = [.command, .shift]
+    saveAs?.target = self
     let showroom = commander.submenu?.addItem(
       withTitle: "Ship Showroom", action: #selector(showShipShowroom), keyEquivalent: "w")
     showroom?.keyEquivalentModifierMask = [.command, .shift]
@@ -390,12 +443,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     guard let game = (window?.contentView as? GameView)?.game else { return false }
     if let command = item.representedObject as? String {
       if command.hasPrefix("screen:") {
-        return !game.paused
+        return !game.paused && !game.showroom.trading
           && ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(
             game.screen)
       }
       if item.menu?.title == "Flight" {
         return !game.docked && game.screen.isFlight && !game.paused
+          && flightActionAvailable(command, game: game)
       }
       if command == "contacts-open" || command == "rumours-open" || command == "gallery-open" {
         return !game.paused && !game.acceptsTextInput
@@ -405,11 +459,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           && (command == "gallery-open" || game.docked)
       }
     }
+    if item.action == #selector(togglePause) {
+      return ![
+        Screen.demo, .title, .gameOver, .help, .gallery, .showroom, .mission, .handoff, .navigation,
+        .rumour,
+      ].contains(game.screen)
+    }
     if item.action == #selector(toggleSpin) || item.action == #selector(stopSpin) {
       return !game.docked && game.screen.isFlight && !game.paused
     }
-    if item.action == #selector(showShipShowroom) { return game.docked && !game.paused }
+    if item.action == #selector(showShipShowroom) {
+      return game.docked && !game.paused
+        && ![
+          Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver, .showroom, .gallery,
+          .rumour,
+        ].contains(game.screen)
+    }
     return true
+  }
+  private func flightActionAvailable(_ command: String, game: Game) -> Bool {
+    switch command {
+    case "e": return game.commander.equipment.contains("E.C.M. System")
+    case "g": return game.commander.equipment.contains("Galactic Hyperdrive")
+    case "energy-bomb": return game.commander.equipment.contains("Energy Bomb")
+    case "escape-pod": return game.commander.equipment.contains("Escape Pod")
+    case "t", "m": return game.commander.missiles > 0 || game.commander.unlimitedMissiles
+    case "j": return !game.massLocked
+    default: return true
+    }
   }
   @objc private func gameAction(_ sender: NSMenuItem) {
     guard let command = sender.representedObject as? String else { return }
@@ -433,7 +510,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   @objc private func saveCommander() {
     Task { [weak self] in
       guard let self else { return }
-      do { try await runtime.save(to: saveURL) } catch { show(error) }
+      do {
+        let url = saveURL
+        try await runtime.save(to: url)
+        saves.didSave(to: url)
+      } catch { show(error) }
     }
   }
   @objc private func loadCommander() {
@@ -442,12 +523,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       do { try await runtime.load(from: saveURL) } catch { show(error) }
     }
   }
+  @objc private func chooseCommander() {
+    Task { [weak self] in await self?.openChosenCommander() }
+  }
+  private func openChosenCommander() async {
+    let panel = NSOpenPanel()
+    panel.canChooseDirectories = false
+    panel.allowsMultipleSelection = false
+    panel.allowedContentTypes = [.json]
+    guard panel.runModal() == .OK, let url = panel.url else { return }
+    do {
+      try await runtime.load(from: url, persistMigrations: false)
+      saves.activeURL = url
+    } catch { show(error) }
+  }
+  @objc private func saveCommanderAs() {
+    let panel = NSSavePanel()
+    panel.allowedContentTypes = [.json]
+    panel.nameFieldStringValue = "commander.json"
+    guard panel.runModal() == .OK, let url = panel.url else { return }
+    Task { [weak self] in
+      guard let self else { return }
+      do {
+        try await runtime.save(to: url)
+        saves.didSave(to: url)
+      } catch { show(error) }
+    }
+  }
+  private func recoverStartup(_ error: Error, url: URL) async {
+    let alert = NSAlert()
+    alert.messageText = "Your last commander could not be restored"
+    alert.informativeText =
+      "The saved file at \(url.path) is missing, inaccessible or invalid. It has not been changed. Choose another save or start a new Commander Jameson. \(error.localizedDescription)"
+    alert.addButton(withTitle: "Choose Save")
+    alert.addButton(withTitle: "Start New")
+    if alert.runModal() == .alertFirstButtonReturn { await openChosenCommander() }
+  }
   private func show(_ error: Error) { NSAlert(error: error).runModal() }
 }
 
 @main
 struct EliteApp {
   @MainActor static func main() async throws {
+    if let index = CommandLine.arguments.firstIndex(of: "--ship-media") {
+      let ids = Array(CommandLine.arguments.dropFirst(index + 1))
+      try exportShipMedia(ids: ids, directory: URL(fileURLWithPath: "docs/ships"))
+      try exportShipOverview(directory: URL(fileURLWithPath: "docs/ships"))
+      return
+    }
     if CommandLine.arguments.contains("--readme-media") {
       try media()
       return
@@ -457,7 +580,15 @@ struct EliteApp {
       return
     }
     let app = NSApplication.shared
-    let delegate = AppDelegate()
+    let sizeArgument = CommandLine.arguments.first { $0.hasPrefix("--window-size=") }
+    let dimensions =
+      sizeArgument?.dropFirst(14).split(separator: "x").compactMap { Double($0) } ?? []
+    let size =
+      dimensions.count == 2
+      ? NSSize(
+        width: max(512, min(3600, dimensions[0])), height: max(518, min(2160, dimensions[1])))
+      : NSSize(width: 768, height: 768)
+    let delegate = AppDelegate(windowSize: size)
     app.setActivationPolicy(.regular)
     app.delegate = delegate
     withExtendedLifetime(delegate) { app.run() }

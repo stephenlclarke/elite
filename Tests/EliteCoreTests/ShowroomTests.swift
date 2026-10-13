@@ -15,7 +15,7 @@ private func showroomGame() -> Game {
   #expect(ShipCatalogue.all.count == 167)
   #expect(Set(ShipCatalogue.all.map(\.id)).count == 167)
   #expect(ShipCatalogue.all.filter(\.refit).count == 158)
-  #expect(ShipCatalogue.modelCount == 74)
+  #expect(ShipCatalogue.modelCount == 167)
   #expect(ShipCatalogue.all.contains { $0.name == "Eagle Mk I" && $0.appearances.contains("FE2") })
   #expect(
     ShipCatalogue.all.contains { $0.id == "SH165" && $0.modelSource?.contains("Vector") == true })
@@ -139,7 +139,7 @@ private func showroomGame() -> Game {
   game.key(".")
   game.key(",")
   game.key("c")
-  #expect(!game.showroom.compare)
+  #expect(game.showroom.compare)
   game.key("return")
   game.key("pagedown")
   #expect(game.showroom.scroll == 8)
@@ -170,7 +170,7 @@ private func showroomGame() -> Game {
     #expect(game.showroom.selection != first)
     game.key("showroom-list:-1")
     #expect(game.showroom.selection == first)
-    for bounds in layout.buttons {
+    for bounds in layout.buttons.prefix(8) {
       game.showroomClick(x: bounds.x + 2, y: bounds.y + 2)
     }
     game.showroom.detail = true
@@ -207,13 +207,15 @@ private func showroomGame() -> Game {
   game.showroom.selection = "SH002"
   game.showroom.compare = false
   let missing = Display.presentation(game, width: 512, height: 518)
-  #expect(missing.shipPanels.isEmpty)
-  #expect(missing.labels.contains { $0.text == "Model unavailable" })
+  #expect(!missing.shipPanels.isEmpty)
+  #expect(!missing.labels.contains { $0.text == "Model unavailable" })
   game.showroom.selection = "SH023"
   let before = Display.presentation(game, width: 1512, height: 982).shipPanels
   game.tick(delta: 0.1)
   #expect(Display.presentation(game, width: 1512, height: 982).shipPanels != before)
   game.commander.installLaser(.naval, on: .rear)
+  game.showroom.sourceProfiles = true
+  game.showroom.compare = false
   game.showroom.scroll = 10000
   let current = Display.presentation(game, width: 1512, height: 982)
   #expect(current.labels.contains { $0.text.contains("Rear: Naval Laser") })
@@ -286,7 +288,7 @@ private func showroomGame() -> Game {
   }
   game.showroom.selection = "SH001"
   #expect(game.showroomTradeoffs.contains("Less cargo capacity"))
-  #expect(!game.showroomTradeoffs.contains { $0.contains("speed") })
+  #expect(game.showroomTradeoffs.contains("Lower maximum speed"))
 }
 
 @Test func showroomLongSourceTokensWrapWithoutOverlappingAdjacentComparisonValues() {
@@ -315,8 +317,8 @@ private func showroomGame() -> Game {
         && $0.status.contains("low confidence") && !$0.basis.isEmpty
     })
   let missingModel = try #require(ShipCatalogue.ship("SH002"))
-  #expect(missingModel.previewMesh == nil && missingModel.dimensions != nil)
-  #expect(missingModel.geometryContext.contains("low confidence"))
+  #expect(missingModel.previewMesh != nil && missingModel.dimensions != nil)
+  #expect(missingModel.design.source.contains("original"))
   let transporter = try #require(ShipCatalogue.ship("SH128"))
   let passengerFact = try #require(
     transporter.profiles.first { $0.group.contains("passengeruppercapacity") })
@@ -327,7 +329,7 @@ private func showroomGame() -> Game {
   game.commander.equipment.insert(Equipment.navalEnergyUnit)
   #expect(
     game.currentShowroomProfile.fields.contains {
-      $0.key == "maximum_speed_project_units" && $0.number == 576 && $0.unit == "native units/s"
+      $0.key == "maximum_speed_project_units" && $0.number == 32 && $0.unit == "speed"
     })
   #expect(
     game.currentShowroomProfile.fields.contains {
@@ -359,7 +361,7 @@ private func showroomGame() -> Game {
   #expect(ShipCatalogue.ship("SH156")?.previewMesh?.vertices.count == 358)
   #expect(ShipCatalogue.ship("SH155")?.previewMesh?.faces.count == 680)
   let unresolved = ["SH017", "SH036"]
-  #expect(unresolved.allSatisfy { ShipCatalogue.ship($0)?.previewMesh == nil })
+  #expect(unresolved.allSatisfy { ShipCatalogue.ship($0)?.previewMesh != nil })
   #expect(ShipCatalogue.all.allSatisfy { !$0.profiles.isEmpty })
   for ship in ShipCatalogue.all.filter({ $0.model?.hasPrefix("xyzzy-showroom-") == true }) {
     var game = showroomGame()
@@ -405,7 +407,7 @@ private func showroomGame() -> Game {
   #expect(game.showroom.query.isEmpty && game.showroom.selection == "SH023")
   let frame = Display.presentation(game, width: 1512, height: 982)
   #expect(frame.labels.contains { $0.text == "Your Cobra Mk III" })
-  #expect(frame.labels.contains { $0.text.contains("Your fitted Cobra / Oolite model") })
+  #expect(frame.labels.contains { $0.text == "Cobra Mk III" })
   #expect(!frame.labels.contains { $0.text.contains("Current native model") })
   #expect(game.commander == commander)
   game.showroom.selection = "SH001"

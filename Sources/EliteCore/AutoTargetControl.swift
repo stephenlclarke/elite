@@ -214,7 +214,7 @@ extension Game {
   }
   mutating func cancelAutoTarget() {
     if autoTargetBody?.hull == .station {
-      speed = max(speed, min(32, max(0, autoPilot.velocity.z / 18)))
+      speed = max(speed, min(commander.performance.speed, max(0, autoPilot.velocity.z / 18)))
     }
     autoPilot.disengage()
     dockingComputer = false

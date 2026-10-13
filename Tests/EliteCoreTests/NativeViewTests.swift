@@ -151,7 +151,7 @@ struct NativeViewTests {
 
   @MainActor @Test func nativeWindowLoopProcessesNumberKeysAndClearsFocus() async throws {
     _ = NSApplication.shared
-    let delegate = AppDelegate()
+    let delegate = AppDelegate(restoreOnLaunch: false)
     let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
     delegate.applicationDidFinishLaunching(notification)
     let window = try #require(delegate.window)

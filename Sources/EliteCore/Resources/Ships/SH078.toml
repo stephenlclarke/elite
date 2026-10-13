@@ -1,0 +1,221 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH078"
+name = "Long Range Cruiser"
+shipClass = "Ship"
+appearances = "FE2, FFE"
+evidence = "S19"
+refit = true
+model = "ROC-SH078"
+modelSource = "Right-On Commander"
+dimensions = [120.0, 99.0, 260.0]
+geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
+
+[game]
+cargo = 3000
+speed = 12.8
+acceleration = 5.25
+energy = 2000.0
+recharge = 1.5
+roll = 0.236
+pitch = 0.252
+yaw = 0.252
+shield = 255.0
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 7
+facings = 15
+cargoExpansion = 15
+price = 4301000
+
+[design]
+vertices = [
+  [18.94737, -21.57384, -130.0],
+  [11.81368, -3.2694, -130.0],
+  [-4.21642, 1.25174, -130.0],
+  [-17.07095, -11.41529, -130.0],
+  [-17.07095, -31.73238, -130.0],
+  [-4.21642, -44.39941, -130.0],
+  [11.81368, -39.87827, -130.0],
+  [18.94737, -21.57384, 113.22581],
+  [11.81368, -3.2694, 113.22581],
+  [-4.21642, 1.25174, 113.22581],
+  [-17.07095, -11.41529, 113.22581],
+  [-17.07095, -31.73238, 113.22581],
+  [-4.21642, -44.39941, 113.22581],
+  [11.81368, -39.87827, 113.22581],
+  [-15.78947, -21.57384, -100.64516],
+  [-37.89474, -4.85058, -100.64516],
+  [-60.0, -21.57384, -100.64516],
+  [-37.89474, -38.29709, -100.64516],
+  [-15.78947, -21.57384, -67.09677],
+  [-37.89474, -4.85058, -67.09677],
+  [-60.0, -21.57384, -67.09677],
+  [-37.89474, -38.29709, -67.09677],
+  [60.0, -21.57384, -100.64516],
+  [37.89474, -4.85058, -100.64516],
+  [15.78947, -21.57384, -100.64516],
+  [37.89474, -38.29709, -100.64516],
+  [60.0, -21.57384, -67.09677],
+  [37.89474, -4.85058, -67.09677],
+  [15.78947, -21.57384, -67.09677],
+  [37.89474, -38.29709, -67.09677],
+  [-15.78947, -21.57384, -50.32258],
+  [-37.89474, -4.85058, -50.32258],
+  [-60.0, -21.57384, -50.32258],
+  [-37.89474, -38.29709, -50.32258],
+  [-15.78947, -21.57384, -16.77419],
+  [-37.89474, -4.85058, -16.77419],
+  [-60.0, -21.57384, -16.77419],
+  [-37.89474, -38.29709, -16.77419],
+  [60.0, -21.57384, -50.32258],
+  [37.89474, -4.85058, -50.32258],
+  [15.78947, -21.57384, -50.32258],
+  [37.89474, -38.29709, -50.32258],
+  [60.0, -21.57384, -16.77419],
+  [37.89474, -4.85058, -16.77419],
+  [15.78947, -21.57384, -16.77419],
+  [37.89474, -38.29709, -16.77419],
+  [-15.78947, -21.57384, 0.0],
+  [-37.89474, -4.85058, 0.0],
+  [-60.0, -21.57384, 0.0],
+  [-37.89474, -38.29709, 0.0],
+  [-15.78947, -21.57384, 33.54839],
+  [-37.89474, -4.85058, 33.54839],
+  [-60.0, -21.57384, 33.54839],
+  [-37.89474, -38.29709, 33.54839],
+  [60.0, -21.57384, 0.0],
+  [37.89474, -4.85058, 0.0],
+  [15.78947, -21.57384, 0.0],
+  [37.89474, -38.29709, 0.0],
+  [60.0, -21.57384, 33.54839],
+  [37.89474, -4.85058, 33.54839],
+  [15.78947, -21.57384, 33.54839],
+  [37.89474, -38.29709, 33.54839],
+  [11.36842, 16.05349, 29.35484],
+  [0.0, 49.5, 29.35484],
+  [-11.36842, 16.05349, 29.35484],
+  [-0.0, -17.39302, 29.35484],
+  [11.36842, 16.05349, 79.67742],
+  [0.0, 49.5, 79.67742],
+  [-11.36842, 16.05349, 79.67742],
+  [-0.0, -17.39302, 79.67742],
+  [-10.10526, -29.93546, 79.67742],
+  [-15.81221, -14.24571, 79.67742],
+  [-28.63642, -10.37093, 79.67742],
+  [-38.91979, -21.2285, 79.67742],
+  [-38.91979, -38.64243, 79.67742],
+  [-28.63642, -49.5, 79.67742],
+  [-15.81221, -45.62522, 79.67742],
+  [-10.10526, -29.93546, 130.0],
+  [-15.81221, -14.24571, 130.0],
+  [-28.63642, -10.37093, 130.0],
+  [-38.91979, -21.2285, 130.0],
+  [-38.91979, -38.64243, 130.0],
+  [-28.63642, -49.5, 130.0],
+  [-15.81221, -45.62522, 130.0],
+  [40.42105, -29.93546, 79.67742],
+  [34.71411, -14.24571, 79.67742],
+  [21.88989, -10.37093, 79.67742],
+  [11.60653, -21.2285, 79.67742],
+  [11.60653, -38.64243, 79.67742],
+  [21.88989, -49.5, 79.67742],
+  [34.71411, -45.62522, 79.67742],
+  [40.42105, -29.93546, 130.0],
+  [34.71411, -14.24571, 130.0],
+  [21.88989, -10.37093, 130.0],
+  [11.60653, -21.2285, 130.0],
+  [11.60653, -38.64243, 130.0],
+  [21.88989, -49.5, 130.0],
+  [34.71411, -45.62522, 130.0],
+]
+faces = [
+  [6, 5, 4, 3, 2, 1, 0],
+  [7, 8, 9, 10, 11, 12, 13],
+  [0, 1, 8, 7],
+  [1, 2, 9, 8],
+  [2, 3, 10, 9],
+  [3, 4, 11, 10],
+  [4, 5, 12, 11],
+  [5, 6, 13, 12],
+  [6, 0, 7, 13],
+  [17, 16, 15, 14],
+  [18, 19, 20, 21],
+  [14, 15, 19, 18],
+  [15, 16, 20, 19],
+  [16, 17, 21, 20],
+  [17, 14, 18, 21],
+  [25, 24, 23, 22],
+  [26, 27, 28, 29],
+  [22, 23, 27, 26],
+  [23, 24, 28, 27],
+  [24, 25, 29, 28],
+  [25, 22, 26, 29],
+  [33, 32, 31, 30],
+  [34, 35, 36, 37],
+  [30, 31, 35, 34],
+  [31, 32, 36, 35],
+  [32, 33, 37, 36],
+  [33, 30, 34, 37],
+  [41, 40, 39, 38],
+  [42, 43, 44, 45],
+  [38, 39, 43, 42],
+  [39, 40, 44, 43],
+  [40, 41, 45, 44],
+  [41, 38, 42, 45],
+  [49, 48, 47, 46],
+  [50, 51, 52, 53],
+  [46, 47, 51, 50],
+  [47, 48, 52, 51],
+  [48, 49, 53, 52],
+  [49, 46, 50, 53],
+  [57, 56, 55, 54],
+  [58, 59, 60, 61],
+  [54, 55, 59, 58],
+  [55, 56, 60, 59],
+  [56, 57, 61, 60],
+  [57, 54, 58, 61],
+  [65, 64, 63, 62],
+  [66, 67, 68, 69],
+  [62, 63, 67, 66],
+  [63, 64, 68, 67],
+  [64, 65, 69, 68],
+  [65, 62, 66, 69],
+  [76, 75, 74, 73, 72, 71, 70],
+  [77, 78, 79, 80, 81, 82, 83],
+  [70, 71, 78, 77],
+  [71, 72, 79, 78],
+  [72, 73, 80, 79],
+  [73, 74, 81, 80],
+  [74, 75, 82, 81],
+  [75, 76, 83, 82],
+  [76, 70, 77, 83],
+  [90, 89, 88, 87, 86, 85, 84],
+  [91, 92, 93, 94, 95, 96, 97],
+  [84, 85, 92, 91],
+  [85, 86, 93, 92],
+  [86, 87, 94, 93],
+  [87, 88, 95, 94],
+  [88, 89, 96, 95],
+  [89, 90, 97, 96],
+  [90, 84, 91, 97],
+]
+license = "MIT"
+source = "Right-On Commander original geometry"
+custody = {  }
+recipe = { "family" = "capital", "variant" = 78, "dimensions" = [120.0, 99.0, 260.0], "sweep" = 0.22, "pods" = 2, "sections" = 7 }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH078"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "3000 t", "number" = 3000, "unit" = "t", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "140.0 project units/s", "number" = 140.0, "unit" = "project units/s", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "2000.0 project units", "number" = 2000.0, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "3.0 project units/s", "number" = 3.0, "unit" = "project units/s", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "0.4725 rad/s", "number" = 0.4725, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "0.252 rad/s", "number" = 0.252, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "0.252 rad/s", "number" = 0.252, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "70.0 project units/s2", "number" = 70.0, "unit" = "project units/s2", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "128 project units", "number" = 128, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "128 project units", "number" = 128, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4" }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "15 bit mask", "number" = 15, "unit" = "bit mask", "status" = "estimated", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "7 pylons", "number" = 7, "unit" = "pylons", "status" = "user minimum / adapted", "basis" = "Estimated Long Range Cruiser refit from named O08 surrogate anaconda-player at volume scale 4; bounded1..16 for common project inventory" }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "608 project slots", "number" = 608, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "100 people", "number" = 100, "unit" = "people", "status" = "borrowed FFE operating requirement", "basis" = "CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions." }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "100 people", "number" = 100, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "3000 t", "number" = 3000, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]
+
+[[profiles]]
+id = "CREW-SH078-0"
+title = "FFE-JJFFE-PINNED crew"
+group = "crew-FFE-JJFFE-PINNED-requiredcrewincludingcommander"
+context = "required crew including commander; CREW03; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Documented minimum", "text" = "100 people", "number" = 100, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Documented maximum", "text" = "100 people", "number" = 100, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "extra_hired_crew", "label" = "Additional hired crew", "text" = "99 people", "number" = 99, "unit" = "people", "status" = "source", "basis" = "" }]

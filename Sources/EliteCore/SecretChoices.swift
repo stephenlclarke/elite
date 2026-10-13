@@ -16,6 +16,7 @@ extension Game {
       "A AUTO TARGET: " + (commander.autoTarget ? "ON" : "OFF"),
       "E AUTO ECM: " + (commander.autoECM ? "ON" : "OFF"),
       "B MILITARY RETURN FIRE: " + (commander.retaliationEnabled ? "ON" : "OFF"),
+      "L RESET LEGAL STATUS TO CLEAN",
       "F FUEL SCOOPS: "
         + (commander.equipment.contains("Fuel Scoops") ? "FITTED" : "NOT FITTED"),
     ]

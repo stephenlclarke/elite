@@ -104,6 +104,8 @@ import Testing
     #expect(rows.contains("Lasers"))
     for text in game.commander.laserMountSummary { #expect(rows.contains("  " + text)) }
     for width in [512.0, 768, 3600] {
+      game.viewportWidth = width
+      game.viewportHeight = 518
       var seen: Set<String> = []
       for _ in 0..<rows.count {
         let frame = Display.information(game, width: width, height: 518)
@@ -116,7 +118,7 @@ import Testing
       #expect(rows.allSatisfy { seen.contains($0) })
       game.informationScroll = 0
       game.key("pagedown")
-      #expect(game.informationScroll > 0)
+      #expect(game.informationScroll == min(8, game.informationWindow.last))
       game.key("pageup")
       #expect(game.informationScroll == 0)
     }

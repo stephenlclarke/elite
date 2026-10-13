@@ -1,0 +1,199 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH119"
+name = "Thargoid Medusa"
+shipClass = "Alien craft"
+appearances = "ED-LEGACY, ED-LIVE"
+evidence = "D09"
+refit = true
+model = "ROC-SH119"
+modelSource = "Right-On Commander"
+dimensions = [170.0, 49.0, 170.0]
+geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
+
+[game]
+cargo = 20
+speed = 45.714
+acceleration = 18.75
+energy = 600.0
+recharge = 2.0
+roll = 1.0
+pitch = 1.0
+yaw = 1.0
+shield = 255.0
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 5
+facings = 15
+cargoExpansion = 15
+price = 223000
+
+[design]
+vertices = [
+  [19.59895, 0.0, -21.14054],
+  [13.85842, 17.32456, -21.14054],
+  [0.0, 24.5, -21.14054],
+  [-13.85842, 17.32456, -21.14054],
+  [-19.59895, 0.0, -21.14054],
+  [-13.85842, -17.32456, -21.14054],
+  [-0.0, -24.5, -21.14054],
+  [13.85842, -17.32456, -21.14054],
+  [19.59895, 0.0, 18.66216],
+  [13.85842, 17.32456, 18.66216],
+  [0.0, 24.5, 18.66216],
+  [-13.85842, 17.32456, 18.66216],
+  [-19.59895, 0.0, 18.66216],
+  [-13.85842, -17.32456, 18.66216],
+  [-0.0, -24.5, 18.66216],
+  [13.85842, -17.32456, 18.66216],
+  [0.0, 0.0, -1.23919],
+  [19.59895, 7.14583, 28.61284],
+  [7.83958, 12.25, 85.0],
+  [-7.83958, 12.25, 85.0],
+  [-19.59895, 7.14583, 28.61284],
+  [0.0, -12.25, 35.24662],
+  [0.0, 0.0, -1.23919],
+  [-3.88321, 7.14583, 34.42138],
+  [-48.5858, 12.25, 69.94065],
+  [-60.59669, 12.25, 59.70671],
+  [-33.91076, 7.14583, 8.8362],
+  [-23.09606, -12.25, 26.71027],
+  [0.0, 0.0, -1.23919],
+  [-25.54854, 7.14583, 23.5433],
+  [-82.27705, 12.25, 21.57572],
+  [-85.0, 12.25, 5.89677],
+  [-32.35526, 7.14583, -15.6544],
+  [-35.38525, -12.25, 5.09674],
+  [0.0, 0.0, -1.23919],
+  [-35.25917, 7.14583, 1.07003],
+  [-77.47008, 12.25, -37.46496],
+  [-69.6305, 12.25, -51.25261],
+  [-15.66022, 7.14583, -33.40044],
+  [-31.11726, -12.25, -19.4821],
+  [0.0, 0.0, -1.23919],
+  [-28.47205, 7.14583, -22.48455],
+  [-36.4142, 12.25, -79.55499],
+  [-21.68036, 12.25, -85.0],
+  [8.36222, 7.14583, -36.09774],
+  [-12.2892, -12.25, -35.52458],
+  [0.0, 0.0, -1.23919],
+  [-8.36222, 7.14583, -36.09774],
+  [21.68036, 12.25, -85.0],
+  [36.4142, 12.25, -79.55499],
+  [28.47205, 7.14583, -22.48455],
+  [12.2892, -12.25, -35.52458],
+  [0.0, 0.0, -1.23919],
+  [15.66022, 7.14583, -33.40044],
+  [69.6305, 12.25, -51.25261],
+  [77.47008, 12.25, -37.46496],
+  [35.25917, 7.14583, 1.07003],
+  [31.11726, -12.25, -19.4821],
+  [0.0, 0.0, -1.23919],
+  [32.35526, 7.14583, -15.6544],
+  [85.0, 12.25, 5.89677],
+  [82.27705, 12.25, 21.57572],
+  [25.54854, 7.14583, 23.5433],
+  [35.38525, -12.25, 5.09674],
+  [0.0, 0.0, -1.23919],
+  [33.91076, 7.14583, 8.8362],
+  [60.59669, 12.25, 59.70671],
+  [48.5858, 12.25, 69.94065],
+  [3.88321, 7.14583, 34.42138],
+  [23.09606, -12.25, 26.71027],
+]
+faces = [
+  [7, 6, 5, 4, 3, 2, 1, 0],
+  [8, 9, 10, 11, 12, 13, 14, 15],
+  [0, 1, 9, 8],
+  [1, 2, 10, 9],
+  [2, 3, 11, 10],
+  [3, 4, 12, 11],
+  [4, 5, 13, 12],
+  [5, 6, 14, 13],
+  [6, 7, 15, 14],
+  [7, 0, 8, 15],
+  [18, 17, 16],
+  [19, 18, 16],
+  [20, 19, 16],
+  [17, 21, 16],
+  [18, 21, 17],
+  [19, 21, 18],
+  [20, 21, 19],
+  [16, 21, 20],
+  [24, 23, 22],
+  [25, 24, 22],
+  [26, 25, 22],
+  [23, 27, 22],
+  [24, 27, 23],
+  [25, 27, 24],
+  [26, 27, 25],
+  [22, 27, 26],
+  [30, 29, 28],
+  [31, 30, 28],
+  [32, 31, 28],
+  [29, 33, 28],
+  [30, 33, 29],
+  [31, 33, 30],
+  [32, 33, 31],
+  [28, 33, 32],
+  [36, 35, 34],
+  [37, 36, 34],
+  [38, 37, 34],
+  [35, 39, 34],
+  [36, 39, 35],
+  [37, 39, 36],
+  [38, 39, 37],
+  [34, 39, 38],
+  [42, 41, 40],
+  [43, 42, 40],
+  [44, 43, 40],
+  [41, 45, 40],
+  [42, 45, 41],
+  [43, 45, 42],
+  [44, 45, 43],
+  [40, 45, 44],
+  [48, 47, 46],
+  [49, 48, 46],
+  [50, 49, 46],
+  [47, 51, 46],
+  [48, 51, 47],
+  [49, 51, 48],
+  [50, 51, 49],
+  [46, 51, 50],
+  [54, 53, 52],
+  [55, 54, 52],
+  [56, 55, 52],
+  [53, 57, 52],
+  [54, 57, 53],
+  [55, 57, 54],
+  [56, 57, 55],
+  [52, 57, 56],
+  [60, 59, 58],
+  [61, 60, 58],
+  [62, 61, 58],
+  [59, 63, 58],
+  [60, 63, 59],
+  [61, 63, 60],
+  [62, 63, 61],
+  [58, 63, 62],
+  [66, 65, 64],
+  [67, 66, 64],
+  [68, 67, 64],
+  [65, 69, 64],
+  [66, 69, 65],
+  [67, 69, 66],
+  [68, 69, 67],
+  [64, 69, 68],
+]
+license = "MIT"
+source = "Right-On Commander original geometry"
+custody = {  }
+recipe = { "family" = "petals", "variant" = 119, "dimensions" = [170.0, 49.0, 170.0], "sweep" = 0.15, "pods" = 4, "sections" = 8 }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH119"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "20 t", "number" = 20, "unit" = "t", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "500.0 project units/s", "number" = 500.0, "unit" = "project units/s", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "600.0 project units", "number" = 600.0, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "4.0 project units/s", "number" = 4.0, "unit" = "project units/s", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "2.0 rad/s", "number" = 2.0, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "1.0 rad/s", "number" = 1.0, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "1.0 rad/s", "number" = 1.0, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "250.0 project units/s2", "number" = 250.0, "unit" = "project units/s2", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "128 project units", "number" = 128, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "128 project units", "number" = 128, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1" }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "15 bit mask", "number" = 15, "unit" = "bit mask", "status" = "estimated", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "5 pylons", "number" = 5, "unit" = "pylons", "status" = "user minimum / adapted", "basis" = "Estimated Thargoid Medusa refit from named O08 surrogate thargoid at volume scale 1; bounded1..16 for common project inventory" }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "12 project slots", "number" = 12, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "estimated humanoid conversion", "basis" = "CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation." }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "20 t", "number" = 20, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]

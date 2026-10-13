@@ -4,7 +4,7 @@ Copyright (c) 2026 Stephen Clarke. The original Swift implementation, tools, tes
 
 ## Ship models
 
-The numerical meshes in [ShowroomModels.json](Sources/EliteCore/Resources/ShowroomModels.json) are adapted third-party artwork. Each entry has its own `license`, source identity and source file hashes. The current collection contains 56 models under CC-BY-NC-SA-3.0, 14 under CC-BY-NC-SA-4.0, one under CC-BY-SA-3.0 and three ADCK Eagle models under the author's public-domain declaration. Model adaptations remain under the corresponding source terms. This is a mixed-licence distribution: the MIT code licence does not permit commercial use of the included NonCommercial artwork.
+The numerical meshes in [individual ship TOMLs](Sources/EliteCore/Resources/Ships) are adapted third-party artwork. Each entry has its own `license`, source identity and source file hashes. The current collection contains 56 models under CC-BY-NC-SA-3.0, 14 under CC-BY-NC-SA-4.0, one under CC-BY-SA-3.0 and three ADCK Eagle models under the author's public-domain declaration. Model adaptations remain under the corresponding source terms. This is a mixed-licence distribution: the MIT code licence does not permit commercial use of the included NonCommercial artwork.
 
 Full Creative Commons legal codes are included here and in the app resource bundle:
 
@@ -33,3 +33,7 @@ The [pinned BBC source repository](https://github.com/markmoxon/elite-source-cod
 Renderer-generated `docs/elite.png`, `docs/start-sequence.gif`, `Resources/Elite.icns` and `docs/images/elite-icon.png` contain the adapted Oolite Cobra Mk III and are distributed under CC-BY-NC-SA-3.0, with attribution to the Oolite artwork contributors above and Stephen Clarke for the native rendering/composition. Their generation by this project's renderer does not turn the depicted model into MIT artwork.
 
 Keep the applicable copyright, attribution and licence notices with redistributed material. The standard app build includes this notice, the MIT licence, all bundled asset notices and the Creative Commons legal codes in `Elite.app/Contents/Resources`. Preserve the per-model licence metadata and additional source terms when redistributing adapted meshes or renderer-generated media containing those meshes.
+
+## Individual ship definitions
+
+The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 74 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-three original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.

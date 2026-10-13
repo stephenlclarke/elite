@@ -18,19 +18,30 @@ public struct SystemDataLayout: Sendable {
   }
 }
 extension Display {
-  public static func systemScreen(_ game: Game, width: Double, height: Double) -> Frame {
-    var frame = cockpit(game, width: width, height: height)
-    let previewLayout = SystemDataLayout(game: game, width: width, height: height, rowCount: 0)
-    let columns = Int(previewLayout.facts.width / (6 * GameTypography.scale))
-    let rows = systemRows(game).flatMap { text, ink in
+  static func systemDataRows(_ game: Game, width: Double, height: Double) -> [(String, Ink)] {
+    let layout = SystemDataLayout(game: game, width: width, height: height, rowCount: 0)
+    let columns = Int(layout.facts.width / (6 * GameTypography.scale))
+    return systemRows(game).flatMap { text, ink in
       MissionNotice.wrap(text, width: columns).map { ($0, ink) }
     }
-    let layout = SystemDataLayout(game: game, width: width, height: height, rowCount: rows.count)
+  }
+  static func systemWindow(_ game: Game, width: Double, height: Double) -> ScrollWindow {
+    let bottom = CockpitLayout(game: game, width: width, height: height).dashboardTop
+    return .init(
+      count: systemDataRows(game, width: width, height: height).count,
+      visible: max(1, Int((bottom - 126) / GameTypography.row)), offset: game.informationScroll)
+  }
+  public static func systemScreen(_ game: Game, width: Double, height: Double) -> Frame {
+    var frame = cockpit(game, width: width, height: height)
+    let rows = systemDataRows(game, width: width, height: height)
+    let window = systemWindow(game, width: width, height: height)
+    let layout = SystemDataLayout(
+      game: game, width: width, height: height, rowCount: min(rows.count, window.visible))
     frame.label(
       "DATA ON G\(game.inspectedGalaxy + 1) / " + game.inspectedSystem.name,
       layout.facts.x, 12, scale: GameTypography.scale, ink: .yellow)
     frame.stroke(24, 34, width - 24, 34, .yellow)
-    for (index, row) in rows.enumerated() {
+    for (index, row) in rows.dropFirst(window.offset).prefix(window.visible).enumerated() {
       frame.label(
         row.0, layout.facts.x, layout.facts.y + Double(index) * GameTypography.row,
         scale: GameTypography.scale, ink: row.1)
@@ -49,6 +60,9 @@ extension Display {
           layout.planet.x + (layout.planet.width - Double(caption.count) * 6 * GameTypography.scale)
             / 2))
       frame.label(caption, x, layout.planet.maxY + 8, scale: GameTypography.scale, ink: .cyan)
+    }
+    if let hint = window.hint {
+      frame.label(hint, layout.facts.x, layout.bottom - 62, scale: GameTypography.scale, ink: .cyan)
     }
     if game.messageTime > 0 {
       frame.label(

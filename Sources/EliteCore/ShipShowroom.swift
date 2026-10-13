@@ -1,6 +1,15 @@
 import Foundation
 
+public enum ShowroomSort: String, Sendable {
+  case alphabetical = "A-Z"
+  case power = "Power"
+}
+
 public struct ShowroomState: Sendable {
+  public var sort: ShowroomSort = .alphabetical
+  public var trading = false
+  public var confirmTrade = false
+  public var tradeScroll = 0
   public var previousScreen: Screen = .status
   public var selection = "SH023"
   public var baseline = "SH023"
@@ -22,8 +31,17 @@ public struct ShowroomState: Sendable {
 }
 extension Game {
   public var showroomShips: [CatalogueShip] {
-    ShipCatalogue.all.filter {
+    let filtered = ShipCatalogue.all.filter {
       showroom.query.isEmpty || $0.searchText.localizedCaseInsensitiveContains(showroom.query)
+    }
+    return filtered.sorted { a, b in
+      if showroom.sort == .power {
+        let left = a.game?.power ?? -1
+        let right = b.game?.power ?? -1
+        if left != right { return left > right }
+      }
+      let order = a.name.localizedStandardCompare(b.name)
+      return order == .orderedSame ? a.id < b.id : order == .orderedAscending
     }
   }
   public var showroomShip: CatalogueShip? {
@@ -33,20 +51,25 @@ extension Game {
     return ship
   }
   var showroomProfiles: [ShipProfile] {
-    showroomShip?.profiles.filter { !showroom.sourceProfiles || $0.group != "project-refit-v1" }
-      ?? []
+    if !showroom.sourceProfiles { return selectedGameProfile.map { [$0] } ?? [] }
+    return showroomShip?.profiles ?? []
   }
-  public var showroomBaseline: CatalogueShip? { ShipCatalogue.ship(showroom.baseline) }
-  public var showroomProfile: ShipProfile? { selectedShowroomProfile(showroomShip) }
-  private func selectedShowroomProfile(_ ship: CatalogueShip?) -> ShipProfile? {
-    let profiles =
-      ship?.profiles.filter { !showroom.sourceProfiles || $0.group != "project-refit-v1" } ?? []
+  public var showroomBaseline: CatalogueShip? {
+    ShipCatalogue.ship(showroom.baselineUsesCurrent ? commander.shipID : showroom.baseline)
+  }
+  public var showroomProfile: ShipProfile? {
+    let profiles = showroomProfiles
     return profiles.isEmpty ? nil : profiles[showroom.profileIndex % profiles.count]
   }
   public var showroomBaselineProfile: ShipProfile? {
-    if showroom.baselineUsesCurrent { return currentShowroomProfile }
-    guard let group = showroomProfile?.group else { return nil }
-    return showroomBaseline?.profiles.first { $0.group == group }
+    if !showroom.sourceProfiles {
+      if showroom.baselineUsesCurrent { return commander.gameShipProfile }
+      guard let ship = showroomBaseline, ship.game != nil else { return nil }
+      var fit = commander
+      fit.shipID = ship.id
+      return fit.gameShipProfile
+    }
+    return showroomBaseline?.profiles.first { $0.group == showroomProfile?.group }
   }
   public var showroomComparison: [ShipComparisonRow] {
     let selected = showroomProfile
@@ -58,12 +81,15 @@ extension Game {
       let b = selected?.fields.first { $0.key == key }
       func text(_ field: ShipSpec?) -> String {
         guard let field else { return "Unavailable" }
-        return field.text + (field.status == "source" ? "" : " [" + field.status + "]")
+        return field.text
+          + (["source", "game"].contains(field.status) ? "" : " [" + field.status + "]")
       }
       return .init(
         label: b?.label ?? a!.label, baseline: text(a), selected: text(b),
         difference: ShipComparisonRow.difference(
-          a, b, comparable: comparableShowroomField(a, b, baseline: baseline, selected: selected)))
+          a, b, comparable: comparableShowroomField(a, b, baseline: baseline, selected: selected)),
+        rating: ComparisonRating.compare(
+          a, b, compatible: comparableShowroomField(a, b, baseline: baseline, selected: selected)))
     }
   }
   public var showroomTradeoffs: [String] {
@@ -102,8 +128,9 @@ extension Game {
     mapSearch.active = false
     showroom.previousScreen = screen
     clearShowroomSearch()
-    showroom.selection = "SH023"
+    showroom.selection = commander.shipID
     showroom.profileIndex = 0
+    showroom.trading = false
     showroom.detail = false
     showroom.scroll = 0
     screen = .showroom
@@ -120,6 +147,10 @@ extension Game {
       let layout = ShowroomLayout(
         width: viewportWidth, height: viewportHeight, detail: showroom.detail)
       showroom.listOffset = showroomListStart(layout)
+    }
+    if showroom.trading {
+      shipTradeKey(key)
+      return
     }
     if ["delete", "showroom-clear", "search-clear"].contains(key) {
       let editing = showroom.searching
@@ -155,17 +186,29 @@ extension Game {
     case "return": showroom.detail = true
     case "tab": showroom.detail.toggle()
     case " ": showroom.rotationPaused.toggle()
+    case "showroom-sort":
+      showroom.sort = showroom.sort == .alphabetical ? .power : .alphabetical
+    case "showroom-trade":
+      guard showroomShip?.game != nil else {
+        notify("THIS OBJECT IS NOT A FLYABLE HULL")
+        return
+      }
+      showroom.trading = true
+      showroom.confirmTrade = false
+      showroom.tradeScroll = 0
     case "b":
+      guard showroomShip != nil else { return }
       showroom.baseline = showroom.selection
       showroom.baselineUsesCurrent = false
     case "r":
-      showroom.baseline = "SH023"
+      showroom.baseline = commander.shipID
       showroom.baselineUsesCurrent = true
     case "c":
       showroom.compare.toggle()
       showroom.scroll = 0
     case "v":
       showroom.sourceProfiles.toggle()
+      showroom.compare = !showroom.sourceProfiles
       showroom.profileIndex = 0
       showroom.scroll = 0
     case ",", ".":
@@ -207,6 +250,12 @@ extension Game {
   }
   public mutating func showroomClick(x: Double, y: Double) {
     guard screen == .showroom else { return }
+    if showroom.trading {
+      let trade = ShipTradeLayout(width: viewportWidth, height: viewportHeight)
+      if trade.back.contains(.init(x, y)) { showroom.trading = false }
+      if trade.confirm.contains(.init(x, y)) { confirmShipTrade() }
+      return
+    }
     let layout = ShowroomLayout(
       width: viewportWidth, height: viewportHeight, detail: showroom.detail)
     let point = ScreenPoint(x, y)
@@ -224,6 +273,7 @@ extension Game {
       return
     }
     for (index, bounds) in layout.buttons.enumerated() where bounds.contains(point) {
+      if [5, 6].contains(index) && showroomProfiles.count <= 1 { return }
       showroom.searching = false
       showroomKey(ShowroomLayout.actionKeys[index])
       return
