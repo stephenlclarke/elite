@@ -9,6 +9,9 @@ mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 cp Resources/Elite.icns "$APP_BUNDLE/Contents/Resources/Elite.icns"
 cp "$(swift build --show-bin-path)/Elite" "$APP_BUNDLE/Contents/MacOS/Elite"
+cp -R "$(swift build --show-bin-path)/Elite_EliteCore.bundle" "$APP_BUNDLE/Contents/Resources/"
+cp LICENSE "$APP_BUNDLE/Contents/Resources/LICENSE"
+cp NOTICE.md "$APP_BUNDLE/Contents/Resources/NOTICE.md"
 cat > "$APP_BUNDLE/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

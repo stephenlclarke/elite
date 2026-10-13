@@ -145,7 +145,7 @@ extension Display {
     frame.responsive = true
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
-    let font = width < 700 ? 1.0 : 1.5
+    let font = GameTypography.scale
     let contentWidth = min(650, width - 48)
     let left = (width - contentWidth) / 2
     frame.label("BLACKJACK'S BULLION", left, 20, scale: font, ink: .yellow)

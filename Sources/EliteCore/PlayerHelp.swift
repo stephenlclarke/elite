@@ -9,7 +9,8 @@ public enum PlayerHelp {
     let context = context(for: screen, paused: game.paused)
     var pages = paginate(context)
     if !game.paused
-      && ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff, .gallery].contains(screen)
+      && ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff, .gallery, .showroom]
+        .contains(screen)
     {
       let screens = HelpPage(
         title: game.docked ? "AT THE STATION" : "IN SPACE: SCREENS",
@@ -17,7 +18,8 @@ public enum PlayerHelp {
           game.docked ? "0 - LAUNCH" : "0 - FRONT VIEW",
           game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "1 / 2 / 3 - REAR / LEFT / RIGHT",
           "4 / 5 - GALACTIC / SHORT RANGE CHART",
-          "6 / 7 - SYSTEM DATA / MARKET PRICES",
+          game.docked ? "4 / 5 INCLUDE FULL PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
+          "7 - MARKET PRICES",
           "8 / 9 - COMMANDER STATUS / INVENTORY",
         ])
       if [Screen.status, .inventory, .market, .system].contains(screen) {
@@ -30,6 +32,16 @@ public enum PlayerHelp {
         }
       } else {
         pages.append(screens)
+      }
+      if game.docked && (screen == .chart || screen == .shortChart) {
+        pages.append(
+          .init(
+            title: "DOCKED PLANET INFORMATION",
+            rows: [
+              "DATA AND PLANET FOLLOW CHART SELECTION",
+              "FN-UP / FN-DOWN - SCROLL PLANET DATA",
+              "MISSION CLUES APPEAR WITH PLANET DATA",
+            ]))
       }
       if !game.docked && !screen.isFlight {
         pages.append(contentsOf: paginate(Self.context(for: .front, paused: false)))
@@ -62,6 +74,8 @@ public enum PlayerHelp {
           "K / COMMAND-K - CONTEXT KEY GUIDE",
           "L - MISSION GALLERY (PAUSES FLIGHT)",
           "B (DOCKED) - BLACKJACK CONTACT",
+          "W (DOCKED) - SHIP SHOWROOM",
+          "U (DOCKED) - STATION RUMOURS",
           "COMMAND-P - PAUSE / RESUME",
           "X Y Z Z Y - CLARKE AND SECRET MENU",
           "COMMAND-S / COMMAND-O - SAVE / LOAD",
@@ -117,7 +131,8 @@ public enum PlayerHelp {
           "H - HYPERSPACE TO SELECTED SYSTEM",
           "G - GALACTIC HYPERDRIVE",
           "J - IN-SYSTEM JUMP",
-          "C / P - DOCKING COMPUTER ON / OFF",
+          "R - TARGET STATION FOR AUTO DOCKING",
+          "P / Q - CANCEL AUTOMATIC GUIDANCE",
           "WEAPONS AND DRIVES REQUIRE EQUIPMENT",
           "R - CYCLE TARGET (FITTED COMPUTER)",
           "Q - DISENGAGE AUTO / MANUAL STEER",
@@ -159,7 +174,9 @@ public enum PlayerHelp {
       if screen == .shortChart { rows.append("Z - ZOOM MAX JUMP / SEARCH / FUEL") }
       if screen == .chart {
         rows += [
-          "SLASH - SEARCH ALL GALAXY PLANETS", "TYPE - FILTER; UP/DOWN - SELECT",
+          "[ / ] - VIEW GALAXY 1 TO 8",
+          "O - RETURN TO CURRENT GALAXY/SYSTEM",
+          "SLASH - SEARCH VIEWED GALAXY PLANETS", "TYPE - FILTER; UP/DOWN - SELECT",
           "RETURN - CHOOSE; ESC - CLOSE SEARCH", "BACKSPACE / CLICK CLEAR - CLEAR SEARCH",
         ]
       }
@@ -181,6 +198,32 @@ public enum PlayerHelp {
           "UP/DOWN - SELECT ALTERNATIVE", "RETURN - SET ROUTE (NO AUTOMATIC JUMP)",
           "C - CLEAR ROUTE", "N / ESC - RETURN TO CHART", "FN-UP/FN-DOWN - SCROLL ROUTE DETAILS",
           "DOCK AT EACH STOP; LAUNCH PRELOADS NEXT", "H - START EACH JUMP MANUALLY",
+        ])
+    case .rumour:
+      return HelpPage(
+        title: "STATION RUMOURS",
+        rows: [
+          "ASK AT THE LOCAL MAIN STATION", "RETURN / ESC / U - BACK TO STATION",
+          "DISCOVERIES ARE SAVED PER GALAXY",
+        ])
+    case .showroom:
+      return HelpPage(
+        title: "DOCKED SHIP SHOWROOM",
+        rows: [
+          "UP/DOWN - SHIP; RETURN - DETAIL",
+          "/ OR CLICK - SEARCH NAME/CLASS/SOURCE/ID",
+          "TYPE - FILTER; RETURN/ESC - END SEARCH",
+          "BACKSPACE - EDIT; SEARCH ID TO FIND",
+          "X / FN-DELETE / CLEAR - ALL SHIPS",
+          "SPACE - PAUSE / RESUME MODEL ROTATION",
+          "B - PIN BASELINE; R - RESET TO COBRA",
+          "C - COMPARE; V - SOURCE / REFIT",
+          "COMMA / FULL STOP - SOURCE VARIANT",
+          "FN-UP / FN-DOWN - SCROLL SPECS",
+          "SCROLL LIST - SELECT; SPECS - READ",
+          "ESC - BACK; W - CLOSE TO PREVIOUS SCREEN",
+          "CATALOGUE BROWSER; NO SHIP PURCHASES",
+          "SOURCE UNITS / ESTIMATES ARE LABELLED",
         ])
     case .gallery:
       return HelpPage(

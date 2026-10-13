@@ -185,8 +185,10 @@ public enum Display {
     case .title: title(game, into: &frame)
     case .front, .rear, .left, .right: flight(game, into: &frame)
     case .chart, .shortChart: chart(game, into: &frame)
-    case .system: system(game, into: &frame)
+    case .system: return systemScreen(game, width: 768, height: 768)
     case .market, .buy, .sell: market(game, into: &frame)
+    case .rumour: return compactScreen(game, width: 768, height: 768)
+    case .showroom: return showroomScreen(game, width: 768, height: 768)
     case .equipment: equipment(game, into: &frame)
     case .status: status(game, into: &frame)
     case .inventory: inventory(game, into: &frame)
@@ -314,18 +316,18 @@ public enum Display {
     }
     var drawn: Set<String> = []
     var visibleFaces: Set<Int> = []
-    let depths = mesh.faces.map { face -> (indices: [Int], distance: Double) in
+    let depths = mesh.faces.enumerated().map { index, face -> (index: Int, distance: Double) in
       let sum = face.reduce(0.0) { total, index in total + vertices[index].z }
-      return (face, sum / Double(face.count))
+      return (index, sum / Double(face.count))
     }
-    let faces = depths.sorted { $0.distance > $1.distance }.map(\.indices)
-    for face in faces {
+    for entry in depths.sorted(by: { $0.distance > $1.distance }) {
+      let face = mesh.faces[entry.index]
       let a = vertices[face[0]]
       let b = vertices[face[1]]
       let c = vertices[face[2]]
       let normal = (b - a).cross(c - a)
       guard normal.dot(a) < 0 else { continue }
-      if let index = mesh.faces.firstIndex(of: face) { visibleFaces.insert(index) }
+      visibleFaces.insert(entry.index)
       if game.commander.shipDisplayStyle == .shadedPanels {
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
@@ -526,23 +528,7 @@ public enum Display {
   private static func secret(_ game: Game, into frame: inout Frame) {
     header("XYZZY", into: &frame)
     frame.centered("A HOLLOW VOICE SAYS...", 28)
-    let choices = [
-      "0 DISPLAY: " + game.commander.shipDisplayStyle.label,
-      "1 DOCKING TARGETING COMPUTER",
-      "2 MAXIMUM HARDWARE",
-      "3 MISSILES: " + (game.commander.unlimitedMissiles ? "UNLIMITED" : "NORMAL"),
-      "4 FUEL: " + (game.commander.unlimitedFuel ? "UNLIMITED" : "NORMAL"),
-      String(format: "5 JUMP LIMIT: %.1f LY", game.commander.maximumJumpDistance),
-      "6 AUTO TRADE: " + (game.commander.autoTrade ? "ON" : "OFF"),
-      "7 SPEECH: " + (game.commander.speech ? "ON" : "OFF"),
-      "8 CARGO: " + (game.commander.unlimitedCargo ? "UNLIMITED" : "NORMAL"),
-      String(format: "9 CASH: %.1f CR", Double(game.commander.credits) / 10),
-      "A AUTO TARGET: " + (game.commander.autoTarget ? "ON" : "OFF"),
-      "E AUTO ECM: " + (game.commander.autoECM ? "ON" : "OFF"),
-      "B MILITARY RETURN FIRE: " + (game.commander.retaliationEnabled ? "ON" : "OFF"),
-      "F FUEL SCOOPS: "
-        + (game.commander.equipment.contains("Fuel Scoops") ? "FITTED" : "NOT FITTED"),
-    ]
+    let choices = game.secretChoices
     for (index, choice) in choices.enumerated() { frame.text(choice, 10, 46 + index * 9) }
     frame.text(game.paused ? "RETURN THEN COMMAND-P TO RESUME" : "RETURN TO RESUME", 10, 177)
   }

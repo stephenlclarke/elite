@@ -6,7 +6,7 @@ extension Display {
     frame.responsive = true
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
-    let font = width < 700 ? 1.0 : 1.25
+    let font = GameTypography.scale
     let row = ceil(font * 7) + 8
     frame.label("NAVIGATIONAL COMPUTER", 16, 12, scale: font, ink: .yellow)
     frame.label(

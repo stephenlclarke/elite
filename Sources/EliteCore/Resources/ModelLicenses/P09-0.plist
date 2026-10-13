@@ -1,0 +1,11 @@
+{
+	identifier = "oolite.oxp.CmdrWombat.Deposed";
+	required_oolite_version = "1.80";
+	title = "Deposed";
+	version = "2.1";
+	category = "Missions";
+	description = "This is a series of missions starting in galaxy 4. Needs 1700 kills to start.";
+	author = "Cmdr. Wombat";
+	information_url = "https://wiki.alioth.net/index.php/Deposed_OXP";
+	license = "CC-BY-NC-SA 3.0";
+}

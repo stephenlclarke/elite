@@ -1,0 +1,37 @@
+{
+   "identifier" = "oolite.oxp.Griff.Hognose";
+   "required_oolite_version" = "1.80";
+   "title" = "Hognose";
+   "version" = "1.3.2";
+   "category" = "Ships";
+   "description" = "The 'Hognose' from the Acorn Archimedes version of the original Elite. Requires a video card capable of supporting Oolite Shaders. This ship is not Player flyable";
+   "author" = "Griff";
+   "information_url" = "http://wiki.alioth.net/index.php/Griff_Industries";
+   "license" = "CC-BY-NC-SA 4.0";
+}
+
+/*
+License:
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License version 4.0. For more information see the ReadMe of Oolite or the Creative Commons' website.
+Practically this means that you may rip it apart and use whatever seems useful to you, as long as you credit the original author.
+
+An oxp for Oolite v1.80 and higher that adds the 'Hognose' missionary ship from the Archimedes version of Elite.
+
+Credits
+-------
+Concept, AI's & Description.plist copied from Dr Nil's Missionaries.oxp http://wiki.alioth.net/index.php/Missionaries_OXP
+"The AIs are based on the basic game plus the ones from Boyracers and the Frog Space Rigshaw by Murgh." - missionaries.oxp readme.txt
+Models & Textures by Griff
+
+Update History
+---------------
+V1.3.2 - CaptSolo - Fixed AI's - OXP now works!!
+v1.3.1 - Made some AI changes, fixed incorrect decals (all ships had the 'Happy Eye preacher' decal instead of their own specific decal)
+V1.3   - 30 May 2015  - Added hull 'weathering' effects
+v1.22  - 07 June 2014 - updated fragment shader 
+V1.21  - 01 June 2013 - fixed a bug in the shader, gl_Lightsource wasn't set properly (was 0, should have been 1)
+V1.2   -  31 May 2013  - Removed player flyable version, added custom AI's and descriptions from Dr Nil's missionaries OXP. New Decal textures 
+v1.1   -  30 May 2013  - Some small changes to the textures
+V1.0   -  29 May 2013  - initial release
+
+*/

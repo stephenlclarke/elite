@@ -2,80 +2,10 @@ import AppKit
 import EliteCore
 
 @MainActor
-func legacyGameRect(_ game: Game, bounds: CGRect) -> CGRect {
-  let plain = [Screen.demo, .title, .help].contains(game.screen)
-  let height =
-    plain
-    ? bounds.height
-    : CockpitLayout(game: game, width: bounds.width, height: bounds.height).dashboardTop
-  let scale = min(bounds.width / 256, height / (plain ? 256 : 192))
-  return CGRect(
-    x: bounds.minX + (bounds.width - 256 * scale) / 2, y: bounds.minY, width: 256 * scale,
-    height: 256 * scale)
-}
-
-@MainActor
 func drawGame(_ game: Game, context: CGContext, rect: CGRect) {
-  if game.screen == .handoff {
-    drawFrame(
-      Display.blackjackHandoff(game, width: rect.width, height: rect.height), context: context,
-      rect: rect)
-    return
-  }
-  if game.screen == .navigation {
-    drawFrame(
-      Display.navigation(game, width: rect.width, height: rect.height), context: context, rect: rect
-    )
-    return
-  }
-  if game.screen == .chart || game.screen == .shortChart {
-    drawFrame(
-      Display.map(game, width: rect.width, height: rect.height), context: context, rect: rect)
-    return
-  }
-  if [.market, .buy, .sell].contains(game.screen) {
-    drawFrame(
-      Display.marketScreen(game, width: rect.width, height: rect.height), context: context,
-      rect: rect)
-    return
-  }
-  if [.status, .inventory].contains(game.screen) {
-    drawFrame(
-      Display.information(game, width: rect.width, height: rect.height), context: context,
-      rect: rect)
-    return
-  }
-  if game.screen == .equipment {
-    drawFrame(
-      Display.equipmentScreen(game, width: rect.width, height: rect.height), context: context,
-      rect: rect)
-    return
-  }
-  if game.screen == .gallery {
-    drawFrame(
-      Display.gallery(game, width: rect.width, height: rect.height), context: context, rect: rect)
-    return
-  }
-  let plain = [Screen.demo, .title, .help].contains(game.screen)
-  if plain {
-    drawFrame(
-      Display.render(game, rasterizeGraphics: false), context: context,
-      rect: legacyGameRect(game, bounds: rect))
-    return
-  }
-  let frame = Display.cockpit(game, width: rect.width, height: rect.height)
-  if !game.screen.isFlight {
-    context.saveGState()
-    context.clip(
-      to: CGRect(
-        x: rect.minX, y: rect.minY, width: rect.width,
-        height: CockpitLayout(game: game, width: rect.width, height: rect.height).dashboardTop))
-    drawFrame(
-      Display.render(game, rasterizeGraphics: false, dashboard: false), context: context,
-      rect: legacyGameRect(game, bounds: rect))
-    context.restoreGState()
-  }
-  drawFrame(frame, context: context, rect: rect)
+  drawFrame(
+    Display.presentation(game, width: rect.width, height: rect.height),
+    context: context, rect: rect)
 }
 
 @MainActor
@@ -173,9 +103,11 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
     provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
 }
 
+@MainActor
 private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Double = 0.5) {
   context.setLineWidth(lineWidth)
   switch graphic {
+  case .planet(let preview): PlanetRenderer.draw(preview, context: context)
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
     context.beginPath()

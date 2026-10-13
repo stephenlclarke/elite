@@ -82,7 +82,8 @@ struct NativeViewTests {
     #expect(view.acceptsFirstResponder && view.isFlipped)
     let keys: [(UInt16, String, String)] = [
       (36, "\r", "return"), (48, "\t", "tab"), (53, "", "escape"),
-      (119, "", "copy"), (123, "", "left"), (124, "", "right"), (125, "", "down"), (126, "", "up"),
+      (117, "", "delete"), (119, "", "copy"), (123, "", "left"), (124, "", "right"),
+      (125, "", "down"), (126, "", "up"),
       (0, "a", "a"),
     ]
     for (code, text, expected) in keys {
@@ -218,7 +219,9 @@ struct NativeViewTests {
     }
     let lines = try colouredPixels(wire)
     let panels = try colouredPixels(shaded)
-    #expect(lines > 100 && panels > lines * 3)
+    #expect(lines > 100)
+    // Source triangulation creates denser wireframes than the former primitive.
+    #expect(panels > lines)
     #expect(shaded.width == 512 && shaded.height == 512)
   }
 
@@ -370,5 +373,80 @@ extension NativeViewTests {
     #expect(view.pending.first?.hasPrefix("handoff-click:") == true)
     view.game.key("k")
     #expect(PlayerHelp.pages(for: view.game).first?.title == "BLACKJACK STATION HANDOFF")
+  }
+}
+
+extension NativeViewTests {
+  @MainActor @Test func rClearsHeldSteeringAndStationGuidanceOwnsTheTrackpad() throws {
+    let view = GameView()
+    view.game.launch()
+    view.game.commander.installTargetingComputer(.military)
+    view.game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
+    view.held = ["x", "left", ",", " "]
+    view.updateTrackpad(positions: [.zero, .zero, .zero])
+    let event = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero,
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "r",
+        charactersIgnoringModifiers: "r", isARepeat: false, keyCode: 15))
+    view.keyDown(with: event)
+    #expect(view.controls.pitch == 0 && view.controls.roll == 0 && view.controls.yaw == 0)
+    view.game.key("r")
+    #expect(view.game.dockingComputer && view.controls.throttle == 0 && view.held.isEmpty)
+    view.updateTrackpad(positions: [.zero, .zero, .zero])
+    #expect(view.controls.throttle == 0 && view.trackpad.fingerCount == 0)
+  }
+
+  @MainActor @Test func nativeCatalogueMapsAndCompactScreensRenderAtWindowAndRetinaSizes() throws {
+    var game = Game(executive: false)
+    game.screen = .status
+    game.key("showroom-open")
+    game.showroom.selection = "SH165"
+    game.showroom.detail = true
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+      for screen in [Screen.showroom, .system, .help, .secret, .demo, .title, .equipment, .chart] {
+        game.screen = screen
+        game.helpReturn = .showroom
+        game.time = 5
+        let image = try #require(imageForGame(game, width: width, height: height, scale: scale))
+        #expect(image.width == width * scale && image.height == height * scale)
+        if let evidence {
+          let url = URL(fileURLWithPath: evidence, isDirectory: true)
+          try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+          let data = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try data.write(to: url.appendingPathComponent("\(screen.rawValue)-\(width).png"))
+        }
+      }
+    }
+    game.screen = .chart
+    game.key("/")
+    game.key("w")
+    #expect(game.screen == .chart && game.mapSearch.query == "w")
+    game.key("showroom-open")
+    #expect(game.screen == .showroom)
+    game.key("/")
+    game.key("k")
+    #expect(game.showroom.searching && game.showroom.query == "k")
+    game.key("help-open")
+    #expect(game.screen == .help && game.helpReturn == .showroom)
+    game.key("help-open")
+    #expect(game.screen == .showroom && game.showroom.searching)
+    game.key("escape")
+    game.showroom.query = ""
+    let bounds = ShowroomLayout(width: 768, height: 768, detail: false)
+    game.viewportWidth = 768
+    game.viewportHeight = 768
+    let view = GameView(frame: .init(x: 0, y: 0, width: 768, height: 768))
+    view.game = game
+    let event = try #require(
+      NSEvent.mouseEvent(
+        with: .leftMouseDown,
+        location: .init(x: bounds.buttons[3].x + 8, y: 768 - bounds.buttons[3].y - 8),
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+        eventNumber: 1, clickCount: 1, pressure: 1))
+    view.mouseDown(with: event)
+    #expect(view.pending.first?.hasPrefix("showroom-click:") == true)
   }
 }

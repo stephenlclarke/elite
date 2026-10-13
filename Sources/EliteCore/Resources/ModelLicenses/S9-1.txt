@@ -1,0 +1,35 @@
+Staer9 shipset
+
+
+An oxp for Oolite that adds the ships by Staer9 to the no shadered Ooniverse
+ 
+Overview:
+Staer9's ships as companions to  Griff's ship models.
+
+In this OXP, only the textures were modified so they render well on GPU's that do not support OpenGL shading language.
+The clever procedure how to convert was developed by Captain SOLO.
+
+Requirements:
+Tested with Oolite 1.80. No dependencies. 
+
+Installation:
+After unzipping, move the folder, "Noshaders_Z_GrOovy_CobraMk3_Variety_Pack_v1.0.1.oxp" to the AddOns Folder of your Oolite installation. 
+
+Credits or rather still "Standing on shoulders of giants":
+* Staer9 for his really neat ship models for his shipsets.
+
+* Keeper and now Spara keeping the shipset alive and update it for newer Oolite versions.
+
+* Griff for his marvelous ship designs
+
+* Captain Solo, who invented a clever way to convert them for computers with shaderless GPUs and helped me 
+  extensively to explain how it was done for his noshader shipset (now default ships for 1.80)
+
+
+License:
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License version 3.0.
+
+Michael "Amah" Doering
+
+
+ 

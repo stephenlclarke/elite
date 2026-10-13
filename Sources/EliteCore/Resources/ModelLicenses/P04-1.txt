@@ -1,0 +1,52 @@
+			      Bank of the Black Monks OXP - V2.3
+			     ------------------------------------
+
+* Original concept (v1.x), reconcepting and flavor texts by "LittleBear"
+* Reconcepting and scripting by "spara"
+* Models, textures and shaders by "Griff"
+
+------------------------------------------------------------------------------------------------
+
+An addon for Oolite by Giles Williams.
+
+Based on "Elite" by Ian Bell and David Braben.
+
+Update history
+---------------
+Version 2.4 - Fixed invalid JS reference.
+Version 2.3 - Added normal, specular and gloss maps to all ships and stations.
+	- Fixed missing panel on minesweeper satellite.
+	- Reverted to using default shaders on all ships.
+	- Moved all text into missiontext.plist or descriptions.plist for easier localisation.
+	- Changed F4 Interface screen category to one of the default Oolite categories.
+Version 2.2.1 - A missing semicolon added to the shipdata.
+Version 2.2 - Texts reproof-read and aged by Diziet Sma. A new one shot welcome page shown when entering a monastery for the first time. New names for Defence Ships. Renamed gunship to be "Holy Avenger Mark II" and defence ship to be "Holy Defender Mark I".
+Version 2.1.1 - Texts proof-read and corrected by Cody.
+Version 2.1 - screenIDs added to the mission screens for compatibility with other OXPs. Monk image added as an overlay instead of background picture. New bigger monk image. Bug fixes.
+Version 2.0 - A full rewrite and reconcepting of the OXP. (25.6.2015)
+
+Version 1.46 - Corrected typo in equipment.plist
+Version 1.45 - Corrected another typo in equipment.plist
+version 1.44 - Added copy of minesweeperAI from Random Hits oxp to remove the dependency on that OXP being installed
+Version 1.43 - Lengthened the dock object to workaround defence ship calmness - they now get angry faster :)
+Version 1.42 - fixed incorrect weapon rage & energy stats on one of the defence ship turrets
+Version 1.41 - removed bounty setting from defence ship, set scan_class to Neutral. Increased defence ship toughness stats
+Version 1.4 - added Blackmonk Station Defence Ship
+Version 1.3 - fixed the wrong shader vertex applied to station turrets 
+Version 1.2 - um, can't remember the changes
+Version 1.12 - Updated shaders slightly to avoid ATI missing texture bug. Added Materials so some shader effects work for on computers unable to run shaders
+Version 1.1 - 27th January 2007. 
+
+
+-------------------------------------------------------------------------------------------------
+
+Added:-
+-------
+
+- Vast Black Monk Monasteries appear in safe high tech Systems.
+- Players can to undertake a short term financial pilgrimage for the Black Monks.
+- The dreaded Black Monk Gunships can be seen shooting down NPC debtors who failed to pay up.
+- Players who fail to repay on time will also find themselves in a Gunship's sights!
+- Holy Fuel buyable from the Monasteries.
+
+LittleBear, Griff & spara

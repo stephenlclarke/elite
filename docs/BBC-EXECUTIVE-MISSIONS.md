@@ -41,7 +41,7 @@ A mission spawning opportunity is scheduled once every 256 native flight updates
 
 The mothership has 240 energy, speed limit 39, a 50-credit bounty and six Thargon releases. Thargons have 20 energy, speed limit 30 and a 5-credit bounty. Native naval tactics recharge one unit and consider finite ordnance at or below half energy, using `random byte & 31 < remaining`; active ECM blocks launches. Drones stop attacking and lose ECM when the last mothership disappears. Naval energy replaces the standard unit, is unavailable in the shop, and uses the original recharge multiplier sequence 1/2/3.
 
-Constrictor and Thargon vertices use numerical blueprint coordinates from the pinned source. The native renderer triangulates the rounded Thargon hull for closed panels and draws the Constrictor's underside markings when visible. All ten hulls pass the existing convexity, closed-edge and rotating-silhouette checks.
+Constrictor and Thargon vertices use numerical blueprint coordinates from the pinned source. The native renderer triangulates the rounded Thargon hull for closed panels and draws the Constrictor's underside markings when visible. Primitive hulls pass convexity and closed-edge checks. The detailed non-convex Oolite Cobra has independent welded-boundary rotation checks; title and flight silhouettes remain covered. BBC-derived blueprint material is excluded from the MIT grant because the reference repository supplies no reuse licence; see [licensing and provenance](../NOTICE.md).
 
 ## Preserved source quirks
 

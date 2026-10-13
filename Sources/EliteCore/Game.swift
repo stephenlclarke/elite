@@ -2,7 +2,8 @@ import Foundation
 
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
-    equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, gameOver
+    equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, showroom, rumour,
+    gameOver
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
@@ -26,6 +27,11 @@ public struct Commander: Sendable, Equatable, Codable {
   public var speech = false
   public var executive = false
   // Optional storage preserves compatibility with commanders saved before each feature existed.
+  private var discoveredSecretPorts: Int?
+  public var plughDiscoveryMask: Int {
+    get { discoveredSecretPorts ?? 0 }
+    set { discoveredSecretPorts = newValue }
+  }
   private var blackjackMission: BlackjackMission?
   public var blackjack: BlackjackMission {
     get { blackjackMission ?? BlackjackMission() }
@@ -111,7 +117,11 @@ public struct Commander: Sendable, Equatable, Codable {
   public var valid: Bool {
     cargo.count == 17 && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
-      && (0..<256).contains(system) && (0..<8).contains(galaxy)
+      && (0...256).contains(system) && (0..<8).contains(galaxy)
+      && (0...255).contains(plughDiscoveryMask)
+      && (system != Plugh.systemID || hasDiscoveredPlugh(in: galaxy))
+      && (!(navigationPlan?.path.contains(Plugh.systemID) ?? false)
+        || hasDiscoveredPlugh(in: galaxy))
       && (0...FuelStorage.maximumCount).contains(fuelStorageUnits)
       && (0...fuelCapacity).contains(fuel)
       && (0...4).contains(missiles) && (0...65535).contains(kills) && legal >= 0
@@ -193,15 +203,20 @@ public struct Controls: Sendable {
 
 public struct Game: Sendable {
   public var commander = Commander()
-  public var systems = Universe.galaxy()
+  public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false
   public var docked = true
   public var dockedAtMainStation = true
   public var blackjackOffer: BlackjackOffer?
+  public var showroom = ShowroomState()
+  public var galacticBrowse = GalaxyBrowseState()
+  public var systemInspection: SystemInspection?
+  public var rumourReturn: Screen = .status
   public var selectedSystem = 7
   public var selection = 0
   public var informationScroll = 0
+  public var chartInformationScroll = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
   public var starfield = Starfield()
@@ -274,6 +289,9 @@ public struct Game: Sendable {
     guard value.valid else { return false }
     commander = value
     blackjackOffer = nil
+    showroom = ShowroomState()
+    galacticBrowse = GalaxyBrowseState()
+    systemInspection = nil
     dockedAtMainStation = true
     enforceBlackjackWanted()
     commander.migrateXYZzyPolicy()
@@ -285,9 +303,9 @@ public struct Game: Sendable {
     frontShield = commander.shieldCapacity
     rearShield = commander.shieldCapacity
     targetPanelExpanded = nil
-    systems = Universe.galaxy(number: value.galaxy)
+    systems = Universe.systemsIncludingPlugh(number: value.galaxy)
     selectedSystem = value.system
-    market = MarketItem.generate(economy: currentSystem.economy, fluctuation: 0)
+    market = MarketItem.at(currentSystem, fluctuation: 0)
     docked = true
     bodies = []
     missionNotice = nil
@@ -312,6 +330,41 @@ public struct Game: Sendable {
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    if key == "showroom-open" {
+      openShowroom()
+      return
+    }
+    if key == "help-open" {
+      if ![Screen.gallery, .handoff, .showroom].contains(screen) { spin.stop(immediate: true) }
+      if screen == .help {
+        screen = helpReturn
+      } else {
+        helpReturn = screen
+        helpPage = 0
+        screen = .help
+      }
+      return
+    }
+    if screen == .rumour {
+      if key == "k" {
+        helpReturn = .rumour
+        helpPage = 0
+        screen = .help
+      } else if ["return", "escape", "u"].contains(key) {
+        screen = rumourReturn
+      }
+      return
+    }
+    if screen == .showroom {
+      if key == "k" && !showroom.searching {
+        helpReturn = .showroom
+        helpPage = 0
+        screen = .help
+      } else {
+        showroomKey(key)
+      }
+      return
+    }
     if screen == .handoff {
       if key == "k" {
         helpReturn = .handoff
@@ -336,8 +389,26 @@ public struct Game: Sendable {
       navigationKey(key)
       return
     }
+    if screen == .chart && ["[", "]"].contains(key) {
+      viewGalaxy(viewedGalaxy + (key == "]" ? 1 : -1))
+      return
+    }
     if screen == .chart && mapSearch.active {
       searchKey(key)
+      return
+    }
+    if docked && (screen == .chart || screen == .shortChart)
+      && ["pageup", "pagedown"].contains(key)
+    {
+      chartInformationScroll = max(0, chartInformationScroll + (key == "pageup" ? -8 : 8))
+      return
+    }
+    if key == "w" && screen != .help && screen != .secret {
+      openShowroom()
+      return
+    }
+    if key == "u" && docked {
+      openStationRumour()
       return
     }
     if (screen == .chart || screen == .shortChart) && key == "n" {
@@ -490,7 +561,7 @@ public struct Game: Sendable {
       if screen == .equipment {
         equipmentMount = key == "right" ? equipmentMount.next : equipmentMount.previous
       } else if screen == .chart || screen == .shortChart {
-        selectNeighbour(direction: key == "left" ? -1 : 1)
+        selectChartNeighbour(key == "left" ? -1 : 1)
       } else if screen == .buy || screen == .sell {
         trade(buy: key == "right")
       }
@@ -499,11 +570,18 @@ public struct Game: Sendable {
       if screen == .equipment { purchase() }
     case "z": if screen == .shortChart { mapZoom = mapZoom.next }
     case "o":
-      if screen == .chart || screen == .shortChart { manuallySelectSystem(commander.system) }
+      if screen == .chart {
+        returnChartToCurrentLocation()
+      } else if screen == .shortChart {
+        manuallySelectSystem(commander.system)
+      }
     case "d":
       if screen == .chart || screen == .shortChart {
         notify(
-          String(format: "DISTANCE %.1f LIGHT YEARS", currentSystem.distance(to: targetSystem)))
+          mapIsCurrentGalaxy
+            ? String(
+              format: "DISTANCE %.1f LIGHT YEARS", currentSystem.distance(to: mapTargetSystem))
+            : "DISTANCE UNAVAILABLE ACROSS GALAXIES")
       }
     case "b": if docked { offerBlackjackHandoff() }
     case "h": beginHyperspace()
@@ -516,7 +594,6 @@ public struct Game: Sendable {
       weaponsTargetID = nil
     case "m": fireMissile()
     case "e": ecm()
-    case "c": engageDockingComputer()
     case "p": cancelAutoTarget()
     case "tab": energyBomb()
     case "escape": escapePod()
@@ -610,6 +687,7 @@ public struct Game: Sendable {
   private mutating func functionKey(_ number: Int) {
     selection = 0
     informationScroll = 0
+    chartInformationScroll = 0
     if (4...9).contains(number) {
       spin.stop(immediate: true)
       cancelAutoTarget()
@@ -622,11 +700,15 @@ public struct Game: Sendable {
     case 4: screen = .chart
     case 5: screen = .shortChart
     case 6:
-      screen = .system
+      systemInspection =
+        screen == .chart ? .init(galaxy: viewedGalaxy, system: viewedSystemID) : nil
+      screen = docked ? (screen == .chart ? .chart : .shortChart) : .system
       let variation = commander.missionStage.rawValue & 1 == 1 ? randomByte() % 5 : 0
-      missionClue = MissionRules.clue(
-        stage: commander.missionStage, galaxy: commander.galaxy, system: selectedSystem,
-        variation: variation)
+      missionClue =
+        inspectedGalaxy == commander.galaxy
+        ? MissionRules.clue(
+          stage: commander.missionStage, galaxy: inspectedGalaxy, system: inspectedSystem.id,
+          variation: variation) : nil
     case 7: screen = .market
     case 8: screen = .status
     case 9: screen = .inventory
@@ -634,11 +716,13 @@ public struct Game: Sendable {
     }
   }
   public mutating func selectNeighbour(direction: Int) {
-    manuallySelectSystem((selectedSystem + direction + systems.count) % systems.count)
+    let known = knownSystems
+    let current = known.firstIndex { $0.id == selectedSystem } ?? 0
+    manuallySelectSystem(known[(current + direction + known.count) % known.count].id)
   }
   public mutating func selectSystem(x: Int, y: Int) {
     let selected =
-      systems.min { left, right in
+      knownSystems.min { left, right in
         let ld = pow(Double(left.x - x), 2) + pow(Double(left.y - y), 2)
         let rd = pow(Double(right.x - x), 2) + pow(Double(right.y - y), 2)
         return ld < rd
@@ -672,13 +756,16 @@ public struct Game: Sendable {
   }
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
-    let item = Equipment.all[selection]
+    let catalogueItem = Equipment.all[selection]
+    let item = Equipment(
+      name: catalogueItem.name, price: shopPrice(catalogueItem),
+      technology: catalogueItem.technology)
     if item.name == FuelStorage.equipmentName {
       guard commander.fuelStorageUnits < FuelStorage.maximumCount else {
         notify("FUEL STORAGE FULL")
         return
       }
-      let price = FuelStorage.price
+      let price = item.price
       guard commander.availableCredits >= price else {
         notify("NOT ENOUGH CASH")
         return
@@ -688,7 +775,7 @@ public struct Game: Sendable {
       notify("FUEL STORAGE UNIT FITTED - REFUEL SEPARATELY")
       return
     }
-    if Equipment.isReward(item.name) {
+    if Equipment.isReward(item.name) && !atPlugh {
       notify(Equipment.rewardLabel(item.name).uppercased() + " - NOT FOR SALE")
       return
     }
@@ -721,8 +808,8 @@ public struct Game: Sendable {
       return
     }
     let cost =
-      item.name == "Fuel" ? (commander.fuelCapacity - commander.fuel) * item.price : item.price
-    guard currentSystem.technology >= item.technology, commander.availableCredits >= cost else {
+      item.price
+    guard equipmentAvailable(item), commander.availableCredits >= cost else {
       notify("NOT AVAILABLE")
       return
     }
@@ -749,6 +836,9 @@ public struct Game: Sendable {
         frontShield = frontShield / oldCapacity * commander.shieldCapacity
         rearShield = rearShield / oldCapacity * commander.shieldCapacity
       } else {
+        if item.name == Equipment.navalEnergyUnit {
+          commander.equipment.remove("Extra Energy Unit")
+        }
         commander.equipment.insert(item.name)
       }
     }
@@ -770,7 +860,7 @@ public struct Game: Sendable {
       market[index].quantity += saleQuantity
       commander.cargo[index] -= saleQuantity
     }
-    let refuelCost = (commander.fuelCapacity - commander.fuel) * Equipment.base[0].price
+    let refuelCost = refillCost
     if commander.unlimitedFuel {
       commander.fuel = commander.fuelCapacity
     } else if commander.availableCredits >= refuelCost {
@@ -782,7 +872,7 @@ public struct Game: Sendable {
     }
     let routeDestination = commander.navigationPlan?.nextSystem
     if routeDestination == nil && selectedSystem == commander.system {
-      let candidates = systems.filter {
+      let candidates = knownSystems.filter {
         $0.id != commander.system
           && currentSystem.distance(to: $0) <= commander.maximumJumpDistance
       }
@@ -809,8 +899,8 @@ public struct Game: Sendable {
     notify("AUTO TRADE TO " + destination.name)
   }
   public func profitableExports(to destination: StarSystem) -> [(index: Int, profit: Int)] {
-    Commodity.all.indices.filter { $0 != 16 }.compactMap { index in
-      let lowestSale = TradePlanner.minimumPrices[destination.economy][index]
+    Commodity.all.indices.compactMap { index in
+      let lowestSale = MarketItem.minimumPrices(at: destination)[index]
       let profit = lowestSale - market[index].price
       return profit > 0 && market[index].quantity > 0 ? (index, profit) : nil
     }.sorted { $0.profit == $1.profit ? $0.index < $1.index : $0.profit > $1.profit }
@@ -871,7 +961,16 @@ public struct Game: Sendable {
     offerBlackjackHandoff()
   }
   public mutating func beginHyperspace() {
-    guard !docked, jumpCountdown == nil, selectedSystem != commander.system else { return }
+    if screen == .chart && !mapIsCurrentGalaxy {
+      _ = prepareChartTravel()
+      return
+    }
+    guard !docked, jumpCountdown == nil else { return }
+    guard prepareChartTravel(), selectedSystem != commander.system,
+      knownSystems.contains(where: { $0.id == selectedSystem })
+    else {
+      return
+    }
     let distance = currentSystem.distance(to: targetSystem)
     guard
       distance <= commander.maximumJumpDistance
@@ -903,7 +1002,7 @@ public struct Game: Sendable {
       commander.navigationPlan = nil
       notify("ROUTE CANCELLED - OFF ROUTE")
     }
-    market = MarketItem.generate(economy: currentSystem.economy, fluctuation: randomByte())
+    market = MarketItem.at(currentSystem, fluctuation: randomByte())
     jumpCountdown = nil
     screen = .front
     dockingComputer = false
@@ -923,7 +1022,10 @@ public struct Game: Sendable {
     commander.navigationPlan = nil
     persistBlackjackTargets()
     commander.galaxy = (commander.galaxy + 1) & 7
-    systems = Universe.galaxy(number: commander.galaxy)
+    if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
+    galacticBrowse = GalaxyBrowseState()
+    systemInspection = nil
+    systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
     selectedSystem = commander.system
     arrive()
     commander.fuel = commander.fuelCapacity
@@ -997,8 +1099,12 @@ public struct Game: Sendable {
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
+    if screen == .showroom {
+      showroom.advance(delta: dt)
+      return
+    }
     if paused || screen == .help || screen == .gallery || screen == .navigation
-      || screen == .handoff
+      || screen == .handoff || screen == .rumour
     {
       return
     }
@@ -1201,11 +1307,20 @@ public actor GameRuntime {
   public func key(_ key: String) {
     let old = game.screen
     game.key(key)
-    if [.gallery, .handoff].contains(old) || [.gallery, .handoff].contains(game.screen) {
+    if key.lowercased() == "r", game.screen.isFlight, game.autoPilot.targetID != nil {
+      controls.pitch = 0
+      controls.yaw = 0
+      controls.roll = 0
+      if game.dockingComputer { controls = Controls() }
+    }
+    if [.gallery, .handoff, .showroom].contains(old)
+      || [.gallery, .handoff, .showroom].contains(game.screen)
+    {
       controls = Controls()
     }
   }
   public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
+  public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
   public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }

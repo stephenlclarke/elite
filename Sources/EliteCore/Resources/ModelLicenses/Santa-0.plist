@@ -1,0 +1,11 @@
+{
+	"identifier" = "oolite.oxp.Griff.Santa";
+	"required_oolite_version" = "1.79";
+	"title" = "Santa";
+	"version" = "1.2";
+	"category" = "Missions";
+	"description" = "Santa watch the system clock and take off within Christmas time only. If you defeat his ship then you can scoop Santa's Lists with the names of good childrens. Deliver it to the main station for some reward.";
+	"author" = "Griff, Littlebear";
+	"information_url" = "http://wiki.alioth.net/index.php/Santa";
+	"license" = "CC BY-NC-SA 4";
+}

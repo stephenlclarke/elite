@@ -1,0 +1,80 @@
+Military Fiasco
+Version 3.0 Written by Murgh.
+
+The Military Fiasco OXP equips the Galactic Navy with the powerful Leviathan Cruiser, supported by the Military Wolf Mark II, the Basilisk, the Hydra and the Rattle Cutter. These ships are occasionally seen in the space lanes, but are more often encountered in Witch Space fighting the Thargoid menace.
+
+A mission is also added. Wouldn’t you know it, those careless chaps at the Military have lost the secret plans to these gruesome battleships, allowing a clan of pirates to mass-produce them. Guess who they will contact for assistance!
+
+Minimum version Oolite 1.74
+-----
+version 3.0
+- Added ship spawning condition script, so that the pirate versions of ships aren't seen until after the mission has started.
+- Converted readme file to plain text.
+- Updated all textures, added normal maps, emission, gloss and spec maps.
+- Swapped original Wolf Mark II model for Griff's version.
+- Added market script to Leviathan, which is different between Military and Pirate versions.
+- Added a switch, changeable via Library Config, to prevent the mission from restarting after you complete it. 
+- Moved all text to missiontext.plist for easier localisation.
+- Added links to GalCop Missions Reputation (if installed).
+- Fixes to shipdata.plist.
+
+version 2.5.3
+- Added fix to prevent update missions to be shown before mission start.
+
+version 2.5.2
+- Added compatibility for future 1.75.
+
+version 2.5
+- Added the new mission screen concept .
+- Raised minimum Oolite version to 1.74
+
+Version 2.4.4
+- Added a incompatibility code for future Oolite 1.74 (Needs new code than)
+
+Version 2.4.3
+- Removed a bug that only affected Oolite 1.65: The initial briefing stopped halfway.
+
+Version 2.4.2
+- Adapted for Oolite 1.72 and 1.73.
+- Added better cloaking detection.
+- When a laser is shot of and it stays intact, it can be scooped now.
+- Pirates are now likely to jump to the next system when all subentities with lasers are shot of and their energy is low.
+
+Version 2.4.1
+- Removed a bug introduced in version 2.4 with the carrier escorts.
+
+Version 2.4
+- Subentities now sometimes fall off in one piece before they explode.
+
+Version 2.3 Additions by Eric Walch:
+- Adapted to Oolite 1.71 Runs now only on Oolite versions until 1.65 and on the current test version 1.71.2+ It does not work with the Oolite test versions 1.68 till 1.71.1 although some of the pirate ships will be there when played on those versions.
+- Removed a bug that made most defence ships of the stolen Leviathan crashing into the carrier on launch. To keep the game in balance I lowered the number of maximum defenders to the value of the plain Leviathan. Changed Leviathan and defence ship AI so they still keep monitoring for an approaching player during docking procedure of the defenders. (only the AI used on the restart of the mission. The first time the mission run they keeps using the original AI.)
+
+Version 2.2.3
+- There is a bug in the oolite 1.70 command that placed one of the targets at the wrong location. This command is replaced by an other placement command so it will also work on the current oolite version.
+
+Version 2.2.2
+- The Java version had an other spelled name than the legacy spelled name. (military-fiasco & military-Fiasco) This resulted in that they did not see each others mission text when switching versions during a mission. Although the missions runs fine, the briefing on the F5 screen is missing. This one now has the right name. (all lowercase) However, when already accepted a mission with version 2.2.0 or 2.2.1 that briefing will miss in this version.
+
+Version 2.2.1
+- Removed a typo the prevented the new progress screen to appear.
+
+Version 2.2    Additions by Eric Walch:
+- Translated the script into JavaScript. On Oolite 1.65 or older the old scripting will be used. On version 1.70 and newer the JS scripting will be used. It will not run on the intermediate test versions 1.68 or 1.69 because they use an to incomplete implementation of the JS commands.
+- Added a progress message that pop's up occasionally to confirm to the player that the script is still doing something.
+- With the JavaScript version, the mission will restart sometimes after completion. You will have the choice to accept or reject the restart of the mission.
+
+Version 2.1    Additions by Eric Walch:
+- The version of Murgh was not compatible with other mission OXP's running simultaniously. Now added code for compatibility with other mission offering OXP's. So called MOP code (Mission Offering Protection).
+- Changed the program structure slightly so that is uses less processor time. The game itself is in no way altered. Specially after finishing the game it still kept checking all possible game conditions and thereby consuming useless time. Will now use a minimum of time when finished but should stay in place when one still wants to see all the nice new ships to randomly appear. 
+- Removed a bug that made it impossible to restart the game after a delay.
+- Gave leviathan escorts a separate entry in shipdata.plist with its own AI file and added code to make that they always get role "escort". (needed to fix a bug in Oolite itself that was present until at least the current version 1.70). Gave one ship a higher max_flight_speed to be able to follow the mother.
+- Changed intelligence code of the leviathan defenders so they do a 5 seconds speed burst after launching. In the old situation they regularly were hit by the mother when launching at full speed.
+- Changed intelligence code of the military leviathan. Main noticeable difference is that he will move around obstacles instead of just flying through it. This is standard practice for current Oolite internal ships.
+- Renamed several "military" AI.plist references into "militaryFiasco" AI.plist references to avoid potential name conflicts with other OXP's.
+The game play itself is in no way altered. I didn't change the intelligence of the target ships. It is just as easy or difficult as it was before.
+Renamed version to "Military Fiasco 2.1"
+
+Version 2.0    Original version by Murgh
+
+Link to wiki page: http://wiki.alioth.net/index.php/Military_Fiasco

@@ -1,0 +1,57 @@
+Imperial Courier Version 2
+--------------------------
+
+by Dave Hughes
+
+Design based on the Imperial Courier featured in Frontier: Elite 2 by Frontier Developments
+
+This is the second version of the Courier. It has a totally new model including rotating engine nacelles (thanks to Giles for the help with this).
+
+I haven't tried to reflect the Frontier abilities of this ship due to the immense differences between that game and Oolite. Trying to do that just created an Uber ship, and I want the Courier to be accessible to all. That said, it should still present a challenge to new players. With that in mind I would recommend that you only install it if you are an Average or above combateer.
+
+Thanks to the Oolite community for their help bringing this ship to life, including help with the viewpoints and laser positions. Apologies for the wait.
+
+So what's in it then? Well, there are two flavours of IC this time around - the standard Imperial Navy edition (white paint job), which is not available as a player ship and the Seldar Shipyards custom build, (flat grey paint job) which is available to players too.
+
+
+Enjoy.
+
+Dave "Selezen" Hughes.
+http://hughesd.co.uk/elite
+
+
+----------------------------------------------------------------------------------------------------------
+
+Version History:
+
+V2.3
+ - Refreshed texture, added normal, specular and gloss maps.
+ - tweaked engine nacelle locations to prevent clipping.
+ 
+V2.2.1
+ - Added extra colour variations.
+ - Adjusted the forward and aft view positions to eliminate obstructions.
+	
+V2.2.0 - Updates by rustem - released 10/12/2018.
+ - Tweaks to shipdata.plist file.
+ - Added texture files for illumination map.
+ - Adjusted roles to better suite ship type and function.
+
+V2.1 - released 17/8/2014.
+- Corrected one texture that was not loading with libpng-1.5 or newer. (Used on the Mac Oolite versions since 1.76)
+- Added some Oolite 1.80 roles
+- Added a cockpit light.
+
+V2.0 - released 14/06/2007.
+- Initial public release.
+
+----------------------------------------------------------------------------------------------------------
+
+This work is licensed under the Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License.
+To view a copy of this license, visit:
+
+http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA. 
+
+You May not use any part of this in anything comercial, and it may not be distributed in any comercial product even if included "free"

@@ -1,0 +1,25 @@
+Ship OXP:  Moccasin - NPC only
+
+Overview:
+Xeceesian Shipyards purchased the rights and plans from Zacariah Design Inc. for unlimited production of the “Moccasin”. The R&D team projected it would be in high demand as a light escort craft for small to medium trading firms. It is priced competitively and in regards to specifications equals or exceeds the other escort class ships on the market. Unfortunately, Xeceesian Shipyards fell on hard times and production ceased. About 1000 units had been produced and of these a fair number were hijacked by pirates.
+
+This ship will appear in the space lanes as an escort craft for both traders and pirates alike, and occasionally as a lone wolf pirate.
+
+Standard Equipment:
+Fore mounted beam laser
+Fuel Scoop
+
+Minimum Requirements:
+Tested with Oolite 1.76.  No dependencies
+
+Installation:
+After unzipping, move or copy the folder, "Moccasin.oxp" into your AddOns folder.  Where that resides depends on your Oolite installation.
+
+License:
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License version 3.0
+http://creativecommons.org/licenses/by-nc-sa/2.5/
+
+History:
+Version 1.15 - Jan. 2012: New materials - effects/lights, normal map/tint map for full shaders
+Version 1.1 - Jan. 2012: Tweaked model and new textures - materials only, no custom shaders
+Verson 1.0 - June 2011

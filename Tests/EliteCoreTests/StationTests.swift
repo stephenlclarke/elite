@@ -126,7 +126,9 @@ import Testing
     let layout = EquipmentLayout(game: game, width: width, height: 518)
     #expect(layout.contentWidth <= 680)
     let frame = Display.equipmentScreen(game, width: width, height: 518)
-    #expect(frame.labels.contains { $0.text.contains("Left: Pulse Laser") })
+    #expect(
+      frame.labels.contains { $0.text == "Left" }
+        && frame.labels.contains { $0.text == "Pulse Laser" })
     for label in frame.labels { #expect(label.bounds.maxX <= width) }
   }
 }

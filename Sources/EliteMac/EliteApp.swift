@@ -7,6 +7,13 @@ import UniformTypeIdentifiers
 final class GameView: NSView {
   var game = Game() {
     didSet {
+      if game.autoPilot.targetID != oldValue.autoPilot.targetID, game.autoPilot.targetID != nil {
+        clearSteeringInput()
+        if game.dockingComputer {
+          held.removeAll()
+          pressedKeys.removeAll()
+        }
+      }
       if game.screen == .gallery || oldValue.screen == .gallery || game.screen == .navigation
         || oldValue.screen == .navigation
         || game.mapSearch.active != oldValue.mapSearch.active
@@ -62,8 +69,13 @@ final class GameView: NSView {
     guard let context = NSGraphicsContext.current?.cgContext else { return }
     drawGame(game, context: context, rect: bounds)
   }
+  private func clearSteeringInput() {
+    held.subtract(["x", "s", ",", "<", ".", ">", "left", "right"])
+    trackpad.reset()
+  }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
+    if key == "r" && !event.isARepeat && game.screen.isFlight { clearSteeringInput() }
     held.insert(key)
     pressedKeys[event.keyCode] = key
     if !event.isARepeat || (game.screen == .equipment && ["up", "down"].contains(key)) {
@@ -74,6 +86,11 @@ final class GameView: NSView {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
+    if game.screen == .showroom {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("showroom-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .handoff {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("handoff-click:\(point.x):\(point.y)")
@@ -96,6 +113,14 @@ final class GameView: NSView {
   override func scrollWheel(with event: NSEvent) {
     if [.status, .inventory, .market, .buy, .sell].contains(game.screen) {
       pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
+    }
+    if game.screen == .showroom {
+      let point = convert(event.locationInWindow, from: nil)
+      let layout = ShowroomLayout(
+        width: bounds.width, height: bounds.height, detail: game.showroom.detail)
+      let region =
+        layout.listVisible && layout.list.contains(.init(point.x, point.y)) ? "list" : "scroll"
+      pending.append("showroom-\(region):\(event.scrollingDeltaY > 0 ? -1 : 1)")
     }
     if game.screen == .equipment {
       pending.append("equipment-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
@@ -144,6 +169,7 @@ final class GameView: NSView {
     case 36: return "return"
     case 48: return "tab"
     case 53: return "escape"
+    case 117: return "delete"
     case 119: return "copy"
     case 116: return "pageup"
     case 121: return "pagedown"
@@ -186,7 +212,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let events = view.pending
         view.pending.removeAll()
         for event in events {
-          if event.hasPrefix("handoff-click:") {
+          if event.hasPrefix("showroom-click:") {
+            let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
+            if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }
+          } else if event.hasPrefix("handoff-click:") {
             let values = event.dropFirst(14).split(separator: ":").compactMap { Double($0) }
             if values.count == 2 { await runtime.blackjackHandoffClick(x: values[0], y: values[1]) }
           } else if event.hasPrefix("equipment-click:") {
@@ -256,6 +285,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let load = commander.submenu?.addItem(
       withTitle: "Load Commander", action: #selector(loadCommander), keyEquivalent: "o")
     load?.target = self
+    let showroom = commander.submenu?.addItem(
+      withTitle: "Ship Showroom", action: #selector(showShipShowroom), keyEquivalent: "w")
+    showroom?.keyEquivalentModifierMask = [.command, .shift]
+    showroom?.target = self
     let game = NSMenuItem()
     game.title = "Game"
     menu.addItem(game)
@@ -278,8 +311,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     guide?.target = self
     NSApp.mainMenu = menu
   }
+  @objc private func showShipShowroom() {
+    (window?.contentView as? GameView)?.pending.append("showroom-open")
+  }
   @objc private func showHelp() {
-    (window?.contentView as? GameView)?.pending.append("k")
+    (window?.contentView as? GameView)?.pending.append("help-open")
   }
   @objc private func togglePause() {
     (window?.contentView as? GameView)?.pending.append("pause")
@@ -436,6 +472,19 @@ struct EliteApp {
       for _ in 0..<120 {
         let state = await encounter.advance(delta: 0.02)
         _ = await imageForGame(state, width: 1024, height: 720)
+      }
+    }
+    for cycle in 0..<8 {
+      var game = Game(executive: false)
+      game.screen = .status
+      let runtime = GameRuntime(game: game)
+      for key in [
+        "showroom-open", "down", "b", "down", "return", "v", ".", "pagedown", " ", "k", "k", "w",
+        "4", "]", "/", "l", "a", "return", "6", "4", "o", "8", "u", "return",
+      ] {
+        await runtime.key(key)
+        let state = await runtime.advance(delta: 0.02)
+        _ = await imageForGame(state, width: cycle % 2 == 0 ? 1280 : 512, height: 720)
       }
     }
     print("Actor simulation and frame lifecycle probe passed")

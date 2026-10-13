@@ -34,11 +34,12 @@ import Testing
 }
 @Test func shortChartMarkersAreRadiusProportionalAndLabelsStayWithinNativeBounds() {
   var game = Game(executive: false)
-  let sorted = game.systems.sorted { $0.radius < $1.radius }
+  let sorted = game.knownSystems.sorted { $0.radius < $1.radius }
   for width in [512.0, 768, 1512] {
     for screen in [Screen.chart, .shortChart] {
       game.screen = screen
-      let layout = ChartLayout(width: width, height: 518, local: screen == .shortChart)
+      let layout = ChartLayout(
+        width: width, height: 518, local: screen == .shortChart, docked: game.docked)
       #expect(
         zip(sorted, sorted.dropFirst()).allSatisfy {
           layout.markerRadius($0) <= layout.markerRadius($1)
@@ -65,7 +66,7 @@ import Testing
   game.commander.fuel = 0
   game.key("/")
   #expect(game.mapSearch.active && game.searchResults.count == 256)
-  let sorted = game.systems.sorted { $0.name == $1.name ? $0.id < $1.id : $0.name < $1.name }
+  let sorted = game.knownSystems.sorted { $0.name == $1.name ? $0.id < $1.id : $0.name < $1.name }
   #expect(game.searchResults == sorted)
   for key in "lAvE" { game.key(String(key)) }
   #expect(
@@ -98,8 +99,8 @@ import Testing
   game.key("down")
   let expected = game.searchResults[2]
   game.key("return")
-  #expect(game.selectedSystem == expected.id)
-  let layout = ChartLayout(width: 768, height: 768, local: false)
+  #expect(game.viewedSystemID == expected.id)
+  let layout = ChartLayout(width: 768, height: 768, local: false, docked: game.docked)
   let point = layout.point(expected, current: game.currentSystem)
   let frame = Display.map(game, width: 768, height: 768)
   #expect(
@@ -111,10 +112,10 @@ import Testing
   game.key("search-clear")
   let mouseExpected = game.searchResults[3]
   game.mapClick(x: layout.searchRect.x + 50, y: layout.searchRect.y + 36 + 3 * 22 + 5)
-  #expect(game.selectedSystem == mouseExpected.id && !game.mapSearch.active)
+  #expect(game.viewedSystemID == mouseExpected.id && !game.mapSearch.active)
   let mousePoint = layout.point(mouseExpected, current: game.currentSystem)
   game.mapClick(x: mousePoint.x, y: mousePoint.y)
-  #expect(game.selectedSystem == mouseExpected.id)
+  #expect(game.viewedSystemID == mouseExpected.id)
   let reach = game.targetReachable
   game.mapColour = .technology
   #expect(game.targetReachable == reach && game.jumpCountdown == nil)

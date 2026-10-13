@@ -12,19 +12,29 @@ extension Display {
         text: text, x: right - Double(text.count) * 6 * layout.font, y: y, scale: layout.font,
         ink: ink)
     }
-    frame.labels.append(rightLabel("PRICE / STATUS", y: 12, ink: .yellow))
-    for (index, mount) in LaserMount.allCases.enumerated() {
-      let title = (mount == game.equipmentMount ? "> " : "  ") + mount.label
+    for cell in layout.mounts {
+      let selected = cell.mount == game.equipmentMount
+      let bounds = cell.bounds
+      let ink: Ink = selected ? .cyan : .blue
+      frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
+      frame.stroke(bounds.maxX, bounds.y, bounds.maxX, bounds.maxY, ink)
+      frame.stroke(bounds.maxX, bounds.maxY, bounds.x, bounds.maxY, ink)
+      frame.stroke(bounds.x, bounds.maxY, bounds.x, bounds.y, ink)
       frame.label(
-        title, layout.left + Double(index) * layout.contentWidth / 4, 36, scale: layout.font,
-        ink: mount == game.equipmentMount ? .cyan : .white)
-    }
-    let summaries = game.commander.laserMountSummary
-    for index in 0..<2 {
+        cell.mount.label, bounds.x + 8, bounds.y + 6, scale: layout.font,
+        ink: selected ? .cyan : .white)
       frame.label(
-        summaries[index * 2] + "   " + summaries[index * 2 + 1], layout.left,
-        56 + Double(index) * 16, scale: layout.font, ink: .cyan)
+        game.commander.laser(on: cell.mount)?.equipmentName ?? "Empty",
+        bounds.x + 8, bounds.y + 24, scale: layout.font,
+        ink: selected ? .cyan : .white)
     }
+    frame.label(
+      "Buying for: " + game.equipmentMount.label, layout.left, layout.buyingTop,
+      scale: layout.font, ink: .cyan)
+    frame.label(
+      "Equipment", layout.left + 32, layout.listTop - 22,
+      scale: layout.font, ink: .yellow)
+    frame.labels.append(rightLabel("PRICE / STATUS", y: layout.listTop - 22, ink: .yellow))
     for visual in layout.start..<min(EquipmentGroups.rows.count, layout.start + layout.count) {
       let y = layout.listTop + Double(visual - layout.start) * layout.row
       switch EquipmentGroups.rows[visual] {
@@ -35,19 +45,25 @@ extension Display {
         let fitted =
           LaserKind.from(item.name).map { game.commander.laser(on: game.equipmentMount) == $0 }
           ?? game.commander.equipment.contains(item.name)
-        let available = item.technology <= game.currentSystem.technology
+        let available = game.equipmentAvailable(item)
         frame.label(
           index == game.selection ? ">" : "", layout.left + 14, y, scale: layout.font, ink: .cyan)
         frame.label(
           item.name, layout.left + 32, y, scale: layout.font,
           ink: available || fitted ? .white : .red)
-        var status = fitted ? "FITTED" : String(format: "%.1f CR", Double(item.price) / 10)
-        if Equipment.isReward(item.name) {
+        var status =
+          fitted ? "FITTED" : String(format: "%.1f CR", Double(game.shopPrice(item)) / 10)
+        if Equipment.isReward(item.name) && !game.atPlugh {
           status = fitted ? "FITTED" : Equipment.rewardLabel(item.name).uppercased()
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "
-            + (game.commander.fuelStorageUnits == 4 ? "MAX" : "2000.0 CR")
+            + (game.commander.fuelStorageUnits == 4
+              ? "MAX" : String(format: "%.1f CR", Double(game.shopPrice(item)) / 10))
+        } else if item.name == "Fuel" {
+          status =
+            game.commander.fuel == game.commander.fuelCapacity
+            ? "FULL" : String(format: "Refill %.1f CR", Double(game.refillCost) / 10)
         } else if !available && !fitted {
           status += " TL\(item.technology + 1)"
         }
@@ -55,10 +71,14 @@ extension Display {
         frame.labels.append(rightLabel(status, y: y, ink: fitted ? .green : statusInk))
       }
     }
+    if game.messageTime > 0 {
+      frame.label(
+        game.message, layout.left, cockpit.dashboardTop - 82, scale: layout.font, ink: .orange)
+    }
     if Equipment.all.indices.contains(game.selection) {
       let item = Equipment.all[game.selection]
       var description = item.name + ": "
-      if Equipment.isReward(item.name) {
+      if Equipment.isReward(item.name) && !game.atPlugh {
         description += Equipment.rewardLabel(item.name) + ". Not for sale."
       } else if let laser = LaserKind.from(item.name) {
         description +=
@@ -72,7 +92,7 @@ extension Display {
       } else if let booster = ShieldBooster.from(item.name) {
         description += String(
           format: "Front/rear capacity x%.4g. Recharge unchanged.", booster.multiplier)
-      } else if item.technology > game.currentSystem.technology {
+      } else if !game.equipmentAvailable(item) {
         description += "Unavailable: requires tech level \(item.technology + 1)."
       } else {
         description += "Up/Down: select. Return: buy. Scroll: browse."
@@ -93,7 +113,9 @@ extension Display {
 public struct EquipmentLayout: Sendable {
   public let contentWidth: Double
   public let left: Double
-  public let listTop = 100.0
+  public let listTop: Double
+  public let buyingTop: Double
+  public let mounts: [(mount: LaserMount, bounds: CanvasRect)]
   public let font: Double
   public let row: Double
   public let count: Int
@@ -101,10 +123,25 @@ public struct EquipmentLayout: Sendable {
   public init(game: Game, width: Double, height: Double) {
     contentWidth = min(680, width - 48)
     left = (width - contentWidth) / 2
-    font = width < 700 ? 1.0 : 1.25
+    font = GameTypography.scale
+    let columns = width < 700 ? 2 : 4
+    let columnWidth = contentWidth / Double(columns)
+    let gridLeft = left
+    mounts = LaserMount.allCases.enumerated().map { index, mount in
+      (
+        mount,
+        CanvasRect(
+          x: gridLeft + Double(index % columns) * columnWidth,
+          y: 36 + Double(index / columns) * 52,
+          width: columnWidth - 8, height: 44)
+      )
+    }
+    let mountBottom = mounts.last!.bounds.maxY
+    buyingTop = mountBottom + 14
+    listTop = mountBottom + 66
     row = ceil(font * 7) + 9
     let top = CockpitLayout(game: game, width: width, height: height).dashboardTop
-    count = max(2, Int((top - 182) / row))
+    count = max(2, Int((top - listTop - 82) / row))
     let selected = EquipmentGroups.rows.firstIndex(of: .item(game.selection)) ?? 1
     var candidate = max(0, min(selected - count + 2, EquipmentGroups.rows.count - count))
     // Keep an item's category visible even when the list is scrolled into its middle.
@@ -121,9 +158,12 @@ extension Game {
   public mutating func equipmentClick(y: Double, x: Double? = nil) {
     guard screen == .equipment else { return }
     let layout = EquipmentLayout(game: self, width: viewportWidth, height: viewportHeight)
-    if let x, y >= 32 && y < 52, x >= layout.left && x < layout.left + layout.contentWidth {
-      equipmentMount = LaserMount.allCases[Int((x - layout.left) / (layout.contentWidth / 4))]
-      return
+    if let x {
+      if let cell = layout.mounts.first(where: { $0.bounds.contains(.init(x, y)) }) {
+        equipmentMount = cell.mount
+        return
+      }
+      guard x >= layout.left && x < layout.left + layout.contentWidth else { return }
     }
     guard y >= layout.listTop else { return }
     let row = Int((y - layout.listTop) / layout.row)

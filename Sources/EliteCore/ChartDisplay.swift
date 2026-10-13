@@ -54,25 +54,27 @@ public struct ChartLayout: Sendable {
   public let plot: CanvasRect
   public let wide: Bool
   public let local: Bool
+  public let docked: Bool
   public let scale: Double
   public let font: Double
   public var searchRect: CanvasRect {
     .init(
-      x: width - min(320, width - 32) - 16, y: 44, width: min(320, width - 32),
-      height: min(320, height - 80))
+      x: width - min(320, width - 32) - 16, y: local ? 44 : 96, width: min(320, width - 32),
+      height: min(320, height - (local ? 80 : 132)))
   }
   public var searchRows: Int { max(1, Int((searchRect.height - 36) / 22)) }
-  public init(width: Double, height: Double, local: Bool, fuel: Int = 70) {
+  public init(width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false) {
     self.width = width
     self.height = height
     self.local = local
+    self.docked = docked
     wide = width >= 1000
-    font = width < 700 ? 1 : 1.25
+    font = GameTypography.scale
     let wideFooter = local ? 276.0 : 226.0
-    let narrowFooter = local ? 320.0 : 270.0
+    let narrowFooter = docked ? 380.0 : (local ? 320.0 : 270.0)
     plot = .init(
-      x: 16, y: 58, width: width - (wide ? 336 : 32),
-      height: max(80, height - (wide ? wideFooter : narrowFooter)))
+      x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
+      height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
     scale =
       local
       ? min(
@@ -104,7 +106,8 @@ extension CanvasRect {
 extension Game {
   public var searchResults: [StarSystem] {
     let query = mapSearch.query.lowercased()
-    return systems.filter { query.isEmpty || $0.name.lowercased().contains(query) }.sorted { a, b in
+    return mapSystems.filter { query.isEmpty || $0.name.lowercased().contains(query) }.sorted {
+      a, b in
       let ap = a.name.lowercased().hasPrefix(query)
       let bp = b.name.lowercased().hasPrefix(query)
       if ap != bp { return ap }
@@ -112,7 +115,8 @@ extension Game {
     }
   }
   public var targetReachable: Bool {
-    let distance = currentSystem.distance(to: targetSystem)
+    guard mapIsCurrentGalaxy else { return false }
+    let distance = currentSystem.distance(to: mapTargetSystem)
     return distance <= commander.maximumJumpDistance
   }
   mutating func searchKey(_ key: String) {
@@ -121,7 +125,7 @@ extension Game {
     case "escape": mapSearch.active = false
     case "return":
       if searchResults.indices.contains(mapSearch.highlight) {
-        manuallySelectSystem(searchResults[mapSearch.highlight].id)
+        selectChartSystem(searchResults[mapSearch.highlight].id)
         mapSearch.active = false
       }
     case "up", "down": mapSearch.highlight += key == "up" ? -1 : 1
@@ -152,8 +156,18 @@ extension Game {
     guard screen == .chart || screen == .shortChart else { return }
     let layout = ChartLayout(
       width: viewportWidth, height: viewportHeight, local: screen == .shortChart,
-      fuel: chartScaleFuel)
-    if screen == .chart && y < 40 && x > viewportWidth - 260 {
+      fuel: chartScaleFuel, docked: docked)
+    if screen == .chart {
+      if let index = layout.galaxyButtons.firstIndex(where: { $0.contains(.init(x, y)) }) {
+        viewGalaxy(index)
+        return
+      }
+      if layout.currentLocationButton.contains(.init(x, y)) {
+        returnChartToCurrentLocation()
+        return
+      }
+    }
+    if screen == .chart && y < 28 && x > viewportWidth - 170 {
       mapSearch.active = true
       return
     }
@@ -166,7 +180,7 @@ extension Game {
       if layout.searchRect.contains(.init(x, y)), y >= layout.searchRect.y + 36,
         searchResults.indices.contains(index)
       {
-        manuallySelectSystem(searchResults[index].id)
+        selectChartSystem(searchResults[index].id)
         mapSearch.active = false
       } else {
         mapSearch.active = false
@@ -174,7 +188,9 @@ extension Game {
       return
     }
     guard layout.plot.contains(.init(x, y)) else { return }
-    let visible = systems.filter { layout.plot.contains(layout.point($0, current: currentSystem)) }
+    let visible = mapSystems.filter {
+      layout.plot.contains(layout.point($0, current: currentSystem))
+    }
     let selected =
       visible.min { a, b in
         func distance(_ system: StarSystem) -> Double {
@@ -183,50 +199,53 @@ extension Game {
         }
         return distance(a) == distance(b) ? a.id < b.id : distance(a) < distance(b)
       }?.id ?? selectedSystem
-    manuallySelectSystem(selected)
+    selectChartSystem(selected)
   }
 }
 extension Display {
   public static func map(_ game: Game, width: Double, height: Double) -> Frame {
     let layout = ChartLayout(
       width: width, height: height, local: game.screen == .shortChart,
-      fuel: game.chartScaleFuel)
+      fuel: game.chartScaleFuel, docked: game.docked)
     var frame = Frame()
     frame.responsive = true
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
     frame.flightClip = layout.plot
     frame.label(
-      layout.local ? "SHORT RANGE CHART" : "GALACTIC CHART \(game.commander.galaxy + 1)", 16, 10,
+      layout.local ? "SHORT RANGE CHART" : "Viewing Galaxy \(game.viewedGalaxy + 1)", 16, 10,
       scale: layout.font, ink: .yellow)
-    frame.label("M: Colour " + game.mapColour.rawValue, 16, 32, scale: layout.font, ink: .cyan)
+    frame.label(
+      "M: " + game.mapColour.rawValue, layout.local ? 16 : 220, layout.local ? 32 : 10,
+      scale: layout.font, ink: .cyan)
     if !layout.local {
       frame.label(
         "/: Search planets", width - 16 - 17 * 6 * layout.font, 10, scale: layout.font, ink: .cyan)
     }
+    if !layout.local { galaxySelector(game, layout: layout, into: &frame) }
     let current = layout.point(game.currentSystem, current: game.currentSystem)
     if layout.local {
       reachRings(game, layout: layout, into: &frame)
-    } else {
+    } else if game.mapIsCurrentGalaxy {
       let radius = game.commander.maximumJumpDistance / 0.4 * layout.scale
       frame.ellipse(current.x, current.y, radius, radius, .blue)
     }
-    let visible = game.systems.filter {
+    let visible = game.mapSystems.filter {
       layout.plot.contains(layout.point($0, current: game.currentSystem))
     }
     let markerBoxes = visible.map { system -> CanvasRect in
       let point = layout.point(system, current: game.currentSystem)
-      let radius = layout.markerRadius(system) + (system.id == game.selectedSystem ? 12 : 3)
+      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 3)
       return .init(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2)
     }
     for system in visible {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
-      if system.id == game.commander.system {
+      if game.mapIsCurrentGalaxy && system.id == game.commander.system {
         frame.ellipse(point.x, point.y, radius + 3, radius + 3, .cyan)
       }
-      if system.id == game.selectedSystem {
+      if system.id == game.viewedSystemID {
         frame.ellipse(point.x, point.y, radius + 5, radius + 5, .white)
         frame.stroke(point.x - radius - 9, point.y, point.x - radius - 3, point.y, .white)
         frame.stroke(point.x + radius + 3, point.y, point.x + radius + 9, point.y, .white)
@@ -239,21 +258,31 @@ extension Display {
     var occupied: [CanvasRect] = []
     let labelled = visible.sorted { a, b in
       func priority(_ value: StarSystem) -> Int {
-        if value.id == game.selectedSystem { return 0 }
-        return value.id == game.commander.system ? 1 : 2
+        if value.id == game.viewedSystemID { return 0 }
+        return game.mapIsCurrentGalaxy && value.id == game.commander.system ? 1 : 2
       }
       return priority(a) == priority(b) ? a.id < b.id : priority(a) < priority(b)
-    }.filter { layout.local || $0.id == game.selectedSystem || $0.id == game.commander.system }
+    }.filter {
+      layout.local || $0.id == game.viewedSystemID
+        || (game.mapIsCurrentGalaxy && $0.id == game.commander.system)
+    }
     for system in labelled {
       chartLabel(
         system, game: game, layout: layout, markerBoxes: markerBoxes, occupied: &occupied,
         into: &frame)
     }
-    mapDetails(game, layout: layout, into: &frame)
+    if game.docked {
+      dockedMapDetails(game, layout: layout, into: &frame)
+    } else {
+      mapDetails(game, layout: layout, into: &frame)
+    }
     mapLegend(game, layout: layout, into: &frame)
     frame.label(
-      "Arrows: select  O: current  D: distance  0: flight  K: help", 16, height - 20,
+      "[/]: galaxy  Arrows: planet  O: current  K: help", 16, height - 20,
       scale: layout.font, ink: .cyan)
+    if game.messageTime > 0 {
+      frame.label(game.message, 16, height - 40, scale: layout.font, ink: .orange)
+    }
     if game.mapSearch.active { searchDropdown(game, layout: layout, into: &frame) }
     return frame
   }
@@ -262,7 +291,7 @@ extension Display {
     occupied: inout [CanvasRect], into frame: inout Frame
   ) {
     let point = layout.point(system, current: game.currentSystem)
-    let radius = layout.markerRadius(system) + (system.id == game.selectedSystem ? 14 : 6)
+    let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 14 : 6)
     let width = Double(system.name.count) * 6 * layout.font
     let height = 7 * layout.font
     let candidates = [
@@ -282,16 +311,20 @@ extension Display {
     frame.label(system.name, box.x, box.y, scale: layout.font)
   }
   private static func mapDetails(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
-    let system = game.targetSystem
+    let system = game.mapTargetSystem
     let x = layout.wide ? layout.width - 300 : 16
-    let y = layout.wide ? 60.0 : layout.height - 198
+    let y = layout.wide ? 96.0 : layout.height - 198
     let row = layout.wide ? 20.0 : 13.0
     let values = [
-      "Selected: " + system.name, "Economy: " + system.economyName,
+      "Selected: G\(game.viewedGalaxy + 1) / " + system.name, "Economy: " + system.economyName,
       "Government: " + system.governmentName,
       "Tech \(system.technology + 1)  Radius \(system.radius) km",
-      String(format: "Distance %.1f light-years", game.currentSystem.distance(to: system)),
-      "Reachable: \(game.targetReachable ? "Yes" : "No")  Range: "
+      game.mapIsCurrentGalaxy
+        ? String(format: "Distance %.1f light-years", game.currentSystem.distance(to: system))
+        : "Distance: unavailable across galaxies",
+      (game.mapIsCurrentGalaxy
+        ? "Reachable: \(game.targetReachable ? "Yes" : "No")  Range: "
+        : "Local range unavailable: ")
         + String(format: "%.1f ly", game.commander.maximumJumpDistance),
     ]
     let nav =
@@ -307,7 +340,9 @@ extension Display {
       route.map {
         "Route: " + game.systems[$0.destination].name + ($0.complete ? " arrived" : " N: inspect")
       } ?? (nav + "  N: routes")
-    frame.label(navLine, x, y + 6 * row, scale: layout.font, ink: .cyan)
+    frame.label(
+      game.mapIsCurrentGalaxy ? navLine : "Routes: current galaxy only", x, y + 6 * row,
+      scale: layout.font, ink: .cyan)
     for (index, value) in values.enumerated() {
       frame.label(
         value, x, y + Double(index) * row, scale: layout.font, ink: index == 0 ? .yellow : .white)
@@ -316,7 +351,8 @@ extension Display {
   private static func mapLegend(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
     let colours: [Ink] = [.red, .redOrange, .orange, .gold, .yellow, .lime, .leaf, .green]
     for (index, name) in game.mapColour.legend.enumerated() {
-      let x = 22 + Double(index / 4) * (layout.width / 2)
+      let legendWidth = layout.docked && layout.wide ? layout.plot.width : layout.width
+      let x = 22 + Double(index / 4) * (legendWidth / 2)
       let y = layout.height - 104 + Double(index % 4) * 16
       frame.point(x, y + 4, radius: 3, ink: colours[index])
       frame.label(name, x + 10, y, scale: layout.font)
@@ -324,7 +360,7 @@ extension Display {
   }
   private static func searchDropdown(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
     let rect = layout.searchRect
-    let font = 1.0
+    let font = GameTypography.scale
     frame.graphics.append(
       .panel(
         .init(
@@ -346,12 +382,36 @@ extension Display {
       let y = rect.y + 36 + Double(row) * 22
       frame.point(rect.x + 12, y + 4, radius: 4, ink: game.mapColour.colour(system))
       frame.label(
-        (index == game.mapSearch.highlight ? "> " : "  ") + system.name, rect.x + 24, y,
+        (index == game.mapSearch.highlight ? "> " : "  ") + "G\(game.viewedGalaxy + 1) "
+          + system.name, rect.x + 24, y,
         scale: font, ink: .white)
       frame.label(game.mapColour.category(system), rect.x + 130, y, scale: font, ink: .yellow)
-      if game.commander.navigationTier != nil && !game.canPlan(to: system) {
+      if game.mapIsCurrentGalaxy && game.commander.navigationTier != nil
+        && !game.canPlan(to: system)
+      {
         frame.label("Outside planning range", rect.x + 130, y + 10, scale: font, ink: .orange)
       }
+    }
+  }
+}
+
+extension Display {
+  private static func galaxySelector(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
+    frame.label(
+      "Current location: Galaxy \(game.commander.galaxy + 1) / " + game.currentSystem.name,
+      16, 32, scale: layout.font)
+    frame.label(
+      "O: Current", layout.currentLocationButton.x + 4, 32, scale: layout.font, ink: .cyan)
+    frame.label("Galaxy", 16, 66, scale: layout.font, ink: .yellow)
+    for (index, bounds) in layout.galaxyButtons.enumerated() {
+      let ink: Ink = index == game.viewedGalaxy ? .cyan : .blue
+      frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
+      frame.stroke(bounds.maxX, bounds.y, bounds.maxX, bounds.maxY, ink)
+      frame.stroke(bounds.maxX, bounds.maxY, bounds.x, bounds.maxY, ink)
+      frame.stroke(bounds.x, bounds.maxY, bounds.x, bounds.y, ink)
+      frame.label(
+        "\(index + 1)", bounds.x + (bounds.width - 6 * layout.font) / 2,
+        bounds.y + 8, scale: layout.font, ink: index == game.viewedGalaxy ? .cyan : .white)
     }
   }
 }
