@@ -268,15 +268,19 @@ extension Display {
   {
     guard let ship = game.showroomShip else { return [] }
     let columns = Int(width / (6 * GameTypography.scale))
-    let metadata = [
+    let dimensions =
+      ship.dimensions.map {
+        $0.map { String(format: "%.4g", $0) }.joined(separator: " x ")
+      } ?? "Unavailable"
+    let profileTitle = game.showroomProfile?.title ?? "Unavailable"
+    let profileLabel =
+      "Profile \(game.showroom.profileIndex + 1)/\(game.showroomProfiles.count): \(profileTitle)"
+    let metadata: [String] = [
       ship.name + " / " + ship.shipClass,
       ship.availability, "Editions: " + ship.appearances,
       "Evidence: " + ship.evidence, ship.geometryContext,
-      "Dimensions: "
-        + (ship.dimensions.map { $0.map { String(format: "%.4g", $0) }.joined(separator: " x ") }
-          ?? "Unavailable"),
-      "Profile \(game.showroom.profileIndex + 1)/\(game.showroomProfiles.count): "
-        + (game.showroomProfile?.title ?? "Unavailable"),
+      "Dimensions: " + dimensions,
+      profileLabel,
       game.showroomProfile?.context ?? "No numerical profile for this object.",
     ]
     var rows = [metadata[0], metadata[6], metadata[7]].flatMap {
