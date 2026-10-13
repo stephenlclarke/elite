@@ -7,6 +7,31 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeSpinInputRecognizesCirclesRebasesAimAndKeepsForwardThrottleSeparate()
+  {
+    let view = GameView()
+    view.game.launch()
+    view.game.key("v")
+    for index in 0...40 {
+      let angle = -Double(index) * .pi / 20
+      view.updateTrackpad(positions: [.init(0.5 + cos(angle) * 0.3, 0.5 + sin(angle) * 0.3)])
+    }
+    #expect(view.pending == ["spin:cw"])
+    #expect(view.controls.pitch == 0 && view.controls.yaw == 0 && view.controls.throttle == 0)
+    view.updateTrackpad(positions: [.zero, .zero, .zero])
+    #expect(view.controls.spinContacts == 3 && view.controls.throttle == 0)
+    view.updateTrackpad(positions: [.init(0.1, 0.1), .init(0.3, 0.1)])
+    #expect(view.controls.pitch == 0 && view.controls.yaw == 0)
+    view.updateTrackpad(positions: [.init(0.2, 0.2), .init(0.4, 0.2)])
+    #expect(view.controls.pitch > 0 && view.controls.yaw > 0 && view.controls.roll == 0)
+    view.held = ["-", "right"]
+    #expect(view.controls.spinSlower && !view.controls.spinFaster && view.controls.yaw == 1)
+    view.held = ["+"]
+    #expect(view.controls.spinFaster && !view.controls.spinSlower)
+    view.game.key("b")
+    #expect(view.trackpad.fingerCount == 0)
+  }
+
   @MainActor @Test func nativeTrackpadHoldsControlsAndClearsOnPauseHelpDockingOrFocusLoss() throws {
     let view = GameView()
     #expect(view.allowedTouchTypes == .indirect && view.wantsRestingTouches)

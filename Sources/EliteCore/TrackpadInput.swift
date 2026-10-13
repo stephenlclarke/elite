@@ -3,6 +3,9 @@ public struct TrackpadInput: Sendable, Equatable {
   public private(set) var fingerCount = 0
   public private(set) var direction = SIMD2<Double>.zero
   private var waitingForLift = false
+  private var spinMode = false
+  private var spinOrigin = SIMD2<Double>.zero
+  private var circle = SpinGesture()
   public init() {}
 
   public var controls: Controls {
@@ -18,29 +21,69 @@ public struct TrackpadInput: Sendable, Equatable {
     return controls
   }
 
+  public var spinControls: Controls {
+    var controls = Controls()
+    controls.spinContacts = fingerCount
+    controls.spinRecognition = circle.progress
+    if fingerCount == 2 {
+      controls.pitch = direction.y
+      controls.yaw = direction.x
+    }
+    return controls
+  }
+
   public mutating func reset() {
     fingerCount = 0
     direction = .zero
     waitingForLift = false
+    spinMode = false
+    spinOrigin = .zero
+    circle.reset()
   }
 
-  public mutating func update(positions: [SIMD2<Double>]) {
+  @discardableResult
+  public mutating func update(
+    positions: [SIMD2<Double>], spinMode: Bool = false
+  ) -> SpinDirection? {
+    if self.spinMode != spinMode {
+      reset()
+      self.spinMode = spinMode
+    }
     if positions.isEmpty {
       reset()
-      return
+      return nil
     }
-    guard !waitingForLift else { return }
+    guard !waitingForLift else { return nil }
     guard positions.count <= 3,
       positions.allSatisfy({ (0...1).contains($0.x) && (0...1).contains($0.y) })
     else {
       // Ignore a system gesture until it ends instead of treating its last fingers as thrust.
       reset()
       waitingForLift = true
-      return
+      return nil
     }
+    let changedCount = fingerCount != positions.count
     fingerCount = positions.count
     let center = positions.reduce(.zero, +) / Double(positions.count)
+    if spinMode {
+      if changedCount {
+        spinOrigin = center
+        circle.reset()
+      }
+      direction =
+        fingerCount == 2
+        ? .init(
+          Self.relativeAxis(center.x - spinOrigin.x), Self.relativeAxis(center.y - spinOrigin.y))
+        : .zero
+      return fingerCount == 1 ? circle.update(center) : nil
+    }
     direction = .init(Self.axis(center.x), Self.axis(center.y))
+    return nil
+  }
+
+  private static func relativeAxis(_ distance: Double) -> Double {
+    let magnitude = min(1, max(0, (abs(distance) - 0.02) / 0.23))
+    return distance < 0 ? -magnitude : magnitude
   }
 
   private static func axis(_ position: Double) -> Double {

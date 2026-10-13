@@ -253,6 +253,9 @@ public enum Display {
       }
     }
     if game.dockingComputer { frame.centered("DOCKING COMPUTERS ON", 164) }
+    for (index, line) in game.spin.hudLines.enumerated() {
+      frame.text(line, 8, 138 + index * 8, .cyan)
+    }
   }
   private static func draw(_ body: SpaceBody, game: Game, into frame: inout Frame) {
     let center = game.viewPosition(body.position)

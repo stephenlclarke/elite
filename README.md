@@ -61,6 +61,10 @@ Number keys select the main game screens. Inside the secret menu they select sec
 | G | Use galactic hyperdrive to enter the next galaxy, if fitted |
 | J | In-system jump, when not mass locked |
 | C / P | Engage / disengage docking computer, if fitted |
+| V / B, in flight | Toggle Spin Hold mode / stop spin smoothly and return to normal flight |
+| [ / ], Spin Hold | Start anticlockwise / clockwise roll at the prototype starting rate |
+| Hold - / = or +, Spin Hold | Slow / increase the set roll rate |
+| Left / Right, Spin Hold | Yaw left / right; X / S still controls pitch |
 | Up / Down, trading/equipment | Select product or equipment |
 | Return, buying/selling/equipment | Buy selected cargo / sell selected cargo / purchase selected equipment |
 | Right / Left, buying or selling | Buy / sell one unit of the selected product |
@@ -98,6 +102,23 @@ Place the pointer over the game before touching the trackpad. Touch gently; no c
 Two-finger steering uses the midpoint of your fingers relative to the centre of the physical trackpad. Hold off centre to keep turning; return to the centre to stop turning and cruise. A small central dead zone prevents drift. Changing finger count switches modes immediately, so dropping from three fingers to two holds the speed you have reached. One- and three-finger speed changes keep the yoke centred.
 
 Trackpad flight operates in cockpit views with manual control. Pause, help, docking, the docking computer, other screens, lost focus and cancelled gestures clear its input. Keyboard flight remains available. macOS Mission Control and three-finger dragging may intercept touches; assign system gestures to four fingers or disable three-finger dragging if three-finger acceleration does not register. Physical three-finger delivery depends on those system settings.
+
+### Spin Hold prototype
+
+Press V, or choose **Game → Toggle Spin Hold**, to enter the explicit spin mode. Draw a deliberate one-finger circle around the physical trackpad's centre to select clockwise or anticlockwise roll. Every recognised circle commands a gentle 12 degrees/second, independently of how quickly you draw it. CW and CCW are defined from the pilot's forward cockpit view. Pure roll preserves the forward heading.
+
+| Fingers, in Spin Hold | Action |
+| --- | --- |
+| One, held still | Gradually reduce roll-speed magnitude to zero, without reversing |
+| Two | Hold roll speed; move together to aim using pitch and yaw |
+| Three | Gradually increase roll-speed magnitude to the cap |
+| None | Keep the set spin speed, allowing your hand to lift and reposition |
+
+The HUD shows Spin Hold state, CW/CCW direction, an arrow and actual degrees/second. It shows the target separately while the ship is changing rate, plus circle-recognition and speed-adjustment feedback. Press B, or choose **Game → Stop Spin**, to command a smooth stop and return to normal controls. V also exits smoothly. An opposite circle commands the other direction through a gradual stop and reversal. Help, pause, other screens, focus loss, cancelled gestures, docking and the docking computer cancel spin immediately.
+
+Keyboard alternatives are [ for anticlockwise, ] for clockwise, and held - / = or + to slow / speed up. In Spin Hold, Left/Right provide yaw and X/S provide pitch. Space and slash still change forward cruising speed. Normal-flight trackpad gestures retain the separate forward-speed mapping above; Spin Hold fingers control roll speed instead.
+
+Prototype defaults are 12 degrees/second initially, 6 degrees/second of rate adjustment per second, a 60 degrees/second cap and a 24 degrees/second-per-second response limit. Contact counts must remain stable for 120 ms before changing rate. Circles need at least 300 degrees of consistent motion, 16 samples and 85% direction consistency, at a normalized radius of 0.12-0.46 around the pad centre; jumps over 45 degrees between samples are rejected. Two-finger aiming starts from a fresh reference whenever the count changes, with a 2% dead zone and full deflection after 25% of pad travel. These are tunable prototype values, not findings from player testing. Native touch hardware and macOS gesture interaction still require an on-device check; no global gesture settings are changed by the game.
 
 Commander saves, including secret options, live at `~/.xyzzy/elite/commander.json`. Saving is atomic; loading validates the entire commander before replacing actor state.
 

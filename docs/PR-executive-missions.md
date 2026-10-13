@@ -8,4 +8,4 @@ Validation covers boundary/workflow fixtures, commander persistence, wrong-order
 
 Request: [ISSUE-executive-missions.md](ISSUE-executive-missions.md).
 
-Final local validation, including the trackpad changes: 56 tests, 92.99% Swift coverage across every source file, passing Thread/Address Sanitizer runs and zero leaked bytes from the native mission/frame probe.
+Final local validation, including the trackpad changes: 66 tests, 93.26% Swift coverage across every source file, passing Thread/Address Sanitizer runs and zero leaked bytes from the native mission/frame probe.

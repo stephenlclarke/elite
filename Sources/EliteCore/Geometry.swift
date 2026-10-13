@@ -9,10 +9,12 @@ public struct Vector3: Sendable, Equatable, Codable {
     self.y = y
     self.z = z
   }
-  public func rotated(pitch: Double, roll: Double) -> Vector3 {
+  public func rotated(pitch: Double, roll: Double, yaw: Double = 0) -> Vector3 {
     let py = y * cos(pitch) - z * sin(pitch)
     let pz = y * sin(pitch) + z * cos(pitch)
-    return Vector3(x * cos(roll) - py * sin(roll), x * sin(roll) + py * cos(roll), pz)
+    let yx = x * cos(yaw) - pz * sin(yaw)
+    let yz = x * sin(yaw) + pz * cos(yaw)
+    return Vector3(yx * cos(roll) - py * sin(roll), yx * sin(roll) + py * cos(roll), yz)
   }
   public var length: Double { sqrt(x * x + y * y + z * z) }
   public static func + (lhs: Self, rhs: Self) -> Self {

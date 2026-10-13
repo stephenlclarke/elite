@@ -90,8 +90,13 @@ public struct Equipment: Sendable {
 public struct Controls: Sendable {
   public var pitch: Double = 0
   public var roll: Double = 0
+  public var yaw: Double = 0
   public var throttle: Double = 0
   public var fire = false
+  public var spinContacts = 0
+  public var spinRecognition = 0.0
+  public var spinSlower = false
+  public var spinFaster = false
   public init() {}
 }
 
@@ -109,6 +114,8 @@ public struct Game: Sendable {
   public var speed = 0.0
   public var pitch = 0.0
   public var roll = 0.0
+  public var yaw = 0.0
+  public var spin = SpinControl()
   public var energy = 256.0
   public var frontShield = 255.0
   public var rearShield = 255.0
@@ -166,15 +173,21 @@ public struct Game: Sendable {
     missionSpawnDelay = 0
     ecmFrames = 0
     paused = false
+    spin.stop(immediate: true)
     screen = .status
     return true
   }
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
+    if key == "spin-cancel" {
+      spin.stop(immediate: true)
+      return
+    }
     if key == "k" {
       if screen == .help {
         screen = helpReturn
       } else {
+        spin.stop(immediate: true)
         helpReturn = screen
         helpPage = 0
         screen = .help
@@ -191,6 +204,7 @@ public struct Game: Sendable {
     if key.count == 1 {
       secretBuffer = String((secretBuffer + key).suffix(5))
       if secretBuffer == "xyzzy" {
+        spin.stop(immediate: true)
         commander.name = "CLARKE"
         fitMaximumHardware()
         secretReturn = screen
@@ -202,6 +216,7 @@ public struct Game: Sendable {
     }
     if key == "pause" || key == "copy" {
       paused.toggle()
+      if paused { spin.stop(immediate: true) }
       return
     }
     if screen == .secret {
@@ -216,6 +231,23 @@ public struct Game: Sendable {
     if screen == .mission {
       missionKey(key)
       return
+    }
+    if !docked && screen.isFlight {
+      switch key {
+      case "v":
+        spin.toggleMode()
+        return
+      case "b":
+        spin.stop()
+        return
+      case "]", "spin:cw":
+        spin.begin(.clockwise)
+        return
+      case "[", "spin:ccw":
+        spin.begin(.anticlockwise)
+        return
+      default: break
+      }
     }
     if screen == .demo { return }
     if screen == .title || screen == .gameOver {
@@ -258,6 +290,7 @@ public struct Game: Sendable {
     case "e": ecm()
     case "c":
       if !docked && commander.equipment.contains("Docking Computers") {
+        spin.stop(immediate: true)
         dockingComputer = true
         screen = .front
       }
@@ -322,6 +355,7 @@ public struct Game: Sendable {
   }
   private mutating func functionKey(_ number: Int) {
     selection = 0
+    if (4...9).contains(number) { spin.stop(immediate: true) }
     switch number {
     case 0, 10: if docked { launch() } else { screen = .front }
     case 1: screen = docked ? .buy : .rear
@@ -470,6 +504,7 @@ public struct Game: Sendable {
     return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    spin.stop(immediate: true)
     docked = false
     screen = .front
     speed = 8
@@ -483,6 +518,7 @@ public struct Game: Sendable {
     notify("LAUNCHING FROM " + currentSystem.name)
   }
   public mutating func dock() {
+    spin.stop(immediate: true)
     docked = true
     screen = .status
     speed = 0
@@ -518,6 +554,7 @@ public struct Game: Sendable {
   }
   public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
   public mutating func arrive() {
+    spin.stop(immediate: true)
     let cost = Int((currentSystem.distance(to: targetSystem) * 10).rounded())
     if !commander.unlimitedFuel && !commander.unlimitedJumps {
       commander.fuel = max(0, commander.fuel - cost)
@@ -610,7 +647,12 @@ public struct Game: Sendable {
     guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
     speed = min(32, max(0, speed + controls.throttle * dt * 12))
     pitch = controls.pitch
-    roll = controls.roll
+    yaw = spin.mode ? controls.yaw : 0
+    let previousSpinRate = spin.actualRate
+    spin.advance(delta: dt, controls: controls)
+    roll =
+      spin.mode || spin.actualRate != 0 || previousSpinRate != 0
+      ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll
     laserHeat = max(0, laserHeat - dt * 12)
     fireCooldown = max(0, fireCooldown - dt)
     energy = min(256, energy + dt * 2 * commander.energyRechargeMultiplier)
@@ -625,7 +667,7 @@ public struct Game: Sendable {
     if missionLoopCounter & 7 == 0 { navalTactics() }
     advanceNavalMissiles(delta: dt)
     ecmFrames = max(0, ecmFrames - 1)
-    starfield.advance(delta: dt, speed: speed, pitch: pitch, roll: roll)
+    starfield.advance(delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw)
     resolveDestroyed()
     missionLoopCounter &-= 1
     if missionLoopCounter == 0 { spawnNavalEncounter() }
@@ -635,6 +677,7 @@ public struct Game: Sendable {
       spawn()
     }
     if energy <= 0 {
+      spin.stop(immediate: true)
       screen = .gameOver
       notify("GAME OVER")
     } else if energy < 64 && messageTime <= 0 {
@@ -667,7 +710,8 @@ public struct Game: Sendable {
   }
   private mutating func moveBodies(dt: Double) {
     for index in bodies.indices {
-      bodies[index].position = bodies[index].position.rotated(pitch: pitch * dt, roll: roll * dt)
+      bodies[index].position = bodies[index].position.rotated(
+        pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
       bodies[index].position.z -= speed * dt * 18
       bodies[index].rotation += dt * (bodies[index].hull == .station ? 0.3 : 0.5)
       if bodies[index].hostile { enemyAction(index: index, dt: dt) }

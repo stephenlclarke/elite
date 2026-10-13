@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 final class GameView: NSView {
   var game = Game() {
     didSet {
-      if !acceptsTrackpadFlight { trackpad.reset() }
+      if !acceptsTrackpadFlight || game.spin.mode != oldValue.spin.mode { trackpad.reset() }
     }
   }
   let audio = AudioPresenter()
@@ -30,7 +30,9 @@ final class GameView: NSView {
       trackpad.reset()
       return
     }
-    trackpad.update(positions: positions)
+    if let direction = trackpad.update(positions: positions, spinMode: game.spin.mode) {
+      pending.append(direction == .clockwise ? "spin:cw" : "spin:ccw")
+    }
   }
   private func updateTrackpad(with event: NSEvent) {
     let positions = event.touches(matching: .touching, in: self).filter { $0.type == .indirect }
@@ -40,7 +42,10 @@ final class GameView: NSView {
   override func touchesBegan(with event: NSEvent) { updateTrackpad(with: event) }
   override func touchesMoved(with event: NSEvent) { updateTrackpad(with: event) }
   override func touchesEnded(with event: NSEvent) { updateTrackpad(with: event) }
-  override func touchesCancelled(with event: NSEvent) { trackpad.reset() }
+  override func touchesCancelled(with event: NSEvent) {
+    trackpad.reset()
+    pending.append("spin-cancel")
+  }
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
   override func draw(_ _: NSRect) {
@@ -80,10 +85,23 @@ final class GameView: NSView {
       (held.contains(" ") ? 1 : 0) - (held.contains("/") || held.contains("?") ? 1 : 0)
     controls.fire = held.contains("a")
     if acceptsTrackpadFlight {
-      let touch = trackpad.controls
+      let touch = game.spin.mode ? trackpad.spinControls : trackpad.controls
       controls.pitch = max(-1, min(1, controls.pitch + touch.pitch))
       controls.roll = max(-1, min(1, controls.roll + touch.roll))
       controls.throttle = max(-1, min(1, controls.throttle + touch.throttle))
+      controls.yaw = touch.yaw
+      controls.spinContacts = touch.spinContacts
+      controls.spinRecognition = touch.spinRecognition
+    }
+    if game.spin.mode {
+      controls.yaw = max(
+        -1,
+        min(
+          1,
+          controls.yaw + (held.contains("right") ? 1 : 0)
+            - (held.contains("left") ? 1 : 0)))
+      controls.spinSlower = held.contains("-")
+      controls.spinFaster = held.contains("=") || held.contains("+")
     }
     return controls
   }
@@ -142,6 +160,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             await runtime.key(event)
           }
         }
+        if !events.isEmpty { view.game = await runtime.snapshot() }
         await runtime.setControls(view.controls)
         let now = ContinuousClock.now
         let elapsed = previousTick.duration(to: now).components
@@ -166,6 +185,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     (window?.contentView as? GameView)?.held.removeAll()
     (window?.contentView as? GameView)?.pressedKeys.removeAll()
     (window?.contentView as? GameView)?.trackpad.reset()
+    (window?.contentView as? GameView)?.pending.append("spin-cancel")
   }
   private func installMenu() {
     let menu = NSMenu()
@@ -191,6 +211,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let pause = game.submenu?.addItem(
       withTitle: "Pause / Resume", action: #selector(togglePause), keyEquivalent: "p")
     pause?.target = self
+    let spin = game.submenu?.addItem(
+      withTitle: "Toggle Spin Hold", action: #selector(toggleSpin), keyEquivalent: "")
+    spin?.target = self
+    let stop = game.submenu?.addItem(
+      withTitle: "Stop Spin", action: #selector(stopSpin), keyEquivalent: "")
+    stop?.target = self
     let help = NSMenuItem()
     help.title = "Help"
     menu.addItem(help)
@@ -205,6 +231,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   }
   @objc private func togglePause() {
     (window?.contentView as? GameView)?.pending.append("pause")
+  }
+  @objc private func toggleSpin() {
+    (window?.contentView as? GameView)?.pending.append("v")
+  }
+  @objc private func stopSpin() {
+    (window?.contentView as? GameView)?.pending.append("b")
   }
   @objc private func saveCommander() {
     Task { [weak self] in
@@ -289,16 +321,23 @@ struct EliteApp {
       for _ in 0..<121 { _ = await runtime.advance(delta: 0.1) }
       await runtime.key(" ")
       await runtime.key("0")
+      let spinMode = cycle % 2 == 0
+      if spinMode {
+        await runtime.key("v")
+        await runtime.key("]")
+        _ = await runtime.advance(delta: 0.01)
+      }
       var trackpad = TrackpadInput()
       for frame in 0..<100 {
         if frame == 40 || frame == 50 { await runtime.key("k") }
         switch frame {
-        case 0..<30: trackpad.update(positions: [.zero, .zero, .zero])
-        case 30..<60: trackpad.update(positions: [.init(0.6, 0.7), .init(0.8, 0.9)])
-        case 60..<80: trackpad.update(positions: [.init(0.5, 0.5)])
-        default: trackpad.update(positions: [])
+        case 0..<30: trackpad.update(positions: [.zero, .zero, .zero], spinMode: spinMode)
+        case 30..<60:
+          trackpad.update(positions: [.init(0.6, 0.7), .init(0.8, 0.9)], spinMode: spinMode)
+        case 60..<80: trackpad.update(positions: [.init(0.5, 0.5)], spinMode: spinMode)
+        default: trackpad.update(positions: [], spinMode: spinMode)
         }
-        await runtime.setControls(trackpad.controls)
+        await runtime.setControls(spinMode ? trackpad.spinControls : trackpad.controls)
         let state = await runtime.advance(delta: 0.02)
         _ = await imageFor(Display.render(state, rasterizeGraphics: false), pixelSize: 512)
       }

@@ -26,6 +26,26 @@ public enum PlayerHelp {
       if !game.docked && !screen.isFlight {
         pages.append(contentsOf: paginate(Self.context(for: .front, paused: false)))
       }
+      if !game.docked {
+        pages.append(
+          HelpPage(
+            title: "SPIN HOLD PROTOTYPE",
+            rows: [
+              "V - SPIN MODE / NORMAL FLIGHT",
+              "ONE FINGER CIRCLE - CHOOSE CW / CCW",
+              "CIRCLE AROUND THE TRACKPAD CENTRE",
+              "1 / 2 / 3 FINGERS - SLOW/HOLD/FASTER",
+              "NO CONTACT - HOLD SET SPIN SPEED",
+              "2 FINGERS MOVE - PITCH / YAW",
+              "B - STOP SPIN SMOOTHLY",
+              "[ / ] - START CCW / CW SPIN",
+              "- / = OR + - SLOW / SPEED UP SPIN",
+              "LEFT / RIGHT - YAW (SPIN MODE)",
+              "X / S - PITCH; SPACE / SLASH - SPEED",
+              "CW / CCW IS FROM FORWARD COCKPIT",
+              "HELP / PAUSE / FOCUS LOSS CANCEL SPIN",
+            ]))
+      }
     }
     pages.append(
       HelpPage(
