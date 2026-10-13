@@ -119,10 +119,12 @@ extension Game {
             "Receive orders to report to Ceerdi", "Dock at Ceerdi and collect plans",
             "Dock at Birera for delivery and reward",
           ], progress: plansProgress, available: plansAvailable)),
-    ]
+    ] + [blackjackGalleryMission]
   }
   public mutating func openGallery() {
-    guard ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .gallery].contains(screen)
+    guard
+      ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .handoff, .gallery].contains(
+        screen)
     else { return }
     gallery.previousScreen = screen
     gallery.previouslyPaused = paused

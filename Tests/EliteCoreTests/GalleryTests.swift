@@ -13,7 +13,7 @@ import Testing
     var game = Game(executive: false)
     game.commander.missionStage = stage
     let catalogue = game.missionCatalogue
-    #expect(catalogue.count == 2)
+    #expect(catalogue.count == 3)
     #expect(catalogue[0].completed == hunt && catalogue[1].completed == plans)
     for mission in catalogue {
       #expect(mission.milestones.filter { $0.state == "Complete" }.count == mission.completed)

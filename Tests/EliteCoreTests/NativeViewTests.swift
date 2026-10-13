@@ -347,3 +347,28 @@ extension NativeViewTests {
   }
 
 }
+
+extension NativeViewTests {
+  @MainActor @Test func blackjackNativeContactRendersAndMouseInputKeepsFlightNeutral() throws {
+    let view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
+    view.game.commander.galaxy = 1
+    view.game.systems = Universe.galaxy(number: 1)
+    view.game.commander.system = 241
+    view.game.dock()
+    view.held = ["a", "x", " "]
+    #expect(view.game.screen == .handoff && !view.controls.fire && view.controls.pitch == 0)
+    for width in [512, 1024, 2560] {
+      let image = try #require(imageForGame(view.game, width: width, height: 518, scale: 2))
+      #expect(image.width == width * 2 && image.height == 1036)
+      #expect(image.dataProvider?.data != nil)
+    }
+    let click = try #require(
+      NSEvent.mouseEvent(
+        with: .leftMouseDown, location: .init(x: 100, y: 48), modifierFlags: [], timestamp: 0,
+        windowNumber: 0, context: nil, eventNumber: 0, clickCount: 1, pressure: 1))
+    view.mouseDown(with: click)
+    #expect(view.pending.first?.hasPrefix("handoff-click:") == true)
+    view.game.key("k")
+    #expect(PlayerHelp.pages(for: view.game).first?.title == "BLACKJACK STATION HANDOFF")
+  }
+}

@@ -74,6 +74,11 @@ final class GameView: NSView {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
+    if game.screen == .handoff {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("handoff-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .equipment {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("equipment-click:\(point.x):\(point.y)")
@@ -181,7 +186,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let events = view.pending
         view.pending.removeAll()
         for event in events {
-          if event.hasPrefix("equipment-click:") {
+          if event.hasPrefix("handoff-click:") {
+            let values = event.dropFirst(14).split(separator: ":").compactMap { Double($0) }
+            if values.count == 2 { await runtime.blackjackHandoffClick(x: values[0], y: values[1]) }
+          } else if event.hasPrefix("equipment-click:") {
             let values = event.dropFirst(16).split(separator: ":").compactMap { Double($0) }
             if values.count == 2 { await runtime.equipmentClick(y: values[1], x: values[0]) }
           } else if event.hasPrefix("map-click:") {
@@ -405,6 +413,28 @@ struct EliteApp {
       for frame in 0..<120 {
         if frame == 115 { await runtime.key("return") }
         let state = await runtime.advance(delta: 0.02)
+        _ = await imageForGame(state, width: 1024, height: 720)
+      }
+    }
+    for cycle in 0..<10 {
+      var game = Game(executive: false)
+      game.commander.galaxy = 1
+      game.systems = Universe.galaxy(number: 1)
+      game.commander.system = 241
+      game.dock()
+      let runtime = GameRuntime(game: game)
+      for key in ["k", "k", "return", "l", "down", "down", "return", "l"] {
+        await runtime.key(key)
+        let state = await runtime.advance(delta: 0.02)
+        _ = await imageForGame(state, width: cycle % 2 == 0 ? 1280 : 512, height: 720)
+      }
+      game.key("return")
+      game.selectedSystem = 88
+      game.docked = false
+      game.arrive()
+      let encounter = GameRuntime(game: game)
+      for _ in 0..<120 {
+        let state = await encounter.advance(delta: 0.02)
         _ = await imageForGame(state, width: 1024, height: 720)
       }
     }

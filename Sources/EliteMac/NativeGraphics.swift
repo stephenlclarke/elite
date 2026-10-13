@@ -16,6 +16,12 @@ func legacyGameRect(_ game: Game, bounds: CGRect) -> CGRect {
 
 @MainActor
 func drawGame(_ game: Game, context: CGContext, rect: CGRect) {
+  if game.screen == .handoff {
+    drawFrame(
+      Display.blackjackHandoff(game, width: rect.width, height: rect.height), context: context,
+      rect: rect)
+    return
+  }
   if game.screen == .navigation {
     drawFrame(
       Display.navigation(game, width: rect.width, height: rect.height), context: context, rect: rect

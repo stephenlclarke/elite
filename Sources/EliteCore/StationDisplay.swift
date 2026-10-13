@@ -42,7 +42,10 @@ public struct StationLayout: Sendable {
 extension Game {
   public func marketAvailability(_ index: Int) -> String {
     if !docked { return "DOCK TO TRADE" }
-    if screen == .sell { return commander.cargo[index] > 0 ? "SELL" : "NONE HELD" }
+    if screen == .sell {
+      if commander.sellableCargo(index) > 0 { return "SELL" }
+      return index == 10 && commander.markedFirearms > 0 ? "RESERVED" : "NONE HELD"
+    }
     if market[index].quantity == 0 { return "NO STOCK" }
     if commander.availableCredits < market[index].price { return "NO CASH" }
     if Commodity.all[index].unit == "t" && commander.cargoTonnes >= commander.capacity {
@@ -61,7 +64,8 @@ extension Game {
       ]
       rows += commander.cargo.indices.filter { commander.cargo[$0] > 0 }.map { index in
         (
-          Commodity.all[index].name + ": \(commander.cargo[index]) \(Commodity.all[index].unit)",
+          Commodity.all[index].name + ": \(commander.cargo[index]) \(Commodity.all[index].unit)"
+            + (index == 10 && commander.markedFirearms > 0 ? " (1 mission item)" : ""),
           CommodityCategory.at(index).ink
         )
       }
