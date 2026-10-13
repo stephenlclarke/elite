@@ -77,7 +77,7 @@ import Testing
   game.key(" ")
   #expect(game.screen == .status)
   let docked: [Screen] = [
-    .front, .buy, .sell, .equipment, .chart, .shortChart, .system, .market, .status, .inventory,
+    .front, .buy, .sell, .equipment, .chart, .shortChart, .shortChart, .market, .status, .inventory,
   ]
   // Screen zero launches, so verify docked screens before it.
   for i in 1..<10 {
@@ -634,8 +634,9 @@ import Testing
   _ = Display.render(game)
 }
 
-@Test func hullFacesHaveOutwardNormalsAndClosedEdges() {
-  for hull in Hull.allCases {
+@Test func primitiveHullFacesHaveOutwardNormalsAndClosedEdges() {
+  // The detailed, non-convex source Cobra has a welded-boundary rotation oracle.
+  for hull in Hull.allCases where hull != .cobra {
     let mesh = Mesh.hull(hull)
     let center = mesh.vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(mesh.vertices.count))
     var adjacency: [String: Int] = [:]

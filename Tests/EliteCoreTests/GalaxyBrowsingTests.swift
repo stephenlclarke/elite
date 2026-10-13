@@ -58,7 +58,7 @@ import Testing
     let expected = game.searchResults[1]
     game.key("return")
     #expect(game.mapTargetSystem == expected)
-    let layout = ChartLayout(width: 768, height: 768, local: false)
+    let layout = ChartLayout(width: 768, height: 768, local: false, docked: game.docked)
     let point = layout.point(expected, current: game.currentSystem)
     let frame = Display.presentation(game, width: 768, height: 768)
     #expect(
@@ -79,7 +79,7 @@ import Testing
   game.viewGalaxy(3)
   #expect(game.mapSearch.active && game.mapSearch.query.isEmpty && game.mapSearch.offset == 0)
   game.key("escape")
-  let layout = ChartLayout(width: 768, height: 768, local: false)
+  let layout = ChartLayout(width: 768, height: 768, local: false, docked: game.docked)
   for (galaxy, bounds) in layout.galaxyButtons.enumerated() {
     game.mapClick(x: bounds.x + 5, y: bounds.y + 5)
     #expect(game.viewedGalaxy == galaxy)

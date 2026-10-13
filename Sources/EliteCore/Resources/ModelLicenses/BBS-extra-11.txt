@@ -1,0 +1,57 @@
+*** Z-GrOovY paintshed (Ze Griff's Ooniversal vinYl paintshed)  presents ***
+
+Z GrOovy Binary Basic Fer De Lance {1.0} 30-Dec-2013
+
+*** Contents ***
+
+- Fer De Lance
+
+The first goal of the binary basic shippack is to redux all existing canon ships from Elite/Oolite adding details to the models while keeping the general shape of the model shape basic and close to the early games.
+I will be reduxing the color of these ships in the fashion I have done with the Eagles.
+
+The second goal will be to add non canon ships that fit the Ooniverse and the Elite, but as an addon pack so you can keep both canon and non canon separate.
+
+Thanks to Griff, this version has random colors, lasers that heat up red, engines that glow... the full monty. Griff was so kind to write this custom shader based on his Arc Elite set and especially adapted for this ship.
+Without Griff, and his texture notes. This pack would not be so diverse, nor would it be released like it is now. Thank you my friend.
+
+*** specifics ***
+
+This is the BBS Fer De Lance, which stock specs to maintain Oolite gameplay. It is just a model changeover and is randomly colored by shader, you will have to wait till you see a color scheme you like at your favorite shipyard.
+
+Have fun! 
+
+*** Debugging ? ***
+
+Found something I can fix ? leave me a message on the Oolite BB, and I'll see what I can do.
+
+*** Glitches ***
+
+Not aware of any at the moment
+
+*** Credits ***
+A big thank you to:
+
+- Giles Williams, Jens Ayton and contributors for Oolite.
+- Griff, for the shaders file he took the time to write to help me create this ship.
+- All the other enthusiasts on the forum.
+
+*** Dependables/Requirements ***
+
+This oxp is standalone, as will be all next upcoming ships. I will be adding all ships to a single file though, so the next time a ship is released, the adder will again be in the zip. Please copy both files again to your addons folder, as I might have done updates on previous ships. 
+
+*** Installation ***
+
+Delete any previous files with the same name and install this one when updating to a newer version.
+As always, copy the OXP to the addons directory and while starting up Oolite hold the SHIFT key until you see the spinning cobra. 
+
+*** Legal bollox ***
+
+This oxp is free to use, distribute, edit or alter as you see fit without my permission. It can not be used in any commercial product and cannot be sold. It is free software and should only cost you download time. I am not in any way liable if your break your Oolite installation using this oxp. Use at your own risk. I have successfully tested it and it works 4 me. Should you publish this mod or an altered version hereof for use in another project please have the courtesy to send me a mail at s.gordts@gmail.com with details.
+http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+
+Enjoy.
+
+Steve
+
+*** Z-GrOovY paintshed - Showing you new ways on how to be seen ***

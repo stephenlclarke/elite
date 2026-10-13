@@ -4,6 +4,7 @@ extension Display {
   /// The native app and media exports share this responsive, fixed-size text path.
   public static func presentation(_ game: Game, width: Double, height: Double) -> Frame {
     switch game.screen {
+    case .system: systemScreen(game, width: width, height: height)
     case .showroom: showroomScreen(game, width: width, height: height)
     case .equipment: equipmentScreen(game, width: width, height: height)
     case .market, .buy, .sell: marketScreen(game, width: width, height: height)
@@ -14,7 +15,7 @@ extension Display {
     case .handoff: blackjackHandoff(game, width: width, height: height)
     case .demo, .title: startupScreen(game, width: width, height: height)
     case .help: helpScreen(game, width: width, height: height)
-    case .system, .secret, .mission, .rumour, .gameOver:
+    case .secret, .mission, .rumour, .gameOver:
       compactScreen(game, width: width, height: height)
     case .front, .rear, .left, .right: cockpit(game, width: width, height: height)
     }
@@ -49,10 +50,6 @@ extension Display {
         "Return / Escape: back  K: help", layout.left, layout.bottom - 22, scale: layout.font,
         ink: .cyan)
       return frame
-    case .system:
-      frame.compactTitle(
-        "DATA ON G\(game.inspectedGalaxy + 1) / " + game.inspectedSystem.name, layout: layout)
-      frame.compactRows(systemRows(game), layout: layout, top: 56)
     case .secret:
       frame.compactTitle("XYZZY", layout: layout)
       frame.label("A hollow voice says...", layout.left, 50, scale: layout.font, ink: .cyan)
@@ -77,7 +74,7 @@ extension Display {
     }
     return frame
   }
-  private static func systemRows(_ game: Game) -> [(String, Ink)] {
+  static func systemRows(_ game: Game) -> [(String, Ink)] {
     let star = game.inspectedSystem
     var rows: [(String, Ink)] = [
       ("Economy: " + star.economyName, .white),
@@ -95,10 +92,19 @@ extension Display {
         )
       ]
     }
-    if let clue = game.missionClue { rows += [("", .cyan), (clue, .cyan)] }
+    let chart = game.screen == .chart || game.screen == .shortChart
+    let clue =
+      chart
+      ? (game.inspectedGalaxy == game.commander.galaxy
+        ? MissionRules.clue(
+          stage: game.commander.missionStage, galaxy: game.inspectedGalaxy,
+          system: star.id,
+          variation: Int(PlanetIdentity(galaxy: game.inspectedGalaxy, system: star).key % 5))
+        : nil)
+      : game.missionClue
+    if let clue { rows += [("", .cyan), (clue, .cyan)] }
     if game.commander.executive && game.docked {
       if star.name == "LAVE" { rows.append(("XYZZY HOME PORT", .cyan)) }
-      if star.name == "RIEDQUAT" { rows.append(("XYZZY: INFINITE RANGE", .cyan)) }
     }
     return rows
   }

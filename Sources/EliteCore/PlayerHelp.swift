@@ -18,7 +18,8 @@ public enum PlayerHelp {
           game.docked ? "0 - LAUNCH" : "0 - FRONT VIEW",
           game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "1 / 2 / 3 - REAR / LEFT / RIGHT",
           "4 / 5 - GALACTIC / SHORT RANGE CHART",
-          "6 / 7 - SYSTEM DATA / MARKET PRICES",
+          game.docked ? "4 / 5 INCLUDE FULL PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
+          "7 - MARKET PRICES",
           "8 / 9 - COMMANDER STATUS / INVENTORY",
         ])
       if [Screen.status, .inventory, .market, .system].contains(screen) {
@@ -31,6 +32,16 @@ public enum PlayerHelp {
         }
       } else {
         pages.append(screens)
+      }
+      if game.docked && (screen == .chart || screen == .shortChart) {
+        pages.append(
+          .init(
+            title: "DOCKED PLANET INFORMATION",
+            rows: [
+              "DATA AND PLANET FOLLOW CHART SELECTION",
+              "FN-UP / FN-DOWN - SCROLL PLANET DATA",
+              "MISSION CLUES APPEAR WITH PLANET DATA",
+            ]))
       }
       if !game.docked && !screen.isFlight {
         pages.append(contentsOf: paginate(Self.context(for: .front, paused: false)))
@@ -203,6 +214,7 @@ public enum PlayerHelp {
           "/ OR CLICK - SEARCH NAME/CLASS/SOURCE/ID",
           "TYPE - FILTER; RETURN/ESC - END SEARCH",
           "BACKSPACE - EDIT; SEARCH ID TO FIND",
+          "X / FN-DELETE / CLEAR - ALL SHIPS",
           "SPACE - PAUSE / RESUME MODEL ROTATION",
           "B - PIN BASELINE; R - RESET TO COBRA",
           "C - COMPARE; V - SOURCE / REFIT",

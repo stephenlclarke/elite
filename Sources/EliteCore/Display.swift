@@ -185,7 +185,7 @@ public enum Display {
     case .title: title(game, into: &frame)
     case .front, .rear, .left, .right: flight(game, into: &frame)
     case .chart, .shortChart: chart(game, into: &frame)
-    case .system: system(game, into: &frame)
+    case .system: return systemScreen(game, width: 768, height: 768)
     case .market, .buy, .sell: market(game, into: &frame)
     case .rumour: return compactScreen(game, width: 768, height: 768)
     case .showroom: return showroomScreen(game, width: 768, height: 768)
@@ -316,18 +316,18 @@ public enum Display {
     }
     var drawn: Set<String> = []
     var visibleFaces: Set<Int> = []
-    let depths = mesh.faces.map { face -> (indices: [Int], distance: Double) in
+    let depths = mesh.faces.enumerated().map { index, face -> (index: Int, distance: Double) in
       let sum = face.reduce(0.0) { total, index in total + vertices[index].z }
-      return (face, sum / Double(face.count))
+      return (index, sum / Double(face.count))
     }
-    let faces = depths.sorted { $0.distance > $1.distance }.map(\.indices)
-    for face in faces {
+    for entry in depths.sorted(by: { $0.distance > $1.distance }) {
+      let face = mesh.faces[entry.index]
       let a = vertices[face[0]]
       let b = vertices[face[1]]
       let c = vertices[face[2]]
       let normal = (b - a).cross(c - a)
       guard normal.dot(a) < 0 else { continue }
-      if let index = mesh.faces.firstIndex(of: face) { visibleFaces.insert(index) }
+      visibleFaces.insert(entry.index)
       if game.commander.shipDisplayStyle == .shadedPanels {
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),

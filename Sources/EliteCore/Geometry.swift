@@ -68,6 +68,7 @@ public struct Mesh: Sendable {
   }
   public static func hull(_ kind: Hull) -> Mesh {
     switch kind {
+    case .cobra: return fittedCobra
     case .constrictor: return NavalShips.constrictor
     case .thargon: return NavalShips.thargon
     case .station:
@@ -99,9 +100,8 @@ public struct Mesh: Sendable {
         vertices: top + bottom,
         faces: [Array((0..<8).reversed()), Array(8..<16)]
           + (0..<8).map { [$0, ($0 + 1) % 8, ($0 + 1) % 8 + 8, $0 + 8] })
-    case .cobra, .viper, .sidewinder, .missile:
-      let standardWidth: Double = kind == .cobra ? 64 : 40
-      let width: Double = kind == .missile ? 8 : standardWidth
+    case .viper, .sidewinder, .missile:
+      let width: Double = kind == .missile ? 8 : 40
       return Mesh(
         vertices: [
           .init(-width, 0, -25), .init(width, 0, -25), .init(30, 12, 30),
@@ -115,6 +115,15 @@ public struct Mesh: Sendable {
         ])
     }
   }
+  /// Match flight, startup and the fitted-ship comparison, retaining the native visual radius.
+  private static let fittedCobra: Mesh = {
+    guard let source = ShipCatalogue.ship("SH023")?.previewMesh else {
+      preconditionFailure("The bundled Cobra Mk III source model is required")
+    }
+    return Mesh(
+      vertices: source.vertices.map { $0 * 0.69 }, faces: source.faces,
+      preserveWinding: true)
+  }()
 }
 
 public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {

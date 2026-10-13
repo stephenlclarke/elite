@@ -1,0 +1,18 @@
+ADCK's Eagles V1.1 - geometry declaration evidence
+
+Author: Michael Francis / Ancient Dwarven Chaos Knight (ADCK).
+Eagle Mark I, II and III designs inspired by David Braben's Frontier/FFE.
+Original bundled credits: ModelLicenses/ADCK-extra-0.txt.
+
+Source: https://wiki.alioth.net/index.php?title=ADCK%27s_Eagles&oldid=29586
+Verified: 2026-10-13.
+Section: Law Stuff.
+
+Author declaration:
+"Everything else is a free-for-all resource. Public Domain Blah blah blah,
+really, you can do whatever you like with it."
+
+This declaration excludes neolite-std.fs and neolite-std.vs by Simon Bridge.
+No shaders are included here. It is not a CC0 declaration. The original
+readme and attribution are retained; only Eagle I, II and III geometry is
+adapted in this project.

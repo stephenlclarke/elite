@@ -42,3 +42,16 @@ class SourceAssemblyTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+class LegacyDictionaryTests(unittest.TestCase):
+    def test_decimal_values_and_missing_final_semicolons_preserve_original_strings(self):
+        data=b'{ hull = { model = "x.dat"; thrust = 12.5; subentities = ("wing 0 0 0 1 0 0 0") }; wing = { model="y.dat" } }'
+        parsed=assembly.openstep_dictionary(data)
+        self.assertEqual(parsed['hull']['thrust'],'12.5')
+        self.assertEqual(parsed['wing']['model'],'y.dat')
+        self.assertEqual(assembly.assembly('hull',parsed,triangle)['components'],['hull','wing'])
+
+    def test_comments_quoted_punctuation_and_nested_materials_do_not_corrupt_the_dictionary(self):
+        parsed=assembly.openstep_dictionary(b'{ /* original */ hull={ model="x.dat"; name="A; B"; material={color=(1,0.5,0);}; }; // tail\n }')
+        self.assertEqual(parsed['hull']['name'],'A; B')
+        self.assertEqual(parsed['hull']['material']['color'],['1','0.5','0'])

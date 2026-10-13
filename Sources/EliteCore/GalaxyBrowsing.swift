@@ -30,24 +30,32 @@ extension Game {
   public var mapTargetSystem: StarSystem {
     mapSystems.first { $0.id == viewedSystemID } ?? mapSystems[0]
   }
-  public var inspectedGalaxy: Int { systemInspection?.galaxy ?? commander.galaxy }
+  public var inspectedGalaxy: Int {
+    (screen == .chart || screen == .shortChart)
+      ? viewedGalaxy
+      : (systemInspection?.galaxy ?? commander.galaxy)
+  }
   public var inspectedSystem: StarSystem {
+    if screen == .chart || screen == .shortChart { return mapTargetSystem }
     guard let inspection = systemInspection else { return targetSystem }
     return ChartUniverses.all[inspection.galaxy][inspection.system]
   }
   public mutating func viewGalaxy(_ galaxy: Int) {
+    chartInformationScroll = 0
     galacticBrowse.galaxy = max(0, min(7, galaxy))
     mapSearch.query = ""
     mapSearch.highlight = 0
     mapSearch.offset = 0
   }
   public mutating func returnChartToCurrentLocation() {
+    chartInformationScroll = 0
     galacticBrowse.galaxy = commander.galaxy
     galacticBrowse.targets[commander.galaxy] = commander.system
     mapSearch = PlanetSearchState()
   }
   mutating func selectChartSystem(_ id: Int) {
     guard mapSystems.contains(where: { $0.id == id }) else { return }
+    chartInformationScroll = 0
     if screen == .chart {
       galacticBrowse.targets[viewedGalaxy] = id
     } else {

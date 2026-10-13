@@ -4,6 +4,7 @@ public struct ShowroomLayout: Sendable {
   public let wide: Bool
   public let listVisible: Bool
   public let search: CanvasRect
+  public let clearSearch: CanvasRect
   public let close: CanvasRect
   public let buttons: [CanvasRect]
   public let list: CanvasRect
@@ -16,7 +17,8 @@ public struct ShowroomLayout: Sendable {
     listVisible = wide || !detail
     let left = wide ? 272.0 : 16
     let available = width - left - 16
-    search = .init(x: 16, y: 42, width: wide ? 240 : width - 32, height: 24)
+    search = .init(x: 16, y: 42, width: min(680, width - 184), height: 24)
+    clearSearch = .init(x: search.maxX + 8, y: 42, width: 144, height: 24)
     close = .init(x: width - 106, y: 8, width: 90, height: 24)
     buttons = (0..<5).map { index in
       .init(x: left + Double(index) * available / 5, y: 72, width: available / 5 - 4, height: 24)
@@ -82,12 +84,22 @@ extension Display {
     let font = GameTypography.scale
     frame.label("SHIP SHOWROOM", 16, 12, scale: font, ink: .yellow)
     frame.label("W: Close", layout.close.x + 8, 12, scale: font, ink: .cyan)
+    let countText =
+      game.showroom.query.isEmpty
+      ? "\(game.showroomShips.count)/\(ShipCatalogue.all.count) ships"
+      : "FILTER ACTIVE: \(game.showroomShips.count)/\(ShipCatalogue.all.count) ships"
+    frame.label(
+      countText + " | You own: Cobra Mk III", 16, 28, scale: font,
+      ink: game.showroom.query.isEmpty ? .white : .orange)
+    frame.label(
+      game.showroom.searching ? "Fn-Del: Clear" : "X: Clear filter", layout.clearSearch.x + 4,
+      layout.clearSearch.y + 8, scale: font, ink: .cyan)
     let query = game.showroom.query.isEmpty ? "Name / class / source / ID" : game.showroom.query
     frame.label(
       (game.showroom.searching ? "> " : "/ ") + query,
       layout.search.x + 8, layout.search.y + 8, scale: font, ink: .cyan)
     let buttonTitles = [
-      "B: Pin", "R: Reset", "C: Compare",
+      "B: Pin", "R: Your ship", "C: Compare",
       game.showroom.rotationPaused ? "Space:Spin" : "Space:Stop",
       game.showroom.sourceProfiles ? "V: Refit" : "V: Source",
     ]
@@ -102,17 +114,20 @@ extension Display {
           baseline, game: game,
           bounds: .init(
             x: layout.model.x, y: layout.model.y,
-            width: half, height: layout.model.height), title: "BASELINE",
+            width: half, height: layout.model.height),
+          title: game.showroom.baselineUsesCurrent ? "Your Cobra Mk III" : "PINNED BASELINE",
           currentNative: game.showroom.baselineUsesCurrent, into: &frame)
         showroomModel(
           selected, game: game,
           bounds: .init(
             x: layout.model.x + half + 16,
-            y: layout.model.y, width: half, height: layout.model.height), title: "SELECTED",
+            y: layout.model.y, width: half, height: layout.model.height),
+          title: "CATALOGUE PREVIEW",
           into: &frame)
       } else {
         showroomModel(
-          selected, game: game, bounds: layout.model, title: selected.name, into: &frame)
+          selected, game: game, bounds: layout.model, title: "Browsing: " + selected.name,
+          into: &frame)
       }
       if layout.wide || game.showroom.detail {
         showroomDetails(game, bounds: layout.details, into: &frame)
@@ -161,7 +176,8 @@ extension Display {
     for (index, line) in lines.prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.y + Double(index) * 14, scale: font, ink: .yellow)
     }
-    guard let mesh = currentNative ? Mesh.hull(.cobra).showroomNormalised : ship.previewMesh else {
+    guard let mesh = currentNative ? ShipCatalogue.ship("SH023")?.previewMesh : ship.previewMesh
+    else {
       frame.label(
         "Model unavailable", bounds.x + 4, bounds.y + bounds.height / 2,
         scale: font, ink: .orange)
@@ -185,7 +201,7 @@ extension Display {
     draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
     frame.flightClip = clip
     let caption =
-      currentNative ? "Current native model (approx.)" : (ship.modelSource ?? "Source geometry")
+      currentNative ? "Your fitted Cobra / Oolite model" : (ship.modelSource ?? "Source geometry")
     for (index, line) in ShowroomText.wrap(caption, width: columns).prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.maxY - 28 + Double(index) * 14, scale: font, ink: .cyan)
     }

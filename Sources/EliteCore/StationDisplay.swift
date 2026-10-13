@@ -148,7 +148,9 @@ extension Display {
       "Restricted cargo affects legal status on launch.", layout.left, layout.bottom + 58,
       scale: layout.font, ink: .orange)
     frame.label(
-      "Up/Down: select  Return: trade  K: help", layout.left, layout.bottom + 74,
+      game.screen == .market
+        ? "Read-only prices  1: buy  2: sell  K: help"
+        : "Up/Down: select  Return: trade  K: help", layout.left, layout.bottom + 74,
       scale: layout.font, ink: .cyan)
     return frame
   }

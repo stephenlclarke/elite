@@ -38,7 +38,8 @@ import Testing
   for width in [512.0, 768, 1512] {
     for screen in [Screen.chart, .shortChart] {
       game.screen = screen
-      let layout = ChartLayout(width: width, height: 518, local: screen == .shortChart)
+      let layout = ChartLayout(
+        width: width, height: 518, local: screen == .shortChart, docked: game.docked)
       #expect(
         zip(sorted, sorted.dropFirst()).allSatisfy {
           layout.markerRadius($0) <= layout.markerRadius($1)
@@ -99,7 +100,7 @@ import Testing
   let expected = game.searchResults[2]
   game.key("return")
   #expect(game.viewedSystemID == expected.id)
-  let layout = ChartLayout(width: 768, height: 768, local: false)
+  let layout = ChartLayout(width: 768, height: 768, local: false, docked: game.docked)
   let point = layout.point(expected, current: game.currentSystem)
   let frame = Display.map(game, width: 768, height: 768)
   #expect(

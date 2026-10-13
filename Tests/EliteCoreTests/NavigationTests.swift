@@ -194,7 +194,8 @@ private func longRoute(_ game: Game) -> [Int] {
     game.navigationOptions.first?.plan.originFuel == 70
       && game.navigationOptions.first?.plan.stopIndex == 1)
   game.key("escape")
-  let layout = ChartLayout(width: game.viewportWidth, height: game.viewportHeight, local: false)
+  let layout = ChartLayout(
+    width: game.viewportWidth, height: game.viewportHeight, local: false, docked: game.docked)
   let point = layout.point(game.systems[next], current: game.currentSystem)
   game.mapClick(x: point.x, y: point.y)
   #expect(game.commander.navigationPlan?.path == path && game.selectedSystem == next)

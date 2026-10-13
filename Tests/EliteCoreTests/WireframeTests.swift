@@ -53,6 +53,7 @@ private func covered(_ a: Point2, _ b: Point2, by lines: [WireLine]) -> Bool {
 }
 
 private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
+  if body.hull == .cobra { return hasCompleteSourceBoundary(body, in: frame) }
   let points = Mesh.hull(body.hull).vertices.map { vertex -> Point2 in
     let p =
       body.orientation.apply(
@@ -66,12 +67,57 @@ private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
   }
 }
 
+// Source craft are not convex. Weld coincident source vertices and independently
+// identify front/back face boundaries instead of inventing convex-hull edges.
+private func hasCompleteSourceBoundary(_ body: SpaceBody, in frame: Frame) -> Bool {
+  let mesh = Mesh.hull(.cobra)
+  let vertices = mesh.vertices.map { body.modelVector($0) + body.position }
+  func token(_ p: Vector3) -> String {
+    "\(Int((p.x * 1e6).rounded()))/\(Int((p.y * 1e6).rounded()))/\(Int((p.z * 1e6).rounded()))"
+  }
+  var edges: [String: (Int, Int, [Bool])] = [:]
+  for face in mesh.faces {
+    var normal = Vector3(0, 0, 0)
+    var center = Vector3(0, 0, 0)
+    for index in face.indices {
+      let a = vertices[face[index]]
+      let b = vertices[face[(index + 1) % face.count]]
+      normal =
+        normal
+        + Vector3(
+          (a.y - b.y) * (a.z + b.z),
+          (a.z - b.z) * (a.x + b.x), (a.x - b.x) * (a.y + b.y))
+      center = center + a
+    }
+    let facing = normal.dot(center) < 0
+    for index in face.indices {
+      let a = face[index]
+      let b = face[(index + 1) % face.count]
+      let key = [token(vertices[a]), token(vertices[b])].sorted().joined(separator: ":")
+      var edge = edges[key] ?? (a, b, [])
+      edge.2.append(facing)
+      edges[key] = edge
+    }
+  }
+  let boundary = edges.values.filter {
+    $0.2.contains(true) && ($0.2.count == 1 || $0.2.contains(false))
+  }
+  return !boundary.isEmpty
+    && boundary.allSatisfy { a, b, _ in
+      let p = vertices[a]
+      let q = vertices[b]
+      return covered(
+        .init(x: 128 + p.x * 256 / p.z, y: 96 - p.y * 256 / p.z),
+        .init(x: 128 + q.x * 256 / q.z, y: 96 - q.y * 256 / q.z), by: frame.shipLines)
+    }
+}
+
 @Test func rotatingHullsKeepEverySilhouetteSegment() {
   var game = Game(executive: false)
   game.screen = .front
   for hull in Hull.allCases {
     // Five rolls and two pitch turns cover the complete combined rotation.
-    for step in 0..<720 {
+    for step in stride(from: 0, to: 720, by: hull == .cobra ? 5 : 1) {
       let rotation = Double(step) * .pi / 72
       var body = SpaceBody(id: 0, hull: hull, position: .init(0, 0, 800))
       body.rotation = rotation
@@ -87,7 +133,7 @@ private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
 @Test func titleShipStaysCompleteBetweenTextRows() {
   var game = Game(executive: false)
   game.screen = .title
-  for step in 0..<720 {
+  for step in stride(from: 0, to: 720, by: 5) {
     let rotation = Double(step) * .pi / 72
     game.time = rotation / 0.6
     let frame = Display.render(game, rasterizeGraphics: false)

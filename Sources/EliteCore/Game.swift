@@ -216,6 +216,7 @@ public struct Game: Sendable {
   public var selectedSystem = 7
   public var selection = 0
   public var informationScroll = 0
+  public var chartInformationScroll = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
   public var starfield = Starfield()
@@ -394,6 +395,12 @@ public struct Game: Sendable {
     }
     if screen == .chart && mapSearch.active {
       searchKey(key)
+      return
+    }
+    if docked && (screen == .chart || screen == .shortChart)
+      && ["pageup", "pagedown"].contains(key)
+    {
+      chartInformationScroll = max(0, chartInformationScroll + (key == "pageup" ? -8 : 8))
       return
     }
     if key == "w" && screen != .help && screen != .secret {
@@ -680,6 +687,7 @@ public struct Game: Sendable {
   private mutating func functionKey(_ number: Int) {
     selection = 0
     informationScroll = 0
+    chartInformationScroll = 0
     if (4...9).contains(number) {
       spin.stop(immediate: true)
       cancelAutoTarget()
@@ -694,7 +702,7 @@ public struct Game: Sendable {
     case 6:
       systemInspection =
         screen == .chart ? .init(galaxy: viewedGalaxy, system: viewedSystemID) : nil
-      screen = .system
+      screen = docked ? (screen == .chart ? .chart : .shortChart) : .system
       let variation = commander.missionStage.rawValue & 1 == 1 ? randomByte() % 5 : 0
       missionClue =
         inspectedGalaxy == commander.galaxy

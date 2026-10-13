@@ -82,7 +82,8 @@ struct NativeViewTests {
     #expect(view.acceptsFirstResponder && view.isFlipped)
     let keys: [(UInt16, String, String)] = [
       (36, "\r", "return"), (48, "\t", "tab"), (53, "", "escape"),
-      (119, "", "copy"), (123, "", "left"), (124, "", "right"), (125, "", "down"), (126, "", "up"),
+      (117, "", "delete"), (119, "", "copy"), (123, "", "left"), (124, "", "right"),
+      (125, "", "down"), (126, "", "up"),
       (0, "a", "a"),
     ]
     for (code, text, expected) in keys {
@@ -218,7 +219,9 @@ struct NativeViewTests {
     }
     let lines = try colouredPixels(wire)
     let panels = try colouredPixels(shaded)
-    #expect(lines > 100 && panels > lines * 3)
+    #expect(lines > 100)
+    // Source triangulation creates denser wireframes than the former primitive.
+    #expect(panels > lines)
     #expect(shaded.width == 512 && shaded.height == 512)
   }
 

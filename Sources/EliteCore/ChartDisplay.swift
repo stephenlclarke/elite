@@ -54,6 +54,7 @@ public struct ChartLayout: Sendable {
   public let plot: CanvasRect
   public let wide: Bool
   public let local: Bool
+  public let docked: Bool
   public let scale: Double
   public let font: Double
   public var searchRect: CanvasRect {
@@ -62,14 +63,15 @@ public struct ChartLayout: Sendable {
       height: min(320, height - (local ? 80 : 132)))
   }
   public var searchRows: Int { max(1, Int((searchRect.height - 36) / 22)) }
-  public init(width: Double, height: Double, local: Bool, fuel: Int = 70) {
+  public init(width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false) {
     self.width = width
     self.height = height
     self.local = local
+    self.docked = docked
     wide = width >= 1000
     font = GameTypography.scale
     let wideFooter = local ? 276.0 : 226.0
-    let narrowFooter = local ? 320.0 : 270.0
+    let narrowFooter = docked ? 380.0 : (local ? 320.0 : 270.0)
     plot = .init(
       x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
       height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
@@ -154,7 +156,7 @@ extension Game {
     guard screen == .chart || screen == .shortChart else { return }
     let layout = ChartLayout(
       width: viewportWidth, height: viewportHeight, local: screen == .shortChart,
-      fuel: chartScaleFuel)
+      fuel: chartScaleFuel, docked: docked)
     if screen == .chart {
       if let index = layout.galaxyButtons.firstIndex(where: { $0.contains(.init(x, y)) }) {
         viewGalaxy(index)
@@ -204,7 +206,7 @@ extension Display {
   public static func map(_ game: Game, width: Double, height: Double) -> Frame {
     let layout = ChartLayout(
       width: width, height: height, local: game.screen == .shortChart,
-      fuel: game.chartScaleFuel)
+      fuel: game.chartScaleFuel, docked: game.docked)
     var frame = Frame()
     frame.responsive = true
     frame.rasterizeGraphics = false
@@ -269,7 +271,11 @@ extension Display {
         system, game: game, layout: layout, markerBoxes: markerBoxes, occupied: &occupied,
         into: &frame)
     }
-    mapDetails(game, layout: layout, into: &frame)
+    if game.docked {
+      dockedMapDetails(game, layout: layout, into: &frame)
+    } else {
+      mapDetails(game, layout: layout, into: &frame)
+    }
     mapLegend(game, layout: layout, into: &frame)
     frame.label(
       "[/]: galaxy  Arrows: planet  O: current  K: help", 16, height - 20,
@@ -345,7 +351,8 @@ extension Display {
   private static func mapLegend(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
     let colours: [Ink] = [.red, .redOrange, .orange, .gold, .yellow, .lime, .leaf, .green]
     for (index, name) in game.mapColour.legend.enumerated() {
-      let x = 22 + Double(index / 4) * (layout.width / 2)
+      let legendWidth = layout.docked && layout.wide ? layout.plot.width : layout.width
+      let x = 22 + Double(index / 4) * (legendWidth / 2)
       let y = layout.height - 104 + Double(index % 4) * 16
       frame.point(x, y + 4, radius: 3, ink: colours[index])
       frame.label(name, x + 10, y, scale: layout.font)

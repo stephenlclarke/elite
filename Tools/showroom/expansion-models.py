@@ -122,3 +122,117 @@ def import_models(inventory_path, cache, core_definitions, dat_reader, output):
         source_hashes[package_id] = package['archive_sha256']
     (license_dir/'index.json').write_text(json.dumps(notices,indent=2)+'\n')
     return result, {'inventory':hashlib.sha256(inventory_bytes).hexdigest(), 'archives':source_hashes}
+
+
+def openstep_dictionary(data):
+    """Read legacy source dictionaries with bare decimals and optional final semicolons."""
+    import re
+    tokens = re.findall(r'\s+|//[^\n]*|/\*[\s\S]*?\*/|"(?:\\.|[^"\\])*"|[{}()=;,]|[^{}\s()=;,]+',data.decode('utf-8-sig'))
+    tokens = [t for t in tokens if not t.isspace() and not t.startswith(('//','/*'))]
+    index = 0
+    def take(expected=None):
+        nonlocal index
+        assert index < len(tokens), 'Unexpected end of OpenStep dictionary'
+        token = tokens[index]
+        if expected is not None:assert token == expected,(expected,token)
+        index += 1
+        return token
+    def value():
+        token=take()
+        if token=='{':
+            result={}
+            while tokens[index]!='}':
+                key=take();key=json.loads(key) if key.startswith('"') else key
+                take('=');result[key]=value()
+                if tokens[index]==';':take(';')
+            take('}');return result
+        if token=='(':
+            result=[]
+            while tokens[index]!=')':
+                result.append(value())
+                if tokens[index]==',':take(',')
+            take(')');return result
+        return json.loads(token) if token.startswith('"') else token
+    result=value()
+    assert index == len(tokens) and isinstance(result,dict)
+    return result
+
+
+def cache_path(cache, package_id, recorded_path):
+    """Relocate the recorded archive cache without depending on a user's absolute path."""
+    parts=Path(recorded_path).parts
+    index=parts.index(package_id)
+    return cache.joinpath(*parts[index:])
+
+
+def import_additional_models(inventory_path, cache, core_definitions, dat_reader, output):
+    """Import only explicit, corresponding mappings with declared asset reuse terms."""
+    data=inventory_path.read_bytes()
+    inventory=json.loads(data)
+    result, provenance, notices={}, {}, []
+    license_dir=output/'ModelLicenses'
+    external_definitions, external_models, dependency_archives = {}, {}, {}
+    for package in inventory['packages']:
+        package_id=package['id']
+        if not any(r['source']['package']==package_id and r['status']=='verified_geometry_and_declared_reuse_terms' for r in inventory['records']):continue
+        archive=cache/(package_id+'.archive')
+        assert hashlib.sha256(archive.read_bytes()).hexdigest()==package['archive_sha256'],archive
+        dependency_archives[package_id]=package['archive_sha256']
+        for item in package['shipdata']:
+            source=cache_path(cache,package_id,item['path']).read_bytes()
+            assert hashlib.sha256(source).hexdigest()==item['sha256']
+            parsed=subprocess.run(['plutil','-convert','json','-o','-','--','-'],input=source,capture_output=True)
+            raw=json.loads(parsed.stdout) if parsed.returncode==0 else openstep_dictionary(source)
+            external_definitions.update(raw)
+        for item in package['models']:
+            external_models.setdefault(Path(item['path']).name,(package_id,item))
+    for package in inventory['packages']:
+        package_id=package['id']
+        selected=[r for r in inventory['records'] if r['source']['package']==package_id and r['status']=='verified_geometry_and_declared_reuse_terms']
+        if not selected:continue
+        archive=cache/(package_id+'.archive')
+        assert hashlib.sha256(archive.read_bytes()).hexdigest()==package['archive_sha256'],archive
+        files, all_definitions, source_hashes={}, {}, {}
+        for item in package['shipdata']:
+            path=cache_path(cache,package_id,item['path'])
+            source=path.read_bytes()
+            assert hashlib.sha256(source).hexdigest()==item['sha256'],path
+            parsed=subprocess.run(['plutil','-convert','json','-o','-','--','-'],input=source,capture_output=True)
+            raw=json.loads(parsed.stdout) if parsed.returncode==0 else openstep_dictionary(source)
+            files[item['path']]=raw
+            all_definitions.update(raw)
+            source_hashes[str(path.relative_to(cache/package_id))]=item['sha256']
+        model_index={Path(m['path']).name:m for m in package['models']}
+        def model_reader(name):
+            owner,record=(package_id,model_index[name]) if name in model_index else external_models[name]
+            path=cache_path(cache,owner,record['path'])
+            return dat_reader(path,record['sha256'])
+        license_name=package['license']
+        if package_id=='ADCK':license_id='Author-declared public domain (geometry only)'
+        elif package_id=='SB':license_id='CC-BY-SA-3.0'
+        else:license_id='CC-BY-NC-SA-4.0' if '4.0' in license_name else 'CC-BY-NC-SA-3.0'
+        for record in selected:
+            source=record['source']
+            definitions=core_definitions | external_definitions | all_definitions | files[source['shipdata_path']]
+            root=resolved(source['definition_id'],definitions)
+            assert Path(root['model']).name==Path(source['model']['path']).name
+            mesh=assembly(source['definition_id'],definitions,model_reader)
+            mesh.update(id='xyzzy-showroom-'+record['id'],source=record['edition'],license=license_id,
+                sourceDefinition=source['definition_id'],archiveSha256=package['archive_sha256'],
+                sourceFiles=source_hashes,dependencyArchives=dependency_archives,modelFiles={m['path']:m['sha256'] for _,m in external_models.values()})
+            points=mesh['vertices']
+            dimensions=[max(p[i] for p in points)-min(p[i] for p in points) for i in range(3)]
+            result[record['id']]=dict(mesh=mesh,dimensions=dimensions,fields=root,
+                source=record['edition'])
+        # libarchive handles both ZIP and the source BBS RAR without changing originals.
+        names=subprocess.run(['/usr/bin/tar','-tf',str(archive)],capture_output=True,check=True).stdout.decode().splitlines()
+        names=[n for n in names if not n.endswith('/') and any(k in Path(n).name.lower() for k in ['licen','copying','readme','manifest'])]
+        for index,name in enumerate(names):
+            original=subprocess.run(['/usr/bin/tar','-xOf',str(archive),name],capture_output=True,check=True).stdout
+            destination=package_id+'-extra-'+str(index)+(Path(name).suffix or '.txt')
+            (license_dir/destination).write_bytes(original)
+            notices.append(dict(package=package_id,sourcePath=name,bundledPath=destination,sha256=hashlib.sha256(original).hexdigest()))
+        provenance[package_id]=dict(archiveSha256=package['archive_sha256'],license=license_id,
+                                   licenseEvidence=package['license_evidence'])
+    (license_dir/'additional-index.json').write_text(json.dumps(notices,indent=2)+'\n')
+    return result,dict(inventory=hashlib.sha256(data).hexdigest(),archives=provenance)

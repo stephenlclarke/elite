@@ -90,11 +90,24 @@ extension Game {
       .contains(screen)
     else { return }
     showroom.previousScreen = screen
+    clearShowroomSearch()
+    showroom.selection = "SH023"
+    showroom.profileIndex = 0
+    showroom.detail = false
     showroom.scroll = 0
     screen = .showroom
   }
   mutating func closeShowroom() { screen = showroom.previousScreen }
+  public mutating func clearShowroomSearch() {
+    showroom.query = ""
+    showroom.searching = false
+    showroom.scroll = 0
+  }
   mutating func showroomKey(_ key: String) {
+    if key == "delete" || key == "showroom-clear" {
+      clearShowroomSearch()
+      return
+    }
     if showroom.searching {
       switch key {
       case "escape", "return": showroom.searching = false
@@ -111,6 +124,7 @@ extension Game {
     }
     switch key {
     case "w": closeShowroom()
+    case "x": clearShowroomSearch()
     case "escape":
       if showroom.detail { showroom.detail = false } else { closeShowroom() }
     case "/": showroom.searching = true
@@ -167,6 +181,10 @@ extension Game {
     let layout = ShowroomLayout(
       width: viewportWidth, height: viewportHeight, detail: showroom.detail)
     let point = ScreenPoint(x, y)
+    if layout.clearSearch.contains(point) {
+      clearShowroomSearch()
+      return
+    }
     if layout.search.contains(point) {
       showroom.searching = true
       return
@@ -176,6 +194,7 @@ extension Game {
       return
     }
     for (index, bounds) in layout.buttons.enumerated() where bounds.contains(point) {
+      showroom.searching = false
       showroomKey(["b", "r", "c", " ", "v"][index])
       return
     }
@@ -184,6 +203,7 @@ extension Game {
     let index = offset + Int((y - layout.list.y) / layout.listRow)
     guard showroomShips.indices.contains(index) else { return }
     showroom.selection = showroomShips[index].id
+    showroom.searching = false
     showroom.scroll = 0
     showroom.profileIndex = 0
   }

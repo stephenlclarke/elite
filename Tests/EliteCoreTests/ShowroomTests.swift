@@ -15,7 +15,7 @@ private func showroomGame() -> Game {
   #expect(ShipCatalogue.all.count == 167)
   #expect(Set(ShipCatalogue.all.map(\.id)).count == 167)
   #expect(ShipCatalogue.all.filter(\.refit).count == 158)
-  #expect(ShipCatalogue.modelCount == 56)
+  #expect(ShipCatalogue.modelCount == 74)
   #expect(ShipCatalogue.all.contains { $0.name == "Eagle Mk I" && $0.appearances.contains("FE2") })
   #expect(
     ShipCatalogue.all.contains { $0.id == "SH165" && $0.modelSource?.contains("Vector") == true })
@@ -337,7 +337,7 @@ private func showroomGame() -> Game {
   #expect(ShipCatalogue.ship("SH159")?.previewMesh?.vertices.count == 98)
   #expect(ShipCatalogue.ship("SH156")?.previewMesh?.vertices.count == 358)
   #expect(ShipCatalogue.ship("SH155")?.previewMesh?.faces.count == 680)
-  let unresolved = ["SH017", "SH020", "SH036", "SH052", "SH053"]
+  let unresolved = ["SH017", "SH036"]
   #expect(unresolved.allSatisfy { ShipCatalogue.ship($0)?.previewMesh == nil })
   #expect(ShipCatalogue.all.allSatisfy { !$0.profiles.isEmpty })
   for ship in ShipCatalogue.all.filter({ $0.model?.hasPrefix("xyzzy-showroom-") == true }) {
@@ -351,4 +351,46 @@ private func showroomGame() -> Game {
     }
     #expect(game.commander.name == "JAMESON")
   }
+}
+
+@Test func showroomFiltersAreVisibleClearableAndNeverChangeTheOwnedCobra() throws {
+  var game = showroomGame()
+  let commander = game.commander
+  game.showroom.query = "SH063"
+  for width in [512.0, 768, 1512] {
+    let frame = Display.presentation(game, width: width, height: 768)
+    #expect(
+      frame.labels.contains {
+        $0.text.contains("FILTER ACTIVE: 1/167 ships") && $0.text.contains("You own: Cobra Mk III")
+      })
+    #expect(frame.labels.contains { $0.text == "X: Clear filter" })
+  }
+  game.key("x")
+  #expect(game.showroomShips.count == 167)
+  game.key("/")
+  for key in "SH063" { game.key(String(key)) }
+  game.key("delete")
+  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 167)
+  game.showroom.query = "SH063"
+  game.showroom.selection = "SH063"
+  game.viewportWidth = 1512
+  game.viewportHeight = 982
+  let layout = ShowroomLayout(width: 1512, height: 982, detail: false)
+  game.showroomClick(x: layout.clearSearch.x + 5, y: layout.clearSearch.y + 5)
+  #expect(game.showroomShips.count == 167 && game.showroom.selection == "SH063")
+  game.showroom.query = "SH063"
+  game.key("w")
+  game.key("w")
+  #expect(game.showroom.query.isEmpty && game.showroom.selection == "SH023")
+  let frame = Display.presentation(game, width: 1512, height: 982)
+  #expect(frame.labels.contains { $0.text == "Your Cobra Mk III" })
+  #expect(frame.labels.contains { $0.text.contains("Your fitted Cobra / Oolite model") })
+  #expect(!frame.labels.contains { $0.text.contains("Current native model") })
+  #expect(game.commander == commander)
+  game.showroom.selection = "SH001"
+  game.key("b")
+  let pinned = Display.presentation(game, width: 1512, height: 982)
+  #expect(pinned.labels.contains { $0.text == "PINNED BASELINE" })
+  game.key("r")
+  #expect(game.showroom.baselineUsesCurrent && game.commander == commander)
 }

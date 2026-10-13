@@ -169,6 +169,7 @@ final class GameView: NSView {
     case 36: return "return"
     case 48: return "tab"
     case 53: return "escape"
+    case 117: return "delete"
     case 119: return "copy"
     case 116: return "pageup"
     case 121: return "pagedown"
