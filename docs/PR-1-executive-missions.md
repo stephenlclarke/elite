@@ -1,5 +1,7 @@
 # Add the Executive Constrictor Hunt and Thargoid Plans
 
+Pull request: [#1](https://github.com/stephenlclarke/elite/pull/1).
+
 The two naval missions now run from actual docking, combat and spawning events. Commander saves retain the source TP stages with legacy defaults. Paged native briefings, system-data clues, source-derived target geometry/statistics, protected Constrictor weapons, finite ordnance, ECM, pursuit and orphan-drone behaviour connect the objectives to gameplay. Debrief commits stage, equipment and rewards once.
 
 [The pinned source profile](BBC-EXECUTIVE-MISSIONS.md) records thresholds, coordinates, rewards, source routines/hashes, the removal-completion and register-wrap quirks and remaining engine/presentation parity limits. Native steering, RNG, clock, collision and dialogue are independent; no original-binary outcome parity is claimed.

@@ -20,7 +20,7 @@ final class GameView: NSView {
     allowedTouchTypes = .indirect
     wantsRestingTouches = true
   }
-  required init?(coder: NSCoder) { nil }
+  required init?(coder _: NSCoder) { nil }
   private var acceptsTrackpadFlight: Bool {
     !game.docked && game.screen.isFlight && !game.paused && !game.dockingComputer
       && (window?.isKeyWindow ?? true)
@@ -42,7 +42,7 @@ final class GameView: NSView {
   override func touchesBegan(with event: NSEvent) { updateTrackpad(with: event) }
   override func touchesMoved(with event: NSEvent) { updateTrackpad(with: event) }
   override func touchesEnded(with event: NSEvent) { updateTrackpad(with: event) }
-  override func touchesCancelled(with event: NSEvent) {
+  override func touchesCancelled(with _: NSEvent) {
     trackpad.reset()
     pending.append("spin-cancel")
   }

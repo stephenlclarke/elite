@@ -1,5 +1,7 @@
 # Protect main and public contribution workflows
 
+Pull request: [#1](https://github.com/stephenlclarke/elite/pull/1).
+
 Main requires pull requests, an up-to-date GitHub Actions quality check, resolved conversations and linear history, including for administrators. Force pushes and deletion are blocked. Independent approving reviews remain optional because the owner is the only writer. Merge commits are disabled; merged branches are deleted automatically.
 
 Pull requests run the complete local quality gates with a read-only token. Only main performs exact-commit Sonar analysis. Actions are pinned, checkout credentials are not persisted, and the repository allows only checkout and artifact upload, with full-SHA pinning required. All external workflow runs require approval. Secret scanning, secret push protection, dependency alerts/updates and private vulnerability reporting are enabled.

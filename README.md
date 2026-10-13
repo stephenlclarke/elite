@@ -185,6 +185,8 @@ Actions use read-only repository tokens, cannot approve pull requests, and run o
 
 The SonarQube project is public so its metrics and badges are readable. Analysis and project administration remain restricted to the Owners group; anonymous visitors have no write permissions.
 
+Automatic analysis is disabled, including on the legacy duplicate `stephenlclarke_elite2` project. The authoritative project is `stephenlclarke_elite`, linked by the badges above; its main-only scanner verifies this setting before analysis.
+
 The README screenshot and animated tape are generated from deterministic scenes using the same drawing commands as the live game, following the Pacman and Defender README media convention. Regenerate both with `make readme-media`.
 
 ## Fidelity and references

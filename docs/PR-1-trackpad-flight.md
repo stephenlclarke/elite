@@ -1,5 +1,7 @@
 # Add continuous trackpad flight controls
 
+Pull request: [#1](https://github.com/stephenlclarke/elite/pull/1).
+
 Raw indirect AppKit touches supply a small Sendable input value. Two fingers apply pitch and roll from their normalized midpoint with a central dead zone. One finger brakes to zero and three accelerate to the existing maximum; switching to two or lifting all holds speed. The existing actor update loop repeats held controls and releasing all stops angular movement immediately.
 
 Trackpad commands clear on touch cancellation, loss of focus, pause, help, non-flight screens and docking-computer operation. Keyboard controls still combine within their normal bounds. Four-finger system gestures are ignored until lifted. No private trackpad APIs, global event taps or permission prompts are added.

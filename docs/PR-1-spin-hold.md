@@ -1,5 +1,7 @@
 # Add explicit Spin Hold with circle recognition and roll-rate HUD
 
+Pull request: [#1](https://github.com/stephenlclarke/elite/pull/1).
+
 V enters Spin Hold; a deliberate one-finger circle around the pad centre selects pilot-relative CW or CCW and commands 12 degrees/second. One stable finger reduces the magnitude, two hold and three increase it at 6 degrees/second per second, capped at 60. Hands-off holds the rate; B or V commands a smooth stop at a response limit of 24 degrees/second per second. Opposite circles reverse through zero. Native AppKit touch values send intents to actor-owned simulation state.
 
 Contact changes settle for 120 ms before adjusting speed. Two-finger aiming rebases on every count change and supplies pitch/yaw without centroid jumps. Circle recognition is exclusive to Spin mode and never applies the tracing movement to aim. It requires a 300-degree sweep, 16 meaningful samples and 85% directional consistency within the normalized 0.12-0.46 centre ring; jumps above 45 degrees reset it. HUD lines show mode, direction/arrow, actual rate, differing target and recognition/adjustment feedback. Keyboard alternatives and menu actions are available.
