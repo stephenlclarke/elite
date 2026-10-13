@@ -95,13 +95,13 @@ import Testing
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.screen == .secret)
   game.key("1")
-  #expect(game.commander.equipment.contains("Docking Computers"))
+  #expect(game.commander.hasAutomaticDocking)
   game.key("2")
-  #expect(game.commander.equipment.contains("Military Laser") && game.commander.fuel == 70)
-  game.key("3")
-  #expect(game.commander.unlimitedMissiles)
+  #expect(game.commander.equipment.contains(Equipment.navalLaser) && game.commander.fuel == 350)
   game.key("3")
   #expect(!game.commander.unlimitedMissiles)
+  game.key("3")
+  #expect(game.commander.unlimitedMissiles)
   game.key("ignored")
   game.key("return")
   #expect(game.screen == .front)
@@ -241,13 +241,13 @@ import Testing
   #expect(game.dockingComputer)
   game.key("p")
   #expect(!game.dockingComputer)
+  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
   game.key("c")
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 200))]
-  game.tick(delta: 0.02)
+  for _ in 0..<2000 where !game.docked { game.tick(delta: 0.1) }
   #expect(game.docked && game.screen == .status && game.speed == 0)
   game.launch()
   game.speed = 0
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 50))]
+  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 89.5))]
   game.tick(delta: 0.02)
   #expect(game.docked)
   game.launch()
@@ -396,7 +396,9 @@ import Testing
       game.missionElapsed = 2
     }
     let image = Display.render(game)
-    #expect(image.pixels.count == 65536 && image.pixels.contains(Ink.white.rawValue))
+    #expect(
+      image.pixels.count == 65536
+        && (image.pixels.contains(Ink.white.rawValue) || !image.labels.isEmpty))
     #expect(image == Display.render(game))
   }
   game.commander.legal = 70
@@ -425,7 +427,6 @@ import Testing
   await runtime.key(" ")
   for key in "xyzzy" { await runtime.key(String(key)) }
   await runtime.key("2")
-  await runtime.key("3")
   await runtime.key("return")
   try await runtime.save(to: url)
   let restored = GameRuntime(game: Game(executive: false))
@@ -484,32 +485,33 @@ import Testing
   #expect(game.commander.name == "JAMESON")
 }
 
-@Test func unlimitedFuelAndRangePersistAndAllowDistantJumps() async throws {
+@Test func xyzzyJumpLimitsPersistAndObeyCurrentFuelAndNavigationComputer() async throws {
   var game = Game(executive: false)
-  game.key(" ")
-  for key in "xyzzy" { game.key(String(key)) }
-  game.key("4")
-  game.key("5")
-  game.key("7")
-  #expect(game.commander.unlimitedFuel && game.commander.unlimitedJumps && game.commander.speech)
-  game.key("return")
   game.launch()
+  for key in "xyzzy" { game.key(String(key)) }
+  #expect(game.commander.unlimitedFuel && !game.commander.unlimitedJumps)
+  #expect(game.commander.fuelStorageUnits == 4 && game.commander.navigationTier == .military)
+  game.key("return")
   game.bodies = []
-  game.selectedSystem = 0
-  #expect(game.currentSystem.distance(to: game.targetSystem) > 7)
+  game.selectedSystem = try #require(
+    game.systems.first { game.currentSystem.distance(to: $0) > 21 }?.id)
+  game.beginHyperspace()
+  #expect(game.jumpCountdown == nil && !game.targetReachable)
+  game.selectedSystem = try #require(
+    game.systems.first {
+      game.currentSystem.distance(to: $0) > 7 && game.currentSystem.distance(to: $0) < 21
+    }?.id)
   game.commander.fuel = 0
   game.beginHyperspace()
-  #expect(game.jumpCountdown == 15)
-  game.jumpCountdown = 0.01
-  game.tick(delta: 0.02)
-  #expect(game.commander.system == 0 && game.commander.fuel == 70)
+  #expect(game.jumpCountdown == nil && !game.targetReachable)
   game.commander.unlimitedFuel = false
-  game.commander.fuel = 10
-  game.selectedSystem = 7
+  game.commander.fuel = 350
+  let destination = game.selectedSystem
+  let cost = Int((game.currentSystem.distance(to: game.targetSystem) * 10).rounded())
   game.beginHyperspace()
-  game.jumpCountdown = 0.01
-  game.tick(delta: 0.02)
-  #expect(game.commander.fuel == 10)
+  #expect(game.jumpCountdown == 15 && game.targetReachable)
+  game.arrive()
+  #expect(game.commander.system == destination && game.commander.fuel == 350 - cost)
   let runtime = GameRuntime(game: game)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
@@ -543,11 +545,10 @@ import Testing
   stranded.commander.fuel = 0
   stranded.commander.credits = 0
   stranded.autoTrade()
-  #expect(stranded.message == "NO TRADE ROUTE")
+  #expect(stranded.message == "INSUFFICIENT FUNDS FOR FULL FUEL")
   var secret = Game(executive: false)
   secret.key(" ")
   for key in "xyzzy" { secret.key(String(key)) }
-  secret.key("6")
   #expect(secret.commander.autoTrade && secret.commander.cargoTonnes > 0)
   _ = Display.render(secret)
   secret.key("6")
@@ -578,19 +579,19 @@ import Testing
   #expect(game.commander.legal == 16)
 }
 
-@Test func unlimitedCashAndCargoKeepTransactionsAndSavesValid() async throws {
+@Test func finiteXYZzyCashAndUnlimitedCargoKeepTransactionsAndSavesValid() async throws {
   var game = Game(executive: false)
   game.key(" ")
   for key in "xyzzy" { game.key(String(key)) }
-  game.key("8")
-  game.key("9")
   game.key("return")
-  #expect(game.commander.unlimitedCargo && game.commander.unlimitedCash)
+  #expect(game.commander.unlimitedCargo && !game.commander.unlimitedCash)
   game.commander.credits = 0
+  game.commander.cargo = Array(repeating: 0, count: 17)
   game.commander.cargo[0] = 100
   game.selection = 1
+  game.market[1] = MarketItem(price: 30, quantity: 10)
   game.trade(buy: true)
-  #expect(game.commander.cargo[1] == 1 && game.commander.credits == 0)
+  #expect(game.commander.cargo[1] == 0 && game.commander.credits == 0)
   game.selection = 2
   game.purchase()
   #expect(game.commander.equipment.contains("Large Cargo Bay"))
@@ -610,14 +611,18 @@ import Testing
   game.key("9")
   #expect(!game.commander.unlimitedCargo && !game.commander.unlimitedCash)
   game.commander.unlimitedCargo = true
-  game.commander.unlimitedCash = true
+  game.commander.unlimitedCash = false
+  game.commander.credits = 100000
   game.selectedSystem = 129
+  game.market = MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 0)
   game.autoTrade()
-  #expect(game.commander.credits == 0 && game.commander.cargoTonnes > 20)
+  #expect(game.commander.credits < 100000 && game.commander.cargoTonnes > 20)
   game.commander.cargo[0] = Int.max / 17
   game.market[0].price = 1020
   game.autoTrade()
-  #expect(game.commander.credits == 4_294_967_295 && game.commander.valid)
+  #expect(
+    game.commander.credits <= 4_294_967_295 && game.commander.credits > 4_294_000_000
+      && game.commander.valid)
   game.screen = .status
   _ = Display.render(game)
   game.screen = .inventory

@@ -185,11 +185,12 @@ extension Commander {
     if equipment.contains(Equipment.navalEnergyUnit) { return 3 }
     return equipment.contains("Extra Energy Unit") ? 2 : 1
   }
-  public func laserDamage(against hull: Hull) -> Double {
-    let military = equipment.contains("Military Laser")
-    if hull == .constrictor { return military ? 5 : 0 }
-    if military { return 23 }
-    return equipment.contains("Mining Laser") ? 50 : 15
+  public func laserDamage(against hull: Hull, mount: LaserMount = .front) -> Double {
+    guard let laser = laser(on: mount) else { return 0 }
+    if hull == .constrictor {
+      return laser == .military || laser == .naval ? floor(laser.damage / 4) : 0
+    }
+    return laser.damage
   }
 }
 
@@ -214,6 +215,7 @@ extension Game {
       commander.equipment.insert(Equipment.navalEnergyUnit)
       commander.kills = (commander.kills + 256) & 0xffff
     }
+    ecmControl.emit(.gameplay("Incoming naval message"))
     missionNotice = MissionNotice(
       message: message, commander: commander.name, galaxy: commander.galaxy)
     missionPage = 0

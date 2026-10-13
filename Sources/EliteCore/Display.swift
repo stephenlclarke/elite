@@ -8,6 +8,10 @@ public enum Ink: UInt32, Sendable {
   case green = 0x00ff_00ff
   case cyan = 0x00ff_ffff
   case blue = 0x4488_ffff
+  case redOrange = 0xff66_22ff
+  case gold = 0xffcc_22ff
+  case lime = 0xccee_22ff
+  case leaf = 0x66ee_44ff
   case orange = 0xffaa_44ff
 }
 
@@ -22,6 +26,11 @@ public struct WireLine: Sendable, Equatable {
 public struct Frame: Sendable, Equatable {
   public var rasterizeGraphics = true
   public var graphics: [Graphic] = []
+  public var worldGraphics: [Graphic] = []
+  public var labels: [BitmapLabel] = []
+  public var canvas = CanvasRect(x: 0, y: 0, width: 256, height: 256)
+  public var flightClip = CanvasRect(x: 0, y: 12, width: 256, height: 164)
+  public var responsive = false
   public static let width = 256
   public static let height = 256
   public var pixels = [UInt32](repeating: Ink.black.rawValue, count: width * height)
@@ -32,12 +41,13 @@ public struct Frame: Sendable, Equatable {
   }
   public mutating func line(
     _ x0: Int, _ y0: Int, _ x1: Int, _ y1: Int, _ ink: Ink = .white, clipTop: Int = 0,
-    clipBottom: Int = 255
+    clipBottom: Int? = nil
   ) {
     // Clip first, keeping enormous projected coordinates out of the raster loop.
     guard
       let ends = clipped(
-        Double(x0), Double(y0), Double(x1), Double(y1), Double(clipTop), Double(clipBottom))
+        Double(x0), Double(y0), Double(x1), Double(y1), Double(clipTop),
+        Double(clipBottom ?? Int(canvas.maxY - 1)), left: canvas.x, right: canvas.maxX - 1)
     else { return }
     graphics.append(.line(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink)))
     if rasterizeGraphics { rasterLine(ends, ink) }
@@ -67,13 +77,14 @@ public struct Frame: Sendable, Equatable {
     }
   }
   private func clipped(
-    _ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ top: Double, _ bottom: Double
+    _ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ top: Double, _ bottom: Double,
+    left: Double = 0, right: Double = 255
   ) -> (Double, Double, Double, Double)? {
     var start = 0.0
     var end = 1.0
     let dx = x1 - x0
     let dy = y1 - y0
-    for (p, q) in [(-dx, x0), (dx, 255 - x0), (-dy, y0 - top), (dy, bottom - y0)] {
+    for (p, q) in [(-dx, x0 - left), (dx, right - x0), (-dy, y0 - top), (dy, bottom - y0)] {
       if p == 0 {
         if q < 0 { return nil }
         continue
@@ -87,7 +98,11 @@ public struct Frame: Sendable, Equatable {
   public mutating func wire(
     _ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ ink: Ink = .white
   ) {
-    guard let ends = clipped(x0, y0, x1, y1, 12, 175) else { return }
+    guard
+      let ends = clipped(
+        x0, y0, x1, y1, flightClip.y, flightClip.maxY - 1, left: flightClip.x,
+        right: flightClip.maxX - 1)
+    else { return }
     graphics.append(.wire(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink)))
     if rasterizeGraphics { rasterLine(ends, ink) }
   }
@@ -115,7 +130,7 @@ public struct Frame: Sendable, Equatable {
   }
   public mutating func text(_ text: String, _ x: Int, _ y: Int, _ ink: Ink = .white) {
     for (index, character) in text.uppercased().enumerated() {
-      let rows = Glyph.rows(character)
+      let rows = BitmapFont.rows(character)
       for row in 0..<7 {
         for col in 0..<5 where rows[row] & (1 << (4 - col)) != 0 {
           pixel(x + index * 6 + col, y + row, ink)
@@ -128,8 +143,8 @@ public struct Frame: Sendable, Equatable {
   }
 }
 
-private enum Glyph {
-  static let table: [Character: String] = [
+public enum BitmapFont {
+  private static let table: [Character: String] = [
     "A": "0E11111F111111", "B": "1E11111E11111E", "C": "0E11101010110E", "D": "1E11111111111E",
     "E": "1F10101E10101F", "F": "1F10101E101010", "G": "0E11101711110F", "H": "1111111F111111",
     "I": "0E04040404040E", "J": "0702020212120C", "K": "11121418141211", "L": "1010101010101F",
@@ -142,19 +157,24 @@ private enum Glyph {
     ".": "00000000000C0C", ",": "00000000000408", ":": "000C0C000C0C00", ";": "000C0C00040408",
     "-": "0000001F000000", "/": "01010204081010", "?": "0E110102040004", "!": "04040404040004",
     "(": "02040808080402", ")": "08040202020408", "+": "0004041F040400", "=": "00001F001F0000",
+    "~": "00000D12000000", "[": "0E08080808080E", "]": "0E02020202020E", "%": "11120408120911",
     "<": "01020408040201", ">": "10080402040810", "*": "00150E1F0E1500", "'": "04040800000000",
   ]
-  static let decoded: [Character: [UInt8]] = table.mapValues { string in
+  private static let decoded: [Character: [UInt8]] = table.mapValues { string in
     let chars = Array(string)
     return stride(from: 0, to: 14, by: 2).map {
       UInt8(String(chars[$0...($0 + 1)]), radix: 16) ?? 0
     }
   }
-  static func rows(_ char: Character) -> [UInt8] { decoded[char] ?? Array(repeating: 0, count: 7) }
+  public static func rows(_ char: Character) -> [UInt8] {
+    decoded[char] ?? Array(repeating: 0, count: 7)
+  }
 }
 
 public enum Display {
-  public static func render(_ game: Game, rasterizeGraphics: Bool = true) -> Frame {
+  public static func render(_ game: Game, rasterizeGraphics: Bool = true, dashboard: Bool = true)
+    -> Frame
+  {
     var frame = Frame()
     frame.rasterizeGraphics = rasterizeGraphics
     switch game.screen {
@@ -169,19 +189,23 @@ public enum Display {
     case .inventory: inventory(game, into: &frame)
     case .secret: secret(game, into: &frame)
     case .help: help(game, into: &frame)
+    case .gallery: return gallery(game, width: 768, height: 768)
+    case .navigation: return navigation(game, width: 768, height: 768)
     case .mission: mission(game, into: &frame)
     case .gameOver:
       frame.centered("GAME OVER", 85)
       frame.centered("PRESS SPACE COMMANDER", 130)
     }
-    if ![Screen.title, .demo, .help].contains(game.screen) { dashboard(game, into: &frame) }
+    if dashboard && ![Screen.title, .demo, .help].contains(game.screen) {
+      Self.dashboard(game, into: &frame)
+    }
     if game.messageTime > 0 && ![Screen.secret, .help, .mission].contains(game.screen) {
       frame.centered(game.message, 178)
     }
     if game.paused && ![Screen.help, .mission, .secret].contains(game.screen) {
       frame.centered("PAUSED: COMMAND-P TO RESUME", game.screen == .title ? 208 : 168)
     }
-    if game.screen != .help { frame.text("K:HELP", 216, 184, .cyan) }
+    if dashboard && game.screen != .help { frame.text("K:HELP", 216, 184, .cyan) }
     return frame
   }
   private static func header(_ title: String, into frame: inout Frame) {
@@ -219,50 +243,69 @@ public enum Display {
   }
   private static func flight(_ game: Game, into frame: inout Frame) {
     frame.centered(game.screen.rawValue + " VIEW", 4)
-    for star in game.starfield.positions {
-      let position = game.viewPosition(star)
-      guard position.z > 100 else { continue }
-      let x = 128 + position.x * 256 / position.z
-      let y = 96 - position.y * 256 / position.z
-      guard x >= 1, x <= 254, y >= 13, y <= 174 else { continue }
-      let proximity = max(0, 1 - position.length / 9000)
-      let fade = min(1, (position.length - 300) / 300)
-      frame.point(x, y, radius: 0.18 + proximity * 0.14, opacity: (0.5 + proximity * 0.45) * fade)
-    }
-    if game.screen == .front {
-      frame.ellipse(192, 55, 35, 35)
-      frame.ellipse(192, 55, 12, 34)
-      frame.line(157, 55, 227, 55)
-    }
-    for body in game.bodies.sorted(by: { $0.position.length > $1.position.length }) {
-      draw(body, game: game, into: &frame)
-    }
-    frame.line(121, 96, 125, 96)
-    frame.line(131, 96, 135, 96)
-    frame.line(128, 89, 128, 93)
-    frame.line(128, 99, 128, 103)
-    if game.laserFlash > 0 {
-      frame.line(0, 190, 126, 98)
-      frame.line(255, 190, 130, 98)
-    }
+    spaceScene(game, projection: .legacy, into: &frame)
     if let countdown = game.jumpCountdown {
       frame.centered("HYPERSPACE " + String(Int(ceil(countdown))), 156)
-      for ring in 0..<6 {
-        let radius = (game.time * 90 + Double(ring * 20)).truncatingRemainder(dividingBy: 128)
-        frame.ellipse(128, 96, radius, max(1, radius / 2))
-      }
     }
     if game.dockingComputer { frame.centered("DOCKING COMPUTERS ON", 164) }
     for (index, line) in game.spin.hudLines.enumerated() {
       frame.text(line, 8, 138 + index * 8, .cyan)
     }
   }
-  private static func draw(_ body: SpaceBody, game: Game, into frame: inout Frame) {
+  static func spaceScene(_ game: Game, projection: FlightProjection, into frame: inout Frame) {
+    for star in game.starfield.positions {
+      let position = game.viewPosition(star)
+      guard position.z > 100 else { continue }
+      let point = projection.point(position)
+      guard frame.flightClip.contains(point), frame.responsive || (point.y >= 13 && point.y <= 174)
+      else { continue }
+      let proximity = max(0, 1 - position.length / 9000)
+      let fade = min(1, (position.length - 300) / 300)
+      let radius = frame.responsive ? 0.65 + proximity * 0.45 : 0.18 + proximity * 0.14
+      frame.point(point.x, point.y, radius: radius, opacity: (0.5 + proximity * 0.45) * fade)
+    }
+    for body in game.bodies.sorted(by: { $0.position.length > $1.position.length }) {
+      draw(body, game: game, into: &frame, projection: projection)
+    }
+    let x = projection.center.x
+    let y = projection.center.y
+    let size = frame.responsive ? 1.5 : 1.0
+    for (a, b, c, d) in [
+      (x - 7 * size, y, x - 3 * size, y), (x + 3 * size, y, x + 7 * size, y),
+      (x, y - 7 * size, x, y - 3 * size), (x, y + 3 * size, x, y + 7 * size),
+    ] {
+      frame.graphics.append(.line(WireLine(x0: a, y0: b, x1: c, y1: d, ink: .white)))
+    }
+    if game.laserFlash > 0 {
+      frame.graphics.append(
+        .line(WireLine(x0: 0, y0: frame.flightClip.maxY, x1: x - 2, y1: y, ink: .white)))
+      frame.graphics.append(
+        .line(
+          WireLine(x0: frame.canvas.width, y0: frame.flightClip.maxY, x1: x + 2, y1: y, ink: .white)
+        ))
+    }
+    if game.jumpCountdown != nil {
+      for ring in 0..<6 {
+        let radius =
+          (game.time * 90 + Double(ring * 20)).truncatingRemainder(dividingBy: 128)
+          * projection.focal / 256
+        frame.ellipse(x, y, radius, max(1, radius / 2))
+      }
+    }
+  }
+  static func draw(
+    _ body: SpaceBody, game: Game, into frame: inout Frame, projection: FlightProjection = .legacy,
+    mesh: Mesh? = nil
+  ) {
+    var game = game
+    if game.screen == .demo || game.screen == .title {
+      game.commander.shipDisplayStyle = .shadedPanels
+    }
     let center = game.viewPosition(body.position)
     guard center.z > 10 else { return }
-    let mesh = Mesh.hull(body.hull)
+    let mesh = mesh ?? Mesh.hull(body.hull)
     let vertices = mesh.vertices.map { vertex -> Vector3 in
-      let rotated = vertex.rotated(pitch: body.rotation * 0.4, roll: body.rotation)
+      let rotated = game.viewPosition(body.modelVector(vertex))
       return rotated + center
     }
     var drawn: Set<String> = []
@@ -281,7 +324,7 @@ public enum Display {
       if let index = mesh.faces.firstIndex(of: face) { visibleFaces.insert(index) }
       if game.commander.shipDisplayStyle == .shadedPanels {
         frame.panel(
-          ShipProjection.polygon(face.map { vertices[$0] }),
+          ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
           colour: ShipProjection.shade(body.hull.ink, normal: normal))
         continue
       }
@@ -290,7 +333,9 @@ public enum Display {
         let i = face[edge]
         let j = face[(edge + 1) % face.count]
         let token = "\(min(i,j)):\(max(i,j))"
-        guard drawn.insert(token).inserted, let points = project(vertices[i], vertices[j]) else {
+        guard drawn.insert(token).inserted,
+          let points = project(vertices[i], vertices[j], projection: projection)
+        else {
           continue
         }
         // The viewport ends above the colour dashboard.
@@ -300,7 +345,8 @@ public enum Display {
     if game.commander.shipDisplayStyle != .shadedPanels {
       let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
       for detail in mesh.details where visibleFaces.contains(detail.face) {
-        if let line = project(vertices[detail.start], vertices[detail.end]) {
+        if let line = project(vertices[detail.start], vertices[detail.end], projection: projection)
+        {
           frame.wire(line.0, line.1, line.2, line.3, ink)
         }
       }
@@ -309,15 +355,18 @@ public enum Display {
       let hatch = [
         Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
         Vector3(-30, 10, -90),
-      ].map { $0.rotated(pitch: body.rotation * 0.4, roll: body.rotation) + center }
-      let normal = Vector3(0, 0, -1).rotated(pitch: body.rotation * 0.4, roll: body.rotation)
+      ].map { game.viewPosition(body.modelVector($0)) + center }
+      let normal = game.viewPosition(body.entranceNormal)
       guard normal.dot(hatch[0]) < 0 else { return }
       if game.commander.shipDisplayStyle == .shadedPanels {
-        frame.panel(ShipProjection.polygon(hatch), colour: Ink.black.rawValue)
+        frame.panel(
+          ShipProjection.polygon(hatch, projection: projection), colour: Ink.black.rawValue)
       } else {
         let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
         for index in hatch.indices {
-          if let line = project(hatch[index], hatch[(index + 1) % hatch.count]) {
+          if let line = project(
+            hatch[index], hatch[(index + 1) % hatch.count], projection: projection)
+          {
             frame.wire(line.0, line.1, line.2, line.3, ink)
           }
         }
@@ -325,15 +374,16 @@ public enum Display {
     }
   }
 
-  public static func project(_ start: Vector3, _ end: Vector3) -> (Double, Double, Double, Double)?
-  {
+  public static func project(
+    _ start: Vector3, _ end: Vector3, projection: FlightProjection = .legacy
+  ) -> (Double, Double, Double, Double)? {
     var a = start
     var b = end
     guard a.z >= 1 || b.z >= 1 else { return nil }
     if a.z < 1 { a = a + (b - a) * ((1 - a.z) / (b.z - a.z)) }
     if b.z < 1 { b = b + (a - b) * ((1 - b.z) / (a.z - b.z)) }
     let coordinates = [
-      128 + a.x * 256 / a.z, 96 - a.y * 256 / a.z, 128 + b.x * 256 / b.z, 96 - b.y * 256 / b.z,
+      projection.point(a).x, projection.point(a).y, projection.point(b).x, projection.point(b).y,
     ]
     guard coordinates.allSatisfy({ $0.isFinite && abs($0) < 1_000_000 }) else { return nil }
     return (coordinates[0], coordinates[1], coordinates[2], coordinates[3])
@@ -388,7 +438,7 @@ public enum Display {
     for (i, item) in Commodity.all.enumerated() {
       let y = 34 + i * 8
       if i == game.selection { frame.text(">", 0, y) }
-      frame.text(item.name, 8, y)
+      frame.text(item.name, 8, y, CommodityCategory.at(i).ink)
       frame.text(String(format: "%5.1f", Double(game.market[i].price) / 10), 100, y)
       frame.text("\(game.market[i].quantity)\(item.unit)", 154, y)
       frame.text("\(game.commander.cargo[i])\(item.unit)", 205, y)
@@ -400,16 +450,20 @@ public enum Display {
   }
   private static func equipment(_ game: Game, into frame: inout Frame) {
     header("EQUIP SHIP", into: &frame)
-    for (i, item) in Equipment.all.enumerated() {
-      let y = 30 + i * 10
+    let start = max(0, min(game.selection - 13, Equipment.all.count - 14))
+    for i in start..<min(start + 14, Equipment.all.count) {
+      let item = Equipment.all[i]
+      let y = 30 + (i - start) * 10
       if i == game.selection { frame.text(">", 0, y) }
       let available = item.technology <= game.currentSystem.technology
       frame.text(item.name, 8, y, available ? .white : .red)
-      frame.text(
-        (game.commander.equipment.contains(item.name)
-          || (item.name == "Extra Energy Unit"
-            && game.commander.equipment.contains(Equipment.navalEnergyUnit)))
-          ? "FITTED" : String(format: "%.1f", Double(item.price) / 10), 194, y)
+      let fitted =
+        game.commander.equipment.contains(item.name)
+        || (item.name == "Extra Energy Unit"
+          && game.commander.equipment.contains(Equipment.navalEnergyUnit))
+      let price =
+        Equipment.isReward(item.name) ? "REWARD" : String(format: "%.1f", Double(item.price) / 10)
+      frame.text(fitted ? "FITTED" : price, 194, y)
     }
     frame.text(
       game.commander.unlimitedCash
@@ -429,12 +483,17 @@ public enum Display {
           ? "CASH: UNLIMITED"
           : String(format: "CASH: %.1f CR", Double(game.commander.credits) / 10),
         "LEGAL STATUS: " + legal,
-        "RATING: " + game.commander.rank, "EQUIPMENT:",
+        "RATING: " + game.commander.rank,
+        "TARGETING: " + (game.commander.targetingTier?.label ?? "NONE"),
+        "NAVIGATION: " + (game.commander.navigationTier?.label ?? "NONE"),
+        "FRONT LASER: " + (game.commander.laser(on: .front)?.equipmentName ?? "EMPTY"),
+        "SHIELDS: " + (game.commander.shieldBooster?.label ?? "STANDARD"), "EQUIPMENT:",
       ]
+      + game.commander.laserMountSummary.dropFirst().map { $0.uppercased() }
       + (game.commander.equipment.contains(Equipment.navalEnergyUnit)
         ? [Equipment.navalEnergyUnit] : [])
       + game.commander.equipment.sorted().filter {
-        !["Fuel", "Missile", Equipment.navalEnergyUnit].contains($0)
+        !["Fuel", "Missile", Equipment.navalEnergyUnit].contains($0) && LaserKind.from($0) == nil
       }
     for (i, line) in lines.prefix(16).enumerated() { frame.text(line, 8, 30 + i * 9) }
     if game.commander.missionStage != .notStarted && game.messageTime <= 0 {
@@ -449,7 +508,7 @@ public enum Display {
         : "CARGO \(game.commander.cargoTonnes)/\(game.commander.capacity) TONNES", 8, 30)
     var row = 0
     for (i, quantity) in game.commander.cargo.enumerated() where quantity > 0 {
-      frame.text(Commodity.all[i].name, 8, 48 + row * 8)
+      frame.text(Commodity.all[i].name, 8, 48 + row * 8, CommodityCategory.at(i).ink)
       frame.text("\(quantity) \(Commodity.all[i].unit)", 180, 48 + row * 8)
       row += 1
     }
@@ -459,17 +518,22 @@ public enum Display {
     frame.centered("A HOLLOW VOICE SAYS...", 28)
     let choices = [
       "0 DISPLAY: " + game.commander.shipDisplayStyle.label,
-      "1 DOCKING COMPUTER",
+      "1 DOCKING TARGETING COMPUTER",
       "2 MAXIMUM HARDWARE",
       "3 MISSILES: " + (game.commander.unlimitedMissiles ? "UNLIMITED" : "NORMAL"),
       "4 FUEL: " + (game.commander.unlimitedFuel ? "UNLIMITED" : "NORMAL"),
-      "5 JUMPS: " + (game.commander.unlimitedJumps ? "UNLIMITED" : "NORMAL"),
+      String(format: "5 JUMP LIMIT: %.1f LY", game.commander.maximumJumpDistance),
       "6 AUTO TRADE: " + (game.commander.autoTrade ? "ON" : "OFF"),
       "7 SPEECH: " + (game.commander.speech ? "ON" : "OFF"),
       "8 CARGO: " + (game.commander.unlimitedCargo ? "UNLIMITED" : "NORMAL"),
-      "9 CASH: " + (game.commander.unlimitedCash ? "UNLIMITED" : "NORMAL"),
+      String(format: "9 CASH: %.1f CR", Double(game.commander.credits) / 10),
+      "A AUTO TARGET: " + (game.commander.autoTarget ? "ON" : "OFF"),
+      "E AUTO ECM: " + (game.commander.autoECM ? "ON" : "OFF"),
+      "B MILITARY RETURN FIRE: " + (game.commander.retaliationEnabled ? "ON" : "OFF"),
+      "F FUEL SCOOPS: "
+        + (game.commander.equipment.contains("Fuel Scoops") ? "FITTED" : "NOT FITTED"),
     ]
-    for (index, choice) in choices.enumerated() { frame.text(choice, 10, 46 + index * 13) }
+    for (index, choice) in choices.enumerated() { frame.text(choice, 10, 46 + index * 9) }
     frame.text(game.paused ? "RETURN THEN COMMAND-P TO RESUME" : "RETURN TO RESUME", 10, 177)
   }
   private static func help(_ game: Game, into frame: inout Frame) {
@@ -508,7 +572,8 @@ public enum Display {
     frame.line(180, 192, 180, 255, .yellow)
     let left: [(String, Double, Ink)] = [
       ("FS", game.frontShield / 255, .green), ("AS", game.rearShield / 255, .green),
-      ("FU", Double(game.commander.fuel) / 70, .green), ("CT", game.cabinTemperature, .red),
+      ("FU", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
+      ("CT", game.cabinTemperature, .red),
       ("LT", game.laserHeat / 255, .red), ("AL", game.altitude, .yellow),
     ]
     for (i, item) in left.enumerated() {

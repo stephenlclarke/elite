@@ -1,26 +1,138 @@
 import AppKit
 import EliteCore
 
+@MainActor
+func legacyGameRect(_ game: Game, bounds: CGRect) -> CGRect {
+  let plain = [Screen.demo, .title, .help].contains(game.screen)
+  let height =
+    plain
+    ? bounds.height
+    : CockpitLayout(game: game, width: bounds.width, height: bounds.height).dashboardTop
+  let scale = min(bounds.width / 256, height / (plain ? 256 : 192))
+  return CGRect(
+    x: bounds.minX + (bounds.width - 256 * scale) / 2, y: bounds.minY, width: 256 * scale,
+    height: 256 * scale)
+}
+
+@MainActor
+func drawGame(_ game: Game, context: CGContext, rect: CGRect) {
+  if game.screen == .navigation {
+    drawFrame(
+      Display.navigation(game, width: rect.width, height: rect.height), context: context, rect: rect
+    )
+    return
+  }
+  if game.screen == .chart || game.screen == .shortChart {
+    drawFrame(
+      Display.map(game, width: rect.width, height: rect.height), context: context, rect: rect)
+    return
+  }
+  if [.market, .buy, .sell].contains(game.screen) {
+    drawFrame(
+      Display.marketScreen(game, width: rect.width, height: rect.height), context: context,
+      rect: rect)
+    return
+  }
+  if [.status, .inventory].contains(game.screen) {
+    drawFrame(
+      Display.information(game, width: rect.width, height: rect.height), context: context,
+      rect: rect)
+    return
+  }
+  if game.screen == .equipment {
+    drawFrame(
+      Display.equipmentScreen(game, width: rect.width, height: rect.height), context: context,
+      rect: rect)
+    return
+  }
+  if game.screen == .gallery {
+    drawFrame(
+      Display.gallery(game, width: rect.width, height: rect.height), context: context, rect: rect)
+    return
+  }
+  let plain = [Screen.demo, .title, .help].contains(game.screen)
+  if plain {
+    drawFrame(
+      Display.render(game, rasterizeGraphics: false), context: context,
+      rect: legacyGameRect(game, bounds: rect))
+    return
+  }
+  let frame = Display.cockpit(game, width: rect.width, height: rect.height)
+  if !game.screen.isFlight {
+    context.saveGState()
+    context.clip(
+      to: CGRect(
+        x: rect.minX, y: rect.minY, width: rect.width,
+        height: CockpitLayout(game: game, width: rect.width, height: rect.height).dashboardTop))
+    drawFrame(
+      Display.render(game, rasterizeGraphics: false, dashboard: false), context: context,
+      rect: legacyGameRect(game, bounds: rect))
+    context.restoreGState()
+  }
+  drawFrame(frame, context: context, rect: rect)
+}
+
+@MainActor
+func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGImage? {
+  guard width >= 320, height >= 320, width <= 4096, height <= 4096, (1...2).contains(scale),
+    let context = CGContext(
+      data: nil, width: width * scale, height: height * scale, bitsPerComponent: 8,
+      bytesPerRow: width * scale * 4, space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+  else { return nil }
+  context.setFillColor(colour(Ink.black.rawValue))
+  context.fill(CGRect(x: 0, y: 0, width: width * scale, height: height * scale))
+  context.translateBy(x: 0, y: Double(height * scale))
+  context.scaleBy(x: Double(scale), y: Double(-scale))
+  drawGame(game, context: context, rect: CGRect(x: 0, y: 0, width: width, height: height))
+  return context.makeImage()
+}
+
 /// The window and exported media share the same drawing path at any pixel size.
 @MainActor
 func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
-  guard let bitmap = bitmapFor(frame) else { return }
   context.saveGState()
   context.translateBy(x: rect.minX, y: rect.minY)
-  context.scaleBy(x: rect.width / 256, y: rect.height / 256)
-  context.clip(to: CGRect(x: 0, y: 0, width: 256, height: 256))
+  context.scaleBy(x: rect.width / frame.canvas.width, y: rect.height / frame.canvas.height)
+  context.clip(to: CGRect(x: 0, y: 0, width: frame.canvas.width, height: frame.canvas.height))
   context.setShouldAntialias(true)
   context.setAllowsAntialiasing(true)
   context.setLineJoin(.round)
   context.setLineCap(.round)
   if !frame.rasterizeGraphics {
-    for graphic in frame.graphics { drawGraphic(graphic, context: context) }
+    if frame.responsive {
+      context.saveGState()
+      let clip = frame.flightClip
+      context.clip(to: CGRect(x: clip.x, y: clip.y, width: clip.width, height: clip.height))
+      for graphic in frame.worldGraphics { drawGraphic(graphic, context: context, lineWidth: 0.85) }
+      context.restoreGState()
+    }
+    for graphic in frame.graphics {
+      drawGraphic(graphic, context: context, lineWidth: frame.responsive ? 0.85 : 0.5)
+    }
   }
-  // Preserve the original bitmap font above the smooth geometry.
-  context.interpolationQuality = .none
-  context.translateBy(x: 0, y: 256)
-  context.scaleBy(x: 1, y: -1)
-  context.draw(bitmap, in: CGRect(x: 0, y: 0, width: 256, height: 256))
+  if frame.responsive {
+    context.setShouldAntialias(false)
+    for label in frame.labels {
+      context.setFillColor(colour(label.ink.rawValue))
+      for (index, char) in label.text.uppercased().enumerated() {
+        let rows = BitmapFont.rows(char)
+        for row in 0..<7 {
+          for column in 0..<5 where rows[row] & (1 << (4 - column)) != 0 {
+            context.fill(
+              CGRect(
+                x: label.x + Double(index * 6 + column) * label.scale,
+                y: label.y + Double(row) * label.scale, width: label.scale, height: label.scale))
+          }
+        }
+      }
+    }
+  } else if let bitmap = bitmapFor(frame) {
+    context.interpolationQuality = .none
+    context.translateBy(x: 0, y: 256)
+    context.scaleBy(x: 1, y: -1)
+    context.draw(bitmap, in: CGRect(x: 0, y: 0, width: 256, height: 256))
+  }
   context.restoreGState()
 }
 
@@ -55,8 +167,8 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
     provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
 }
 
-private func drawGraphic(_ graphic: Graphic, context: CGContext) {
-  context.setLineWidth(0.5)
+private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Double = 0.5) {
+  context.setLineWidth(lineWidth)
   switch graphic {
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
@@ -64,6 +176,13 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext) {
     context.move(to: CGPoint(x: line.x0, y: line.y0))
     context.addLine(to: CGPoint(x: line.x1, y: line.y1))
     context.strokePath()
+  case .ring(let center, let rx, let ry, let ink, let style):
+    context.setStrokeColor(colour(ink.rawValue))
+    let dash: [CGFloat] = style == .dashed ? [8, 5] : (style == .dotted ? [1, 4] : [])
+    context.setLineDash(phase: 0, lengths: dash)
+    context.strokeEllipse(
+      in: CGRect(x: center.x - rx, y: center.y - ry, width: rx * 2, height: ry * 2))
+    context.setLineDash(phase: 0, lengths: [])
   case .ellipse(let center, let rx, let ry, let ink):
     context.setStrokeColor(colour(ink.rawValue))
     context.strokeEllipse(

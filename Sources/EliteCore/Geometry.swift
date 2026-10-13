@@ -116,16 +116,21 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var hull: Hull
   public var position: Vector3
   public var rotation: Double = 0
+  public var orientation = Basis3()
+  public var rotationRate: Double = 0.5
   public var energy: Double = 100
   public var hostile: Bool = false
   public var navalTarget = false
   public var missiles = 0
   public var playerMissileTarget: Int?
   public var enemyMissile = false
+  public var missileSourceID: Int?
+  public var destroyedByPlayer: Bool?
   public var ecmEnabled = false
   public init(id: Int, hull: Hull, position: Vector3, hostile: Bool = false) {
     self.id = id
     self.hull = hull
+    self.rotationRate = hull == .station ? 0.3 : 0.5
     self.position = position
     self.hostile = hostile
     self.energy = hull.navalEnergy ?? 100

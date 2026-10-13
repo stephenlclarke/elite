@@ -7,6 +7,7 @@ import Testing
   var game = Game(executive: false)
   #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .whiteWireframe)
   game.key("return")
+  game.launch()
   game.commander.credits = 1234
   game.commander.cargo[0] = 3
   game.frontShield = 1
@@ -15,11 +16,13 @@ import Testing
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.commander.name == "CLARKE")
   #expect(game.commander.equipment == Equipment.maximumHardware)
-  #expect(game.commander.credits == 1234 && game.commander.cargo[0] == 3)
-  #expect(game.commander.missiles == 4 && game.commander.fuel == 70)
-  #expect(game.frontShield == 255 && game.rearShield == 255 && game.energy == 256)
+  #expect(game.commander.credits == Commander.xyzzyStartingCredits && game.commander.cargo[0] == 3)
+  #expect(game.commander.missiles == 4 && game.commander.fuel == game.commander.fuelCapacity)
+  #expect(
+    game.frontShield == game.commander.shieldCapacity
+      && game.rearShield == game.commander.shieldCapacity && game.energy == 256)
   for expected in [
-    ShipDisplayStyle.colourWireframe, .shadedPanels, .whiteWireframe, .colourWireframe,
+    ShipDisplayStyle.whiteWireframe, .colourWireframe, .shadedPanels, .whiteWireframe,
   ] {
     game.key("0")
     #expect(game.commander.shipDisplayStyle == expected)
@@ -34,7 +37,7 @@ import Testing
   #expect(await restored.snapshot().commander == game.commander)
   game.key("escape")
   game.key("0")
-  #expect(!game.docked && game.commander.shipDisplayStyle == .colourWireframe)
+  #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)
 }
 
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {

@@ -22,6 +22,8 @@ leaks:
 	@tail -8 reports/leaks.txt
 readme-media:
 	swift run Elite --readme-media
+	mkdir -p Resources
+	iconutil -c icns .build/Elite.iconset -o Resources/Elite.icns
 sonar:
 	./script/sonar.sh
 ci: coverage-check threads address leaks

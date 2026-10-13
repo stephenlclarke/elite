@@ -58,7 +58,9 @@ enum ShipProjection {
     return r << 24 | g << 16 | b << 8 | 255
   }
 
-  static func polygon(_ vertices: [Vector3]) -> [ScreenPoint] {
+  static func polygon(_ vertices: [Vector3], projection: FlightProjection = .legacy)
+    -> [ScreenPoint]
+  {
     guard var previous = vertices.last else { return [] }
     var clipped: [Vector3] = []
     for current in vertices {
@@ -69,7 +71,7 @@ enum ShipProjection {
       if current.z >= 1 { clipped.append(current) }
       previous = current
     }
-    let points = clipped.map { ScreenPoint(128 + $0.x * 256 / $0.z, 96 - $0.y * 256 / $0.z) }
+    let points = clipped.map { projection.point($0) }
     return points.allSatisfy { $0.x.isFinite && $0.y.isFinite } ? points : []
   }
 }
@@ -80,10 +82,10 @@ extension Frame {
       return
     }
     var clipped = vertices
-    clipped = Self.clipPolygon(clipped, axis: \.x, limit: 0, above: true)
-    clipped = Self.clipPolygon(clipped, axis: \.x, limit: 255, above: false)
-    clipped = Self.clipPolygon(clipped, axis: \.y, limit: 12, above: true)
-    clipped = Self.clipPolygon(clipped, axis: \.y, limit: 175, above: false)
+    clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.x, above: true)
+    clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.maxX - 1, above: false)
+    clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.y, above: true)
+    clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.maxY - 1, above: false)
     guard clipped.count >= 3 else { return }
     graphics.append(.panel(ShipPanel(vertices: clipped, colour: colour)))
     if rasterizeGraphics { fillPanel(clipped, colour: colour) }

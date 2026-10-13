@@ -1,12 +1,13 @@
 import AVFoundation
 import EliteCore
+import Foundation
 
 @MainActor
 final class AudioPresenter {
   private var players: [AVAudioPlayer] = []
   private let speech = AVSpeechSynthesizer()
   private var previous = Game()
-  private var lastSpoken = ""
+  private var feed = SpeechFeed()
   func update(_ game: Game) {
     players.removeAll { !$0.isPlaying }
     if game.laserFlash > 0 && previous.laserFlash == 0 { play(.laser) }
@@ -16,23 +17,15 @@ final class AudioPresenter {
     if game.message != previous.message && game.messageTime > 0 {
       play(game.message == "E.C.M." ? .ecm : .ping)
     }
-    if game.commander.speech {
-      let text = game.screen == .title ? "Elite" : spokenMessage(game)
-      if !text.isEmpty && text != lastSpoken {
-        speech.speak(AVSpeechUtterance(string: text))
-        lastSpoken = text
-      }
-    } else {
-      lastSpoken = ""
-      if previous.commander.speech { speech.stopSpeaking(at: .immediate) }
+    if (!game.commander.speech && previous.commander.speech)
+      || game.ecmControl.epoch != previous.ecmControl.epoch
+    {
+      speech.stopSpeaking(at: .immediate)
+    }
+    if let text = feed.update(game, busy: speech.isSpeaking) {
+      speech.speak(AVSpeechUtterance(string: text))
     }
     previous = game
-  }
-  private func spokenMessage(_ game: Game) -> String {
-    if game.messageTime <= 0 { return "" }
-    if game.message.hasPrefix("ENERGY LOW") { return "Energy low" }
-    if game.message.hasPrefix("INCOMING MISSILE") { return "Incoming missile" }
-    return ""
   }
   private func play(_ effect: SoundEffect) {
     do {

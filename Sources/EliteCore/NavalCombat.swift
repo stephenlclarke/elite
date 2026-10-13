@@ -20,9 +20,10 @@ extension Game {
       } else {
         var missile = SpaceBody(id: nextBodyID, hull: .missile, position: position, hostile: true)
         missile.enemyMissile = true
+        missile.missileSourceID = id
         bodies.append(missile)
         nextBodyID += 1
-        notify("INCOMING MISSILE")
+        notify("INCOMING MISSILE", voiced: false)
       }
     }
   }
@@ -34,6 +35,8 @@ extension Game {
         continue
       }
       if ecmFrames > 0 {
+        ecmControl.recordDestruction()
+        confirmRetaliation(bodies[index])
         bodies[index].energy = 0
         continue
       }
@@ -58,10 +61,12 @@ extension Game {
     let step = 44 * 18 * delta
     if vector.length <= step + 64 {
       bodies[target].energy = 0
+      bodies[target].destroyedByPlayer = true
       bodies[index].energy = 0
     } else if bodies[target].ecmEnabled && randomByte() < 16 {
       // Missile TACTICS tests proximity first, then a 16/256 ECM chance.
       ecmFrames = 32
+      enemyECMSource = bodies[target].id
       bodies[index].energy = 0
       notify("ENEMY ECM")
     } else {
@@ -73,13 +78,7 @@ extension Game {
     let position = bodies[index].position
     let step = 44 * 18 * delta
     if position.length <= step + 64 {
-      let shield = position.z >= 0 ? frontShield : rearShield
-      energy -= max(0, 250 - shield)
-      if position.z >= 0 {
-        frontShield = max(0, frontShield - 250)
-      } else {
-        rearShield = max(0, rearShield - 250)
-      }
+      applyDamage(250, front: position.z >= 0)
       bodies[index].energy = 0
     } else {
       bodies[index].position = position * (1 - step / position.length)
