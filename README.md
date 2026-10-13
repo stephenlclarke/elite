@@ -219,7 +219,7 @@ Military identifies the actual craft that launched a player-targeted missile and
 
 ## Trading colours
 
-Buy Cargo, Sell Cargo and Market Prices use consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
+Buy Cargo, Sell Cargo and Market Prices use consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD, RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
 
 ## Navigation, fuel storage and charts
 
