@@ -24,4 +24,6 @@ Validation on 2026-10-13: 139 tests passed with 94.92% overall Swift coverage; T
 
 Old JSON commanders remain readable; legacy docking, XYZZY cash and Elite rewards migrate without downgrading higher equipment. Route figures assume station refuelling and estimate market opportunities; future fuel affordability is not guaranteed. NPC fuel/shield/cargo telemetry remains explicitly unavailable where not modelled. Solar scooping and original binary-save compatibility are not implemented. Safe docking from inside station geometry is not guaranteed. These native additions do not claim complete historical physics or blueprint parity. Only the two implemented BBC missions are playable; cross-version research stays separate.
 
-Request: [ISSUE-compact-cockpit-hud.md](ISSUE-compact-cockpit-hud.md).
+Request: [ISSUE-2.md](ISSUE-2.md).
+
+Pull request: <https://github.com/stephenlclarke/elite/pull/2>.

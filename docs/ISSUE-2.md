@@ -6,4 +6,6 @@ Equipment needs categories and visible reward tiers, while targeting tiers repla
 
 Retain every ship research record, Frontier capability and shipyard requirement. The playable gallery remains the two implemented BBC naval missions; unfinished research records are not automatically activated.
 
-Implementation: [PR-compact-cockpit-hud.md](PR-compact-cockpit-hud.md).
+Implementation: [PR-2.md](PR-2.md).
+
+Pull request: <https://github.com/stephenlclarke/elite/pull/2>.
