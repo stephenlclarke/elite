@@ -7,12 +7,8 @@ public enum PlayerHelp {
   public static func pages(for game: Game) -> [HelpPage] {
     let screen = game.screen == .help ? game.helpReturn : game.screen
     let context = context(for: screen, paused: game.paused)
-    var pages = stride(from: 0, to: context.rows.count, by: 16).map { offset in
-      HelpPage(
-        title: context.title,
-        rows: Array(context.rows[offset..<min(offset + 16, context.rows.count)]))
-    }
-    if !game.paused && ![Screen.demo, .title, .gameOver, .secret].contains(screen) {
+    var pages = paginate(context)
+    if !game.paused && ![Screen.demo, .title, .gameOver, .secret, .mission].contains(screen) {
       let screens = HelpPage(
         title: game.docked ? "AT THE STATION" : "IN SPACE: SCREENS",
         rows: [
@@ -27,14 +23,36 @@ public enum PlayerHelp {
       } else {
         pages.append(screens)
       }
-      if !game.docked && !screen.isFlight { pages.append(Self.context(for: .front, paused: false)) }
+      if !game.docked && !screen.isFlight {
+        pages.append(contentsOf: paginate(Self.context(for: .front, paused: false)))
+      }
+      if !game.docked {
+        pages.append(
+          HelpPage(
+            title: "SPIN HOLD PROTOTYPE",
+            rows: [
+              "V - SPIN MODE / NORMAL FLIGHT",
+              "ONE FINGER CIRCLE - CHOOSE CW / CCW",
+              "CIRCLE AROUND THE TRACKPAD CENTRE",
+              "1 / 2 / 3 FINGERS - SLOW/HOLD/FASTER",
+              "NO CONTACT - HOLD SET SPIN SPEED",
+              "2 FINGERS MOVE - PITCH / YAW",
+              "B - STOP SPIN SMOOTHLY",
+              "[ / ] - START CCW / CW SPIN",
+              "- / = OR + - SLOW / SPEED UP SPIN",
+              "LEFT / RIGHT - YAW (SPIN MODE)",
+              "X / S - PITCH; SPACE / SLASH - SPEED",
+              "CW / CCW IS FROM FORWARD COCKPIT",
+              "HELP / PAUSE / FOCUS LOSS CANCEL SPIN",
+            ]))
+      }
     }
     pages.append(
       HelpPage(
         title: "COMMON KEYS",
         rows: [
           "K / COMMAND-K - CONTEXT KEY GUIDE",
-          "END - PAUSE / RESUME",
+          "COMMAND-P - PAUSE / RESUME",
           "X Y Z Z Y - CLARKE AND SECRET MENU",
           "COMMAND-S / COMMAND-O - SAVE / LOAD",
           "COMMAND-Q - QUIT",
@@ -43,6 +61,14 @@ public enum PlayerHelp {
           "K / RETURN / ESC - CLOSE HELP",
         ]))
     return pages
+  }
+
+  private static func paginate(_ context: HelpPage) -> [HelpPage] {
+    stride(from: 0, to: context.rows.count, by: 16).map { offset in
+      HelpPage(
+        title: context.title,
+        rows: Array(context.rows[offset..<min(offset + 16, context.rows.count)]))
+    }
   }
 
   private static func context(for screen: Screen, paused: Bool) -> HelpPage {
@@ -64,7 +90,7 @@ public enum PlayerHelp {
         ])
     }
     if paused {
-      return HelpPage(title: "PAUSED", rows: ["END / ESC - RESUME", ": - TOGGLE SPEECH"])
+      return HelpPage(title: "PAUSED", rows: ["COMMAND-P / ESC - RESUME", ": - TOGGLE SPEECH"])
     }
     switch screen {
     case .front, .rear, .left, .right:
@@ -81,6 +107,11 @@ public enum PlayerHelp {
           "J - IN-SYSTEM JUMP",
           "C / P - DOCKING COMPUTER ON / OFF",
           "WEAPONS AND DRIVES REQUIRE EQUIPMENT",
+          "TRACKPAD: 2 FINGERS - STEER / CRUISE",
+          "1 FINGER - SLOW; 3 FINGERS - SPEED UP",
+          "HOLD OFF CENTRE TO KEEP TURNING",
+          "CENTRE 2 FINGERS - STOP TURNING",
+          "LIFT ALL - CENTRE YOKE / KEEP SPEED",
         ])
     case .buy, .sell:
       return HelpPage(
@@ -105,7 +136,7 @@ public enum PlayerHelp {
       return HelpPage(title: "NAVIGATION CHART", rows: rows)
     case .demo:
       return HelpPage(
-        title: "EXECUTIVE DEMO",
+        title: "RIGHT-ON COMMANDER DEMO",
         rows: ["THE TITLE APPEARS AFTER THE DEMO", "K - RETURN TO THE DEMO"])
     case .title:
       return HelpPage(
@@ -113,6 +144,14 @@ public enum PlayerHelp {
         rows: ["SPACE / RETURN - COMMANDER SCREEN", "NEW COMMANDER: JAMESON"])
     case .gameOver:
       return HelpPage(title: "GAME OVER", rows: ["SPACE / RETURN - NEW COMMANDER JAMESON"])
+    case .mission:
+      return HelpPage(
+        title: "NAVAL MESSAGE",
+        rows: [
+          "SPACE / RETURN / ESC - CONTINUE",
+          "ARROWS - PREVIOUS / NEXT PAGE",
+          "FINISH THE MESSAGE TO RETURN TO STATUS",
+        ])
     default:
       return HelpPage(
         title: "INFORMATION SCREEN",

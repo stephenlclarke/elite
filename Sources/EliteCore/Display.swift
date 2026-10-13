@@ -169,15 +169,18 @@ public enum Display {
     case .inventory: inventory(game, into: &frame)
     case .secret: secret(game, into: &frame)
     case .help: help(game, into: &frame)
+    case .mission: mission(game, into: &frame)
     case .gameOver:
       frame.centered("GAME OVER", 85)
       frame.centered("PRESS SPACE COMMANDER", 130)
     }
     if ![Screen.title, .demo, .help].contains(game.screen) { dashboard(game, into: &frame) }
-    if game.messageTime > 0 && ![Screen.secret, .help].contains(game.screen) {
+    if game.messageTime > 0 && ![Screen.secret, .help, .mission].contains(game.screen) {
       frame.centered(game.message, 178)
     }
-    if game.paused && game.screen != .help { frame.centered("PAUSED", 168) }
+    if game.paused && ![Screen.help, .mission, .secret].contains(game.screen) {
+      frame.centered("PAUSED: COMMAND-P TO RESUME", game.screen == .title ? 208 : 168)
+    }
     if game.screen != .help { frame.text("K:HELP", 216, 184, .cyan) }
     return frame
   }
@@ -191,8 +194,7 @@ public enum Display {
     var ship = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 280))
     ship.rotation = game.time * 0.6
     draw(ship, game: game, into: &frame)
-    frame.centered(
-      game.commander.executive ? "THE EXECUTIVE VERSION" : "BBC MICRO DISC EDITION", 163)
+    frame.centered("RIGHT-ON COMMANDER VERSION", 163)
     frame.centered("PRESS SPACE COMMANDER", 190)
     frame.centered("SWIFT MACOS REIMPLEMENTATION", 224)
   }
@@ -207,7 +209,7 @@ public enum Display {
     }
     for body in demonstration.bodies { draw(body, game: demonstration, into: &frame) }
     let lines = [
-      "PIZZASOFT PRESENTS", "THE EXECUTIVE VERSION", "WELCOME COMMANDER " + game.commander.name,
+      "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
       "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
     ]
     for (index, line) in lines.enumerated() {
@@ -251,6 +253,9 @@ public enum Display {
       }
     }
     if game.dockingComputer { frame.centered("DOCKING COMPUTERS ON", 164) }
+    for (index, line) in game.spin.hudLines.enumerated() {
+      frame.text(line, 8, 138 + index * 8, .cyan)
+    }
   }
   private static func draw(_ body: SpaceBody, game: Game, into frame: inout Frame) {
     let center = game.viewPosition(body.position)
@@ -261,6 +266,7 @@ public enum Display {
       return rotated + center
     }
     var drawn: Set<String> = []
+    var visibleFaces: Set<Int> = []
     let depths = mesh.faces.map { face -> (indices: [Int], distance: Double) in
       let sum = face.reduce(0.0) { total, index in total + vertices[index].z }
       return (face, sum / Double(face.count))
@@ -272,6 +278,7 @@ public enum Display {
       let c = vertices[face[2]]
       let normal = (b - a).cross(c - a)
       guard normal.dot(a) < 0 else { continue }
+      if let index = mesh.faces.firstIndex(of: face) { visibleFaces.insert(index) }
       if game.commander.shipDisplayStyle == .shadedPanels {
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }),
@@ -288,6 +295,14 @@ public enum Display {
         }
         // The viewport ends above the colour dashboard.
         frame.wire(points.0, points.1, points.2, points.3, ink)
+      }
+    }
+    if game.commander.shipDisplayStyle != .shadedPanels {
+      let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe ? .white : body.hull.ink
+      for detail in mesh.details where visibleFaces.contains(detail.face) {
+        if let line = project(vertices[detail.start], vertices[detail.end]) {
+          frame.wire(line.0, line.1, line.2, line.3, ink)
+        }
       }
     }
     if body.hull == .station {
@@ -355,8 +370,14 @@ public enum Display {
       "GROSS PRODUCTIVITY \(star.productivity) MCR", "AVERAGE RADIUS \(star.radius) KM",
     ]
     for (i, line) in lines.enumerated() { frame.text(line, 8, 30 + i * 16) }
+    if let clue = game.missionClue {
+      // Mission hints replace the description, as in PDESC; the normal data stays above.
+      for (index, line) in MissionNotice.wrap(clue, width: 40).enumerated() {
+        frame.text(line, 8, 130 + index * 8)
+      }
+    }
     if game.commander.executive && game.docked {
-      if star.name == "LAVE" { frame.text("EXECUTIVE EDITION HOME PORT", 8, 150) }
+      if star.name == "LAVE" { frame.text("XYZZY HOME PORT", 8, 150) }
       if star.name == "RIEDQUAT" { frame.text("XYZZY: INFINITE RANGE", 8, 150) }
     }
   }
@@ -385,7 +406,9 @@ public enum Display {
       let available = item.technology <= game.currentSystem.technology
       frame.text(item.name, 8, y, available ? .white : .red)
       frame.text(
-        game.commander.equipment.contains(item.name)
+        (game.commander.equipment.contains(item.name)
+          || (item.name == "Extra Energy Unit"
+            && game.commander.equipment.contains(Equipment.navalEnergyUnit)))
           ? "FITTED" : String(format: "%.1f", Double(item.price) / 10), 194, y)
     }
     frame.text(
@@ -407,8 +430,16 @@ public enum Display {
           : String(format: "CASH: %.1f CR", Double(game.commander.credits) / 10),
         "LEGAL STATUS: " + legal,
         "RATING: " + game.commander.rank, "EQUIPMENT:",
-      ] + game.commander.equipment.sorted().filter { !["Fuel", "Missile"].contains($0) }
+      ]
+      + (game.commander.equipment.contains(Equipment.navalEnergyUnit)
+        ? [Equipment.navalEnergyUnit] : [])
+      + game.commander.equipment.sorted().filter {
+        !["Fuel", "Missile", Equipment.navalEnergyUnit].contains($0)
+      }
     for (i, line) in lines.prefix(16).enumerated() { frame.text(line, 8, 30 + i * 9) }
+    if game.commander.missionStage != .notStarted && game.messageTime <= 0 {
+      frame.text(game.commander.missionStage.status, 8, 177, .cyan)
+    }
   }
   private static func inventory(_ game: Game, into frame: inout Frame) {
     header("INVENTORY", into: &frame)
@@ -439,7 +470,7 @@ public enum Display {
       "9 CASH: " + (game.commander.unlimitedCash ? "UNLIMITED" : "NORMAL"),
     ]
     for (index, choice) in choices.enumerated() { frame.text(choice, 10, 46 + index * 13) }
-    frame.text("RETURN TO RESUME", 10, 177)
+    frame.text(game.paused ? "RETURN THEN COMMAND-P TO RESUME" : "RETURN TO RESUME", 10, 177)
   }
   private static func help(_ game: Game, into frame: inout Frame) {
     header("PLAYER KEY GUIDE", into: &frame)
@@ -450,6 +481,26 @@ public enum Display {
     for (row, text) in page.rows.enumerated() { frame.text(text, 8, 48 + row * 10) }
     frame.centered("PAGE \(index + 1) OF \(pages.count)", 220, .yellow)
     frame.centered("ARROWS: MORE   K/ESC: BACK", 238, .cyan)
+  }
+  private static func mission(_ game: Game, into frame: inout Frame) {
+    guard let notice = game.missionNotice else { return }
+    if game.missionElapsed < 2 {
+      frame.centered("INCOMING MESSAGE", 85)
+      return
+    }
+    header("INCOMING MESSAGE", into: &frame)
+    if notice.showsShip {
+      var ship = SpaceBody(id: 0, hull: .constrictor, position: .init(0, 80, 600))
+      ship.rotation = game.time * 0.6
+      draw(ship, game: game, into: &frame)
+    }
+    let pages = notice.pages
+    let page = min(game.missionPage, pages.count - 1)
+    for (index, line) in pages[page].enumerated() {
+      frame.text(line, 8, (notice.showsShip ? 103 : 30) + index * 8)
+    }
+    frame.text(game.paused ? "COMMAND-P: RESUME" : "SPACE/RETURN: CONTINUE", 8, 177, .cyan)
+    frame.text("\(page + 1)/\(pages.count)", 8, 185, .yellow)
   }
   private static func dashboard(_ game: Game, into frame: inout Frame) {
     frame.box(0, 191, 255, 64, .yellow)

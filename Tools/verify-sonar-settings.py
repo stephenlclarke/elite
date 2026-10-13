@@ -17,12 +17,14 @@ def read(endpoint):
 
 def main():
     """Fail closed if the remote project settings have drifted."""
-    settings = read("settings/values?component=stephenlclarke_elite&keys=sonar.leak.period")
+    settings = read("settings/values?component=stephenlclarke_elite&keys=sonar.leak.period,sonar.autoscan.enabled")
     assert any(s["key"] == "sonar.leak.period" and s.get("value") == "previous_version"
                for s in settings["settings"]), "Set new code to Previous version"
+    assert any(s["key"] == "sonar.autoscan.enabled" and s.get("value") == "false"
+               for s in settings["settings"]), "Disable automatic analysis; scan committed main through CI"
     branches = read("project_branches/list?project=stephenlclarke_elite")
     assert [b["name"] for b in branches["branches"] if b["isMain"]] == ["main"], "Sonar main branch must be main"
-    print("Sonar settings verified: main, Previous version")
+    print("Sonar settings verified: main, Previous version, automatic analysis disabled")
 
 
 if __name__ == "__main__":

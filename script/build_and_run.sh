@@ -14,6 +14,7 @@ cat > "$APP_BUNDLE/Contents/Info.plist" <<'PLIST'
 <key>CFBundleExecutable</key><string>Elite</string>
 <key>CFBundleIdentifier</key><string>io.xyzzy.elite</string>
 <key>CFBundleName</key><string>Elite</string>
+<key>CFBundleDisplayName</key><string>XYZZY Elite - Right-On Commander</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>NSPrincipalClass</key><string>NSApplication</string>
