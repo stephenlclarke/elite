@@ -6,4 +6,6 @@ Acceptance: use the existing compact bitmap font at a fixed logical size across 
 
 R must visibly centre the selected ship, clear stale steering and engage full station guidance at Docking tier or higher. Remove C docking while keeping route clearing and showroom comparison. Preserve the approved app icon, original 256 systems, historical mission rules, existing saves and independently maintained research. Run native visual checks, regression tests, coverage, sanitizers and leaks; publish authoritative Sonar analysis only from committed main.
 
-Implementation: [PR-docked-showroom-and-typography.md](PR-docked-showroom-and-typography.md).
+Implementation: [PR-5.md](PR-5.md).
+
+Pull request: <https://github.com/stephenlclarke/elite/pull/5>.

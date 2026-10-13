@@ -1,4 +1,5 @@
 # Preserve original upstream notices byte-for-byte, including their line endings.
-Sources/EliteCore/Resources/ModelLicenses/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+# Upstream README underline separators are not Git conflict markers.
+Sources/EliteCore/Resources/ModelLicenses/** conflict-marker-size=32 -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 Sources/EliteCore/Resources/*-LICENSE.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 Sources/EliteCore/Resources/Vector-MANIFEST.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
