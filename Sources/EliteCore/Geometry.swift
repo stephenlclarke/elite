@@ -31,14 +31,22 @@ public struct Vector3: Sendable, Equatable, Codable {
 }
 
 public enum Hull: String, Sendable, Codable, CaseIterable {
-  case cobra, viper, sidewinder, asteroid, station, missile, thargoid, cargo
+  case cobra, viper, sidewinder, asteroid, station, missile, thargoid, cargo, constrictor, thargon
+}
+
+public struct MeshDetail: Sendable {
+  public let start: Int
+  public let end: Int
+  public let face: Int
 }
 
 public struct Mesh: Sendable {
   public let vertices: [Vector3]
   public let faces: [[Int]]
-  public init(vertices: [Vector3], faces: [[Int]]) {
+  public let details: [MeshDetail]
+  public init(vertices: [Vector3], faces: [[Int]], details: [MeshDetail] = []) {
     self.vertices = vertices
+    self.details = details
     let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
     // A consistent outward winding is essential to preserve silhouette edges.
     self.faces = faces.map { face in
@@ -52,6 +60,8 @@ public struct Mesh: Sendable {
   }
   public static func hull(_ kind: Hull) -> Mesh {
     switch kind {
+    case .constrictor: return NavalShips.constrictor
+    case .thargon: return NavalShips.thargon
     case .station:
       return Mesh(
         vertices: [
@@ -106,10 +116,18 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var rotation: Double = 0
   public var energy: Double = 100
   public var hostile: Bool = false
+  public var navalTarget = false
+  public var missiles = 0
+  public var playerMissileTarget: Int?
+  public var enemyMissile = false
+  public var ecmEnabled = false
   public init(id: Int, hull: Hull, position: Vector3, hostile: Bool = false) {
     self.id = id
     self.hull = hull
     self.position = position
     self.hostile = hostile
+    self.energy = hull.navalEnergy ?? 100
+    self.missiles = hull.navalMissiles
+    self.ecmEnabled = hull.hasECM
   }
 }

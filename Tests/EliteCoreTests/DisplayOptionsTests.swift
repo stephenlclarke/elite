@@ -14,7 +14,7 @@ import Testing
   game.energy = 3
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.commander.name == "CLARKE")
-  #expect(game.commander.equipment == Set(Equipment.all.map(\.name)))
+  #expect(game.commander.equipment == Equipment.maximumHardware)
   #expect(game.commander.credits == 1234 && game.commander.cargo[0] == 3)
   #expect(game.commander.missiles == 4 && game.commander.fuel == 70)
   #expect(game.frontShield == 255 && game.rearShield == 255 && game.energy == 256)

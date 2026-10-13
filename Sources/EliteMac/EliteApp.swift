@@ -5,11 +5,42 @@ import UniformTypeIdentifiers
 
 @MainActor
 final class GameView: NSView {
-  var game = Game()
+  var game = Game() {
+    didSet {
+      if !acceptsTrackpadFlight { trackpad.reset() }
+    }
+  }
   let audio = AudioPresenter()
   var held: Set<String> = []
   var pressedKeys: [UInt16: String] = [:]
   var pending: [String] = []
+  var trackpad = TrackpadInput()
+  override init(frame frameRect: NSRect) {
+    super.init(frame: frameRect)
+    allowedTouchTypes = .indirect
+    wantsRestingTouches = true
+  }
+  required init?(coder: NSCoder) { nil }
+  private var acceptsTrackpadFlight: Bool {
+    !game.docked && game.screen.isFlight && !game.paused && !game.dockingComputer
+      && (window?.isKeyWindow ?? true)
+  }
+  func updateTrackpad(positions: [SIMD2<Double>]) {
+    guard acceptsTrackpadFlight else {
+      trackpad.reset()
+      return
+    }
+    trackpad.update(positions: positions)
+  }
+  private func updateTrackpad(with event: NSEvent) {
+    let positions = event.touches(matching: .touching, in: self).filter { $0.type == .indirect }
+      .map { SIMD2<Double>($0.normalizedPosition.x, $0.normalizedPosition.y) }
+    updateTrackpad(positions: positions)
+  }
+  override func touchesBegan(with event: NSEvent) { updateTrackpad(with: event) }
+  override func touchesMoved(with event: NSEvent) { updateTrackpad(with: event) }
+  override func touchesEnded(with event: NSEvent) { updateTrackpad(with: event) }
+  override func touchesCancelled(with event: NSEvent) { trackpad.reset() }
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
   override func draw(_ _: NSRect) {
@@ -48,6 +79,12 @@ final class GameView: NSView {
     controls.throttle =
       (held.contains(" ") ? 1 : 0) - (held.contains("/") || held.contains("?") ? 1 : 0)
     controls.fire = held.contains("a")
+    if acceptsTrackpadFlight {
+      let touch = trackpad.controls
+      controls.pitch = max(-1, min(1, controls.pitch + touch.pitch))
+      controls.roll = max(-1, min(1, controls.roll + touch.roll))
+      controls.throttle = max(-1, min(1, controls.throttle + touch.throttle))
+    }
     return controls
   }
   private static func key(_ event: NSEvent) -> String {
@@ -77,7 +114,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let window = NSWindow(
       contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered, defer: false)
-    window.title = "Elite - Executive Edition"
+    window.title = "XYZZY Elite - Right-On Commander"
     window.contentView = view
     window.contentAspectRatio = NSSize(width: 1, height: 1)
     window.minSize = NSSize(width: 512, height: 540)
@@ -128,6 +165,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   func windowDidResignKey(_ _: Notification) {
     (window?.contentView as? GameView)?.held.removeAll()
     (window?.contentView as? GameView)?.pressedKeys.removeAll()
+    (window?.contentView as? GameView)?.trackpad.reset()
   }
   private func installMenu() {
     let menu = NSMenu()
@@ -146,6 +184,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let load = commander.submenu?.addItem(
       withTitle: "Load Commander", action: #selector(loadCommander), keyEquivalent: "o")
     load?.target = self
+    let game = NSMenuItem()
+    game.title = "Game"
+    menu.addItem(game)
+    game.submenu = NSMenu(title: "Game")
+    let pause = game.submenu?.addItem(
+      withTitle: "Pause / Resume", action: #selector(togglePause), keyEquivalent: "p")
+    pause?.target = self
     let help = NSMenuItem()
     help.title = "Help"
     menu.addItem(help)
@@ -157,6 +202,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
   }
   @objc private func showHelp() {
     (window?.contentView as? GameView)?.pending.append("k")
+  }
+  @objc private func togglePause() {
+    (window?.contentView as? GameView)?.pending.append("pause")
   }
   @objc private func saveCommander() {
     Task { [weak self] in
@@ -241,8 +289,37 @@ struct EliteApp {
       for _ in 0..<121 { _ = await runtime.advance(delta: 0.1) }
       await runtime.key(" ")
       await runtime.key("0")
+      var trackpad = TrackpadInput()
       for frame in 0..<100 {
         if frame == 40 || frame == 50 { await runtime.key("k") }
+        switch frame {
+        case 0..<30: trackpad.update(positions: [.zero, .zero, .zero])
+        case 30..<60: trackpad.update(positions: [.init(0.6, 0.7), .init(0.8, 0.9)])
+        case 60..<80: trackpad.update(positions: [.init(0.5, 0.5)])
+        default: trackpad.update(positions: [])
+        }
+        await runtime.setControls(trackpad.controls)
+        let state = await runtime.advance(delta: 0.02)
+        _ = await imageFor(Display.render(state, rasterizeGraphics: false), pixelSize: 512)
+      }
+    }
+    for stage in NavalMissionStage.allCases {
+      var game = Game()
+      game.commander.missionStage = stage
+      game.commander.galaxy = stage.rawValue >= 6 ? 2 : 0
+      game.commander.kills = 1280
+      game.dock()
+      if game.screen != .mission {
+        game.launch()
+        game.bodies = [
+          SpaceBody(id: 1, hull: .constrictor, position: .init(0, 0, 1200), hostile: true),
+          SpaceBody(id: 2, hull: .thargoid, position: .init(100, 0, 1500), hostile: true),
+          SpaceBody(id: 3, hull: .thargon, position: .init(-100, 0, 1000), hostile: true),
+        ]
+      }
+      let runtime = GameRuntime(game: game)
+      for frame in 0..<120 {
+        if frame == 115 { await runtime.key("return") }
         let state = await runtime.advance(delta: 0.02)
         _ = await imageFor(Display.render(state, rasterizeGraphics: false), pixelSize: 512)
       }

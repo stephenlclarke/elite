@@ -36,13 +36,13 @@ public struct ShipPanel: Sendable, Equatable {
 extension Hull {
   public var ink: Ink {
     switch self {
-    case .cobra: .cyan
+    case .cobra, .constrictor: .cyan
     case .viper: .blue
     case .sidewinder, .cargo: .yellow
     case .asteroid: .orange
     case .station: .blue
     case .missile: .red
-    case .thargoid: .green
+    case .thargoid, .thargon: .green
     }
   }
 }

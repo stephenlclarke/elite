@@ -390,6 +390,11 @@ import Testing
   game.commander.cargo[0] = 2
   for screen in Screen.allCases {
     game.screen = screen
+    if screen == .mission {
+      game.missionNotice = MissionNotice(
+        message: .constrictorBriefing, commander: "JAMESON", galaxy: 0)
+      game.missionElapsed = 2
+    }
     let image = Display.render(game)
     #expect(image.pixels.count == 65536 && image.pixels.contains(Ink.white.rawValue))
     #expect(image == Display.render(game))
