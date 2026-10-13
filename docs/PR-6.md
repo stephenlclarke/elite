@@ -4,4 +4,6 @@ Simplify chart/footer and docked screen routing conditionals, merge repeated cha
 
 Existing chart, planet, showroom, gallery and typography regressions validate the refactoring. Focused layout assertions bind the selected column to its model caption and keep Required crew on one line at the supplied wide size, with gutters and responsive wrapping checked across six widths. Icon checks require the detailed canonical hull, shaded visibility and all standard/Retina sizes. The 37 focused refactoring checks and 18 updated layout/icon checks pass. A rebuilt native app visibly aligns the right header/values under its model caption and keeps Required crew on one line at the supplied wide size. `make readme-media` regenerates the detailed icon, and the app has been rebuilt/relaunched with the saved commander preserved. Full `make ci` coverage, thread/address sanitizer and leak gates are running for this revision. Main-only Sonar analysis must confirm the eight findings are resolved using the exact merged SHA. Licence scope and inherited BBC rights exclusions remain in [NOTICE.md](../NOTICE.md).
 
-Request: [ISSUE-quality-polish.md](ISSUE-quality-polish.md). Follow-up to [PR #5](https://github.com/stephenlclarke/elite/pull/5).
+Request: [ISSUE-6.md](ISSUE-6.md). Follow-up to [PR #5](https://github.com/stephenlclarke/elite/pull/5).
+
+Pull request: <https://github.com/stephenlclarke/elite/pull/6>.
