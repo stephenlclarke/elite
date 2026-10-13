@@ -24,12 +24,12 @@ Elite was created by David Braben and Ian Bell. The project credits Mark Moxon's
 
 ## BBC-derived material
 
-The numerical Constrictor/Thargon blueprints in `Sources/EliteCore/NavalShips.swift`, Cobra blueprint coordinates used by `Sources/EliteCore/AppIcon.swift`, and any retained original Elite narrative or design material are excluded from the MIT grant. The renderer, native control/simulation implementation and original explanatory prose are separately authored; those additions do not relicense the underlying material.
+The numerical Constrictor/Thargon blueprints in `Sources/EliteCore/NavalShips.swift` and any retained original Elite narrative or design material are excluded from the MIT grant. The renderer, native control/simulation implementation and original explanatory prose are separately authored; those additions do not relicense the underlying material.
 
 The [pinned BBC source repository](https://github.com/markmoxon/elite-source-code-6502-second-processor/tree/9080bd09c814b43c9c82571493c74bfb447aa607#a-note-on-licences-copyright-etc) explicitly supplies no licence and retains original copyright. Public source availability, attribution and a noncommercial project are not a reuse licence. This repository does not claim permission to sublicense that material or that the complete game has been cleared for redistribution. See the bundled [BBC provenance notice](Sources/EliteCore/Resources/Legal/BBC-PROVENANCE.txt). The original rights remain with their holders.
 
 ## Distribution
 
-Renderer-generated `docs/elite.png` and `docs/start-sequence.gif` contain the adapted Oolite Cobra Mk III and are distributed under CC-BY-NC-SA-3.0, with attribution to the Oolite artwork contributors above and Stephen Clarke for the native rendering/composition. Their generation by this project's renderer does not turn the depicted model into MIT artwork. `Resources/Elite.icns` and `docs/images/elite-icon.png` instead use the retained BBC Cobra blueprint; the BBC-derived-material exclusion above applies to that underlying design.
+Renderer-generated `docs/elite.png`, `docs/start-sequence.gif`, `Resources/Elite.icns` and `docs/images/elite-icon.png` contain the adapted Oolite Cobra Mk III and are distributed under CC-BY-NC-SA-3.0, with attribution to the Oolite artwork contributors above and Stephen Clarke for the native rendering/composition. Their generation by this project's renderer does not turn the depicted model into MIT artwork.
 
 Keep the applicable copyright, attribution and licence notices with redistributed material. The standard app build includes this notice, the MIT licence, all bundled asset notices and the Creative Commons legal codes in `Elite.app/Contents/Resources`. Preserve the per-model licence metadata and additional source terms when redistributing adapted meshes or renderer-generated media containing those meshes.

@@ -93,18 +93,19 @@ extension Display {
       ]
     }
     let chart = game.screen == .chart || game.screen == .shortChart
-    let clue =
-      chart
-      ? (game.inspectedGalaxy == game.commander.galaxy
-        ? MissionRules.clue(
-          stage: game.commander.missionStage, galaxy: game.inspectedGalaxy,
-          system: star.id,
-          variation: Int(PlanetIdentity(galaxy: game.inspectedGalaxy, system: star).key % 5))
-        : nil)
-      : game.missionClue
+    let clue: String?
+    if !chart {
+      clue = game.missionClue
+    } else if game.inspectedGalaxy == game.commander.galaxy {
+      clue = MissionRules.clue(
+        stage: game.commander.missionStage, galaxy: game.inspectedGalaxy, system: star.id,
+        variation: Int(PlanetIdentity(galaxy: game.inspectedGalaxy, system: star).key % 5))
+    } else {
+      clue = nil
+    }
     if let clue { rows += [("", .cyan), (clue, .cyan)] }
-    if game.commander.executive && game.docked {
-      if star.name == "LAVE" { rows.append(("XYZZY HOME PORT", .cyan)) }
+    if game.commander.executive && game.docked && star.name == "LAVE" {
+      rows.append(("XYZZY HOME PORT", .cyan))
     }
     return rows
   }

@@ -71,7 +71,8 @@ public struct ChartLayout: Sendable {
     wide = width >= 1000
     font = GameTypography.scale
     let wideFooter = local ? 276.0 : 226.0
-    let narrowFooter = docked ? 380.0 : (local ? 320.0 : 270.0)
+    let flightNarrowFooter = local ? 320.0 : 270.0
+    let narrowFooter = docked ? 380.0 : flightNarrowFooter
     plot = .init(
       x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
       height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
@@ -221,8 +222,8 @@ extension Display {
     if !layout.local {
       frame.label(
         "/: Search planets", width - 16 - 17 * 6 * layout.font, 10, scale: layout.font, ink: .cyan)
+      galaxySelector(game, layout: layout, into: &frame)
     }
-    if !layout.local { galaxySelector(game, layout: layout, into: &frame) }
     let current = layout.point(game.currentSystem, current: game.currentSystem)
     if layout.local {
       reachRings(game, layout: layout, into: &frame)

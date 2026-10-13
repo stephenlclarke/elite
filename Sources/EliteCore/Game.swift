@@ -702,7 +702,8 @@ public struct Game: Sendable {
     case 6:
       systemInspection =
         screen == .chart ? .init(galaxy: viewedGalaxy, system: viewedSystemID) : nil
-      screen = docked ? (screen == .chart ? .chart : .shortChart) : .system
+      let dockedScreen: Screen = screen == .chart ? .chart : .shortChart
+      screen = docked ? dockedScreen : .system
       let variation = commander.missionStage.rawValue & 1 == 1 ? randomByte() % 5 : 0
       missionClue =
         inspectedGalaxy == commander.galaxy

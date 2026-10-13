@@ -238,18 +238,22 @@ private func showroomGame() -> Game {
   for width in [512.0, 768, 1000, 1512, 1800, 2560] {
     let outer = ShowroomLayout(width: width, height: 1160, detail: true)
     let labels = ["Comparison"] + game.showroomComparison.map(\.label)
-    let layout = ShipComparisonLayout(width: outer.details.width, labels: labels)
-    if width >= 1000 {
+    let layout = ShipComparisonLayout(
+      width: outer.details.width, labels: labels, modelAligned: outer.wide)
+    if outer.wide { #expect(outer.details.x + layout.selectedX == outer.selectedModelX) }
+    if width >= 1512 {
       #expect(
         labels.allSatisfy {
           Double($0.count) * 6 * GameTypography.scale <= layout.labelWidth
         })
     }
     var found = Set<String>()
+    var foundChunks = Set<String>()
     for scroll in stride(from: 0, to: 200, by: 8) {
       game.showroom.scroll = scroll
       let frame = Display.presentation(game, width: width, height: 1160)
       let cells = frame.labels.filter { $0.y >= outer.details.y && $0.y < outer.details.maxY }
+      foundChunks.formUnion(cells.filter { $0.ink == .yellow }.map(\.text))
       for label in cells where label.ink == .yellow && labels.contains(label.text) {
         found.insert(label.text)
         let baseline = cells.first { $0.y == label.y && $0.x == outer.details.x + layout.baselineX }
@@ -260,8 +264,22 @@ private func showroomGame() -> Game {
         #expect(left.bounds.maxX + 16 <= right.x)
       }
       #expect(cells.allSatisfy { $0.scale == GameTypography.scale && $0.bounds.maxX <= width - 16 })
+      if width >= 1800, let label = cells.first(where: { $0.text == "Required crew" }) {
+        let field = try #require(game.showroomComparison.first { $0.label == "Required crew" })
+        let expected = field.selected + (field.difference.isEmpty ? "" : " / " + field.difference)
+        #expect(
+          cells.contains { $0.x == outer.selectedModelX && $0.y == label.y && $0.text == expected })
+      }
     }
-    if width >= 1000 { #expect(found.isSuperset(of: labels)) }
+    if width >= 1512 { #expect(found.isSuperset(of: labels)) }
+    if outer.wide {
+      for label in labels {
+        #expect(
+          ShowroomText.wrap(label, width: layout.labelColumns).allSatisfy {
+            foundChunks.contains($0)
+          })
+      }
+    }
   }
   game.showroom.selection = "SH001"
   #expect(game.showroomTradeoffs.contains("Less cargo capacity"))
