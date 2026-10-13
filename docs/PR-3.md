@@ -4,4 +4,6 @@ Resolve the 18 Sonar maintainability findings from the flight-assistance update.
 
 Gameplay and rendering behaviour are unchanged. Existing regressions cover chart ordering, all gallery states, cockpit bounds, line clipping, complete ship silhouettes, equipment selection and native rendering. Regenerated README media must remain byte-identical. Validation: `make ci` passed with 139 tests, 94.86% overall Swift coverage, clean Thread Sanitizer and Address Sanitizer runs, and 0 leaked bytes. Strict Swift formatting and Markdown lint passed. `make readme-media` produced byte-identical tracked artwork. Sonar verification follows merge because analysis is restricted to committed main.
 
-Request: [ISSUE-simplify-rendering-helpers.md](ISSUE-simplify-rendering-helpers.md).
+Request: [ISSUE-3.md](ISSUE-3.md).
+
+Pull request: <https://github.com/stephenlclarke/elite/pull/3>.
