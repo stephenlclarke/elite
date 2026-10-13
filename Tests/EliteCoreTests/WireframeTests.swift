@@ -67,48 +67,63 @@ private func hasCompleteOutline(_ body: SpaceBody, in frame: Frame) -> Bool {
   }
 }
 
-// Source craft are not convex. Weld coincident source vertices and independently
-// identify front/back face boundaries instead of inventing convex-hull edges.
+// Source craft are not convex. Weld source vertices once and independently
+// identify front/back face boundaries at every tested camera orientation.
+private struct SourceBoundaryOracle: Sendable {
+  let mesh: Mesh
+  let faces: [(normal: Vector3, center: Vector3)]
+  let edges: [(a: Int, b: Int, adjacent: [Int])]
+  init() {
+    mesh = Mesh.hull(.cobra)
+    let tokens = mesh.vertices.map { p in
+      "\(Int((p.x * 1e6).rounded()))/\(Int((p.y * 1e6).rounded()))/\(Int((p.z * 1e6).rounded()))"
+    }
+    var faceData: [(normal: Vector3, center: Vector3)] = []
+    var edgeData: [String: (a: Int, b: Int, adjacent: [Int])] = [:]
+    for (faceIndex, face) in mesh.faces.enumerated() {
+      var normal = Vector3(0, 0, 0)
+      var center = Vector3(0, 0, 0)
+      for index in face.indices {
+        let a = mesh.vertices[face[index]]
+        let b = mesh.vertices[face[(index + 1) % face.count]]
+        normal =
+          normal
+          + Vector3(
+            (a.y - b.y) * (a.z + b.z),
+            (a.z - b.z) * (a.x + b.x), (a.x - b.x) * (a.y + b.y))
+        center = center + a
+        let key = [tokens[face[index]], tokens[face[(index + 1) % face.count]]].sorted().joined(
+          separator: ":")
+        var edge = edgeData[key] ?? (face[index], face[(index + 1) % face.count], [])
+        edge.adjacent.append(faceIndex)
+        edgeData[key] = edge
+      }
+      faceData.append((normal, center * (1 / Double(face.count))))
+    }
+    faces = faceData
+    edges = Array(edgeData.values)
+  }
+}
+private let cobraBoundaryOracle = SourceBoundaryOracle()
+
 private func hasCompleteSourceBoundary(_ body: SpaceBody, in frame: Frame) -> Bool {
-  let mesh = Mesh.hull(.cobra)
-  let vertices = mesh.vertices.map { body.modelVector($0) + body.position }
-  func token(_ p: Vector3) -> String {
-    "\(Int((p.x * 1e6).rounded()))/\(Int((p.y * 1e6).rounded()))/\(Int((p.z * 1e6).rounded()))"
+  let oracle = cobraBoundaryOracle
+  let vertices = oracle.mesh.vertices.map { body.modelVector($0) + body.position }
+  let facing = oracle.faces.map {
+    body.modelVector($0.normal).dot(body.modelVector($0.center) + body.position) < 0
   }
-  var edges: [String: (Int, Int, [Bool])] = [:]
-  for face in mesh.faces {
-    var normal = Vector3(0, 0, 0)
-    var center = Vector3(0, 0, 0)
-    for index in face.indices {
-      let a = vertices[face[index]]
-      let b = vertices[face[(index + 1) % face.count]]
-      normal =
-        normal
-        + Vector3(
-          (a.y - b.y) * (a.z + b.z),
-          (a.z - b.z) * (a.x + b.x), (a.x - b.x) * (a.y + b.y))
-      center = center + a
-    }
-    let facing = normal.dot(center) < 0
-    for index in face.indices {
-      let a = face[index]
-      let b = face[(index + 1) % face.count]
-      let key = [token(vertices[a]), token(vertices[b])].sorted().joined(separator: ":")
-      var edge = edges[key] ?? (a, b, [])
-      edge.2.append(facing)
-      edges[key] = edge
-    }
+  let boundary = oracle.edges.filter { edge in
+    let visible = edge.adjacent.map { facing[$0] }
+    return visible.contains(true) && (visible.count == 1 || visible.contains(false))
   }
-  let boundary = edges.values.filter {
-    $0.2.contains(true) && ($0.2.count == 1 || $0.2.contains(false))
-  }
+  let lines = frame.shipLines
   return !boundary.isEmpty
-    && boundary.allSatisfy { a, b, _ in
-      let p = vertices[a]
-      let q = vertices[b]
+    && boundary.allSatisfy { edge in
+      let p = vertices[edge.a]
+      let q = vertices[edge.b]
       return covered(
         .init(x: 128 + p.x * 256 / p.z, y: 96 - p.y * 256 / p.z),
-        .init(x: 128 + q.x * 256 / q.z, y: 96 - q.y * 256 / q.z), by: frame.shipLines)
+        .init(x: 128 + q.x * 256 / q.z, y: 96 - q.y * 256 / q.z), by: lines)
     }
 }
 
@@ -138,13 +153,15 @@ private func hasCompleteSourceBoundary(_ body: SpaceBody, in frame: Frame) -> Bo
     game.time = rotation / 0.6
     let frame = Display.render(game, rasterizeGraphics: false)
     #expect(!frame.shipPanels.isEmpty && frame.shipLines.isEmpty)
+    #expect(
+      frame.shipPanels.allSatisfy { panel in panel.vertices.allSatisfy { $0.y > 29 && $0.y < 163 }
+      }, "Title bounds at \(step)")
     var edges = frame
     for panel in frame.shipPanels {
       for index in panel.vertices.indices {
         let a = panel.vertices[index]
         let b = panel.vertices[(index + 1) % panel.vertices.count]
         edges.graphics.append(.wire(WireLine(x0: a.x, y0: a.y, x1: b.x, y1: b.y, ink: .white)))
-        #expect(a.y > 29 && a.y < 163)
       }
     }
     var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 280))
