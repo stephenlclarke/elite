@@ -4,7 +4,7 @@ This native adaptation selects Rustybolts' Oolite Blackjack's Bullion 1.2.9, pac
 
 ## Pinned evidence
 
-The [author's listing](https://wiki.alioth.net/index.php/BlackjacksBullion_OXP) identifies the campaign. The recovered [public author archive](https://app.box.com/s/ed1c019b87b021ee54db), file 2389064390, was accessed on 13 October 2026. Archive SHA-256: `d3ae65a6bfca690d9154ca7890efa707fb2f0a03d3d14e911f9e16cc9c78bbe8`. The source scripts identify Rustybolts and permit reuse with “Do with as you wish”. Text here and in the game is independently worded.
+The [author's listing](https://wiki.alioth.net/index.php/BlackjacksBullion_OXP) identifies the campaign. The recovered [public author archive](https://app.box.com/s/ed1c019b87b021ee54db), file 2389064390, was accessed on 13 October 2026. Archive SHA-256: `d3ae65a6bfca690d9154ca7890efa707fb2f0a03d3d14e911f9e16cc9c78bbe8`. The source scripts identify Rustybolts and permit reuse with "Do with as you wish". Text here and in the game is independently worded.
 
 Paths below are relative to `galaxy 2, Blackjack's Bullion 1.2.9.oxp/` in that archive.
 
@@ -24,13 +24,13 @@ All locations are in player Galaxy 2 (stored index 1); system IDs are zero-based
 
 | Saved stage | Trigger | Result |
 | --- | --- | --- |
-| 0 → 1 | Dock at Telace 241 main station | Automatic enrolment; find Commander Bolts at Gerebied 88 |
-| 1 → 2 | Unique Bolts destroyed at Gerebied, by any killer | Directly earn 20 kg gold once; report at any Galaxy 2 main station |
-| 2 → 3 | Confirm station report | Proceed to Tegete 233 |
-| 3 → 4 | Confirm Tegete main-station pickup with one free tonne | Load one marked mission firearm |
-| 4 → 5 | Confirm Ceinerxe 127 main-station handoff | Consume the marked firearm; wanted level at least 64; find witness at Edater 99 |
-| 5 → 6 | Unique witness destroyed at Edater, by any killer | Report at Esdi 67 |
-| 6 → 99 | Confirm Esdi main-station debrief | Award exactly 9,500 CR and clear bounty once; terminal completion |
+| 0 -> 1 | Dock at Telace 241 main station | Automatic enrolment; find Commander Bolts at Gerebied 88 |
+| 1 -> 2 | Unique Bolts destroyed at Gerebied, by any killer | Directly earn 20 kg gold once; report at any Galaxy 2 main station |
+| 2 -> 3 | Confirm station report | Proceed to Tegete 233 |
+| 3 -> 4 | Confirm Tegete main-station pickup with one free tonne | Load one marked mission firearm |
+| 4 -> 5 | Confirm Ceinerxe 127 main-station handoff | Consume the marked firearm; wanted level at least 64; find witness at Edater 99 |
+| 5 -> 6 | Unique witness destroyed at Edater, by any killer | Report at Esdi 67 |
+| 6 -> 99 | Confirm Esdi main-station debrief | Award exactly 9,500 CR and clear bounty once; terminal completion |
 
 Initial contact enrols immediately, matching the source. Continue or Back closes its explanation. Later transfers require explicit Confirm; Back has no transfer effect. B reopens an eligible station contact. K shows contextual help. Station messages defer to an active BBC naval briefing. Saving/loading never confirms a handoff or pays a reward.
 
