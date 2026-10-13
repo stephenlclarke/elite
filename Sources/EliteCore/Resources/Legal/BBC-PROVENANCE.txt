@@ -16,7 +16,8 @@ blueprint coordinates, narrative or designs, and is not a claim of
 redistribution permission for the complete game.
 
 Native uses include Constrictor and Thargon numerical blueprints in
-NavalShips.swift and the Cobra blueprint coordinates in AppIcon.swift.
+NavalShips.swift. The current app icon instead uses the licensed Oolite
+Cobra rendition, credited separately in ASSET-NOTICE.txt.
 The original assembly source, ROMs and upstream commentary are not bundled
 in the app. The implementation adds camera-axis reflection, native face
 construction/triangulation, shading, projection and an original icon layout.

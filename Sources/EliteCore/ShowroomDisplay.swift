@@ -11,6 +11,8 @@ public struct ShowroomLayout: Sendable {
   public let listRow = 36.0
   public let model: CanvasRect
   public let details: CanvasRect
+  public var selectedModelX: Double { model.x + Self.selectedModelOffset(model.width) }
+  static func selectedModelOffset(_ width: Double) -> Double { (width + 16) / 2 }
   public var listCount: Int { max(1, Int(list.height / listRow)) }
   public init(width: Double, height: Double, detail: Bool) {
     wide = width >= 1000
@@ -51,20 +53,31 @@ struct ShipComparisonLayout {
   let labelWidth: Double
   let baselineX: Double
   let selectedX: Double
-  let valueWidth: Double
+  let baselineWidth: Double
+  let selectedWidth: Double
   var labelColumns: Int { max(1, Int(labelWidth / (6 * GameTypography.scale))) }
-  var valueColumns: Int { max(1, Int(valueWidth / (6 * GameTypography.scale))) }
-  init(width: Double, labels: [String]) {
+  var baselineColumns: Int { max(1, Int(baselineWidth / (6 * GameTypography.scale))) }
+  var selectedColumns: Int { max(1, Int(selectedWidth / (6 * GameTypography.scale))) }
+  init(width: Double, labels: [String], modelAligned: Bool) {
     let gutter = 16.0
     let longest =
       labels.map {
         BitmapLabel(text: $0, x: 0, y: 0, scale: GameTypography.scale, ink: .white).bounds.width
       }.max() ?? 0
-    // Reserve useful value columns on narrow windows; use measured labels everywhere else.
-    labelWidth = min(longest, max(60, width - 2 * 96 - 2 * gutter))
-    baselineX = labelWidth + gutter
-    valueWidth = (width - labelWidth - 2 * gutter) / 2
-    selectedX = baselineX + valueWidth + gutter
+    if modelAligned {
+      selectedX = ShowroomLayout.selectedModelOffset(width)
+      labelWidth = min(longest, max(60, selectedX - 96 - 2 * gutter))
+      baselineX = labelWidth + gutter
+      baselineWidth = selectedX - baselineX - gutter
+      selectedWidth = width - selectedX
+    } else {
+      // Narrow detail views retain equal value columns and wrap their shared rows.
+      labelWidth = min(longest, max(60, width - 2 * 96 - 2 * gutter))
+      baselineX = labelWidth + gutter
+      baselineWidth = (width - labelWidth - 2 * gutter) / 2
+      selectedX = baselineX + baselineWidth + gutter
+      selectedWidth = baselineWidth
+    }
   }
 }
 
@@ -96,7 +109,7 @@ extension Display {
       layout.clearSearch.y + 8, scale: font, ink: .cyan)
     let query = game.showroom.query.isEmpty ? "Name / class / source / ID" : game.showroom.query
     frame.label(
-      (game.showroom.searching ? "> " : "/ ") + query,
+      (game.showroom.searching ? "> " : "/: ") + query,
       layout.search.x + 8, layout.search.y + 8, scale: font, ink: .cyan)
     let buttonTitles = [
       "B: Pin", "R: Your ship", "C: Compare",
@@ -120,7 +133,7 @@ extension Display {
         showroomModel(
           selected, game: game,
           bounds: .init(
-            x: layout.model.x + half + 16,
+            x: layout.selectedModelX,
             y: layout.model.y, width: half, height: layout.model.height),
           title: "CATALOGUE PREVIEW",
           into: &frame)
@@ -130,7 +143,7 @@ extension Display {
           into: &frame)
       }
       if layout.wide || game.showroom.detail {
-        showroomDetails(game, bounds: layout.details, into: &frame)
+        showroomDetails(game, bounds: layout.details, modelAligned: layout.wide, into: &frame)
       }
     } else {
       frame.label(
@@ -207,8 +220,10 @@ extension Display {
     }
   }
 
-  private static func showroomDetails(_ game: Game, bounds: CanvasRect, into frame: inout Frame) {
-    let rows = showroomDetailRows(game, width: bounds.width)
+  private static func showroomDetails(
+    _ game: Game, bounds: CanvasRect, modelAligned: Bool, into frame: inout Frame
+  ) {
+    let rows = showroomDetailRows(game, width: bounds.width, modelAligned: modelAligned)
     let visible = max(1, Int(bounds.height / GameTypography.row))
     let start = min(game.showroom.scroll, max(0, rows.count - visible))
     for (index, labels) in rows.dropFirst(start).prefix(visible).enumerated() {
@@ -220,7 +235,9 @@ extension Display {
     }
   }
 
-  private static func showroomDetailRows(_ game: Game, width: Double) -> [[ShowroomTextLine]] {
+  private static func showroomDetailRows(_ game: Game, width: Double, modelAligned: Bool)
+    -> [[ShowroomTextLine]]
+  {
     guard let ship = game.showroomShip else { return [] }
     let columns = Int(width / (6 * GameTypography.scale))
     let metadata = [
@@ -244,7 +261,7 @@ extension Display {
       }.map {
         [ShowroomTextLine(text: $0, x: 0, ink: .yellow)]
       }
-      rows += comparisonRows(game, width: width)
+      rows += comparisonRows(game, width: width, modelAligned: modelAligned)
     } else {
       for field in game.showroomProfile?.fields ?? [] {
         let text = field.label + ": " + field.text + " [" + field.status + "]"
@@ -267,7 +284,9 @@ extension Display {
     return rows
   }
 
-  private static func comparisonRows(_ game: Game, width: Double) -> [[ShowroomTextLine]] {
+  private static func comparisonRows(_ game: Game, width: Double, modelAligned: Bool)
+    -> [[ShowroomTextLine]]
+  {
     var rows: [[ShowroomTextLine]] = []
     let a =
       (game.showroom.baselineUsesCurrent ? "Current fitted: " : "Baseline: ")
@@ -278,11 +297,12 @@ extension Display {
       + game.showroomComparison.map {
         ($0.label, $0.baseline, $0.selected + ($0.difference.isEmpty ? "" : " / " + $0.difference))
       }
-    let layout = ShipComparisonLayout(width: width, labels: pairs.map { $0.0 })
+    let layout = ShipComparisonLayout(
+      width: width, labels: pairs.map { $0.0 }, modelAligned: modelAligned)
     for (label, baseline, selected) in pairs {
       let names = ShowroomText.wrap(label, width: layout.labelColumns)
-      let left = ShowroomText.wrap(baseline, width: layout.valueColumns)
-      let right = ShowroomText.wrap(selected, width: layout.valueColumns)
+      let left = ShowroomText.wrap(baseline, width: layout.baselineColumns)
+      let right = ShowroomText.wrap(selected, width: layout.selectedColumns)
       for line in 0..<max(names.count, left.count, right.count) {
         var cells: [ShowroomTextLine] = []
         if names.indices.contains(line) {

@@ -211,7 +211,8 @@ public enum PlayerHelp {
         title: "DOCKED SHIP SHOWROOM",
         rows: [
           "UP/DOWN - SHIP; RETURN - DETAIL",
-          "/ OR CLICK - SEARCH NAME/CLASS/SOURCE/ID",
+          "SLASH / CLICK - SEARCH NAME/CLASS/ID",
+          "SOURCE EDITIONS ARE SEARCHABLE TOO",
           "TYPE - FILTER; RETURN/ESC - END SEARCH",
           "BACKSPACE - EDIT; SEARCH ID TO FIND",
           "X / FN-DELETE / CLEAR - ALL SHIPS",

@@ -5,11 +5,10 @@ import Testing
 @testable import EliteCore
 @testable import EliteMac
 
-@Test func appIconUsesVisibleCobraPanelsAndMatchingWireGeometry() {
+@Test func appIconUsesTheDetailedCobraWithLegibleShadedPanels() {
   let icon = Display.appIcon()
   #expect(!icon.rasterizeGraphics)
-  #expect(!icon.shipPanels.isEmpty && !icon.shipLines.isEmpty)
-  #expect(icon.shipLines.allSatisfy { $0.ink == Hull.cobra.ink })
+  #expect(icon.shipPanels.count > 200 && icon.shipLines.isEmpty)
   #expect(icon.shipPanels.flatMap(\.vertices).allSatisfy { icon.canvas.contains($0) })
   #expect(icon.graphics == Display.appIcon().graphics)
 }

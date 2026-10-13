@@ -171,7 +171,7 @@ extension Game {
         gallery.scroll,
         galleryDetailLines(
           width: viewportWidth < 900 ? viewportWidth - 32 : viewportWidth * 0.64 - 32,
-          font: GalleryLayout.font(viewportWidth)
+          font: GameTypography.scale
         ).count - visibleRows))
   }
   public mutating func galleryClick(x: Double, y: Double) {
@@ -221,11 +221,10 @@ public struct GalleryLayout: Sendable {
   public let divider: Double
   public let listTop = 104.0
   public let itemHeight = 116.0
-  static func font(_ width: Double) -> Double { GameTypography.scale }
   public init(width: Double, height: Double) {
     self.width = width
     self.height = height
-    font = Self.font(width)
+    font = GameTypography.scale
     row = ceil(font * 7) + 8
     wide = width >= 900
     divider = floor(width * 0.34)
