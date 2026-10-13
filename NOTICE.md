@@ -30,4 +30,6 @@ The [pinned BBC source repository](https://github.com/markmoxon/elite-source-cod
 
 ## Distribution
 
+Renderer-generated `docs/elite.png` and `docs/start-sequence.gif` contain the adapted Oolite Cobra Mk III and are distributed under CC-BY-NC-SA-3.0, with attribution to the Oolite artwork contributors above and Stephen Clarke for the native rendering/composition. Their generation by this project's renderer does not turn the depicted model into MIT artwork. `Resources/Elite.icns` and `docs/images/elite-icon.png` instead use the retained BBC Cobra blueprint; the BBC-derived-material exclusion above applies to that underlying design.
+
 Keep the applicable copyright, attribution and licence notices with redistributed material. The standard app build includes this notice, the MIT licence, all bundled asset notices and the Creative Commons legal codes in `Elite.app/Contents/Resources`. Preserve the per-model licence metadata and additional source terms when redistributing adapted meshes or renderer-generated media containing those meshes.
