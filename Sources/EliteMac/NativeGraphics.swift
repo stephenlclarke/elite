@@ -178,7 +178,12 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Doub
     context.strokePath()
   case .ring(let center, let rx, let ry, let ink, let style):
     context.setStrokeColor(colour(ink.rawValue))
-    let dash: [CGFloat] = style == .dashed ? [8, 5] : (style == .dotted ? [1, 4] : [])
+    let dash: [CGFloat]
+    switch style {
+    case .dashed: dash = [8, 5]
+    case .dotted: dash = [1, 4]
+    case .solid: dash = []
+    }
     context.setLineDash(phase: 0, lengths: dash)
     context.strokeEllipse(
       in: CGRect(x: center.x - rx, y: center.y - ry, width: rx * 2, height: ry * 2))

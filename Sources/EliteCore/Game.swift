@@ -331,15 +331,15 @@ public struct Game: Sendable {
       mapColour = mapColour.next
       return
     }
-    if screen == .status || screen == .inventory {
-      if ["up", "down", "pageup", "pagedown"].contains(key) {
-        informationScroll = max(
-          0,
-          informationScroll + ((key == "up" || key == "pageup") ? -1 : 1)
-            * (key.hasPrefix("page") ? 8 : 1))
-        informationScroll = min(informationScroll, max(0, informationRows.count - 1))
-        return
-      }
+    if (screen == .status || screen == .inventory)
+      && ["up", "down", "pageup", "pagedown"].contains(key)
+    {
+      informationScroll = max(
+        0,
+        informationScroll + ((key == "up" || key == "pageup") ? -1 : 1)
+          * (key.hasPrefix("page") ? 8 : 1))
+      informationScroll = min(informationScroll, max(0, informationRows.count - 1))
+      return
     }
     if screen == .equipment && key.hasPrefix("equipment-scroll:"),
       let amount = Int(key.dropFirst(17))
@@ -1131,7 +1131,8 @@ public struct Game: Sendable {
   }
   private mutating func spawn() {
     let hostile = randomByte() & 7 > currentSystem.government
-    let kind: Hull = hostile ? .sidewinder : (nextBodyID % 4 == 0 ? .cargo : .cobra)
+    let peacefulKind: Hull = nextBodyID % 4 == 0 ? .cargo : .cobra
+    let kind: Hull = hostile ? .sidewinder : peacefulKind
     bodies.append(
       SpaceBody(
         id: nextBodyID, hull: kind,

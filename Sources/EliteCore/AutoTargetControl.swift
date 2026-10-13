@@ -55,7 +55,8 @@ public struct AutoTargetControl: Sendable {
     let ids = Set(eligible.map(\.id))
     let ordered = eligible.sorted { a, b in
       func group(_ body: SpaceBody) -> Int {
-        body.hull == .station ? 2 : (frontIDs.contains(body.id) ? 0 : 1)
+        if body.hull == .station { return 2 }
+        return frontIDs.contains(body.id) ? 0 : 1
       }
       if group(a) != group(b) { return group(a) < group(b) }
       if a.position.length != b.position.length { return a.position.length < b.position.length }
@@ -124,8 +125,11 @@ public struct AutoTargetControl: Sendable {
       desired = finalVelocity(target)
     } else {
       desired = approachWaypoint(target, goal: goal) * 0.8
-      status =
-        positionError > 40 ? "APPROACHING" : (facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN")
+      if positionError > 40 {
+        status = "APPROACHING"
+      } else {
+        status = facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN"
+      }
     }
     velocity = velocity + (desired.limited(to: 144) - velocity).limited(to: 240 * delta)
     if !finalApproach { keepOutsideStation(target, delta: delta) }

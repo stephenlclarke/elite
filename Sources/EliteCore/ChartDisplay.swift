@@ -68,9 +68,11 @@ public struct ChartLayout: Sendable {
     self.local = local
     wide = width >= 1000
     font = width < 700 ? 1 : 1.25
+    let wideFooter = local ? 276.0 : 226.0
+    let narrowFooter = local ? 320.0 : 270.0
     plot = .init(
       x: 16, y: 58, width: width - (wide ? 336 : 32),
-      height: max(80, height - (wide ? (local ? 276 : 226) : (local ? 320 : 270))))
+      height: max(80, height - (wide ? wideFooter : narrowFooter)))
     scale =
       local
       ? min(
@@ -237,7 +239,8 @@ extension Display {
     var occupied: [CanvasRect] = []
     let labelled = visible.sorted { a, b in
       func priority(_ value: StarSystem) -> Int {
-        value.id == game.selectedSystem ? 0 : (value.id == game.commander.system ? 1 : 2)
+        if value.id == game.selectedSystem { return 0 }
+        return value.id == game.commander.system ? 1 : 2
       }
       return priority(a) == priority(b) ? a.id < b.id : priority(a) < priority(b)
     }.filter { layout.local || $0.id == game.selectedSystem || $0.id == game.commander.system }

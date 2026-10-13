@@ -51,8 +51,8 @@ extension Display {
         } else if !available && !fitted {
           status += " TL\(item.technology + 1)"
         }
-        frame.labels.append(
-          rightLabel(status, y: y, ink: fitted ? .green : (available ? .white : .red)))
+        let statusInk: Ink = available ? .white : .red
+        frame.labels.append(rightLabel(status, y: y, ink: fitted ? .green : statusInk))
       }
     }
     if Equipment.all.indices.contains(game.selection) {

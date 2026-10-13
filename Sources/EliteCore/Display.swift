@@ -47,7 +47,7 @@ public struct Frame: Sendable, Equatable {
     guard
       let ends = clipped(
         Double(x0), Double(y0), Double(x1), Double(y1), Double(clipTop),
-        Double(clipBottom ?? Int(canvas.maxY - 1)), left: canvas.x, right: canvas.maxX - 1)
+        Double(clipBottom ?? Int(canvas.maxY - 1)), horizontal: canvas.x...(canvas.maxX - 1))
     else { return }
     graphics.append(.line(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink)))
     if rasterizeGraphics { rasterLine(ends, ink) }
@@ -78,13 +78,16 @@ public struct Frame: Sendable, Equatable {
   }
   private func clipped(
     _ x0: Double, _ y0: Double, _ x1: Double, _ y1: Double, _ top: Double, _ bottom: Double,
-    left: Double = 0, right: Double = 255
+    horizontal: ClosedRange<Double> = 0...255
   ) -> (Double, Double, Double, Double)? {
     var start = 0.0
     var end = 1.0
     let dx = x1 - x0
     let dy = y1 - y0
-    for (p, q) in [(-dx, x0 - left), (dx, right - x0), (-dy, y0 - top), (dy, bottom - y0)] {
+    for (p, q) in [
+      (-dx, x0 - horizontal.lowerBound), (dx, horizontal.upperBound - x0), (-dy, y0 - top),
+      (dy, bottom - y0),
+    ] {
       if p == 0 {
         if q < 0 { return nil }
         continue
@@ -100,8 +103,8 @@ public struct Frame: Sendable, Equatable {
   ) {
     guard
       let ends = clipped(
-        x0, y0, x1, y1, flightClip.y, flightClip.maxY - 1, left: flightClip.x,
-        right: flightClip.maxX - 1)
+        x0, y0, x1, y1, flightClip.y, flightClip.maxY - 1,
+        horizontal: flightClip.x...(flightClip.maxX - 1))
     else { return }
     graphics.append(.wire(WireLine(x0: ends.0, y0: ends.1, x1: ends.2, y1: ends.3, ink: ink)))
     if rasterizeGraphics { rasterLine(ends, ink) }
