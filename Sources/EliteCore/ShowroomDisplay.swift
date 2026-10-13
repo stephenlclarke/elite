@@ -286,18 +286,18 @@ extension Display {
 
   private static func currentCraftRows(_ game: Game) -> [String] {
     let commander = game.commander
-    return [
+    let capacityText = commander.unlimitedCargo ? "Unlimited" : String(commander.capacity)
+    let freeText =
+      commander.unlimitedCargo
+      ? "Unlimited (XYZZY)" : "\(commander.capacity - commander.cargoTonnes)t free"
+    var rows: [String] = [
       "", "CURRENT FITTED CRAFT: COBRA MK III (NATIVE)",
       "Native performance units stay separate from source/project units.",
       "Required crew: 1; reserved crew quarters: 1 (assigned)",
       "Fitted berths: 0; passengers aboard: 0; free places: 0",
       "Cabin footprint: 0t; no passenger modules are fitted",
-      commander.unlimitedCargo
-        ? "Usable cargo after fit: Unlimited (XYZZY)"
-        : "Usable cargo after fit: \(commander.capacity - commander.cargoTonnes)t free",
-      "Cargo \(commander.cargoTonnes)/"
-        + (commander.unlimitedCargo ? "Unlimited" : "\(commander.capacity)")
-        + " t; missiles \(commander.missiles)/4",
+      "Usable cargo after fit: " + freeText,
+      "Cargo \(commander.cargoTonnes)/\(capacityText) t; missiles \(commander.missiles)/4",
       String(
         format: "Fuel %.1f/%.1f LY; jump limit %.1f LY", Double(commander.fuel) / 10,
         Double(commander.fuelCapacity) / 10, commander.maximumJumpDistance),
@@ -306,8 +306,8 @@ extension Display {
       "Targeting: " + (commander.targetingTier?.label ?? "None"),
       "Navigation: " + (commander.navigationTier?.label ?? "None"),
     ]
-      + commander.laserMountSummary + [
-        "Fitted equipment: " + commander.equipment.sorted().joined(separator: ", ")
-      ]
+    rows += commander.laserMountSummary
+    rows.append("Fitted equipment: " + commander.equipment.sorted().joined(separator: ", "))
+    return rows
   }
 }
