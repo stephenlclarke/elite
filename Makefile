@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help build run test coverage coverage-check threads address leaks readme-media sonar ci
+.PHONY: help build run test coverage coverage-check threads address leaks readme-media showroom-data showroom-check sonar ci
 help:
-	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media sonar ci'
+	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media showroom-data showroom-check sonar ci'
 build:
 	swift build
 run:
@@ -24,6 +24,10 @@ readme-media:
 	swift run Elite --readme-media
 	mkdir -p Resources
 	iconutil -c icns .build/Elite.iconset -o Resources/Elite.icns
+showroom-data:
+	python3 Tools/showroom/build-catalogue.py --models "$(SHOWROOM_MODELS)" --expansions "$(SHOWROOM_EXPANSIONS)" $(if $(SHOWROOM_MODEL_CACHE),--model-cache "$(SHOWROOM_MODEL_CACHE)")
+showroom-check:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'
 sonar:
 	./script/sonar.sh
-ci: coverage-check threads address leaks
+ci: showroom-check coverage-check threads address leaks

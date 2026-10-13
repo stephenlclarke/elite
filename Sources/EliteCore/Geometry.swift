@@ -46,10 +46,16 @@ public struct Mesh: Sendable {
   public let vertices: [Vector3]
   public let faces: [[Int]]
   public let details: [MeshDetail]
-  public init(vertices: [Vector3], faces: [[Int]], details: [MeshDetail] = []) {
+  public init(
+    vertices: [Vector3], faces: [[Int]], details: [MeshDetail] = [], preserveWinding: Bool = false
+  ) {
     self.vertices = vertices
     self.details = details
     let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
+    if preserveWinding {
+      self.faces = faces
+      return
+    }
     // A consistent outward winding is essential to preserve silhouette edges.
     self.faces = faces.map { face in
       let a = vertices[face[0]]

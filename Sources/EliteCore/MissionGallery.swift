@@ -123,8 +123,9 @@ extension Game {
   }
   public mutating func openGallery() {
     guard
-      ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .handoff, .gallery].contains(
-        screen)
+      ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .handoff, .gallery, .showroom]
+        .contains(
+          screen)
     else { return }
     gallery.previousScreen = screen
     gallery.previouslyPaused = paused
@@ -220,7 +221,7 @@ public struct GalleryLayout: Sendable {
   public let divider: Double
   public let listTop = 104.0
   public let itemHeight = 116.0
-  static func font(_ width: Double) -> Double { width < 700 ? 1.25 : 1.5 }
+  static func font(_ width: Double) -> Double { GameTypography.scale }
   public init(width: Double, height: Double) {
     self.width = width
     self.height = height

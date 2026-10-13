@@ -11,5 +11,11 @@ Research readiness, receipt and playable implementation are separate. Apply the 
 | P32 Runner G5 | Received 13 October 2026; isolated challenge-commander profile and finish-boundary checks | Queued; not yet playable |
 | P47 Victim11 | Received 13 October 2026; custody branches, saved failure ending and source battle profile | Queued; not yet playable; depends on actual P01 completion |
 | P28 Oo-Haul 2.0 | Received 13 October 2026; generated escort contracts and explicit edition repairs | Queued; not yet playable |
+| P44 Trident Down | Received 13 October 2026; four-way bounded profile | Queued; not yet playable |
+| P46 Vector services | Received 13 October 2026; Benus/PAD, Arn, Richmans World, flight inspection, Areidis terminals and specialist crystal trade | Queued; not yet playable |
+| RRS Contract Board | Received 13 October 2026; explicit waystation/HQ capability adapter | Queued with P30 missions; no board or new mission claimed playable |
+| P30 Solar Lab 2b | Received 13 October 2026; bounded lease, thermal/recovery and refund profile | Queued; not yet playable |
+| P30 Rescue Stations couriers 2/2a | Received 13 October 2026; two isolated document delivery profiles | Queued; not yet playable |
+| P30 Rescue Stations escort 1/1a/1b | Received 13 October 2026; three isolated bounded repair/escort profiles | Queued; not yet playable; remaining P30 families are research-open |
 
 The complete research collection and shipyard backlog are not declared finished. A source fixture count is not a native runtime test count or proof of original-engine parity.

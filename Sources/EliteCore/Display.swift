@@ -187,6 +187,8 @@ public enum Display {
     case .chart, .shortChart: chart(game, into: &frame)
     case .system: system(game, into: &frame)
     case .market, .buy, .sell: market(game, into: &frame)
+    case .rumour: return compactScreen(game, width: 768, height: 768)
+    case .showroom: return showroomScreen(game, width: 768, height: 768)
     case .equipment: equipment(game, into: &frame)
     case .status: status(game, into: &frame)
     case .inventory: inventory(game, into: &frame)
@@ -526,23 +528,7 @@ public enum Display {
   private static func secret(_ game: Game, into frame: inout Frame) {
     header("XYZZY", into: &frame)
     frame.centered("A HOLLOW VOICE SAYS...", 28)
-    let choices = [
-      "0 DISPLAY: " + game.commander.shipDisplayStyle.label,
-      "1 DOCKING TARGETING COMPUTER",
-      "2 MAXIMUM HARDWARE",
-      "3 MISSILES: " + (game.commander.unlimitedMissiles ? "UNLIMITED" : "NORMAL"),
-      "4 FUEL: " + (game.commander.unlimitedFuel ? "UNLIMITED" : "NORMAL"),
-      String(format: "5 JUMP LIMIT: %.1f LY", game.commander.maximumJumpDistance),
-      "6 AUTO TRADE: " + (game.commander.autoTrade ? "ON" : "OFF"),
-      "7 SPEECH: " + (game.commander.speech ? "ON" : "OFF"),
-      "8 CARGO: " + (game.commander.unlimitedCargo ? "UNLIMITED" : "NORMAL"),
-      String(format: "9 CASH: %.1f CR", Double(game.commander.credits) / 10),
-      "A AUTO TARGET: " + (game.commander.autoTarget ? "ON" : "OFF"),
-      "E AUTO ECM: " + (game.commander.autoECM ? "ON" : "OFF"),
-      "B MILITARY RETURN FIRE: " + (game.commander.retaliationEnabled ? "ON" : "OFF"),
-      "F FUEL SCOOPS: "
-        + (game.commander.equipment.contains("Fuel Scoops") ? "FITTED" : "NOT FITTED"),
-    ]
+    let choices = game.secretChoices
     for (index, choice) in choices.enumerated() { frame.text(choice, 10, 46 + index * 9) }
     frame.text(game.paused ? "RETURN THEN COMMAND-P TO RESUME" : "RETURN TO RESUME", 10, 177)
   }

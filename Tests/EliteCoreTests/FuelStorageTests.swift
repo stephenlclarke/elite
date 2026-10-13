@@ -69,7 +69,7 @@ import Testing
         #expect(
           game.navigationPlanningRadius
             == (tier == .military ? nil : capacity + Double(tier.rawValue * 7)))
-        for system in game.systems {
+        for system in game.knownSystems {
           game.selectedSystem = system.id
           #expect(
             game.targetReachable

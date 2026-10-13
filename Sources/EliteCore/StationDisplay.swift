@@ -33,7 +33,7 @@ public struct StationLayout: Sendable {
   public init(game: Game, width: Double, height: Double, footer: Double = 0) {
     self.width = min(680, width - 48)
     left = (width - self.width) / 2
-    font = width < 700 ? 1.0 : 1.25
+    font = GameTypography.scale
     row = ceil(font * 7) + 9
     bottom = CockpitLayout(game: game, width: width, height: height).dashboardTop - footer
     count = max(1, Int((bottom - 76) / row))
@@ -165,7 +165,9 @@ extension Display {
         row.0, layout.left, 56 + Double(index) * layout.row, scale: layout.font, ink: row.1)
     }
     frame.label(
-      "Up/Down or scroll: more  K: help", layout.left, layout.bottom, scale: layout.font, ink: .cyan
+      "Up/Down: more  U: rumours  W: showroom  K: help", layout.left, layout.bottom,
+      scale: layout.font,
+      ink: .cyan
     )
     return frame
   }

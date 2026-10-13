@@ -3,7 +3,7 @@ import Foundation
 extension Display {
   static func targetPanel(_ game: Game, layout: CockpitLayout, into frame: inout Frame) {
     guard let info = game.targetInformation else { return }
-    let font = layout.width < 700 ? 1.0 : 1.25
+    let font = GameTypography.scale
     let width = min(280, layout.width * 0.4)
     let x = layout.width - width - 12
     let y = 32.0

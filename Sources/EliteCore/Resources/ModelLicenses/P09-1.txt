@@ -1,0 +1,97 @@
+Deposed
+=======
+v2.1, Feb 2026.
+
+by Cmdr. Wombat
+(revisions by Eric Walch, Commander McLane and phkb)
+
+
+Requirements:
+
+Version 1.77 (or higher) of Oolite is required.
+
+
+To install:
+
+Move the deposed.oxp file into the AddOns folder in your Oolite folder. The Oolite folder is where the Oolite program resides. The deposed.oxp file is in the Deposed folder along with this README.txt file. DO NOT move the entire Deposed folder into the AddOns folder - you only need the deposed.oxp folder. (Seen as a single file on Mac systems)
+
+
+Description:
+
+This is a series of Oolite missions connected by a plot of sorts. The plot is not resolved, leaving open the possibility that I, or someone else, will write a sequel series of missions. I have borrowed liberally from various threads on the Oolite bulletin board. Hopefully no one will be offended if they see something they suggested at some point.
+
+These missions start in Galaxy 4. There are no prior mission requirements, but the Naval energy unit from the Thargoid mission could come in handy. For the mission series to start you need ~1700 kills and must be docked at a station. Your location in Galaxy 4 is not important. Note that there are slightly different plot threads in Deposed depending upon your legal status when you start.
+
+It doesn't matter whether you have completed the Nova mission or not. I tried to tailor parts of the scripts to handle both possibilities. However, it is important that you don't start the Nova mission part way through this series unless you have no interest in completing the series, or are happy to make your way back to Galaxy 4. There is a point towards the end of the Deposed series where you will trigger the Nova mission if you haven't already done it - that's okay, it's planned to happen that way.
+
+v2.1 Released Feb 2026 bv phkb
+- Fixed integration with Library PAD where added character data was not being correctly saved between sessions.
+- Darkened overlay images for better compatibility with Oolite 1.92.
+
+v2.0 Release November 2023 by phkb
+- Updated models to use Griffs Sidewinder, Fer de Lance, and Asp Mk2 ships.
+- Updated textures on factory.
+- Removed plist script. Minimum version is now 1.80.
+- Updated pseudo random number method to use latest, preferred method.
+- Added links into Library PAD (if installed)
+- Switch Peldorian Asps to be escorts for the Tarantula, rather than just individual ships that spawn with it.
+- Moved drug factory further away from witchpoint to prevent clashes with other OXPs (eg Constores)
+
+v1.4.0 Released september 2013 by Eric Walch
+- Converted all legacy scripts into JavaScript. 
+- The hints for the blackwidows location are no longer on the Systemdata screen (F7) but at the new Interface screen (F4).
+- Tuned down the strength of some ships in the first battle as they became stronger through changes in Oolite since Deposed's original release.
+- Tuned up the ship strength of the 2nd and 3th battles, as they seemed to weak in comparison to the first one.
+- Added some mission info strings with mission updates.
+- The code disables itself after the mission ended, so it does not waste cpu power if the player does not remove the oxp.
+- Raised minimum Oolite version to 1.77 to use of the new Interface screen.
+
+v1.3.4 Released March 2009 by Eric Walch
+- Added mission destinations on the long range map.
+- Fixed one missing short description.
+- Replaced tarantulaAI.plist by pirateAI.plist. tarantulaAI was an exact copy of the old oolite 1.55 pirateAI. That AI evolved, so better use always the current pirateAI.
+- For three missions the target ships were only added on entering the system by a jump, but not when loading a saved game in that system. Fixed now.
+
+v1.3.3 Released August 2008 by Commander McLane
+- Fixed a bug that would not recognize the elimination of the tarantula or the drug factory.
+
+v1.3.2 Released February 2008 by Commander McLane
+- Fixed a bug that would not recognize the elimination of the three blackwidows.
+
+v1.3.1 Released January 2008 by Commander McLane
+- Fixed a bug that lead to entering in a loop when the mission is first offered.
+
+v1.3 Released January 2008 by Commander McLane
+Made two changes to avoid clashes with other OXPs, and three cosmetic changes:
+- Inserted queries before bringing up mission screens according to the method proposed by Eric Walch (see http://wiki.alioth.net/index.php/OXP_mission_offering).
+- Changed file-names to make them more unique.
+- Inserted a reset of all mission_variables except mission_deposed on finishing the OXP, in order to clean out the save-file.
+- Inserted a missing condition-clause on refusal of the initial offering. In this case mission_deposed is set to NOT_PLAYED. No further offers are made.
+- Fixed typos in the missiontexts.
+- Raised minimum requirement to Oolite 1.65, because I'm not sure when 'oneof' was introduced in conditions. I guess there are not many players left who use versions prior to 1.65, anyway.
+
+v1.2.1 Released 29th December 2007.
+Additions by Eric Walch: 
+Restructuring the scripting for faster code handling.
+Added code to make it compatible with the nova mission. It is advisable to do this mission before you encountered the native nova mission. Starting deposed after the nova mission leaves a possibility that deposed has no ending (removed spoiler about this from the readme file).
+
+v1.2 Released June 2006.
+In response to various pieces of equipment now available to players, I have made some of the opponents encountered in Deposed a little tougher.
+
+v1.1.1 Released March 2006.
+Minor AI bug fix (thanks again to Rxke).
+
+v1.1 Released March 2006.
+Minor bug fixes (thanks Rxke for unearthing them!).
+
+v1.0 Released May 2005.
+
+Disclaimer:
+
+Feel free to copy, share, alter, mutilate or do whatever you like with these scripts. If there are elements you want to use in your own expansion packs, go right ahead. However, selling or otherwise profiting from them is simply not on. Don't do it.
+
+If you find any bugs, and there are sure to be some, please send me all the gory details in a Private Message  to Cmdr. Wombat on the Oolite bulletin board. Alternatively, simply make a post there detailing the problem. Note that I am in no way responsible for any clashes with existing or future Oolite expansion packs, although this was play tested without issue with most of the expansion packs from Oosat (up to April, 2005) installed and with Oolite version 1.46 up to 1.48.
+
+
+<a href="https://www.flaticon.com/free-icons/black-widow" title="black widow icons">Black widow icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/spider" title="spider icons">Spider icons created by Freepik - Flaticon</a>

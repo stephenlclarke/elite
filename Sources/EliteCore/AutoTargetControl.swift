@@ -38,6 +38,9 @@ public struct AutoTargetControl: Sendable {
   public private(set) var facingError = 0.0
   public private(set) var phaseError = 0.0
   public private(set) var rateError = 0.0
+  public private(set) var manualEngagement = false
+  private var previousAim: Vector3?
+  private var previousDelta = 0.0
   private var visited: Set<Int> = []
   private var membership: Set<Int> = []
   private var cycleSignature = ""
@@ -45,13 +48,17 @@ public struct AutoTargetControl: Sendable {
   public init() {}
   public mutating func disengage() {
     targetID = nil
+    manualEngagement = false
+    previousAim = nil
     ready = false
     finalApproach = false
     velocity = .init(0, 0, 0)
     rollRate = 0
     status = "OFF"
   }
-  mutating func cycle(_ eligible: [SpaceBody], frontIDs: Set<Int>, signature: String) {
+  mutating func cycle(
+    _ eligible: [SpaceBody], frontIDs: Set<Int>, signature: String, manualEngagement: Bool = false
+  ) {
     let ids = Set(eligible.map(\.id))
     let ordered = eligible.sorted { a, b in
       func group(_ body: SpaceBody) -> Int {
@@ -79,6 +86,8 @@ public struct AutoTargetControl: Sendable {
       status = "NO TARGETS"
       return
     }
+    self.manualEngagement = manualEngagement
+    previousAim = nil
     targetID = remaining.removeFirst()
     if let targetID { visited.insert(targetID) }
     ready = false
@@ -87,7 +96,7 @@ public struct AutoTargetControl: Sendable {
     status = "FACING TARGET"
   }
 
-  mutating func steer(target: SpaceBody, delta: Double) -> (
+  mutating func steer(target: SpaceBody, delta: Double, aimTolerance: Double = 0.001) -> (
     pitch: Double, yaw: Double, roll: Double?
   ) {
     let station = target.hull == .station
@@ -98,12 +107,31 @@ public struct AutoTargetControl: Sendable {
     let pitch = max(-0.8, min(0.8, pitchAngle * 1.8))
     let yaw = max(-0.8, min(0.8, yawAngle * 1.8))
     guard station else {
-      status = facingError < 0.02 ? "TRACKING TARGET" : "FACING TARGET"
-      return (pitch, yaw, nil)
+      let motion = targetMotion(aim, delta: delta)
+      status = facingError < aimTolerance ? "TRACKING TARGET" : "FACING TARGET"
+      return (
+        max(-0.8, min(0.8, pitchAngle * 4 + motion.pitch)),
+        max(-0.8, min(0.8, yawAngle * 4 + motion.yaw)), nil
+      )
     }
     let previousRate = rollRate
     alignStation(target, delta: delta)
     return (pitch, yaw, (previousRate + rollRate) / 2)
+  }
+
+  private mutating func targetMotion(_ aim: Vector3, delta: Double) -> (pitch: Double, yaw: Double)
+  {
+    defer {
+      previousAim = aim.unit
+      previousDelta = delta
+    }
+    guard let previousAim, previousDelta > 0 else { return (0, 0) }
+    let pitch =
+      atan2(aim.y, hypot(aim.x, aim.z)) - atan2(previousAim.y, hypot(previousAim.x, previousAim.z))
+    var yaw = atan2(aim.x, aim.z) - atan2(previousAim.x, previousAim.z)
+    if yaw > .pi { yaw -= 2 * .pi }
+    if yaw < -.pi { yaw += 2 * .pi }
+    return (pitch / previousDelta, yaw / previousDelta)
   }
 
   mutating func setApproachVelocity(_ value: Vector3) { velocity = value }
@@ -169,6 +197,7 @@ public struct AutoTargetControl: Sendable {
 
   mutating func rotateVelocity(pitch: Double, roll: Double, yaw: Double) {
     velocity = velocity.rotated(pitch: pitch, roll: roll, yaw: yaw)
+    previousAim = previousAim?.rotated(pitch: pitch, roll: roll, yaw: yaw)
   }
 }
 
@@ -177,7 +206,7 @@ extension Game {
     bodies.first { $0.id == autoPilot.targetID && $0.energy > 0 }
   }
   public var autoHUDLines: [String] {
-    guard targetingEnabled || dockingComputer else { return [] }
+    guard targetingEnabled || dockingComputer || autoPilot.manualEngagement else { return [] }
     guard let target = autoTargetBody else { return ["AUTO: R SELECT TARGET / Q OFF"] }
     return [
       "AUTO: \(information(for: target)?.identifier ?? "Target #\(target.id)") - \(autoPilot.status)"
@@ -191,7 +220,9 @@ extension Game {
     dockingComputer = false
   }
   mutating func cycleAutoTarget() {
-    guard !docked, screen.isFlight, targetingEnabled, let tier = commander.targetingTier else {
+    guard !docked, screen.isFlight else { return }
+    guard let tier = commander.targetingTier else {
+      notify("FIT A TARGETING COMPUTER")
       return
     }
     let layout = CockpitLayout(game: self, width: viewportWidth, height: viewportHeight)
@@ -205,35 +236,20 @@ extension Game {
       return body.hull.isTargetShip && (tier >= .advanced || frontIDs.contains(body.id))
     }
     let signature = "\(tier.rawValue):\(Int(viewportWidth)):\(Int(viewportHeight))"
-    autoPilot.cycle(eligible, frontIDs: frontIDs, signature: signature)
+    autoPilot.cycle(
+      eligible, frontIDs: frontIDs, signature: signature, manualEngagement: !targetingEnabled)
     weaponsTargetID = autoPilot.targetID
-    dockingComputer = false
-    if autoTargetBody?.hull == .station { beginStationGuidance() }
-  }
-  mutating func engageDockingComputer() {
-    guard !docked else {
-      notify("LAUNCH BEFORE AUTO DOCKING")
-      return
-    }
-    guard commander.hasAutomaticDocking else {
-      notify("FIT DOCKING TARGETING COMPUTER OR HIGHER")
-      return
-    }
-    guard
-      let station = bodies.filter({ $0.hull == .station && $0.energy > 0 }).min(by: {
-        $0.position.length < $1.position.length
-      })
-    else {
-      notify("NO STATION IN LOCAL SPACE")
-      return
-    }
-    cancelAutoTarget()
-    autoPilot.cycle([station], frontIDs: [], signature: "docking")
-    weaponsTargetID = station.id
-    dockingComputer = true
     screen = .front
-    beginStationGuidance()
-    notify("AUTO DOCKING ENGAGED")
+    dockingComputer = autoTargetBody?.hull == .station
+    if dockingComputer {
+      beginStationGuidance()
+      notify("AUTO DOCKING ENGAGED")
+    } else if autoTargetBody != nil {
+      notify("AUTO TARGETING ENGAGED")
+    } else {
+      let stationOnly = bodies.contains { $0.hull == .station && $0.energy > 0 } && tier < .docking
+      notify(stationOnly ? "DOCKING TARGETING TIER REQUIRED FOR STATIONS" : "NO ELIGIBLE TARGETS")
+    }
   }
   private mutating func beginStationGuidance() {
     spin.stop(immediate: true)
@@ -245,7 +261,8 @@ extension Game {
     let station = autoTargetBody?.hull == .station
     let enabled =
       station
-      ? commander.hasAutomaticDocking && (targetingEnabled || dockingComputer) : targetingEnabled
+      ? commander.hasAutomaticDocking && (targetingEnabled || autoPilot.manualEngagement)
+      : (targetingEnabled || autoPilot.manualEngagement)
     if !enabled
       || controls.pitch != 0 || controls.yaw != 0
       || controls.roll != 0 || (station && controls.throttle != 0)
@@ -264,7 +281,9 @@ extension Game {
       return
     }
     let previousPhase = autoPilot.status
-    let steering = autoPilot.steer(target: target, delta: delta)
+    let focal = CockpitLayout(game: self, width: viewportWidth, height: viewportHeight).projection
+      .focal
+    let steering = autoPilot.steer(target: target, delta: delta, aimTolerance: 1.5 / focal)
     if station && previousPhase != autoPilot.status { notify("AUTO DOCKING: " + autoPilot.status) }
     pitch = steering.pitch
     yaw = steering.yaw

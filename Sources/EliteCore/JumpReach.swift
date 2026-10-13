@@ -21,7 +21,7 @@ extension Game {
       search: navigationPlanningRadius,
       maximum: min(commander.jumpCap, Double(commander.fuelCapacity) / 10),
       actual: commander.maximumJumpDistance,
-      wholeGalaxyExtent: (systems.map { currentSystem.distance(to: $0) }.max() ?? 0) + 0.4)
+      wholeGalaxyExtent: (knownSystems.map { currentSystem.distance(to: $0) }.max() ?? 0) + 0.4)
   }
   public var chartScaleFuel: Int {
     let reach = jumpReach

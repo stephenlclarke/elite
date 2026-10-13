@@ -1,0 +1,11 @@
+{
+	"identifier" = "oolite.oxp.spara.random_hits";
+	"required_oolite_version" = "1.82";
+	"title" = "Random Hits";
+	"version" = "1.11.5";
+	"category" = "Missions";
+	"description" = "Random Hits adds seedy Space Bars to anarchy systems that offer large bounties on the galaxy's Most Wanted Criminals. This oxp adds Missions, Ships, Stations and Features.";
+	"author" = "Eric Walch, Little Bear, spara and contributors";
+	"information_url" = "http://wiki.alioth.net/index.php/Random_Hits_OXP";
+	"license" = "CC-BY-NC-SA 4.0";
+}

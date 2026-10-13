@@ -1,0 +1,11 @@
+{
+	identifier = "oolite.oxp.littlebear.blackmonks";
+	required_oolite_version = "1.82";
+	title = "Bank of the Black Monks";
+	version = "2.4";
+	category = "Activities";
+	description = "Bank of the Black Monks invites you to undertake a short term financial pilgrimage for the Black Monks of St. Herod. In addition monasteries, that can be found in safe and advanced systems, sell blessed Holy Fuel. Beware of the Black Monk Gunships that persecute defaulters.";
+	author = "LittleBear, Griff, spara";
+	information_url = "http://wiki.alioth.net/index.php/Black_Monk_Monastery";
+	license = "CC-BY-NC-SA 4.0";
+}

@@ -43,7 +43,7 @@ private func longRoute(_ game: Game) -> [Int] {
   game.commander.equipment = [NavigationTier.advanced.equipmentName]
   #expect(game.navigationPlanningRadius == 21)
   game.commander.equipment = [NavigationTier.military.equipmentName]
-  #expect(game.navigationPlanningRadius == nil && game.systems.allSatisfy(game.canPlan))
+  #expect(game.navigationPlanningRadius == nil && game.knownSystems.allSatisfy(game.canPlan))
   game.commander.fuel = 0
   game.selectedSystem = 129
   game.key("n")
@@ -177,7 +177,7 @@ private func longRoute(_ game: Game) -> [Int] {
   #expect(game.mapSearch.query == "n" && game.screen == .chart)
 }
 
-@Test func activeRouteInspectionUsesFixedOriginScopeAfterHopsAndManualMapSelectionCancelsIt() {
+@Test func activeRouteInspectionUsesFixedOriginScopeAfterHopsAndMapBrowsingPreservesIt() {
   var game = navigationGame()
   let path = longRoute(game)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .basic, originFuel: 70)
@@ -197,7 +197,7 @@ private func longRoute(_ game: Game) -> [Int] {
   let layout = ChartLayout(width: game.viewportWidth, height: game.viewportHeight, local: false)
   let point = layout.point(game.systems[next], current: game.currentSystem)
   game.mapClick(x: point.x, y: point.y)
-  #expect(game.commander.navigationPlan == nil)
+  #expect(game.commander.navigationPlan?.path == path && game.selectedSystem == next)
 }
 @Test func infeasibleGraphAndInvalidSavedLegNeverProduceInventedHops() {
   var game = navigationGame()

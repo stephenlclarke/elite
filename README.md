@@ -41,7 +41,7 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. The project has no external game assets or package dependencies. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
+The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. The project has no package dependencies. The showroom includes attributed CC-BY-NC-SA-3.0/4.0 model geometry; the Swift code remains MIT. See [model attribution and fidelity](docs/SHIP-SHOWROOM.md). It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
 
 ## Controls
 
@@ -66,7 +66,7 @@ Number keys select the main game screens. Inside the secret menu they select sec
 | H | Begin hyperspace countdown to selected system |
 | G | Use galactic hyperdrive to enter the next galaxy, if fitted |
 | J | In-system jump, when not mass locked |
-| C / P | Engage / disengage docking assistance (Docking targeting tier or higher) |
+| R / P, station targeted | Engage full docking guidance / disengage (Docking targeting tier or higher) |
 | V / B, in flight | Toggle Spin Hold mode / stop spin smoothly and return to normal flight |
 | [ / ], Spin Hold | Start anticlockwise / clockwise roll at the prototype starting rate |
 | Hold - / = or +, Spin Hold | Slow / increase the set roll rate |
@@ -81,7 +81,7 @@ Number keys select the main game screens. Inside the secret menu they select sec
 | Right / Left, chart | Select next / previous system |
 | Click, either chart | Select the system nearest the pointer |
 | M, either chart | Cycle Economy / Government / Technology colours |
-| /, galactic chart | Open planet search; type to filter all 256 systems |
+| /, galactic chart | Open search for the viewed galaxy; discovered PLUGH is included |
 | Up / Down / Return / Escape, search | Select result / choose / close |
 | Backspace / Clear, search | Delete a character / clear the filter |
 | Z, short range chart | Zoom to maximum jump / search range / actual fuel reach |
@@ -89,13 +89,21 @@ Number keys select the main game screens. Inside the secret menu they select sec
 | Up / Down / Return, routes | Select an alternative / set the route without jumping |
 | C / Escape or N, routes | Clear route / return to chart |
 | Fn-Up / Fn-Down, routes | Scroll route details |
-| O / D, chart | Reset target to current system / show distance |
+| [ / ], galactic chart | Browse previous / next galaxy (or click a galaxy button) |
+| O / D, chart | Return to current location / show distance |
 | Command-P | Pause / resume (also available in the Game menu) |
 | :, paused | Toggle speech |
 | Escape, paused | Resume |
 | X Y Z Z Y, typed in sequence | Open secret menu |
 | 0-9 / A / B / E / F, secret menu | Select options in the XYZZY table below |
-| R / Q, fitted targeting computer | Cycle AUTO target / disengage AUTO |
+| R / Q, fitted targeting computer | Cycle targets and show forward view / disengage AUTO |
+| W / Command-Shift-W, docked | Open Ship Showroom; W closes it |
+| /, showroom | Search ships by name, class, source or ID |
+| Up / Down / Return, showroom | Select ship / open specifications |
+| B / R / C, showroom | Pin baseline / reset to current fit / toggle comparison |
+| Space / V / comma or full stop, showroom | Pause rotation / source profiles / profile variant |
+| Fn-Up / Fn-Down or scroll, showroom | Browse specifications |
+| U, docked | Open station rumours; Return or Escape closes them |
 | I, target locked | Expand / collapse target camera and details |
 | B, docked | Reopen an eligible Blackjack station contact |
 | Arrows / Return / Escape, Blackjack handoff | Choose Confirm or Back / select / Back without transfer |
@@ -157,7 +165,7 @@ The original two BBC Second Processor missions are enabled, including the Execut
 
 The Constrictor Hunt starts in galaxy 1 or 2 at 256 combat points. Read system data with 6 for the original clue trail; clue visits are optional. The stolen ship appears at Orarra in galaxy 2. It has 252 energy, ECM, four missiles and bomb immunity. Ordinary lasers cannot damage it; a military laser inflicts five damage per hit, a quarter of its normal 23 points rounded down. Returning to a station after its removal awards 5,000 credits and 256 combat points once. The Executive source also treats the target leaving the local space bubble as mission completion; this historical quirk is retained.
 
-Thargoid Plans starts on docking in galaxy 3 after the Hunt is finished and your tally reaches 1,280. Report to Ceerdi, collect the encoded plans, then dock at Birera. Visiting Birera before collection does nothing. The plans occupy no cargo space and survive commander save/load. Carrying them enables the original 56-in-256 Thargoid ambush predicate at eligible spawning checks, with a mothership and Thargon companion. Motherships can release six additional drones when damaged; surviving drones stop fighting after the last mothership is destroyed. Delivery replaces a standard energy unit with the naval unit and adds 256 combat points once, with no cash payment. Energy recharge follows the original 1:2:3 ratio for an unupgraded, standard and naval unit. The naval unit is a mission reward, not a shop purchase; maximum XYZZY hardware includes it.
+Thargoid Plans starts on docking in galaxy 3 after the Hunt is finished and your tally reaches 1,280. Report to Ceerdi, collect the encoded plans, then dock at Birera. Visiting Birera before collection does nothing. The plans occupy no cargo space and survive commander save/load. Carrying them enables the original 56-in-256 Thargoid ambush predicate at eligible spawning checks, with a mothership and Thargon companion. Motherships can release six additional drones when damaged; surviving drones stop fighting after the last mothership is destroyed. Delivery replaces a standard energy unit with the naval unit and adds 256 combat points once, with no cash payment. Energy recharge follows the original 1:2:3 ratio for an unupgraded, standard and naval unit. Outside PLUGH, the naval unit is a mission reward; maximum XYZZY hardware includes it.
 
 Mission flags retain the original TP low-nibble states and default to unstarted in older saves. [Source profile and fidelity boundaries](docs/BBC-EXECUTIVE-MISSIONS.md) records the selected revision, source quirks, tests and the remaining differences in the native simulation and briefing presentation.
 
@@ -198,7 +206,13 @@ The missile rack shows one icon per finite missile, `None` for an empty rack, or
 
 With a fitted targeting computer, press **R** repeatedly to select eligible ships. All ships actually visible in the front renderer come first, nearest first, followed by offscreen ships nearest first if your tier supports them. IDs break distance ties. Stations follow the ship groups at Docking tier and above. Cargo canisters, asteroids and missiles are excluded. Front visibility uses the same mesh projection and clipping as rendering even from a rear or side view, including partly visible hulls. A cycle keeps its order while ships move; membership, equipment or viewport changes reconcile unvisited targets, and wrapping starts a fresh snapshot. A cyan lock marker and offscreen cue identify the target. AUTO faces and tracks ordinary ships at unchanged cruising speed, with Spin Hold available. **Q** or manual steering disengages.
 
-Station AUTO completes docking without further input. It routes outside a 400-unit safety sphere, settles on the entrance axis at 1,000 units, matches facing, rotational phase and rate, then controls acceleration and braking during final approach. It holds or retreats if alignment is inadequate and enters through the rendered doorway using the simulation's docking and collision checks. The HUD and voice announce Approaching, Aligning, Matching spin, Final approach and Docked. Q, manual controls, Spin Hold, pause or focus loss cancels; controlled forward cruise is retained on manual cancellation. C also engages station guidance through the same targeting-tier capability. The old standalone Docking Computers item has been removed; older saves migrate to at least Docking tier without downgrading a higher tier. These native guidance thresholds are prototype choices. Tests cover front/behind, tilted/off-axis and away-facing starts, both spin directions and high initial speed; starting inside station geometry is not a supported safe starting condition.
+Station AUTO completes docking without further input. It routes outside a 400-unit safety sphere, settles on the entrance axis at 1,000 units, matches facing, rotational phase and rate, then controls acceleration and braking during final approach. It holds or retreats if alignment is inadequate and enters through the rendered doorway using the simulation's docking and collision checks. The HUD and voice announce Approaching, Aligning, Matching spin, Final approach and Docked. Q, manual controls, Spin Hold, pause or focus loss cancels; controlled forward cruise is retained on manual cancellation. R selects stations after eligible ships and engages full guidance; C is no longer a docking shortcut. Guidance owns trackpad and held throttle while docking. The old standalone Docking Computers item has been removed; older saves migrate to at least Docking tier without downgrading a higher tier. These native guidance thresholds are prototype choices. Tests cover front/behind, tilted/off-axis and away-facing starts, both spin directions and high initial speed; starting inside station geometry is not a supported safe starting condition.
+
+## Ship showroom and secret ports
+
+W or Command-Shift-W opens the docked showroom with 167 canonical ship records, 158 labelled comparison refits and 56 corresponding shaded source models. Search, inspect edition-specific facts, pin a baseline and compare against your actual fitted Cobra. Model-unavailable records remain honest; defensible missing specification estimates show their basis/confidence and never replace actual fitted statistics. Browsing never buys a hull or changes gameplay. See [showroom controls, source units and model attribution](docs/SHIP-SHOWROOM.md).
+
+Each galaxy has a hidden **PLUGH** port. Ask for station rumours with U while docked to follow the local clue; discovery is saved separately per galaxy. Reach it through ordinary fuel/nav-limited travel and dock normally. It stocks all commodities and supported equipment, including reward hardware, at a documented 25% discount while retaining cash and fitting limits. See [discovery, prices and travel rules](docs/PLUGH.md).
 
 ## Targeting computers and target information
 
@@ -236,13 +250,13 @@ Each Fuel Storage Unit costs **2,000 CR** and adds 7 LY of capacity. Up to four 
 
 Actual reach is the lesser of the computer cap and current remaining fuel; fuel capacity cannot bypass the cap. Search uses installed capacity, so an empty tank does not shrink search range. This applies in XYZZY too: its 35-LY tank and Military computer permit at most 21 LY per jump. Normal jumps debit distance-based fuel; the optional XYZZY fuel switch replenishes the tank during updates. Original distances are quantised in 0.4-LY steps.
 
-On either chart, M cycles Economy, Government and Technology colour modes with a labelled red-to-green legend. Short-range planets are filled discs sized from their radius; the current system has a cyan ring and the selected system a white ring and crosshair. Click to select. Slash opens the galactic chart's searchable list of all 256 planets, with case-insensitive filtering, arrows, Return, Escape, scrolling and Clear. Chart search consumes text input without firing weapons or steering.
+On either chart, M cycles Economy, Government and Technology colour modes with a labelled red-to-green legend. Short-range planets are filled discs sized from their radius; the current system has a cyan ring and the selected system a white ring and crosshair. Click to select. The galaxy selector or [ / ] browses all eight galaxies without travelling. O returns to the current location. Crosshair and system data follow the viewed galaxy; H/N require the current galaxy for actual travel/route selection. Slash opens the viewed galaxy's searchable list of its 256 original planets and any discovered PLUGH, with case-insensitive filtering, arrows, Return, Escape, scrolling and Clear. Chart search consumes text input without firing weapons or steering.
 
 The short-range chart distinguishes dotted green search range, dashed yellow maximum equipment reach and solid cyan fuel-limited reach. When fuel and maximum reach coincide, the legend states that explicitly. Military search is labelled as the entire galaxy, with Z cycling maximum-jump, search-fit and actual-fuel zoom; offscreen boundaries remain described in the legend.
 
 Press N on a chart to compare Fewest Jumps, Safest and Trade Opportunities routes. A Best Cargo Sale detour is offered when its estimated return exceeds direct destination sales. Identical paths combine labels; all paths use legal hops, current fuel for the first leg, and station refuelling to installed capacity thereafter. Risk reflects government, and trade/cargo figures are conservative market estimates rather than guaranteed profits or guaranteed affordable refuelling. An empty tank must be refuelled before planning.
 
-Return sets a route without launching, jumping or docking. Dock at each stop; launching preloads the next system and announces it, and H starts each jump manually. N inspects the stored route. C clears it in the route panel; a manual chart destination, off-route arrival or galactic jump clears it too. Route progress survives save/load, and auto-trade evaluates the next planned leg without replacing it. Route browsing pauses flight.
+Return sets a route without launching, jumping or docking. Dock at each stop; launching preloads the next system and announces it, and H starts each jump manually. N inspects the stored route. C clears it in the route panel; an explicit new travel destination, off-route arrival or galactic jump clears it too. Pure galactic-map preview browsing retains the route. Route progress survives save/load, and auto-trade evaluates the next planned leg without replacing it. Route browsing pauses flight.
 
 ## Shields, Naval lasers and voice
 
@@ -259,7 +273,7 @@ Each standard booster multiplies base front and rear capacity by `1.5 × (matchi
 
 Standard booster prices are exactly 75% of the corresponding laser price and use that laser's technology requirement. Capital is awarded once when the authoritative combat rank reaches Elite, including migration of already-Elite saves. The earned flag is saved; XYZZY grants the hardware without granting rank or claiming an earned reward. Shields, HUD normalisation, damage, docking resets and save migration use the effective capacity.
 
-The Cobra Mk III has independent Front, Left, Right and Rear laser mounts. A new Jameson has a front Pulse Laser and three empty mounts. Equip Ship always shows all four fittings; Left/Right or clicking a mount chooses where the selected laser is installed. Return purchases one installation at its listed price and replaces only that mount. Fitted status and confirmations name the chosen destination. Each cockpit view fires its own mounted laser, with its own damage and firing interval; an empty mount cannot fire. Heat and energy remain shared ship resources. Commander Status and Inventory list all four mounts, and arrows, scrolling or Fn-Up/Fn-Down expose every equipment row. Legacy global laser saves resolve to one effective front laser, preserving other equipment without inventing paid side lasers. XYZZY grants Naval lasers on all four mounts, including migration of old XYZZY saves, and retains Mining as specialised equipment. Naval damage is a chosen native default of 64 per hit, or 16 against the Constrictor's quarter-damage shield; heat/energy cost and rapid firing use the existing laser mechanics. Naval lasers and Capital shields are grant/reward equipment, with no invented shop price or availability.
+The Cobra Mk III has independent Front, Left, Right and Rear laser mounts. A new Jameson has a front Pulse Laser and three empty mounts. Equip Ship always shows all four fittings; Left/Right or clicking a mount chooses where the selected laser is installed. Return purchases one installation at its listed price and replaces only that mount. Fitted status and confirmations name the chosen destination. Each cockpit view fires its own mounted laser, with its own damage and firing interval; an empty mount cannot fire. Heat and energy remain shared ship resources. Commander Status and Inventory list all four mounts, and arrows, scrolling or Fn-Up/Fn-Down expose every equipment row. Legacy global laser saves resolve to one effective front laser, preserving other equipment without inventing paid side lasers. XYZZY grants Naval lasers on all four mounts, including migration of old XYZZY saves, and retains Mining as specialised equipment. Naval damage is a chosen native default of 64 per hit, or 16 against the Constrictor's quarter-damage shield; heat/energy cost and rapid firing use the existing laser mechanics. Outside PLUGH, Naval lasers and Capital shields remain grant/reward equipment. PLUGH has documented native shop prices for these rewards.
 
 A locked target destroyed by the player displays and voices **Target destroyed - your kill** once. Actual player laser, missile and energy-bomb damage carries kill attribution; unrelated destruction, range loss or despawn announces Target lost without awarding a player kill. Manual switching does not announce a loss, and rank/bounty feedback remains separate.
 
@@ -287,7 +301,7 @@ Browsing is read-only. Flight time, movement, combat, AUTO and Spin Hold freeze 
 
 `EliteCore` contains the deterministic simulation, original galaxy and commodity calculations, commander persistence, raster graphics and sound synthesis. `GameRuntime` is a Swift actor owning the game and controls. The Mac app sends commands to that actor and draws immutable snapshots on the main actor. Ships and markets are value types within the simulation actor, avoiding a task per object and preserving update order. The window loop is cancelled on close; losing focus clears held controls.
 
-`EliteMac` is the native AppKit window, keyboard adapter, drawing and audio/speech output. Flight rendering uses a responsive full-width native-resolution viewport and compact cockpit, including Retina displays and window resizing. Equipment, markets, commander status, inventory, charts, route planning and mission browsing use responsive native layouts; system data, demo, title and help retain their original logical layout. Curves and lines are antialiased; the original bitmap font remains sharp with nearest-neighbour scaling. Persistent stars move through three-dimensional space with the ship's speed, pitch and roll, using subpixel positions and small round points without diagonal tails. Changing throttle cannot teleport the starfield. Shaded faces clip against the near plane and viewport and draw from back to front. Display preferences, star motion and contextual help remain value state owned by the game actor. Speech and sound are independent native reproductions, not recordings or ROM playback.
+`EliteMac` is the native AppKit window, keyboard adapter, drawing and audio/speech output. Flight rendering uses a responsive full-width native-resolution viewport and compact cockpit, including Retina displays and window resizing. All native screens, including system data, demo, title, missions, help and XYZZY, use responsive layouts and the same fixed 1.25-point bitmap scale. Window size, full screen and Retina backing scale do not enlarge the logical glyphs. Ship, map and scanner geometry still uses the available space. Curves and lines are antialiased; the original bitmap font remains sharp with nearest-neighbour scaling. Persistent stars move through three-dimensional space with the ship's speed, pitch and roll, using subpixel positions and small round points without diagonal tails. Changing throttle cannot teleport the starfield. Shaded faces clip against the near plane and viewport and draw from back to front. Display preferences, star motion and contextual help remain value state owned by the game actor. Speech and sound are independent native reproductions, not recordings or ROM playback.
 
 ## Validation and SonarQube
 

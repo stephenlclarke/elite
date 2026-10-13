@@ -188,7 +188,7 @@ import Testing
   game.key(" ")
   game.key("4")
   game.key("right")
-  #expect(game.selectedSystem == 8)
+  #expect(game.viewedSystemID == 8 && game.selectedSystem == 7)
   game.key("left")
   #expect(game.selectedSystem == 7)
   game.selectedSystem = 0
@@ -236,13 +236,14 @@ import Testing
   #expect(
     game.commander.galaxy == 1 && game.commander.fuel == 70
       && !game.commander.equipment.contains("Galactic Hyperdrive"))
-  game.commander.equipment.insert("Docking Computers")
-  game.key("c")
+  game.commander.installTargetingComputer(.docking)
+  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
+  game.key("r")
   #expect(game.dockingComputer)
   game.key("p")
   #expect(!game.dockingComputer)
   game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
-  game.key("c")
+  game.key("r")
   for _ in 0..<2000 where !game.docked { game.tick(delta: 0.1) }
   #expect(game.docked && game.screen == .status && game.speed == 0)
   game.launch()

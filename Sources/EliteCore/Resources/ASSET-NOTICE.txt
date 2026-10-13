@@ -1,0 +1,52 @@
+SHOWROOM MODEL ATTRIBUTION
+
+ShowroomModels.json contains adapted numerical mesh geometry, without textures.
+Each model and adaptation retains its source CC-BY-NC-SA-3.0 or 4.0 license,
+as recorded in its JSON license field and the bundled original notices.
+https://creativecommons.org/licenses/by-nc-sa/3.0/
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+They are separate from this repository's MIT-licensed Swift implementation.
+
+Oolite: Giles C Williams, Jens Ayton and contributors.
+Pinned revision: 574ca848c91a067178416216523e8d09c1e9282a
+https://github.com/OoliteProject/oolite/tree/574ca848c91a067178416216523e8d09c1e9282a/Resources/Models
+See Oolite-LICENSE.txt for the original license and full attribution.
+25 catalogue records use corresponding source geometry, including assembled
+source-defined hull/dock subentities; non-geometry flashers are omitted.
+
+Vector 1.7.2: Svengali. vector.dat and vector_inspection.dat.
+https://wiki.alioth.net/index.php/Vector_OXP
+See Vector-MANIFEST.txt. Two distinct corresponding hulls are included.
+
+Rescue Stations 1.5.4: original by cim, update by spara.
+Arafura based on Puma Clipper by Dertien; model tweaked by Keeper.
+rrsfl_arafura.dat. https://wiki.alioth.net/index.php/RRS_Group
+See RescueStations-LICENSE.txt for the original credits and license.
+
+Adaptations by Stephen Clarke / XYZZY: source DAT parsing, camera-axis
+reflection with reversed winding, original-normal winding reconciliation,
+source subentity assembly, JSON conversion and radius normalization.
+Original mesh file SHA256 values and source names accompany every JSON mesh.
+No textures, source engines, scripts or mission artwork are bundled here.
+
+ADDITIONAL CORRESPONDING SOURCE ASSEMBLIES (28 RECORDS)
+
+Black Monks (P04), Deposed (P09), Ionics (P18), Military Fiasco (P26),
+Stealth (P36), Thargoid Wars (P41), Random Hits (P29), Staer9 no-shader
+shipset (S9), Santa and Selezen Imperial Courier (IC).
+
+Original authors, full credits, manifest evidence and licenses are preserved
+in ModelLicenses; index.json maps every notice to its source archive path
+and SHA256. The catalogue records the exact source archive SHA256s;
+ShowroomModels.json records source definition, component identities,
+shipdata hash and DAT file hashes. Source identifiers are provenance only;
+runtime preview IDs use the xyzzy-showroom-SHxxx namespace. No source role,
+mission variable, equipment identifier or script is activated. Stealth's
+additional compatibility clauses are included verbatim in its notice.
+
+Adaptations additionally resolve like_ship inheritance, legacy string and
+dictionary subentities, component positions/quaternions and uniform source
+scale. The complete assembly is normalized once for the native preview.
+Oolite renditions are labelled; they do not prove original Elite-A, BBC,
+Frontier or Elite Dangerous geometry. No unverified original game assets
+or unrelated same-name meshes are supplied for the remaining 111 records.

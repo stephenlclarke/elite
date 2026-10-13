@@ -1,0 +1,4 @@
+# Preserve original upstream notices byte-for-byte, including their line endings.
+Sources/EliteCore/Resources/ModelLicenses/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+Sources/EliteCore/Resources/*-LICENSE.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+Sources/EliteCore/Resources/Vector-MANIFEST.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol

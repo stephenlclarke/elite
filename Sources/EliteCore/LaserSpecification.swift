@@ -97,7 +97,7 @@ extension Game {
       notify(equipmentMount.label.uppercased() + " " + item.name.uppercased() + " ALREADY FITTED")
       return
     }
-    guard currentSystem.technology >= item.technology, commander.availableCredits >= item.price
+    guard equipmentAvailable(item), commander.availableCredits >= item.price
     else {
       notify("NOT AVAILABLE")
       return

@@ -182,3 +182,32 @@ private func assistedGame() -> Game {
   game.tick(delta: 0.02)
   #expect(game.bodies.contains { $0.id == 3 })
 }
+
+@Test func rCentersTheSelectedShipFromEveryViewAtNativeResolutionWithoutChangingCruise() {
+  for view in [Screen.front, .rear, .left, .right] {
+    for position in [Vector3(900, 500, 1800), .init(-900, -500, -1800)] {
+      var game = assistedGame()
+      game.commander.autoTarget = false
+      game.viewportWidth = 1800
+      game.viewportHeight = 1160
+      game.screen = view
+      game.speed = 3
+      game.bodies = [.init(id: 22, hull: .cobra, position: position)]
+      game.key("r")
+      #expect(game.screen == .front && game.weaponsTargetID == 22)
+      for _ in 0..<800 {
+        // Independent target movement exercises tracking rather than only a fixed bearing.
+        game.bodies[0].position.x += 0.08
+        game.bodies[0].position.y -= 0.04
+        game.tick(delta: 0.01)
+      }
+      let target = game.bodies[0].position
+      let focal = CockpitLayout(game: game, width: 1800, height: 1160).projection.focal
+      #expect(target.z > 0 && hypot(target.x, target.y) / target.z * focal < 1.5)
+      #expect(game.speed == 3 && game.autoPilot.status == "TRACKING TARGET")
+      #expect(!game.commander.autoTarget && game.autoPilot.manualEngagement)
+      game.key("q")
+      #expect(game.autoPilot.targetID == nil && !game.autoPilot.manualEngagement)
+    }
+  }
+}

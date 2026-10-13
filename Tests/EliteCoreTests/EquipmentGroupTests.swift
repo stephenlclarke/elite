@@ -73,14 +73,16 @@ import Testing
     #expect(game.commander.targetingTier == max(tier, .docking))
     #expect(!game.commander.equipment.contains(Equipment.legacyDockingComputer))
     game.launch()
-    game.key("c")
+    game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
+    game.key("r")
     #expect(game.dockingComputer)
   }
   for tier in [TargetingTier.basic, .advanced] {
     var game = Game(executive: false)
     game.commander.installTargetingComputer(tier)
     game.launch()
-    game.key("c")
+    game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
+    game.key("r")
     #expect(!game.dockingComputer)
   }
 }
@@ -135,37 +137,37 @@ import Testing
   #expect(restored.commander.credits == 1234)
 }
 
-@Test func cEngagesFullStationDockingWithClearFeedbackEvenWhenXYZzyAutoTargetIsOff() {
+@Test func rEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() {
   var game = Game(executive: false)
-  game.screen = .status
-  game.key("c")
-  #expect(game.message == "LAUNCH BEFORE AUTO DOCKING")
   game.launch()
-  game.key("c")
-  #expect(game.message == "FIT DOCKING TARGETING COMPUTER OR HIGHER" && !game.dockingComputer)
+  game.key("r")
+  #expect(game.message == "FIT A TARGETING COMPUTER" && !game.dockingComputer)
   game.commander.installTargetingComputer(.military)
   game.commander.xyzzyActive = true
   game.commander.autoTarget = false
   game.bodies = []
+  game.key("r")
+  #expect(game.message == "NO ELIGIBLE TARGETS")
+  game.bodies = [.init(id: 0, hull: .station, position: .init(300, 0, 1500))]
+  game.screen = .rear
   game.key("c")
-  #expect(game.message == "NO STATION IN LOCAL SPACE")
-  game.bodies = [.init(id: 42, hull: .station, position: .init(300, 0, 1500))]
-  game.screen = .shortChart
-  game.key("c")
-  #expect(game.screen == .front && game.dockingComputer && game.autoPilot.targetID == 42)
+  #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
+  game.key("r")
+  #expect(game.screen == .front && game.dockingComputer && game.autoPilot.targetID == 0)
   #expect(game.message == "AUTO DOCKING ENGAGED")
   game.tick(delta: 0.1)
   #expect(game.autoPilot.velocity.length > 0 && game.dockingComputer)
   #expect(game.autoHUDLines.contains { $0.contains("AUTO:") })
   game.key("p")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("c")
+  game.key("r")
   game.key("q")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("c")
+  game.key("r")
   game.key("5")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("c")
+  game.key("0")
+  game.key("r")
   for _ in 0..<2500 where !game.docked { game.tick(delta: 0.1) }
   #expect(game.docked && !game.dockingComputer && game.screen == .status)
 }

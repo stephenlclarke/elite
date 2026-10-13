@@ -84,6 +84,7 @@ extension Game {
   }
   public var informationTargetBody: SpaceBody? {
     guard commander.targetingTier != nil else { return nil }
+    if let target = autoTargetBody { return target }
     if let id = weaponsTargetID, let body = bodies.first(where: { $0.id == id && $0.energy > 0 }) {
       return body
     }

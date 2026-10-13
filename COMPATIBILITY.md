@@ -4,7 +4,7 @@ XYZZY's Right-On Commander version uses the 6502 Second Processor Executive buil
 
 | Area | Current implementation | Evidence / remaining work |
 | --- | --- | --- |
-| Galaxy | Eight seeded 256-system galaxies | Lave, Zaonce and Diso fixtures and repeatability tests |
+| Galaxy | Eight seeded 256-system galaxies plus a separately discovered PLUGH port per galaxy | Lave, Zaonce and Diso fixtures and repeatability tests |
 | Markets | Original economy, gradient and fluctuation calculations | Exhaustive bounds over eight economies and 256 fluctuation values |
 | Commander | Jameson with standard Cobra Mk III; XYZZY gives Clarke maximum hardware | Intentional user-requested defaults replacing Executive Firebud; finite 1M CR XYZZY start and independent four-mount laser loadout; JSON save format rather than DFS commander files |
 | Controls | Number keys, keyboard or held trackpad flight, weapon and drive keys; Command-P pause | Two fingers steer, one brakes, three accelerate; release centres the yoke and cruises. Native adapter, continuous-input and menu tests; physical three-finger delivery depends on macOS gestures |
@@ -14,6 +14,7 @@ XYZZY's Right-On Commander version uses the 6502 Second Processor Executive buil
 | Trading | Buy/sell with consistent commodity-category colours, explicit availability, grouped equipment and four laser fittings | Transaction, mount persistence, stock/cash/capacity and responsive layout tests |
 | Travel | Fuel accounting, countdown, eight galaxies, mass lock and docking computer | Navigation tests; physics and docking are simplified |
 | Combat | Lasers, shields/energy, missiles, ECM, bomb, escape pod, ranks | Deterministic combat tests; historical tactics, missile flight and legal pursuit remain simplified |
+| Ship showroom | Read-only 167-identity catalogue, 158 labelled refits and 56 corresponding source meshes | Source units and unknown facts retained; current player hull remains native Cobra; [model attribution and limits](docs/SHIP-SHOWROOM.md) |
 | Ship roster | Eight independent hull categories plus source-derived Constrictor and Thargon geometry; Executive limit of 18 simultaneous objects | Full original ship roster and blueprint-by-blueprint parity pending |
 | Max equipment | XYZZY Naval lasers, Military targeting and Capital shields; earned Capital reward at Elite rank | User-requested extensions; Naval damage is a documented prototype default, shield multipliers/prices follow user instructions; no rank grant from XYZZY |
 | Secret additions | Unlimited missiles/cargo and optional fuel replenishment; finite cash; destination/economy/government-aware auto-trading including illegal goods; white/colour wireframe and shaded-panel display selector | Dedicated tests, old-save compatibility and opaque clipped faces; intentional user-requested extensions |

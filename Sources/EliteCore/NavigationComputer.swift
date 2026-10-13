@@ -32,8 +32,8 @@ public struct NavigationPlan: Sendable, Codable, Equatable {
   public var nextSystem: Int? { valid && !complete ? path[stopIndex + 1] : nil }
   public var destination: Int { path.last ?? 0 }
   public var valid: Bool {
-    (0..<8).contains(galaxy) && (2...256).contains(path.count)
-      && path.allSatisfy { (0..<256).contains($0) }
+    (0..<8).contains(galaxy) && (2...257).contains(path.count)
+      && path.allSatisfy { (0...256).contains($0) }
       && Set(path).count == path.count && path.indices.contains(stopIndex)
       && [70, 140, 210, 280, 350].contains(capacityAtPlanning)
       && (0...capacityAtPlanning).contains(originFuel)
@@ -64,7 +64,7 @@ struct NavigationGraph {
   init(game: Game) {
     self.game = game
     edges = game.systems.map { source in
-      game.systems.filter {
+      game.knownSystems.filter {
         $0.id != source.id
           && source.distance(to: $0)
             <= min(game.commander.jumpCap, Double(game.commander.fuelCapacity) / 10)
@@ -74,15 +74,15 @@ struct NavigationGraph {
   func trade(_ a: Int, _ b: Int) -> Double {
     let market =
       a == game.commander.system
-      ? game.market : MarketItem.generate(economy: game.systems[a].economy, fluctuation: 0)
-    let sale = TradePlanner.minimumPrices[game.systems[b].economy]
-    return Commodity.all.indices.filter { $0 != 16 }.map { index in
+      ? game.market : MarketItem.at(game.systems[a], fluctuation: 0)
+    let sale = MarketItem.minimumPrices(at: game.systems[b])
+    return Commodity.all.indices.map { index in
       Double(max(0, sale[index] - market[index].price))
         * min(63, Double(market[index].quantity), Double(game.commander.capacity))
     }.max() ?? 0
   }
   func cargoSale(_ id: Int) -> Double {
-    zip(game.commander.cargo, TradePlanner.minimumPrices[game.systems[id].economy]).reduce(0) {
+    zip(game.commander.cargo, MarketItem.minimumPrices(at: game.systems[id])).reduce(0) {
       $0 + Double($1.0) * Double($1.1)
     }
   }
@@ -138,7 +138,7 @@ struct NavigationGraph {
       }
     }
     if game.commander.cargo.contains(where: { $0 > 0 }) {
-      let waypoints = game.systems.filter { $0.id != origin && $0.id != destination }.sorted {
+      let waypoints = game.knownSystems.filter { $0.id != origin && $0.id != destination }.sorted {
         a, b in cargoSale(a.id) == cargoSale(b.id) ? a.id < b.id : cargoSale(a.id) > cargoSale(b.id)
       }.prefix(8)
       var best: (path: [Int], value: Double)?
@@ -193,11 +193,16 @@ extension Game {
     commander.navigationTier?.radius(capacity: commander.fuelCapacity)
   }
   public func canPlan(to system: StarSystem) -> Bool {
-    guard let tier = commander.navigationTier else { return false }
+    guard let tier = commander.navigationTier, knownSystems.contains(system) else { return false }
     return tier == .military
       || currentSystem.distance(to: system) <= (tier.radius(capacity: commander.fuelCapacity) ?? 0)
   }
   mutating func openNavigation() {
+    if screen == .chart && !mapIsCurrentGalaxy {
+      _ = prepareChartTravel()
+      return
+    }
+    if commander.navigationPlan == nil && !prepareChartTravel() { return }
     if let plan = commander.navigationPlan, plan.valid, plan.galaxy == commander.galaxy,
       !plan.complete, selectedSystem == plan.nextSystem
     {

@@ -1,0 +1,62 @@
+Stealth OXP by Thargoid.
+
+This is a little mission OXP set in Galaxy 3, designed to showcase what can be done in Oolite with scanner lollipop colours and the creation of stealth ships which do not appear (in this case programmed to only be visible when they are attacking prey). 
+
+A squadron of six experimental stealth Barracuda fighters have been stolen by a pirate gang and are preying on innocent traders. The navy needs someone to take care of business and take them out, and your name's in the frame.
+
+To kick off the mission, fly to the main station in the Beenbeor system.
+
+Requirements -
+
+This OXP is scripted for Oolite v1.76 or later, and will not run on any earlier versions of the game. 
+
+The mission is set in Galaxy 3, and requires the player to have at least 512 kills to their name. If these conditions are met then the mission will be offered on docking, after which time reminder instructions are provided in mission screens with pointers via the manifest (F5-F5) screen.
+
+--------------------------------------------------------------
+
+License:
+
+This OXP is released under the Creative Commons Attribution - Non-Commercial - Share Alike 3.0 license with the following clauses:
+
+* Whilst you are free (and encouraged) to re-use any of the scripting, models or texturing in this OXP, the usage must be distinct from that within this OXP. Unique identifiers such as (but not limited to) unique shipdata.plist entity keys, mission variables, script names (this.name), equipment identity strings (EQ_), description list arrays and entity roles must not be re-used without prior agreement. Basically if it's unique or would identify or overwrite anything in the original OXP, then you may not re-use it (for obvious compatibility reasons).
+* rebundling of this OXP within another distribution is permitted as long as it is unchanged. The following derivates however are permitted and except from the above:
+	* the conversion of files between XML and openStep.
+	* the merging of files with other files of the same type from other OXPs.
+* The license information (either as this file or merged into a larger one) must be included in the OXP.
+* Even though it is not compulsory, if you are re-using any sizable or recognisable piece of this OXP, please let me know :)
+
+--------------------------------------------------------------
+
+Instructions:
+
+Unzip the file, and then move the folder "Stealth 1.05.oxp" to the AddOns directory of your Oolite installation. Then start the game up and the ships should be added. 
+
+Version history:
+
+13/06/2010 - Version 1.00, Initial release.
+02/11/2010 - Version 1.01, bugfix correcting missing script element which spawns the base!
+13/02/2011 - Version 1.02, removal of upper limit, to allow running with 1.75
+02/03/2011 - Version 1.03, added a couple of missing break; commands to the script.js
+14/07/2011 - Version 1.04, tweaked script to make sure pirate base is added if player saves and reloads in mission system.
+26/03/2013 - Version 1.05, some script and message adjustments to make the objectives a bit clearer, and to notify that the mission will fail if the target system is left once the mission is active and the hunt underway.
+30/04/2025 - Version 2.0
+- Updated textures, added normal and specular maps for Stealth Barracuda and Stealth Mine. 
+- Replaced base with new Oolite Rock Hermit. 
+- Updated scripts and spawning routines. 
+- Tweaks to AI's to make the base more aggressive.
+- Added overlay to mission screens. 
+- Added links to Library PAD.
+- Prevented mission from starting if the TCAT mission is underway.
+- Incorporated code from Stealth Reset to allow for the OXP settings to be reset once completed.
+19/12/2025 - Version 2.1
+- Fixed missing semi-colon in shipdata.plist.
+02/02/2026 - Version 2.2
+- Darkened overlay images for better compatibility with Oolite 1.92.
+
+--------------------------------------------------------------
+
+Acknowledgements:
+
+With thanks to another_commander for the implementation of the scanner functions in 1.74, and a nod to Frame for his discussions on stealth ships on the forum. Also thanks to bjasspa for the missing break's heads-up.
+
+Thanks also to Mauiby de Fug for the bug report on the save/reload issue, and Stewart for the constructive write-up on v1.04 which lead to v1.05

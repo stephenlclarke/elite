@@ -4,6 +4,7 @@ public struct CockpitLayout: Sendable {
   public let width: Double
   public let height: Double
   public let font: Double
+  public let instrumentScale: Double
   public let row: Double
   public let dashboardTop: Double
   public let instrumentsTop: Double
@@ -22,12 +23,14 @@ public struct CockpitLayout: Sendable {
   public init(game: Game, width: Double, height: Double) {
     self.width = max(320, width)
     self.height = max(320, height)
-    if width < 640 { font = 1.25 } else { font = width < 1100 ? 1.5 : 2 }
-    row = ceil(font * 7) + 6
+    font = GameTypography.scale
+    if width < 640 { instrumentScale = 1.25 } else { instrumentScale = width < 1100 ? 1.5 : 2 }
+    // Instrument geometry keeps its existing proportions independently of text size.
+    row = ceil(instrumentScale * 7) + 6
     radarWidth = min(560, max(104, width * 0.30))
     sideWidth = (width - radarWidth - 48) / 2
     leftColumns = sideWidth >= 400 ? 2 : 1
-    let textColumns = max(20, Int((width - 24) / (6 * font)))
+    let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
     extraLines = (game.autoHUDLines + weaponLines + game.spin.hudLines).flatMap {
       MissionNotice.wrap($0, width: textColumns)
@@ -134,8 +137,10 @@ extension Display {
       next += 4 * 6 * layout.font
     } else {
       for _ in 0..<game.missileIconCount {
-        missileIcon(x: next, y: y, scale: layout.font / 1.5, armed: game.missileArmed, into: &frame)
-        next += 14 * layout.font / 1.5
+        missileIcon(
+          x: next, y: y, scale: layout.instrumentScale / 1.5, armed: game.missileArmed, into: &frame
+        )
+        next += 14 * layout.instrumentScale / 1.5
       }
     }
     if game.commander.unlimitedMissiles {
@@ -185,7 +190,7 @@ extension Display {
         ink: gauge.2,
         into: &frame)
     }
-    let instrumentWidth = min(layout.sideWidth, 13 * 6 * layout.font + 160)
+    let instrumentWidth = min(layout.sideWidth, 13 * 6 * layout.instrumentScale + 160)
     let x = layout.width - 12 - instrumentWidth
     for (index, gauge) in [
       (
@@ -204,7 +209,7 @@ extension Display {
     }
     let y = layout.instrumentsTop + 3 * layout.row
     frame.label("Energy", x, y, scale: layout.font, ink: .yellow)
-    let barX = x + min(instrumentWidth * 0.75, 13 * 6 * layout.font)
+    let barX = x + min(instrumentWidth * 0.75, 13 * 6 * layout.instrumentScale)
     let barEnd = min(x + instrumentWidth, barX + 160)
     for bank in 0..<4 {
       let length =
@@ -225,7 +230,7 @@ extension Display {
     let width = bounds.width
     let label = signed && abs(value) < 0.02 ? name + " neutral" : name
     frame.label(label, x, y, scale: layout.font, ink: .yellow)
-    let barX = x + min(width * 0.75, 13 * 6 * layout.font)
+    let barX = x + min(width * 0.75, 13 * 6 * layout.instrumentScale)
     let barWidth = min(160, width - (barX - x))
     let by = y + 5
     frame.stroke(barX, by, barX + barWidth, by, .blue)
