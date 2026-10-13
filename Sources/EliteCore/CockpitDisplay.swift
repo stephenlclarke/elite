@@ -22,7 +22,7 @@ public struct CockpitLayout: Sendable {
   public init(game: Game, width: Double, height: Double) {
     self.width = max(320, width)
     self.height = max(320, height)
-    font = width < 640 ? 1.25 : (width < 1100 ? 1.5 : 2)
+    if width < 640 { font = 1.25 } else { font = width < 1100 ? 1.5 : 2 }
     row = ceil(font * 7) + 6
     radarWidth = min(560, max(104, width * 0.30))
     sideWidth = (width - radarWidth - 48) / 2
@@ -180,7 +180,9 @@ extension Display {
       let x = 12 + Double(index / rows) * (columnWidth + 12)
       let y = layout.instrumentsTop + Double(index % rows) * layout.row
       cockpitGauge(
-        gauge.0, value: gauge.1, x: x, y: y, width: columnWidth, layout: layout, ink: gauge.2,
+        gauge.0, value: gauge.1, bounds: .init(x: x, y: y, width: columnWidth, height: layout.row),
+        layout: layout,
+        ink: gauge.2,
         into: &frame)
     }
     let instrumentWidth = min(layout.sideWidth, 13 * 6 * layout.font + 160)
@@ -194,8 +196,11 @@ extension Display {
     ]
     .enumerated() {
       cockpitGauge(
-        gauge.0, value: gauge.1, x: x, y: layout.instrumentsTop + Double(index) * layout.row,
-        width: instrumentWidth, layout: layout, ink: .green, signed: index > 0, into: &frame)
+        gauge.0, value: gauge.1,
+        bounds: .init(
+          x: x, y: layout.instrumentsTop + Double(index) * layout.row, width: instrumentWidth,
+          height: layout.row),
+        layout: layout, ink: .green, signed: index > 0, into: &frame)
     }
     let y = layout.instrumentsTop + 3 * layout.row
     frame.label("Energy", x, y, scale: layout.font, ink: .yellow)
@@ -212,9 +217,12 @@ extension Display {
   }
 
   private static func cockpitGauge(
-    _ name: String, value: Double, x: Double, y: Double, width: Double,
+    _ name: String, value: Double, bounds: CanvasRect,
     layout: CockpitLayout, ink: Ink, signed: Bool = false, into frame: inout Frame
   ) {
+    let x = bounds.x
+    let y = bounds.y
+    let width = bounds.width
     let label = signed && abs(value) < 0.02 ? name + " neutral" : name
     frame.label(label, x, y, scale: layout.font, ink: .yellow)
     let barX = x + min(width * 0.75, 13 * 6 * layout.font)

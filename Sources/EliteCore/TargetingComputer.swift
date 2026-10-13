@@ -99,7 +99,8 @@ extension Game {
     guard tier >= .identification else {
       return .init(id: body.id, model: nil, status: nil, fields: [])
     }
-    let status = body.hull == .station ? autoPilot.status : (body.hostile ? "Hostile" : "Neutral")
+    let shipStatus = body.hostile ? "Hostile" : "Neutral"
+    let status = body.hull == .station ? autoPilot.status : shipStatus
     var fields: [TargetField] = []
     if body.hull == .station {
       fields = [

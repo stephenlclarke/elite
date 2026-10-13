@@ -69,11 +69,14 @@ extension Game {
     }
     func steps(_ names: [String], progress: Int, available: Bool) -> [MissionMilestone] {
       names.enumerated().map { index, name in
-        let state =
-          index < progress
-          ? "Complete"
-          : (index == progress && (progress > 0 || available)
-            ? "Current" : (progress > 0 || available ? "Upcoming" : "Locked"))
+        let state: String
+        if index < progress {
+          state = "Complete"
+        } else if index == progress && (progress > 0 || available) {
+          state = "Current"
+        } else {
+          state = progress > 0 || available ? "Upcoming" : "Locked"
+        }
         return .init(title: name, state: state)
       }
     }

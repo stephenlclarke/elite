@@ -68,7 +68,8 @@ extension Game {
       rows += [("Lasers", .yellow)] + commander.laserMountSummary.map { ("  " + $0, .cyan) }
       return rows
     }
-    let legal = commander.legal == 0 ? "Clean" : (commander.legal < 50 ? "Offender" : "Fugitive")
+    let criminalStatus = commander.legal < 50 ? "Offender" : "Fugitive"
+    let legal = commander.legal == 0 ? "Clean" : criminalStatus
     var rows: [(String, Ink)] = [
       ("Present system: " + currentSystem.name, .white),
       ("Hyperspace: " + targetSystem.name, .white),
@@ -101,8 +102,8 @@ extension Display {
   public static func marketScreen(_ game: Game, width: Double, height: Double) -> Frame {
     var frame = cockpit(game, width: width, height: height)
     let layout = StationLayout(game: game, width: width, height: height, footer: 92)
-    let title =
-      game.screen == .buy ? "BUY CARGO" : (game.screen == .sell ? "SELL CARGO" : "MARKET PRICES")
+    let marketTitle = game.screen == .sell ? "SELL CARGO" : "MARKET PRICES"
+    let title = game.screen == .buy ? "BUY CARGO" : marketTitle
     frame.label(title, layout.left, 12, scale: layout.font, ink: .yellow)
     frame.label(
       String(format: "Cash %.1f CR", Double(game.commander.credits) / 10), layout.left, 32,

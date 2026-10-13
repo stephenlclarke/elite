@@ -23,11 +23,13 @@ public enum EquipmentGroups {
       ("Travel", ["Galactic Hyperdrive"]),
       ("Emergency Equipment", ["Escape Pod"]),
     ]
-    return groups.map { title, names in
-      EquipmentSection(
-        title: title,
-        indices: names.compactMap { name in Equipment.all.firstIndex { $0.name == name } })
+    let catalogue = Dictionary(
+      uniqueKeysWithValues: Equipment.all.enumerated().map { ($0.element.name, $0.offset) })
+    var result: [EquipmentSection] = []
+    for (title, names) in groups {
+      result.append(EquipmentSection(title: title, indices: names.compactMap { catalogue[$0] }))
     }
+    return result
   }()
   public static let rows: [EquipmentRow] = sections.flatMap { section in
     [.heading(section.title)] + section.indices.map(EquipmentRow.item)
