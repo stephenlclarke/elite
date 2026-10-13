@@ -80,7 +80,7 @@ Left/Right or clicking selects a planet. Docked charts 4/5 include all planet fa
 | Local-chart range | Z |
 | Open routes with fitted navigation computer | N |
 | Choose route | Up/Down then Return |
-| Read route details | Scroll or Option-Up/Down |
+| Read route details | Option-Up/Down |
 | Clear route | C |
 | Return from routes | Escape |
 
