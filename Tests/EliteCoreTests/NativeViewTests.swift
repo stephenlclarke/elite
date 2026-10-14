@@ -22,7 +22,10 @@ struct NativeViewTests {
     commander.credits = 12345
     try JSONEncoder().encode(commander).write(to: url)
     let saves = CommanderSaveSession(preferences: preferences, defaultURL: url)
-    let delegate = AppDelegate(saves: saves)
+    // Await fixture validation before testing input order; sanitizer startup may be slow.
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: url, persistMigrations: false)
+    #expect(await delegate.runtime.snapshot().commander.shipID == "SH013")
     let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
     delegate.applicationDidFinishLaunching(notification)
     let window = try #require(delegate.window)
@@ -31,11 +34,6 @@ struct NativeViewTests {
       window.orderOut(nil)
     }
     let view = try #require(window.contentView as? GameView)
-    let loaded = ContinuousClock.now.advanced(by: .seconds(5))
-    while view.game.commander.shipID != "SH013" && ContinuousClock.now < loaded {
-      try await Task.sleep(for: .milliseconds(10))
-    }
-    #expect(view.game.commander.shipID == "SH013")
     view.pending = ["x", "y", "z", "z", "y"]
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
     menu.performActionForItem(at: 0)
