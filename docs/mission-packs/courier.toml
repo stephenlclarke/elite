@@ -1,0 +1,61 @@
+schemaVersion = 1
+id = "xyzzy.example.courier"
+version = "1.0.0"
+minimumEngine = "1.0.0"
+capabilities = ["state-machine-v1", "dialog-v1", "economy-v1", "cargo-v1"]
+priority = 500
+source = "Original project example; not an original Elite campaign."
+license = "MIT"
+
+[mission]
+id = "lave-zaonce"
+title = "Lave Courier"
+initialStage = "available"
+briefing = "Carry a sealed one-tonne parcel from Lave to Zaonce."
+destination = "Galaxy 1: Lave (7) to Zaonce (129), main stations."
+reward = "50 CR, once."
+prerequisites = ["Dock at Lave with one free tonne."]
+milestones = ["Accept the parcel", "Deliver at Zaonce"]
+
+[[stages]]
+id = "available"
+objective = "Meet the courier at Lave's main station."
+completed = 0
+[[stages]]
+id = "carrying"
+objective = "Deliver the sealed parcel to Zaonce's main station."
+completed = 1
+[[stages]]
+id = "complete"
+objective = "Parcel delivered."
+completed = 2
+terminal = true
+
+[[dialogs]]
+id = "accept"
+text = "Carry this one-tonne sealed parcel to Zaonce for 50 CR? Confirm accepts; Back leaves it here."
+[[dialogs]]
+id = "delivery"
+text = "Confirm delivery of the sealed parcel and receive 50 CR."
+
+[[transitions]]
+id = "accept"
+from = "available"
+event = "contact"
+to = "carrying"
+confirmation = true
+dialog = "accept"
+conditions = [{ field = "galaxy", op = "eq", value = 0 }, { field = "system", op = "eq", value = 7 }, { field = "mainStation", op = "eq", value = 1 }, { field = "freeTonnes", op = "ge", value = 1 }]
+actions = [{ kind = "payloadAdd", key = "parcel", amount = 1 }]
+notification = "PARCEL ACCEPTED - DELIVER TO ZAONCE"
+
+[[transitions]]
+id = "deliver"
+from = "carrying"
+event = "contact"
+to = "complete"
+confirmation = true
+dialog = "delivery"
+conditions = [{ field = "galaxy", op = "eq", value = 0 }, { field = "system", op = "eq", value = 129 }, { field = "mainStation", op = "eq", value = 1 }, { field = "payload:parcel", op = "eq", value = 1 }]
+actions = [{ kind = "payloadRemove", key = "parcel", amount = 1 }, { kind = "credits", amount = 500 }]
+notification = "PARCEL DELIVERED - 50 CR RECEIVED"

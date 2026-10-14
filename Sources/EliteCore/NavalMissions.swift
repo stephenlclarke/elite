@@ -25,13 +25,21 @@ public enum NavalMissionStage: Int, Codable, Sendable, CaseIterable {
 
 public enum MissionMessage: String, Sendable {
   case constrictorBriefing, constrictorDebriefing, ceerdiOrders, plansCollection, plansDebriefing
+  static let allMessages: [Self] = [
+    .constrictorBriefing, .constrictorDebriefing, .ceerdiOrders, .plansCollection, .plansDebriefing,
+  ]
 }
 
 public struct MissionNotice: Sendable, Equatable {
   public let message: MissionMessage
   public let commander: String
   public let galaxy: Int
-  public var showsShip: Bool { message == .constrictorBriefing }
+  var dialog: PackDialog? {
+    MissionPackLibrary.bundled.entries.first {
+      $0.pack.dialog(message.rawValue.lowercased()) != nil
+    }?.pack.dialog(message.rawValue.lowercased())
+  }
+  public var showsShip: Bool { dialog?.ship ?? false }
   public var pages: [[String]] {
     let lines = Self.wrap(text, width: 40)
     let count = showsShip ? 9 : 17
@@ -40,70 +48,14 @@ public struct MissionNotice: Sendable, Equatable {
     }
   }
   public var text: String {
-    switch message {
-    case .constrictorBriefing:
-      let captain = galaxy == 0 ? "CARRUTHERS" : "FOSDYKE SMYTHE"
-      let location =
-        galaxy == 0
-        ? "ITS LAST REPORTED SIGHTING WAS AT REESDICE."
-        : "INTELLIGENCE BELIEVES IT JUMPED INTO THIS GALAXY."
-      return """
-        COMMANDER \(commander),
-        CAPTAIN \(captain), SPACE NAVY.
-
-        THE CONSTRICTOR IS AN EXPERIMENTAL WARSHIP WITH SECRET SHIELD TECHNOLOGY. IT WAS STOLEN FROM OUR XEER SHIPYARD FIVE MONTHS AGO.
-
-        \(location)
-
-        FIND AND DESTROY IT. ONLY MILITARY LASERS CAN DAMAGE ITS SHIELDS, AND IT CARRIES ECM. A GENEROUS REWARD AWAITS YOU.
-
-        MESSAGE ENDS
-        """
-    case .constrictorDebriefing:
-      return """
-        COMMANDER \(commander),
-
-        THE STOLEN CONSTRICTOR IS NO LONGER A THREAT. THE NAVY THANKS YOU FOR YOUR SERVICE.
-
-        YOUR ACCOUNT HAS BEEN CREDITED WITH 5,000 CR AND YOUR COMBAT TALLY INCREASED BY 256 POINTS.
-
-        MESSAGE ENDS
-        """
-    case .ceerdiOrders:
-      return """
-        COMMANDER \(commander),
-        CAPTAIN FORTESQUE, SPACE NAVY.
-
-        WE HAVE ANOTHER ASSIGNMENT FOR YOU. REPORT TO CEERDI IN THIS GALAXY FOR YOUR BRIEFING.
-
-        MESSAGE ENDS
-        """
-    case .plansCollection:
-      return """
-        COMMANDER \(commander),
-        AGENT BLAKE, NAVAL INTELLIGENCE.
-
-        WE HAVE OBTAINED DEFENCE PLANS FOR THE THARGOID HIVE WORLDS. THE NAVY IS PREPARING AN OFFENSIVE.
-
-        RADIO TRANSMISSION WOULD EXPOSE THE PLANS TO INTERCEPTION. THEY HAVE BEEN ENCODED INTO THIS MESSAGE FOR YOU TO CARRY TO OUR BASE ON BIRERA.
-
-        REACH BIRERA IN THIS GALAXY AND DOCK THERE. EXPECT THARGOID OPPOSITION.
-
-        MESSAGE ENDS
-        """
-    case .plansDebriefing:
-      return """
-        COMMANDER \(commander),
-
-        THE PLANS HAVE REACHED OUR BIRERA BASE. YOUR SERVICE WILL BE REMEMBERED.
-
-        WE HAVE FITTED A NAVAL ENERGY UNIT IN RECOGNITION OF YOUR WORK. IT REPLACES A STANDARD ENERGY UNIT AND RECHARGES AT THREE TIMES THE UNUPGRADED RATE.
-
-        YOUR COMBAT TALLY HAS INCREASED BY 256 POINTS.
-
-        MESSAGE ENDS
-        """
-    }
+    let template = dialog?.text ?? "MESSAGE UNAVAILABLE"
+    return template.replacingOccurrences(of: "{commander}", with: commander)
+      .replacingOccurrences(of: "{captain}", with: galaxy == 0 ? "CARRUTHERS" : "FOSDYKE SMYTHE")
+      .replacingOccurrences(
+        of: "{sighting}",
+        with: galaxy == 0
+          ? "ITS LAST REPORTED SIGHTING WAS AT REESDICE."
+          : "INTELLIGENCE BELIEVES IT JUMPED INTO THIS GALAXY.")
   }
 
   static func wrap(_ text: String, width: Int) -> [String] {
@@ -124,20 +76,6 @@ public struct MissionNotice: Sendable, Equatable {
 }
 
 public enum MissionRules {
-  public static func dockingMessage(
-    stage: NavalMissionStage, galaxy: Int, score: Int, x: Int, y: Int
-  ) -> MissionMessage? {
-    if stage == .notStarted && score >= 256 && galaxy < 2 { return .constrictorBriefing }
-    if stage == .constrictorDestroyed { return .constrictorDebriefing }
-    guard galaxy == 2 else { return nil }
-    switch stage {
-    case .constrictorComplete: return score >= 1280 ? .ceerdiOrders : nil
-    case .reportToCeerdi: return x == 215 && y == 84 ? .plansCollection : nil
-    case .carryingPlans: return x == 63 && y == 72 ? .plansDebriefing : nil
-    default: return nil
-    }
-  }
-
   public static func constrictorSystem(galaxy: Int, x: Int, y: Int) -> Bool {
     galaxy == 1 && x == 144 && y == 33
   }
@@ -152,32 +90,13 @@ public enum MissionRules {
     stage: NavalMissionStage, galaxy: Int, system: Int, variation: Int
   ) -> String? {
     guard stage.rawValue & 1 != 0 else { return nil }
-    if galaxy == 0 {
-      return [
-        150: "NAVAL REPORT: THE CONSTRICTOR WAS SIGHTED AT REESDICE.",
-        36: "A STRANGE SHIP LEFT HERE, APPARENTLY HEADING FOR AREXE.",
-        28: "AN UNUSUAL SHIP BOUGHT A GALACTIC HYPERDRIVE HERE AND USED IT.",
-      ][system]
-    }
-    if galaxy == 2 && system == 101 { return "YOU ARE LOOKING IN THE WRONG GALAXY!" }
-    guard galaxy == 1 else { return nil }
-    let trail = [
-      253: "A STRANGE SHIP ARRIVED HERE, SKIMMED THE SUN AND LEFT FOR INBIBE.",
-      79: "A ROGUE ATTACKED ME AT AUSAR. MY LASERS COULD NOT HURT ITS HULL.",
-      53: "A DANGEROUS SHIP FOUGHT THE PIRATES HERE, THEN LEFT FOR USLERI.",
-      118: "THE DANGEROUS SHIP YOU SEEK IS AT ORARRA.",
-      193: "THERE IS A PARTICULARLY DANGEROUS PIRATE IN THIS SYSTEM.",
-    ]
-    if let clue = trail[system] { return clue }
-    guard [32, 68, 164, 220, 106, 16, 162, 3, 107, 26, 192, 184, 5].contains(system) else {
-      return nil
-    }
-    return [
-      "A PECULIAR SHIP WAS REPORTED AT ERRIUS.", "THAT STRANGE SHIP LEFT ERRIUS RECENTLY.",
-      "YOU SHOULD INVESTIGATE ERRIUS.", "A SUSPICIOUS NEW SHIP WAS SEEN AT ERRIUS.",
-      "LOOK FOR MORE INFORMATION AT ERRIUS.",
-    ][variation % 5]
+    let clues = MissionPackLibrary.bundled.entries.flatMap { $0.pack.clues ?? [] }
+    guard let clue = clues.first(where: { $0.galaxy == galaxy && $0.systems.contains(system) }),
+      !clue.texts.isEmpty
+    else { return nil }
+    return clue.texts[abs(variation % clue.texts.count)]
   }
+
 }
 
 extension Commander {
@@ -196,35 +115,11 @@ extension Commander {
 
 extension Game {
   mutating func progressNavalMissions() {
-    guard
-      let message = MissionRules.dockingMessage(
-        stage: commander.missionStage, galaxy: commander.galaxy, score: commander.kills,
-        x: currentSystem.x, y: currentSystem.y)
-    else { return }
-    switch message {
-    case .constrictorBriefing: commander.missionStage = .huntingConstrictor
-    case .constrictorDebriefing:
-      commander.missionStage = .constrictorComplete
-      commander.credits = (commander.credits + 50000) & 0xffff_ffff
-      commander.kills = (commander.kills + 256) & 0xffff
-    case .ceerdiOrders: commander.missionStage = .reportToCeerdi
-    case .plansCollection: commander.missionStage = .carryingPlans
-    case .plansDebriefing:
-      commander.missionStage = .plansDelivered
-      commander.equipment.remove("Extra Energy Unit")
-      commander.equipment.insert(Equipment.navalEnergyUnit)
-      commander.kills = (commander.kills + 256) & 0xffff
-    }
-    ecmControl.emit(.gameplay("Incoming naval message"))
-    missionNotice = MissionNotice(
-      message: message, commander: commander.name, galaxy: commander.galaxy)
-    missionPage = 0
-    missionElapsed = 0
-    screen = .mission
+    _ = dispatchMission(.dock, naval: true)
   }
 
   mutating func missionKey(_ key: String) {
-    guard missionElapsed >= 2 else { return }
+    guard missionElapsed >= (missionNotice?.dialog?.delaySeconds ?? 2) else { return }
     let last = max(0, (missionNotice?.pages.count ?? 1) - 1)
     if key == "left" || key == "up" {
       missionPage = max(0, missionPage - 1)
@@ -258,12 +153,14 @@ extension Game {
       && commander.missionStage == .huntingConstrictor
     {
       // KILLSHP sets TP on removal, including FAROF culling, not just a credited kill.
-      commander.missionStage = .constrictorDestroyed
+      _ = dispatchMission(.targetRemoved, naval: true, target: "constrictor")
     }
   }
 
   mutating func spawnNavalEncounter() {
-    guard commander.missionStage == .carryingPlans || commander.missionStage == .huntingConstrictor,
+    let hunt = missionEncounter("constrictor-hunt") != nil
+    let plans = missionEncounter("plans-ambush") != nil
+    guard missionEncounter("constrictor-hunt", location: false) != nil || plans,
       !bodies.contains(where: {
         $0.hull == .viper || ($0.hull == .station && $0.position.length < 600)
       })
@@ -273,18 +170,14 @@ extension Game {
       return
     }
     let limit = commander.executive ? 18 : 10
-    if commander.missionStage == .carryingPlans
-      && MissionRules.plansAmbush(randomByte: randomByte())
-    {
+    if plans && MissionRules.plansAmbush(randomByte: randomByte()) {
       let x = randomByte() & 128 == 0 ? 6400.0 : -6400.0
       let y = randomByte() & 128 == 0 ? 6400.0 : -6400.0
       for hull in [Hull.thargoid, .thargon] where bodies.count < limit {
         addNavalShip(hull, position: .init(x, y, 6400))
       }
     }
-    guard commander.missionStage == .huntingConstrictor,
-      MissionRules.constrictorSystem(
-        galaxy: commander.galaxy, x: currentSystem.x, y: currentSystem.y),
+    guard hunt,
       !bodies.contains(where: { $0.hull == .constrictor }), bodies.count < limit,
       MissionRules.bountyHunterCheck(
         government: currentSystem.government, roll: randomByte(), hunterRoll: randomByte())

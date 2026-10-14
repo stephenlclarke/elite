@@ -140,12 +140,9 @@ extension Display {
         ink: ([5, 6].contains(index) && game.showroomProfiles.count <= 1) ? .blue : .cyan)
     }
     let window = showroomWindow(game)
-    let focus =
-      game.showroom.searching
-      ? "Search: type / arrows / Return"
-      : (game.showroom.detail
-        ? (window.hint ?? "Specifications: all rows visible")
-        : "Ships: arrows / Return")
+    var focus = "Ships: arrows / Return"
+    if game.showroom.detail { focus = window.hint ?? "Specifications: all rows visible" }
+    if game.showroom.searching { focus = "Search: type / arrows / Return" }
     frame.label(focus, 16, height - 42, scale: font, ink: .yellow)
     if layout.listVisible {
       frame.label(
@@ -167,7 +164,7 @@ extension Display {
             width: half, height: layout.model.height),
           title: game.showroom.baselineUsesCurrent
             ? "Your " + game.commander.ship.name : "PINNED BASELINE",
-          currentNative: game.showroom.baselineUsesCurrent, into: &frame)
+          into: &frame)
         showroomModel(
           selected, game: game,
           bounds: .init(
@@ -217,7 +214,7 @@ extension Display {
 
   private static func showroomModel(
     _ ship: CatalogueShip, game: Game, bounds: CanvasRect,
-    title: String, currentNative: Bool = false, into frame: inout Frame
+    title: String, into frame: inout Frame
   ) {
     let font = GameTypography.scale
     let columns = max(10, Int(bounds.width / (6 * font)))
@@ -352,11 +349,13 @@ extension Display {
     let pairs =
       [("Comparison", a, b, Ink.cyan)]
       + game.showroomComparison.map {
-        (
+        var comparison = " " + $0.rating.rawValue
+        if game.showroom.sourceProfiles {
+          comparison = $0.difference.isEmpty ? "" : " / " + $0.difference
+        }
+        return (
           $0.label, $0.baseline,
-          $0.selected
-            + (game.showroom.sourceProfiles
-              ? ($0.difference.isEmpty ? "" : " / " + $0.difference) : " " + $0.rating.rawValue),
+          $0.selected + comparison,
           $0.rating.ink
         )
       }

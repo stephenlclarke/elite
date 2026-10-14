@@ -175,7 +175,7 @@ import Testing
     game.docked = false
     #expect(
       Display.presentation(game, width: 768, height: 518).labels.contains {
-        $0.text.contains("6: system data")
+        $0.text.contains("Esc: back") && $0.text.contains("K: help")
       })
   }
 }

@@ -69,6 +69,19 @@ extension Game {
           CommodityCategory.at(index).ink
         )
       }
+      for id in commander.missionProgress.keys.sorted() {
+        let title =
+          missionPacks.entries.first { $0.pack.stateID == id }?.pack.mission.title ?? "Missing pack"
+        for (key, quantity) in commander.missionProgress[id]!.payloads.sorted(by: {
+          $0.key < $1.key
+        }) where quantity > 0 {
+          rows.append(
+            (
+              "Reserved " + String(title.prefix(18)) + ": " + String(key.prefix(14))
+                + " \(quantity)t", .cyan
+            ))
+        }
+      }
       rows += [("Lasers", .yellow)] + commander.laserMountSummary.map { ("  " + $0, .cyan) }
       return rows
     }
@@ -148,11 +161,14 @@ extension Display {
     frame.label(
       "Restricted cargo affects legal status on launch.", layout.left, layout.bottom + 58,
       scale: layout.font, ink: .orange)
+    var actions = "Arrows: select  Return: trade  Esc: back  K: help"
+    if game.screen == .market {
+      actions =
+        game.docked
+        ? "Prices  1: buy  2: sell  Esc: back  K: help" : "Prices only  Esc: back  K: help"
+    }
     frame.label(
-      game.screen == .market
-        ? (game.docked
-          ? "Prices  1: buy  2: sell  Esc: back  K: help" : "Prices only  Esc: back  K: help")
-        : "Arrows: select  Return: trade  Esc: back  K: help", layout.left, layout.bottom + 74,
+      actions, layout.left, layout.bottom + 74,
       scale: layout.font, ink: .cyan)
     return frame
   }
@@ -171,8 +187,8 @@ extension Display {
         row.0, layout.left, 56 + Double(index) * layout.row, scale: layout.font, ink: row.1)
     }
     frame.label(
-      [window.hint, game.docked ? "6: showroom" : "6: system data", "Esc: back  K: help"].compactMap
-      { $0 }.joined(separator: "  "), layout.left, layout.bottom,
+      [window.hint, "Esc: back  K: help"].compactMap { $0 }.joined(separator: "  "), layout.left,
+      layout.bottom,
       scale: layout.font,
       ink: .cyan
     )

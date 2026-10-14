@@ -235,6 +235,20 @@ Mission dialogs use **Confirm / Back**: arrows choose, Return selects, Escape ba
 
 This is an Oolite expansion adaptation with documented custody, wanted-level and witness-callback repairs. Its S.T.E targets currently use the native Cobra mesh and simplified combat. See the [pinned source profile and fidelity limits](docs/BLACKJACK-BULLION.md). [The implementation queue](docs/MISSION-IMPLEMENTATION.md) distinguishes research packets from playable campaigns.
 
+## Download for macOS
+
+The [signed universal app](releases/macos/Elite-1.1.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.1.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.1.0-universal.json).
+
+This distribution uses Developer ID signing and the hardened runtime. Notarization is recorded separately in the manifest; a build without notarization can be blocked by Gatekeeper after downloading. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
+
+## Add mission packs
+
+The Constrictor hunt, Thargoid plans delivery and Blackjack's Bullion now load their campaign stages, conditions, messages and rewards from bundled TOML packs. Their original/native behaviour and older saved progress are preserved.
+
+Choose **Commander > Install Mission Pack...**, select a validated `.toml`, then open **Game > Mission Gallery**. At an eligible main station, **Game > Mission Contacts** or **B** opens its Confirm/Back dialog. Installing supported content does not require rebuilding the app. Packs are stored in `~/.xyzzy/elite/mission-packs/`; manual copying there takes effect at next launch. The optional [Lave courier example](docs/mission-packs/courier.toml) demonstrates a new two-stage parcel delivery and once-only 50 CR reward.
+
+See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. Unsupported AI, passenger cabins, crew, station boards and other new mechanics still require engine work; the research queue is not automatically playable.
+
 ## Mission Gallery
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.

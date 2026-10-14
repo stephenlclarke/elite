@@ -58,3 +58,7 @@ The Gallery adds seven chronological milestones driven by committed mission stat
 ## Validation
 
 Native regressions cover exact seeded system names, automatic enrolment, all seven transitions, any-killer objectives, wrong station/galaxy/identity/stage, Back, stale offers, main-station binding, full holds, reserved firearms, auto-trade, escape recovery, old-save migration, corrupted state rejection, persistent health/ammunition/pose, living range removal, final account limits and once-only gold/payment/clearance. AppKit tests exercise Retina frame conversion, contact mouse events and contextual help. The leak lifecycle probe includes station contacts, Gallery browsing and persistent mission encounters. `make ci` remains the coverage, thread, address and leak acceptance gate.
+
+## Mission-pack implementation
+
+Campaign content and progression are maintained in `Sources/EliteCore/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.

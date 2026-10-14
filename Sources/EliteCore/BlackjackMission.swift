@@ -49,8 +49,16 @@ extension Commander {
 }
 public enum BlackjackTarget: String, Sendable, Codable {
   case bolts, witness
-  public var system: Int { self == .bolts ? 88 : 99 }
-  public var requiredStage: BlackjackStage { self == .bolts ? .huntBolts : .huntWitness }
+  var definition: PackEncounter {
+    MissionPackLibrary.bundled.entries.first { $0.pack.mission.binding == "blackjack" }!.pack
+      .encounters!.first { $0.id == rawValue }!
+  }
+  public var system: Int { definition.system! }
+  public var requiredStage: BlackjackStage {
+    let pack = MissionPackLibrary.bundled.entries.first { $0.pack.mission.binding == "blackjack" }!
+      .pack
+    return BlackjackStage(rawValue: pack.stage(definition.stage)!.legacyWrite!)!
+  }
   public var name: String { self == .bolts ? "Commander Bolts (S.T.E)" : "Witness (S.T.E)" }
   public var ink: Ink { self == .bolts ? .orange : .green }
   public var cargoCapacity: Int { self == .bolts ? 55 : 5 }

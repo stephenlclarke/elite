@@ -62,6 +62,16 @@ final class GameView: NSView {
   }
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
+  override var wantsUpdateLayer: Bool { true }
+  override func updateLayer() {
+    let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
+    guard
+      let image = imageForGame(
+        game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
+    else { return }
+    layer?.contentsScale = CGFloat(scale)
+    layer?.contents = image
+  }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
@@ -143,6 +153,10 @@ final class GameView: NSView {
     pending.append("map-click:\(point.x):\(point.y)")
   }
   override func scrollWheel(with event: NSEvent) {
+    if game.screen == .handoff {
+      pending.append(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
+      return
+    }
     if [.secret, .system, .status, .inventory, .market, .buy, .sell].contains(game.screen) {
       pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
     }
@@ -255,6 +269,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   func applicationDidFinishLaunching(_ _: Notification) {
     let view = GameView(frame: NSRect(origin: .zero, size: windowSize))
+    view.wantsLayer = true
     let window = NSWindow(
       contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered, defer: false)
@@ -270,6 +285,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     NSApp.activate(ignoringOtherApps: true)
     let runtime = self.runtime
     loop = Task { [weak view, weak self] in
+      await runtime.loadMissionPacks()
+      let packErrors = await runtime.snapshot().missionPacks.errors
+      if !packErrors.isEmpty {
+        let alert = NSAlert()
+        alert.messageText = "Some mission packs could not be enabled"
+        alert.informativeText = packErrors.joined(separator: "\n")
+        alert.runModal()
+      }
       if let self, self.restoreOnLaunch, let url = self.saves.startupURL {
         do {
           try await runtime.load(from: url, persistMigrations: false)
@@ -366,6 +389,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       withTitle: "Save Commander As...", action: #selector(saveCommanderAs), keyEquivalent: "s")
     saveAs?.keyEquivalentModifierMask = [.command, .shift]
     saveAs?.target = self
+    let installPack = commander.submenu?.addItem(
+      withTitle: "Install Mission Pack...", action: #selector(installMissionPack), keyEquivalent: ""
+    )
+    installPack?.target = self
     let showroom = commander.submenu?.addItem(
       withTitle: "Ship Showroom", action: #selector(showShipShowroom), keyEquivalent: "w")
     showroom?.keyEquivalentModifierMask = [.command, .shift]
@@ -517,6 +544,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       } catch { show(error) }
     }
   }
+  @objc private func installMissionPack() {
+    let panel = NSOpenPanel()
+    panel.canChooseDirectories = false
+    panel.allowsMultipleSelection = false
+    panel.allowedContentTypes = [UTType(filenameExtension: "toml") ?? .plainText]
+    guard panel.runModal() == .OK, let url = panel.url else { return }
+    Task { [weak self] in
+      guard let self else { return }
+      do { try await runtime.installMissionPack(from: url) } catch { show(error) }
+    }
+  }
   @objc private func loadCommander() {
     Task { [weak self] in
       guard let self else { return }
@@ -565,6 +603,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
 @main
 struct EliteApp {
   @MainActor static func main() async throws {
+    if let index = CommandLine.arguments.firstIndex(of: "--validate-mission-pack") {
+      guard CommandLine.arguments.indices.contains(index + 1) else {
+        throw MissionPackErrorCLI.missingPath
+      }
+      let entry = try MissionPackLibrary.read(
+        URL(fileURLWithPath: CommandLine.arguments[index + 1]))
+      _ = try MissionPackLibrary.checked(MissionPackLibrary.bundled.entries + [entry])
+      print("Valid mission pack: \(entry.pack.stateID) @ \(entry.pack.version)")
+      return
+    }
     if let index = CommandLine.arguments.firstIndex(of: "--ship-media") {
       let ids = Array(CommandLine.arguments.dropFirst(index + 1))
       try exportShipMedia(ids: ids, directory: URL(fileURLWithPath: "docs/ships"))
@@ -725,3 +773,5 @@ struct EliteApp {
     print("Actor simulation and frame lifecycle probe passed")
   }
 }
+
+enum MissionPackErrorCLI: Error { case missingPath }

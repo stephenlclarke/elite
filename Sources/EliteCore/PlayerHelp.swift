@@ -202,7 +202,7 @@ public enum PlayerHelp {
           "ESC - BACK WITHOUT TRANSFER",
           "GAME MENU: MISSION CONTACTS TO REOPEN",
           "B (DOCKED) ALSO REOPENS A CONTACT",
-        ])
+        ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
     case .mission:
       .init(
         title: "MISSION MESSAGE",

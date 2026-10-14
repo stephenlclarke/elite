@@ -130,3 +130,7 @@ Existing browser-specific close aliases (W, L, N or U in their own browser) and 
 Shipyard: click Trade ship, review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
 
 XYZZY L (or clicking its row) resets legal status to Clean. Saved mission progress is preserved. Save/Save As: Command-S / Command-Shift-S. Reload/Open: Command-O / Command-Shift-O. The last successful save restores automatically on launch, docked at the saved system.
+
+## Installed mission packs
+
+Commander > Install Mission Pack selects a TOML file. Game > Mission Gallery lists valid packs and suspended saved progress. Game > Mission Contacts or docked B opens eligible contacts. Arrows choose Confirm/Back, Return or clicking selects, Escape returns without a pending transfer. Option-Up/Down and trackpad scrolling read long dialogs.

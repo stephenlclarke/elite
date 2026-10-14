@@ -448,7 +448,7 @@ import Testing
   invalid.system = -1
   try JSONEncoder().encode(invalid).write(to: url)
   await #expect(throws: SaveError.self) { try await restored.load(from: url) }
-  try Data(repeating: 0, count: 65537).write(to: url)
+  try Data(repeating: 0, count: 4_194_305).write(to: url)
   await #expect(throws: SaveError.self) { try await restored.load(from: url) }
   var game = Game(executive: false)
   let loaded = game.load(invalid)
