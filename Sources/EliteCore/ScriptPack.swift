@@ -13,6 +13,7 @@ public struct ScriptMission: Codable, Sendable {
   public let destination: String
   public let reward: String
   public let milestones: [String]
+  public let requiredDestructionEncounters: [String]?
 }
 public struct ScriptDialog: Codable, Sendable {
   public let id: String
@@ -34,6 +35,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let mission: ScriptMission
   public let handlers: [ScriptHandler]
   public let dialogs: [ScriptDialog]?
+  public let encounters: [ScriptEncounterDefinition]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -50,10 +52,26 @@ public struct ScriptPack: Sendable {
 public enum ScriptCapabilities {
   public static let implemented: Set<String> = [
     "script-lua-v1", "story-v2", "economy-v2", "cargo-v2", "local-flight-clocks-v2",
+    "classic-encounters-v2",
   ]
+  static func playerFeatureName(_ capability: String) -> String {
+    let names = [
+      "world-actors-v1": "persistent ships and stations",
+      "encounter-admission-v1": "physical encounter deployment",
+      "flight-ai-v1": "scripted ship navigation", "combat-events-v1": "mission combat tracking",
+      "wormhole-transit-v1": "ship travel through wormholes",
+      "world-clocks-v1": "mission clocks and station jobs",
+      "custody-v1": "passenger and cargo custody",
+      "fitting-storage-v1": "equipment transfer and storage",
+      "contracts-v1": "station contract boards", "campaigns-v1": "linked campaigns",
+      "gallery-world-v1": "mission trial scenarios",
+    ]
+    return names[capability] ?? "additional mission support"
+  }
   static let events: Set<String> = [
     "mission.accepted", "station.docked", "station.undocked", "system.entered", "contact.requested",
-    "dialogue.confirmed", "timer.fired", "mission.abandoned",
+    "dialogue.confirmed", "timer.fired", "mission.abandoned", "encounter.admitted",
+    "encounter.pending", "actor.destroyed", "actor.removed",
   ]
 }
 
@@ -67,13 +85,26 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters"
     )
-    try keys(root.table(forKey: "mission"), "id title briefing destination reward milestones")
+    try keys(
+      root.table(forKey: "mission"),
+      "id title briefing destination reward milestones requiredDestructionEncounters")
     for (name, allowed) in ["handlers": "event function", "dialogs": "id text"]
     where root.contains(key: name) {
       let array = try root.array(forKey: name)
       for i in 0..<array.count { try keys(array.table(atIndex: i), allowed) }
+    }
+    if root.contains(key: "encounters") {
+      let encounters = try root.array(forKey: "encounters")
+      for index in 0..<encounters.count {
+        let table = try encounters.table(atIndex: index)
+        try keys(table, "id galaxy system profile actors")
+        let actors = try table.array(forKey: "actors")
+        for actor in 0..<actors.count {
+          try keys(actors.table(atIndex: actor), "id hull x y z hostile")
+        }
+      }
     }
     let manifest = try TOMLDecoder().decode(ScriptManifest.self, from: bytes)
     try validate(manifest)
@@ -139,6 +170,25 @@ public enum ScriptPackLibrary {
       throw MissionPackError(
         "Invalid script manifest, scope, identity, handler or resource declarations.")
     }
+    let nativeEvents = Set([
+      "encounter.admitted", "encounter.pending", "actor.destroyed", "actor.removed",
+    ])
+    guard
+      !manifest.handlers.contains(where: { nativeEvents.contains($0.event) })
+        || manifest.capabilities.contains("classic-encounters-v2")
+    else {
+      throw MissionPackError(
+        "Native actor events require the declared classic encounter capability.")
+    }
+    let encounters = manifest.encounters ?? []
+    guard encounters.count <= 64, Set(encounters.map(\.id)).count == encounters.count,
+      encounters.allSatisfy(\.valid), encounters.reduce(0, { $0 + $1.actors.count }) <= 128,
+      Set(manifest.mission.requiredDestructionEncounters ?? []).isSubset(
+        of: Set(encounters.map(\.id))),
+      encounters.isEmpty || manifest.capabilities.contains("classic-encounters-v2")
+    else {
+      throw MissionPackError("Invalid encounter declarations or missing native classic capability.")
+    }
     try path(manifest.module)
     guard manifest.module.hasSuffix(".lua"), manifest.module != "manifest.toml" else {
       throw MissionPackError("Declare a pack-local .lua module.")
@@ -184,6 +234,13 @@ public enum ScriptPackLibrary {
       return destination
     }
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let installedNames = try FileManager.default.contentsOfDirectory(atPath: directory.path).filter
+    { !$0.hasPrefix(".") }
+    guard installedNames.count < 128 else {
+      throw MissionPackError(
+        "The mission library is full. Keep versions that saved commanders need before installing another."
+      )
+    }
     let staging = directory.appendingPathComponent(".install-" + UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: staging) }
     try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: false)
@@ -213,7 +270,10 @@ public enum ScriptPackLibrary {
       var packs: [ScriptPack] = []
       var errors: [String] = []
       for url in urls {
-        do { packs.append(try read(url)) } catch {
+        do {
+          let pack = try read(url)
+          if !packs.contains(where: { $0.digest == pack.digest }) { packs.append(pack) }
+        } catch {
           errors.append(url.lastPathComponent + ": " + error.localizedDescription)
         }
       }

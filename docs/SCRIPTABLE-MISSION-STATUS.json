@@ -5,11 +5,12 @@
   "default_bundled_campaigns": 3,
   "example": "Optional original scripted courier; not a historical research mission",
   "supported_capabilities": [
-    "script-lua-v1",
-    "story-v2",
-    "economy-v2",
     "cargo-v2",
-    "local-flight-clocks-v2"
+    "classic-encounters-v2",
+    "economy-v2",
+    "local-flight-clocks-v2",
+    "script-lua-v1",
+    "story-v2"
   ],
   "requirements": [
     {
@@ -67,7 +68,9 @@
       "required_acceptance": "Foreign/duplicate/unload/pod/role events cannot grant death objective; any real attacker still qualifies.",
       "status": "partial",
       "current_evidence": [
-        "Sources/EliteCore/ScriptDirector.swift"
+        "Sources/EliteCore/ScriptDirector.swift",
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -87,8 +90,11 @@
       "title": "Whole encounter admission",
       "full_requirement": "Durable saved plan/RNG, full real fleet/components/clear placements/resources; actual admission before target ledger.",
       "required_acceptance": "Maenes32crewed+surviving50grid/22escorts full or pending, never partialquota/clone/refill.",
-      "status": "not implemented",
-      "current_evidence": [],
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+      ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
     {
@@ -96,8 +102,11 @@
       "title": "Scriptable AI and actual travel",
       "full_requirement": "Composable decisions/native steering/formation/dock/scoop/wormhole with distinct request/result and stable people/bodies.",
       "required_acceptance": "Same Cherkasova real NPC-first hole/arrival/docking; missed wakes/leader loss without teleport.",
-      "status": "not implemented",
-      "current_evidence": [],
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+      ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
     {
@@ -105,8 +114,11 @@
       "title": "Weapons and combat profiles",
       "full_requirement": "NPC/player source separation, exact lasers/facings/controllers/muzzles/turrets/missiles/ECM/stock/physicaldamage.",
       "required_acceptance": "Real source beam/pulse/military/turret15/25/cooldowns/ECM/collateral and no visual-only dock capability.",
-      "status": "not implemented",
-      "current_evidence": [],
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+      ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
     {
@@ -164,7 +176,9 @@
       "required_acceptance": "Crash before/after publication, oldsave migration, missingpack/changedversion and lateevents preserve exactstate.",
       "status": "partial",
       "current_evidence": [
-        "Sources/EliteCore/ScriptPersistence.swift"
+        "Sources/EliteCore/ScriptPersistence.swift",
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -173,8 +187,11 @@
       "title": "Reproducible plans and RNG",
       "full_requirement": "Engine-owned versioned streams and stable ordering; commit preparations once, no independent script RNG/time.",
       "required_acceptance": "Denied/retried spawn, Gallery/read-only/upgrade/reload never changes existing role/equipment/missile/person draws.",
-      "status": "not implemented",
-      "current_evidence": [],
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+      ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
     {
@@ -197,7 +214,9 @@
       "status": "partial",
       "current_evidence": [
         "Sources/EliteCore/ScriptRuntime.swift",
-        "Sources/EliteCore/MissionGallery.swift"
+        "Sources/EliteCore/MissionGallery.swift",
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -243,7 +262,9 @@
       "required_acceptance": "Unavailable jobs remain reference/blocked, no courier/contact rewrite or fake implemented label.",
       "status": "partial",
       "current_evidence": [
-        "Sources/EliteCore/ScriptPack.swift"
+        "Sources/EliteCore/ScriptPack.swift",
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -254,7 +275,9 @@
       "required_acceptance": "RRS pilot latefullpay/failed once, rescuedpeoplecare retained, no reward revival/second payout.",
       "status": "partial",
       "current_evidence": [
-        "Sources/EliteCore/ScriptCommands.swift"
+        "Sources/EliteCore/ScriptCommands.swift",
+        "Sources/EliteCore/ScriptEncounters.swift",
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -272,12 +295,64 @@
     "coder_1": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
     "coder_2": "01a139b4-fcdd-76d1-b0dd-4e4a91c1a3a1",
     "engine_worktree": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite",
-    "integration": "Do not merge into either coder checkout during their release work. Preserve committed restoreStartup/profit changes when integrating."
+    "integration": "Do not merge into either coder checkout during their release work. Preserve committed restoreStartup/profit changes when integrating.",
+    "solar_integration": {
+      "commits": [
+        "21f25e5",
+        "68cd9a6"
+      ],
+      "base": "197fb4b",
+      "requirement": "Preserve actual celestial positions/radii/kinds, cabinTemperature, solarFuelRemainder and SolarScoopState in physical saves; no midflight resetCelestialFlight replay. Add explicit DTO or coordinated Codable support after integrating coder2 source.",
+      "current_types": {
+        "CelestialKind": "String raw enum planet/sun, not yet Codable",
+        "CelestialBody": "kind, mutable Vector3 position, radius; Sendable/Equatable",
+        "SolarScoopState": "inactive/noScoops/turnTowardSun/collecting/tankFull; no raw value/Codable",
+        "solarFuelRemainder": "internal Double"
+      }
+    },
+    "root_integration": {
+      "branch": "liberator-ship",
+      "runtime_checkpoint": "97d0a4c8438aa92b73f384016f58351a6a544134",
+      "release_checkpoint": "2c9cf17bd33e10f87e8f91ad08b68c2655f15724",
+      "pr_reference": "https://github.com/stephenlclarke/elite/pull/11",
+      "other_commits": [
+        "197fb4b",
+        "65c62aa",
+        "8115302",
+        "dd27810"
+      ],
+      "status": "Await actual merged main SHA from coder1. Preserve all station/solar/geometry/startup/profit/control changes during eventual rebase. Engine kept separate while root release finishes.",
+      "latest_clean_source": "5939431bc038c7a099ddee9b7bb2e3ffa7567553"
+    },
+    "gui_lease": "Engine final CI exited0 and coder1 notified; no more native GUI runs until coder1 signed smoke finishes."
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 244,
-    "maintained_coverage_percent": 93.09,
+    "tests_per_lane": 261,
+    "maintained_coverage_percent": 93.29,
+    "script_swift_coverage_percent": 94.8,
+    "encounter_coverage_percent": 97.73,
+    "maintained_c_host_coverage_percent": 94.62,
     "leaks": 0
-  }
+  },
+  "in_progress_physical_checkpoint": {
+    "status": "validated bounded milestone; full engine remains incomplete",
+    "capability": "classic-encounters-v2",
+    "sample": "docs/mission-packs/scripted-patrol",
+    "native_evidence": [
+      "actual laser combat + automatic docking + station confirmation",
+      "actual 82-root admission, unique world UUIDs",
+      "blocked placement retains plan IDs; no partial fleet",
+      "late command failure rolls back staged bodies and money",
+      "actual removal/foreign/duplicate facts cannot create death tombstones",
+      "condition/stock/world pose through dock/launch/save",
+      "combat RNG/tactics replay equals uninterrupted native simulation",
+      "isolated trial save namespaces, production/redirected paths blocked",
+      "due timers frozen in inactive domains and read-only Gallery"
+    ]
+  },
+  "examples": [
+    "Optional original scripted courier",
+    "Optional original physical classic patrol"
+  ]
 }

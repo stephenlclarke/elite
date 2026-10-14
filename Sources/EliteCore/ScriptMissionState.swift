@@ -23,6 +23,12 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public let definition: String
   public let version: String
   public let digest: String
+  public init(id: UUID, definition: String, version: String, digest: String) {
+    self.id = id
+    self.definition = definition
+    self.version = version
+    self.digest = digest
+  }
   public var data: ScriptValue = .object([:])
   public var outcome: ScriptOutcome = .active
   public var suspension: String?
@@ -34,6 +40,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var timers: [String: ScriptTimer] = [:]
   public var dialogue: ScriptDialogue?
   public var journal: [String] = []
+  private var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
+  public var ownedEncounters: [String: ScriptOwnedEncounter] {
+    get { savedOwnedEncounters ?? [:] }
+    set { savedOwnedEncounters = newValue }
+  }
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
@@ -66,7 +77,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    instances.count <= 128 && pendingEvents.count <= 4096 && nextEvent < UInt64(Int64.max)
+    let identities = instances.values.flatMap {
+      $0.ownedEncounters.values.flatMap { $0.actors.values.map(\.identity) }
+    }
+    return Set(identities).count == identities.count && instances.count <= 128
+      && pendingEvents.count <= 4096 && nextEvent < UInt64(Int64.max)
       && pendingEvents.allSatisfy { $0.sequence <= nextEvent && instances[$0.instance] != nil }
       && [flightSeconds, localSeconds, calendarSeconds, transitSeconds].allSatisfy {
         $0.isFinite && (0...1e12).contains($0)
@@ -82,6 +97,12 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           } ?? true)
           && instance.revision < UInt64.max - 1 && instance.acknowledgedEvents.count <= 4096
           && instance.receipts.count <= 4096 && instance.receipts.allSatisfy(PackValidation.localID)
+          && instance.ownedEncounters.count <= 64
+          && instance.ownedEncounters.allSatisfy {
+            $0.key == $0.value.id && $0.value.valid
+              && $0.value.actors.values.allSatisfy { $0.body.missionInstanceID == instance.id }
+          }
+          && instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128
           && instance.payloads.count <= 128
           && instance.payloads.keys.allSatisfy(PackValidation.localID)
           && instance.payloads.values.allSatisfy { (0...1_000_000).contains($0) }

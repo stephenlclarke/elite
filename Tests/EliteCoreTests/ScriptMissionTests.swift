@@ -370,3 +370,33 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
   #expect(await pausedRuntime.snapshot().scriptAvailablePackDigest == nil)
   #expect(await pausedRuntime.snapshot().commander.scriptState.instances.isEmpty)
 }
+
+@Test func dueScriptTimersWaitForAnActiveDomainAndNeverAdvanceInTheGallery() throws {
+  let source = """
+    return {accepted=function(e,w,d)
+      return {data={count=0},commands={
+        {op='timer.ensure',id='local',domain='local',after=0,interval=0,policy='once'},
+        {op='timer.ensure',id='flight',domain='flight',after=0,interval=0,policy='once'}}}
+    end,contact=function(e,w,d) return {data=d,commands={}} end,
+    confirm=function(e,w,d) d.count=d.count+1 return {data=d,commands={}} end}
+    """
+  let (pack, folder) = try scriptPack(
+    [
+      ("\"cargo-v2\"]", "\"cargo-v2\", \"local-flight-clocks-v2\"]"),
+      ("event = \"dialogue.confirmed\"", "event = \"timer.fired\""),
+    ], source: source)
+  defer { try? FileManager.default.removeItem(at: folder) }
+  var game = Game(executive: false)
+  game.scriptPacks = [pack]
+  let id = try game.acceptScriptMission(pack)
+  let unchanged = game.commander.scriptState
+  game.advanceScriptClocks(delta: 0.1, flight: false, local: false)
+  #expect(game.commander.scriptState == unchanged)
+  game.advanceScriptClocks(delta: 0.1, flight: false, local: true)
+  #expect(game.commander.scriptState.instances[id]?.data["count"] == .integer(1))
+  #expect(game.commander.scriptState.instances[id]?.timers["flight"] != nil)
+  game.advanceScriptClocks(delta: 0.1, flight: false, local: true)
+  #expect(game.commander.scriptState.instances[id]?.data["count"] == .integer(1))
+  game.advanceScriptClocks(delta: 0.1, flight: true, local: true)
+  #expect(game.commander.scriptState.instances[id]?.data["count"] == .integer(2))
+}

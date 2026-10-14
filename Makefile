@@ -38,6 +38,7 @@ mission-packs-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/courier.toml
 script-missions-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-courier
+	swift run Elite --validate-mission-pack docs/mission-packs/scripted-patrol
 package-macos:
 	python3 Tools/distribution/package_macos.py
 ci: ships-check showroom-check mission-packs-check script-missions-check coverage-check threads address leaks

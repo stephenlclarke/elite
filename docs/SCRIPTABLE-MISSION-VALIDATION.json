@@ -1,5 +1,5 @@
 {
-  "recorded_utc": "2026-10-14T10:11:20.819227+00:00",
+  "recorded_utc": "2026-10-14T16:46:34.568925+00:00",
   "branch": "feature/scriptable-mission-engine",
   "base_commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
   "command": "make ci",
@@ -7,32 +7,32 @@
   "test_runs": [
     {
       "lane": "coverage",
-      "tests": 244,
+      "tests": 261,
       "suites": 2,
-      "seconds": 16.654
+      "seconds": 18.316
     },
     {
       "lane": "thread sanitizer",
-      "tests": 244,
+      "tests": 261,
       "suites": 2,
-      "seconds": 80.198
+      "seconds": 74.389
     },
     {
       "lane": "address sanitizer",
-      "tests": 244,
+      "tests": 261,
       "suites": 2,
-      "seconds": 387.625
+      "seconds": 311.78
     }
   ],
   "coverage": {
-    "covered_lines": 10066,
-    "total_lines": 10813,
-    "percentage": 93.09
+    "covered_lines": 10572,
+    "total_lines": 11333,
+    "percentage": 93.29
   },
   "new_script_swift_coverage": {
-    "covered_lines": 993,
-    "total_lines": 1050,
-    "percentage": 94.57
+    "covered_lines": 1422,
+    "total_lines": 1500,
+    "percentage": 94.8
   },
   "maintained_c_host_coverage": {
     "covered_lines": 246,
@@ -53,11 +53,12 @@
     "Markdown lint",
     "document relative links",
     "git diff --check",
-    "59 upstream C/header files byte-identical to pinned Lua archive"
+    "59 upstream C/header files byte-identical to pinned Lua archive",
+    "Real scripted patrol through actual lasers, automatic docking and report; 82 physical roots; combat RNG reload parity; trial namespace redirects blocked"
   ],
-  "raw_log_sha256": "ebdd1aa9749db1a4ad3d4a8f096b76cb6dc561048810e2d608c414270393c18d",
+  "raw_log_sha256": "dfc9ba1261035c116a0c1a3f6f7a9333aa3d937ec295e69c8f08dab1fb281e37",
   "validated_file_sha256": {
-    "Makefile": "03aa593339ebb4f055d066a3673851ff05460b0e0a99252f73f9ea064acb9e1c",
+    "Makefile": "4cb839d4a7927d20e5a5764532a78cec84a2f56583324c86b97f49bc794d1fce",
     "Package.swift": "c615ca1b2cb521a27c2b7bdf62d513c21299daa5f1deb77f9a6025b4c818ca18",
     "Sources/CLua/PROVENANCE.json": "a378356284f593e8a5729e21f94f7781519dc0c586e5f9a1d462f32c312a1873",
     "Sources/CLua/include/CLua.h": "933e239e69741ee17b5b0acda91582881433a71e0f069baf693729ce2b8aacc0",
@@ -139,9 +140,9 @@
     "Sources/EliteCore/EquipmentGroups.swift": "a46d8e0a0eb7c7efa6566f981dc31492af5775e1a3dfa9a1267f378c62ff961d",
     "Sources/EliteCore/FuelStorage.swift": "d1327e100242c84485d9221481a16cb7743af9a088f9a7d6600b31fea2025645",
     "Sources/EliteCore/GalaxyBrowsing.swift": "389b4812dbe6f24c78dc6ec6c8a3f097b8ef443f08bc5d0feea423b472379e97",
-    "Sources/EliteCore/Game.swift": "afc4bf61c298016fe8f8275f2464c0fd76bb4fd3eb7c33efa456787f0cecc06c",
+    "Sources/EliteCore/Game.swift": "1436b50d00b48a2c8c1940d92251b8a2865c1d813c04e8947bed4a2c60ce3b0d",
     "Sources/EliteCore/GameTypography.swift": "1276ae2462788271f4772de8b9ff68c309d0805d21b1918fd729f8ac1f6c8ba0",
-    "Sources/EliteCore/Geometry.swift": "8a320ede08f7445bb953c4ba1d0d0621518890d87cf4172ad94f68934fc9d31a",
+    "Sources/EliteCore/Geometry.swift": "a510eae3cad1d10065a678c9f2a14bf53b4c3f9aea428e645de066bc1e965057",
     "Sources/EliteCore/Graphics.swift": "a9ed4be0cf7960515ab5a923ef3fa9540d5624f1902a76701cdb2c579fa7a76a",
     "Sources/EliteCore/JumpReach.swift": "e4d0b6eaf78e0a77642f4de875d75684f55e831ef6a833bb363b3e7790a17342",
     "Sources/EliteCore/LaserSpecification.swift": "1c519819510d94f7a1a44ce23398c22092b88edfbdd08e5ca51b42b4845d207c",
@@ -156,20 +157,22 @@
     "Sources/EliteCore/PackGallery.swift": "f3f0a8bce124da59134040916a7c466c19b9ef8223024a1ca4908a34e545c38b",
     "Sources/EliteCore/PackKeys.swift": "7820a09b65d1567c1a33464dd33e17069ca6d312810d8bcdcb3cdaab6fca8615",
     "Sources/EliteCore/PackRuntime.swift": "6bd0eab194e3d054c7a12cce5c1314be353c329b72a87634148da0f86a09898d",
-    "Sources/EliteCore/PackTransactions.swift": "3b9ea735b97e0dc795e4ddd48bd9b80147628b108d435b86c1f952687ad96d14",
+    "Sources/EliteCore/PackTransactions.swift": "b48030a3a982650aadc7911e74e649215bcaa519ccd419506a020816027c88e4",
     "Sources/EliteCore/PackValidation.swift": "c3a877c9149e1b416eb4d6cfa57a094eac05d37382ffcef74a8497191bce4179",
     "Sources/EliteCore/PlanetPreview.swift": "4c66750ebd99f776c13e29960c8ebae651fb6dedd1f8ccf0f4e7d494ad4f8b6b",
     "Sources/EliteCore/PlayerHelp.swift": "c49eb7b9a99dcbd41da14653ba64474ef1b76cdfd9965d1e07f7d6ba9472a55e",
     "Sources/EliteCore/Plugh.swift": "a47d3e8eb48cb8364d83547dc646bd5c38bfc92dc0bd03b4faeaa28a8d6a3be0",
     "Sources/EliteCore/RetaliationControl.swift": "daaa870e53331614ae5484cd0a01d87c548049efd3aff21982f25a18978b490b",
     "Sources/EliteCore/ScreenNavigation.swift": "a0d45cf348e6fee379aa83975484a6ba9a5fd873a3586764410dc887c258eab9",
-    "Sources/EliteCore/ScriptCommands.swift": "72d70aabceb98db07790e94d5b9fabbd506d21fd17ced4472de048eac322dafe",
-    "Sources/EliteCore/ScriptDirector.swift": "1c11b6fc57de0fbfa97889e26bcc5b474a05dbd867d6e2f6dee8690d37cf8d94",
+    "Sources/EliteCore/ScriptCommands.swift": "f93d25aee01d4b60d6de739516f4d70d85d5eaf22ce5916c651a8a2f73e0c7f3",
+    "Sources/EliteCore/ScriptDirector.swift": "c2d763a8fcf1418e717b5f90c3f4f1f5239677017cb45e341f210b641cd41fe3",
+    "Sources/EliteCore/ScriptEncounters.swift": "7033f7cb3cfbb85b2f4f036e4dc0e4e9d66d860ebde5309c717c582f68985fca",
     "Sources/EliteCore/ScriptEvaluator.swift": "89e05f0eb25b1558610cdc8db0e36d10be9f7a0e6788a939b26775a1d610c687",
-    "Sources/EliteCore/ScriptMissionState.swift": "f375567ab500f350ace6907b0bea17d20df6d5c08f755c2ccab0857e260f1850",
-    "Sources/EliteCore/ScriptPack.swift": "2d43b9959c977329516181918bddb126b9d93853976eb5a93967cef649d54171",
-    "Sources/EliteCore/ScriptPersistence.swift": "662e9935db25bc1ade5c838e665d66691b23b97526f31e336d6e9c877d5d6dea",
-    "Sources/EliteCore/ScriptRuntime.swift": "de92646e12068276759a1067939b8bd6e2aa1db5b53c4aa543645336d7b32084",
+    "Sources/EliteCore/ScriptMissionState.swift": "25998e4da7f9dee6fcec821bc874a58283edb0fc3ca38b16e7049103f1866755",
+    "Sources/EliteCore/ScriptPack.swift": "b068781487b77a5032e60fe60f92a6b505f48f1c9963de5bc1fab339d07f0954",
+    "Sources/EliteCore/ScriptPersistence.swift": "907cb963e046b5da0dd60182671b63f23ed910fb5849c9d1f2e9cd1383616a7b",
+    "Sources/EliteCore/ScriptRuntime.swift": "66acf8aea11049a65663ce979eac565870d52db895c9b81494646fca91970bc0",
+    "Sources/EliteCore/ScriptSimulationSave.swift": "f2e1e3d367e09514284df83c05b52ef85e27e1c15f99834c7e7f28b238aea3bd",
     "Sources/EliteCore/ScriptValue.swift": "4c88d7d8e4e957edefa78d7471213c54816730e4c248877a06f401a120a44e3a",
     "Sources/EliteCore/ScrollWindow.swift": "fccf9d299be8da85c0aae5837f12aa4a3034d96b26f489d55fb8380212e0ee3e",
     "Sources/EliteCore/SecretChoices.swift": "2c58456c378a8610fe9374cd63b89968533ad2a765727fcb1048bba2f7237e95",
@@ -210,5 +213,16 @@
     "script/coverage.sh": "09a9c802156f79144290fc248a3a999eeb65be320f3c2a3331e3e747308374f7",
     "sonar-project.properties": "9678da010467df9603aeba7e4fcf452c8a65c3ee17bf6e6ebbf1f3a5134038ef"
   },
-  "limits": "Validation of the implemented Lua/story/economy/cargo/basic-clock foundation. Not native acceptance for Maenes, finance, RRS or all 24 design requirements; not original-engine source parity. Full engine remains in progress."
+  "limits": "Validation of the implemented Lua/story/economy/cargo/basic-clock and native classic encounter verticals. Full-source Maenes/finance/RRS, programmable AI/transit/people/fitting/boards/jobs/controllers remain incomplete; not original-engine source parity.",
+  "previous_checkpoint": {
+    "commit": "3d858a0229e150b1265744bd93da02316db9e409",
+    "tests_per_lane": 244,
+    "maintained_coverage_percent": 93.09,
+    "note": "Original evidence is retained at that Git commit."
+  },
+  "native_encounter_coverage": {
+    "covered_lines": 258,
+    "total_lines": 264,
+    "percentage": 97.73
+  }
 }

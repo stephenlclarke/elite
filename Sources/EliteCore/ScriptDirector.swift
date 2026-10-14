@@ -14,6 +14,21 @@ struct ScriptEvent: Codable, Sendable, Equatable {
 }
 
 extension Game {
+  var orderedScriptInstances: [UUID] {
+    let priorities = Dictionary(
+      scriptPacks.map { ($0.manifest.stateID + "@" + $0.digest, $0.manifest.priority) },
+      uniquingKeysWith: { first, _ in first })
+    return commander.scriptState.instances.keys.sorted { a, b in
+      let left = commander.scriptState.instances[a]!
+      let right = commander.scriptState.instances[b]!
+      return (
+        priorities[left.definition + "@" + left.digest] ?? 1001, left.definition, a.uuidString
+      )
+        < (
+          priorities[right.definition + "@" + right.digest] ?? 1001, right.definition, b.uuidString
+        )
+    }
+  }
   mutating func observeScriptLocation(wasDocked: Bool, galaxy: Int, system: Int) {
     if galaxy != commander.galaxy || system != commander.system {
       emitScriptEvent("system.entered")
@@ -28,7 +43,9 @@ extension Game {
   }
   func scriptUnavailable(_ pack: ScriptPack) -> String? {
     if !pack.missingCapabilities.isEmpty {
-      return "Requires: " + pack.missingCapabilities.joined(separator: ", ")
+      return "Not available in this build: "
+        + Set(pack.missingCapabilities.map(ScriptCapabilities.playerFeatureName)).sorted().joined(
+          separator: ", ")
     }
     let versions = Set(scriptPacks.map { $0.manifest.id + "@" + $0.manifest.version })
       .union(missionPacks.entries.map { $0.pack.id + "@" + $0.pack.version })
@@ -46,6 +63,11 @@ extension Game {
       "calendar_seconds": .number(commander.scriptState.calendarSeconds),
       "transit_seconds": .number(commander.scriptState.transitSeconds),
     ])
+  }
+  func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
+    var fields = scriptSnapshot.object ?? [:]
+    fields["encounters"] = scriptEncounterSnapshot(instance)
+    return .object(fields)
   }
   mutating func acceptScriptMission(_ pack: ScriptPack, instanceID: UUID = UUID()) throws -> UUID {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
@@ -70,9 +92,9 @@ extension Game {
     return instance.id
   }
   mutating func emitScriptEvent(
-    _ kind: String, values: [String: ScriptValue] = [:], only: UUID? = nil
+    _ kind: String, values: [String: ScriptValue] = [:], only: UUID? = nil, drain: Bool = true
   ) {
-    for id in commander.scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString })
+    for id in orderedScriptInstances
     where only == nil || only == id {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active else {
         continue
@@ -89,9 +111,12 @@ extension Game {
         ScriptEvent(
           sequence: commander.scriptState.nextEvent, kind: kind, instance: id, values: values))
     }
-    drainScriptEvents()
+    if drain { drainScriptEvents() }
   }
   mutating func drainScriptEvents() {
+    guard !scriptDispatching else { return }
+    scriptDispatching = true
+    defer { scriptDispatching = false }
     // Work is bounded per actor turn; suspended facts remain saved for explicit recovery.
     let events = commander.scriptState.pendingEvents.prefix(64)
     for event in events {
@@ -114,22 +139,39 @@ extension Game {
       do {
         let result = try ScriptEvaluator.evaluate(
           source: pack.source, handler: handler.function,
-          event: event.value, snapshot: scriptSnapshot, state: instance.data)
-        var candidate = commander
+          event: event.value, snapshot: scopedScriptSnapshot(instance), state: instance.data)
+        var candidate = self
+        var derivedEvents: [(String, [String: ScriptValue])] = []
         var next = instance
         next.data = result.data
         for command in result.commands {
-          try applyScriptCommand(
-            command, event: event, pack: pack, state: &next, candidate: &candidate)
+          if command["op"]?.string == "encounter.ensure" {
+            guard let fields = command.object, Set(fields.keys) == ["op", "id"],
+              let id = command["id"]?.string
+            else {
+              throw MissionPackError("Encounter request requires only op and declared id.")
+            }
+            derivedEvents.append(try candidate.ensureScriptEncounter(id, pack: pack, state: &next))
+          } else {
+            try applyScriptCommand(
+              command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
+          }
         }
         next.revision += 1
         next.acknowledgedEvents.insert(event.sequence)
-        candidate.scriptState.instances[next.id] = next
-        candidate.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
-        guard candidate.valid else {
+        candidate.commander.scriptState.instances[next.id] = next
+        candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
+        guard candidate.commander.valid else {
           throw MissionPackError("Mission transfer cannot fit the commander or saved state.")
         }
-        commander = candidate
+        let savedBytes = try JSONEncoder().encode(candidate.commander.scriptState)
+        guard savedBytes.count <= 33_554_432 else {
+          throw MissionPackError("Mission save budget exceeded; proposal was not committed.")
+        }
+        self = candidate
+        for (kind, values) in derivedEvents {
+          emitScriptEvent(kind, values: values, only: next.id, drain: false)
+        }
       } catch {
         commander.scriptState.instances[event.instance]?.suspension = error.localizedDescription
         notify("MISSION SUSPENDED - SEE MISSION GALLERY")
@@ -137,19 +179,22 @@ extension Game {
     }
   }
   mutating func advanceScriptClocks(delta: Double, flight: Bool, local: Bool) {
-    guard !commander.scriptState.instances.isEmpty, delta.isFinite, delta > 0, !paused else {
+    guard !commander.scriptState.instances.isEmpty, delta.isFinite, delta > 0, !paused,
+      flight || local
+    else {
       return
     }
     let dt = min(delta, 0.1)
     if local { commander.scriptState.localSeconds += dt }
     if flight { commander.scriptState.flightSeconds += dt }
     // Calendar/transit require explicit native travel admission; no invented wall-time progression.
-    for id in commander.scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+    for id in orderedScriptInstances {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
         instance.suspension == nil
       else { continue }
       for key in instance.timers.keys.sorted() {
         guard var timer = commander.scriptState.instances[id]?.timers[key],
+          (timer.domain == .flight && flight) || (timer.domain == .local && local),
           timer.due <= commander.scriptState.clock(timer.domain)
         else { continue }
         let firedAt = commander.scriptState.clock(timer.domain)
@@ -176,7 +221,7 @@ extension Game {
   }
   mutating func showScriptDialogue() -> Bool {
     guard docked, dockedAtMainStation, scriptOffer == nil else { return false }
-    for id in commander.scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+    for id in orderedScriptInstances {
       guard let state = commander.scriptState.instances[id], state.outcome == .active,
         state.suspension == nil,
         let dialogue = state.dialogue, dialogue.galaxy == commander.galaxy,

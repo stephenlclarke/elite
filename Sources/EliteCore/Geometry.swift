@@ -112,6 +112,8 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var enemyMissile = false
   public var missileSourceID: Int?
   public var destroyedByPlayer: Bool?
+  public var missionActorID: UUID?
+  public var missionInstanceID: UUID?
   public var blackjackIdentity: UUID?
   public var blackjackRole: BlackjackTarget?
   public var blackjackLaserCooldown: Double?

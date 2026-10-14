@@ -234,6 +234,8 @@ public struct Game: Sendable {
   public var paused = false
   public var docked = true
   public var dockedAtMainStation = true
+  var scriptReferenceFrame: ScriptReferenceFrame?
+  var scriptDispatching = false
   public var scriptPacks: [ScriptPack] = []
   public var scriptAvailablePackDigest: String?
   public var scriptOffer: UUID?
@@ -325,6 +327,9 @@ public struct Game: Sendable {
   }
   public mutating func load(_ value: Commander) -> Bool {
     guard value.valid else { return false }
+    // A new commander must never receive destruction rewards from the previous local scene.
+    bodies = []
+    scriptReferenceFrame = nil
     commander = value
     blackjackOffer = nil
     packOffer = nil
@@ -807,6 +812,7 @@ public struct Game: Sendable {
     return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    persistScriptActors(unloading: true)
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -828,8 +834,11 @@ public struct Game: Sendable {
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
+    restoreScriptActors()
   }
   public mutating func dock(atMainStation: Bool = true) {
+    resolveDestroyed()
+    persistScriptActors(unloading: true)
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
     retaliation.clear()
@@ -884,6 +893,8 @@ public struct Game: Sendable {
   }
   public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
   public mutating func arrive() {
+    resolveDestroyed()
+    persistScriptActors(unloading: true)
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -914,11 +925,14 @@ public struct Game: Sendable {
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
+    restoreScriptActors()
   }
   public mutating func galacticJump() {
     guard !docked, commander.equipment.remove("Galactic Hyperdrive") != nil else { return }
+    resolveDestroyed()
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
+    persistScriptActors(unloading: true)
     persistBlackjackTargets()
     commander.galaxy = (commander.galaxy + 1) & 7
     if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
@@ -935,6 +949,12 @@ public struct Game: Sendable {
       return
     }
     for index in bodies.indices { bodies[index].position.z -= 3000 }
+    if !bodies.contains(where: { $0.id == 0 && $0.hull == .station }),
+      var frame = scriptReferenceFrame, frame.galaxy == commander.galaxy,
+      frame.system == commander.system {
+      frame.station.position.z -= 3000
+      scriptReferenceFrame = frame
+    }
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -1023,7 +1043,8 @@ public struct Game: Sendable {
     if commander.unlimitedFuel { commander.fuel = commander.fuelCapacity }
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
-    guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
+    guard !docked, screen != .gameOver, screen != .secret, screen != .help,
+      screen != .title, screen != .demo else { return }
     let craft = commander.performance
     speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
     pitch = controls.pitch * craft.pitch
@@ -1111,6 +1132,7 @@ public struct Game: Sendable {
   }
   private mutating func moveBodies(dt: Double) {
     autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+    advanceScriptReferenceFrame(delta: dt)
     for index in bodies.indices {
       bodies[index].position = bodies[index].position.rotated(
         pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
@@ -1129,13 +1151,16 @@ public struct Game: Sendable {
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
     persistBlackjackTargets()
+    persistScriptActors()
     let departing = bodies.filter { $0.leavesLocalBubble }
     for body in departing {
+      recordScriptActorRemoval(body, destroyed: body.energy <= 0)
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
     }
     bodies.removeAll { $0.leavesLocalBubble }
+    drainScriptEvents()
   }
   private mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {
@@ -1159,6 +1184,7 @@ public struct Game: Sendable {
     }
   }
   mutating func resolveDestroyed() {
+    persistScriptActors()
     let destroyed = bodies.filter { $0.energy <= 0 }
     for body in destroyed
     where body.destroyedByPlayer == true && body.hull != .cargo && body.hull != .asteroid
@@ -1176,11 +1202,13 @@ public struct Game: Sendable {
       if !body.hostile { commander.legal += 8 }
     }
     for body in destroyed {
+      recordScriptActorRemoval(body, destroyed: true)
       missionTargetRemoved(body)
       clearRemovedTarget(body)
       blackjackTargetDestroyed(body)
     }
     bodies.removeAll { $0.energy <= 0 }
+    drainScriptEvents()
     if !bodies.contains(where: { $0.hull == .thargoid }) {
       for index in bodies.indices where bodies[index].hull == .thargon {
         bodies[index].hostile = false
@@ -1207,15 +1235,26 @@ public enum SaveError: Error { case invalidCommander }
 public actor GameRuntime {
   var game: Game
   private var controls = Controls()
-  public init(game: Game = Game()) { self.game = game }
+  let galleryNamespace: URL?
+  public init(game: Game = Game()) {
+    self.game = game
+    galleryNamespace = nil
+  }
+  init(trialGame: Game) {
+    game = trialGame
+    galleryNamespace = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
+      .appendingPathComponent("elite-mission-gallery-" + UUID().uuidString, isDirectory: true)
+  }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     let old = game.screen
     let wasDocked = game.docked
     let oldLocation = (game.commander.galaxy, game.commander.system)
-    if (key == "contacts-open" || (key == "b" && !game.acceptsTextInput)), game.docked, !game.paused,
-      ![Screen.help, .gallery, .handoff, .mission, .showroom, .title, .demo, .gameOver,
-        .secret, .navigation, .rumour].contains(game.screen)
+    if key == "contacts-open" || (key == "b" && !game.acceptsTextInput), game.docked, !game.paused,
+      ![
+        Screen.help, .gallery, .handoff, .mission, .showroom, .title, .demo, .gameOver,
+        .secret, .navigation, .rumour,
+      ].contains(game.screen)
     {
       game.emitScriptEvent("contact.requested")
       if game.showScriptDialogue() || game.offerAvailableScriptMission() {
@@ -1253,16 +1292,26 @@ public actor GameRuntime {
   public func advance(delta: Double) -> Game {
     let wasDocked = game.docked
     let location = (game.commander.galaxy, game.commander.system)
-    let localActive = !game.paused && ![Screen.demo, .title, .gameOver, .gallery, .help].contains(game.screen)
-    let flightActive = localActive && !game.docked && game.screen.isFlight
+    let localActive =
+      !game.paused
+      && ![Screen.demo, .title, .gameOver, .gallery, .help, .navigation].contains(game.screen)
+    let flightActive =
+      localActive && !game.docked
+      && ![Screen.mission, .handoff, .rumour, .showroom, .secret].contains(game.screen)
     game.tick(delta: delta, controls: controls)
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
     game.advanceScriptClocks(delta: delta, flight: flightActive, local: localActive)
+    if localActive && !game.docked {
+      game.persistScriptActors()
+      game.restoreScriptActors()
+    }
     return game
   }
   public func save(to url: URL) throws {
+    try requireGalleryFileAccess(url)
     game.resolveDestroyed()
     game.persistBlackjackTargets()
+    game.persistScriptActors()
     guard game.commander.valid else { throw SaveError.invalidCommander }
     if !game.commander.scriptState.instances.isEmpty {
       try ScriptSaveStore.write(commander: game.commander, world: game.scriptWorldSave, to: url)
@@ -1275,6 +1324,7 @@ public actor GameRuntime {
     try data.write(to: url, options: .atomic)
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
+    try requireGalleryFileAccess(url)
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     if (try? JSONDecoder().decode(ScriptSavePointer.self, from: data)) != nil {
@@ -1297,7 +1347,6 @@ public actor GameRuntime {
     if persistMigrations && game.commander != commander { try save(to: url) }
   }
 }
-
 public enum TradePlanner {
   /// Conservative selling prices account for every possible market fluctuation.
   public static let minimumPrices: [[Int]] = (0..<8).map { economy in
@@ -1307,5 +1356,29 @@ public enum TradePlanner {
       for index in prices.indices { prices[index] = min(prices[index], market[index].price) }
     }
     return prices
+  }
+}
+
+extension Game {
+  var scriptSimulationSave: ScriptSimulationSave {
+    ScriptSimulationSave(
+      randomState: randomState, fireCooldown: fireCooldown, spawnClock: spawnClock,
+      missionLoopCounter: missionLoopCounter, missionSpawnDelay: missionSpawnDelay,
+      ecmFrames: ecmFrames,
+      enemyECMSource: enemyECMSource, missileCooldown: missileCooldown,
+      cabinTemperature: cabinTemperature, altitude: altitude)
+  }
+  mutating func restoreScriptSimulation(_ state: ScriptSimulationSave?) {
+    guard let state else { return }
+    randomState = state.randomState
+    fireCooldown = state.fireCooldown
+    spawnClock = state.spawnClock
+    missionLoopCounter = state.missionLoopCounter
+    missionSpawnDelay = state.missionSpawnDelay
+    ecmFrames = state.ecmFrames
+    enemyECMSource = state.enemyECMSource
+    missileCooldown = state.missileCooldown
+    cabinTemperature = state.cabinTemperature
+    altitude = state.altitude
   }
 }

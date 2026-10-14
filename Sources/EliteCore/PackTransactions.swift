@@ -76,6 +76,7 @@ extension GameRuntime {
   public func installMissionPack(from url: URL, directory: URL = MissionPackLibrary.userDirectory)
     throws
   {
+    guard galleryNamespace == nil else { throw MissionPackError("Install packs in the main game, then start a new Gallery trial.") }
     if (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
       try installScriptPack(from: url, destination: directory.appendingPathComponent("scripted"))
       return

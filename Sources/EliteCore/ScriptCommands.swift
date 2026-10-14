@@ -95,7 +95,11 @@ extension Game {
       state.journal.append(message)
     case "mission.finish":
       guard let outcome = ScriptOutcome(rawValue: try text("outcome")), outcome != .active,
-        outcome != .complete || state.milestones.count == pack.manifest.mission.milestones.count
+        outcome != .complete
+          || (state.milestones.count == pack.manifest.mission.milestones.count
+            && (pack.manifest.mission.requiredDestructionEncounters ?? []).allSatisfy {
+              state.ownedEncounters[$0]?.destroyed == true
+            })
       else {
         throw MissionPackError("Completion requires every declared milestone.")
       }

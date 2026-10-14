@@ -7,6 +7,9 @@ extension GameRuntime {
     for error in library.errors { game.notify(error) }
   }
   public func installScriptPack(from directory: URL, destination: URL) throws {
+    guard galleryNamespace == nil else {
+      throw MissionPackError("Install packs in the main game, then start a new Gallery trial.")
+    }
     let pack = try ScriptPackLibrary.read(directory)
     _ = try ScriptPackLibrary.install(pack, directory: destination)
     if !game.scriptPacks.contains(where: { $0.digest == pack.digest }) {
@@ -39,7 +42,7 @@ extension GameRuntime {
     trial.scriptPacks = game.scriptPacks
     let id = try trial.acceptScriptMission(pack)
     trial.commander.scriptState.instances[id]?.randomState = seed
-    return GameRuntime(game: trial)
+    return GameRuntime(trialGame: trial)
   }
 }
 
@@ -75,6 +78,26 @@ extension GameRuntime {
       {
         // The expected protected failure must release the VM and any proposal buffer.
       }
+    }
+  }
+}
+
+extension GameRuntime {
+  public func gallerySaveDirectory() -> URL? { galleryNamespace }
+  func requireGalleryFileAccess(_ url: URL) throws {
+    guard let namespace = galleryNamespace else { return }
+    let ownedRoot = namespace.standardizedFileURL.path
+    guard namespace.resolvingSymlinksInPath().standardizedFileURL.path == ownedRoot else {
+      throw MissionPackError(
+        "The Gallery save folder has changed. Start a new trial to save safely.")
+    }
+    let root = ownedRoot + "/"
+    let target = url.resolvingSymlinksInPath().standardizedFileURL.path
+    let chunks = url.appendingPathExtension("missions").resolvingSymlinksInPath()
+      .standardizedFileURL.path
+    guard target.hasPrefix(root), chunks.hasPrefix(root) else {
+      throw MissionPackError(
+        "Gallery trials use their own save folder and cannot replace production commanders.")
     }
   }
 }
