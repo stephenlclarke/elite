@@ -33,9 +33,9 @@ class ShipReferenceTests(unittest.TestCase):
 
     def test_all_runtime_definitions_include_geometry_and_preserve_source_profiles(self):
         ships=reference.ship_files.read_ships()
-        self.assertEqual(len(ships),167)
-        self.assertEqual(sum('game' in s for s in ships),158)
-        self.assertEqual(sum('recipe' in s['design'] for s in ships),93)
+        self.assertEqual(len(ships),168)
+        self.assertEqual(sum('game' in s for s in ships),159)
+        self.assertEqual(sum('recipe' in s['design'] for s in ships),94)
         originals=[]
         for ship in ships:
             design=ship['design'];vertices=design['vertices']

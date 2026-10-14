@@ -13863,3 +13863,41 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
+
+<a id="sh171"></a>
+
+## SH171 - Liberator DSV2
+
+**Design:** Right-On Commander Liberator interpretation; visual references in docs/LIBERATOR.md; MIT.
+
+Project renderer envelope units, not a canonical length or SI docking measurement. Visual reference and chosen native mechanics: docs/LIBERATOR.md.
+
+**Appearances:** Blake's 7; DSV2; Liberator; **evidence:** Three radial nacelles, pointed bows and aft green sphere; Tony Gardner visual reference.
+
+Original project interpretation: liberator-dsv2 family, individual sweep/components/envelope. Full authored geometry and recipe are embedded in the TOML. No gameplay statistic was inferred from the invented shape.
+
+[Liberator visual references, palette and chosen native mechanics](LIBERATOR.md). Three radial nacelles, forward probes and an aft green engine; no external artwork or model asset is redistributed.
+
+### Liberator native refit
+
+Project gameplay adaptation; visual references do not establish numeric combat, cargo or price specifications.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 120 t | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Top speed | 36.6 speed | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Acceleration | 9.0 speed/s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Energy | 1024.0 energy | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Energy recharge | 4.0 energy/s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Roll | 0.4 rad/s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Pitch | 0.5 rad/s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Yaw | 0.45 rad/s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Shields (each) | 510.0 energy | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Shield recharge | 2.0 energy/s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Fuel capacity | 140 0.1 LY | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Base jump | 7.0 LY | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Jump charge | 15.0 s | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Missile pylons | 8 pylons | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Laser facing mask | 15 bit mask | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Cargo expansion | 15 t | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |
+| Hull price | 415000 CR | project adaptation; Chosen gameplay balance; not a canonical television specification. See docs/LIBERATOR.md. |

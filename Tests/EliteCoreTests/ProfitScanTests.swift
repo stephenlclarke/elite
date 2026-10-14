@@ -65,7 +65,7 @@ import Testing
   let ranks = game.profitDestinations
   #expect(!ranks.isEmpty)
   let frame = Display.map(game, width: 1512, height: 900)
-  #expect(frame.labels.contains { $0.text == "1" })
+  #expect(frame.labels.contains { $0.text == "1 " + game.systems[ranks[0].systemID].name })
   game.screen = .navigation
   game.key("p")
   #expect(!game.commander.profitScanEnabled)

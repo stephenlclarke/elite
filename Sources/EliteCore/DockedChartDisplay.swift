@@ -3,7 +3,7 @@ import Foundation
 extension Display {
   static func dockedMapDetails(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
     let x = layout.wide ? layout.width - 300 : 16
-    let y = layout.wide ? 96.0 : layout.plot.maxY + 12
+    let y = layout.detailsTop
     let bottom = layout.height - (layout.wide ? 48 : 126)
     let diameter = layout.wide ? 0.0 : min(140, bottom - y - 24)
     let factsWidth = layout.wide ? 284 : layout.width - 48 - max(0, diameter) - 16
@@ -42,7 +42,7 @@ extension Display {
     let layout = ChartLayout(
       width: game.viewportWidth, height: game.viewportHeight, local: game.screen == .shortChart,
       fuel: game.commander.fuel, docked: game.docked)
-    let y = layout.wide ? 96.0 : layout.plot.maxY + 12
+    let y = layout.detailsTop
     let bottom = layout.height - (layout.wide ? 48 : 126)
     let diameter = layout.wide ? 0.0 : min(140, bottom - y - 24)
     let factsWidth = layout.wide ? 284 : layout.width - 48 - max(0, diameter) - 16
@@ -79,4 +79,8 @@ extension Display {
       (game.mapIsCurrentGalaxy ? "N: navigation routes" : "Routes: current galaxy only", .cyan))
     return rows
   }
+}
+
+extension ChartLayout {
+  var detailsTop: Double { wide ? 96 : plot.maxY + (local ? 72 : 12) }
 }

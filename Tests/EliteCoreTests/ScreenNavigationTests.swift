@@ -81,7 +81,7 @@ import Testing
   #expect(frame.shipPanels.isEmpty && frame.labels.contains { $0.text.contains("No matches") })
   game.key("escape")
   game.key("x")
-  #expect(game.showroomShips.count == 167)
+  #expect(game.showroomShips.count == 168)
   game.key("return")
   for _ in 0..<200 { game.key("pagedown") }
   let bottom = game.showroom.scroll

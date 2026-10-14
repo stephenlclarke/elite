@@ -72,7 +72,7 @@ public struct ChartLayout: Sendable {
     font = GameTypography.scale
     let wideFooter = local ? 276.0 : 226.0
     let flightNarrowFooter = local ? 320.0 : 270.0
-    let narrowFooter = docked ? 380.0 : flightNarrowFooter
+    let narrowFooter = docked ? (local ? 440.0 : 380.0) : flightNarrowFooter
     plot = .init(
       x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
       height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
@@ -234,10 +234,12 @@ extension Display {
     let visible = game.mapSystems.filter {
       layout.plot.contains(layout.point($0, current: game.currentSystem))
     }
-    let ranks = game.mapIsCurrentGalaxy
-      ? Dictionary(uniqueKeysWithValues: game.profitDestinations.enumerated().map {
-        ($0.element.systemID, $0.offset + 1)
-      }) : [:]
+    let ranks =
+      game.mapIsCurrentGalaxy
+      ? Dictionary(
+        uniqueKeysWithValues: game.profitDestinations.enumerated().map {
+          ($0.element.systemID, $0.offset + 1)
+        }) : [:]
     let markerBoxes = visible.map { system -> CanvasRect in
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 3)
@@ -247,10 +249,8 @@ extension Display {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
-      if let rank = ranks[system.id] {
+      if ranks[system.id] != nil {
         frame.ellipse(point.x, point.y, radius + 7, radius + 7, .gold)
-        frame.label(String(rank), point.x - 3 * layout.font, point.y - 3.5 * layout.font,
-          scale: layout.font, ink: .yellow)
       }
       if game.mapIsCurrentGalaxy && system.id == game.commander.system {
         frame.ellipse(point.x, point.y, radius + 3, radius + 3, .cyan)
@@ -280,7 +280,7 @@ extension Display {
     for system in labelled {
       chartLabel(
         system, game: game, layout: layout, markerBoxes: markerBoxes, occupied: &occupied,
-        into: &frame)
+        rank: ranks[system.id], into: &frame)
     }
     if game.docked {
       dockedMapDetails(game, layout: layout, into: &frame)
@@ -289,7 +289,7 @@ extension Display {
     }
     mapLegend(game, layout: layout, into: &frame)
     frame.label(
-      "Arrows: planet  P: profit scan  O: current  Esc: back", 16, height - 20,
+      "Left/Right: planet  P: scan  O: current  Esc: back  K: help", 16, height - 20,
       scale: layout.font, ink: .cyan)
     if game.messageTime > 0 {
       frame.label(game.message, 16, height - 40, scale: layout.font, ink: .orange)
@@ -299,11 +299,12 @@ extension Display {
   }
   private static func chartLabel(
     _ system: StarSystem, game: Game, layout: ChartLayout, markerBoxes: [CanvasRect],
-    occupied: inout [CanvasRect], into frame: inout Frame
+    occupied: inout [CanvasRect], rank: Int? = nil, into frame: inout Frame
   ) {
     let point = layout.point(system, current: game.currentSystem)
     let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 14 : 6)
-    let width = Double(system.name.count) * 6 * layout.font
+    let text = rank.map { "\($0) " + system.name } ?? system.name
+    let width = Double(text.count) * 6 * layout.font
     let height = 7 * layout.font
     let candidates = [
       CanvasRect(x: point.x + radius, y: point.y - height / 2, width: width, height: height),
@@ -319,7 +320,7 @@ extension Display {
       })
     else { return }
     occupied.append(box)
-    frame.label(system.name, box.x, box.y, scale: layout.font)
+    frame.label(text, box.x, box.y, scale: layout.font, ink: rank == nil ? .white : .gold)
   }
   private static func mapDetails(_ game: Game, layout: ChartLayout, into frame: inout Frame) {
     let system = game.mapTargetSystem

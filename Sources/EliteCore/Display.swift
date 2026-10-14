@@ -242,11 +242,12 @@ public enum Display {
       demonstration.bodies[index].rotation = game.time * 0.7
     }
     for body in demonstration.bodies { draw(body, game: demonstration, into: &frame) }
-    let lines = [
-      "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
-      "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
-      BuildIdentity.current.versionLine, BuildIdentity.repository,
-    ] + BuildIdentity.current.legacyRevisionLines
+    let lines =
+      [
+        "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
+        "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
+        BuildIdentity.current.versionLine, BuildIdentity.repository,
+      ] + BuildIdentity.current.legacyRevisionLines
 
     let speed = Double(250 + lines.count * 24) / 11
     for (index, line) in lines.enumerated() {
@@ -336,9 +337,14 @@ public enum Display {
       guard normal.dot(a) < 0 else { continue }
       visibleFaces.insert(entry.index)
       if game.commander.shipDisplayStyle == .shadedPanels {
+        let material =
+          mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
-          colour: ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
+          colour: material.map {
+            ShipProjection.shade($0.colour, normal: normal, emissive: $0.emissive)
+          }
+            ?? ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
         continue
       }
       let ink: Ink =

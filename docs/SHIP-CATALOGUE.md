@@ -64,7 +64,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2682.5 |
 | Trade-in (CR) | 174000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 42 faces |
+| Design | 3142 vertices; 2245 faces |
 
 ## SH003 - Alliance Chieftain
 
@@ -94,7 +94,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2448.3 |
 | Trade-in (CR) | 169500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 56 vertices; 44 faces |
+| Design | 3094 vertices; 2135 faces |
 
 ## SH004 - Alliance Crusader
 
@@ -124,7 +124,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2491.0 |
 | Trade-in (CR) | 168000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 38 faces |
+| Design | 3410 vertices; 2323 faces |
 
 ## SH005 - Anaconda
 
@@ -184,7 +184,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 36 faces |
+| Design | 2466 vertices; 1615 faces |
 
 ## SH007 - Argent's Quest
 
@@ -214,7 +214,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2018.0 |
 | Trade-in (CR) | 846000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 40 vertices; 40 faces |
+| Design | 1902 vertices; 1275 faces |
 
 ## SH008 - Asp Explorer
 
@@ -304,7 +304,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 60 vertices; 48 faces |
+| Design | 2158 vertices; 1443 faces |
 
 ## SH011 - Asp Scout
 
@@ -334,7 +334,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1597.0 |
 | Trade-in (CR) | 115500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 56 vertices; 56 faces |
+| Design | 2054 vertices; 1383 faces |
 
 ## SH012 - Beluga Liner
 
@@ -364,7 +364,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2894.3 |
 | Trade-in (CR) | 166500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 66 vertices; 53 faces |
+| Design | 652 vertices; 754 faces |
 
 ## SH013 - Boa
 
@@ -514,7 +514,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 48 vertices; 52 faces |
+| Design | 1844 vertices; 1243 faces |
 
 ## SH018 - Caiman
 
@@ -544,7 +544,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 36 faces |
+| Design | 2308 vertices; 1647 faces |
 
 ## SH019 - Caspian Explorer
 
@@ -574,7 +574,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 4563.5 |
 | Trade-in (CR) | 240000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 40 vertices; 40 faces |
+| Design | 3692 vertices; 2420 faces |
 
 ## SH020 - Cat prototype
 
@@ -724,7 +724,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1533.0 |
 | Trade-in (CR) | 103500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 36 vertices; 32 faces |
+| Design | 2088 vertices; 1459 faces |
 
 ## SH025 - Cobra Mk V
 
@@ -754,7 +754,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1916.0 |
 | Trade-in (CR) | 123000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 36 vertices; 38 faces |
+| Design | 2296 vertices; 1579 faces |
 
 ## SH026 - Constrictor
 
@@ -814,7 +814,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 64 vertices; 48 faces |
+| Design | 1798 vertices; 1229 faces |
 
 ## SH028 - Coriolis station
 
@@ -855,7 +855,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2650.1 |
 | Trade-in (CR) | 180750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 48 vertices; 52 faces |
+| Design | 1780 vertices; 1197 faces |
 
 ## SH030 - Cougar
 
@@ -885,7 +885,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1594.0 |
 | Trade-in (CR) | 105000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 36 faces |
+| Design | 1800 vertices; 1231 faces |
 
 ## SH031 - Delta
 
@@ -915,7 +915,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 40 vertices; 40 faces |
+| Design | 1906 vertices; 1275 faces |
 
 ## SH032 - Diamondback Explorer
 
@@ -945,7 +945,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1660.2 |
 | Trade-in (CR) | 106500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 26 vertices; 22 faces |
+| Design | 2310 vertices; 1557 faces |
 
 ## SH033 - Diamondback Scout
 
@@ -975,7 +975,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1469.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 42 faces |
+| Design | 2230 vertices; 1509 faces |
 
 ## SH034 - Dodo station
 
@@ -1016,7 +1016,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1255.9 |
 | Trade-in (CR) | 95250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 84 vertices; 62 faces |
+| Design | 532 vertices; 682 faces |
 
 ## SH036 - Drake
 
@@ -1046,7 +1046,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 36 vertices; 32 faces |
+| Design | 2016 vertices; 1357 faces |
 
 ## SH037 - Eagle Mk I
 
@@ -1196,7 +1196,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 42 vertices; 40 faces |
+| Design | 1290 vertices; 918 faces |
 
 ## SH042 - Falcon
 
@@ -1226,7 +1226,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1510 vertices; 1113 faces |
 
 ## SH043 - Farragut-class Battle Cruiser
 
@@ -1256,7 +1256,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 5518.0 |
 | Trade-in (CR) | 6398250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 120 vertices; 84 faces |
+| Design | 4920 vertices; 3171 faces |
 
 ## SH044 - Federal Assault Ship
 
@@ -1286,7 +1286,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2363.0 |
 | Trade-in (CR) | 158250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 38 faces |
+| Design | 2868 vertices; 1895 faces |
 
 ## SH045 - Federal Corvette
 
@@ -1316,7 +1316,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 4967.5 |
 | Trade-in (CR) | 225000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 48 vertices; 40 faces |
+| Design | 3324 vertices; 2169 faces |
 
 ## SH046 - Federal Dropship
 
@@ -1346,7 +1346,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2427.0 |
 | Trade-in (CR) | 180750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 42 faces |
+| Design | 2852 vertices; 1885 faces |
 
 ## SH047 - Federal Gunship
 
@@ -1376,7 +1376,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2980.4 |
 | Trade-in (CR) | 157500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 56 vertices; 44 faces |
+| Design | 2932 vertices; 1943 faces |
 
 ## SH048 - Fer-de-Lance
 
@@ -1586,7 +1586,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1472 vertices; 1090 faces |
 
 ## SH055 - Gyr
 
@@ -1616,7 +1616,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 40 vertices; 40 faces |
+| Design | 1786 vertices; 1219 faces |
 
 ## SH056 - Harrier
 
@@ -1646,7 +1646,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 38 vertices; 38 faces |
+| Design | 1426 vertices; 1065 faces |
 
 ## SH057 - Harris Fighter
 
@@ -1676,7 +1676,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 42 faces |
+| Design | 1770 vertices; 1205 faces |
 
 ## SH058 - Hauler
 
@@ -1706,7 +1706,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 788.1 |
 | Trade-in (CR) | 78000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 94 vertices; 73 faces |
+| Design | 2352 vertices; 1598 faces |
 
 ## SH059 - Hawk Airfighter
 
@@ -1736,7 +1736,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 50 vertices; 44 faces |
+| Design | 1258 vertices; 969 faces |
 
 ## SH060 - Hognose
 
@@ -1826,7 +1826,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2171.5 |
 | Trade-in (CR) | 203250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 42 faces |
+| Design | 1256 vertices; 1084 faces |
 
 ## SH063 - Imperial Courier
 
@@ -1886,7 +1886,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 5318.3 |
 | Trade-in (CR) | 318750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 38 faces |
+| Design | 1456 vertices; 1280 faces |
 
 ## SH065 - Imperial Eagle
 
@@ -1916,7 +1916,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1022.0 |
 | Trade-in (CR) | 80250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 42 vertices; 40 faces |
+| Design | 360 vertices; 450 faces |
 
 ## SH066 - Imperial Explorer
 
@@ -2006,7 +2006,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1884.6 |
 | Trade-in (CR) | 159750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 104 vertices; 82 faces |
+| Design | 2352 vertices; 1598 faces |
 
 ## SH069 - Kestrel Airfighter
 
@@ -2036,7 +2036,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 42 vertices; 40 faces |
+| Design | 1296 vertices; 989 faces |
 
 ## SH070 - Kestrel Mk II
 
@@ -2066,7 +2066,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2095.7 |
 | Trade-in (CR) | 87000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1338 vertices; 1013 faces |
 
 ## SH071 - Krait
 
@@ -2126,7 +2126,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2383.8 |
 | Trade-in (CR) | 195000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 38 faces |
+| Design | 2846 vertices; 1899 faces |
 
 ## SH073 - Krait Phantom
 
@@ -2156,7 +2156,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2107.0 |
 | Trade-in (CR) | 199500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 48 vertices; 40 faces |
+| Design | 2788 vertices; 1821 faces |
 
 ## SH074 - Lanner
 
@@ -2186,7 +2186,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1640.0 |
 | Trade-in (CR) | 192750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 112 vertices; 86 faces |
+| Design | 2642 vertices; 1768 faces |
 
 ## SH075 - Lanner II
 
@@ -2216,7 +2216,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1776.0 |
 | Trade-in (CR) | 226500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 80 vertices; 62 faces |
+| Design | 2838 vertices; 1924 faces |
 
 ## SH076 - Lifter
 
@@ -2276,7 +2276,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2018.0 |
 | Trade-in (CR) | 846000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 48 vertices; 52 faces |
+| Design | 2204 vertices; 1565 faces |
 
 ## SH078 - Long Range Cruiser
 
@@ -2306,7 +2306,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 3518.0 |
 | Trade-in (CR) | 3225750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 98 vertices; 69 faces |
+| Design | 5120 vertices; 3293 faces |
 
 ## SH079 - Lynx Bulk Carrier
 
@@ -2336,7 +2336,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 3518.0 |
 | Trade-in (CR) | 3225750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 120 vertices; 84 faces |
+| Design | 4376 vertices; 2835 faces |
 
 ## SH080 - Lynx Highliner
 
@@ -2366,7 +2366,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 118 vertices; 87 faces |
+| Design | 4872 vertices; 3137 faces |
 
 ## SH081 - Majestic-class Interdictor
 
@@ -2396,7 +2396,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 5518.0 |
 | Trade-in (CR) | 6398250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 92 vertices; 66 faces |
+| Design | 4890 vertices; 3131 faces |
 
 ## SH082 - Mamba
 
@@ -2456,7 +2456,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2469.2 |
 | Trade-in (CR) | 163500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 56 vertices; 44 faces |
+| Design | 2080 vertices; 1500 faces |
 
 ## SH084 - Mantis
 
@@ -2486,7 +2486,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 36 vertices; 32 faces |
+| Design | 1912 vertices; 1295 faces |
 
 ## SH085 - Merlin
 
@@ -2516,7 +2516,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 42 vertices; 40 faces |
+| Design | 1384 vertices; 1041 faces |
 
 ## SH086 - Moccasin
 
@@ -2696,7 +2696,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 40 vertices; 28 faces |
+| Design | 1964 vertices; 1360 faces |
 
 ## SH092 - Ophidian
 
@@ -2756,7 +2756,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2255.8 |
 | Trade-in (CR) | 139500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 72 vertices; 56 faces |
+| Design | 620 vertices; 734 faces |
 
 ## SH094 - Osprey Attack Fighter
 
@@ -2786,7 +2786,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1594 vertices; 1161 faces |
 
 ## SH095 - Osprey X
 
@@ -2876,7 +2876,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 4385.9 |
 | Trade-in (CR) | 404250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 90 vertices; 71 faces |
+| Design | 4324 vertices; 2800 faces |
 
 ## SH098 - Puma Clipper
 
@@ -2966,7 +2966,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 3309.0 |
 | Trade-in (CR) | 143250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 44 faces |
+| Design | 2188 vertices; 1557 faces |
 
 ## SH101 - Racer
 
@@ -2996,7 +2996,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 56 vertices; 46 faces |
+| Design | 1528 vertices; 1062 faces |
 
 ## SH102 - Rock hermit
 
@@ -3037,7 +3037,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 50 vertices; 44 faces |
+| Design | 1246 vertices; 957 faces |
 
 ## SH104 - Salamander
 
@@ -3127,7 +3127,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 94 vertices; 73 faces |
+| Design | 2488 vertices; 1678 faces |
 
 ## SH107 - Sidewinder
 
@@ -3187,7 +3187,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 39 faces |
+| Design | 1912 vertices; 1295 faces |
 
 ## SH109 - Spar
 
@@ -3217,7 +3217,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 30 vertices; 24 faces |
+| Design | 1922 vertices; 1287 faces |
 
 ## SH110 - Stowmaster
 
@@ -3247,7 +3247,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1594 vertices; 1161 faces |
 
 ## SH111 - Taipan
 
@@ -3277,7 +3277,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 50 vertices; 44 faces |
+| Design | 1470 vertices; 1089 faces |
 
 ## SH112 - Thargoid Basilisk
 
@@ -3307,7 +3307,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 52 vertices; 63 faces |
+| Design | 1100 vertices; 2128 faces |
 
 ## SH113 - Thargoid Berserker
 
@@ -3337,7 +3337,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 60 vertices; 72 faces |
+| Design | 764 vertices; 1504 faces |
 
 ## SH114 - Thargoid Cyclops
 
@@ -3367,7 +3367,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 68 vertices; 81 faces |
+| Design | 1100 vertices; 2128 faces |
 
 ## SH115 - Thargoid Glaive
 
@@ -3397,7 +3397,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 50 faces |
+| Design | 792 vertices; 1552 faces |
 
 ## SH116 - Thargoid Hydra
 
@@ -3427,7 +3427,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 55 faces |
+| Design | 1100 vertices; 2128 faces |
 
 ## SH117 - Thargoid Inciter
 
@@ -3457,7 +3457,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 54 vertices; 64 faces |
+| Design | 764 vertices; 1504 faces |
 
 ## SH118 - Thargoid Marauder
 
@@ -3487,7 +3487,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 62 vertices; 73 faces |
+| Design | 764 vertices; 1504 faces |
 
 ## SH119 - Thargoid Medusa
 
@@ -3517,7 +3517,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 70 vertices; 82 faces |
+| Design | 1100 vertices; 2128 faces |
 
 ## SH120 - Thargoid Orthrus
 
@@ -3547,7 +3547,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 40 vertices; 47 faces |
+| Design | 1100 vertices; 2128 faces |
 
 ## SH121 - Thargoid Regenerator
 
@@ -3577,7 +3577,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 48 vertices; 56 faces |
+| Design | 816 vertices; 1600 faces |
 
 ## SH122 - Thargoid Scythe
 
@@ -3607,7 +3607,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2006.0 |
 | Trade-in (CR) | 167250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 56 vertices; 65 faces |
+| Design | 792 vertices; 1552 faces |
 
 ## SH123 - Thargoid Titan
 
@@ -3637,7 +3637,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 6206.0 |
 | Trade-in (CR) | 766500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 64 vertices; 74 faces |
+| Design | 1178 vertices; 2280 faces |
 
 ## SH124 - Thargoid warship
 
@@ -3727,7 +3727,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 44 vertices; 36 faces |
+| Design | 2320 vertices; 1659 faces |
 
 ## SH127 - Tiger Trader
 
@@ -3817,7 +3817,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 4045.3 |
 | Trade-in (CR) | 419250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 72 vertices; 58 faces |
+| Design | 3578 vertices; 2430 faces |
 
 ## SH130 - Type-11 Prospector
 
@@ -3847,7 +3847,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2947.8 |
 | Trade-in (CR) | 208500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 94 vertices; 73 faces |
+| Design | 2616 vertices; 1765 faces |
 
 ## SH131 - Type-6 Transporter
 
@@ -3877,7 +3877,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1277.8 |
 | Trade-in (CR) | 143250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 116 vertices; 88 faces |
+| Design | 1720 vertices; 1240 faces |
 
 ## SH132 - Type-7 Transporter
 
@@ -3907,7 +3907,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2161.5 |
 | Trade-in (CR) | 258000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 68 vertices; 56 faces |
+| Design | 2464 vertices; 1672 faces |
 
 ## SH133 - Type-8 Transporter
 
@@ -3937,7 +3937,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2968.2 |
 | Trade-in (CR) | 336750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 90 vertices; 71 faces |
+| Design | 2736 vertices; 1809 faces |
 
 ## SH134 - Type-9 Heavy
 
@@ -3967,7 +3967,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 3066.0 |
 | Trade-in (CR) | 504750.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 112 vertices; 86 faces |
+| Design | 3322 vertices; 2266 faces |
 
 ## SH135 - Urutu
 
@@ -3997,7 +3997,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 64 vertices; 48 faces |
+| Design | 1674 vertices; 1149 faces |
 
 ## SH136 - Viper
 
@@ -4057,7 +4057,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 42 vertices; 40 faces |
+| Design | 1692 vertices; 1157 faces |
 
 ## SH138 - Viper Mk III
 
@@ -4087,7 +4087,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1266.7 |
 | Trade-in (CR) | 90000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1700 vertices; 1161 faces |
 
 ## SH139 - Viper Mk IV
 
@@ -4117,7 +4117,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1724.2 |
 | Trade-in (CR) | 116250.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 50 vertices; 44 faces |
+| Design | 1850 vertices; 1263 faces |
 
 ## SH140 - Vulture
 
@@ -4147,7 +4147,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 2191.3 |
 | Trade-in (CR) | 96000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 38 vertices; 38 faces |
+| Design | 1836 vertices; 1277 faces |
 
 ## SH141 - Wheel station
 
@@ -4158,7 +4158,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Game specification | Value |
 | --- | --- |
 | Player availability | Display object; not flyable |
-| Design | 240 vertices; 178 faces |
+| Design | 3368 vertices; 1872 faces |
 
 ## SH142 - Wolf Mk II
 
@@ -4248,7 +4248,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1598.0 |
 | Trade-in (CR) | 112500.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 36 vertices; 32 faces |
+| Design | 2172 vertices; 1443 faces |
 
 ## SH145 - XG7 Trident
 
@@ -4278,7 +4278,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 42 vertices; 40 faces |
+| Design | 1042 vertices; 812 faces |
 
 ## SH146 - XG8 Javelin
 
@@ -4308,7 +4308,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 46 vertices; 42 faces |
+| Design | 1094 vertices; 848 faces |
 
 ## SH147 - XG9 Lance
 
@@ -4338,7 +4338,7 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Power index | 1330.0 |
 | Trade-in (CR) | 93000.0 |
 | Operating crew | 1 (project solo automation) |
-| Design | 50 vertices; 44 faces |
+| Design | 1130 vertices; 864 faces |
 
 ## SH148 - Stealth Barracuda
 
@@ -4844,3 +4844,33 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Trade-in (CR) | 110250.0 |
 | Operating crew | 1 (project solo automation) |
 | Design | 118 vertices; 164 faces |
+
+## SH171 - Liberator DSV2
+
+![Rotating Liberator DSV2](ships/SH171.gif)
+
+**Class:** Deep-space cruiser | [Definition](../Sources/EliteCore/Resources/Ships/SH171.toml) | [Provenance](SHIP-PROVENANCE.md#sh171)
+
+| Game specification | Value |
+| --- | --- |
+| Cargo (t) | 120 |
+| Top speed | 36.6 |
+| Acceleration (speed/s) | 9.0 |
+| Energy capacity | 1024.0 |
+| Energy recharge /s | 4.0 |
+| Roll (rad/s) | 0.4 |
+| Pitch (rad/s) | 0.5 |
+| Yaw (rad/s) | 0.5 |
+| Each shield | 510.0 |
+| Shield recharge /s | 2.0 |
+| Fuel tank (LY) | 14.0 |
+| Base jump (LY) | 7.0 |
+| Jump charge (s) | 15.0 |
+| Missile pylons | 8 |
+| Laser mounts | Front, Rear, Left, Right |
+| Cargo bay upgrade (t) | 15 |
+| Hull price (CR) | 415,000 |
+| Power index | 3196.0 |
+| Trade-in (CR) | 311250.0 |
+| Operating crew | 1 (project solo automation) |
+| Design | 3868 vertices; 3134 faces |

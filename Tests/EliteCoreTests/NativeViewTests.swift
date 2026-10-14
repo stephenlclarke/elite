@@ -258,13 +258,14 @@ struct NativeViewTests {
       let data = try #require(image.dataProvider?.data)
       let bytes = try #require(CFDataGetBytePtr(data))
       return stride(from: 0, to: CFDataGetLength(data), by: 4).filter {
-        bytes[$0 + 1] > 20 && bytes[$0 + 2] > 20 && bytes[$0] < bytes[$0 + 1] / 2
+        let channels = [Int(bytes[$0]), Int(bytes[$0 + 1]), Int(bytes[$0 + 2])]
+        return channels.max()! > 20 && channels.max()! - channels.min()! > 20
       }.count
     }
     let lines = try colouredPixels(wire)
     let panels = try colouredPixels(shaded)
     #expect(lines > 100)
-    // Source triangulation creates denser wireframes than the former primitive.
+    // Filled material colour covers more area than lines, regardless of livery hue.
     #expect(panels > lines)
     #expect(shaded.width == 512 && shaded.height == 512)
   }

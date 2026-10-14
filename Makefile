@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check mission-packs-check package-macos sonar ci
+.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos sonar ci
 help:
-	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check mission-packs-check package-macos sonar ci'
+	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos sonar ci'
 build:
 	swift build
 run:
@@ -32,6 +32,10 @@ showroom-import:
 	python3 Tools/showroom/build-catalogue.py --models "$(SHOWROOM_MODELS)" --expansions "$(SHOWROOM_EXPANSIONS)" $(if $(SHOWROOM_MODEL_CACHE),--model-cache "$(SHOWROOM_MODEL_CACHE)")
 showroom-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'
+hull-designs:
+	python3 Tools/showroom/refine-catalogue.py
+liberator-design:
+	python3 Tools/showroom/liberator-design.py
 sonar:
 	./script/sonar.sh
 mission-packs-check:
