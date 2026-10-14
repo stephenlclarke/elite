@@ -8,6 +8,7 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  public var ownedEquipment: OwnedEquipmentInventory?
   private var savedAccommodation: ShipAccommodation?
   public var accommodation: ShipAccommodation {
     get { savedAccommodation ?? ShipAccommodation() }
@@ -16,7 +17,7 @@ public struct Commander: Sendable, Equatable, Codable {
   private var savedScriptState: ScriptEngineState?
   public var scriptState: ScriptEngineState {
     get { savedScriptState ?? ScriptEngineState() }
-    set { savedScriptState = newValue }
+    set { savedScriptState = newValue == ScriptEngineState() ? nil : newValue }
   }
   private var savedMissionProgress: [String: MissionProgress]?
   public var missionProgress: [String: MissionProgress] {
@@ -163,7 +164,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
-      && scriptState.valid && accommodationValid
+      && scriptState.valid && accommodationValid && ownedEquipmentValid && issuedEquipmentValid
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -405,8 +406,10 @@ public struct Game: Sendable {
     return true
   }
   public mutating func key(_ raw: String) {
+    defer { commander.synchronizeEquipmentInventory() }
     let key = raw.lowercased()
     if interfaceKey(key) { return }
+    if ownedEquipmentKey(key) { return }
     if !docked && screen.isFlight {
       switch key {
       case "r", "tab":
@@ -701,7 +704,10 @@ public struct Game: Sendable {
     let before = commander
     let oldShields = (frontShield, rearShield)
     defer {
-      if !commander.accommodation.fitted.isEmpty && !commander.valid {
+      commander.synchronizeEquipmentInventory()
+      if (!commander.accommodation.fitted.isEmpty || commander.ownedEquipment != nil)
+        && !commander.valid
+      {
         commander = before
         frontShield = oldShields.0
         rearShield = oldShields.1
@@ -799,6 +805,7 @@ public struct Game: Sendable {
         rearShield = rearShield / oldCapacity * commander.shieldCapacity
       } else {
         if item.name == Equipment.navalEnergyUnit {
+          commander.storeOwnedModules(["Extra Energy Unit"], keeping: Equipment.navalEnergyUnit)
           commander.equipment.remove("Extra Energy Unit")
         }
         commander.equipment.insert(item.name)
@@ -998,7 +1005,10 @@ public struct Game: Sendable {
     restoreScriptActors()
   }
   public mutating func galacticJump() {
+    let spent = ownedFittedGear(named: "Galactic Hyperdrive")
     guard !docked, commander.equipment.remove("Galactic Hyperdrive") != nil else { return }
+    commander.synchronizeEquipmentInventory()
+    recordOwnedGearConsumption(spent)
     resolveDestroyed()
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
@@ -1036,7 +1046,11 @@ public struct Game: Sendable {
           && (weaponsTargetID == nil || body.id == weaponsTargetID)
       })
     else { return false }
+    let spent = commander.ownedEquipment?.fitted.first {
+      $0.fittedSlot == .pylon(commander.missiles - 1)
+    }
     if !commander.unlimitedMissiles { commander.missiles -= 1 }
+    commander.synchronizeEquipmentInventory()
     missileCooldown = 1
     if bodies[target].ecmEnabled {
       var missile = SpaceBody(id: nextBodyID, hull: .missile, position: .init(0, 0, 24))
@@ -1049,6 +1063,7 @@ public struct Game: Sendable {
     }
     notify("MISSILE AWAY", voiced: !retaliating)
     missileArmed = false
+    if !commander.unlimitedMissiles { recordOwnedGearConsumption(spent) }
     return true
   }
   public mutating func ecm() {
@@ -1068,23 +1083,29 @@ public struct Game: Sendable {
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
+    let spent = ownedFittedGear(named: "Energy Bomb")
     guard !docked, commander.equipment.remove("Energy Bomb") != nil else { return }
+    commander.synchronizeEquipmentInventory()
     for index in bodies.indices where !bodies[index].hull.bombImmune {
       bodies[index].energy = 0
       bodies[index].destroyedByPlayer = true
     }
     notify("ENERGY BOMB")
+    recordOwnedGearConsumption(spent)
   }
   public mutating func escapePod() {
+    let spent = ownedFittedGear(named: "Escape Pod")
     guard !commander.accommodation.fittedBerths.contains(where: { $0.use.used }) else {
       notify("PASSENGERS CANNOT FIT THIS ESCAPE POD")
       return
     }
     guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
+    commander.synchronizeEquipmentInventory()
     commander.cargo = Array(repeating: 0, count: 17)
     commander.cargo[10] = commander.markedFirearms
     commander.legal = 0
     commander.fuel = commander.fuelCapacity
+    recordOwnedGearConsumption(spent)
     dock()
   }
   mutating func randomByte() -> Int {
@@ -1092,6 +1113,7 @@ public struct Game: Sendable {
     return Int((randomState >> 32) & 255)
   }
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
+    defer { commander.synchronizeEquipmentInventory() }
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
     if screen == .showroom {
@@ -1477,6 +1499,7 @@ public actor GameRuntime {
       candidate.viewportHeight = game.viewportHeight
       candidate.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
       candidate.restoreScriptWorld(world)
+      candidate.suspendUnavailableScriptContent()
       game = candidate
       controls = Controls()
       scriptSaveURL = url

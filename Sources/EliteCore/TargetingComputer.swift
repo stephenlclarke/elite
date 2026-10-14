@@ -27,7 +27,11 @@ extension Commander {
   }
   public var hasAutomaticDocking: Bool { targetingTier.map { $0 >= .docking } ?? false }
   public mutating func installTargetingComputer(_ tier: TargetingTier) {
+    defer { synchronizeEquipmentInventory() }
     let effective = max(tier, targetingTier ?? tier)
+    storeOwnedModules(
+      Set(TargetingTier.allCases.map(\.equipmentName) + [Equipment.legacyDockingComputer]),
+      keeping: effective.equipmentName)
     equipment.remove(Equipment.legacyDockingComputer)
     equipment.subtract(TargetingTier.allCases.map(\.equipmentName))
     equipment.insert(effective.equipmentName)

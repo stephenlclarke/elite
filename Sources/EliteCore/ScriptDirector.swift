@@ -41,6 +41,16 @@ extension Game {
         && $0.digest == instance.digest
     }
   }
+  mutating func suspendUnavailableScriptContent() {
+    for id in orderedScriptInstances {
+      guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
+        instance.suspension == nil
+      else { continue }
+      if let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil { continue }
+      commander.scriptState.instances[id]?.suspension =
+        "Restore the exact saved mission version and its requirements."
+    }
+  }
   func scriptUnavailable(_ pack: ScriptPack) -> String? {
     if !pack.missingCapabilities.isEmpty {
       return "Not available in this build: "
@@ -60,6 +70,9 @@ extension Game {
       "galaxy": .integer(Int64(commander.galaxy)), "system": .integer(Int64(commander.system)),
       "docked": .bool(docked), "main_station": .bool(docked && dockedAtMainStation),
       "durable_commands": .bool(scriptDurabilityAvailable),
+      "fitted_equipment": commander.ownedGearCounts(fitted: true),
+      "stored_equipment": commander.ownedGearCounts(fitted: false),
+      "free_equipment_units": .integer(Int64(commander.passengerFit?.freeEquipmentUnits ?? 0)),
       "credits": .integer(Int64(commander.credits)),
       "free_tonnes": .integer(Int64(commander.tradeCargoCapacity - commander.cargoTonnes)),
       "flight_seconds": .number(commander.scriptState.flightSeconds),
@@ -72,6 +85,7 @@ extension Game {
     var fields = scriptSnapshot.object ?? [:]
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
+    fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
     fields["free_passenger_places"] = .integer(
       Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
     return .object(fields)
@@ -93,6 +107,9 @@ extension Game {
       version: pack.manifest.version, digest: pack.digest)
     instance.randomState = randomSeed
     var candidate = self
+    if pack.manifest.capabilities.contains("owned-equipment-v2") {
+      candidate.commander.synchronizeEquipmentInventory(force: true)
+    }
     candidate.commander.scriptState.instances[instance.id] = instance
     candidate.emitScriptEvent("mission.accepted", only: instance.id)
     if let reason = candidate.commander.scriptState.instances[instance.id]?.suspension {
@@ -162,6 +179,14 @@ extension Game {
               throw MissionPackError("Encounter request requires only op and declared id.")
             }
             derivedEvents.append(try candidate.ensureScriptEncounter(id, pack: pack, state: &next))
+          } else if ["gear.issue", "gear.return", "gear.release", "gear.store", "gear.refit"]
+            .contains(command["op"]?.string ?? "")
+          {
+            if let result = try candidate.applyScriptGearCommand(
+              command, pack: pack, state: &next, candidate: &candidate.commander)
+            {
+              derivedEvents.append(result)
+            }
           } else if ["passengers.board", "passengers.deliver"].contains(command["op"]?.string ?? "")
           {
             try candidate.applyPassengerCommand(

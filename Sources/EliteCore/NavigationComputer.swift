@@ -52,7 +52,10 @@ public struct RouteAlternative: Sendable {
 extension Commander {
   public var navigationTier: NavigationTier? { equipment.compactMap(NavigationTier.from).max() }
   public mutating func installNavigationComputer(_ tier: NavigationTier) {
+    defer { synchronizeEquipmentInventory() }
     let effective = max(tier, navigationTier ?? tier)
+    storeOwnedModules(
+      Set(NavigationTier.allCases.map(\.equipmentName)), keeping: effective.equipmentName)
     equipment.subtract(NavigationTier.allCases.map(\.equipmentName))
     equipment.insert(effective.equipmentName)
   }

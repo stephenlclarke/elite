@@ -79,7 +79,7 @@ extension Commander {
   mutating func migrateLegacyPassengerMarker() { equipment.remove(PassengerCabin.equipmentName) }
   /// Charter fitting uses the real hold even when legacy unlimited-cargo policy is enabled.
   public var tradeCargoCapacity: Int {
-    accommodation.fitted.isEmpty ? capacity : standardCargoCapacity
+    accommodation.fitted.isEmpty && ownedEquipment == nil ? capacity : standardCargoCapacity
   }
   public var passengerFit: AccommodationFit? {
     guard let hull = ShipCatalogue.ship(shipID),
@@ -108,7 +108,7 @@ extension Commander {
       accommodation.people.values.allSatisfy({ scriptState.instances[$0.mission] != nil })
     else { return false }
     // Legacy commanders without fitted cabins retain their established hardware behavior.
-    return accommodation.fitted.isEmpty || passengerFit?.allowed == true
+    return (accommodation.fitted.isEmpty && ownedEquipment == nil) || passengerFit?.allowed == true
   }
 }
 extension Game {

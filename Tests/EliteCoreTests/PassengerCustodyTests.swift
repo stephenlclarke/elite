@@ -158,7 +158,12 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let restored = GameRuntime(game: Game(executive: false))
   try await restored.load(from: url)
   let loaded = await restored.snapshot()
-  #expect(loaded.commander == commander && loaded.commander.valid)
+  var preserved = loaded.commander
+  for (id, instance) in commander.scriptState.instances {
+    #expect(loaded.commander.scriptState.instances[id]?.suspension != nil)
+    preserved.scriptState.instances[id]?.suspension = instance.suspension
+  }
+  #expect(preserved == commander && loaded.commander.valid)
   #expect(loaded.commander.accommodation.people.count == 1)
   await restored.key("b")
   let suspended = await restored.snapshot()
@@ -213,7 +218,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let url = folder.appendingPathComponent("save.json")
   try await runtime.save(to: url)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 6)
+  #expect(pointer.schemaVersion == 7)
   let restored = GameRuntime()
   try await restored.load(from: url)
   #expect(await restored.snapshot().commander.accommodation == game.commander.accommodation)

@@ -4,6 +4,7 @@ extension GameRuntime {
   public func loadScriptPacks(directory: URL) {
     let library = ScriptPackLibrary.installed(directory: directory)
     game.scriptPacks = library.packs
+    game.suspendUnavailableScriptContent()
     for error in library.errors { game.notify(error) }
   }
   public func installScriptPack(from directory: URL, destination: URL) throws {

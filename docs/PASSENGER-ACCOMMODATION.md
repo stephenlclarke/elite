@@ -8,7 +8,7 @@ At Lave's main orbital station, open Equip Ship and select **Passenger Berth** i
 
 Install [scripted passengers](mission-packs/scripted-passengers), then accept through Mission Contacts. Ari boards an actual fitted empty berth at Lave. Fly to Zaonce's main orbital station and confirm delivery to receive 100 CR. Back leaves both the passenger and payment untouched. This is an original engine example, not a recovered historical mission.
 
-The carried-fit comparison now shows operating crew, intrinsic crew quarters, fitted cabins, occupied/reserved places, free compatible places, cabin hold usage and spare freight hold. The existing shared preview orientation is unchanged. Hull transfer checks accommodation before confirmation; insufficient physical hold or equipment capacity blocks the exchange.
+The carried-fit comparison now shows operating crew, intrinsic crew quarters, fitted cabins, occupied/reserved places, free compatible places, cabin hold usage and spare freight hold. The existing shared preview orientation is unchanged. Hull transfer checks accommodation before confirmation. Empty cabins can be stored automatically and reused; occupied/reserved/extra-crew cabins and actual freight must fit, otherwise the exchange is blocked.
 
 ## Capacity and ownership
 
@@ -30,7 +30,7 @@ Use `passengers.board` or `passengers.deliver` with a once-only operation `id` a
 
 Add party IDs to `mission.requiredPassengerParties` when their true delivery is a completion requirement. Completing all story milestones cannot substitute for those receipts. A later invalid command rolls back boarding, delivery, money and explicit script data together.
 
-Saves with cabins or scripts publish format **5**, using the existing hashed immutable generation/pointer system. Readers accept earlier formats 2, 3 and 4; earlier physical writers reject format 5 instead of silently dropping passenger ownership. Keep the pointer and its `.missions` sidecar together. The desktop runtime now publishes fitting and mission transfers before reporting success; see [durable transactions](DURABLE-MISSION-TRANSACTIONS.md). A memory-only backend must bind a writer to obtain that guarantee.
+Saves with cabins or scripts publish format **7**, using the existing hashed immutable generation/pointer system. Readers accept earlier formats 2 through 6; earlier physical readers reject format 7 instead of silently dropping passenger ownership. Keep the pointer and its `.missions` sidecar together. The desktop runtime now publishes fitting and mission transfers before reporting success; see [durable transactions](DURABLE-MISSION-TRANSACTIONS.md). A memory-only backend must bind a writer to obtain that guarantee.
 
 ## Source-data follow-ups
 

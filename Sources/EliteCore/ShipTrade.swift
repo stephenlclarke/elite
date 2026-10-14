@@ -7,6 +7,8 @@ public struct ShipTradeQuote: Sendable {
   public let net: Int
   public let balance: Int
   public let issues: [String]
+  public var storageRows: [String] = []
+  var projected: Commander?
   public var allowed: Bool { issues.isEmpty }
   public var rows: [String] {
     [
@@ -15,9 +17,10 @@ public struct ShipTradeQuote: Sendable {
       String(format: "Trade-in allowance: %.1f CR", Double(allowance) / 10),
       String(format: "Net %@: %.1f CR", net < 0 ? "credit" : "cost", Double(abs(net)) / 10),
       String(format: "Resulting cash: %.1f CR", Double(balance) / 10),
-      "All cargo, fuel, equipment and mission property transfer.",
+      "Cargo, fuel, people and mission property are preserved.",
+      "Compatible equipment transfers; surplus is stored for reuse.",
       "No new lasers, missiles or free fuel are included.",
-    ] + (issues.isEmpty ? ["Compatible fit. Confirm to exchange hulls."] : issues)
+    ] + storageRows + (issues.isEmpty ? ["Compatible fit. Confirm to exchange hulls."] : issues)
   }
 }
 extension Game {
@@ -32,39 +35,15 @@ extension Game {
     if selected.id == commander.shipID { issues.append("You already own this hull.") }
     if balance < 0 { issues.append("Insufficient cash for this exchange.") }
     if balance > 4_294_967_295 { issues.append("Credit would exceed the account limit.") }
-    var projected = commander
-    projected.shipID = selected.id
-    issues += shipTransferIssues(to: projected)
+    let transfer = commander.equipmentTransfer(to: selected.id)
+    issues += transfer.issues
+    issues += shipTransferIssues(to: transfer.commander)
     return .init(
       selected: selected, purchase: purchase, allowance: allowance, net: net, balance: balance,
-      issues: issues)
+      issues: issues, storageRows: transfer.storageRows, projected: transfer.commander)
   }
   private func shipTransferIssues(to projected: Commander) -> [String] {
-    let next = projected.performance
     var issues: [String] = []
-    if !commander.accommodation.fitted.isEmpty {
-      issues +=
-        projected.passengerFit?.issues ?? ["This hull has no compatible accommodation adapter."]
-    }
-    if commander.cargoTonnes > projected.capacity {
-      issues.append(
-        "Sell cargo first: hold requires \(commander.cargoTonnes)t; new capacity \(projected.capacity)t. Mission cargo cannot be sold."
-      )
-    }
-    if commander.equipment.contains("Large Cargo Bay") && next.cargoExpansion == 0 {
-      issues.append("Cargo expansion cannot transfer to this hull. Choose a compatible hull.")
-    }
-    for mount in LaserMount.allCases
-    where commander.laser(on: mount) != nil && !next.supports(mount) {
-      issues.append(mount.label + " laser has no matching mount. Choose a compatible hull.")
-    }
-    if commander.missiles > next.missiles {
-      issues.append(
-        "Use excess missiles first: \(commander.missiles) held; \(next.missiles) pylons available.")
-    }
-    if commander.fuel > projected.fuelCapacity {
-      issues.append("Use excess fuel first; new tank is smaller.")
-    }
     if let plan = commander.navigationPlan,
       zip(plan.path, plan.path.dropFirst()).contains(where: {
         systems[$0].distance(to: systems[$1])
@@ -76,9 +55,12 @@ extension Game {
     return issues
   }
   mutating func confirmShipTrade() {
-    guard !paused, showroom.trading, let quote = shipTradeQuote, quote.allowed else { return }
+    guard !paused, showroom.trading, let quote = shipTradeQuote, quote.allowed,
+      let projected = quote.projected
+    else { return }
     // Re-evaluate the quote at confirmation; no state changes happen on opening or Back.
-    commander.shipID = quote.selected.id
+    let previousShip = commander.shipID
+    commander = projected
     commander.credits = quote.balance
     speed = 0
     energy = commander.performance.energy
@@ -89,6 +71,9 @@ extension Game {
     showroom.trading = false
     showroom.scroll = 0
     notify("NOW FLYING " + commander.ship.name.uppercased())
+    emitScriptEvent(
+      "ship.changed",
+      values: ["previous": .string(previousShip), "ship": .string(commander.shipID)])
   }
   mutating func shipTradeKey(_ key: String) {
     switch key {

@@ -56,9 +56,9 @@ import Testing
   game.commander.equipment.insert("Large Cargo Bay")
   let quote = try #require(game.shipTradeQuote)
   #expect(quote.issues.contains { $0.contains("Sell cargo") })
-  #expect(quote.issues.contains { $0.contains("Cargo expansion") })
-  #expect(quote.issues.contains { $0.contains("Rear laser") })
-  #expect(quote.issues.contains { $0.contains("missiles") })
+  #expect(quote.storageRows.contains { $0.contains("Large Cargo Bay") })
+  #expect(quote.storageRows.contains { $0.contains("Naval Laser") })
+  #expect(quote.storageRows.contains { $0.contains("Missile") })
   let old = game.commander
   game.key("showroom-trade")
   game.key("right")

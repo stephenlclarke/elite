@@ -82,6 +82,8 @@ extension LaserKind {
 extension Commander {
   public func laser(on mount: LaserMount) -> LaserKind? { laserMounts[mount] }
   public mutating func installLaser(_ kind: LaserKind, on mount: LaserMount) {
+    defer { synchronizeEquipmentInventory() }
+    storeReplacedLaser(on: mount, by: kind)
     var mounts = laserMounts
     mounts[mount] = kind
     laserMounts = mounts

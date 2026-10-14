@@ -7,6 +7,52 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeSaveBatchIncludesThePrecedingOwnedEquipmentStorageAction()
+    async throws
+  {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: folder)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    try JSONEncoder().encode(Commander()).write(to: file)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: file)
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: file, persistMigrations: false)
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    let view = try #require(window.contentView as? GameView)
+    await delegate.runtime.key("3")
+    let desired = try #require(Equipment.all.firstIndex { $0.name == "Missile" })
+    for _ in Equipment.all.indices {
+      if await delegate.runtime.snapshot().selection == desired { break }
+      await delegate.runtime.key("down")
+    }
+    #expect(await delegate.runtime.snapshot().selection == desired)
+    view.pending = ["s"]
+    let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
+    menu.performActionForItem(at: 0)
+    await delegate.processPendingCommands(in: view)
+    let loaded = GameRuntime()
+    try await loaded.load(from: file, persistMigrations: false)
+    let commander = await loaded.snapshot().commander
+    #expect(
+      commander.missiles == 2
+        && commander.ownedEquipment?.stored.filter { $0.kind == .missile }.count == 1)
+    #expect(commander.credits == 1000 && saves.activeURL == file)
+  }
   @MainActor @Test func nativeGalleryTrialSaveKeepsLiveFileAndCommanderPreferences() async throws {
     let id = UUID().uuidString
     let preferences = try #require(UserDefaults(suiteName: id))

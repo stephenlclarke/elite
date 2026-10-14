@@ -62,6 +62,8 @@ Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets
 
 Buy with 1, sell with 2, equip with 3. Up/Down or scrolling selects an item; Return trades one unit or purchases/refuels. Equipment headings are skipped. Left/Right or the visible Front/Left/Right/Rear controls choose a laser mount. Status and inventory use Up/Down or scrolling for more rows. Option-Up/Down moves a page. Market 7 shows prices; use 1/2 to trade.
 
+At a main orbital station, other equipment rows use S to store a fitted item and R to refit owned storage without buying again. Choose a laser mount before refitting a laser. Owned ammunition, equipment identities and loan ownership survive hull exchanges.
+
 On the Passenger Berth equipment row, Return buys another cabin, S stores one empty fitted cabin and R refits an owned stored cabin. Each fitted cabin uses five tonnes of physical hold and one equipment unit. The displayed 1000 CR base price is a project estimate. Occupied or reserved cabins cannot be stored. See [passenger accommodation](PASSENGER-ACCOMMODATION.md).
 
 **Game > Mission Contacts** opens an eligible station contact. Mission dialogs use arrows to choose Confirm or Back, Return or a click to select, and Escape to return without a transfer. They return to the station screen that opened them. Initial enrolment and automatic naval orders/rewards retain their campaign rules.

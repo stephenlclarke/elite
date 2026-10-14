@@ -14,6 +14,7 @@ extension Commander {
     }
   }
   mutating func apply(_ action: PackAction, state: inout MissionProgress) throws {
+    defer { synchronizeEquipmentInventory() }
     let amount = action.amount ?? 0
     let key = action.key ?? ""
     switch action.kind {
@@ -27,7 +28,14 @@ extension Commander {
     case "legalSet": legal = amount
     case "legalFloor": legal = max(legal, amount)
     case "equipmentAdd": equipment.insert(key)
-    case "equipmentRemove": equipment.remove(key)
+    case "equipmentRemove":
+      guard
+        ownedEquipment?.fitted.contains(where: { $0.kind.name == key && $0.loanOwner != nil })
+          != true
+      else {
+        throw MissionPackError("Return borrowed equipment through its own mission contact.")
+      }
+      equipment.remove(key)
     case "flagSet": state.flags[key] = amount
     case "receipt": state.receipts.insert(key)
     case "payloadAdd":
@@ -76,7 +84,9 @@ extension GameRuntime {
   public func installMissionPack(from url: URL, directory: URL = MissionPackLibrary.userDirectory)
     throws
   {
-    guard galleryNamespace == nil else { throw MissionPackError("Install packs in the main game, then start a new Gallery trial.") }
+    guard galleryNamespace == nil else {
+      throw MissionPackError("Install packs in the main game, then start a new Gallery trial.")
+    }
     if (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
       try installScriptPack(from: url, destination: directory.appendingPathComponent("scripted"))
       return

@@ -65,6 +65,10 @@ extension Commander {
       field("hyperspace_range_ly", "Jump capacity", min(jumpCap, Double(fuelCapacity) / 10), "LY"),
       field("jump_spool_seconds", "Jump charge", p.spool, "s"),
       field("missile_capacity", "Missile pylons", Double(missileCapacity), "pylons"),
+      field("fitted_missiles", "Loaded missiles", Double(missiles), "missiles"),
+      field(
+        "fitted_lasers", "Fitted lasers",
+        Double(LaserMount.allCases.filter { laser(on: $0) != nil }.count), "lasers"),
       field(
         "laser_facings", "Laser mounts", Double(LaserMount.allCases.filter(p.supports).count),
         "mounts"),
@@ -87,6 +91,10 @@ extension Commander {
           "free_passenger_places", "Free passenger places", Double(fit.freeCompatiblePlaces),
           "places"),
         field("hold_used_by_cabins", "Cabin hold", Double(fit.cabinCargo), "t"),
+        field(
+          "free_equipment_units", "Spare equipment space", Double(fit.freeEquipmentUnits), "units",
+          status: "estimated",
+          basis: "Selected common project equipment budget and actual carried fit"),
         field("usable_cargo_after_fit", "Spare freight hold", Double(fit.usableCargo), "t"),
       ]
     }
@@ -98,15 +106,14 @@ extension Commander {
     return .init(
       id: "game-" + shipID, title: ship.name + " / carried fit", group: "native-game",
       context:
-        "Game units; same carried equipment on both hulls. Fuel supply is separate from tank and jump capacity.",
+        "Game units; compatible owned equipment transfers and surplus is stored. Fuel supply is separate from tank and jump capacity.",
       fields: fields)
   }
 }
 extension Game {
   var selectedGameProfile: ShipProfile? {
     guard let ship = showroomShip, ship.game != nil else { return nil }
-    var fit = commander
-    fit.shipID = ship.id
+    let fit = commander.equipmentTransfer(to: ship.id).commander
     return fit.gameShipProfile
   }
 }

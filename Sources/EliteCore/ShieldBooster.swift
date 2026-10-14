@@ -41,7 +41,10 @@ extension Commander {
   public var shieldCapacity: Double { performance.shield * (shieldBooster?.multiplier ?? 1) }
   public var effectiveLaser: String { activeLaser?.equipmentName ?? "None" }
   public mutating func installShieldBooster(_ booster: ShieldBooster) {
+    defer { synchronizeEquipmentInventory() }
     let effective = max(booster, shieldBooster ?? booster)
+    storeOwnedModules(
+      Set(ShieldBooster.allCases.map(\.equipmentName)), keeping: effective.equipmentName)
     equipment.subtract(ShieldBooster.allCases.map(\.equipmentName))
     equipment.insert(effective.equipmentName)
   }

@@ -3,7 +3,7 @@
   "branch": "feature/scriptable-mission-engine",
   "full_engine_ready": false,
   "default_bundled_campaigns": 3,
-  "example": "Optional original courier, patrol and humanoid passenger demonstrations; not historical mission research packets",
+  "example": "Four optional original courier, patrol, humanoid passenger and equipment-loan demonstrations; not historical mission research packets",
   "supported_capabilities": [
     "cargo-v2",
     "charter-passengers-v2",
@@ -12,6 +12,7 @@
     "economy-v2",
     "gallery-basic-v2",
     "local-flight-clocks-v2",
+    "owned-equipment-v2",
     "script-lua-v1",
     "story-v2"
   ],
@@ -88,7 +89,7 @@
         "Sources/EliteCore/ScriptTransactions.swift",
         "Tests/EliteCoreTests/ScriptTransactionTests.swift"
       ],
-      "remaining": "Desktop/native command and post-physics script effects publish durably with failure/retry preservation. Full quotes, debts/refunds, unique gear and partial commodity-lot transactions still require implementation."
+      "remaining": "Native owned gear and scoped quest issue/return/release participate in staged durable transactions. Full price/debt/refund/partial-lot quotes, station inventory and source finance acceptance remain required."
     },
     {
       "id": "R07",
@@ -161,9 +162,15 @@
       "current_evidence": [
         "Sources/EliteCore/PassengerFitting.swift",
         "Sources/EliteCore/ShipTrade.swift",
-        "Sources/EliteCore/NativeShipValues.swift"
+        "Sources/EliteCore/NativeShipValues.swift",
+        "Sources/EliteCore/OwnedEquipment.swift",
+        "Sources/EliteCore/EquipmentTransfer.swift",
+        "Sources/EliteCore/EquipmentFitting.swift",
+        "Sources/EliteCore/ScriptEquipment.swift",
+        "Tests/EliteCoreTests/OwnedEquipmentTests.swift",
+        "Tests/EliteCoreTests/ScriptEquipmentTests.swift"
       ],
-      "remaining": "Uniquely owned empty cabins can be stored/refitted and occupied cabins block invalid hull transfer. General unique weapons/modules/ammunition storage and compatible surplus transfer remain required."
+      "remaining": "Unique standard native gear, actual ammunition, surplus storage/reuse, strongest current tiers, real scoped loans and native hull/refit events implemented. Full source condition/modification controllers, broker/station stock movement, source-specific gear/custody/loan adapters and full historical acceptance remain required; fitting-storage-v1 remains gated."
     },
     {
       "id": "R13",
@@ -196,7 +203,7 @@
         "Sources/EliteCore/ScriptTransactions.swift",
         "Sources/EliteCore/ScriptSolarSave.swift"
       ],
-      "remaining": "Format6 scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required."
+      "remaining": "Format7 scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately."
     },
     {
       "id": "R16",
@@ -345,7 +352,7 @@
         "8115302",
         "dd27810"
       ],
-      "status": "Final protected main1ef005e integrated; all352-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
+      "status": "Final protected main1ef005e integrated; all377-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
       "latest_clean_source": "5939431bc038c7a099ddee9b7bb2e3ffa7567553",
       "merged_main": "1ef005e0c73971a360a0e3bb52792a9286a761d3"
     },
@@ -353,16 +360,18 @@
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 352,
-    "maintained_coverage_percent": 93.41,
-    "script_swift_coverage_percent": 95.71,
+    "tests_per_lane": 377,
+    "maintained_coverage_percent": 93.54,
+    "script_swift_coverage_percent": 96.14,
     "encounter_coverage_percent": 97.73,
     "maintained_c_host_coverage_percent": 94.62,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.72,
     "solar_save_coverage_percent": 100.0,
     "durable_transaction_coverage_percent": 100.0,
-    "gallery_trial_coverage_percent": 97.65
+    "gallery_trial_coverage_percent": 97.65,
+    "owned_equipment_coverage_percent": 94.92,
+    "equipment_loan_coverage_percent": 97.58
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -383,13 +392,14 @@
   "examples": [
     "Optional original scripted courier",
     "Optional original physical classic patrol",
-    "Optional original humanoid charter passengers"
+    "Optional original humanoid charter passengers",
+    "Optional original identified equipment loan"
   ],
   "source_data_follow_ups": [
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes352 tests per lane,93.41% maintained coverage,95.71% script coverage,97.65% Gallery trial coverage,100% transaction-helper coverage and0leaks; exact bytes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes377 tests per lane,93.54% maintained coverage,96.14% script coverage,94.92% equipment/storage,97.58% loan handling and0leaks; exact bytes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -411,5 +421,21 @@
       "restart retains seeded scene",
       "saved fault requires explicit retry"
     ]
+  },
+  "owned_equipment_checkpoint": {
+    "status": "validated with complete make ci; full engine remains incomplete",
+    "capability": "owned-equipment-v2",
+    "scope": "standard native lasers, missiles, modules/tanks; identity and loan ownership; common fitting/storage/transfer; physical consumption and original returns",
+    "source_hull_numbers_changed": false,
+    "acceptance": [
+      "4/4 to1/1 and back with same IDs",
+      "spent missiles never refilled by exchange",
+      "native Save batch includes owned storage",
+      "disk failure keeps hull/cash/loan/reward/dialogue",
+      "native hyperspace and auto-dock equipment example",
+      "substitutes and story flags cannot settle loans",
+      "return results distinguish remaining identities from consumed goods"
+    ],
+    "full_engine_ready": false
   }
 }

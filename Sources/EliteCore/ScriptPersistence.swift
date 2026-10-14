@@ -106,7 +106,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 6, generation: generation,
+      format: "elite-script-save", schemaVersion: 7, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope)
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
@@ -121,7 +121,7 @@ enum ScriptSaveStore {
   static func read(_ pointerBytes: Data, from url: URL) throws -> (Commander, ScriptWorldSave) {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-    guard pointer.format == "elite-script-save", (2...6).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...7).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == ["commander.json", "missions.json", "world.json"],
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")

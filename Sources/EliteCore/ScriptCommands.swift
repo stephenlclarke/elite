@@ -102,6 +102,10 @@ extension Game {
             }
             && (pack.manifest.mission.requiredPassengerParties ?? []).allSatisfy {
               passengersDelivered($0, pack: pack, instance: state, commander: candidate)
+            }
+            && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
+            && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {
+              state.gearIssues[$0]?.status == .returned
             })
       else {
         throw MissionPackError("Completion requires every declared milestone.")

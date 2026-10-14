@@ -2,7 +2,7 @@
 
 The desktop game binds the mission runtime to the active commander save. A schema 2 acceptance, confirmation, payment, payload/passenger transfer or refit is staged and written before its effects return to the interface. Scripted native input commands use the same barrier. Opening an unaccepted offer or changing a read-only preview does not create a save.
 
-The writer uses the existing immutable format-6 generation and atomic pointer publication. The complete candidate includes commander/property, native bodies, actual clock/timer state, event acknowledgments, operation receipts and native result envelopes. A deployed encounter and its later admission envelope cannot be separated by a crash between writes. Earlier generations remain intact.
+The writer uses the existing immutable format-7 generation and atomic pointer publication. The complete candidate includes commander/property, native bodies, actual clock/timer state, event acknowledgments, operation receipts and native result envelopes. A deployed encounter and its later admission envelope cannot be separated by a crash between writes. Earlier generations remain intact.
 
 ## Failure and recovery
 
@@ -27,3 +27,5 @@ Gallery runtimes use a fresh commander, seeded native simulation/instance stream
 ## Evidence
 
 [Transaction tests](../Tests/EliteCoreTests/ScriptTransactionTests.swift) exercise actual disk-write denial, keyboard and mouse confirmation, initial acceptance rollback, cabin purchase rollback, pending-handler Save rollback, durable encounter/result publication, queue-capacity admission rollback, timer cancellation/recovery and real laser death with deferred once-only reward. The tests use isolated temporary directories and original demonstration packs, not historical mission acceptance claims. The complete gate record is [SCRIPTABLE-MISSION-VALIDATION.json](SCRIPTABLE-MISSION-VALIDATION.json).
+
+Identified gear, stored stock and scoped loan issue/return/release records participate in the same staged publication. A denied fit or failed write cannot publish a hull exchange, substitute return or reward. New format7 readers restore ownership before validating the combined commander/mission state; older readers reject this format. Native Save includes preceding equipment actions in the ordered command batch.

@@ -15,6 +15,7 @@ public struct ScriptMission: Codable, Sendable {
   public let milestones: [String]
   public let requiredDestructionEncounters: [String]?
   public let requiredPassengerParties: [String]?
+  public let requiredEquipmentReturns: [String]?
 }
 public struct ScriptDialog: Codable, Sendable {
   public let id: String
@@ -39,6 +40,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let encounters: [ScriptEncounterDefinition]?
   public let passengerParties: [ScriptPassengerParty]?
   public let trial: ScriptTrialDefinition?
+  public let equipment: [ScriptGearDefinition]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -56,6 +58,7 @@ public enum ScriptCapabilities {
   public static let implemented: Set<String> = [
     "script-lua-v1", "story-v2", "economy-v2", "cargo-v2", "local-flight-clocks-v2",
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
+    "owned-equipment-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -75,6 +78,8 @@ public enum ScriptCapabilities {
     "mission.accepted", "station.docked", "station.undocked", "system.entered", "contact.requested",
     "dialogue.confirmed", "timer.fired", "mission.abandoned", "encounter.admitted",
     "encounter.pending", "actor.destroyed", "actor.removed",
+    "ship.changed", "equipment.changed", "gear.consumed",
+    "equipment.issued", "equipment.returned", "equipment.released",
   ]
 }
 
@@ -88,13 +93,16 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment"
     )
     try keys(
       root.table(forKey: "mission"),
-      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties"
+      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties requiredEquipmentReturns"
     )
-    for (name, allowed) in ["handlers": "event function", "dialogs": "id text"]
+    for (name, allowed) in [
+      "handlers": "event function", "dialogs": "id text",
+      "equipment": "id name quantity loan mount returnPolicy",
+    ]
     where root.contains(key: name) {
       let array = try root.array(forKey: name)
       for i in 0..<array.count { try keys(array.table(atIndex: i), allowed) }
@@ -205,6 +213,21 @@ public enum ScriptPackLibrary {
       throw MissionPackError("Invalid encounter declarations or missing native classic capability.")
     }
     let parties = manifest.passengerParties ?? []
+    guard
+      !manifest.handlers.contains(where: {
+        [
+          "ship.changed", "equipment.changed", "gear.consumed", "equipment.issued",
+          "equipment.returned", "equipment.released",
+        ].contains($0.event)
+      })
+        || manifest.capabilities.contains("owned-equipment-v2")
+    else { throw MissionPackError("Equipment events require owned-equipment-v2.") }
+    let gear = manifest.equipment ?? []
+    guard gear.count <= 64, Set(gear.map(\.id)).count == gear.count,
+      gear.allSatisfy(\.valid), gear.reduce(0, { $0 + $1.quantity }) <= 128,
+      Set(manifest.mission.requiredEquipmentReturns ?? []).isSubset(of: Set(gear.map(\.id))),
+      gear.isEmpty || manifest.capabilities.contains("owned-equipment-v2")
+    else { throw MissionPackError("Invalid equipment declaration or missing owned-equipment-v2.") }
     guard parties.count <= 64, Set(parties.map(\.id)).count == parties.count,
       parties.allSatisfy(\.valid), parties.reduce(0, { $0 + $1.names.count }) <= 128,
       Set(manifest.mission.requiredPassengerParties ?? []).isSubset(of: Set(parties.map(\.id))),

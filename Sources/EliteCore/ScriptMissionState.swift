@@ -40,6 +40,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var timers: [String: ScriptTimer] = [:]
   public var dialogue: ScriptDialogue?
   public var journal: [String] = []
+  private var savedGearIssues: [String: ScriptGearIssue]?
+  public var gearIssues: [String: ScriptGearIssue] {
+    get { savedGearIssues ?? [:] }
+    set { savedGearIssues = newValue }
+  }
   private var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
   public var ownedEncounters: [String: ScriptOwnedEncounter] {
     get { savedOwnedEncounters ?? [:] }
@@ -80,7 +85,9 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     let identities = instances.values.flatMap {
       $0.ownedEncounters.values.flatMap { $0.actors.values.map(\.identity) }
     }
+    let gearIdentities = instances.values.flatMap { $0.gearIssues.values.flatMap(\.items) }
     return Set(identities).count == identities.count && instances.count <= 128
+      && Set(gearIdentities).count == gearIdentities.count
       && pendingEvents.count <= 4096 && nextEvent < UInt64(Int64.max)
       && pendingEvents.allSatisfy { $0.sequence <= nextEvent && instances[$0.instance] != nil }
       && [flightSeconds, localSeconds, calendarSeconds, transitSeconds].allSatisfy {
@@ -103,6 +110,10 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
               && $0.value.actors.values.allSatisfy { $0.body.missionInstanceID == instance.id }
           }
           && instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128
+          && instance.gearIssues.count <= 64
+          && instance.gearIssues.allSatisfy { $0.key == $0.value.resource && $0.value.valid }
+          && Set(instance.gearIssues.values.flatMap(\.items)).count
+            == instance.gearIssues.values.reduce(0) { $0 + $1.items.count }
           && instance.payloads.count <= 128
           && instance.payloads.keys.allSatisfy(PackValidation.localID)
           && instance.payloads.values.allSatisfy { (0...1_000_000).contains($0) }

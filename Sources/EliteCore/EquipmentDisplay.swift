@@ -107,6 +107,11 @@ extension Display {
       } else {
         description += "Arrows: select. Return: buy. Esc: back."
       }
+      if !["Fuel", PassengerCabin.equipmentName].contains(item.name) {
+        let stored =
+          game.commander.ownedEquipment?.stored.filter { $0.kind.name == item.name }.count ?? 0
+        description = "Owned storage: \(stored). S: store / R: refit. " + description
+      }
       let lines = MissionNotice.wrap(
         description, width: Int(layout.contentWidth / (6 * layout.font)))
       for (index, line) in lines.prefix(3).enumerated() {
