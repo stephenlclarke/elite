@@ -8,6 +8,11 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedAccommodation: ShipAccommodation?
+  public var accommodation: ShipAccommodation {
+    get { savedAccommodation ?? ShipAccommodation() }
+    set { savedAccommodation = newValue }
+  }
   private var savedScriptState: ScriptEngineState?
   public var scriptState: ScriptEngineState {
     get { savedScriptState ?? ScriptEngineState() }
@@ -128,7 +133,9 @@ public struct Commander: Sendable, Equatable, Codable {
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
-    zip(cargo, Commodity.all).reduce(missionPayloadTonnes + scriptState.payloadTonnes) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
+    zip(cargo, Commodity.all).reduce(
+      missionPayloadTonnes + scriptState.payloadTonnes + accommodation.fittedBerths.count * 5
+    ) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
   }
   public var rank: String {
     let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
@@ -151,7 +158,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
-      && scriptState.valid
+      && scriptState.valid && accommodationValid
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -196,6 +203,7 @@ public struct Equipment: Sendable {
       .init(name: "Galactic Hyperdrive", price: 50000, technology: 10),
       .init(name: "Mining Laser", price: 8000, technology: 10),
       .init(name: "Military Laser", price: 60000, technology: 10),
+      .init(name: PassengerCabin.equipmentName, price: PassengerCabin.price, technology: 0),
     ]
   public static let all =
     base
@@ -421,6 +429,23 @@ public struct Game: Sendable {
     }
     if key.count == 1, let number = Int(key), (0...9).contains(number) {
       functionKey(number)
+      return
+    }
+    if screen == .equipment, Equipment.all.indices.contains(selection),
+      Equipment.all[selection].name == PassengerCabin.equipmentName, ["s", "r"].contains(key)
+    {
+      let berth =
+        key == "s"
+        ? commander.accommodation.fittedBerths.first(where: { !$0.use.used })
+        : commander.accommodation.storedBerths.first
+      guard let berth else {
+        notify("NO EMPTY CABIN AVAILABLE")
+        return
+      }
+      do {
+        try setPassengerBerthFitted(berth.id, fitted: key == "r")
+        notify(key == "r" ? "OWNED CABIN REFITTED" : "EMPTY CABIN STORED")
+      } catch { notify(error.localizedDescription.uppercased()) }
       return
     }
     switch key {
@@ -650,10 +675,26 @@ public struct Game: Sendable {
   }
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
+    let before = commander
+    let oldShields = (frontShield, rearShield)
+    defer {
+      if !commander.accommodation.fitted.isEmpty && !commander.valid {
+        commander = before
+        frontShield = oldShields.0
+        rearShield = oldShields.1
+        notify("EQUIPMENT CANNOT FIT WITH THE CURRENT CABINS AND CARGO")
+      }
+    }
     let catalogueItem = Equipment.all[selection]
     let item = Equipment(
       name: catalogueItem.name, price: shopPrice(catalogueItem),
       technology: catalogueItem.technology)
+    if item.name == PassengerCabin.equipmentName {
+      do { try confirmPassengerBerth(passengerBerthQuote) } catch {
+        notify(error.localizedDescription.uppercased())
+      }
+      return
+    }
     if item.name == FuelStorage.equipmentName {
       guard commander.fuelStorageUnits < FuelStorage.maximumCount else {
         notify("FUEL STORAGE FULL")
@@ -951,7 +992,8 @@ public struct Game: Sendable {
     for index in bodies.indices { bodies[index].position.z -= 3000 }
     if !bodies.contains(where: { $0.id == 0 && $0.hull == .station }),
       var frame = scriptReferenceFrame, frame.galaxy == commander.galaxy,
-      frame.system == commander.system {
+      frame.system == commander.system
+    {
       frame.station.position.z -= 3000
       scriptReferenceFrame = frame
     }
@@ -1004,6 +1046,10 @@ public struct Game: Sendable {
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
+    guard !commander.accommodation.fittedBerths.contains(where: { $0.use.used }) else {
+      notify("PASSENGERS CANNOT FIT THIS ESCAPE POD")
+      return
+    }
     guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
     commander.cargo = Array(repeating: 0, count: 17)
     commander.cargo[10] = commander.markedFirearms
@@ -1044,7 +1090,8 @@ public struct Game: Sendable {
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
     guard !docked, screen != .gameOver, screen != .secret, screen != .help,
-      screen != .title, screen != .demo else { return }
+      screen != .title, screen != .demo
+    else { return }
     let craft = commander.performance
     speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
     pitch = controls.pitch * craft.pitch
@@ -1313,7 +1360,9 @@ public actor GameRuntime {
     game.persistBlackjackTargets()
     game.persistScriptActors()
     guard game.commander.valid else { throw SaveError.invalidCommander }
-    if !game.commander.scriptState.instances.isEmpty {
+    if !game.commander.scriptState.instances.isEmpty
+      || !game.commander.accommodation.ownedBerths.isEmpty
+    {
       try ScriptSaveStore.write(commander: game.commander, world: game.scriptWorldSave, to: url)
       return
     }

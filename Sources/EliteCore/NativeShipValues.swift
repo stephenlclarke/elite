@@ -66,6 +66,26 @@ extension Commander {
         "mounts"),
       field("price", "Hull price", Double(p.price), "CR"),
     ]
+    if let crew = try? ShipAccommodationProfile(ship: ship), let fit = passengerFit {
+      fields += [
+        field(
+          "required_crew_including_commander", "Operating crew", Double(crew.operatingCrew),
+          "people"),
+        field(
+          "reserved_crew_accommodation", "Crew quarters", Double(crew.intrinsicCrewQuarters),
+          "people"),
+        field(
+          "fitted_passenger_berths", "Fitted cabins", Double(accommodation.fitted.count), "places"),
+        field(
+          "passengers_aboard", "Occupied/reserved",
+          Double(accommodation.fittedBerths.filter { $0.use.used }.count), "places"),
+        field(
+          "free_passenger_places", "Free passenger places", Double(fit.freeCompatiblePlaces),
+          "places"),
+        field("hold_used_by_cabins", "Cabin hold", Double(fit.cabinCargo), "t"),
+        field("usable_cargo_after_fit", "Spare freight hold", Double(fit.usableCargo), "t"),
+      ]
+    }
     if unlimitedCargo {
       fields[0] = .init(
         key: "cargo_tonnes", label: "Cargo", text: "Unlimited (XYZZY)", number: nil, unit: "t",

@@ -99,6 +99,9 @@ extension Game {
           || (state.milestones.count == pack.manifest.mission.milestones.count
             && (pack.manifest.mission.requiredDestructionEncounters ?? []).allSatisfy {
               state.ownedEncounters[$0]?.destroyed == true
+            }
+            && (pack.manifest.mission.requiredPassengerParties ?? []).allSatisfy {
+              passengersDelivered($0, pack: pack, instance: state, commander: candidate)
             })
       else {
         throw MissionPackError("Completion requires every declared milestone.")

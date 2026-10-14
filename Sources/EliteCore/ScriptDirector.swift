@@ -67,6 +67,9 @@ extension Game {
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
     fields["encounters"] = scriptEncounterSnapshot(instance)
+    fields["passengers"] = scriptPassengerSnapshot(instance)
+    fields["free_passenger_places"] = .integer(
+      Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
     return .object(fields)
   }
   mutating func acceptScriptMission(_ pack: ScriptPack, instanceID: UUID = UUID()) throws -> UUID {
@@ -152,6 +155,10 @@ extension Game {
               throw MissionPackError("Encounter request requires only op and declared id.")
             }
             derivedEvents.append(try candidate.ensureScriptEncounter(id, pack: pack, state: &next))
+          } else if ["passengers.board", "passengers.deliver"].contains(command["op"]?.string ?? "")
+          {
+            try candidate.applyPassengerCommand(
+              command, pack: pack, state: &next, candidate: &candidate.commander)
           } else {
             try applyScriptCommand(
               command, event: event, pack: pack, state: &next, candidate: &candidate.commander)

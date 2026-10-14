@@ -14,6 +14,7 @@ public struct ScriptMission: Codable, Sendable {
   public let reward: String
   public let milestones: [String]
   public let requiredDestructionEncounters: [String]?
+  public let requiredPassengerParties: [String]?
 }
 public struct ScriptDialog: Codable, Sendable {
   public let id: String
@@ -36,6 +37,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let handlers: [ScriptHandler]
   public let dialogs: [ScriptDialog]?
   public let encounters: [ScriptEncounterDefinition]?
+  public let passengerParties: [ScriptPassengerParty]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -52,7 +54,7 @@ public struct ScriptPack: Sendable {
 public enum ScriptCapabilities {
   public static let implemented: Set<String> = [
     "script-lua-v1", "story-v2", "economy-v2", "cargo-v2", "local-flight-clocks-v2",
-    "classic-encounters-v2",
+    "classic-encounters-v2", "charter-passengers-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -85,11 +87,12 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties"
     )
     try keys(
       root.table(forKey: "mission"),
-      "id title briefing destination reward milestones requiredDestructionEncounters")
+      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties"
+    )
     for (name, allowed) in ["handlers": "event function", "dialogs": "id text"]
     where root.contains(key: name) {
       let array = try root.array(forKey: name)
@@ -104,6 +107,14 @@ public enum ScriptPackLibrary {
         for actor in 0..<actors.count {
           try keys(actors.table(atIndex: actor), "id hull x y z hostile")
         }
+      }
+    }
+    if root.contains(key: "passengerParties") {
+      let parties = try root.array(forKey: "passengerParties")
+      for index in 0..<parties.count {
+        try keys(
+          parties.table(atIndex: index),
+          "id names pickupGalaxy pickupSystem destinationGalaxy destinationSystem")
       }
     }
     let manifest = try TOMLDecoder().decode(ScriptManifest.self, from: bytes)
@@ -189,6 +200,12 @@ public enum ScriptPackLibrary {
     else {
       throw MissionPackError("Invalid encounter declarations or missing native classic capability.")
     }
+    let parties = manifest.passengerParties ?? []
+    guard parties.count <= 64, Set(parties.map(\.id)).count == parties.count,
+      parties.allSatisfy(\.valid), parties.reduce(0, { $0 + $1.names.count }) <= 128,
+      Set(manifest.mission.requiredPassengerParties ?? []).isSubset(of: Set(parties.map(\.id))),
+      parties.isEmpty || manifest.capabilities.contains("charter-passengers-v2")
+    else { throw MissionPackError("Invalid passenger parties or missing charter capability.") }
     try path(manifest.module)
     guard manifest.module.hasSuffix(".lua"), manifest.module != "manifest.toml" else {
       throw MissionPackError("Declare a pack-local .lua module.")

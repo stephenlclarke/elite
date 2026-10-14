@@ -3,9 +3,10 @@
   "branch": "feature/scriptable-mission-engine",
   "full_engine_ready": false,
   "default_bundled_campaigns": 3,
-  "example": "Optional original scripted courier; not a historical research mission",
+  "example": "Optional original courier, patrol and humanoid passenger demonstrations; not historical mission research packets",
   "supported_capabilities": [
     "cargo-v2",
+    "charter-passengers-v2",
     "classic-encounters-v2",
     "economy-v2",
     "local-flight-clocks-v2",
@@ -138,18 +139,27 @@
       "title": "Crew/passenger/cargo custody",
       "full_requirement": "Shared fit/life-support service; intrinsic crew vs charter,5t+1unit berths, real1toccupiedpods, protected actuallots.",
       "required_acceptance": "Passenger acceptance/hull swap blocked if actual capacity insufficient; no people deletion/storage/free cabins.",
-      "status": "not implemented",
-      "current_evidence": [],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ShipAccommodation.swift",
+        "Sources/EliteCore/PassengerCustody.swift",
+        "Sources/EliteCore/PassengerFitting.swift",
+        "Tests/EliteCoreTests/PassengerCustodyTests.swift"
+      ],
+      "remaining": "Humanoid charter cabins and actual station transfers are implemented. Native occupied pods, non-humanoid adapters, damage/life-support controllers, person care/world jobs and source-specific custody remain unsupported. The full custody-v1 capability remains gated."
     },
     {
       "id": "R12",
       "title": "Shipyard and equipment storage",
       "full_requirement": "Unique compatiblegear transfer/surplusstorage/reuse, stock and loan preservation;3Dallplanes/linkedsidebyside orientation.",
       "required_acceptance": "Switch4laser/4missile to1/1 and back with same IDs/ammo, actualpayload fit and synchronized preview quaternion.",
-      "status": "not implemented",
-      "current_evidence": [],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/PassengerFitting.swift",
+        "Sources/EliteCore/ShipTrade.swift",
+        "Sources/EliteCore/NativeShipValues.swift"
+      ],
+      "remaining": "Uniquely owned empty cabins can be stored/refitted and occupied cabins block invalid hull transfer. General unique weapons/modules/ammunition storage and compatible surplus transfer remain required."
     },
     {
       "id": "R13",
@@ -354,5 +364,9 @@
   "examples": [
     "Optional original scripted courier",
     "Optional original physical classic patrol"
+  ],
+  "source_data_follow_ups": [
+    "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
+    "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ]
 }

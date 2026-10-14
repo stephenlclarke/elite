@@ -20,6 +20,7 @@ public enum EquipmentGroups {
       ("Energy Systems", ["Extra Energy Unit", Equipment.navalEnergyUnit]),
       ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
       ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops"]),
+      ("Passenger Accommodation", [PassengerCabin.equipmentName]),
       ("Travel", ["Galactic Hyperdrive"]),
       ("Emergency Equipment", ["Escape Pod"]),
     ]

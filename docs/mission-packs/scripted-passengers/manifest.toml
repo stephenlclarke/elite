@@ -1,0 +1,42 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.scripted-passengers"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "economy-v2", "charter-passengers-v2"]
+priority = 500
+source = "Original engine demonstration; not a historical Elite mission. Cabin purchase price is a labelled project estimate."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "charter"
+title = "Scripted passenger demonstration"
+briefing = "Fit an empty passenger berth at Lave's main orbital station, then accept to board Ari. Deliver Ari to Zaonce's main orbital station. Each fitted berth occupies five tonnes and one equipment unit."
+destination = "Galaxy 1, Zaonce (system 129)"
+reward = "100 credits on confirmed delivery."
+milestones = ["Board Ari in an actual fitted cabin", "Deliver Ari to Zaonce orbital station"]
+requiredPassengerParties = ["charter"]
+
+[[passengerParties]]
+id = "charter"
+names = ["Ari"]
+pickupGalaxy = 0
+pickupSystem = 7
+destinationGalaxy = 0
+destinationSystem = 129
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[dialogs]]
+id = "delivery"
+text = "Ari is ready to disembark. Confirm to transfer your passenger to the station and collect 100 credits."

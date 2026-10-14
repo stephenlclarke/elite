@@ -55,6 +55,10 @@ extension Display {
           fitted ? "FITTED" : String(format: "%.1f CR", Double(game.shopPrice(item)) / 10)
         if Equipment.isReward(item.name) && !game.atPlugh {
           status = fitted ? "FITTED" : Equipment.rewardLabel(item.name).uppercased()
+        } else if item.name == PassengerCabin.equipmentName {
+          status =
+            "\(game.commander.accommodation.fitted.count) FIT / "
+            + String(format: "%.1f CR", Double(game.shopPrice(item)) / 10)
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "
@@ -86,6 +90,12 @@ extension Display {
           + (game.commander.laser(on: game.equipmentMount) == laser
             ? "Fitted here. " : "Return fits/replaces only this mount. ")
           + "Left/Right or click mount to choose."
+      } else if item.name == PassengerCabin.equipmentName {
+        let fit = game.commander.passengerFit
+        description +=
+          "5t + 1 unit per place. \(fit?.freeCompatiblePlaces ?? 0) free. Price: project estimate. "
+        description +=
+          game.passengerBerthQuote.issues.first ?? "Return: buy. S: store empty. R: refit stored."
       } else if item.name == FuelStorage.equipmentName {
         description +=
           "Fitted \(game.commander.fuelStorageUnits)/4. Total fuel \(game.commander.fuelCapacity / 10) LY. Refuel separately."

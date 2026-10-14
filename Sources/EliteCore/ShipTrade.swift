@@ -42,6 +42,10 @@ extension Game {
   private func shipTransferIssues(to projected: Commander) -> [String] {
     let next = projected.performance
     var issues: [String] = []
+    if !commander.accommodation.fitted.isEmpty {
+      issues +=
+        projected.passengerFit?.issues ?? ["This hull has no compatible accommodation adapter."]
+    }
     if commander.cargoTonnes > projected.capacity {
       issues.append(
         "Sell cargo first: hold requires \(commander.cargoTonnes)t; new capacity \(projected.capacity)t. Mission cargo cannot be sold."
