@@ -108,7 +108,7 @@ extension Game {
   public var solarHUDLines: [String] {
     guard !docked, !celestials.isEmpty else { return [] }
     var lines = celestials.map { body -> String in
-      let p = body.position
+      let p = viewPosition(body.position)
       let horizontal = abs(p.x) < max(1, abs(p.z)) * 0.12 ? "" : (p.x < 0 ? " PORT" : " STARBOARD")
       let vertical = abs(p.y) < max(1, abs(p.z)) * 0.12 ? "" : (p.y > 0 ? " UP" : " DOWN")
       let ahead = p.z >= 0 ? " AHEAD" : " ASTERN"

@@ -127,3 +127,18 @@ private func solarGame(distance: Double = 2970) -> Game {
   game.celestials[0].position = .init(-1000, 1000, -3000)
   #expect(game.solarHUDLines[0].contains("ASTERN PORT UP"))
 }
+
+@Test func celestialHUDBearingsFollowTheSelectedCockpitView() {
+  for (screen, position) in [
+    (Screen.front, Vector3(0, 0, 1000)),
+    (.rear, .init(0, 0, -1000)),
+    (.left, .init(-1000, 0, 0)),
+    (.right, .init(1000, 0, 0)),
+  ] {
+    var game = solarGame()
+    game.screen = screen
+    game.celestials[0].position = position
+    #expect(game.solarHUDLines[0].contains("SUN AHEAD"))
+    #expect(!game.solarHUDLines[0].contains("ASTERN"))
+  }
+}
