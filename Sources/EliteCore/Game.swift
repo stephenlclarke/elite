@@ -1239,6 +1239,11 @@ public actor GameRuntime {
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
   }
+  public func restoreStartup(from url: URL) throws {
+    try load(from: url, persistMigrations: false)
+    game.screen = .title
+    game.time = 0
+  }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }

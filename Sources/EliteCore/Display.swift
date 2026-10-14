@@ -226,7 +226,11 @@ public enum Display {
     draw(ship, game: game, into: &frame)
     frame.centered("RIGHT-ON COMMANDER VERSION", 163)
     frame.centered("PRESS SPACE COMMANDER", 190)
-    frame.centered("SWIFT MACOS REIMPLEMENTATION", 224)
+    frame.centered(BuildIdentity.current.versionLine, 208)
+    frame.centered(BuildIdentity.repository, 218)
+    for (index, line) in BuildIdentity.current.legacyRevisionLines.enumerated() {
+      frame.centered(line, 230 + index * 10)
+    }
   }
   private static func demo(_ game: Game, into frame: inout Frame) {
     var demonstration = game
@@ -241,9 +245,12 @@ public enum Display {
     let lines = [
       "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
       "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
-    ]
+      BuildIdentity.current.versionLine, BuildIdentity.repository,
+    ] + BuildIdentity.current.legacyRevisionLines
+
+    let speed = Double(250 + lines.count * 24) / 11
     for (index, line) in lines.enumerated() {
-      let y = 250 + index * 24 - Int(game.time * 22)
+      let y = 250 + index * 24 - Int(game.time * speed)
       if (0..<250).contains(y) { frame.centered(line, y) }
     }
   }

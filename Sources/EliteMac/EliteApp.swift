@@ -295,7 +295,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       }
       if let self, self.restoreOnLaunch, let url = self.saves.startupURL {
         do {
-          try await runtime.load(from: url, persistMigrations: false)
+          try await runtime.restoreStartup(from: url)
           view?.game = await runtime.snapshot()
         } catch { await self.recoverStartup(error, url: url) }
       }
