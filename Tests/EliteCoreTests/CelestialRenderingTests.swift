@@ -154,3 +154,28 @@ private func planetPreviews(_ frame: Frame) -> [PlanetPreview] {
   #expect(Array(mixed.graphics[..<planetIndex]) == farFrame.graphics)
   #expect(Array(mixed.graphics[(planetIndex + 1)...]) == nearFrame.graphics)
 }
+
+@Test func celestialForwardLimbSurvivesCenterPassingBehindCameraInEveryView() throws {
+  for screen in [Screen.front, .rear, .left, .right] {
+    func world(_ x: Double, _ z: Double) -> Vector3 {
+      switch screen {
+      case .rear: .init(-x, 0, -z)
+      case .left: .init(-z, 0, x)
+      case .right: .init(z, 0, -x)
+      default: .init(x, 0, z)
+      }
+    }
+    var game = Game(executive: false)
+    game.screen = screen
+    var previews: [PlanetPreview] = []
+    for depth in [1.0, -1.0] {
+      game.celestials = [.init(kind: .planet, position: world(1200, depth), radius: 1100)]
+      previews.append(try #require(planetPreviews(celestialFrame(game)).first))
+    }
+    // Both centers straddle the near plane, but the right-edge view ray still
+    // intersects the forward limb. The bounded projection must not pop away.
+    #expect(previews[0].bounds == previews[1].bounds)
+    game.celestials = [.init(kind: .planet, position: world(0, -1200), radius: 1100)]
+    #expect(celestialFrame(game).graphics.isEmpty)
+  }
+}

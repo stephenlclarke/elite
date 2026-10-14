@@ -12,6 +12,6 @@ No commander save schema change. Existing saves restore docked; launch/arrival r
 
 ## Validation
 
-Full isolated Swift suite: 248 tests passed. Sixteen focused simulation/rendering tests cover collection and fuel policies, fractional accumulation, viewing direction, motion, heat/death, lifecycle, surface/jump limits, default visibility, perspective, clipping, alpha and mixed-object depth. The existing starfield test now isolates stars from the solid sun disk, and extra flight help uses existing pagination in all contexts.
+Full isolated Swift suite: 248 tests passed. Eighteen focused simulation/rendering tests cover collection and fuel policies, fractional accumulation, viewing direction, motion, heat/death, lifecycle, surface/jump limits, default visibility, perspective, clipping, alpha, mixed-object depth and near-plane limb continuity in all four views. The existing starfield test now isolates stars from the solid sun disk, and extra flight help uses existing pagination in all contexts.
 
 Final combined CI/media checks and native flight evidence are recorded separately by the integration owner. The shared implementation branch is coordinated with the station/docking HUD change; `CockpitDisplay.extraLines` must include both owners' feedback.
