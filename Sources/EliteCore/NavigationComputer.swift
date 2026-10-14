@@ -241,6 +241,7 @@ extension Game {
   }
   mutating func navigationKey(_ key: String) {
     switch key {
+    case "p": toggleProfitScan()
     case "escape", "n": screen = navigationReturn
     case "k":
       helpReturn = .navigation

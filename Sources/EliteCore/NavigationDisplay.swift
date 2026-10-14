@@ -4,7 +4,13 @@ extension Display {
   static func navigationSummary(_ game: Game, width: Double) -> [String] {
     guard game.navigationOptions.indices.contains(game.navigationSelection) else { return [] }
     let route = game.navigationOptions[game.navigationSelection]
-    let summary = [
+    let profits = game.profitDestinations
+    let scan = [game.profitScanSummary] + profits.enumerated().map {
+      String(format: "%d %@: %.1f CR estimated profit", $0.offset + 1,
+        game.systems[$0.element.systemID].name, Double($0.element.profit) / 10)
+    }
+    let summary = scan + [
+      "Profit estimates: carried cargo vs selling here plus affordable exports; before fuel/risk.",
       String(
         format: "%d jumps  %.1f ly  Fuel estimate %.1f CR", route.plan.path.count - 1,
         route.distance, Double(route.fuelUnits * 2) / 10),
@@ -67,7 +73,7 @@ extension Display {
       }
     }
     frame.label(
-      "Arrows: route  Return: set  C: clear  Esc: back", 16, height - 34, scale: font, ink: .cyan)
+      "Arrows: route  Return: set  P: profit scan  C: clear  Esc: back", 16, height - 34, scale: font, ink: .cyan)
     frame.label(
       navigationWindow(game, width: width, height: height).hint.map { "Option-" + $0 }
         ?? "Set route, then launch; H starts a jump in flight", 16, height - 17, scale: font,

@@ -234,6 +234,10 @@ extension Display {
     let visible = game.mapSystems.filter {
       layout.plot.contains(layout.point($0, current: game.currentSystem))
     }
+    let ranks = game.mapIsCurrentGalaxy
+      ? Dictionary(uniqueKeysWithValues: game.profitDestinations.enumerated().map {
+        ($0.element.systemID, $0.offset + 1)
+      }) : [:]
     let markerBoxes = visible.map { system -> CanvasRect in
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 3)
@@ -243,6 +247,11 @@ extension Display {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
+      if let rank = ranks[system.id] {
+        frame.ellipse(point.x, point.y, radius + 7, radius + 7, .gold)
+        frame.label(String(rank), point.x - 3 * layout.font, point.y - 3.5 * layout.font,
+          scale: layout.font, ink: .yellow)
+      }
       if game.mapIsCurrentGalaxy && system.id == game.commander.system {
         frame.ellipse(point.x, point.y, radius + 3, radius + 3, .cyan)
       }
@@ -260,11 +269,12 @@ extension Display {
     let labelled = visible.sorted { a, b in
       func priority(_ value: StarSystem) -> Int {
         if value.id == game.viewedSystemID { return 0 }
-        return game.mapIsCurrentGalaxy && value.id == game.commander.system ? 1 : 2
+        if game.mapIsCurrentGalaxy && value.id == game.commander.system { return 1 }
+        return ranks[value.id].map { $0 + 1 } ?? 7
       }
       return priority(a) == priority(b) ? a.id < b.id : priority(a) < priority(b)
     }.filter {
-      layout.local || $0.id == game.viewedSystemID
+      layout.local || ranks[$0.id] != nil || $0.id == game.viewedSystemID
         || (game.mapIsCurrentGalaxy && $0.id == game.commander.system)
     }
     for system in labelled {
@@ -279,7 +289,7 @@ extension Display {
     }
     mapLegend(game, layout: layout, into: &frame)
     frame.label(
-      "Arrows: planet  O: current  Esc: back  K: help", 16, height - 20,
+      "Arrows: planet  P: profit scan  O: current  Esc: back", 16, height - 20,
       scale: layout.font, ink: .cyan)
     if game.messageTime > 0 {
       frame.label(game.message, 16, height - 40, scale: layout.font, ink: .orange)
