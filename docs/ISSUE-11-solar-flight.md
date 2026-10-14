@@ -1,5 +1,7 @@
 # Visible celestial flight space and solar fuel scooping
 
+Delivered together in [PR #11](https://github.com/stephenlclarke/elite/pull/11). See [the integrated validation and release evidence](PR-11.md) and [request checklist](DELIVERY-BACKLOG.md).
+
 ## Problem
 
 The local flight scene contains ships and a station but no reachable planet or sun. Cabin temperature never changes, and Fuel Scoops only collect cargo, leaving the expected solar fuel/overheating gameplay absent.

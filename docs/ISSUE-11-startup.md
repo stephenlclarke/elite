@@ -1,5 +1,7 @@
 # Startup continuation and build identity
 
+Delivered together in [PR #11](https://github.com/stephenlclarke/elite/pull/11). See [the integrated validation and release evidence](PR-11.md) and [request checklist](DELIVERY-BACKLOG.md).
+
 ## Motivation
 
 Automatic save restoration bypasses the title, and startup credits omit verifiable build identity.

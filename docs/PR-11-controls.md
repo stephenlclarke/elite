@@ -1,5 +1,7 @@
 # Control guide consistency
 
+Delivered together in [PR #11](https://github.com/stephenlclarke/elite/pull/11). See [the integrated validation and release evidence](PR-11.md) and [request checklist](DELIVERY-BACKLOG.md).
+
 ## Motivation
 
 The control guide still described a showroom without purchases, used retired source/refit button labels, and omitted the distinction between reload and Open. Title help always claimed a new Jameson even after restoration.

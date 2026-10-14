@@ -1,5 +1,7 @@
 # Ship design quality and remaining player experience requests
 
+Delivered together in [PR #11](https://github.com/stephenlclarke/elite/pull/11). See [the integrated validation and release evidence](PR-11.md) and [request checklist](DELIVERY-BACKLOG.md).
+
 ## Motivation
 
 Catalogue coverage did not satisfy the requested design quality. The generated Alliance Challenger had only 52 vertices and 42 faces, with no intricate surface detail; many unrelated ships reused the same primary template. The requested family resemblance, coordinated palettes and smooth alien forms remained outstanding. The Liberator also needed three nacelles, a smooth two-hemisphere engine and a gold collector that was not hidden by intersecting grey hull faces.
