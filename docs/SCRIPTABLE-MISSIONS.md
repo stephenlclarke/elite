@@ -1,0 +1,67 @@
+# Scriptable mission packs
+
+The script engine is being implemented on `feature/scriptable-mission-engine`. The first vertical implementation runs authored Lua story, station, courier and timer logic without a mission-specific Swift class. It preserves schema 1 and the three bundled campaigns. This is not completion of the full physical mission-engine design, and none of the queued historical research campaigns is enabled by this example.
+
+## Install and play the example
+
+Choose **Commander > Install Mission Pack**, then select the [scripted courier folder](mission-packs/scripted-courier). At a main orbital station, open **Mission Contacts**, read the offer and confirm. Acceptance requires one free tonne; Back does nothing. Carry the sealed supplies to Zaonce in Galaxy 1, visit its main orbital station, and confirm delivery for 50 credits. The authored Lua module controls the branches; native code validates location, owned cargo, capacity and the balance. This original demonstration is separate from the historical mission catalogue.
+
+The Gallery shows installed scripted missions and preserves missing-pack references, status, milestones and rendered journal entries. It remains read-only. `GameRuntime.scriptGalleryTrial` creates an independent runtime with a fresh commander; live commander, cargo and RNG state are untouched. A player-facing trial launcher and authored full-world scenario tools remain to be implemented.
+
+## Format and interpreter contract
+
+A schema 2 folder contains `manifest.toml` and its declared pack-local UTF-8 Lua module. See the [example manifest](mission-packs/scripted-courier/manifest.toml) and [module](mission-packs/scripted-courier/scripts/main.lua). The manifest declares API 2, minimum engine contract 2.0.0, identity/version, dependencies, source/license, space/orbital environments, handlers, dialogue and milestones. Unknown fields, invalid paths, linked resource components, oversized files, unsupported environments and syntax/module-initialization errors are rejected. Every declared handler must exist.
+
+Installation snapshots and verifies the bytes, then publishes a new folder named from pack ID, version and content digest under `~/.xyzzy/elite/mission-packs/scripted`. Identical content is idempotent. Existing version folders are retained. Saved instances require their exact digest and dependency set; missing content suspends progress while retaining the cargo and event queue. Restore the original pack and explicitly resume the instance through the runtime author API; a changed pack is not an implicit migration.
+
+Each named function receives `(event, world, data)` and returns `{data = a_map, commands = an_array}`. `world` is a scoped value snapshot: galaxy/system, genuine docking/main station, decicredits, free tonnes and native clock values. `event.kind`, `sequence` and event-specific values come from the engine. Editing either table cannot mutate native facts. Persistent data must be explicit finite values; functions, userdata, cycles, sparse/mixed-key tables, invalid UTF-8 and excessive nesting are rejected. Empty Lua tables decode as empty maps and are accepted as empty command arrays. Module globals and closures are recreated on every dispatch.
+
+The interpreter exposes base scalar/assert/error/type/iteration helpers and numeric math, without `pairs`/`next`, metatables, catch/resume, loaders, packages, I/O, OS, debug, string/table libraries or independent random/time. Use numeric loops and `ipairs` over ordered arrays. `tostring` accepts scalars only. VM entry, allocation, hooks, library setup, serialization and error unwinding are entirely C; no Lua error unwinds across a Swift callback. There are no interpreter pointers in game snapshots.
+
+## Implemented native capabilities
+
+| Capability | Current executable support |
+| --- | --- |
+| `script-lua-v1` | Bounded programmable handlers, fresh environment, validated explicit data and proposals. |
+| `story-v2` | Native scoped station dialogue/confirmation, journal, story milestones and terminal outcomes. |
+| `economy-v2` | Signed integer decicredit debits/rewards with checked balance and per-instance operation receipts. |
+| `cargo-v2` | Owned mission payload lots counted against the current hold, atomic issue/removal and receipts. |
+| `local-flight-clocks-v2` | Saved local/flight clocks, one-shot/fixed-delay/skipped-interval named timers and actual fired pulses. |
+
+Required capabilities outside this set keep a valid pack unavailable. In particular `world-clocks-v1` from the design is not advertised: all four source domains and independently owned world jobs are not implemented yet. No physical kill objective can be proved by a story milestone, contact, role name or installed pack.
+
+Current events are `mission.accepted`, `station.docked`, `station.undocked`, `system.entered`, `contact.requested`, `dialogue.confirmed`, `timer.fired` and reserved `mission.abandoned`. Dock/location events are observed after native simulation/input changes. No public script API manufactures physical destruction, wormhole, passenger or equipment events.
+
+| Command | Fields after `op` | Native checks |
+| --- | --- | --- |
+| `credits` | `id`, signed integer `amount` | Declared economy capability, once-only operation, balance 0-4294967295 decicredits. |
+| `payload.add` / `payload.remove` | `id`, `key`, positive integer `amount` | Declared cargo capability, owned lot, final whole-batch hold fit, once-only operation. |
+| `milestone.ensure` | zero-based `index` | Declared story milestone; idempotent. These are story milestones, not physical-objective receipts. |
+| `journal.append` | `text` | Bounded rendered text and journal count. |
+| `dialogue.offer` | declared dialogue `id` | Actual main orbital station; pins instance, location and revision token. |
+| `dialogue.commit` | `id`, native event `token` | Actual matching confirmation, current location/revision and offer. Back cannot issue this event. |
+| `timer.ensure` | `id`, `domain`, `after`, `interval`, `policy` | Local/flight domain, finite bounds, `once`/`delay`/`skip`, saved native due/pulse state. |
+| `timer.cancel` | `id` | Removes this instance's timer only. |
+| `mission.finish` | `outcome` | `complete` requires every milestone; `failed`/`abandoned` are terminal. Place this last. |
+
+Commands and explicit data commit as one in-memory commander transaction. An invalid command, unknown field, denied balance/hold, stale confirmation or execution fault discards the proposal. Already accepted instances suspend with their original data/property and unacknowledged event; initial acceptance fails without creating an instance. Subsequent events cannot revive or repay a terminal instance. A source-authorized failed payment can precede the terminal command in the same batch. Personal equipment storage and passenger custody are not payload substitutes.
+
+Local time continues in loaded unpaused docked panels and handoffs, freezes in Help/Gallery/explicit pause, and advances by the native capped tick. Flight time requires actual active flight. A skipped timer fires once after a late tick and schedules the next original interval; it does not replay missed pulses. Calendar/transit progression and independent world-job ownership remain unavailable. Clocks do not create empty script state in legacy commanders.
+
+## Saves and bounds
+
+Commanders without scripted instances retain the existing single JSON format. Scripted commanders publish a small JSON generation pointer plus a sibling `.missions` directory. Each immutable generation contains hashed `commander.json`, `missions.json` and `world.json`. All new chunks are written before the pointer is atomically replaced; earlier generations remain recoverable. Load validates every chunk and the complete candidate before replacing actor state. No ordinary docking, reward, auto-trade or Lua constructor callbacks replay during v2 restore. Preserve both the pointer and its sidecar when copying a scripted save.
+
+The current world chunk preserves the local bodies/market, location/docking/view, energy/shields/heat, speed/time, selected system, jump countdown and next body ID. Full source-profile AI/controller/transit/people/storage/campaign world persistence remains part of subsequent physical implementation; this first chunk must not be used as proof that all researched battle state can be restored. Publication currently runs synchronously inside GameRuntime, which prevents actor reentrancy during the write. Durable automatic Confirm publication, background writer barriers and explicit migrations are still required by the full design.
+
+Initial quotas are 50000 VM instructions (1000-instruction hooks), 8 MiB heap, 32 MiB allocation work, 512 KiB proposal output, 256 KiB explicit data, 256 commands, depth 32 and 16384 exchanged values. Collections, journals, receipts, instances and pending events have native limits. These are bounded initial implementation limits, not permission to truncate researched encounter counts. VM faults cannot publish partial output.
+
+The [24-requirement status map](SCRIPTABLE-MISSION-STATUS.json) records partial and unsupported groups separately.
+
+## Validation and remaining implementation
+
+The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 244 tests in each coverage/thread/address lane, 93.09% maintained coverage and zero native diagnostic leaks.
+
+Run `make script-missions-check` for the authored example, `make test` for behavior and `make ci` for repository gates. Tests cover script execution, quota faults, invalid output, initial acceptance rollback, whole-batch cargo/economy rollback, stale/Back/valid Confirm, terminal reward replay, missing content/cargo preservation, local timer skips, isolated trials, old saves, immutable generations and corrupt/failed saves. The maintained C shim is included in coverage; only unmodified third-party Lua is excluded from the maintained-code percentage and Sonar source scope. Compiled Lua still runs under sanitizers and leak checks.
+
+The full design additionally requires actual owned fleets/components and admission, native AI/docking/wormholes/weapons/death objectives, all source clock domains and persistent station jobs, people/life support/crew/berths, unique equipment and storage, contract boards/quotes/repeatable jobs, compound campaign receipts, complete physical save/migration/replay services, deterministic plans, full Gallery scenes/tools and native Maenes/finance/RRS acceptance. These remain unsupported, with no historical mission rewritten into a courier to bypass them.

@@ -4,3 +4,6 @@ Sources/EliteCore/Resources/ModelLicenses/** conflict-marker-size=32 -text white
 Sources/EliteCore/Resources/*-LICENSE.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 Sources/EliteCore/Resources/Vector-MANIFEST.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 Sources/EliteCore/Resources/Legal/CC-*.txt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Preserve the pinned third-party interpreter source byte-for-byte.
+Sources/CLua/** -text whitespace=-blank-at-eol,-blank-at-eof

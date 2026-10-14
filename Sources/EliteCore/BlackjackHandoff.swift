@@ -48,12 +48,17 @@ extension Game {
     if ["left", "right", "up", "down"].contains(key) {
       blackjackOffer?.confirmSelected.toggle()
       packOffer?.confirmSelected.toggle()
+      if scriptOffer != nil || scriptAvailablePackDigest != nil { scriptConfirmSelected.toggle() }
     }
     if key == "escape" {
       closeBlackjackHandoff()
       return
     }
     guard key == "return" else { return }
+    if (scriptOffer != nil || scriptAvailablePackDigest != nil) && !scriptConfirmSelected {
+      closeBlackjackHandoff()
+      return
+    }
     if packOffer?.confirmSelected == false || blackjackOffer?.confirmSelected == false {
       closeBlackjackHandoff()
       return
@@ -63,9 +68,21 @@ extension Game {
   mutating func closeBlackjackHandoff() {
     blackjackOffer = nil
     packOffer = nil
+    scriptOffer = nil
+    scriptAvailablePackDigest = nil
     screen = blackjackReturn
   }
   mutating func confirmBlackjackHandoff() {
+    if let digest = scriptAvailablePackDigest, let pack = scriptPacks.first(where: { $0.digest == digest }) {
+      guard !paused, docked, dockedAtMainStation else {
+        notify("RETURN TO THE STATION AND RESUME TO CONFIRM")
+        return
+      }
+      do { _ = try acceptScriptMission(pack) } catch { notify(error.localizedDescription) }
+      closeBlackjackHandoff()
+      return
+    }
+    if scriptOffer != nil { confirmScriptDialogue(); return }
     confirmPackOffer()
   }
 
@@ -80,7 +97,7 @@ extension Display {
     let contentWidth = min(650, width - 48)
     let left = (width - contentWidth) / 2
     frame.label(
-      game.offeredPack?.pack.mission.title.uppercased() ?? "MISSION CONTACT", left, 20, scale: font,
+      game.offeredScriptTitle?.uppercased() ?? game.offeredPack?.pack.mission.title.uppercased() ?? "MISSION CONTACT", left, 20, scale: font,
       ink: .yellow)
     frame.label(
       "Main orbital station: " + game.currentSystem.name, left, 48, scale: font, ink: .cyan)
@@ -101,7 +118,7 @@ extension Display {
         frame.label(line, left, height - 100 + Double(index) * 16, scale: font, ink: .orange)
       }
     }
-    let selected = game.packOffer?.confirmSelected ?? game.blackjackOffer?.confirmSelected ?? true
+    let selected = (game.scriptOffer != nil || game.scriptAvailablePackDigest != nil) ? game.scriptConfirmSelected : game.packOffer?.confirmSelected ?? game.blackjackOffer?.confirmSelected ?? true
     frame.label(
       (selected ? "> " : "  ") + "Confirm / Continue", left, height - 48, scale: font, ink: .cyan)
     frame.label(
@@ -119,7 +136,7 @@ extension Game {
   }
   func packDialogLines(width: Double) -> [String] {
     MissionNotice.wrap(
-      packText(offeredDialog?.text ?? blackjackOffer?.action.text ?? "Contact unavailable."),
+      packText(offeredScriptText ?? offeredDialog?.text ?? blackjackOffer?.action.text ?? "Contact unavailable."),
       width: max(10, Int(min(650, width - 48) / (6 * GameTypography.scale))))
   }
   var packDialogWindow: ScrollWindow {

@@ -42,7 +42,7 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
+The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically; the bounded mission interpreter uses vendored Lua 5.5.1 with its bundled MIT notice. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
 
 ## Licence
 
@@ -100,7 +100,7 @@ Keyboard alternatives are [ for anticlockwise, ] for clockwise, and held - / = o
 
 Prototype defaults are 12 degrees/second initially, 6 degrees/second of rate adjustment per second, a 60 degrees/second cap and a 24 degrees/second-per-second response limit. Contact counts must remain stable for 120 ms before changing rate. Circles need at least 300 degrees of consistent motion, 16 samples and 85% direction consistency, at a normalized radius of 0.12-0.46 around the pad centre; jumps over 45 degrees between samples are rejected. Two-finger aiming starts from a fresh reference whenever the count changes, with a 2% dead zone and full deflection after 25% of pad travel. These are tunable prototype values, not findings from player testing. Native touch hardware and macOS gesture interaction still require an on-device check; no global gesture settings are changed by the game.
 
-Commander saves, including secret options, live at `~/.xyzzy/elite/commander.json`. Saving is atomic; loading validates the entire commander before replacing actor state.
+Commander saves, including secret options, live at `~/.xyzzy/elite/commander.json`. Saving is atomic; loading validates the entire commander before replacing actor state. Scripted missions also use a sibling `.missions` folder of immutable save generations; keep it together with its JSON pointer when copying a save.
 
 ## Original BBC naval missions
 
@@ -303,3 +303,7 @@ The primary reference is [Mark Moxon's Executive version analysis](https://elite
 All ship data, including Frontier capabilities and shipyard refit research, is retained; see [ship data scope](docs/SHIP-DATA-SCOPE.md).
 
 On launch, the app restores your last successfully saved commander. Command-S saves; Command-Shift-S chooses a new save location. Command-O reloads the active save; Command-Shift-O opens another file. Hull, fit, cargo, credits, legal status and mission progress persist. The current format restores docked at the saved system, rather than recreating a mid-flight scene. Missing or corrupt saves show a recoverable choice and are not overwritten during startup.
+
+## Scriptable missions
+
+Schema 2 folders can author bounded Lua station, story, courier and local/flight timer logic without a Swift mission class. Install the [scripted courier example](docs/mission-packs/scripted-courier), then visit Mission Contacts at an orbital station. The three original bundled campaigns keep their schema 1 behavior. The [author guide](docs/SCRIPTABLE-MISSIONS.md) documents current APIs, save sidecars and remaining physical/custody/campaign work; no queued research campaign is enabled by the example.

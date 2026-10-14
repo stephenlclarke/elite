@@ -41,7 +41,7 @@ extension Game {
       offset: max(0, gallery.selection - visible + 1))
   }
   public var missionCatalogue: [GalleryMission] {
-    missionPacks.entries.map { packGallery($0) } + missingPackGallery
+    missionPacks.entries.map { packGallery($0) } + missingPackGallery + scriptGallery
   }
   public mutating func openGallery() {
     guard

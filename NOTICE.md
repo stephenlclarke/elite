@@ -37,3 +37,7 @@ Keep the applicable copyright, attribution and licence notices with redistribute
 ## Individual ship definitions
 
 The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 74 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-three original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
+
+## Lua mission interpreter
+
+Lua 5.5.1 is vendored from the [official source archive](https://www.lua.org/ftp/lua-5.5.1.tar.gz), SHA256 `1c4b4068d67061f2a2231ad2b5422e77acea1487ea9890f6320af614f4373dce`. Copyright 1994-2026 Lua.org, PUC-Rio, MIT licensed. The [complete notice](Sources/EliteCore/Resources/Legal/Lua-LICENSE.txt) is included in the app's legal resources. [Per-file provenance](Sources/CLua/PROVENANCE.json) records the unmodified upstream C and headers. The separate MissionScript C host and Swift mission integration are original project code.

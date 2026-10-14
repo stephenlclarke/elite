@@ -549,7 +549,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   @objc private func installMissionPack() {
     let panel = NSOpenPanel()
-    panel.canChooseDirectories = false
+    panel.canChooseDirectories = true
     panel.allowsMultipleSelection = false
     panel.allowedContentTypes = [UTType(filenameExtension: "toml") ?? .plainText]
     guard panel.runModal() == .OK, let url = panel.url else { return }
@@ -604,8 +604,14 @@ struct EliteApp {
       guard CommandLine.arguments.indices.contains(index + 1) else {
         throw MissionPackErrorCLI.missingPath
       }
-      let entry = try MissionPackLibrary.read(
-        URL(fileURLWithPath: CommandLine.arguments[index + 1]))
+      let url = URL(fileURLWithPath: CommandLine.arguments[index + 1])
+      if (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
+        let pack = try ScriptPackLibrary.read(url)
+        print("Valid scripted pack: \(pack.manifest.stateID) @ \(pack.manifest.version)")
+        print(pack.missingCapabilities.isEmpty ? "Native capabilities available." : "Reference only. Requires: " + pack.missingCapabilities.joined(separator: ", "))
+        return
+      }
+      let entry = try MissionPackLibrary.read(url)
       _ = try MissionPackLibrary.checked(MissionPackLibrary.bundled.entries + [entry])
       print("Valid mission pack: \(entry.pack.stateID) @ \(entry.pack.version)")
       return
@@ -678,6 +684,7 @@ struct EliteApp {
     guard CGImageDestinationFinalize(gif) else { throw SaveError.invalidCommander }
   }
   private static func diagnostics() async throws {
+    try await GameRuntime().diagnoseScriptHost()
     for cycle in 0..<10 {
       let runtime = GameRuntime()
       await runtime.key("x")

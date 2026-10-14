@@ -1,0 +1,283 @@
+{
+  "design": "ELITE-SCRIPTABLE-MISSION-ENGINE-v1 (14 October 2026)",
+  "branch": "feature/scriptable-mission-engine",
+  "full_engine_ready": false,
+  "default_bundled_campaigns": 3,
+  "example": "Optional original scripted courier; not a historical research mission",
+  "supported_capabilities": [
+    "script-lua-v1",
+    "story-v2",
+    "economy-v2",
+    "cargo-v2",
+    "local-flight-clocks-v2"
+  ],
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "Compatibility and programmable content",
+      "full_requirement": "Keep schema1/legacy3 working; schema2manifest plus real Lua procedures/branches/event handlers, no per-mission Swift code.",
+      "required_acceptance": "Existing three campaigns unchanged and new installed scripted space mission without Swift mission edits.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptPack.swift",
+        "docs/mission-packs/scripted-courier"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R02",
+      "title": "Pack identity and installation",
+      "full_requirement": "Exact bytes/hash/version/modules/dependencies/assets/capabilities, v1files and immutablev2directories; saved versions retained.",
+      "required_acceptance": "Changed digest/missing asset/duplicate ID/symlink/path escape rejected or intact suspension; no active reset.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptPack.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R03",
+      "title": "Explicit script state",
+      "full_requirement": "Fresh per-dispatch environment, bounded serializable data, no hidden globals/upvalue/coroutine save state.",
+      "required_acceptance": "Reload/replay same input yields same validated proposal and no hidden counter drift.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptValue.swift",
+        "Sources/EliteCore/ScriptEvaluator.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R04",
+      "title": "Swift6 and C boundary",
+      "full_requirement": "GameRuntime owns mutations; MainActor UI snapshots; C protected error frames/no Lua error across Swift callback.",
+      "required_acceptance": "Actor isolation build, ASan/TSan/leak/VMerror paths with no pointer in Sendable Game snapshot.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/MissionScript/MissionScript.c",
+        "Sources/EliteCore/ScriptEvaluator.swift",
+        "Sources/EliteCore/Game.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R05",
+      "title": "Native physical events and deduplication",
+      "full_requirement": "Engine envelopes/real admission/destruction/removal/transit/person receipts, stable body IDs and causal order.",
+      "required_acceptance": "Foreign/duplicate/unload/pod/role events cannot grant death objective; any real attacker still qualifies.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptDirector.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R06",
+      "title": "Atomic economy and ownership",
+      "full_requirement": "Quotes/debits/refunds/debts/partial quantities and multi-resource Confirm transactions with exact receipts.",
+      "required_acceptance": "Stale quote, denied capacity, disk failure and replay leave original balance/property; actual new partial lot succeeds.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptCommands.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R07",
+      "title": "Whole encounter admission",
+      "full_requirement": "Durable saved plan/RNG, full real fleet/components/clear placements/resources; actual admission before target ledger.",
+      "required_acceptance": "Maenes32crewed+surviving50grid/22escorts full or pending, never partialquota/clone/refill.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R08",
+      "title": "Scriptable AI and actual travel",
+      "full_requirement": "Composable decisions/native steering/formation/dock/scoop/wormhole with distinct request/result and stable people/bodies.",
+      "required_acceptance": "Same Cherkasova real NPC-first hole/arrival/docking; missed wakes/leader loss without teleport.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R09",
+      "title": "Weapons and combat profiles",
+      "full_requirement": "NPC/player source separation, exact lasers/facings/controllers/muzzles/turrets/missiles/ECM/stock/physicaldamage.",
+      "required_acceptance": "Real source beam/pulse/military/turret15/25/cooldowns/ECM/collateral and no visual-only dock capability.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R10",
+      "title": "Clocks and world jobs",
+      "full_requirement": "Explicit flight/local/calendar/transit domains, source skipped-pulse counters and independently owned grid/care jobs.",
+      "required_acceptance": "Maenes0first/285/lander120/final10/late/earlyvictory/unload/report cases with true controller receipts.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptMissionState.swift",
+        "Sources/EliteCore/ScriptDirector.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R11",
+      "title": "Crew/passenger/cargo custody",
+      "full_requirement": "Shared fit/life-support service; intrinsic crew vs charter,5t+1unit berths, real1toccupiedpods, protected actuallots.",
+      "required_acceptance": "Passenger acceptance/hull swap blocked if actual capacity insufficient; no people deletion/storage/free cabins.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R12",
+      "title": "Shipyard and equipment storage",
+      "full_requirement": "Unique compatiblegear transfer/surplusstorage/reuse, stock and loan preservation;3Dallplanes/linkedsidebyside orientation.",
+      "required_acceptance": "Switch4laser/4missile to1/1 and back with same IDs/ammo, actualpayload fit and synchronized preview quaternion.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R13",
+      "title": "Contract boards and generated instances",
+      "full_requirement": "Station/HQ support, saved offers/revisions/seed/quote/deadline, distinct repeatable jobUUIDs, readableblocked offers.",
+      "required_acceptance": "Stale/refreshed/Back/reload/hull cases never rerollaccepted job or enable unsupported content.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R14",
+      "title": "Compound campaigns and services",
+      "full_requirement": "True childcompletion joins, exclusive choices, shared contacts/dossier/loans/book and mission-instance scoped keys.",
+      "required_acceptance": "FourP19strands join real receipts; one followup selected once; book read not contact/payment.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R15",
+      "title": "Persistent saves and migrations",
+      "full_requirement": "v2immutable generations/worldchunks/receipts/RNG/custody/clocks/digests; v1import; atomicpublish/barrier.",
+      "required_acceptance": "Crash before/after publication, oldsave migration, missingpack/changedversion and lateevents preserve exactstate.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptPersistence.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R16",
+      "title": "Reproducible plans and RNG",
+      "full_requirement": "Engine-owned versioned streams and stable ordering; commit preparations once, no independent script RNG/time.",
+      "required_acceptance": "Denied/retried spawn, Gallery/read-only/upgrade/reload never changes existing role/equipment/missile/person draws.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R17",
+      "title": "Generic nontechnical UI and journal",
+      "full_requirement": "Native paragraphs/choices/tables/books/HUD/3Dpanels with declared text/typed substitutions and queued interactions.",
+      "required_acceptance": "EverypageBack/staleConfirm/reload/scopedoverlay/renderedjournal preserves truthfulstate.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/BlackjackHandoff.swift",
+        "Sources/EliteCore/ScriptDirector.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R18",
+      "title": "Isolated Mission Gallery",
+      "full_requirement": "Pack scenarios/checkpoints/seed/actualworld trials and source/estimate/status labels in separate namespaces.",
+      "required_acceptance": "Complete success/failure native scenes with no effect on livecommander/gear/debt/people/RNG.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptRuntime.swift",
+        "Sources/EliteCore/MissionGallery.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R19",
+      "title": "Scope/editions/provenance",
+      "full_requirement": "Scopev4space/orbital only; groundreference separate; source/borrow/estimate/repair and hull/alien dedup retained.",
+      "required_acceptance": "All branches/text/dependencies screened, unsupportedground APIs unavailable, no Frontiermission return.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptPack.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R20",
+      "title": "Execution budgets and recovery",
+      "full_requirement": "C-only VM quotas/hooks/allocator/host work bounds, restrictedlibs/no scriptcatchbudgetloop; typedexpecteddenials.",
+      "required_acceptance": "Endlessloop/deeprecursion/largealloc/heavyhelper/statecycle/error cannot partialcommit or starve game.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/MissionScript/MissionScript.c",
+        "Tests/EliteCoreTests/ScriptEvaluatorTests.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R21",
+      "title": "Author tools and diagnostics",
+      "full_requirement": "Manifest/syntax/capability report/scenario/replay/migrationdryrun/isolatedhotreload and per-case traces/timings.",
+      "required_acceptance": "Author fixes missing capability or failed native receipt from readabletrace; parser green not acceptance.",
+      "status": "partial",
+      "current_evidence": [
+        "Makefile",
+        "Sources/EliteMac/EliteApp.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R22",
+      "title": "Readiness and enablement gates",
+      "full_requirement": "Real capability registry/version/assets/acceptance distinctfromsourcecomplete/delivered; preserve queued fullmission.",
+      "required_acceptance": "Unavailable jobs remain reference/blocked, no courier/contact rewrite or fake implemented label.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptPack.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R23",
+      "title": "Terminal outcomes and living care",
+      "full_requirement": "Complete/failed terminals no restart; source latefailed payment and independent returncare/worldjobs preserved.",
+      "required_acceptance": "RRS pilot latefullpay/failed once, rescuedpeoplecare retained, no reward revival/second payout.",
+      "status": "partial",
+      "current_evidence": [
+        "Sources/EliteCore/ScriptCommands.swift"
+      ],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    },
+    {
+      "id": "R24",
+      "title": "Implementation validation and native evidence",
+      "full_requirement": "Coherentvertical phases, full source/adaptation acceptance, meaningful saves/VM/world tests and nativeCI/sanitizer/leak/render gates.",
+      "required_acceptance": "Actual Maenes/finance/RRS examples playablewithisolatedGallery and no bespokeSwiftmissionbranch; makeci and exact-mainSonar rules.",
+      "status": "not implemented",
+      "current_evidence": [],
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+    }
+  ],
+  "coordination": {
+    "coder_1": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+    "coder_2": "01a139b4-fcdd-76d1-b0dd-4e4a91c1a3a1",
+    "engine_worktree": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite",
+    "integration": "Do not merge into either coder checkout during their release work. Preserve committed restoreStartup/profit changes when integrating."
+  },
+  "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
+  "validation_result": {
+    "tests_per_lane": 244,
+    "maintained_coverage_percent": 93.09,
+    "leaks": 0
+  }
+}

@@ -8,6 +8,11 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedScriptState: ScriptEngineState?
+  public var scriptState: ScriptEngineState {
+    get { savedScriptState ?? ScriptEngineState() }
+    set { savedScriptState = newValue }
+  }
   private var savedMissionProgress: [String: MissionProgress]?
   public var missionProgress: [String: MissionProgress] {
     get { savedMissionProgress ?? [:] }
@@ -123,7 +128,7 @@ public struct Commander: Sendable, Equatable, Codable {
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
-    zip(cargo, Commodity.all).reduce(missionPayloadTonnes) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
+    zip(cargo, Commodity.all).reduce(missionPayloadTonnes + scriptState.payloadTonnes) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
   }
   public var rank: String {
     let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
@@ -146,6 +151,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
+      && scriptState.valid
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -228,6 +234,10 @@ public struct Game: Sendable {
   public var paused = false
   public var docked = true
   public var dockedAtMainStation = true
+  public var scriptPacks: [ScriptPack] = []
+  public var scriptAvailablePackDigest: String?
+  public var scriptOffer: UUID?
+  public var scriptConfirmSelected = true
   public var missionPacks = MissionPackLibrary.bundled
   public var packOffer: PackOffer?
   public var packOfferElapsed = 0.0
@@ -318,6 +328,8 @@ public struct Game: Sendable {
     commander = value
     blackjackOffer = nil
     packOffer = nil
+    scriptOffer = nil
+    scriptAvailablePackDigest = nil
     migrateMissionProgress()
     gallery = MissionGalleryState()
     showroom = ShowroomState()
@@ -1199,7 +1211,20 @@ public actor GameRuntime {
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     let old = game.screen
+    let wasDocked = game.docked
+    let oldLocation = (game.commander.galaxy, game.commander.system)
+    if (key == "contacts-open" || (key == "b" && !game.acceptsTextInput)), game.docked, !game.paused,
+      ![Screen.help, .gallery, .handoff, .mission, .showroom, .title, .demo, .gameOver,
+        .secret, .navigation, .rumour].contains(game.screen)
+    {
+      game.emitScriptEvent("contact.requested")
+      if game.showScriptDialogue() || game.offerAvailableScriptMission() {
+        controls = Controls()
+        return
+      }
+    }
     game.key(key)
+    game.observeScriptLocation(wasDocked: wasDocked, galaxy: oldLocation.0, system: oldLocation.1)
     if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
     {
       controls.pitch = 0
@@ -1226,13 +1251,23 @@ public actor GameRuntime {
   }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
+    let wasDocked = game.docked
+    let location = (game.commander.galaxy, game.commander.system)
+    let localActive = !game.paused && ![Screen.demo, .title, .gameOver, .gallery, .help].contains(game.screen)
+    let flightActive = localActive && !game.docked && game.screen.isFlight
     game.tick(delta: delta, controls: controls)
+    game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
+    game.advanceScriptClocks(delta: delta, flight: flightActive, local: localActive)
     return game
   }
   public func save(to url: URL) throws {
     game.resolveDestroyed()
     game.persistBlackjackTargets()
     guard game.commander.valid else { throw SaveError.invalidCommander }
+    if !game.commander.scriptState.instances.isEmpty {
+      try ScriptSaveStore.write(commander: game.commander, world: game.scriptWorldSave, to: url)
+      return
+    }
     let data = try JSONEncoder().encode(game.commander)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     try FileManager.default.createDirectory(
@@ -1242,6 +1277,21 @@ public actor GameRuntime {
   public func load(from url: URL, persistMigrations: Bool = true) throws {
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
+    if (try? JSONDecoder().decode(ScriptSavePointer.self, from: data)) != nil {
+      let (commander, world) = try ScriptSaveStore.read(data, from: url)
+      // v2 is already migrated/validated; ordinary docking/load callbacks must not replay here.
+      var candidate = Game(executive: false)
+      candidate.commander = commander
+      candidate.missionPacks = game.missionPacks
+      candidate.scriptPacks = game.scriptPacks
+      candidate.viewportWidth = game.viewportWidth
+      candidate.viewportHeight = game.viewportHeight
+      candidate.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
+      candidate.restoreScriptWorld(world)
+      game = candidate
+      controls = Controls()
+      return
+    }
     let commander = try JSONDecoder().decode(Commander.self, from: data)
     guard game.load(commander) else { throw SaveError.invalidCommander }
     if persistMigrations && game.commander != commander { try save(to: url) }

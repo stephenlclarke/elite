@@ -71,10 +71,15 @@ extension GameRuntime {
   public func loadMissionPacks(directory: URL = MissionPackLibrary.userDirectory) {
     game.missionPacks = .installed(directory: directory)
     game.migrateMissionProgress()
+    loadScriptPacks(directory: directory.appendingPathComponent("scripted"))
   }
   public func installMissionPack(from url: URL, directory: URL = MissionPackLibrary.userDirectory)
     throws
   {
+    if (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
+      try installScriptPack(from: url, destination: directory.appendingPathComponent("scripted"))
+      return
+    }
     let entry = try MissionPackLibrary.read(url)
     guard
       game.commander.missionProgress[entry.pack.stateID].map({
