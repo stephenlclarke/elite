@@ -8,7 +8,7 @@ Adds a startup-only runtime restoration path that loads in memory and resets pre
 
 ## Validation
 
-Focused StartupSaveTests cover title continuation, unchanged save bytes, normal Open behavior and exact/malformed build metadata. Shell syntax and full Swift test suite are checked before handoff. The final integrated `make ci` passes 268 tests, 93.27% coverage, both sanitizers and zero leaks; signed native startup/Continue and exact 1.3.0 identity checks pass.
+Focused StartupSaveTests cover title continuation, unchanged save bytes, normal Open behavior and exact/malformed build metadata. Shell syntax and full Swift test suite are checked before handoff. The final integrated `make ci` passes 268 tests, 93.29% coverage, both sanitizers and zero leaks; signed native startup/Continue and exact 1.3.0 identity checks pass.
 
 ## Compatibility and risks
 
