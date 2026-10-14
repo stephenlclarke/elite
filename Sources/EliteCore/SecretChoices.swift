@@ -6,6 +6,7 @@ extension Game {
       "0 DISPLAY: " + commander.shipDisplayStyle.label,
       "1 DOCKING TARGETING COMPUTER",
       "2 MAXIMUM HARDWARE",
+      "C SWITCH TO COBRA MK III (FREE REFIT)",
       "3 MISSILES: " + (commander.unlimitedMissiles ? "UNLIMITED" : "NORMAL"),
       "4 FUEL: " + (commander.unlimitedFuel ? "UNLIMITED" : "NORMAL"),
       String(format: "5 JUMP LIMIT: %.1f LY", commander.maximumJumpDistance),

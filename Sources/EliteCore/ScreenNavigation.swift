@@ -210,8 +210,7 @@ extension Game {
       if secretBuffer == "xyzzy" {
         spin.stop(immediate: true)
         commander.name = "CLARKE"
-        if !commander.xyzzyActive { enableXYZzy() }
-        fitMaximumHardware()
+        if !commander.xyzzyActive { enableXYZzy() } else { restoreXYZzyCobra() }
         secretReturn = screen
         secretScroll = 0
         screen = .secret

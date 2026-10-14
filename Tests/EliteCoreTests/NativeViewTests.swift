@@ -7,6 +7,50 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeSaveIncludesEarlierQueuedCobraRestore() async throws {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(id + ".json")
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: url)
+    }
+    var commander = Commander()
+    commander.shipID = "SH013"
+    commander.xyzzyActive = true
+    commander.autoTrade = false
+    commander.credits = 12345
+    try JSONEncoder().encode(commander).write(to: url)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: url)
+    // Await fixture validation before testing input order; sanitizer startup may be slow.
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: url, persistMigrations: false)
+    #expect(await delegate.runtime.snapshot().commander.shipID == "SH013")
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    let view = try #require(window.contentView as? GameView)
+    view.pending = ["x", "y", "z", "z", "y"]
+    let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
+    menu.performActionForItem(at: 0)
+    let saved = ContinuousClock.now.advanced(by: .seconds(5))
+    var persisted = commander
+    while persisted.shipID != "SH023" && ContinuousClock.now < saved {
+      try await Task.sleep(for: .milliseconds(10))
+      if let data = try? Data(contentsOf: url),
+        let value = try? JSONDecoder().decode(Commander.self, from: data)
+      {
+        persisted = value
+      }
+    }
+    #expect(persisted.shipID == "SH023" && persisted.credits == 12345)
+    #expect(persisted.name == "CLARKE" && saves.startupURL == url)
+  }
+
   @MainActor @Test func nativeSpinInputRecognizesCirclesRebasesAimAndKeepsForwardThrottleSeparate()
   {
     let view = GameView()

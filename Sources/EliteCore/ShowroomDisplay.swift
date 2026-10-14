@@ -2,7 +2,7 @@ import Foundation
 
 public struct ShowroomLayout: Sendable {
   public static let actionKeys = [
-    "tab", "b", "r", "c", "v", ",", ".", " ", "showroom-sort", "showroom-trade",
+    "b", "r", "c", "v", ",", ".", " ", "showroom-sort",
   ]
   public let wide: Bool
   public let listVisible: Bool
@@ -10,6 +10,8 @@ public struct ShowroomLayout: Sendable {
   public let clearSearch: CanvasRect
   public let close: CanvasRect
   public let buttons: [CanvasRect]
+  public let trade: CanvasRect
+  public let pane: CanvasRect
   public let list: CanvasRect
   public let listRow = 36.0
   public let model: CanvasRect
@@ -30,11 +32,13 @@ public struct ShowroomLayout: Sendable {
         x: left + Double(index % 4) * available / 4, y: 72 + Double(index / 4) * 28,
         width: available / 4 - 4, height: 24)
     }
+    trade = .init(x: left, y: 132, width: available * 0.68 - 8, height: 32)
+    pane = .init(x: trade.maxX + 16, y: 132, width: available - trade.width - 16, height: 32)
     list = .init(
-      x: 16, y: 176, width: wide ? 240 : width - 32,
-      height: wide ? height - 236 : min(160, height * 0.30))
-    let modelTop = wide || detail ? 176 : list.maxY + 14
-    let modelHeight = wide || detail ? min(260, height * 0.30) : max(80, height - modelTop - 60)
+      x: 16, y: 222, width: wide ? 240 : width - 32,
+      height: wide ? height - 282 : min(160, height * 0.25))
+    let modelTop = wide || detail ? 222 : list.maxY + 14
+    let modelHeight = wide || detail ? min(240, height * 0.24) : max(80, height - modelTop - 60)
     model = .init(x: left, y: modelTop, width: available, height: modelHeight)
     details = .init(
       x: left, y: model.maxY + 18, width: available,
@@ -122,14 +126,13 @@ extension Display {
       (game.showroom.searching ? "> " : "/: ") + query,
       layout.search.x + 8, layout.search.y + 8, scale: font, ink: .cyan)
     let buttonTitles = [
-      game.showroom.detail ? "Ships" : "Specs", "Pin baseline", "Your ship",
+      "Pin baseline", "Your ship",
       game.showroom.compare ? "Compare: on" : "Compare: off",
       game.showroom.sourceProfiles ? "Game values" : "Source notes",
       game.showroomProfiles.count > 1 ? "Prev profile" : "Single profile",
       game.showroomProfiles.count > 1 ? "Next profile" : "Single profile",
       game.showroom.rotationPaused ? "Rotate model" : "Pause model",
       "Sort: " + game.showroom.sort.rawValue,
-      game.showroomShip?.game == nil ? "Display only" : "Trade ship",
     ]
     for (index, bounds) in layout.buttons.enumerated() {
       frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, .blue)
@@ -137,16 +140,28 @@ extension Display {
       let columns = max(1, Int((bounds.width - 8) / (6 * font)))
       frame.label(
         String(title.prefix(columns)), bounds.x + 4, bounds.y + 8, scale: font,
-        ink: ([5, 6].contains(index) && game.showroomProfiles.count <= 1) ? .blue : .cyan)
+        ink: ([",", "."].contains(ShowroomLayout.actionKeys[index])
+          && game.showroomProfiles.count <= 1) ? .blue : .cyan)
     }
+    showroomTradeAction(game, layout: layout, into: &frame)
+    frame.stroke(layout.pane.x, layout.pane.maxY, layout.pane.maxX, layout.pane.maxY, .blue)
+    frame.label(
+      game.showroom.detail ? "Browse ships" : "Read specs", layout.pane.x + 8,
+      layout.pane.y + 10, scale: font, ink: .cyan)
     let window = showroomWindow(game)
     var focus = "Ships: arrows / Return"
-    if game.showroom.detail { focus = window.hint ?? "Specifications: all rows visible" }
+    if game.showroom.detail {
+      focus = window.hint ?? "All specifications visible"
+      if game.showroomShip?.id != game.commander.shipID && game.shipTradeQuote != nil {
+        focus += " | Return: review trade"
+      }
+    }
     if game.showroom.searching { focus = "Search: type / arrows / Return" }
     frame.label(focus, 16, height - 42, scale: font, ink: .yellow)
     if layout.listVisible {
       frame.label(
-        game.showroom.detail ? "Ships" : "> Ships", layout.list.x, 158, scale: font, ink: .cyan)
+        game.showroom.detail ? "Ships" : "> Ships", layout.list.x, layout.list.y - 18,
+        scale: font, ink: .cyan)
       showroomList(game, layout: layout, into: &frame)
     }
     if layout.wide || game.showroom.detail {
@@ -163,14 +178,14 @@ extension Display {
             x: layout.model.x, y: layout.model.y,
             width: half, height: layout.model.height),
           title: game.showroom.baselineUsesCurrent
-            ? "Your " + game.commander.ship.name : "PINNED BASELINE",
+            ? "CURRENT SHIP" : "PINNED BASELINE",
           into: &frame)
         showroomModel(
           selected, game: game,
           bounds: .init(
             x: layout.selectedModelX,
             y: layout.model.y, width: half, height: layout.model.height),
-          title: "CATALOGUE PREVIEW",
+          title: "SELECTED SHIP",
           into: &frame)
       } else {
         showroomModel(
@@ -188,6 +203,50 @@ extension Display {
     let help = "Tab: ships/specs  /: search  Esc: back  K: help"
     frame.label(help, 16, height - 24, scale: font, ink: .cyan)
     return frame
+  }
+
+  private static func showroomTradeAction(
+    _ game: Game, layout: ShowroomLayout, into frame: inout Frame
+  ) {
+    let owned = game.showroomShip?.id == game.commander.shipID
+    let quote = game.shipTradeQuote
+    let title: String
+    if owned {
+      title = "Currently flying"
+    } else if quote != nil {
+      title = "Switch ship - review trade"
+    } else {
+      title = game.showroomShip == nil ? "Select a ship" : "Display only - cannot fly"
+    }
+    let ink: Ink
+    if owned { ink = .cyan } else if quote?.allowed == true { ink = .green } else { ink = .orange }
+    let bounds = layout.trade
+    frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
+    frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, ink)
+    frame.stroke(bounds.x, bounds.y, bounds.x, bounds.maxY, ink)
+    frame.stroke(bounds.maxX, bounds.y, bounds.maxX, bounds.maxY, ink)
+    frame.label(title, bounds.x + 8, bounds.y + 10, scale: GameTypography.scale, ink: ink)
+    let rows: [String]
+    if let quote, !owned {
+      rows = [
+        String(
+          format: "Price %.1f CR | Trade-in %.1f CR", Double(quote.purchase) / 10,
+          Double(quote.allowance) / 10),
+        String(
+          format: "%@ %.1f CR | Balance %.1f CR", quote.net < 0 ? "Credit" : "Pay",
+          Double(abs(quote.net)) / 10, Double(quote.balance) / 10),
+        quote.allowed
+          ? "Review fit, then confirm or go back" : "Trade blocked - open review for reasons",
+      ]
+    } else {
+      rows = ["Current ship: " + game.commander.ship.name]
+    }
+    let columns = Int(layout.model.width / (6 * GameTypography.scale))
+    for (index, row) in rows.enumerated() {
+      frame.label(
+        String(row.prefix(columns)), bounds.x, bounds.maxY + 8 + Double(index) * 14,
+        scale: GameTypography.scale, ink: index == 2 ? ink : .white)
+    }
   }
 
   private static func showroomList(_ game: Game, layout: ShowroomLayout, into frame: inout Frame) {
@@ -302,8 +361,7 @@ extension Display {
       game.showroom.sourceProfiles
       ? [metadata[0], metadata[6], metadata[7]]
       : [
-        ship.name + " / carried fit",
-        "Same carried fit. Green BETTER / orange WORSE / cyan SAME.",
+        ship.name + " / carried fit"
       ]
     var rows = headings.flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
@@ -342,6 +400,14 @@ extension Display {
     -> [[ShowroomTextLine]]
   {
     var rows: [[ShowroomTextLine]] = []
+    if !game.showroom.sourceProfiles {
+      rows.append([.init(text: "Comparison: same carried fit", x: 0, ink: .cyan)])
+      rows.append([
+        .init(text: "BETTER", x: 0, ink: .green),
+        .init(text: "WORSE", x: 72, ink: .orange),
+        .init(text: "SAME", x: 132, ink: .cyan),
+      ])
+    }
     let a =
       (game.showroom.baselineUsesCurrent ? "Your fitted: " : "Baseline: ")
       + (game.showroomBaseline?.name ?? "Unavailable")

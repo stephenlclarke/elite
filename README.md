@@ -22,7 +22,7 @@
 <br clear="left" />
 <!-- markdownlint-enable MD033 -->
 
-A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
+A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
 
 ![Elite gameplay](docs/elite.png)
 
@@ -42,7 +42,7 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. The project has no package dependencies. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
+The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
 
 ## Licence
 
@@ -114,9 +114,9 @@ Mission flags retain the original TP low-nibble states and default to unstarted 
 
 ## XYZZY
 
-Type `xyzzy` in the game to become Commander Clarke and open the secret menu. On first activation you receive 1,000,000 CR, with finite cash accounting, maximum supported hardware, four additional fuel units (35 LY total capacity), a Military navigation computer, a full missile rack, fuel, shields and energy. The 21-LY Military jump cap and remaining fuel still limit each jump. Unlimited missiles, fuel replenishment, cargo, auto-trade, speech, AUTO targeting, automatic ECM and Military retaliation start enabled; shaded panels are selected. Naval lasers, Capital Ship shields, Military targeting and Naval Energy Unit are fitted, while Mining capability, ECM and scoops are retained.
+Type `xyzzy` in the game to become Commander Clarke in the canonical Cobra Mk III and open the secret menu. On first activation you receive 1,000,000 CR, with finite cash accounting, maximum supported hardware, four additional fuel units (35 LY total capacity), a Military navigation computer, a full missile rack, fuel, shields and energy. The 21-LY Military jump cap and remaining fuel still limit each jump. Unlimited missiles, fuel replenishment, cargo, auto-trade, speech, AUTO targeting, automatic ECM and Military retaliation start enabled; shaded panels are selected. Naval lasers, Capital Ship shields, Military targeting and Naval Energy Unit are fitted, while Mining capability, ECM and scoops are retained.
 
-Auto-trade immediately sells and restocks when activation happens while docked, so the initial grant can be spent immediately. Cash then changes through ordinary purchases, sales, fuel and rewards. Reopening XYZZY or loading a save never replenishes cash; re-entry retains switch choices and refits maximum hardware. Old XYZZY saves with unlimited cash receive the finite starting balance once, then persist the migration; finite old balances and ordinary commanders are preserved. Old unlimited-jump flags cannot bypass current jump limits. Location and mission progress remain intact. A new game starts as Jameson again.
+Auto-trade immediately sells and restocks when activation happens while docked, so the initial grant can be spent immediately. Cash then changes through ordinary purchases, sales, fuel and rewards. Reopening XYZZY or loading a save never replenishes cash; re-entry retains switch choices and restores the Cobra Mk III with maximum hardware. C repeats this free refit without granting cash or running auto-trade; excess cargo enables unlimited capacity to preserve it. Old XYZZY saves with unlimited cash receive the finite starting balance once, then persist the migration; finite old balances and ordinary commanders are preserved. Old unlimited-jump flags cannot bypass current jump limits. Location and mission progress remain intact. A new game starts as Jameson again.
 
 | Key | Option |
 | --- | --- |
@@ -132,6 +132,7 @@ Auto-trade immediately sells and restocks when activation happens while docked, 
 | 9 | Show actual cash balance; first XYZZY activation starts with 1,000,000 CR |
 | A | AUTO target assist |
 | B | Military ECM-confirmed return fire |
+| C | Restore Cobra Mk III and maximum hardware for free; preserve cash, cargo and mission progress |
 | E | Automatic ECM |
 | L | Reset legal status to Clean (saved with your commander) |
 | F | Fit fuel scoops |
@@ -154,7 +155,7 @@ Station AUTO completes docking without further input. It routes outside a 400-un
 
 ## Ship showroom and secret ports
 
-6 opens the showroom with 167 rotating ship models and 158 flyable hull adaptations. Browse with arrows, Return, Tab and Escape; secondary actions are visible buttons. Sort A-Z or by native power, compare **BETTER / WORSE / SAME** game values with the same carried fit, then click **Trade ship** to review the price, trade-in allowance and compatibility before confirming. Purchases change actual flight characteristics and persist in saved games. Cargo, paid equipment, fuel and mission property transfer intact; incompatible exchanges are blocked with an explanation. All definitions and geometry load from individual [ship TOMLs](Sources/EliteCore/Resources/Ships). See the [complete animated ship catalogue](docs/SHIP-CATALOGUE.md), [showroom guide](docs/SHIP-SHOWROOM.md) and [conversion/generation rules](docs/SHIP-FILES.md).
+6 opens the showroom with 167 rotating ship models and 158 flyable hull adaptations. Browse with arrows, Return, Tab and Escape; secondary actions are visible buttons. Sort A-Z or by native power, compare **BETTER / WORSE / SAME** game values with the same carried fit. The prominent **Switch ship - review trade** action shows price, trade-in and resulting cash before opening the compatibility review. Return opens specifications, then the trade review; Tab switches panes. **Currently flying** identifies your owned hull. Purchases change actual flight characteristics and persist in saved games. Cargo, paid equipment, fuel and mission property transfer intact; incompatible exchanges are blocked with an explanation. All definitions and geometry load from individual [ship TOMLs](Sources/EliteCore/Resources/Ships). See the [complete animated ship catalogue](docs/SHIP-CATALOGUE.md), [showroom guide](docs/SHIP-SHOWROOM.md) and [conversion/generation rules](docs/SHIP-FILES.md).
 
 Each galaxy has a hidden **PLUGH** port. Ask for station rumours with U while docked to follow the local clue; discovery is saved separately per galaxy. Reach it through ordinary fuel/nav-limited travel and dock normally. It stocks all commodities and supported equipment, including reward hardware, at a documented 25% discount while retaining cash and fitting limits. See [discovery, prices and travel rules](docs/PLUGH.md).
 
@@ -237,7 +238,7 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 ## Download for macOS
 
-The [signed universal app](releases/macos/Elite-1.1.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.1.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.1.0-universal.json).
+The [signed universal app](releases/macos/Elite-1.2.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.2.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.2.0-universal.json).
 
 This distribution uses Developer ID signing and the hardened runtime. The current download is signed but **not notarized**; Gatekeeper rejects it as an unnotarized Developer ID build. Notarization needs a configured notarytool keychain profile. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
 

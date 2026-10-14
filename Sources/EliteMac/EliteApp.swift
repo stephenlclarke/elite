@@ -305,7 +305,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         let events = view.pending
         view.pending.removeAll()
         for event in events {
-          if event.hasPrefix("secret-click:") {
+          if event.hasPrefix("commander-save:"), let self {
+            let url = URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
+            do {
+              try await runtime.save(to: url)
+              self.saves.didSave(to: url)
+            } catch { self.show(error) }
+          } else if event.hasPrefix("secret-click:") {
             let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
             if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
           } else if event.hasPrefix("showroom-click:") {
@@ -535,14 +541,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     (window?.contentView as? GameView)?.pending.append("b")
   }
   @objc private func saveCommander() {
-    Task { [weak self] in
-      guard let self else { return }
-      do {
-        let url = saveURL
-        try await runtime.save(to: url)
-        saves.didSave(to: url)
-      } catch { show(error) }
-    }
+    queueCommanderSave(to: saveURL)
+  }
+  private func queueCommanderSave(to url: URL) {
+    // Preserve input order: a fast Save must include the preceding confirmation/refit.
+    (window?.contentView as? GameView)?.pending.append("commander-save:" + url.path)
   }
   @objc private func installMissionPack() {
     let panel = NSOpenPanel()
@@ -580,13 +583,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     panel.allowedContentTypes = [.json]
     panel.nameFieldStringValue = "commander.json"
     guard panel.runModal() == .OK, let url = panel.url else { return }
-    Task { [weak self] in
-      guard let self else { return }
-      do {
-        try await runtime.save(to: url)
-        saves.didSave(to: url)
-      } catch { show(error) }
-    }
+    queueCommanderSave(to: url)
   }
   private func recoverStartup(_ error: Error, url: URL) async {
     let alert = NSAlert()

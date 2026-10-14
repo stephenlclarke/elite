@@ -102,7 +102,7 @@ import Testing
     func centre(_ rect: CanvasRect) -> ScreenPoint { .init(rect.x + 8, rect.y + 8) }
     game.showroomClick(x: centre(layout.list).x, y: centre(layout.list).y)
     let selected = game.showroom.selection
-    for index in [1, 2, 3, 4, 5, 6, 7] {
+    for index in ShowroomLayout.actionKeys.indices {
       let before = game
       let point = centre(layout.buttons[index])
       game.showroomClick(x: point.x, y: point.y)
@@ -114,7 +114,7 @@ import Testing
       #expect(game.showroom.sourceProfiles == keyboard.showroom.sourceProfiles)
       #expect(game.showroom.rotationPaused == keyboard.showroom.rotationPaused)
     }
-    let point = centre(layout.buttons[0])
+    let point = centre(layout.pane)
     game.showroomClick(x: point.x, y: point.y)
     #expect(game.showroom.detail && game.showroom.selection == selected)
     layout = ShowroomLayout(width: width, height: 768, detail: true)
@@ -200,6 +200,7 @@ import Testing
   #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
   game.key("escape")
   game.key("6")
+  game.showroom.selection = "SH013"
   game.key("showroom-trade")
   game.key("k")
   #expect(PlayerHelp.pages(for: game).first!.title == "SHIP EXCHANGE")
