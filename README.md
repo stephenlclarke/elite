@@ -42,7 +42,7 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. The project has no package dependencies. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
+The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch.
 
 ## Licence
 
@@ -114,9 +114,9 @@ Mission flags retain the original TP low-nibble states and default to unstarted 
 
 ## XYZZY
 
-Type `xyzzy` in the game to become Commander Clarke and open the secret menu. On first activation you receive 1,000,000 CR, with finite cash accounting, maximum supported hardware, four additional fuel units (35 LY total capacity), a Military navigation computer, a full missile rack, fuel, shields and energy. The 21-LY Military jump cap and remaining fuel still limit each jump. Unlimited missiles, fuel replenishment, cargo, auto-trade, speech, AUTO targeting, automatic ECM and Military retaliation start enabled; shaded panels are selected. Naval lasers, Capital Ship shields, Military targeting and Naval Energy Unit are fitted, while Mining capability, ECM and scoops are retained.
+Type `xyzzy` in the game to become Commander Clarke in the canonical Cobra Mk III and open the secret menu. On first activation you receive 1,000,000 CR, with finite cash accounting, maximum supported hardware, four additional fuel units (35 LY total capacity), a Military navigation computer, a full missile rack, fuel, shields and energy. The 21-LY Military jump cap and remaining fuel still limit each jump. Unlimited missiles, fuel replenishment, cargo, auto-trade, speech, AUTO targeting, automatic ECM and Military retaliation start enabled; shaded panels are selected. Naval lasers, Capital Ship shields, Military targeting and Naval Energy Unit are fitted, while Mining capability, ECM and scoops are retained.
 
-Auto-trade immediately sells and restocks when activation happens while docked, so the initial grant can be spent immediately. Cash then changes through ordinary purchases, sales, fuel and rewards. Reopening XYZZY or loading a save never replenishes cash; re-entry retains switch choices and refits maximum hardware. Old XYZZY saves with unlimited cash receive the finite starting balance once, then persist the migration; finite old balances and ordinary commanders are preserved. Old unlimited-jump flags cannot bypass current jump limits. Location and mission progress remain intact. A new game starts as Jameson again.
+Auto-trade immediately sells and restocks when activation happens while docked, so the initial grant can be spent immediately. Cash then changes through ordinary purchases, sales, fuel and rewards. Reopening XYZZY or loading a save never replenishes cash; re-entry retains switch choices and restores the Cobra Mk III with maximum hardware. C repeats this free refit without granting cash or running auto-trade; excess cargo enables unlimited capacity to preserve it. Old XYZZY saves with unlimited cash receive the finite starting balance once, then persist the migration; finite old balances and ordinary commanders are preserved. Old unlimited-jump flags cannot bypass current jump limits. Location and mission progress remain intact. A new game starts as Jameson again.
 
 | Key | Option |
 | --- | --- |
@@ -132,6 +132,7 @@ Auto-trade immediately sells and restocks when activation happens while docked, 
 | 9 | Show actual cash balance; first XYZZY activation starts with 1,000,000 CR |
 | A | AUTO target assist |
 | B | Military ECM-confirmed return fire |
+| C | Restore Cobra Mk III and maximum hardware for free; preserve cash, cargo and mission progress |
 | E | Automatic ECM |
 | L | Reset legal status to Clean (saved with your commander) |
 | F | Fit fuel scoops |
