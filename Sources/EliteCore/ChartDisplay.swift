@@ -72,7 +72,8 @@ public struct ChartLayout: Sendable {
     font = GameTypography.scale
     let wideFooter = local ? 276.0 : 226.0
     let flightNarrowFooter = local ? 320.0 : 270.0
-    let narrowFooter = docked ? (local ? 440.0 : 380.0) : flightNarrowFooter
+    let dockedNarrowFooter = local ? 440.0 : 380.0
+    let narrowFooter = docked ? dockedNarrowFooter : flightNarrowFooter
     plot = .init(
       x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
       height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
