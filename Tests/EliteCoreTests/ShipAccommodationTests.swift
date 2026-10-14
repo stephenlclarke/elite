@@ -83,3 +83,26 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
     otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [cabin, cabin])
   #expect(!duplicate.allowed)
 }
+
+@Test func everyFlyableHullHasAnExplicitAccommodationAdapterIncludingEstimatedLiberator() throws {
+  let ships = ShipCatalogue.all.filter { $0.game != nil }
+  #expect(ships.count == 159)
+  for ship in ships { _ = try ShipAccommodationProfile(ship: ship) }
+  let liberator = try #require(ShipCatalogue.ship("SH171"))
+  let profile = try ShipAccommodationProfile(ship: liberator)
+  #expect(
+    profile.operatingCrew == 4 && profile.intrinsicCrewQuarters == 4 && profile.equipmentUnits == 32
+  )
+  #expect(profile.crewStatus == "estimated" && profile.crewBasis.contains("not TV canon"))
+  var commander = Commander()
+  commander.shipID = liberator.id
+  #expect(
+    commander.passengerFit?.usableCargo == 120 && commander.passengerFit?.freeCompatiblePlaces == 0)
+  #expect(
+    commander.gameShipProfile.fields.first { $0.key == "required_crew_including_commander" }?.status
+      == "estimated")
+  let cabin = PassengerBerth()
+  commander.accommodation.ownedBerths = [cabin]
+  commander.accommodation.fitted = [cabin.id]
+  #expect(commander.valid && commander.passengerFit?.usableCargo == 115)
+}

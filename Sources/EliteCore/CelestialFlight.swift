@@ -109,8 +109,22 @@ extension Game {
     guard !docked, !celestials.isEmpty else { return [] }
     var lines = celestials.map { body -> String in
       let p = viewPosition(body.position)
-      let horizontal = abs(p.x) < max(1, abs(p.z)) * 0.12 ? "" : (p.x < 0 ? " PORT" : " STARBOARD")
-      let vertical = abs(p.y) < max(1, abs(p.z)) * 0.12 ? "" : (p.y > 0 ? " UP" : " DOWN")
+      let horizontal: String
+      if abs(p.x) < max(1, abs(p.z)) * 0.12 {
+        horizontal = ""
+      } else if p.x < 0 {
+        horizontal = " PORT"
+      } else {
+        horizontal = " STARBOARD"
+      }
+      let vertical: String
+      if abs(p.y) < max(1, abs(p.z)) * 0.12 {
+        vertical = ""
+      } else if p.y > 0 {
+        vertical = " UP"
+      } else {
+        vertical = " DOWN"
+      }
       let ahead = p.z >= 0 ? " AHEAD" : " ASTERN"
       return (body.kind == .sun ? "SUN" : currentSystem.name + " PLANET")
         + ahead + horizontal + vertical + String(format: " %.1fK", p.length / 1000)

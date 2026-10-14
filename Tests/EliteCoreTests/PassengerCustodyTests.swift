@@ -297,3 +297,22 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   #expect(
     !game.passengersDelivered("charter", pack: pack, instance: state, commander: game.commander))
 }
+
+@Test func manualAndAutomaticTradingRespectActualCabinHoldEvenWithUnlimitedCargo() throws {
+  var (game, _) = try passengerGame()
+  game.commander.unlimitedCargo = true
+  game.commander.autoTrade = true
+  game.commander.credits = 1_000_000
+  game.autoTrade()
+  #expect(
+    game.commander.cargoTonnes <= game.commander.standardCargoCapacity && game.commander.valid)
+  game.selection = 0
+  for _ in 0..<64 { game.trade(buy: true) }
+  #expect(
+    game.commander.cargoTonnes <= game.commander.standardCargoCapacity && game.commander.valid)
+  game.launch()
+  game.dock()
+  #expect(
+    game.commander.cargoTonnes <= game.commander.standardCargoCapacity && game.commander.valid)
+  #expect(game.commander.accommodation.ownedBerths.count == 1)
+}

@@ -1,38 +1,38 @@
 {
-  "recorded_utc": "2026-10-14T17:59:16.122283+00:00",
+  "recorded_utc": "2026-10-14T19:29:56.532170+00:00",
   "branch": "feature/scriptable-mission-engine",
-  "base_commit": "34790e313c0d6cf8be84fe74aaf8f2f228cd3b3f",
+  "base_commit": "1ef005e0c73971a360a0e3bb52792a9286a761d3",
   "command": "make ci",
   "result": "passed",
   "test_runs": [
     {
       "lane": "coverage",
-      "tests": 325,
+      "tests": 340,
       "suites": 2,
-      "seconds": 37.134
+      "seconds": 34.373
     },
     {
       "lane": "thread sanitizer",
-      "tests": 325,
+      "tests": 340,
       "suites": 2,
-      "seconds": 178.867
+      "seconds": 162.017
     },
     {
       "lane": "address sanitizer",
-      "tests": 325,
+      "tests": 340,
       "suites": 2,
-      "seconds": 621.681
+      "seconds": 460.957
     }
   ],
   "coverage": {
-    "covered_lines": 11555,
-    "total_lines": 12378,
-    "percentage": 93.35
+    "covered_lines": 11731,
+    "total_lines": 12558,
+    "percentage": 93.41
   },
   "new_script_swift_coverage": {
-    "covered_lines": 1486,
-    "total_lines": 1564,
-    "percentage": 95.01
+    "covered_lines": 1577,
+    "total_lines": 1652,
+    "percentage": 95.46
   },
   "maintained_c_host_coverage": {
     "covered_lines": 246,
@@ -56,7 +56,7 @@
     "59 upstream C/header files byte-identical to pinned Lua archive",
     "Real scripted patrol through actual lasers, automatic docking and report; 82 physical roots; combat RNG reload parity; trial namespace redirects blocked"
   ],
-  "raw_log_sha256": "cc7d0f987ad79af24282279d6269e41c7ee52decd4b0e8751bb1ba213b1d102d",
+  "raw_log_sha256": "a8d2bd8d6f7fd8d0a29bb9929edebf15fb98cba889ed19311d2bcd3465c1168c",
   "validated_file_sha256": {
     "Makefile": "d64cceb3fff307e50d840aa24df36d799e9c681e4745cd4f4d60bb6653a4babd",
     "Package.resolved": "23770167faec69f1722574eebb7fb62dd32655dd4b461735fec67a928686dd4d",
@@ -131,9 +131,9 @@
     "Sources/EliteCore/BlackjackMission.swift": "f6337d84e26bf86b4bace934e6543c3821df7489bd05f0d93566232711822018",
     "Sources/EliteCore/BuildIdentity.swift": "3a33f3e9acc9c61d745b274f89de54c914def7d37d602afebf94b1f492f90182",
     "Sources/EliteCore/CargoScooping.swift": "b1c1e008992ce87680223c9195d392d4dc3366b77c382b1e91d5c50f3c18907e",
-    "Sources/EliteCore/CelestialFlight.swift": "43e0002e6b14b5472b465d765e4f87992e4c32b85dc61082cb1e8fe80e0a868a",
+    "Sources/EliteCore/CelestialFlight.swift": "f45b178cae99ffe4960164eaee9595dff67e55ae5a7ce7da3bfa898e8ef9fed6",
     "Sources/EliteCore/CelestialRendering.swift": "bcabb9ca3f035ad516da2152858b3033f851b5db98362740b0ecca80a70b40e3",
-    "Sources/EliteCore/ChartDisplay.swift": "49cd849bd5e2907c449fdd2fa7d1b389120de64a4a21f6d0401b14970a4dd913",
+    "Sources/EliteCore/ChartDisplay.swift": "69c94c3877576b36e922f3335d1289f195fccf4b0e46e9d2dbaf41cc29e3837d",
     "Sources/EliteCore/CockpitDisplay.swift": "556c3969c46aa0562745b6381e2f7d144d285b320a7d1e6ceca84df0296f394c",
     "Sources/EliteCore/CompactScreens.swift": "96f2e43198f6a6540ddc0eed84841223dfd75c419a108328d9dd2ea602536c8a",
     "Sources/EliteCore/CurrentShipComparison.swift": "c9f08577d9b2a62abe43a79f7c8ae3843f76f50143240d0b7e9f9251b02d4d07",
@@ -145,7 +145,7 @@
     "Sources/EliteCore/EquipmentGroups.swift": "2e89f89843c9e31f9d204a0ebedd02338ca8a4bf3750a55c95b5891d2ed2fa7c",
     "Sources/EliteCore/FuelStorage.swift": "d1327e100242c84485d9221481a16cb7743af9a088f9a7d6600b31fea2025645",
     "Sources/EliteCore/GalaxyBrowsing.swift": "389b4812dbe6f24c78dc6ec6c8a3f097b8ef443f08bc5d0feea423b472379e97",
-    "Sources/EliteCore/Game.swift": "6492d98388e9744ffe3755e9025f17e9ec2a770b0d2434f3d5c5131e6a3b3950",
+    "Sources/EliteCore/Game.swift": "f2fd787408a4f9e222b238837d88d1df697ef22f4140a3f874aae9222d558732",
     "Sources/EliteCore/GameTypography.swift": "1276ae2462788271f4772de8b9ff68c309d0805d21b1918fd729f8ac1f6c8ba0",
     "Sources/EliteCore/Geometry.swift": "1abb069a3494b10e1f54c37de073637434aafec21dbb6962eaddb513af53c03b",
     "Sources/EliteCore/Graphics.swift": "a9ed4be0cf7960515ab5a923ef3fa9540d5624f1902a76701cdb2c579fa7a76a",
@@ -153,7 +153,7 @@
     "Sources/EliteCore/LaserSpecification.swift": "1c519819510d94f7a1a44ce23398c22092b88edfbdd08e5ca51b42b4845d207c",
     "Sources/EliteCore/MissionGallery.swift": "52c0c7a91df903f30586c4c5b1e8809d637a63ff4e98305bfe8f5d7c405fc998",
     "Sources/EliteCore/MissionPack.swift": "75d31b46feb71d82c6b5fdb0b990cbb0d220c8d5373db76780e50c4ab50d734e",
-    "Sources/EliteCore/NativeShipValues.swift": "38467a960374c79ca50f470f7aa7bb8b4db9ed7e92d3f68672e15d643018bbf5",
+    "Sources/EliteCore/NativeShipValues.swift": "349ac9d3f65d5e76f23dde9226db887dcb9ede1e6e145381615b27a30f5c888c",
     "Sources/EliteCore/NavalCombat.swift": "15b97b54bfb881b55b7c6bec3ff76b4d14c88fe8f8711cce903c6c13a6749247",
     "Sources/EliteCore/NavalMissions.swift": "d5ee195151778f739b28a44a01e894b7ea5ebc43af37fa1bdff55a40b7a25c28",
     "Sources/EliteCore/NavalShips.swift": "ace7a3b309833bf755a23a2763f9c2a20cfa1d0da7612ccc27b8a2f33ce73604",
@@ -164,8 +164,8 @@
     "Sources/EliteCore/PackRuntime.swift": "6bd0eab194e3d054c7a12cce5c1314be353c329b72a87634148da0f86a09898d",
     "Sources/EliteCore/PackTransactions.swift": "b48030a3a982650aadc7911e74e649215bcaa519ccd419506a020816027c88e4",
     "Sources/EliteCore/PackValidation.swift": "c3a877c9149e1b416eb4d6cfa57a094eac05d37382ffcef74a8497191bce4179",
-    "Sources/EliteCore/PassengerCustody.swift": "7c6d54d31cb0e49f6586fe9d174a3ad9fd79e7e6958567b13c61cc208b4b6273",
-    "Sources/EliteCore/PassengerFitting.swift": "5b2775aa76c30c684a773742c46f1d6f55394fcfcdba149ccec24e4727792dd9",
+    "Sources/EliteCore/PassengerCustody.swift": "8344e7aac7fa8e1c9716da8f80c13ebf0d15bb596b681c88743ec393349f2a74",
+    "Sources/EliteCore/PassengerFitting.swift": "0fa31129add300d342ad8bbdd1465e60469cfd6d8073bf9ca2be63a23b593151",
     "Sources/EliteCore/PlanetPreview.swift": "4c66750ebd99f776c13e29960c8ebae651fb6dedd1f8ccf0f4e7d494ad4f8b6b",
     "Sources/EliteCore/PlayerHelp.swift": "b393e8b3816f6247d498d68d29e15ff7ae5fb7e1589fd1bd7d4a504b4e234a50",
     "Sources/EliteCore/Plugh.swift": "a47d3e8eb48cb8364d83547dc646bd5c38bfc92dc0bd03b4faeaa28a8d6a3be0",
@@ -421,21 +421,22 @@
     "Sources/EliteCore/RetaliationControl.swift": "daaa870e53331614ae5484cd0a01d87c548049efd3aff21982f25a18978b490b",
     "Sources/EliteCore/ScreenNavigation.swift": "86f50aecd6c378b5d5dba89960bc017f3c909c1128278594eb8f3e5436bacd85",
     "Sources/EliteCore/ScriptCommands.swift": "eab69914b0472da4be3854ea1b05bc36154e175e90f1f3849b79f9958fb7f301",
-    "Sources/EliteCore/ScriptDirector.swift": "1bac2dbf166353362574c96999b951b47e8469109091b413117da71145f33210",
+    "Sources/EliteCore/ScriptDirector.swift": "cef084725567328b7b83d10156a819fc0874085e72fcabba573a667aeadd7506",
     "Sources/EliteCore/ScriptEncounters.swift": "7033f7cb3cfbb85b2f4f036e4dc0e4e9d66d860ebde5309c717c582f68985fca",
     "Sources/EliteCore/ScriptEvaluator.swift": "89e05f0eb25b1558610cdc8db0e36d10be9f7a0e6788a939b26775a1d610c687",
     "Sources/EliteCore/ScriptMissionState.swift": "25998e4da7f9dee6fcec821bc874a58283edb0fc3ca38b16e7049103f1866755",
-    "Sources/EliteCore/ScriptPack.swift": "26c7b8580051c9a5667bfb9e37f70c1e1050f5c720259bac56514d5f2b3636e4",
-    "Sources/EliteCore/ScriptPersistence.swift": "fa226e488c76a15565e98dcf4d8994b9d836f11296128984d9260b9b32ce77d7",
-    "Sources/EliteCore/ScriptRuntime.swift": "66acf8aea11049a65663ce979eac565870d52db895c9b81494646fca91970bc0",
+    "Sources/EliteCore/ScriptPack.swift": "25f53b7b5047bc9f2a3df4dcbbe46e170422f99fa9489eb31f9678094a3e62de",
+    "Sources/EliteCore/ScriptPersistence.swift": "6281c907fa87b5b8c1b33c4362fa33fc2f4127a26fe886af84ec74b37c6328af",
+    "Sources/EliteCore/ScriptRuntime.swift": "7edccdf3583194cdb4264894755f4e72c0e8015d383b32fa298f7b1a27b6bc80",
     "Sources/EliteCore/ScriptSimulationSave.swift": "d3f2f34185402ba4ad9317e32ec229479d55ccd127e0b44f6011bf283e48556e",
     "Sources/EliteCore/ScriptSolarSave.swift": "fe3bba47a98a7d4da995b11ab6ec0a44fe552cce29067ac3ba028867d2ff0359",
+    "Sources/EliteCore/ScriptTransactions.swift": "dfc6a1c350b13451e8aae01b29596a5f5a8419aa8f0f2205a950704895cc0c69",
     "Sources/EliteCore/ScriptValue.swift": "4c88d7d8e4e957edefa78d7471213c54816730e4c248877a06f401a120a44e3a",
     "Sources/EliteCore/ScrollWindow.swift": "fccf9d299be8da85c0aae5837f12aa4a3034d96b26f489d55fb8380212e0ee3e",
     "Sources/EliteCore/SecretChoices.swift": "2c58456c378a8610fe9374cd63b89968533ad2a765727fcb1048bba2f7237e95",
     "Sources/EliteCore/SecretMenu.swift": "184d1c19e255fa95abf3fc4d60e590e1b237d1fdadf343f7dd62cffc1a8e67b3",
     "Sources/EliteCore/ShieldBooster.swift": "0c55f6e0eec65c619a36478d5eeb794b48f7b62de6c70b7086b550723982b631",
-    "Sources/EliteCore/ShipAccommodation.swift": "9e5dae9936bc42b1e278ca9270ef19333e2cd12edcae5bbcc7a843ebb064d7c8",
+    "Sources/EliteCore/ShipAccommodation.swift": "39e720d679f20b15b8f8e153dd1b38d52762434eb952a59a25f266dbeeccc0ce",
     "Sources/EliteCore/ShipAppearance.swift": "d440e8db1f5969a3d890d932d40a0d12150aa958c03fb5c32d8567ed122890bf",
     "Sources/EliteCore/ShipCatalogue.swift": "e9cd936f73106610c539211a7a77fe492d3576381405b2b4ea27387891e61352",
     "Sources/EliteCore/ShipPerformance.swift": "4a5e04008fc65a3fe19d8225b7c1059290085f92f4701509ed052474de10531e",
@@ -464,7 +465,7 @@
     "Sources/EliteMac/AppIconMedia.swift": "ed598bf487c503e334125ccb13090dd584494649c924c37a7b483d65e87881a9",
     "Sources/EliteMac/AudioPresenter.swift": "4258386554ce7e6f06a740142328534a777e8428b456891b19a25a05d8ba75bb",
     "Sources/EliteMac/CommanderSaveSession.swift": "38e347950a38b033ebc0a79225bc106fe8248199e70995ef3a46156ba97aad18",
-    "Sources/EliteMac/EliteApp.swift": "125efeb06d5d853c932fa6fdf8b96619f7307dd4828d262e6ce9010e469cab38",
+    "Sources/EliteMac/EliteApp.swift": "71ae3549dee7cdba83b6a3d32e8142281e39c97a6cfc2e2c9395bb19f02f66aa",
     "Sources/EliteMac/NativeGraphics.swift": "3df6baa46dc022f870555f8df08b59c64363295986e4c837a99ebbe0767bb70d",
     "Sources/EliteMac/PlanetRenderer.swift": "f1b2cbfe5ebdc3a07d6d2ccc59598e5b0e119c34f0f79f19c9695eab5ff6b7ac",
     "Sources/EliteMac/ShipMedia.swift": "f2f854fb0bbbcaee23382183d46439b86dc414ff375c6a27ee6005660335b55c",
@@ -489,18 +490,19 @@
     "Tests/EliteCoreTests/NativeViewTests.swift": "bc8951644d44147cf2de6c023637506dd45042509b1916cc68996f060ca81269",
     "Tests/EliteCoreTests/NavalMissionTests.swift": "130b4fae03359480f1c4cf337c7410e58c99a026ce56d983bcaf4d8caecb5f28",
     "Tests/EliteCoreTests/NavigationTests.swift": "42c5999eb8f8968e4f5461d9f4b8a0a0d49d68cc2628a653ad504886865952de",
-    "Tests/EliteCoreTests/PassengerCustodyTests.swift": "149886706a4a774dda8037b83ed81d8066f24c7db6ad64204218bf56bfcadbe2",
+    "Tests/EliteCoreTests/PassengerCustodyTests.swift": "26f937380d42b0b2a637251662e9f2f533aa9e97cda92b74ea217b303e363fb2",
     "Tests/EliteCoreTests/PlanetTests.swift": "bebc944b6b0f7154e1c3bc7ba264c869ce59138c663efb73af52fff501544a5d",
     "Tests/EliteCoreTests/PlughTests.swift": "d80518d7c576d2dfd4dcb95d8cd43007860e77e48f26094fd8122c01400cde65",
     "Tests/EliteCoreTests/ProfitScanTests.swift": "ccf318cb8152b629a863964be052b7edd18c3ec2e833a06436333ce8c1b1dfa0",
     "Tests/EliteCoreTests/RetaliationTests.swift": "176d43c43c7a229845cf9926283a6688d3a1201afff91c4226fe6d73150b35a1",
     "Tests/EliteCoreTests/ScreenNavigationTests.swift": "0eab0c881855a53a2c55e90c2ccc4395e9c9287ec083eccecafefb32f8046c56",
-    "Tests/EliteCoreTests/ScriptEncounterTests.swift": "9c42bdade4a17ec4968e3eb54ce352f7e2c003e8ca23e733797f76f5c6791176",
+    "Tests/EliteCoreTests/ScriptEncounterTests.swift": "4ee903bcac46e7bf46c60d6167deae11a37c75db6006ee9aec7f6e714dd1016c",
     "Tests/EliteCoreTests/ScriptEvaluatorTests.swift": "758c6d84fbbca30d5b68364920d477d17ce0845af60dfaf1aa2b3e5e8a8ab6d0",
-    "Tests/EliteCoreTests/ScriptMissionTests.swift": "4d3d1aeb8ebe94413792923cfbcfdf8151530e2b95f58213777f3ce33322bcfe",
+    "Tests/EliteCoreTests/ScriptMissionTests.swift": "b9a480dbcec47d45c372a5fb5ff17b3fdb6b677772d7f54eaefaced2d7bb5b74",
     "Tests/EliteCoreTests/ScriptSolarSaveTests.swift": "d815c1508f92044a7a0e59206733a87fb53dace9a61e378d215ffe40924dca03",
+    "Tests/EliteCoreTests/ScriptTransactionTests.swift": "a01191844f2409800c3b0494b0621eeadd765fbf14579d9c46cd0ba8a5b451e0",
     "Tests/EliteCoreTests/ShieldTests.swift": "de8385345e55002547002c8640c4e425c474e3658f14b23e311cfa1e8c5d049f",
-    "Tests/EliteCoreTests/ShipAccommodationTests.swift": "500a83ebfa6d3930c87ef1dfc7dc90ed407e25e6fa5818b376fd99579be4b3fd",
+    "Tests/EliteCoreTests/ShipAccommodationTests.swift": "f31f42449f319b11e98d4801818b3d162b3e8e88c3feb45b95ab7ebf945eb95a",
     "Tests/EliteCoreTests/ShipAppearanceTests.swift": "fc0b090e4790a3adad3826eec2725e288672c058ba4577dd93c374a2a970be8d",
     "Tests/EliteCoreTests/ShipTradeTests.swift": "5c5395d6222e25f2a08bf82f7f89b8f34d7b06f749bb9745eed94c08e43fd33a",
     "Tests/EliteCoreTests/ShowroomTests.swift": "1df0a2100faf06d93cef6d877ffe97464949f4b88a1bc3aea0cf7973172d0ba2",
@@ -527,12 +529,12 @@
     "script/coverage.sh": "09a9c802156f79144290fc248a3a999eeb65be320f3c2a3331e3e747308374f7",
     "sonar-project.properties": "9678da010467df9603aeba7e4fcf452c8a65c3ee17bf6e6ebbf1f3a5134038ef"
   },
-  "limits": "Validated isolated engine integration of main34790e3: Lua/story/economy/cargo/basic clocks, native classic encounters, common humanoid charter custody and solar save/title continuity. General fitting/storage, pods/care, automatic durable commands, full-source Maenes/finance/RRS, AI/transit/boards/jobs/controllers remain incomplete.",
+  "limits": "Validated final protected main1ef005e integration; bounded Lua/story/economy/cargo/basic clocks, native classic encounters, all159 player accommodation adapters, humanoid charter custody, solar/title continuity and synchronous durable command publication/recovery. General gear storage, pods/care, complete controllers/world-business, full-source Maenes/finance/RRS, AI/transit/boards/jobs and player Gallery launcher remain incomplete.",
   "previous_checkpoint": {
-    "commit": "35f568f",
-    "tests_per_lane": 275,
-    "maintained_coverage_percent": 93.28,
-    "note": "Passenger/cabin checkpoint before integrating main; source evidence retained at that commit."
+    "commit": "c9b681bae05640ff08400e2452356038cb2938b7",
+    "tests_per_lane": 325,
+    "maintained_coverage_percent": 93.35,
+    "note": "Main34790e3 and solar continuity checkpoint; source evidence retained at that Git commit."
   },
   "native_encounter_coverage": {
     "covered_lines": 258,
@@ -540,13 +542,18 @@
     "percentage": 97.73
   },
   "charter_accommodation_coverage": {
-    "covered_lines": 308,
-    "total_lines": 324,
-    "percentage": 95.06
+    "covered_lines": 341,
+    "total_lines": 360,
+    "percentage": 94.72
   },
   "solar_save_coverage": {
     "covered_lines": 37,
     "total_lines": 37,
+    "percentage": 100.0
+  },
+  "durable_transaction_coverage": {
+    "covered_lines": 60,
+    "total_lines": 60,
     "percentage": 100.0
   }
 }

@@ -54,7 +54,7 @@ public struct ScriptPack: Sendable {
 public enum ScriptCapabilities {
   public static let implemented: Set<String> = [
     "script-lua-v1", "story-v2", "economy-v2", "cargo-v2", "local-flight-clocks-v2",
-    "classic-encounters-v2", "charter-passengers-v2",
+    "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [

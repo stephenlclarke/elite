@@ -250,6 +250,8 @@ public struct Game: Sendable {
   public var dockedAtMainStation = true
   var scriptReferenceFrame: ScriptReferenceFrame?
   var scriptDispatching = false
+  var scriptEventsDeferred = false
+  var scriptDurabilityAvailable = false
   public var scriptPacks: [ScriptPack] = []
   public var scriptAvailablePackDigest: String?
   public var scriptOffer: UUID?
@@ -671,7 +673,7 @@ public struct Game: Sendable {
     let item = market[index]
     if buy {
       guard item.quantity > 0, commander.availableCredits >= item.price,
-        Commodity.all[index].unit != "t" || commander.cargoTonnes < commander.capacity
+        Commodity.all[index].unit != "t" || commander.cargoTonnes < commander.tradeCargoCapacity
       else {
         notify("CANNOT BUY")
         return
@@ -843,7 +845,7 @@ public struct Game: Sendable {
     for item in exports {
       selection = item.index
       let unit = Commodity.all[item.index].unit
-      let room = unit == "t" ? commander.capacity - commander.cargoTonnes : 63
+      let room = unit == "t" ? commander.tradeCargoCapacity - commander.cargoTonnes : 63
       let affordable =
         market[item.index].price > 0 ? commander.availableCredits / market[item.index].price : 63
       let count = max(0, min(room, min(affordable, market[item.index].quantity)))
@@ -864,7 +866,7 @@ public struct Game: Sendable {
   private func routeScore(_ destination: StarSystem) -> Double {
     let exports = profitableExports(to: destination)
     let gross = exports.reduce(0) {
-      $0 + $1.profit * min(commander.capacity, market[$1.index].quantity)
+      $0 + $1.profit * min(commander.tradeCargoCapacity, market[$1.index].quantity)
     }
     let risk = Double(7 - destination.government) * 0.15
     return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
@@ -1310,17 +1312,36 @@ public actor GameRuntime {
   var game: Game
   private var controls = Controls()
   let galleryNamespace: URL?
-  public init(game: Game = Game()) {
+  var scriptSaveURL: URL?
+  public init(game: Game = Game(), saveURL: URL? = nil) {
     self.game = game
+    self.game.scriptDurabilityAvailable = saveURL != nil
     galleryNamespace = nil
+    scriptSaveURL = saveURL
   }
-  init(trialGame: Game) {
-    game = trialGame
-    galleryNamespace = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
+  init(trialGame: Game) throws {
+    let namespace = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
       .appendingPathComponent("elite-mission-gallery-" + UUID().uuidString, isDirectory: true)
+    let target = namespace.appendingPathComponent("commander.json")
+    var candidate = trialGame
+    candidate.scriptDurabilityAvailable = true
+    try Self.writeCommander(&candidate, to: target)
+    game = candidate
+    galleryNamespace = namespace
+    scriptSaveURL = target
   }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
+    let before = game
+    let held = controls
+    applyKey(key)
+    do { try commitScriptCommand(from: before) } catch {
+      game = before
+      controls = held
+      game.notify("MISSION SAVE FAILED - ACTION NOT COMMITTED")
+    }
+  }
+  private func applyKey(_ key: String) {
     let old = game.screen
     let wasDocked = game.docked
     let oldLocation = (game.commander.galaxy, game.commander.system)
@@ -1351,10 +1372,14 @@ public actor GameRuntime {
       controls = Controls()
     }
   }
-  public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
-  public func secretClick(x: Double, y: Double) { game.secretClick(x: x, y: y) }
-  public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
-  public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
+  public func blackjackHandoffClick(x: Double, y: Double) {
+    nativeCommand { $0.blackjackHandoffClick(x: x, y: y) }
+  }
+  public func secretClick(x: Double, y: Double) { nativeCommand { $0.secretClick(x: x, y: y) } }
+  public func showroomClick(x: Double, y: Double) { nativeCommand { $0.showroomClick(x: x, y: y) } }
+  public func equipmentClick(y: Double, x: Double? = nil) {
+    nativeCommand { $0.equipmentClick(y: y, x: x) }
+  }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
   public func setControls(_ value: Controls) { controls = value }
@@ -1372,32 +1397,27 @@ public actor GameRuntime {
     let flightActive =
       localActive && !game.docked
       && ![Screen.mission, .handoff, .rumour, .showroom, .secret].contains(game.screen)
+    // Physical facts commit first. A failed script save must never undo a real hit/death.
+    game.scriptEventsDeferred = true
     game.tick(delta: delta, controls: controls)
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
-    game.advanceScriptClocks(delta: delta, flight: flightActive, local: localActive)
+    game.scriptEventsDeferred = false
     if localActive && !game.docked {
       game.persistScriptActors()
       game.restoreScriptActors()
     }
+    if localActive { game.drainScriptEvents(publish: scriptPublisher()) }
+    game.advanceScriptClocks(
+      delta: delta, flight: flightActive, local: localActive, publish: scriptPublisher())
     return game
   }
   public func save(to url: URL) throws {
     try requireGalleryFileAccess(url)
-    game.resolveDestroyed()
-    game.persistBlackjackTargets()
-    game.persistScriptActors()
-    guard game.commander.valid else { throw SaveError.invalidCommander }
-    if !game.commander.scriptState.instances.isEmpty
-      || !game.commander.accommodation.ownedBerths.isEmpty
-    {
-      try ScriptSaveStore.write(commander: game.commander, world: game.scriptWorldSave, to: url)
-      return
-    }
-    let data = try JSONEncoder().encode(game.commander)
-    guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
-    try FileManager.default.createDirectory(
-      at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-    try data.write(to: url, options: .atomic)
+    var candidate = game
+    try Self.writeCommander(&candidate, to: url)
+    game = candidate
+    scriptSaveURL = url
+    game.scriptDurabilityAvailable = true
   }
   public func restoreStartup(from url: URL) throws {
     try load(from: url, persistMigrations: false)
@@ -1413,7 +1433,9 @@ public actor GameRuntime {
     try requireGalleryFileAccess(url)
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
-    if (try? JSONDecoder().decode(ScriptSavePointer.self, from: data)) != nil {
+    if let pointer = try? JSONDecoder().decode(ScriptSavePointer.self, from: data) {
+      let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: url)
+      try Self.requireGalleryPathAccess(generation, namespace: galleryNamespace)
       let (commander, world) = try ScriptSaveStore.read(data, from: url)
       // v2 is already migrated/validated; ordinary docking/load callbacks must not replay here.
       var candidate = Game(executive: false)
@@ -1426,11 +1448,22 @@ public actor GameRuntime {
       candidate.restoreScriptWorld(world)
       game = candidate
       controls = Controls()
+      scriptSaveURL = url
+      game.scriptDurabilityAvailable = true
       return
     }
-    let commander = try JSONDecoder().decode(Commander.self, from: data)
-    guard game.load(commander) else { throw SaveError.invalidCommander }
-    if persistMigrations && game.commander != commander { try save(to: url) }
+    var commander = try JSONDecoder().decode(Commander.self, from: data)
+    let original = commander
+    commander.migrateLegacyPassengerMarker()
+    var candidate = game
+    guard candidate.load(commander) else { throw SaveError.invalidCommander }
+    if persistMigrations && candidate.commander != original {
+      try Self.writeCommander(&candidate, to: url)
+    }
+    game = candidate
+    controls = Controls()
+    scriptSaveURL = url
+    game.scriptDurabilityAvailable = true
   }
 }
 public enum TradePlanner {
@@ -1475,4 +1508,8 @@ extension Game {
       solarScoopState = .inactive
     }
   }
+}
+
+extension Game {
+  mutating func seedScriptTrial(_ seed: UInt64) { randomState = seed }
 }

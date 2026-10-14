@@ -426,6 +426,7 @@ private func modifiedPatrol(
   }
   let commander = outside.appendingPathComponent("commander.json")
   try Data("production".utf8).write(to: commander)
+  try FileManager.default.removeItem(at: namespace)
   try FileManager.default.createSymbolicLink(at: namespace, withDestinationURL: outside)
   await #expect(throws: MissionPackError.self) {
     try await trial.save(to: namespace.appendingPathComponent("commander.json"))

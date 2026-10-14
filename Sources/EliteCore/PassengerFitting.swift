@@ -71,9 +71,9 @@ extension Game {
 extension GameRuntime {
   public func passengerBerthQuote() -> PassengerBerthQuote { game.passengerBerthQuote }
   public func confirmPassengerBerth(_ quote: PassengerBerthQuote) throws {
-    try game.confirmPassengerBerth(quote)
+    try scriptCommand { try $0.confirmPassengerBerth(quote) }
   }
   public func setPassengerBerthFitted(_ id: UUID, fitted: Bool) throws {
-    try game.setPassengerBerthFitted(id, fitted: fitted)
+    try scriptCommand { try $0.setPassengerBerthFitted(id, fitted: fitted) }
   }
 }

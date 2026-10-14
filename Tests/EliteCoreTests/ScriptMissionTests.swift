@@ -152,6 +152,8 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
   game.scriptPacks = [pack]
   let runtime = GameRuntime(game: game)
   let trial = try await runtime.scriptGalleryTrial(packDigest: pack.digest)
+  let namespace = try #require(await trial.gallerySaveDirectory())
+  defer { try? FileManager.default.removeItem(at: namespace) }
   #expect(await trial.snapshot().commander.cargoTonnes == 1)
   #expect(await runtime.snapshot().commander.scriptState.instances.isEmpty)
   await runtime.key("contacts-open")

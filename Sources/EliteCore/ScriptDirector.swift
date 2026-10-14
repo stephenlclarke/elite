@@ -47,6 +47,9 @@ extension Game {
         + Set(pack.missingCapabilities.map(ScriptCapabilities.playerFeatureName)).sorted().joined(
           separator: ", ")
     }
+    if pack.manifest.capabilities.contains("durable-commands-v2"), !scriptDurabilityAvailable {
+      return "Choose a commander save before running this mission."
+    }
     let versions = Set(scriptPacks.map { $0.manifest.id + "@" + $0.manifest.version })
       .union(missionPacks.entries.map { $0.pack.id + "@" + $0.pack.version })
     let missing = Set(pack.manifest.dependencies ?? []).subtracting(versions)
@@ -56,8 +59,9 @@ extension Game {
     .object([
       "galaxy": .integer(Int64(commander.galaxy)), "system": .integer(Int64(commander.system)),
       "docked": .bool(docked), "main_station": .bool(docked && dockedAtMainStation),
+      "durable_commands": .bool(scriptDurabilityAvailable),
       "credits": .integer(Int64(commander.credits)),
-      "free_tonnes": .integer(Int64(commander.capacity - commander.cargoTonnes)),
+      "free_tonnes": .integer(Int64(commander.tradeCargoCapacity - commander.cargoTonnes)),
       "flight_seconds": .number(commander.scriptState.flightSeconds),
       "local_seconds": .number(commander.scriptState.localSeconds),
       "calendar_seconds": .number(commander.scriptState.calendarSeconds),
@@ -72,7 +76,9 @@ extension Game {
       Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
     return .object(fields)
   }
-  mutating func acceptScriptMission(_ pack: ScriptPack, instanceID: UUID = UUID()) throws -> UUID {
+  mutating func acceptScriptMission(
+    _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445
+  ) throws -> UUID {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
       !commander.scriptState.instances.values.contains(where: {
@@ -82,9 +88,10 @@ extension Game {
       throw MissionPackError(
         "Mission unavailable, already accepted or saved under another version.")
     }
-    let instance = ScriptInstance(
+    var instance = ScriptInstance(
       id: instanceID, definition: pack.manifest.stateID,
       version: pack.manifest.version, digest: pack.digest)
+    instance.randomState = randomSeed
     var candidate = self
     candidate.commander.scriptState.instances[instance.id] = instance
     candidate.emitScriptEvent("mission.accepted", only: instance.id)
@@ -116,8 +123,8 @@ extension Game {
     }
     if drain { drainScriptEvents() }
   }
-  mutating func drainScriptEvents() {
-    guard !scriptDispatching else { return }
+  mutating func drainScriptEvents(publish: ScriptPublisher? = nil) {
+    guard !scriptDispatching, !scriptEventsDeferred else { return }
     scriptDispatching = true
     defer { scriptDispatching = false }
     // Work is bounded per actor turn; suspended facts remain saved for explicit recovery.
@@ -171,21 +178,29 @@ extension Game {
         guard candidate.commander.valid else {
           throw MissionPackError("Mission transfer cannot fit the commander or saved state.")
         }
+        guard candidate.commander.scriptState.pendingEvents.count + derivedEvents.count <= 4096,
+          candidate.commander.scriptState.nextEvent <= UInt64(Int64.max) - 1
+            - UInt64(derivedEvents.count)
+        else { throw MissionPackError("The native result queue cannot fit this whole proposal.") }
+        // Admission/result envelopes belong to the same durable generation as their cause.
+        for (kind, values) in derivedEvents {
+          candidate.emitScriptEvent(kind, values: values, only: next.id, drain: false)
+        }
         let savedBytes = try JSONEncoder().encode(candidate.commander.scriptState)
         guard savedBytes.count <= 33_554_432 else {
           throw MissionPackError("Mission save budget exceeded; proposal was not committed.")
         }
+        try publish?(&candidate)
         self = candidate
-        for (kind, values) in derivedEvents {
-          emitScriptEvent(kind, values: values, only: next.id, drain: false)
-        }
       } catch {
         commander.scriptState.instances[event.instance]?.suspension = error.localizedDescription
         notify("MISSION SUSPENDED - SEE MISSION GALLERY")
       }
     }
   }
-  mutating func advanceScriptClocks(delta: Double, flight: Bool, local: Bool) {
+  mutating func advanceScriptClocks(
+    delta: Double, flight: Bool, local: Bool, publish: ScriptPublisher? = nil
+  ) {
     guard !commander.scriptState.instances.isEmpty, delta.isFinite, delta > 0, !paused,
       flight || local
     else {
@@ -200,7 +215,8 @@ extension Game {
         instance.suspension == nil
       else { continue }
       for key in instance.timers.keys.sorted() {
-        guard var timer = commander.scriptState.instances[id]?.timers[key],
+        guard commander.scriptState.instances[id]?.suspension == nil,
+          var timer = commander.scriptState.instances[id]?.timers[key],
           (timer.domain == .flight && flight) || (timer.domain == .local && local),
           timer.due <= commander.scriptState.clock(timer.domain)
         else { continue }
@@ -221,10 +237,12 @@ extension Game {
           values: [
             "timer_id": .string(key), "pulse": .integer(Int64(timer.pulses)),
             "due": .number(due), "fired_at": .number(firedAt),
-          ], only: id)
+          ], only: id, drain: false)
+        // Process each callback before deciding whether another due timer still exists.
+        drainScriptEvents(publish: publish)
       }
     }
-    drainScriptEvents()
+    drainScriptEvents(publish: publish)
   }
   mutating func showScriptDialogue() -> Bool {
     guard docked, dockedAtMainStation, scriptOffer == nil else { return false }

@@ -36,11 +36,15 @@ public enum ComparisonRating: String, Sendable {
 extension Commander {
   public var gameShipProfile: ShipProfile {
     let p = performance
-    func field(_ key: String, _ label: String, _ number: Double, _ unit: String) -> ShipSpec {
+    func field(
+      _ key: String, _ label: String, _ number: Double, _ unit: String, status: String = "game",
+      basis: String = "Authoritative ship TOML and carried equipment"
+    ) -> ShipSpec {
       .init(
         key: key, label: label,
-        text: String(format: "%.1f", number) + (unit.isEmpty ? "" : " " + unit), number: number,
-        unit: unit, status: "game", basis: "Authoritative ship TOML and carried equipment")
+        text: String(format: "%.1f", number) + (unit.isEmpty ? "" : " " + unit)
+          + (status.contains("estimated") ? " (est.)" : ""), number: number,
+        unit: unit, status: status, basis: basis)
     }
     var fields = [
       field("cargo_tonnes", "Cargo", Double(capacity), "t"),
@@ -70,7 +74,7 @@ extension Commander {
       fields += [
         field(
           "required_crew_including_commander", "Operating crew", Double(crew.operatingCrew),
-          "people"),
+          "people", status: crew.crewStatus, basis: crew.crewBasis),
         field(
           "reserved_crew_accommodation", "Crew quarters", Double(crew.intrinsicCrewQuarters),
           "people"),

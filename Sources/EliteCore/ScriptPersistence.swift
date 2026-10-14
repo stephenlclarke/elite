@@ -106,6 +106,13 @@ enum ScriptSaveStore {
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
   }
+  static func generationDirectory(_ generation: String, from url: URL) throws -> URL {
+    guard UUID(uuidString: generation)?.uuidString == generation else {
+      throw SaveError.invalidCommander
+    }
+    return url.appendingPathExtension("missions").appendingPathComponent(
+      generation, isDirectory: true)
+  }
   static func read(_ pointerBytes: Data, from url: URL) throws -> (Commander, ScriptWorldSave) {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
@@ -113,8 +120,7 @@ enum ScriptSaveStore {
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == ["commander.json", "missions.json", "world.json"]
     else { throw SaveError.invalidCommander }
-    let directory = url.appendingPathExtension("missions").appendingPathComponent(
-      pointer.generation, isDirectory: true)
+    let directory = try generationDirectory(pointer.generation, from: url)
     var chunks: [String: Data] = [:]
     for (name, limit) in [
       ("commander.json", 4_194_304), ("missions.json", 33_554_432), ("world.json", 8_388_608),
@@ -133,6 +139,7 @@ enum ScriptSaveStore {
       chunks[name] = data
     }
     var commander = try JSONDecoder().decode(Commander.self, from: chunks["commander.json"]!)
+    if pointer.schemaVersion <= 4 { commander.migrateLegacyPassengerMarker() }
     commander.scriptState = try JSONDecoder().decode(
       ScriptEngineState.self, from: chunks["missions.json"]!)
     let world = try JSONDecoder().decode(ScriptWorldSave.self, from: chunks["world.json"]!)

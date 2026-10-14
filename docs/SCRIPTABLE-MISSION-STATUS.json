@@ -8,6 +8,7 @@
     "cargo-v2",
     "charter-passengers-v2",
     "classic-encounters-v2",
+    "durable-commands-v2",
     "economy-v2",
     "local-flight-clocks-v2",
     "script-lua-v1",
@@ -82,9 +83,11 @@
       "required_acceptance": "Stale quote, denied capacity, disk failure and replay leave original balance/property; actual new partial lot succeeds.",
       "status": "partial",
       "current_evidence": [
-        "Sources/EliteCore/ScriptCommands.swift"
+        "Sources/EliteCore/ScriptCommands.swift",
+        "Sources/EliteCore/ScriptTransactions.swift",
+        "Tests/EliteCoreTests/ScriptTransactionTests.swift"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "remaining": "Desktop/native command and post-physics script effects publish durably with failure/retry preservation. Full quotes, debts/refunds, unique gear and partial commodity-lot transactions still require implementation."
     },
     {
       "id": "R07",
@@ -188,9 +191,11 @@
       "current_evidence": [
         "Sources/EliteCore/ScriptPersistence.swift",
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptTransactions.swift",
+        "Sources/EliteCore/ScriptSolarSave.swift"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "remaining": "Format5 immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required."
     },
     {
       "id": "R16",
@@ -336,22 +341,23 @@
         "8115302",
         "dd27810"
       ],
-      "status": "Main34790e3 integrated and all combined325-test CI/sanitizer/leak gates pass; 1.3.1 remains separately coordinated.",
+      "status": "Final protected main1ef005e integrated; all340-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
       "latest_clean_source": "5939431bc038c7a099ddee9b7bb2e3ffa7567553",
-      "merged_main": "34790e313c0d6cf8be84fe74aaf8f2f228cd3b3f"
+      "merged_main": "1ef005e0c73971a360a0e3bb52792a9286a761d3"
     },
     "gui_lease": "Coder1 signed1.3.1 smoke released the GUI before this successful325-test combined CI. No interactive engine GUI session used."
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 325,
-    "maintained_coverage_percent": 93.35,
-    "script_swift_coverage_percent": 95.01,
+    "tests_per_lane": 340,
+    "maintained_coverage_percent": 93.41,
+    "script_swift_coverage_percent": 95.46,
     "encounter_coverage_percent": 97.73,
     "maintained_c_host_coverage_percent": 94.62,
     "leaks": 0,
-    "charter_accommodation_coverage_percent": 95.06,
-    "solar_save_coverage_percent": 100.0
+    "charter_accommodation_coverage_percent": 94.72,
+    "solar_save_coverage_percent": 100.0,
+    "durable_transaction_coverage_percent": 100.0
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -376,8 +382,16 @@
   ],
   "source_data_follow_ups": [
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
-    "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update.",
-    "New main SH171 Liberator has a distinct native profile without selected common accommodation metadata; charter fitting is explicitly unavailable until an accommodation adapter is provided."
+    "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes325 tests per lane with93.35% maintained coverage and0leaks. Exact source, resource, test and example bytes are pinned in SCRIPTABLE-MISSION-VALIDATION.json."
+  "integration_validation": "Complete combined make ci passes340 tests per lane,93.41% maintained coverage,100% transaction-helper coverage and0leaks; exact bytes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "liberator_accommodation": {
+    "status": "explicit project estimate",
+    "crew_including_commander": 4,
+    "intrinsic_quarters": 4,
+    "common_equipment_units": 32,
+    "initial_charter_cabins": 0,
+    "source": "Sources/EliteCore/ShipAccommodation.swift",
+    "release_gameplay_records_changed": false
+  }
 }

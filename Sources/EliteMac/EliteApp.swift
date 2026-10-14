@@ -252,7 +252,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   NSMenuItemValidation
 {
   var window: NSWindow?
-  let runtime = GameRuntime()
+  let runtime: GameRuntime
   var loop: Task<Void, Never>?
   let saves: CommanderSaveSession
   let windowSize: NSSize
@@ -264,7 +264,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   ) {
     self.windowSize = windowSize
     self.restoreOnLaunch = restoreOnLaunch
-    self.saves = saves ?? CommanderSaveSession()
+    let session = saves ?? CommanderSaveSession()
+    self.saves = session
+    runtime = GameRuntime(saveURL: session.activeURL)
     super.init()
   }
   func applicationDidFinishLaunching(_ _: Notification) {
@@ -627,7 +629,10 @@ struct EliteApp {
       if (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true {
         let pack = try ScriptPackLibrary.read(url)
         print("Valid scripted pack: \(pack.manifest.stateID) @ \(pack.manifest.version)")
-        print(pack.missingCapabilities.isEmpty ? "Native capabilities available." : "Reference only. Requires: " + pack.missingCapabilities.joined(separator: ", "))
+        print(
+          pack.missingCapabilities.isEmpty
+            ? "Native capabilities available."
+            : "Reference only. Requires: " + pack.missingCapabilities.joined(separator: ", "))
         return
       }
       let entry = try MissionPackLibrary.read(url)

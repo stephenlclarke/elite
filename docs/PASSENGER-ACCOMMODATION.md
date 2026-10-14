@@ -12,9 +12,9 @@ The carried-fit comparison now shows operating crew, intrinsic crew quarters, fi
 
 ## Capacity and ownership
 
-Operating crew counts include the commander. The selected `project-refit-v1` ship metadata supplies crew count, intrinsic quarters and equipment budget. The current compiled catalogue has 158 such profiles. Their existing source/borrowed/estimated status and basis remain in the ship TOMLs. Assigned operating quarters lie outside published usable cargo and are not subtracted again. Crew quarters and unfilled cargo space never become charter seats.
+Operating crew counts include the commander. The selected `project-refit-v1` ship metadata supplies crew count, intrinsic quarters and equipment budget. The current compiled catalogue has 158 such profiles, plus the explicitly estimated Liberator adapter below. Their existing source/borrowed/estimated status and basis remain in the ship TOMLs. Assigned operating quarters lie outside published usable cargo and are not subtracted again. Crew quarters and unfilled cargo space never become charter seats.
 
-Only actually fitted, empty, compatible cabins with working life support count as free passenger places. Fitted cabins keep occupying hold and equipment capacity while empty. Stored cabins provide no capacity. Ordinary cargo, protected mission payloads and all fitted cabins share the hold. The unlimited-cargo cheat does not create physical passenger accommodation.
+Only actually fitted, empty, compatible cabins with working life support count as free passenger places. Fitted cabins keep occupying hold and equipment capacity while empty. Stored cabins provide no capacity. Ordinary cargo, protected mission payloads and all fitted cabins share the hold. The unlimited-cargo cheat does not create physical passenger accommodation. Manual buying and automatic trading respect the physical hold while cabins are fitted, including restocking on docking.
 
 Laser controllers and missile pylons use their separate native constraints; intrinsic docking is excluded from the common equipment budget. Extra Energy Unit costs two units, Naval Energy Unit three, and native shield boosters two. Fuel-storage units and other hardware without a more specific selected common adapter use the documented **one-unit fitting estimate**. These are common-project costs, not a claim about native edition slots. Purchases with cabins fitted cannot exceed the combined budget; rejected purchases restore cash, equipment and shields.
 
@@ -30,10 +30,16 @@ Use `passengers.board` or `passengers.deliver` with a once-only operation `id` a
 
 Add party IDs to `mission.requiredPassengerParties` when their true delivery is a completion requirement. Completing all story milestones cannot substitute for those receipts. A later invalid command rolls back boarding, delivery, money and explicit script data together.
 
-Saves with cabins or scripts publish format **5**, using the existing hashed immutable generation/pointer system. Readers accept earlier formats 2, 3 and 4; earlier physical writers reject format 5 instead of silently dropping passenger ownership. Keep the pointer and its `.missions` sidecar together. Automatic durable economic confirmation is a separate unfinished engine requirement; this checkpoint still requires an explicit commander save.
+Saves with cabins or scripts publish format **5**, using the existing hashed immutable generation/pointer system. Readers accept earlier formats 2, 3 and 4; earlier physical writers reject format 5 instead of silently dropping passenger ownership. Keep the pointer and its `.missions` sidecar together. The desktop runtime now publishes fitting and mission transfers before reporting success; see [durable transactions](DURABLE-MISSION-TRANSACTIONS.md). A memory-only backend must bind a writer to obtain that guarantee.
 
 ## Source-data follow-ups
 
 The selected release catalogue still has the older zero-tonne SH128 player refit. Research verified a preferable twelve-tonne adaptation from [`oolite_template_transporter.max_cargo`](https://github.com/OoliteProject/oolite/blob/574ca848c91a067178416216523e8d09c1e9282a/Resources/Config/shipdata.plist). That source is an NPC capacity borrowed for the future player adaptation. It must enter through a separately validated data update, without changing release-pinned numeric profiles here. The current fit service uses the compiled value and does not silently substitute twelve tonnes.
 
 Sunray, Minnow and Stingray research imports are also pending that data update. In particular, Sunray's first-acquisition cabin exception must become a uniquely owned, once-issued module when its native profile is imported. Repeated selection must never grant another free cabin. Native alien craft and drone identities do not authorize humanoid cabins or operating-crew assumptions.
+
+## Liberator player adapter
+
+Main's project-authored SH171 Liberator has a distinct native profile. `PROJECT-LIBERATOR-ACCOMMODATION-v1` supplies a **labelled estimate of four assigned operating crew**, four intrinsic quarters and 32 common equipment units, with zero initial charter cabins. The unchanged native hold is 120 tonnes. Its renderer envelope is 183.13726 × 163.20903 × 300 project units; the equivalent-volume reference is the O08 Cobra III envelope, 369874.0268262. These are an explicit project proxy, not real engineering dimensions or television canon staffing.
+
+The approved estimate uses `equipment = 8 + ceil(cargo/5)` and `crew = max(1, 1 + floor(0.5*max(0,sqrt(volumeRatio)-1) + max(equipment/24,cargo/200)))`. It excludes double counting correlated cargo/equipment terms. This adds a player accommodation adapter without changing the maintained release ship's gameplay values or NPC staffing. The comparison marks estimated crew with `(est.)` and retains its full basis/status. All 159 compiled flyable hulls now have an explicit accommodation adapter.

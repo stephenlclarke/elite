@@ -74,6 +74,13 @@ public struct ShipAccommodation: Codable, Sendable, Equatable {
   }
 }
 extension Commander {
+  /// An early prototype included this virtual hardware flag in maximum equipment.
+  /// Actual cabin/person ownership is stored separately and must remain untouched.
+  mutating func migrateLegacyPassengerMarker() { equipment.remove(PassengerCabin.equipmentName) }
+  /// Charter fitting uses the real hold even when legacy unlimited-cargo policy is enabled.
+  public var tradeCargoCapacity: Int {
+    accommodation.fitted.isEmpty ? capacity : standardCargoCapacity
+  }
   public var passengerFit: AccommodationFit? {
     guard let hull = ShipCatalogue.ship(shipID),
       let profile = try? ShipAccommodationProfile(ship: hull)

@@ -26,23 +26,26 @@ extension GameRuntime {
       game.scriptUnavailable(pack) == nil
     else { throw MissionPackError("Restore the exact saved pack and its requirements.") }
     game.commander.scriptState.instances[id]?.suspension = nil
-    game.drainScriptEvents()
+    game.drainScriptEvents(publish: scriptPublisher())
   }
   /// Gallery trials receive separate value state and have no access to live save writers or directories.
   public func scriptGalleryTrial(packDigest: String, seed: UInt64 = 0x45_4c49_5445) throws
     -> GameRuntime
   {
-    guard let pack = game.scriptPacks.first(where: { $0.digest == packDigest }),
-      game.scriptUnavailable(pack) == nil
-    else {
-      throw MissionPackError("This mission's native capabilities are not available for a trial.")
+    guard let pack = game.scriptPacks.first(where: { $0.digest == packDigest }) else {
+      throw MissionPackError("Choose an installed mission for a trial.")
     }
     var trial = Game(executive: false)
     trial.screen = .status
     trial.scriptPacks = game.scriptPacks
-    let id = try trial.acceptScriptMission(pack)
-    trial.commander.scriptState.instances[id]?.randomState = seed
-    return GameRuntime(trialGame: trial)
+    trial.missionPacks = game.missionPacks
+    trial.scriptDurabilityAvailable = true
+    guard trial.scriptUnavailable(pack) == nil else {
+      throw MissionPackError("This mission's native capabilities are not available for a trial.")
+    }
+    trial.seedScriptTrial(seed)
+    _ = try trial.acceptScriptMission(pack, randomSeed: seed)
+    return try GameRuntime(trialGame: trial)
   }
 }
 
@@ -85,17 +88,21 @@ extension GameRuntime {
 extension GameRuntime {
   public func gallerySaveDirectory() -> URL? { galleryNamespace }
   func requireGalleryFileAccess(_ url: URL) throws {
-    guard let namespace = galleryNamespace else { return }
+    try Self.requireGalleryFileAccess(url, namespace: galleryNamespace)
+  }
+  static func requireGalleryFileAccess(_ url: URL, namespace: URL?) throws {
+    try requireGalleryPathAccess(url, namespace: namespace)
+    try requireGalleryPathAccess(url.appendingPathExtension("missions"), namespace: namespace)
+  }
+  static func requireGalleryPathAccess(_ url: URL, namespace: URL?) throws {
+    guard let namespace else { return }
     let ownedRoot = namespace.standardizedFileURL.path
     guard namespace.resolvingSymlinksInPath().standardizedFileURL.path == ownedRoot else {
       throw MissionPackError(
         "The Gallery save folder has changed. Start a new trial to save safely.")
     }
-    let root = ownedRoot + "/"
     let target = url.resolvingSymlinksInPath().standardizedFileURL.path
-    let chunks = url.appendingPathExtension("missions").resolvingSymlinksInPath()
-      .standardizedFileURL.path
-    guard target.hasPrefix(root), chunks.hasPrefix(root) else {
+    guard target.hasPrefix(ownedRoot + "/") else {
       throw MissionPackError(
         "Gallery trials use their own save folder and cannot replace production commanders.")
     }

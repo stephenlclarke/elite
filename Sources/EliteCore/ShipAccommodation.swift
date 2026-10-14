@@ -10,6 +10,38 @@ public struct ShipAccommodationProfile: Sendable, Equatable {
   public let crewBasis: String
   public let crewStatus: String
   public init(ship: CatalogueShip) throws {
+    if ship.id == "SH171", let native = ship.game,
+      ship.profiles.contains(where: { $0.group == "liberator-native-v1" })
+    {
+      // Explicit player adapter for the project-authored Liberator, not television canon.
+      guard let dimensions = ship.dimensions, dimensions.count == 3,
+        dimensions.allSatisfy({ $0.isFinite && (0.001...1e6).contains($0) })
+      else {
+        throw MissionPackError("The Liberator accommodation estimate needs its model envelope.")
+      }
+      let referenceVolume = 369874.0268262
+      let volumeRatio = dimensions.reduce(1, *) / referenceVolume
+      let budget = 8 + Int(ceil(Double(native.cargo) / 5))
+      let complement = max(
+        1,
+        1
+          + Int(
+            floor(
+              0.5 * max(0, sqrt(volumeRatio) - 1)
+                + max(Double(budget) / 24, Double(native.cargo) / 200))))
+      guard (1...100000).contains(complement), (0...100000).contains(budget) else {
+        throw MissionPackError("The Liberator accommodation estimate exceeds supported counts.")
+      }
+      shipID = ship.id
+      operatingCrew = complement
+      intrinsicCrewQuarters = complement
+      equipmentUnits = budget
+      initialCharterBerths = 0
+      crewStatus = "estimated"
+      crewBasis =
+        "PROJECT-LIBERATOR-ACCOMMODATION-v1: renderer-envelope volume relative to the O08 CobraIII369874.0268262 reference; equipment budget8+ceil(cargo/5); crew1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentUnits/24,cargo/200)). Project coefficients and equivalent-volume proxy; not TV canon staffing."
+      return
+    }
     guard ship.game != nil,
       let profile = ship.profiles.first(where: { $0.group == "project-refit-v1" })
     else {
