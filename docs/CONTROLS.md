@@ -79,10 +79,13 @@ Left/Right or clicking selects a planet. Docked charts 4/5 include all planet fa
 | Colour by economy/government/technology | M |
 | Local-chart range | Z |
 | Open routes with fitted navigation computer | N |
+| Toggle automatic top-five profit scan | P on either chart or the navigation screen |
 | Choose route | Up/Down then Return |
 | Read route details | Option-Up/Down |
 | Clear route | C |
 | Return from routes | Escape |
+
+Profit scan starts enabled by XYZZY and its switch is saved with the commander. It recomputes up to five positive-profit destinations within the current fuel and jump limit. Gold rings and numbers 1-5 highlight them on the current galaxy charts; navigation details list credit estimates or explain that none qualify. Estimates compare sellable carried cargo with selling here, then add affordable exports using available hold space and current stock, at conservative destination prices. They exclude fuel costs and danger; no cargo is bought, route selected or jump started by scanning.
 
 Choosing a route does not jump. Dock at each stop, launch, and use H for the next jump. Foreign-galaxy browsing cannot initiate actual travel or route planning.
 

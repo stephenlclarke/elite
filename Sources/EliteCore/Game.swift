@@ -58,6 +58,11 @@ public struct Commander: Sendable, Equatable, Codable {
   private var displayStyle: ShipDisplayStyle?
   private var navalMission: NavalMissionStage?
   private var xyzzyEnabled: Bool?
+  private var automaticProfitScan: Bool?
+  public var profitScanEnabled: Bool {
+    get { automaticProfitScan ?? false }
+    set { automaticProfitScan = newValue }
+  }
   private var automaticECM: Bool?
   private var automaticTargeting: Bool?
   private var returnFireEnabled: Bool?
@@ -531,6 +536,7 @@ public struct Game: Sendable {
   }
   mutating func enableXYZzy() {
     commander.xyzzyActive = true
+    commander.profitScanEnabled = true
     commander.shipDisplayStyle = .shadedPanels
     commander.retaliationEnabled = true
     commander.unlimitedMissiles = true

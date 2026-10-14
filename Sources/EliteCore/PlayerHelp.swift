@@ -134,6 +134,7 @@ public enum PlayerHelp {
           "O - CURRENT LOCATION; D - DISTANCE",
           "M - ECONOMY / GOVERNMENT / TECHNOLOGY",
           "N - ROUTES (FITTED NAV COMPUTER)",
+          "P - TOGGLE TOP-FIVE PROFIT SCAN",
           "Z (LOCAL) - CHANGE RANGE",
           "[ / ] OR GALAXY BUTTONS - VIEW GALAXY",
           "H - HYPERSPACE WHEN IN FLIGHT",
@@ -147,6 +148,7 @@ public enum PlayerHelp {
           "RETURN - SET ROUTE; ESC - BACK",
           "OPTION-UP/DOWN - SCROLL DETAILS",
           "C - CLEAR ROUTE",
+          "P - TOGGLE TOP-FIVE PROFIT SCAN",
           "DOCK AT EACH STOP; H STARTS EACH JUMP",
         ])
     case .showroom where game.showroom.trading:
