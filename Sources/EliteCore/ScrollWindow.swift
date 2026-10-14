@@ -13,7 +13,8 @@ public struct ScrollWindow: Sendable {
   public func moved(_ amount: Int) -> Int { max(0, min(last, offset + amount)) }
   public var hint: String? {
     guard last > 0 else { return nil }
-    let direction = offset == 0 ? "Down" : (offset == last ? "Up" : "Up/Down")
+    let middle = offset == last ? "Up" : "Up/Down"
+    let direction = offset == 0 ? "Down" : middle
     return direction + ": scroll \(offset + 1)-\(min(count, offset + visible))/\(count)"
   }
 }

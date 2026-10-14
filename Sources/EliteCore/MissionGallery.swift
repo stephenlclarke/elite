@@ -5,6 +5,7 @@ public enum GalleryStatus: String, Sendable {
   case available = "Available"
   case locked = "Locked"
   case complete = "Complete"
+  case failed = "Failed"
 }
 public struct MissionMilestone: Sendable {
   public let title: String
@@ -32,94 +33,15 @@ public struct MissionGalleryState: Sendable {
 }
 
 extension Game {
-  /// Source TP values are deliberately mapped by meaning, never by numeric order.
+  var galleryListWindow: ScrollWindow {
+    let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
+    let visible = max(1, Int((viewportHeight - layout.listTop - 48) / layout.itemHeight))
+    return .init(
+      count: missionCatalogue.count, visible: visible,
+      offset: max(0, gallery.selection - visible + 1))
+  }
   public var missionCatalogue: [GalleryMission] {
-    let stage = commander.missionStage
-    let huntProgress: Int
-    let plansProgress: Int
-    switch stage {
-    case .notStarted:
-      huntProgress = 0
-      plansProgress = 0
-    case .huntingConstrictor:
-      huntProgress = 1
-      plansProgress = 0
-    case .constrictorDestroyed:
-      huntProgress = 2
-      plansProgress = 0
-    case .constrictorComplete:
-      huntProgress = 3
-      plansProgress = 0
-    case .reportToCeerdi:
-      huntProgress = 3
-      plansProgress = 1
-    case .carryingPlans:
-      huntProgress = 3
-      plansProgress = 2
-    case .plansDelivered:
-      huntProgress = 3
-      plansProgress = 3
-    }
-    let huntAvailable = commander.kills >= 256 && commander.galaxy < 2
-    let plansAvailable = huntProgress == 3 && commander.kills >= 1280 && commander.galaxy == 2
-    func status(_ progress: Int, available: Bool) -> GalleryStatus {
-      if progress == 3 { return .complete }
-      if progress > 0 { return .active }
-      return available ? .available : .locked
-    }
-    func steps(_ names: [String], progress: Int, available: Bool) -> [MissionMilestone] {
-      names.enumerated().map { index, name in
-        let state: String
-        if index < progress {
-          state = "Complete"
-        } else if index == progress && (progress > 0 || available) {
-          state = "Current"
-        } else {
-          state = progress > 0 || available ? "Upcoming" : "Locked"
-        }
-        return .init(title: name, state: state)
-      }
-    }
-    return [
-      .init(
-        name: "Constrictor Hunt", status: status(huntProgress, available: huntAvailable),
-        objective: stage == .constrictorDestroyed
-          ? "Dock for your naval debriefing."
-          : "Find and remove the stolen Constrictor, then report to the Navy.",
-        briefing:
-          "The Navy's experimental warship has been stolen. Follow system reports across the first two galaxies. Its shields require military lasers; it carries ECM. Optional clues do not count as required milestones.",
-        destination: "Galaxies 1 and 2. Spoiler: Orarra, Galaxy 2 (144,33). Debrief at a station.",
-        reward: "5,000 CR and 256 combat points, awarded on docking after target removal.",
-        prerequisites: [
-          "Combat points: \(commander.kills) of 256 required to receive orders.",
-          "Receive orders while docked in Galaxy 1 or 2. Current: \(commander.galaxy + 1).",
-        ],
-        completed: huntProgress,
-        milestones: steps(
-          ["Receive naval assignment", "Remove the Constrictor", "Dock for debriefing and reward"],
-          progress: huntProgress, available: huntAvailable)),
-      .init(
-        name: "Thargoid Plans", status: status(plansProgress, available: plansAvailable),
-        objective: stage == .carryingPlans
-          ? "Carry the plans to Birera and dock."
-          : "Report to Ceerdi, collect the plans and deliver them to Birera.",
-        briefing:
-          "Naval Intelligence needs a courier for captured Thargoid defence plans. Reach Ceerdi for collection, then deliver to Birera. Expect Thargoid opposition while carrying the plans.",
-        destination: "Galaxy 3: Ceerdi (215,84), then Birera (63,72). Dock at each destination.",
-        reward:
-          "Naval Energy Unit and 256 combat points on delivery. The unit replaces a standard energy unit.",
-        prerequisites: [
-          "Constrictor Hunt: \(huntProgress == 3 ? "complete" : "required").",
-          "Combat points: \(commander.kills) of 1280 required to receive orders.",
-          "Receive orders in Galaxy 3. Current: \(commander.galaxy + 1).",
-        ],
-        completed: plansProgress,
-        milestones: steps(
-          [
-            "Receive orders to report to Ceerdi", "Dock at Ceerdi and collect plans",
-            "Dock at Birera for delivery and reward",
-          ], progress: plansProgress, available: plansAvailable)),
-    ] + [blackjackGalleryMission]
+    missionPacks.entries.map { packGallery($0) } + missingPackGallery
   }
   public mutating func openGallery() {
     guard
@@ -186,7 +108,7 @@ extension Game {
     }
     if layout.wide || !gallery.detail {
       if x < (layout.wide ? layout.divider : viewportWidth), y >= layout.listTop {
-        let index = Int((y - layout.listTop) / layout.itemHeight)
+        let index = Int((y - layout.listTop) / layout.itemHeight) + galleryListWindow.offset
         if missionCatalogue.indices.contains(index) {
           gallery.selection = index
           gallery.detail = true
@@ -200,10 +122,15 @@ extension Game {
   }
   func galleryDetailLines(width: Double, font: Double) -> [String] {
     let mission = missionCatalogue[gallery.selection]
-    let next =
-      mission.milestones.first { $0.state == "Current" }?.title
-      ?? (mission.status == .complete
-        ? "Assignment complete." : "Meet the prerequisites, then dock for orders.")
+    let ending: String
+    if mission.status == .failed {
+      ending = mission.objective
+    } else if mission.status == .complete {
+      ending = "Assignment complete."
+    } else {
+      ending = "Meet the prerequisites, then dock for orders."
+    }
+    let next = mission.milestones.first { $0.state == "Current" }?.title ?? ending
     let sections =
       [
         mission.name, "Status: \(mission.status.rawValue) - \(mission.progress)", "", "Briefing",
@@ -245,7 +172,7 @@ extension Display {
     frame.label("Esc: Back", width - 16 - 9 * 6 * layout.font, 12, scale: layout.font, ink: .cyan)
     let missions = game.missionCatalogue
     let counts =
-      "Active: \(missions.filter { $0.status == .active }.count)  Available: \(missions.filter { $0.status == .available }.count)  Complete: \(missions.filter { $0.status == .complete }.count)"
+      "Active: \(missions.filter { $0.status == .active }.count)  Available: \(missions.filter { $0.status == .available }.count)  Complete: \(missions.filter { $0.status == .complete }.count)  Failed: \(missions.filter { $0.status == .failed }.count)"
     frame.label(counts, 16, 38, scale: layout.font)
     frame.label(
       game.docked ? "Docked - read-only catalogue" : "Flight paused - read-only catalogue", 16, 62,
@@ -253,10 +180,16 @@ extension Display {
     frame.stroke(0, 88, width, 88, .yellow)
     if layout.wide || !game.gallery.detail {
       let listWidth = layout.wide ? layout.divider : width
-      for (index, mission) in missions.enumerated() {
-        let y = layout.listTop + Double(index) * layout.itemHeight
+      let visible = max(1, Int((height - layout.listTop - 48) / layout.itemHeight))
+      let first = max(0, game.gallery.selection - visible + 1)
+      for (index, mission) in missions.enumerated().dropFirst(first).prefix(visible) {
+        let y = layout.listTop + Double(index - first) * layout.itemHeight
+        let titleWidth = max(8, Int((listWidth - 48) / (6 * layout.font)))
+        let name =
+          mission.name.count > titleWidth
+          ? String(mission.name.prefix(titleWidth - 3)) + "..." : mission.name
         frame.label(
-          (index == game.gallery.selection ? "> " : "  ") + mission.name, 16, y, scale: layout.font,
+          (index == game.gallery.selection ? "> " : "  ") + name, 16, y, scale: layout.font,
           ink: index == game.gallery.selection ? .cyan : .white)
         frame.label(
           mission.status.rawValue + " - " + mission.progress, 28, y + layout.row,

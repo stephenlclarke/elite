@@ -1,0 +1,143 @@
+schemaVersion = 1
+id = "xyzzy.constrictor"
+version = "1.0.0"
+minimumEngine = "1.0.0"
+capabilities = ["state-machine-v1", "dialog-v1", "economy-v1", "cargo-v1"]
+priority = 0
+source = "BBC Micro Executive source / project adaptation"
+license = "Original narrative rights retained; see NOTICE.md"
+
+[mission]
+id = "constrictor"
+title = "Constrictor Hunt"
+initialStage = "not-started"
+binding = "naval"
+briefing = "The Navy's experimental warship has been stolen. Follow system reports across the first two galaxies. Its shields require military lasers; it carries ECM. Optional clues do not count as required milestones."
+destination = "Galaxies 1 and 2. Spoiler: Orarra, Galaxy 2 (144,33). Debrief at a station."
+reward = "5,000 CR and 256 combat points, awarded on docking after target removal."
+prerequisites = ["Combat points: {kills} of 256 required to receive orders.", "Receive orders while docked in Galaxy 1 or 2. Current: {galaxy}."]
+milestones = ["Receive naval assignment", "Remove the Constrictor", "Dock for debriefing and reward"]
+
+[[stages]]
+id = "not-started"
+objective = "Find and remove the stolen Constrictor, then report to the Navy."
+completed = 0
+legacyValues = [0]
+legacyWrite = 0
+
+[[stages]]
+id = "hunt"
+objective = "Find and remove the stolen Constrictor, then report to the Navy."
+completed = 1
+legacyValues = [1]
+legacyWrite = 1
+
+[[stages]]
+id = "report"
+objective = "Dock for your naval debriefing."
+completed = 2
+legacyValues = [3]
+legacyWrite = 3
+
+[[stages]]
+id = "complete"
+objective = "Constrictor Hunt complete."
+completed = 3
+legacyValues = [2, 6, 10, 14]
+legacyWrite = 2
+terminal = true
+
+[[dialogs]]
+id = "constrictorbriefing"
+text = "COMMANDER {commander},\nCAPTAIN {captain}, SPACE NAVY.\n\nTHE CONSTRICTOR IS AN EXPERIMENTAL WARSHIP WITH SECRET SHIELD TECHNOLOGY. IT WAS STOLEN FROM OUR XEER SHIPYARD FIVE MONTHS AGO.\n\n{sighting}\n\nFIND AND DESTROY IT. ONLY MILITARY LASERS CAN DAMAGE ITS SHIELDS, AND IT CARRIES ECM. A GENEROUS REWARD AWAITS YOU.\n\nMESSAGE ENDS"
+ship = true
+delaySeconds = 2.0
+
+[[dialogs]]
+id = "constrictordebriefing"
+text = "COMMANDER {commander},\n\nTHE STOLEN CONSTRICTOR IS NO LONGER A THREAT. THE NAVY THANKS YOU FOR YOUR SERVICE.\n\nYOUR ACCOUNT HAS BEEN CREDITED WITH 5,000 CR AND YOUR COMBAT TALLY INCREASED BY 256 POINTS.\n\nMESSAGE ENDS"
+ship = false
+delaySeconds = 2.0
+
+[[transitions]]
+id = "briefing"
+from = "not-started"
+event = "dock"
+to = "hunt"
+conditions = [{ field = "kills", op = "ge", value = 256 }, { field = "galaxy", op = "lt", value = 2 }]
+actions = []
+dialog = "constrictorbriefing"
+
+[[transitions]]
+id = "removal"
+from = "hunt"
+event = "targetRemoved"
+to = "report"
+conditions = [{ field = "target", op = "eq", text = "constrictor" }]
+actions = []
+
+[[transitions]]
+id = "debrief"
+from = "report"
+event = "dock"
+to = "complete"
+conditions = []
+actions = [{ kind = "creditsWrapped", amount = 50000 }, { kind = "killsWrapped", amount = 256 }]
+dialog = "constrictordebriefing"
+
+[[clues]]
+galaxy = 0
+systems = [150]
+texts = ["NAVAL REPORT: THE CONSTRICTOR WAS SIGHTED AT REESDICE."]
+
+[[clues]]
+galaxy = 0
+systems = [36]
+texts = ["A STRANGE SHIP LEFT HERE, APPARENTLY HEADING FOR AREXE."]
+
+[[clues]]
+galaxy = 0
+systems = [28]
+texts = ["AN UNUSUAL SHIP BOUGHT A GALACTIC HYPERDRIVE HERE AND USED IT."]
+
+[[clues]]
+galaxy = 1
+systems = [253]
+texts = ["A STRANGE SHIP ARRIVED HERE, SKIMMED THE SUN AND LEFT FOR INBIBE."]
+
+[[clues]]
+galaxy = 1
+systems = [79]
+texts = ["A ROGUE ATTACKED ME AT AUSAR. MY LASERS COULD NOT HURT ITS HULL."]
+
+[[clues]]
+galaxy = 1
+systems = [53]
+texts = ["A DANGEROUS SHIP FOUGHT THE PIRATES HERE, THEN LEFT FOR USLERI."]
+
+[[clues]]
+galaxy = 1
+systems = [118]
+texts = ["THE DANGEROUS SHIP YOU SEEK IS AT ORARRA."]
+
+[[clues]]
+galaxy = 1
+systems = [193]
+texts = ["THERE IS A PARTICULARLY DANGEROUS PIRATE IN THIS SYSTEM."]
+
+[[clues]]
+galaxy = 2
+systems = [101]
+texts = ["YOU ARE LOOKING IN THE WRONG GALAXY!"]
+
+[[clues]]
+galaxy = 1
+systems = [32, 68, 164, 220, 106, 16, 162, 3, 107, 26, 192, 184, 5]
+texts = ["A PECULIAR SHIP WAS REPORTED AT ERRIUS.", "THAT STRANGE SHIP LEFT ERRIUS RECENTLY.", "YOU SHOULD INVESTIGATE ERRIUS.", "A SUSPICIOUS NEW SHIP WAS SEEN AT ERRIUS.", "LOOK FOR MORE INFORMATION AT ERRIUS."]
+
+[[encounters]]
+id = "constrictor"
+stage = "hunt"
+galaxy = 1
+system = 193
+kind = "constrictor-hunt"

@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check sonar ci
+.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check mission-packs-check package-macos sonar ci
 help:
-	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check sonar ci'
+	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check mission-packs-check package-macos sonar ci'
 build:
 	swift build
 run:
@@ -34,4 +34,8 @@ showroom-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'
 sonar:
 	./script/sonar.sh
-ci: ships-check showroom-check coverage-check threads address leaks
+mission-packs-check:
+	swift run Elite --validate-mission-pack docs/mission-packs/courier.toml
+package-macos:
+	python3 Tools/distribution/package_macos.py
+ci: ships-check showroom-check mission-packs-check coverage-check threads address leaks

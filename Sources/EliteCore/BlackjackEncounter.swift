@@ -106,20 +106,7 @@ extension Game {
     else { return }
     let saved = role == .bolts ? commander.blackjack.bolts : commander.blackjack.witness
     guard saved?.identity == body.blackjackIdentity else { return }
-    if role == .bolts {
-      commander.blackjack.stage = .reportBolts
-      commander.blackjack.transfers.insert(.goldAward)
-      if commander.cargo[13] <= Int.max / 17 - 20 {
-        commander.cargo[13] += 20
-        commander.blackjack.transfers.insert(.goldDelivery)
-      } else {
-        commander.blackjack.pendingGold = true
-      }
-      notify("20 KG GOLD AWARDED - REPORT AT A GALAXY 2 STATION")
-    } else {
-      commander.blackjack.stage = .reportWitness
-      notify("WITNESS DESTROYED - REPORT AT ESDI, GALAXY 2")
-    }
+    _ = dispatchMission(.targetDestroyed, target: role.rawValue)
     persistBlackjackTargets()
   }
   mutating func advanceBlackjackNPC(index: Int, delta: Double) {

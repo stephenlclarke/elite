@@ -58,3 +58,7 @@ Tests use literal source thresholds, coordinates, reward amounts and wrapping bo
 ## Requested native equipment extensions
 
 The added XYZZY Naval Laser is grant-only and deals a prototype 64 damage, reduced to 16 by the Constrictor shield. Historical Military Laser damage remains 23/5. Capital shields, targeting tiers, automatic docking and ECM-confirmed Military retaliation are user-requested native extensions rather than original mission rules. They do not alter the saved TP stage mapping, offers, rewards, source encounter predicates or mission completion conditions.
+
+## Mission-pack implementation
+
+Campaign content and progression are maintained in `Sources/EliteCore/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.

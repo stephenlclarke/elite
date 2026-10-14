@@ -1,6 +1,6 @@
 # Incremental mission implementation
 
-Research readiness, receipt and playable implementation are separate. Apply the local `docs/research/implementation-scope.md` v4 and station-handoff contract. Frontier/First Encounters missions, Elite Dangerous Operations and playable surface stages remain excluded. Preserve all ship and alien research.
+Research readiness, receipt and playable implementation are separate. The three currently playable campaigns are now bundled TOML packs; the [mission-pack framework](MISSION-PACKS.md) also loads validated external content without rebuilding. This does not enable any queued research packet. Apply the local `docs/research/implementation-scope.md` v4 and station-handoff contract. Frontier/First Encounters missions, Elite Dangerous Operations and playable surface stages remain excluded. Preserve all ship and alien research.
 
 | Packet | Receipt | Implementation |
 | --- | --- | --- |

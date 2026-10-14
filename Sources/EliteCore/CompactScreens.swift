@@ -34,12 +34,19 @@ extension Display {
     frame.label(
       "Page \(page + 1) of \(pages.count)", layout.left, height - 44,
       scale: layout.font, ink: .yellow)
+    var paging: String?
+    if pages.count > 1 {
+      if page == 0 {
+        paging = "Right/Down: next page"
+      } else if page == pages.count - 1 {
+        paging = "Left/Up: previous page"
+      } else {
+        paging = "Arrows: help pages"
+      }
+    }
     frame.label(
       [
-        pages.count > 1
-          ? (page == 0
-            ? "Right/Down: next page"
-            : (page == pages.count - 1 ? "Left/Up: previous page" : "Arrows: help pages")) : nil,
+        paging,
         "Esc: back",
       ].compactMap {
         $0

@@ -10,7 +10,8 @@ let package = Package(
     .target(
       name: "EliteCore", dependencies: [.product(name: "TOMLDecoder", package: "TOMLDecoder")],
       resources: [
-        .copy("Resources/Ships"), .process("Resources/Legal"), .process("Resources/ModelLicenses"),
+        .copy("Resources/Ships"), .copy("Resources/MissionPacks"), .process("Resources/Legal"),
+        .process("Resources/ModelLicenses"),
         .process("Resources/ASSET-NOTICE.txt"), .process("Resources/Oolite-LICENSE.txt"),
         .process("Resources/RescueStations-LICENSE.txt"), .process("Resources/Vector-MANIFEST.txt"),
         .process("Resources/CatalogueInputs.json"),

@@ -8,6 +8,14 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedMissionProgress: [String: MissionProgress]?
+  public var missionProgress: [String: MissionProgress] {
+    get { savedMissionProgress ?? [:] }
+    set { savedMissionProgress = newValue }
+  }
+  public var missionPayloadTonnes: Int {
+    missionProgress.values.reduce(0) { $0 + $1.payloads.values.reduce(0, +) }
+  }
   private var wantedAmnesty: Bool?
   public var xyzzyWantedAmnesty: Bool {
     get { wantedAmnesty ?? false }
@@ -115,7 +123,7 @@ public struct Commander: Sendable, Equatable, Codable {
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
-    zip(cargo, Commodity.all).reduce(0) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
+    zip(cargo, Commodity.all).reduce(missionPayloadTonnes) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
   }
   public var rank: String {
     let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
@@ -138,6 +146,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
+      && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
   }
@@ -219,6 +228,10 @@ public struct Game: Sendable {
   public var paused = false
   public var docked = true
   public var dockedAtMainStation = true
+  public var missionPacks = MissionPackLibrary.bundled
+  public var packOffer: PackOffer?
+  public var packOfferElapsed = 0.0
+  public var packDialogScroll = 0
   public var blackjackOffer: BlackjackOffer?
   public var showroom = ShowroomState()
   public var galacticBrowse = GalaxyBrowseState()
@@ -304,6 +317,9 @@ public struct Game: Sendable {
     guard value.valid else { return false }
     commander = value
     blackjackOffer = nil
+    packOffer = nil
+    migrateMissionProgress()
+    gallery = MissionGalleryState()
     showroom = ShowroomState()
     galacticBrowse = GalaxyBrowseState()
     systemInspection = nil
@@ -813,6 +829,7 @@ public struct Game: Sendable {
     if commander.autoTrade { autoTrade() }
     progressNavalMissions()
     reconcileEliteReward()
+    if screen != .mission { _ = dispatchMission(.dock) }
     offerBlackjackHandoff()
   }
   public mutating func beginHyperspace() {
@@ -960,6 +977,10 @@ public struct Game: Sendable {
       showroom.advance(delta: dt)
       return
     }
+    if screen == .handoff {
+      if !paused { packOfferElapsed += dt }
+      return
+    }
     if paused || screen == .help || screen == .gallery || screen == .navigation
       || screen == .handoff || screen == .rumour
     {
@@ -1035,6 +1056,7 @@ public struct Game: Sendable {
     } else if energy < commander.performance.energy / 4 && messageTime <= 0 {
       notify("ENERGY LOW,SIR")
     }
+    if screen != .gameOver { advanceMissionClock(dt) }
   }
   private mutating func fireLaser() {
     guard fireCooldown <= 0, laserHeat < 240, energy > 1 else { return }
@@ -1158,7 +1180,7 @@ public enum SaveError: Error { case invalidCommander }
 
 /// Owns all mutable simulation state. Rendering consumes value snapshots only.
 public actor GameRuntime {
-  private var game: Game
+  var game: Game
   private var controls = Controls()
   public init(game: Game = Game()) { self.game = game }
   public func snapshot() -> Game { game }
@@ -1199,13 +1221,14 @@ public actor GameRuntime {
     game.persistBlackjackTargets()
     guard game.commander.valid else { throw SaveError.invalidCommander }
     let data = try JSONEncoder().encode(game.commander)
+    guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     try FileManager.default.createDirectory(
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
     let data = try Data(contentsOf: url)
-    guard data.count < 65536 else { throw SaveError.invalidCommander }
+    guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     let commander = try JSONDecoder().decode(Commander.self, from: data)
     guard game.load(commander) else { throw SaveError.invalidCommander }
     if persistMigrations && game.commander != commander { try save(to: url) }
