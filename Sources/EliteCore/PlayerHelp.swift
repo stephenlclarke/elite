@@ -267,6 +267,21 @@ public enum PlayerHelp {
 
   private static let flightReference: [HelpPage] = [
     .init(
+      title: "FINDING THE STATION",
+      rows: [
+        "YELLOW COMPASS - CURRENT VIEW BEARING",
+        "RANGE IS IN LOCAL FLIGHT UNITS",
+        "BEHIND - TURN TOWARD LEFT / RIGHT",
+        "COMPASS UP / DOWN - STATION ELEVATION",
+        "0 / 1 / 2 / 3 - FRONT / REAR / LEFT / RIGHT",
+        "COMPASS WORKS BEYOND SCANNER RANGE",
+        "NO TARGETING COMPUTER NEEDED FOR CUE",
+        "TAB - CYCLE SHIPS, THEN STATIONS",
+        "DOCKING TARGETING TIER OR BETTER FOR AUTO",
+        "AUTO FACES WAYPOINT, BRAKES, ALIGNS",
+        "Q OR MANUAL CONTROLS - CANCEL AUTO",
+      ]),
+    .init(
       title: "FLIGHT: WEAPONS AND DRIVES",
       rows: [
         "FLIGHT MENU SHOWS ALL THESE ACTIONS",

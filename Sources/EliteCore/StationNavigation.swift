@@ -42,6 +42,9 @@ public struct StationNavigation: Sendable, Equatable {
   }
 
   var arrowDirection: ScreenPoint {
+    if !behind && abs(bearingDegrees) < 0.5 && abs(elevationDegrees) < 0.5 {
+      return .init(0, 0)
+    }
     let length = hypot(viewPosition.x, viewPosition.y)
     if length > 1e-9 { return .init(viewPosition.x / length, -viewPosition.y / length) }
     // Directly astern has two equally short turns. Explicit RIGHT 180 gives one

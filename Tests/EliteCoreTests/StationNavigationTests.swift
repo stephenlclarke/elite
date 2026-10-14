@@ -187,3 +187,23 @@ private func stationLabels(_ navigation: StationNavigation, layout: CockpitLayou
     #expect(try #require(game.stationNavigation).distanceText.count <= 30)
   }
 }
+
+@Test func stationCompassCentersWhenTinyAlignmentResidualsReadAsZeroDegrees() throws {
+  var game = stationNavigationGame(.init(-0.00001, 0.00002, 526))
+  let layout = CockpitLayout(game: game, width: 512, height: 518)
+  for position in [Vector3(-0.00001, 0.00002, 526), .init(4, -4, 526)] {
+    game.bodies[0].position = position
+    let navigation = try #require(game.stationNavigation)
+    #expect(navigation.bearingText(layout: layout) == "AHEAD 0 DEG")
+    #expect(navigation.elevationText == "LEVEL 0 DEG")
+    #expect(navigation.arrowDirection == .init(0, 0))
+    let frame = Display.cockpit(game, width: 512, height: 518)
+    #expect(stationLabels(navigation, layout: layout, frame: frame).count == 3)
+  }
+  for position in [Vector3(5, 0, 526), .init(0, -5, 526), .init(-4, 4, -526)] {
+    game.bodies[0].position = position
+    #expect(try #require(game.stationNavigation).arrowDirection != .init(0, 0))
+  }
+  game.bodies[0].position = .init(0, 0, -526)
+  #expect(try #require(game.stationNavigation).arrowDirection == .init(1, 0))
+}

@@ -132,3 +132,36 @@ private func approachGame(
   for _ in 0..<100 { game.tick(delta: 0.02) }
   #expect(game.autoPilot.status == "APPROACHING" && !game.autoPilot.finalApproach)
 }
+
+@Test func freshLaunchCobraAndLiberatorDockFromTheActualCloseRearStation() throws {
+  for shipID in ["SH023", "SH171"] {
+    var game = Game(executive: false)
+    game.commander.shipID = shipID
+    game.commander.installTargetingComputer(.docking)
+    game.launch()
+    game.bodies.removeAll { $0.hull != .station }
+    #expect(game.speed == 8)
+    #expect(try #require(game.bodies.first).position == Vector3(0, 0, -500))
+    game.key("r")
+    var collided = false
+    var finalFrames = 0
+    var minimumTransitRange = Double.infinity
+    var elapsed = 0.0
+    for _ in 0..<9000 where !game.docked {
+      game.tick(delta: 0.02)
+      elapsed += 0.02
+      game.bodies.removeAll { $0.hull != .station }
+      collided = collided || game.message == "DOCKING COLLISION"
+      if game.autoPilot.status == "FINAL APPROACH" { finalFrames += 1 }
+      if !game.autoPilot.finalApproach, let station = game.bodies.first {
+        minimumTransitRange = min(minimumTransitRange, station.position.length)
+      }
+    }
+    #expect(
+      game.docked,
+      "\(shipID): \(game.autoPilot.status), facing \(game.autoPilot.facingError), goal \(game.autoPilot.positionError), velocity \(game.autoPilot.velocity)"
+    )
+    #expect(!collided && minimumTransitRange >= 399.9)
+    #expect(finalFrames > 100 && elapsed < 90, "\(shipID): \(elapsed) simulated seconds")
+  }
+}
