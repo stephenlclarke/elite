@@ -1,4 +1,4 @@
-# TOML missions and signed macOS release
+# PR #8: TOML missions and signed macOS release
 
 The Constrictor hunt, Thargoid plans delivery and Blackjack's Bullion now load their campaign stages, conditions, dialogs, clues, encounter bindings and rewards from bundled TOMLs. Commander > Install Mission Pack accepts supported external content without rebuilding. The optional Lave courier example reserves one tonne and pays 50 CR exactly once at Zaonce.
 
@@ -12,4 +12,4 @@ A Makefile-backed distribution workflow builds arm64+x86_64 Release slices, pack
 
 Native review installed the external example in the already-built app, accepted it at Lave, flew to Zaonce, completed actual automatic docking, paid exactly 500 tenths of CR and restored Complete after save/reload. Eight compact captures after the redraw fix retained all text; wide Gallery review passed. The original user commander and save preference were restored. Local evidence: reports/ui/mission-pack-audit/report.md.
 
-Final local make ci passes 219 Swift tests and nine Python checks, with 92.53% line coverage, clean Thread Sanitizer (70.2s), clean Address Sanitizer (316.8s) and zero detected leaks. This includes all original naval/Blackjack scenarios, external install/validation/save migration/atomic reward cases, gallery reset and long-dialog bounds. Signed package provenance will be recorded before publication. Player documentation: [MISSION-PACKS.md](MISSION-PACKS.md), [MACOS-DISTRIBUTION.md](MACOS-DISTRIBUTION.md). Motivation: [ISSUE-mission-packs.md](ISSUE-mission-packs.md).
+Final local make ci passes 219 Swift tests and nine Python checks, with 92.53% line coverage, clean Thread Sanitizer (70.2s), clean Address Sanitizer (316.8s) and zero detected leaks. This includes all original naval/Blackjack scenarios, external install/validation/save migration/atomic reward cases, gallery reset and long-dialog bounds. Signed package provenance will be recorded before publication. Player documentation: [MISSION-PACKS.md](MISSION-PACKS.md), [MACOS-DISTRIBUTION.md](MACOS-DISTRIBUTION.md). Motivation: [ISSUE-8.md](ISSUE-8.md).

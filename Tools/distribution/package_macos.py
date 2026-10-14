@@ -211,6 +211,16 @@ def package(options):
         ).stdout.split()
         if set(architectures) != {"arm64", "x86_64"}:
             raise RuntimeError("Universal artifact is missing an architecture.")
+        build_versions = run(
+            "xcrun",
+            "vtool",
+            "-show-build",
+            str(delivered / "Contents/MacOS/Elite"),
+            capture=True,
+        ).stdout
+        minimums = re.findall(r"minos\s+([0-9.]+)", build_versions)
+        if minimums != ["14.0", "14.0"]:
+            raise RuntimeError("Both executable slices must target macOS 14.0.")
         verify_resources(delivered)
         run(str(delivered / "Contents/MacOS/Elite"), "--diagnostics")
         gatekeeper = run(
@@ -236,6 +246,7 @@ def package(options):
             "sourceRevision": revision,
             "builtAtUTC": datetime.datetime.now(datetime.UTC).isoformat(),
             "minimumMacOS": "14.0",
+            "verifiedMachOMinimums": minimums,
             "architectures": sorted(architectures),
             "archive": archive.name,
             "archiveBytes": archive.stat().st_size,

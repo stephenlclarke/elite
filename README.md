@@ -239,7 +239,7 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 The [signed universal app](releases/macos/Elite-1.1.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.1.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.1.0-universal.json).
 
-This distribution uses Developer ID signing and the hardened runtime. Notarization is recorded separately in the manifest; a build without notarization can be blocked by Gatekeeper after downloading. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
+This distribution uses Developer ID signing and the hardened runtime. The current download is signed but **not notarized**; Gatekeeper rejects it as an unnotarized Developer ID build. Notarization needs a configured notarytool keychain profile. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
 
 ## Add mission packs
 
