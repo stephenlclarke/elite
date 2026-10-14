@@ -58,7 +58,11 @@ extension Display {
       center = .init(clip.x + clip.width / 2, clip.y + clip.height / 2)
       radius = hypot(clip.width, clip.height)
     } else {
-      guard position.z > 0 else { return }
+      guard
+        intersectsCelestialView(position, radius: body.radius, projection: projection, clip: clip)
+      else { return }
+      // A sphere's forward limb can remain visible after its center passes behind
+      // the camera. Frustum planes cull the sphere before this bounded projection.
       // Keep near-plane crossings bounded; normal approach remains perspective.
       let depth = max(position.z, body.radius * 0.05, 1)
       let projectedRadius = projection.focal * (body.radius / depth)
@@ -94,4 +98,21 @@ extension Display {
       frame.graphics.append(.point(center: center, radius: radius * 0.86, opacity: 1, ink: .yellow))
     }
   }
+
+  private static func intersectsCelestialView(
+    _ position: Vector3, radius: Double, projection: FlightProjection, clip: CanvasRect
+  ) -> Bool {
+    guard position.z + radius > 0 else { return false }
+    let left = (clip.x - projection.center.x) / projection.focal
+    let right = (clip.maxX - projection.center.x) / projection.focal
+    let bottom = (projection.center.y - clip.maxY) / projection.focal
+    let top = (projection.center.y - clip.y) / projection.focal
+    // Signed distances to the four side planes include the sphere's radius;
+    // testing its center alone drops visible limbs at the near plane and edges.
+    return position.x - left * position.z >= -radius * hypot(1, left)
+      && -position.x + right * position.z >= -radius * hypot(1, right)
+      && position.y - bottom * position.z >= -radius * hypot(1, bottom)
+      && -position.y + top * position.z >= -radius * hypot(1, top)
+  }
+
 }
