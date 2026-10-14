@@ -244,7 +244,7 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 The [signed universal app](releases/macos/Elite-1.3.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.3.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.3.0-universal.json).
 
-This distribution uses Developer ID signing and the hardened runtime. Version 1.3.0 is **notarized by Apple**, includes a validated stapled ticket and passes Gatekeeper assessment. The [Apple submission log](releases/macos/Elite-1.3.0-universal-notarization.json) covers both architectures. This build includes the detailed hulls, Liberator, startup/profit fixes and celestial/station flight changes. Its manifest and title identify source checkpoint `97d0a4c8438aa92b73f384016f58351a6a544134`; the later artifact commit does not relabel the executable. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
+This distribution uses Developer ID signing and the hardened runtime. Version 1.3.0 is **notarized by Apple**, includes a validated stapled ticket and passes Gatekeeper assessment. The [Apple submission log](releases/macos/Elite-1.3.0-universal-notarization.json) covers both architectures. This build includes the detailed hulls, Liberator, startup/profit fixes and celestial/station flight changes. Its manifest and title identify source checkpoint `5939431bc038c7a099ddee9b7bb2e3ffa7567553`; the later artifact commit does not relabel the executable. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
 
 ## Add mission packs
 
