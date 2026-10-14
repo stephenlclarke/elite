@@ -30,3 +30,20 @@ import Testing
     }
   }
 }
+
+@Test func profitScanToggleNoticeFitsTheSmallestChart() {
+  var game = Game(executive: true)
+  game.enableXYZzy()
+  game.screen = .shortChart
+  for _ in 0..<2 {
+    game.toggleProfitScan()
+    let frame = Display.map(game, width: 512, height: 518)
+    let notice = frame.labels.first { $0.text == game.message }
+    #expect(notice != nil)
+    #expect(notice!.bounds.maxX <= 496)
+    #expect(
+      !frame.labels.filter { $0.text != game.message }.contains {
+        $0.bounds.overlaps(notice!.bounds)
+      })
+  }
+}

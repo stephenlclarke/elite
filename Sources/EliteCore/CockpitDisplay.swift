@@ -93,6 +93,7 @@ extension Display {
       if game.dockingComputer {
         frame.label("Docking computer engaged", 12, 72, scale: layout.font, ink: .cyan)
       }
+      stationDirection(game, layout: layout, into: &frame)
     }
     cockpitHeader(game, layout: layout, into: &frame)
     for (index, line) in layout.extraLines.enumerated() {

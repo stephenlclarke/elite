@@ -34,6 +34,8 @@ The Screens menu offers these same destinations and Command-number shortcuts. Nu
 
 Trackpad: two fingers steer at the current speed, one brakes, three accelerate. Hold two fingers off centre to keep turning. Centre them or lift all fingers to centre the yoke and cruise. macOS gestures can intercept three-finger input; see the README trackpad section.
 
+The yellow station compass shows range and left/right/up/down bearings relative to the current cockpit view, even beyond scanner range. BEHIND means turn toward the indicated side. It does not require equipment. To dock automatically, fit a Docking or better targeting computer and press Tab until the station is selected. Guidance faces the safe approach waypoint, stops outside the entrance, then aligns and closes through the doorway. Q or manual steering/throttle returns control to you.
+
 ## Specialist flight actions
 
 Every action in this table is visible in the **Flight** menu. Equipment requirements and fuel, docking, mass-lock and jump rules still apply.

@@ -45,7 +45,13 @@ extension Game {
 
   mutating func toggleProfitScan() {
     commander.profitScanEnabled.toggle()
-    notify(profitScanSummary)
+    // The full ranked list belongs in the scrollable navigation summary. A
+    // chart toast has one row even in the smallest supported window.
+    let count = profitDestinations.count
+    notify(
+      commander.profitScanEnabled
+        ? "PROFIT SCAN ON - \(count) PROFITABLE DESTINATIONS"
+        : "PROFIT SCAN OFF")
   }
 
   public var profitScanSummary: String {
