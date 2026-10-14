@@ -53,7 +53,9 @@ enum PlanetRenderer {
         bytes[offset] = byte(colour.x)
         bytes[offset + 1] = byte(colour.y)
         bytes[offset + 2] = byte(colour.z)
-        bytes[offset + 3] = 255
+        // Preserve the premultiplied atmospheric rim while keeping space transparent.
+        let haze = max(0, 1 - (sqrt(radius) - 1) / 0.035)
+        bytes[offset + 3] = radius < 1 ? 255 : byte(haze * haze * 0.25)
       }
     }
     let data = Data(bytes) as CFData

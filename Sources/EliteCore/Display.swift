@@ -278,9 +278,7 @@ public enum Display {
       let radius = frame.responsive ? 0.65 + proximity * 0.45 : 0.18 + proximity * 0.14
       frame.point(point.x, point.y, radius: radius, opacity: (0.5 + proximity * 0.45) * fade)
     }
-    for body in game.bodies.sorted(by: { $0.position.length > $1.position.length }) {
-      draw(body, game: game, into: &frame, projection: projection)
-    }
+    flightObjects(game, projection: projection, into: &frame)
     let x = projection.center.x
     let y = projection.center.y
     let size = frame.responsive ? 1.5 : 1.0
