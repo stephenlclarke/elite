@@ -183,19 +183,13 @@ extension Game {
     case "/":
       showroom.searching = true
       showroom.detail = false
-    case "return": showroom.detail = true
+    case "return":
+      if showroom.detail { openShipTrade() } else { showroom.detail = true }
     case "tab": showroom.detail.toggle()
     case " ": showroom.rotationPaused.toggle()
     case "showroom-sort":
       showroom.sort = showroom.sort == .alphabetical ? .power : .alphabetical
-    case "showroom-trade":
-      guard showroomShip?.game != nil else {
-        notify("THIS OBJECT IS NOT A FLYABLE HULL")
-        return
-      }
-      showroom.trading = true
-      showroom.confirmTrade = false
-      showroom.tradeScroll = 0
+    case "showroom-trade": openShipTrade()
     case "b":
       guard showroomShip != nil else { return }
       showroom.baseline = showroom.selection
@@ -272,8 +266,20 @@ extension Game {
       showroomKey("escape")
       return
     }
+    if layout.trade.contains(point) {
+      showroom.searching = false
+      openShipTrade()
+      return
+    }
+    if layout.pane.contains(point) {
+      showroom.searching = false
+      showroomKey("tab")
+      return
+    }
     for (index, bounds) in layout.buttons.enumerated() where bounds.contains(point) {
-      if [5, 6].contains(index) && showroomProfiles.count <= 1 { return }
+      if [",", "."].contains(ShowroomLayout.actionKeys[index]) && showroomProfiles.count <= 1 {
+        return
+      }
       showroom.searching = false
       showroomKey(ShowroomLayout.actionKeys[index])
       return
@@ -293,6 +299,19 @@ extension Game {
     showroom.scroll = 0
     showroom.profileIndex = 0
     showroom.listOffset = showroomListStart(layout)
+  }
+  private mutating func openShipTrade() {
+    guard let ship = showroomShip, ship.game != nil else {
+      notify("THIS OBJECT IS NOT A FLYABLE HULL")
+      return
+    }
+    guard ship.id != commander.shipID else {
+      notify("CURRENTLY FLYING " + commander.ship.name.uppercased())
+      return
+    }
+    showroom.trading = true
+    showroom.confirmTrade = false
+    showroom.tradeScroll = 0
   }
   func showroomListStart(_ layout: ShowroomLayout) -> Int {
     let selected = showroomShips.firstIndex { $0.id == showroom.selection } ?? 0

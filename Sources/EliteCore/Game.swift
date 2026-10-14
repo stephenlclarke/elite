@@ -477,6 +477,7 @@ public struct Game: Sendable {
     case "2":
       fitMaximumHardware()
       notify("MAXIMUM HARDWARE FITTED")
+    case "c": restoreXYZzyCobra()
     case "3":
       commander.unlimitedMissiles.toggle()
       commander.missiles = commander.missileCapacity
@@ -541,8 +542,20 @@ public struct Game: Sendable {
     commander.speech = true
     commander.autoECM = true
     commander.autoTarget = true
-    fitMaximumHardware()
+    restoreXYZzyCobra()
     if docked { autoTrade() }
+  }
+  mutating func restoreXYZzyCobra() {
+    commander.shipID = "SH023"
+    fitMaximumHardware()
+    // A secret refit preserves cargo even when a larger former hold was full.
+    if commander.cargoTonnes > commander.standardCargoCapacity { commander.unlimitedCargo = true }
+    speed = min(speed, commander.performance.speed)
+    showroom.selection = commander.shipID
+    showroom.baseline = commander.shipID
+    showroom.baselineUsesCurrent = true
+    clearShowroomSearch()
+    notify("COBRA MK III RESTORED - MAXIMUM HARDWARE")
   }
   mutating func fitMaximumHardware() {
     commander.equipment = Equipment.maximumHardware

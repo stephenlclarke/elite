@@ -22,7 +22,7 @@
 <br clear="left" />
 <!-- markdownlint-enable MD033 -->
 
-A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
+A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
 
 ![Elite gameplay](docs/elite.png)
 
@@ -154,7 +154,7 @@ Station AUTO completes docking without further input. It routes outside a 400-un
 
 ## Ship showroom and secret ports
 
-6 opens the showroom with 167 rotating ship models and 158 flyable hull adaptations. Browse with arrows, Return, Tab and Escape; secondary actions are visible buttons. Sort A-Z or by native power, compare **BETTER / WORSE / SAME** game values with the same carried fit, then click **Trade ship** to review the price, trade-in allowance and compatibility before confirming. Purchases change actual flight characteristics and persist in saved games. Cargo, paid equipment, fuel and mission property transfer intact; incompatible exchanges are blocked with an explanation. All definitions and geometry load from individual [ship TOMLs](Sources/EliteCore/Resources/Ships). See the [complete animated ship catalogue](docs/SHIP-CATALOGUE.md), [showroom guide](docs/SHIP-SHOWROOM.md) and [conversion/generation rules](docs/SHIP-FILES.md).
+6 opens the showroom with 167 rotating ship models and 158 flyable hull adaptations. Browse with arrows, Return, Tab and Escape; secondary actions are visible buttons. Sort A-Z or by native power, compare **BETTER / WORSE / SAME** game values with the same carried fit. The prominent **Switch ship - review trade** action shows price, trade-in and resulting cash before opening the compatibility review. Return opens specifications, then the trade review; Tab switches panes. **Currently flying** identifies your owned hull. Purchases change actual flight characteristics and persist in saved games. Cargo, paid equipment, fuel and mission property transfer intact; incompatible exchanges are blocked with an explanation. All definitions and geometry load from individual [ship TOMLs](Sources/EliteCore/Resources/Ships). See the [complete animated ship catalogue](docs/SHIP-CATALOGUE.md), [showroom guide](docs/SHIP-SHOWROOM.md) and [conversion/generation rules](docs/SHIP-FILES.md).
 
 Each galaxy has a hidden **PLUGH** port. Ask for station rumours with U while docked to follow the local clue; discovery is saved separately per galaxy. Reach it through ordinary fuel/nav-limited travel and dock normally. It stocks all commodities and supported equipment, including reward hardware, at a documented 25% discount while retaining cash and fitting limits. See [discovery, prices and travel rules](docs/PLUGH.md).
 
@@ -237,7 +237,7 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 ## Download for macOS
 
-The [signed universal app](releases/macos/Elite-1.1.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.1.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.1.0-universal.json).
+The [signed universal app](releases/macos/Elite-1.2.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.2.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.2.0-universal.json).
 
 This distribution uses Developer ID signing and the hardened runtime. The current download is signed but **not notarized**; Gatekeeper rejects it as an unnotarized Developer ID build. Notarization needs a configured notarytool keychain profile. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
 

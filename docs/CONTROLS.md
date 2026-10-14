@@ -102,7 +102,7 @@ Delete means the ordinary MacBook key marked Delete or backspace, which erases t
 
 ## XYZZY options
 
-Type XYZZY outside a search to become Commander Clarke and open the secret menu. K gives its help, Escape returns to the game, and numbers select options here rather than game areas.
+Type XYZZY outside a search to become Commander Clarke in a fully fitted Cobra Mk III and open the secret menu. K gives its help, Escape returns to the game, and numbers select options here rather than game areas.
 
 | Key | Option |
 | --- | --- |
@@ -118,6 +118,7 @@ Type XYZZY outside a search to become Commander Clarke and open the secret menu.
 | 9 | Show cash; initial XYZZY grant is 1 million CR |
 | A | Toggle automatic target assistance |
 | B | Toggle military return fire |
+| C | Restore the Cobra Mk III and maximum hardware without a purchase; preserve cargo and mission progress |
 | E | Toggle automatic ECM |
 | F | Fit Fuel Scoops |
 
@@ -127,7 +128,7 @@ Experienced players can still use A for laser fire; X/S for pitch; comma/less-th
 
 Existing browser-specific close aliases (W, L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
 
-Shipyard: click Trade ship, review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
+Shipyard: click Switch ship, or Return to read specifications then Return again to review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
 
 XYZZY L (or clicking its row) resets legal status to Clean. Saved mission progress is preserved. Save/Save As: Command-S / Command-Shift-S. Reload/Open: Command-O / Command-Shift-O. The last successful save restores automatically on launch, docked at the saved system.
 

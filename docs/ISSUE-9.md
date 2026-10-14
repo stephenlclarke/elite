@@ -1,0 +1,7 @@
+# Issue for PR #9: clearer showroom controls and Cobra restore
+
+The existing shipyard hides switching among small secondary controls, does not clearly distinguish the current hull from the preview, and places the colour legend in the description/tradeoff block. Return opens specifications but offers no normal keyboard route onward to trade review. XYZZY refits the current hull rather than restoring the requested Cobra Mk III, and has no explicit Cobra action. An immediate Save can overtake queued player input and persist the pre-confirmation state.
+
+Make trade review a prominent labelled action with costs and current-hull state, retain pointer and MacBook keyboard browsing, move the legend beside the comparison headings, and restore the canonical Cobra on XYZZY activation or C. Preserve all 167 ship records, source profiles, existing transaction rules, personal/mission cargo, progress and unique actors. Queue saving after earlier input. This pass refines existing controls and comparisons; it does not introduce more hull economics, crew/storage rules or remodel catalogue silhouettes.
+
+Acceptance: inspect actual minimum/narrow/wide app layouts, pointer and keyboard quotes, a real exchange/launch/docking/second exchange, Cobra restore and immediate saving; cover state and property preservation with regressions. Run make ci, regenerate media through the renderer, publish a signed universal package with honest provenance/notarization state, and scan only the committed main SHA after protected merge. See [PR-9.md](PR-9.md).
