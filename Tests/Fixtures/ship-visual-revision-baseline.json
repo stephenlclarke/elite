@@ -1,0 +1,1007 @@
+{
+  "sourceCommit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+  "ships": {
+    "SH001": {
+      "unchangedRecord": "25e0f89de0d34cfac4b40a8cf3a92801bd1e085f3831b793c8ab52e11f39fb5e",
+      "sourceGeometry": "da7b07861aaf28f9ac7b2bec5cc7505df41197f10a121f4a43eca52ea4738142",
+      "oldVertices": 1102,
+      "oldFaces": 694
+    },
+    "SH002": {
+      "unchangedRecord": "9c6e35d9bcfab448843d03e5d4cfe894552a3ac2152d6c3c46eb664901071ffc",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 42
+    },
+    "SH003": {
+      "unchangedRecord": "5e70855fc44d00b67fcbbba9eced0f9707d740fe704f3be70d2ae6dfd6751005",
+      "sourceGeometry": null,
+      "oldVertices": 56,
+      "oldFaces": 44
+    },
+    "SH004": {
+      "unchangedRecord": "637feda02ce15882ec8d4d7bf7150faaa86edfc4983dc02eba5fd4522e79fc26",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 38
+    },
+    "SH005": {
+      "unchangedRecord": "d4f6f1ae4e64c63779c7d0bbf70b7cb3051d0b2260ae061f0bfc67dc8c6168de",
+      "sourceGeometry": "a0cdb34c33d87a44a0fa718a037e05de27062131d563b64e29875ff034cda5e7",
+      "oldVertices": 3101,
+      "oldFaces": 1413
+    },
+    "SH006": {
+      "unchangedRecord": "0315231ce4832dbb1a388629c133bbc138dc27d0d89cc96fa6030e08af740cef",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 36
+    },
+    "SH007": {
+      "unchangedRecord": "1b4c2de5bb5f2ba1a26e05fc50436cfe1d6cad11f291634968672262befb99e9",
+      "sourceGeometry": null,
+      "oldVertices": 40,
+      "oldFaces": 40
+    },
+    "SH008": {
+      "unchangedRecord": "534160debd61ff9ff42eb9ae04db6852269757190db32dd5c1ed59ae729821f3",
+      "sourceGeometry": "d0f6e8b5ea7dc4c4da6852bd1c513a4376b7e185f4a19ed2255dd85de96293c3",
+      "oldVertices": 1633,
+      "oldFaces": 776
+    },
+    "SH009": {
+      "unchangedRecord": "7a4e898b3efb5e8cf9781d3446728d496253ed96763c5c79f4483554cb5d1945",
+      "sourceGeometry": "b75d70fb291106722e4800dcfe3c82cf5e930c48dc65bd0e441d121a9f1930c4",
+      "oldVertices": 1181,
+      "oldFaces": 726
+    },
+    "SH010": {
+      "unchangedRecord": "108ba60442df8e9fc5c1ffc0d94aae1145e867f07623114ce2d5db28c0115c6e",
+      "sourceGeometry": null,
+      "oldVertices": 60,
+      "oldFaces": 48
+    },
+    "SH011": {
+      "unchangedRecord": "b99543ef2f237bc21b2ac57583c15f6390d23c103608f7795542a7cb41c098b1",
+      "sourceGeometry": null,
+      "oldVertices": 56,
+      "oldFaces": 56
+    },
+    "SH012": {
+      "unchangedRecord": "20126e365714f8a75709c5837989f333ee744f0dd95bf8f6125f1481033ff5e4",
+      "sourceGeometry": null,
+      "oldVertices": 66,
+      "oldFaces": 53
+    },
+    "SH013": {
+      "unchangedRecord": "e8aaf5bbcbe41d6ecb4c55e720ff4a542df0248b9e63c593c4e50bd1f4d168d5",
+      "sourceGeometry": "53035e927e5a3a219b4e138614b72544976ad5297811e485f533bba7a4a61339",
+      "oldVertices": 1861,
+      "oldFaces": 1101
+    },
+    "SH014": {
+      "unchangedRecord": "1dc4540ae9b6f307a461c4da5976423f4b7c678206bafe36509a1ba76eb99684",
+      "sourceGeometry": "852f39987977607a99b6db0a89c93e1c9690cfca73123b1674d18f778a29937a",
+      "oldVertices": 2229,
+      "oldFaces": 1274
+    },
+    "SH015": {
+      "unchangedRecord": "dc0143e53c67fd2a7efa4bca858555e17137974920bfd44fffa77de31b6d240b",
+      "sourceGeometry": "dc6f56fdaef73fd9f430e2ca5d15c54cea9ecae8ce2f071b553c5a3af61499e3",
+      "oldVertices": 2017,
+      "oldFaces": 1270
+    },
+    "SH016": {
+      "unchangedRecord": "aa579ca4e0b17b526be41189322ef3adb9b9ad0da8041a9cb95e6abf82866126",
+      "sourceGeometry": "72fefe6a17a7af45f2def302c3ca7fc6f1680f6f240f9874bc862736a38fe90a",
+      "oldVertices": 107,
+      "oldFaces": 194
+    },
+    "SH017": {
+      "unchangedRecord": "fde5c16f973fb004e72677cd41d11a328798754024ca32fa9b93a5a72db7e5e4",
+      "sourceGeometry": null,
+      "oldVertices": 48,
+      "oldFaces": 52
+    },
+    "SH018": {
+      "unchangedRecord": "22e1e5bc860f0822155e018e7e665013a5785d4c5043871e6ca0c5e51247f76e",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 36
+    },
+    "SH019": {
+      "unchangedRecord": "553d1ef492b62821eddf8210aadfafe039ea5b9658e876a3c2f13d64274d058f",
+      "sourceGeometry": null,
+      "oldVertices": 40,
+      "oldFaces": 40
+    },
+    "SH020": {
+      "unchangedRecord": "594a1136835c7224adcff26fb1dbab71cceca1b5a45c1d2a9e5a2c49ed3c7154",
+      "sourceGeometry": "5e9e334be2fadeaf42d96c9660cd29943d326a680baaef22bfd188077abbcb01",
+      "oldVertices": 93,
+      "oldFaces": 162
+    },
+    "SH021": {
+      "unchangedRecord": "f777ef5faa8780cced88447e5a094da79e55b1068d95079a7d1417d3da05c6e4",
+      "sourceGeometry": "e91a18a16076f224fa3a9c3cd036931b61527c320eef9e270633ffbd2cd0fccf",
+      "oldVertices": 462,
+      "oldFaces": 692
+    },
+    "SH022": {
+      "unchangedRecord": "fe5cd8147b63684292c5939e723723867a0bba235b0b51a1fc9db28d607e64fd",
+      "sourceGeometry": "2a396b603a25e889dc04c04ef574412f7fb730a0f2b8b663a31d6d53e68c40f5",
+      "oldVertices": 1117,
+      "oldFaces": 731
+    },
+    "SH023": {
+      "unchangedRecord": "565cbcb7f73a9ef9443f0670c665ca1093aec1df26ac2740d05c1d257061d6f2",
+      "sourceGeometry": "ffe6f19570c14714f9acd8e54399d43fd2a38eb6c961cf795647177c8cc1c899",
+      "oldVertices": 1548,
+      "oldFaces": 1076
+    },
+    "SH024": {
+      "unchangedRecord": "52aaa68b8d48e6ae4d2bbcdecc3d22dbfc723a699bf872197384689c577ac194",
+      "sourceGeometry": null,
+      "oldVertices": 36,
+      "oldFaces": 32
+    },
+    "SH025": {
+      "unchangedRecord": "c7f39408e201b1ab84b99d0d90834a6bac3147c627fa89a464012f483f53e9c3",
+      "sourceGeometry": null,
+      "oldVertices": 36,
+      "oldFaces": 38
+    },
+    "SH026": {
+      "unchangedRecord": "bb3a60cf5b5973b602eed8f69b84f81730b4d043a6988e1a57de3c8f1feb054b",
+      "sourceGeometry": "1b6589e95da6312cf18762b72f837ce32ac804798cc409fefa07da42295b733f",
+      "oldVertices": 1618,
+      "oldFaces": 980
+    },
+    "SH027": {
+      "unchangedRecord": "774b3fc517436e376ee04ab266b7f530072c00577b82fd1fb3fefb25694864f8",
+      "sourceGeometry": null,
+      "oldVertices": 64,
+      "oldFaces": 48
+    },
+    "SH028": {
+      "unchangedRecord": "ae310f1abee28f726d6236067222de7db54fc5a56e54e62abf1ab7701e499021",
+      "sourceGeometry": "951d02964e3c1e22c4e80cffe10b623a5823849178ac6993ec908a225f04b17c",
+      "oldVertices": 1474,
+      "oldFaces": 2226
+    },
+    "SH029": {
+      "unchangedRecord": "87dce6611418be722f2ef5533d51dd5aabf225bdf349f147ca3219b103fcd540",
+      "sourceGeometry": null,
+      "oldVertices": 48,
+      "oldFaces": 52
+    },
+    "SH030": {
+      "unchangedRecord": "356886cb93ed203f4b85a613c2ac4be5e5b00af7043c0a4cee6cc0df688692ee",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 36
+    },
+    "SH031": {
+      "unchangedRecord": "d11fe64cd0aecd2eeaf30dd72dcdbe4ffbb10ff6806bb4d327c9e1947b08911e",
+      "sourceGeometry": null,
+      "oldVertices": 40,
+      "oldFaces": 40
+    },
+    "SH032": {
+      "unchangedRecord": "9687cdabd9536f1ff613fbd205434389e416b2cce575b92e7cc425dc07ac38aa",
+      "sourceGeometry": null,
+      "oldVertices": 26,
+      "oldFaces": 22
+    },
+    "SH033": {
+      "unchangedRecord": "98669d0bcd8dcfcfbdb99140db9da016b3e390a595045b1a3e7e30fe2f2ebc93",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 42
+    },
+    "SH034": {
+      "unchangedRecord": "124f0678d6b16e9c0a98c870e64fc25bc373195eb653f17587e69515c4f9e5f0",
+      "sourceGeometry": "efa8e2ce267f3113c7dd35de63342702d3321fbeca55405a16b0819e0419018e",
+      "oldVertices": 4277,
+      "oldFaces": 2912
+    },
+    "SH035": {
+      "unchangedRecord": "ec8b905c6f5530afcc8d22a9c0a3ea1035df1f0ec978d8cabfc2eb4553e10af6",
+      "sourceGeometry": null,
+      "oldVertices": 84,
+      "oldFaces": 62
+    },
+    "SH036": {
+      "unchangedRecord": "b0a4d054e3fb5413e731c14552a128c2af9309cfe3ac7cbd78a4bf8a73b79325",
+      "sourceGeometry": null,
+      "oldVertices": 36,
+      "oldFaces": 32
+    },
+    "SH037": {
+      "unchangedRecord": "8d5b88a9d539172b563f2975a91c2beee311dd98b697c9fbe168bccff3d76a90",
+      "sourceGeometry": "77191842ae807df8947f94167e560bd0d27af38e5041ceebaf6b9109183ffe56",
+      "oldVertices": 388,
+      "oldFaces": 760
+    },
+    "SH038": {
+      "unchangedRecord": "6d7f957ecd8a4d2482ae28d4cd8849a62913092bda1976bdff51fe8975bdd988",
+      "sourceGeometry": "fa69d11aee7dce237c392ce0ef861c08be9a4956e7055c70a2fa3b85cd2a045f",
+      "oldVertices": 416,
+      "oldFaces": 816
+    },
+    "SH039": {
+      "unchangedRecord": "801c7aefc7cd6c33ab1ca4498611e5917e24e6e7d02844ca23f2e460226e48e5",
+      "sourceGeometry": "9259f58103934368844b774f7d60ba2561494a22b1aadc5bc084cad45e14db2a",
+      "oldVertices": 416,
+      "oldFaces": 816
+    },
+    "SH040": {
+      "unchangedRecord": "b73da2dde9e35dffbf72eaf3c7f230a246ef94c23d63e2b79b6c02b00eacb81a",
+      "sourceGeometry": "0f1c6616e20ae6cacfaffb4a79f45ac61365ab187d8654557fcad1c44126b1bf",
+      "oldVertices": 1172,
+      "oldFaces": 788
+    },
+    "SH041": {
+      "unchangedRecord": "3113c4751d68845fa4d5875cf459b0967d5893996e0828eb74a655a147bcc291",
+      "sourceGeometry": null,
+      "oldVertices": 42,
+      "oldFaces": 40
+    },
+    "SH042": {
+      "unchangedRecord": "1ad7ba4eb40744ccf808729200758ba35386e6a61b2e1635facc24e1b9dbb611",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH043": {
+      "unchangedRecord": "f476bb5887602a0a96891f94dc5b2b7ad60b3fa4337ee638922c8d905f3cdc7f",
+      "sourceGeometry": null,
+      "oldVertices": 120,
+      "oldFaces": 84
+    },
+    "SH044": {
+      "unchangedRecord": "4f0982df5d2a94cb76c0d64f2f8a0e51e3f4aa11716de87516b5e5ebab567469",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 38
+    },
+    "SH045": {
+      "unchangedRecord": "8cf7c0f6b80ce83c8f440c862e144fab548ef481ced3c9249738439f9a102836",
+      "sourceGeometry": null,
+      "oldVertices": 48,
+      "oldFaces": 40
+    },
+    "SH046": {
+      "unchangedRecord": "56544626d6c61f522f06833b27fdf2d4b5f3625b401c7ee433f9e4d4872dec00",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 42
+    },
+    "SH047": {
+      "unchangedRecord": "db1fbbb86aa0c2da955002e8556a5617d1c61689ba1a287946e15325dd5c2f15",
+      "sourceGeometry": null,
+      "oldVertices": 56,
+      "oldFaces": 44
+    },
+    "SH048": {
+      "unchangedRecord": "c8624bd42c6e5c07154593b768504d8341ce5b3e007e286b3608c151a31e8fd1",
+      "sourceGeometry": "a679f469ad9993e3c13ce64848d88a99ffb071ff89051a23ba6b07f1955a05bc",
+      "oldVertices": 921,
+      "oldFaces": 601
+    },
+    "SH049": {
+      "unchangedRecord": "761a318fcef2971eea305789682032036ccf83dd3c964fe5ca82bd426e0c6d05",
+      "sourceGeometry": "bac876be32416be42043962ab1eaf48ba50c409e5ff47a00cd108c55d35c3edd",
+      "oldVertices": 1570,
+      "oldFaces": 1032
+    },
+    "SH050": {
+      "unchangedRecord": "2dd009decb0076c502a456bfbfa16cbcc938107b1d64f751b72bfa5f0d985671",
+      "sourceGeometry": "8b9f259a4faf66bd52b9ac8d79e7d47ddf2de09a8f7ba4644ff874cdd0f36594",
+      "oldVertices": 440,
+      "oldFaces": 651
+    },
+    "SH051": {
+      "unchangedRecord": "74a977191856370b99e3a49760b1ce279f03dafdbcdbb905abe1fad44fff54e5",
+      "sourceGeometry": "bd2d12d3ca83a42a164c9db23a93def4e8cc5ba411b7fe399c88f88dd2a70a55",
+      "oldVertices": 3874,
+      "oldFaces": 2860
+    },
+    "SH052": {
+      "unchangedRecord": "0f9a7040601fe0ef3900c19b2c4cb1fe38705b84d53b3f380d94a7fddd0a1678",
+      "sourceGeometry": "31195586fc61ba822290690b55224842e6475dfa5bdff2f64459e167064eb4c1",
+      "oldVertices": 83,
+      "oldFaces": 150
+    },
+    "SH053": {
+      "unchangedRecord": "541d40615498c15da2a635c6e8b5a9cfa582a93b23c481cc67aa209f6f325c38",
+      "sourceGeometry": "41deee455dad19f72f910e65d7e8cc4362afb26bf956ea26036d41def452636c",
+      "oldVertices": 8698,
+      "oldFaces": 6075
+    },
+    "SH054": {
+      "unchangedRecord": "140397121881d58f22556cddae72c921a41fb9b7a6a2eb268e7669b8a305da72",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH055": {
+      "unchangedRecord": "456d53d3f1034d35b8176bee331f23dd56b6c19d7de7cf8956f39a76aa35de45",
+      "sourceGeometry": null,
+      "oldVertices": 40,
+      "oldFaces": 40
+    },
+    "SH056": {
+      "unchangedRecord": "401365d2a54275933d3fd8548316b299cf42fa16259b5f850bf88fce058d36dd",
+      "sourceGeometry": null,
+      "oldVertices": 38,
+      "oldFaces": 38
+    },
+    "SH057": {
+      "unchangedRecord": "5206a5e1232199810ec05e570920950d6e48bcab71193e386b014582c5cb924c",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 42
+    },
+    "SH058": {
+      "unchangedRecord": "4c1c6ba307956b91926e8e50b3b864fde227ad0c7783a3343b18b8415ce2fc9b",
+      "sourceGeometry": null,
+      "oldVertices": 94,
+      "oldFaces": 73
+    },
+    "SH059": {
+      "unchangedRecord": "6c02498593de761765e575a3fda3900de24ab9f873049ab45b48a3794babcf7e",
+      "sourceGeometry": null,
+      "oldVertices": 50,
+      "oldFaces": 44
+    },
+    "SH060": {
+      "unchangedRecord": "107897fe579a401b270e2a129a9de88ac52d4c2e1e4777477efbabdc0ff835ee",
+      "sourceGeometry": "9f3dbdf550000fdabed029de4aeace565626d75a531eeda6467a6efa32d70d9c",
+      "oldVertices": 2430,
+      "oldFaces": 1752
+    },
+    "SH061": {
+      "unchangedRecord": "17d53412f6ee445c46f43ff5fcf54087fc0fc6841e48ae93bd59fdbc94017296",
+      "sourceGeometry": "84a19f61539d39767f1722805aa97f7fe148190687148c37bc4b7123b3da225d",
+      "oldVertices": 990,
+      "oldFaces": 1504
+    },
+    "SH062": {
+      "unchangedRecord": "7aebdb05fa9474e1aaab1ce5e6ce77a5c83ad774cdd3ec3b1132d3b38f11fd0f",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 42
+    },
+    "SH063": {
+      "unchangedRecord": "03c85afccbb277e5a72ddbfb76b924377575a90853a06ee058021b4b12324ee1",
+      "sourceGeometry": "ae785645fbbdc61c9bf18a2405cdbfd5dd0be641175288c35a088ab9ba728ec1",
+      "oldVertices": 136,
+      "oldFaces": 244
+    },
+    "SH064": {
+      "unchangedRecord": "7ed5b661c60a9fa2cf07b561fbecf5c8f29953aaded6603ea397d9c2fc69472f",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 38
+    },
+    "SH065": {
+      "unchangedRecord": "db07f0440d507f992537d93bf56d9f1cf50aa4321b17f27bdc010fc9260434a7",
+      "sourceGeometry": null,
+      "oldVertices": 42,
+      "oldFaces": 40
+    },
+    "SH066": {
+      "unchangedRecord": "57113421accf20d3e6f4bcf6e1a602ed6d6b57887e6302c0129706649feab693",
+      "sourceGeometry": "cb479996826e3e21be08336d8f12dd6bd821e2896e35bcabb809fd87c4d2c38f",
+      "oldVertices": 1683,
+      "oldFaces": 3222
+    },
+    "SH067": {
+      "unchangedRecord": "249ab2ba81e944cc279cb1676511fa3ebc3a230fe8c2bc9818bfa077cb7a33a1",
+      "sourceGeometry": "c1d54ac6bec1fa166d9bfc28362256e3400436678dd280f37bbcf20edb80b855",
+      "oldVertices": 1126,
+      "oldFaces": 974
+    },
+    "SH068": {
+      "unchangedRecord": "b5465b818dd9b0902a131c7838a17178c358f80ae122db2bf842519610b1c134",
+      "sourceGeometry": null,
+      "oldVertices": 104,
+      "oldFaces": 82
+    },
+    "SH069": {
+      "unchangedRecord": "b1ac47e3a188819e326511b462731f01fc79dbf34c7540564c4919ec70ce0435",
+      "sourceGeometry": null,
+      "oldVertices": 42,
+      "oldFaces": 40
+    },
+    "SH070": {
+      "unchangedRecord": "ebb85e2ef042641a1f10a0ce5713d062bf936168c8d30339bd675ffdca64901b",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH071": {
+      "unchangedRecord": "46176a8f9b21d9564de3c04caddafe1cc227be0a22246a68c55cf80ba05ac9d4",
+      "sourceGeometry": "cf36c2203a28e70382b8c65981079370c0345ff8dffe4bb4dc52b6cb452cdad6",
+      "oldVertices": 1023,
+      "oldFaces": 1509
+    },
+    "SH072": {
+      "unchangedRecord": "dd6a8390e6f90925ee8e88584897721f3df2b7662d14824c389b5cb69903009f",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 38
+    },
+    "SH073": {
+      "unchangedRecord": "6ee62b6b77dc7900da0cced50b35a8cf207e4c6d8cfaace72ffb7099c5884aed",
+      "sourceGeometry": null,
+      "oldVertices": 48,
+      "oldFaces": 40
+    },
+    "SH074": {
+      "unchangedRecord": "8f403bc5e1d4e6c80853d78561bd6a4a5afd69fdd6c4e2ec9c5b5c1c037fb925",
+      "sourceGeometry": null,
+      "oldVertices": 112,
+      "oldFaces": 86
+    },
+    "SH075": {
+      "unchangedRecord": "95d8868478666541f3a042d3b242994abae4bc63c981ab42f3b415f72581d722",
+      "sourceGeometry": null,
+      "oldVertices": 80,
+      "oldFaces": 62
+    },
+    "SH076": {
+      "unchangedRecord": "4df94bd5048ec8c30807eda4d419140b75ade5640cb8052a9e0d23c02e4474d9",
+      "sourceGeometry": "435026140963436ccb5f027bbf4e809494f54943aed3ea2c343a09b04ce2530b",
+      "oldVertices": 767,
+      "oldFaces": 1430
+    },
+    "SH077": {
+      "unchangedRecord": "a9259bbc1aebad505d4c8988a9a37e099fe685a75160ffa184c0a1a00d33dd78",
+      "sourceGeometry": null,
+      "oldVertices": 48,
+      "oldFaces": 52
+    },
+    "SH078": {
+      "unchangedRecord": "2a6faf4ae4c2213d86cfa59f75e0892eafd698840053519cc82b2252a0437781",
+      "sourceGeometry": null,
+      "oldVertices": 98,
+      "oldFaces": 69
+    },
+    "SH079": {
+      "unchangedRecord": "4da2a785e022bd4193417f74e5104e29827319e32974bca43285824fd96add8b",
+      "sourceGeometry": null,
+      "oldVertices": 120,
+      "oldFaces": 84
+    },
+    "SH080": {
+      "unchangedRecord": "ba2cc904a40ee1280142cfd01c98e49577d0df7189c5b6de398e6bb96cd06412",
+      "sourceGeometry": null,
+      "oldVertices": 118,
+      "oldFaces": 87
+    },
+    "SH081": {
+      "unchangedRecord": "442980fbc928e20da8600fe0764ea59d305e01a924c69fa88e14d8963611823f",
+      "sourceGeometry": null,
+      "oldVertices": 92,
+      "oldFaces": 66
+    },
+    "SH082": {
+      "unchangedRecord": "bb71793e2e3d8e1520693fb4c2c94bb45bef0e49d3a4ea141ba7e79bdb3f3817",
+      "sourceGeometry": "a216bd2432096cfa77ecd02cfed0b5dff31cd58532d9f5925fe1089ba1abfb70",
+      "oldVertices": 1112,
+      "oldFaces": 688
+    },
+    "SH083": {
+      "unchangedRecord": "9b37cd8f5490235af18d0994111efae0701f5a1295dfee77ce074274acb073c1",
+      "sourceGeometry": null,
+      "oldVertices": 56,
+      "oldFaces": 44
+    },
+    "SH084": {
+      "unchangedRecord": "77611ebec7257031138f2280a6548f000494961f9c0fa61fba761342f1c0a330",
+      "sourceGeometry": null,
+      "oldVertices": 36,
+      "oldFaces": 32
+    },
+    "SH085": {
+      "unchangedRecord": "bfab09421854f924ca04f5eee13dac65232353ecf443dcb88d64498414a56ec3",
+      "sourceGeometry": null,
+      "oldVertices": 42,
+      "oldFaces": 40
+    },
+    "SH086": {
+      "unchangedRecord": "55461b2f6e9e4022f8c79d45ba83ab4073614becd32849f833ff3c1f5fa00b42",
+      "sourceGeometry": "8cc4dffdff3b69beec9d8f18c12478da4dcd9d450d779bbd40ded03a157d9683",
+      "oldVertices": 71,
+      "oldFaces": 138
+    },
+    "SH087": {
+      "unchangedRecord": "498558be0e4171ee26b34415d1bb55048af9f5da1ba9dc426bcf942d51c916d3",
+      "sourceGeometry": "f66837348bcacbbe1136dfb0ad0e03c4d3a023e2f60b7043f648c3fc73aba929",
+      "oldVertices": 443,
+      "oldFaces": 781
+    },
+    "SH088": {
+      "unchangedRecord": "650c7ebe34084f7b9966d5505083c4e7afa01c431b4867c25f572928cab1c7c5",
+      "sourceGeometry": "1af33426181386335213d8af3fc517761cd10293dbd3e3e7bd251bbdd5818477",
+      "oldVertices": 1324,
+      "oldFaces": 930
+    },
+    "SH089": {
+      "unchangedRecord": "e24b44ef65b565528d827a70cca9f782eb3604e1ccb845d76c79fa7183d6095f",
+      "sourceGeometry": "936b9c6d252f7dbbcb573a8dc5524b6ecda2f6565671c69a4e62959ed1603b9d",
+      "oldVertices": 517,
+      "oldFaces": 755
+    },
+    "SH090": {
+      "unchangedRecord": "3e54f45b70e8fd9d3438640fe55893d9ceec87c6bf181727728a46c99b6a76c9",
+      "sourceGeometry": "24101fe9e93605210fc4bc95b2bc50c3313808854376304b593d0af0d43e7818",
+      "oldVertices": 81,
+      "oldFaces": 146
+    },
+    "SH091": {
+      "unchangedRecord": "67bc581a8c1445670c6e4c2f57aa0f6e762d9364cddacacafd5412ae4c4488e5",
+      "sourceGeometry": null,
+      "oldVertices": 40,
+      "oldFaces": 28
+    },
+    "SH092": {
+      "unchangedRecord": "8afdbb344b1451c9fd8b399129f94ae27cc7742e62ba2dfb0ec6d4278640030b",
+      "sourceGeometry": "5a6dc0ecb9e53bed1a2b9262b76df600d1e31415c6fbde4b9f6a96c71bf8512d",
+      "oldVertices": 7394,
+      "oldFaces": 4764
+    },
+    "SH093": {
+      "unchangedRecord": "4f1d1ec58668dc3984fe382b212a7ecf74beb4e1a51a91bdce02e17f9a7bc19e",
+      "sourceGeometry": null,
+      "oldVertices": 72,
+      "oldFaces": 56
+    },
+    "SH094": {
+      "unchangedRecord": "5f2d5933714967836fb05ca21dfc744f81e705c2acbdb8a155865d15f83a2ba8",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH095": {
+      "unchangedRecord": "156f231c8b6e2acb49a664bea181367fbafa1abe7a9eebae3f72bfdc7a25c6e7",
+      "sourceGeometry": "98cb7b26fc68cd1740309aceb2f04ed74183f42a2b97c860c7794e7f52c05ffc",
+      "oldVertices": 2356,
+      "oldFaces": 4378
+    },
+    "SH096": {
+      "unchangedRecord": "8d62a95eba7dd8f7e10a0540125a0d3726c7d79d341e7a5369253263dd3fba12",
+      "sourceGeometry": "93b5bcdae50ced78508ea78083d7274b3e5935319de2835d4cc318f00bb6f6eb",
+      "oldVertices": 2212,
+      "oldFaces": 3864
+    },
+    "SH097": {
+      "unchangedRecord": "639ae44bbf9e6b06f7fa716dff2c759be27697b019ab65db66288da91e001c64",
+      "sourceGeometry": null,
+      "oldVertices": 90,
+      "oldFaces": 71
+    },
+    "SH098": {
+      "unchangedRecord": "8af5d672d4ffc390459a3b37ef83f62b46cbd080a6169bdf93bc7f511ce56d8f",
+      "sourceGeometry": "178fbf5cdc0c2e7682d70efa79caa22253ac1f1a29f390bc6e32683886985248",
+      "oldVertices": 3354,
+      "oldFaces": 6154
+    },
+    "SH099": {
+      "unchangedRecord": "9b38e611ac801dbaef3fa2bb92bb3b803b3236d71e43f4ed9f67de4d6a991c89",
+      "sourceGeometry": "7490035b04f65ff87988bf1ea63169bad49060b931bcafc4992b6f1a43164bfe",
+      "oldVertices": 2085,
+      "oldFaces": 1206
+    },
+    "SH100": {
+      "unchangedRecord": "899b220be62333ccf93f606fba7e24a33619548d2ad0ac5be6e15ec0ff172b1d",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 44
+    },
+    "SH101": {
+      "unchangedRecord": "7eab63d65d47ebda7380c6b273f07d3f8c5a19e6934bce88e47d67aaa7cec487",
+      "sourceGeometry": null,
+      "oldVertices": 56,
+      "oldFaces": 46
+    },
+    "SH102": {
+      "unchangedRecord": "6c3f94ba3476a1a86e9f56d06543109dbaec224dbf64b58fb760ca3151a59f9e",
+      "sourceGeometry": "8090a0872adcdceb72c8e8982ece61bdf8659240b52013bbe2fe91084d1f5698",
+      "oldVertices": 1628,
+      "oldFaces": 2586
+    },
+    "SH103": {
+      "unchangedRecord": "f0344efa3424795f83f7b3756757952d30e9c9a998a5c1bd10dbb6c560703968",
+      "sourceGeometry": null,
+      "oldVertices": 50,
+      "oldFaces": 44
+    },
+    "SH104": {
+      "unchangedRecord": "a96012e61e125aaad0764f21ebfa32b11a01c0b90bce87433535b33fd4c29a4f",
+      "sourceGeometry": "5efdc7c0bb5f4cef1e1e55443998eaa160041d746b1458a891ecf417d1a046dc",
+      "oldVertices": 496,
+      "oldFaces": 732
+    },
+    "SH105": {
+      "unchangedRecord": "b85f542f8ed33daf200c289f1f0c36def9d566b180a138c881f7c48681cce7e4",
+      "sourceGeometry": "702a3132361290aa1f2b364119eb25be1173ca61b9a906a3b89026c1be625e50",
+      "oldVertices": 477,
+      "oldFaces": 292
+    },
+    "SH106": {
+      "unchangedRecord": "f8b0812768baf9f1b84fc57dc9e263a345a1b6594d5d8f848b6d2ecc5e07fdb8",
+      "sourceGeometry": null,
+      "oldVertices": 94,
+      "oldFaces": 73
+    },
+    "SH107": {
+      "unchangedRecord": "6a76425eb1aca569cc8bb72063863d582e810e41465f2c234bfbb7e2b3e83bea",
+      "sourceGeometry": "fd00c293cc2e20fbef8ffd1118b2c4a5f215e4a54f91d4a3fb649591d1b8dac8",
+      "oldVertices": 1294,
+      "oldFaces": 762
+    },
+    "SH108": {
+      "unchangedRecord": "a20d3028302e21a181065566ba1a879747c33600e0425973a468c9919132834c",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 39
+    },
+    "SH109": {
+      "unchangedRecord": "964dfcd41793f19453b3d40829e54689463ee35ca8300f79a2074ec7b7dfe7ca",
+      "sourceGeometry": null,
+      "oldVertices": 30,
+      "oldFaces": 24
+    },
+    "SH110": {
+      "unchangedRecord": "5100c6a19fb1bce3649d15d4d1b4a108b7327dc6a6b7b13bf0a190d2c593f267",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH111": {
+      "unchangedRecord": "716062679195658e502d5f74e1964d7c6255b282ec74697c97d6c16a14d1a395",
+      "sourceGeometry": null,
+      "oldVertices": 50,
+      "oldFaces": 44
+    },
+    "SH112": {
+      "unchangedRecord": "ea033ff6b2f57cd5c4e3a7521964589eb9dd7c5d39e2b4b54e37b533649c4e59",
+      "sourceGeometry": null,
+      "oldVertices": 52,
+      "oldFaces": 63
+    },
+    "SH113": {
+      "unchangedRecord": "ea762bf430febfe5b61c82dd49a756ae376b6557707b3a7436b20755bd5cf61a",
+      "sourceGeometry": null,
+      "oldVertices": 60,
+      "oldFaces": 72
+    },
+    "SH114": {
+      "unchangedRecord": "85bcdab5472335fc2d5f5a4fb49d9443a2da35920367565b94635f2dd76de5a4",
+      "sourceGeometry": null,
+      "oldVertices": 68,
+      "oldFaces": 81
+    },
+    "SH115": {
+      "unchangedRecord": "796910b82091e75c7797c6525e0b419074db75b069f9d48fb4a56f9ea76fb705",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 50
+    },
+    "SH116": {
+      "unchangedRecord": "f85497034bd4caddc9e2e71b99caf58fb142cd2018d73e9e30fe907a521baa35",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 55
+    },
+    "SH117": {
+      "unchangedRecord": "ada5d1da221b5e5d7a7ddfa2b67e25c5c9ae2f157286599fbe58b64395fdfab8",
+      "sourceGeometry": null,
+      "oldVertices": 54,
+      "oldFaces": 64
+    },
+    "SH118": {
+      "unchangedRecord": "5503245ddcc87bbe33ad7eb6ccb93a456ca963b62a992f80cd78bea88e33e2e1",
+      "sourceGeometry": null,
+      "oldVertices": 62,
+      "oldFaces": 73
+    },
+    "SH119": {
+      "unchangedRecord": "2c824cd69a2922068726fa823d6beccc47f08e753773873233ea366d1f8b4719",
+      "sourceGeometry": null,
+      "oldVertices": 70,
+      "oldFaces": 82
+    },
+    "SH120": {
+      "unchangedRecord": "2eaddc3072893cfaa30f8f0f9c8af3964ac272785fde9dfbca9e2e5ba41e1119",
+      "sourceGeometry": null,
+      "oldVertices": 40,
+      "oldFaces": 47
+    },
+    "SH121": {
+      "unchangedRecord": "78cd947d81607d29bdd255480f36d32d886f28b83460a45ddf1c9cec78bd601e",
+      "sourceGeometry": null,
+      "oldVertices": 48,
+      "oldFaces": 56
+    },
+    "SH122": {
+      "unchangedRecord": "84a68fa14bedc7da8e6da0c66b3247201c7dc971f272832b6b28d135977966fd",
+      "sourceGeometry": null,
+      "oldVertices": 56,
+      "oldFaces": 65
+    },
+    "SH123": {
+      "unchangedRecord": "59a03c843f6307eb7611c6592b2a6fcac56debbd115deeafd541d61b27454c68",
+      "sourceGeometry": null,
+      "oldVertices": 64,
+      "oldFaces": 74
+    },
+    "SH124": {
+      "unchangedRecord": "88a2fe515981474150ce11d9df657bd9419f57f2587dd6a5f9b554a32141293e",
+      "sourceGeometry": "c7d9dabd30cbb0f538df0242b9378a57be952592e84bcd2d1d710a6baf02ba7f",
+      "oldVertices": 1090,
+      "oldFaces": 624
+    },
+    "SH125": {
+      "unchangedRecord": "aee3309a24c5bc19a310b54aa257f4bc14f4a22c1bc196bd64b20e97d0700259",
+      "sourceGeometry": "8a73585291d556046c735e9833319badfb0d6ef134caf781e0a3a3bdecc499a0",
+      "oldVertices": 247,
+      "oldFaces": 157
+    },
+    "SH126": {
+      "unchangedRecord": "981514897e90e75133ffe9e6e93f96bf425dfd0ec316dc4423d9e5f0237a9abd",
+      "sourceGeometry": null,
+      "oldVertices": 44,
+      "oldFaces": 36
+    },
+    "SH127": {
+      "unchangedRecord": "0c9163d35041df0ddd8488d8a4ceaf53dbe8155800b471e7923899e0fe500454",
+      "sourceGeometry": "a6f1606b1523a1bcc9671c000aecee0c2e8a8497434075e16c463c74bce67e3b",
+      "oldVertices": 3806,
+      "oldFaces": 7016
+    },
+    "SH128": {
+      "unchangedRecord": "703aea8f4e656aeeab641ab6a1730ce268fc7a458f5214c5c54be9f4d984bc47",
+      "sourceGeometry": "3b3fa1fad75e16285a27780ec9111a32a30edfd4807a25eab206aba733790754",
+      "oldVertices": 897,
+      "oldFaces": 606
+    },
+    "SH129": {
+      "unchangedRecord": "97764be8901c3d0ae4d35fcaf8f574feac5ea005820c126921c81aad0ff6efba",
+      "sourceGeometry": null,
+      "oldVertices": 72,
+      "oldFaces": 58
+    },
+    "SH130": {
+      "unchangedRecord": "3ea648f097c95629809b0e6030a12dc69616835361a028b3ea2110410042538a",
+      "sourceGeometry": null,
+      "oldVertices": 94,
+      "oldFaces": 73
+    },
+    "SH131": {
+      "unchangedRecord": "aaebd8b03d36eca6429df6547f870d6bdf533558d7c74e54fad833222702912b",
+      "sourceGeometry": null,
+      "oldVertices": 116,
+      "oldFaces": 88
+    },
+    "SH132": {
+      "unchangedRecord": "84c07aa9c368e55e1164df457429c92a5303024f4d3400c6b9ec6e5bc47e8af5",
+      "sourceGeometry": null,
+      "oldVertices": 68,
+      "oldFaces": 56
+    },
+    "SH133": {
+      "unchangedRecord": "274555cfc30bbe5d7afe950d6b8672dfff68bd14bb7081250512fc8283879bc2",
+      "sourceGeometry": null,
+      "oldVertices": 90,
+      "oldFaces": 71
+    },
+    "SH134": {
+      "unchangedRecord": "de821b8aa88d65406f07941cee6737a608828cd6a1872b8b1ed38a0fd4ba3605",
+      "sourceGeometry": null,
+      "oldVertices": 112,
+      "oldFaces": 86
+    },
+    "SH135": {
+      "unchangedRecord": "70d38af454daffcf631b652ca3c266f0999a52fd7e9c372bcb455071e51ada66",
+      "sourceGeometry": null,
+      "oldVertices": 64,
+      "oldFaces": 48
+    },
+    "SH136": {
+      "unchangedRecord": "e4c49f7e80a6d87d9a5b6ea46883f8cd4305c71efedb76f34c80662691663809",
+      "sourceGeometry": "46c17bd951e32a659845020575e439c6afa82f986609e47a3cd151c820229a02",
+      "oldVertices": 1113,
+      "oldFaces": 699
+    },
+    "SH137": {
+      "unchangedRecord": "40d90ea8798f5db1d701e881c7e1f4dd31e191a82f006796ac408560199a54ce",
+      "sourceGeometry": null,
+      "oldVertices": 42,
+      "oldFaces": 40
+    },
+    "SH138": {
+      "unchangedRecord": "b3afe9539fba14a0b6019e27eec0c4375d193cb45778ff17a3b9e346fd1aa88d",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH139": {
+      "unchangedRecord": "f96d0f07b04b5be96a34f7805c8743a38f4192fe01ffdd790fc65e062c527200",
+      "sourceGeometry": null,
+      "oldVertices": 50,
+      "oldFaces": 44
+    },
+    "SH140": {
+      "unchangedRecord": "fb65a0bf0ec814387c739587d672ef6eef8edc7ac98f017cf0ec95c0ea8359f8",
+      "sourceGeometry": null,
+      "oldVertices": 38,
+      "oldFaces": 38
+    },
+    "SH141": {
+      "unchangedRecord": "4d41a6a6ac68649b83bf1c63f2294f493eab38ecc8105f1453d16455a1ac80ef",
+      "sourceGeometry": null,
+      "oldVertices": 240,
+      "oldFaces": 178
+    },
+    "SH142": {
+      "unchangedRecord": "fa354306766235027d6e826fb11dcdb36dabcc4c8c775f07c4eda4d0b81b336f",
+      "sourceGeometry": "295cfd619cd6a4989e99b9fb99ec284cc13571d9257fc242f18c19d0fbf4b69e",
+      "oldVertices": 2772,
+      "oldFaces": 1628
+    },
+    "SH143": {
+      "unchangedRecord": "e781ea57184915ab9ca12347ec3c549a83c0291570592d918083be6137f51988",
+      "sourceGeometry": "8229b974d65bf67b5030f1f5e3148b9f33bf4c937f5113e8603b4556f6a1dacf",
+      "oldVertices": 1094,
+      "oldFaces": 618
+    },
+    "SH144": {
+      "unchangedRecord": "eb847b9760fd83b8a4904d566953d22ff231a90632b6ff40e7d7737657ca0eee",
+      "sourceGeometry": null,
+      "oldVertices": 36,
+      "oldFaces": 32
+    },
+    "SH145": {
+      "unchangedRecord": "56a217c4585c84170af317e045896b898d100baab50ed2597d14143ba7e6af65",
+      "sourceGeometry": null,
+      "oldVertices": 42,
+      "oldFaces": 40
+    },
+    "SH146": {
+      "unchangedRecord": "6cc55526551dd67b968ef20b08d2530eb0ead4b2111dc86aaf51637ec5975e3e",
+      "sourceGeometry": null,
+      "oldVertices": 46,
+      "oldFaces": 42
+    },
+    "SH147": {
+      "unchangedRecord": "71d985a6f97ac5a72877f766af69229ecf402d7f003856dc8f42b66d9623eeb3",
+      "sourceGeometry": null,
+      "oldVertices": 50,
+      "oldFaces": 44
+    },
+    "SH148": {
+      "unchangedRecord": "062ac377d080f56cee264324e8f890e1cc499828856137c64fa2bc98bb09cc07",
+      "sourceGeometry": "b02d9e529c73bd8d2ecca9b64d583106566ebb3f3e49e2cb51733a37a161d82b",
+      "oldVertices": 360,
+      "oldFaces": 716
+    },
+    "SH149": {
+      "unchangedRecord": "497a268907353718321424585845fcc4cfb60d777ae22818dcd4ce44c9c5d6fb",
+      "sourceGeometry": "80320945991b28abff34d7c21e79eb17c45fe66b853da3db6fd1b365cbaa973e",
+      "oldVertices": 751,
+      "oldFaces": 1159
+    },
+    "SH150": {
+      "unchangedRecord": "dd46c9d3f53833c650a265cf111eb9a1f5caa1a948cd6425e8aaf651df51a1a7",
+      "sourceGeometry": "83704028e931d608c3b6438812abe0336d82d2565253bb8fb0645fd4f67623f3",
+      "oldVertices": 475,
+      "oldFaces": 758
+    },
+    "SH151": {
+      "unchangedRecord": "f6c32ebff8a6e564263920de9fc4a7a974d931f3b37e30a3911e1a839f44ccf4",
+      "sourceGeometry": "8aed15beec27b1e628f6e95d60a8bc533831a38e6ac37b3123493b9bf981d395",
+      "oldVertices": 304,
+      "oldFaces": 436
+    },
+    "SH152": {
+      "unchangedRecord": "f4d940c0d65b25d5d45425d0360d87e904c28d1173fb64cfa88fe79291c1d4f9",
+      "sourceGeometry": "8361183ec26c603864d0e1fc6a556d912e891fb824cf1053e6c819abaaea774f",
+      "oldVertices": 31,
+      "oldFaces": 58
+    },
+    "SH153": {
+      "unchangedRecord": "db286c63e8d03d848d04357ec3f2a1c6dfed879dbe037b6fc7fcd81923e77dec",
+      "sourceGeometry": "2173397cf20c901aa50ce2cc8e7c3e9cdf853edc9e4f91639e908ea901974e25",
+      "oldVertices": 72,
+      "oldFaces": 140
+    },
+    "SH154": {
+      "unchangedRecord": "c3f238f7b032b8d86f12091f95b040d0fab486973ff4f17cee917bb13816f8e2",
+      "sourceGeometry": "d98c14cc6c53cbbebad6f09f788769020a990d2a55b4837456b57da7435ce3ab",
+      "oldVertices": 100,
+      "oldFaces": 184
+    },
+    "SH155": {
+      "unchangedRecord": "371b8478ab24d387e77c8478b035924a7055a16e41b3deebd324ba781e79c9aa",
+      "sourceGeometry": "7b44080c4d2921dd88b88a7d5b819115b03127d64032b06231dca3102bd1051d",
+      "oldVertices": 354,
+      "oldFaces": 680
+    },
+    "SH156": {
+      "unchangedRecord": "019fac2d945419672446a8783cf764a3056f055b13d79a0cad80c09014b5480a",
+      "sourceGeometry": "e48c2ff03e460d2dfd6c72958a67ec55968403015bdc9930ceb6ed6728c2e12f",
+      "oldVertices": 358,
+      "oldFaces": 688
+    },
+    "SH157": {
+      "unchangedRecord": "690ff5b7f90109c889e6b878bfe2a47535981f3a1c7ea408cf5dfbe32a625978",
+      "sourceGeometry": "488d3917e9be21530b5218a0f9a2c669db434f2ea0311429dfbe3c130a9144af",
+      "oldVertices": 18,
+      "oldFaces": 20
+    },
+    "SH158": {
+      "unchangedRecord": "9d60379907103278e8434334d2ef6d62c43363f0040fd84292471359a4311600",
+      "sourceGeometry": "cd02516f646a3a892b019362e7d145ec5a2c94386be19685db513e773d8ebd2e",
+      "oldVertices": 78,
+      "oldFaces": 128
+    },
+    "SH159": {
+      "unchangedRecord": "6251e2d605ef0669b76ef0c37a462765dceecbfe950df66afd620a7d02761597",
+      "sourceGeometry": "7c65dc080fc855199b5544d0419233a9960af323ecbd7ddaed3ddd978bb38895",
+      "oldVertices": 98,
+      "oldFaces": 160
+    },
+    "SH160": {
+      "unchangedRecord": "197a8e8521d0df6c812169ad1daf68a5efb71d23f61bb6174ee312bab0abe217",
+      "sourceGeometry": "be733383e56e15ae85a9d16daa8f8dd7fecef83a387b783f42ce6ac59077e601",
+      "oldVertices": 57,
+      "oldFaces": 94
+    },
+    "SH161": {
+      "unchangedRecord": "a7500230740f625016c132037e0299085ba8544604d12a1dd2ecb1ab8100b6b8",
+      "sourceGeometry": "333152381c0a4b8f97d037898679d59e560884d0964320e99b2396fc5abe6c26",
+      "oldVertices": 529,
+      "oldFaces": 1011
+    },
+    "SH162": {
+      "unchangedRecord": "d4fdf44e1a994e084fba47143d80a026014d964520c3cfb42505c7f60729c891",
+      "sourceGeometry": "79fb9f3084b9a8a7b1c90eb6e67dd821ac3f019ee0ab6658e82cf5b91cea735b",
+      "oldVertices": 40,
+      "oldFaces": 72
+    },
+    "SH163": {
+      "unchangedRecord": "533af2c3839b238072f16b4f6f24a92385c053ec8c046d5c40e19cdf19b09de6",
+      "sourceGeometry": "8442371e30d862448a66ba7f567d013a5537f9e38803c32cda030b31213fc12f",
+      "oldVertices": 1553,
+      "oldFaces": 935
+    },
+    "SH164": {
+      "unchangedRecord": "a05aa55ea985e9776d1a0e27d27096a9dc024b9aab83dc36163d98747ca666a4",
+      "sourceGeometry": "187b858a65af19164d1760cb51bb2580f99d595078893a66d8b894b0d26cbac5",
+      "oldVertices": 18,
+      "oldFaces": 32
+    },
+    "SH165": {
+      "unchangedRecord": "190557e17263d5bcfc39c65b47c6160c38cc6cadb35c1ac638f4e2c1b433f139",
+      "sourceGeometry": "7ef5aa4135485eca04919f14a2238f1c6f6f7a820d8f736bec4bf0736be62aa9",
+      "oldVertices": 124,
+      "oldFaces": 196
+    },
+    "SH166": {
+      "unchangedRecord": "7d545c6b9071bec5ec0995f13b9f082ed93cf24614abbf7e046b93ada267edb2",
+      "sourceGeometry": "202bf72ef35df17bee57713bb9bde2708ec66a8f58cbfd70d0c67945c3ae7259",
+      "oldVertices": 1629,
+      "oldFaces": 1148
+    },
+    "SH167": {
+      "unchangedRecord": "f01d22a7ecd2ef1e099dccc15c4184a0de5d220582dcd751133f38a480f980f1",
+      "sourceGeometry": "ae27efd6b3c54baa4bc8de47cbe08f6debef066812412aebe71fc355e586412e",
+      "oldVertices": 118,
+      "oldFaces": 164
+    }
+  }
+}

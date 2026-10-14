@@ -278,7 +278,7 @@ def package(options):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", default="1.2.0")
+    parser.add_argument("--version", default="1.3.0")
     parser.add_argument(
         "--identity",
         default=os.environ.get(

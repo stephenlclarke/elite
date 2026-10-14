@@ -36,4 +36,10 @@ Keep the applicable copyright, attribution and licence notices with redistribute
 
 ## Individual ship definitions
 
-The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 74 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-three original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
+The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 74 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-four original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
+
+## Liberator DSV2 adaptation
+
+The Liberator mesh and material authoring code are project-authored interpretations of the Blake's 7 spacecraft, with visual attribution and adaptation limits in [docs/LIBERATOR.md](docs/LIBERATOR.md). Tony Gardner's ArtStation artwork and other reference images/models are not included. The project's MIT terms cover its authored implementation and mesh data, and do not grant rights to the underlying television property or external reference artwork.
+
+Imported DAT face triples, texture names and UV mappings are retained as source metadata with model hashes. Referenced bitmap textures are not bundled or rendered; their rights are not inferred from geometry licences. Native per-face palettes and newly authored surface details are explicitly project adaptations.

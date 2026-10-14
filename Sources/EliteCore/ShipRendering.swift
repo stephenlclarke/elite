@@ -49,9 +49,13 @@ extension Hull {
 
 enum ShipProjection {
   static func shade(_ ink: Ink, normal: Vector3) -> UInt32 {
+    shade(ink.rawValue, normal: normal)
+  }
+
+  static func shade(_ rgba: UInt32, normal: Vector3, emissive: Bool = false) -> UInt32 {
+    if emissive { return rgba }
     let light = Vector3(-0.4, 0.6, -1)
     let brightness = 0.25 + 0.75 * max(0, normal.dot(light) / (normal.length * light.length))
-    let rgba = ink.rawValue
     let r = UInt32(Double((rgba >> 24) & 255) * brightness)
     let g = UInt32(Double((rgba >> 16) & 255) * brightness)
     let b = UInt32(Double((rgba >> 8) & 255) * brightness)

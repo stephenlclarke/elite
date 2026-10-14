@@ -62,7 +62,8 @@ extension Display {
       ),
     ]
     for (index, entry) in values.enumerated() {
-      frame.label(entry.0, 16, top + Double(index) * 14, scale: layout.font, ink: entry.1)
+      frame.label(
+        entry.0, 16, top + Double(index) * GameTypography.row, scale: layout.font, ink: entry.1)
     }
     frame.label(
       "Z: zoom " + game.mapZoom.rawValue, layout.width - 16 - 24 * 6 * layout.font, 32,

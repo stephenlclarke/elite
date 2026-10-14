@@ -241,6 +241,10 @@ extension Game {
 
   private mutating func chartKey(_ key: String) -> Bool {
     guard screen == .chart || screen == .shortChart else { return false }
+    if key == "p" {
+      toggleProfitScan()
+      return true
+    }
     if key == "n" {
       openNavigation()
       return true

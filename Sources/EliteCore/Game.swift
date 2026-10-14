@@ -58,6 +58,11 @@ public struct Commander: Sendable, Equatable, Codable {
   private var displayStyle: ShipDisplayStyle?
   private var navalMission: NavalMissionStage?
   private var xyzzyEnabled: Bool?
+  private var automaticProfitScan: Bool?
+  public var profitScanEnabled: Bool {
+    get { automaticProfitScan ?? false }
+    set { automaticProfitScan = newValue }
+  }
   private var automaticECM: Bool?
   private var automaticTargeting: Bool?
   private var returnFireEnabled: Bool?
@@ -264,6 +269,9 @@ public struct Game: Sendable {
   public var laserHeat = 0.0
   public var laserFlash = 0.0
   public var altitude = 1.0
+  public var celestials: [CelestialBody] = []
+  public var solarScoopState: SolarScoopState = .inactive
+  var solarFuelRemainder = 0.0
   public var cabinTemperature = 0.0
   public var equipmentMount: LaserMount = .front
   public var dockingComputer = false
@@ -316,6 +324,7 @@ public struct Game: Sendable {
   public mutating func load(_ value: Commander) -> Bool {
     guard value.valid else { return false }
     commander = value
+    clearCelestialFlight()
     blackjackOffer = nil
     packOffer = nil
     migrateMissionProgress()
@@ -531,6 +540,7 @@ public struct Game: Sendable {
   }
   mutating func enableXYZzy() {
     commander.xyzzyActive = true
+    commander.profitScanEnabled = true
     commander.shipDisplayStyle = .shadedPanels
     commander.retaliationEnabled = true
     commander.unlimitedMissiles = true
@@ -813,6 +823,7 @@ public struct Game: Sendable {
       SpaceBody(id: 2, hull: .asteroid, position: .init(-280, 100, 2200)),
     ]
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
+    resetCelestialFlight()
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
@@ -837,6 +848,7 @@ public struct Game: Sendable {
     laserHeat = 0
     jumpCountdown = nil
     missileArmed = false
+    clearCelestialFlight()
     notify("DOCKED")
     navigationDocked()
     if commander.autoTrade { autoTrade() }
@@ -870,7 +882,10 @@ public struct Game: Sendable {
     jumpCountdown = commander.performance.spool
     notify("HYPERSPACE")
   }
-  public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
+  public var massLocked: Bool {
+    bodies.contains { $0.hull != .cargo && $0.position.length < 600 }
+      || celestials.contains { $0.position.length < $0.radius * 4 }
+  }
   public mutating func arrive() {
     persistBlackjackTargets()
     retaliation.clear()
@@ -899,6 +914,7 @@ public struct Game: Sendable {
         id: 1, hull: .sidewinder, position: .init(80, 0, 2600),
         hostile: currentSystem.government < 4),
     ]
+    resetCelestialFlight()
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
@@ -923,6 +939,7 @@ public struct Game: Sendable {
       return
     }
     for index in bodies.indices { bodies[index].position.z -= 3000 }
+    for index in celestials.indices { celestials[index].position.z -= 3000 }
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -1038,6 +1055,8 @@ public struct Game: Sendable {
       reconcileEliteReward()
       return
     }
+    advanceSolarFlight(delta: dt)
+    guard screen != .gameOver else { return }
     scoopCargo()
     if missionLoopCounter & 7 == 0 { navalTactics() }
     detectIncomingMissiles()
@@ -1099,6 +1118,7 @@ public struct Game: Sendable {
   }
   private mutating func moveBodies(dt: Double) {
     autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+    moveCelestials(delta: dt)
     for index in bodies.indices {
       bodies[index].position = bodies[index].position.rotated(
         pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
@@ -1238,6 +1258,11 @@ public actor GameRuntime {
     try FileManager.default.createDirectory(
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
+  }
+  public func restoreStartup(from url: URL) throws {
+    try load(from: url, persistMigrations: false)
+    game.screen = .title
+    game.time = 0
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
     let data = try Data(contentsOf: url)

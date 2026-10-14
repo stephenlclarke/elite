@@ -1,6 +1,6 @@
 # BBC Micro Executive mission profile
 
-The starting reference is the repository research in [mission-specifications.md](research/mission-specifications.md), C01/C02, with its R1-core boundary in [coverage.md](research/coverage.md). This implementation selects BBC-EXEC, not C64, Oolite, MSX or a reconstructed campaign.
+The starting reference is the local research in `docs/research/mission-specifications.md`, C01/C02, with its R1-core boundary in `docs/research/coverage.md`. Those working research notes are maintained separately; the pinned primary evidence below supports the published implementation. This implementation selects BBC-EXEC, not C64, Oolite, MSX or a reconstructed campaign.
 
 ## Pinned primary evidence
 

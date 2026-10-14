@@ -115,8 +115,8 @@ import Testing
 
 @Test func normalizedComparisonsSortAndTOMLLoaderAreConsistent() throws {
   let loaded = try ShipCatalogue.load(from: ShipCatalogue.folder)
-  #expect(loaded.count == 167 && loaded.allSatisfy { $0.design.valid })
-  #expect(loaded.filter { $0.game != nil }.count == 158)
+  #expect(loaded.count == 168 && loaded.allSatisfy { $0.design.valid })
+  #expect(loaded.filter { $0.game != nil }.count == 159)
   #expect(loaded.allSatisfy { $0.previewMesh != nil })
   var game = Game(executive: false)
   game.screen = .status

@@ -17,9 +17,10 @@ extension Display {
       centeredLabel("E L I T E", y: 18, into: &frame)
       for (index, text) in [
         "RIGHT-ON COMMANDER VERSION", "PRESS SPACE COMMANDER",
-        "SWIFT MACOS REIMPLEMENTATION",
+        BuildIdentity.current.versionLine, BuildIdentity.repository,
+        BuildIdentity.current.revisionLine,
       ].enumerated() {
-        centeredLabel(text, y: height - 76 + Double(index) * GameTypography.row, into: &frame)
+        centeredLabel(text, y: height - 120 + Double(index) * GameTypography.row, into: &frame)
       }
     } else {
       for (id, hull, position) in [
@@ -33,7 +34,8 @@ extension Display {
       let lines = [
         "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION",
         "WELCOME COMMANDER " + game.commander.name, "THE GALAXY AWAITS",
-        "FLY. TRADE. SURVIVE.",
+        "FLY. TRADE. SURVIVE.", BuildIdentity.current.versionLine,
+        BuildIdentity.repository, BuildIdentity.current.revisionLine,
       ]
       let speed = (height + Double(lines.count) * GameTypography.row) / 11
       for (index, text) in lines.enumerated() {

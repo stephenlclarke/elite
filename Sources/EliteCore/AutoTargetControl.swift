@@ -41,6 +41,7 @@ public struct AutoTargetControl: Sendable {
   public private(set) var manualEngagement = false
   private var previousAim: Vector3?
   private var previousDelta = 0.0
+  private var stationStaged = false
   private var visited: Set<Int> = []
   private var membership: Set<Int> = []
   private var cycleSignature = ""
@@ -52,6 +53,7 @@ public struct AutoTargetControl: Sendable {
     previousAim = nil
     ready = false
     finalApproach = false
+    stationStaged = false
     velocity = .init(0, 0, 0)
     rollRate = 0
     status = "OFF"
@@ -92,6 +94,7 @@ public struct AutoTargetControl: Sendable {
     if let targetID { visited.insert(targetID) }
     ready = false
     finalApproach = false
+    stationStaged = false
     velocity = .init(0, 0, 0)
     status = "FACING TARGET"
   }
@@ -100,7 +103,19 @@ public struct AutoTargetControl: Sendable {
     pitch: Double, yaw: Double, roll: Double?
   ) {
     let station = target.hull == .station
-    let aim = station ? target.entranceNormal * -1 : target.position
+    let aim: Vector3
+    if station {
+      let goal = target.entrancePosition + target.entranceNormal * 1000
+      positionError = goal.length
+      // Finish the forward journey before turning to the entrance axis. The
+      // smaller staging radius also keeps final lateral correction inside the door.
+      if !finalApproach && positionError < 12 && velocity.length < 8 { stationStaged = true }
+      aim =
+        stationStaged || finalApproach
+        ? target.entranceNormal * -1 : approachWaypoint(target, goal: goal)
+    } else {
+      aim = target.position
+    }
     let pitchAngle = atan2(aim.y, hypot(aim.x, aim.z))
     let yawAngle = atan2(aim.x, aim.z)
     facingError = hypot(pitchAngle, yawAngle)
@@ -139,25 +154,28 @@ public struct AutoTargetControl: Sendable {
   private mutating func alignStation(_ target: SpaceBody, delta: Double) {
     phaseError = atan2(target.entranceUp.x, target.entranceUp.y)
     let matchRate = -target.rotationRate * target.orientation.z.z
-    let command = max(-1, min(1, matchRate + phaseError * 1.8))
+    let command =
+      stationStaged || finalApproach ? max(-1, min(1, matchRate + phaseError * 1.8)) : 0
     rollRate += max(-0.8 * delta, min(0.8 * delta, command - rollRate))
     rateError = abs(rollRate - matchRate)
     let goal = target.entrancePosition + target.entranceNormal * 1000
     positionError = goal.length
     ready =
-      positionError < 40 && facingError < 0.02 && abs(phaseError) < 0.03
+      stationStaged && positionError < 40 && facingError < 0.02 && abs(phaseError) < 0.03
       && rateError < 0.02 && velocity.length < 1
     if ready { finalApproach = true }
     let desired: Vector3
     if finalApproach {
       desired = finalVelocity(target)
+    } else if stationStaged {
+      // Hold at the safe external goal while facing the doorway and matching spin.
+      desired = .init(0, 0, 0)
+      status = facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN"
     } else {
-      desired = approachWaypoint(target, goal: goal) * 0.8
-      if positionError > 40 {
-        status = "APPROACHING"
-      } else {
-        status = facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN"
-      }
+      // Existing cruise momentum brakes under the acceleration limit. Once the
+      // waypoint is ahead, thrust follows the same bearing as the forward view.
+      desired = facingError < 0.12 ? approachWaypoint(target, goal: goal) * 0.8 : .init(0, 0, 0)
+      status = "APPROACHING"
     }
     velocity = velocity + (desired.limited(to: 144) - velocity).limited(to: 240 * delta)
     if !finalApproach { keepOutsideStation(target, delta: delta) }
@@ -182,8 +200,10 @@ public struct AutoTargetControl: Sendable {
       target.position - goal * max(0, min(1, target.position.dot(goal) / max(1, goal.dot(goal))))
     guard closest.length < 400 && positionError > 40 else { return goal }
     let radial = target.position.unit * -1
-    var tangent = target.modelVector(.init(1, 0, 0))
-    if abs(tangent.dot(radial)) > 0.8 { tangent = target.entranceUp }
+    // Avoidance belongs to the station's fixed entrance axis, not its spinning
+    // doorway phase. A rotating detour can outrun the player's transit speed.
+    var tangent = target.orientation.x
+    if abs(tangent.dot(radial)) > 0.8 { tangent = target.orientation.y }
     return target.position + (radial + tangent * 0.8).unit * 600
   }
   private mutating func keepOutsideStation(_ target: SpaceBody, delta: Double) {

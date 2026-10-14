@@ -7,6 +7,10 @@ import importlib.util
 import re
 from pathlib import Path
 
+appearance_spec = importlib.util.spec_from_file_location('source_appearance', Path(__file__).with_name('source-appearance.py'))
+appearance = importlib.util.module_from_spec(appearance_spec)
+appearance_spec.loader.exec_module(appearance)
+
 LABELS = {
     'required_crew_including_commander': ('Required crew', 'people'),
     'reserved_crew_accommodation': ('Reserved crew quarters', 'people'),
@@ -116,12 +120,13 @@ def dat_mesh(path, expected_hash, data=None):
         start = lines.index('NORMALS') + 1
         normals = [[float(x) for x in re.split(r'[\s,]+', line)[:3]] for line in lines[start:start+nverts]]
     start = lines.index('FACES') + 1
-    faces = []
+    faces, corner_orders = [], []
     for line in lines[start:start+nfaces]:
         parts = re.split(r'[\s,]+', line)
         count = int(parts[6])
         face = [int(x) for x in parts[7:7+count]]
         assert len(face) >= 3 and all(0 <= x < nverts for x in face)
+        order = list(range(len(face)))
         a, b, c = [vertices[i] for i in face[:3]]
         ab, ac = [b[i]-a[i] for i in range(3)], [c[i]-a[i] for i in range(3)]
         cross = [ab[1]*ac[2]-ab[2]*ac[1], ab[2]*ac[0]-ab[0]*ac[2], ab[0]*ac[1]-ab[1]*ac[0]]
@@ -130,11 +135,16 @@ def dat_mesh(path, expected_hash, data=None):
             normal_vector = [sum(normals[v][i] for v in face) for i in range(3)]
         if sum(cross[i]*normal_vector[i] for i in range(3)) < 0:
             face.reverse()
+            order.reverse()
         # Reflect Z into the native camera convention, also reversing winding.
         faces.append(list(reversed(face)))
+        corner_orders.append(list(reversed(order)))
     vertices = [[v[0], v[1], -v[2]] for v in vertices]
     return dict(id=path.name, vertices=vertices, faces=faces, sha256=expected_hash,
-                source='Oolite 574ca848', license='CC-BY-NC-SA-3.0')
+                source='Oolite 574ca848', license='CC-BY-NC-SA-3.0',
+                **appearance.dat_appearance(
+                    lines, corner_orders, f'{path.name}; sha256={expected_hash}',
+                    'Texture licence not established from DAT; reference only, no pixels bundled'))
 
 
 def composite_mesh(root, definitions, models, directory, seen=None):
@@ -167,6 +177,7 @@ def composite_mesh(root, definitions, models, directory, seen=None):
             ry = (2*x*y+2*z*w)*vx + (1-2*x*x-2*z*z)*vy + (2*y*z-2*x*w)*vz
             rz = (2*x*z-2*y*w)*vx + (2*y*z+2*x*w)*vy + (1-2*x*x-2*y*y)*vz
             result['vertices'].append([rx+pos[0], ry+pos[1], -(rz+pos[2])])
+        appearance.append_appearance(result, mesh, len(result['faces']), len(mesh['faces']))
         result['faces'].extend([[v+offset for v in face] for face in mesh['faces']])
     result['id'] = 'O08-'+root['definition_id']
     return result

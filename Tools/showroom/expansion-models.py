@@ -1,10 +1,16 @@
 """Import complete, source-hashed Oolite assemblies without activating source scripts."""
+import importlib.util
 import hashlib
 import json
 import math
 import subprocess
 import zipfile
 from pathlib import Path
+
+
+appearance_spec = importlib.util.spec_from_file_location('source_appearance', Path(__file__).with_name('source-appearance.py'))
+appearance = importlib.util.module_from_spec(appearance_spec)
+appearance_spec.loader.exec_module(appearance)
 
 
 def source_definitions(archive):
@@ -53,6 +59,7 @@ def append_component(result, child, part):
         ry = (2*x*y+2*z*w)*vx + (1-2*x*x-2*z*z)*vy + (2*y*z-2*x*w)*vz
         rz = (2*x*z-2*y*w)*vx + (2*y*z+2*x*w)*vy + (1-2*x*x-2*y*y)*vz
         result['vertices'].append([rx+pos[0], ry+pos[1], -(rz+pos[2])])
+    appearance.append_appearance(result, child, len(result['faces']), len(child['faces']))
     result['faces'].extend([[v+offset for v in face] for face in child['faces']])
     result['components'] += child['components']
 

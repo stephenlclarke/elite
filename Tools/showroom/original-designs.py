@@ -6,7 +6,7 @@ repeatable design revisions; it is not a competing runtime model catalogue.
 import math
 
 
-def design(parameters):
+def coarse_design(parameters):
     """Assemble role-specific, closed convex components with outward normals."""
     vertices, faces = [], []
     family = parameters['family']
@@ -133,3 +133,15 @@ def design(parameters):
         low,high=min(p[axis] for p in vertices),max(p[axis] for p in vertices)
         for p in vertices:p[axis]=round((p[axis]-(high+low)/2)*extent/(high-low),5)
     return dict(vertices=vertices,faces=faces,source='Right-On Commander original geometry',license='MIT')
+
+
+def design(parameters):
+    """Respect the revision stored in the individual authoritative recipe."""
+    if parameters.get('revision',1) < 2:
+        return coarse_design(parameters)
+    import importlib.util
+    from pathlib import Path
+    spec=importlib.util.spec_from_file_location('refined_designs',Path(__file__).with_name('refined-designs.py'))
+    revised=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(revised)
+    return revised.design(parameters)
