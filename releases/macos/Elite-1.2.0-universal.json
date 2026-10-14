@@ -12,8 +12,8 @@
     "x86_64"
   ],
   "archive": "Elite-1.2.0-universal.zip",
-  "archiveBytes": 4508573,
-  "sha256": "cf69a029e46d7b90b0d839ef4c05dfac3dcdb94db647423885a001f3fef28862",
+  "archiveBytes": 4510236,
+  "sha256": "02e83137d62eac0aa05e4a5b0d69f0bc084051eccb3a569c4b2b07048a3dc25b",
   "signature": "Developer ID Application",
   "signatureDetails": [
     "Executable=Elite.app/Contents/MacOS/Elite",
@@ -35,8 +35,17 @@
   ],
   "hardenedRuntime": true,
   "secureTimestamp": true,
-  "notarized": false,
-  "gatekeeperAccepted": false,
-  "gatekeeperAssessment": "Elite.app: rejected\nsource=Unnotarized Developer ID",
-  "verification": "Extracted ZIP: strict deep signature, architectures, exact resources and diagnostics passed."
+  "notarized": true,
+  "gatekeeperAccepted": true,
+  "gatekeeperAssessment": "Elite.app: accepted\nsource=Notarized Developer ID",
+  "verification": "Extracted stapled ZIP: strict deep signature, unchanged executable and bundle metadata, both macOS 14 architectures, exact resources, diagnostics, stapled ticket and Gatekeeper acceptance passed.",
+  "notarization": {
+    "submissionID": "fb6ded2b-0e06-4009-b0f8-34387a613b5f",
+    "status": "Accepted",
+    "submittedArchiveSHA256": "cf69a029e46d7b90b0d839ef4c05dfac3dcdb94db647423885a001f3fef28862",
+    "uploadedAtUTC": "2026-10-14T08:02:52.924Z",
+    "verifiedAtUTC": "2026-10-14T08:05:39.028158+00:00",
+    "stapledTicketValidated": true,
+    "appleLog": "Elite-1.2.0-universal-notarization.json"
+  }
 }
