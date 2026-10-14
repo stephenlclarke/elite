@@ -39,6 +39,8 @@ import Testing
 @Test func starfieldRecyclesWithoutGrowingOrLeavingTheViewEmpty() {
   var game = Game(executive: false)
   game.launch()
+  // Isolate star points from the solid solar disk introduced in flight space.
+  game.celestials = []
   for _ in 0..<3000 { game.starfield.advance(delta: 0.1, speed: 32, pitch: 0, roll: 0) }
   #expect(game.starfield.positions.count == 768)
   #expect(game.starfield.positions.allSatisfy { $0.length >= 300 && $0.length <= 9000 })

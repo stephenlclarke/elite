@@ -52,6 +52,8 @@ Every action in this table is visible in the **Flight** menu. Equipment requirem
 
 Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Pass scoopable cargo below your nose with Fuel Scoops fitted.
 
+Flight HUD bearings point to the actual moving planet and sun, including astern and off-screen directions. Fuel Scoops collect solar fuel automatically when cruising nose-first in the outer corona; no extra key is needed. Stay near the corona edge, watch Cabin temp, and turn away to cool before it reaches the limit. Sun and planet surfaces are fatal, and overheating destroys the ship even with unlimited XYZZY fuel. Saves retain the existing commander-only behaviour: loading docks at the saved system, and launching creates a fresh local flight scene.
+
 Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets start anticlockwise/clockwise spin, and held minus / equals or plus changes the spin rate. Arrows pitch/yaw in this mode; Space/Delete still changes forward speed. One-finger circles choose spin direction, one/two/three contacts slow/hold/increase it, and two-finger movement aims pitch/yaw. Help, pause and focus loss cancel Spin Hold. This specialist prototype is separate from ordinary flight.
 
 ## Station tasks and mission dialogs

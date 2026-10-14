@@ -50,7 +50,7 @@ public enum PlayerHelp {
             "COMMAND-Q - QUIT",
           ]))
       if !game.docked {
-        if !screen.isFlight { pages.append(context(for: .front, game: game)) }
+        if !screen.isFlight { pages.append(contentsOf: paginate(context(for: .front, game: game))) }
         pages.append(contentsOf: flightReference)
       }
     }
@@ -87,6 +87,10 @@ public enum PlayerHelp {
           "TAB - NEXT TARGET / STATION AUTO DOCK",
           "Q - CANCEL AUTOMATIC GUIDANCE",
           "4 / 5 - CHART; H - HYPERSPACE",
+          "SUN / PLANET BEARINGS - FLIGHT HUD",
+          "FUEL SCOOPS - CRUISE TOWARD SUN",
+          "WATCH CABIN TEMP; TURN AWAY TO COOL",
+          "OVERHEATING / SURFACE IMPACT IS FATAL",
           "FLIGHT MENU - WEAPONS / DRIVES / POD",
           "ESC - BACK; NEVER LAUNCHES ESCAPE POD",
           "TRACKPAD: 2 FINGERS - STEER / CRUISE",
