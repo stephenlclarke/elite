@@ -1,5 +1,7 @@
 # Readable chart and celestial bearing conditions
 
+Tracked in [PR #12](https://github.com/stephenlclarke/elite/pull/12), following the integrated delivery in [PR #11](https://github.com/stephenlclarke/elite/pull/11).
+
 ## Motivation
 
 The authoritative main analysis of `34790e313c0d6cf8be84fe74aaf8f2f228cd3b3f` passed its quality gate but reported three `swift:S3358` findings: two nested bearing expressions in `CelestialFlight.swift` and one nested docked chart footer expression in `ChartDisplay.swift`.
