@@ -38,7 +38,7 @@ public enum ShieldBooster: Int, Sendable, CaseIterable, Comparable {
 extension Commander {
   public static let eliteThreshold = 6400
   public var shieldBooster: ShieldBooster? { equipment.compactMap(ShieldBooster.from).max() }
-  public var shieldCapacity: Double { 255 * (shieldBooster?.multiplier ?? 1) }
+  public var shieldCapacity: Double { performance.shield * (shieldBooster?.multiplier ?? 1) }
   public var effectiveLaser: String { activeLaser?.equipmentName ?? "None" }
   public mutating func installShieldBooster(_ booster: ShieldBooster) {
     let effective = max(booster, shieldBooster ?? booster)

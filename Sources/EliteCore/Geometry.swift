@@ -36,7 +36,7 @@ public enum Hull: String, Sendable, Codable, CaseIterable {
   case cobra, viper, sidewinder, asteroid, station, missile, thargoid, cargo, constrictor, thargon
 }
 
-public struct MeshDetail: Sendable {
+public struct MeshDetail: Codable, Sendable, Equatable {
   public let start: Int
   public let end: Int
   public let face: Int
@@ -67,19 +67,8 @@ public struct Mesh: Sendable {
     }
   }
   public static func hull(_ kind: Hull) -> Mesh {
+    if let mesh = ShipCatalogue.nativeMesh(kind) { return mesh }
     switch kind {
-    case .cobra: return fittedCobra
-    case .constrictor: return NavalShips.constrictor
-    case .thargon: return NavalShips.thargon
-    case .station:
-      return Mesh(
-        vertices: [
-          .init(-90, -90, -90), .init(90, -90, -90), .init(90, 90, -90), .init(-90, 90, -90),
-          .init(-90, -90, 90), .init(90, -90, 90), .init(90, 90, 90), .init(-90, 90, 90),
-        ],
-        faces: [
-          [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [3, 7, 6, 2], [0, 4, 7, 3], [1, 2, 6, 5],
-        ])
     case .asteroid, .cargo:
       return Mesh(
         vertices: [
@@ -89,19 +78,8 @@ public struct Mesh: Sendable {
         faces: [
           [0, 2, 1], [0, 3, 2], [0, 4, 3], [0, 1, 4], [5, 1, 2], [5, 2, 3], [5, 3, 4], [5, 4, 1],
         ])
-    case .thargoid:
-      let top = (0..<8).map { i in
-        Vector3(cos(Double(i) * .pi / 4) * 70, 15, sin(Double(i) * .pi / 4) * 70)
-      }
-      let bottom = (0..<8).map { i in
-        Vector3(cos(Double(i) * .pi / 4) * 40, -15, sin(Double(i) * .pi / 4) * 40)
-      }
-      return Mesh(
-        vertices: top + bottom,
-        faces: [Array((0..<8).reversed()), Array(8..<16)]
-          + (0..<8).map { [$0, ($0 + 1) % 8, ($0 + 1) % 8 + 8, $0 + 8] })
-    case .viper, .sidewinder, .missile:
-      let width: Double = kind == .missile ? 8 : 40
+    case .missile:
+      let width = 8.0
       return Mesh(
         vertices: [
           .init(-width, 0, -25), .init(width, 0, -25), .init(30, 12, 30),
@@ -113,17 +91,10 @@ public struct Mesh: Sendable {
           [0, 3, 2, 1], [0, 4, 6], [0, 6, 3], [1, 2, 5], [1, 5, 4],
           [0, 1, 4], [3, 6, 5, 2], [4, 5, 6],
         ])
+    default: preconditionFailure("Missing native ship definition: " + kind.rawValue)
     }
   }
-  /// Match flight, startup and the fitted-ship comparison, retaining the native visual radius.
-  private static let fittedCobra: Mesh = {
-    guard let source = ShipCatalogue.ship("SH023")?.previewMesh else {
-      preconditionFailure("The bundled Cobra Mk III source model is required")
-    }
-    return Mesh(
-      vertices: source.vertices.map { $0 * 0.69 }, faces: source.faces,
-      preserveWinding: true)
-  }()
+
 }
 
 public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {

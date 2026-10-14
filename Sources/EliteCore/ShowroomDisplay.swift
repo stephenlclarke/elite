@@ -1,6 +1,9 @@
 import Foundation
 
 public struct ShowroomLayout: Sendable {
+  public static let actionKeys = [
+    "tab", "b", "r", "c", "v", ",", ".", " ", "showroom-sort", "showroom-trade",
+  ]
   public let wide: Bool
   public let listVisible: Bool
   public let search: CanvasRect
@@ -22,18 +25,20 @@ public struct ShowroomLayout: Sendable {
     search = .init(x: 16, y: 42, width: min(680, width - 184), height: 24)
     clearSearch = .init(x: search.maxX + 8, y: 42, width: 144, height: 24)
     close = .init(x: width - 106, y: 8, width: 90, height: 24)
-    buttons = (0..<5).map { index in
-      .init(x: left + Double(index) * available / 5, y: 72, width: available / 5 - 4, height: 24)
+    buttons = Self.actionKeys.indices.map { index in
+      .init(
+        x: left + Double(index % 4) * available / 4, y: 72 + Double(index / 4) * 28,
+        width: available / 4 - 4, height: 24)
     }
     list = .init(
-      x: 16, y: 108, width: wide ? 240 : width - 32,
-      height: wide ? height - 148 : min(160, height * 0.30))
-    let modelTop = wide || detail ? 108 : list.maxY + 14
-    let modelHeight = wide || detail ? min(260, height * 0.30) : max(80, height - modelTop - 40)
+      x: 16, y: 176, width: wide ? 240 : width - 32,
+      height: wide ? height - 236 : min(160, height * 0.30))
+    let modelTop = wide || detail ? 176 : list.maxY + 14
+    let modelHeight = wide || detail ? min(260, height * 0.30) : max(80, height - modelTop - 60)
     model = .init(x: left, y: modelTop, width: available, height: modelHeight)
     details = .init(
       x: left, y: model.maxY + 18, width: available,
-      height: max(0, height - model.maxY - 60))
+      height: max(0, height - model.maxY - 80))
   }
 }
 
@@ -89,6 +94,7 @@ private struct ShowroomTextLine {
 
 extension Display {
   public static func showroomScreen(_ game: Game, width: Double, height: Double) -> Frame {
+    if game.showroom.trading { return shipTradeScreen(game, width: width, height: height) }
     var frame = Frame()
     frame.responsive = true
     frame.rasterizeGraphics = false
@@ -96,30 +102,61 @@ extension Display {
     let layout = ShowroomLayout(width: width, height: height, detail: game.showroom.detail)
     let font = GameTypography.scale
     frame.label("SHIP SHOWROOM", 16, 12, scale: font, ink: .yellow)
-    frame.label("W: Close", layout.close.x + 8, 12, scale: font, ink: .cyan)
+    frame.label("Esc: Back", layout.close.x + 4, 12, scale: font, ink: .cyan)
     let countText =
       game.showroom.query.isEmpty
       ? "\(game.showroomShips.count)/\(ShipCatalogue.all.count) ships"
       : "FILTER ACTIVE: \(game.showroomShips.count)/\(ShipCatalogue.all.count) ships"
+    let banner = countText + " | You own: " + game.commander.ship.name
+    let columns = Int((width - 32) / (6 * font))
+    let compactBanner =
+      "\(game.showroomShips.count)/\(ShipCatalogue.all.count) | Owned: " + game.commander.ship.name
     frame.label(
-      countText + " | You own: Cobra Mk III", 16, 28, scale: font,
+      banner.count <= columns ? banner : String(compactBanner.prefix(columns)), 16, 28, scale: font,
       ink: game.showroom.query.isEmpty ? .white : .orange)
     frame.label(
-      game.showroom.searching ? "Fn-Del: Clear" : "X: Clear filter", layout.clearSearch.x + 4,
+      game.showroom.searching ? "Clear search" : "Clear filter", layout.clearSearch.x + 4,
       layout.clearSearch.y + 8, scale: font, ink: .cyan)
     let query = game.showroom.query.isEmpty ? "Name / class / source / ID" : game.showroom.query
     frame.label(
       (game.showroom.searching ? "> " : "/: ") + query,
       layout.search.x + 8, layout.search.y + 8, scale: font, ink: .cyan)
     let buttonTitles = [
-      "B: Pin", "R: Your ship", "C: Compare",
-      game.showroom.rotationPaused ? "Space:Spin" : "Space:Stop",
-      game.showroom.sourceProfiles ? "V: Refit" : "V: Source",
+      game.showroom.detail ? "Ships" : "Specs", "Pin baseline", "Your ship",
+      game.showroom.compare ? "Compare: on" : "Compare: off",
+      game.showroom.sourceProfiles ? "Game values" : "Source notes",
+      game.showroomProfiles.count > 1 ? "Prev profile" : "Single profile",
+      game.showroomProfiles.count > 1 ? "Next profile" : "Single profile",
+      game.showroom.rotationPaused ? "Rotate model" : "Pause model",
+      "Sort: " + game.showroom.sort.rawValue,
+      game.showroomShip?.game == nil ? "Display only" : "Trade ship",
     ]
     for (index, bounds) in layout.buttons.enumerated() {
-      frame.label(buttonTitles[index], bounds.x + 4, bounds.y + 8, scale: font, ink: .cyan)
+      frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, .blue)
+      let title = buttonTitles[index]
+      let columns = max(1, Int((bounds.width - 8) / (6 * font)))
+      frame.label(
+        String(title.prefix(columns)), bounds.x + 4, bounds.y + 8, scale: font,
+        ink: ([5, 6].contains(index) && game.showroomProfiles.count <= 1) ? .blue : .cyan)
     }
-    if layout.listVisible { showroomList(game, layout: layout, into: &frame) }
+    let window = showroomWindow(game)
+    let focus =
+      game.showroom.searching
+      ? "Search: type / arrows / Return"
+      : (game.showroom.detail
+        ? (window.hint ?? "Specifications: all rows visible")
+        : "Ships: arrows / Return")
+    frame.label(focus, 16, height - 42, scale: font, ink: .yellow)
+    if layout.listVisible {
+      frame.label(
+        game.showroom.detail ? "Ships" : "> Ships", layout.list.x, 158, scale: font, ink: .cyan)
+      showroomList(game, layout: layout, into: &frame)
+    }
+    if layout.wide || game.showroom.detail {
+      frame.label(
+        game.showroom.detail ? "> Specifications" : "Specifications", layout.details.x,
+        layout.details.y - 14, scale: font, ink: .cyan)
+    }
     if let selected = game.showroomShip {
       if layout.wide && game.showroom.compare, let baseline = game.showroomBaseline {
         let half = (layout.model.width - 16) / 2
@@ -128,7 +165,8 @@ extension Display {
           bounds: .init(
             x: layout.model.x, y: layout.model.y,
             width: half, height: layout.model.height),
-          title: game.showroom.baselineUsesCurrent ? "Your Cobra Mk III" : "PINNED BASELINE",
+          title: game.showroom.baselineUsesCurrent
+            ? "Your " + game.commander.ship.name : "PINNED BASELINE",
           currentNative: game.showroom.baselineUsesCurrent, into: &frame)
         showroomModel(
           selected, game: game,
@@ -147,12 +185,10 @@ extension Display {
       }
     } else {
       frame.label(
-        "Catalogue unavailable", layout.model.x, layout.model.y + 40, scale: font, ink: .orange)
+        "No matches - clear or edit search", layout.model.x, layout.model.y + 40, scale: font,
+        ink: .orange)
     }
-    let help =
-      layout.wide || game.showroom.detail
-      ? "Fn-Up/Down: specs  ,/.: variant  Esc: back  K: help"
-      : "Up/Down: ship  Return: specs  /: search  K: help"
+    let help = "Tab: ships/specs  /: search  Esc: back  K: help"
     frame.label(help, 16, height - 24, scale: font, ink: .cyan)
     return frame
   }
@@ -189,7 +225,7 @@ extension Display {
     for (index, line) in lines.prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.y + Double(index) * 14, scale: font, ink: .yellow)
     }
-    guard let mesh = currentNative ? ShipCatalogue.ship("SH023")?.previewMesh : ship.previewMesh
+    guard let mesh = ship.previewMesh
     else {
       frame.label(
         "Model unavailable", bounds.x + 4, bounds.y + bounds.height / 2,
@@ -214,11 +250,21 @@ extension Display {
     draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
     frame.flightClip = clip
     let caption =
-      currentNative ? "Your fitted Cobra / Oolite model" : (ship.modelSource ?? "Source geometry")
+      ship.name
     for (index, line) in ShowroomText.wrap(caption, width: columns).prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.maxY - 28 + Double(index) * 14, scale: font, ink: .cyan)
     }
   }
+
+  static func showroomWindow(_ game: Game) -> ScrollWindow {
+    let layout = ShowroomLayout(
+      width: game.viewportWidth, height: game.viewportHeight, detail: game.showroom.detail)
+    let rows = showroomDetailRows(game, width: layout.details.width, modelAligned: layout.wide)
+    return .init(
+      count: rows.count, visible: max(1, Int(layout.details.height / GameTypography.row)),
+      offset: game.showroom.scroll)
+  }
+  static func showroomMaximumScroll(_ game: Game) -> Int { showroomWindow(game).last }
 
   private static func showroomDetails(
     _ game: Game, bounds: CanvasRect, modelAligned: Bool, into frame: inout Frame
@@ -240,19 +286,29 @@ extension Display {
   {
     guard let ship = game.showroomShip else { return [] }
     let columns = Int(width / (6 * GameTypography.scale))
-    let metadata = [
+    let dimensions =
+      ship.dimensions.map {
+        $0.map { String(format: "%.4g", $0) }.joined(separator: " x ")
+      } ?? "Unavailable"
+    let profileTitle = game.showroomProfile?.title ?? "Unavailable"
+    let profileLabel =
+      "Profile \(game.showroom.profileIndex + 1)/\(game.showroomProfiles.count): \(profileTitle)"
+    let metadata: [String] = [
       ship.name + " / " + ship.shipClass,
       ship.availability, "Editions: " + ship.appearances,
-      "Evidence: " + ship.evidence, ship.geometryContext,
-      "Dimensions: "
-        + (ship.dimensions.map { $0.map { String(format: "%.4g", $0) }.joined(separator: " x ") }
-          ?? "Unavailable"),
-      "Profile: " + (game.showroomProfile?.title ?? "Unavailable"),
+      "Evidence: " + ship.evidence, "Design provenance: docs/SHIP-PROVENANCE.md",
+      "Dimensions: " + dimensions,
+      profileLabel,
       game.showroomProfile?.context ?? "No numerical profile for this object.",
     ]
-    var rows = [metadata[0], metadata[6], metadata[7]].flatMap {
-      ShowroomText.wrap($0, width: columns)
-    }.map {
+    let headings =
+      game.showroom.sourceProfiles
+      ? [metadata[0], metadata[6], metadata[7]]
+      : [
+        ship.name + " / carried fit",
+        "Same carried fit. Green BETTER / orange WORSE / cyan SAME.",
+      ]
+    var rows = headings.flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
     }
     if game.showroom.compare {
@@ -275,6 +331,7 @@ extension Display {
         }
       }
     }
+    if !game.showroom.sourceProfiles { return rows }
     rows += Array(metadata[1...5]).flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
     }
@@ -289,17 +346,23 @@ extension Display {
   {
     var rows: [[ShowroomTextLine]] = []
     let a =
-      (game.showroom.baselineUsesCurrent ? "Current fitted: " : "Baseline: ")
+      (game.showroom.baselineUsesCurrent ? "Your fitted: " : "Baseline: ")
       + (game.showroomBaseline?.name ?? "Unavailable")
     let b = "Selected: " + (game.showroomShip?.name ?? "Unavailable")
     let pairs =
-      [("Comparison", a, b)]
+      [("Comparison", a, b, Ink.cyan)]
       + game.showroomComparison.map {
-        ($0.label, $0.baseline, $0.selected + ($0.difference.isEmpty ? "" : " / " + $0.difference))
+        (
+          $0.label, $0.baseline,
+          $0.selected
+            + (game.showroom.sourceProfiles
+              ? ($0.difference.isEmpty ? "" : " / " + $0.difference) : " " + $0.rating.rawValue),
+          $0.rating.ink
+        )
       }
     let layout = ShipComparisonLayout(
       width: width, labels: pairs.map { $0.0 }, modelAligned: modelAligned)
-    for (label, baseline, selected) in pairs {
+    for (label, baseline, selected, ink) in pairs {
       let names = ShowroomText.wrap(label, width: layout.labelColumns)
       let left = ShowroomText.wrap(baseline, width: layout.baselineColumns)
       let right = ShowroomText.wrap(selected, width: layout.selectedColumns)
@@ -312,7 +375,7 @@ extension Display {
           cells.append(.init(text: left[line], x: layout.baselineX, ink: .white))
         }
         if right.indices.contains(line) {
-          cells.append(.init(text: right[line], x: layout.selectedX, ink: .white))
+          cells.append(.init(text: right[line], x: layout.selectedX, ink: ink))
         }
         rows.append(cells)
       }
@@ -327,18 +390,20 @@ extension Display {
       commander.unlimitedCargo
       ? "Unlimited (XYZZY)" : "\(commander.capacity - commander.cargoTonnes)t free"
     var rows: [String] = [
-      "", "CURRENT FITTED CRAFT: COBRA MK III (NATIVE)",
+      "", "CURRENT FITTED CRAFT: " + commander.ship.name.uppercased(),
       "Native performance units stay separate from source/project units.",
       "Required crew: 1; reserved crew quarters: 1 (assigned)",
       "Fitted berths: 0; passengers aboard: 0; free places: 0",
       "Cabin footprint: 0t; no passenger modules are fitted",
       "Usable cargo after fit: " + freeText,
-      "Cargo \(commander.cargoTonnes)/\(capacityText) t; missiles \(commander.missiles)/4",
+      "Cargo \(commander.cargoTonnes)/\(capacityText) t; missiles \(commander.missiles)/\(commander.missileCapacity)",
       String(
         format: "Fuel %.1f/%.1f LY; jump limit %.1f LY", Double(commander.fuel) / 10,
         Double(commander.fuelCapacity) / 10, commander.maximumJumpDistance),
       String(format: "Front/rear shield capacity %.1f native units", commander.shieldCapacity),
-      "Energy capacity 256 native units; max throttle 32 native units",
+      String(
+        format: "Energy %.1f; top speed %.1f", commander.performance.energy,
+        commander.performance.speed),
       "Targeting: " + (commander.targetingTier?.label ?? "None"),
       "Navigation: " + (commander.navigationTier?.label ?? "None"),
     ]

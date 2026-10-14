@@ -50,88 +50,23 @@ Original code and documentation: [MIT](LICENSE), copyright 2026 Stephen Clarke. 
 
 ## Controls
 
-Number keys select the main game screens. Inside the secret menu they select secret options instead. No function keys are required.
+Start with **numbers, arrows, Return, Escape and K**. Numbers open game areas, arrows move the selection, Return chooses, Escape goes back one level, and K shows help for the current activity. Click visible actions or use the **Screens**, **Game** and **Flight** menus for everything else.
 
-| Key | Action |
-| --- | --- |
-| Space / Return, title | Enter the commander screen |
-| 0 | Launch when docked / front view in flight |
-| 1 / 2 / 3, docked | Buy cargo / sell cargo / equip ship |
-| 1 / 2 / 3, in flight | Rear / left / right view |
-| 4 / 5 | Galactic chart / short range chart, including full planet data when docked |
-| 6, in flight | System data and rotating planet view |
-| Fn-Up / Fn-Down, docked charts | Scroll all selected planet facts and mission clues |
-| 7 / 8 / 9 | Market prices / commander status / inventory |
-| Space / ? or /, in flight | Accelerate / slow down |
-| X / S | Pull up / pitch down |
-| < or comma / > or full stop | Roll left / right |
-| A | Fire laser (hold for repeated fire) |
-| T / U / M | Arm / disarm / fire missile |
-| E | Activate ECM, if fitted |
-| Tab | Detonate energy bomb, if fitted |
-| Escape, in flight | Launch escape pod, if fitted |
-| H | Begin hyperspace countdown to selected system |
-| G | Use galactic hyperdrive to enter the next galaxy, if fitted |
-| J | In-system jump, when not mass locked |
-| R / P, station targeted | Engage full docking guidance / disengage (Docking targeting tier or higher) |
-| V / B, in flight | Toggle Spin Hold mode / stop spin smoothly and return to normal flight |
-| [ / ], Spin Hold | Start anticlockwise / clockwise roll at the prototype starting rate |
-| Hold - / = or +, Spin Hold | Slow / increase the set roll rate |
-| Left / Right, Spin Hold | Yaw left / right; X / S still controls pitch |
-| Up / Down, trading/equipment | Select product or equipment item, skipping category headings |
-| Click / trackpad scroll, equipment | Select an item / browse the grouped list |
-| Left / Right or click Front/Left/Right/Rear, equipment | Choose the laser installation mount |
-| Up / Down or scroll, status/inventory | Browse all equipment and cargo rows |
-| Fn-Up / Fn-Down, status/inventory | Page through information |
-| Return, buying/selling/equipment | Buy selected cargo / sell selected cargo / purchase selected equipment |
-| Right / Left, buying or selling | Buy / sell one unit of the selected product |
-| Right / Left, chart | Select next / previous system |
-| Click, either chart | Select the system nearest the pointer |
-| M, either chart | Cycle Economy / Government / Technology colours |
-| /, galactic chart | Open search for the viewed galaxy; discovered PLUGH is included |
-| Up / Down / Return / Escape, search | Select result / choose / close |
-| Backspace / Clear, search | Delete a character / clear the filter |
-| Z, short range chart | Zoom to maximum jump / search range / actual fuel reach |
-| N, either chart | Open routes with a fitted navigation computer, or inspect the active route |
-| Up / Down / Return, routes | Select an alternative / set the route without jumping |
-| C / Escape or N, routes | Clear route / return to chart |
-| Fn-Up / Fn-Down, routes | Scroll route details |
-| [ / ], galactic chart | Browse previous / next galaxy (or click a galaxy button) |
-| O / D, chart | Return to current location / show distance |
-| Command-P | Pause / resume (also available in the Game menu) |
-| :, paused | Toggle speech |
-| Escape, paused | Resume |
-| X Y Z Z Y, typed in sequence | Open secret menu |
-| 0-9 / A / B / E / F, secret menu | Select options in the XYZZY table below |
-| R / Q, fitted targeting computer | Cycle targets and show forward view / disengage AUTO |
-| W / Command-Shift-W, docked | Open Ship Showroom; W closes it |
-| /, showroom | Search ships by name, class, source or ID |
-| X / Fn-Delete / Clear, showroom | Clear the filter and show all ships; finish typing before using X |
-| Up / Down / Return, showroom | Select ship / open specifications |
-| B / R / C, showroom | Pin baseline / reset to current fit / toggle comparison |
-| Space / V / comma or full stop, showroom | Pause rotation / source profiles / profile variant |
-| Fn-Up / Fn-Down or scroll, showroom | Browse specifications |
-| U, docked | Open station rumours; Return or Escape closes them |
-| I, target locked | Expand / collapse target camera and details |
-| B, docked | Reopen an eligible Blackjack station contact |
-| Arrows / Return / Escape, Blackjack handoff | Choose Confirm or Back / select / Back without transfer |
-| Click, Blackjack handoff | Confirm / Continue or Back |
-| L, flight or station | Open / close the Mission Gallery |
-| Up / Down, Mission Gallery | Select mission; scroll in narrow detail view |
-| Return / Escape, Mission Gallery | Open detail / back or close |
-| Fn-Up / Fn-Down, Mission Gallery | Page up / down through details |
-| Click / trackpad scroll, Mission Gallery | Select mission / scroll details |
-| Return / Escape, secret menu | Close secret menu and return to previous screen |
-| K / Command-K | Open or close the context-sensitive player key guide |
-| Left / Right or Up / Down, help | Previous / next help page |
-| Return / Escape, help | Close help and return to the previous screen |
-| Space / Return / Escape, naval message | Continue to the next page, then return to commander status |
-| Arrow keys, naval message | Previous / next message page |
-| Space / Return, game over | Start a new commander |
-| Command-S / Command-O | Save / load commander |
-| Command-Q | Quit the app |
+| Keys | At a station | In space |
+| --- | --- | --- |
+| 0 | Launch | Front view |
+| 1 / 2 / 3 | Buy / sell / equipment | Rear / left / right view |
+| 4 / 5 | Charts with full planet information | Galactic / short range chart |
+| 6 | Ship showroom | System data and planet view |
+| 7 / 8 / 9 | Prices / commander / cargo | Prices / commander / cargo |
 
-Held flight controls are cleared when the game loses focus. Number keys on the main keyboard or numeric keypad select the same screens.
+For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**, **Return fires**, and **Tab selects a target**. Selecting the station engages automatic docking with a suitable targeting computer; Q returns to manual control. The trackpad controls are below.
+
+Escape never launches an escape pod. Use **Flight > Launch Escape Pod** or **Command-Shift-E** deliberately. Help and pause close before the screen beneath them; search closes before its browser. Mission dialogs return without transferring anything when you press Escape.
+
+Everything essential works on a built-in MacBook keyboard. Delete means its normal backspace key; scrolling also works with the trackpad or arrows. **Option-Up / Option-Down** moves a page at a time, and **Command-Delete** clears an active search. No function keys, keypad or dedicated paging keys are required. Held flight inputs clear when you change screens, pause or lose focus.
+
+The [complete control guide](docs/CONTROLS.md) groups specialist flight actions, charts, missions, showroom, Mac commands and XYZZY options by activity. In-game K help follows the same scheme.
 
 ### Trackpad flight
 
@@ -169,7 +104,7 @@ Commander saves, including secret options, live at `~/.xyzzy/elite/commander.jso
 
 ## Original BBC naval missions
 
-The original two BBC Second Processor missions are enabled, including the Executive build. They begin automatically when you dock and qualify; there is no acceptance menu or deadline. An incoming message appears for two seconds before the briefing. Space, Return or Escape continues through the pages. K opens the relevant key guide; Command-P pauses the briefing or game.
+The original two BBC Second Processor missions are enabled, including the Executive build. They begin automatically when you dock and qualify; there is no acceptance menu or deadline. An incoming message appears for two seconds before the briefing. Return or Space advances the pages; Escape closes the message after the incoming-message delay. K opens the relevant key guide; Command-P pauses the briefing or game.
 
 The Constrictor Hunt starts in galaxy 1 or 2 at 256 combat points. Read the selected planet data on docked charts 4/5, or use 6 in flight, for the original clue trail; clue visits are optional. The stolen ship appears at Orarra in galaxy 2. It has 252 energy, ECM, four missiles and bomb immunity. Ordinary lasers cannot damage it; a military laser inflicts five damage per hit, a quarter of its normal 23 points rounded down. Returning to a station after its removal awards 5,000 credits and 256 combat points once. The Executive source also treats the target leaving the local space bubble as mission completion; this historical quirk is retained.
 
@@ -198,11 +133,12 @@ Auto-trade immediately sells and restocks when activation happens while docked, 
 | A | AUTO target assist |
 | B | Military ECM-confirmed return fire |
 | E | Automatic ECM |
+| L | Reset legal status to Clean (saved with your commander) |
 | F | Fit fuel scoops |
 
 Normal games default to white wireframes; XYZZY activation defaults to shaded panels. Coloured wireframes identify hulls by colour; shaded panels draw opaque faces with flat directional lighting. The chosen display is saved with the commander. Old saves without a display choice load with white wireframes. Key 4 controls fuel replenishment. Jump distance always obeys fuel cells, current fuel and the navigation computer; the paused-game @ shortcut has been removed.
 
-Press K, use Command-K, or choose **Help → Player Key Guide** for the controls relevant to your current activity. The guide covers flight, station screens, trading, equipment, charts, pause, the title/demo and XYZZY. Arrow keys change pages; K, Return or Escape closes it. The simulation pauses while the guide is open and resumes on the same screen.
+Press K, use Command-K, or choose **Help → Player Key Guide** for the controls relevant to your current activity. The guide covers flight, station screens, trading, equipment, charts, pause, the title/demo and XYZZY. Arrow keys change pages; Escape or K closes it. The simulation pauses while the guide is open and resumes on the same screen.
 
 Auto-trade runs when enabled while docked and on subsequent docking. It sells tradable cargo while retaining marked mission items, refuels, and buys profitable exports for the selected destination. If the target is the current system, it chooses a reachable route using profit, distance and government risk. Pricing follows the original economy calculation; it evaluates all possible destination market fluctuations and buys only goods with a positive conservative margin. Slaves, narcotics and firearms are included when profitable, and illegal cargo affects legal status on launch. Cash and local stock always constrain XYZZY purchases; hold capacity is unlimited while its switch is on. Auto-trade pays for a full tank before buying exports when fuel replenishment is off; insufficient cash stops export purchases with an explanation. Unlimited cargo cannot be disabled while the hold exceeds the normal bay capacity; sell excess cargo first.
 
@@ -212,13 +148,13 @@ The flight view uses the full window width and native resolution, with antialias
 
 The missile rack shows one icon per finite missile, `None` for an empty rack, or one icon with the literal `~` for unlimited missiles. Armed and Unarmed are written as well as coloured.
 
-With a fitted targeting computer, press **R** repeatedly to select eligible ships. All ships actually visible in the front renderer come first, nearest first, followed by offscreen ships nearest first if your tier supports them. IDs break distance ties. Stations follow the ship groups at Docking tier and above. Cargo canisters, asteroids and missiles are excluded. Front visibility uses the same mesh projection and clipping as rendering even from a rear or side view, including partly visible hulls. A cycle keeps its order while ships move; membership, equipment or viewport changes reconcile unvisited targets, and wrapping starts a fresh snapshot. A cyan lock marker and offscreen cue identify the target. AUTO faces and tracks ordinary ships at unchanged cruising speed, with Spin Hold available. **Q** or manual steering disengages.
+With a fitted targeting computer, press **Tab** repeatedly to select eligible ships. All ships actually visible in the front renderer come first, nearest first, followed by offscreen ships nearest first if your tier supports them. IDs break distance ties. Stations follow the ship groups at Docking tier and above. Cargo canisters, asteroids and missiles are excluded. Front visibility uses the same mesh projection and clipping as rendering even from a rear or side view, including partly visible hulls. A cycle keeps its order while ships move; membership, equipment or viewport changes reconcile unvisited targets, and wrapping starts a fresh snapshot. A cyan lock marker and offscreen cue identify the target. AUTO faces and tracks ordinary ships at unchanged cruising speed, with Spin Hold available. **Q** or manual steering disengages.
 
-Station AUTO completes docking without further input. It routes outside a 400-unit safety sphere, settles on the entrance axis at 1,000 units, matches facing, rotational phase and rate, then controls acceleration and braking during final approach. It holds or retreats if alignment is inadequate and enters through the rendered doorway using the simulation's docking and collision checks. The HUD and voice announce Approaching, Aligning, Matching spin, Final approach and Docked. Q, manual controls, Spin Hold, pause or focus loss cancels; controlled forward cruise is retained on manual cancellation. R selects stations after eligible ships and engages full guidance; C is no longer a docking shortcut. Guidance owns trackpad and held throttle while docking. The old standalone Docking Computers item has been removed; older saves migrate to at least Docking tier without downgrading a higher tier. These native guidance thresholds are prototype choices. Tests cover front/behind, tilted/off-axis and away-facing starts, both spin directions and high initial speed; starting inside station geometry is not a supported safe starting condition.
+Station AUTO completes docking without further input. It routes outside a 400-unit safety sphere, settles on the entrance axis at 1,000 units, matches facing, rotational phase and rate, then controls acceleration and braking during final approach. It holds or retreats if alignment is inadequate and enters through the rendered doorway using the simulation's docking and collision checks. The HUD and voice announce Approaching, Aligning, Matching spin, Final approach and Docked. Q, manual controls, Spin Hold, pause or focus loss cancels; controlled forward cruise is retained on manual cancellation. Tab selects stations after eligible ships and engages full guidance. Guidance owns trackpad and held throttle while docking. The old standalone Docking Computers item has been removed; older saves migrate to at least Docking tier without downgrading a higher tier. These native guidance thresholds are prototype choices. Tests cover front/behind, tilted/off-axis and away-facing starts, both spin directions and high initial speed; starting inside station geometry is not a supported safe starting condition.
 
 ## Ship showroom and secret ports
 
-W or Command-Shift-W opens the docked showroom with 167 canonical ship records, 158 labelled comparison refits and 74 corresponding shaded source models. Search, inspect edition-specific facts, pin a baseline and compare against your actual fitted Cobra. Model-unavailable records remain honest; defensible missing specification estimates show their basis/confidence and never replace actual fitted statistics. The fitted-ship preview, catalogue Cobra, flight, startup and app icon use the same Oolite Cobra Mk III geometry. Reopening starts on your Cobra with all 167 records visible; active filters show their result count and can be cleared with X, Fn-Delete or Clear. Browsing never buys a hull or changes gameplay. See [showroom controls, source units and model attribution](docs/SHIP-SHOWROOM.md).
+6 opens the showroom with 167 rotating ship models and 158 flyable hull adaptations. Browse with arrows, Return, Tab and Escape; secondary actions are visible buttons. Sort A-Z or by native power, compare **BETTER / WORSE / SAME** game values with the same carried fit, then click **Trade ship** to review the price, trade-in allowance and compatibility before confirming. Purchases change actual flight characteristics and persist in saved games. Cargo, paid equipment, fuel and mission property transfer intact; incompatible exchanges are blocked with an explanation. All definitions and geometry load from individual [ship TOMLs](Sources/EliteCore/Resources/Ships). See the [complete animated ship catalogue](docs/SHIP-CATALOGUE.md), [showroom guide](docs/SHIP-SHOWROOM.md) and [conversion/generation rules](docs/SHIP-FILES.md).
 
 Each galaxy has a hidden **PLUGH** port. Ask for station rumours with U while docked to follow the local clue; discovery is saved separately per galaxy. Reach it through ordinary fuel/nav-limited travel and dock normally. It stocks all commodities and supported equipment, including reward hardware, at a documented 25% discount while retaining cash and fitting limits. See [discovery, prices and travel rules](docs/PLUGH.md).
 
@@ -260,7 +196,7 @@ Actual reach is the lesser of the computer cap and current remaining fuel; fuel 
 
 On either chart, M cycles Economy, Government and Technology colour modes with a labelled red-to-green legend. Short-range planets are filled discs sized from their radius; the current system has a cyan ring and the selected system a white ring and crosshair. Click to select. The galaxy selector or [ / ] browses all eight galaxies without travelling. O returns to the current location. Crosshair, system data and planet preview follow the viewed galaxy; H/N require the current galaxy for actual travel/route selection. Slash opens the viewed galaxy's searchable list of its 256 original planets and any discovered PLUGH, with case-insensitive filtering, arrows, Return, Escape, scrolling and Clear. Chart search consumes text input without firing weapons or steering.
 
-Docked charts 4 and 5 include economy, government, technology, population, productivity, radius, mission clues and a generated planet view. Fn-Up/Fn-Down scroll long data panels. There is no separate docked system-data page; 6 remains a compatibility shortcut to the chart. In flight, 6 retains the separate System Data screen. Planet views are original deterministic illustrations with oceans, land, clouds, poles, atmosphere and shaded day/night lighting; they rotate slowly without changing simulation randomness. Lave has a blue-green palette. They are not imported textures or claims of canonical surface geography.
+Docked charts 4 and 5 include economy, government, technology, population, productivity, radius, mission clues and a generated planet view. Option-Up/Option-Down scroll long data panels. There is no separate docked system-data page; 6 opens the ship showroom. In flight, 6 retains the separate System Data screen. Planet views are original deterministic illustrations with oceans, land, clouds, poles, atmosphere and shaded day/night lighting; they rotate slowly without changing simulation randomness. Lave has a blue-green palette. They are not imported textures or claims of canonical surface geography.
 
 The short-range chart distinguishes dotted green search range, dashed yellow maximum equipment reach and solid cyan fuel-limited reach. When fuel and maximum reach coincide, the legend states that explicitly. Military search is labelled as the entire galaxy, with Z cycling maximum-jump, search-fit and actual-fuel zoom; offscreen boundaries remain described in the legend.
 
@@ -283,7 +219,7 @@ Each standard booster multiplies base front and rear capacity by `1.5 × (matchi
 
 Standard booster prices are exactly 75% of the corresponding laser price and use that laser's technology requirement. Capital is awarded once when the authoritative combat rank reaches Elite, including migration of already-Elite saves. The earned flag is saved; XYZZY grants the hardware without granting rank or claiming an earned reward. Shields, HUD normalisation, damage, docking resets and save migration use the effective capacity.
 
-The Cobra Mk III has independent Front, Left, Right and Rear laser mounts. A new Jameson has a front Pulse Laser and three empty mounts. Equip Ship always shows all four fittings; Left/Right or clicking a mount chooses where the selected laser is installed. Return purchases one installation at its listed price and replaces only that mount. Fitted status and confirmations name the chosen destination. Each cockpit view fires its own mounted laser, with its own damage and firing interval; an empty mount cannot fire. Heat and energy remain shared ship resources. Commander Status and Inventory list all four mounts, and arrows, scrolling or Fn-Up/Fn-Down expose every equipment row. Legacy global laser saves resolve to one effective front laser, preserving other equipment without inventing paid side lasers. XYZZY grants Naval lasers on all four mounts, including migration of old XYZZY saves, and retains Mining as specialised equipment. Naval damage is a chosen native default of 64 per hit, or 16 against the Constrictor's quarter-damage shield; heat/energy cost and rapid firing use the existing laser mechanics. Outside PLUGH, Naval lasers and Capital shields remain grant/reward equipment. PLUGH has documented native shop prices for these rewards.
+The Cobra Mk III has independent Front, Left, Right and Rear laser mounts; other hulls use their TOML facing masks. Unsupported mounts cannot accept a purchase or transferred laser. A new Jameson has a front Pulse Laser and three empty mounts. Equip Ship always shows all four fittings; Left/Right or clicking a mount chooses where the selected laser is installed. Return purchases one installation at its listed price and replaces only that mount. Fitted status and confirmations name the chosen destination. Each cockpit view fires its own mounted laser, with its own damage and firing interval; an empty mount cannot fire. Heat and energy remain shared ship resources. Commander Status and Inventory list all four mounts, and arrows, scrolling or Option-Up/Option-Down expose every equipment row. Legacy global laser saves resolve to one effective front laser, preserving other equipment without inventing paid side lasers. XYZZY grants Naval lasers on all four mounts, including migration of old XYZZY saves, and retains Mining as specialised equipment. Naval damage is a chosen native default of 64 per hit, or 16 against the Constrictor's quarter-damage shield; heat/energy cost and rapid firing use the existing laser mechanics. Outside PLUGH, Naval lasers and Capital shields remain grant/reward equipment. PLUGH has documented native shop prices for these rewards.
 
 A locked target destroyed by the player displays and voices **Target destroyed - your kill** once. Actual player laser, missile and energy-bomb damage carries kill attribution; unrelated destruction, range loss or despawn announces Target lost without awarding a player kill. Manual switching does not announce a loss, and rank/bounty feedback remains separate.
 
@@ -291,19 +227,19 @@ Every gameplay notification uses a shared event queue for its on-screen text and
 
 Automatic ECM requires active XYZZY mode, its E switch, fitted ECM and enough energy. It respects the 32-update field cooldown. Speech announces **Missile Detected**, **ECM Activated**, then the actual count of missiles destroyed by that activation, with singular/plural wording. It never announces a successful zero count or credits enemy ECM. Repeated speech waves are queued and coalesced. Secret key 7 controls speech; flight key E still activates ECM manually. Fuel Scoops are fitted by default and can be refitted with secret F. Pass a cargo canister below the forward nose within 85 native units to collect it; a full finite hold leaves it in space. Inactive Thargons can be scooped as Alien Items. Native canisters currently contain one Food unit; solar fuel collection is not implemented. Unlimited fuel remains independently controlled by 4.
 
-## Blackjack's Bullion expansion
+## Station mission campaign
 
-Blackjack's Bullion 1.2.9 is now playable alongside the two BBC naval missions. Dock at **Telace in Galaxy 2** for automatic enrolment, with no score prerequisite or deadline. Follow the Gallery objectives through Gerebied, Tegete, Ceinerxe, Edater and Esdi. Bolts' destruction earns 20 kg gold directly; the final Esdi report pays 9,500 CR and clears your bounty once. Any killer counts for the two unique mission targets.
+The station mission campaign is now playable alongside the two BBC naval missions. Dock at **Telace in Galaxy 2** for automatic enrolment, with no score prerequisite or deadline. Follow the Gallery objectives through Gerebied, Tegete, Ceinerxe, Edater and Esdi. Bolts' destruction earns 20 kg gold directly; the final Esdi report pays 9,500 CR and clears your bounty once. Any killer counts for the two unique mission targets.
 
-Station transfers use **Confirm / Back**: arrows choose, Return selects, Escape backs out, and buttons can be clicked. **B while docked** reopens an eligible contact; **K** shows the handoff keys. Tegete needs one free tonne for a marked firearm. It stays reserved during sales and auto-trade until its Ceinerxe transfer. Saved targets retain identity, damage and finite missiles across visits; repeat contacts cannot repeat rewards.
+Mission dialogs use **Confirm / Back**: arrows choose, Return selects, Escape backs out, and buttons can be clicked. **Game > Mission Contacts** reopens an eligible contact; **K** shows the handoff keys. Tegete needs one free tonne for a marked firearm. It stays reserved during sales and auto-trade until its Ceinerxe transfer. Saved targets retain identity, damage and finite missiles across visits; repeat contacts cannot repeat rewards.
 
 This is an Oolite expansion adaptation with documented custody, wanted-level and witness-callback repairs. Its S.T.E targets currently use the native Cobra mesh and simplified combat. See the [pinned source profile and fidelity limits](docs/BLACKJACK-BULLION.md). [The implementation queue](docs/MISSION-IMPLEMENTATION.md) distinguishes research packets from playable campaigns.
 
 ## Mission Gallery
 
-Press **L** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show a mission list and detail side by side; narrow windows open a detail page with Escape to go back. Use arrows and Return, click a mission, and scroll with the trackpad or **Fn-Up/Fn-Down** on a MacBook. L closes directly.
+Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.
 
-The gallery shows Active, Available and Complete counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. The two BBC missions each have three required milestones; Blackjack's Bullion has seven. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
+The gallery shows Active, Available and Complete counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. The two BBC missions each have three required milestones; the station campaign has seven. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
 
 Browsing is read-only. Flight time, movement, combat, AUTO and Spin Hold freeze while the gallery is open. Closing restores the exact prior screen and paused state and clears held weapon, keyboard and touch input. A pending naval briefing must be completed before opening the gallery. Older commander saves remain compatible.
 
@@ -350,3 +286,5 @@ This is an independent implementation, and exact historical parity has not yet b
 The primary reference is [Mark Moxon's Executive version analysis](https://elite.bbcelite.com/deep_dives/secrets_of_the_executive_version.html), with [the 6502 Second Processor variant comparison](https://elite.bbcelite.com/6502sp/releases.html) and [the BBC Micro disc source documentation](https://elite.bbcelite.com/disc/). Original Elite was created by Ian Bell and David Braben. Numerical mission ship blueprint data is attributed in the mission source profile. This repository does not bundle their assembly source, binaries, ROMs or Mark Moxon's commentary. Mission briefing prose is independently worded.
 
 All ship data, including Frontier capabilities and shipyard refit research, is retained; see [ship data scope](docs/SHIP-DATA-SCOPE.md).
+
+On launch, the app restores your last successfully saved commander. Command-S saves; Command-Shift-S chooses a new save location. Command-O reloads the active save; Command-Shift-O opens another file. Hull, fit, cargo, credits, legal status and mission progress persist. The current format restores docked at the saved system, rather than recreating a mid-flight scene. Missing or corrupt saves show a recoverable choice and are not overwritten during startup.

@@ -75,6 +75,7 @@ extension Game {
     let criminalStatus = commander.legal < 50 ? "Offender" : "Fugitive"
     let legal = commander.legal == 0 ? "Clean" : criminalStatus
     var rows: [(String, Ink)] = [
+      ("Ship: " + commander.ship.name, .cyan),
       ("Present system: " + currentSystem.name, .white),
       ("Hyperspace: " + targetSystem.name, .white),
       ("Condition: " + flightStatus, .white),
@@ -149,8 +150,9 @@ extension Display {
       scale: layout.font, ink: .orange)
     frame.label(
       game.screen == .market
-        ? "Read-only prices  1: buy  2: sell  K: help"
-        : "Up/Down: select  Return: trade  K: help", layout.left, layout.bottom + 74,
+        ? (game.docked
+          ? "Prices  1: buy  2: sell  Esc: back  K: help" : "Prices only  Esc: back  K: help")
+        : "Arrows: select  Return: trade  Esc: back  K: help", layout.left, layout.bottom + 74,
       scale: layout.font, ink: .cyan)
     return frame
   }
@@ -161,13 +163,16 @@ extension Display {
       game.screen == .inventory ? "INVENTORY" : "COMMANDER " + game.commander.name, layout.left, 12,
       scale: layout.font, ink: .yellow)
     let rows = game.informationRows
-    let start = max(0, min(game.informationScroll, rows.count - layout.count))
+    let window = ScrollWindow(
+      count: rows.count, visible: layout.count, offset: game.informationScroll)
+    let start = window.offset
     for (index, row) in rows.dropFirst(start).prefix(layout.count).enumerated() {
       frame.label(
         row.0, layout.left, 56 + Double(index) * layout.row, scale: layout.font, ink: row.1)
     }
     frame.label(
-      "Up/Down: more  U: rumours  W: showroom  K: help", layout.left, layout.bottom,
+      [window.hint, game.docked ? "6: showroom" : "6: system data", "Esc: back  K: help"].compactMap
+      { $0 }.joined(separator: "  "), layout.left, layout.bottom,
       scale: layout.font,
       ink: .cyan
     )

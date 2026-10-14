@@ -5,8 +5,8 @@ public enum FuelStorage {
   public static let price = 20000
 }
 extension Commander {
-  public var fuelCapacity: Int { FuelStorage.unitCapacity * (1 + fuelStorageUnits) }
+  public var fuelCapacity: Int { performance.fuel + FuelStorage.unitCapacity * fuelStorageUnits }
   public var availableJumpFuel: Int { fuel }
-  public var jumpCap: Double { navigationTier?.jumpCap ?? 7 }
+  public var jumpCap: Double { max(performance.jump, navigationTier?.jumpCap ?? 0) }
   public var maximumJumpDistance: Double { min(jumpCap, Double(availableJumpFuel) / 10) }
 }

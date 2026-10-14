@@ -1,0 +1,109 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH032"
+name = "Diamondback Explorer"
+shipClass = "Ship"
+appearances = "ED-LEGACY, ED-LIVE"
+evidence = "D06"
+refit = true
+model = "ROC-SH032"
+modelSource = "Right-On Commander"
+dimensions = [150.0, 40.0, 92.0]
+geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
+
+[game]
+cargo = 12
+speed = 29.714
+acceleration = 12.0
+energy = 320.0
+recharge = 2.0
+roll = 0.785
+pitch = 0.611
+yaw = 0.227
+shield = 478.125
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 3
+facings = 1
+cargoExpansion = 0
+price = 142000
+
+[design]
+vertices = [
+  [0.0, -5.33333, -46.0],
+  [75.0, -5.33333, 5.89744],
+  [0.0, -5.33333, 38.92308],
+  [-75.0, -5.33333, 5.89744],
+  [0.0, 20.0, 5.89744],
+  [0.0, -20.0, 5.89744],
+  [-7.03125, -10.66667, 17.69231],
+  [-12.29473, -2.424, 17.69231],
+  [-20.81074, -5.57267, 17.69231],
+  [-20.81074, -15.76067, 17.69231],
+  [-12.29473, -18.90933, 17.69231],
+  [-7.03125, -10.66667, 46.0],
+  [-12.29473, -2.424, 46.0],
+  [-20.81074, -5.57267, 46.0],
+  [-20.81074, -15.76067, 46.0],
+  [-12.29473, -18.90933, 46.0],
+  [22.26562, -10.66667, 17.69231],
+  [17.00215, -2.424, 17.69231],
+  [8.48613, -5.57267, 17.69231],
+  [8.48613, -15.76067, 17.69231],
+  [17.00215, -18.90933, 17.69231],
+  [22.26562, -10.66667, 46.0],
+  [17.00215, -2.424, 46.0],
+  [8.48613, -5.57267, 46.0],
+  [8.48613, -15.76067, 46.0],
+  [17.00215, -18.90933, 46.0],
+]
+faces = [
+  [4, 1, 0],
+  [4, 2, 1],
+  [4, 3, 2],
+  [4, 0, 3],
+  [1, 5, 0],
+  [2, 5, 1],
+  [3, 5, 2],
+  [0, 5, 3],
+  [10, 9, 8, 7, 6],
+  [11, 12, 13, 14, 15],
+  [6, 7, 12, 11],
+  [7, 8, 13, 12],
+  [8, 9, 14, 13],
+  [9, 10, 15, 14],
+  [10, 6, 11, 15],
+  [20, 19, 18, 17, 16],
+  [21, 22, 23, 24, 25],
+  [16, 17, 22, 21],
+  [17, 18, 23, 22],
+  [18, 19, 24, 23],
+  [19, 20, 25, 24],
+  [20, 16, 21, 25],
+]
+license = "MIT"
+source = "Right-On Commander original geometry"
+custody = {  }
+recipe = { "family" = "wedge", "variant" = 32, "dimensions" = [150.0, 40.0, 92.0], "sweep" = 0.43, "pods" = 4, "sections" = 5, "form" = 2 }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH032"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "12 t", "number" = 12, "unit" = "t", "status" = "borrowed", "basis" = "D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "325.0 project units/s", "number" = 325.0, "unit" = "project units/s", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "320.0 project units", "number" = 320.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "240.0 project units", "number" = 240.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "240.0 project units", "number" = 240.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "4 project units/s", "number" = 4, "unit" = "project units/s", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "1.5708 rad/s", "number" = 1.5708, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "0.6109 rad/s", "number" = 0.6109, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "0.2269 rad/s", "number" = 0.2269, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "160 project units/s2", "number" = 160, "unit" = "project units/s2", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "1 bit mask", "number" = 1, "unit" = "bit mask", "status" = "estimated", "basis" = "D23 diamondback_explorer outfitting hull inputs, translated into O08-like project units; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "3 pylons", "number" = 3, "unit" = "pylons", "status" = "estimated", "basis" = "Project pylon count chosen from number of positive-size D23 hardpoints, bounded1..16. Native missile rack ammunition is separate. This does not assert a native pylon layout." }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "10 project slots", "number" = 10, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project adoption of solo-operated ED profile", "basis" = "ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths." }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "12 t", "number" = 12, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]
+
+[[profiles]]
+id = "D23-diamondback_explorer"
+title = "ED Coriolis Diamondback Explorer"
+group = "ed-coriolis"
+context = "D23 0db9234b: community outfitting snapshot; equipped FSD/shield results not inferred."
+fields = [{ "key" = "speed", "label" = "Base speed", "text" = "260 m/s", "number" = 260, "unit" = "m/s", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "boost", "label" = "Boost", "text" = "340 m/s", "number" = 340, "unit" = "m/s", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "pitch", "label" = "Pitch", "text" = "35 deg/s", "number" = 35, "unit" = "deg/s", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "roll", "label" = "Roll", "text" = "90 deg/s", "number" = 90, "unit" = "deg/s", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "yaw", "label" = "Yaw", "text" = "13 deg/s", "number" = 13, "unit" = "deg/s", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "hullMass", "label" = "Hull mass", "text" = "260 t", "number" = 260, "unit" = "t", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "baseShieldStrength", "label" = "Shield input", "text" = "150 ED raw", "number" = 150, "unit" = "ED raw", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "baseArmour", "label" = "Armour input", "text" = "150 ED raw", "number" = 150, "unit" = "ED raw", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "hullCost", "label" = "Hull price", "text" = "1638277 CR", "number" = 1638277, "unit" = "CR", "status" = "source", "basis" = "D23 diamondback_explorer" }, { "key" = "retail_cost", "label" = "Retail loadout", "text" = "1894760 CR", "number" = 1894760, "unit" = "CR", "status" = "source", "basis" = "" }, { "key" = "hardpoints", "label" = "Hardpoint sizes", "text" = "3, 2, 2, 0, 0, 0, 0", "unit" = "", "status" = "source", "basis" = "" }, { "key" = "internal", "label" = "Internal slots", "text" = "4, 4, 3, 3, 2, 2, 1, 1, {'class': 1, 'name': 'PlanetaryApproachSuite', 'eligible': {'pas': 1}}", "unit" = "", "status" = "source", "basis" = "" }]
+
+[[profiles]]
+id = "CREW-SH032-0"
+title = "ED-D23-PINNED crew"
+group = "crew-ED-D23-PINNED-datasetflightcrewseatsnotrequiredstaffing"
+context = "dataset flight crew seats, not required staffing; D23; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Flight seats", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Maximum flight seats", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "source", "basis" = "" }]

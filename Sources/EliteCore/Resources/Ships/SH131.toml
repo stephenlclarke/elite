@@ -1,0 +1,265 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH131"
+name = "Type-6 Transporter"
+shipClass = "Ship"
+appearances = "ED-LEGACY, ED-LIVE"
+evidence = "D06"
+refit = true
+model = "ROC-SH131"
+modelSource = "Right-On Commander"
+dimensions = [120.0, 33.0, 77.0]
+geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
+
+[game]
+cargo = 50
+speed = 25.143
+acceleration = 12.0
+energy = 384.0
+recharge = 2.0
+roll = 0.873
+pitch = 0.524
+yaw = 0.297
+shield = 286.875
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 2
+facings = 1
+cargoExpansion = 15
+price = 191000
+
+[design]
+vertices = [
+  [36.4486, 0.95319, -26.52222],
+  [18.2243, 16.5, -26.52222],
+  [-18.2243, 16.5, -26.52222],
+  [-36.4486, 0.95319, -26.52222],
+  [-18.2243, -14.59361, -26.52222],
+  [18.2243, -14.59361, -26.52222],
+  [36.4486, 0.95319, 28.23333],
+  [18.2243, 16.5, 28.23333],
+  [-18.2243, 16.5, 28.23333],
+  [-36.4486, 0.95319, 28.23333],
+  [-18.2243, -14.59361, 28.23333],
+  [18.2243, -14.59361, 28.23333],
+  [-19.62617, 0.95319, -20.53333],
+  [19.62617, 0.95319, -20.53333],
+  [-11.38318, 8.9318, -14.54444],
+  [11.38318, 8.9318, -14.54444],
+  [0.0, 3.7457, -38.5],
+  [0.0, -7.02541, -32.51111],
+  [-11.38318, -3.03611, -14.54444],
+  [11.38318, -3.03611, -14.54444],
+  [-29.71963, -3.03611, -21.73111],
+  [-44.85981, 10.42778, -21.73111],
+  [-60.0, -3.03611, -21.73111],
+  [-44.85981, -16.5, -21.73111],
+  [-29.71963, -3.03611, -3.93556],
+  [-44.85981, 10.42778, -3.93556],
+  [-60.0, -3.03611, -3.93556],
+  [-44.85981, -16.5, -3.93556],
+  [60.0, -3.03611, -21.73111],
+  [44.85981, 10.42778, -21.73111],
+  [29.71963, -3.03611, -21.73111],
+  [44.85981, -16.5, -21.73111],
+  [60.0, -3.03611, -3.93556],
+  [44.85981, 10.42778, -3.93556],
+  [29.71963, -3.03611, -3.93556],
+  [44.85981, -16.5, -3.93556],
+  [-29.71963, -3.03611, -12.60507],
+  [-44.85981, 10.42778, -12.60507],
+  [-60.0, -3.03611, -12.60507],
+  [-44.85981, -16.5, -12.60507],
+  [-29.71963, -3.03611, 5.19048],
+  [-44.85981, 10.42778, 5.19048],
+  [-60.0, -3.03611, 5.19048],
+  [-44.85981, -16.5, 5.19048],
+  [60.0, -3.03611, -12.60507],
+  [44.85981, 10.42778, -12.60507],
+  [29.71963, -3.03611, -12.60507],
+  [44.85981, -16.5, -12.60507],
+  [60.0, -3.03611, 5.19048],
+  [44.85981, 10.42778, 5.19048],
+  [29.71963, -3.03611, 5.19048],
+  [44.85981, -16.5, 5.19048],
+  [-29.71963, -3.03611, -3.47937],
+  [-44.85981, 10.42778, -3.47937],
+  [-60.0, -3.03611, -3.47937],
+  [-44.85981, -16.5, -3.47937],
+  [-29.71963, -3.03611, 14.31618],
+  [-44.85981, 10.42778, 14.31618],
+  [-60.0, -3.03611, 14.31618],
+  [-44.85981, -16.5, 14.31618],
+  [60.0, -3.03611, -3.47937],
+  [44.85981, 10.42778, -3.47937],
+  [29.71963, -3.03611, -3.47937],
+  [44.85981, -16.5, -3.47937],
+  [60.0, -3.03611, 14.31618],
+  [44.85981, 10.42778, 14.31618],
+  [29.71963, -3.03611, 14.31618],
+  [44.85981, -16.5, 14.31618],
+  [-29.71963, -3.03611, 5.64667],
+  [-44.85981, 10.42778, 5.64667],
+  [-60.0, -3.03611, 5.64667],
+  [-44.85981, -16.5, 5.64667],
+  [-29.71963, -3.03611, 23.44222],
+  [-44.85981, 10.42778, 23.44222],
+  [-60.0, -3.03611, 23.44222],
+  [-44.85981, -16.5, 23.44222],
+  [60.0, -3.03611, 5.64667],
+  [44.85981, 10.42778, 5.64667],
+  [29.71963, -3.03611, 5.64667],
+  [44.85981, -16.5, 5.64667],
+  [60.0, -3.03611, 23.44222],
+  [44.85981, 10.42778, 23.44222],
+  [29.71963, -3.03611, 23.44222],
+  [44.85981, -16.5, 23.44222],
+  [-10.09346, 0.95319, 21.38889],
+  [-12.88542, 6.94762, 21.38889],
+  [-19.62617, 9.43046, 21.38889],
+  [-26.36692, 6.94762, 21.38889],
+  [-29.15888, 0.95319, 21.38889],
+  [-26.36692, -5.04123, 21.38889],
+  [-19.62617, -7.52407, 21.38889],
+  [-12.88542, -5.04123, 21.38889],
+  [-10.09346, 0.95319, 38.5],
+  [-12.88542, 6.94762, 38.5],
+  [-19.62617, 9.43046, 38.5],
+  [-26.36692, 6.94762, 38.5],
+  [-29.15888, 0.95319, 38.5],
+  [-26.36692, -5.04123, 38.5],
+  [-19.62617, -7.52407, 38.5],
+  [-12.88542, -5.04123, 38.5],
+  [29.15888, 0.95319, 21.38889],
+  [26.36692, 6.94762, 21.38889],
+  [19.62617, 9.43046, 21.38889],
+  [12.88542, 6.94762, 21.38889],
+  [10.09346, 0.95319, 21.38889],
+  [12.88542, -5.04123, 21.38889],
+  [19.62617, -7.52407, 21.38889],
+  [26.36692, -5.04123, 21.38889],
+  [29.15888, 0.95319, 38.5],
+  [26.36692, 6.94762, 38.5],
+  [19.62617, 9.43046, 38.5],
+  [12.88542, 6.94762, 38.5],
+  [10.09346, 0.95319, 38.5],
+  [12.88542, -5.04123, 38.5],
+  [19.62617, -7.52407, 38.5],
+  [26.36692, -5.04123, 38.5],
+]
+faces = [
+  [5, 4, 3, 2, 1, 0],
+  [6, 7, 8, 9, 10, 11],
+  [0, 1, 7, 6],
+  [1, 2, 8, 7],
+  [2, 3, 9, 8],
+  [3, 4, 10, 9],
+  [4, 5, 11, 10],
+  [5, 0, 6, 11],
+  [13, 15, 14, 12],
+  [14, 16, 12],
+  [16, 15, 13],
+  [15, 16, 14],
+  [16, 17, 12],
+  [17, 16, 13],
+  [17, 18, 12],
+  [18, 14, 12],
+  [19, 17, 13],
+  [15, 19, 13],
+  [18, 19, 15, 14],
+  [19, 18, 17],
+  [23, 22, 21, 20],
+  [24, 25, 26, 27],
+  [20, 21, 25, 24],
+  [21, 22, 26, 25],
+  [22, 23, 27, 26],
+  [23, 20, 24, 27],
+  [31, 30, 29, 28],
+  [32, 33, 34, 35],
+  [28, 29, 33, 32],
+  [29, 30, 34, 33],
+  [30, 31, 35, 34],
+  [31, 28, 32, 35],
+  [39, 38, 37, 36],
+  [40, 41, 42, 43],
+  [36, 37, 41, 40],
+  [37, 38, 42, 41],
+  [38, 39, 43, 42],
+  [39, 36, 40, 43],
+  [47, 46, 45, 44],
+  [48, 49, 50, 51],
+  [44, 45, 49, 48],
+  [45, 46, 50, 49],
+  [46, 47, 51, 50],
+  [47, 44, 48, 51],
+  [55, 54, 53, 52],
+  [56, 57, 58, 59],
+  [52, 53, 57, 56],
+  [53, 54, 58, 57],
+  [54, 55, 59, 58],
+  [55, 52, 56, 59],
+  [63, 62, 61, 60],
+  [64, 65, 66, 67],
+  [60, 61, 65, 64],
+  [61, 62, 66, 65],
+  [62, 63, 67, 66],
+  [63, 60, 64, 67],
+  [71, 70, 69, 68],
+  [72, 73, 74, 75],
+  [68, 69, 73, 72],
+  [69, 70, 74, 73],
+  [70, 71, 75, 74],
+  [71, 68, 72, 75],
+  [79, 78, 77, 76],
+  [80, 81, 82, 83],
+  [76, 77, 81, 80],
+  [77, 78, 82, 81],
+  [78, 79, 83, 82],
+  [79, 76, 80, 83],
+  [91, 90, 89, 88, 87, 86, 85, 84],
+  [92, 93, 94, 95, 96, 97, 98, 99],
+  [84, 85, 93, 92],
+  [85, 86, 94, 93],
+  [86, 87, 95, 94],
+  [87, 88, 96, 95],
+  [88, 89, 97, 96],
+  [89, 90, 98, 97],
+  [90, 91, 99, 98],
+  [91, 84, 92, 99],
+  [107, 106, 105, 104, 103, 102, 101, 100],
+  [108, 109, 110, 111, 112, 113, 114, 115],
+  [100, 101, 109, 108],
+  [101, 102, 110, 109],
+  [102, 103, 111, 110],
+  [103, 104, 112, 111],
+  [104, 105, 113, 112],
+  [105, 106, 114, 113],
+  [106, 107, 115, 114],
+  [107, 100, 108, 115],
+]
+license = "MIT"
+source = "Right-On Commander original geometry"
+custody = {  }
+recipe = { "family" = "freighter", "variant" = 131, "dimensions" = [120.0, 33.0, 77.0], "sweep" = 0.5, "pods" = 4, "sections" = 8 }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH131"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "50 t", "number" = 50, "unit" = "t", "status" = "borrowed", "basis" = "D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "275.0 project units/s", "number" = 275.0, "unit" = "project units/s", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "384.0 project units", "number" = 384.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "144.0 project units", "number" = 144.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "144.0 project units", "number" = 144.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "4 project units/s", "number" = 4, "unit" = "project units/s", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "1.7453 rad/s", "number" = 1.7453, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "0.5236 rad/s", "number" = 0.5236, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "0.2967 rad/s", "number" = 0.2967, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "160 project units/s2", "number" = 160, "unit" = "project units/s2", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "1 bit mask", "number" = 1, "unit" = "bit mask", "status" = "estimated", "basis" = "D23 type_6_transporter outfitting hull inputs, translated into O08-like project units; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "2 pylons", "number" = 2, "unit" = "pylons", "status" = "estimated", "basis" = "Project pylon count chosen from number of positive-size D23 hardpoints, bounded1..16. Native missile rack ammunition is separate. This does not assert a native pylon layout." }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "18 project slots", "number" = 18, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project adoption of solo-operated ED profile", "basis" = "ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths." }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "50 t", "number" = 50, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]
+
+[[profiles]]
+id = "D23-type_6_transporter"
+title = "ED Coriolis Type-6 Transporter"
+group = "ed-coriolis"
+context = "D23 0db9234b: community outfitting snapshot; equipped FSD/shield results not inferred."
+fields = [{ "key" = "speed", "label" = "Base speed", "text" = "220 m/s", "number" = 220, "unit" = "m/s", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "boost", "label" = "Boost", "text" = "350 m/s", "number" = 350, "unit" = "m/s", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "pitch", "label" = "Pitch", "text" = "30 deg/s", "number" = 30, "unit" = "deg/s", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "roll", "label" = "Roll", "text" = "100 deg/s", "number" = 100, "unit" = "deg/s", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "yaw", "label" = "Yaw", "text" = "17 deg/s", "number" = 17, "unit" = "deg/s", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "hullMass", "label" = "Hull mass", "text" = "155 t", "number" = 155, "unit" = "t", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "baseShieldStrength", "label" = "Shield input", "text" = "90 ED raw", "number" = 90, "unit" = "ED raw", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "baseArmour", "label" = "Armour input", "text" = "180 ED raw", "number" = 180, "unit" = "ED raw", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "hullCost", "label" = "Hull price", "text" = "866622 CR", "number" = 866622, "unit" = "CR", "status" = "source", "basis" = "D23 type_6_transporter" }, { "key" = "retail_cost", "label" = "Retail loadout", "text" = "1045945 CR", "number" = 1045945, "unit" = "CR", "status" = "source", "basis" = "" }, { "key" = "hardpoints", "label" = "Hardpoint sizes", "text" = "1, 1, 0, 0, 0", "unit" = "", "status" = "source", "basis" = "" }, { "key" = "internal", "label" = "Internal slots", "text" = "5, 5, 4, 4, 3, 2, 2, 1, {'class': 1, 'name': 'PlanetaryApproachSuite', 'eligible': {'pas': 1}}", "unit" = "", "status" = "source", "basis" = "" }]
+
+[[profiles]]
+id = "CREW-SH131-0"
+title = "ED-D23-PINNED crew"
+group = "crew-ED-D23-PINNED-datasetflightcrewseatsnotrequiredstaffing"
+context = "dataset flight crew seats, not required staffing; D23; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Flight seats", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Maximum flight seats", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "source", "basis" = "" }]

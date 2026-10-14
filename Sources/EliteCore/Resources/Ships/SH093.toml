@@ -1,0 +1,196 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH093"
+name = "Orca"
+shipClass = "Ship"
+appearances = "ED-LEGACY, ED-LIVE"
+evidence = "D06"
+refit = true
+model = "ROC-SH093"
+modelSource = "Right-On Commander"
+dimensions = [150.0, 41.0, 95.0]
+geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
+
+[game]
+cargo = 24
+speed = 34.286
+acceleration = 12.0
+energy = 469.333
+recharge = 2.0
+roll = 0.48
+pitch = 0.436
+yaw = 0.314
+shield = 701.25
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 3
+facings = 1
+cargoExpansion = 15
+price = 186000
+
+[design]
+vertices = [
+  [34.09091, -6.83333, -29.40476],
+  [24.10617, 2.83064, -29.40476],
+  [0.0, 6.83333, -29.40476],
+  [-24.10617, 2.83064, -29.40476],
+  [-34.09091, -6.83333, -29.40476],
+  [-24.10617, -16.49731, -29.40476],
+  [-0.0, -20.5, -29.40476],
+  [24.10617, -16.49731, -29.40476],
+  [34.09091, -6.83333, 47.5],
+  [24.10617, 2.83064, 47.5],
+  [0.0, 6.83333, 47.5],
+  [-24.10617, 2.83064, 47.5],
+  [-34.09091, -6.83333, 47.5],
+  [-24.10617, -16.49731, 47.5],
+  [-0.0, -20.5, 47.5],
+  [24.10617, -16.49731, 47.5],
+  [-34.09091, -6.83333, -15.40357],
+  [34.09091, -6.83333, -15.40357],
+  [-19.77273, 2.46, 2.2619],
+  [19.77273, 2.46, 2.2619],
+  [0.0, -3.58067, -47.5],
+  [0.0, -16.12667, -35.05952],
+  [-19.77273, -11.48, 2.2619],
+  [19.77273, -11.48, 2.2619],
+  [-51.62338, -6.83333, -11.30952],
+  [-57.46753, -1.15237, -11.30952],
+  [-69.15584, -1.15237, -11.30952],
+  [-75.0, -6.83333, -11.30952],
+  [-69.15584, -12.51429, -11.30952],
+  [-57.46753, -12.51429, -11.30952],
+  [-51.62338, -6.83333, 47.5],
+  [-57.46753, -1.15237, 47.5],
+  [-69.15584, -1.15237, 47.5],
+  [-75.0, -6.83333, 47.5],
+  [-69.15584, -12.51429, 47.5],
+  [-57.46753, -12.51429, 47.5],
+  [-4.87013, -6.83333, 10.40476],
+  [-34.09091, -3.55333, 10.40476],
+  [-63.31169, -6.83333, 10.40476],
+  [-34.09091, -10.11333, 10.40476],
+  [-4.87013, -6.83333, 21.2619],
+  [-34.09091, -3.55333, 21.2619],
+  [-63.31169, -6.83333, 21.2619],
+  [-34.09091, -10.11333, 21.2619],
+  [75.0, -6.83333, -11.30952],
+  [69.15584, -1.15237, -11.30952],
+  [57.46753, -1.15237, -11.30952],
+  [51.62338, -6.83333, -11.30952],
+  [57.46753, -12.51429, -11.30952],
+  [69.15584, -12.51429, -11.30952],
+  [75.0, -6.83333, 47.5],
+  [69.15584, -1.15237, 47.5],
+  [57.46753, -1.15237, 47.5],
+  [51.62338, -6.83333, 47.5],
+  [57.46753, -12.51429, 47.5],
+  [69.15584, -12.51429, 47.5],
+  [63.31169, -6.83333, 10.40476],
+  [34.09091, -3.55333, 10.40476],
+  [4.87013, -6.83333, 10.40476],
+  [34.09091, -10.11333, 10.40476],
+  [63.31169, -6.83333, 21.2619],
+  [34.09091, -3.55333, 21.2619],
+  [4.87013, -6.83333, 21.2619],
+  [34.09091, -10.11333, 21.2619],
+  [9.74026, 6.83333, 28.04762],
+  [0.0, 20.5, 28.04762],
+  [-9.74026, 6.83333, 28.04762],
+  [-0.0, -6.83333, 28.04762],
+  [9.74026, 6.83333, 44.33333],
+  [0.0, 20.5, 44.33333],
+  [-9.74026, 6.83333, 44.33333],
+  [-0.0, -6.83333, 44.33333],
+]
+faces = [
+  [7, 6, 5, 4, 3, 2, 1, 0],
+  [8, 9, 10, 11, 12, 13, 14, 15],
+  [0, 1, 9, 8],
+  [1, 2, 10, 9],
+  [2, 3, 11, 10],
+  [3, 4, 12, 11],
+  [4, 5, 13, 12],
+  [5, 6, 14, 13],
+  [6, 7, 15, 14],
+  [7, 0, 8, 15],
+  [16, 18, 19, 17],
+  [18, 20, 16],
+  [20, 19, 17],
+  [19, 20, 18],
+  [20, 21, 16],
+  [21, 20, 17],
+  [21, 22, 16],
+  [22, 18, 16],
+  [23, 21, 17],
+  [19, 23, 17],
+  [22, 23, 19, 18],
+  [23, 22, 21],
+  [29, 28, 27, 26, 25, 24],
+  [30, 31, 32, 33, 34, 35],
+  [24, 25, 31, 30],
+  [25, 26, 32, 31],
+  [26, 27, 33, 32],
+  [27, 28, 34, 33],
+  [28, 29, 35, 34],
+  [29, 24, 30, 35],
+  [39, 38, 37, 36],
+  [40, 41, 42, 43],
+  [36, 37, 41, 40],
+  [37, 38, 42, 41],
+  [38, 39, 43, 42],
+  [39, 36, 40, 43],
+  [49, 48, 47, 46, 45, 44],
+  [50, 51, 52, 53, 54, 55],
+  [44, 45, 51, 50],
+  [45, 46, 52, 51],
+  [46, 47, 53, 52],
+  [47, 48, 54, 53],
+  [48, 49, 55, 54],
+  [49, 44, 50, 55],
+  [59, 58, 57, 56],
+  [60, 61, 62, 63],
+  [56, 57, 61, 60],
+  [57, 58, 62, 61],
+  [58, 59, 63, 62],
+  [59, 56, 60, 63],
+  [67, 66, 65, 64],
+  [68, 69, 70, 71],
+  [64, 65, 69, 68],
+  [65, 66, 70, 69],
+  [66, 67, 71, 70],
+  [67, 64, 68, 71],
+]
+license = "MIT"
+source = "Right-On Commander original geometry"
+custody = {  }
+recipe = { "family" = "liner", "variant" = 93, "dimensions" = [150.0, 41.0, 95.0], "sweep" = 0.29, "pods" = 2, "sections" = 6 }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH093"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "24 t", "number" = 24, "unit" = "t", "status" = "borrowed", "basis" = "D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "375.0 project units/s", "number" = 375.0, "unit" = "project units/s", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "469.3333 project units", "number" = 469.3333, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "352.0 project units", "number" = 352.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "352.0 project units", "number" = 352.0, "unit" = "project units", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "4 project units/s", "number" = 4, "unit" = "project units/s", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "0.9599 rad/s", "number" = 0.9599, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "0.4363 rad/s", "number" = 0.4363, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "0.3142 rad/s", "number" = 0.3142, "unit" = "rad/s", "status" = "estimated conversion", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "160 project units/s2", "number" = 160, "unit" = "project units/s2", "status" = "estimated", "basis" = "Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted." }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "1 bit mask", "number" = 1, "unit" = "bit mask", "status" = "estimated", "basis" = "D23 orca outfitting hull inputs, translated into O08-like project units; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "3 pylons", "number" = 3, "unit" = "pylons", "status" = "estimated", "basis" = "Project pylon count chosen from number of positive-size D23 hardpoints, bounded1..16. Native missile rack ammunition is separate. This does not assert a native pylon layout." }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "12 project slots", "number" = 12, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project adoption of solo-operated ED profile", "basis" = "ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths." }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "24 t", "number" = 24, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Unsupported mount", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]
+
+[[profiles]]
+id = "D23-orca"
+title = "ED Coriolis Orca"
+group = "ed-coriolis"
+context = "D23 0db9234b: community outfitting snapshot; equipped FSD/shield results not inferred."
+fields = [{ "key" = "speed", "label" = "Base speed", "text" = "300 m/s", "number" = 300, "unit" = "m/s", "status" = "source", "basis" = "D23 orca" }, { "key" = "boost", "label" = "Boost", "text" = "380 m/s", "number" = 380, "unit" = "m/s", "status" = "source", "basis" = "D23 orca" }, { "key" = "pitch", "label" = "Pitch", "text" = "25 deg/s", "number" = 25, "unit" = "deg/s", "status" = "source", "basis" = "D23 orca" }, { "key" = "roll", "label" = "Roll", "text" = "55 deg/s", "number" = 55, "unit" = "deg/s", "status" = "source", "basis" = "D23 orca" }, { "key" = "yaw", "label" = "Yaw", "text" = "18 deg/s", "number" = 18, "unit" = "deg/s", "status" = "source", "basis" = "D23 orca" }, { "key" = "hullMass", "label" = "Hull mass", "text" = "290 t", "number" = 290, "unit" = "t", "status" = "source", "basis" = "D23 orca" }, { "key" = "baseShieldStrength", "label" = "Shield input", "text" = "220 ED raw", "number" = 220, "unit" = "ED raw", "status" = "source", "basis" = "D23 orca" }, { "key" = "baseArmour", "label" = "Armour input", "text" = "220 ED raw", "number" = 220, "unit" = "ED raw", "status" = "source", "basis" = "D23 orca" }, { "key" = "hullCost", "label" = "Hull price", "text" = "47800723 CR", "number" = 47800723, "unit" = "CR", "status" = "source", "basis" = "D23 orca" }, { "key" = "retail_cost", "label" = "Retail loadout", "text" = "48539887 CR", "number" = 48539887, "unit" = "CR", "status" = "source", "basis" = "" }, { "key" = "hardpoints", "label" = "Hardpoint sizes", "text" = "3, 2, 2, 0, 0, 0, 0", "unit" = "", "status" = "source", "basis" = "" }, { "key" = "internal", "label" = "Internal slots", "text" = "6, 5, 5, 5, 4, 3, 2, 2, 1, {'class': 1, 'name': 'PlanetaryApproachSuite', 'eligible': {'pas': 1}}", "unit" = "", "status" = "source", "basis" = "" }]
+
+[[profiles]]
+id = "CREW-SH093-0"
+title = "ED-HORIZONS-2.3-GUIDE crew"
+group = "crew-ED-HORIZONS-2.3-GUIDE-totalsupportedflightcrewseats"
+context = "total supported flight crew seats; CREW04; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Maximum flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }]
+
+[[profiles]]
+id = "CREW-SH093-1"
+title = "ED-D23-PINNED crew"
+group = "crew-ED-D23-PINNED-datasetflightcrewseatsnotrequiredstaffing"
+context = "dataset flight crew seats, not required staffing; D23; crew is separate from passenger cabins."
+fields = [{ "key" = "crew_minimum", "label" = "Flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }, { "key" = "crew_maximum", "label" = "Maximum flight seats", "text" = "2 people", "number" = 2, "unit" = "people", "status" = "source", "basis" = "" }]

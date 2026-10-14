@@ -13,12 +13,17 @@ Research readiness, receipt and playable implementation are separate. Apply the 
 | P28 Oo-Haul 2.0 | Received 13 October 2026; generated escort contracts and explicit edition repairs | Queued; not yet playable |
 | P44 Trident Down | Received 13 October 2026; four-way bounded profile | Queued; not yet playable |
 | P46 Vector services | Received 13 October 2026; Benus/PAD, Arn, Richmans World, flight inspection, Areidis terminals and specialist crystal trade | Queued; not yet playable |
-| RRS Contract Board | Received 13 October 2026; explicit waystation/HQ capability adapter; ten research-ready profiles, only implemented/enabled safe profiles may be offered | Queued with P30 missions; no board or new mission claimed playable |
+| RRS Contract Board | Received 13 October 2026; explicit waystation/HQ capability adapter; fifteen research-ready profiles, only implemented/enabled safe profiles may be offered | Queued with P30 missions; no board or new mission claimed playable |
 | P30 Rescue Stations blackbox 3/3a | Received 13 October 2026; two isolated recovery profiles | Queued; not yet playable |
 | P30 Rescue Stations personnel 4 | Received 13 October 2026; pilot pickup/return, fitted berth and saved deadline profile | Queued; not yet playable |
 | P30 Rescue Stations captured pilot 4a | Received 13 October 2026; slaver-base rescue, unique captives, medical receipts and reserved fitted berth profile | Queued; not yet playable |
+| P30 Rescue Stations Astromine 4b | Received 13 October 2026; docked agent/captive-craft transport, strict timer and wormhole receipt profile | Queued; not yet playable; actual board, cabins, AI and transport receipts remain dependencies |
+| P30 Rescue Stations emergency freighter 5 | Received 13 October 2026; accepted-home emergency escort, physical docking, finite actors and deferred bonus receipts | Queued; not yet playable; 5a and 6 are received; 6a is now received |
+| P30 Rescue Stations returning Arafura 5a | Received 13 October 2026; real home/boat escort, timer and crew/custody profile | Queued; not yet playable |
+| P30 Rescue Stations materials transfer 6 | Received 13 October 2026; sealed 1t cargo, actual waystation receipt and accepted deadline profile | Queued; not yet playable |
+| P30 Rescue Stations medical supplies 6a | Received 14 October 2026; orbital pickup/hospital delivery, fixed physical consignment and saved fleet/timer receipts | Queued; not yet playable |
 | P30 Solar Lab 2b | Received 13 October 2026; bounded lease, thermal/recovery and refund profile | Queued; not yet playable |
 | P30 Rescue Stations couriers 2/2a | Received 13 October 2026; two isolated document delivery profiles | Queued; not yet playable |
 | P30 Rescue Stations escort 1/1a/1b | Received 13 October 2026; three isolated bounded repair/escort profiles | Queued; not yet playable; remaining P30 families are research-open |
 
-The complete research collection and shipyard backlog are not declared finished. A source fixture count is not a native runtime test count or proof of original-engine parity.
+The complete research collection and remaining mission backlog are not declared finished. A source fixture count is not a native runtime test count or proof of original-engine parity.

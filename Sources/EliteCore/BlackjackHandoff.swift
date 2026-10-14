@@ -36,7 +36,7 @@ public struct BlackjackOffer: Sendable {
 }
 extension Game {
   mutating func enforceBlackjackWanted() {
-    if commander.galaxy == 1 && commander.blackjack.stage.wanted {
+    if commander.galaxy == 1 && commander.blackjack.stage.wanted && !commander.xyzzyWantedAmnesty {
       commander.legal = max(commander.legal, 64)
     }
   }
@@ -65,8 +65,9 @@ extension Game {
     default: return
     }
     blackjackOffer = .init(action: action, galaxy: commander.galaxy, system: commander.system)
+    blackjackReturn = screen
     screen = .handoff
-    notify("BLACKJACK STATION CONTACT")
+    notify("MISSION CONTACT")
   }
   mutating func blackjackHandoffKey(_ key: String) {
     if ["left", "right", "up", "down"].contains(key) { blackjackOffer?.confirmSelected.toggle() }
@@ -83,7 +84,7 @@ extension Game {
   }
   mutating func closeBlackjackHandoff() {
     blackjackOffer = nil
-    screen = .status
+    screen = blackjackReturn
   }
   mutating func confirmBlackjackHandoff() {
     guard let offer = blackjackOffer, docked, dockedAtMainStation, offer.galaxy == 1,
@@ -170,7 +171,7 @@ extension Display {
       (selected ? "  " : "> ") + "Back", left + contentWidth / 2, height - 48, scale: font,
       ink: .cyan)
     frame.label(
-      "Arrows: choose  Return: select  Escape: back  K: help", left, height - 22, scale: font)
+      "Arrows: choose  Return: confirm  Esc: back  K: help", left, height - 22, scale: font)
     return frame
   }
 }

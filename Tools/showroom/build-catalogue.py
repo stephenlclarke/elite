@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a read-only ship snapshot without modifying the retained research."""
+"""Stage research imports for review; runtime ships live in individual TOMLs."""
 import argparse
 import hashlib
 import json
@@ -366,7 +366,8 @@ def main():
             mesh = dat_mesh(args.models/definition, models[definition]['sha256'])
         meshes.append(mesh)
     meshes += [m['mesh'] for m in extra_models.values()]
-    output = Path('Sources/EliteCore/Resources')
+    output = Path('reports/showroom-import')
+    output.mkdir(parents=True,exist_ok=True)
     manifest = dict(revision='2026-10-13-catalogue-v2', records=records, extraModels=extra_provenance,
                     inputs={name:hashlib.sha256(data).hexdigest() for name,data in inputs.items()})
     (output/'ShipCatalogue.json').write_text(json.dumps(manifest, ensure_ascii=True, separators=(',', ':'))+'\n')

@@ -33,7 +33,7 @@ The source's two-second incoming-message wait is retained. The briefing/debrief 
 
 ## Source-specific combat and spawning
 
-The Hunt clue systems are galaxy 1 indices 150/36/28; galaxy 2 indices 253/79/53/118/193 and the thirteen Errius-rumour systems 32/68/164/220/106/16/162/3/107/26/192/184/5; galaxy 3 index 101 gives the wrong-galaxy warning. System-data key 6 shows the relevant hint while TP bit 0 is set, including TP 3.
+The Hunt clue systems are galaxy 1 indices 150/36/28; galaxy 2 indices 253/79/53/118/193 and the thirteen Errius-rumour systems 32/68/164/220/106/16/162/3/107/26/192/184/5; galaxy 3 index 101 gives the wrong-galaxy warning. Docked charts 4/5, or system-data key 6 in flight, show the relevant hint while TP bit 0 is set, including TP 3.
 
 The Constrictor has 252 energy, speed limit 36, four missiles and no destruction bounty. Its military-laser damage is 23 shifted right twice, giving 5; pulse, beam and mining lasers inflict zero damage. It resists the energy bomb. Missile proximity is evaluated before the target's 16-in-256 ECM check, so ECM is not absolute missile immunity.
 

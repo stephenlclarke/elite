@@ -279,7 +279,7 @@ extension Display {
     }
     mapLegend(game, layout: layout, into: &frame)
     frame.label(
-      "[/]: galaxy  Arrows: planet  O: current  K: help", 16, height - 20,
+      "Arrows: planet  O: current  Esc: back  K: help", 16, height - 20,
       scale: layout.font, ink: .cyan)
     if game.messageTime > 0 {
       frame.label(game.message, 16, height - 40, scale: layout.font, ink: .orange)

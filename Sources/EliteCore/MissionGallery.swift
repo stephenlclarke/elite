@@ -139,17 +139,20 @@ extension Game {
     switch key {
     case "l": closeGallery()
     case "escape":
-      if gallery.detail && viewportWidth < 900 {
+      if gallery.detail {
         gallery.detail = false
         gallery.scroll = 0
       } else {
         closeGallery()
       }
+    case "tab":
+      gallery.detail.toggle()
+      gallery.scroll = 0
     case "return":
       gallery.detail = true
       gallery.scroll = 0
     case "up", "down":
-      if gallery.detail && viewportWidth < 900 {
+      if gallery.detail {
         gallery.scroll += key == "up" ? -1 : 1
       } else {
         gallery.selection = max(
@@ -178,7 +181,7 @@ extension Game {
     guard screen == .gallery else { return }
     let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
     if y < 28 && x > viewportWidth - 160 {
-      closeGallery()
+      galleryKey("escape")
       return
     }
     if layout.wide || !gallery.detail {
@@ -239,7 +242,7 @@ extension Display {
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
     frame.label("MISSION GALLERY", 16, 12, scale: layout.font, ink: .yellow)
-    frame.label("L: Close", width - 16 - 8 * 6 * layout.font, 12, scale: layout.font, ink: .cyan)
+    frame.label("Esc: Back", width - 16 - 9 * 6 * layout.font, 12, scale: layout.font, ink: .cyan)
     let missions = game.missionCatalogue
     let counts =
       "Active: \(missions.filter { $0.status == .active }.count)  Available: \(missions.filter { $0.status == .available }.count)  Complete: \(missions.filter { $0.status == .complete }.count)"
@@ -284,7 +287,10 @@ extension Display {
         scale: layout.font, ink: .yellow)
     }
     frame.label(
-      "Arrows: Select  Enter: Detail  PgUp/PgDn: Scroll", 16, height - 20, scale: layout.font,
+      game.gallery.detail
+        ? "Up/Down: read  Tab: list  Esc: back  K: help"
+        : "Up/Down: mission  Return: details  Esc: back  K: help", 16, height - 20,
+      scale: layout.font,
       ink: .cyan)
     return frame
   }

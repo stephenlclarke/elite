@@ -1,0 +1,259 @@
+# Authoritative ship definition. See docs/SHIP-FILES.md.
+id = "SH158"
+name = "Military Fiasco Hydra I"
+shipClass = "Ship"
+appearances = "OOLITE-OXP P26 2.5.3, 3.0 definitions"
+evidence = "O07"
+refit = true
+model = "xyzzy-showroom-SH158"
+modelSource = "P26 / Military Hydra (Oolite rendition)"
+dimensions = [25.416320000000002, 17.04, 56.25]
+geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
+
+[game]
+cargo = 20
+speed = 32.0
+acceleration = 12.0
+energy = 256.0
+recharge = 2.0
+roll = 1.0
+pitch = 1.0
+yaw = 1.0
+shield = 255.0
+shieldRecharge = 1.0
+fuel = 70
+jump = 7
+spool = 15
+missiles = 4
+facings = 15
+cargoExpansion = 15
+price = 150000
+
+[design]
+vertices = [
+  [6.0, -6.0, 16.5],
+  [6.0, 6.0, 16.5],
+  [-6.0, 6.0, 16.5],
+  [-6.0, -6.0, 16.5],
+  [-0.0, 0.0, -36.0],
+  [8.52, 0.0, 16.5],
+  [-0.0, -8.52, 16.5],
+  [-0.0, 8.52, 16.5],
+  [-8.52, 0.0, 16.5],
+  [-0.0, 0.0, 16.0],
+  [-0.0, -4.26, 20.25],
+  [-0.0, 4.26, 20.25],
+  [4.26, 0.0, 20.25],
+  [3.0, 3.0, 20.25],
+  [-3.0, 3.0, 20.25],
+  [-4.26, 0.0, 20.25],
+  [-3.0, -3.0, 20.25],
+  [3.0, -3.0, 20.25],
+  [11.848, -2.048, 14.6],
+  [11.848, 2.048, 14.6],
+  [7.752000000000001, 2.048, 14.6],
+  [7.752000000000001, -2.048, 14.6],
+  [9.8, 0.0, -7.8],
+  [12.708160000000001, 0.0, 14.6],
+  [9.8, -2.90816, 14.6],
+  [9.8, 2.90816, 14.6],
+  [6.89184, 0.0, 14.6],
+  [9.8, 0.0, 17.8],
+  [-7.752000000000001, -2.048, 14.6],
+  [-7.752000000000001, 2.048, 14.6],
+  [-11.848, 2.048, 14.6],
+  [-11.848, -2.048, 14.6],
+  [-9.8, 0.0, -7.8],
+  [-6.89184, 0.0, 14.6],
+  [-9.8, -2.90816, 14.6],
+  [-9.8, 2.90816, 14.6],
+  [-12.708160000000001, 0.0, 14.6],
+  [-9.8, 0.0, 17.8],
+  [9.548, 2.952, 14.6],
+  [9.548, 7.048, 14.6],
+  [5.452, 7.048, 14.6],
+  [5.452, 2.952, 14.6],
+  [7.5, 5.0, -7.8],
+  [10.40816, 5.0, 14.6],
+  [7.5, 2.09184, 14.6],
+  [7.5, 7.9081600000000005, 14.6],
+  [4.5918399999999995, 5.0, 14.6],
+  [7.5, 5.0, 17.8],
+  [9.548, -7.048, 14.6],
+  [9.548, -2.952, 14.6],
+  [5.452, -2.952, 14.6],
+  [5.452, -7.048, 14.6],
+  [7.5, -5.0, -7.8],
+  [10.40816, -5.0, 14.6],
+  [7.5, -7.9081600000000005, 14.6],
+  [7.5, -2.09184, 14.6],
+  [4.5918399999999995, -5.0, 14.6],
+  [7.5, -5.0, 17.8],
+  [-5.452, 2.952, 14.6],
+  [-5.452, 7.048, 14.6],
+  [-9.548, 7.048, 14.6],
+  [-9.548, 2.952, 14.6],
+  [-7.5, 5.0, -7.8],
+  [-4.5918399999999995, 5.0, 14.6],
+  [-7.5, 2.09184, 14.6],
+  [-7.5, 7.9081600000000005, 14.6],
+  [-10.40816, 5.0, 14.6],
+  [-7.5, 5.0, 17.8],
+  [-5.452, -7.048, 14.6],
+  [-5.452, -2.952, 14.6],
+  [-9.548, -2.952, 14.6],
+  [-9.548, -7.048, 14.6],
+  [-7.5, -5.0, -7.8],
+  [-4.5918399999999995, -5.0, 14.6],
+  [-7.5, -7.9081600000000005, 14.6],
+  [-7.5, -2.09184, 14.6],
+  [-10.40816, -5.0, 14.6],
+  [-7.5, -5.0, 17.8],
+]
+faces = [
+  [0, 4, 5],
+  [0, 17, 6],
+  [1, 4, 7],
+  [1, 5, 4],
+  [1, 13, 5],
+  [2, 4, 8],
+  [2, 7, 4],
+  [2, 14, 7],
+  [3, 8, 4],
+  [3, 16, 8],
+  [4, 6, 3],
+  [5, 13, 12],
+  [5, 17, 0],
+  [6, 4, 0],
+  [6, 16, 3],
+  [6, 17, 10],
+  [7, 13, 1],
+  [7, 14, 11],
+  [8, 14, 2],
+  [8, 16, 15],
+  [9, 10, 17],
+  [9, 13, 11],
+  [9, 17, 12],
+  [10, 16, 6],
+  [11, 13, 7],
+  [11, 14, 9],
+  [12, 13, 9],
+  [12, 17, 5],
+  [14, 15, 9],
+  [15, 14, 8],
+  [15, 16, 9],
+  [16, 10, 9],
+  [18, 22, 23],
+  [18, 27, 24],
+  [19, 22, 25],
+  [19, 23, 22],
+  [19, 27, 23],
+  [20, 22, 26],
+  [20, 25, 22],
+  [20, 27, 25],
+  [21, 26, 22],
+  [21, 27, 26],
+  [22, 24, 21],
+  [23, 27, 18],
+  [24, 22, 18],
+  [24, 27, 21],
+  [25, 27, 19],
+  [26, 27, 20],
+  [28, 32, 33],
+  [28, 37, 34],
+  [29, 32, 35],
+  [29, 33, 32],
+  [29, 37, 33],
+  [30, 32, 36],
+  [30, 35, 32],
+  [30, 37, 35],
+  [31, 36, 32],
+  [31, 37, 36],
+  [32, 34, 31],
+  [33, 37, 28],
+  [34, 32, 28],
+  [34, 37, 31],
+  [35, 37, 29],
+  [36, 37, 30],
+  [38, 42, 43],
+  [38, 47, 44],
+  [39, 42, 45],
+  [39, 43, 42],
+  [39, 47, 43],
+  [40, 42, 46],
+  [40, 45, 42],
+  [40, 47, 45],
+  [41, 46, 42],
+  [41, 47, 46],
+  [42, 44, 41],
+  [43, 47, 38],
+  [44, 42, 38],
+  [44, 47, 41],
+  [45, 47, 39],
+  [46, 47, 40],
+  [48, 52, 53],
+  [48, 57, 54],
+  [49, 52, 55],
+  [49, 53, 52],
+  [49, 57, 53],
+  [50, 52, 56],
+  [50, 55, 52],
+  [50, 57, 55],
+  [51, 56, 52],
+  [51, 57, 56],
+  [52, 54, 51],
+  [53, 57, 48],
+  [54, 52, 48],
+  [54, 57, 51],
+  [55, 57, 49],
+  [56, 57, 50],
+  [58, 62, 63],
+  [58, 67, 64],
+  [59, 62, 65],
+  [59, 63, 62],
+  [59, 67, 63],
+  [60, 62, 66],
+  [60, 65, 62],
+  [60, 67, 65],
+  [61, 66, 62],
+  [61, 67, 66],
+  [62, 64, 61],
+  [63, 67, 58],
+  [64, 62, 58],
+  [64, 67, 61],
+  [65, 67, 59],
+  [66, 67, 60],
+  [68, 72, 73],
+  [68, 77, 74],
+  [69, 72, 75],
+  [69, 73, 72],
+  [69, 77, 73],
+  [70, 72, 76],
+  [70, 75, 72],
+  [70, 77, 75],
+  [71, 76, 72],
+  [71, 77, 76],
+  [72, 74, 71],
+  [73, 77, 68],
+  [74, 72, 68],
+  [74, 77, 71],
+  [75, 77, 69],
+  [76, 77, 70],
+]
+license = "CC-BY-NC-SA-3.0"
+source = "P26 / Oolite expansion rendition; not proof of original or Elite Dangerous geometry"
+custody = { "id" = "xyzzy-showroom-SH158", "sha256" = "220f029cf833aaa49e3398b66da73062051f5dffcca944b96d23de7dfb55e3d4", "components" = ["mil-hydra1", "mil-hydraspike", "mil-hydraspike", "mil-hydraspike", "mil-hydraspike", "mil-hydraspike", "mil-hydraspike"], "sourceDefinition" = "mil-hydra1", "archiveSha256" = "48ddacbac6ba4e78913d25571757df584a600e1e92f5ca9cd682953089ca33b7", "sourceFiles" = { "Config/shipdata.plist" = "61d401663fb90418a9ba8c1b1fd0e5e854725ae5fd38959b30e9d1eaf7c23e7e" }, "modelFiles" = { "Models/basilisk.dat" = "8d5f3eeaf0fc8f472dd9200c8af1a6434abd3e4482ef7ad945389db4eaf41a3a", "Models/basiltooth.dat" = "c6c8d60fa635cd17340d2541d179c76a769c39ac296a8eed410635f71696c4e3", "Models/fiasco_dock.dat" = "c711b050d3b1afe50040937701366069ad1dcd228c9aa9f8f746f9510a0df6a3", "Models/fiasco_wolfmk2.dat" = "eb0914bb80af7a963619c2262ff2df92c3e8692064e84aef552e1e3af74bdf22", "Models/hydra.dat" = "220f029cf833aaa49e3398b66da73062051f5dffcca944b96d23de7dfb55e3d4", "Models/hydraspike.dat" = "0ba1d3714763718e5326af2e4f35e62cfcd9cd489a2bed8eb884f2ec5771001e", "Models/leviathan.dat" = "68ac3f3a9f5fa33cb5e8131a94c96fca9681912860dccf373e8996ba9fe83bcd", "Models/levibridge.dat" = "1eb6bf0dac50c1989d82666df96a7bda64ce27506bfe97f274297f9d6aaf9774", "Models/leviturret.dat" = "ddc52cc5d0a455d41b9730b99360fe72d797224adbd414d1b0c6d2fefccd6beb", "Models/mil-ballturret.dat" = "d6fc50c21f75450c41bbae6f0ae9cbfa05e33134c9fefb1becefc10b87a44677", "Models/rattle.dat" = "12384b3d598db15bdc97610ac75175cd40b067d2e169f143ef9f2b31c86a6a99", "Models/rattlefang.dat" = "4180fc9e4d829200c69e0610b7048300d3ce8337e5aba2a47fea7f761217469a" } }
+
+[[profiles]]
+id = "PROJECT-PLAYER-SH158"
+title = "Common project refit"
+group = "project-refit-v1"
+context = "Adaptation; borrowed and estimated fields, not historical native specifications."
+fields = [{ "key" = "cargo_tonnes", "label" = "Cargo", "text" = "20 t", "number" = 20, "unit" = "t", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "maximum_speed_project_units", "label" = "Speed", "text" = "350.0 project units/s", "number" = 350.0, "unit" = "project units/s", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "hull_energy", "label" = "Hull energy", "text" = "256.0 project units", "number" = 256.0, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "energy_recharge_per_second", "label" = "Energy recharge", "text" = "4.0 project units/s", "number" = 4.0, "unit" = "project units/s", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "roll_radians_per_second", "label" = "Roll", "text" = "2.0 rad/s", "number" = 2.0, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "pitch_radians_per_second", "label" = "Pitch", "text" = "1.0 rad/s", "number" = 1.0, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "yaw_radians_per_second", "label" = "Yaw", "text" = "1.0 rad/s", "number" = 1.0, "unit" = "rad/s", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "acceleration_project_units_per_second_squared", "label" = "Acceleration", "text" = "160.0 project units/s2", "number" = 160.0, "unit" = "project units/s2", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "fore_shield_max", "label" = "Front shield", "text" = "128 project units", "number" = 128, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "aft_shield_max", "label" = "Rear shield", "text" = "128 project units", "number" = 128, "unit" = "project units", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1" }, { "key" = "fore_shield_recharge_per_second", "label" = "Front recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "aft_shield_recharge_per_second", "label" = "Rear recharge", "text" = "2 project units/s", "number" = 2, "unit" = "project units/s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "hyperspace_range_ly", "label" = "Jump range", "text" = "7 LY", "number" = 7, "unit" = "LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "jump_spool_seconds", "label" = "Jump spool", "text" = "15 s", "number" = 15, "unit" = "s", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "fuel_capacity_tenths_ly", "label" = "Fuel capacity", "text" = "70 0.1 LY", "number" = 70, "unit" = "0.1 LY", "status" = "borrowed", "basis" = "O08/S37 classical refit baseline; project adaptation" }, { "key" = "laser_facing_mask", "label" = "Laser facings", "text" = "15 bit mask", "number" = 15, "unit" = "bit mask", "status" = "estimated", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1; bit1 forward,2aft,4port,8starboard" }, { "key" = "forward_laser", "label" = "Forward laser", "text" = "Pulse Laser", "unit" = "", "status" = "user required / borrowed equipment", "basis" = "User baseline plus O08 weapon definition; NPC alien weapons remain separate" }, { "key" = "missile_capacity", "label" = "Missile capacity", "text" = "4 pylons", "number" = 4, "unit" = "pylons", "status" = "user minimum / adapted", "basis" = "Estimated Military Fiasco Hydra I refit from named O08 surrogate cobra3-player at volume scale 1; bounded1..16 for common project inventory" }, { "key" = "new_refit_initial_missiles", "label" = "Initial missiles", "text" = "1 missiles", "number" = 1, "unit" = "missiles", "status" = "project choice", "basis" = "Initial hull acquisition only; repeat selection preserves spent stock" }, { "key" = "equipment_capacity_units", "label" = "Equipment capacity", "text" = "12 project slots", "number" = 12, "unit" = "project slots", "status" = "estimated", "basis" = "Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded" }, { "key" = "docking_computer", "label" = "Docking computer", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "hyperspace_drive", "label" = "Hyperspace drive", "text" = "Yes", "unit" = "", "status" = "user required", "basis" = "Intrinsic baseline" }, { "key" = "cargo_expansion_tonnes", "label" = "Cargo expansion", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "project choice", "basis" = "No unsupported cargo upgrade silently granted" }, { "key" = "required_crew_including_commander", "label" = "Required crew", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "estimated", "basis" = "CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander" }, { "key" = "reserved_crew_accommodation", "label" = "Reserved crew quarters", "text" = "1 people", "number" = 1, "unit" = "people", "status" = "project allocation", "basis" = "Intrinsic crew quarters outside published usable cargo; no double subtraction from hold" }, { "key" = "initial_charter_passenger_berths", "label" = "initial_charter_passenger_berths", "text" = "0", "number" = 0, "unit" = "", "status" = "project choice", "basis" = "Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths" }, { "key" = "fitted_passenger_berths", "label" = "Fitted passenger berths", "text" = "0 berths", "number" = 0, "unit" = "berths", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "passengers_aboard", "label" = "Passengers aboard", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "free_passenger_places", "label" = "Free passenger places", "text" = "0 people", "number" = 0, "unit" = "people", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "hold_used_by_cabins", "label" = "Hold used by cabins", "text" = "0 t", "number" = 0, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "usable_cargo_after_fit", "label" = "Usable cargo after fit", "text" = "20 t", "number" = 20, "unit" = "t", "status" = "standard unladen refit", "basis" = "Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each." }, { "key" = "rear_laser", "label" = "Rear laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "left_laser", "label" = "Left laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }, { "key" = "right_laser", "label" = "Right laser", "text" = "Empty (standard refit)", "unit" = "", "status" = "estimated project fitting", "basis" = "Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment." }]
+
+[[profiles]]
+id = "xyzzy-showroom-SH158"
+title = "Oolite source assembly"
+group = "oolite-expansion"
+context = "Exact selected source definition and assembled model; pre-equipment NPC fields, not a player-hull grant or ED geometry."
+fields = [{ "key" = "max_cargo", "label" = "Cargo", "text" = "1 t", "number" = 1.0, "unit" = "t", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "max_flight_speed", "label" = "Speed", "text" = "160 Oolite units/s", "number" = 160.0, "unit" = "Oolite units/s", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "max_energy", "label" = "Hull energy", "text" = "380 Oolite units", "number" = 380.0, "unit" = "Oolite units", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "energy_recharge_rate", "label" = "Energy recharge", "text" = "3.5 Oolite units/s", "number" = 3.5, "unit" = "Oolite units/s", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "max_flight_roll", "label" = "Roll", "text" = "2.9 rad/s", "number" = 2.9, "unit" = "rad/s", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "max_flight_pitch", "label" = "Pitch", "text" = "0.6 rad/s", "number" = 0.6, "unit" = "rad/s", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "max_flight_yaw", "label" = "Yaw", "text" = "0.6 rad/s", "number" = 0.6, "unit" = "rad/s", "status" = "source engine default", "basis" = "O08 xyzzy-showroom-SH158; pinned ShipEntity.m initialization/default; before fitted/random equipment effects" }, { "key" = "thrust", "label" = "Thrust", "text" = "20 Oolite raw", "number" = 20.0, "unit" = "Oolite raw", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "weapon_facings", "label" = "Laser facings", "text" = "15 bit mask", "number" = 15, "unit" = "bit mask", "status" = "source engine default", "basis" = "O08 xyzzy-showroom-SH158; pinned ShipEntity.m initialization/default; before fitted/random equipment effects" }, { "key" = "missiles", "label" = "Initial missiles", "text" = "0 missiles", "number" = 0.0, "unit" = "missiles", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "max_missiles", "label" = "Missile capacity", "text" = "0 pylons", "number" = 0, "unit" = "pylons", "status" = "source engine default", "basis" = "O08 xyzzy-showroom-SH158; pinned ShipEntity.m initialization/default; before fitted/random equipment effects" }, { "key" = "forward_weapon_type", "label" = "Forward laser", "text" = "None", "unit" = "", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "aft_weapon_type", "label" = "Rear laser", "text" = "None", "unit" = "", "status" = "source engine default", "basis" = "O08 xyzzy-showroom-SH158; pinned ShipEntity.m initialization/default; before fitted/random equipment effects" }, { "key" = "has_ecm", "label" = "ECM capability", "text" = "0.95 source predicate", "number" = 0.95, "unit" = "source predicate", "status" = "source", "basis" = "O08 xyzzy-showroom-SH158" }, { "key" = "has_scoop", "label" = "Fuel scoops", "text" = "No source predicate", "unit" = "source predicate", "status" = "source engine default", "basis" = "O08 xyzzy-showroom-SH158; pinned ShipEntity.m initialization/default; before fitted/random equipment effects" }, { "key" = "has_hyperspace_motor", "label" = "Hyperdrive", "text" = "Yes source predicate", "unit" = "source predicate", "status" = "source engine default", "basis" = "O08 xyzzy-showroom-SH158; pinned ShipEntity.m initialization/default; before fitted/random equipment effects; hyperspace_motor and nonnegative spin time, not an invented has_hyperspace_motor key" }]

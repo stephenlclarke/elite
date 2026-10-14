@@ -7,3 +7,5 @@ coverage.xml
 reports/
 
 .vscode/
+
+__pycache__/

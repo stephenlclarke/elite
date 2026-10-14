@@ -205,8 +205,8 @@ private func finishMessage(_ game: inout Game) {
   #expect(MissionRules.clue(stage: .huntingConstrictor, galaxy: 1, system: 7, variation: 0) == nil)
   var game = navalGame(galaxy: 1, stage: .huntingConstrictor)
   game.selectedSystem = 118
-  game.key("6")
-  #expect(game.missionClue?.contains("ORARRA") == true)
+  game.key("5")
+  #expect(Display.systemRows(game).contains { $0.0.contains("ORARRA") })
   #expect(!Display.render(game).pixels.isEmpty)
 }
 
@@ -301,7 +301,7 @@ private func finishMessage(_ game: inout Game) {
   let notice = game.missionNotice
   #expect(notice?.pages.flatMap { $0 }.allSatisfy { $0.count <= 40 } == true)
   game.key("k")
-  #expect(PlayerHelp.pages(for: game)[0].title == "NAVAL MESSAGE")
+  #expect(PlayerHelp.pages(for: game)[0].title == "MISSION MESSAGE")
   game.key("k")
   #expect(game.screen == .mission && game.missionNotice == notice)
   game.key("pause")

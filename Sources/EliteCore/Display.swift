@@ -578,14 +578,18 @@ public enum Display {
       bar(&frame, 24, y, item.1, item.2, 46)
     }
     let right: [(String, Double)] = [
-      ("SP", game.speed / 32), ("RL", (game.roll + 1) / 2), ("DC", (game.pitch + 1) / 2),
+      ("SP", game.speed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
+      ("DC", (game.pitch + 1) / 2),
     ]
     for (i, item) in right.enumerated() {
       frame.text(item.0, 184, 196 + i * 9, .yellow)
       bar(&frame, 201, 196 + i * 9, item.1, .green, 48)
     }
     for i in 0..<4 {
-      bar(&frame, 201, 225 + i * 7, (game.energy - Double(i * 64)) / 64, .yellow, 48)
+      bar(
+        &frame, 201, 225 + i * 7,
+        (game.energy - Double(i) * game.commander.performance.energy / 4)
+          / (game.commander.performance.energy / 4), .yellow, 48)
     }
     frame.ellipse(128, 220, 46, 20, .green)
     frame.line(82, 220, 174, 220, .green)

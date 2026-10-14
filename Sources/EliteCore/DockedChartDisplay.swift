@@ -13,13 +13,15 @@ extension Display {
       MissionNotice.wrap(text, width: columns).map { ($0, ink) }
     }
     let visible = max(1, Int((bottom - y - 20 - (layout.wide ? 174 : 0)) / GameTypography.row))
-    let offset = min(game.chartInformationScroll, max(0, wrapped.count - visible))
+    let window = ScrollWindow(
+      count: wrapped.count, visible: visible, offset: game.chartInformationScroll)
+    let offset = window.offset
     for (index, row) in wrapped.dropFirst(offset).prefix(visible).enumerated() {
       frame.label(row.0, x, y + Double(index) * GameTypography.row, scale: layout.font, ink: row.1)
     }
-    frame.label(
-      "Fn-Up/Down: data \(offset + 1)/\(wrapped.count)", x, bottom - 14, scale: layout.font,
-      ink: .cyan)
+    if let hint = window.hint {
+      frame.label(hint, x, bottom - 14, scale: layout.font, ink: .cyan)
+    }
     let planetSize =
       layout.wide
       ? min(240, bottom - y - Double(min(wrapped.count, visible)) * GameTypography.row - 34)
@@ -34,6 +36,22 @@ extension Display {
             bounds: .init(x: planetX, y: planetY, width: planetSize, height: planetSize),
             time: game.time)))
     }
+  }
+
+  static func chartDataWindow(_ game: Game) -> ScrollWindow {
+    let layout = ChartLayout(
+      width: game.viewportWidth, height: game.viewportHeight, local: game.screen == .shortChart,
+      fuel: game.commander.fuel, docked: game.docked)
+    let y = layout.wide ? 96.0 : layout.plot.maxY + 12
+    let bottom = layout.height - (layout.wide ? 48 : 126)
+    let diameter = layout.wide ? 0.0 : min(140, bottom - y - 24)
+    let factsWidth = layout.wide ? 284 : layout.width - 48 - max(0, diameter) - 16
+    let columns = max(1, Int(factsWidth / (6 * layout.font)))
+    let count = dockedPlanetRows(game).reduce(0) {
+      $0 + MissionNotice.wrap($1.0, width: columns).count
+    }
+    let visible = max(1, Int((bottom - y - 20 - (layout.wide ? 174 : 0)) / GameTypography.row))
+    return .init(count: count, visible: visible, offset: game.chartInformationScroll)
   }
 
   private static func dockedPlanetRows(_ game: Game) -> [(String, Ink)] {

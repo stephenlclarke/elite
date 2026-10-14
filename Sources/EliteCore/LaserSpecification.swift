@@ -93,6 +93,10 @@ extension Commander {
 }
 extension Game {
   mutating func purchaseLaser(_ kind: LaserKind, item: Equipment) {
+    guard commander.performance.supports(equipmentMount) else {
+      notify("THIS HULL HAS NO " + equipmentMount.label.uppercased() + " LASER MOUNT")
+      return
+    }
     guard commander.laser(on: equipmentMount) != kind else {
       notify(equipmentMount.label.uppercased() + " " + item.name.uppercased() + " ALREADY FITTED")
       return

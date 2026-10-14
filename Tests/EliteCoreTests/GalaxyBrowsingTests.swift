@@ -66,8 +66,9 @@ import Testing
         if case .ellipse(let p, _, _, .white) = $0 { return p == point }
         return false
       })
-    game.key("6")
     #expect(game.inspectedGalaxy == galaxy && game.inspectedSystem == expected)
+    game.key("6")
+    #expect(game.screen == .showroom)
     game.key("4")
     #expect(game.viewedGalaxy == galaxy && game.mapTargetSystem == expected)
   }

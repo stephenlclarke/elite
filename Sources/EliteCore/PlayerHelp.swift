@@ -6,83 +6,62 @@ public struct HelpPage: Sendable {
 public enum PlayerHelp {
   public static func pages(for game: Game) -> [HelpPage] {
     let screen = game.screen == .help ? game.helpReturn : game.screen
-    let context = context(for: screen, paused: game.paused)
-    var pages = paginate(context)
-    if !game.paused
-      && ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff, .gallery, .showroom]
-        .contains(screen)
+    if game.paused {
+      return [
+        .init(
+          title: "PAUSED",
+          rows: ["ESC / COMMAND-P - RESUME", "K - CLOSE HELP", ": - SPEECH ON/OFF"])
+      ]
+    }
+    var contextGame = game
+    contextGame.screen = screen
+    var pages = paginate(context(for: screen, game: contextGame))
+    if ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff].contains(screen)
+      && !(screen == .showroom && game.showroom.trading)
     {
-      let screens = HelpPage(
-        title: game.docked ? "AT THE STATION" : "IN SPACE: SCREENS",
-        rows: [
-          game.docked ? "0 - LAUNCH" : "0 - FRONT VIEW",
-          game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "1 / 2 / 3 - REAR / LEFT / RIGHT",
-          "4 / 5 - GALACTIC / SHORT RANGE CHART",
-          game.docked ? "4 / 5 INCLUDE FULL PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
-          "7 - MARKET PRICES",
-          "8 / 9 - COMMANDER STATUS / INVENTORY",
-        ])
-      if [Screen.status, .inventory, .market, .system].contains(screen) {
-        pages = [screens]
-        if screen != .system {
-          pages.append(
-            .init(
-              title: "BROWSE STATION INFORMATION",
-              rows: ["UP / DOWN / SCROLL - MORE ROWS", "FN-UP/FN-DOWN - PAGE STATUS / INVENTORY"]))
-        }
-      } else {
-        pages.append(screens)
-      }
-      if game.docked && (screen == .chart || screen == .shortChart) {
-        pages.append(
-          .init(
-            title: "DOCKED PLANET INFORMATION",
-            rows: [
-              "DATA AND PLANET FOLLOW CHART SELECTION",
-              "FN-UP / FN-DOWN - SCROLL PLANET DATA",
-              "MISSION CLUES APPEAR WITH PLANET DATA",
-            ]))
-      }
-      if !game.docked && !screen.isFlight {
-        pages.append(contentsOf: paginate(Self.context(for: .front, paused: false)))
-      }
+      pages.append(
+        .init(
+          title: game.docked ? "STATION SCREENS" : "SCREENS IN SPACE",
+          rows: [
+            game.docked ? "0 - LAUNCH" : "0 / 1 / 2 / 3 - FRONT/REAR/LEFT/RIGHT",
+            game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
+            game.docked ? "4 / 5 - CHARTS WITH PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
+            game.docked ? "6 - SHIP SHOWROOM" : "7 - MARKET PRICES",
+            game.docked ? "7 - MARKET PRICES" : "8 / 9 - STATUS / INVENTORY",
+            game.docked ? "8 / 9 - STATUS / INVENTORY" : "ESC - PREVIOUS SCREEN / COCKPIT",
+            "ARROWS - MOVE; RETURN - CHOOSE",
+            "ESC - BACK ONE LEVEL; K - HELP",
+            "SCREENS MENU HAS THE SAME DESTINATIONS",
+          ]))
+      pages.append(
+        .init(
+          title: "MORE ACTIONS",
+          rows: [
+            "GAME MENU: MISSIONS / CONTACTS / RUMOURS",
+            "L - MISSION GALLERY",
+            "B (DOCKED) - MISSION CONTACTS",
+            "U (DOCKED) - STATION RUMOURS",
+            "OPTION-UP/DOWN - PAGE LONG LISTS",
+            "SCROLL - BROWSE THE AREA UNDER POINTER",
+            "COMMAND-P - PAUSE / RESUME",
+            "COMMAND-S / COMMAND-O - SAVE / LOAD",
+            "X Y Z Z Y - CLARKE / SECRET OPTIONS",
+            "COMMAND-Q - QUIT",
+          ]))
       if !game.docked {
-        pages.append(
-          HelpPage(
-            title: "SPIN HOLD PROTOTYPE",
-            rows: [
-              "V - SPIN MODE / NORMAL FLIGHT",
-              "ONE FINGER CIRCLE - CHOOSE CW / CCW",
-              "CIRCLE AROUND THE TRACKPAD CENTRE",
-              "1 / 2 / 3 FINGERS - SLOW/HOLD/FASTER",
-              "NO CONTACT - HOLD SET SPIN SPEED",
-              "2 FINGERS MOVE - PITCH / YAW",
-              "B - STOP SPIN SMOOTHLY",
-              "[ / ] - START CCW / CW SPIN",
-              "- / = OR + - SLOW / SPEED UP SPIN",
-              "LEFT / RIGHT - YAW (SPIN MODE)",
-              "X / S - PITCH; SPACE / SLASH - SPEED",
-              "CW / CCW IS FROM FORWARD COCKPIT",
-              "HELP / PAUSE / FOCUS LOSS CANCEL SPIN",
-            ]))
+        if !screen.isFlight { pages.append(context(for: .front, game: game)) }
+        pages.append(contentsOf: flightReference)
       }
     }
     pages.append(
-      HelpPage(
-        title: "COMMON KEYS",
+      .init(
+        title: "KEY GUIDE",
         rows: [
-          "K / COMMAND-K - CONTEXT KEY GUIDE",
-          "L - MISSION GALLERY (PAUSES FLIGHT)",
-          "B (DOCKED) - BLACKJACK CONTACT",
-          "W (DOCKED) - SHIP SHOWROOM",
-          "U (DOCKED) - STATION RUMOURS",
-          "COMMAND-P - PAUSE / RESUME",
-          "X Y Z Z Y - CLARKE AND SECRET MENU",
-          "COMMAND-S / COMMAND-O - SAVE / LOAD",
-          "COMMAND-Q - QUIT",
-          "LEFT / RIGHT - HELP PAGES",
-          "UP / DOWN - HELP PAGES",
-          "K / RETURN / ESC - CLOSE HELP",
+          "ARROWS - PREVIOUS / NEXT HELP PAGE",
+          "K / ESC - CLOSE HELP",
+          "COMMAND-K OR HELP MENU - OPEN GUIDE",
+          "RETURN ALSO CLOSES THIS GUIDE",
+          "NO FUNCTION OR KEYPAD KEYS REQUIRED",
         ]))
     return pages
   }
@@ -95,164 +74,219 @@ public enum PlayerHelp {
     }
   }
 
-  private static func context(for screen: Screen, paused: Bool) -> HelpPage {
-    if screen == .secret {
-      return HelpPage(
-        title: "XYZZY: COMMANDER CLARKE",
-        rows: [
-          "0 - WHITE / COLOUR / SHADED SHIPS",
-          "1 - FIT DOCKING TARGETING TIER",
-          "2 - MAXIMUM HARDWARE / RESTORE SHIP",
-          "3 - UNLIMITED MISSILES",
-          "4 - UNLIMITED FUEL",
-          "5 - SHOW FUEL / NAV JUMP LIMIT",
-          "6 - AUTO TRADE (INCLUDING ILLEGAL)",
-          "7 - SPEECH",
-          "8 - UNLIMITED CARGO",
-          "9 - SHOW CASH (STARTS AT 1M CR)",
-          "A - AUTO TARGET ASSIST", "E - AUTOMATIC ECM", "F - FIT FUEL SCOOPS",
-          "B - MILITARY RETURN FIRE",
-          "RETURN / ESC - RETURN TO GAME",
-        ])
-    }
-    if paused {
-      return HelpPage(title: "PAUSED", rows: ["COMMAND-P / ESC - RESUME", ": - TOGGLE SPEECH"])
-    }
+  private static func context(for screen: Screen, game: Game) -> HelpPage {
     switch screen {
     case .front, .rear, .left, .right:
-      return HelpPage(
-        title: "IN SPACE: FLIGHT",
+      .init(
+        title: "FLIGHT: START HERE",
         rows: [
-          "SPACE - ACCELERATE", "? / SLASH - SLOW DOWN",
-          "X / S - PULL UP / PITCH DOWN",
-          "< / COMMA - ROLL LEFT", "> / FULL STOP - ROLL RIGHT",
-          "A - FIRE LASER (HOLD)", "T / U / M - ARM / DISARM / MISSILE",
-          "E - ECM", "TAB - ENERGY BOMB", "ESC - ESCAPE POD",
-          "H - HYPERSPACE TO SELECTED SYSTEM",
-          "G - GALACTIC HYPERDRIVE",
-          "J - IN-SYSTEM JUMP",
-          "R - TARGET STATION FOR AUTO DOCKING",
-          "P / Q - CANCEL AUTOMATIC GUIDANCE",
-          "WEAPONS AND DRIVES REQUIRE EQUIPMENT",
-          "R - CYCLE TARGET (FITTED COMPUTER)",
-          "Q - DISENGAGE AUTO / MANUAL STEER",
-          "I - TARGET CAMERA DETAILS / HIDE",
-          "STATION AUTO COMPLETES DOCKING",
-          "SCOOPS: PASS CARGO BELOW YOUR NOSE",
+          "ARROWS - PITCH / ROLL",
+          "SPACE - ACCELERATE; DELETE - BRAKE",
+          "RETURN - FIRE LASER (HOLD)",
+          "TAB - NEXT TARGET / STATION AUTO DOCK",
+          "Q - CANCEL AUTOMATIC GUIDANCE",
+          "4 / 5 - CHART; H - HYPERSPACE",
+          "FLIGHT MENU - WEAPONS / DRIVES / POD",
+          "ESC - BACK; NEVER LAUNCHES ESCAPE POD",
           "TRACKPAD: 2 FINGERS - STEER / CRUISE",
           "1 FINGER - SLOW; 3 FINGERS - SPEED UP",
           "HOLD OFF CENTRE TO KEEP TURNING",
           "CENTRE 2 FINGERS - STOP TURNING",
           "LIFT ALL - CENTRE YOKE / KEEP SPEED",
         ])
+    case .system:
+      .init(
+        title: "SYSTEM DATA",
+        rows: ["UP / DOWN / SCROLL - LONG PLANET DATA", "ESC - PREVIOUS SCREEN", "K - HELP"])
     case .buy, .sell:
-      return HelpPage(
-        title: screen == .buy ? "STATION: BUY CARGO" : "STATION: SELL CARGO",
+      .init(
+        title: screen == .buy ? "BUY CARGO" : "SELL CARGO",
         rows: [
           "UP / DOWN / SCROLL - SELECT PRODUCT",
-          "COLOUR: CATEGORY; ACTION: AVAILABILITY",
           screen == .buy ? "RETURN - BUY ONE UNIT" : "RETURN - SELL ONE UNIT",
-          "RIGHT / LEFT - BUY / SELL ONE UNIT",
+          "COLOUR: CATEGORY; ACTION: AVAILABILITY",
+          "1 / 2 - SWITCH BUY / SELL",
+          "ESC - PREVIOUS SCREEN",
         ])
     case .equipment:
-      return HelpPage(
-        title: "STATION: EQUIPMENT",
+      .init(
+        title: "EQUIPMENT",
         rows: [
-          "UP / DOWN - SELECT ITEM (SKIP HEADINGS)", "RETURN - PURCHASE / REFUEL",
+          "UP / DOWN / SCROLL - SELECT ITEM",
+          "RETURN - PURCHASE / REFUEL",
           "LEFT / RIGHT - SELECT LASER MOUNT",
           "CLICK FRONT/LEFT/RIGHT/REAR - MOUNT",
-          "CLICK - SELECT; TRACKPAD SCROLL - BROWSE", "REWARD ITEMS ARE NOT FOR SALE",
+          "CLICK AN ITEM TO SELECT IT",
+          "REWARD ITEMS ARE NOT FOR SALE",
+          "ESC - PREVIOUS SCREEN",
         ])
     case .chart, .shortChart:
-      var rows = [
-        "LEFT / RIGHT - PREV / NEXT SYSTEM", "O - TARGET CURRENT SYSTEM", "D - SHOW DISTANCE",
-        "H - HYPERSPACE WHEN IN FLIGHT",
-        "M - ECONOMY / GOVERNMENT / TECHNOLOGY",
-        "N - NAVIGATION ROUTES (FITTED COMPUTER)",
-      ]
-      rows.append("CLICK CHART - SELECT SYSTEM")
-      if screen == .shortChart { rows.append("Z - ZOOM MAX JUMP / SEARCH / FUEL") }
-      if screen == .chart {
-        rows += [
-          "[ / ] - VIEW GALAXY 1 TO 8",
-          "O - RETURN TO CURRENT GALAXY/SYSTEM",
-          "SLASH - SEARCH VIEWED GALAXY PLANETS", "TYPE - FILTER; UP/DOWN - SELECT",
-          "RETURN - CHOOSE; ESC - CLOSE SEARCH", "BACKSPACE / CLICK CLEAR - CLEAR SEARCH",
-        ]
-      }
-      return HelpPage(title: "NAVIGATION CHART", rows: rows)
-    case .demo:
-      return HelpPage(
-        title: "RIGHT-ON COMMANDER DEMO",
-        rows: ["THE TITLE APPEARS AFTER THE DEMO", "K - RETURN TO THE DEMO"])
-    case .title:
-      return HelpPage(
-        title: "TITLE SCREEN",
-        rows: ["SPACE / RETURN - COMMANDER SCREEN", "NEW COMMANDER: JAMESON"])
-    case .gameOver:
-      return HelpPage(title: "GAME OVER", rows: ["SPACE / RETURN - NEW COMMANDER JAMESON"])
+      .init(
+        title: "CHARTS AND PLANET DATA",
+        rows: [
+          "LEFT / RIGHT OR CLICK - SELECT PLANET",
+          game.docked ? "UP / DOWN / SCROLL - PLANET DATA" : "PLANET DATA: 6",
+          "SLASH (GALACTIC CHART) - SEARCH",
+          "TYPE - FILTER; UP / DOWN - RESULT",
+          "RETURN - CHOOSE; ESC - END SEARCH",
+          "DELETE - ERASE ONE LETTER",
+          "COMMAND-DELETE / CLICK CLEAR - RESET",
+          "O - CURRENT LOCATION; D - DISTANCE",
+          "M - ECONOMY / GOVERNMENT / TECHNOLOGY",
+          "N - ROUTES (FITTED NAV COMPUTER)",
+          "Z (LOCAL) - CHANGE RANGE",
+          "[ / ] OR GALAXY BUTTONS - VIEW GALAXY",
+          "H - HYPERSPACE WHEN IN FLIGHT",
+          "ESC - PREVIOUS SCREEN",
+        ])
     case .navigation:
-      return HelpPage(
+      .init(
         title: "NAVIGATION ROUTES",
         rows: [
-          "UP/DOWN - SELECT ALTERNATIVE", "RETURN - SET ROUTE (NO AUTOMATIC JUMP)",
-          "C - CLEAR ROUTE", "N / ESC - RETURN TO CHART", "FN-UP/FN-DOWN - SCROLL ROUTE DETAILS",
-          "DOCK AT EACH STOP; LAUNCH PRELOADS NEXT", "H - START EACH JUMP MANUALLY",
+          "UP / DOWN - SELECT ALTERNATIVE",
+          "RETURN - SET ROUTE; ESC - BACK",
+          "OPTION-UP/DOWN - SCROLL DETAILS",
+          "C - CLEAR ROUTE",
+          "DOCK AT EACH STOP; H STARTS EACH JUMP",
         ])
-    case .rumour:
-      return HelpPage(
-        title: "STATION RUMOURS",
+    case .showroom where game.showroom.trading:
+      .init(
+        title: "SHIP EXCHANGE",
         rows: [
-          "ASK AT THE LOCAL MAIN STATION", "RETURN / ESC / U - BACK TO STATION",
-          "DISCOVERIES ARE SAVED PER GALAXY",
+          "REVIEW PRICE, TRADE-IN AND FITTING", "LEFT / RIGHT / TAB - BACK OR CONFIRM",
+          "RETURN / CLICK - SELECT", "UP / DOWN / SCROLL - LONG QUOTES",
+          "ESC - CANCEL WITHOUT CHANGES", "BLOCKED TRADES EXPLAIN EACH CONFLICT",
         ])
     case .showroom:
-      return HelpPage(
-        title: "DOCKED SHIP SHOWROOM",
+      .init(
+        title: "SHIP SHOWROOM",
         rows: [
-          "UP/DOWN - SHIP; RETURN - DETAIL",
-          "SLASH / CLICK - SEARCH NAME/CLASS/ID",
-          "SOURCE EDITIONS ARE SEARCHABLE TOO",
-          "TYPE - FILTER; RETURN/ESC - END SEARCH",
-          "BACKSPACE - EDIT; SEARCH ID TO FIND",
-          "X / FN-DELETE / CLEAR - ALL SHIPS",
-          "SPACE - PAUSE / RESUME MODEL ROTATION",
-          "B - PIN BASELINE; R - RESET TO COBRA",
-          "C - COMPARE; V - SOURCE / REFIT",
-          "COMMA / FULL STOP - SOURCE VARIANT",
-          "FN-UP / FN-DOWN - SCROLL SPECS",
-          "SCROLL LIST - SELECT; SPECS - READ",
-          "ESC - BACK; W - CLOSE TO PREVIOUS SCREEN",
-          "CATALOGUE BROWSER; NO SHIP PURCHASES",
-          "SOURCE UNITS / ESTIMATES ARE LABELLED",
+          "UP / DOWN - SELECT SHIP",
+          "RETURN / SPECS BUTTON - READ SPECS",
+          "TAB / SHIPS BUTTON - CHANGE PANE",
+          "ARROWS IN SPECS - SCROLL",
+          "SLASH / CLICK SEARCH - FILTER SHIPS",
+          "UP / DOWN IN SEARCH - SELECT RESULT",
+          "RETURN - SPECS; ESC - FINISH SEARCH",
+          "DELETE - ERASE; COMMAND-DELETE - CLEAR",
+          "CLICK CLEAR FILTER - SHOW ALL SHIPS",
+          "CLICK PIN BASE / YOUR SHIP / COMPARE",
+          "CLICK PREV / NEXT TO CHANGE PROFILE",
+          "CLICK SOURCE NOTES / GAME VALUES",
+          "CLICK PAUSE / ROTATE TO STOP MOTION",
+          "OPTION-UP/DOWN - PAGE ACTIVE PANE",
+          "ESC - SEARCH, THEN LIST, THEN STATION",
+          "CLICK TRADE SHIP - REVIEW EXCHANGE",
+          "LEFT / RIGHT, RETURN - CONFIRM / BACK",
+          "CLICK SORT: A-Z / POWER (STRONGEST)",
+          "POWER: ENERGY + SHIELDS + WEAPONS",
         ])
     case .gallery:
-      return HelpPage(
+      .init(
         title: "MISSION GALLERY",
         rows: [
-          "UP / DOWN - SELECT MISSION", "RETURN - DETAILS", "PAGE UP / PAGE DOWN - SCROLL DETAILS",
-          "CLICK - SELECT MISSION", "TRACKPAD SCROLL - SCROLL DETAILS",
-          "ESC - BACK / CLOSE; L - CLOSE", "READ ONLY; FLIGHT IS PAUSED",
+          "UP / DOWN - SELECT MISSION",
+          "RETURN / CLICK - READ DETAILS",
+          "TAB - SWITCH LIST / DETAILS",
+          "ARROWS / SCROLL IN DETAILS - READ MORE",
+          "OPTION-UP/DOWN - PAGE DETAILS",
+          "ESC - LIST, THEN PREVIOUS SCREEN",
+          "READ ONLY; FLIGHT IS PAUSED",
         ])
     case .handoff:
-      return HelpPage(
-        title: "BLACKJACK STATION HANDOFF",
+      .init(
+        title: "MISSION DIALOG",
         rows: [
-          "ARROWS - CONFIRM / BACK", "RETURN - SELECT", "ESC - BACK WITHOUT TRANSFER",
-          "B (DOCKED) - REOPEN CONTACT", "INITIAL CONTACT ENROLS AUTOMATICALLY",
+          "ARROWS - CHOOSE CONFIRM / BACK",
+          "RETURN / CLICK - SELECT",
+          "ESC - BACK WITHOUT TRANSFER",
+          "GAME MENU: MISSION CONTACTS TO REOPEN",
+          "B (DOCKED) ALSO REOPENS A CONTACT",
         ])
     case .mission:
-      return HelpPage(
-        title: "NAVAL MESSAGE",
+      .init(
+        title: "MISSION MESSAGE",
         rows: [
-          "SPACE / RETURN / ESC - CONTINUE",
+          "RETURN / SPACE - NEXT PAGE",
           "ARROWS - PREVIOUS / NEXT PAGE",
-          "FINISH THE MESSAGE TO RETURN TO STATUS",
+          "ESC - CLOSE MESSAGE",
+          "ORDERS AND REWARDS ARE AUTOMATIC",
+          "WAIT TWO SECONDS FOR INCOMING MESSAGE",
         ])
+    case .rumour:
+      .init(
+        title: "STATION RUMOURS",
+        rows: [
+          "ASK AT THE LOCAL MAIN STATION",
+          "ESC - BACK TO PREVIOUS SCREEN",
+          "DISCOVERIES ARE SAVED PER GALAXY",
+        ])
+    case .secret:
+      .init(
+        title: "XYZZY: COMMANDER CLARKE",
+        rows: [
+          "0 - WHITE / COLOUR / SHADED SHIPS", "1 - DOCKING TARGETING TIER",
+          "2 - MAXIMUM HARDWARE / RESTORE SHIP", "3 - UNLIMITED MISSILES", "4 - UNLIMITED FUEL",
+          "5 - SHOW FUEL / NAV JUMP LIMIT", "6 - AUTO TRADE (INCLUDING ILLEGAL)", "7 - SPEECH",
+          "8 - UNLIMITED CARGO", "9 - SHOW CASH (STARTS AT 1M CR)",
+          "A - AUTO TARGET; E - AUTO ECM", "F - FUEL SCOOPS; B - RETURN FIRE",
+          "L - RESET LEGAL STATUS TO CLEAN",
+          "ESC - RETURN TO GAME",
+        ])
+    case .demo:
+      .init(
+        title: "RIGHT-ON COMMANDER DEMO",
+        rows: ["THE TITLE APPEARS AFTER THE DEMO", "ESC - CLOSE HELP"])
+    case .title:
+      .init(
+        title: "TITLE SCREEN",
+        rows: ["RETURN / SPACE - COMMANDER SCREEN", "NEW COMMANDER: JAMESON"])
+    case .gameOver:
+      .init(title: "GAME OVER", rows: ["RETURN / SPACE - NEW COMMANDER JAMESON"])
     default:
-      return HelpPage(
-        title: "INFORMATION SCREEN",
-        rows: ["USE NUMBER KEYS TO SELECT A SCREEN", "K - RETURN TO YOUR PREVIOUS SCREEN"])
+      .init(
+        title: "STATION / SHIP INFORMATION",
+        rows: [
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          game.informationWindow.hint == nil
+            ? "NUMBER KEYS - CHOOSE SCREEN" : "OPTION-UP/DOWN - PAGE LONG LISTS",
+          "NUMBER KEYS - CHOOSE SCREEN", "ESC - PREVIOUS SCREEN",
+        ])
     }
   }
+
+  private static let flightReference: [HelpPage] = [
+    .init(
+      title: "FLIGHT: WEAPONS AND DRIVES",
+      rows: [
+        "FLIGHT MENU SHOWS ALL THESE ACTIONS",
+        "T / U / M - ARM / DISARM / MISSILE",
+        "E - ECM; G - GALACTIC HYPERDRIVE",
+        "J - IN-SYSTEM JUMP",
+        "R ALSO SELECTS TARGET / STATION AUTO",
+        "P / Q - CANCEL AUTOMATIC GUIDANCE",
+        "I - TARGET CAMERA DETAILS / HIDE",
+        "COMMAND-SHIFT-E - LAUNCH ESCAPE POD",
+        "FLIGHT MENU: DETONATE ENERGY BOMB",
+        "SCOOPS: PASS CARGO BELOW YOUR NOSE",
+        "WEAPONS / DRIVES REQUIRE EQUIPMENT",
+      ]),
+    .init(
+      title: "OPTIONAL SPIN HOLD",
+      rows: [
+        "GAME MENU: TOGGLE SPIN HOLD / STOP",
+        "V - SPIN MODE; B - STOP SMOOTHLY",
+        "ONE FINGER CIRCLE - CHOOSE CW / CCW",
+        "CIRCLE AROUND THE TRACKPAD CENTRE",
+        "1 / 2 / 3 FINGERS - SLOW/HOLD/FASTER",
+        "NO CONTACT - HOLD SET SPIN SPEED",
+        "2 FINGERS MOVE - PITCH / YAW",
+        "[ / ] - START CCW / CW SPIN",
+        "- / = OR + - SLOW / SPEED UP SPIN",
+        "LEFT / RIGHT - YAW IN SPIN MODE",
+        "UP / DOWN - PITCH; SPACE/DELETE - SPEED",
+        "HELP / PAUSE / FOCUS LOSS CANCEL SPIN",
+      ]),
+  ]
 }

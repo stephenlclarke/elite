@@ -49,7 +49,9 @@ import UniformTypeIdentifiers
       game.chartInformationScroll = 0
     }
     game.key("6")
-    #expect(game.screen == screen && game.commander == commander)
+    #expect(game.screen == .showroom && game.commander == commander)
+    game.key("escape")
+    #expect(game.screen == screen)
   }
   game.launch()
   game.key("6")

@@ -77,7 +77,7 @@ import Testing
   game.key(" ")
   #expect(game.screen == .status)
   let docked: [Screen] = [
-    .front, .buy, .sell, .equipment, .chart, .shortChart, .shortChart, .market, .status, .inventory,
+    .front, .buy, .sell, .equipment, .chart, .shortChart, .showroom, .market, .status, .inventory,
   ]
   // Screen zero launches, so verify docked screens before it.
   for i in 1..<10 {
@@ -289,7 +289,7 @@ import Testing
     SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1000)),
     SpaceBody(id: 4, hull: .thargoid, position: .init(0, 0, 2000)),
   ]
-  game.key("tab")
+  game.key("energy-bomb")
   game.tick(delta: 0.02)
   #expect(game.bodies.count == 1 && game.bodies[0].hull == .station)
   #expect(!game.commander.equipment.contains("Energy Bomb"))
@@ -312,12 +312,12 @@ import Testing
   #expect(game.screen == .gameOver)
   game = Game(executive: false)
   game.launch()
-  game.key("escape")
+  game.key("escape-pod")
   #expect(!game.docked)
   game.commander.equipment.insert("Escape Pod")
   game.commander.cargo[0] = 10
   game.commander.legal = 30
-  game.key("escape")
+  game.key("escape-pod")
   #expect(game.docked && game.commander.cargoTonnes == 0 && game.commander.legal == 0)
   game.launch()
   game.bodies = []

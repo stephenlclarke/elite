@@ -9,6 +9,7 @@ mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 cp Resources/Elite.icns "$APP_BUNDLE/Contents/Resources/Elite.icns"
 cp "$(swift build --show-bin-path)/Elite" "$APP_BUNDLE/Contents/MacOS/Elite"
+rm -rf "$APP_BUNDLE/Contents/Resources/Elite_EliteCore.bundle"
 cp -R "$(swift build --show-bin-path)/Elite_EliteCore.bundle" "$APP_BUNDLE/Contents/Resources/"
 cp LICENSE "$APP_BUNDLE/Contents/Resources/LICENSE"
 cp NOTICE.md "$APP_BUNDLE/Contents/Resources/NOTICE.md"
@@ -30,11 +31,15 @@ PLIST
 codesign --force --sign - "$APP_BUNDLE" >/dev/null
 if [[ "$MODE" == --build-only ]]; then exit 0; fi
 # Stop only this checkout's staged application before relaunching it.
-APP_PID="$(pgrep -f "^$APP_BUNDLE/Contents/MacOS/Elite$" || true)"
-if [[ -n "$APP_PID" ]]; then kill "$APP_PID"; fi
+APP_PID="$(pgrep -f "^$APP_BUNDLE/Contents/MacOS/Elite([[:space:]]|$)" || true)"
+if [[ -n "$APP_PID" ]]; then
+  while IFS= read -r pid; do kill "$pid"; done <<< "$APP_PID"
+fi
 if [[ "$MODE" == --debug ]]; then exec lldb -- "$APP_BUNDLE/Contents/MacOS/Elite"; fi
-/usr/bin/open -n "$APP_BUNDLE"
+LAUNCH_ARGS=()
+if [[ -n "${ELITE_WINDOW_SIZE:-}" ]]; then LAUNCH_ARGS=(--args "--window-size=$ELITE_WINDOW_SIZE"); fi
+/usr/bin/open -n "$APP_BUNDLE" "${LAUNCH_ARGS[@]}"
 case "$MODE" in
   --logs|--telemetry) /usr/bin/log stream --info --style compact --predicate 'process == "Elite"' ;;
-  --verify) sleep 1; pgrep -f "^$APP_BUNDLE/Contents/MacOS/Elite$" >/dev/null ;;
+  --verify) sleep 1; pgrep -f "^$APP_BUNDLE/Contents/MacOS/Elite([[:space:]]|$)" >/dev/null ;;
 esac
