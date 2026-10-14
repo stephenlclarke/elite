@@ -1,4 +1,4 @@
-# feat(missions): add Lua missions and owned physical encounters
+# feat(missions): add Lua missions, physical encounters and isolated trials
 
 ## Motivation and behavior
 
@@ -6,11 +6,11 @@ The owner requested a generic Lua mission engine on a new branch. The implementa
 
 ## Implementation
 
-SHA-pinned vendored Lua, C-only protected/budgeted host, explicit serializable data, strict schema 2 folder loading and immutable installation, capability gates, durable staged commander transactions, station Confirm, local/flight timers, native Gallery references, isolated trial/save namespaces and immutable hashed save generations; whole-cohort classic admission, stable actor identity/world records, true death versus removal, native completion gates and saved combat RNG/tactics; actual crew/physical cabin fit, uniquely owned empty cabin storage/refitting and native passenger delivery receipts. See [API, limits and remaining work](SCRIPTABLE-MISSIONS.md).
+SHA-pinned vendored Lua, C-only protected/budgeted host, explicit serializable data, strict schema 2 folder loading and immutable installation, capability gates, durable staged commander transactions, station Confirm, local/flight timers, native Gallery references, player-facing isolated trials with restart/return/retry and scoped Save/Open and immutable hashed save generations; whole-cohort classic admission, stable actor identity/world records, true death versus removal, native completion gates and saved combat RNG/tactics; actual crew/physical cabin fit, uniquely owned empty cabin storage/refitting and native passenger delivery receipts. See [API, limits and remaining work](SCRIPTABLE-MISSIONS.md).
 
 ## Validation
 
-Full `make ci` passes: 340 tests in each coverage/thread/address lane, 93.41% maintained-code coverage, 95.46% new script Swift coverage, 94.72% charter/accommodation coverage, 94.62% maintained C-host coverage 100% durable-transaction helper coverage and 0 leaks. [Machine-readable evidence](SCRIPTABLE-MISSION-VALIDATION.json) pins the validated source bytes. Markdown and relative-link checks pass. Unmodified Lua is excluded from maintained-code coverage and analysis scope, while the custom host remains included and compiled Lua participates in sanitizer/leak execution.
+Full `make ci` passes: 352 tests in each coverage/thread/address lane, 93.41% maintained-code coverage, 95.71% new script Swift coverage, 94.72% charter/accommodation coverage, 94.62% maintained C-host coverage, 97.65% trial-runtime coverage, 100% durable-transaction helper coverage and 0 leaks. [Machine-readable evidence](SCRIPTABLE-MISSION-VALIDATION.json) pins the validated source bytes. Markdown and relative-link checks pass. Unmodified Lua is excluded from maintained-code coverage and analysis scope, while the custom host remains included and compiled Lua participates in sanitizer/leak execution.
 
 ## Compatibility and risks
 

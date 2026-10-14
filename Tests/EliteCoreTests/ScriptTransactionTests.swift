@@ -307,7 +307,10 @@ private func timerFixture() throws -> DurableFixture {
       && game.commander.scriptState.instances.values.first?.ownedEncounters.isEmpty == true)
   #expect(
     game.commander.scriptState.instances.values.first?.suspension?.contains("result queue") == true)
-  #expect(!FileManager.default.fileExists(atPath: url.path))
+  let (saved, world) = try ScriptSaveStore.read(Data(contentsOf: url), from: url)
+  #expect(
+    world.bodies == bodies
+      && saved.scriptState.instances.values.first?.ownedEncounters.isEmpty == true)
 }
 
 @Test func durableCapabilityRequiresBoundWriterAndTrialUsesOnlyItsOwnWriter() async throws {
@@ -389,7 +392,9 @@ private func timerFixture() throws -> DurableFixture {
   let bytes = try Data(contentsOf: fixture.url)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
   let copied = namespace.appendingPathComponent("copied.json")
-  try bytes.write(to: copied)
+  var copiedPointer = pointer
+  copiedPointer.scope = "gallery"
+  try JSONEncoder().encode(copiedPointer).write(to: copied)
   let sidecar = copied.appendingPathExtension("missions")
   try FileManager.default.createDirectory(at: sidecar, withIntermediateDirectories: true)
   let link = sidecar.appendingPathComponent(pointer.generation)

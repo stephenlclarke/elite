@@ -4,13 +4,20 @@ import Foundation
 public struct SpeechFeed: Sendable {
   private var epoch: UUID?
   private var eventID = 0
+  private var cursors: [UUID: Int] = [:]
+  private var recentEpochs: [UUID] = []
   private var queue = AnnouncementQueue()
   private var previousScreen: Screen?
   public init() {}
   public mutating func update(_ game: Game, busy: Bool) -> String? {
     if epoch != game.ecmControl.epoch {
-      epoch = game.ecmControl.epoch
-      eventID = 0
+      if let epoch { cursors[epoch] = eventID }
+      let next = game.ecmControl.epoch
+      epoch = next
+      eventID = cursors[next] ?? 0
+      recentEpochs.removeAll { $0 == next }
+      recentEpochs.append(next)
+      if recentEpochs.count > 64 { cursors.removeValue(forKey: recentEpochs.removeFirst()) }
       queue.clear()
     }
     let fresh = game.ecmControl.events.filter { $0.id > eventID }

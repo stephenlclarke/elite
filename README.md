@@ -252,13 +252,15 @@ The Constrictor hunt, Thargoid plans delivery and Blackjack's Bullion now load t
 
 Choose **Commander > Install Mission Pack...**, select a validated `.toml`, then open **Game > Mission Gallery**. At an eligible main station, **Game > Mission Contacts** or **B** opens its Confirm/Back dialog. Installing supported content does not require rebuilding the app. Packs are stored in `~/.xyzzy/elite/mission-packs/`; manual copying there takes effect at next launch. The optional [Lave courier example](docs/mission-packs/courier.toml) demonstrates a new two-stage parcel delivery and once-only 50 CR reward.
 
-See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. Unsupported AI, passenger cabins, crew, station boards and other new mechanics still require engine work; the research queue is not automatically playable.
+See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. The feature branch adds bounded Lua, actual common humanoid charter cabins, isolated trials and durable transactions; see the [implemented script API and remaining work](docs/SCRIPTABLE-MISSIONS.md). Full source-specific AI, custody, station boards and other mechanics still require engine work; the research queue is not automatically playable.
 
 ## Mission Gallery
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.
 
 The gallery shows Active, Available, Complete and Failed counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. The two BBC missions each have three required milestones; the station campaign has seven. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
+
+For a supported installed schema 2 script, select it and press **T**, or choose **Game > Try Selected Mission**. The labelled trial has a fresh commander and separate saves. **Game > Restart Mission Trial** starts it again; **Game > Return to Commander** restores your exact live game. Press **R** on a suspended script to retry after restoring its exact pack or resolving the native problem. Legacy campaign trial scenes remain unavailable.
 
 Browsing is read-only. Flight time, movement, combat, AUTO and Spin Hold freeze while the gallery is open. Closing restores the exact prior screen and paused state and clears held weapon, keyboard and touch input. A pending naval briefing must be completed before opening the gallery. Older commander saves remain compatible.
 

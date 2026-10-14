@@ -12,7 +12,8 @@ extension GameRuntime {
       candidate.persistBlackjackTargets()
       candidate.persistScriptActors()
       try ScriptSaveStore.write(
-        commander: candidate.commander, world: candidate.scriptWorldSave, to: url)
+        commander: candidate.commander, world: candidate.scriptWorldSave, to: url,
+        scope: namespace == nil ? "commander" : "gallery")
     }
   }
   /// User commands are staged before a frame is published. Disk failure publishes no
@@ -54,10 +55,11 @@ extension GameRuntime {
     candidate.persistScriptActors()
     guard candidate.commander.valid else { throw SaveError.invalidCommander }
     if !candidate.commander.scriptState.instances.isEmpty
-      || !candidate.commander.accommodation.ownedBerths.isEmpty
+      || !candidate.commander.accommodation.ownedBerths.isEmpty || candidate.isMissionTrial
     {
       try ScriptSaveStore.write(
-        commander: candidate.commander, world: candidate.scriptWorldSave, to: url)
+        commander: candidate.commander, world: candidate.scriptWorldSave, to: url,
+        scope: candidate.isMissionTrial ? "gallery" : "commander")
     } else {
       let data = try JSONEncoder().encode(candidate.commander)
       guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
@@ -65,5 +67,21 @@ extension GameRuntime {
         at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
       try data.write(to: url, options: .atomic)
     }
+  }
+}
+
+extension Game {
+  mutating func recordScriptFailure(_ id: UUID, error: any Error, publish: ScriptPublisher?) {
+    commander.scriptState.instances[id]?.suspension = String(
+      error.localizedDescription.prefix(1024))
+    notify("MISSION SUSPENDED - SEE MISSION GALLERY")
+    // A deterministic script/validation fault can be saved without its rejected proposal.
+    // A failed filesystem write is not retried here; live native facts remain intact.
+    guard error is MissionPackError, let publish else { return }
+    var fault = self
+    do {
+      try publish(&fault)
+      self = fault
+    } catch { notify("MISSION SUSPENDED - SAVE UNAVAILABLE") }
   }
 }

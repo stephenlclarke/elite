@@ -38,6 +38,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let dialogs: [ScriptDialog]?
   public let encounters: [ScriptEncounterDefinition]?
   public let passengerParties: [ScriptPassengerParty]?
+  public let trial: ScriptTrialDefinition?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -54,7 +55,7 @@ public struct ScriptPack: Sendable {
 public enum ScriptCapabilities {
   public static let implemented: Set<String> = [
     "script-lua-v1", "story-v2", "economy-v2", "cargo-v2", "local-flight-clocks-v2",
-    "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2",
+    "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -87,7 +88,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -116,6 +117,9 @@ public enum ScriptPackLibrary {
           parties.table(atIndex: index),
           "id names pickupGalaxy pickupSystem destinationGalaxy destinationSystem")
       }
+    }
+    if root.contains(key: "trial") {
+      try keys(root.table(forKey: "trial"), "ship galaxy system credits cabins flight")
     }
     let manifest = try TOMLDecoder().decode(ScriptManifest.self, from: bytes)
     try validate(manifest)
@@ -206,6 +210,11 @@ public enum ScriptPackLibrary {
       Set(manifest.mission.requiredPassengerParties ?? []).isSubset(of: Set(parties.map(\.id))),
       parties.isEmpty || manifest.capabilities.contains("charter-passengers-v2")
     else { throw MissionPackError("Invalid passenger parties or missing charter capability.") }
+    if let trial = manifest.trial {
+      guard trial.valid, manifest.capabilities.contains("gallery-basic-v2") else {
+        throw MissionPackError("Invalid trial loadout or missing basic Gallery capability.")
+      }
+    }
     try path(manifest.module)
     guard manifest.module.hasSuffix(".lua"), manifest.module != "manifest.toml" else {
       throw MissionPackError("Declare a pack-local .lua module.")

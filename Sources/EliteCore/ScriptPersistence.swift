@@ -71,12 +71,17 @@ struct ScriptSavePointer: Codable {
   let schemaVersion: Int
   let generation: String
   let hashes: [String: String]
+  var scope: String? = nil
 }
 
 /// Publication is synchronous inside GameRuntime: no actor reentrancy can overwrite newer simulation state.
 enum ScriptSaveStore {
-  static func write(commander: Commander, world: ScriptWorldSave, to url: URL) throws {
-    guard commander.valid, world.valid, world.consistent(with: commander) else {
+  static func write(
+    commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander"
+  ) throws {
+    guard ["commander", "gallery"].contains(scope), commander.valid, world.valid,
+      world.consistent(with: commander)
+    else {
       throw SaveError.invalidCommander
     }
     let encoder = JSONEncoder()
@@ -101,8 +106,8 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 5, generation: generation,
-      hashes: chunks.mapValues(ScriptPackLibrary.hash))
+      format: "elite-script-save", schemaVersion: 6, generation: generation,
+      hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope)
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
   }
@@ -116,9 +121,10 @@ enum ScriptSaveStore {
   static func read(_ pointerBytes: Data, from url: URL) throws -> (Commander, ScriptWorldSave) {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-    guard pointer.format == "elite-script-save", (2...5).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...6).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
-      Set(pointer.hashes.keys) == ["commander.json", "missions.json", "world.json"]
+      Set(pointer.hashes.keys) == ["commander.json", "missions.json", "world.json"],
+      pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
     else { throw SaveError.invalidCommander }
     let directory = try generationDirectory(pointer.generation, from: url)
     var chunks: [String: Data] = [:]

@@ -10,6 +10,7 @@
     "classic-encounters-v2",
     "durable-commands-v2",
     "economy-v2",
+    "gallery-basic-v2",
     "local-flight-clocks-v2",
     "script-lua-v1",
     "story-v2"
@@ -195,7 +196,7 @@
         "Sources/EliteCore/ScriptTransactions.swift",
         "Sources/EliteCore/ScriptSolarSave.swift"
       ],
-      "remaining": "Format5 immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required."
+      "remaining": "Format6 scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required."
     },
     {
       "id": "R16",
@@ -231,9 +232,12 @@
         "Sources/EliteCore/ScriptRuntime.swift",
         "Sources/EliteCore/MissionGallery.swift",
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptGalleryTrial.swift",
+        "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift",
+        "Tests/EliteCoreTests/NativeViewTests.swift"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "remaining": "Supported schema2 entries have a native isolated launcher, validated starting loadout, actual launch, retry/restart/return and scoped Save/Open. Full historical scenes, checkpoints, rich source/estimate labels and legacy campaign trial presets remain required; gallery-world-v1 stays gated."
     },
     {
       "id": "R19",
@@ -341,23 +345,24 @@
         "8115302",
         "dd27810"
       ],
-      "status": "Final protected main1ef005e integrated; all340-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
+      "status": "Final protected main1ef005e integrated; all352-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
       "latest_clean_source": "5939431bc038c7a099ddee9b7bb2e3ffa7567553",
       "merged_main": "1ef005e0c73971a360a0e3bb52792a9286a761d3"
     },
-    "gui_lease": "Coder1 signed1.3.1 smoke released the GUI before this successful325-test combined CI. No interactive engine GUI session used."
+    "gui_lease": "Release GUI lease released; native AppKit integration test windows only."
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 340,
+    "tests_per_lane": 352,
     "maintained_coverage_percent": 93.41,
-    "script_swift_coverage_percent": 95.46,
+    "script_swift_coverage_percent": 95.71,
     "encounter_coverage_percent": 97.73,
     "maintained_c_host_coverage_percent": 94.62,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.72,
     "solar_save_coverage_percent": 100.0,
-    "durable_transaction_coverage_percent": 100.0
+    "durable_transaction_coverage_percent": 100.0,
+    "gallery_trial_coverage_percent": 97.65
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -384,7 +389,7 @@
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes340 tests per lane,93.41% maintained coverage,100% transaction-helper coverage and0leaks; exact bytes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes352 tests per lane,93.41% maintained coverage,95.71% script coverage,97.65% Gallery trial coverage,100% transaction-helper coverage and0leaks; exact bytes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -393,5 +398,18 @@
     "initial_charter_cabins": 0,
     "source": "Sources/EliteCore/ShipAccommodation.swift",
     "release_gameplay_records_changed": false
+  },
+  "gallery_checkpoint": {
+    "status": "implemented basic schema2 trials; full historical Gallery incomplete",
+    "test_command": "make ci",
+    "tests": 352,
+    "isolation": [
+      "complete live Game and writer restored",
+      "scoped saves reject opposite mode",
+      "delayed controls and file dialogs rejected",
+      "native menu saving preserves live bytes/preferences",
+      "restart retains seeded scene",
+      "saved fault requires explicit retry"
+    ]
   }
 }

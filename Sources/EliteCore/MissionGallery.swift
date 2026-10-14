@@ -21,6 +21,8 @@ public struct GalleryMission: Sendable {
   public let prerequisites: [String]
   public let completed: Int
   public let milestones: [MissionMilestone]
+  public var trialDigest: String? = nil
+  public var savedInstance: UUID? = nil
   public var progress: String { "\(completed) of \(milestones.count) milestones" }
 }
 public struct MissionGalleryState: Sendable {
@@ -219,12 +221,17 @@ extension Display {
         "Lines \(offset + 1)-\(min(lines.count, offset + count)) of \(lines.count)", x, height - 40,
         scale: layout.font, ink: .yellow)
     }
-    frame.label(
+    var actions =
       game.gallery.detail
-        ? "Up/Down: read  Tab: list  Esc: back  K: help"
-        : "Up/Down: mission  Return: details  Esc: back  K: help", 16, height - 20,
-      scale: layout.font,
-      ink: .cyan)
+      ? "Arrows: read  Tab: list  Esc: back" : "Arrows: mission  Return: details  Esc: back"
+    if game.canTrialSelectedMission { actions += "  T: trial" }
+    if game.canRetrySelectedMission { actions += "  R: retry" }
+    frame.label(actions, 16, height - 20, scale: layout.font, ink: .cyan)
+    if game.messageTime > 0 {
+      frame.label(
+        String(game.message.prefix(max(1, Int((width - 32) / (6 * layout.font))))), 16, 62,
+        scale: layout.font, ink: .orange)
+    }
     return frame
   }
 }

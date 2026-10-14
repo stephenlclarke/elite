@@ -213,7 +213,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let url = folder.appendingPathComponent("save.json")
   try await runtime.save(to: url)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 5)
+  #expect(pointer.schemaVersion == 6)
   let restored = GameRuntime()
   try await restored.load(from: url)
   #expect(await restored.snapshot().commander.accommodation == game.commander.accommodation)

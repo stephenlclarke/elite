@@ -2,7 +2,7 @@
 
 The desktop game binds the mission runtime to the active commander save. A schema 2 acceptance, confirmation, payment, payload/passenger transfer or refit is staged and written before its effects return to the interface. Scripted native input commands use the same barrier. Opening an unaccepted offer or changing a read-only preview does not create a save.
 
-The writer uses the existing immutable format-5 generation and atomic pointer publication. The complete candidate includes commander/property, native bodies, actual clock/timer state, event acknowledgments, operation receipts and native result envelopes. A deployed encounter and its later admission envelope cannot be separated by a crash between writes. Earlier generations remain intact.
+The writer uses the existing immutable format-6 generation and atomic pointer publication. The complete candidate includes commander/property, native bodies, actual clock/timer state, event acknowledgments, operation receipts and native result envelopes. A deployed encounter and its later admission envelope cannot be separated by a crash between writes. Earlier generations remain intact.
 
 ## Failure and recovery
 
@@ -22,7 +22,7 @@ Declare `durable-commands-v2` when a pack requires this guarantee. A memory-only
 
 The barrier is synchronous inside GameRuntime, with no actor suspension during publication. Native input and rendering see the previous or the fully committed state. Legacy autonomous world-business/controller integration, background writer scheduling, bounded input backpressure, archival segments and explicit content migrations remain unfinished design requirements; this checkpoint is not full engine readiness.
 
-Gallery runtimes use a fresh commander, seeded native simulation/instance stream and an independently created save namespace. Their initial state is saved before the trial runtime is returned. Subsequent automatic transactions can use only that namespace. Production saves and pack installation remain inaccessible through the trial API; redirected namespaces and linked save-generation escapes are rejected. A native player-facing trial launcher and full authored world scenarios remain separate work.
+Gallery runtimes use a fresh commander, seeded native simulation/instance stream and an independently created save namespace. Their initial state is saved before the trial runtime is returned. Subsequent automatic transactions can use only that namespace. Production saves and pack installation remain inaccessible through the trial API; redirected namespaces and linked save-generation escapes are rejected. The native Gallery launcher, retry/restart/return actions and separate Save/Open destinations are implemented for supported schema 2 packs. Complete historical world scenarios remain separate work. New saves carry a commander/gallery scope tag.
 
 ## Evidence
 

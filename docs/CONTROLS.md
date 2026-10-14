@@ -66,7 +66,7 @@ On the Passenger Berth equipment row, Return buys another cabin, S stores one em
 
 **Game > Mission Contacts** opens an eligible station contact. Mission dialogs use arrows to choose Confirm or Back, Return or a click to select, and Escape to return without a transfer. They return to the station screen that opened them. Initial enrolment and automatic naval orders/rewards retain their campaign rules.
 
-**Game > Station Rumours** opens the local station rumour. Escape returns to the previous screen. **Game > Mission Gallery** opens the read-only mission list. Up/Down selects, Return or a click opens details, Tab switches list/details, and arrows/scrolling in details reads more. Escape returns to the list, then to the previous screen. Flight freezes during the gallery.
+**Game > Station Rumours** opens the local station rumour. Escape returns to the previous screen. **Game > Mission Gallery** opens the read-only mission list. Up/Down selects, Return or a click opens details, Tab switches list/details, and arrows/scrolling in details reads more. Escape returns to the list, then to the previous screen. Flight freezes during the gallery. Select a supported schema 2 script and press T to start its isolated trial. R retries a supported suspended script. Game menu actions restart the trial or return to the live commander. Trial Save/Load stays separate from the live commander; Space/Return restarts after a trial loss.
 
 Naval mission messages retain the two-second incoming-message delay. Return/Space advances; arrows review pages; Escape closes the message. These controls do not accept/reject a mission or change its automatic award rules. Campaign-specific details are in the campaign guides.
 

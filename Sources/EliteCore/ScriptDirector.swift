@@ -193,8 +193,7 @@ extension Game {
         try publish?(&candidate)
         self = candidate
       } catch {
-        commander.scriptState.instances[event.instance]?.suspension = error.localizedDescription
-        notify("MISSION SUSPENDED - SEE MISSION GALLERY")
+        recordScriptFailure(event.instance, error: error, publish: publish)
       }
     }
   }
@@ -352,7 +351,7 @@ extension Game {
           milestones: pack.manifest.mission.milestones.enumerated().map { i, title in
             MissionMilestone(
               title: title, state: state?.milestones.contains(i) == true ? "Complete" : "Upcoming")
-          }))
+          }, trialDigest: pack.digest, savedInstance: state?.id))
     }
     for state in commander.scriptState.instances.values.sorted(by: {
       $0.id.uuidString < $1.id.uuidString

@@ -246,6 +246,10 @@ public struct Game: Sendable {
   public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false
+  public var isMissionTrial = false
+  public var trialTitle: String?
+  var trialDigest: String?
+  var trialSeed: UInt64?
   public var docked = true
   public var dockedAtMainStation = true
   var scriptReferenceFrame: ScriptReferenceFrame?
@@ -1310,14 +1314,22 @@ public enum SaveError: Error { case invalidCommander }
 /// Owns all mutable simulation state. Rendering consumes value snapshots only.
 public actor GameRuntime {
   var game: Game
-  private var controls = Controls()
-  let galleryNamespace: URL?
+  var controls = Controls()
+  var galleryNamespace: URL?
+  var galleryParent: GalleryParentState?
   var scriptSaveURL: URL?
   public init(game: Game = Game(), saveURL: URL? = nil) {
     self.game = game
-    self.game.scriptDurabilityAvailable = saveURL != nil
-    galleryNamespace = nil
-    scriptSaveURL = saveURL
+    if game.isMissionTrial {
+      let namespace = Self.newGalleryNamespace()
+      galleryNamespace = namespace
+      scriptSaveURL = namespace.appendingPathComponent("commander.json")
+      self.game.scriptDurabilityAvailable = true
+    } else {
+      self.game.scriptDurabilityAvailable = saveURL != nil
+      galleryNamespace = nil
+      scriptSaveURL = saveURL
+    }
   }
   init(trialGame: Game) throws {
     let namespace = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
@@ -1325,6 +1337,7 @@ public actor GameRuntime {
     let target = namespace.appendingPathComponent("commander.json")
     var candidate = trialGame
     candidate.scriptDurabilityAvailable = true
+    candidate.isMissionTrial = true
     try Self.writeCommander(&candidate, to: target)
     game = candidate
     galleryNamespace = namespace
@@ -1332,9 +1345,15 @@ public actor GameRuntime {
   }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
+    if galleryAction(key) { return }
     let before = game
     let held = controls
     applyKey(key)
+    game.scriptDurabilityAvailable = scriptSaveURL != nil
+    if before.screen == .gameOver, [" ", "return"].contains(key) {
+      game.scriptPacks = before.scriptPacks
+      game.missionPacks = before.missionPacks
+    }
     do { try commitScriptCommand(from: before) } catch {
       game = before
       controls = held
@@ -1382,7 +1401,9 @@ public actor GameRuntime {
   }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
-  public func setControls(_ value: Controls) { controls = value }
+  public func setControls(_ value: Controls, expectedEpoch: UUID? = nil) {
+    controls = expectedEpoch == nil || expectedEpoch == game.ecmControl.epoch ? value : Controls()
+  }
   public func setViewport(width: Double, height: Double) {
     game.viewportWidth = width
     game.viewportHeight = height
@@ -1434,12 +1455,22 @@ public actor GameRuntime {
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     if let pointer = try? JSONDecoder().decode(ScriptSavePointer.self, from: data) {
+      if pointer.schemaVersion >= 6 {
+        guard (pointer.scope == "gallery") == (galleryNamespace != nil) else {
+          throw MissionPackError(
+            "Trial saves open only in Gallery trials; commander saves open in the live game.")
+        }
+      }
       let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: url)
       try Self.requireGalleryPathAccess(generation, namespace: galleryNamespace)
       let (commander, world) = try ScriptSaveStore.read(data, from: url)
       // v2 is already migrated/validated; ordinary docking/load callbacks must not replay here.
       var candidate = Game(executive: false)
       candidate.commander = commander
+      candidate.isMissionTrial = galleryNamespace != nil
+      candidate.trialTitle = game.trialTitle
+      candidate.trialDigest = game.trialDigest
+      candidate.trialSeed = game.trialSeed
       candidate.missionPacks = game.missionPacks
       candidate.scriptPacks = game.scriptPacks
       candidate.viewportWidth = game.viewportWidth
@@ -1451,6 +1482,9 @@ public actor GameRuntime {
       scriptSaveURL = url
       game.scriptDurabilityAvailable = true
       return
+    }
+    guard galleryNamespace == nil else {
+      throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
     var commander = try JSONDecoder().decode(Commander.self, from: data)
     let original = commander

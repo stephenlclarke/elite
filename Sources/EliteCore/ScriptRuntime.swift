@@ -21,30 +21,24 @@ extension GameRuntime {
         : "MISSION REFERENCE INSTALLED - SEE MISSION GALLERY")
   }
   public func resumeScriptMission(_ id: UUID) throws {
-    guard let state = game.commander.scriptState.instances[id],
+    guard let state = game.commander.scriptState.instances[id], state.outcome == .active,
       let pack = game.scriptPack(for: state),
       game.scriptUnavailable(pack) == nil
     else { throw MissionPackError("Restore the exact saved pack and its requirements.") }
-    game.commander.scriptState.instances[id]?.suspension = nil
+    var candidate = game
+    candidate.commander.scriptState.instances[id]?.suspension = nil
+    try scriptPublisher()?(&candidate)
+    game = candidate
     game.drainScriptEvents(publish: scriptPublisher())
+    if let reason = game.commander.scriptState.instances[id]?.suspension {
+      throw MissionPackError(reason)
+    }
   }
   /// Gallery trials receive separate value state and have no access to live save writers or directories.
   public func scriptGalleryTrial(packDigest: String, seed: UInt64 = 0x45_4c49_5445) throws
     -> GameRuntime
   {
-    guard let pack = game.scriptPacks.first(where: { $0.digest == packDigest }) else {
-      throw MissionPackError("Choose an installed mission for a trial.")
-    }
-    var trial = Game(executive: false)
-    trial.screen = .status
-    trial.scriptPacks = game.scriptPacks
-    trial.missionPacks = game.missionPacks
-    trial.scriptDurabilityAvailable = true
-    guard trial.scriptUnavailable(pack) == nil else {
-      throw MissionPackError("This mission's native capabilities are not available for a trial.")
-    }
-    trial.seedScriptTrial(seed)
-    _ = try trial.acceptScriptMission(pack, randomSeed: seed)
+    let trial = try game.makeScriptTrial(packDigest: packDigest, seed: seed)
     return try GameRuntime(trialGame: trial)
   }
 }

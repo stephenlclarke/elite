@@ -15,6 +15,7 @@ final class GameView: NSView {
         }
       }
       if game.screen != oldValue.screen || game.paused != oldValue.paused
+        || game.ecmControl.epoch != oldValue.ecmControl.epoch
         || game.acceptsTextInput != oldValue.acceptsTextInput
       {
         held.removeAll()
@@ -327,8 +328,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func processFrame(in view: GameView, delta: () -> Double) async {
     await processPendingCommands(in: view)
     await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
-    await runtime.setControls(view.controls)
+    await runtime.setControls(view.controls, expectedEpoch: view.game.ecmControl.epoch)
     view.game = await runtime.advance(delta: delta())
+    window?.title =
+      view.game.isMissionTrial
+      ? "MISSION TRIAL - " + (view.game.trialTitle ?? "Mission") + " - Game > Return to Commander"
+      : "XYZZY Elite - Right-On Commander"
     view.audio.update(view.game)
     view.needsDisplay = true
   }
@@ -338,11 +343,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let events = view.pending
     view.pending.removeAll()
     for event in events {
-      if event.hasPrefix("commander-save:") {
-        let url = URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
+      if event.hasPrefix("commander-save-context:") {
+        let parts = event.dropFirst("commander-save-context:".count).split(
+          separator: ":", maxSplits: 1)
+        if parts.count == 2, let epoch = UUID(uuidString: String(parts[0])) {
+          do {
+            let receipt = try await runtime.saveForInterface(
+              to: URL(fileURLWithPath: String(parts[1])), expectedEpoch: epoch)
+            if !receipt.isTrial { self.saves.didSave(to: receipt.url) }
+          } catch { self.show(error) }
+        }
+      } else if event == "commander-save-default" || event.hasPrefix("commander-save:") {
+        let requested =
+          event == "commander-save-default"
+          ? nil
+          : URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
         do {
-          try await runtime.save(to: url)
-          self.saves.didSave(to: url)
+          let receipt = try await runtime.saveForInterface(to: requested)
+          if !receipt.isTrial { self.saves.didSave(to: receipt.url) }
         } catch { self.show(error) }
       } else if event.hasPrefix("secret-click:") {
         let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
@@ -463,6 +481,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     for (title, command) in [
       ("Mission Gallery", "gallery-open"), ("Mission Contacts", "contacts-open"),
       ("Station Rumours", "rumours-open"),
+      ("Try Selected Mission", "gallery-trial"), ("Retry Selected Mission", "mission-resume"),
+      ("Return to Commander", "trial-return"), ("Restart Mission Trial", "trial-restart"),
     ] {
       let item = game.submenu?.addItem(
         withTitle: title, action: #selector(gameAction(_:)), keyEquivalent: "")
@@ -496,6 +516,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func validateMenuItem(_ item: NSMenuItem) -> Bool {
     guard let game = (window?.contentView as? GameView)?.game else { return false }
     if let command = item.representedObject as? String {
+      if command == "trial-return" || command == "trial-restart" { return game.isMissionTrial }
+      if command == "gallery-trial" {
+        return game.screen == .gallery && game.canTrialSelectedMission
+      }
+      if command == "mission-resume" {
+        return game.screen == .gallery && game.canRetrySelectedMission
+      }
       if command.hasPrefix("screen:") {
         return !game.paused && !game.showroom.trading
           && ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(
@@ -562,11 +589,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     (window?.contentView as? GameView)?.pending.append("b")
   }
   @objc private func saveCommander() {
-    queueCommanderSave(to: saveURL)
+    (window?.contentView as? GameView)?.pending.append("commander-save-default")
   }
-  private func queueCommanderSave(to url: URL) {
+  private func queueCommanderSave(to url: URL, expectedEpoch: UUID? = nil) {
     // Preserve input order: a fast Save must include the preceding confirmation/refit.
-    (window?.contentView as? GameView)?.pending.append("commander-save:" + url.path)
+    let command =
+      expectedEpoch.map { "commander-save-context:" + $0.uuidString + ":" + url.path }
+      ?? ("commander-save:" + url.path)
+    (window?.contentView as? GameView)?.pending.append(command)
   }
   @objc private func installMissionPack() {
     let panel = NSOpenPanel()
@@ -582,29 +612,39 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   @objc private func loadCommander() {
     Task { [weak self] in
       guard let self else { return }
-      do { try await runtime.load(from: saveURL) } catch { show(error) }
+      do { _ = try await runtime.loadForInterface() } catch { show(error) }
     }
   }
   @objc private func chooseCommander() {
     Task { [weak self] in await self?.openChosenCommander() }
   }
   private func openChosenCommander() async {
+    let epoch = await runtime.snapshot().ecmControl.epoch
+    let namespace = await runtime.gallerySaveDirectory()
     let panel = NSOpenPanel()
+    panel.directoryURL = namespace ?? saves.activeURL.deletingLastPathComponent()
     panel.canChooseDirectories = false
     panel.allowsMultipleSelection = false
     panel.allowedContentTypes = [.json]
     guard panel.runModal() == .OK, let url = panel.url else { return }
     do {
-      try await runtime.load(from: url, persistMigrations: false)
-      saves.activeURL = url
+      let receipt = try await runtime.loadForInterface(
+        from: url, persistMigrations: false, expectedEpoch: epoch)
+      if !receipt.isTrial { saves.activeURL = receipt.url }
     } catch { show(error) }
   }
   @objc private func saveCommanderAs() {
-    let panel = NSSavePanel()
-    panel.allowedContentTypes = [.json]
-    panel.nameFieldStringValue = "commander.json"
-    guard panel.runModal() == .OK, let url = panel.url else { return }
-    queueCommanderSave(to: url)
+    Task { [weak self] in
+      guard let self else { return }
+      let epoch = await runtime.snapshot().ecmControl.epoch
+      let namespace = await runtime.gallerySaveDirectory()
+      let panel = NSSavePanel()
+      panel.allowedContentTypes = [.json]
+      panel.directoryURL = namespace ?? saves.activeURL.deletingLastPathComponent()
+      panel.nameFieldStringValue = namespace == nil ? "commander.json" : "trial.json"
+      guard panel.runModal() == .OK, let url = panel.url else { return }
+      queueCommanderSave(to: url, expectedEpoch: epoch)
+    }
   }
   private func recoverStartup(_ error: Error, url: URL) async {
     let alert = NSAlert()

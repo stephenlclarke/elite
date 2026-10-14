@@ -7,6 +7,77 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeGalleryTrialSaveKeepsLiveFileAndCommanderPreferences() async throws {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: folder)
+    }
+    let liveFile = folder.appendingPathComponent("live.json")
+    var commander = Commander()
+    commander.name = "KEEP"
+    commander.credits = 123456
+    let original = try JSONEncoder().encode(commander)
+    try original.write(to: liveFile)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: liveFile)
+    saves.didSave(to: liveFile)
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: liveFile, persistMigrations: false)
+    let pack = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent()
+      .deletingLastPathComponent().appendingPathComponent("docs/mission-packs/scripted-passengers")
+    try await delegate.runtime.installScriptPack(
+      from: pack, destination: folder.appendingPathComponent("packs"))
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    let view = try #require(window.contentView as? GameView)
+    await delegate.runtime.key("gallery-open")
+    for _ in 0..<3 { await delegate.runtime.key("down") }
+    view.game = await delegate.runtime.snapshot()
+    let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
+    let trialIndex = try #require(
+      menu.items.firstIndex { ($0.representedObject as? String) == "gallery-trial" })
+    #expect(delegate.validateMenuItem(menu.items[trialIndex]))
+    menu.performActionForItem(at: trialIndex)
+    let commanderMenu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
+    commanderMenu.performActionForItem(at: 0)
+    await delegate.processFrame(in: view, delta: { 0 })
+    let namespace = try #require(await delegate.runtime.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    #expect(view.game.isMissionTrial && window.title.hasPrefix("MISSION TRIAL"))
+    #expect(try Data(contentsOf: liveFile) == original)
+    #expect(
+      saves.activeURL == liveFile
+        && preferences.string(forKey: "lastCommanderSavePath") == liveFile.path)
+    let namedTrial = namespace.appendingPathComponent("named-trial.json")
+    view.pending = [
+      "commander-save-context:" + view.game.ecmControl.epoch.uuidString + ":" + namedTrial.path
+    ]
+    await delegate.processPendingCommands(in: view)
+    #expect(FileManager.default.fileExists(atPath: namedTrial.path) && saves.activeURL == liveFile)
+
+    view.held = [" ", "right"]
+    let returnIndex = try #require(
+      menu.items.firstIndex { ($0.representedObject as? String) == "trial-return" })
+    #expect(delegate.validateMenuItem(menu.items[returnIndex]))
+    menu.performActionForItem(at: returnIndex)
+    await delegate.processFrame(in: view, delta: { 0 })
+    #expect(!view.game.isMissionTrial && view.game.commander.name == "KEEP")
+    #expect(view.held.isEmpty && saves.activeURL == liveFile)
+    #expect(try Data(contentsOf: liveFile) == original)
+  }
+
   @MainActor @Test func nativeSaveIncludesEarlierQueuedCobraRestore() async throws {
     let id = UUID().uuidString
     let preferences = try #require(UserDefaults(suiteName: id))
@@ -42,7 +113,7 @@ struct NativeViewTests {
     view.pending = ["x", "y", "z", "z", "y"]
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
     menu.performActionForItem(at: 0)
-    #expect(view.pending.last == "commander-save:" + url.path)
+    #expect(view.pending.last == "commander-save-default")
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty)
     let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
