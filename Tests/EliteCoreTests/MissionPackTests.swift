@@ -142,6 +142,12 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
       "kind = \"payloadAdd\", key = \"parcel\", amount = 1",
       "kind = \"cargoAdd\", key = \"17\", amount = 1"
     ),
+    ("kind = \"credits\", amount = 500", "kind = \"equipmentAdd\", key = \"Military Laser\""),
+    ("kind = \"credits\", amount = 500", "kind = \"equipmentAdd\", key = \"Missile\""),
+    (
+      "kind = \"credits\", amount = 500",
+      "kind = \"equipmentRemove\", key = \"Targeting: Military\""
+    ),
     ("amount = 500", "amount = -1"),
   ]
   for edit in edits {
@@ -359,4 +365,59 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
     #expect(!labels.contains { $0.contains("6: showroom") || $0.contains("6: system data") })
     #expect(labels.contains { $0.contains("Esc: back") && $0.contains("K: help") })
   }
+}
+
+@Test func timedMissionFailureStaysFailedAfterDockAndReloadWithoutPayingAReward() async throws {
+  let folder = try packFolder()
+  defer { try? FileManager.default.removeItem(at: folder) }
+  let file = try modifiedPack([("\"cargo-v1\"]", "\"cargo-v1\", \"clock-v1\"]")], directory: folder)
+  let failure = """
+
+    [[stages]]
+    id = "failed"
+    objective = "The parcel deadline expired."
+    completed = 1
+    terminal = true
+    outcome = "failed"
+    [[transitions]]
+    id = "expiry"
+    from = "carrying"
+    event = "clock"
+    to = "failed"
+    conditions = [{ field = "stageSeconds", op = "ge", value = 0.1 }]
+    actions = [{ kind = "payloadRemove", key = "parcel", amount = 1 }]
+    """
+  let original = try String(contentsOf: file, encoding: .utf8)
+  try (original + failure).write(to: file, atomically: true, encoding: .utf8)
+  let entry = try MissionPackLibrary.read(file)
+  var game = Game(executive: false)
+  game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
+  game.screen = .status
+  game.key("b")
+  game.key("return")
+  game.launch()
+  game.bodies = []
+  game.tick(delta: 0.1)
+  #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == 0)
+  #expect(game.missionCatalogue.last?.status == .failed)
+  #expect(game.missionCatalogue.last?.completed == 1)
+  game.commander.system = 129
+  game.dock()
+  game.key("b")
+  #expect(game.commander.credits == 1000 && game.screen != .handoff)
+  let runtime = GameRuntime(game: game)
+  let save = folder.appendingPathComponent("failed.json")
+  try await runtime.save(to: save)
+  try await runtime.load(from: save)
+  #expect(await runtime.snapshot().missionCatalogue.last?.status == .failed)
+  let outgoing = """
+
+    [[transitions]]
+    id = "retry"
+    from = "failed"
+    event = "contact"
+    to = "available"
+    """
+  try (original + failure + outgoing).write(to: file, atomically: true, encoding: .utf8)
+  #expect(throws: MissionPackError.self) { try MissionPackLibrary.read(file) }
 }

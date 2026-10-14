@@ -1,6 +1,10 @@
 import Foundation
 
 enum PackValidation {
+  private static let equipmentFlags: Set<String> = [
+    "E.C.M. System", "Fuel Scoops", "Escape Pod", "Energy Bomb", "Extra Energy Unit",
+    Equipment.navalEnergyUnit, "Galactic Hyperdrive",
+  ]
   static func identifier(_ value: String) -> Bool {
     value.range(of: "^[a-z][a-z0-9.-]{0,79}$", options: .regularExpression) != nil
   }
@@ -68,6 +72,18 @@ enum PackValidation {
         }, "Invalid/duplicate dialog.")
     try require(
       Set(pack.transitions.map(\.id)).count == pack.transitions.count, "Duplicate transition ID.")
+    for stage in pack.stages {
+      try require(
+        stage.outcome == nil || stage.terminal == true, "An outcome requires a terminal stage.")
+      if stage.terminal == true {
+        try require(
+          !pack.transitions.contains { $0.from == stage.id },
+          "Terminal stages cannot have outgoing transitions.")
+        try require(
+          stage.outcome == .failed || stage.completed == pack.mission.milestones.count,
+          "A successful terminal stage must complete every milestone.")
+      }
+    }
   }
   private static func validate(_ transition: PackTransition, pack: MissionPack, bundled: Bool)
     throws
@@ -163,6 +179,10 @@ enum PackValidation {
     if action.kind.hasPrefix("equipment") {
       guard let key = action.key, Equipment.validNames.contains(key) else {
         throw MissionPackError("Unknown equipment.")
+      }
+      guard equipmentFlags.contains(key) else {
+        throw MissionPackError(
+          "This equipment needs a fitting/stock action not supported by schema 1.")
       }
     } else if action.kind.hasPrefix("cargo") {
       guard let key = action.key, let index = Int(key), (0..<17).contains(index),

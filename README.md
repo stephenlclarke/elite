@@ -253,7 +253,7 @@ See the [schema, capabilities, save compatibility and validation commands](docs/
 
 Choose **Game > Mission Gallery** in space or at a station to inspect all currently implemented missions, including locked and completed ones. Wide windows show the list and details side by side; narrow windows open a detail page. Use arrows and Return, click a mission, and scroll with the trackpad or Option-Up/Option-Down. Tab switches between list and details; Escape returns to the list, then to the previous screen.
 
-The gallery shows Active, Available and Complete counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. The two BBC missions each have three required milestones; the station campaign has seven. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
+The gallery shows Active, Available, Complete and Failed counts, prerequisites, briefing, destination, rewards, next step and a chronological timeline with Complete, Current, Upcoming or Locked states. The two BBC missions each have three required milestones; the station campaign has seven. Unlock scores and optional clues are separate; no travel percentage or invented historical events are shown. Destination spoilers are labelled.
 
 Browsing is read-only. Flight time, movement, combat, AUTO and Spin Hold freeze while the gallery is open. Closing restores the exact prior screen and paused state and clears held weapon, keyboard and touch input. A pending naval briefing must be completed before opening the gallery. Older commander saves remain compatible.
 

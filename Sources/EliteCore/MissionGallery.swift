@@ -5,6 +5,7 @@ public enum GalleryStatus: String, Sendable {
   case available = "Available"
   case locked = "Locked"
   case complete = "Complete"
+  case failed = "Failed"
 }
 public struct MissionMilestone: Sendable {
   public let title: String
@@ -121,10 +122,15 @@ extension Game {
   }
   func galleryDetailLines(width: Double, font: Double) -> [String] {
     let mission = missionCatalogue[gallery.selection]
-    let next =
-      mission.milestones.first { $0.state == "Current" }?.title
-      ?? (mission.status == .complete
-        ? "Assignment complete." : "Meet the prerequisites, then dock for orders.")
+    let ending: String
+    if mission.status == .failed {
+      ending = mission.objective
+    } else if mission.status == .complete {
+      ending = "Assignment complete."
+    } else {
+      ending = "Meet the prerequisites, then dock for orders."
+    }
+    let next = mission.milestones.first { $0.state == "Current" }?.title ?? ending
     let sections =
       [
         mission.name, "Status: \(mission.status.rawValue) - \(mission.progress)", "", "Briefing",
@@ -166,7 +172,7 @@ extension Display {
     frame.label("Esc: Back", width - 16 - 9 * 6 * layout.font, 12, scale: layout.font, ink: .cyan)
     let missions = game.missionCatalogue
     let counts =
-      "Active: \(missions.filter { $0.status == .active }.count)  Available: \(missions.filter { $0.status == .available }.count)  Complete: \(missions.filter { $0.status == .complete }.count)"
+      "Active: \(missions.filter { $0.status == .active }.count)  Available: \(missions.filter { $0.status == .available }.count)  Complete: \(missions.filter { $0.status == .complete }.count)  Failed: \(missions.filter { $0.status == .failed }.count)"
     frame.label(counts, 16, 38, scale: layout.font)
     frame.label(
       game.docked ? "Docked - read-only catalogue" : "Flight paused - read-only catalogue", 16, 62,

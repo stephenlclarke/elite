@@ -18,7 +18,7 @@ extension Game {
     if !compatible {
       status = .locked
     } else if stage.terminal == true {
-      status = .complete
+      status = stage.outcome == .failed ? .failed : .complete
     } else if stage.completed > 0 {
       status = .active
     } else {
@@ -28,6 +28,8 @@ extension Game {
       let label: String
       if index < stage.completed {
         label = "Complete"
+      } else if status == .failed {
+        label = "Failed"
       } else if index == stage.completed && status != .locked {
         label = "Current"
       } else {

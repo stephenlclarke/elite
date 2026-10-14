@@ -116,6 +116,7 @@ extension Game {
       let pack = entry.pack
       guard (pack.mission.binding == "naval") == naval, packMatchesSave(entry) else { continue }
       let state = progress(for: entry)
+      guard pack.stage(state.stage)?.terminal != true else { continue }
       guard
         let transition = pack.transitions.first(where: {
           $0.event == event && $0.from == state.stage

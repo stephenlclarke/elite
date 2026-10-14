@@ -16,11 +16,13 @@ public struct PackAction: Codable, Sendable {
   public let key: String?
   public let amount: Int?
 }
+public enum PackOutcome: String, Codable, Sendable { case complete, failed }
 public struct PackStage: Codable, Sendable {
   public let id: String
   public let objective: String
   public let completed: Int
   public let terminal: Bool?
+  public let outcome: PackOutcome?
   public let legacyValues: [Int]?
   public let legacyWrite: Int?
 }

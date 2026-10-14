@@ -13,7 +13,7 @@ enum PackKeys {
       root.table(forKey: "mission"),
       allowed: "id title initialStage briefing destination reward prerequisites milestones binding")
     let tables = [
-      "stages": "id objective completed terminal legacyValues legacyWrite",
+      "stages": "id objective completed terminal outcome legacyValues legacyWrite",
       "transitions": "id from event to conditions actions dialog confirmation notification",
       "dialogs": "id text ship delaySeconds",
       "clues": "galaxy systems texts", "encounters": "id stage galaxy system kind",
