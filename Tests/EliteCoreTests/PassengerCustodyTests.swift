@@ -213,7 +213,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let url = folder.appendingPathComponent("save.json")
   try await runtime.save(to: url)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 4)
+  #expect(pointer.schemaVersion == 5)
   let restored = GameRuntime()
   try await restored.load(from: url)
   #expect(await restored.snapshot().commander.accommodation == game.commander.accommodation)
@@ -266,4 +266,34 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let original = game.commander
   game.escapePod()
   #expect(!game.docked && game.commander == original && game.message.contains("CANNOT FIT"))
+}
+
+@Test func publicActorCabinTransactionsPreserveUniqueOwnershipAndRejectStaleQuotes() async throws {
+  var game = Game(executive: false)
+  game.screen = .equipment
+  game.commander.credits = 100000
+  let runtime = GameRuntime(game: game)
+  let quote = await runtime.passengerBerthQuote()
+  try await runtime.confirmPassengerBerth(quote)
+  await #expect(throws: MissionPackError.self) { try await runtime.confirmPassengerBerth(quote) }
+  var current = await runtime.snapshot()
+  let id = try #require(current.commander.accommodation.ownedBerths.first?.id)
+  try await runtime.setPassengerBerthFitted(id, fitted: false)
+  try await runtime.setPassengerBerthFitted(id, fitted: true)
+  current = await runtime.snapshot()
+  #expect(
+    current.commander.accommodation.fitted == [id]
+      && current.commander.accommodation.ownedBerths.count == 1)
+  #expect(!Equipment.maximumHardware.contains(PassengerCabin.equipmentName))
+}
+@Test func anotherMissionCannotSupplyTheRequiredPassengerDeliveryReceipt() throws {
+  var (game, pack) = try passengerGame()
+  let mission = try game.acceptScriptMission(pack)
+  let state = try #require(game.commander.scriptState.instances[mission])
+  let person = try #require(game.commander.accommodation.people.values.first)
+  game.commander.accommodation.people[person.id] = ScriptPassenger(
+    id: person.id, mission: UUID(), party: person.party, name: person.name,
+    location: .delivered(galaxy: 0, system: 129))
+  #expect(
+    !game.passengersDelivered("charter", pack: pack, instance: state, commander: game.commander))
 }

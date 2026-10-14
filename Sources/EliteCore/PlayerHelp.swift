@@ -44,12 +44,13 @@ public enum PlayerHelp {
             "OPTION-UP/DOWN - PAGE LONG LISTS",
             "SCROLL - BROWSE THE AREA UNDER POINTER",
             "COMMAND-P - PAUSE / RESUME",
-            "COMMAND-S / COMMAND-O - SAVE / LOAD",
+            "COMMAND-S / COMMAND-O - SAVE / RELOAD",
+            "COMMAND-SHIFT-S / O - SAVE AS / OPEN",
             "X Y Z Z Y - CLARKE / SECRET OPTIONS",
             "COMMAND-Q - QUIT",
           ]))
       if !game.docked {
-        if !screen.isFlight { pages.append(context(for: .front, game: game)) }
+        if !screen.isFlight { pages.append(contentsOf: paginate(context(for: .front, game: game))) }
         pages.append(contentsOf: flightReference)
       }
     }
@@ -86,6 +87,10 @@ public enum PlayerHelp {
           "TAB - NEXT TARGET / STATION AUTO DOCK",
           "Q - CANCEL AUTOMATIC GUIDANCE",
           "4 / 5 - CHART; H - HYPERSPACE",
+          "SUN / PLANET BEARINGS - FLIGHT HUD",
+          "FUEL SCOOPS - CRUISE TOWARD SUN",
+          "WATCH CABIN TEMP; TURN AWAY TO COOL",
+          "OVERHEATING / SURFACE IMPACT IS FATAL",
           "FLIGHT MENU - WEAPONS / DRIVES / POD",
           "ESC - BACK; NEVER LAUNCHES ESCAPE POD",
           "TRACKPAD: 2 FINGERS - STEER / CRUISE",
@@ -134,8 +139,10 @@ public enum PlayerHelp {
           "O - CURRENT LOCATION; D - DISTANCE",
           "M - ECONOMY / GOVERNMENT / TECHNOLOGY",
           "N - ROUTES (FITTED NAV COMPUTER)",
+          "P - TOGGLE TOP-FIVE PROFIT SCAN",
           "Z (LOCAL) - CHANGE RANGE",
-          "[ / ] OR GALAXY BUTTONS - VIEW GALAXY",
+          "[ / ] (GALACTIC) - VIEW GALAXY",
+          "GALAXY BUTTONS - VIEW GALAXY",
           "H - HYPERSPACE WHEN IN FLIGHT",
           "ESC - PREVIOUS SCREEN",
         ])
@@ -147,6 +154,7 @@ public enum PlayerHelp {
           "RETURN - SET ROUTE; ESC - BACK",
           "OPTION-UP/DOWN - SCROLL DETAILS",
           "C - CLEAR ROUTE",
+          "P - TOGGLE TOP-FIVE PROFIT SCAN",
           "DOCK AT EACH STOP; H STARTS EACH JUMP",
         ])
     case .showroom where game.showroom.trading:
@@ -241,7 +249,7 @@ public enum PlayerHelp {
     case .title:
       .init(
         title: "TITLE SCREEN",
-        rows: ["RETURN / SPACE - COMMANDER SCREEN", "NEW COMMANDER: JAMESON"])
+        rows: ["RETURN / SPACE - CONTINUE COMMANDER", "COMMANDER: " + game.commander.name])
     case .gameOver:
       .init(title: "GAME OVER", rows: ["RETURN / SPACE - NEW COMMANDER JAMESON"])
     default:
@@ -258,6 +266,21 @@ public enum PlayerHelp {
   }
 
   private static let flightReference: [HelpPage] = [
+    .init(
+      title: "FINDING THE STATION",
+      rows: [
+        "YELLOW COMPASS - CURRENT VIEW BEARING",
+        "RANGE IS IN LOCAL FLIGHT UNITS",
+        "BEHIND - TURN TOWARD LEFT / RIGHT",
+        "COMPASS UP / DOWN - STATION ELEVATION",
+        "VIEWS: 0 FRONT; 1 REAR; 2 LEFT; 3 RIGHT",
+        "COMPASS WORKS BEYOND SCANNER RANGE",
+        "NO TARGETING COMPUTER NEEDED FOR CUE",
+        "TAB - CYCLE SHIPS, THEN STATIONS",
+        "AUTO: DOCKING TARGETING TIER OR BETTER",
+        "AUTO FACES WAYPOINT, BRAKES, ALIGNS",
+        "Q OR MANUAL CONTROLS - CANCEL AUTO",
+      ]),
     .init(
       title: "FLIGHT: WEAPONS AND DRIVES",
       rows: [

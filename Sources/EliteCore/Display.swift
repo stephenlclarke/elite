@@ -226,7 +226,11 @@ public enum Display {
     draw(ship, game: game, into: &frame)
     frame.centered("RIGHT-ON COMMANDER VERSION", 163)
     frame.centered("PRESS SPACE COMMANDER", 190)
-    frame.centered("SWIFT MACOS REIMPLEMENTATION", 224)
+    frame.centered(BuildIdentity.current.versionLine, 208)
+    frame.centered(BuildIdentity.repository, 218)
+    for (index, line) in BuildIdentity.current.legacyRevisionLines.enumerated() {
+      frame.centered(line, 230 + index * 10)
+    }
   }
   private static func demo(_ game: Game, into frame: inout Frame) {
     var demonstration = game
@@ -238,12 +242,16 @@ public enum Display {
       demonstration.bodies[index].rotation = game.time * 0.7
     }
     for body in demonstration.bodies { draw(body, game: demonstration, into: &frame) }
-    let lines = [
-      "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
-      "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
-    ]
+    let lines =
+      [
+        "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
+        "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
+        BuildIdentity.current.versionLine, BuildIdentity.repository,
+      ] + BuildIdentity.current.legacyRevisionLines
+
+    let speed = Double(250 + lines.count * 24) / 11
     for (index, line) in lines.enumerated() {
-      let y = 250 + index * 24 - Int(game.time * 22)
+      let y = 250 + index * 24 - Int(game.time * speed)
       if (0..<250).contains(y) { frame.centered(line, y) }
     }
   }
@@ -270,9 +278,7 @@ public enum Display {
       let radius = frame.responsive ? 0.65 + proximity * 0.45 : 0.18 + proximity * 0.14
       frame.point(point.x, point.y, radius: radius, opacity: (0.5 + proximity * 0.45) * fade)
     }
-    for body in game.bodies.sorted(by: { $0.position.length > $1.position.length }) {
-      draw(body, game: game, into: &frame, projection: projection)
-    }
+    flightObjects(game, projection: projection, into: &frame)
     let x = projection.center.x
     let y = projection.center.y
     let size = frame.responsive ? 1.5 : 1.0
@@ -329,9 +335,14 @@ public enum Display {
       guard normal.dot(a) < 0 else { continue }
       visibleFaces.insert(entry.index)
       if game.commander.shipDisplayStyle == .shadedPanels {
+        let material =
+          mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
-          colour: ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
+          colour: material.map {
+            ShipProjection.shade($0.colour, normal: normal, emissive: $0.emissive)
+          }
+            ?? ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
         continue
       }
       let ink: Ink =

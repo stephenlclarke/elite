@@ -48,6 +48,15 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   public let license: String
   public let source: String
   public let details: [MeshDetail]?
+  public let materials: [ShipMaterial]?
+  public let faceMaterials: [Int]?
+  public let paletteName: String?
+  public let appearanceSource: String?
+  public let appearanceLicense: String?
+  public let appearanceBasis: String?
+  public let sourceFaceColours: [[Double]]?
+  public let sourceTextures: [ShipSourceTexture]?
+  public let sourceFaceTextures: [ShipSourceFaceTexture]?
   var valid: Bool {
     guard vertices.count >= 4, faces.count >= 4,
       vertices.allSatisfy({ $0.count == 3 && $0.allSatisfy(\.isFinite) }),
@@ -56,7 +65,15 @@ public struct ShipDesign: Codable, Sendable, Equatable {
     let indicesValid = faces.allSatisfy {
       $0.count >= 3 && $0.allSatisfy { vertices.indices.contains($0) }
     }
-    guard indicesValid,
+    let palette = materials ?? []
+    let assignments = faceMaterials ?? []
+    let materialsValid =
+      palette.isEmpty
+      ? assignments.isEmpty
+      : assignments.count == faces.count
+        && assignments.allSatisfy { palette.indices.contains($0) }
+        && palette.allSatisfy { !$0.name.isEmpty && $0.colour & 255 == 255 }
+    guard indicesValid, materialsValid, sourceAppearanceValid,
       (details ?? []).allSatisfy({
         vertices.indices.contains($0.start) && vertices.indices.contains($0.end)
           && faces.indices.contains($0.face)
@@ -71,7 +88,8 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   var rawMesh: Mesh {
     Mesh(
       vertices: vertices.map { Vector3($0[0], $0[1], $0[2]) }, faces: faces,
-      details: details ?? [], preserveWinding: true)
+      details: details ?? [], materials: materials ?? [], faceMaterials: faceMaterials ?? [],
+      preserveWinding: true)
   }
   var mesh: Mesh { rawMesh.showroomNormalised }
 }
@@ -94,6 +112,7 @@ public enum ShipCatalogue {
     let mesh = ship.design.mesh
     return Mesh(
       vertices: mesh.vertices.map { $0 * 0.69 }, faces: mesh.faces, details: mesh.details,
+      materials: mesh.materials, faceMaterials: mesh.faceMaterials,
       preserveWinding: true)
   }
   public static func nativeShip(_ hull: Hull) -> CatalogueShip? { nativeRecords[hull] }

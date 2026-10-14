@@ -34,21 +34,51 @@ struct NativeViewTests {
       window.orderOut(nil)
     }
     let view = try #require(window.contentView as? GameView)
+    // Stop and await the automatic consumer before draining the real menu batch
+    // deterministically. Heavy sanitizer workloads can starve a wall-clock poll.
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
     view.pending = ["x", "y", "z", "z", "y"]
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
     menu.performActionForItem(at: 0)
-    let saved = ContinuousClock.now.advanced(by: .seconds(5))
-    var persisted = commander
-    while persisted.shipID != "SH023" && ContinuousClock.now < saved {
-      try await Task.sleep(for: .milliseconds(10))
-      if let data = try? Data(contentsOf: url),
-        let value = try? JSONDecoder().decode(Commander.self, from: data)
-      {
-        persisted = value
-      }
-    }
+    #expect(view.pending.last == "commander-save:" + url.path)
+    await delegate.processPendingCommands(in: view)
+    #expect(view.pending.isEmpty)
+    let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
     #expect(persisted.shipID == "SH023" && persisted.credits == 12345)
     #expect(persisted.name == "CLARKE" && saves.startupURL == url)
+  }
+
+  @MainActor @Test func cancellingNativeStartupBeforeExecutionDoesNotRestoreOrProcessInput()
+    async throws
+  {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(id + ".json")
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: url)
+    }
+    var commander = Commander()
+    commander.name = "CANCELLED"
+    commander.credits = 98765
+    try JSONEncoder().encode(commander).write(to: url)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: url)
+    let delegate = AppDelegate(saves: saves)
+    let before = await delegate.runtime.snapshot().commander
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    defer { window.orderOut(nil) }
+    let view = try #require(window.contentView as? GameView)
+    view.pending = ["x", "y", "z", "z", "y"]
+    let loop = try #require(delegate.loop)
+    delegate.windowWillClose(notification)
+    await loop.value
+    #expect(delegate.loop == nil)
+    #expect(await delegate.runtime.snapshot().commander == before)
+    #expect(view.pending == ["x", "y", "z", "z", "y"])
   }
 
   @MainActor @Test func nativeSpinInputRecognizesCirclesRebasesAimAndKeepsForwardThrottleSeparate()
@@ -193,44 +223,34 @@ struct NativeViewTests {
     #expect(view.controls.roll == 0 && view.held.isEmpty)
   }
 
-  @MainActor @Test func nativeWindowLoopProcessesNumberKeysAndClearsFocus() async throws {
+  @MainActor @Test func nativeFrameProcessesNumberKeysMenusAndClearsFocus() async throws {
     _ = NSApplication.shared
     let delegate = AppDelegate(restoreOnLaunch: false)
     let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
     delegate.applicationDidFinishLaunching(notification)
     let window = try #require(delegate.window)
     let view = try #require(window.contentView as? GameView)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
     view.pending = ["return", "0", "chart:20:30"]
     view.held = ["x"]
     view.pressedKeys = [7: "x"]
-    // Sanitizers can delay the actor's first frame while other tests run.
-    let deadline = ContinuousClock.now.advanced(by: .seconds(5))
-    while view.game.time == 0 && ContinuousClock.now < deadline {
-      try await Task.sleep(for: .milliseconds(10))
-    }
+    await delegate.processFrame(in: view) { 0.02 }
     #expect(view.pending.isEmpty)
     #expect(view.game.time > 0)
     let gameMenu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
     let pauseItem = try #require(gameMenu.item(withTitle: "Pause / Resume"))
     #expect(pauseItem.keyEquivalent == "p" && pauseItem.keyEquivalentModifierMask == .command)
     gameMenu.performActionForItem(at: gameMenu.index(of: pauseItem))
-    let pauseDeadline = ContinuousClock.now.advanced(by: .seconds(5))
-    while !view.game.paused && ContinuousClock.now < pauseDeadline {
-      try await Task.sleep(for: .milliseconds(10))
-    }
+    await delegate.processFrame(in: view) { 0.02 }
     #expect(view.game.paused)
     gameMenu.performActionForItem(at: gameMenu.index(of: pauseItem))
-    let resumeDeadline = ContinuousClock.now.advanced(by: .seconds(5))
-    while view.game.paused && ContinuousClock.now < resumeDeadline {
-      try await Task.sleep(for: .milliseconds(10))
-    }
+    await delegate.processFrame(in: view) { 0.02 }
     #expect(!view.game.paused)
     let guideMenu = try #require(NSApp.mainMenu?.item(withTitle: "Help")?.submenu)
     guideMenu.performActionForItem(at: 0)
-    let helpDeadline = ContinuousClock.now.advanced(by: .seconds(5))
-    while view.game.screen != .help && ContinuousClock.now < helpDeadline {
-      try await Task.sleep(for: .milliseconds(10))
-    }
+    await delegate.processFrame(in: view) { 0.02 }
     #expect(view.game.screen == .help)
     view.game.launch()
     // Headless runners may not grant key-window status; inject the held touch for this reset check.
@@ -258,13 +278,14 @@ struct NativeViewTests {
       let data = try #require(image.dataProvider?.data)
       let bytes = try #require(CFDataGetBytePtr(data))
       return stride(from: 0, to: CFDataGetLength(data), by: 4).filter {
-        bytes[$0 + 1] > 20 && bytes[$0 + 2] > 20 && bytes[$0] < bytes[$0 + 1] / 2
+        let channels = [Int(bytes[$0]), Int(bytes[$0 + 1]), Int(bytes[$0 + 2])]
+        return channels.max()! > 20 && channels.max()! - channels.min()! > 20
       }.count
     }
     let lines = try colouredPixels(wire)
     let panels = try colouredPixels(shaded)
     #expect(lines > 100)
-    // Source triangulation creates denser wireframes than the former primitive.
+    // Filled material colour covers more area than lines, regardless of livery hue.
     #expect(panels > lines)
     #expect(shaded.width == 512 && shaded.height == 512)
   }

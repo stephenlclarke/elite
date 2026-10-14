@@ -42,15 +42,26 @@ public struct MeshDetail: Codable, Sendable, Equatable {
   public let face: Int
 }
 
+public struct ShipMaterial: Codable, Sendable, Equatable {
+  public let name: String
+  public let colour: UInt32
+  public let emissive: Bool
+}
+
 public struct Mesh: Sendable {
   public let vertices: [Vector3]
   public let faces: [[Int]]
   public let details: [MeshDetail]
+  public let materials: [ShipMaterial]
+  public let faceMaterials: [Int]
   public init(
-    vertices: [Vector3], faces: [[Int]], details: [MeshDetail] = [], preserveWinding: Bool = false
+    vertices: [Vector3], faces: [[Int]], details: [MeshDetail] = [],
+    materials: [ShipMaterial] = [], faceMaterials: [Int] = [], preserveWinding: Bool = false
   ) {
     self.vertices = vertices
     self.details = details
+    self.materials = materials
+    self.faceMaterials = faceMaterials
     let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
     if preserveWinding {
       self.faces = faces

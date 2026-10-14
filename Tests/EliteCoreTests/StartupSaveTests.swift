@@ -57,6 +57,59 @@ struct StartupSaveTests {
     #expect(await runtime.snapshot().commander == commander)
   }
 
+  @Test func restoredStartupWaitsAtTitleAndContinuesTheSameCommander() async throws {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: url) }
+    var commander = Commander()
+    commander.name = "RESTORED"
+    commander.credits = 12345
+    commander.system = 7
+    let original = try JSONEncoder().encode(commander)
+    try original.write(to: url)
+    let runtime = GameRuntime()
+    try await runtime.restoreStartup(from: url)
+    let restored = await runtime.snapshot()
+    #expect(restored.screen == .title && restored.time == 0)
+    #expect(restored.commander == commander && restored.docked)
+    #expect(try Data(contentsOf: url) == original)
+    await runtime.key(" ")
+    let continued = await runtime.snapshot()
+    #expect(continued.screen == .status && continued.commander == commander)
+    try await runtime.load(from: url)
+    #expect(await runtime.snapshot().screen == .status)
+  }
+
+  @Test func buildIdentityKeepsTheExactRevisionAndRejectsMissingOrMalformedMetadata() {
+    let sha = "0123456789abcdef0123456789abcdef01234567"
+    let identity = BuildIdentity(info: ["CFBundleShortVersionString": "1.2.3", "EliteSourceRevision": sha])
+    #expect(identity.versionLine == "VERSION 1.2.3")
+    #expect(identity.revisionLine == sha)
+    #expect(identity.legacyRevisionLines.joined() == sha)
+    #expect(BuildIdentity(info: [:]).revisionLine == "COMMIT UNAVAILABLE")
+    #expect(BuildIdentity(info: ["EliteSourceRevision": "short"]).revision == nil)
+    #expect(BuildIdentity(info: ["EliteSourceRevision": String(repeating: "z", count: 40)]).revision == nil)
+  }
+
+  @Test func titleAndScrollingCreditsIncludeBuildIdentityWithinTheStartupDuration() {
+    var game = Game()
+    game.screen = .title
+    let frame = Display.startupScreen(game, width: 512, height: 512)
+    let title = frame.labels.map(\.text)
+    #expect(title.contains(BuildIdentity.repository))
+    #expect(title.contains(BuildIdentity.current.versionLine))
+    #expect(title.contains(BuildIdentity.current.revisionLine))
+    var seen = Set<String>()
+    game.screen = .demo
+    for tick in 0..<120 {
+      game.time = Double(tick) / 10
+      let credits = Display.startupScreen(game, width: 512, height: 512)
+      seen.formUnion(credits.labels.map(\.text))
+    }
+    #expect(seen.contains(BuildIdentity.repository))
+    #expect(seen.contains(BuildIdentity.current.versionLine))
+    #expect(seen.contains(BuildIdentity.current.revisionLine))
+  }
+
   @Test func xyzzyLegalResetPersistsWithoutChangingMissionOrOtherCommanderState() async throws {
     var game = Game(executive: false)
     game.screen = .secret

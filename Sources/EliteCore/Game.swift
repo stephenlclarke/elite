@@ -68,6 +68,11 @@ public struct Commander: Sendable, Equatable, Codable {
   private var displayStyle: ShipDisplayStyle?
   private var navalMission: NavalMissionStage?
   private var xyzzyEnabled: Bool?
+  private var automaticProfitScan: Bool?
+  public var profitScanEnabled: Bool {
+    get { automaticProfitScan ?? false }
+    set { automaticProfitScan = newValue }
+  }
   private var automaticECM: Bool?
   private var automaticTargeting: Bool?
   private var returnFireEnabled: Bool?
@@ -170,9 +175,10 @@ public struct Equipment: Sendable {
   public static let navalEnergyUnit = "Naval Energy Unit"
   public static let navalLaser = "Naval Laser"
   public static var validNames: Set<String> {
-    Set(all.map(\.name)).subtracting([FuelStorage.equipmentName]).union([
-      navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
-    ])
+    Set(all.map(\.name)).subtracting([FuelStorage.equipmentName, PassengerCabin.equipmentName])
+      .union([
+        navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
+      ])
   }
   public static var maximumHardware: Set<String> {
     validNames.subtracting(
@@ -284,6 +290,9 @@ public struct Game: Sendable {
   public var laserHeat = 0.0
   public var laserFlash = 0.0
   public var altitude = 1.0
+  public var celestials: [CelestialBody] = []
+  public var solarScoopState: SolarScoopState = .inactive
+  var solarFuelRemainder = 0.0
   public var cabinTemperature = 0.0
   public var equipmentMount: LaserMount = .front
   public var dockingComputer = false
@@ -292,6 +301,7 @@ public struct Game: Sendable {
   public var messageTime = 0.0
   public var jumpCountdown: Double? = nil
   public var time = 0.0
+  var scriptStartupTime: Double?
   public var secretBuffer = ""
   public var secretReturn: Screen = .status
   public var helpReturn: Screen = .title
@@ -338,7 +348,9 @@ public struct Game: Sendable {
     // A new commander must never receive destruction rewards from the previous local scene.
     bodies = []
     scriptReferenceFrame = nil
+    scriptStartupTime = nil
     commander = value
+    clearCelestialFlight()
     blackjackOffer = nil
     packOffer = nil
     scriptOffer = nil
@@ -424,6 +436,10 @@ public struct Game: Sendable {
       if key == " " || key == "return" {
         if screen == .gameOver { self = Game(executive: commander.executive) }
         screen = .status
+        if let saved = scriptStartupTime {
+          time = saved
+          scriptStartupTime = nil
+        }
       }
       return
     }
@@ -573,6 +589,7 @@ public struct Game: Sendable {
   }
   mutating func enableXYZzy() {
     commander.xyzzyActive = true
+    commander.profitScanEnabled = true
     commander.shipDisplayStyle = .shadedPanels
     commander.retaliationEnabled = true
     commander.unlimitedMissiles = true
@@ -872,6 +889,7 @@ public struct Game: Sendable {
       SpaceBody(id: 2, hull: .asteroid, position: .init(-280, 100, 2200)),
     ]
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
+    resetCelestialFlight()
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
@@ -899,6 +917,7 @@ public struct Game: Sendable {
     laserHeat = 0
     jumpCountdown = nil
     missileArmed = false
+    clearCelestialFlight()
     notify("DOCKED")
     navigationDocked()
     if commander.autoTrade { autoTrade() }
@@ -932,7 +951,10 @@ public struct Game: Sendable {
     jumpCountdown = commander.performance.spool
     notify("HYPERSPACE")
   }
-  public var massLocked: Bool { bodies.contains { $0.hull != .cargo && $0.position.length < 600 } }
+  public var massLocked: Bool {
+    bodies.contains { $0.hull != .cargo && $0.position.length < 600 }
+      || celestials.contains { $0.position.length < $0.radius * 4 }
+  }
   public mutating func arrive() {
     resolveDestroyed()
     persistScriptActors(unloading: true)
@@ -963,6 +985,7 @@ public struct Game: Sendable {
         id: 1, hull: .sidewinder, position: .init(80, 0, 2600),
         hostile: currentSystem.government < 4),
     ]
+    resetCelestialFlight()
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
@@ -997,6 +1020,7 @@ public struct Game: Sendable {
       frame.station.position.z -= 3000
       scriptReferenceFrame = frame
     }
+    for index in celestials.indices { celestials[index].position.z -= 3000 }
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -1118,6 +1142,8 @@ public struct Game: Sendable {
       reconcileEliteReward()
       return
     }
+    advanceSolarFlight(delta: dt)
+    guard screen != .gameOver else { return }
     scoopCargo()
     if missionLoopCounter & 7 == 0 { navalTactics() }
     detectIncomingMissiles()
@@ -1180,6 +1206,7 @@ public struct Game: Sendable {
   private mutating func moveBodies(dt: Double) {
     autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
     advanceScriptReferenceFrame(delta: dt)
+    moveCelestials(delta: dt)
     for index in bodies.indices {
       bodies[index].position = bodies[index].position.rotated(
         pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
@@ -1372,6 +1399,16 @@ public actor GameRuntime {
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
   }
+  public func restoreStartup(from url: URL) throws {
+    try load(from: url, persistMigrations: false)
+    if !game.commander.scriptState.instances.isEmpty
+      || !game.commander.accommodation.ownedBerths.isEmpty
+    {
+      game.scriptStartupTime = game.time
+    }
+    game.screen = .title
+    game.time = 0
+  }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
     try requireGalleryFileAccess(url)
     let data = try Data(contentsOf: url)
@@ -1415,7 +1452,7 @@ extension Game {
       missionLoopCounter: missionLoopCounter, missionSpawnDelay: missionSpawnDelay,
       ecmFrames: ecmFrames,
       enemyECMSource: enemyECMSource, missileCooldown: missileCooldown,
-      cabinTemperature: cabinTemperature, altitude: altitude)
+      cabinTemperature: cabinTemperature, altitude: altitude, solar: ScriptSolarSave(game: self))
   }
   mutating func restoreScriptSimulation(_ state: ScriptSimulationSave?) {
     guard let state else { return }
@@ -1429,5 +1466,13 @@ extension Game {
     missileCooldown = state.missileCooldown
     cabinTemperature = state.cabinTemperature
     altitude = state.altitude
+    if let solar = state.solar {
+      solar.restore(into: &self)
+    } else {
+      // Earlier physical formats predate local solar simulation; do not invent a saved scene.
+      celestials = []
+      solarFuelRemainder = 0
+      solarScoopState = .inactive
+    }
   }
 }

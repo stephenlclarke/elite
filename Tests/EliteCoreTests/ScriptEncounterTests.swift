@@ -94,7 +94,7 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: save)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: save))
-  #expect(pointer.schemaVersion == 4)
+  #expect(pointer.schemaVersion == 5)
   let restored = GameRuntime(game: game)
   try await restored.load(from: save)
   let body = try actualActor(await restored.snapshot(), alias: "lead", instance: id)

@@ -28,6 +28,10 @@ cat > "$APP_BUNDLE/Contents/Info.plist" <<'PLIST'
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
 PLIST
+BUILD_REVISION="$(git rev-parse HEAD)"
+BUILD_VERSION="$(git describe --tags --always --dirty)"
+/usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $BUILD_VERSION" "$APP_BUNDLE/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Add :EliteSourceRevision string $BUILD_REVISION" "$APP_BUNDLE/Contents/Info.plist"
 codesign --force --sign - "$APP_BUNDLE" >/dev/null
 if [[ "$MODE" == --build-only ]]; then exit 0; fi
 # Stop only this checkout's staged application before relaunching it.

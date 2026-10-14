@@ -30,7 +30,7 @@ Use `passengers.board` or `passengers.deliver` with a once-only operation `id` a
 
 Add party IDs to `mission.requiredPassengerParties` when their true delivery is a completion requirement. Completing all story milestones cannot substitute for those receipts. A later invalid command rolls back boarding, delivery, money and explicit script data together.
 
-Saves with cabins or scripts publish format **4**, using the existing hashed immutable generation/pointer system. Readers accept earlier formats 2 and 3; earlier physical writers reject format 4 instead of silently dropping passenger ownership. Keep the pointer and its `.missions` sidecar together. Automatic durable economic confirmation is a separate unfinished engine requirement; this checkpoint still requires an explicit commander save.
+Saves with cabins or scripts publish format **5**, using the existing hashed immutable generation/pointer system. Readers accept earlier formats 2, 3 and 4; earlier physical writers reject format 5 instead of silently dropping passenger ownership. Keep the pointer and its `.missions` sidecar together. Automatic durable economic confirmation is a separate unfinished engine requirement; this checkpoint still requires an explicit commander save.
 
 ## Source-data follow-ups
 

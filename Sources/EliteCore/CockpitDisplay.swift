@@ -32,7 +32,7 @@ public struct CockpitLayout: Sendable {
     leftColumns = sideWidth >= 400 ? 2 : 1
     let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
-    extraLines = (game.autoHUDLines + weaponLines + game.spin.hudLines).flatMap {
+    extraLines = (game.autoHUDLines + game.solarHUDLines + weaponLines + game.spin.hudLines).flatMap {
       MissionNotice.wrap($0, width: textColumns)
     }
     let rows = max(4, Int(ceil(6 / Double(leftColumns))))
@@ -93,6 +93,7 @@ extension Display {
       if game.dockingComputer {
         frame.label("Docking computer engaged", 12, 72, scale: layout.font, ink: .cyan)
       }
+      stationDirection(game, layout: layout, into: &frame)
     }
     cockpitHeader(game, layout: layout, into: &frame)
     for (index, line) in layout.extraLines.enumerated() {

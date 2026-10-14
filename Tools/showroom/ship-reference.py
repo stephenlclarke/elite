@@ -75,6 +75,8 @@ def references(ships, write=True):
                        '**Appearances:** '+ship['appearances']+'; **evidence:** '+ship['evidence']+'.','']
         if 'recipe' in design:
             provenance += ['Original project interpretation: '+design['recipe']['family']+' family, individual sweep/components/envelope. Full authored geometry and recipe are embedded in the TOML. No gameplay statistic was inferred from the invented shape.','']
+            if design['recipe']['family'] == 'liberator-dsv2':
+                provenance += ['[Liberator visual references, palette and chosen native mechanics](LIBERATOR.md). Three radial nacelles, forward probes and an aft green engine; no external artwork or model asset is redistributed.','']
         else:provenance += ['Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.','']
         if 'nativeHull' in ship:
             provenance += ['**Original encounter variant:** '+ship['nativeHull']+'. The game loads this retained variant from the same TOML; player adaptations above remain distinct.','']

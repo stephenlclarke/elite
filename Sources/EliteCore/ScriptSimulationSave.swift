@@ -12,10 +12,12 @@ struct ScriptSimulationSave: Codable, Sendable {
   let missileCooldown: Double
   let cabinTemperature: Double
   let altitude: Double
+  let solar: ScriptSolarSave?
   var valid: Bool {
     [fireCooldown, spawnClock, missileCooldown, cabinTemperature, altitude].allSatisfy {
       $0.isFinite && (0...1e12).contains($0)
     }
+      && (solar?.valid ?? true)
       && (0...1_000_000).contains(missionSpawnDelay) && (0...1024).contains(ecmFrames)
       && (enemyECMSource.map { (0..<1_000_000_000).contains($0) } ?? true)
   }
