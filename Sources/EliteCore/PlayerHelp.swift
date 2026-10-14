@@ -37,7 +37,7 @@ public enum PlayerHelp {
         .init(
           title: "MORE ACTIONS",
           rows: [
-            "GAME MENU: MISSIONS / CONTACTS / RUMOURS",
+            "GAME: CONTRACTS / MISSIONS / CONTACTS",
             "L - MISSION GALLERY",
             "B (DOCKED) - MISSION CONTACTS",
             "U (DOCKED) - STATION RUMOURS",
@@ -188,6 +188,15 @@ public enum PlayerHelp {
           "LEFT / RIGHT, RETURN - CONFIRM / BACK",
           "CLICK SORT: A-Z / POWER (STRONGEST)",
           "POWER: ENERGY + SHIELDS + WEAPONS",
+        ])
+    case .contracts:
+      .init(
+        title: "STATION CONTRACTS",
+        rows: [
+          "UP / DOWN - SELECT OFFER", "RETURN / CLICK - READ BRIEFING",
+          "LEFT / RIGHT - ACCEPT / DECLINE / BACK", "RETURN - CHOOSE; BACK IS THE DEFAULT",
+          "ESC - BACK TO BOARD, THEN STATION", "SCROLL - READ LONG BRIEFINGS",
+          "READING DOES NOT START A DEADLINE", "ACTIVE WORK REMAINS IN MISSION GALLERY",
         ])
     case .gallery:
       .init(

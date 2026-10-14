@@ -117,6 +117,14 @@ final class GameView: NSView {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
+    if game.screen == .contracts {
+      let point = convert(event.locationInWindow, from: nil)
+      let offer = game.contractBoard.quote?.offer.uuidString ?? "none"
+      pending.append(
+        "contract-click:\(game.ecmControl.epoch):\(offer):\(game.contractBoard.detail ? 1 : 0):\(point.x):\(point.y)"
+      )
+      return
+    }
     if game.screen == .secret {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("secret-click:\(point.x):\(point.y)")
@@ -154,6 +162,10 @@ final class GameView: NSView {
     pending.append("map-click:\(point.x):\(point.y)")
   }
   override func scrollWheel(with event: NSEvent) {
+    if game.screen == .contracts {
+      pending.append("contract-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+      return
+    }
     if game.screen == .handoff {
       pending.append(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
       return
@@ -379,6 +391,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
           await runtime.mapClick(x: x, y: y)
         }
+      } else if event.hasPrefix("contract-click:") {
+        let parts = event.split(separator: ":")
+        if parts.count == 6, let epoch = UUID(uuidString: String(parts[1])),
+          parts[2] == "none" || UUID(uuidString: String(parts[2])) != nil,
+          let detail = Int(parts[3]), [0, 1].contains(detail), let x = Double(parts[4]),
+          let y = Double(parts[5])
+        {
+          await runtime.contractClick(
+            x: x, y: y, expectedOffer: UUID(uuidString: String(parts[2])), detail: detail == 1,
+            epoch: epoch)
+        }
+      } else if event.hasPrefix("contract-scroll:"), let amount = Int(event.dropFirst(16)) {
+        await runtime.contractScroll(amount)
       } else if event.hasPrefix("gallery-click:") {
         let parts = event.split(separator: ":")
         if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
@@ -480,6 +505,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     game.submenu = NSMenu(title: "Game")
     for (title, command) in [
       ("Mission Gallery", "gallery-open"), ("Mission Contacts", "contacts-open"),
+      ("Station Contracts", "contracts-open"),
       ("Station Rumours", "rumours-open"),
       ("Try Selected Mission", "gallery-trial"), ("Retry Selected Mission", "mission-resume"),
       ("Return to Commander", "trial-return"), ("Restart Mission Trial", "trial-restart"),
@@ -516,6 +542,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func validateMenuItem(_ item: NSMenuItem) -> Bool {
     guard let game = (window?.contentView as? GameView)?.game else { return false }
     if let command = item.representedObject as? String {
+      if command == "contracts-open" {
+        return game.docked && game.dockedAtMainStation && !game.paused && !game.showroom.trading
+          && ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .handoff].contains(
+            game.screen)
+      }
       if command == "trial-return" || command == "trial-restart" { return game.isMissionTrial }
       if command == "gallery-trial" {
         return game.screen == .gallery && game.canTrialSelectedMission

@@ -7,6 +7,98 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeContractBoardUsesExplicitActionsAndSavesThePrecedingAcceptance()
+    async throws
+  {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: folder)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    try JSONEncoder().encode(Commander()).write(to: file)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: file)
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: file, persistMigrations: false)
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
+        "docs/mission-packs/scripted-contracts")
+    try await delegate.runtime.installScriptPack(
+      from: example, destination: folder.appendingPathComponent("packs"))
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    let view = try #require(window.contentView as? GameView)
+    await delegate.processFrame(in: view, delta: { 0 })
+    let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
+    let index = try #require(
+      menu.items.firstIndex { ($0.representedObject as? String) == "contracts-open" })
+    #expect(delegate.validateMenuItem(menu.items[index]))
+    menu.performActionForItem(at: index)
+    await delegate.processFrame(in: view, delta: { 0 })
+    #expect(view.game.screen == .contracts && view.game.contractBoard.rows.count == 2)
+    let before = view.game.commander
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for detail in [false, true] {
+      if detail {
+        view.pending = ["return"]
+        await delegate.processFrame(in: view, delta: { 0 })
+      }
+      for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+        let image = try #require(
+          imageForGame(view.game, width: width, height: height, scale: scale))
+        #expect(image.width == width * scale && image.height == height * scale)
+        if let evidence {
+          let directory = URL(fileURLWithPath: evidence)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          let data = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try data.write(
+            to: directory.appendingPathComponent(
+              "contracts-\(detail ? "detail" : "list")-\(width).png"))
+        }
+      }
+    }
+    #expect(view.game.commander == before && view.game.contractBoard.action == .back)
+    view.pending = ["right"]
+    let commanderMenu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
+    commanderMenu.performActionForItem(at: 0)
+    await delegate.processFrame(in: view, delta: { 0 })
+    let loaded = GameRuntime(game: view.game)
+    try await loaded.load(from: file)
+    #expect(await loaded.snapshot().contractBoard.detail)
+    #expect(await loaded.snapshot().contractBoard.action == .accept)
+    #expect(await loaded.snapshot().commander.scriptState.instances.isEmpty)
+    let quote = try #require(view.game.contractBoard.quote)
+    let rect = try #require(
+      ContractBoardLayout(width: view.bounds.width, height: view.bounds.height).actions.first {
+        $0.0 == .accept
+      }?.1)
+    await delegate.runtime.contractClick(
+      x: rect.x + 8, y: rect.y + 8, expectedOffer: quote.offer, detail: true, epoch: UUID())
+    #expect(await delegate.runtime.snapshot().commander == before)
+    view.pending = [
+      "contract-click:\(view.game.ecmControl.epoch):\(quote.offer):1:\(rect.x + 8):\(rect.y + 8)"
+    ]
+    commanderMenu.performActionForItem(at: 0)
+    await delegate.processFrame(in: view, delta: { 0 })
+    try await loaded.load(from: file)
+    let accepted = await loaded.snapshot().commander
+    #expect(
+      accepted.scriptState.instances.count == 1 && accepted.credits == 900
+        && accepted.cargoTonnes > 0)
+    #expect(saves.activeURL == file)
+  }
   @MainActor @Test func nativeSaveBatchIncludesThePrecedingOwnedEquipmentStorageAction()
     async throws
   {

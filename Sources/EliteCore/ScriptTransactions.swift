@@ -25,6 +25,7 @@ extension GameRuntime {
       || !before.commander.accommodation.ownedBerths.isEmpty
       || !game.commander.accommodation.ownedBerths.isEmpty
       || before.commander.ownedEquipment != nil || game.commander.ownedEquipment != nil
+      || !before.commander.contracts.boards.isEmpty || !game.commander.contracts.boards.isEmpty
     let changed =
       before.commander != game.commander || before.docked != game.docked
       || before.bodies != game.bodies || before.jumpCountdown != game.jumpCountdown
@@ -58,6 +59,7 @@ extension GameRuntime {
     if !candidate.commander.scriptState.instances.isEmpty
       || !candidate.commander.accommodation.ownedBerths.isEmpty || candidate.isMissionTrial
       || candidate.commander.ownedEquipment != nil
+      || !candidate.commander.contracts.boards.isEmpty
     {
       try ScriptSaveStore.write(
         commander: candidate.commander, world: candidate.scriptWorldSave, to: url,

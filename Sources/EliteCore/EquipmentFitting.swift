@@ -47,7 +47,13 @@ extension Game {
       } else {
         issues.append("This item is already stored.")
       }
-      issues += candidate.passengerFit?.issues ?? ["The hull has no compatible equipment adapter."]
+      let legacyStorage =
+        !fitted && candidate.xyzzyActive && candidate.accommodation.fitted.isEmpty
+        && !candidate.requiresContractFit
+      if !legacyStorage {
+        issues +=
+          candidate.passengerFit?.issues ?? ["The hull has no compatible equipment adapter."]
+      }
       if candidate.fuel > candidate.fuelCapacity {
         issues.append("Use excess fuel before storing its tank.")
       }

@@ -18,7 +18,9 @@ extension GameRuntime {
     }
     game.notify(
       pack.missingCapabilities.isEmpty
-        ? "MISSION PACK INSTALLED - VISIT STATION CONTACTS"
+        ? (pack.manifest.board == nil
+          ? "MISSION PACK INSTALLED - VISIT STATION CONTACTS"
+          : "CONTRACT PROVIDER INSTALLED - OPEN STATION CONTRACTS")
         : "MISSION REFERENCE INSTALLED - SEE MISSION GALLERY")
   }
   public func resumeScriptMission(_ id: UUID) throws {

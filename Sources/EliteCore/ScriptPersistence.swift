@@ -3,6 +3,7 @@ import Foundation
 struct ScriptWorldSave: Codable, Sendable {
   var simulation: ScriptSimulationSave?
   var referenceFrame: ScriptReferenceFrame?
+  var contractScreen: ContractScreenSave?
   var bodies: [SpaceBody]
   var market: [MarketItem]
   var docked: Bool
@@ -18,7 +19,8 @@ struct ScriptWorldSave: Codable, Sendable {
   var selectedSystem: Int
   var nextBodyID: Int
   var valid: Bool {
-    (simulation?.valid ?? true) && (referenceFrame?.valid ?? true) && bodies.count <= 1024
+    (simulation?.valid ?? true) && (referenceFrame?.valid ?? true)
+      && (contractScreen?.valid ?? true) && bodies.count <= 1024
       && Set(bodies.map(\.id)).count == bodies.count
       && Set(bodies.compactMap(\.missionActorID)).count
         == bodies.filter { $0.missionActorID != nil }.count
@@ -88,14 +90,17 @@ enum ScriptSaveStore {
     encoder.outputFormatting = [.sortedKeys]
     var header = commander
     header.scriptState = ScriptEngineState()
+    header.contracts = ScriptContractState()
     let chunks = [
       "commander.json": try encoder.encode(header),
       "missions.json": try encoder.encode(commander.scriptState),
       "world.json": try encoder.encode(world),
+      "contracts.json": try encoder.encode(commander.contracts),
     ]
     guard chunks["commander.json"]!.count <= 4_194_304,
       chunks["missions.json"]!.count <= 33_554_432,
       chunks["world.json"]!.count <= 8_388_608
+        && chunks["contracts.json"]!.count <= 33_554_432
     else { throw SaveError.invalidCommander }
     let generation = UUID().uuidString
     let root = url.appendingPathExtension("missions")
@@ -106,7 +111,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 7, generation: generation,
+      format: "elite-script-save", schemaVersion: 8, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope)
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
@@ -121,16 +126,22 @@ enum ScriptSaveStore {
   static func read(_ pointerBytes: Data, from url: URL) throws -> (Commander, ScriptWorldSave) {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-    guard pointer.format == "elite-script-save", (2...7).contains(pointer.schemaVersion),
+    let names: Set<String> =
+      pointer.schemaVersion >= 8
+      ? ["commander.json", "missions.json", "world.json", "contracts.json"]
+      : ["commander.json", "missions.json", "world.json"]
+    guard pointer.format == "elite-script-save", (2...8).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
-      Set(pointer.hashes.keys) == ["commander.json", "missions.json", "world.json"],
+      Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
     else { throw SaveError.invalidCommander }
     let directory = try generationDirectory(pointer.generation, from: url)
     var chunks: [String: Data] = [:]
-    for (name, limit) in [
+    var limits = [
       ("commander.json", 4_194_304), ("missions.json", 33_554_432), ("world.json", 8_388_608),
-    ] {
+    ]
+    if pointer.schemaVersion >= 8 { limits.append(("contracts.json", 33_554_432)) }
+    for (name, limit) in limits {
       let location = directory.appendingPathComponent(name)
       let properties = try location.resourceValues(forKeys: [
         .isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey,
@@ -148,6 +159,13 @@ enum ScriptSaveStore {
     if pointer.schemaVersion <= 4 { commander.migrateLegacyPassengerMarker() }
     commander.scriptState = try JSONDecoder().decode(
       ScriptEngineState.self, from: chunks["missions.json"]!)
+    if let bytes = chunks["contracts.json"] {
+      commander.contracts = try JSONDecoder().decode(ScriptContractState.self, from: bytes)
+    } else if !commander.contracts.boards.isEmpty
+      || commander.scriptState.instances.values.contains(where: { $0.contract != nil })
+    {
+      throw SaveError.invalidCommander
+    }
     let world = try JSONDecoder().decode(ScriptWorldSave.self, from: chunks["world.json"]!)
     guard commander.valid, world.valid, world.consistent(with: commander) else {
       throw SaveError.invalidCommander
@@ -159,7 +177,8 @@ enum ScriptSaveStore {
 extension Game {
   var scriptWorldSave: ScriptWorldSave {
     ScriptWorldSave(
-      simulation: scriptSimulationSave, referenceFrame: scriptReferenceFrame, bodies: bodies,
+      simulation: scriptSimulationSave, referenceFrame: scriptReferenceFrame,
+      contractScreen: commander.contracts.boards.isEmpty ? nil : contractBoard.save, bodies: bodies,
       market: market, docked: docked,
       mainStation: dockedAtMainStation,
       screen: screen, speed: speed, time: scriptStartupTime ?? time, energy: energy,
@@ -185,5 +204,15 @@ extension Game {
     jumpCountdown = world.jumpCountdown
     selectedSystem = world.selectedSystem
     nextBodyID = world.nextBodyID
+    if let saved = world.contractScreen {
+      contractBoard.restoredSelection = saved.selection
+      contractBoard.previous = saved.previous
+      contractBoard.action = saved.action
+      contractBoard.scroll = saved.scroll
+    }
+    if world.screen == .contracts, docked, dockedAtMainStation, let saved = world.contractScreen {
+      screen = .contracts
+      refreshContractRows(restoring: saved)
+    }
   }
 }

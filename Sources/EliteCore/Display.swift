@@ -196,6 +196,7 @@ public enum Display {
     case .secret: secret(game, into: &frame)
     case .help: help(game, into: &frame)
     case .gallery: return gallery(game, width: 768, height: 768)
+    case .contracts: return contractBoard(game, width: 768, height: 768)
     case .navigation: return navigation(game, width: 768, height: 768)
     case .mission: mission(game, into: &frame)
     case .gameOver:

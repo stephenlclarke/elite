@@ -69,7 +69,9 @@ extension Game {
     .object([
       "galaxy": .integer(Int64(commander.galaxy)), "system": .integer(Int64(commander.system)),
       "docked": .bool(docked), "main_station": .bool(docked && dockedAtMainStation),
+      "station_id": docked && dockedAtMainStation ? .string(contractStation.key) : .null,
       "durable_commands": .bool(scriptDurabilityAvailable),
+      "jump_range_ly": .number(commander.maximumJumpDistance),
       "fitted_equipment": commander.ownedGearCounts(fitted: true),
       "stored_equipment": commander.ownedGearCounts(fitted: false),
       "free_equipment_units": .integer(Int64(commander.passengerFit?.freeEquipmentUnits ?? 0)),
@@ -86,18 +88,21 @@ extension Game {
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
+    fields["contract"] = contractSnapshot(instance)
     fields["free_passenger_places"] = .integer(
       Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
     return .object(fields)
   }
   mutating func acceptScriptMission(
-    _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445
+    _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445,
+    contract: ScriptContractJob? = nil
   ) throws -> UUID {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
-      !commander.scriptState.instances.values.contains(where: {
-        $0.definition == pack.manifest.stateID
-      })
+      pack.manifest.board != nil
+        || !commander.scriptState.instances.values.contains(where: {
+          $0.definition == pack.manifest.stateID
+        }), (pack.manifest.board == nil) == (contract == nil)
     else {
       throw MissionPackError(
         "Mission unavailable, already accepted or saved under another version.")
@@ -106,6 +111,11 @@ extension Game {
       id: instanceID, definition: pack.manifest.stateID,
       version: pack.manifest.version, digest: pack.digest)
     instance.randomState = randomSeed
+    instance.contract = contract
+    if let contract, let due = contract.deadline {
+      instance.timers["contract-deadline"] = .init(
+        id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
+    }
     var candidate = self
     if pack.manifest.capabilities.contains("owned-equipment-v2") {
       candidate.commander.synchronizeEquipmentInventory(force: true)
@@ -201,7 +211,9 @@ extension Game {
         candidate.commander.scriptState.instances[next.id] = next
         candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
         guard candidate.commander.valid else {
-          throw MissionPackError("Mission transfer cannot fit the commander or saved state.")
+          throw MissionPackError(
+            candidate.commander.passengerFit?.issues.first
+              ?? "Mission transfer cannot fit the commander or saved state.")
         }
         guard candidate.commander.scriptState.pendingEvents.count + derivedEvents.count <= 4096,
           candidate.commander.scriptState.nextEvent <= UInt64(Int64.max) - 1
@@ -225,7 +237,8 @@ extension Game {
   mutating func advanceScriptClocks(
     delta: Double, flight: Bool, local: Bool, publish: ScriptPublisher? = nil
   ) {
-    guard !commander.scriptState.instances.isEmpty, delta.isFinite, delta > 0, !paused,
+    guard !commander.scriptState.instances.isEmpty || !commander.contracts.boards.isEmpty,
+      delta.isFinite, delta > 0, !paused,
       flight || local
     else {
       return
@@ -314,7 +327,10 @@ extension Game {
       let pack = scriptPacks.sorted(by: {
         ($0.manifest.priority, $0.manifest.id) < ($1.manifest.priority, $1.manifest.id)
       })
-      .first(where: { !accepted.contains($0.manifest.stateID) && scriptUnavailable($0) == nil })
+      .first(where: {
+        $0.manifest.board == nil && !accepted.contains($0.manifest.stateID)
+          && scriptUnavailable($0) == nil
+      })
     else { return false }
     scriptAvailablePackDigest = pack.digest
     scriptConfirmSelected = true
@@ -343,6 +359,40 @@ extension Game {
     else { return nil }
     return scriptPack(for: instance)?.manifest.dialogs?.first { $0.id == dialogue.id }?.text
   }
+  private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
+    let reason = scriptUnavailable(pack)
+    let suspension = state?.suspension ?? reason
+    let status: GalleryStatus =
+      suspension != nil
+      ? .locked
+      : state.map {
+        switch $0.outcome {
+        case .active: .active
+        case .complete: .complete
+        case .failed, .abandoned: .failed
+        }
+      } ?? .available
+    let job = state?.contract
+    let destination =
+      job.map {
+        "Galaxy \($0.offer.destinationGalaxy + 1), "
+          + Universe.systemsIncludingPlugh(number: $0.offer.destinationGalaxy)[
+            $0.offer.destinationSystem
+          ].name
+      } ?? pack.manifest.mission.destination
+    return GalleryMission(
+      name: job?.offer.title ?? pack.manifest.mission.title, status: status,
+      objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
+      briefing: job?.offer.briefing ?? pack.manifest.mission.briefing, destination: destination,
+      reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
+        ?? pack.manifest.mission.reward,
+      prerequisites: reason.map { [$0] } ?? [], completed: state?.milestones.count ?? 0,
+      milestones: pack.manifest.mission.milestones.enumerated().map { i, title in
+        MissionMilestone(
+          title: title, state: state?.milestones.contains(i) == true ? "Complete" : "Upcoming")
+      }, trialDigest: job == nil ? pack.digest : nil, savedInstance: state?.id)
+  }
+
   var scriptGallery: [GalleryMission] {
     var entries: [GalleryMission] = []
     for pack in scriptPacks.sorted(by: {
@@ -352,38 +402,20 @@ extension Game {
     }) {
       let instances = commander.scriptState.instances.values.filter {
         $0.definition == pack.manifest.stateID && $0.digest == pack.digest
+      }.sorted { $0.id.uuidString < $1.id.uuidString }
+      if pack.manifest.board != nil {
+        entries.append(scriptGalleryEntry(pack, state: nil))
+        entries += instances.map { scriptGalleryEntry(pack, state: $0) }
+      } else {
+        entries.append(scriptGalleryEntry(pack, state: instances.first))
       }
-      let reason = scriptUnavailable(pack)
-      let state = instances.first
-      let suspension = state?.suspension ?? reason
-      let status: GalleryStatus =
-        suspension != nil
-        ? .locked
-        : state.map {
-          switch $0.outcome {
-          case .active: .active
-          case .complete: .complete
-          case .failed, .abandoned: .failed
-          }
-        } ?? .available
-      entries.append(
-        GalleryMission(
-          name: pack.manifest.mission.title, status: status,
-          objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
-          briefing: pack.manifest.mission.briefing, destination: pack.manifest.mission.destination,
-          reward: pack.manifest.mission.reward, prerequisites: reason.map { [$0] } ?? [],
-          completed: state?.milestones.count ?? 0,
-          milestones: pack.manifest.mission.milestones.enumerated().map { i, title in
-            MissionMilestone(
-              title: title, state: state?.milestones.contains(i) == true ? "Complete" : "Upcoming")
-          }, trialDigest: pack.digest, savedInstance: state?.id))
     }
     for state in commander.scriptState.instances.values.sorted(by: {
       $0.id.uuidString < $1.id.uuidString
     }) where scriptPack(for: state) == nil {
       entries.append(
         GalleryMission(
-          name: state.definition, status: .locked,
+          name: state.contract?.offer.title ?? state.definition, status: .locked,
           objective: "Restore the exact saved mission pack.",
           briefing: "Saved state and cargo remain intact.", destination: "Pack missing",
           reward: "Suspended", prerequisites: [], completed: state.milestones.count, milestones: [])

@@ -121,6 +121,10 @@ extension Game {
       openGallery()
       return true
     }
+    if key == "contracts-open" {
+      openContractBoard()
+      return true
+    }
     if key == "showroom-open" {
       openShowroom()
       return true
@@ -157,6 +161,9 @@ extension Game {
       return true
     case .gallery:
       galleryKey(key)
+      return true
+    case .contracts:
+      contractBoardKey(key)
       return true
     case .navigation:
       navigationKey(key)
@@ -232,6 +239,7 @@ extension Game {
     switch screen {
     case .showroom: closeShowroom()
     case .gallery: closeGallery()
+    case .contracts: screen = contractBoard.previous
     case .rumour: screen = rumourReturn
     case .navigation: screen = navigationReturn
     default: break

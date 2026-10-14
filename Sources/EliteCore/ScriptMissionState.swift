@@ -40,6 +40,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var timers: [String: ScriptTimer] = [:]
   public var dialogue: ScriptDialogue?
   public var journal: [String] = []
+  public var contract: ScriptContractJob?
   private var savedGearIssues: [String: ScriptGearIssue]?
   public var gearIssues: [String: ScriptGearIssue] {
     get { savedGearIssues ?? [:] }

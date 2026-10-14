@@ -3,11 +3,16 @@ import Foundation
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
     equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, showroom, rumour,
-    gameOver
+    gameOver, contracts
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedContracts: ScriptContractState?
+  public var contracts: ScriptContractState {
+    get { savedContracts ?? ScriptContractState() }
+    set { savedContracts = newValue == ScriptContractState() ? nil : newValue }
+  }
   public var ownedEquipment: OwnedEquipmentInventory?
   private var savedAccommodation: ShipAccommodation?
   public var accommodation: ShipAccommodation {
@@ -165,6 +170,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && scriptState.valid && accommodationValid && ownedEquipmentValid && issuedEquipmentValid
+      && contractsValid
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -248,6 +254,7 @@ public struct Game: Sendable {
   public var screen: Screen = .title
   public var paused = false
   public var isMissionTrial = false
+  public var contractBoard = ContractBoardUI()
   public var trialTitle: String?
   var trialDigest: String?
   var trialSeed: UInt64?
@@ -626,6 +633,8 @@ public struct Game: Sendable {
     notify("COBRA MK III RESTORED - MAXIMUM HARDWARE")
   }
   mutating func fitMaximumHardware() {
+    commander.storeOwnedModules(
+      commander.equipment.subtracting(Equipment.maximumHardware), keeping: "")
     commander.equipment = Equipment.maximumHardware
     for mount in LaserMount.allCases where commander.performance.supports(mount) {
       commander.installLaser(.naval, on: mount)
@@ -1399,6 +1408,7 @@ public actor GameRuntime {
       }
     }
     game.key(key)
+    if old == .handoff, game.screen == .contracts { game.refreshContractRows() }
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: oldLocation.0, system: oldLocation.1)
     if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
     {
@@ -1495,6 +1505,7 @@ public actor GameRuntime {
       candidate.trialSeed = game.trialSeed
       candidate.missionPacks = game.missionPacks
       candidate.scriptPacks = game.scriptPacks
+      candidate.scriptDurabilityAvailable = true
       candidate.viewportWidth = game.viewportWidth
       candidate.viewportHeight = game.viewportHeight
       candidate.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)

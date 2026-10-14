@@ -1,0 +1,219 @@
+import Foundation
+
+public enum ContractBoardAction: String, Codable, Sendable, CaseIterable {
+  case accept = "Accept"
+  case decline = "Decline"
+  case back = "Back"
+}
+public struct ContractBoardRow: Sendable {
+  public let board: String
+  public let offer: ScriptContractOffer?
+  public let title: String
+  public let reason: String?
+  public var key: String { board + "/" + (offer?.id.uuidString ?? "unavailable") }
+}
+public struct ContractScreenSave: Codable, Sendable {
+  public let selection: String?
+  public let detail: Bool
+  public let action: ContractBoardAction
+  public let scroll: Int
+  public let previous: Screen
+  var valid: Bool {
+    (selection?.count ?? 0) <= 512 && (0...100000).contains(scroll) && previous != .contracts
+  }
+}
+public struct ContractBoardUI: Sendable {
+  public var selection = 0
+  public var detail = false
+  public var action: ContractBoardAction = .back
+  public var scroll = 0
+  public var rows: [ContractBoardRow] = []
+  public var quote: ContractAcceptanceQuote?
+  var previous: Screen = .status
+  var restoredSelection: String?
+  public init() {}
+  var selected: ContractBoardRow? { rows.indices.contains(selection) ? rows[selection] : nil }
+  var save: ContractScreenSave {
+    .init(
+      selection: selected?.key ?? restoredSelection, detail: detail, action: action, scroll: scroll,
+      previous: previous)
+  }
+}
+extension Game {
+  mutating func openContractBoard() {
+    guard docked, dockedAtMainStation, !paused,
+      ![Screen.title, .demo, .gameOver, .help, .secret, .mission, .handoff].contains(screen),
+      !showroom.trading
+    else {
+      notify("CONTRACTS REQUIRE A MAIN ORBITAL STATION")
+      return
+    }
+    var candidate = self
+    if screen != .contracts { candidate.contractBoard.previous = screen }
+    var failures: [String: String] = [:]
+    for pack in scriptPacks where pack.manifest.board != nil && scriptUnavailable(pack) == nil {
+      do { _ = try candidate.ensureContractBoard(pack) } catch {
+        failures[pack.digest] = String(error.localizedDescription.prefix(512))
+      }
+    }
+    candidate.refreshContractRows(failures: failures)
+    candidate.screen = .contracts
+    candidate.contractBoard.detail = false
+    candidate.contractBoard.quote = nil
+    self = candidate
+  }
+  mutating func refreshContractRows(
+    failures: [String: String] = [:], restoring save: ContractScreenSave? = nil
+  ) {
+    let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
+    var rows: [ContractBoardRow] = []
+    for pack in scriptPacks.sorted(by: {
+      ($0.manifest.id, $0.manifest.version, $0.digest) < (
+        $1.manifest.id, $1.manifest.version, $1.digest
+      )
+    }) {
+      guard let definition = pack.manifest.board else { continue }
+      let key = pack.digest + "/" + definition.id + "/" + contractStation.key
+      if let reason = failures[pack.digest] ?? scriptUnavailable(pack) {
+        rows.append(.init(board: key, offer: nil, title: definition.title, reason: reason))
+      } else if let board = commander.contracts.boards[key],
+        board.revision == contractRevision(definition)
+      {
+        for offer in board.offers where offer.status == .available {
+          let quote = contractAcceptanceQuote(board: key, offer: offer.id)
+          rows.append(
+            .init(board: key, offer: offer, title: offer.title, reason: quote.issues.first))
+        }
+      }
+    }
+    contractBoard.rows = rows
+    contractBoard.restoredSelection = nil
+    contractBoard.selection =
+      selected.flatMap { key in rows.firstIndex { $0.key == key } }
+      ?? min(contractBoard.selection, max(0, rows.count - 1))
+    if let save {
+      contractBoard.detail = save.detail && contractBoard.selected != nil
+      contractBoard.action = save.action
+      contractBoard.scroll = save.scroll
+      contractBoard.previous = save.previous
+      refreshSelectedContractQuote()
+    }
+  }
+  mutating func refreshSelectedContractQuote() {
+    if let row = contractBoard.selected, let offer = row.offer {
+      contractBoard.quote = contractAcceptanceQuote(board: row.board, offer: offer.id)
+    } else {
+      contractBoard.quote = nil
+    }
+  }
+  mutating func contractBoardKey(_ key: String) {
+    if key == "escape" {
+      if contractBoard.detail {
+        contractBoard.detail = false
+        contractBoard.quote = nil
+      } else {
+        screen = contractBoard.previous
+      }
+      return
+    }
+    if key == "contract-refresh" {
+      openContractBoard()
+      return
+    }
+    if !contractBoard.detail {
+      if key == "up" || key == "down" {
+        contractBoard.selection = max(
+          0, min(contractBoard.rows.count - 1, contractBoard.selection + (key == "up" ? -1 : 1)))
+      }
+      if key == "return", contractBoard.selected != nil {
+        contractBoard.detail = true
+        contractBoard.action = .back
+        contractBoard.scroll = 0
+        refreshSelectedContractQuote()
+      }
+      return
+    }
+    if ["left", "right", "tab"].contains(key) {
+      let actions = ContractBoardAction.allCases
+      let index = actions.firstIndex(of: contractBoard.action)!
+      contractBoard.action = actions[(index + (key == "left" ? 2 : 1)) % 3]
+    }
+    if ["up", "down", "pageup", "pagedown"].contains(key) {
+      let count = Display.contractDetailRows(self, width: viewportWidth).count
+      let visible = ContractBoardLayout(width: viewportWidth, height: viewportHeight).detailCount
+      let window = ScrollWindow(count: count, visible: visible, offset: contractBoard.scroll)
+      contractBoard.scroll = window.moved(key == "up" || key == "pageup" ? -4 : 4)
+    }
+    guard key == "return" else { return }
+    if contractBoard.action == .back {
+      contractBoard.detail = false
+      contractBoard.quote = nil
+      return
+    }
+    do {
+      guard let row = contractBoard.selected, let offer = row.offer else {
+        throw MissionPackError("This provider is unavailable.")
+      }
+      if contractBoard.action == .accept {
+        guard let quote = contractBoard.quote else {
+          throw MissionPackError("Review this offer before accepting.")
+        }
+        _ = try confirmContract(quote)
+        notify("CONTRACT ACCEPTED - SEE MISSION GALLERY")
+      } else {
+        try declineContract(board: row.board, offer: offer.id)
+        notify("OFFER DECLINED")
+      }
+      refreshContractRows()
+      contractBoard.detail = false
+      contractBoard.quote = nil
+    } catch {
+      openContractBoard()
+      notify(String(error.localizedDescription.prefix(512)))
+    }
+  }
+  public var activeContractSummary: [String] {
+    commander.scriptState.instances.values.filter { $0.outcome == .active && $0.contract != nil }
+      .sorted { $0.id.uuidString < $1.id.uuidString }.map { instance in
+        let job = instance.contract!
+        let name = Universe.systemsIncludingPlugh(number: job.station.galaxy)[job.station.system]
+          .name
+        let late = job.deadline.map { commander.scriptState.clock(job.clock) >= $0 } ?? false
+        return job.offer.title + " / " + name + (late ? " / OVERDUE" : " / ACTIVE")
+      }
+  }
+  mutating func contractClick(x: Double, y: Double) {
+    guard screen == .contracts, !paused else { return }
+    let layout = ContractBoardLayout(width: viewportWidth, height: viewportHeight)
+    let point = ScreenPoint(x, y)
+    if contractBoard.detail {
+      if let action = layout.actions.first(where: { $0.1.contains(point) })?.0 {
+        contractBoard.action = action
+        contractBoardKey("return")
+      }
+    } else if layout.refresh.contains(point) {
+      openContractBoard()
+    } else if x >= layout.left && x <= layout.left + layout.width && y >= layout.listTop
+      && y < layout.listBottom
+    {
+      let start = max(0, contractBoard.selection - layout.listCount + 1)
+      let index = start + Int((y - layout.listTop) / layout.listRow)
+      if contractBoard.rows.indices.contains(index) {
+        contractBoard.selection = index
+        contractBoardKey("return")
+      }
+    }
+  }
+}
+extension GameRuntime {
+  public func contractClick(x: Double, y: Double, expectedOffer: UUID?, detail: Bool, epoch: UUID) {
+    guard game.screen == .contracts, game.ecmControl.epoch == epoch,
+      game.contractBoard.detail == detail, game.contractBoard.quote?.offer == expectedOffer
+    else { return }
+    nativeCommand { $0.contractClick(x: x, y: y) }
+  }
+  public func contractScroll(_ amount: Int) {
+    guard game.screen == .contracts else { return }
+    game.contractBoardKey(amount < 0 ? "up" : "down")
+  }
+}

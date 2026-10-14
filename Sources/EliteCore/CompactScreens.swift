@@ -12,6 +12,7 @@ extension Display {
     case .chart, .shortChart: map(game, width: width, height: height)
     case .navigation: navigation(game, width: width, height: height)
     case .gallery: gallery(game, width: width, height: height)
+    case .contracts: contractBoard(game, width: width, height: height)
     case .handoff: blackjackHandoff(game, width: width, height: height)
     case .demo, .title: startupScreen(game, width: width, height: height)
     case .help: helpScreen(game, width: width, height: height)

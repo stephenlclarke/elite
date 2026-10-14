@@ -369,6 +369,7 @@ private func timerFixture() throws -> DurableFixture {
   let headerBytes = try JSONEncoder().encode(header)
   try headerBytes.write(to: headerFile)
   var hashes = pointer.hashes
+  hashes.removeValue(forKey: "contracts.json")
   hashes["commander.json"] = ScriptPackLibrary.hash(headerBytes)
   let old = ScriptSavePointer(
     format: pointer.format, schemaVersion: 4, generation: oldGeneration, hashes: hashes)

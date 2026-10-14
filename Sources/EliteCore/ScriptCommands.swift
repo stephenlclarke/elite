@@ -110,6 +110,13 @@ extension Game {
       else {
         throw MissionPackError("Completion requires every declared milestone.")
       }
+      if outcome == .complete, let job = state.contract, let due = job.deadline,
+        candidate.scriptState.clock(job.clock) >= due
+      {
+        throw MissionPackError(
+          "This contract's deadline has passed; use its declared failure handoff.")
+      }
+      try settleContract(outcome, state: &state, candidate: &candidate)
       state.outcome = outcome
       state.dialogue = nil
       state.timers = [:]

@@ -41,6 +41,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let passengerParties: [ScriptPassengerParty]?
   public let trial: ScriptTrialDefinition?
   public let equipment: [ScriptGearDefinition]?
+  public let board: ScriptBoardDefinition?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -59,6 +60,7 @@ public enum ScriptCapabilities {
     "script-lua-v1", "story-v2", "economy-v2", "cargo-v2", "local-flight-clocks-v2",
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
     "owned-equipment-v2",
+    "contracts-basic-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -93,12 +95,16 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board"
     )
     try keys(
       root.table(forKey: "mission"),
       "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties requiredEquipmentReturns"
     )
+    if root.contains(key: "board") {
+      try keys(
+        root.table(forKey: "board"), "id title generator clock refreshSeconds exclusiveGroup")
+    }
     for (name, allowed) in [
       "handlers": "event function", "dialogs": "id text",
       "equipment": "id name quantity loan mount returnPolicy",
@@ -127,7 +133,7 @@ public enum ScriptPackLibrary {
       }
     }
     if root.contains(key: "trial") {
-      try keys(root.table(forKey: "trial"), "ship galaxy system credits cabins flight")
+      try keys(root.table(forKey: "trial"), "ship galaxy system credits cabins flight offer")
     }
     let manifest = try TOMLDecoder().decode(ScriptManifest.self, from: bytes)
     try validate(manifest)
@@ -135,7 +141,9 @@ public enum ScriptPackLibrary {
     guard String(data: source, encoding: .utf8) != nil, !source.contains(0) else {
       throw MissionPackError("Mission Lua must be UTF-8 text without NUL bytes.")
     }
-    try ScriptEvaluator.validate(source: source, handlers: manifest.handlers.map(\.function))
+    try ScriptEvaluator.validate(
+      source: source,
+      handlers: manifest.handlers.map(\.function) + (manifest.board.map { [$0.generator] } ?? []))
     var digestInput = Data()
     for (name, data) in [("manifest.toml", bytes), (manifest.module, source)] {
       digestInput.append(try ScriptWire.encode([.string(name), .integer(Int64(data.count))]))
@@ -223,6 +231,15 @@ public enum ScriptPackLibrary {
         || manifest.capabilities.contains("owned-equipment-v2")
     else { throw MissionPackError("Equipment events require owned-equipment-v2.") }
     let gear = manifest.equipment ?? []
+    if let board = manifest.board {
+      guard board.valid, manifest.capabilities.contains("contracts-basic-v2"),
+        manifest.capabilities.contains("local-flight-clocks-v2"),
+        board.clock == .local || board.clock == .flight
+          || manifest.capabilities.contains("world-clocks-v1")
+      else {
+        throw MissionPackError("Invalid contract board or missing clock/contract capability.")
+      }
+    }
     guard gear.count <= 64, Set(gear.map(\.id)).count == gear.count,
       gear.allSatisfy(\.valid), gear.reduce(0, { $0 + $1.quantity }) <= 128,
       Set(manifest.mission.requiredEquipmentReturns ?? []).isSubset(of: Set(gear.map(\.id))),
@@ -234,7 +251,9 @@ public enum ScriptPackLibrary {
       parties.isEmpty || manifest.capabilities.contains("charter-passengers-v2")
     else { throw MissionPackError("Invalid passenger parties or missing charter capability.") }
     if let trial = manifest.trial {
-      guard trial.valid, manifest.capabilities.contains("gallery-basic-v2") else {
+      guard trial.valid, manifest.capabilities.contains("gallery-basic-v2"),
+        trial.offer == nil || manifest.board != nil
+      else {
         throw MissionPackError("Invalid trial loadout or missing basic Gallery capability.")
       }
     }

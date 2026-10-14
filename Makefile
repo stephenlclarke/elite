@@ -45,6 +45,7 @@ script-missions-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-patrol
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-passengers
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-equipment
+	swift run Elite --validate-mission-pack docs/mission-packs/scripted-contracts
 package-macos:
 	python3 Tools/distribution/package_macos.py
 ci: ships-check showroom-check mission-packs-check script-missions-check coverage-check threads address leaks

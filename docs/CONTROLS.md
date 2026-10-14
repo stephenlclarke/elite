@@ -146,3 +146,7 @@ XYZZY L (or clicking its row) resets legal status to Clean. Saved mission progre
 ## Installed mission packs
 
 Commander > Install Mission Pack selects a TOML file. Game > Mission Gallery lists valid packs and suspended saved progress. Game > Mission Contacts or docked B opens eligible contacts. Arrows choose Confirm/Back, Return or clicking selects, Escape returns without a pending transfer. Option-Up/Down and trackpad scrolling read long dialogs.
+
+## Station contracts
+
+**Game > Station Contracts** opens supported main-orbital providers. Up/Down selects, Return/click reads, Left/Right chooses Accept/Decline/Back and Return confirms. Back is initially selected. Escape returns through briefing, board and station; scrolling reads long offers. Refresh retains the same saved decisions until the next simulation generation. Reading does not start a deadline or debit money. Active work is in the Mission Gallery. The sample provider cancels accepted work through Mission Contacts at its original offering station, after returning its actual samples.

@@ -8,6 +8,7 @@ public struct ScriptTrialDefinition: Codable, Sendable {
   public let credits: Int
   public let cabins: Int
   public let flight: Bool
+  public let offer: Int?
   var valid: Bool {
     guard let hull = ShipCatalogue.ship(ship), let performance = hull.game,
       let accommodation = try? ShipAccommodationProfile(ship: hull)
@@ -16,6 +17,7 @@ public struct ScriptTrialDefinition: Codable, Sendable {
       && (0...4_294_967_295).contains(credits) && (0...128).contains(cabins)
       && cabins * 5 <= performance.cargo && cabins <= accommodation.equipmentUnits
       && credits >= cabins * PassengerCabin.price
+      && (offer.map { (0..<16).contains($0) } ?? true)
   }
 }
 struct GalleryParentState: Sendable {
@@ -81,7 +83,17 @@ extension Game {
       trial.rearShield = trial.commander.shieldCapacity
       for _ in 0..<scene.cabins { try trial.confirmPassengerBerth(trial.passengerBerthQuote) }
     }
-    _ = try trial.acceptScriptMission(pack, randomSeed: seed)
+    if pack.manifest.board != nil {
+      let key = try trial.ensureContractBoard(pack)
+      let offers = trial.commander.contracts.boards[key]?.offers ?? []
+      let index = pack.manifest.trial?.offer ?? 0
+      guard offers.indices.contains(index) else {
+        throw MissionPackError("This trial has no generated offer at the selected position.")
+      }
+      _ = try trial.acceptContract(board: key, offer: offers[index].id)
+    } else {
+      _ = try trial.acceptScriptMission(pack, randomSeed: seed)
+    }
     if pack.manifest.trial?.flight == true {
       trial.launch()
       trial.observeScriptLocation(
