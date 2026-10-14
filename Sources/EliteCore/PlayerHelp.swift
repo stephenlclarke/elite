@@ -44,7 +44,8 @@ public enum PlayerHelp {
             "OPTION-UP/DOWN - PAGE LONG LISTS",
             "SCROLL - BROWSE THE AREA UNDER POINTER",
             "COMMAND-P - PAUSE / RESUME",
-            "COMMAND-S / COMMAND-O - SAVE / LOAD",
+            "COMMAND-S / COMMAND-O - SAVE / RELOAD",
+            "COMMAND-SHIFT-S / O - SAVE AS / OPEN",
             "X Y Z Z Y - CLARKE / SECRET OPTIONS",
             "COMMAND-Q - QUIT",
           ]))
@@ -136,7 +137,8 @@ public enum PlayerHelp {
           "N - ROUTES (FITTED NAV COMPUTER)",
           "P - TOGGLE TOP-FIVE PROFIT SCAN",
           "Z (LOCAL) - CHANGE RANGE",
-          "[ / ] OR GALAXY BUTTONS - VIEW GALAXY",
+          "[ / ] (GALACTIC) - VIEW GALAXY",
+          "GALAXY BUTTONS - VIEW GALAXY",
           "H - HYPERSPACE WHEN IN FLIGHT",
           "ESC - PREVIOUS SCREEN",
         ])
@@ -243,7 +245,7 @@ public enum PlayerHelp {
     case .title:
       .init(
         title: "TITLE SCREEN",
-        rows: ["RETURN / SPACE - COMMANDER SCREEN", "NEW COMMANDER: JAMESON"])
+        rows: ["RETURN / SPACE - CONTINUE COMMANDER", "COMMANDER: " + game.commander.name])
     case .gameOver:
       .init(title: "GAME OVER", rows: ["RETURN / SPACE - NEW COMMANDER JAMESON"])
     default:
