@@ -147,7 +147,7 @@ Auto-trade runs when enabled while docked and on subsequent docking. It sells tr
 
 ## Cockpit and AUTO assistance
 
-The flight view uses the full window width and native resolution, with antialiased wireframes and small point stars. Resize the window or enter full screen using the green window button. The original bitmap font stays at a compact readable size. Instruments are labelled Front shield, Rear shield, Fuel, Cabin temp, Laser heat, Altitude, Speed, Roll, Pitch and Energy; signed controls have a centre marker and neutral label. Status names are explicit. The decorative planet has been removed. The central scanner expands with the window, while supporting bars have a maximum width so they stay compact in full screen.
+The flight view uses the full window width and native resolution, with antialiased wireframes and small point stars. Resize the window or enter full screen using the green window button. The original bitmap font stays at a compact readable size. Instruments are labelled Front shield, Rear shield, Fuel, Cabin temp, Laser heat, Altitude, Speed, Roll, Pitch and Energy; signed controls have a centre marker and neutral label. Status names are explicit. The system planet and sun occupy actual flight space; the HUD shows their bearings in the current view. The central scanner expands with the window, while supporting bars have a maximum width so they stay compact in full screen.
 
 The missile rack shows one icon per finite missile, `None` for an empty rack, or one icon with the literal `~` for unlimited missiles. Armed and Unarmed are written as well as coloured.
 

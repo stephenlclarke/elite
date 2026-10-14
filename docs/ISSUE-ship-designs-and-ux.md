@@ -10,6 +10,6 @@ The player's audit identified additional missing behaviour: reachable profit ran
 
 Revise every existing project-authored hull with appropriate primary structures and real surface geometry, retain intentional clean/organic surfaces, preserve all source geometry/gameplay/reference profiles, and store actual final designs/materials in individual TOMLs. Add the purchasable Liberator and correct its engine/collector. Preserve source colour/texture/UV facts without pretending to render unbundled textures.
 
-Integrate the audited startup, profit, chart and control fixes. Verify actual native browsing, exchange, flight, docking and saved progress; regenerated full catalogue/README media; coverage, sanitizers and leaks; protected-main publication, exact-main Sonar and a verified signed/notarized download. The separate scriptable mission-engine branch must retain its honest capability boundary.
+Integrate the audited startup, profit, chart and control fixes, plus visible celestial flight objects, solar scooping/thermal danger, persistent station bearings and forward-facing physical docking. Verify actual native browsing, exchange, flight, docking and saved progress; regenerated full catalogue/README media; coverage, sanitizers and leaks; protected-main publication, exact-main Sonar and a verified signed/notarized download. The separate scriptable mission-engine branch must retain its honest capability boundary.
 
 See [the shared checklist](DELIVERY-BACKLOG.md) and [per-ship revision table](SHIP-DESIGNS.md).
