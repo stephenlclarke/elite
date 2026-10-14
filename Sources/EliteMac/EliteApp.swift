@@ -285,8 +285,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     NSApp.activate(ignoringOtherApps: true)
     let runtime = self.runtime
     loop = Task { [weak view, weak self] in
+      guard !Task.isCancelled else { return }
       await runtime.loadMissionPacks()
       let packErrors = await runtime.snapshot().missionPacks.errors
+      guard !Task.isCancelled else { return }
       if !packErrors.isEmpty {
         let alert = NSAlert()
         alert.messageText = "Some mission packs could not be enabled"
@@ -296,65 +298,82 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       if let self, self.restoreOnLaunch, let url = self.saves.startupURL {
         do {
           try await runtime.restoreStartup(from: url)
+          guard !Task.isCancelled else { return }
           view?.game = await runtime.snapshot()
-        } catch { await self.recoverStartup(error, url: url) }
+        } catch {
+          guard !Task.isCancelled else { return }
+          await self.recoverStartup(error, url: url)
+        }
       }
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
-        let events = view.pending
-        view.pending.removeAll()
-        for event in events {
-          if event.hasPrefix("commander-save:"), let self {
-            let url = URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
-            do {
-              try await runtime.save(to: url)
-              self.saves.didSave(to: url)
-            } catch { self.show(error) }
-          } else if event.hasPrefix("secret-click:") {
-            let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
-            if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
-          } else if event.hasPrefix("showroom-click:") {
-            let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
-            if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }
-          } else if event.hasPrefix("handoff-click:") {
-            let values = event.dropFirst(14).split(separator: ":").compactMap { Double($0) }
-            if values.count == 2 { await runtime.blackjackHandoffClick(x: values[0], y: values[1]) }
-          } else if event.hasPrefix("equipment-click:") {
-            let values = event.dropFirst(16).split(separator: ":").compactMap { Double($0) }
-            if values.count == 2 { await runtime.equipmentClick(y: values[1], x: values[0]) }
-          } else if event.hasPrefix("map-click:") {
-            let parts = event.split(separator: ":")
-            if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
-              await runtime.mapClick(x: x, y: y)
-            }
-          } else if event.hasPrefix("gallery-click:") {
-            let parts = event.split(separator: ":")
-            if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
-              await runtime.galleryClick(x: x, y: y)
-            }
-          } else if event.hasPrefix("chart:") {
-            let parts = event.split(separator: ":")
-            if let x = Int(parts[1]), let y = Int(parts[2]) {
-              await runtime.selectSystem(x: x, y: y)
-            }
-          } else {
-            await runtime.key(event)
+        if let self {
+          await self.processFrame(in: view) {
+            let now = ContinuousClock.now
+            let elapsed = previousTick.duration(to: now).components
+            previousTick = now
+            return Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18
           }
+        } else {
+          return
         }
-        if !events.isEmpty { view.game = await runtime.snapshot() }
-        await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
-        await runtime.setControls(view.controls)
-        let now = ContinuousClock.now
-        let elapsed = previousTick.duration(to: now).components
-        previousTick = now
-        view.game = await runtime.advance(
-          delta: Double(elapsed.seconds) + Double(elapsed.attoseconds) / 1e18)
-        view.audio.update(view.game)
-        view.needsDisplay = true
         do { try await Task.sleep(for: .milliseconds(16)) } catch { return }
       }
     }
+  }
+  func processFrame(in view: GameView, delta: () -> Double) async {
+    await processPendingCommands(in: view)
+    await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
+    await runtime.setControls(view.controls)
+    view.game = await runtime.advance(delta: delta())
+    view.audio.update(view.game)
+    view.needsDisplay = true
+  }
+  // The frame loop and native integration checks share one ordered command batch.
+  // Awaiting this method acknowledges actual processing instead of elapsed time.
+  func processPendingCommands(in view: GameView) async {
+    let events = view.pending
+    view.pending.removeAll()
+    for event in events {
+      if event.hasPrefix("commander-save:") {
+        let url = URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
+        do {
+          try await runtime.save(to: url)
+          self.saves.didSave(to: url)
+        } catch { self.show(error) }
+      } else if event.hasPrefix("secret-click:") {
+        let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
+        if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
+      } else if event.hasPrefix("showroom-click:") {
+        let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
+        if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }
+      } else if event.hasPrefix("handoff-click:") {
+        let values = event.dropFirst(14).split(separator: ":").compactMap { Double($0) }
+        if values.count == 2 { await runtime.blackjackHandoffClick(x: values[0], y: values[1]) }
+      } else if event.hasPrefix("equipment-click:") {
+        let values = event.dropFirst(16).split(separator: ":").compactMap { Double($0) }
+        if values.count == 2 { await runtime.equipmentClick(y: values[1], x: values[0]) }
+      } else if event.hasPrefix("map-click:") {
+        let parts = event.split(separator: ":")
+        if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
+          await runtime.mapClick(x: x, y: y)
+        }
+      } else if event.hasPrefix("gallery-click:") {
+        let parts = event.split(separator: ":")
+        if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
+          await runtime.galleryClick(x: x, y: y)
+        }
+      } else if event.hasPrefix("chart:") {
+        let parts = event.split(separator: ":")
+        if let x = Int(parts[1]), let y = Int(parts[2]) {
+          await runtime.selectSystem(x: x, y: y)
+        }
+      } else {
+        await runtime.key(event)
+      }
+    }
+    if !events.isEmpty { view.game = await runtime.snapshot() }
   }
   func applicationShouldTerminateAfterLastWindowClosed(_ _: NSApplication) -> Bool { true }
   func applicationWillTerminate(_ notification: Notification) {

@@ -8,6 +8,8 @@ Catalogue coverage did not satisfy the requested design quality. The generated A
 
 The player's audit identified additional missing behaviour: reachable profit rankings, restored-game startup credits/title, compact chart separation and consistent controls/help. These requests need a single evidence-backed delivery rather than treating received instructions or an audit as completed implementation.
 
+The hosted Address Sanitizer run exposed a timing-dependent native save regression test: its five-second polling deadline could expire while the shared executor was busy rendering, before the queued Save ran. The integration checks must await actual ordered command/frame completion, preserve the real menu and saved-file assertions, and verify cancellation before startup execution without weakening sanitizer gates.
+
 ## Acceptance
 
 Revise every existing project-authored hull with appropriate primary structures and real surface geometry, retain intentional clean/organic surfaces, preserve all source geometry/gameplay/reference profiles, and store actual final designs/materials in individual TOMLs. Add the purchasable Liberator and correct its engine/collector. Preserve source colour/texture/UV facts without pretending to render unbundled textures.

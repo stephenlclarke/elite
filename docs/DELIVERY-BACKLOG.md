@@ -23,6 +23,7 @@ Version 1.3.0 includes the verified ship, startup, chart, control and flight cha
 | Normalised better/worse/same comparisons, aligned values and legend | Coder 1 | Regression verified | Comparison/layout/UX tests | Complete: native narrow/wide specs and comparison |
 | A-Z and power sorting; visible ship-switch action | Coder 1 | Regression verified | Existing showroom state/UX tests | Native browsing/filter/quote/exchange verified |
 | XYZZY Clean reset and Cobra restore | Coder 1 | Regression verified | Existing XYZZY tests and menu actions | Complete integrated 268-test regression suite passed |
+| Native Save includes preceding queued refits; cancelled startup does not consume input | Coder 1 / Coder 2 review | Regression verified | Awaited production command/frame processing; actual menu/file/preferences assertions | Focused save/menu/cancellation checks pass without wall-clock polling |
 | MacBook search, paging, focus, Back and overflow hints | Coder 1 | Regression verified | Existing keyboard/help/navigation tests; controls guide | Native essential flows and compact help verified |
 | Mission schema shared with researcher | Coder 1 | Verified handoff | Explicit cross-chat handoff of `MISSION-PACKS.md` and current source boundaries; researcher acknowledged | Preserve schema-1 compatibility in engine branch |
 | Generic mission terminology and safe existing campaign behaviour | Coder 1 | Regression verified | Existing mission-pack/gallery/dialog tests | 268-test suite passed; no unsupported research campaign activated |
