@@ -1,0 +1,59 @@
+{
+  "title": "Standard Basic Energy System and add-on modules",
+  "version": 3,
+  "date": "2026-10-15",
+  "status": "Planned implementation requirements; not a claim of released gameplay. Published player documentation and release notes identify available features.",
+  "request": "All ships get a Basic Energy System with Intermediate and Advanced add-on modules, following the navigation-computer modular presentation.",
+  "model": {
+    "base": "Basic Energy System is standard installed equipment on every playable hull, including new commanders, restored saves and exchanged ships. Use the hull's existing native energy capacity and recharge. No separate base purchase or technology gate, and no migration cash changes.",
+    "modules": [
+      {
+        "display_name": "Intermediate Energy Module",
+        "legacy_identity": "Extra Energy Unit",
+        "recharge_multiplier": 2,
+        "price_cr": 1500,
+        "display_technology_level": 9
+      },
+      {
+        "display_name": "Advanced Energy Module",
+        "legacy_identity": "Naval Energy Unit",
+        "recharge_multiplier": 3,
+        "initial_shop_price_cr": 4500,
+        "initial_display_technology_level": 11
+      }
+    ],
+    "advanced_availability": "Both add-on rows appear in Equip Ship. Intermediate must be purchased before an Advanced shop purchase, including at PLUGH. Intermediate retains its existing price/technology; proposed Advanced high-tech purchase tuning is 4500 CR at displayed technology level 11, using the existing PLUGH Naval Energy Unit price as reference, with final implementation values documented. Preserve PLUGH lower-price policy. Existing Naval mission reward is a distinct exactly-once acquisition path, never a second stacked unit or a fictional paid receipt.",
+    "calculation": "Basic=1 times native recharge, Intermediate=2, Advanced=3; use the highest installed module, not additive 2+3 or multiplicative 2x3. Capacity does not automatically increase merely from renaming or installing the recharge module. Independent salvaged capacity/efficiency improvements use explicit effects and component progression rules.",
+    "progression": "Compatible salvaged energy upgrades may improve actual component stats and promote Basic to Intermediate then Advanced when the authoritative required templates are met. These are the named energy tiers; do not create extra named energy tiers merely because shields now have Elite. Apply finite family-specific terminal limits and preserve accumulated progress/receipts.",
+    "xyzzymode": "XYZZY includes the Advanced Energy Module, formerly Naval Energy Unit, by the existing maximum-hardware rule. Preserve finite cash, separate cheat switches and reward provenance."
+  },
+  "identity_and_rewards": {
+    "mapping": "Keep stable legacy equipment identities or explicitly migrate Extra Energy Unit to Intermediate and Naval Energy Unit to Advanced without losing effective strength. Separate player-visible labels from saved/mission-script equipment keys.",
+    "mission_compatibility": "Naval mission reward/conditions, pack validation allowed names and older third-party TOML mission packs must keep accepting their legacy energy-unit identifiers. Awarding the module is exactly once; if an equal or better effective system is already installed, do not downgrade, duplicate stats or overwrite intrinsic salvaged improvements. Coordinate reward settlement with mission owner.",
+    "preservation": "Old no-unit saves retain Basic native stats; old Extra unit retains 2 times and old Naval retains 3 times recharge. Preserve current energy/shields, cash, route, legal/mission state, cargo, item ownership and reward flags. Fitting, promotion or load must not refill energy for free or compound previously applied bonuses."
+  },
+  "screens_and_documentation": [
+    "Equip Ship: Energy System heading, Basic core marked Standard/Fitted, Intermediate and Advanced module rows indented with right-aligned price/status, technology/compatibility and exact recharge effect. Do not list them as separate complete energy systems.",
+    "Commander Status/equipment summaries: Basic Energy System plus actual installed module and effective capacity/recharge. Distinguish cargo-owned recovered modules from installed equipment. Remove stale Extra/Naval player-facing labels while preserving compatibility identifiers.",
+    "Cockpit HUD: energy bars use actual effective capacity, energy recovery uses actual module-adjusted recharge. Keep compact fixed small typography and do not turn the HUD into an equipment list.",
+    "Showroom/ship comparisons/trade: distinguish standard hull energy values, installed module and effective fitted values; transfer compatible physical components without copying consumed upgrades or hull-bound improvements.",
+    "Target details where disclosed, fitting/salvage/PLUGH services, mission reward notices and voice: one name/effect authority, correct finite stats and exactly-once notifications. Honour targeting information disclosure gates.",
+    "README/equipment/energy/navigation/targeting/salvage/PLUGH and mission-reward docs plus in-game help: show Basic standard and two add-ons, verified prices/technology, 1x/2x/3x recharge, capacity distinction, acquisition/reward paths, recovered upgrade promotion and XYZZY default. Label pending versus shipped behaviour accurately."
+  ],
+  "ownership": {
+    "Elite Coder 1": "Central equipment/defaults/energy simulation/purchase/reward/save/UI/documentation integration and final validation; coordinate mission adapter with its owner and preserve frozen route release source.",
+    "Elite Coder 2": "Independent recovered energy item/effect/quality data, progression contract review and focused tests; do not concurrently edit central equipment/save/rendering files.",
+    "Mission researcher": "Review Naval/mission-pack legacy identifiers, reward conditions/settlement and exactly-once ownership at natural checkpoint; general tests only if explicitly transferred when free."
+  },
+  "acceptance": [
+    "Every new/restored/exchanged playable ship has Basic; Intermediate/Advanced installs produce actual 2x/3x native recharge with no accidental energy-capacity change or stacking.",
+    "Shop has two working finite-price add-ons with tech requirements and correct installed status; Advanced can also be awarded once by the existing Naval mission without downgrade or duplicated equipment effects.",
+    "Legacy saves and mission pack energy keys retain their real meanings. Fit/promotion/save/reload/retry/ship exchange cannot erase upgrades, compound stats, refill resources or clone items.",
+    "Recovered compatible energy upgrades can fit immediately and progress through the three named templates with truthful stat/grade progress. Held modules do not affect energy before fitting.",
+    "All compact/normal/full-screen displays and docs use consistent Basic/Intermediate/Advanced module terminology, real effective stats and fixed small fonts. Existing energy/shield/combat/ECM resource consumers pass focused regressions and integrated make ci gates."
+  ],
+  "related_specifications": [
+    "EQUIPMENT-PURCHASE-PROGRESSION-DESIGN.json",
+    "COMPONENT-PROGRESSION-DESIGN.json"
+  ]
+}

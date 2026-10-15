@@ -1,0 +1,61 @@
+{
+  "title": "Standard Basic navigation computer and add-on modules",
+  "version": 3,
+  "date": "2026-10-15",
+  "status": "Planned implementation requirements; not a claim of released gameplay. Published player documentation and release notes identify available features.",
+  "request": "All ships get a Basic navigation computer; Intermediate and Advanced add-on modules can be purchased.",
+  "model": {
+    "base": "Basic Navigation Computer is standard installed equipment on every playable ship, including new commanders, restored legacy saves and exchanged hulls. No purchase or technology gate for the base computer, and no change to existing commander cash merely from migration.",
+    "addons": [
+      {
+        "display_name": "Intermediate Navigation Module",
+        "previous_name": "Advanced Navigation Computer",
+        "legacy_tier_raw_value": 2,
+        "price_cr": 3000,
+        "maximum_computer_jump_ly": 14,
+        "planning_range": "Fuel capacity in LY plus 14 LY, preserving current behaviour."
+      },
+      {
+        "display_name": "Advanced Navigation Module",
+        "previous_name": "Military Navigation Computer",
+        "legacy_tier_raw_value": 3,
+        "price_cr": 9000,
+        "maximum_computer_jump_ly": 21,
+        "planning_range": "Full current galaxy, preserving current behaviour."
+      }
+    ],
+    "basic_specification": "Retain current Basic computer 7 LY declared jump cap and planning range equal to fuel capacity in LY plus 7 LY. Preserve the existing hull/drive-derived jump calculation and actual fuel constraint; this request does not silently replace special hull mechanics.",
+    "progression": "Basic is standard. Intermediate must be purchased before Advanced; all shop paths, including PLUGH, enforce prior purchases through the shared validator. The highest installed module determines capability and ranges do not stack. Preserve prices and technology requirements; recovered fitting, rewards and XYZZY grants retain distinct provenance and never fabricate paid predecessors.",
+    "xyzzymode": "XYZZY includes the Advanced Navigation Module, which is the renamed former Military model. Preserve finite cash, fuel-storage equipment and separate cheat switches."
+  },
+  "migration_and_identity": {
+    "mapping": "Existing raw Basic=1 stays Basic, old Advanced=2 becomes Intermediate module, old Military=3 becomes Advanced module. Existing no-computer saves gain the standard Basic core. Existing routes and stronger installed capabilities remain intact.",
+    "collision_warning": "Current NavigationTier.equipmentName is derived from its display label and saves contain 'Navigation: Advanced'. That legacy string means tier2, not the newly named tier3 Advanced module. Separate stable saved equipment identity from new display names; do not globally relabel then parse the ambiguous string as tier3. Keep legacy IDs/raw enum values or use an explicit versioned migration with unambiguous new identifiers.",
+    "preservation": "Keep route path, stopIndex, planning tier semantics, fuel/capacity, cash, ship/equipment/module ownership, legal state and mission progress. Do not refund old Basic purchases or buy a second computer automatically. Adding a default core must not activate secret modes or alter navigation RNG."
+  },
+  "screens_and_documentation": [
+    "Equip Ship: Navigation Computer heading, Basic core marked Standard/Fitted, Intermediate Module and Advanced Module indented purchasable rows with right-aligned price/status and actual range/prerequisites. No for-sale Basic core.",
+    "Commander Status/equipment/showroom/ship comparisons: show Basic computer plus actual installed add-on and effective jump/planning capability; all ships include Basic. Held recovered modules remain separate until fitted.",
+    "Chart/search/route planner: consistent Basic/Intermediate/Advanced names, preserved three range rings (planning, equipment/hardware maximum, current-fuel maximum), route alternatives, explicit Set/Back semantics, countdown revalidation and preloaded next hops/refuelling.",
+    "HUD/details/target displays where relevant, upgrade/recovery notifications and voice: use the new module names from one display authority, with actual limits rather than labels alone.",
+    "README/navigation/equipment/targeting/salvage/PLUGH guides and in-game help: compare standard core and two purchasable modules, exact costs/technology/ranges and fuel constraints, legacy-name mapping and XYZZY Advanced default. Label pending features until integration lands."
+  ],
+  "salvage_progression": "Recovered compatible navigation items can improve stats/features or promote the physical component under the component-progression design, but merely holding an item does not install an add-on. Template/feature changes must preserve this core/module distinction and actual route/fuel constraints; do not invent additional named navigation tiers without a defined compatible progression template.",
+  "ownership": {
+    "Elite Coder 1": "Central navigation identity/default-equipment/save/purchase/fit integration, equipment/status/UI/docs and final validation. Coordinate chart/planner adapter changes with Coder2; do not modify the frozen route-release checkpoint.",
+    "Elite Coder 2": "Own coordinated planner/chart/range/route regression work only on agreed isolated feature files/checkpoint; provide route compatibility review and recovered module/effect data. Avoid competing shared equipment/save edits.",
+    "Mission researcher": "Compatibility review or explicitly transferred independent tests when free; preserve physical time, mission-route/custody state and legacy save interpretation."
+  },
+  "acceptance": [
+    "New normal/XYZZY commanders and every exchanged playable hull include Basic; old none/basic/advanced/military saves map to standard core and correct Intermediate/Advanced module without changed cash or route progress.",
+    "Legacy 'Navigation: Advanced' remains old tier2 capability and is not mistaken for new tier3. Old route tier raw values retain their semantics through save/load.",
+    "Basic/Intermediate/Advanced computer caps remain 7/14/21 LY with unchanged actual hull/fuel rules; Basic/Intermediate planning limits and Advanced full-galaxy search stay correct for all tank capacities.",
+    "Shop shows only two purchasable add-ons, correct costs/tech/status and no stacked ranges. Core upgrade, recovered-module fitting, ship exchange and XYZZY produce matching runtime capabilities.",
+    "Route alternatives, preview/cancel/commit countdown, refuelling/preloaded hops and three range rings pass regression tests; all compact/full-screen screens and docs use consistent module names and fixed small fonts.",
+    "Run focused migration/purchase/route/UI tests and final integrated make ci; preserve main-only exact-SHA Sonar and signed publication workflow."
+  ],
+  "related_specifications": [
+    "EQUIPMENT-PURCHASE-PROGRESSION-DESIGN.json",
+    "COMPONENT-PROGRESSION-DESIGN.json"
+  ]
+}

@@ -246,20 +246,50 @@ Mission dialogs use **Confirm / Back**: arrows choose, Return selects, Escape ba
 
 This is an Oolite expansion adaptation with documented custody, wanted-level and witness-callback repairs. Its S.T.E targets currently use the native Cobra mesh and simplified combat. See the [pinned source profile and fidelity limits](docs/BLACKJACK-BULLION.md). [The implementation queue](docs/MISSION-IMPLEMENTATION.md) distinguishes research packets from playable campaigns.
 
-## Download for macOS
+## Install on macOS
 
-The [signed universal app](releases/macos/Elite-1.4.0-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.4.0-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.4.0-universal.json).
+The signed, Apple-notarized universal app supports **Apple silicon and Intel Macs running macOS 14 or later**. Choose Homebrew or download the app directly; neither method requires Xcode or Swift.
 
-With Homebrew installed, install the same signed app from the project owner's tap:
+### Install with Homebrew
+
+With [Homebrew](https://brew.sh/) installed:
 
 ```sh
 brew install --cask stephenlclarke/tap/elite
 open -a Elite
 ```
 
-For updates, quit Elite, run `brew update` and then `brew upgrade --cask stephenlclarke/tap/elite`. Remove the app with `brew uninstall --cask elite`; your commander and mission packs under `~/.xyzzy/elite/` remain intact. The [maintained cask](Casks/elite.rb) pins an immutable published archive and its checksum, preserves macOS quarantine and requires macOS 14 or later. See [Homebrew distribution](docs/HOMEBREW.md) for validation and release synchronization.
+To update, quit Elite and run:
 
-This distribution uses Developer ID signing and the hardened runtime. Version 1.4.0 is **notarized by Apple**, includes a validated stapled ticket and passes Gatekeeper assessment. The [Apple submission log](releases/macos/Elite-1.4.0-universal-notarization.json) covers both architectures. This build adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls, while retaining the detailed hulls, Liberator and flight fixes. Its manifest and title identify source checkpoint `511190738f1f238ecbeae325d6e2f237e81c6f54`; the later artifact commit does not relabel the executable. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
+```sh
+brew update
+brew upgrade --cask stephenlclarke/tap/elite
+```
+
+To uninstall:
+
+```sh
+brew uninstall --cask stephenlclarke/tap/elite
+```
+
+The tap currently provides version 1.3.1; the GitHub release below provides 1.4.0. The tap update follows verification of its published release asset.
+
+Uninstalling preserves saved commanders and mission packs in `~/.xyzzy/elite/`. See [Homebrew distribution](docs/HOMEBREW.md) for the maintained cask, checksums and release synchronization.
+
+### Download from GitHub Releases
+
+1. Open the [latest GitHub Release](https://github.com/stephenlclarke/elite/releases/latest).
+2. Under **Assets**, download `Elite-<version>-universal.zip`. The same app supports Apple silicon and Intel.
+3. Extract the ZIP and move **Elite.app** into **Applications**.
+4. Open **Elite** from Applications.
+
+To update a manually installed copy, quit Elite and replace it in Applications with the app from the latest release. Saved commanders and mission packs remain in `~/.xyzzy/elite/`.
+
+Each release includes a matching `.sha256` checksum, build/signing `.json` manifest and notarization report. The manifest identifies the binary's source commit and verification results. See [macOS distribution](docs/MACOS-DISTRIBUTION.md) for package verification and signing details.
+
+For development builds, use the separate [Build and run](#build-and-run) instructions.
+
+Version 1.4.0 adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls. Its signed, notarized app identifies binary source checkpoint `36fa5cfef1e781f68dcb1fdbf7dae1e1e1f76224`; the release tag also includes the later archive and documentation commit. See the [packaging verification](docs/MACOS-DISTRIBUTION.md).
 
 ## Add mission packs
 
@@ -312,6 +342,8 @@ Automatic analysis is disabled, including on the legacy duplicate `stephenlclark
 The README screenshot and animated tape are generated from deterministic scenes using the same drawing commands as the live game, following the Pacman and Defender README media convention. Regenerate both with `make readme-media`.
 
 ## Fidelity and references
+
+The [design index](docs/DESIGN-INDEX.json) records the current gameplay, equipment, salvage and graphics implementation contracts. Those designs and dated audits describe remaining work; they are not claims that every feature is in this release.
 
 The independently maintained local `docs/research/` reference contains separate deduplicated mission, ship and alien catalogues, version mappings, source provenance and mission replication specifications. It distinguishes documented historical behaviour from implementation recommendations and explicitly lists unresolved fidelity requirements.
 
