@@ -94,7 +94,7 @@ extension Game {
       }
       bodies[index].energy = 0
     } else {
-      damageBody(index: index, incident: incident, damage: damage)
+      damageBody(index: index, incident: incident, damage: damage, point: hit.point)
     }
     if bodies[index].energy <= 0 {
       bodies[index].physical?.deathOrigin = origin
@@ -128,10 +128,18 @@ extension Game {
     return incident
   }
 
-  private mutating func damageBody(index: Int, incident: CombatIncident, damage: Double) {
+  private mutating func damageBody(
+    index: Int, incident: CombatIncident, damage: Double, point: Vector3
+  ) {
     guard damage > 0, bodies[index].hull != .station,
       incident.kind != .bomb || !bodies[index].hull.bombImmune
     else { return }
+    if bodies[index].hull == .constrictor,
+      incident.kind == .plasma
+        || (incident.kind == .laser && incident.laser != .military && incident.laser != .naval)
+    {
+      return
+    }
     if let rockID = bodies[index].physical?.rock,
       let rock = miningFields.lazy.flatMap(\.rocks).first(where: { $0.identity == rockID })
     {
@@ -141,7 +149,14 @@ extension Game {
       case .ignored, .capacityRefused: break
       }
     } else {
-      bodies[index].energy = max(0, bodies[index].energy - damage)
+      var remaining = damage
+      if incident.kind != .bomb, var resources = bodies[index].physical?.npc?.resources {
+        let forward = bodies[index].modelVector(.init(0, 0, 1))
+        remaining = resources.absorb(
+          damage, front: (point - bodies[index].position).dot(forward) >= 0)
+        bodies[index].physical?.npc?.resources = resources
+      }
+      bodies[index].energy = max(0, bodies[index].energy - remaining)
     }
   }
 
@@ -160,6 +175,7 @@ extension Game {
       let baseline = max(0, min(255, legal))
       let penalty = max(0, min(255, resolution.legalPenalty))
       bodies[index].physical?.npc?.legal.value = max(legal, min(255, baseline + penalty))
+      if penalty > 0 { bodies[index].physical?.npc?.legalProvenance = .recorded }
     }
     if resolution.unlawful, case .body(let id) = target,
       let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].hull.isTargetShip

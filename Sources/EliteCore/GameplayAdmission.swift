@@ -44,8 +44,16 @@ extension Game {
         if let rock = miningFields.flatMap(\.rocks).first(where: { $0.identity == request.rock }) {
           body.energy = commander.miningLedger.remainingEnergy(for: rock)
         }
+        var npc = request.npc
+        if npc != nil, npc?.resources == nil, request.priority != .mission,
+          let performance = request.catalogueShipID.flatMap({ ShipCatalogue.ship($0)?.game })
+            ?? ShipCatalogue.nativeShip(request.hull)?.game
+        {
+          npc?.resources = NPCResources.stock(performance)
+          body.energy = performance.energy
+        }
         body.physical = .init(
-          identity: actor, population: request.population, npc: request.npc,
+          identity: actor, population: request.population, npc: npc,
           velocity: request.velocity, rock: request.rock, payload: request.payload,
           spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
           angularVelocity: request.angularVelocity, salvage: request.salvage)

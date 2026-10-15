@@ -79,6 +79,11 @@ public struct NPCState: Equatable, Codable, Sendable {
   public var origin: SystemIdentity
   public var destination: SystemIdentity
   public var ordinaryCargo: [CommodityAmount] = []
+  public var legalProvenance: NPCFactProvenance?
+  public var cargoProvenance: NPCFactProvenance?
+  public var routeProvenance: NPCFactProvenance?
+  public var resources: NPCResources?
+  public var hasFuelScoops: Bool?
 }
 
 public struct ShipPose: Equatable, Codable, Sendable {

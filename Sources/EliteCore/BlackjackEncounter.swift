@@ -22,6 +22,7 @@ public struct BlackjackEncounter: Sendable, Codable, Equatable {
       && body.rotation.isFinite && body.rotationRate.isFinite
       && (body.blackjackLaserCooldown ?? 0).isFinite
       && (body.blackjackLaserCooldown ?? 0) >= 0
+      && (body.physical?.npc?.resources?.valid ?? true)
   }
 }
 extension Vector3 { var finite: Bool { x.isFinite && y.isFinite && z.isFinite } }
@@ -88,6 +89,20 @@ extension Game {
     var body = saved.body
     body = body.withID(nextBodyID)
     nextBodyID += 1
+    if let prior = body.physical,
+      prior.identity.system != systemIdentity
+        || prior.identity.visit != commander.flightSimulation.visit
+    {
+      guard let identity = commander.flightSimulation.allocateActor() else { return }
+      var npc = prior.npc
+      npc?.firstAggressor = nil
+      npc?.intention = nil
+      body.physical = .init(
+        identity: identity, population: prior.population, npc: npc,
+        velocity: prior.velocity, laserCooldown: prior.laserCooldown,
+        blocksNavalEncounter: prior.blocksNavalEncounter, catalogueShipID: prior.catalogueShipID,
+        angularVelocity: prior.angularVelocity)
+    }
     body.position = anchor.position + anchor.orientation.apply(saved.body.position)
     body.orientation = saved.body.orientation.transformed(by: anchor.orientation)
     if body.leavesLocalBubble { body.position = anchor.position * 0.1 }

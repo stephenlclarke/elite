@@ -111,17 +111,11 @@ extension Game {
         .init(label: "Range", value: String(format: "%.0f units", body.position.length)),
       ]
     } else {
-      if tier >= .pirate {
-        fields += [
-          .init(label: "Cargo", value: "Unavailable"), .init(label: "Origin", value: "Unknown"),
-          .init(label: "Destination", value: "Unknown"),
-        ]
-      }
+      fields += TargetTelemetry.fields(
+        facts: telemetryFacts(for: body), tier: tier, targetIsShip: body.hull.isTargetShip,
+        observerGalaxy: commander.galaxy, discloseLegal: true)
       if tier >= .military {
         fields += [
-          .init(label: "Shields", value: "Unavailable"),
-          .init(label: "Laser heat", value: "Unavailable"),
-          .init(label: "Fuel", value: "Unavailable"),
           .init(label: "Missiles", value: String(body.missiles)),
           .init(label: "ECM equipped", value: body.ecmEnabled ? "Yes" : "No"),
           .init(
@@ -130,7 +124,10 @@ extension Game {
       }
     }
     return .init(
-      id: body.id, model: body.blackjackRole?.name ?? body.hull.modelName, status: status,
+      id: body.id,
+      model: TargetTelemetry.modelName(
+        catalogueShipID: body.physical?.catalogueShipID, missionName: body.blackjackRole?.name,
+        fallbackHull: body.hull), status: status,
       fields: fields)
   }
 }

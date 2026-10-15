@@ -52,7 +52,7 @@ Every action in this table is visible in the **Flight** menu. Equipment requirem
 | Detonate energy bomb | Flight > Detonate Energy Bomb |
 | Launch escape pod | Command-Shift-E, or Flight > Launch Escape Pod |
 
-Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Pass scoopable cargo below your nose with Fuel Scoops fitted.
+Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Option-Up/Down pages its wrapped cargo, route and resource readings. Pass scoopable cargo below your nose with Fuel Scoops fitted.
 
 Flight HUD bearings point to the actual moving planet and sun, including astern and off-screen directions. Fuel Scoops collect solar fuel automatically when cruising nose-first in the outer corona; no extra key is needed. Stay near the corona edge, watch Cabin temp, and turn away to cool before it reaches the limit. Sun and planet surfaces are fatal, and overheating destroys the ship even with unlimited XYZZY fuel. Saves retain the existing commander-only behaviour: loading docks at the saved system, and launching creates a fresh local flight scene.
 

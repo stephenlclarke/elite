@@ -3,6 +3,7 @@ import Foundation
 extension Game {
   mutating func advanceGameplayEncounters(delta: Double) {
     ensurePhysicalActors()
+    advanceNPCResources(delta: delta)
     guard let context = gameplayContext() else { return }
     let hasStation = bodies.contains { $0.id == 0 && $0.hull == .station && $0.energy > 0 }
     let security: SecurityPlan
@@ -187,6 +188,7 @@ extension Game {
   ) {
     guard let index = bodies.firstIndex(where: { $0.id == bodyID }),
       let actor = bodies[index].physical, actor.laserCooldown <= 0, bodies[index].energy > 1,
+      actor.npc?.resources?.canFire ?? true,
       let target = gameplayActor(identity, context: context)
     else { return }
     let position = bodies[index].position
@@ -211,6 +213,7 @@ extension Game {
     let laser: LaserKind = mining ? .mining : .pulse
     bodies[index].physical?.laserCooldown = laser.firingInterval
     bodies[index].energy -= 1
+    bodies[index].physical?.npc?.resources?.recordBeam(heat: 10)
     applyCombatHit(
       hit, origin: origin, kind: .laser, damage: laser.damage, laser: laser, mount: .front,
       emissionPosition: commander.flightSimulation.pose.systemPoint(position))
@@ -233,6 +236,7 @@ extension Game {
       payload: payload, into: &cargo, freeTonnes: max(0, capacity - used),
       hasScoops: true, approachAllowed: true, protection: context.protection)
     if case .collected = receipt {
+      bodies[index].physical?.npc?.cargoProvenance = .recorded
       bodies[index].physical?.npc?.ordinaryCargo = CommodityIdentity.allCases.compactMap {
         cargo[$0.rawValue] > 0 ? .init(commodity: $0, quantity: cargo[$0.rawValue]) : nil
       }

@@ -285,6 +285,7 @@ public struct Game: Sendable {
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
   public var targetPanelExpanded: Bool?
+  public var targetPanelScroll = 0
   public var weaponsTargetID: Int?
   public var secretScroll = 0
   public var energy = 256.0
@@ -400,6 +401,9 @@ public struct Game: Sendable {
       switch key {
       case "r", "tab":
         cycleAutoTarget()
+        return
+      case "pageup", "pagedown":
+        pageTargetDetails(key == "pageup" ? -1 : 1)
         return
       case "i":
         targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))

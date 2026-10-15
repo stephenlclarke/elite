@@ -334,7 +334,7 @@ struct GameplayCombatTests {
     try combatBody(&ordinary, hull: .constrictor, role: .trader, energy: 10)
     let otherOrigin = try combatPlayerOrigin(&ordinary)
     ordinary.applyCombatHit(
-      try combatBodyHit(ordinary), origin: otherOrigin, kind: .laser, damage: 10)
+      try combatBodyHit(ordinary), origin: otherOrigin, kind: .laser, damage: 10, laser: .military)
     #expect(ordinary.commander.legal == 40 && ordinary.commander.credits == 1000)
   }
 

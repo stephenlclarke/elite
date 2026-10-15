@@ -242,6 +242,8 @@ private func afterRobbery() throws -> Game {
   game.docked = false
   game.arrive()
   let index = try #require(game.bodies.firstIndex { $0.blackjackRole == .bolts })
+  game.ensurePhysicalActors()
+  game.bodies[index].physical?.npc?.resources?.laserHeat = 37
   game.bodies[index].energy = 123
   game.bodies[index].missiles = 1
   game.bodies[index].blackjackLaserCooldown = 0.2
@@ -261,6 +263,14 @@ private func afterRobbery() throws -> Game {
   #expect(
     body.blackjackIdentity == id && body.energy == 123 && body.missiles == 1
       && body.blackjackLaserCooldown == 0.2)
+  #expect(body.physical?.npc?.resources?.laserHeat == 37)
+  #expect(body.physical?.npc?.resources?.fuel == nil)
+  #expect(body.physical?.npc?.resources?.frontCapacity == 0)
+  #expect(body.physical?.identity.visit == restored.commander.flightSimulation.visit)
+  var playable = restored
+  let actor = try #require(body.physical?.identity)
+  let rebound = playable.makeAttackOrigin(owner: actor)
+  #expect(rebound?.owner == actor)
   let station = try #require(restored.bodies.first { $0.hull == .station })
   #expect((body.position - station.position - saved.body.position).length < 0.0001)
   #expect(body.orientation == saved.body.orientation)

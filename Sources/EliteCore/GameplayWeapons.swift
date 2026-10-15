@@ -57,6 +57,9 @@ extension Game {
       body.position.length > 0
     else { return }
     let launch = commander.flightSimulation.pose.systemPoint(body.position)
+    if let index = bodies.firstIndex(where: { $0.id == bodyID }) {
+      bodies[index].physical?.npc?.resources?.recordBeam(heat: min(10, damage * 10 / 15))
+    }
     let hit = GameplayRaycast.nearest(
       origin: body.position, direction: body.position * -1, maxDistance: body.position.length + 1,
       bodies: bodies.filter { $0.energy > 0 }, ignoring: [bodyID],

@@ -3,7 +3,7 @@ import Foundation
 /// Pure disclosure of supplied NPC facts. The runtime owns their acquisition and updates.
 public enum TargetTelemetry {
   public enum RouteProvenance: Equatable, Sendable {
-    case recorded, inferredLocal
+    case recorded, generated, inferredLocal
   }
 
   public struct RouteFact: Equatable, Sendable {
@@ -123,7 +123,12 @@ public enum TargetTelemetry {
       identity.system == Plugh.systemID
       ? Plugh.name : Universe.galaxy(number: identity.galaxy)[identity.system].name
     let galaxy = identity.galaxy == observerGalaxy ? "" : " (Galaxy \(identity.galaxy + 1))"
-    let provenance = route.provenance == .inferredLocal ? " (inferred local)" : ""
+    let provenance: String
+    switch route.provenance {
+    case .recorded: provenance = ""
+    case .generated: provenance = " (generated route)"
+    case .inferredLocal: provenance = " (inferred local)"
+    }
     return name + galaxy + provenance
   }
 

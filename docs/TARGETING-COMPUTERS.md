@@ -32,9 +32,9 @@ The yellow station compass works without any computer. It shows the station's be
 | Information | Current disclosure |
 | --- | --- |
 | Identification ship model/status | Actual model and Hostile/Neutral state |
-| Pirate cargo | `Unavailable`; NPC cargo is not currently modelled |
-| Pirate origin/destination | `Unknown`; NPC routes are not currently modelled |
-| Military shields, laser heat, fuel | `Unavailable`; NPC values are not currently modelled |
+| Pirate cargo | Actual ordinary manifest, with commodity units; `Unknown` until recorded |
+| Pirate origin/destination | Recorded route; generated or inferred routes are labelled; cross-galaxy destinations show their galaxy |
+| Military shields, laser heat, fuel | Actual selected-craft readings, with front/rear shield banks separate; unrecorded legacy fuel remains `Unknown` |
 | Military missiles | Actual remaining NPC missile count |
 | Military ECM equipped/active | Actual fitting and whether that target owns the active enemy ECM field |
 | Identification+ station | Entrance Ready/Aligning, rotation rate and range; ship resource fields do not apply |
@@ -99,3 +99,5 @@ Equip Ship currently groups the six cores under Targeting Computers, uses the sm
 ## Implementation references
 
 Core behavior and prices: [TargetingComputer.swift](../Sources/EliteCore/TargetingComputer.swift), [AutoTargetControl.swift](../Sources/EliteCore/AutoTargetControl.swift), [TargetPanel.swift](../Sources/EliteCore/TargetPanel.swift), [RetaliationControl.swift](../Sources/EliteCore/RetaliationControl.swift), [ECMControl.swift](../Sources/EliteCore/ECMControl.swift), [Game.swift](../Sources/EliteCore/Game.swift), [Plugh.swift](../Sources/EliteCore/Plugh.swift), [ShipTrade.swift](../Sources/EliteCore/ShipTrade.swift), [EquipmentDisplay.swift](../Sources/EliteCore/EquipmentDisplay.swift) and [PlayerHelp.swift](../Sources/EliteCore/PlayerHelp.swift). The pending work follows the primary checkout's `SALVAGE-GAMEPLAY-DESIGN.json`, version 6, dated 2026-10-15; it does not replace those implemented sources.
+
+Target details wrap within the cockpit panel. Use I to expand it and Option-Up/Down to page long manifests and resource readings. Legacy mission ships keep their original energy-only combat rules; zero shield capacity describes that profile and does not grant them modern shields.
