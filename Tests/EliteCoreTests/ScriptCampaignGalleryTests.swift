@@ -186,7 +186,8 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   defer { fixture.clean() }
   var game = fixture.game()
   let campaign = try fixture.startContractCampaign(&game, nested: nested)
-  game.commander.name = "LIVE CONTRACT OWNER"
+  game.commander.name = "LIVE OWNER"
+  #expect(game.commander.valid)
   let savedRoot = try #require(
     game.missionCatalogue.first { $0.savedInstance == campaign.root })
   #expect(savedRoot.trialDigest == nil)
