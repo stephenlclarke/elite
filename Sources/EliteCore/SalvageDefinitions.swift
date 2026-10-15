@@ -2,7 +2,7 @@ import Foundation
 
 public enum SalvageTechnologyCategory: String, CaseIterable, Codable, Sendable {
   case computerCore, driveTechnology, laserTechnology, shieldTechnology, recoveredMissile
-  case laserHardpoint, missilePylon, spareEscapePod, alienArtefact
+  case laserHardpoint, missilePylon, spareEscapePod, alienArtefact, featureModule
 }
 
 public enum SalvageQuality: Int, CaseIterable, Codable, Sendable {
@@ -44,9 +44,33 @@ public enum SalvageMissileVariant: String, CaseIterable, Codable, Sendable {
   public var heatMultiplier: Double { 1 }
 }
 
+/// Capacity-class modules keep the existing single strongest-amplifier rule.
+public enum SalvageShieldSlot: String, CaseIterable, Codable, Sendable {
+  case capacityAmplifier, recharge, efficiency, feature
+  public static let maximumAdditiveBonusBasisPoints = 3000
+  public static let minimumEfficiencyCostBasisPoints = 7000
+  public static let capacityClassesStack = false
+
+  public static func slot(for axis: SalvageUpgradeAxis) -> SalvageShieldSlot? {
+    switch axis {
+    case .frontShieldCapacity, .rearShieldCapacity: .capacityAmplifier
+    case .frontShieldRecharge, .rearShieldRecharge: .recharge
+    default: nil
+    }
+  }
+}
+
+public enum SalvageFeature: String, CaseIterable, Codable, Sendable {
+  case miningTargetingModule, salvageTargetingModule, fuelScoops, ecm, salvageCutter
+  public var requiresTargetingCore: Bool {
+    self == .miningTargetingModule || self == .salvageTargetingModule
+  }
+}
+
 public enum SalvageTechnologyEffect: Equatable, Codable, Sendable {
   case scalar(axes: [SalvageUpgradeAxis])
   case missile(SalvageMissileVariant)
+  case feature(SalvageFeature)
   case unlockFacing, addPylon, spareEscapePod, researchAndSale
 }
 
@@ -70,7 +94,8 @@ public enum SalvageDefinitionAction: Equatable, Codable, Sendable {
 
 public enum SalvageCompatibilityRefusal: String, Codable, Sendable {
   case unsupportedAxis, missingLaser, noFacingAvailable, pylonLimit, sparePodLimit
-  case incompatibleHardware, invalidStructure, researchUnavailable
+  case incompatibleHardware, invalidStructure, researchUnavailable, alreadyInstalled,
+    missingTargetingCore
 }
 
 public enum SalvageCompatibilityResult: Equatable, Codable, Sendable {
@@ -80,6 +105,9 @@ public enum SalvageCompatibilityResult: Equatable, Codable, Sendable {
 
 /// G1 supplies authoritative installed structure and hardware, never UI guesses.
 public struct SalvageFitContext: Codable, Sendable {
+  public var installedFeatures: Set<SalvageFeature>
+  public var hasTargetingCore: Bool
+  public var isPlughWorkshop: Bool
   public var stockFacingMask: Int
   public var installedFacingMask: Int
   public var retrofitFacingMask: Int
@@ -98,8 +126,12 @@ public struct SalvageFitContext: Codable, Sendable {
     stockPylons: Int, installedPylons: Int, structuralPylonLimit: Int, storedEmptyPods: Int,
     fittedLasers: [LaserMount: LaserKind] = [:], loadedMissiles: Int = 0,
     fittedEscapePod: Bool = false, hasCompatibleAlienHardware: Bool = false,
-    computerResearchAvailable: Bool = false
+    computerResearchAvailable: Bool = false, installedFeatures: Set<SalvageFeature> = [],
+    hasTargetingCore: Bool = false, isPlughWorkshop: Bool = false
   ) {
+    self.installedFeatures = installedFeatures
+    self.hasTargetingCore = hasTargetingCore
+    self.isPlughWorkshop = isPlughWorkshop
     self.stockFacingMask = stockFacingMask
     self.installedFacingMask = installedFacingMask
     self.retrofitFacingMask = retrofitFacingMask
@@ -135,7 +167,9 @@ public struct SalvageResearchRecipe: Equatable, Codable, Sendable {
 /// Project tuning. Catalogue geometry never implies a retrofit entitlement.
 public enum SalvageDefinitions {
   public static let maximumBonusBasisPoints = 3000
+  /// Retrofit ceiling; larger native stock loadouts remain valid.
   public static let maximumPylons = 8
+  public static let maximumNativePylons = 32
   public static let maximumExtraPylons = 2
   public static let maximumSparePods = 2
 
@@ -175,6 +209,22 @@ public enum SalvageDefinitions {
     item(
       "spare-escape-pod", .spareEscapePod, "Empty spare escape pod", 500,
       Vector3(15, 15, 20), 10000, .spareEscapePod),
+    item(
+      "feature-mining-targeting", .featureModule, "Targeting: Mining Module", 2,
+      Vector3(6, 4, 3), 20000, .feature(.miningTargetingModule)),
+    item(
+      "feature-salvage-targeting", .featureModule, "Targeting: Salvage Module", 2,
+      Vector3(6, 4, 3), 40000, .feature(.salvageTargetingModule)),
+    item(
+      "feature-fuel-scoops", .featureModule, "Fuel Scoops", 150,
+      Vector3(10, 8, 5), Equipment.base.first { $0.name == "Fuel Scoops" }!.price,
+      .feature(.fuelScoops)),
+    item(
+      "feature-ecm", .featureModule, "E.C.M. System", 40,
+      Vector3(8, 6, 4), Equipment.base.first { $0.name == "E.C.M. System" }!.price, .feature(.ecm)),
+    item(
+      "feature-salvage-cutter", .featureModule, "Salvage Cutter", 125,
+      Vector3(12, 4, 4), 25000, .feature(.salvageCutter)),
     item(
       "alien-artefact", .alienArtefact, "Alien technology artefact", 25,
       Vector3(4, 4, 4), 50000, .researchAndSale, provenance: .alien),
@@ -252,7 +302,8 @@ public enum SalvageDefinitions {
     if action == .sell { return .permitted }
     if action == .research {
       if definition.category == .alienArtefact {
-        return context.hasCompatibleAlienHardware ? .permitted : .refused(.incompatibleHardware)
+        return context.hasCompatibleAlienHardware && context.isPlughWorkshop
+          ? .permitted : .refused(.incompatibleHardware)
       }
       return definition.category == .computerCore && context.computerResearchAvailable
         ? .permitted : .refused(.researchUnavailable)
@@ -273,17 +324,27 @@ public enum SalvageDefinitions {
       return .permitted
     case .addPylon:
       guard validStructure(context) else { return .refused(.invalidStructure) }
-      let limit = min(
-        maximumPylons, context.structuralPylonLimit,
-        context.stockPylons + maximumExtraPylons)
+      let limit =
+        context.stockPylons >= maximumPylons
+        ? context.stockPylons
+        : min(
+          maximumPylons, context.structuralPylonLimit,
+          context.stockPylons + maximumExtraPylons)
       return context.installedPylons < limit ? .permitted : .refused(.pylonLimit)
     case .spareEscapePod:
       return (0...maximumSparePods).contains(context.storedEmptyPods) && !context.fittedEscapePod
         ? .permitted : .refused(.sparePodLimit)
     case .missile:
-      return context.installedPylons > 0 && context.installedPylons <= maximumPylons
+      return context.installedPylons > 0 && context.installedPylons <= maximumNativePylons
         && (0..<context.installedPylons).contains(context.loadedMissiles)
         ? .permitted : .refused(.pylonLimit)
+    case .feature(let feature):
+      guard axis == nil, mount == nil else { return .refused(.unsupportedAxis) }
+      guard !context.installedFeatures.contains(feature) else { return .refused(.alreadyInstalled) }
+      guard !feature.requiresTargetingCore || context.hasTargetingCore else {
+        return .refused(.missingTargetingCore)
+      }
+      return .permitted
     case .researchAndSale: return .refused(.incompatibleHardware)
     }
   }
@@ -297,9 +358,9 @@ public enum SalvageDefinitions {
       && (1...15).contains(context.retrofitFacingMask)
       && context.stockFacingMask & context.installedFacingMask == context.stockFacingMask
       && context.installedFacingMask & context.retrofitFacingMask == context.installedFacingMask
-      && (0...maximumPylons).contains(context.stockPylons)
-      && (context.stockPylons...maximumPylons).contains(context.installedPylons)
-      && (context.stockPylons...maximumPylons).contains(context.structuralPylonLimit)
+      && (0...maximumNativePylons).contains(context.stockPylons)
+      && (context.stockPylons...maximumNativePylons).contains(context.installedPylons)
+      && (context.stockPylons...maximumNativePylons).contains(context.structuralPylonLimit)
   }
 
   private static func mask(_ mount: LaserMount) -> Int {

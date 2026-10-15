@@ -32,6 +32,7 @@ public struct SalvageProfile: Sendable {
   public let name: String
   public let role: SalvageHullRole
   public let basis: String
+  public let sourceRoles: Set<SalvageSourceRole>
   /// Project native-unit scale; source geometry does not establish metres or mass.
   public let physicalScale: Double
   public let bounds: SalvageBounds
@@ -265,8 +266,30 @@ public enum SalvageCatalogue {
     guard radius.isFinite, radius > 0, !sections.isEmpty else { return nil }
     return .init(
       catalogueShipID: ship.id, name: ship.name, role: entry.role, basis: entry.basis,
+      sourceRoles: sourceRoles(entry),
       physicalScale: 1, bounds: .init(center: center, radius: radius), minimum: minimum,
       maximum: maximum, sections: sections, mesh: mesh)
+  }
+
+  private static func sourceRoles(_ entry: Entry) -> Set<SalvageSourceRole> {
+    // Specific sourced installations override generic project hull classifications.
+    switch entry.id {
+    case "SH102": return [.rockHermit, .station]
+    case "SH156": return [.weaponsPlatform]
+    case "SH164": return [.drugFactory]
+    case "SH161": return [.militaryCapital]
+    default: break
+    }
+    switch entry.role {
+    case .capitalWarship: return [.militaryCapital]
+    case .alienCapital: return [.thargoid]
+    case .carrier: return [.commercialCarrier]
+    case .bulkFreighter, .largeLiner, .largeTransport: return [.commercialTrader]
+    case .abandonedInfrastructure: return [.station]
+    case .deepSpaceCruiser, .largeExplorer, .largeCombatShip, .largeEncounterShip:
+      // Initial project tuning: generic cargo/5% ship item, not a historical trader claim.
+      return [.generalShip]
+    }
   }
 
   private static func workSeconds(_ kind: SalvageSectionKind) -> Double {

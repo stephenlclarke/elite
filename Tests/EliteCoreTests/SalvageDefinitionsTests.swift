@@ -174,6 +174,11 @@ struct SalvageDefinitionsTests {
     #expect(
       SalvageDefinitions.compatibility(
         definition: alien,
+        action: .research, context: fit) == .refused(.incompatibleHardware))
+    fit.isPlughWorkshop = true
+    #expect(
+      SalvageDefinitions.compatibility(
+        definition: alien,
         action: .research, context: fit) == .permitted)
     #expect(
       SalvageDefinitions.compatibility(
@@ -210,6 +215,85 @@ struct SalvageDefinitionsTests {
         #expect(recipe.requiresCompatibleAlienHardware)
         #expect(recipe.requiredDefinitionID == "alien-artefact")
       }
+    }
+  }
+
+  @Test func readyFitFeaturesRequireExplicitFittingAndRespectCoreAndInstalledState() throws {
+    let ids = [
+      "feature-mining-targeting", "feature-salvage-targeting", "feature-fuel-scoops",
+      "feature-ecm", "feature-salvage-cutter",
+    ]
+    var seen = Set<SalvageFeature>()
+    for id in ids {
+      let definition = try #require(SalvageDefinitions.definition(id: id))
+      guard case .feature(let feature) = definition.effect else {
+        Issue.record("Missing feature effect")
+        continue
+      }
+      seen.insert(feature)
+      var fit = context()
+      if feature.requiresTargetingCore {
+        #expect(
+          SalvageDefinitions.compatibility(
+            definition: definition,
+            action: .fit(axis: nil, mount: nil), context: fit) == .refused(.missingTargetingCore))
+      }
+      fit.hasTargetingCore = true
+      #expect(
+        SalvageDefinitions.compatibility(
+          definition: definition,
+          action: .fit(axis: nil, mount: nil), context: fit) == .permitted)
+      #expect(fit.installedFeatures.isEmpty)
+      #expect(
+        SalvageDefinitions.compatibility(
+          definition: definition,
+          action: .fit(axis: .laserDamage, mount: nil), context: fit) == .refused(.unsupportedAxis))
+      fit.installedFeatures.insert(feature)
+      #expect(
+        SalvageDefinitions.compatibility(
+          definition: definition,
+          action: .fit(axis: nil, mount: nil), context: fit) == .refused(.alreadyInstalled))
+    }
+    #expect(seen == Set(SalvageFeature.allCases))
+    #expect(
+      SalvageDefinitions.definition(id: "feature-fuel-scoops")?.baseValueTenths
+        == Equipment.base.first { $0.name == "Fuel Scoops" }?.price)
+    #expect(
+      SalvageDefinitions.definition(id: "feature-ecm")?.baseValueTenths
+        == Equipment.base.first { $0.name == "E.C.M. System" }?.price)
+  }
+
+  @Test func shieldSlotMetadataPreservesSingleCapacityClassAndBoundedAddons() {
+    #expect(!SalvageShieldSlot.capacityClassesStack)
+    #expect(SalvageShieldSlot.maximumAdditiveBonusBasisPoints == 3000)
+    #expect(SalvageShieldSlot.minimumEfficiencyCostBasisPoints == 7000)
+    #expect(SalvageShieldSlot.slot(for: .frontShieldCapacity) == .capacityAmplifier)
+    #expect(SalvageShieldSlot.slot(for: .rearShieldRecharge) == .recharge)
+    #expect(SalvageShieldSlot.slot(for: .laserDamage) == nil)
+  }
+
+  @Test func largeNativeStockPylonCapacityRemainsUsableWithoutRetrofitExpansion() throws {
+    let pylon = try #require(SalvageDefinitions.definition(id: "missile-pylon"))
+    let missile = try #require(SalvageDefinitions.definition(id: "missile-standard"))
+    for stock in [8, 16, 32] {
+      var fit = context()
+      fit.stockPylons = stock
+      fit.installedPylons = stock
+      fit.structuralPylonLimit = stock
+      fit.loadedMissiles = stock - 1
+      #expect(
+        SalvageDefinitions.compatibility(
+          definition: pylon,
+          action: .fit(axis: nil, mount: nil), context: fit) == .refused(.pylonLimit))
+      #expect(
+        SalvageDefinitions.compatibility(
+          definition: missile,
+          action: .fit(axis: nil, mount: nil), context: fit) == .permitted)
+      fit.loadedMissiles = stock
+      #expect(
+        SalvageDefinitions.compatibility(
+          definition: missile,
+          action: .fit(axis: nil, mount: nil), context: fit) == .refused(.pylonLimit))
     }
   }
 
