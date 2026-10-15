@@ -58,6 +58,7 @@ func ecologyContext(
   #expect(partitioned.nextDecisionTime == whole.nextDecisionTime)
   let data = try JSONEncoder().encode(partitioned)
   var restored = try JSONDecoder().decode(EncounterDirector.self, from: data)
+  #expect(restored == partitioned)
   #expect(
     restored.advance(context: ecologyContext(time: 160))
       == partitioned.advance(context: ecologyContext(time: 160)))

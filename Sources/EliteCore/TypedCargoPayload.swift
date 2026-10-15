@@ -31,6 +31,7 @@ public struct TypedCargoPayload: Equatable, Codable, Sendable {
     approachAllowed: Bool, protection: MissionProtection
   ) -> CargoCollectionReceipt {
     if case .mission = identity { return .refused(.protectedPayload) }
+    if case .salvage = identity { return .refused(.protectedPayload) }
     guard !protection.protectedPayloads.contains(identity) else {
       return .refused(.protectedPayload)
     }
