@@ -61,6 +61,15 @@ extension Game {
           velocity: request.velocity, rock: request.rock, payload: request.payload,
           spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
           angularVelocity: request.angularVelocity, salvage: request.salvage)
+        if request.identity.producer != .persistence,
+          let snapshot = NPCPersistenceSnapshot.capture(
+            body: body, pose: pose, physicalTime: context.physicalTime,
+            protection: context.protection),
+          case .refused = commander.npcPersistence.capture(snapshot, protection: context.protection)
+        {
+          receipts.append(.init(request: request.identity, actor: nil, refusal: .reservedCapacity))
+          continue
+        }
         bodies.append(body)
         receipts.append(.init(request: request.identity, actor: actor, refusal: nil))
       }
@@ -77,6 +86,12 @@ extension Game {
     guard UInt64(fresh.count) <= UInt64.max - commander.flightSimulation.nextActor,
       fresh.count <= Int.max - nextBodyID
     else { return .reservedCapacity }
+    let newNPCs = fresh.filter {
+      $0.npc != nil && $0.npc?.role != .mission && $0.identity.producer != .persistence
+    }.count
+    guard newNPCs <= NPCPersistenceLedger.maximumEntries - commander.npcPersistence.count else {
+      return .reservedCapacity
+    }
     var budget = context.budget
     for request in fresh {
       guard request.identity.system == context.system, request.identity.visit == context.visit

@@ -4,6 +4,9 @@ extension Game {
   mutating func advanceGameplayEncounters(delta: Double) {
     ensurePhysicalActors()
     advanceNPCResources(delta: delta)
+    _ = persistNPCStates()
+    advanceUnboundNPCs()
+    admitPersistentNPCs()
     guard let context = gameplayContext() else { return }
     let hasStation = bodies.contains { $0.id == 0 && $0.hull == .station && $0.energy > 0 }
     let security: SecurityPlan
@@ -141,6 +144,7 @@ extension Game {
       if permission.allowed && (actor.position - destination).length < 80 {
         // Departure is a traffic transition, never a death or bounty settlement.
         let departing = bodies[index]
+        _ = commander.npcPersistence.terminal(actor: actor.identity, reason: .docked)
         clearRemovedTarget(departing)
         bodies.removeAll { $0.id == departing.id }
       }

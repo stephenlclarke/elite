@@ -66,9 +66,10 @@ extension Game {
     }
   }
 
-  mutating func departOrdinaryCargo() {
+  mutating func departOrdinarySimulation() {
     commander.cargoDebrisLedger.depart(system: systemIdentity)
     commander.miningLedger.depart(system: systemIdentity)
+    commander.npcPersistence.depart(system: systemIdentity)
   }
 
   mutating func collectOrdinaryPayload(

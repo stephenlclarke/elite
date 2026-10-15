@@ -24,6 +24,11 @@ public struct Commander: Sendable, Equatable, Codable {
     set { savedStationSecurity = newValue }
   }
   public var encounterDirector: EncounterDirector?
+  private var savedNPCPersistence: NPCPersistenceLedger?
+  public var npcPersistence: NPCPersistenceLedger {
+    get { savedNPCPersistence ?? NPCPersistenceLedger() }
+    set { savedNPCPersistence = newValue }
+  }
   private var savedCargoDebrisLedger: CargoDebrisLedger?
   public var cargoDebrisLedger: CargoDebrisLedger {
     get { savedCargoDebrisLedger ?? CargoDebrisLedger() }
@@ -179,6 +184,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && (savedFlightSimulation?.valid ?? true)
       && (savedCargoDebrisLedger?.valid ?? true)
+      && (savedNPCPersistence?.valid ?? true)
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -354,6 +360,10 @@ public struct Game: Sendable {
   public mutating func load(_ value: Commander) -> Bool {
     guard value.valid else { return false }
     commander = value
+    if commander.npcPersistence.count > 0 {
+      commander.npcPersistence.resetPhysicalBindings(
+        system: .init(galaxy: value.galaxy, system: value.system))
+    }
     clearCelestialFlight()
     blackjackOffer = nil
     packOffer = nil
@@ -374,6 +384,7 @@ public struct Game: Sendable {
     frontShield = commander.shieldCapacity
     rearShield = commander.shieldCapacity
     targetPanelExpanded = nil
+    targetPanelScroll = 0
     systems = Universe.systemsIncludingPlugh(number: value.galaxy)
     selectedSystem = value.system
     market = MarketItem.at(currentSystem, fluctuation: 0)
@@ -856,9 +867,11 @@ public struct Game: Sendable {
     dockingComputer = false
     bodies = [
       SpaceBody(id: 0, hull: .station, position: .init(0, 0, -500)),
-      SpaceBody(id: 1, hull: .cobra, position: .init(90, 20, 1400)),
       SpaceBody(id: 2, hull: .asteroid, position: .init(-280, 100, 2200)),
     ]
+    if commander.npcPersistence.count == 0 {
+      bodies.insert(.init(id: 1, hull: .cobra, position: .init(90, 20, 1400)), at: 1)
+    }
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     resetCelestialFlight()
     beginGameplayVisit(arriving: false)
@@ -867,6 +880,10 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
   }
   public mutating func dock(atMainStation: Bool = true) {
+    guard persistNPCStates().isEmpty else {
+      notify("DOCKING DEFERRED: NPC STATE UNAVAILABLE")
+      return
+    }
     persistCargoPoses()
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
@@ -926,7 +943,7 @@ public struct Game: Sendable {
       || celestials.contains { $0.position.length < $0.radius * 4 }
   }
   public mutating func arrive() {
-    if selectedSystem != commander.system { departOrdinaryCargo() }
+    if selectedSystem != commander.system { departOrdinarySimulation() }
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -965,7 +982,7 @@ public struct Game: Sendable {
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
-    departOrdinaryCargo()
+    departOrdinarySimulation()
     commander.galaxy = (commander.galaxy + 1) & 7
     if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
     galacticBrowse = GalaxyBrowseState()
@@ -1176,17 +1193,21 @@ public struct Game: Sendable {
     }
     persistBlackjackTargets()
     persistCargoPoses()
-    let departing = bodies.filter { $0.leavesLocalBubble && $0.id != 0 }
+    let retainedNPCs = persistNPCStates()
+    let departing = bodies.filter {
+      $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
+    }
     for body in departing {
       if let actor = body.physical?.identity {
         commander.miningLedger.cull(actor: actor)
         commander.cargoDebrisLedger.cull(actor: actor)
+        commander.npcPersistence.cull(actor: actor)
       }
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.leavesLocalBubble && $0.id != 0 }
+    bodies.removeAll { $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id) }
   }
   private mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {
@@ -1220,6 +1241,9 @@ public struct Game: Sendable {
         _ = commander.miningLedger.destroy(payload: payload)
         _ = commander.cargoDebrisLedger.destroy(
           payload: payload, protection: gameplayContext()?.protection)
+      }
+      if let actor = body.physical?.identity {
+        _ = commander.npcPersistence.terminal(actor: actor, reason: .destroyed)
       }
       missionTargetRemoved(body)
       clearRemovedTarget(body)
@@ -1282,7 +1306,8 @@ public actor GameRuntime {
     candidate.resolveDestroyed()
     candidate.persistCargoPoses()
     candidate.persistBlackjackTargets()
-    guard candidate.commander.valid,
+    let refusedNPCs = candidate.persistNPCStates()
+    guard refusedNPCs.isEmpty, candidate.commander.valid,
       !candidate.bodies.contains(where: {
         $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
           && $0.physical?.npc?.role != .mission
