@@ -659,6 +659,7 @@ struct EliteApp {
   }
   @MainActor private static func media() throws {
     try exportAppIcon()
+    try exportRouteReadmeMedia()
     try FileManager.default.createDirectory(atPath: "docs", withIntermediateDirectories: true)
     var game = Game()
     game.launch()
