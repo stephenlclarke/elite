@@ -128,6 +128,7 @@ struct NavigationGraph {
   }
   func alternatives(destination: Int, tier: NavigationTier) -> [RouteAlternative] {
     let origin = game.commander.system
+    guard destination != origin, game.systems.indices.contains(destination) else { return [] }
     let fuel = game.commander.availableJumpFuel
     var candidates: [(String, [Int])] = []
     for (score, label) in [(0, "Fewest Jumps"), (1, "Safest"), (2, "Trade Opportunities")] {
@@ -173,17 +174,18 @@ struct NavigationGraph {
     return result
   }
   func summary(plan: NavigationPlan, labels: [String]) -> RouteAlternative {
-    let legs = Array(zip(plan.path, plan.path.dropFirst()))
+    let remaining = Array(plan.path.dropFirst(plan.stopIndex))
+    let legs = Array(zip(remaining, remaining.dropFirst()))
     let distance = legs.reduce(0.0) { $0 + game.systems[$1.0].distance(to: game.systems[$1.1]) }
     let units = legs.reduce(0) {
       $0 + Int((game.systems[$1.0].distance(to: game.systems[$1.1]) * 10).rounded())
     }
-    let risk = plan.path.dropFirst().reduce(0.0) {
+    let risk = remaining.dropFirst().reduce(0.0) {
       $0 + Double(7 - game.systems[$1].government) * 0.15
     }
     return .init(
       labels: labels, plan: plan, distance: distance, fuelUnits: units, risk: risk,
-      cargoSale: plan.path.dropFirst().map(cargoSale).max() ?? 0,
+      cargoSale: remaining.dropFirst().map(cargoSale).max() ?? 0,
       tradeEstimate: legs.reduce(0) { $0 + trade($1.0, $1.1) })
   }
 
@@ -200,12 +202,12 @@ extension Game {
   }
   mutating func openNavigation() {
     if screen == .chart && !mapIsCurrentGalaxy {
-      _ = prepareChartTravel()
+      notify("TRAVEL / ROUTES REQUIRE THE CURRENT GALAXY")
       return
     }
-    if commander.navigationPlan == nil && !prepareChartTravel() { return }
+    let destination = screen == .chart ? viewedSystemID : selectedSystem
     if let plan = commander.navigationPlan, plan.valid, plan.galaxy == commander.galaxy,
-      !plan.complete, selectedSystem == plan.nextSystem
+      !plan.complete, destination == plan.nextSystem
     {
       navigationOptions = [
         NavigationGraph(game: self).summary(plan: plan, labels: ["Current route"])
@@ -224,12 +226,16 @@ extension Game {
       notify("REFUELLING NEEDED BEFORE PLANNING")
       return
     }
-    guard canPlan(to: targetSystem), selectedSystem != commander.system else {
+    guard destination != commander.system else {
+      notify("ALREADY AT DESTINATION")
+      return
+    }
+    guard systems.indices.contains(destination), canPlan(to: systems[destination]) else {
       notify("DESTINATION OUTSIDE PLANNING RANGE")
       return
     }
     navigationOptions = NavigationGraph(game: self).alternatives(
-      destination: selectedSystem, tier: tier)
+      destination: destination, tier: tier)
     guard !navigationOptions.isEmpty else {
       notify("NO FEASIBLE ROUTE - CHECK FUEL")
       return
@@ -260,12 +266,25 @@ extension Game {
     case "c":
       cancelNavigation()
       screen = navigationReturn
-    case "return":
+    case "return", "route-set":
       guard navigationOptions.indices.contains(navigationSelection) else { return }
-      commander.navigationPlan = navigationOptions[navigationSelection].plan
-      if let next = commander.navigationPlan?.nextSystem { selectedSystem = next }
+      let plan = navigationOptions[navigationSelection].plan
+      guard routeCandidateIsFeasible(plan) else {
+        navigationOptions = []
+        notify("ROUTE CHANGED - BACK AND REPLAN")
+        return
+      }
+      let cancelledJump = jumpCountdown != nil
+      jumpCountdown = nil
+      commander.navigationPlan = plan
+      if let next = plan.nextSystem { selectedSystem = next }
+      if navigationReturn == .chart {
+        galacticBrowse.targets[commander.galaxy] = selectedSystem
+      }
       screen = navigationReturn
-      notify("ROUTE SET TO " + systems[commander.navigationPlan!.destination].name)
+      notify(
+        (cancelledJump ? "JUMP CANCELLED - " : "") + "ROUTE SET TO "
+          + systems[plan.destination].name)
     default:
       if key.hasPrefix("route-scroll:"), let amount = Int(key.dropFirst(13)) {
         navigationScroll = Display.navigationWindow(
@@ -329,5 +348,37 @@ extension Game {
     notify(
       "NEXT: " + systems[next].name
         + (cost <= commander.availableJumpFuel ? "" : " - REFUEL REQUIRED"))
+  }
+}
+
+extension Game {
+  func routeCandidateIsFeasible(_ plan: NavigationPlan) -> Bool {
+    guard plan.valid, plan.galaxy == commander.galaxy,
+      commander.navigationTier == plan.tier,
+      plan.capacityAtPlanning == commander.fuelCapacity,
+      plan.path[plan.stopIndex] == commander.system,
+      let next = plan.nextSystem,
+      plan.path.allSatisfy({ id in knownSystems.contains { $0.id == id } }),
+      zip(plan.path.dropFirst(plan.stopIndex), plan.path.dropFirst(plan.stopIndex + 1))
+        .allSatisfy({
+          systems[$0].distance(to: systems[$1])
+            <= min(commander.jumpCap, Double(commander.fuelCapacity) / 10)
+        })
+    else { return false }
+    return currentSystem.distance(to: systems[next]) <= commander.maximumJumpDistance
+  }
+
+  mutating func navigationClick(x: Double, y: Double) {
+    guard screen == .navigation, !paused else { return }
+    let layout = NavigationPreviewLayout(game: self, width: viewportWidth, height: viewportHeight)
+    let point = ScreenPoint(x, y)
+    if let index = layout.candidateRects.firstIndex(where: { $0.contains(point) }) {
+      navigationSelection = index
+      navigationScroll = 0
+    } else if layout.setRect.contains(point) {
+      navigationKey("route-set")
+    } else if layout.backRect.contains(point) {
+      navigationKey("escape")
+    }
   }
 }

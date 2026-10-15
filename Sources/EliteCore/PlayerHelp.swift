@@ -150,11 +150,19 @@ public enum PlayerHelp {
       .init(
         title: "NAVIGATION ROUTES",
         rows: [
-          "UP / DOWN - SELECT ALTERNATIVE",
-          "RETURN - SET ROUTE; ESC - BACK",
+          "UP / DOWN / CLICK - PREVIEW CANDIDATE",
+          "RETURN / SET ROUTE - COMMIT PREVIEW",
+          "ESC / BACK - KEEP ACTIVE ROUTE",
+          "4 / 5 - GALAXY / LOCAL PREVIEW",
+          "LOCAL LEGS CLIP; CUES CONTINUE OFFSCREEN",
           "OPTION-UP/DOWN - SCROLL DETAILS",
           "C - CLEAR ROUTE",
           "P - TOGGLE TOP-FIVE PROFIT SCAN",
+          "FEWEST / SAFEST / TRADE / CARGO",
+          "IDENTICAL PATHS COMBINE THEIR LABELS",
+          "BASIC SEARCH: TANK CAPACITY LY + 7",
+          "ADVANCED: CAPACITY + 14; MILITARY: ALL",
+          "FIRST LEG: ACTUAL FUEL; THEN REFUEL",
           "DOCK AT EACH STOP; H STARTS EACH JUMP",
         ])
     case .showroom where game.showroom.trading:
