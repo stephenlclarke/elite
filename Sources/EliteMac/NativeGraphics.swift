@@ -11,10 +11,12 @@ func drawGame(_ game: Game, context: CGContext, rect: CGRect) {
 @MainActor
 func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGImage? {
   guard width >= 320, height >= 320, width <= 4096, height <= 4096, (1...2).contains(scale),
+    let colourSpace = CGColorSpace(name: CGColorSpace.sRGB),
     let context = CGContext(
       data: nil, width: width * scale, height: height * scale, bitsPerComponent: 8,
-      bytesPerRow: width * scale * 4, space: CGColorSpaceCreateDeviceRGB(),
-      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+      bytesPerRow: width * scale * 4, space: colourSpace,
+      bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue
+        | CGBitmapInfo.byteOrder32Little.rawValue)
   else { return nil }
   context.setFillColor(colour(Ink.black.rawValue))
   context.fill(CGRect(x: 0, y: 0, width: width * scale, height: height * scale))
@@ -27,6 +29,7 @@ func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGIm
 /// The window and exported media share the same drawing path at any pixel size.
 @MainActor
 func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
+  FramePerformance.noteFrame(frame)
   context.saveGState()
   context.translateBy(x: rect.minX, y: rect.minY)
   context.scaleBy(x: rect.width / frame.canvas.width, y: rect.height / frame.canvas.height)
@@ -107,7 +110,9 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
 private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Double = 0.5) {
   context.setLineWidth(lineWidth)
   switch graphic {
-  case .planet(let preview): PlanetRenderer.draw(preview, context: context)
+  case .planet(let preview):
+    FramePerformance.notePlanet()
+    PlanetRenderer.draw(preview, context: context)
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
     context.beginPath()
