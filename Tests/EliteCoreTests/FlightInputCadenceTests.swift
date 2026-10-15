@@ -6,6 +6,45 @@ import Testing
 
 @Suite(.serialized)
 struct FlightInputCadenceTests {
+  @MainActor @Test func directPresentationPreservesFullRenderedFrame() throws {
+    var game = Game(executive: false)
+    game.launch()
+    game.commander.shipDisplayStyle = .shadedPanels
+    game.celestials = [
+      .init(kind: .planet, position: .init(-900, 0, 6000), radius: 700),
+      .init(kind: .sun, position: .init(1500, 400, 7000), radius: 600),
+    ]
+    let view = GameView(frame: CGRect(x: 0, y: 0, width: 768, height: 768))
+    view.game = game
+    view.presentationPath = .direct
+    let space = try #require(CGColorSpace(name: CGColorSpace.sRGB))
+    func context() throws -> CGContext {
+      try #require(
+        CGContext(
+          data: nil, width: 768, height: 768, bitsPerComponent: 8, bytesPerRow: 768 * 4,
+          space: space,
+          bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
+            | CGBitmapInfo.byteOrder32Little.rawValue))
+    }
+    let direct = try context()
+    direct.translateBy(x: 0, y: 768)
+    direct.scaleBy(x: 1, y: -1)
+    NSGraphicsContext.saveGraphicsState()
+    NSGraphicsContext.current = NSGraphicsContext(cgContext: direct, flipped: true)
+    view.draw(view.bounds)
+    NSGraphicsContext.restoreGraphicsState()
+    let image = try #require(imageForGame(game, width: 768, height: 768))
+    let reference = try context()
+    reference.draw(image, in: view.bounds)
+    let directBytes = try #require(direct.data).assumingMemoryBound(to: UInt8.self)
+    let referenceBytes = try #require(reference.data).assumingMemoryBound(to: UInt8.self)
+    // Both images are normalized into the same canonical opaque BGRA context.
+    let count = 768 * 768 * 4
+    #expect(
+      Array(UnsafeBufferPointer(start: directBytes, count: count))
+        == Array(UnsafeBufferPointer(start: referenceBytes, count: count)))
+  }
+
   @MainActor @Test func heldPitchIgnoresRepeatAndReleasesImmediately() throws {
     let view = GameView()
     view.game.launch()

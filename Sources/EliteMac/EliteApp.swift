@@ -3,6 +3,13 @@ import EliteCore
 import ImageIO
 import UniformTypeIdentifiers
 
+enum NativePresentationPath: String {
+  case image, direct
+  static var configured: Self {
+    ProcessInfo.processInfo.environment["ELITE_FRAME_PRESENTATION"] == "direct" ? .direct : .image
+  }
+}
+
 @MainActor
 final class GameView: NSView {
   var game = Game() {
@@ -63,28 +70,39 @@ final class GameView: NSView {
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
   override var isOpaque: Bool { true }
-  override var wantsUpdateLayer: Bool { true }
-  override func updateLayer() {
+  // Set before enabling wantsLayer; ordinary launches retain the image presentation path.
+  var presentationPath = NativePresentationPath.configured
+  override var wantsUpdateLayer: Bool { presentationPath == .image }
+  private func recordPresentation(_ render: () -> Void) {
     let start = FramePerformance.begin()
-    let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
     defer {
       FramePerformance.end(
         start: start, pitch: controls.pitch, screen: String(describing: game.screen),
-        width: Int(bounds.width), height: Int(bounds.height), scale: scale)
+        width: Int(bounds.width), height: Int(bounds.height),
+        scale: (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1,
+        presentationPath: presentationPath.rawValue)
     }
-    guard
-      let image = imageForGame(
-        game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
-    else { return }
-    layer?.contentsScale = CGFloat(scale)
-    layer?.isOpaque = true
-    layer?.contents = image
+    render()
+  }
+  override func updateLayer() {
+    recordPresentation {
+      let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
+      guard
+        let image = imageForGame(
+          game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
+      else { return }
+      layer?.contentsScale = CGFloat(scale)
+      layer?.isOpaque = true
+      layer?.contents = image
+    }
   }
   override func draw(_ _: NSRect) {
-    NSColor.black.setFill()
-    bounds.fill()
-    guard let context = NSGraphicsContext.current?.cgContext else { return }
-    drawGame(game, context: context, rect: bounds)
+    recordPresentation {
+      NSColor.black.setFill()
+      bounds.fill()
+      guard let context = NSGraphicsContext.current?.cgContext else { return }
+      drawGame(game, context: context, rect: bounds)
+    }
   }
   private func clearSteeringInput() {
     held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])

@@ -1,7 +1,7 @@
 import EliteCore
 import Foundation
 
-/// Opt-in, bounded native diagnostics. Intervals measure layer updates, not scanout.
+/// Opt-in, bounded native diagnostics. Intervals measure render callbacks, not scanout.
 @MainActor
 enum FramePerformance {
   private static let path = ProcessInfo.processInfo.environment["ELITE_FRAME_PROFILE_OUTPUT"]
@@ -50,6 +50,8 @@ enum FramePerformance {
     let valid: Bool
   }
   private struct Sample: Codable {
+    let presentationPath: String?
+    let renderStartUptimeNanoseconds: UInt64?
     let intervalMilliseconds: Double?
     let renderMilliseconds: Double
     let pitch: Double
@@ -148,12 +150,14 @@ enum FramePerformance {
   }
   static func notePlanet() { if path != nil { planetVisible = true } }
   static func end(
-    start: UInt64?, pitch: Double, screen: String, width: Int, height: Int, scale: Int
+    start: UInt64?, pitch: Double, screen: String, width: Int, height: Int, scale: Int,
+    presentationPath: String = "image"
   ) {
     guard let start, samples.count < 12000 else { return }
     let end = DispatchTime.now().uptimeNanoseconds
     samples.append(
       .init(
+        presentationPath: presentationPath, renderStartUptimeNanoseconds: start,
         intervalMilliseconds: previous.map { Double(start - $0) / 1e6 },
         renderMilliseconds: Double(end - start) / 1e6, pitch: pitch, screen: screen,
         width: width, height: height, scale: scale, planetVisible: planetVisible,
