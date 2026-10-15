@@ -45,6 +45,17 @@ private func combatBodyHit(_ game: Game, id: Int = 10) throws -> GameplayHit {
 }
 
 struct GameplayCombatTests {
+  @Test(arguments: [250, Int.max])
+  func legalPenaltiesSaturateWithoutOverflowOrWeakeningLegacyRecords(_ initial: Int) throws {
+    var game = combatGame()
+    game.commander.legal = initial
+    try combatBody(&game)
+    let origin = try combatPlayerOrigin(&game)
+    let hit = try combatBodyHit(game)
+    game.applyCombatHit(hit, origin: origin, kind: .laser, damage: 50, laser: .pulse)
+    #expect(game.commander.legal == max(initial, 255))
+  }
+
   @Test func cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty() throws {
     var game = combatGame()
     let trader = try combatBody(&game)

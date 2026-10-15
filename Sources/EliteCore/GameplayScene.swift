@@ -157,7 +157,7 @@ extension Game {
       energy: energy, maximumEnergy: commander.performance.energy,
       maximumSpeedUnitsPerSecond: commander.performance.speed * 18,
       legal: .init(value: min(255, commander.legal)), npc: nil, rock: nil, payload: nil,
-      ordinaryCargo: commander.ordinaryCommodityAmounts)
+      ordinaryCargo: commander.ordinaryCommodityAmounts, catalogueShipID: commander.shipID)
     let depleted = Set(
       miningFields.flatMap(\.rocks).filter { commander.miningLedger.isDepleted($0.identity) }
         .map(\.identity))

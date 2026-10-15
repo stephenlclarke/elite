@@ -29,13 +29,16 @@ private func announcements(_ game: Game, _ text: String) -> Int {
   #expect(
     announcements(game, "TARGET LOST") == 0 && announcements(game, "RIGHT ON, COMMANDER") == 1)
 }
-@Test func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution() {
-  for mode in 0..<3 {
+@Test(arguments: 0..<3)
+func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution(_ mode: Int) {
+  do {
     var game = lockedGame()
     if mode == 2 {
       game.commander.equipment.insert("Energy Bomb")
       game.energyBomb()
     } else {
+      // Isolate kill attribution: a nearby attacker can now physically intercept the missile.
+      game.bodies[0].hostile = false
       game.bodies[0].ecmEnabled = mode == 1
       game.bodies[0].position = .init(0, 0, 100)
       game.key("t")

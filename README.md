@@ -22,7 +22,7 @@
 <br clear="left" />
 <!-- markdownlint-enable MD033 -->
 
-A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, white wireframe ships by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
+A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, shaded ship panels by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
 
 ![Elite gameplay](docs/elite.png)
 
@@ -139,7 +139,7 @@ Auto-trade immediately sells and restocks when activation happens while docked, 
 | L | Reset legal status to Clean (saved with your commander) |
 | F | Fit fuel scoops |
 
-Normal games default to white wireframes; XYZZY activation defaults to shaded panels. Coloured wireframes identify hulls by colour; shaded panels draw opaque faces with flat directional lighting. The chosen display is saved with the commander. Old saves without a display choice load with white wireframes. Key 4 controls fuel replenishment. Jump distance always obeys fuel cells, current fuel and the navigation computer; the paused-game @ shortcut has been removed.
+Normal games, XYZZY activation and saves without a display choice default to shaded panels. Explicit saved white or coloured wireframe choices are preserved. White wireframe draws the flight scene, including planet and sun outlines, in monochrome; coloured wireframe uses the same outline geometry with hull and celestial colours. Shaded panels draw opaque faces with directional lighting, textured planets and a filled sun/corona. Planet data previews follow the selected mode; chart and cockpit information colours stay legible. The chosen display is saved with the commander. Key 4 controls fuel replenishment. Jump distance always obeys fuel cells, current fuel and the navigation computer; the paused-game @ shortcut has been removed.
 
 Press K, use Command-K, or choose **Help → Player Key Guide** for the controls relevant to your current activity. The guide covers flight, station screens, trading, equipment, charts, pause, the title/demo and XYZZY. Arrow keys change pages; Escape or K closes it. The simulation pauses while the guide is open and resumes on the same screen.
 

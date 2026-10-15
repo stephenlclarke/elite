@@ -96,9 +96,13 @@ extension Game {
       body.hull.isTargetShip, let player = commander.flightSimulation.player,
       let origin = makeAttackOrigin(owner: player)
     else { return }
-    recordCombat(
+    let destruction = recordCombat(
       origin: origin, kind: .laser, outcome: .destruction, target: .body(body.id),
       worldPosition: commander.flightSimulation.pose.systemPoint(body.position))
+    if let index = bodies.firstIndex(where: { $0.id == body.id }) {
+      bodies[index].physical?.deathOrigin = origin
+      bodies[index].physical?.deathIncidentID = destruction?.id
+    }
     commander.crimeLedger.finishEmission(origin.emissionID)
   }
 

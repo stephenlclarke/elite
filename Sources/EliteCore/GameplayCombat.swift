@@ -100,9 +100,10 @@ extension Game {
       bodies[index].physical?.deathOrigin = origin
       bodies[index].destroyedByPlayer = origin.owner == commander.flightSimulation.player
       if !interception {
-        recordCombat(
+        let destruction = recordCombat(
           origin: origin, kind: kind, outcome: .destruction, target: hit.target,
           worldPosition: world, emissionPosition: emissionPosition, laser: laser, mount: mount)
+        bodies[index].physical?.deathIncidentID = destruction?.id
       }
     }
     return incident
@@ -149,13 +150,16 @@ extension Game {
     context: EncounterContext
   ) {
     if resolution.offender == context.player.identity {
-      commander.legal += resolution.legalPenalty
+      let baseline = max(0, min(255, commander.legal))
+      let penalty = max(0, min(255, resolution.legalPenalty))
+      commander.legal = max(commander.legal, min(255, baseline + penalty))
     } else if let index = bodies.firstIndex(where: { $0.physical?.identity == resolution.offender }
     ),
       let legal = bodies[index].physical?.npc?.legal.value
     {
-      bodies[index].physical?.npc?.legal.value = max(
-        legal, min(255, legal + resolution.legalPenalty))
+      let baseline = max(0, min(255, legal))
+      let penalty = max(0, min(255, resolution.legalPenalty))
+      bodies[index].physical?.npc?.legal.value = max(legal, min(255, baseline + penalty))
     }
     if resolution.unlawful, case .body(let id) = target,
       let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].hull.isTargetShip

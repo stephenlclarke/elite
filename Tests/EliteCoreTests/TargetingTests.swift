@@ -113,6 +113,7 @@ private func computerGame(_ tier: TargetingTier) -> Game {
 }
 @Test func targetCameraIsLiveBoundedAndIndependentOfPlayerViewAndSimulation() {
   var game = computerGame(.military)
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 1000))]
   game.key("r")
   game.screen = .rear

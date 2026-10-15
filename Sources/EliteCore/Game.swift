@@ -133,7 +133,7 @@ public struct Commander: Sendable, Equatable, Codable {
     set { navalMission = newValue }
   }
   public var shipDisplayStyle: ShipDisplayStyle {
-    get { displayStyle ?? .whiteWireframe }
+    get { displayStyle ?? .shadedPanels }
     set { displayStyle = newValue }
   }
   mutating func migrateLegacyXYZzyMounts() {
@@ -321,7 +321,6 @@ public struct Game: Sendable {
   public var missionClue: String?
   public var missionElapsed = 0.0
   var fireCooldown = 0.0
-  private var spawnClock = 0.0
   var missionLoopCounter: UInt8 = 0
   var missionSpawnDelay = 0
   var ecmFrames = 0
@@ -1080,6 +1079,7 @@ public struct Game: Sendable {
       jumpCountdown = remaining - dt
       if remaining <= dt { arrive() }
     }
+    advanceGameplayEncounters(delta: dt)
     moveBodies(dt: dt)
     if docked {
       reconcileEliteReward()
@@ -1106,11 +1106,6 @@ public struct Game: Sendable {
     reconcileEliteReward()
     missionLoopCounter &-= 1
     if missionLoopCounter == 0 { spawnNavalEncounter() }
-    spawnClock += dt
-    if spawnClock > 18 && bodies.count < (commander.executive ? 18 : 10) {
-      spawnClock = 0
-      spawn()
-    }
     if energy <= 0 {
       spin.stop(immediate: true)
       screen = .gameOver
@@ -1141,7 +1136,18 @@ public struct Game: Sendable {
       bodies[index].position = bodies[index].position - autoPilot.velocity * dt
       bodies[index].position.z -= speed * dt * 18
       bodies[index].rotation += dt * bodies[index].rotationRate
-      if bodies[index].hostile && bodies[index].energy > 0 { enemyAction(index: index, dt: dt) }
+      if let physical = bodies[index].physical, physical.spawnIdentity != nil,
+        physical.ordnance == nil
+      {
+        bodies[index].position =
+          bodies[index].position
+          + commander.flightSimulation.pose.shipVector(physical.velocity) * dt
+      }
+      if bodies[index].hostile && bodies[index].energy > 0,
+        bodies[index].physical?.spawnIdentity == nil
+      {
+        enemyAction(index: index, dt: dt)
+      }
     }
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
@@ -1154,6 +1160,7 @@ public struct Game: Sendable {
     persistBlackjackTargets()
     let departing = bodies.filter { $0.leavesLocalBubble && $0.id != 0 }
     for body in departing {
+      if let actor = body.physical?.identity { commander.miningLedger.cull(actor: actor) }
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
@@ -1183,9 +1190,12 @@ public struct Game: Sendable {
   }
   mutating func resolveDestroyed() {
     let destroyed = bodies.filter { $0.energy <= 0 }
-    ensurePhysicalActors()
+    if !destroyed.isEmpty { ensurePhysicalActors() }
     for body in destroyed { settleLegacyCombatDeath(body) }
     for body in destroyed {
+      if let payload = body.physical?.payload {
+        _ = commander.miningLedger.destroy(payload: payload)
+      }
       missionTargetRemoved(body)
       clearRemovedTarget(body)
       blackjackTargetDestroyed(body)
@@ -1198,17 +1208,7 @@ public struct Game: Sendable {
       }
     }
   }
-  private mutating func spawn() {
-    let hostile = randomByte() & 7 > currentSystem.government
-    let peacefulKind: Hull = nextBodyID % 4 == 0 ? .cargo : .cobra
-    let kind: Hull = hostile ? .sidewinder : peacefulKind
-    bodies.append(
-      SpaceBody(
-        id: nextBodyID, hull: kind,
-        position: .init(Double(randomByte() - 128) * 4, Double(randomByte() - 128) * 2, 5000),
-        hostile: hostile))
-    nextBodyID += 1
-  }
+
 }
 
 public enum SaveError: Error { case invalidCommander }

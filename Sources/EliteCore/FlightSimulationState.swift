@@ -105,6 +105,8 @@ public struct PhysicalActorState: Equatable, Codable, Sendable {
   public var attackOrigin: AttackOrigin?
   public var emissionPosition: Vector3?
   public var deathOrigin: AttackOrigin?
+  public var deathIncidentID: UInt64?
+  public var ordnance: OrdnanceState?
   public var spawnIdentity: SpawnIdentity?
   public var blocksNavalEncounter = false
   public var catalogueShipID: String?
