@@ -54,7 +54,8 @@ extension Game {
       let origin = makeAttackOrigin(owner: owner.identity, ordnance: actor),
       let state = OrdnanceState(
         profile: .standardMissile, origin: origin,
-        target: target.identity, position: position, direction: direction),
+        target: target.identity, position: position, direction: direction,
+        emissionPosition: owner.position),
       recordCombat(
         origin: origin, kind: .missile, outcome: .targetedLaunch,
         target: targetBodyID.map(GameplayHitTarget.body) ?? .player, worldPosition: owner.position,
