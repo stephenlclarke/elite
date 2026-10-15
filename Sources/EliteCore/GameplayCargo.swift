@@ -1,6 +1,13 @@
 import Foundation
 
 extension Game {
+  var hasUnsettledCargoDeaths: Bool {
+    bodies.contains {
+      $0.energy <= 0 && $0.hull.isTargetShip
+        && $0.physical?.npc != nil && $0.physical?.npc?.role != .mission
+    }
+  }
+
   /// Commit manifests in destruction-event order before removing their source bodies.
   /// Refusal retains the dead body and its exact event for the next capacity retry.
   mutating func registerDestroyedCargo() -> Set<Int> {

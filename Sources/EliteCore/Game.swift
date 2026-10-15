@@ -880,6 +880,11 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
   }
   public mutating func dock(atMainStation: Bool = true) {
+    resolveDestroyed()
+    guard !hasUnsettledCargoDeaths else {
+      notify("DOCKING DEFERRED: CARGO SETTLEMENT PENDING")
+      return
+    }
     guard persistNPCStates().isEmpty else {
       notify("DOCKING DEFERRED: NPC STATE UNAVAILABLE")
       return
@@ -1195,7 +1200,7 @@ public struct Game: Sendable {
     persistCargoPoses()
     let retainedNPCs = persistNPCStates()
     let departing = bodies.filter {
-      $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
+      $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
     }
     for body in departing {
       if let actor = body.physical?.identity {
@@ -1207,7 +1212,9 @@ public struct Game: Sendable {
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id) }
+    bodies.removeAll {
+      $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
+    }
   }
   private mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {

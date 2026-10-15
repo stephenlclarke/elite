@@ -40,6 +40,85 @@ private func persistedNPCGame() throws -> Game {
 }
 
 struct NPCPersistenceRuntimeTests {
+  @Test func deadNPCOutsideBubbleSettlesBeforeCullAndNeverResurrects() throws {
+    var game = try persistedNPCGame()
+    let source = try #require(game.bodies[0].physical?.identity)
+    #expect(game.persistNPCStates().isEmpty)
+    game.bodies[0].position.z = 45000
+    game.bodies[0].energy = 0
+    game.tick(delta: 0.001)
+    #expect(game.bodies.isEmpty && game.commander.npcPersistence.livingCount == 0)
+    #expect(game.commander.npcPersistence.binding(for: source) == nil)
+    #expect(
+      game.commander.cargoDebrisLedger.pendingPayloads.map(\.amount) == [
+        .init(commodity: .gold, quantity: 4)
+      ])
+    game.admitPersistentNPCs()
+    #expect(game.bodies.isEmpty)
+  }
+
+  @Test func dockingSettlesPendingDeathBeforeDiscardingScene() throws {
+    var game = try persistedNPCGame()
+    #expect(game.persistNPCStates().isEmpty)
+    game.bodies[0].energy = 0
+    game.dock()
+    #expect(game.docked && game.commander.npcPersistence.livingCount == 0)
+    #expect(
+      game.commander.cargoDebrisLedger.pendingPayloads.map(\.amount) == [
+        .init(commodity: .gold, quantity: 4)
+      ])
+    game.launch()
+    #expect(!game.bodies.contains { $0.physical?.npc != nil })
+  }
+
+  @Test func blockedCargoSettlementPreventsDockAndCameraRemovalUntilCapacityReturns() throws {
+    var game = try persistedNPCGame()
+    #expect(game.persistNPCStates().isEmpty)
+    let source = try #require(game.bodies[0].physical?.identity)
+    // A valid full historical debris ledger makes this real death defer atomically.
+    for _ in 0..<CargoDebrisLedger.maximumSources {
+      let allocated = game.commander.flightSimulation.allocateActor()
+      let actor = try #require(allocated)
+      let allocatedEvent = game.commander.flightSimulation.allocateIncident()
+      let event = try #require(allocatedEvent)
+      let dead = ActorSnapshot(
+        identity: actor, hull: .cobra, position: .init(0, 0, 2500),
+        orientation: Basis3(), velocity: .init(0, 0, 0), energy: 0, maximumEnergy: 100,
+        maximumSpeedUnitsPerSecond: 100, legal: .init(),
+        npc: .init(role: .trader, origin: game.systemIdentity, destination: game.systemIdentity),
+        rock: nil, payload: nil, ordinaryCargo: [.init(commodity: .food, quantity: 1)])
+      let registration = game.commander.cargoDebrisLedger.registerDeath(
+        actor: dead,
+        manifest: dead.ordinaryCargo, settlementID: event, physicalTime: 0, protection: .init())
+      #expect(registration == .registered(lots: 1))
+    }
+    game.bodies[0].energy = 0
+    game.resolveDestroyed()
+    let event = try #require(game.bodies[0].physical?.deathIncidentID)
+    game.bodies[0].position.z = 45000
+    game.tick(delta: 0.001)
+    #expect(game.bodies.contains { $0.physical?.identity == source && $0.energy == 0 })
+    #expect(
+      game.bodies.first { $0.physical?.identity == source }?.physical?.deathIncidentID == event)
+    game.dock()
+    #expect(!game.docked && game.hasUnsettledCargoDeaths)
+    game.commander.equipment.insert("Fuel Scoops")
+    game.admitPendingCargo()
+    let pod = try #require(game.bodies.firstIndex { $0.physical?.payload != nil })
+    game.bodies[pod].position = .init(0, -10, 40)
+    game.scoopCargo()
+    #expect(game.commander.cargo[0] == 1)
+    game.resolveDestroyed()
+    #expect(!game.hasUnsettledCargoDeaths && game.commander.npcPersistence.livingCount == 0)
+    #expect(
+      game.commander.cargoDebrisLedger.pendingPayloads.filter { $0.amount.commodity == .gold }.map(
+        \.amount) == [.init(commodity: .gold, quantity: 4)])
+    game.admitPersistentNPCs()
+    #expect(!game.bodies.contains { $0.physical?.npc != nil })
+    game.dock()
+    #expect(game.docked)
+  }
+
   @Test func realSaveReloadAndLaunchRetainSpentStateAndRebindSceneReferences() async throws {
     let game = try persistedNPCGame()
     let source = try #require(game.bodies[0].physical?.identity)
@@ -83,6 +162,7 @@ struct NPCPersistenceRuntimeTests {
     #expect(game.bodies.isEmpty && game.commander.flightSimulation.nextActor == allocator)
     let coasted = try #require(game.commander.npcPersistence.snapshot(for: source))
     #expect(coasted.position.z > culled.position.z)
+    #expect(coasted.laserCooldown == 0)
     #expect(coasted.npc.resources?.laserHeat ?? 0 < culled.npc.resources?.laserHeat ?? 0)
     #expect(coasted.npc.resources?.fuel == culled.npc.resources?.fuel)
     game.commander.flightSimulation.pose.position = coasted.position - .init(0, 0, 1000)
@@ -115,14 +195,24 @@ struct NPCPersistenceRuntimeTests {
     let game = try persistedNPCGame()
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    defer { try? FileManager.default.removeItem(at: directory) }
+    defer {
+      try? FileManager.default.setAttributes(
+        [.posixPermissions: 0o700], ofItemAtPath: directory.path)
+      try? FileManager.default.removeItem(at: directory)
+    }
+    let file = directory.appendingPathComponent("commander.json")
+    let original = try JSONEncoder().encode(game.commander)
+    try original.write(to: file, options: .atomic)
+    try FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: directory.path)
     let runtime = GameRuntime(game: game)
     var failed = false
-    do { try await runtime.save(to: directory) } catch { failed = true }
+    do { try await runtime.save(to: file) } catch { failed = true }
     #expect(failed)
     let after = await runtime.snapshot()
     #expect(after.commander == game.commander && after.bodies == game.bodies)
-    try await runtime.save(to: directory.appendingPathComponent("commander.json"))
+    #expect(try Data(contentsOf: file) == original)
+    try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: directory.path)
+    try await runtime.save(to: file)
     #expect(await runtime.snapshot().commander.npcPersistence.count == 1)
   }
 }

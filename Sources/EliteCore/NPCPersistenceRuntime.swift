@@ -38,6 +38,7 @@ extension Game {
       guard elapsed.isFinite, elapsed > 0 else { continue }
       snapshot.position = snapshot.position + snapshot.velocity * elapsed
       snapshot.rotation += snapshot.rotationRate * elapsed
+      snapshot.laserCooldown = max(0, snapshot.laserCooldown - elapsed)
       let spin = snapshot.angularVelocity * elapsed
       snapshot.orientation.rotate(pitch: spin.x, roll: spin.z, yaw: spin.y)
       if var resources = snapshot.npc.resources {
