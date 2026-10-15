@@ -131,9 +131,9 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   /// Physical destruction settles a pod without credit; culling merely hides it.
   @discardableResult
   public mutating func destroy(
-    payload: PayloadIdentity, protection: MissionProtection = .init()
+    payload: PayloadIdentity, protection: MissionProtection? = nil
   ) -> Bool {
-    guard case .ore = payload, !protection.protectedPayloads.contains(payload),
+    guard case .ore = payload, protection?.protectedPayloads.contains(payload) != true,
       pending.removeValue(forKey: payload) != nil
     else { return false }
     bindings.removeValue(forKey: payload)
