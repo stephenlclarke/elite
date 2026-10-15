@@ -120,6 +120,8 @@ public struct ActorSnapshot: Equatable, Codable, Sendable {
   public let npc: NPCState?
   public let rock: RockIdentity?
   public let payload: PayloadIdentity?
+  /// Available native units only; mission-owned cargo is not pirate loot.
+  public var ordinaryCargo: [CommodityAmount] = []
 }
 
 public struct MissionProtection: Equatable, Codable, Sendable {
