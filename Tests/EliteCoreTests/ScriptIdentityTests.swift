@@ -104,13 +104,19 @@ private func physicalIDs(_ state: ScriptInstance) -> Set<UUID> {
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: save)
   var pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: save))
+  let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: save)
+  let legacyBytes = try JSONEncoder().encode(game.commander.scriptState)
+  try legacyBytes.write(to: directory.appendingPathComponent("missions.json"))
+  var hashes = pointer.hashes
+  hashes["missions.json"] = ScriptPackLibrary.hash(legacyBytes)
   pointer = .init(
     format: pointer.format, schemaVersion: 11, generation: pointer.generation,
-    hashes: pointer.hashes, scope: pointer.scope)
+    hashes: hashes, scope: pointer.scope)
   try JSONEncoder().encode(pointer).write(to: save, options: .atomic)
   let loaded = GameRuntime(game: game)
   try await loaded.load(from: save)
   var restored = await loaded.snapshot()
+  #expect(restored.commander.scriptState.instances[origin]?.data == state.data)
   restored.bodies.removeAll { $0.hull == .cargo }
   var original = try #require(restored.commander.scriptState.instances[origin])
   let admitted = try restored.ensureScriptEncounter("opponents", pack: pack, state: &original)

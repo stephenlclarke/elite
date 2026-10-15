@@ -219,7 +219,8 @@ private struct HistoryFixture {
   hashes["missions.json"] = ScriptPackLibrary.hash(corrupt)
   let changed = ScriptSavePointer(
     format: pointer.format, schemaVersion: pointer.schemaVersion,
-    generation: pointer.generation, hashes: hashes, scope: pointer.scope)
+    generation: pointer.generation, hashes: hashes, scope: pointer.scope,
+    valueCodec: pointer.valueCodec)
   try JSONEncoder().encode(changed).write(to: fixture.save, options: .atomic)
   let restored = GameRuntime(game: Game(executive: false))
   let before = await restored.snapshot()

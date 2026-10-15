@@ -80,7 +80,7 @@ public enum ScriptCapabilities {
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
     "owned-equipment-v2",
     "contracts-basic-v2", "profiled-encounters-v2",
-    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2", "event-history-v2", "deterministic-plans-v2",
+    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2", "event-history-v2", "deterministic-plans-v2", "typed-save-values-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [

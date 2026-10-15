@@ -1561,6 +1561,7 @@ public actor GameRuntime {
     try requireGalleryFileAccess(url)
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
+    try ScriptSaveJSONPreflight.validate(data)
     if let pointer = try? JSONDecoder().decode(ScriptSavePointer.self, from: data) {
       if pointer.schemaVersion >= 6 {
         guard (pointer.scope == "gallery") == (galleryNamespace != nil) else {
@@ -1599,7 +1600,7 @@ public actor GameRuntime {
     guard galleryNamespace == nil else {
       throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
-    var commander = try JSONDecoder().decode(Commander.self, from: data)
+    var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     let original = commander
     commander.migrateLegacyPassengerMarker()
     var candidate = game

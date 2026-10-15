@@ -453,7 +453,8 @@ private struct ContractFixture {
   hashes["contracts.json"] = ScriptPackLibrary.hash(altered)
   let changed = ScriptSavePointer(
     format: pointer.format, schemaVersion: pointer.schemaVersion,
-    generation: pointer.generation, hashes: hashes, scope: pointer.scope)
+    generation: pointer.generation, hashes: hashes, scope: pointer.scope,
+    valueCodec: pointer.valueCodec)
   try JSONEncoder().encode(changed).write(to: fixture.save)
   await #expect(throws: (any Error).self) { try await runtime.load(from: fixture.save) }
   #expect(await runtime.snapshot().commander == before)

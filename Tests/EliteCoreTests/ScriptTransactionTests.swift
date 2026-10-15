@@ -368,7 +368,13 @@ private func timerFixture() throws -> DurableFixture {
   header.equipment.insert(PassengerCabin.equipmentName)
   let headerBytes = try JSONEncoder().encode(header)
   try headerBytes.write(to: headerFile)
+  let missionFile = oldDirectory.appendingPathComponent("missions.json")
+  let missionState = try ScriptValueStorage.decoder(typed: true).decode(
+    ScriptEngineState.self, from: Data(contentsOf: missionFile))
+  let legacyMissionBytes = try JSONEncoder().encode(missionState)
+  try legacyMissionBytes.write(to: missionFile)
   var hashes = pointer.hashes
+  hashes["missions.json"] = ScriptPackLibrary.hash(legacyMissionBytes)
   hashes.removeValue(forKey: "contracts.json")
   hashes["commander.json"] = ScriptPackLibrary.hash(headerBytes)
   let old = ScriptSavePointer(

@@ -11,27 +11,20 @@ public indirect enum ScriptValue: Sendable, Equatable, Codable {
   case object([String: ScriptValue])
 
   public init(from decoder: any Decoder) throws {
-    guard decoder.codingPath.count < 64 else {
+    let typed = decoder.userInfo[ScriptValueStorage.modeKey] as? Bool == true
+    guard decoder.codingPath.count < (typed ? 128 : 64) else {
       throw MissionPackError("Saved script value nesting exceeded.")
     }
-    let container = try decoder.singleValueContainer()
-    if container.decodeNil() {
-      self = .null
-    } else if let value = try? container.decode(Bool.self) {
-      self = .bool(value)
-    } else if let value = try? container.decode(Int64.self) {
-      self = .integer(value)
-    } else if let value = try? container.decode(Double.self), value.isFinite {
-      self = .number(value)
-    } else if let value = try? container.decode(String.self) {
-      self = .string(value)
-    } else if let value = try? container.decode([ScriptValue].self) {
-      self = .array(value)
-    } else {
-      self = .object(try container.decode([String: ScriptValue].self))
-    }
+    let budget = decoder.userInfo[ScriptValueStorage.budgetKey] as? ScriptValueDecodeBudget
+    try budget?.enter()
+    defer { budget?.leave() }
+    self = try Self.decodeStored(from: decoder, typed: typed, budget: budget)
   }
   public func encode(to encoder: any Encoder) throws {
+    if encoder.userInfo[ScriptValueStorage.modeKey] as? Bool == true {
+      try encodeStored(to: encoder)
+      return
+    }
     var container = encoder.singleValueContainer()
     switch self {
     case .null: try container.encodeNil()

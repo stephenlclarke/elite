@@ -252,7 +252,7 @@ The Constrictor hunt, Thargoid plans delivery and Blackjack's Bullion now load t
 
 Choose **Commander > Install Mission Pack...**, select a validated `.toml`, then open **Game > Mission Gallery**. At an eligible main station, **Game > Mission Contacts** or **B** opens its Confirm/Back dialog. Installing supported content does not require rebuilding the app. Packs are stored in `~/.xyzzy/elite/mission-packs/`; manual copying there takes effect at next launch. The optional [Lave courier example](docs/mission-packs/courier.toml) demonstrates a new two-stage parcel delivery and once-only 50 CR reward.
 
-See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. The feature branch adds bounded Lua, actual common humanoid charter cabins, isolated trials and durable transactions; see the [implemented script API and remaining work](docs/SCRIPTABLE-MISSIONS.md). Full source-specific AI, custody, station boards and other mechanics still require engine work; the research queue is not automatically playable.
+See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. The feature branch adds bounded Lua, actual common humanoid charter cabins, isolated trials, exact saved script-value types and durable transactions; see the [implemented script API and remaining work](docs/SCRIPTABLE-MISSIONS.md). Full source-specific AI, custody, station boards and other mechanics still require engine work; the research queue is not automatically playable.
 
 ## Mission Gallery
 
