@@ -232,6 +232,12 @@ public enum EquipmentPurchaseProgression {
     _ = try Prepared(graph)
   }
 
+  public static func validateHistory(
+    _ history: EquipmentPurchaseHistory, graph: EquipmentPurchaseGraph
+  ) throws {
+    try validate(history, prepared: Prepared(graph))
+  }
+
   public static func legacyEntitlement(
     for item: EquipmentPurchaseItem, owner: UUID, graph: EquipmentPurchaseGraph
   ) throws -> EquipmentLegacyEntitlement {

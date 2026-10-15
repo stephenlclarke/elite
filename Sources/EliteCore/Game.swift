@@ -8,6 +8,10 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  var savedEquipmentInventory: OwnedEquipmentInventory?
+  var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
+  var savedSalvageLedger: SalvageLedger?
+  var savedEquipmentVersion: Int?
   private var savedFlightSimulation: FlightSimulationState?
   public var flightSimulation: FlightSimulationState {
     get { savedFlightSimulation ?? FlightSimulationState() }
@@ -185,6 +189,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (savedFlightSimulation?.valid ?? true)
       && (savedCargoDebrisLedger?.valid ?? true)
       && (savedNPCPersistence?.valid ?? true)
+      && equipmentStateValid
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
