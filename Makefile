@@ -49,6 +49,7 @@ script-missions-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/branch-courier
 	swift run Elite --validate-mission-pack docs/mission-packs/station-conversation
 	swift run Elite --validate-mission-pack docs/mission-packs/reference-book
+	swift run Elite --validate-mission-pack docs/mission-packs/material-collection
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-passengers
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-equipment
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-contracts

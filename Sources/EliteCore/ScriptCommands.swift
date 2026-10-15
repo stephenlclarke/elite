@@ -115,6 +115,11 @@ extension Game {
               let book = candidate.scriptState.books[pack.manifest.id + "/" + $0]
               return book?.version == pack.manifest.version && book?.digest == pack.digest
             }
+            && (pack.manifest.mission.requiredCollections ?? []).allSatisfy { id in
+              state.collections[id]?.complete == true
+                && state.collections[id]?.definition
+                  == pack.manifest.collections?.first(where: { $0.id == id })
+            }
             && scriptAnswersSatisfied(pack, state: state)
             && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
             && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {
@@ -151,7 +156,15 @@ extension Game {
       {
         throw MissionPackError("This exclusive station branch has already been chosen.")
       }
+      var quote: ScriptCollectionQuote?
+      if let collection = pack.manifest.dialogs?.first(where: { $0.id == id })?.collection {
+        guard let actual = collectionQuote(collection, state: state, commander: candidate) else {
+          throw MissionPackError("Material handoffs require their actual assigned main station.")
+        }
+        quote = actual
+      }
       state.dialogue = ScriptDialogue(
+        collectionQuote: quote,
         id: id, token: state.id.uuidString + ":" + String(event.sequence) + ":" + id,
         galaxy: candidate.galaxy, system: candidate.system, revision: state.revision + 1)
     case "dialogue.commit":

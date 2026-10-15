@@ -8,6 +8,98 @@ import Testing
 @Suite(.serialized)
 struct NativeViewTests {
   @MainActor @Test
+  func nativeMaterialQuoteUsesRealPurchasedUnitsAndOrderedTrialSaveWithoutTouchingTheOwner()
+    async throws
+  {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: folder)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    try JSONEncoder().encode(Commander()).write(to: file)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: file)
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: file, persistMigrations: false)
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
+        "docs/mission-packs/material-collection")
+    try await delegate.runtime.installScriptPack(
+      from: example,
+      destination: folder.appendingPathComponent("packs"))
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    window.setContentSize(NSSize(width: 512, height: 518))
+    let view = try #require(window.contentView as? GameView)
+    await delegate.runtime.setViewport(width: 512, height: 518)
+    await delegate.runtime.key("gallery-open")
+    let original = await delegate.runtime.snapshot().commander
+    let originalBytes = try Data(contentsOf: file)
+    let pack = try ScriptPackLibrary.read(example)
+    try await delegate.runtime.startScriptGalleryTrial(packDigest: pack.digest)
+    let namespace = try #require(await delegate.runtime.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    // Buy through the real native market; the trial does not start with gifted materials.
+    let market = await delegate.runtime.snapshot().market
+    #expect(market[2].quantity > 0 && market[14].quantity > 0)
+    await delegate.runtime.key("1")
+    await delegate.runtime.key("down")
+    await delegate.runtime.key("down")
+    await delegate.runtime.key("return")
+    for _ in 0..<12 { await delegate.runtime.key("down") }
+    await delegate.runtime.key("return")
+    await delegate.runtime.key("8")
+    let acquired = await delegate.runtime.snapshot().commander
+    #expect(acquired.cargo[2] == 1 && acquired.cargo[14] == 1)
+    // Gallery scenarios already accepted the mission when creating their isolated starting state.
+    await delegate.runtime.key("contacts-open")
+    await delegate.processFrame(in: view, delta: { 0 })
+    let preview = await delegate.runtime.snapshot()
+    let instance = try #require(preview.commander.scriptState.instances.keys.first)
+    let quote = try #require(preview.scriptPresentedDialogue?.collectionQuote)
+    #expect(quote.items.first?.quantity == 1 && quote.items.last?.quantity == 1)
+    #expect(quote.items.last?.unit == "kg" && quote.items.last?.requested == 1)
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+      let image = try #require(imageForGame(preview, width: width, height: height, scale: scale))
+      #expect(image.width == width * scale && image.height == height * scale)
+      if let evidence {
+        let directory = URL(fileURLWithPath: evidence, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let bytes = try #require(
+          NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+        try bytes.write(to: directory.appendingPathComponent("material-quote-\(width).png"))
+      }
+    }
+    #expect(await delegate.runtime.snapshot().commander == preview.commander)
+    let saved = namespace.appendingPathComponent("commander.json")
+    view.pending = ["return", "commander-save:\(saved.path)"]
+    await delegate.processPendingCommands(in: view)
+    let delivered = await delegate.runtime.snapshot().commander
+    let collection = try #require(
+      delivered.scriptState.instances[instance]?.collections["materials"])
+    #expect(collection.lots.count == 1 && collection.lots.values.first?.massGrams == 1_001_000)
+    #expect(delivered.cargo[2] == 0 && delivered.cargo[14] == 0)
+    #expect(delivered.credits == acquired.credits)
+    try await delegate.runtime.load(from: saved, persistMigrations: false)
+    #expect(await delegate.runtime.snapshot().commander == delivered)
+    try await delegate.runtime.returnFromScriptGalleryTrial()
+    #expect(await delegate.runtime.snapshot().commander == original)
+    #expect(try Data(contentsOf: file) == originalBytes)
+  }
+
+  @MainActor @Test
   func nativeReferenceLibraryMenuClicksAndOrderedSaveKeepReadingSeparateFromMissions() async throws
   {
     let id = UUID().uuidString

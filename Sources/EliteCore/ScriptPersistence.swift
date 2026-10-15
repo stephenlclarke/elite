@@ -168,7 +168,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 17, generation: generation,
+      format: "elite-script-save", schemaVersion: 18, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
     let bytes = try encoder.encode(pointer)
@@ -189,7 +189,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...17).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...18).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")

@@ -69,6 +69,7 @@ extension Game {
     else { return false }
     return state.dialogue != shown || state.revision != shown.revision
       || state.suspension != nil || state.outcome != .active
+      || !collectionQuoteFresh(shown, state: state)
   }
   mutating func moveScriptChoice(_ step: Int) {
     let count = offeredScriptChoices.count

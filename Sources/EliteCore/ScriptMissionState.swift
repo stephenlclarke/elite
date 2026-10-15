@@ -38,6 +38,7 @@ extension ScriptTimer {
 }
 
 public struct ScriptDialogue: Codable, Sendable, Equatable {
+  public var collectionQuote: ScriptCollectionQuote?
   public var id: String
   public var token: String
   public var galaxy: Int
@@ -56,6 +57,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     self.digest = digest
   }
   public var data: ScriptValue = .object([:])
+  public var savedCollections: [String: ScriptCollection]?
   public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
   public var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
   public var choiceReceipts: [String: ScriptChoiceReceipt] {
@@ -210,6 +212,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
               && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
               && (0...256).contains(dialogue.system)
           } ?? true)
+          && instance.collectionsValid(engine: self)
           && instance.conversationReceipts.count <= 1024
           && instance.conversationReceipts.allSatisfy {
             $0.key == $0.value.sequence && $0.value.group == nil

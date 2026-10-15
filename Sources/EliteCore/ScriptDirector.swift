@@ -94,6 +94,7 @@ extension Game {
   }
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
+    fields["collections"] = collectionQuery(instance)
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
@@ -229,7 +230,13 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
-          if command["op"]?.string == "book.unlock" {
+          if ["collection.ensure", "collection.deliver"].contains(command["op"]?.string ?? "") {
+            if let result = try candidate.applyCollectionCommand(
+              command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
+            {
+              derivedEvents.append(result)
+            }
+          } else if command["op"]?.string == "book.unlock" {
             if let result = try candidate.unlockScriptBook(
               command, pack: pack, state: next, event: event)
             {
@@ -444,10 +451,15 @@ extension Game {
       dialogue == scriptPresentedDialogue,
       docked, dockedAtMainStation, dialogue.galaxy == commander.galaxy,
       dialogue.system == commander.system,
-      dialogue.revision == state.revision, state.suspension == nil
+      dialogue.revision == state.revision, state.suspension == nil,
+      collectionQuoteFresh(dialogue, state: state)
     else {
       notify("CONTACT CHANGED - OPEN THE CONTACT AGAIN")
       closeBlackjackHandoff()
+      return
+    }
+    if dialogue.collectionQuote?.positive == false {
+      notify("NO REQUESTED UNRESERVED MATERIALS AVAILABLE")
       return
     }
     var values: [String: ScriptValue] = [
@@ -506,7 +518,8 @@ extension Game {
     guard let id = scriptOffer, let instance = commander.scriptState.instances[id],
       let dialogue = scriptPresentedDialogue
     else { return nil }
-    return scriptPack(for: instance)?.manifest.dialogs?.first { $0.id == dialogue.id }?.text
+    let text = scriptPack(for: instance)?.manifest.dialogs?.first { $0.id == dialogue.id }?.text
+    return text.map { $0 + (offeredCollectionText.map { "\n\n" + $0 } ?? "") }
   }
   private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
     let reason = scriptUnavailable(pack) ?? (state == nil ? scriptAcceptanceIssue(pack) : nil)

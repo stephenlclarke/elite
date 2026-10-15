@@ -22,6 +22,7 @@ The interpreter exposes base scalar/assert/error/type/iteration helpers and nume
 
 | Capability | Current executable support |
 | --- | --- |
+| `partial-collections-v2` | Frozen native material quotes, real unreserved commodity handoffs and immutable repeated partial lot receipts. |
 | `library-books-basic-v2` | Immutable mission-granted text books, native contents/reading/source pages, retained ownership and saved reading position. |
 | `script-lua-v1` | Bounded programmable handlers, fresh environment, validated explicit data and proposals. |
 | `story-v2` | Native scoped station dialogue/confirmation, journal, story milestones and terminal outcomes. |
@@ -396,3 +397,34 @@ The optional `[mission] requiredBooks=["field-notes"]` list is a native successf
 **Game > Mission Library** opens the native book list. Return/click opens contents and chapters; arrows/Page Up/Page Down scroll, Tab returns to contents, I opens source/licence, and Escape backs out to the preceding screen. Contextual K help explains the current page. The saved reading position restores on load. Long titles and source identifiers wrap within the pane. Reading is presentation-only: it does not invoke Lua/contact callbacks, change mission decisions or transfer money/property. Flight, combat and mission-local/calendar time freeze while reading; independently resource-owned loaded-world jobs retain their documented behavior. Source/hash validation occurs on native construction and decoding, not repeatedly during rendering.
 
 Format17 retains the book ledger and reading cursor. Older formats invent no book ownership. The [original reference-book demonstration](mission-packs/reference-book) grants its notes through a real station briefing, completes with no credit reward and remains readable afterward, including in its isolated Gallery trial. Native menu/click/paging/ordered-Save tests verify that reading does not alter commander mission state. This basic capability covers text and hierarchy; source images/logos, rich dossiers, shared financial services and full historical acceptance remain outstanding.
+
+## Partial native material collections
+
+With `partial-collections-v2` and `story-v2`, a pack declares up to32 root `[[collections]]` definitions. Each has a unique local `id`, `title` of1-96 characters, zero-based `galaxy`0-7 and `system`0-255 for its actual main orbital station, and1-17 `items`. Every item uses its unique native `commodity` index0-16, exact native `unit` (`t`, `kg` or `g`) and integer `quantity`1-1000000. An incorrect unit, repeated commodity, unknown field or fractional/negative quantity is invalid. Example:
+
+```toml
+[[collections]]
+id = "materials"
+title = "Workshop materials"
+galaxy = 0
+system = 7
+items = [
+  {commodity=2, unit="t", quantity=10},
+  {commodity=14, unit="kg", quantity=1}
+]
+
+[[dialogs]]
+id = "handoff"
+text = "Review the actual quantities before confirming."
+collection = "materials"
+```
+
+An active handler returns `{op="collection.ensure", id="materials"}` once the source authorizes that request. The native per-instance ledger freezes the declared terms; repeated ensures do not reset delivered quantities. Initializing a request grants no goods. A dialogue with `collection` uses no answer-choice list. Its ordinary `dialogue.offer` freezes the current native requested/delivered/outstanding/aboard/unreserved/transfer quantities at that assigned main station. The handoff screen renders these actual quantities and units after its authored paragraphs. Reading, Help and Back make no transfer. Changing the relevant cargo makes the displayed quote stale before the interpreter runs; reopen Contacts to obtain a fresh quote. A quote with no positive available outstanding goods stays readable and refuses Confirm without suspending the mission.
+
+The confirmed handler uses `{op="collection.deliver", id="materials", token=event.token}`. This command performs the genuine current `dialogue.commit` checks itself; do not precede it with another `dialogue.commit`. It consumes `min(actual unreserved aboard units, outstanding units)` per requested commodity. At least one quantity must be positive. Excess, unrelated native goods, the marked Blackjack firearm, separate mission payloads, passengers and gear remain intact. Only the actual assigned main orbital station qualifies. A new genuine confirmation can transfer another partial lot using the same collection ID; the native event sequence identifies that lot. Replaying the earlier event/token cannot take another consignment.
+
+Each immutable lot records actual native units, original instance/sequence/dialogue and original/committed native clock/location/revision context. Its gram total uses1000000 per tonne,1000 per kilogram and1 per gram. Cumulative deliveries and outstanding quantities derive from these records; Lua narrative flags cannot replace them. `world.collections[id]` exposes title, station, actual complete state, ordered requested/delivered/outstanding items and a current ordered native `quote` at the valid station (otherwise nil). Quote rows additionally include commodity name, aboard, available and transfer `quantity`. The derived `collection.delivered` event carries `collection_id`, `lot_sequence`, actual `mass_grams` and native `complete`, only while the origin remains active.
+
+`[mission] requiredCollections=["materials"]` is a native successful-finish gate over complete exact declared collections. A failed/abandoned mission keeps delivered lots without manufacturing a successful handoff or refund. Lots survive hull changes, saves and later visits. Up to1024 partial lot receipts total are admitted per instance; an additional lot is rejected as a whole and no prior history is truncated. Every batch and its output facts use the existing durable barrier: later command failure rolls back staged goods/lot changes, and filesystem failure preserves the original offer/cargo/earlier receipts for a real retry. Format18 persists collections/quotes; old saves invent no deliveries. Invalid units, quantities, owner identities and quote/ledger disagreement are refused on load even if the outer chunk hash is updated. Quantity validation precedes cumulative arithmetic.
+
+The [original material-collection example](mission-packs/material-collection) requests19t plus1kg through repeated actual orbital handoffs, with no reward or gifted stock. Its Gallery trial starts with cash for normal native trade. These ledger units do not change the existing BBC trade hold's quantization of kilogram/gram goods or implement full typed world cargo/pod custody. A future shared unit-aware payload adapter must preserve the same unreserved-quantity and ownership boundary. Historical finance still needs its sample/pylon/thermal/scoop/receiver, moving contact/docking, shared loan and full-source acceptance; this demonstration does not enable that campaign.
