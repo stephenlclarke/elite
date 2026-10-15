@@ -1,10 +1,13 @@
 import AppKit
 import Foundation
 import Testing
-@testable import EliteMac
-@testable import EliteCore
 
-private func modeCelestials(_ style: ShipDisplayStyle, position: Vector3 = .init(0, 0, 1000)) -> Frame {
+@testable import EliteCore
+@testable import EliteMac
+
+private func modeCelestials(_ style: ShipDisplayStyle, position: Vector3 = .init(0, 0, 1000))
+  -> Frame
+{
   var game = Game(executive: false)
   game.screen = .front
   game.commander.shipDisplayStyle = style
@@ -45,7 +48,8 @@ private func modeCelestials(_ style: ShipDisplayStyle, position: Vector3 = .init
 @Test func shadedCelestialsRetainTextureAndCorona() {
   let frame = modeCelestials(.shadedPanels)
   #expect(frame.graphics.contains { if case .planet = $0 { true } else { false } })
-  #expect(frame.graphics.contains { if case .point(_, _, 0.15, .orange) = $0 { true } else { false } })
+  #expect(
+    frame.graphics.contains { if case .point(_, _, 0.15, .orange) = $0 { true } else { false } })
   #expect(!frame.graphics.contains { if case .wire = $0 { true } else { false } })
 }
 
@@ -61,7 +65,9 @@ private func modeCelestials(_ style: ShipDisplayStyle, position: Vector3 = .init
 }
 
 @Test @MainActor func celestialModeRendererEvidence() throws {
-  guard let output = ProcessInfo.processInfo.environment["ELITE_CELESTIAL_MODE_EVIDENCE"] else { return }
+  guard let output = ProcessInfo.processInfo.environment["ELITE_CELESTIAL_MODE_EVIDENCE"] else {
+    return
+  }
   let directory = URL(fileURLWithPath: output, isDirectory: true)
   try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
   var game = Game(executive: false)
@@ -80,7 +86,8 @@ private func modeCelestials(_ style: ShipDisplayStyle, position: Vector3 = .init
   for style in ShipDisplayStyle.allCases {
     game.commander.shipDisplayStyle = style
     let image = try #require(imageForGame(game, width: 1024, height: 768, scale: 2))
-    let data = try #require(NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+    let data = try #require(
+      NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
     try data.write(to: directory.appendingPathComponent(style.rawValue + ".png"))
   }
 }
