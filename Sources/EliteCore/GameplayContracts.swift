@@ -22,10 +22,11 @@ public enum PayloadIdentity: Hashable, Codable, Sendable {
   case ore(RockIdentity, fragment: UInt16)
   case wreck(ActorIdentity, lot: UInt16)
   case mission(instance: UUID, payload: String)
+  case salvage(SalvageLotIdentity)
 }
 
 public enum SpawnProducer: String, Codable, Sendable {
-  case ambient, mining, security, mission
+  case ambient, mining, salvage, security, mission
 }
 
 public struct SpawnIdentity: Hashable, Codable, Sendable {
@@ -128,6 +129,9 @@ public struct ActorSnapshot: Equatable, Codable, Sendable {
   public let payload: PayloadIdentity?
   /// Available native units only; mission-owned cargo is not pirate loot.
   public var ordinaryCargo: [CommodityAmount] = []
+  public var catalogueShipID: String?
+  public var angularVelocity = Vector3(0, 0, 0)
+  public var salvage: SalvageTargetMetadata?
 }
 
 public struct MissionProtection: Equatable, Codable, Sendable {
@@ -198,6 +202,9 @@ public struct SpawnRequest: Equatable, Codable, Sendable {
   public let rock: RockIdentity?
   public let payload: PayloadIdentity?
   public let priority: AdmissionPriority
+  public var catalogueShipID: String?
+  public var angularVelocity = Vector3(0, 0, 0)
+  public var salvage: SalvageTargetMetadata?
 }
 
 public struct SpawnBatch: Equatable, Codable, Sendable {
