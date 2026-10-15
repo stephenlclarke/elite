@@ -37,7 +37,7 @@ extension Commander {
   /// Called explicitly at a runtime mutation boundary, never by a getter or decoder.
   /// IDs are allocated by that caller once and saved with the physical inventory.
   mutating func initializeEquipment(
-    owner: UUID, hull: UUID, legacy: Bool, allocatingItemIDs: () -> UUID
+    owner: UUID, hull: UUID, legacy: Bool, xyzzyGrant: Bool = false, allocatingItemIDs: () -> UUID
   ) throws {
     try validateEquipmentState()
     guard savedEquipmentInventory == nil else { return }
@@ -55,7 +55,7 @@ extension Commander {
         provenance = .reward("elite-rank")
       } else if missionStage == .plansDelivered && name == Equipment.navalEnergyUnit {
         provenance = .reward("thargoid-plans")
-      } else if xyzzyActive {
+      } else if xyzzyGrant {
         provenance = .xyzzy
       } else {
         provenance = legacy ? .legacyUnknown : .standard
@@ -83,6 +83,11 @@ extension Commander {
     if let core = targetingTier { try append(core.equipmentName, at: .targetingCore) }
     for mount in LaserMount.allCases {
       if let laser = laser(on: mount) { try append(laser.equipmentName, at: .laser(mount)) }
+    }
+    if xyzzyGrant && equipment.contains(LaserKind.mining.equipmentName),
+      performance.workTools?.contains(.miningLaser) == true
+    {
+      try append(LaserKind.mining.equipmentName, at: .utility(.miningLaser))
     }
     for (name, utility) in EquipmentRuntimeCatalog.utilities where equipment.contains(name) {
       try append(name, at: .utility(utility))
@@ -118,12 +123,8 @@ extension Commander {
     guard let definition = EquipmentRuntimeCatalog.definition(for: node.family) else { return nil }
     let mapping = EquipmentModuleTemplates.legacyMapping(family: definition.family, key: name)
     let origin = mapping?.origin ?? definition.grades[0]
-    var statistics = origin.statistics
-    if node.family == EquipmentPurchaseCatalog.navigation {
-      statistics[.jumpReach] = max(performance.jump, statistics[.jumpReach] ?? 7)
-    }
     let component = ComponentInstance(
-      id: id, origin: origin, statistics: statistics,
+      id: id, origin: origin, statistics: origin.statistics,
       grade: mapping?.grade ?? origin.identity)
     return try ComponentProgression.reconcileLoaded(component, definition: definition)
   }

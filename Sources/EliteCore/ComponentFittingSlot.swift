@@ -21,7 +21,8 @@ public enum ComponentFittingSlot: Hashable, Codable, Sendable {
 }
 
 public enum ComponentUtility: String, Hashable, Codable, Sendable {
-  case salvageCutter, fuelScoops, ecm, escapePod, energyBomb, cargoExpansion, galacticHyperdrive
+  case miningLaser, salvageCutter, fuelScoops, ecm, escapePod, energyBomb, cargoExpansion,
+    galacticHyperdrive
 }
 
 public struct ComponentFittingLocation: Hashable, Codable, Sendable {

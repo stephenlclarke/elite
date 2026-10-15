@@ -6,9 +6,13 @@ import Testing
 private let cemOwner = UUID(uuidString: "91000000-0000-0000-0000-000000000001")!
 private let cemHull = UUID(uuidString: "91000000-0000-0000-0000-000000000002")!
 
-private func cemInitialize(_ commander: inout Commander, legacy: Bool = true) throws {
+private func cemInitialize(
+  _ commander: inout Commander, legacy: Bool = true, xyzzyGrant: Bool = false
+) throws {
   var sequence = 0
-  try commander.initializeEquipment(owner: cemOwner, hull: cemHull, legacy: legacy) {
+  try commander.initializeEquipment(
+    owner: cemOwner, hull: cemHull, legacy: legacy, xyzzyGrant: xyzzyGrant
+  ) {
     sequence += 1
     return UUID(uuidString: String(format: "92000000-0000-0000-0000-%012d", sequence))!
   }
@@ -102,7 +106,7 @@ struct CommanderEquipmentMigrationTests {
     xyzzy.xyzzyActive = true
     xyzzy.equipment = Equipment.maximumHardware
     xyzzy.fuelStorageUnits = FuelStorage.maximumCount
-    try cemInitialize(&xyzzy)
+    try cemInitialize(&xyzzy, legacy: false, xyzzyGrant: true)
     #expect(
       xyzzy.equipmentPurchaseHistory?.paid.isEmpty == true
         && xyzzy.equipmentPurchaseHistory?.legacy.isEmpty == true)
@@ -126,6 +130,36 @@ struct CommanderEquipmentMigrationTests {
     #expect(decoded == commander && decoded.valid)
     #expect(
       decoded.equipmentInventory?.items.map(\.id) == commander.equipmentInventory?.items.map(\.id))
+  }
+
+  @Test func nativeHullReachDoesNotBecomeATransferableComputerUpgrade() throws {
+    for shipID in ["SH087", "SH001"] {
+      var commander = Commander()
+      commander.shipID = shipID
+      let nativeReach = commander.jumpCap
+      try cemInitialize(&commander)
+      let navigation = try #require(
+        commander.equipmentInventory?.items.first {
+          $0.location?.slot == .navigation
+        }?.component)
+      #expect(navigation.statistics[.jumpReach] == 7 && navigation.grade.id == "navigation.basic")
+      #expect(commander.jumpCap == nativeReach)
+    }
+  }
+
+  @Test func oldXYZZYFlagDoesNotRelabelAmbiguousLaterPurchasesAsGrants() throws {
+    var commander = Commander()
+    commander.xyzzyActive = true
+    commander.equipment.formUnion(["Beam Laser", NavigationTier.advanced.equipmentName])
+    try cemInitialize(&commander)
+    let items = try #require(commander.equipmentInventory?.items)
+    #expect(items.contains { $0.node.key == "Beam Laser" && $0.provenance == .legacyUnknown })
+    #expect(
+      items.contains {
+        $0.node.key == NavigationTier.advanced.equipmentName && $0.provenance == .legacyUnknown
+      })
+    #expect(!items.contains { $0.provenance == .xyzzy })
+    #expect(commander.equipmentPurchaseHistory?.paid.isEmpty == true)
   }
 
   @Test func failedMigrationCannotPublishPartialEquipmentOrAlterExistingLegacyState() throws {

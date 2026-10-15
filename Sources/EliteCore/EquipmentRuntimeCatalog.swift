@@ -71,16 +71,27 @@ enum EquipmentRuntimeCatalog {
       LaserMount.allCases.filter { performance.supports($0) }.map(ComponentFittingSlot.laser))
     slots.formUnion(
       utilities.compactMap { _, utility -> ComponentFittingSlot? in
-        utility == .cargoExpansion && performance.cargoExpansion == 0 ? nil : .utility(utility)
+        if utility == .cargoExpansion && performance.cargoExpansion == 0 { return nil }
+        if utility == .salvageCutter && performance.workTools?.contains(utility) != true {
+          return nil
+        }
+        return .utility(utility)
       })
+    if performance.workTools?.contains(.miningLaser) == true {
+      slots.insert(.utility(.miningLaser))
+    }
     slots.formUnion((0..<FuelStorage.maximumCount).map(ComponentFittingSlot.fuelStorage))
     var nodes: [EquipmentNodeID: OwnedEquipmentNodeCapability] = [:]
     var limits: [EquipmentFamilyID: Int] = [:]
     for node in graph.nodes {
       let allowed: Set<ComponentFittingSlot>
       if node.id.family == laserFamily {
-        allowed = Set(LaserMount.allCases.map(ComponentFittingSlot.laser))
-        limits[node.id.family] = 4
+        var laserSlots = Set(LaserMount.allCases.map(ComponentFittingSlot.laser))
+        if node.id.key == LaserKind.mining.equipmentName {
+          laserSlots.insert(.utility(.miningLaser))
+        }
+        allowed = laserSlots
+        limits[node.id.family] = performance.workTools?.contains(.miningLaser) == true ? 5 : 4
       } else if node.id.family == storageFamily {
         allowed = Set((0..<FuelStorage.maximumCount).map(ComponentFittingSlot.fuelStorage))
         limits[node.id.family] = FuelStorage.maximumCount
