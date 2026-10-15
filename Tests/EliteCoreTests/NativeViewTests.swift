@@ -7,6 +7,46 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeGalleryDisplaysIndependentServiceAfterAuthorizationCompletes()
+    async throws
+  {
+    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: root) }
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/station-maintenance")
+    let pack = try ScriptPackLibrary.read(example)
+    let runtime = GameRuntime(game: Game(executive: false))
+    try await runtime.installScriptPack(from: example, destination: root)
+    let trial = try await runtime.scriptGalleryTrial(packDigest: pack.digest, seed: 72)
+    let namespace = try #require(await trial.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    var actual = await trial.snapshot()
+    let origin = try #require(actual.commander.scriptState.instances.values.first)
+    #expect(origin.outcome == .complete && actual.commander.scriptState.worldJobs.count == 1)
+    actual.openGallery()
+    actual.gallery.selection = try #require(
+      actual.missionCatalogue.firstIndex { $0.savedInstance == origin.id })
+    actual.gallery.detail = true
+    #expect(actual.missionCatalogue[actual.gallery.selection].status == .complete)
+    #expect(
+      actual.missionCatalogue[actual.gallery.selection].briefing.contains(
+        "Station training patrol service: Active"))
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+      actual.gallery.scroll = width == 512 ? 6 : 0
+      let image = try #require(imageForGame(actual, width: width, height: height, scale: scale))
+      #expect(image.width == width * scale && image.height == height * scale)
+      if let evidence {
+        let directory = URL(fileURLWithPath: evidence, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let bytes = try #require(
+          NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+        try bytes.write(to: directory.appendingPathComponent("services-active-\(width).png"))
+      }
+    }
+  }
+
   @MainActor @Test func nativeProfiledShipsRenderMeasuredComponentsAndSourcePanels() async throws {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: root) }
@@ -25,7 +65,9 @@ struct NativeViewTests {
       if actual.bodies.contains(where: {
         $0.scriptNPC?.guns["forward"]?.beamRange != nil
           && ($0.scriptNPC?.guns["forward"]?.cooldown ?? 0) > 0.05
-      }) { break }
+      }) {
+        break
+      }
     }
     #expect(actual.isMissionTrial)
     #expect(actual.bodies.contains { $0.scriptNPC?.guns["forward"]?.beamRange != nil })
@@ -35,7 +77,8 @@ struct NativeViewTests {
       let directory = URL(fileURLWithPath: evidence)
       try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
       let image = try #require(imageForGame(actual, width: 1512, height: 982, scale: 2))
-      let bytes = try #require(NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+      let bytes = try #require(
+        NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
       try bytes.write(to: directory.appendingPathComponent("npc-native-combat-1512.png"))
     }
     for rotated in [false, true] {
@@ -55,8 +98,11 @@ struct NativeViewTests {
         if let evidence {
           let directory = URL(fileURLWithPath: evidence)
           try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-          let bytes = try #require(NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
-          try bytes.write(to: directory.appendingPathComponent("npc-\(rotated ? "rotated" : "front")-\(width).png"))
+          let bytes = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try bytes.write(
+            to: directory.appendingPathComponent(
+              "npc-\(rotated ? "rotated" : "front")-\(width).png"))
         }
       }
     }

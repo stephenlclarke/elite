@@ -919,10 +919,17 @@ public struct Game: Sendable {
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
+    applyScriptStationResources()
     restoreScriptActors()
   }
   public mutating func dock(atMainStation: Bool = true) {
     resolveDestroyed()
+    if atMainStation
+      && commander.scriptState.stationResources[contractStation.key]?.destroyed == true
+    {
+      notify("MAIN STATION DESTROYED - DOCKING UNAVAILABLE")
+      return
+    }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
@@ -1024,6 +1031,7 @@ public struct Game: Sendable {
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
+    applyScriptStationResources()
     restoreScriptActors()
   }
   public mutating func galacticJump() {
@@ -1528,6 +1536,7 @@ public actor GameRuntime {
         flight: flightActive, local: localActive, calendar: calendarActive,
         publish: scriptPublisher())
     }
+    game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())
     return game
   }
   public func save(to url: URL) throws {

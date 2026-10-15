@@ -44,8 +44,9 @@ extension Game {
   }
   public var canRetrySelectedMission: Bool {
     guard let id = selectedGalleryMission?.savedInstance,
-      let state = commander.scriptState.instances[id], state.outcome == .active,
-      state.suspension != nil, let pack = scriptPack(for: state)
+      let state = commander.scriptState.instances[id],
+      state.outcome == .active && state.suspension != nil || hasSuspendedWorldJobs(origin: id),
+      let pack = scriptPack(for: state)
     else { return false }
     return scriptUnavailable(pack) == nil
   }

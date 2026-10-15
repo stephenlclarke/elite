@@ -10,6 +10,7 @@ public struct ScriptTimer: Codable, Sendable, Equatable {
   public var interval: Double
   public var policy: ScriptTimerPolicy
   public var pulses = 0
+  public var clockExhausted: Bool?
   public var lastDue: Double?
   public var lastFiredAt: Double?
   public var savedCounters: [String: ScriptPulseCounter]?
@@ -18,6 +19,24 @@ public struct ScriptTimer: Codable, Sendable, Equatable {
     set { savedCounters = newValue.isEmpty ? nil : newValue }
   }
 }
+extension ScriptTimer {
+  var valid: Bool {
+    PackValidation.localID(id) && due.isFinite && (0...1e12).contains(due)
+      && interval.isFinite && (0...1e9).contains(interval)
+      && (0...1_000_000_000).contains(pulses) && counters.count <= 16
+      && counters.allSatisfy {
+        PackValidation.localID($0.key) && $0.value.valid
+          && $0.value.value <= Int64(pulses)
+      }
+      && ((lastDue == nil && lastFiredAt == nil)
+        || (lastDue.map { $0.isFinite && (0...1e12).contains($0) } == true
+          && lastFiredAt.map { $0.isFinite && (0...1e12).contains($0) } == true
+          && lastDue! <= lastFiredAt!))
+      && (clockExhausted != true || due == 1e12)
+      && (policy == .once || interval > 0)
+  }
+}
+
 public struct ScriptDialogue: Codable, Sendable, Equatable {
   public var id: String
   public var token: String
@@ -61,6 +80,16 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  public var savedWorldJobs: [UUID: ScriptWorldJob]?
+  public var worldJobs: [UUID: ScriptWorldJob] {
+    get { savedWorldJobs ?? [:] }
+    set { savedWorldJobs = newValue.isEmpty ? nil : newValue }
+  }
+  public var savedStationResources: [String: ScriptStationResource]?
+  public var stationResources: [String: ScriptStationResource] {
+    get { savedStationResources ?? [:] }
+    set { savedStationResources = newValue.isEmpty ? nil : newValue }
+  }
   public var calendarLedger: ScriptCalendarLedger?
   public var savedProjectiles: [UUID: ScriptProjectileRecord]?
   public var projectiles: [UUID: ScriptProjectileRecord] {
@@ -101,6 +130,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
+    guard worldJobsValid else { return false }
     guard
       calendarLedger.map({
         $0.valid
@@ -179,22 +209,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           && instance.milestones.count <= 64
           && instance.milestones.allSatisfy { (0..<64).contains($0) }
           && instance.timers.count <= 128
-          && instance.timers.allSatisfy { key, timer in
-            key == timer.id && PackValidation.localID(key) && timer.due.isFinite
-              && (0...1e12).contains(timer.due)
-              && timer.interval.isFinite && (0...1e9).contains(timer.interval)
-              && (0...1_000_000_000).contains(timer.pulses)
-              && timer.counters.count <= 16
-              && timer.counters.allSatisfy {
-                PackValidation.localID($0.key) && $0.value.valid
-                  && $0.value.value <= Int64(timer.pulses)
-              }
-              && ((timer.lastDue == nil && timer.lastFiredAt == nil)
-                || (timer.lastDue.map { $0.isFinite && (0...1e12).contains($0) } == true
-                  && timer.lastFiredAt.map { $0.isFinite && (0...1e12).contains($0) } == true
-                  && timer.lastDue! <= timer.lastFiredAt!))
-              && (timer.policy == .once || timer.interval > 0)
-          }
+          && instance.timers.allSatisfy { $0.key == $0.value.id && $0.value.valid }
           && instance.journal.count <= 512 && instance.journal.allSatisfy { $0.utf8.count <= 12000 }
           && instance.data.object != nil
           && (try? ScriptWire.encode([instance.data], limit: 262144)) != nil

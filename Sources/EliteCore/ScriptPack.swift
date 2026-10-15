@@ -45,6 +45,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let npcs: [ScriptNPCDefinition]?
   public let models: [ScriptNPCModel]?
   public let modules: [ScriptModuleDefinition]?
+  public let worldJobs: [ScriptWorldJobDefinition]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -79,7 +80,7 @@ public enum ScriptCapabilities {
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
     "owned-equipment-v2",
     "contracts-basic-v2", "profiled-encounters-v2",
-    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2",
+    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -116,7 +117,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -129,6 +130,8 @@ public enum ScriptPackLibrary {
     for (name, allowed) in [
       "handlers": "event function", "dialogs": "id text",
       "equipment": "id name quantity loan mount returnPolicy",
+      "worldJobs":
+        "id title handler owner galaxy system encounter actor firstDue interval policy counters controlledEncounters",
     ]
     where root.contains(key: name) {
       let array = try root.array(forKey: name)
@@ -172,7 +175,8 @@ public enum ScriptPackLibrary {
     let assets = try readNPCModels(manifest, directory: directory)
     try ScriptEvaluator.validate(
       source: source,
-      handlers: manifest.handlers.map(\.function) + (manifest.board.map { [$0.generator] } ?? []))
+      handlers: manifest.handlers.map(\.function) + (manifest.board.map { [$0.generator] } ?? [])
+        + (manifest.worldJobs ?? []).map(\.handler))
     var digestInput = Data()
     for (name, data) in [("manifest.toml", bytes), (manifest.module, entry)] {
       digestInput.append(try ScriptWire.encode([.string(name), .integer(Int64(data.count))]))
@@ -272,6 +276,7 @@ public enum ScriptPackLibrary {
       throw MissionPackError("Invalid encounter declarations or missing native classic capability.")
     }
     try validateNPCDeclarations(manifest)
+    try validateWorldJobs(manifest)
     let modules = manifest.modules ?? []
     let resourcePaths =
       [manifest.module] + modules.map(\.path) + (manifest.models ?? []).map(\.path)

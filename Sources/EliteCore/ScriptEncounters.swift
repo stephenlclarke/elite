@@ -31,8 +31,10 @@ public struct ScriptOwnedActor: Codable, Sendable, Equatable {
       && body.position.finite && body.position.length <= 1e9 && body.orientation.validRotation
       && body.energy.isFinite && (0...10_000_000).contains(body.energy)
       && (body.scriptNPC?.valid ?? true)
-      && (body.scriptNPC.map { body.energy <= $0.fit.definition.energy
-        && body.missiles <= $0.fit.definition.missiles } ?? true)
+      && (body.scriptNPC.map {
+        body.energy <= $0.fit.definition.energy
+          && body.missiles <= $0.fit.definition.missiles
+      } ?? true)
       && body.rotation.isFinite && body.rotationRate.isFinite && (0...32).contains(body.missiles)
       && (-1..<1_000_000_000).contains(body.id)
       && (presence != .destroyed || body.energy == 0)
@@ -129,8 +131,10 @@ extension Game {
                 "identity": .string(actor.identity.uuidString),
                 "presence": .string(actor.presence.rawValue),
                 "energy": .number(actor.body.energy),
-                "position": .array([.number(actor.body.position.x), .number(actor.body.position.y),
-                  .number(actor.body.position.z)]),
+                "position": .array([
+                  .number(actor.body.position.x), .number(actor.body.position.y),
+                  .number(actor.body.position.z),
+                ]),
                 "npc": scriptNPCSnapshot(actor.body.scriptNPC),
                 "missiles": .integer(Int64(actor.body.missiles)),
               ])
@@ -139,12 +143,15 @@ extension Game {
       })
   }
   /// Returns a later native result. A saved plan is not an admission receipt.
-  mutating func ensureScriptEncounter(_ id: String, pack: ScriptPack, state: inout ScriptInstance)
+  mutating func ensureScriptEncounter(
+    _ id: String, pack: ScriptPack, state: inout ScriptInstance,
+    worldJobAuthorized: Bool = false
+  )
     throws -> (String, [String: ScriptValue])
   {
-    guard state.outcome == .active,
-      (pack.manifest.capabilities.contains("classic-encounters-v2")
-        || pack.manifest.capabilities.contains("profiled-encounters-v2")),
+    guard state.outcome == .active || worldJobAuthorized,
+      pack.manifest.capabilities.contains("classic-encounters-v2")
+        || pack.manifest.capabilities.contains("profiled-encounters-v2"),
       let definition = pack.manifest.encounters?.first(where: { $0.id == id })
     else {
       throw MissionPackError(
@@ -156,7 +163,8 @@ extension Game {
       for spec in definition.actors {
         let identity = UUID()
         var body = SpaceBody(
-          id: -1, hull: spec.hull ?? .cobra, position: .init(spec.x, spec.y, spec.z), hostile: spec.hostile)
+          id: -1, hull: spec.hull ?? .cobra, position: .init(spec.x, spec.y, spec.z),
+          hostile: spec.hostile)
         if let npcID = spec.npc,
           let definition = pack.manifest.npcs?.first(where: { $0.id == npcID })
         {
@@ -236,6 +244,10 @@ extension Game {
   mutating func persistScriptActors(unloading: Bool = false) {
     guard !commander.scriptState.instances.isEmpty else { return }
     if let actual = bodies.first(where: { $0.id == 0 && $0.hull == .station }) {
+      if actual.energy <= 0 { recordScriptWorldResourceLoss(actual) }
+      if commander.scriptState.stationResources[contractStation.key] != nil {
+        commander.scriptState.stationResources[contractStation.key]?.energy = max(0, actual.energy)
+      }
       scriptReferenceFrame = ScriptReferenceFrame(
         galaxy: commander.galaxy, system: commander.system, station: actual)
     }
@@ -263,7 +275,8 @@ extension Game {
           saved.body.energy = max(0, body.energy)
           saved.body.position = anchor.orientation.inverse(body.position - anchor.position)
           saved.body.orientation = body.orientation.relative(to: anchor.orientation)
-          saved.body.scriptNPC?.velocity = anchor.orientation.inverse(body.scriptNPC?.velocity ?? .init(0, 0, 0))
+          saved.body.scriptNPC?.velocity = anchor.orientation.inverse(
+            body.scriptNPC?.velocity ?? .init(0, 0, 0))
           if unloading && saved.presence == .present { saved.presence = .unloaded }
           encounter.actors[alias] = saved
         }
@@ -320,6 +333,7 @@ extension Game {
     restoreScriptShots(anchor: anchor)
   }
   mutating func recordScriptActorRemoval(_ body: SpaceBody, destroyed: Bool) {
+    if destroyed { recordScriptWorldResourceLoss(body) }
     recordScriptShotRemoval(body)
     guard let identity = body.missionActorID, let instanceID = body.missionInstanceID,
       var instance = commander.scriptState.instances[instanceID]

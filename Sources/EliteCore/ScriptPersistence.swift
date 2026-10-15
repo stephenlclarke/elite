@@ -49,6 +49,17 @@ struct ScriptWorldSave: Codable, Sendable {
       && nextBodyID >= (bodies.map(\.id).max() ?? 0)
   }
   func consistent(with commander: Commander) -> Bool {
+    let stationKey = "main-orbital:\(commander.galaxy):\(commander.system)"
+    if let resource = commander.scriptState.stationResources[stationKey] {
+      let actual = bodies.first { $0.id == 0 && $0.hull == .station }
+      if resource.destroyed {
+        guard actual == nil, !(docked && mainStation),
+          referenceFrame.map({ $0.station.energy <= 0 }) ?? true
+        else { return false }
+      } else if let actual, actual.energy != resource.energy {
+        return false
+      }
+    }
     var records: [UUID: (UUID, Int, Int, ScriptOwnedActor)] = [:]
     for instance in commander.scriptState.instances.values {
       for encounter in instance.ownedEncounters.values {
@@ -147,7 +158,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 10, generation: generation,
+      format: "elite-script-save", schemaVersion: 11, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope)
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
@@ -166,7 +177,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...10).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...11).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")

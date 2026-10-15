@@ -488,3 +488,31 @@ private func calendarContractPack() throws -> ScriptPack {
   #expect(game.commander.system == admitted.destination && game.selectedSystem == cursor)
   #expect(game.commander.valid)
 }
+
+@Test func calendarAtItsCeilingDeliversTheActualLastPulseWithoutOverflowOrInventingMoreCallbacks()
+  async throws
+{
+  let fixture = try CalendarFixture(
+    source: CalendarFixture.source.replacingOccurrences(
+      of: "domain='local'", with: "domain='calendar'"))
+  defer { fixture.clean() }
+  var game = Game(executive: false)
+  game.screen = .status
+  game.scriptPacks = [fixture.pack]
+  game.ensureScriptCalendar(origin: .newCommander)
+  game.commander.scriptState.calendarSeconds = 1e12 - 0.05
+  let id = try game.acceptScriptMission(fixture.pack)
+  for _ in 0..<10 {
+    game.advanceScriptClocks(delta: 0.1, flight: false, local: false, calendar: true)
+  }
+  let timer = try #require(game.commander.scriptState.instances[id]?.timers["pulse"])
+  #expect(timer.pulses == 1 && timer.clockExhausted == true && timer.due == 1e12)
+  #expect(game.commander.scriptState.instances[id]?.data["stamps"]?.array?.count == 1)
+  #expect(game.commander.valid)
+  let runtime = GameRuntime(game: game)
+  try await runtime.save(to: fixture.save)
+  let loaded = GameRuntime(game: game)
+  try await loaded.load(from: fixture.save)
+  _ = await loaded.advance(delta: 0.1)
+  #expect(await loaded.snapshot().commander.scriptState.instances[id]?.timers["pulse"] == timer)
+}

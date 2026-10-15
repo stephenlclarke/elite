@@ -19,7 +19,8 @@
     "script-lua-v1",
     "story-v2",
     "calendar-clocks-v2",
-    "pulse-counters-v2"
+    "pulse-counters-v2",
+    "world-resource-jobs-v2"
   ],
   "requirements": [
     {
@@ -173,9 +174,13 @@
         "Sources/EliteCore/ScriptDirector.swift",
         "Sources/EliteCore/ScriptCalendar.swift",
         "Sources/EliteCore/ScriptCalendarState.swift",
-        "Tests/EliteCoreTests/ScriptCalendarTests.swift"
+        "Tests/EliteCoreTests/ScriptCalendarTests.swift",
+        "Sources/EliteCore/ScriptWorldJobState.swift",
+        "Sources/EliteCore/ScriptWorldJobs.swift",
+        "Sources/EliteCore/ScriptWorldJobCommands.swift",
+        "Tests/EliteCoreTests/ScriptWorldJobTests.swift"
       ],
-      "remaining": "Commander calendar, native launch/travel provenance, calendar deadlines and skipped actual-pulse counters implemented. Transit, independent resource-owned world jobs and full Maenes source acceptance remain required; world-clocks-v1 stays gated."
+      "remaining": "Calendar/native pulse counters and independently resource-owned loaded-world jobs implemented. Full transit, source station/grid/people-care services and Maenes acceptance remain required; world-clocks-v1 stays gated."
     },
     {
       "id": "R11",
@@ -255,7 +260,7 @@
         "Sources/EliteCore/ScriptNPCPersistence.swift",
         "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
-      "remaining": "Format10 with calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
+      "remaining": "Format11 with calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, full source world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
     },
     {
       "id": "R16",
@@ -355,9 +360,13 @@
       "current_evidence": [
         "Sources/EliteCore/ScriptCommands.swift",
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptWorldJobState.swift",
+        "Sources/EliteCore/ScriptWorldJobs.swift",
+        "Sources/EliteCore/ScriptWorldJobCommands.swift",
+        "Tests/EliteCoreTests/ScriptWorldJobTests.swift"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "remaining": "Native terminal outcomes remain irreversible; independent resource-owned station/ship jobs can continue after completion/failure/abandonment, with their own saved rights/data/pending pulses and actual owner-death cancellation. Full people/pod/life-support care and source-specific living-return policies remain unsupported."
     },
     {
       "id": "R24",
@@ -412,23 +421,24 @@
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 439,
-    "maintained_coverage_percent": 94.04,
-    "script_swift_coverage_percent": 97.39,
-    "encounter_coverage_percent": 97.66,
+    "tests_per_lane": 459,
+    "maintained_coverage_percent": 94.06,
+    "script_swift_coverage_percent": 97.1,
+    "encounter_coverage_percent": 97.74,
     "maintained_c_host_coverage_percent": 95.0,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.85,
     "solar_save_coverage_percent": 100.0,
     "durable_transaction_coverage_percent": 100.0,
-    "gallery_trial_coverage_percent": 97.25,
+    "gallery_trial_coverage_percent": 97.27,
     "owned_equipment_coverage_percent": 94.97,
     "equipment_loan_coverage_percent": 97.58,
     "contract_coverage_percent": 92.34,
     "profiled_npc_coverage_percent": 97.92,
     "module_loader_coverage_percent": 98.04,
-    "pack_loader_coverage_percent": 96.74,
-    "calendar_coverage_percent": 97.58
+    "pack_loader_coverage_percent": 96.77,
+    "calendar_coverage_percent": 97.58,
+    "world_job_coverage_percent": 94.12
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -453,13 +463,14 @@
     "Optional original identified equipment loan",
     "Optional original main-orbital generated sample contracts",
     "Optional original profiled NPC/component skirmish",
-    "docs/mission-packs/calendar-contracts"
+    "docs/mission-packs/calendar-contracts",
+    "docs/mission-packs/station-maintenance"
   ],
   "source_data_follow_ups": [
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes439 tests per lane,94.04% maintained coverage,97.39% script coverage,97.58% calendar coverage and0leaks; exact511 source/resource/test/example hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes459 tests per lane,94.06% maintained coverage,97.10% script coverage,94.12% world-job coverage and0leaks; exact518 source/resource/test/example/renderer-manifest hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -515,7 +526,7 @@
     "full_rrs_ready": false,
     "full_engine_ready": false
   },
-  "last_validated_commit": "1e3a670 (preceding checkpoint; current source hashes in validation document)",
+  "last_validated_commit": "87a157b (preceding committed checkpoint; current source hashes in validation document)",
   "npc_checkpoint": {
     "status": "validated with complete make ci,417 tests per lane; full source engine remains incomplete",
     "capability": "profiled-encounters-v2",
@@ -543,6 +554,12 @@
       "pulse-counters-v2"
     ],
     "save_format": 10,
+    "full_engine_ready": false
+  },
+  "world_job_checkpoint": {
+    "status": "validated with complete make ci;459 tests per lane; full engine remains incomplete",
+    "capability": "world-resource-jobs-v2",
+    "save_format": 11,
     "full_engine_ready": false
   }
 }

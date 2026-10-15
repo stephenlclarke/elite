@@ -24,16 +24,25 @@ extension GameRuntime {
         : "MISSION REFERENCE INSTALLED - SEE MISSION GALLERY")
   }
   public func resumeScriptMission(_ id: UUID) throws {
-    guard let state = game.commander.scriptState.instances[id], state.outcome == .active,
+    guard let state = game.commander.scriptState.instances[id],
+      state.outcome == .active || game.hasSuspendedWorldJobs(origin: id),
       let pack = game.scriptPack(for: state),
       game.scriptUnavailable(pack) == nil
     else { throw MissionPackError("Restore the exact saved pack and its requirements.") }
     var candidate = game
-    candidate.commander.scriptState.instances[id]?.suspension = nil
+    if state.outcome == .active { candidate.commander.scriptState.instances[id]?.suspension = nil }
+    for jobID in candidate.commander.scriptState.worldJobs.keys {
+      if candidate.commander.scriptState.worldJobs[jobID]?.origin == id {
+        candidate.commander.scriptState.worldJobs[jobID]?.suspension = nil
+      }
+    }
     try scriptPublisher()?(&candidate)
     game = candidate
     game.drainScriptEvents(publish: scriptPublisher())
-    if let reason = game.commander.scriptState.instances[id]?.suspension {
+    game.retryPendingWorldJobs(origin: id, publish: scriptPublisher())
+    if let reason = game.commander.scriptState.instances[id]?.suspension
+      ?? game.worldJobSuspension(origin: id)
+    {
       throw MissionPackError(reason)
     }
   }

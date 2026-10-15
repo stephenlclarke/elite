@@ -42,6 +42,7 @@ extension Game {
     }
   }
   mutating func suspendUnavailableScriptContent() {
+    suspendUnavailableWorldJobs()
     for id in orderedScriptInstances {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
         instance.suspension == nil
@@ -96,6 +97,7 @@ extension Game {
         .object([
           "due": .number(timer.due), "domain": .string(timer.domain.rawValue),
           "pulse": .integer(Int64(timer.pulses)), "has_been_run": .bool(timer.pulses > 0),
+          "clock_exhausted": .bool(timer.clockExhausted == true),
           "last_due": timer.lastDue.map(ScriptValue.number) ?? .null,
           "last_fired_at": timer.lastFiredAt.map(ScriptValue.number) ?? .null,
           "counters": .object(
@@ -211,7 +213,9 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
-          if command["op"]?.string == "encounter.ensure" {
+          if command["op"]?.string == "world.job.ensure" {
+            try candidate.ensureScriptWorldJob(command, pack: pack, state: next)
+          } else if command["op"]?.string == "encounter.ensure" {
             guard let fields = command.object, Set(fields.keys) == ["op", "id"],
               let id = command["id"]?.string
             else {
@@ -314,7 +318,7 @@ extension Game {
           var timer = commander.scriptState.instances[id]?.timers[key],
           (timer.domain == .flight && flight) || (timer.domain == .local && local)
             || (timer.domain == .calendar && calendar),
-          timer.due <= commander.scriptState.clock(timer.domain)
+          timer.clockExhausted != true, timer.due <= commander.scriptState.clock(timer.domain)
         else { continue }
         let firedAt = commander.scriptState.clock(timer.domain)
         let due = timer.due
@@ -338,6 +342,10 @@ extension Game {
             timer.policy == .delay
             ? firedAt + timer.interval
             : due + (floor((firedAt - due) / timer.interval) + 1) * timer.interval
+          if timer.due > 1e12 {
+            timer.due = 1e12
+            timer.clockExhausted = true
+          }
           commander.scriptState.instances[id]?.timers[key] = timer
         }
         emitScriptEvent(
@@ -345,7 +353,7 @@ extension Game {
           values: [
             "timer_id": .string(key), "pulse": .integer(Int64(timer.pulses)),
             "due": .number(due), "fired_at": .number(firedAt),
-            "has_been_run": .bool(true),
+            "has_been_run": .bool(true), "clock_exhausted": .bool(timer.clockExhausted == true),
             "counters": .object(timer.counters.mapValues { .integer($0.value) }),
             "reset_counters": .array(resets),
           ], only: id, drain: false)
@@ -457,7 +465,8 @@ extension Game {
     return GalleryMission(
       name: job?.offer.title ?? pack.manifest.mission.title, status: status,
       objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
-      briefing: job?.offer.briefing ?? pack.manifest.mission.briefing, destination: destination,
+      briefing: (job?.offer.briefing ?? pack.manifest.mission.briefing)
+        + worldJobGallerySummary(origin: state?.id), destination: destination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
       prerequisites: reason.map { [$0] } ?? [], completed: state?.milestones.count ?? 0,
