@@ -64,7 +64,12 @@ final class GameView: NSView {
   override var isFlipped: Bool { true }
   override var wantsUpdateLayer: Bool { true }
   override func updateLayer() {
+    let start = FramePerformance.begin()
     let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
+    defer {
+      FramePerformance.end(start: start, pitch: controls.pitch, screen: String(describing: game.screen),
+        width: Int(bounds.width), height: Int(bounds.height), scale: scale)
+    }
     guard
       let image = imageForGame(
         game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
@@ -380,6 +385,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     windowWillClose(notification)
   }
   func windowWillClose(_ _: Notification) {
+    FramePerformance.flush()
     loop?.cancel()
     loop = nil
   }

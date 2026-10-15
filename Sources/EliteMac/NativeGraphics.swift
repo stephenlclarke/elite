@@ -107,7 +107,9 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
 private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Double = 0.5) {
   context.setLineWidth(lineWidth)
   switch graphic {
-  case .planet(let preview): PlanetRenderer.draw(preview, context: context)
+  case .planet(let preview):
+    FramePerformance.notePlanet()
+    PlanetRenderer.draw(preview, context: context)
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
     context.beginPath()
