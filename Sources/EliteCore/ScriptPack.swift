@@ -16,10 +16,12 @@ public struct ScriptMission: Codable, Sendable {
   public let requiredDestructionEncounters: [String]?
   public let requiredPassengerParties: [String]?
   public let requiredEquipmentReturns: [String]?
+  public let requiredChoiceGroups: [String]?
 }
 public struct ScriptDialog: Codable, Sendable {
   public let id: String
   public let text: String
+  public let choices: [ScriptDialogChoice]?
 }
 public struct ScriptManifest: Codable, Sendable {
   public let schemaVersion: Int
@@ -83,7 +85,7 @@ public enum ScriptCapabilities {
     "contracts-basic-v2", "profiled-encounters-v2",
     "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2",
     "event-history-v2", "deterministic-plans-v2", "typed-save-values-v2", "commander-queries-v2",
-    "completion-receipts-v2",
+    "completion-receipts-v2", "exclusive-choices-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -106,7 +108,7 @@ public enum ScriptCapabilities {
     "ship.changed", "equipment.changed", "gear.consumed",
     "equipment.issued", "equipment.returned", "equipment.released",
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
-    "component.destroyed", "weapon.fired", "mission.receipted",
+    "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen",
   ]
 }
 
@@ -124,15 +126,16 @@ public enum ScriptPackLibrary {
     )
     try keys(
       root.table(forKey: "mission"),
-      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties requiredEquipmentReturns"
+      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties requiredEquipmentReturns requiredChoiceGroups"
     )
     if root.contains(key: "board") {
       try keys(
         root.table(forKey: "board"), "id title generator clock refreshSeconds exclusiveGroup")
     }
     for (name, allowed) in [
-      "handlers": "event function", "dialogs": "id text",
-      "receiptRequirements": "id stage definition version digest outcome minimumCount",
+      "handlers": "event function", "dialogs": "id text choices",
+      "receiptRequirements":
+        "id stage definition version digest outcome minimumCount choiceGroup choice",
       "equipment": "id name quantity loan mount returnPolicy",
       "worldJobs":
         "id title handler owner galaxy system encounter actor firstDue interval policy counters controlledEncounters",
@@ -140,6 +143,18 @@ public enum ScriptPackLibrary {
     where root.contains(key: name) {
       let array = try root.array(forKey: name)
       for i in 0..<array.count { try keys(array.table(atIndex: i), allowed) }
+    }
+    if root.contains(key: "dialogs") {
+      let dialogs = try root.array(forKey: "dialogs")
+      for index in 0..<dialogs.count {
+        let dialog = try dialogs.table(atIndex: index)
+        if dialog.contains(key: "choices") {
+          let choices = try dialog.array(forKey: "choices")
+          for choice in 0..<choices.count {
+            try keys(choices.table(atIndex: choice), "id label group")
+          }
+        }
+      }
     }
     if root.contains(key: "encounters") {
       let encounters = try root.array(forKey: "encounters")
@@ -281,11 +296,14 @@ public enum ScriptPackLibrary {
     }
     try validateNPCDeclarations(manifest)
     try validateWorldJobs(manifest)
+    try validateChoices(manifest)
     let requirements = manifest.receiptRequirements ?? []
     guard requirements.count <= 32, Set(requirements.map(\.id)).count == requirements.count,
       requirements.allSatisfy(\.valid),
       requirements.allSatisfy({ $0.definition != manifest.stateID }),
       requirements.isEmpty || manifest.capabilities.contains("completion-receipts-v2"),
+      !manifest.handlers.contains(where: { $0.event == "dialogue.chosen" })
+        || manifest.capabilities.contains("exclusive-choices-v2"),
       !manifest.handlers.contains(where: { $0.event == "mission.receipted" })
         || manifest.capabilities.contains("completion-receipts-v2")
     else { throw MissionPackError("Invalid native completion receipt requirements.") }

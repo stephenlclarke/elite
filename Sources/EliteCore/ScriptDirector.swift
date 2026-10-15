@@ -96,6 +96,7 @@ extension Game {
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
+    fields["choices"] = .object(instance.choiceReceipts.mapValues(\.value))
     fields["contract"] = contractSnapshot(instance)
     if let pack = scriptPack(for: instance) {
       fields["receipt_requirements"] = scriptReceiptQuery(pack, state: instance)
@@ -254,6 +255,17 @@ extension Game {
               command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
           }
         }
+        for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
+          let choice = next.choiceReceipts[group]!
+          derivedEvents.append(
+            (
+              "dialogue.chosen",
+              [
+                "group": .string(group), "choice_id": .string(choice.choice),
+                "dialogue_id": .string(choice.dialogue),
+              ]
+            ))
+        }
         next.revision += 1
         next.acknowledge(event.sequence)
         if next.outcome != .active {
@@ -390,6 +402,7 @@ extension Game {
       else { continue }
       scriptOffer = id
       scriptConfirmSelected = true
+      scriptChoiceSelection = 0
       blackjackReturn = screen
       packDialogScroll = 0
       screen = .handoff
@@ -412,9 +425,11 @@ extension Game {
       closeBlackjackHandoff()
       return
     }
-    emitScriptEvent(
-      "dialogue.confirmed",
-      values: ["dialogue_id": .string(dialogue.id), "token": .string(dialogue.token)], only: id)
+    var values: [String: ScriptValue] = [
+      "dialogue_id": .string(dialogue.id), "token": .string(dialogue.token),
+    ]
+    if let choice = selectedScriptChoice { values["choice_id"] = .string(choice.id) }
+    emitScriptEvent("dialogue.confirmed", values: values, only: id)
     closeBlackjackHandoff()
   }
   mutating func offerAvailableScriptMission() -> Bool {

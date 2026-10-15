@@ -11,16 +11,22 @@ public struct ScriptReceiptRequirement: Codable, Sendable {
   public let digest: String
   public let outcome: ScriptOutcome
   public let minimumCount: Int
+  public let choiceGroup: String?
+  public let choice: String?
   var valid: Bool {
     let parts = definition.split(separator: "/", omittingEmptySubsequences: false)
     return PackValidation.localID(id) && parts.count == 2
       && parts.allSatisfy { PackValidation.identifier(String($0)) }
       && PackValidation.version(version) && ScriptCompletionReceipt.validDigest(digest)
       && outcome != .active && (1...128).contains(minimumCount)
+      && ((choiceGroup == nil && choice == nil)
+        || (choiceGroup.map(PackValidation.localID) == true
+          && choice.map(PackValidation.localID) == true))
   }
   func matches(_ receipt: ScriptCompletionReceipt) -> Bool {
     receipt.definition == definition && receipt.version == version && receipt.digest == digest
       && receipt.outcome == outcome
+      && (choiceGroup.map { receipt.choices?[$0]?.choice == choice } ?? true)
   }
 }
 
@@ -41,6 +47,7 @@ public struct ScriptCompletionReceipt: Codable, Sendable, Equatable {
   public let deliveredParties: [String]
   public let returnedEquipment: [String]
   public let settlementAmount: Int?
+  public let choices: [String: ScriptChoiceReceipt]?
 
   static func validDigest(_ digest: String) -> Bool {
     digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
@@ -72,6 +79,7 @@ public struct ScriptCompletionReceipt: Codable, Sendable, Equatable {
         == state.gearIssues.values.filter { $0.status == .returned }
         .map(\.resource).sorted()
       && settlementAmount == state.contract?.settlementAmount
+      && (choices ?? [:]) == state.choiceReceipts
   }
 }
 
@@ -93,6 +101,8 @@ extension Game {
         return
           "Requires \(requirement.minimumCount) verified \(requirement.outcome.rawValue) receipt(s): "
           + requirement.definition + "@" + requirement.version
+          + (requirement.choiceGroup.map { " with branch " + $0 + "/" + (requirement.choice ?? "") }
+            ?? "")
       }
     }
     return nil
@@ -151,7 +161,8 @@ extension Game {
         passengersDelivered($0.id, pack: pack, instance: state, commander: commander)
       }.map(\.id).sorted(),
       returnedEquipment: state.gearIssues.values.filter { $0.status == .returned }.map(\.resource)
-        .sorted(), settlementAmount: state.contract?.settlementAmount)
+        .sorted(), settlementAmount: state.contract?.settlementAmount,
+      choices: state.choiceReceipts.isEmpty ? nil : state.choiceReceipts)
   }
   mutating func enqueueScriptCompletion(_ receipt: ScriptCompletionReceipt) throws {
     let dependents = orderedScriptInstances.filter { id in

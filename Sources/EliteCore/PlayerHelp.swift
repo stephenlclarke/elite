@@ -213,13 +213,18 @@ public enum PlayerHelp {
     case .handoff:
       .init(
         title: "MISSION DIALOG",
-        rows: [
-          "ARROWS - CHOOSE CONFIRM / BACK",
-          "RETURN / CLICK - SELECT",
-          "ESC - BACK WITHOUT TRANSFER",
-          "GAME MENU: MISSION CONTACTS TO REOPEN",
-          "B (DOCKED) ALSO REOPENS A CONTACT",
-        ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
+        rows: (game.offeredScriptChoices.isEmpty
+          ? ["ARROWS - CHOOSE CONFIRM / BACK"]
+          : [
+            "UP / DOWN - BROWSE ASSIGNMENTS",
+            "LEFT / RIGHT - CHOOSE CONFIRM / BACK",
+            "READING / BACK DOES NOT CHOOSE A BRANCH",
+          ]) + [
+            "RETURN / CLICK - SELECT",
+            "ESC - BACK WITHOUT TRANSFER",
+            "GAME MENU: MISSION CONTACTS TO REOPEN",
+            "B (DOCKED) ALSO REOPENS A CONTACT",
+          ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
     case .mission:
       .init(
         title: "MISSION MESSAGE",

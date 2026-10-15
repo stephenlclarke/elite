@@ -56,6 +56,11 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     self.digest = digest
   }
   public var data: ScriptValue = .object([:])
+  public var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
+  public var choiceReceipts: [String: ScriptChoiceReceipt] {
+    get { savedChoiceReceipts ?? [:] }
+    set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
+  }
   public var completionReceipt: ScriptCompletionReceipt?
   public var receiptJoins: [String: [UUID]]?
   public var outcome: ScriptOutcome = .active
@@ -199,6 +204,10 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
               && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
               && (0...256).contains(dialogue.system)
           } ?? true)
+          && instance.choiceReceipts.count <= 64
+          && instance.choiceReceipts.allSatisfy {
+            $0.key == $0.value.group && $0.value.valid(for: instance, engine: self)
+          }
           && (instance.completionReceipt.map { $0.valid(for: instance, engine: self) } ?? true)
           && (instance.receiptJoins.map { joins in
             joins.count <= 32

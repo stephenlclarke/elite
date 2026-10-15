@@ -28,6 +28,7 @@ The interpreter exposes base scalar/assert/error/type/iteration helpers and nume
 | `cargo-v2` | Owned mission payload lots counted against the current hold, atomic issue/removal and receipts. |
 | `calendar-clocks-v2` | Saved commander calendar, explicit epoch, native launch/travel adjustments, calendar timers and contract deadlines. |
 | `commander-queries-v2` | Read-only native commander, stock, weapons, cargo, fitting and labelled common crew/accommodation queries. |
+| `exclusive-choices-v2` | Genuine orbital-station dialogue choices, immutable one-per-group receipts and matching child-branch filters. |
 | `completion-receipts-v2` | Native immutable terminal receipts, exact-content child joins, acceptance/success gates and scoped completion notifications. |
 | `typed-save-values-v2` | Exact integer/floating data and finite IEEE64 bits across saves, versioned unambiguous storage and bounded decoding. |
 | `event-history-v2` | Bounded acknowledgement watermarks, ordered native facts and original location/clock provenance through faults, saves and retries. |
@@ -90,9 +91,9 @@ The [24-requirement status map](SCRIPTABLE-MISSION-STATUS.json) records partial 
 
 ## Validation and remaining implementation
 
-The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 495 tests in each coverage/thread/address lane, 94.31% maintained coverage and zero native diagnostic leaks.
+The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 504 tests in each coverage/thread/address lane, 94.37% maintained coverage and zero native diagnostic leaks.
 
-Run `make script-missions-check` for the eight authored examples, `make test` for behavior and `make ci` for repository gates. Tests cover script execution, quota faults, invalid output, initial acceptance rollback, whole-batch cargo/economy rollback, stale/Back/valid Confirm, terminal reward replay, missing content/cargo preservation, local timer skips, isolated trials, old saves, immutable generations and corrupt/failed saves. The maintained C shim is included in coverage; only unmodified third-party Lua is excluded from the maintained-code percentage and Sonar source scope. Compiled Lua still runs under sanitizers and leak checks.
+Run `make script-missions-check` for the twelve authored examples, `make test` for behavior and `make ci` for repository gates. Tests cover script execution, quota faults, invalid output, initial acceptance rollback, whole-batch cargo/economy rollback, stale/Back/valid Confirm, terminal reward replay, missing content/cargo preservation, local timer skips, isolated trials, old saves, immutable generations and corrupt/failed saves. The maintained C shim is included in coverage; only unmodified third-party Lua is excluded from the maintained-code percentage and Sonar source scope. Compiled Lua still runs under sanitizers and leak checks.
 
 The full design additionally requires actual owned fleets/components and admission, native AI/docking/wormholes/weapons/death objectives, all source clock domains and persistent station jobs, people/life support/crew/berths, full source-specific gear condition/modification adapters, full source station/contract adapters and world services, compound campaign receipts, complete physical save/migration/replay services, deterministic plans, full Gallery scenes/tools and native Maenes/finance/RRS acceptance. These remain unsupported, with no historical mission rewritten into a courier to bypass them.
 
@@ -135,7 +136,7 @@ Install the [station sample contract example](mission-packs/scripted-contracts) 
 
 The original example offers nearby sample runs with real owned tonnes and a deposit. It requires an actual direct jump and enough fuel, physical hold and equipment space. Native hyperspace, automatic docking, station handoff, on-time settlement, late failed settlement, separate repeated instances and cancellation are exercised in acceptance tests. To cancel this example, return to its original offering station and use Mission Contacts to hand back the actual samples and forfeit the deposit; Back preserves the accepted job. This is a generic main-station demonstration, not RRS or historical mission implementation.
 
-A pack with `[board]` becomes a repeatable contract provider instead of an ordinary single Mission Contacts enrolment. Declare `id`, `title`, `generator`, `clock`, optional `refreshSeconds` (default3600) and optional local `exclusiveGroup` (default board ID). Require `contracts-basic-v2` and `local-flight-clocks-v2`; durable production providers should require `durable-commands-v2`. Implemented board domains are `local` and `flight`. Calendar/transit declarations additionally require the still-unavailable `world-clocks-v1`, leaving those profiles unavailable. Main orbital identity is explicit and independent of display names. RRS waystations/headquarters, their distinct capabilities/roles and geometry remain required under full `contracts-v1`; this basic provider does not manufacture them.
+A pack with `[board]` becomes a repeatable contract provider instead of an ordinary single Mission Contacts enrolment. Declare `id`, `title`, `generator`, `clock`, optional `refreshSeconds` (default3600) and optional local `exclusiveGroup` (default board ID). Require `contracts-basic-v2` and `local-flight-clocks-v2`; durable production providers should require `durable-commands-v2`. Implemented board domains are `local`, `flight` and `calendar` (with `calendar-clocks-v2`). Transit still requires the unavailable full `world-clocks-v1` capability. Main orbital identity is explicit and independent of display names. RRS waystations/headquarters, their distinct capabilities/roles and geometry remain required under full `contracts-v1`; this basic provider does not manufacture them.
 
 The generator is a declared, validated Lua function using the same bounded fresh VM. It receives `board.generate`, a read-only world and empty data. Return `{data={offers={...}}, commands={}}`; generation cannot pay, spawn, reserve, accept or issue any command. World fields include actual `station_id`, `board_revision`, 64 deterministic unsigned32 `offer_draws` and current-galaxy known ordinary `destinations` (system/name/distance/economy/government/zero-based technology). The stream is separate from native combat and existing mission streams. A board's station/provider/digest/time generation, seed and decisions are saved before publication. Opening, refresh, Back, refuel or hull changes in the same generation do not reroll them. At most128 saved provider/station snapshots and16 offers each are supported.
 
@@ -286,4 +287,44 @@ A declared `mission.receipted` handler receives a native notification only when 
 
 Install the [linked patrol debrief](mission-packs/linked-patrol) alongside the exact [scripted patrol](mission-packs/scripted-patrol). Accept the debrief and patrol at Lave, fly the actual battle, dock and confirm the patrol report, then reopen Contacts to confirm the separate debrief. The debrief grants no additional money. Its fresh Gallery trial also requires playing the actual child mission in that isolated commander; it does not seed fake completion receipts. Use manual docking or fit the native docking computer normally. An acceptance-gated pack cannot start a fresh trial if its required receipts do not exist there. Rich historical checkpoint scenarios remain required.
 
-Format14 retains terminal receipts and their pinned joins in the mission chunk; formats2-13 remain readable without inventing earlier proof. This implements the generic receipt/join part of linked campaigns. Exclusive branch choices, shared dossiers/loans/services, complete campaign instance scoping and full P19/Maenes/finance/RRS acceptance remain required before `campaigns-v1` can be advertised.
+Format14 retains terminal receipts and their pinned joins in the mission chunk; formats2-13 remain readable without inventing earlier proof. This implements the generic receipt/join part of linked campaigns. Shared dossiers/loans/services, complete campaign instance scoping and full P19/Maenes/finance/RRS acceptance remain required before `campaigns-v1` can be advertised.
+
+## Exclusive station choices
+
+`exclusive-choices-v2` adds up to8 authored choices to an orbital-station dialogue. All choices in one dialogue use the same local exclusive group. A mission instance can commit one choice per group, with up to64 groups shared across its declared dialogues. Choices are ordinary declared text/IDs, with no mission-specific Swift branch.
+
+```toml
+[mission]
+# Other required mission fields omitted here.
+requiredChoiceGroups = ["assignment"]
+
+[[dialogs]]
+id = "assignment"
+text = "Choose the work you want to undertake, then Confirm."
+choices = [
+  {id="patrol", label="Patrol near Lave", group="assignment"},
+  {id="courier", label="Carry supplies to Zaonce", group="assignment"}
+]
+```
+
+At the station, Up/Down browses choices; Left/Right selects Confirm or Back. The Previous/Next choice buttons provide the same browsing action. Return or the Confirm button commits the selected choice. Reading, browsing, Help, Back and Escape create no branch receipt or payment. Contextual help describes these controls. Reload reopens uncommitted dialogue through Contacts with a fresh selection; it does not infer that browsing meant consent.
+
+The native `dialogue.confirmed` envelope adds `choice_id`. The authored handler must pass that exact field back in `dialogue.commit` alongside `id` and `token`. Changing the proposed choice, adding a choice to a plain dialogue, using a stale token, lacking native confirmation provenance, leaving the station or attempting a second choice in the group rejects the whole batch, including any earlier proposed credits. A failed disk publication restores the preceding state and selection for retry.
+
+```lua
+{op='dialogue.commit', id='assignment', token=event.token, choice_id=event.choice_id}
+```
+
+`world.choices[group]` is a copied native receipt containing `group`, `choice_id`, `label`, `dialogue_id`, `sequence`, original `cause` and actual `committed` contexts. Narrative flags cannot manufacture it. `mission.requiredChoiceGroups` blocks a successful finish until every listed group has a genuine receipt. An active mission can handle `dialogue.chosen` to query the committed choice in a subsequent native event; a terminal mission's frozen completion receipt contains its chosen groups directly. Choices remain immutable through later callbacks and saves.
+
+A child's `[[receiptRequirements]]` may additionally declare both `choiceGroup` and `choice`. These fields must appear together and require `exclusive-choices-v2`. The native join still requires the parent's exact definition/version/digest/outcome and actual receipt; it then filters by the parent's frozen chosen branch. Wrong-branch follow-ups stay locked, with the branch shown in their prerequisite reason. Counts still refer to distinct qualifying parent instances.
+
+```toml
+# In the child's existing receiptRequirements table:
+choiceGroup = "assignment"
+choice = "courier"
+```
+
+Install the [station assignment choice](mission-packs/branch-choice), [patrol follow-up](mission-packs/branch-patrol) and [courier follow-up](mission-packs/branch-courier) together. Accept the choice at Lave, reopen Contacts, select and Confirm one assignment, then reopen Contacts to accept its separate mission. The patrol uses the actual two-ship battle/report path; the courier uses actual one-tonne custody/travel/delivery. These are original demonstrations, not historical missions. A fresh Gallery trial of the chooser uses the same station choices in its separate commander; follow-ups do not receive invented parent receipts.
+
+Format15 saves the native choice records and the terminal receipt's frozen choices. Formats2-14 remain readable, without turning old story flags into a branch selection. This covers exclusive choices within one pinned mission instance. Shared dossiers/books/loans/services, full campaign-parent instance management and full P19/source acceptance remain required under the unavailable `campaigns-v1` capability.

@@ -12,7 +12,7 @@ extension Game {
       "credits": ["op", "id", "amount"], "payload.add": ["op", "id", "key", "amount"],
       "payload.remove": ["op", "id", "key", "amount"], "milestone.ensure": ["op", "index"],
       "journal.append": ["op", "text"], "mission.finish": ["op", "outcome"],
-      "dialogue.offer": ["op", "id"], "dialogue.commit": ["op", "id", "token"],
+      "dialogue.offer": ["op", "id"], "dialogue.commit": ["op", "id", "token", "choice_id"],
       "timer.ensure": ["op", "id", "domain", "after", "interval", "policy"],
       "timer.cancel": ["op", "id"],
       "timer.counter.ensure": ["op", "id", "name", "enabled"],
@@ -108,12 +108,15 @@ extension Game {
             && (pack.manifest.mission.requiredPassengerParties ?? []).allSatisfy {
               passengersDelivered($0, pack: pack, instance: state, commander: candidate)
             }
+            && (pack.manifest.mission.requiredChoiceGroups ?? []).allSatisfy {
+              state.choiceReceipts[$0] != nil
+            }
             && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
             && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {
               state.gearIssues[$0]?.status == .returned
             })
       else {
-        throw MissionPackError("Completion requires every declared milestone.")
+        throw MissionPackError("Complete every required objective before reporting.")
       }
       if outcome == .complete, let job = state.contract, let due = job.deadline,
         candidate.scriptState.clock(job.clock) >= due
@@ -138,6 +141,11 @@ extension Game {
       else {
         throw MissionPackError("Dialogue requires a declared contact at the orbital station.")
       }
+      if let choices = pack.manifest.dialogs?.first(where: { $0.id == id })?.choices,
+        choices.contains(where: { state.choiceReceipts[$0.group] != nil })
+      {
+        throw MissionPackError("This exclusive station branch has already been chosen.")
+      }
       state.dialogue = ScriptDialogue(
         id: id, token: state.id.uuidString + ":" + String(event.sequence) + ":" + id,
         galaxy: candidate.galaxy, system: candidate.system, revision: state.revision + 1)
@@ -150,6 +158,10 @@ extension Game {
         state.dialogue?.galaxy == candidate.galaxy, state.dialogue?.system == candidate.system,
         docked, dockedAtMainStation
       else { throw MissionPackError("Stale or invalid dialogue confirmation.") }
+      guard let dialogue = pack.manifest.dialogs?.first(where: { $0.id == id }) else {
+        throw MissionPackError("The confirmed dialogue is not declared.")
+      }
+      try commitScriptChoice(fields, event: event, dialogue: dialogue, pack: pack, state: &state)
       state.dialogue = nil
     case "timer.ensure":
       let id = try identifier("id")

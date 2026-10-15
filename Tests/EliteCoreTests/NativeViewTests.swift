@@ -7,6 +7,55 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeStationChoicesRenderDistinctSelectionsWithoutCommittingABranch()
+    async throws
+  {
+    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: root) }
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/branch-choice")
+    let runtime = GameRuntime(game: Game(executive: false))
+    try await runtime.installScriptPack(from: example, destination: root)
+    let pack = try ScriptPackLibrary.read(example)
+    let trial = try await runtime.scriptGalleryTrial(packDigest: pack.digest)
+    let namespace = try #require(await trial.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    await trial.key("contacts-open")
+    let first = await trial.snapshot()
+    #expect(first.screen == .handoff && first.scriptChoiceSelection == 0)
+    let origin = try #require(first.commander.scriptState.instances.values.first)
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for (index, name) in [(0, "patrol"), (1, "courier")] {
+      if index == 1 { await trial.key("down") }
+      let actual = await trial.snapshot()
+      #expect(actual.scriptChoiceSelection == index && actual.commander == first.commander)
+      let frame = Display.presentation(actual, width: 512, height: 518)
+      #expect(frame.labels.contains { $0.text.contains("Choose the work") })
+      #expect(frame.labels.contains { $0.text.contains("Arrows: choose") })
+      #expect(actual.commander.scriptState.instances[origin.id]?.choiceReceipts.isEmpty == true)
+      for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+        let image = try #require(imageForGame(actual, width: width, height: height, scale: scale))
+        #expect(image.width == width * scale && image.height == height * scale)
+        let pixels = try #require(image.dataProvider?.data) as Data
+        let white = stride(from: 0, to: pixels.count - 3, by: 4).filter { offset in
+          pixels[offset] == 255 && pixels[offset + 1] == 255
+            && pixels[offset + 2] == 255 && pixels[offset + 3] == 255
+        }.count
+        #expect(white > 1000)  // Retain the briefing and key guide while the choice changes.
+        if let evidence {
+          let directory = URL(fileURLWithPath: evidence, isDirectory: true)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          let bytes = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try bytes.write(to: directory.appendingPathComponent("choice-\(name)-\(width).png"))
+        }
+      }
+    }
+    await trial.key("escape")
+    #expect(await trial.snapshot().commander == first.commander)
+  }
+
   @MainActor @Test func nativeGalleryDisplaysIndependentServiceAfterAuthorizationCompletes()
     async throws
   {
