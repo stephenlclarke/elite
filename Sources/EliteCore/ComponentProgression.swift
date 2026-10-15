@@ -9,10 +9,14 @@ public struct ComponentFamily: Hashable, Codable, Sendable {
 public enum ComponentAxis: String, CaseIterable, Codable, Sendable {
   case frontShieldCapacity, rearShieldCapacity, frontShieldRecharge, rearShieldRecharge
   case energyCapacity, energyRecharge, damage, energyDemand, heat, firingInterval, jumpSpool
-  case speed, acceleration, jumpReach, scanPrecision
+  case speed, acceleration, jumpReach, scanPrecision, scanRange
+  case acquisitionError, automationError, jumpFuelCost
 
   public var higherIsBetter: Bool {
-    ![.energyDemand, .heat, .firingInterval, .jumpSpool].contains(self)
+    ![
+      .energyDemand, .heat, .firingInterval, .jumpSpool, .acquisitionError, .automationError,
+      .jumpFuelCost,
+    ].contains(self)
   }
   fileprivate func valid(_ value: Double) -> Bool {
     value.isFinite && (self == .firingInterval || self == .jumpSpool ? value > 0 : value >= 0)
@@ -57,7 +61,8 @@ public struct ComponentTemplate: Equatable, Codable, Sendable {
   }
 }
 
-/// Directional terminal bounds: benefit maxima and cost minima, in actual native stat units.
+/// Directional terminal bounds: benefit maxima and cost minima in the catalogue's declared units.
+/// Statistics may use native values or dimensionless device ratios; the engine does not convert them.
 public struct ComponentFamilyDefinition: Equatable, Codable, Sendable {
   public let family: ComponentFamily
   public let revision: Int

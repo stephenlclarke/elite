@@ -364,3 +364,76 @@ private func cpApply(
   #expect(upgraded.receipts[0].appliedAbsoluteEffects[.energyDemand] == 0)
   #expect(upgraded.receipts[0].appliedAbsoluteEffects[.heat] == -5)
 }
+
+@Test func componentProgressionKeepsRangeAccuracyAndJumpFuelCostEffectsDistinct() throws {
+  let family = ComponentFamily("test-navigation")
+  let original: ComponentStatistics = [
+    .scanRange: 1000, .acquisitionError: 0.2, .automationError: 0.1, .jumpFuelCost: 7,
+  ]
+  let axes = Set(original.keys)
+  let first = ComponentTemplate(
+    identity: .init(family: family, id: "a", version: 1), order: 0,
+    statistics: original, requiredAxes: axes)
+  let second = ComponentTemplate(
+    identity: .init(family: family, id: "b", version: 1), order: 1,
+    statistics: [
+      .scanRange: 1100, .acquisitionError: 0.18, .automationError: 0.09, .jumpFuelCost: 6.3,
+    ], requiredAxes: axes)
+  let definition = ComponentFamilyDefinition(
+    family: family, revision: 1, grades: [first, second],
+    terminalLimits: [
+      .scanRange: 2000, .acquisitionError: 0, .automationError: 0, .jumpFuelCost: 0,
+    ])
+  let initial = ComponentInstance(id: cpID, origin: first)
+  let rangeOnly = cpItem(1, component: initial, points: [.scanRange: 1000])
+  let quote = try ComponentProgression.quote(
+    component: initial, item: rangeOnly, definition: definition, inventoryRevision: 10)
+  #expect(quote.after[.scanRange] == 1100 && quote.promotions.isEmpty)
+  for axis in [ComponentAxis.acquisitionError, .automationError, .jumpFuelCost] {
+    #expect(!axis.higherIsBetter)
+    #expect(quote.after[axis] == original[axis])
+    #expect(quote.progress.first(where: { $0.axis == axis })?.fulfilled == false)
+  }
+  #expect(ComponentAxis.scanRange.higherIsBetter)
+
+  var component = try cpApply(rangeOnly, to: initial, definition: definition)
+  for number in 2...3 {
+    let item = cpItem(
+      UInt16(number), component: component,
+      points: Dictionary(uniqueKeysWithValues: axes.map { ($0, 1000) }))
+    component = try cpApply(item, to: component, definition: definition)
+  }
+  #expect(component.grade == second.identity && component.statistics[.scanRange] == 1300)
+  #expect(abs((component.statistics[.acquisitionError] ?? 0) - 0.16) < 1e-12)
+  #expect(abs((component.statistics[.automationError] ?? 0) - 0.08) < 1e-12)
+  #expect(abs((component.statistics[.jumpFuelCost] ?? 0) - 5.6) < 1e-12)
+  #expect(component.statistics[.scanPrecision] == nil && component.statistics[.energyDemand] == nil)
+  let effects = component.receipts.last!.appliedAbsoluteEffects
+  #expect(effects[.scanRange] == 100)
+  #expect(abs((effects[.acquisitionError] ?? 0) + 0.02) < 1e-12)
+  #expect(abs((effects[.automationError] ?? 0) + 0.01) < 1e-12)
+  #expect(abs((effects[.jumpFuelCost] ?? 0) + 0.7) < 1e-12)
+  #expect(component.origin == first && component.id == initial.id)
+}
+
+@Test func componentProgressionAcceptsDeclaredDeviceRatiosWithoutNativeHullConversion() throws {
+  let family = ComponentFamily("test-shield-ratio")
+  let stats: ComponentStatistics = [
+    .frontShieldCapacity: 1, .rearShieldCapacity: 1,
+    .frontShieldRecharge: 1, .rearShieldRecharge: 1,
+  ]
+  let origin = ComponentTemplate(
+    identity: .init(family: family, id: "origin", version: 1), order: 0,
+    statistics: stats, requiredAxes: Set(stats.keys))
+  let definition = ComponentFamilyDefinition(
+    family: family, revision: 1, grades: [origin],
+    terminalLimits: stats.mapValues { $0 * 2 })
+  let component = ComponentInstance(id: cpID, origin: origin)
+  let item = cpItem(
+    1, component: component,
+    points: Dictionary(uniqueKeysWithValues: stats.keys.map { ($0, 500) }))
+  let upgraded = try cpApply(item, to: component, definition: definition)
+  #expect(upgraded.statistics.values.allSatisfy { $0 == 1.05 })
+  #expect(upgraded.receipts[0].appliedAbsoluteEffects.values.allSatisfy { abs($0 - 0.05) < 1e-12 })
+  #expect(upgraded.origin.statistics == stats && upgraded.features.isEmpty)
+}
