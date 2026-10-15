@@ -34,7 +34,11 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  var expected = game.commander
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  }
+  #expect(await restored.snapshot().commander == expected)
   game.key("escape")
   game.key("0")
   #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)

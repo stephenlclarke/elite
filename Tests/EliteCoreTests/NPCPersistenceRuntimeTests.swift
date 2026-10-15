@@ -126,6 +126,8 @@ struct NPCPersistenceRuntimeTests {
     defer { try? FileManager.default.removeItem(at: url) }
     let runtime = GameRuntime(game: game)
     try await runtime.save(to: url)
+    let onDisk = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+    #expect(onDisk.npcPersistence.binding(for: source) == nil)
     try await runtime.load(from: url)
     await runtime.key("0")
     let loaded = await runtime.snapshot()

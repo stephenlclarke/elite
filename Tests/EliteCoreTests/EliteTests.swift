@@ -265,6 +265,10 @@ import Testing
   game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
   game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 500), hostile: true)]
   game.commander.equipment.insert("Military Laser")
+  game.ensurePhysicalActors()
+  // Hostility does not establish a bounty; this fixture supplies its known criminal record.
+  game.bodies[0].physical?.npc?.legal = .init(value: 64, bountyTenths: 50)
+  game.bodies[0].physical?.npc?.legalProvenance = .recorded
   var controls = Controls()
   controls.fire = true
   for _ in 0..<6 { game.tick(delta: 0.1, controls: controls) }
@@ -520,7 +524,11 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  var expected = game.commander
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  }
+  #expect(await restored.snapshot().commander == expected)
 }
 
 @Test func autoTraderUsesEconomyCapitalAndCargo() {
@@ -607,7 +615,11 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  var expected = game.commander
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  }
+  #expect(await restored.snapshot().commander == expected)
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.key("8")
   game.key("9")

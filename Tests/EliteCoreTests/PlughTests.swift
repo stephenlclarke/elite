@@ -106,7 +106,9 @@ private func plughGame(galaxy: Int = 0) -> Game {
   try await runtime.save(to: url)
   try await runtime.load(from: url)
   let saved = await runtime.snapshot()
-  #expect(saved.commander == game.commander && saved.currentSystem.name == "PLUGH")
+  var expected = game.commander
+  expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  #expect(saved.commander == expected && saved.currentSystem.name == "PLUGH")
   var invalid = saved.commander
   invalid.plughDiscoveryMask = 0
   #expect(!invalid.valid)

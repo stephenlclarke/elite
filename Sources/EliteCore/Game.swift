@@ -1320,7 +1320,11 @@ public actor GameRuntime {
           && $0.physical?.npc?.role != .mission
       })
     else { throw SaveError.invalidCommander }
-    let data = try JSONEncoder().encode(candidate.commander)
+    var persistedCommander = candidate.commander
+    if persistedCommander.npcPersistence.count > 0 {
+      persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
+    }
+    let data = try JSONEncoder().encode(persistedCommander)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     try FileManager.default.createDirectory(
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)

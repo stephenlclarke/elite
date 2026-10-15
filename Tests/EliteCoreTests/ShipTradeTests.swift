@@ -166,12 +166,20 @@ import Testing
     #expect(
       !tall.labels.contains { $0.text.contains("scroll") || $0.text.contains("Arrows: more") })
     game.viewportHeight = 518
-    #expect(game.informationWindow.hint?.hasPrefix("Down:") == true)
-    for _ in 0..<100 { game.key("pagedown") }
-    #expect(game.informationScroll == game.informationWindow.last)
-    #expect(game.informationWindow.hint?.hasPrefix("Up:") == true)
-    game.key("up")
-    #expect(game.informationScroll == game.informationWindow.last - 1)
+    if screen == .status {
+      // The summary now fits; only the detailed inventory needs scrolling.
+      #expect(game.informationWindow.hint == nil && game.informationWindow.last == 0)
+      game.key("pagedown")
+      game.key("up")
+      #expect(game.informationScroll == 0)
+    } else {
+      #expect(game.informationWindow.hint?.hasPrefix("Down:") == true)
+      for _ in 0..<100 { game.key("pagedown") }
+      #expect(game.informationScroll == game.informationWindow.last)
+      #expect(game.informationWindow.hint?.hasPrefix("Up:") == true)
+      game.key("up")
+      #expect(game.informationScroll == game.informationWindow.last - 1)
+    }
     game.docked = false
     #expect(
       Display.presentation(game, width: 768, height: 518).labels.contains {

@@ -123,7 +123,7 @@ private func solarGame(distance: Double = 2970) -> Game {
     JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
   for key in [
     "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
-    "encounterDirector",
+    "encounterDirector", "savedNPCPersistence",
   ] {
     actual.removeValue(forKey: key)
     expected.removeValue(forKey: key)

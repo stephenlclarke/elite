@@ -115,7 +115,7 @@ public enum PlayerHelp {
       .init(
         title: "COMMANDER STATUS",
         rows: [
-          "READINESS, LOCATION, CASH AND LEGAL STATUS",
+          "LOCATION, CASH, CONDITION AND LEGALITY",
           "9 - INVENTORY: CARGO AND FULL FITTINGS",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
@@ -125,7 +125,7 @@ public enum PlayerHelp {
       .init(
         title: "INVENTORY",
         rows: [
-          "CARGO, MISSION PROPERTY AND FITTED EQUIPMENT",
+          "CARGO, MISSION PROPERTY AND FITTINGS",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
           "OPTION-UP/DOWN - PAGE LONG LISTS",
