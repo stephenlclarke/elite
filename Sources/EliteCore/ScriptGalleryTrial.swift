@@ -148,6 +148,7 @@ extension GameRuntime {
       throw MissionPackError("This standalone trial has no live commander to return to.")
     }
     game = parent.game
+    game.gallery.presentationGeneration = UUID()
     controls = parent.controls
     scriptSaveURL = parent.saveURL
     galleryNamespace = nil
@@ -207,6 +208,7 @@ extension GameRuntime {
         game.openCampaignTrialReview()
         return true
       }
+      game.gallery.presentationGeneration = UUID()
       do {
         guard game.canTrialSelectedMission, let digest = game.selectedGalleryMission?.trialDigest
         else {
@@ -217,6 +219,7 @@ extension GameRuntime {
       return true
     }
     if ["r", "mission-resume"].contains(key) {
+      game.gallery.presentationGeneration = UUID()
       do {
         guard game.canRetrySelectedMission, let id = game.selectedGalleryMission?.savedInstance
         else {
@@ -232,6 +235,7 @@ extension GameRuntime {
 
   func commitCampaignGalleryTrial() {
     game.gallery.campaignTrialRequested = false
+    game.gallery.presentationGeneration = UUID()
     guard let review = game.gallery.campaignReview,
       review == game.campaignTrialReview, game.gallery.campaignStartSelected
     else {
@@ -246,6 +250,7 @@ extension GameRuntime {
       try startScriptGalleryTrial(packDigest: review.digest)
     } catch {
       game.gallery = browsing
+      game.gallery.campaignStartSelected = false
       game.notify(error.localizedDescription)
     }
   }

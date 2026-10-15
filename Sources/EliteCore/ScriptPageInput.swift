@@ -31,11 +31,13 @@ public enum ScriptPageIdentity: Codable, Sendable, Equatable {
   case legacy(ScriptLegacyPageIdentity)
   case offer(String)
   case question(ScriptQuestionIdentity)
+  case gallery(ScriptGalleryPageIdentity)
   var valid: Bool {
     switch self {
     case .legacy(let page): page.valid
     case .offer(let digest): ScriptCompletionReceipt.validDigest(digest)
     case .question(let question): question.valid
+    case .gallery(let page): page.valid
     }
   }
 }
@@ -51,6 +53,8 @@ public struct ScriptPagePresentation: Codable, Sendable, Equatable {
   public static let controlKeys: Set<String> = [
     "return", "escape", "left", "right", "up", "down", "pageup", "pagedown", "k",
   ]
+  /// Preserve ordinary controls while capturing absence before a queued Gallery opening.
+  public static let galleryContextKeys: Set<String> = ["t", "r", "tab", "l"]
   var valid: Bool { page?.valid ?? true }
 }
 
@@ -70,6 +74,8 @@ extension Game {
           stateID: offer.stateID, transitionID: offer.transitionID,
           digest: pack.digest, galaxy: offer.galaxy, system: offer.system,
           committed: offer.committed))
+    } else if screen == .gallery {
+      page = .gallery(scriptGalleryPageIdentity)
     } else {
       page = nil
     }
@@ -79,7 +85,17 @@ extension Game {
 
 extension GameRuntime {
   public func scriptPageKey(_ key: String, expected: ScriptPagePresentation) {
-    guard ScriptPagePresentation.controlKeys.contains(key), expected.valid,
+    let allowed: Bool
+    if case .gallery(let page)? = expected.page {
+      allowed = page.allowedKeys.contains(key)
+    } else if expected.page == nil {
+      allowed =
+        ScriptPagePresentation.controlKeys.contains(key)
+        || ScriptPagePresentation.galleryContextKeys.contains(key)
+    } else {
+      allowed = ScriptPagePresentation.controlKeys.contains(key)
+    }
+    guard allowed, expected.valid,
       game.scriptPagePresentation == expected
     else {
       game.notify("CONTACT CHANGED - REVIEW THE CURRENT PAGE")
@@ -94,6 +110,10 @@ extension GameRuntime {
       game.notify("CONTACT CHANGED - REVIEW THE CURRENT PAGE")
       return
     }
-    blackjackHandoffClick(x: x, y: y)
+    if case .gallery? = expected.page {
+      galleryClick(x: x, y: y)
+    } else {
+      blackjackHandoffClick(x: x, y: y)
+    }
   }
 }

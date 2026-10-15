@@ -10,11 +10,33 @@ public struct CampaignGalleryAssignment: Sendable {
   let definition: ScriptChildDefinition
 }
 
+public enum ScriptGalleryPageKind: String, Codable, Sendable, Equatable {
+  case list, detail, links, review
+}
+
+/// Compact proof of the exact painted controls, independent of focus within one visible review.
+public struct ScriptGalleryPageIdentity: Codable, Sendable, Equatable {
+  public let generation: UUID
+  public let mode: ScriptGalleryPageKind
+  public let entry: String
+  public let targets: String
+  public let layout: String
+  var valid: Bool {
+    [entry, targets, layout].allSatisfy(ScriptCompletionReceipt.validDigest)
+  }
+  var allowedKeys: Set<String> {
+    if mode == .review { return ScriptPagePresentation.controlKeys.union(["l"]) }
+    var keys = ScriptPagePresentation.controlKeys.union(["tab", "l", "t", "gallery-trial"])
+    if mode != .links { keys.formUnion(["r", "mission-resume"]) }
+    return keys
+  }
+}
+
 extension Display {
   static func campaignGalleryDetail(
     _ frame: inout Frame, game: Game, layout: GalleryLayout, x: Double, width: Double
   ) -> Bool {
-    let columns = max(10, Int(width / (6 * layout.font)))
+    let columns = max(10, Int(min(700, width) / (6 * layout.font)))
     if let review = game.gallery.campaignReview {
       let text = [
         "Try campaign", game.campaignTitle(review.root), "",
@@ -69,6 +91,7 @@ struct CampaignGalleryLocation: Sendable {
   let linkSelection: Int
   let preview: GalleryMission?
   let previewOwner: UUID?
+  let previewIdentity: String?
 }
 
 struct CampaignGallerySelection: Sendable {
@@ -100,6 +123,99 @@ struct CampaignGalleryLink: Sendable {
 }
 
 extension Game {
+  func galleryIdentityDigest(_ fields: [String]) -> String {
+    // Length prefixes avoid ambiguous identities even when authored text contains separators.
+    ScriptPackLibrary.hash(Data(fields.map { "\($0.utf8.count):\($0)" }.joined().utf8))
+  }
+
+  func galleryEntryIdentity(_ mission: GalleryMission, index: Int) -> String {
+    if let id = mission.savedInstance, let state = commander.scriptState.instances[id] {
+      return galleryIdentityDigest([
+        "saved", id.uuidString, state.definition, state.version, state.digest,
+      ])
+    }
+    if let digest = mission.trialDigest { return galleryIdentityDigest(["template", digest]) }
+    return galleryIdentityDigest([
+      "catalogue", String(index), mission.name, mission.briefing, mission.destination,
+      mission.reward,
+    ])
+  }
+
+  var gallerySelectedEntryIdentity: String {
+    if let preview = gallery.campaignPreviewIdentity { return preview }
+    guard let mission = selectedGalleryMission else {
+      return galleryIdentityDigest(["unavailable"])
+    }
+    return galleryEntryIdentity(mission, index: resolvedGallerySelection)
+  }
+
+  var scriptGalleryPageIdentity: ScriptGalleryPageIdentity {
+    let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
+    let mode: ScriptGalleryPageKind =
+      gallery.campaignReview != nil
+      ? .review
+      : gallery.campaignLinks ? .links : gallery.detail ? .detail : .list
+    let listFirst = galleryListWindow.offset
+    let linkFirst = max(0, gallery.campaignLinkSelection - layout.visibleLinks + 1)
+    let geometry = galleryIdentityDigest([
+      String(viewportWidth), String(viewportHeight), String(gallery.scroll), String(listFirst),
+      String(linkFirst), String(layout.divider), String(layout.actionTop), String(layout.listTop),
+      String(layout.linkHeight), String(layout.itemHeight), String(layout.row),
+    ])
+    return .init(
+      generation: gallery.presentationGeneration, mode: mode, entry: gallerySelectedEntryIdentity,
+      targets: galleryControlTargets(mode: mode, listFirst: listFirst, linkFirst: linkFirst),
+      layout: geometry)
+  }
+
+  private func galleryControlTargets(mode: ScriptGalleryPageKind, listFirst: Int, linkFirst: Int)
+    -> String
+  {
+    let state = selectedCampaignState
+    var fields = [
+      String(canTrialSelectedMission), String(campaignTrialReview != nil),
+      campaignTrialUnavailableReason ?? "", String(canRetrySelectedMission),
+      state.map { String($0.revision) } ?? "", state?.outcome.rawValue ?? "",
+      state?.suspension ?? "", state.map { worldJobGallerySummary(origin: $0.id) } ?? "",
+      campaignImmediateOwner?.uuidString ?? "", gallery.campaignPreviewIdentity ?? "",
+    ]
+    if let review = gallery.campaignReview {
+      fields += [review.source.uuidString, review.root.uuidString, review.digest]
+    }
+    let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
+    if mode == .list || layout.wide {
+      let visible = galleryListWindow.visible
+      for (index, mission) in missionCatalogue.enumerated().dropFirst(listFirst).prefix(visible) {
+        fields += [
+          galleryEntryIdentity(mission, index: index), mission.status.rawValue, mission.objective,
+        ]
+      }
+    }
+    let links = campaignGalleryLinks
+    let visibleLinks =
+      mode == .links
+      ? Array(links.dropFirst(linkFirst).prefix(layout.visibleLinks)) : links
+    for link in visibleLinks {
+      fields += [link.title, link.detail]
+      switch link.action {
+      case .owner(let id): fields += ["owner", id.uuidString]
+      case .trial: fields.append("trial")
+      case .assignment(let assignment):
+        fields += [
+          assignment.alias, assignment.instance?.uuidString ?? "", assignment.definition.definition,
+          assignment.definition.version, assignment.definition.digest,
+          assignment.definition.terminalPolicy.rawValue, assignment.unavailableReason ?? "",
+        ]
+      }
+    }
+    return galleryIdentityDigest(fields)
+  }
+
+  mutating func finishGalleryNavigation(from previous: ScriptGalleryPageIdentity) {
+    pinGallerySelection()
+    if previous != scriptGalleryPageIdentity { gallery.presentationGeneration = UUID() }
+  }
+
   var resolvedGallerySelection: Int {
     guard let pinned = gallery.campaignSelection else { return gallery.selection }
     return missionCatalogue.firstIndex(where: { pinned.matches($0) }) ?? gallery.selection
@@ -183,6 +299,7 @@ extension Game {
 
   var campaignRelationshipLines: [String] {
     var lines: [String] = []
+    if gallery.campaignPreview != nil { lines += ["Assignment status: Not started", ""] }
     if let owner = campaignImmediateOwner {
       lines += [
         "Part of " + campaignTitle(owner), "This assignment starts through its campaign.", "",
@@ -299,12 +416,23 @@ extension Game {
     return .init(source: source, root: root.id, digest: pack.digest, epoch: ecmControl.epoch)
   }
 
+  public var canReviewSelectedCampaignTrial: Bool {
+    gallery.campaignReview == nil && campaignTrialReview != nil
+  }
+
+  public var selectedGalleryMissionIsOwnedAssignment: Bool { campaignImmediateOwner != nil }
+
+  public var canRetrySelectedGalleryEntry: Bool {
+    gallery.campaignReview == nil && !gallery.campaignLinks && canRetrySelectedMission
+  }
+
   mutating func openCampaignTrialReview() {
     guard let review = campaignTrialReview else {
       notify(campaignTrialUnavailableReason ?? "This entry has no owning campaign trial.")
       return
     }
     gallery.campaignReview = review
+    gallery.presentationGeneration = UUID()
     gallery.detail = true
     gallery.campaignStartSelected = false
     gallery.campaignTrialRequested = false
@@ -317,7 +445,8 @@ extension Game {
         selection: resolvedGallerySelection, instance: selectedGalleryMission?.savedInstance,
         scroll: gallery.scroll, links: gallery.campaignLinks,
         linkSelection: gallery.campaignLinkSelection, preview: gallery.campaignPreview,
-        previewOwner: gallery.campaignPreviewOwner))
+        previewOwner: gallery.campaignPreviewOwner, previewIdentity: gallery.campaignPreviewIdentity
+      ))
     // A bounded presentation stack is independent of saved campaign depth.
     if gallery.campaignHistory.count > 32 { gallery.campaignHistory.removeFirst() }
   }
@@ -334,6 +463,7 @@ extension Game {
     gallery.campaignLinks = false
     gallery.campaignPreview = nil
     gallery.campaignPreviewOwner = nil
+    gallery.campaignPreviewIdentity = nil
   }
 
   mutating func followCampaignGalleryLink(_ index: Int) {
@@ -347,6 +477,11 @@ extension Game {
         openCampaignGalleryInstance(id)
       } else {
         let owner = selectedCampaignState?.id
+        let previewIdentity = galleryIdentityDigest([
+          gallerySelectedEntryIdentity, assignment.alias, assignment.definition.definition,
+          assignment.definition.version, assignment.definition.digest,
+          assignment.definition.terminalPolicy.rawValue,
+        ])
         rememberCampaignGalleryLocation()
         gallery.campaignPreview = GalleryMission(
           name: assignment.title, status: .locked, objective: assignment.objective,
@@ -354,6 +489,7 @@ extension Game {
           destination: "Not started", reward: "No transaction on this page", prerequisites: [],
           completed: 0, milestones: [])
         gallery.campaignPreviewOwner = owner
+        gallery.campaignPreviewIdentity = previewIdentity
         gallery.campaignLinks = false
         gallery.scroll = 0
       }
@@ -361,6 +497,7 @@ extension Game {
   }
 
   mutating func backInCampaignGallery() -> Bool {
+    gallery.presentationGeneration = UUID()
     if gallery.campaignReview != nil {
       gallery.campaignReview = nil
       gallery.campaignStartSelected = false
@@ -370,6 +507,7 @@ extension Game {
     if let previous = gallery.campaignHistory.popLast() {
       gallery.campaignPreview = previous.preview
       gallery.campaignPreviewOwner = previous.previewOwner
+      gallery.campaignPreviewIdentity = previous.previewIdentity
       if let id = previous.instance,
         let index = missionCatalogue.firstIndex(where: { $0.savedInstance == id })
       {

@@ -35,11 +35,13 @@ public struct MissionGalleryState: Sendable {
   var campaignLinkSelection = 0
   var campaignPreview: GalleryMission?
   var campaignPreviewOwner: UUID?
+  var campaignPreviewIdentity: String?
   var campaignReview: CampaignGalleryTrialReview?
   var campaignStartSelected = false
   var campaignTrialRequested = false
   var campaignHistory: [CampaignGalleryLocation] = []
   var campaignSelection: CampaignGallerySelection?
+  var presentationGeneration = UUID()
   var previousScreen: Screen = .status
   var previouslyPaused = false
   public init() {}
@@ -65,18 +67,22 @@ extension Game {
     gallery.previousScreen = screen
     gallery.previouslyPaused = paused
     pinGallerySelection()
+    gallery.presentationGeneration = UUID()
     screen = .gallery
   }
   public mutating func closeGallery() {
+    gallery.presentationGeneration = UUID()
     gallery.campaignReview = nil
     gallery.campaignTrialRequested = false
     screen = gallery.previousScreen
     paused = gallery.previouslyPaused
   }
   mutating func galleryKey(_ key: String) {
-    defer { pinGallerySelection() }
+    let previousPage = scriptGalleryPageIdentity
+    defer { finishGalleryNavigation(from: previousPage) }
     if gallery.campaignReview != nil {
       switch key {
+      case "l": closeGallery()
       case "escape": _ = backInCampaignGallery()
       case "up", "down", "left", "right": gallery.campaignStartSelected.toggle()
       case "return":
@@ -87,6 +93,7 @@ extension Game {
     }
     if gallery.detail, gallery.campaignLinks {
       switch key {
+      case "l": closeGallery()
       case "up", "down":
         gallery.campaignLinkSelection = max(
           0,
@@ -125,6 +132,7 @@ extension Game {
     case "tab":
       gallery.campaignPreview = nil
       gallery.campaignPreviewOwner = nil
+      gallery.campaignPreviewIdentity = nil
       gallery.campaignHistory = []
       gallery.detail.toggle()
       gallery.scroll = 0
@@ -158,7 +166,7 @@ extension Game {
       min(
         gallery.scroll,
         galleryDetailLines(
-          width: viewportWidth < 900 ? viewportWidth - 32 : viewportWidth * 0.64 - 32,
+          width: layout.wide ? viewportWidth - layout.divider - 32 : viewportWidth - 32,
           font: GameTypography.scale
         ).count - visibleRows))
   }
@@ -166,7 +174,8 @@ extension Game {
     guard screen == .gallery, x.isFinite, y.isFinite,
       x >= 0, y >= 0, x <= viewportWidth, y <= viewportHeight
     else { return }
-    defer { pinGallerySelection() }
+    let previousPage = scriptGalleryPageIdentity
+    defer { finishGalleryNavigation(from: previousPage) }
     let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
     if y < 28 && x > viewportWidth - 160 {
       galleryKey("escape")
@@ -210,6 +219,7 @@ extension Game {
         if missionCatalogue.indices.contains(index) {
           gallery.campaignPreview = nil
           gallery.campaignPreviewOwner = nil
+          gallery.campaignPreviewIdentity = nil
           gallery.campaignHistory = []
           gallery.campaignLinks = false
           gallery.selection = index
@@ -237,14 +247,22 @@ extension Game {
       ending = "Meet the prerequisites, then dock for orders."
     }
     let next = mission.milestones.first { $0.state == "Current" }?.title ?? ending
+    let progress =
+      gallery.campaignPreview != nil
+      ? "Read-only assignment preview"
+      : campaignImmediateOwner != nil
+        ? "Milestones: \(mission.progress)"
+        : "Status: \(mission.status.rawValue) - \(mission.progress)"
     let sections =
       [mission.name] + campaignRelationshipLines + [
-        "Status: \(mission.status.rawValue) - \(mission.progress)", "", "Briefing",
+        progress, "", "Briefing",
         briefing, "", "Destination (spoilers)", mission.destination, "", "Reward",
         mission.reward, "", "Next step", next, "", "Prerequisites (not completion milestones)",
       ] + mission.prerequisites + ["", "Timeline"]
       + mission.milestones.map { "\($0.state): \($0.title)" }
-    return sections.flatMap { MissionNotice.wrap($0, width: max(10, Int(width / (6 * font)))) }
+    return sections.flatMap {
+      MissionNotice.wrap($0, width: max(10, Int(min(700, width) / (6 * font))))
+    }
   }
 }
 

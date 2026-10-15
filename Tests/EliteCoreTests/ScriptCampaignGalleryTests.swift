@@ -10,7 +10,10 @@ struct CampaignGalleryFixture {
   let nested: ScriptPack
   var save: URL { directory.appendingPathComponent("save/commander.json") }
 
-  init(unstarted: Bool = false, parentOnly: Bool = false, dependency: Bool = false) throws {
+  init(
+    unstarted: Bool = false, parentOnly: Bool = false, dependency: Bool = false,
+    additionalAliases: Int = 0, retryFault: Bool = false
+  ) throws {
     directory = FileManager.default.temporaryDirectory.appendingPathComponent(
       "campaign-gallery-" + UUID().uuidString)
     let examples = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
@@ -29,6 +32,16 @@ struct CampaignGalleryFixture {
         )
         .replacingOccurrences(of: "[mission]", with: "[mission]\nparentOnly=true")
       try text.write(to: manifest, atomically: true, encoding: .utf8)
+    }
+    if retryFault {
+      let module = childFolder.appendingPathComponent("scripts/main.lua")
+      let text = try String(contentsOf: module, encoding: .utf8)
+        .replacingOccurrences(
+          of: "function M.contact(e,w,d)",
+          with:
+            "function M.contact(e,w,d)\n  if w.credits<2000 then error('More working capital required') end"
+        )
+      try text.write(to: module, atomically: true, encoding: .utf8)
     }
     child = try ScriptPackLibrary.read(childFolder)
     var loaded: [ScriptPack] = []
@@ -49,6 +62,19 @@ struct CampaignGalleryFixture {
         text = text.replacingOccurrences(
           of: "priority = 540",
           with: "priority = 540\ndependencies = [\"test.gallery-1@1.0.0\"]")
+      }
+      for alias in 0..<additionalAliases {
+        let declaration = """
+          [[children]]
+          id = "alternate-\(alias)"
+          definition = "\(child.manifest.stateID)"
+          version = "1.0.0"
+          digest = "\(child.digest)"
+          terminalPolicy = "suspend"
+
+          [[receiptRequirements]]
+          """
+        text = text.replacingOccurrences(of: "[[receiptRequirements]]", with: declaration)
       }
       try text.write(to: manifest, atomically: true, encoding: .utf8)
       if unstarted {
@@ -272,7 +298,12 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   await runtime.key("return")
   let namespace = try #require(await runtime.gallerySaveDirectory())
   defer { try? FileManager.default.removeItem(at: namespace) }
+  let initialTrial = await runtime.snapshot()
+  await runtime.key("trial-restart")
   var actual = await runtime.advance(delta: 0.1)
+  #expect(actual.ecmControl.epoch != initialTrial.ecmControl.epoch)
+  #expect(actual.commander.credits == initialTrial.commander.credits)
+  #expect(actual.commander.shipID == initialTrial.commander.shipID)
   let root = try #require(
     actual.commander.scriptState.instances.values.first { $0.campaignParent == nil })
   let child = try #require(root.campaignChildren["patrol"]?.child)
@@ -439,4 +470,130 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   await runtime.key("t")
   #expect(await runtime.gallerySaveDirectory() == nil)
   #expect(await runtime.snapshot().commander == before)
+}
+
+@Test func campaignGalleryProofDistinguishesPreviewAliasesAndStaysCompact() throws {
+  let fixture = try CampaignGalleryFixture(unstarted: true, additionalAliases: 1)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let parent = try game.acceptScriptMission(fixture.parents[0])
+  try fixture.select(parent, game: &game)
+  let before = game.commander
+  game.followCampaignGalleryLink(0)
+  let first = game.scriptPagePresentation
+  game.key("escape")
+  game.followCampaignGalleryLink(1)
+  let second = game.scriptPagePresentation
+  #expect(first != second)
+  #expect(game.selectedGalleryMission?.name == fixture.child.manifest.mission.title)
+  let bytes = try JSONEncoder().encode(second)
+  #expect(bytes.count <= 1024 && bytes.base64EncodedString().utf8.count <= 1400)
+  #expect(try JSONDecoder().decode(ScriptPagePresentation.self, from: bytes) == second)
+  #expect(game.commander == before)
+}
+
+@Test func campaignGallerySamePaintedReviewChoosesOnceAndOldReturnCannotRestartIt() async throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (_, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let childPage = await runtime.snapshot().scriptPagePresentation
+  await runtime.scriptPageKey("t", expected: childPage)
+  await runtime.scriptPageKey("return", expected: childPage)
+  #expect(await runtime.gallerySaveDirectory() == nil)
+  let review = await runtime.snapshot().scriptPagePresentation
+  await runtime.scriptPageKey("down", expected: review)
+  #expect(await runtime.snapshot().scriptPagePresentation == review)
+  await runtime.scriptPageKey("return", expected: review)
+  let directory = try #require(await runtime.gallerySaveDirectory())
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let trial = await runtime.snapshot().commander
+  await runtime.scriptPageKey("return", expected: review)
+  #expect(await runtime.snapshot().commander == trial)
+  await runtime.key("trial-return")
+  let restored = await runtime.snapshot()
+  #expect(restored.commander == game.commander)
+  #expect(restored.scriptPagePresentation != childPage)
+  await runtime.scriptPageKey("t", expected: childPage)
+  await runtime.scriptPageKey("return", expected: review)
+  #expect(await runtime.gallerySaveDirectory() == nil)
+}
+
+@Test func campaignGalleryProofBindsScrollResizeRetryRevisionAndRowReordering() async throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  game.viewportWidth = 512
+  game.viewportHeight = 518
+  let (_, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  let before = game.commander
+  let page = game.scriptPagePresentation
+  game.key("down")
+  #expect(game.scriptPagePresentation != page)
+  let scrolled = game.scriptPagePresentation
+  game.viewportWidth = 1512
+  game.viewportHeight = 982
+  #expect(game.scriptPagePresentation != scrolled)
+  let oldIndex = game.resolvedGallerySelection
+  let originalEntry = game.scriptGalleryPageIdentity.entry
+  game.scriptPacks.removeAll { $0.digest == fixture.parents[1].digest }
+  #expect(game.selectedGalleryMission?.savedInstance == child)
+  #expect(game.scriptGalleryPageIdentity.entry == originalEntry)
+  #expect(game.resolvedGallerySelection != oldIndex)
+  #expect(game.commander == before)
+  // A saved native fault/revision boundary; no successful gameplay outcome is manufactured.
+  game.commander.scriptState.instances[child]?.suspension = "Restore requirements."
+  let retry = game.scriptPagePresentation
+  game.commander.scriptState.instances[child]?.revision += 1
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  await runtime.scriptPageKey("mission-resume", expected: retry)
+  #expect(await runtime.snapshot().commander.scriptState.instances[child]?.suspension != nil)
+}
+
+@Test func campaignGalleryProofRejectsCrossPageCommandsAndChangedVisibleLinkMaps() async throws {
+  let fixture = try CampaignGalleryFixture(unstarted: true, additionalAliases: 5)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  game.viewportWidth = 512
+  game.viewportHeight = 518
+  let parent = try game.acceptScriptMission(fixture.parents[0])
+  try fixture.select(parent, game: &game)
+  game.key("return")
+  let original = game.scriptPagePresentation
+  game.key("pagedown")
+  #expect(game.scriptPagePresentation != original)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let before = await runtime.snapshot().commander
+  await runtime.scriptPageClick(x: 20, y: 105, expected: original)
+  #expect(await runtime.snapshot().gallery.campaignPreview == nil)
+  let gallery = await runtime.snapshot().scriptPagePresentation
+  for key in ["0", "trial-return", "commander-save-default", "unknown", "mission-resume"] {
+    await runtime.scriptPageKey(key, expected: gallery)
+  }
+  let offer = ScriptPagePresentation(epoch: gallery.epoch, page: .offer(fixture.parents[0].digest))
+  await runtime.scriptPageKey("gallery-trial", expected: offer)
+  #expect(await runtime.snapshot().commander == before)
+  #expect(await runtime.gallerySaveDirectory() == nil)
+}
+
+@Test func campaignGalleryFailedRetryConsumesItsPaintedAttemptEvenIfTheFaultRepeats() async throws {
+  let fixture = try CampaignGalleryFixture(retryFault: true)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (_, child) = try fixture.start(&game)
+  game.emitScriptEvent("contact.requested", only: child)
+  #expect(
+    game.commander.scriptState.instances[child]?.suspension?.contains("working capital") == true)
+  try fixture.select(child, game: &game)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let page = await runtime.snapshot().scriptPagePresentation
+  await runtime.scriptPageKey("r", expected: page)
+  let retried = await runtime.snapshot()
+  #expect(retried.commander.scriptState.instances[child]?.suspension != nil)
+  #expect(retried.scriptPagePresentation != page)
+  await runtime.scriptPageKey("r", expected: page)
+  #expect(await runtime.snapshot().commander == retried.commander)
 }

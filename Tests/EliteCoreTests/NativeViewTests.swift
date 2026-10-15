@@ -767,6 +767,7 @@ struct NativeViewTests {
     await delegate.runtime.key("gallery-open")
     for _ in 0..<3 { await delegate.runtime.key("down") }
     view.game = await delegate.runtime.snapshot()
+    try paintCampaignGalleryView(view)
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
     let trialIndex = try #require(
       menu.items.firstIndex { ($0.representedObject as? String) == "gallery-trial" })
