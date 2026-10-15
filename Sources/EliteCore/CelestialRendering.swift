@@ -79,7 +79,8 @@ extension Display {
     let nearestY = min(max(center.y, clip.y), clip.maxY)
     guard hypot(center.x - nearestX, center.y - nearestY) <= visibleRadius else { return }
     if game.commander.shipDisplayStyle != .shadedPanels {
-      let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe
+      let ink: Ink =
+        game.commander.shipDisplayStyle == .whiteWireframe
         ? .white : (body.kind == .sun ? .gold : .blue)
       celestialOutline(center: center, radius: radius, ink: ink, into: &frame)
       return
