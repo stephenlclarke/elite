@@ -1,5 +1,5 @@
 {
-  "recorded_utc": "2026-10-15T13:59:14.675730+00:00",
+  "recorded_utc": "2026-10-15T15:30:05.349008+00:00",
   "branch": "feature/scriptable-mission-engine",
   "base_commit": "1ef005e0c73971a360a0e3bb52792a9286a761d3",
   "command": "make ci",
@@ -7,32 +7,32 @@
   "test_runs": [
     {
       "lane": "coverage",
-      "tests": 547,
+      "tests": 563,
       "suites": 2,
-      "seconds": 171.499
+      "seconds": 49.414
     },
     {
       "lane": "thread sanitizer",
-      "tests": 547,
+      "tests": 563,
       "suites": 2,
-      "seconds": 720.305
+      "seconds": 726.18
     },
     {
       "lane": "address sanitizer",
-      "tests": 547,
+      "tests": 563,
       "suites": 2,
-      "seconds": 912.983
+      "seconds": 1210.668
     }
   ],
   "coverage": {
-    "covered_lines": 17199,
-    "total_lines": 18178,
-    "percentage": 94.61
+    "covered_lines": 17476,
+    "total_lines": 18455,
+    "percentage": 94.7
   },
   "new_script_swift_coverage": {
-    "covered_lines": 6008,
-    "total_lines": 6145,
-    "percentage": 97.77
+    "covered_lines": 6285,
+    "total_lines": 6422,
+    "percentage": 97.87
   },
   "maintained_c_host_coverage": {
     "covered_lines": 247,
@@ -103,11 +103,16 @@
     "Synthetic admitted1024 saved-receipt boundary refuses a whole extra genuine confirmation without truncation (not a claim of1024 played source handoffs). Six semantic tamper cases with updated chunk hash, including two Int.max quantities, reject load before replacing live state or cumulative arithmetic.",
     "Native isolated Gallery purchases actual Radioactives and Platinum from the market, renders actual unit/quantity quotes at512 and1512@2, then ordered Confirm+Save persists exactly1001000g while live commander/file remain unchanged.",
     "Actual queued native Return/click packets cannot answer or accept a replacement page before it is painted; same-page navigation and Details remain usable.",
-    "Actual load/control epoch changes and malformed/oversized/unsupported packets refuse before mission dispatch. Native schema1 confirmation stays exactly once."
+    "Actual load/control epoch changes and malformed/oversized/unsupported packets refuse before mission dispatch. Native schema1 confirmation stays exactly once.",
+    "Sixteen optional original schema2 examples validated, including native parent-owned patrol creation and exact scoped report joins.",
+    "Two actual campaigns fly separate physical patrols; each receives only its own native report and completion join, with genuine combat/docking/station Confirm/save/reload. Earlier standalone reports and foreign-parent joins cannot qualify.",
+    "Native staged child acceptance, deterministic identity/independent seed, duplicate ensure, late-command and filesystem rollback, original child initialization fault/pending cause, exact content restoration, terminal suspend/preserve and ancestor gates verified.",
+    "Synthetic admitted128-instance and fifth-link boundaries refuse whole creation without truncation or hidden child. Inverse/root/depth/provenance/scope/join corruption with updated chunk hash and format downgrade refuse load.",
+    "Isolated native Gallery campaign flies actual child patrol/debrief and scoped Save/Load/Return, preserving live owner/file; separate owned child entries and parent assignment summaries rendered and inspected at512 and1512@2."
   ],
-  "raw_log_sha256": "5435d5aa041af82d063ed899e8cbbaf9f6586e91c1db855a053b8eae6500d4b8",
+  "raw_log_sha256": "e1ec942ac3789563005b38c0f95240eadf9dcac28615501caaf11cfe7b16761a",
   "validated_file_sha256": {
-    "Makefile": "9185525fd1d8b1f417cb1c45b1772f4eaad4c3692595cfed492e06953cb276f0",
+    "Makefile": "dea96ceaf950793ea9b61f57e54d65f8bb1f781c7120ee513d04e4cad95ab96b",
     "Package.resolved": "23770167faec69f1722574eebb7fb62dd32655dd4b461735fec67a928686dd4d",
     "Package.swift": "c615ca1b2cb521a27c2b7bdf62d513c21299daa5f1deb77f9a6025b4c818ca18",
     "Sources/CLua/LICENSE.txt": "a38e88aeffd124e9403aab4635ae3c0285d8d84147caef2df6fdce1b4c2bc971",
@@ -477,24 +482,26 @@
     "Sources/EliteCore/ScriptBooks.swift": "2f7a1cfa1a2bd1ca1c850db965569010d1303ed936cff5e117f9a3d2ee23becd",
     "Sources/EliteCore/ScriptCalendar.swift": "07c777bd1c64a2af4495722931a8b48f006e50a5652cd99f097684ad5b703b7a",
     "Sources/EliteCore/ScriptCalendarState.swift": "b27f46c7ea117cacef9828b80fcded3b1a9eed7c7bca0bac441f88130341b5d0",
+    "Sources/EliteCore/ScriptCampaignCommands.swift": "e0386ad00f8548608c9e8491dce90ff2739370e1f984853bd79e4dc948e15636",
+    "Sources/EliteCore/ScriptCampaignState.swift": "d3e6a75c685fc11b4575150be3242982b8276194f718d9a4746467b96f467d7d",
     "Sources/EliteCore/ScriptChoices.swift": "88fb6b6c1d860bbe59298e808817fcaee88f893a58d3b77ec37162de4af20fc7",
     "Sources/EliteCore/ScriptCollections.swift": "d2103216d8e0a4959f86290a8d388866951dff3851c35325dee08f7623d10ece",
     "Sources/EliteCore/ScriptCommanderQuery.swift": "447b00b08b0760864c2577ad3fdb603a2553463ad4ab8a03a5c48974006f08b2",
-    "Sources/EliteCore/ScriptCommands.swift": "05646c3b058f54c0375e028e70da79744c96377699f6f2a55b9a32b38a8d6a6c",
-    "Sources/EliteCore/ScriptCompletion.swift": "357c416657eb74882e45471db4d672284db2af21347d8dce35a27eb367caeddc",
+    "Sources/EliteCore/ScriptCommands.swift": "bb0d9dbc3613cd70fe2800991936f1842b0f6bc0d61b3a738d710671305884af",
+    "Sources/EliteCore/ScriptCompletion.swift": "67f5d57f7aa17f19958fe446bdf7714309e7a19c8e8a3df9a7d89f1315e4eb72",
     "Sources/EliteCore/ScriptContractCore.swift": "20e18f5d7d70acf78d52687d312e1e55489bc9728c8856d76bfe50e11fd20a02",
     "Sources/EliteCore/ScriptContractState.swift": "0ab539a6ef72a727fddb0a1805c4dc5d574b92bef0c7c7153d509019b19a563f",
     "Sources/EliteCore/ScriptConversations.swift": "c3c332f7f6b88319feb574a31cf517a854db9d713724576c8e5458927049356b",
-    "Sources/EliteCore/ScriptDirector.swift": "d0fde86c013aac4f1046ed817712b4e3f9b03b0b7ed97bb5dcf82ae74823b27b",
+    "Sources/EliteCore/ScriptDirector.swift": "d7b01b123969280c33883e41f1a2c36781781ac6e43866ff6cfcc5aab2b9157f",
     "Sources/EliteCore/ScriptEncounters.swift": "9066a29e82b131dec69560ab9474c88b7db5bc3a38b83e2944fd5c646b61b7ae",
     "Sources/EliteCore/ScriptEquipment.swift": "4ca55e96d536bc7e782a3a9c66c06755f292d665995a7939b6015a2d664899e0",
     "Sources/EliteCore/ScriptEvaluator.swift": "89e05f0eb25b1558610cdc8db0e36d10be9f7a0e6788a939b26775a1d610c687",
     "Sources/EliteCore/ScriptEventContext.swift": "70c8a51aedbac9b89dc38edb2c464ce4683578f4abfebd2e6b4f1392b9391c58",
-    "Sources/EliteCore/ScriptGalleryTrial.swift": "8f4ad8ca62a5660528a120d50eddf6eddf1cfa02a8da1e666902da85e88ae71a",
+    "Sources/EliteCore/ScriptGalleryTrial.swift": "abeb5d314c11a37785737a1654c767fc7b94abaedb9f3d25ffd80c166a2d48fc",
     "Sources/EliteCore/ScriptIdentity.swift": "da767c593d920b68a060cef8dd259d68e8405dfc3e268294c0f591ba289148cc",
     "Sources/EliteCore/ScriptLibrary.swift": "35b833b23691761fdc430530fb34683244e621f8117d1f5618247a60ec094167",
     "Sources/EliteCore/ScriptLibraryDisplay.swift": "794bbdbabcc115cabfcb9ffd3853c65dfdd1978d92a9e734af5daee4c2657ae5",
-    "Sources/EliteCore/ScriptMissionState.swift": "2df6eff8d3a896245cc0f9f2699593147ca9d865bf1f22e36f51b8d75c268654",
+    "Sources/EliteCore/ScriptMissionState.swift": "3b1648240074cee28b9a1113a410573a4620fe7faf0d715659b8d93267ca0a7d",
     "Sources/EliteCore/ScriptModules.swift": "3a84eb374589f9a02a98b8e4659b3509d09ba38a6223c775b6185c7bc6580ee2",
     "Sources/EliteCore/ScriptNPCAssets.swift": "98b33aab8fcdfd678c6b5fb2ff125b1ce97d70ffcd0b6a3a009b760f5e28b5fe",
     "Sources/EliteCore/ScriptNPCCollision.swift": "1cdff10c52c18ed9f888bdbdb874ceecfc48f6b1699782467fba13760463f272",
@@ -505,10 +512,10 @@
     "Sources/EliteCore/ScriptNPCSnapshot.swift": "154036da6808df2503242f19dbdcec4bc3d988d0a4acdba26185ed4715a206ea",
     "Sources/EliteCore/ScriptNPCValidation.swift": "05e261cbac04c6fa7e91a40b9bae4afdb03e7fa428cab2667e4db299a663d9b4",
     "Sources/EliteCore/ScriptNPCWeapons.swift": "714bd4c5fb93ed56c682e1933ff91435d3f218fea712047bb713fff93dc26a40",
-    "Sources/EliteCore/ScriptPack.swift": "1069d86bf19cfc8e9be3bff59028ca03df23c68b33692b8a5b907f3a65bc40a1",
+    "Sources/EliteCore/ScriptPack.swift": "4d7e647c93bc59cd80e9934023311f7b296cd6f58df9cb588310901c6d2f0135",
     "Sources/EliteCore/ScriptPageInput.swift": "5d4b7ffaba2c2b3488b880fb58c9adc3da5d9a7dbb81fe6b1d9fffab623df890",
-    "Sources/EliteCore/ScriptPersistence.swift": "64b69dac9a72a1e357930dedf740d68df07ccc26157a2761823b50a04aa89ffc",
-    "Sources/EliteCore/ScriptRuntime.swift": "519481465d1c81cbb41323bfcff044738a86274767cea2c5efb64c15338870c7",
+    "Sources/EliteCore/ScriptPersistence.swift": "eba950e3881290f0cb0c3a5bdb9ec3fc4f14407b8cfc9054125a51d5c38af55b",
+    "Sources/EliteCore/ScriptRuntime.swift": "4f3551f5051200443f6c016a3d86c8559c4fd80e23494b051d09c0b87a6512d2",
     "Sources/EliteCore/ScriptSaveJSONPreflight.swift": "285a32e61986521220e0b43ca2d60bd8c1957e26096972c2d74e46886f146b0c",
     "Sources/EliteCore/ScriptSimulationSave.swift": "d3f2f34185402ba4ad9317e32ec229479d55ccd127e0b44f6011bf283e48556e",
     "Sources/EliteCore/ScriptSolarSave.swift": "fe3bba47a98a7d4da995b11ab6ec0a44fe552cce29067ac3ba028867d2ff0359",
@@ -574,11 +581,11 @@
     "Tests/EliteCoreTests/LiberatorTests.swift": "ea55dded8c6d2caf94a6170b7a18722c191aff36bf3497232b62b0098ce87cd5",
     "Tests/EliteCoreTests/MissionPackTests.swift": "a7164cfb05abaa91d02e4fed57ca27a287caeccaf22ac20e66877738ba46cf8c",
     "Tests/EliteCoreTests/NativeBlueprintTests.swift": "00ef6585e85b7276e7bccba0a3fae645246e0b1a405e230f8e8f5200511a12c4",
-    "Tests/EliteCoreTests/NativeViewTests.swift": "20c3fc48863a58eb2c124c3d07bb92011ea77c3e2413ed93265cd8773fa521cb",
+    "Tests/EliteCoreTests/NativeViewTests.swift": "571d5d51b585436a24df5abdb0f8acc47467d15226379aba10dbe53110225db4",
     "Tests/EliteCoreTests/NavalMissionTests.swift": "130b4fae03359480f1c4cf337c7410e58c99a026ce56d983bcaf4d8caecb5f28",
     "Tests/EliteCoreTests/NavigationTests.swift": "42c5999eb8f8968e4f5461d9f4b8a0a0d49d68cc2628a653ad504886865952de",
     "Tests/EliteCoreTests/OwnedEquipmentTests.swift": "ab643c42e4fba12492cd6feaefdaf359c63a7aee7e337330ee8f937f50db8452",
-    "Tests/EliteCoreTests/PassengerCustodyTests.swift": "e3d34e5a8386e0b603dc131a9d835e97029f1567352fbd337a98687173c2f1d9",
+    "Tests/EliteCoreTests/PassengerCustodyTests.swift": "e82d35fed4e6455da20e7644f249b9c4ea401cff0f7d163254160feede82ee56",
     "Tests/EliteCoreTests/PlanetTests.swift": "bebc944b6b0f7154e1c3bc7ba264c869ce59138c663efb73af52fff501544a5d",
     "Tests/EliteCoreTests/PlughTests.swift": "7d1f98be3fc7a8e878edb269ec43db8a4351b3e2f46e2037dab41f2829435557",
     "Tests/EliteCoreTests/ProfitScanTests.swift": "ccf318cb8152b629a863964be052b7edd18c3ec2e833a06436333ce8c1b1dfa0",
@@ -586,17 +593,18 @@
     "Tests/EliteCoreTests/ScreenNavigationTests.swift": "0eab0c881855a53a2c55e90c2ccc4395e9c9287ec083eccecafefb32f8046c56",
     "Tests/EliteCoreTests/ScriptBookTests.swift": "38406c1717d0228dd3085a4b8bbd48ce87e23f56202e6b8f89e08c7884abb14d",
     "Tests/EliteCoreTests/ScriptCalendarTests.swift": "6b31c6694d679ea96be2598e82cbb9891bb3044d494c8fa1493ca0f7c8f51758",
+    "Tests/EliteCoreTests/ScriptCampaignTests.swift": "66bd72e9c9c27a90b9b0ecc1331784fbe1ecf020e44b58d595dda1e718ac054e",
     "Tests/EliteCoreTests/ScriptChoiceTests.swift": "bf0700733301eaceddd2c2d15c54c8cdcf85fc71c040e9dd1d27d6b3f4e8c390",
     "Tests/EliteCoreTests/ScriptCollectionTests.swift": "b3d79880eaaf58be69f40da283f076e99ceda5ffd57e067f111bd56722559ade",
     "Tests/EliteCoreTests/ScriptCommanderQueryTests.swift": "be99450b779f1233e229c1586e341d023bfb88358a82c3bf8a5257e5e39ed55b",
     "Tests/EliteCoreTests/ScriptCompletionTests.swift": "d598e03697a985ccd21ef7c6093d956ff350d868c8108814bff4ae56163d8e06",
     "Tests/EliteCoreTests/ScriptContractTests.swift": "110bdc7b947439f751d3fd0bf239917de10e9ea246e15246253bce110396a3c9",
     "Tests/EliteCoreTests/ScriptConversationTests.swift": "252144701926313fc277ddbe114d5c50f15de268a83aa3a76e20a70a85b1a8b8",
-    "Tests/EliteCoreTests/ScriptEncounterTests.swift": "d223b33f99e9bc21eb3c771efd34031173ed8ce0493ea1cbaf46d00705db9e14",
+    "Tests/EliteCoreTests/ScriptEncounterTests.swift": "9fafd0a9127c42bc74168e109c5fe9ae1ecc421ef57e8037e63e4cbb10b02158",
     "Tests/EliteCoreTests/ScriptEquipmentTests.swift": "daad2c5ef9d1a10b33bd47f394da0e268fa8b2a62fc5c027b358d9ccbc093094",
     "Tests/EliteCoreTests/ScriptEvaluatorTests.swift": "758c6d84fbbca30d5b68364920d477d17ce0845af60dfaf1aa2b3e5e8a8ab6d0",
     "Tests/EliteCoreTests/ScriptEventHistoryTests.swift": "5c4105efa32766b6f203051fc7a1dd76a8c8a3c907fbce8a5d2a42e405e76a90",
-    "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift": "2efc8adda25e1264e747f45682252e54dde6d573e39515dcb8fb4aeedf0f03cf",
+    "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift": "9637c362e01c2177eb4cf4e495d958a1fd953fbe4096e5f947107a1319ae9e5a",
     "Tests/EliteCoreTests/ScriptIdentityTests.swift": "27dfcb98b18c69eec3f9114c2476027ab301385ecee54206393019a0568864b4",
     "Tests/EliteCoreTests/ScriptMissionTests.swift": "5b413a49f2e42661fc89d1b93567a179d62749f0f77a3dd8aff80cb7b913371b",
     "Tests/EliteCoreTests/ScriptModuleTests.swift": "e0217d01f9f927ed5dcfd16c076a4d00f2a60b318b0d0bf1e85b72a9a99cbc09",
@@ -604,7 +612,7 @@
     "Tests/EliteCoreTests/ScriptPageInputTests.swift": "f5dc325a181cd8b5ad6b2595373f12e5340bbcd9e67d0f6c6237ba923ec02342",
     "Tests/EliteCoreTests/ScriptSolarSaveTests.swift": "d815c1508f92044a7a0e59206733a87fb53dace9a61e378d215ffe40924dca03",
     "Tests/EliteCoreTests/ScriptTransactionTests.swift": "05f107dcca357a8c6f39bb07eebd84e55ebabe450f54eaa12123df14b38e92c0",
-    "Tests/EliteCoreTests/ScriptValueStorageTests.swift": "fe71d20b14192a53d076bc566e6cbeea04e06fdba92dc0edea080b4f79bdedc5",
+    "Tests/EliteCoreTests/ScriptValueStorageTests.swift": "f6b9ffcd100a61f6a32e4a88d14b69f3bec5f970708d082d883602b14487d96f",
     "Tests/EliteCoreTests/ScriptWorldJobTests.swift": "69272ba0206d3e9f6eb3e604df22340397a1d17c9027f62da34f0cf027185e06",
     "Tests/EliteCoreTests/ShieldTests.swift": "de8385345e55002547002c8640c4e425c474e3658f14b23e311cfa1e8c5d049f",
     "Tests/EliteCoreTests/ShipAccommodationTests.swift": "f31f42449f319b11e98d4801818b3d162b3e8e88c3feb45b95ab7ebf945eb95a",
@@ -645,6 +653,8 @@
     "docs/mission-packs/profiled-skirmish/scripts/skirmish.lua": "6ea2933a2c6a69dc981ce437d2cd43a9d35b8a753df8d628569871053ff3772f",
     "docs/mission-packs/reference-book/manifest.toml": "175a7aae741c3ba1084701cfe7a6d729acc998098a7ae84a026951ca36c1b9a0",
     "docs/mission-packs/reference-book/scripts/main.lua": "616386a9da4e84cd464787e63d5f67cba4a786f5f0f78c41bd70b3b382d0900b",
+    "docs/mission-packs/scoped-patrol/manifest.toml": "cfa04f5245baf783249716f0e3e61207d9555e7fdbf12acbe154a98f7edcba52",
+    "docs/mission-packs/scoped-patrol/scripts/main.lua": "8d41cebfe3c0eb23f1f7914ad024b4e595c7cfb2352467fd584d74711d53f814",
     "docs/mission-packs/scripted-contracts/manifest.toml": "6eb22c252178e07542821c1a6e6a849462f2a148eed47475d1f4ff587b74173f",
     "docs/mission-packs/scripted-contracts/scripts/main.lua": "e4a702e5a47c7da5aedc17bb76abab16d403ee746e67f37a80cbbde986dcf193",
     "docs/mission-packs/scripted-courier/manifest.toml": "75b9505e28fced80d4313cd2503a7ba882d3facc788707c9677ffb96a518e5bf",
@@ -659,16 +669,16 @@
     "docs/mission-packs/station-conversation/scripts/main.lua": "13ddd6bcda0b9a6b1bc9d67f85d9e3b89ec58ead17f90e9b75534e69e5cf10b4",
     "docs/mission-packs/station-maintenance/manifest.toml": "fb98009ae34f77130e10a3752cd08c4ef9887a0910447142e51b68beade659bc",
     "docs/mission-packs/station-maintenance/scripts/main.lua": "51cbee6c8f411515d96d99a216175cabc18288803f28cdf24d4dc5c01cec09c5",
-    "docs/ships/manifest.json": "ffe78ab37bb408a265bcb68bb46f0b42e78c1e037492d59853bd7bd310fc04d7",
+    "docs/ships/manifest.json": "437315f42d4ce9c6c950ead6bc078e5582af654253dc40d36a1e695c84577d0a",
     "script/coverage.sh": "09a9c802156f79144290fc248a3a999eeb65be320f3c2a3331e3e747308374f7",
     "sonar-project.properties": "9678da010467df9603aeba7e4fcf452c8a65c3ee17bf6e6ebbf1f3a5134038ef"
   },
-  "limits": "Validated protected main1ef005e integration plus immutable multi-module Lua helper content, bounded Lua/story/economy/cargo/local/flight/calendar clocks and saved native pulse counters, classic physical encounters, all159 player accommodation adapters, humanoid charter custody, solar/title continuity, durable staged transactions, isolated native Gallery trials, unique standard native equipment/storage/hull transfer scoped quest loans/consumption/returns, measured profiled NPC/components with bounded steering/laser/plasma/swept physical collision/projectile persistence, and saved generic main-orbital contract boards with local/flight/calendar deadlines and repeatable job identities. Full source gear condition/modification controllers, broker movement, pods/care, complete controllers/world-business, complete source AI/combat/transit, complete RRS/boards/jobs/campaigns, full-source Maenes/finance/RRS and rich historical Gallery scenarios remain incomplete. Format18 pins native calendar and admitted-journey provenance. Generic independently resource-owned local-world jobs are implemented. Transit and full source station/grid/care/finance/service adapters remain incomplete. Full historical Maenes/finance/RRS acceptance and remaining complete engine requirements are still gated. Native event contexts/watermarks and deterministic new plan IDs are implemented. Exact generic ScriptValue integer/float storage and bounded saved JSON decoding are implemented; full world epochs/archive/replay/source RNG and historical acceptance are still incomplete. Native commander snapshots, immutable new terminal receipts and pinned exact-content child joins are implemented. Shared campaign services/full campaign scoping and historical campaign acceptance remain incomplete. Native exclusive station choices and frozen matching-child branch filters implemented. Rich book assets, shared dossiers/loans, full campaign instance management and source acceptance remain incomplete. Repeatable native station answers, explicit successful-finish answer gates, compact saved-history queries, exact allowed child-outcome unions and pinned displayed-dialogue confirmations are implemented. Full rich library assets/dossiers/loans, campaign-instance management, archives/replay and historical acceptance remain incomplete. Immutable native-granted text books and hierarchy/contents/reading/source pages with retained ownership and saved cursors are implemented; logos/images, rich dossiers, shared financial services and full source acceptance remain required. Native fixed material collections, frozen quotes, genuine positive partial lot receipts and exact declared completion gates implemented. Full typed physical cargo/pod provenance and common mass fitting remain incomplete; existing BBC kg/g hold quantization is preserved.",
+  "limits": "Validated protected main1ef005e integration plus immutable multi-module Lua helper content, bounded Lua/story/economy/cargo/local/flight/calendar clocks and saved native pulse counters, classic physical encounters, all159 player accommodation adapters, humanoid charter custody, solar/title continuity, durable staged transactions, isolated native Gallery trials, unique standard native equipment/storage/hull transfer scoped quest loans/consumption/returns, measured profiled NPC/components with bounded steering/laser/plasma/swept physical collision/projectile persistence, and saved generic main-orbital contract boards with local/flight/calendar deadlines and repeatable job identities. Full source gear condition/modification controllers, broker movement, pods/care, complete controllers/world-business, complete source AI/combat/transit, complete RRS/boards/jobs/campaigns, full-source Maenes/finance/RRS and rich historical Gallery scenarios remain incomplete. Format18 pins native calendar and admitted-journey provenance. Generic independently resource-owned local-world jobs are implemented. Transit and full source station/grid/care/finance/service adapters remain incomplete. Full historical Maenes/finance/RRS acceptance and remaining complete engine requirements are still gated. Native event contexts/watermarks and deterministic new plan IDs are implemented. Exact generic ScriptValue integer/float storage and bounded saved JSON decoding are implemented; full world epochs/archive/replay/source RNG and historical acceptance are still incomplete. Native commander snapshots, immutable new terminal receipts and pinned exact-content child joins are implemented. Shared campaign services/full campaign scoping and historical campaign acceptance remain incomplete. Native exclusive station choices and frozen matching-child branch filters implemented. Rich book assets, shared dossiers/loans, full campaign instance management and source acceptance remain incomplete. Repeatable native station answers, explicit successful-finish answer gates, compact saved-history queries, exact allowed child-outcome unions and pinned displayed-dialogue confirmations are implemented. Full rich library assets/dossiers/loans, campaign-instance management, archives/replay and historical acceptance remain incomplete. Immutable native-granted text books and hierarchy/contents/reading/source pages with retained ownership and saved cursors are implemented; logos/images, rich dossiers, shared financial services and full source acceptance remain required. Native fixed material collections, frozen quotes, genuine positive partial lot receipts and exact declared completion gates implemented. Full typed physical cargo/pod provenance and common mass fitting remain incomplete; existing BBC kg/g hold quantization is preserved. Native bounded campaign-instance ownership, exact per-parent receipt joins/notifications, explicit terminal policies and separate native Gallery child entries now implemented. Shared finance/dossiers/loans, complete source AI/transit/custody and historical campaign acceptance remain required.",
   "previous_checkpoint": {
-    "commit": "94766896ed8ea976f3eed067bc3eda531ac1868a",
-    "tests_per_lane": 541,
-    "maintained_coverage_percent": 94.59,
-    "note": "Native partial collection checkpoint; evidence retained at that commit."
+    "commit": "86c6fd74a4e021a08ec03eb28a10f940fdad65f8",
+    "tests_per_lane": 547,
+    "maintained_coverage_percent": 94.61,
+    "note": "Native displayed-page input checkpoint; evidence retained at that commit."
   },
   "native_encounter_coverage": {
     "covered_lines": 305,
@@ -691,9 +701,9 @@
     "percentage": 100.0
   },
   "gallery_trial_coverage": {
-    "covered_lines": 180,
-    "total_lines": 185,
-    "percentage": 97.3
+    "covered_lines": 182,
+    "total_lines": 187,
+    "percentage": 97.33
   },
   "owned_equipment_coverage": {
     "covered_lines": 623,
@@ -746,9 +756,9 @@
     "percentage": 98.04
   },
   "pack_loader_coverage": {
-    "covered_lines": 385,
-    "total_lines": 396,
-    "percentage": 97.22
+    "covered_lines": 387,
+    "total_lines": 398,
+    "percentage": 97.24
   },
   "calendar_coverage": {
     "covered_lines": 121,
@@ -796,9 +806,9 @@
     "percentage": 100.0
   },
   "completion_receipt_coverage": {
-    "covered_lines": 147,
-    "total_lines": 148,
-    "percentage": 99.32
+    "covered_lines": 155,
+    "total_lines": 155,
+    "percentage": 100.0
   },
   "station_choices_coverage": {
     "covered_lines": 121,
@@ -854,34 +864,31 @@
     }
   },
   "sanitizer_timing_note": {
-    "result": "All lanes passed once without a timing waiver. Only make parent paused after its ASan child completed, before leaks, to release CPU+GUI for a separate matched replay; no active test paused.",
-    "current_log": "/tmp/elite-script-page-ci.log",
-    "stage_boundary_pause": {
-      "make_pid": 75274,
-      "asan_helper": 17830,
-      "stopped_utc_unix": 1792071404.348397,
-      "reason": "Hold parent between ASan and leaks for user-priority matched fullscreen replay; ASan child not paused.",
-      "chain": [
-        {
-          "pid": 17830,
-          "parent": 16715,
-          "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper --test-bundle-path /Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests --scratch-path .build/asan --sanitize=address /Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests --testing-library swift-testing"
-        },
-        {
-          "pid": 16715,
-          "parent": 75274,
-          "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-test --scratch-path .build/asan --sanitize=address"
-        },
-        {
-          "pid": 75274,
-          "parent": 1,
-          "command": "make ci"
-        }
-      ],
-      "root": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite",
-      "resumed_utc_unix": 1792072611.745964,
-      "resume_reason": "Coder2 explicitly released CPU+GUI after both matched fullscreen replays completed and private apps exited."
-    }
+    "result": "Completed coverage retained. An explicit turn interruption stopped the first TSan attempt; its raw partial log and process evidence are retained. Only that interrupted lane was rerun, followed by address/leaks, against unchanged560 inputs. No timeout, performance waiver or source change. Renderer experiment preceded the frozen gate. A later normal-play QA handoff held only make at the completed TSan boundary before ASan; exact pause/release times retained in process evidence. No active test paused. Exact same-fixture ASan durations retained.",
+    "same_lane_baseline_log": "/tmp/elite-script-page-ci.log",
+    "current_log": "/tmp/elite-campaign-ci.log",
+    "fixtures": [
+      {
+        "test": "everyModelRemainsVisibleFiniteAndFramedThroughoutFullRotation",
+        "previous_seconds": 912.964,
+        "current_seconds": 1210.662
+      },
+      {
+        "test": "titleShipStaysCompleteBetweenTextRows",
+        "previous_seconds": 835.29,
+        "current_seconds": 853.476
+      },
+      {
+        "test": "eachComputerStorageAndFuelCombinationControlsRingsSearchAndActualJump",
+        "previous_seconds": 287.8,
+        "current_seconds": 634.288
+      },
+      {
+        "test": "normalizedComparisonsSortAndTOMLLoaderAreConsistent",
+        "previous_seconds": 373.684,
+        "current_seconds": 300.472
+      }
+    ]
   },
   "partial_collections_coverage": {
     "covered_lines": 228,
@@ -914,9 +921,51 @@
     "scope": "Headless actual NSEvent and AppKit pending queue; no new visual layout."
   },
   "process_exit": {
-    "pid": 75274,
-    "exit_status_raw": 0,
+    "command": [
+      "make",
+      "ci"
+    ],
+    "cwd": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite",
+    "started_unix": 1792074150.527276,
+    "frozen_inputs": 560,
+    "make_pid": 91163,
+    "interruption": {
+      "reason": "Turn explicitly aborted during thread-sanitizer lane; original coordinator and owned children gone; no final status captured. Completed coverage retained, interrupted TSan rerun with no timing waiver.",
+      "partial_log": "/tmp/elite-campaign-ci-before-interruption.log",
+      "sha256": "a5053faae898521a872aa2f744ca39e5c8ff2249e37c3fcde0e9fbed6377956a",
+      "recorded_unix": 1792075310.1145751
+    },
+    "resume_command": [
+      "make",
+      "threads",
+      "address",
+      "leaks"
+    ],
+    "resumed_unix": 1792075310.1145759,
+    "resume_make_pid": 20694,
     "exit_code": 0,
-    "observed_unix": 1792072711.63024
+    "finished_unix": 1792078046.238139
+  },
+  "scoped_campaign_coverage": {
+    "covered_lines": 207,
+    "total_lines": 208,
+    "percentage": 99.52
+  },
+  "validation_strategy": "Initial make ci completed renderer/importer/pack/coverage gates; explicit turn interruption stopped TSan. Resumed make threads address leaks with unchanged frozen inputs; final exit refers to that remaining-gates command.",
+  "native_scoped_campaign_ui": {
+    "test": "nativeGalleryShowsActualCampaignAndItsOwnedChildWithoutStartingAnotherTrial",
+    "seconds": 8.352,
+    "result": "passed; actual isolated native campaign/owned-child normal and Retina Gallery images inspected singly; browsing grants no mission actions; live owner unchanged.",
+    "image_sha256": {
+      "campaign-child-1512.png": "906889b1d75b09367dce1d4996d7b268a39debac3396cd9dee1f95ee62e7c1e5",
+      "campaign-child-512.png": "4f6ff44da0494a0531485d5f2dc77578108291d37917c967198bda16a4a0cbff",
+      "campaign-parent-1512.png": "299bd1531d497fa2616b9b67d81e4247c8e5d6cc24c0f9b82db69c89e33ea4a7",
+      "campaign-parent-512.png": "25d4f6e991abe585d70cfae18bad846b1ef580fc420dc62beda87dacb396bed3"
+    },
+    "focused_tests": 16,
+    "focused_seconds": 10.023,
+    "focused_helper_coverage_percent": 99.52,
+    "integration_tests": 63,
+    "integration_seconds": 10.458
   }
 }

@@ -136,9 +136,9 @@ extension Game {
       }
       if outcome == .complete {
         state.receiptJoins = try scriptReceiptJoins(
-          pack, stage: .acceptance, existing: state.receiptJoins ?? [:])
+          pack, stage: .acceptance, existing: state.receiptJoins ?? [:], parent: state)
         state.receiptJoins = try scriptReceiptJoins(
-          pack, stage: .completion, existing: state.receiptJoins ?? [:])
+          pack, stage: .completion, existing: state.receiptJoins ?? [:], parent: state)
       }
       try settleContract(outcome, state: &state, candidate: &candidate)
       state.outcome = outcome

@@ -481,6 +481,54 @@ struct NativeViewTests {
     }
   }
 
+  @MainActor @Test
+  func nativeGalleryShowsActualCampaignAndItsOwnedChildWithoutStartingAnotherTrial() async throws {
+    let examples = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
+        "docs/mission-packs")
+    let parent = try ScriptPackLibrary.read(examples.appendingPathComponent("scoped-patrol"))
+    let child = try ScriptPackLibrary.read(examples.appendingPathComponent("scripted-patrol"))
+    var live = Game(executive: false)
+    live.screen = .status
+    live.scriptPacks = [parent, child]
+    let owner = GameRuntime(game: live)
+    let original = await owner.snapshot()
+    let trial = try await owner.scriptGalleryTrial(packDigest: parent.digest, seed: 91)
+    let namespace = try #require(await trial.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    var actual = await trial.advance(delta: 0.1)
+    let before = actual.commander
+    actual.openGallery()
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for (kind, digest) in [("parent", parent.digest), ("child", child.digest)] {
+      let index = try #require(
+        actual.missionCatalogue.firstIndex { entry in
+          kind == "parent"
+            ? entry.trialDigest == digest : entry.savedInstance != nil && entry.trialDigest == nil
+        })
+      actual.gallery.selection = index
+      actual.gallery.detail = true
+      #expect(
+        actual.missionCatalogue[index].briefing.contains(
+          kind == "parent" ? "Campaign assignments:" : "Owning campaign:"))
+      if kind == "child" { #expect(!actual.canTrialSelectedMission) }
+      for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+        actual.gallery.scroll = width == 512 ? 7 : 0
+        let image = try #require(imageForGame(actual, width: width, height: height, scale: scale))
+        #expect(image.width == width * scale && image.height == height * scale)
+        if let evidence {
+          let directory = URL(fileURLWithPath: evidence, isDirectory: true)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          let bytes = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try bytes.write(to: directory.appendingPathComponent("campaign-\(kind)-\(width).png"))
+        }
+      }
+    }
+    #expect(actual.commander == before)
+    #expect(await owner.snapshot().commander == original.commander)
+  }
+
   @MainActor @Test func nativeProfiledShipsRenderMeasuredComponentsAndSourcePanels() async throws {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: root) }

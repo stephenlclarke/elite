@@ -15,9 +15,11 @@ public struct ScriptReceiptRequirement: Codable, Sendable {
   public let minimumCount: Int
   public let choiceGroup: String?
   public let choice: String?
+  public let child: String?
   var valid: Bool {
     let parts = definition.split(separator: "/", omittingEmptySubsequences: false)
-    return PackValidation.localID(id) && parts.count == 2
+    return PackValidation.localID(id) && (child.map(PackValidation.localID) ?? true)
+      && parts.count == 2
       && parts.allSatisfy { PackValidation.identifier(String($0)) }
       && PackValidation.version(version) && ScriptCompletionReceipt.validDigest(digest)
       && ((outcome == nil) != (outcomes == nil))
@@ -89,8 +91,13 @@ public struct ScriptCompletionReceipt: Codable, Sendable, Equatable {
 }
 
 extension Game {
-  func matchingScriptReceipts(_ requirement: ScriptReceiptRequirement) -> [UUID] {
-    commander.scriptState.instances.values.compactMap { state in
+  func matchingScriptReceipts(
+    _ requirement: ScriptReceiptRequirement, parent: ScriptInstance? = nil
+  ) -> [UUID] {
+    let childID = requirement.child.flatMap { parent?.campaignChildren[$0]?.child }
+    return commander.scriptState.instances.values.filter {
+      requirement.child == nil || $0.id == childID
+    }.compactMap { state in
       state.completionReceipt.flatMap {
         $0.valid(for: state, engine: commander.scriptState) ? $0 : nil
       }
@@ -113,11 +120,12 @@ extension Game {
     return nil
   }
   func scriptReceiptJoins(
-    _ pack: ScriptPack, stage: ScriptReceiptStage, existing: [String: [UUID]]
+    _ pack: ScriptPack, stage: ScriptReceiptStage, existing: [String: [UUID]],
+    parent: ScriptInstance? = nil
   ) throws -> [String: [UUID]] {
     var joins = existing
     for requirement in pack.manifest.receiptRequirements ?? [] where requirement.stage == stage {
-      let matches = matchingScriptReceipts(requirement)
+      let matches = matchingScriptReceipts(requirement, parent: parent)
       if let pinned = joins[requirement.id] {
         guard pinned.count == requirement.minimumCount, pinned.allSatisfy(matches.contains) else {
           throw MissionPackError("The pinned child mission receipts are unavailable.")
@@ -136,7 +144,7 @@ extension Game {
       Dictionary(
         uniqueKeysWithValues: (pack.manifest.receiptRequirements ?? []).map {
           requirement in
-          let matches = matchingScriptReceipts(requirement)
+          let matches = matchingScriptReceipts(requirement, parent: state)
           return (
             requirement.id,
             .object([
@@ -174,7 +182,10 @@ extension Game {
       guard let state = commander.scriptState.instances[id], state.outcome == .active,
         let pack = scriptPack(for: state)
       else { return false }
-      return (pack.manifest.receiptRequirements ?? []).contains { $0.matches(receipt) }
+      return (pack.manifest.receiptRequirements ?? []).contains {
+        $0.matches(receipt)
+          && ($0.child.map { state.campaignChildren[$0]?.child == receipt.instance } ?? true)
+      }
         && pack.manifest.handlers.contains { $0.event == "mission.receipted" }
     }
     guard commander.scriptState.pendingEvents.count + dependents.count <= 4096,

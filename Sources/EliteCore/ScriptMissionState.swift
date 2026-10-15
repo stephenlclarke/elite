@@ -58,6 +58,9 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   }
   public var data: ScriptValue = .object([:])
   public var savedCollections: [String: ScriptCollection]?
+  public var savedCampaignChildren: [String: ScriptChildBinding]?
+  public var campaignParent: ScriptChildBinding?
+  public var savedCampaignReceiptScopes: [String: String]?
   public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
   public var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
   public var choiceReceipts: [String: ScriptChoiceReceipt] {
@@ -188,7 +191,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       $0.choiceReceipts.values.map(\.sequence) + Array($0.conversationReceipts.keys)
     }
     let completionSequences = instances.values.compactMap { $0.completionReceipt?.sequence }
-    return Set(identities).count == identities.count && instances.count <= 128
+    return campaignsValid && Set(identities).count == identities.count && instances.count <= 128
       && Set(choiceSequences).count == choiceSequences.count
       && Set(completionSequences).count == completionSequences.count
       && Set(gearIdentities).count == gearIdentities.count

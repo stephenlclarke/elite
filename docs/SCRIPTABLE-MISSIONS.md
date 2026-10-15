@@ -22,6 +22,7 @@ The interpreter exposes base scalar/assert/error/type/iteration helpers and nume
 
 | Capability | Current executable support |
 | --- | --- |
+| `scoped-campaigns-basic-v2` | Native parent-owned child instances, exact scoped receipt joins, explicit terminal policies and separate Gallery entries. |
 | `partial-collections-v2` | Frozen native material quotes, real unreserved commodity handoffs and immutable repeated partial lot receipts. |
 | `library-books-basic-v2` | Immutable mission-granted text books, native contents/reading/source pages, retained ownership and saved reading position. |
 | `script-lua-v1` | Bounded programmable handlers, fresh environment, validated explicit data and proposals. |
@@ -291,7 +292,7 @@ A declared `mission.receipted` handler receives a native notification only when 
 
 Install the [linked patrol debrief](mission-packs/linked-patrol) alongside the exact [scripted patrol](mission-packs/scripted-patrol). Accept the debrief and patrol at Lave, fly the actual battle, dock and confirm the patrol report, then reopen Contacts to confirm the separate debrief. The debrief grants no additional money. Its fresh Gallery trial also requires playing the actual child mission in that isolated commander; it does not seed fake completion receipts. Use manual docking or fit the native docking computer normally. An acceptance-gated pack cannot start a fresh trial if its required receipts do not exist there. Rich historical checkpoint scenarios remain required.
 
-Format14 retains terminal receipts and their pinned joins in the mission chunk; formats2-13 remain readable without inventing earlier proof. This implements the generic receipt/join part of linked campaigns. Shared dossiers/loans/services, complete campaign instance scoping and full P19/Maenes/finance/RRS acceptance remain required before `campaigns-v1` can be advertised.
+Format14 retains terminal receipts and their pinned joins in the mission chunk; formats2-13 remain readable without inventing earlier proof. This implements the generic receipt/join part of linked campaigns. Shared dossiers/loans/services, full campaign source acceptance and full P19/Maenes/finance/RRS acceptance remain required before `campaigns-v1` can be advertised.
 
 ## Exclusive station choices
 
@@ -436,3 +437,40 @@ Native keyboard and handoff mouse input carries the page identity captured when 
 The native view retains the painted identity separately from the next model snapshot. Two queued Returns or clicks from the same old page cannot answer a chained next question, including an additional input after command processing but before repaint. Once the new page is drawn, a new confirmation can answer it normally. Selection is deliberately separate: arrows followed by Return on the same displayed question still choose the intended answer. Reading, scrolling, Help and Back do not manufacture answers. Malformed/oversized input envelopes and invalid identities are refused without executing business handlers. Existing trusted direct `GameRuntime.key` callers keep their original behavior; this guard protects the native window's real input/queue boundary.
 
 This is presentation context, not persistent script state, and does not change save format18 or create a new content capability. Native event tests reproduce the original double-confirm issue before the fix, then verify single-answer behavior, initial offer/question protection, keyboard/mouse parity, same-page selection and reload rejection through the actual AppKit queue and actor pipeline. No new visible controls or mandatory confirmation screen are added.
+
+## Owned campaign children
+
+Declare `scoped-campaigns-basic-v2` and root `[[children]]` tables, each with a unique local `id`, exact `definition`, `version`, `digest` and explicit `terminalPolicy="suspend"` or `"preserve"`. These declarations authorize child templates; they do not claim that a child has started or completed. Up to32 children per parent and four relationship levels fit inside the existing128 total saved-instance limit. A board job can own children, but a child template itself cannot be a board provider.
+
+```toml
+[[children]]
+id = "patrol"
+definition = "example.scripted-patrol/patrol"
+version = "1.0.0"
+digest = "f7c2123ea24e13e6d8e613a72270a052ae6b5a010e4edb678ab10a239f185906"
+terminalPolicy = "suspend"
+
+[[receiptRequirements]]
+id = "owned-report"
+child = "patrol"
+stage = "completion"
+definition = "example.scripted-patrol/patrol"
+version = "1.0.0"
+digest = "f7c2123ea24e13e6d8e613a72270a052ae6b5a010e4edb678ab10a239f185906"
+outcome = "complete"
+minimumCount = 1
+```
+
+Lua proposes `{op='child.ensure',id='patrol'}`. Native code validates the active owning parent, declaration, exact installed child content, dependencies/capabilities, relationship depth and whole-instance/event capacity. A deterministic child UUID and independent script seed derive from the parent UUID, alias and exact content without drawing simulation randomness. Different parents or aliases receive distinct instances even when they use the same template. Repeating an ensure retains the same original child, including its terminal result, faults, actors, spent stock and pending events; it never resets, heals or reissues it.
+
+The parent and child retain the same immutable binding, root/depth and original cause/commit provenance. Their relationship and the child's native accepted event publish in the parent's complete transaction. Child Lua runs later from that accepted event, after the parent proposal has committed. A later invalid parent command or failed filesystem publication leaves no child, binding or accepted event behind. A subsequent child initialization fault retains the original identity and pending cause for explicit retry.
+
+`world.children[alias]` is a compact read-only native snapshot containing `instance`, `root`, exact content identity, `outcome`, `suspension` and `receipted`. A newly created binding emits `campaign.child.started` to its parent, with `child` (alias) and `instance`. A receipt requirement with `child` can use only `stage="completion"` and `minimumCount=1`, with the exact declared child's content. Its query, notification, pinned join and successful-finish check admit only that parent's actual bound child. An earlier standalone receipt or another campaign's child cannot qualify. Requirements without `child` keep their existing global prerequisite behavior.
+
+A child template may declare `[mission] parentOnly=true` with this capability. It is then absent from standalone station offers and cannot start a standalone Gallery trial or direct acceptance. Its owning campaign starts it. Existing templates without this restriction may also be used as independent missions; their independent completions still cannot satisfy a scoped requirement.
+
+When a parent becomes terminal, each `suspend` edge blocks business execution below it, including grandchildren whose immediate edge says `preserve`. Actual child people/property, encounter identities, damage, stock and safe native world state remain intact. Retry cannot revoke that terminal-parent gate. `preserve` explicitly allows the child to continue when its owning ancestors permit it. Independently resource-owned maintenance jobs retain their existing rights and lifetime; this capability does not grant terminal missions renewed reward, credit or custody rights. Missing exact owning content suspends the intact relationship until restoration and explicit retry.
+
+Format19 retains both relationship ends and scoped requirement aliases. Inconsistent inverse/root/depth/provenance/joins refuse load even with a recalculated outer chunk hash; bounded validation precedes relationship arithmetic. Formats2-18 remain readable without inventing children, and an older format cannot conceal new relationship fields. The Gallery keeps each owned child as a separate saved entry, displays its owning campaign and the parent's assignment statuses, and starts trials from the campaign rather than an owned child row. Browsing remains read-only.
+
+Install the [owned patrol campaign](mission-packs/scoped-patrol) with the exact [scripted patrol](mission-packs/scripted-patrol). Acceptance starts its child automatically. Fly the actual patrol, confirm its own station report, then confirm the campaign debrief. The isolated Gallery trial follows the same physical steps and has separate saves. This original example is not P19 acceptance. Shared financial services/dossiers/loans, full historical AI/transit/custody and full historical campaign trials remain required before `campaigns-v1` is advertised.

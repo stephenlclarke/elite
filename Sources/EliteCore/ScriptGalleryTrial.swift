@@ -41,7 +41,8 @@ extension Game {
     var isolatedAvailability = self
     isolatedAvailability.scriptDurabilityAvailable = true
     isolatedAvailability.commander.scriptState = ScriptEngineState()
-    return isolatedAvailability.scriptUnavailable(pack) == nil
+    return pack.manifest.mission.parentOnly != true
+      && isolatedAvailability.scriptUnavailable(pack) == nil
       && isolatedAvailability.scriptAcceptanceIssue(pack) == nil
   }
   public var canRetrySelectedMission: Bool {
@@ -51,6 +52,7 @@ extension Game {
       let pack = scriptPack(for: state)
     else { return false }
     return scriptUnavailable(pack) == nil
+      && (state.outcome != .active || campaignExecutionIssue(state) == nil)
   }
   func makeScriptTrial(packDigest: String, seed: UInt64) throws -> Game {
     guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {

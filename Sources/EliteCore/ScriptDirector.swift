@@ -51,9 +51,16 @@ extension Game {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
         instance.suspension == nil
       else { continue }
-      if let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil { continue }
-      commander.scriptState.instances[id]?.suspension =
-        "Restore the exact saved mission version and its requirements."
+      if let reason = campaignExecutionIssue(instance) {
+        commander.scriptState.instances[id]?.suspension = reason
+      } else if let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil {
+        if let reason = campaignContentIssue(instance, pack: pack) {
+          commander.scriptState.instances[id]?.suspension = reason
+        }
+      } else {
+        commander.scriptState.instances[id]?.suspension =
+          "Restore the exact saved mission version and its requirements."
+      }
     }
   }
   func scriptUnavailable(_ pack: ScriptPack) -> String? {
@@ -94,6 +101,7 @@ extension Game {
   }
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
+    fields["children"] = campaignChildrenQuery(instance)
     fields["collections"] = collectionQuery(instance)
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
@@ -139,11 +147,22 @@ extension Game {
   }
   mutating func acceptScriptMission(
     _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445,
-    contract: ScriptContractJob? = nil
+    contract: ScriptContractJob? = nil, campaignParent: ScriptChildBinding? = nil,
+    drainAccepted: Bool = true
   ) throws -> UUID {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
-      pack.manifest.board != nil
+      pack.manifest.mission.parentOnly != true || campaignParent != nil,
+      campaignParent == nil || contract == nil,
+      campaignParent.map({ binding in
+        binding.child == instanceID && binding.definition.definition == pack.manifest.stateID
+          && binding.definition.version == pack.manifest.version
+          && binding.definition.digest == pack.digest
+          && commander.scriptState.instances[binding.parent]?.campaignChildren[
+            binding.definition.id]
+            == binding
+      }) ?? true,
+      pack.manifest.board != nil || campaignParent != nil
         || !commander.scriptState.instances.values.contains(where: {
           $0.definition == pack.manifest.stateID
         }), (pack.manifest.board == nil) == (contract == nil)
@@ -158,6 +177,12 @@ extension Game {
     instance.receiptJoins = try scriptReceiptJoins(pack, stage: .acceptance, existing: [:])
     instance.randomState = randomSeed
     instance.contract = contract
+    instance.campaignParent = campaignParent
+    let scopes = Dictionary(
+      uniqueKeysWithValues: (pack.manifest.receiptRequirements ?? []).compactMap { requirement in
+        requirement.child.map { (requirement.id, $0) }
+      })
+    instance.savedCampaignReceiptScopes = scopes.isEmpty ? nil : scopes
     if let contract, let due = contract.deadline {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
@@ -168,7 +193,7 @@ extension Game {
       candidate.commander.synchronizeEquipmentInventory(force: true)
     }
     candidate.commander.scriptState.instances[instance.id] = instance
-    candidate.emitScriptEvent("mission.accepted", only: instance.id)
+    candidate.emitScriptEvent("mission.accepted", only: instance.id, drain: drainAccepted)
     if let reason = candidate.commander.scriptState.instances[instance.id]?.suspension {
       throw MissionPackError(reason)
     }
@@ -217,6 +242,11 @@ extension Game {
         commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
         continue
       }
+      if let reason = campaignExecutionIssue(instance) ?? campaignContentIssue(instance, pack: pack)
+      {
+        commander.scriptState.instances[event.instance]?.suspension = reason
+        continue
+      }
       guard let handler = pack.manifest.handlers.first(where: { $0.event == event.kind }) else {
         commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
         continue
@@ -230,7 +260,15 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
-          if ["collection.ensure", "collection.deliver"].contains(command["op"]?.string ?? "") {
+          if command["op"]?.string == "child.ensure" {
+            if let result = try candidate.ensureCampaignChild(
+              command, pack: pack, state: &next, event: event)
+            {
+              derivedEvents.append(result)
+            }
+          } else if ["collection.ensure", "collection.deliver"].contains(
+            command["op"]?.string ?? "")
+          {
             if let result = try candidate.applyCollectionCommand(
               command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
             {
@@ -302,6 +340,7 @@ extension Game {
           next.completionReceipt = candidate.completionReceipt(next, event: event, pack: pack)
         }
         candidate.commander.scriptState.instances[next.id] = next
+        candidate.suspendTerminalCampaignChildren(next)
         candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
         if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
         guard candidate.commander.valid else {
@@ -368,7 +407,7 @@ extension Game {
     // Transit still requires a real admitted native wormhole journey.
     for id in orderedScriptInstances {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
-        instance.suspension == nil
+        instance.suspension == nil, campaignExecutionIssue(instance) == nil
       else { continue }
       for key in instance.timers.keys.sorted() {
         guard commander.scriptState.instances[id]?.suspension == nil,
@@ -489,7 +528,8 @@ extension Game {
         ($0.manifest.priority, $0.manifest.id) < ($1.manifest.priority, $1.manifest.id)
       })
       .first(where: {
-        $0.manifest.board == nil && !accepted.contains($0.manifest.stateID)
+        $0.manifest.board == nil && $0.manifest.mission.parentOnly != true
+          && !accepted.contains($0.manifest.stateID)
           && scriptUnavailable($0) == nil && scriptAcceptanceIssue($0) == nil
       })
     else { return false }
@@ -522,7 +562,12 @@ extension Game {
     return text.map { $0 + (offeredCollectionText.map { "\n\n" + $0 } ?? "") }
   }
   private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
-    let reason = scriptUnavailable(pack) ?? (state == nil ? scriptAcceptanceIssue(pack) : nil)
+    let reason =
+      scriptUnavailable(pack)
+      ?? (state == nil && pack.manifest.mission.parentOnly == true
+        ? "Start this child through its owning campaign." : nil)
+      ?? (state == nil ? scriptAcceptanceIssue(pack) : nil)
+      ?? state.flatMap { campaignExecutionIssue($0) }
     let suspension = state?.suspension ?? reason
     let status: GalleryStatus =
       suspension != nil
@@ -546,14 +591,16 @@ extension Game {
       name: job?.offer.title ?? pack.manifest.mission.title, status: status,
       objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
       briefing: (job?.offer.briefing ?? pack.manifest.mission.briefing)
-        + worldJobGallerySummary(origin: state?.id), destination: destination,
+        + worldJobGallerySummary(origin: state?.id) + campaignGallerySummary(state),
+      destination: destination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
       prerequisites: reason.map { [$0] } ?? [], completed: state?.milestones.count ?? 0,
       milestones: pack.manifest.mission.milestones.enumerated().map { i, title in
         MissionMilestone(
           title: title, state: state?.milestones.contains(i) == true ? "Complete" : "Upcoming")
-      }, trialDigest: job == nil ? pack.digest : nil, savedInstance: state?.id)
+      }, trialDigest: job == nil && state?.campaignParent == nil ? pack.digest : nil,
+      savedInstance: state?.id)
   }
 
   var scriptGallery: [GalleryMission] {
@@ -569,8 +616,10 @@ extension Game {
       if pack.manifest.board != nil {
         entries.append(scriptGalleryEntry(pack, state: nil))
         entries += instances.map { scriptGalleryEntry(pack, state: $0) }
+      } else if instances.isEmpty {
+        entries.append(scriptGalleryEntry(pack, state: nil))
       } else {
-        entries.append(scriptGalleryEntry(pack, state: instances.first))
+        entries += instances.map { scriptGalleryEntry(pack, state: $0) }
       }
     }
     for state in commander.scriptState.instances.values.sorted(by: {
@@ -580,8 +629,10 @@ extension Game {
         GalleryMission(
           name: state.contract?.offer.title ?? state.definition, status: .locked,
           objective: "Restore the exact saved mission pack.",
-          briefing: "Saved state and cargo remain intact.", destination: "Pack missing",
-          reward: "Suspended", prerequisites: [], completed: state.milestones.count, milestones: [])
+          briefing: "Saved state and cargo remain intact." + campaignGallerySummary(state),
+          destination: "Pack missing",
+          reward: "Suspended", prerequisites: [], completed: state.milestones.count, milestones: [],
+          savedInstance: state.id)
       )
     }
     return entries

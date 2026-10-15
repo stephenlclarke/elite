@@ -27,7 +27,8 @@ extension GameRuntime {
     guard let state = game.commander.scriptState.instances[id],
       state.outcome == .active || game.hasSuspendedWorldJobs(origin: id),
       let pack = game.scriptPack(for: state),
-      game.scriptUnavailable(pack) == nil
+      game.scriptUnavailable(pack) == nil,
+      state.outcome != .active || game.campaignExecutionIssue(state) == nil
     else { throw MissionPackError("Restore the exact saved pack and its requirements.") }
     var candidate = game
     if state.outcome == .active { candidate.commander.scriptState.instances[id]?.suspension = nil }
