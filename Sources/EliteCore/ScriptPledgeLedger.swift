@@ -85,6 +85,7 @@ public struct ScriptPledgeReceipt: Codable, Sendable, Equatable, Identifiable {
       state.definition.hasPrefix(declaration.provider + "/"),
       job.provider == declaration.provider, job.version == version, job.digest == digest,
       job.boardKey == board, job.boardRevision == boardRevision, job.offer.id == offer,
+      boardRevision == Int64(floor(cause.localSeconds / 3600)), job.offer.status == .available,
       boardSeed == Game.pledgeBoardSeed(board, revision: boardRevision),
       offer == ScriptIdentity.uuid("contract-offer-v1:\(board):\(boardRevision):\(job.offer.key)"),
       instance == Game.contractJobIdentity(offer), job.station == origin,
