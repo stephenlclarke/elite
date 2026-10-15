@@ -297,4 +297,21 @@ struct SalvageDefinitionsTests {
     }
   }
 
+  @Test func recoveredEnergyUsesApprovedProjectCalibrationAndOnlyDeclaredEnergyAxes() throws {
+    let energy = try #require(SalvageDefinitions.definition(id: "energy-technology"))
+    #expect(energy.category == .energyTechnology && energy.provenance == .human)
+    #expect(energy.massKg == 8 && energy.halfExtents == Vector3(2, 2, 2))
+    #expect(energy.baseValueTenths == 12000 && energy.installationCostTenths == 1200)
+    #expect(energy.effect == .scalar(axes: [.energyCapacity, .energyRecharge]))
+    #expect(
+      SalvageDefinitions.compatibility(
+        definition: energy,
+        action: .fit(axis: .energyRecharge, mount: nil), context: context()) == .permitted)
+    #expect(
+      SalvageDefinitions.compatibility(
+        definition: energy,
+        action: .fit(axis: .laserDamage, mount: nil), context: context())
+        == .refused(.unsupportedAxis))
+  }
+
 }

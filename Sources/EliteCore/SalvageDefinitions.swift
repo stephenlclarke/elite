@@ -1,7 +1,8 @@
 import Foundation
 
 public enum SalvageTechnologyCategory: String, CaseIterable, Codable, Sendable {
-  case computerCore, driveTechnology, laserTechnology, shieldTechnology, recoveredMissile
+  case computerCore, driveTechnology, laserTechnology, shieldTechnology, energyTechnology,
+    recoveredMissile
   case laserHardpoint, missilePylon, spareEscapePod, alienArtefact, featureModule
 }
 
@@ -17,6 +18,7 @@ public enum SalvageUpgradeAxis: String, CaseIterable, Codable, Sendable {
   case scanningRange, acquisitionError, automationError, maximumSpeed, acceleration
   case spoolDuration, jumpFuelCost, jumpReach, laserDamage, laserEnergyCost, laserHeatCost
   case frontShieldCapacity, rearShieldCapacity, frontShieldRecharge, rearShieldRecharge
+  case energyCapacity, energyRecharge
 
   public var reducesBaseline: Bool {
     [
@@ -180,6 +182,10 @@ public enum SalvageDefinitions {
     item(
       "drive-technology", .driveTechnology, "Drive technology", 400, Vector3(12, 8, 8), 30000,
       .scalar(axes: [.maximumSpeed, .acceleration, .spoolDuration, .jumpFuelCost, .jumpReach])),
+    // Project-calibrated recovered energy controller, not a historical mass measurement.
+    item(
+      "energy-technology", .energyTechnology, "Energy technology", 8,
+      Vector3(2, 2, 2), 12000, .scalar(axes: [.energyCapacity, .energyRecharge])),
     item(
       "laser-technology", .laserTechnology, "Laser technology", 150, Vector3(10, 4, 4), 25000,
       .scalar(axes: [.laserDamage, .laserEnergyCost, .laserHeatCost])),
@@ -260,7 +266,8 @@ public enum SalvageDefinitions {
     all.first { $0.id == id }
   }
 
-  /// Recompute from unmodified specification every time; never feed previous results back in.
+  /// Legacy ungraded effects only. Graded components use ComponentProgression and its
+  /// authoritative terminal bounds; this helper must never impose a lifetime promotion cap.
   public static func effective(base: Double, axis: SalvageUpgradeAxis, bonusesBasisPoints: [Int])
     -> Double
   {

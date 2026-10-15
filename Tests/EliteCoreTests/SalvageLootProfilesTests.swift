@@ -240,4 +240,29 @@ import Testing
     }
   }
 
+  @Test func energyFindsUseExistingRoleBucketsAndPersistOneSelectedAxis() throws {
+    var seen = Set<SalvageUpgradeAxis>()
+    for seed in 0..<10000 {
+      let snapshot = source([.weaponsPlatform])
+      let plan = SalvageLootProfiles.plan(section: section(), seed: UInt64(seed), source: snapshot)
+      for item in plan.items {
+        guard case .technology(let id, let quality, _, let axis) = item.content,
+          id == "energy-technology", let axis
+        else { continue }
+        #expect(plan.bucket == .otherShipUpgrade)
+        #expect([SalvageUpgradeAxis.energyCapacity, .energyRecharge].contains(axis))
+        #expect(
+          item.effect == .scalar(axes: [axis]) && item.bonusBasisPoints == quality.bonusBasisPoints)
+        #expect(item.massKg == 8 && item.halfExtents == Vector3(2, 2, 2))
+        #expect(item.provenance == .human)
+        #expect(
+          try JSONDecoder().decode(SalvageLootPlan.self, from: JSONEncoder().encode(plan)) == plan)
+        seen.insert(axis)
+      }
+      if seen.count == 2 { break }
+    }
+    #expect(seen == [.energyCapacity, .energyRecharge])
+    #expect(SalvageLootProfiles.weights(for: .weaponsPlatform).map(\.percent) == [60, 30, 10])
+  }
+
 }

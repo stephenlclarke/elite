@@ -278,7 +278,8 @@ public enum SalvageLootProfiles {
       "missile-ecm-resistant", "laser-hardpoint", "missile-pylon",
     ]
     let other = [
-      "computer-core", "drive-technology", "shield-technology", "spare-escape-pod",
+      "computer-core", "drive-technology", "shield-technology", "energy-technology",
+      "spare-escape-pod",
       "feature-mining-targeting", "feature-salvage-targeting", "feature-fuel-scoops", "feature-ecm",
       "feature-salvage-cutter",
     ]
