@@ -25,6 +25,7 @@ extension Game {
   @discardableResult
   mutating func fireMiningWorkTool() -> Bool {
     guard !docked, screen == .front, let tool = commander.fittedMiningWorkTool,
+      energy.isFinite, laserHeat.isFinite, fireCooldown.isFinite,
       fireCooldown <= 0, laserHeat <= 230, energy > 1
     else { return false }
     ensurePhysicalActors()
@@ -34,8 +35,15 @@ extension Game {
         bodies: bodies.filter { $0.energy > 0 }, celestials: celestials,
         meshOverrides: gameplayMeshOverrides),
       case .body(let bodyID) = hit.target,
-      bodies.contains(where: { $0.id == bodyID && $0.hull == .asteroid && $0.physical?.rock != nil }
-      ),
+      let body = bodies.first(where: { $0.id == bodyID && $0.hull == .asteroid }),
+      let physical = body.physical, let rockID = physical.rock,
+      physical.identity.system == systemIdentity,
+      physical.identity.visit == commander.flightSimulation.visit,
+      rockID.system == systemIdentity,
+      let rock = miningFields.lazy.flatMap(\.rocks).first(where: { $0.identity == rockID }),
+      rock.energy.isFinite, rock.energy > 0,
+      commander.miningLedger.remainingEnergy(for: rock).isFinite,
+      commander.miningLedger.remainingEnergy(for: rock) > 0,
       let player = commander.flightSimulation.player,
       let origin = makeAttackOrigin(owner: player, sourcePart: "work-tool:" + tool.id.uuidString)
     else { return false }

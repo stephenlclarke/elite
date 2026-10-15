@@ -31,6 +31,93 @@ private func workToolGame() throws -> Game {
 }
 
 struct MiningWorkToolTests {
+  private func expectRefusalWithoutMutation(_ game: inout Game) {
+    let bodies = game.bodies
+    let fields = game.miningFields
+    let ledger = game.commander.miningLedger
+    let crime = game.commander.crimeLedger
+    let flight = game.commander.flightSimulation
+    let resources = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash].map(
+      \.bitPattern)
+    #expect(!game.fireMiningWorkTool())
+    #expect(game.bodies == bodies && game.miningFields == fields)
+    #expect(game.commander.miningLedger == ledger && game.commander.crimeLedger == crime)
+    #expect(game.commander.flightSimulation == flight)
+    #expect(
+      [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash].map(\.bitPattern)
+        == resources)
+  }
+
+  @Test func nonfiniteResourcesRefuseBeforeRockLedgerEmissionOrResourceMutation() throws {
+    for resource in 0..<3 {
+      for invalid in [Double.nan, .infinity, -.infinity] {
+        var game = try workToolGame()
+        try workToolRock(&game)
+        switch resource {
+        case 0: game.energy = invalid
+        case 1: game.laserHeat = invalid
+        default: game.fireCooldown = invalid
+        }
+        expectRefusalWithoutMutation(&game)
+      }
+    }
+  }
+
+  @Test func staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack() throws {
+    for mismatch in 0..<5 {
+      var game = try workToolGame()
+      try workToolRock(&game)
+      let physical = try #require(game.bodies[0].physical)
+      let rock = try #require(physical.rock)
+      switch mismatch {
+      case 0:
+        game.miningFields = []
+      case 1:
+        game.miningFields = game.miningFields.map { field in
+          .init(position: field.position, rocks: field.rocks.filter { $0.identity != rock })
+        }
+      case 2:
+        game.bodies[0].physical?.rock = .init(
+          system: rock.system, field: UInt16.max, rock: rock.rock)
+      case 3:
+        game.bodies[0].physical?.rock = .init(
+          system: .init(galaxy: (rock.system.galaxy + 1) % 8, system: rock.system.system),
+          field: rock.field, rock: rock.rock)
+      default:
+        game.bodies[0].physical = .init(
+          identity: .init(
+            system: physical.identity.system, visit: physical.identity.visit + 1,
+            entity: physical.identity.entity),
+          population: .asteroid, rock: rock)
+      }
+      expectRefusalWithoutMutation(&game)
+    }
+  }
+
+  @Test func depletedLedgerCannotBeBypassedByAStalePositiveEnergyRockBody() throws {
+    var game = try workToolGame()
+    try workToolRock(&game)
+    let rock = try #require(game.miningFields.first?.rocks.first)
+    let tool = try #require(game.commander.fittedMiningWorkTool)
+    for _ in 0..<5 where game.bodies[0].energy > 0 {
+      game.fireCooldown = 0
+      #expect(game.fireMiningWorkTool())
+    }
+    #expect(game.commander.miningLedger.isDepleted(rock.identity))
+    let payloads = game.commander.miningLedger.pendingPayloads
+    #expect(!payloads.isEmpty && payloads.count <= MiningLedger.maximumPending)
+    #expect(
+      payloads.allSatisfy {
+        if case .ore(let source, _) = $0.identity { return source == rock.identity }
+        return false
+      })
+    #expect(game.commander.fittedMiningWorkTool?.id == tool.id)
+    game.bodies[0].energy = rock.energy
+    game.fireCooldown = 0
+    expectRefusalWithoutMutation(&game)
+    #expect(game.commander.miningLedger.pendingPayloads == payloads)
+  }
+
   @Test func explicitWorkToolCoexistsWithFourNavalFacingsAndAnIndependentCutter() throws {
     var game = try workToolGame()
     var inventory = try #require(game.commander.equipmentInventory)
