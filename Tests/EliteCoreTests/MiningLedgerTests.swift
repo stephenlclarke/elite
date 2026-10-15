@@ -30,7 +30,9 @@ struct MiningLedgerTests {
       #expect(
         ledger.hit(rock: rock(), incident: incident(1, mount: mount), damage: 50) == .damaged(100))
       #expect(ledger.hit(rock: rock(), incident: incident(1, mount: mount), damage: 50) == .ignored)
-      ledger = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
+      let restored = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
+      #expect(restored == ledger)
+      ledger = restored
       #expect(ledger.remainingEnergy(for: rock()) == 100)
       guard
         case .extracted(let payloads) = ledger.hit(
@@ -115,6 +117,15 @@ struct MiningLedgerTests {
       amount: mineral.amount, position: mineral.position)
     #expect(
       mission.collect(
+        into: &cargo, freeTonnes: 10, hasScoops: true,
+        approachAllowed: true, protection: MissionProtection()) == .refused(.protectedPayload))
+    let wreck = WreckIdentity(system: system, site: 1, lineage: 2)
+    let lot = SalvageLotIdentity(section: WreckSectionIdentity(wreck: wreck, section: 0), lot: 0)
+    let salvage = TypedCargoPayload(
+      identity: .salvage(lot), amount: mineral.amount,
+      position: mineral.position)
+    #expect(
+      salvage.collect(
         into: &cargo, freeTonnes: 10, hasScoops: true,
         approachAllowed: true, protection: MissionProtection()) == .refused(.protectedPayload))
     cargo[CommodityIdentity.minerals.rawValue] = Int.max / 17

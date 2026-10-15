@@ -8,7 +8,7 @@ public enum MiningHitResult: Equatable, Codable, Sendable {
 }
 
 /// Compact irreversible depletion survives visits; live cargo bindings do not.
-public struct MiningLedger: Codable, Sendable {
+public struct MiningLedger: Equatable, Codable, Sendable {
   public static let maximumPending = 256
   public static let maximumPartial = 256
   private let seed: UInt64

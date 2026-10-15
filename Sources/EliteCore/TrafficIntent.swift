@@ -109,7 +109,7 @@ public enum TrafficIntent {
         distance($0, actor) <= 2000
       else { return false }
       switch payload {
-      case .mission: return false
+      case .mission, .salvage: return false
       case .wreck: return !oreOnly
       case .ore: return true
       }

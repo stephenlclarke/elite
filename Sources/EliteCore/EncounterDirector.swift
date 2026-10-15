@@ -1,6 +1,6 @@
 import Foundation
 
-private struct EncounterRandom: Codable, Sendable {
+private struct EncounterRandom: Equatable, Codable, Sendable {
   var state: UInt64
   mutating func next() -> UInt64 {
     state &+= 0x9e37_79b9_7f4a_7c15
@@ -16,7 +16,7 @@ private struct EncounterRandom: Codable, Sendable {
 }
 
 /// Runtime-owned deterministic proposals. Only receipts establish actual admission.
-public struct EncounterDirector: Codable, Sendable {
+public struct EncounterDirector: Equatable, Codable, Sendable {
   public private(set) var system: SystemIdentity
   public private(set) var visit: UInt64
   public private(set) var nextDecisionTime: Double
