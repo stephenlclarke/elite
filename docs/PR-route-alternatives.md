@@ -8,7 +8,7 @@ README, the player control guide and contextual navigation help describe the sam
 
 ## Validation
 
-The initial 24 navigation regressions and 12 route-preview regressions passed. Native checks exercised three distinct Lave-to-Tibedied alternatives on both chart projections at 768 and 512 point widths: keyboard and pointer preview, explicit Set route, local offscreen continuation, Back preserving an active plan and the active-route banner. Independent review identified pause protection and consumed-leg summary issues; fixes and targeted regressions are being completed. The final combined coverage, sanitizer and leak gates remain pending.
+The final integrated `make ci` passed 284 Swift tests, 92.90% overall line coverage, Thread Sanitizer, Address Sanitizer and a zero-leak probe, plus 39 Python checks. Focused regressions cover paused/stale/invalid commits, pending-jump cancellation, consumed-leg summaries and sequential galaxy-to-local rendering. Native development-build checks cover keyboard/pointer previews, explicit Set, Back/save preservation and both maps at 512/768-point widths. The signed 1.4.0 app independently shows four real Cobra alternatives, active-route separation, local clipping, Back retaining next Reorte and Set changing it to Diso; the production commander remained byte-identical. Its exact source, archive hash and Apple acceptance are documented in [macOS distribution](MACOS-DISTRIBUTION.md). Pending-jump cancellation is tested in the game model; the signed native attempt was mass locked. Required protected-branch checks and exact-main Sonar run after publication.
 
 ## Compatibility and risks
 

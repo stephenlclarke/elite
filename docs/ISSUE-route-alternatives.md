@@ -14,4 +14,4 @@ Retain the existing deduplicated Fewest Jumps, Safest, Trade Opportunities and q
 
 ## Validation
 
-Documentation and help updates are prepared. Gameplay, pointer, keyboard, clipping and plan-preservation validation is pending integration in the owning implementation session.
+Implemented and covered by focused route regressions, the integrated 284-test quality gates and native development/signed-app checks. See the [pull request handoff](PR-route-alternatives.md) for exact validation and remaining platform limits.
