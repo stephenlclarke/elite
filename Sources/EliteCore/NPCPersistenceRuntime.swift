@@ -79,38 +79,49 @@ extension Game {
           commander.npcPersistence.snapshot(for: $0)
         }
       }
-      if let original = bodies[index].physical?.npc?.firstAggressor {
-        if let binding = saved?.firstAggressorBinding, binding.sceneActor == original {
-          if let current = currentNPCReference(binding) {
-            bodies[index].physical?.npc?.firstAggressor = current
-          }
-        } else {
-          let rebound = reboundNPCReference(original, identities: identities)
-          bodies[index].physical?.npc?.firstAggressor = rebound
-        }
-      }
-      let intention =
-        bodies[index].physical?.npc?.intention
-        ?? bodies[index].physical?.suspendedNPCIntention
-      if let intention, let binding = saved?.intentionTargetBinding,
-        binding.sceneActor == intention.referencedActor
-      {
-        if let current = currentNPCReference(binding) {
-          bodies[index].physical?.npc?.intention = intention.replacingReferencedActor(with: current)
-          bodies[index].physical?.suspendedNPCIntention = nil
-        } else {
-          // Missing, dead, refused or terminal targets cannot become a different active target.
-          bodies[index].physical?.npc?.intention = nil
-          bodies[index].physical?.suspendedNPCIntention = intention
-          bodies[index].hostile = false
-        }
+      var body = bodies[index]
+      rebindFirstAggressor(in: &body, saved: saved, identities: identities)
+      rebindIntention(in: &body, saved: saved, identities: identities)
+      bodies[index] = body
+    }
+  }
+
+  private func rebindFirstAggressor(
+    in body: inout SpaceBody, saved: NPCPersistenceSnapshot?,
+    identities: [ActorIdentity: ActorIdentity]
+  ) {
+    guard let original = body.physical?.npc?.firstAggressor else { return }
+    if let binding = saved?.firstAggressorBinding, binding.sceneActor == original {
+      if let current = currentNPCReference(binding) { body.physical?.npc?.firstAggressor = current }
+    } else {
+      body.physical?.npc?.firstAggressor = reboundNPCReference(original, identities: identities)
+    }
+  }
+
+  private func rebindIntention(
+    in body: inout SpaceBody, saved: NPCPersistenceSnapshot?,
+    identities: [ActorIdentity: ActorIdentity]
+  ) {
+    guard let intention = body.physical?.npc?.intention ?? body.physical?.suspendedNPCIntention
+    else {
+      return
+    }
+    if let binding = saved?.intentionTargetBinding, binding.sceneActor == intention.referencedActor
+    {
+      if let current = currentNPCReference(binding) {
+        body.physical?.npc?.intention = intention.replacingReferencedActor(with: current)
+        body.physical?.suspendedNPCIntention = nil
       } else {
-        bodies[index].physical?.suspendedNPCIntention = nil
-        if let intention, let actor = intention.referencedActor {
-          let rebound = reboundNPCReference(actor, identities: identities)
-          bodies[index].physical?.npc?.intention = intention.replacingReferencedActor(
-            with: rebound)
-        }
+        // Missing, dead, refused or terminal targets cannot become a different active target.
+        body.physical?.npc?.intention = nil
+        body.physical?.suspendedNPCIntention = intention
+        body.hostile = false
+      }
+    } else {
+      body.physical?.suspendedNPCIntention = nil
+      if let actor = intention.referencedActor {
+        body.physical?.npc?.intention = intention.replacingReferencedActor(
+          with: reboundNPCReference(actor, identities: identities))
       }
     }
   }

@@ -120,12 +120,20 @@ struct NPCReferenceRuntimeTests {
     try referenceExpectA(game, a: a, target: b2, flee: flee, saved: savedAgain)
   }
 
-  @Test func realSaveLoadKeepsReferenceToAnEarlierBatchAndPreservesSourceData() async throws {
+  @Test(arguments: [false, true])
+  func realSaveLoadKeepsReferenceToAnEarlierBatchAndPreservesSourceData(
+    targetReturnsBeforeSave: Bool
+  ) async throws {
     let (initial, a, b) = try referenceGame()
     var game = initial
     try referenceCullBoth(&game, a: a, b: b)
-    let savedA = try #require(game.commander.npcPersistence.snapshot(for: a))
-    let beforeSaveB = try referenceBringIn(&game, logical: b)
+    let oldVisit = game.commander.flightSimulation.visit
+    if targetReturnsBeforeSave {
+      try referenceBringIn(&game, logical: b)
+    } else {
+      try referenceBringIn(&game, logical: a)
+      game.tick(delta: 0.001)
+    }
     let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: url) }
     let runtime = GameRuntime(game: game)
@@ -133,11 +141,13 @@ struct NPCReferenceRuntimeTests {
     let disk = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
     #expect(
       disk.npcPersistence.binding(for: a) == nil && disk.npcPersistence.binding(for: b) == nil)
+    let savedA = try #require(disk.npcPersistence.snapshot(for: a))
+    #expect(savedA.npc.intention == .flee(b))
     try await runtime.load(from: url)
     await runtime.key("0")
     game = await runtime.snapshot()
     let afterLoadB = try referenceBringIn(&game, logical: b)
-    #expect(afterLoadB != beforeSaveB && game.commander.npcPersistence.binding(for: a) == nil)
+    #expect(afterLoadB.visit > oldVisit && game.commander.npcPersistence.binding(for: a) == nil)
     try referenceBringIn(&game, logical: a)
     try referenceExpectA(game, a: a, target: afterLoadB, flee: true, saved: savedA)
   }
@@ -204,6 +214,11 @@ struct NPCReferenceRuntimeTests {
     try referenceCullBoth(&game, a: a, b: b)
     let a1 = try referenceBringIn(&game, logical: a)
     #expect(game.bodies.first { $0.physical?.identity == a1 }?.physical?.npc?.intention == nil)
+    let waitingVelocity = try #require(
+      game.bodies.first { $0.physical?.identity == a1 }?.physical?.velocity)
+    game.tick(delta: 0.01)
+    #expect(
+      game.bodies.first { $0.physical?.identity == a1 }?.physical?.velocity == waitingVelocity)
     #expect(game.persistNPCStates().isEmpty)
     let context = try #require(game.gameplayContext())
     var requests: [SpawnRequest] = []
