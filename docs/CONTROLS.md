@@ -7,8 +7,8 @@ The main pattern is the same everywhere: **numbers open areas, arrows move, Retu
 | Key | Docked | In flight |
 | --- | --- | --- |
 | 0 | Launch | Front view |
-| 1 | Market, buy mode (alias) | Rear view |
-| 2 | Market, sell mode (alias) | Left view |
+| 1 | — | Rear view |
+| 2 | — | Left view |
 | 3 | Equipment | Right view |
 | 4 | Galactic chart, planet facts and globe | Galactic chart |
 | 5 | Short range chart, planet facts and globe | Short range chart |
@@ -17,7 +17,7 @@ The main pattern is the same everywhere: **numbers open areas, arrows move, Retu
 | 8 | Commander status | Commander status |
 | 9 | Inventory | Inventory |
 
-The Screens menu offers these same destinations and Command-number shortcuts. Number keys work in read-only browsers as well as ordinary screens, but mission dialogs, help, pause and XYZZY consume their own controls. Escape from ordinary information screens returns through the screens you visited, ending at commander status when docked or your cockpit in flight. Switching to a cockpit view starts a fresh return path. Escape in the cockpit leaves you flying.
+The Screens menu offers these same destinations. Plain numbers are the navigation shortcuts; there are no additional Command-number shortcuts. Docked 1/2 have no action; use Market (7) and Tab to choose Buy or Sell. Number keys work in read-only browsers as well as ordinary screens, but mission dialogs, help, pause and XYZZY consume their own controls. Escape from ordinary information screens returns through the screens you visited, ending at commander status when docked or your cockpit in flight. Switching to a cockpit view starts a fresh return path. Escape in the cockpit leaves you flying.
 
 ## Basic flight
 
@@ -97,7 +97,7 @@ Choosing a route does not jump. Dock at each stop, launch, and use H for the nex
 
 ## Ship showroom
 
-Open with 6 while docked. Use arrows or click to choose a ship; Return or the Specifications button reads it. Tab or the Ships/Specifications button switches the active pane, visibly named in the footer. A double-click opens specifications directly. Arrows act on the active pane; scrolling acts on the pane under the pointer. Option-Up/Down pages that pane.
+Open with 6 while docked. W and Command-Shift-W have no showroom action. Use arrows or click to choose a ship; Return or the Specifications button reads it. Tab or the Ships/Specifications button switches the active pane, visibly named in the footer. A double-click opens specifications directly. Arrows act on the active pane; scrolling acts on the pane under the pointer. Option-Up/Down pages that pane.
 
 Slash or clicking the search field begins a filter. Up/Down works immediately on the results, Return opens the selected specifications, Delete erases a letter, and Command-Delete clears the search. Clear filter is also clickable. No matches means no stale model. Escape leaves search, then specifications, then the showroom, preserving selection while you move between panes and help. Reopening the showroom starts unfiltered on your currently owned ship.
 
@@ -133,9 +133,9 @@ Type XYZZY outside a search to become Commander Clarke in a fully fitted Cobra M
 
 ## Compatibility shortcuts
 
-Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; R for targeting; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. W and Command-Shift-W still open the docked showroom; B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
+Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; R for targeting; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
 
-Existing browser-specific close aliases (W, L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
+Existing browser-specific close aliases (L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
 
 Shipyard: click Switch ship, or Return to read specifications then Return again to review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
 

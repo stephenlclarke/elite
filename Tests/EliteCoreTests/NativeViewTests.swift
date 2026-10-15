@@ -7,6 +7,59 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeMenusRetireDuplicateNavigationAcceleratorsAndKeepPrimaryScreens()
+    async throws
+  {
+    _ = NSApplication.shared
+    let delegate = AppDelegate(restoreOnLaunch: false)
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    let view = try #require(window.contentView as? GameView)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    view.game.screen = .status
+    let commander = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
+    #expect(commander.item(withTitle: "Ship Showroom") == nil)
+    let screens = try #require(NSApp.mainMenu?.item(withTitle: "Screens")?.submenu)
+    delegate.menuNeedsUpdate(screens)
+    #expect(screens.items.allSatisfy { $0.keyEquivalent.isEmpty })
+    for number in [1, 2] {
+      let item = try #require(screens.items.first { $0.tag == number })
+      #expect(item.isHidden && !delegate.validateMenuItem(item))
+    }
+    for number in [6, 7] {
+      let item = try #require(screens.items.first { $0.tag == number })
+      #expect(!item.isHidden && delegate.validateMenuItem(item))
+      screens.performActionForItem(at: screens.index(of: item))
+      #expect(view.pending.last == "screen:\(number)")
+    }
+    view.pending.removeAll()
+    let retired = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero,
+        modifierFlags: [.command, .shift], timestamp: 0, windowNumber: window.windowNumber,
+        context: nil, characters: "W", charactersIgnoringModifiers: "w", isARepeat: false,
+        keyCode: 13))
+    view.keyDown(with: retired)
+    #expect(view.pending.isEmpty && view.game.screen == .status)
+    let save = try #require(commander.item(withTitle: "Save Commander"))
+    let open = try #require(commander.item(withTitle: "Open Commander..."))
+    #expect(save.keyEquivalent == "s" && save.keyEquivalentModifierMask == .command)
+    #expect(open.keyEquivalent == "o" && open.keyEquivalentModifierMask == [.command, .shift])
+    view.game.launch()
+    delegate.menuNeedsUpdate(screens)
+    for number in [1, 2] {
+      let item = try #require(screens.items.first { $0.tag == number })
+      #expect(!item.isHidden && delegate.validateMenuItem(item))
+    }
+  }
+
   @MainActor @Test func nativeSaveIncludesEarlierQueuedCobraRestore() async throws {
     let id = UUID().uuidString
     let preferences = try #require(UserDefaults(suiteName: id))

@@ -426,10 +426,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       withTitle: "Install Mission Pack...", action: #selector(installMissionPack), keyEquivalent: ""
     )
     installPack?.target = self
-    let showroom = commander.submenu?.addItem(
-      withTitle: "Ship Showroom", action: #selector(showShipShowroom), keyEquivalent: "w")
-    showroom?.keyEquivalentModifierMask = [.command, .shift]
-    showroom?.target = self
     let screens = NSMenuItem()
     screens.title = "Screens"
     menu.addItem(screens)
@@ -438,7 +434,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     for number in 0...9 {
       let item = screens.submenu?.addItem(
         withTitle: Game.screenTitle(number, docked: true),
-        action: #selector(gameAction(_:)), keyEquivalent: String(number))
+        action: #selector(gameAction(_:)), keyEquivalent: "")
       item?.representedObject = "screen:\(number)"
       item?.tag = number
       item?.target = self
@@ -496,15 +492,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func menuNeedsUpdate(_ menu: NSMenu) {
     guard menu.title == "Screens", let view = window?.contentView as? GameView else { return }
     for item in menu.items {
-      item.isHidden = view.game.docked && [1, 2].contains(item.tag)
+      item.isHidden = Game.numberedScreen(item.tag, docked: view.game.docked) == nil
       item.title = "\(item.tag): " + Game.screenTitle(item.tag, docked: view.game.docked)
     }
   }
   func validateMenuItem(_ item: NSMenuItem) -> Bool {
     guard let game = (window?.contentView as? GameView)?.game else { return false }
     if let command = item.representedObject as? String {
-      if command.hasPrefix("screen:") {
-        return !game.paused && !game.showroom.trading
+      if command.hasPrefix("screen:"), let number = Int(command.dropFirst(7)) {
+        return Game.numberedScreen(number, docked: game.docked) != nil && !game.paused
+          && !game.showroom.trading
           && ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(
             game.screen)
       }
@@ -529,13 +526,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     if item.action == #selector(toggleSpin) || item.action == #selector(stopSpin) {
       return !game.docked && game.screen.isFlight && !game.paused
     }
-    if item.action == #selector(showShipShowroom) {
-      return game.docked && !game.paused
-        && ![
-          Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver, .showroom, .gallery,
-          .rumour,
-        ].contains(game.screen)
-    }
     return true
   }
   private func flightActionAvailable(_ command: String, game: Game) -> Bool {
@@ -552,9 +542,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   @objc private func gameAction(_ sender: NSMenuItem) {
     guard let command = sender.representedObject as? String else { return }
     (window?.contentView as? GameView)?.pending.append(command)
-  }
-  @objc private func showShipShowroom() {
-    (window?.contentView as? GameView)?.pending.append("showroom-open")
   }
   @objc private func showHelp() {
     (window?.contentView as? GameView)?.pending.append("help-open")
@@ -787,7 +774,8 @@ struct EliteApp {
       game.screen = .status
       let runtime = GameRuntime(game: game)
       for key in [
-        "showroom-open", "down", "b", "down", "return", "v", ".", "pagedown", " ", "k", "k", "w",
+        "showroom-open", "down", "b", "down", "return", "v", ".", "pagedown", " ", "k", "k",
+        "escape",
         "4", "]", "/", "l", "a", "return", "6", "4", "o", "8", "u", "return",
       ] {
         await runtime.key(key)

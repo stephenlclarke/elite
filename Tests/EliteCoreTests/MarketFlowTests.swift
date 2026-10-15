@@ -11,11 +11,11 @@ import Testing
   let before = game.commander
   game.key("tab")
   #expect(game.screen == .sell && game.commander == before)
-  game.key("1")
+  game.key("tab")
   #expect(game.screen == .buy && game.selection == 0)
   game.key("return")
   #expect(game.commander.cargo[0] == before.cargo[0] + 1)
-  game.key("2")
+  game.key("tab")
   game.key("return")
   #expect(game.commander.cargo[0] == before.cargo[0])
   game.key("escape")

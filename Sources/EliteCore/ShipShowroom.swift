@@ -176,7 +176,6 @@ extension Game {
       return
     }
     switch key {
-    case "w": closeShowroom()
     case "x": clearShowroomSearch()
     case "escape":
       if showroom.detail { showroom.detail = false } else { closeShowroom() }

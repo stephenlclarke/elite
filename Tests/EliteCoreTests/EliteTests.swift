@@ -76,13 +76,13 @@ import Testing
   #expect(game.screen == .title)
   game.key(" ")
   #expect(game.screen == .status)
-  let docked: [Screen] = [
-    .front, .buy, .sell, .equipment, .chart, .shortChart, .showroom, .market, .status, .inventory,
-  ]
-  // Screen zero launches, so verify docked screens before it.
-  for i in 1..<10 {
-    game.key("\(i)")
-    #expect(game.screen == docked[i])
+  // Retired docked market aliases do not navigate; zero is tested separately because it launches.
+  for (number, expected) in [
+    (3, Screen.equipment), (4, .chart), (5, .shortChart),
+    (6, .showroom), (7, .buy), (8, .status), (9, .inventory),
+  ] {
+    game.key("\(number)")
+    #expect(game.screen == expected)
   }
   game.key("99")
   #expect(game.screen == .inventory)

@@ -38,8 +38,9 @@ import Testing
   #expect(game.docked && !game.commander.equipment.contains("Escape Pod"))
   for docked in [false, true] {
     for number in 0...9 {
-      #expect(Game.numberedScreen(number, docked: docked) != nil)
-      #expect(!Game.screenTitle(number, docked: docked).isEmpty)
+      let retired = docked && [1, 2].contains(number)
+      #expect((Game.numberedScreen(number, docked: docked) == nil) == retired)
+      #expect(Game.screenTitle(number, docked: docked).isEmpty == retired)
     }
   }
   #expect(Game.numberedScreen(11, docked: true) == nil)
@@ -205,4 +206,57 @@ import Testing
   game.key("k")
   #expect(PlayerHelp.pages(for: game).first!.title == "SHIP EXCHANGE")
   #expect(!PlayerHelp.pages(for: game).contains { $0.title == "STATION SCREENS" })
+}
+
+@Test func retiredDockedMarketAliasesDoNotDismissBrowsersOrChangeState() {
+  for screen in [
+    Screen.status, .buy, .sell, .chart, .shortChart, .showroom, .gallery, .rumour, .navigation,
+  ] {
+    for key in ["1", "2", "screen:1", "screen:2"] {
+      var game = Game(executive: false)
+      game.screen = screen
+      game.selection = 5
+      game.screenHistory = [.status, .equipment]
+      game.showroom.query = "cobra"
+      let before = game.commander
+      let history = game.screenHistory
+      let showroom = game.showroom
+      game.key(key)
+      #expect(game.screen == screen && game.selection == 5)
+      #expect(game.commander == before && game.screenHistory == history)
+      #expect(
+        game.showroom.query == showroom.query && game.showroom.selection == showroom.selection)
+      #expect(
+        game.showroom.detail == showroom.detail && game.showroom.searching == showroom.searching)
+    }
+  }
+}
+
+@Test func showroomHasOneNumberedShortcutAndRetiredWLeavesNestedDetailsIntact() {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.key("w")
+  #expect(game.screen == .status)
+  game.key("6")
+  #expect(game.screen == .showroom)
+  game.key("return")
+  let before = game.commander
+  game.key("w")
+  #expect(game.screen == .showroom && game.showroom.detail && game.commander == before)
+  game.key("escape")
+  game.key("/")
+  for letter in "wnu612" { game.key(String(letter)) }
+  #expect(game.showroom.query == "wnu612" && game.acceptsTextInput)
+  game.key("escape")
+  game.key("escape")
+  #expect(game.screen == .status)
+  game.key("7")
+  #expect(game.screen == .buy)
+  game.key("tab")
+  #expect(game.screen == .sell)
+  game.launch()
+  game.key("1")
+  #expect(game.screen == .rear)
+  game.key("2")
+  #expect(game.screen == .left)
 }

@@ -56,7 +56,7 @@ Start with **numbers, arrows, Return, Escape and K**. Numbers open game areas, a
 | --- | --- | --- |
 | 0 | Launch | Front view |
 | 3 | Equipment | Right view |
-| 1 / 2 | Use Market (7) | Rear / left view |
+| 1 / 2 | — | Rear / left view |
 | 4 / 5 | Charts with full planet information | Galactic / short range chart |
 | 6 | Ship showroom | System data and planet view |
 | 7 / 8 / 9 | Market / status summary / inventory | Prices / status summary / inventory |
