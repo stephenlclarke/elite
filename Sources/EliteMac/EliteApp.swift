@@ -304,6 +304,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
+        let frameStart = ContinuousClock.now
+        let framesPerSecond = max(1, min(60, view.window?.screen?.maximumFramesPerSecond ?? 60))
+        let deadline = frameStart.advanced(by: .seconds(1.0 / Double(framesPerSecond)))
         if let self {
           await self.processFrame(in: view) {
             let now = ContinuousClock.now
@@ -314,7 +317,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         } else {
           return
         }
-        do { try await Task.sleep(for: .milliseconds(16)) } catch { return }
+        // Account for work inside the interval; overdue frames yield without a catch-up burst.
+        if ContinuousClock.now < deadline {
+          do { try await Task.sleep(until: deadline, clock: .continuous) } catch { return }
+        } else {
+          await Task.yield()
+        }
       }
     }
   }
