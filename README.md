@@ -272,8 +272,6 @@ To uninstall:
 brew uninstall --cask stephenlclarke/tap/elite
 ```
 
-The tap currently provides version 1.3.1; the GitHub release below provides 1.4.0. The tap update follows verification of its published release asset.
-
 Uninstalling preserves saved commanders and mission packs in `~/.xyzzy/elite/`. See [Homebrew distribution](docs/HOMEBREW.md) for the maintained cask, checksums and release synchronization.
 
 ### Download from GitHub Releases
