@@ -67,7 +67,8 @@ final class GameView: NSView {
     let start = FramePerformance.begin()
     let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
     defer {
-      FramePerformance.end(start: start, pitch: controls.pitch, screen: String(describing: game.screen),
+      FramePerformance.end(
+        start: start, pitch: controls.pitch, screen: String(describing: game.screen),
         width: Int(bounds.width), height: Int(bounds.height), scale: scale)
     }
     guard
@@ -257,7 +258,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   NSMenuItemValidation
 {
   var window: NSWindow?
-  let runtime = GameRuntime()
+  let runtime: GameRuntime
+  private let performanceScenario: FlightPerformanceScenario?
+  private var performanceTick = 0
+  private let performanceRequiresFullscreen: Bool
   var loop: Task<Void, Never>?
   let saves: CommanderSaveSession
   let windowSize: NSSize
@@ -265,10 +269,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   var saveURL: URL { saves.activeURL }
   init(
     restoreOnLaunch: Bool = true, saves: CommanderSaveSession? = nil,
-    windowSize: NSSize = .init(width: 768, height: 768)
+    windowSize: NSSize = .init(width: 768, height: 768),
+    performanceScenario: FlightPerformanceScenario? = nil
   ) {
+    let scenario =
+      performanceScenario
+      ?? ProcessInfo.processInfo.environment["ELITE_FRAME_SCENARIO"]
+      .flatMap(FlightPerformanceScenario.Variant.init(rawValue:))
+      .map { FlightPerformanceScenario(variant: $0) }
+    self.performanceScenario = scenario
+    performanceRequiresFullscreen =
+      scenario != nil
+      && ProcessInfo.processInfo.environment["ELITE_FRAME_FULLSCREEN"] == "1"
+    runtime = scenario.map { GameRuntime(game: $0.makeGame()) } ?? GameRuntime()
     self.windowSize = windowSize
-    self.restoreOnLaunch = restoreOnLaunch
+    self.restoreOnLaunch = scenario == nil && restoreOnLaunch
     self.saves = saves ?? CommanderSaveSession()
     super.init()
   }
@@ -328,6 +343,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     }
   }
   func processFrame(in view: GameView, delta: () -> Double) async {
+    if let scenario = performanceScenario {
+      if performanceRequiresFullscreen && window?.styleMask.contains(.fullScreen) != true {
+        // Hold the safe scene until native full-screen entry; never advance off-camera.
+        view.game = await runtime.snapshot()
+        view.needsDisplay = true
+        return
+      }
+      guard performanceTick < FlightPerformanceScenario.tickCount else {
+        loop?.cancel()
+        return
+      }
+      // Diagnostic replay advances the same runtime actor with a fixed input trace.
+      // Stop after the bounded trace so a stalled renderer cannot cause game-over.
+      view.pending.removeAll()
+      await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
+      let controls = scenario.controls(forTick: performanceTick)
+      await runtime.setControls(controls)
+      view.game = await runtime.advance(delta: FlightPerformanceScenario.delta)
+      FramePerformance.noteScenario(
+        name: scenario.variant.rawValue, tick: performanceTick, pitch: controls.pitch,
+        game: view.game, delta: FlightPerformanceScenario.delta)
+      performanceTick += 1
+      view.needsDisplay = true
+      return
+    }
     await processPendingCommands(in: view)
     await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
     await runtime.setControls(view.controls)

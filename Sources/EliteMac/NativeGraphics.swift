@@ -27,6 +27,7 @@ func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGIm
 /// The window and exported media share the same drawing path at any pixel size.
 @MainActor
 func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
+  FramePerformance.noteFrame(frame)
   context.saveGState()
   context.translateBy(x: rect.minX, y: rect.minY)
   context.scaleBy(x: rect.width / frame.canvas.width, y: rect.height / frame.canvas.height)
