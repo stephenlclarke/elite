@@ -186,6 +186,7 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   defer { fixture.clean() }
   var game = fixture.game()
   let campaign = try fixture.startContractCampaign(&game, nested: nested)
+  game.commander.name = "LIVE CONTRACT OWNER"
   let savedRoot = try #require(
     game.missionCatalogue.first { $0.savedInstance == campaign.root })
   #expect(savedRoot.trialDigest == nil)
@@ -236,7 +237,9 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   let trial = await runtime.snapshot()
   #expect(trial.isMissionTrial && trial.trialDigest == campaign.provider.digest)
   #expect(trial.commander.valid)
-  #expect(trial.commander.scriptState.instances[campaign.root] == nil)
+  // Native board IDs are deterministic; isolated worlds may generate the same offer UUID.
+  #expect(trial.commander.name != before.name && trial.commander != before)
+  #expect(trial.ecmControl.epoch != epoch)
   #expect(trial.commander.scriptState.instances.values.contains { $0.contract != nil })
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
