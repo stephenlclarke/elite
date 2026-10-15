@@ -21,6 +21,11 @@ public struct RockIdentity: Hashable, Codable, Sendable {
 public enum PayloadIdentity: Hashable, Codable, Sendable {
   case ore(RockIdentity, fragment: UInt16)
   case wreck(ActorIdentity, lot: UInt16)
+  case mission(instance: UUID, payload: String)
+}
+
+public enum SpawnProducer: String, Codable, Sendable {
+  case ambient, mining, security, mission
 }
 
 public struct SpawnIdentity: Hashable, Codable, Sendable {
@@ -28,6 +33,7 @@ public struct SpawnIdentity: Hashable, Codable, Sendable {
   public let visit: UInt64
   public let sequence: UInt64
   public let member: UInt16
+  public var producer: SpawnProducer = .ambient
 }
 
 /// Raw values are the existing market/save indices. Units have one authority.
@@ -227,14 +233,15 @@ public struct AttackOrigin: Equatable, Codable, Sendable {
   public let ordnance: ActorIdentity?
   public let emittedAt: Double
   public let ownerLegalAtEmission: LegalRecord
+  public var sourcePart: String?
 }
 
 public enum AttackKind: String, Codable, Sendable {
-  case laser, missile, bomb, collision
+  case laser, missile, bomb, plasma, collision
 }
 
 public enum AttackOutcome: String, Codable, Sendable {
-  case discharge, targetedLaunch, hit, destruction, ordnanceInterception
+  case discharge, targetedLaunch, hit, destruction, componentDestruction, ordnanceInterception
 }
 
 public struct CombatIncident: Equatable, Codable, Sendable {
@@ -251,4 +258,5 @@ public struct CombatIncident: Equatable, Codable, Sendable {
   public let victimIsStation: Bool
   public var laser: LaserKind?
   public var mount: LaserMount?
+  public var victimPart: String?
 }
