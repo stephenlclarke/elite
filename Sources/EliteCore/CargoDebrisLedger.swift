@@ -39,6 +39,7 @@ public struct CargoDebrisLedger: Equatable, Codable, Sendable {
   public static let maximumPending = 256
   public static let maximumSources = 256
   public static let maximumRecentDeaths = 256
+  private static let lotSpacing = 2 * (Mesh.hull(.cargo).vertices.map(\.length).max() ?? 48) + 16
   private var sources: [ActorIdentity: DebrisSource] = [:]
   private var pending: [PayloadIdentity: DebrisLot] = [:]
   private var offers: [SpawnIdentity: PayloadIdentity] = [:]
@@ -132,10 +133,17 @@ public struct CargoDebrisLedger: Equatable, Codable, Sendable {
   }
 
   public mutating func pendingSpawnRequests(context: EncounterContext) -> [SpawnRequest] {
-    guard valid, context.physicalTime.isFinite, context.physicalTime >= 0 else { return [] }
+    guard valid, context.physicalTime.isFinite, context.physicalTime >= 0,
+      context.perceptionRadius.isFinite, context.perceptionRadius > 0
+    else { return [] }
     fillPending(physicalTime: context.physicalTime)
     refreshPositions(context: context)
-    let current = offers.filter { $0.key.system == context.system && $0.key.visit == context.visit }
+    let current = offers.filter {
+      $0.key.system == context.system && $0.key.visit == context.visit
+        && pending[$0.value].map {
+          ($0.payload.position - context.player.position).length <= context.perceptionRadius
+        } == true
+    }
     offers = current
     let capacity = min(
       PopulationClass.cargo.maximum,
@@ -149,6 +157,7 @@ public struct CargoDebrisLedger: Equatable, Codable, Sendable {
     for item in pendingPayloads where offers.count < capacity {
       guard Self.system(of: item.identity) == context.system, bindings[item.identity] == nil,
         !reserved.contains(item.identity), !protected(item.identity, by: context.protection),
+        (item.position - context.player.position).length <= context.perceptionRadius,
         sequence < UInt64.max
       else { continue }
       sequence += 1
@@ -261,7 +270,8 @@ public struct CargoDebrisLedger: Equatable, Codable, Sendable {
       let identity = PayloadIdentity.wreck(next.actor, lot: UInt16(next.nextLot))
       let slot = next.nextLot % Self.maximumPending
       let offset = Vector3(
-        Double(slot % 8 - 4) * 80, Double(slot / 8 % 8 - 4) * 80, Double(slot / 64 + 1) * 80)
+        Double(slot % 8 - 4) * Self.lotSpacing, Double(slot / 8 % 8 - 4) * Self.lotSpacing,
+        Double(slot / 64 + 1) * Self.lotSpacing)
       let velocity = next.velocity + next.orientation.apply(offset.unit * 8)
       let position =
         next.position + next.orientation.apply(offset) + velocity

@@ -24,6 +24,11 @@ public struct Commander: Sendable, Equatable, Codable {
     set { savedStationSecurity = newValue }
   }
   public var encounterDirector: EncounterDirector?
+  private var savedCargoDebrisLedger: CargoDebrisLedger?
+  public var cargoDebrisLedger: CargoDebrisLedger {
+    get { savedCargoDebrisLedger ?? CargoDebrisLedger() }
+    set { savedCargoDebrisLedger = newValue }
+  }
   private var savedMiningLedger: MiningLedger?
   public var miningLedger: MiningLedger {
     get { savedMiningLedger ?? MiningLedger() }
@@ -173,6 +178,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && (savedFlightSimulation?.valid ?? true)
+      && (savedCargoDebrisLedger?.valid ?? true)
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -861,6 +867,7 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
   }
   public mutating func dock(atMainStation: Bool = true) {
+    persistCargoPoses()
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
     retaliation.clear()
@@ -919,6 +926,7 @@ public struct Game: Sendable {
       || celestials.contains { $0.position.length < $0.radius * 4 }
   }
   public mutating func arrive() {
+    if selectedSystem != commander.system { departOrdinaryCargo() }
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -957,6 +965,7 @@ public struct Game: Sendable {
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
+    departOrdinaryCargo()
     commander.galaxy = (commander.galaxy + 1) & 7
     if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
     galacticBrowse = GalaxyBrowseState()
@@ -1166,9 +1175,13 @@ public struct Game: Sendable {
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
     persistBlackjackTargets()
+    persistCargoPoses()
     let departing = bodies.filter { $0.leavesLocalBubble && $0.id != 0 }
     for body in departing {
-      if let actor = body.physical?.identity { commander.miningLedger.cull(actor: actor) }
+      if let actor = body.physical?.identity {
+        commander.miningLedger.cull(actor: actor)
+        commander.cargoDebrisLedger.cull(actor: actor)
+      }
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
@@ -1197,18 +1210,22 @@ public struct Game: Sendable {
     }
   }
   mutating func resolveDestroyed() {
-    let destroyed = bodies.filter { $0.energy <= 0 }
-    if !destroyed.isEmpty { ensurePhysicalActors() }
-    for body in destroyed { settleLegacyCombatDeath(body) }
+    let initial = bodies.filter { $0.energy <= 0 }
+    if !initial.isEmpty { ensurePhysicalActors() }
+    for body in initial { settleLegacyCombatDeath(body) }
+    let deferred = registerDestroyedCargo()
+    let destroyed = bodies.filter { $0.energy <= 0 && !deferred.contains($0.id) }
     for body in destroyed {
       if let payload = body.physical?.payload {
         _ = commander.miningLedger.destroy(payload: payload)
+        _ = commander.cargoDebrisLedger.destroy(
+          payload: payload, protection: gameplayContext()?.protection)
       }
       missionTargetRemoved(body)
       clearRemovedTarget(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.energy <= 0 }
+    bodies.removeAll { $0.energy <= 0 && !deferred.contains($0.id) }
     if !bodies.contains(where: { $0.hull == .thargoid }) {
       for index in bodies.indices where bodies[index].hull == .thargon {
         bodies[index].hostile = false
@@ -1261,14 +1278,22 @@ public actor GameRuntime {
     return game
   }
   public func save(to url: URL) throws {
-    game.resolveDestroyed()
-    game.persistBlackjackTargets()
-    guard game.commander.valid else { throw SaveError.invalidCommander }
-    let data = try JSONEncoder().encode(game.commander)
+    var candidate = game
+    candidate.resolveDestroyed()
+    candidate.persistCargoPoses()
+    candidate.persistBlackjackTargets()
+    guard candidate.commander.valid,
+      !candidate.bodies.contains(where: {
+        $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
+          && $0.physical?.npc?.role != .mission
+      })
+    else { throw SaveError.invalidCommander }
+    let data = try JSONEncoder().encode(candidate.commander)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     try FileManager.default.createDirectory(
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
+    game = candidate
   }
   public func restoreStartup(from url: URL) throws {
     try load(from: url, persistMigrations: false)

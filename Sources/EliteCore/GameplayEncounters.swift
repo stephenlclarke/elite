@@ -27,6 +27,7 @@ extension Game {
     commander.encounterDirector = director
     activateNearbyMiningFields()
     admitPendingOre()
+    admitPendingCargo()
     guard let live = gameplayContext() else { return }
     let intents = TrafficIntent.intents(context: live) + security.encounters.intents
     for index in bodies.indices where bodies[index].physical?.spawnIdentity != nil {
@@ -227,14 +228,21 @@ extension Game {
       let npc = bodies[index].physical?.npc
     else { return }
     var cargo = Array(repeating: 0, count: CommodityIdentity.allCases.count)
-    for amount in npc.ordinaryCargo { cargo[amount.commodity.rawValue] += amount.quantity }
-    let capacity = ShipCatalogue.nativeShip(bodies[index].hull)?.game?.cargo ?? 20
+    for amount in npc.ordinaryCargo {
+      guard amount.valid, cargo[amount.commodity.rawValue] <= Int.max / 17 - amount.quantity else {
+        return
+      }
+      cargo[amount.commodity.rawValue] += amount.quantity
+    }
+    let capacity =
+      bodies[index].physical?.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.cargo }
+      ?? ShipCatalogue.nativeShip(bodies[index].hull)?.game?.cargo ?? 20
     let used = CommodityIdentity.allCases.reduce(0) {
       $0 + ($1.unit == "t" ? cargo[$1.rawValue] : 0)
     }
-    let receipt = commander.miningLedger.collect(
+    let receipt = collectOrdinaryPayload(
       payload: payload, into: &cargo, freeTonnes: max(0, capacity - used),
-      hasScoops: true, approachAllowed: true, protection: context.protection)
+      hasScoops: npc.hasFuelScoops == true, approachAllowed: true, protection: context.protection)
     if case .collected = receipt {
       bodies[index].physical?.npc?.cargoProvenance = .recorded
       bodies[index].physical?.npc?.ordinaryCargo = CommodityIdentity.allCases.compactMap {

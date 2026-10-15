@@ -12,7 +12,7 @@ extension Game {
         guard let context = gameplayContext() else { continue }
         var cargo = commander.cargo
         let freeTonnes = max(0, commander.capacity - commander.cargoTonnes)
-        let receipt = commander.miningLedger.collect(
+        let receipt = collectOrdinaryPayload(
           payload: payload, into: &cargo,
           freeTonnes: freeTonnes,
           hasScoops: true, approachAllowed: true, protection: context.protection)

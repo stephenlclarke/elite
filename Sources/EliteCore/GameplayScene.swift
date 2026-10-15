@@ -40,6 +40,7 @@ extension Game {
       miningFields = MiningFields.generate(anchors: anchors, seed: gameplaySeed)
     }
     commander.miningLedger.resetPhysicalBindings(system: systemIdentity)
+    commander.cargoDebrisLedger.resetPhysicalBindings(system: systemIdentity)
     gameplayRevision &+= 1
     ensurePhysicalActors()
     if let context = gameplayContext() {
