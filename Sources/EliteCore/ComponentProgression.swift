@@ -162,6 +162,8 @@ public struct ComponentUpgradeApplication: Sendable {
   public let component: ComponentInstance
   public let consumedItem: ComponentUpgradeIdentity
   public let expectedInventoryRevision: UInt64
+  fileprivate let proof: ComponentUpgradeQuote
+
 }
 
 public enum ComponentProgressionError: Error, Equatable, Sendable {
@@ -173,6 +175,45 @@ public enum ComponentProgressionError: Error, Equatable, Sendable {
 /// The caller must atomically commit this result and consume the actual G2 inventory item using
 /// the pinned inventory revision. G2's ledger is the sole cross-instance consumption authority.
 public enum ComponentProgression {
+  /// Validates a loaded physical instance without consuming an item or changing its grade/stats.
+  public static func validateLoaded(
+    _ component: ComponentInstance, definition: ComponentFamilyDefinition
+  ) throws {
+    let grades = try validate(definition)
+    _ = try validate(component, definition: definition, grades: grades)
+  }
+
+  /// Reconciles an already-valid saved grade with actual earned thresholds. This creates no
+  /// upgrade receipt, item, equipment entitlement or runtime resource refill.
+  public static func reconcileLoaded(
+    _ component: ComponentInstance, definition: ComponentFamilyDefinition
+  ) throws -> ComponentInstance {
+    let grades = try validate(definition)
+    let index = try validate(component, definition: definition, grades: grades)
+    let finalIndex = promotedIndex(statistics: component.statistics, from: index, grades: grades)
+    guard finalIndex != index else { return component }
+    return .init(
+      id: component.id, origin: component.origin, statistics: component.statistics,
+      grade: grades[finalIndex].identity, features: component.features, receipts: component.receipts
+    )
+  }
+
+  /// Verifies the sealed original upgrade transaction. The source revision belongs to the
+  /// authoritative salvage inventory; an owned-equipment revision is a separate caller concern.
+  /// Caller must still consume the source and replace the physical component atomically.
+  public static func validateApplication(
+    _ application: ComponentUpgradeApplication, before: ComponentInstance,
+    definition: ComponentFamilyDefinition, sourceInventoryRevision: UInt64
+  ) throws {
+    let checked = try apply(
+      application.proof, component: before, item: application.proof.item,
+      definition: definition, inventoryRevision: sourceInventoryRevision)
+    guard application.component == checked.component,
+      application.consumedItem == checked.consumedItem,
+      application.expectedInventoryRevision == checked.expectedInventoryRevision
+    else { throw ComponentProgressionError.staleQuote }
+  }
+
   public static func quote(
     component: ComponentInstance, item: ComponentUpgrade, definition: ComponentFamilyDefinition,
     inventoryRevision: UInt64
@@ -181,10 +222,7 @@ public enum ComponentProgression {
     let index = try validate(component, item: item, definition: definition, grades: grades)
     let (statistics, effects) = try improved(
       component, item: item, limits: definition.terminalLimits)
-    var finalIndex = index
-    while finalIndex + 1 < grades.count && meets(statistics, template: grades[finalIndex + 1]) {
-      finalIndex += 1
-    }
+    let finalIndex = promotedIndex(statistics: statistics, from: index, grades: grades)
     let final = grades[finalIndex]
     let promotions = grades[(index + 1)..<(finalIndex + 1)].map(\.identity)
     let receipt = ComponentUpgradeReceipt(
@@ -240,7 +278,7 @@ public enum ComponentProgression {
     guard checked.planned == quote.planned else { throw ComponentProgressionError.staleQuote }
     return .init(
       component: checked.planned, consumedItem: item.identity,
-      expectedInventoryRevision: inventoryRevision)
+      expectedInventoryRevision: inventoryRevision, proof: checked)
   }
 
   private static func validate(_ definition: ComponentFamilyDefinition) throws
@@ -295,12 +333,30 @@ public enum ComponentProgression {
     guard component.id == item.boundComponent else {
       throw ComponentProgressionError.wrongComponent
     }
-    guard item.origin == component.origin.identity,
-      (grades + definition.historicalOrigins).contains(component.origin)
-    else { throw ComponentProgressionError.originMismatch }
+    guard item.origin == component.origin.identity else {
+      throw ComponentProgressionError.originMismatch
+    }
     guard !component.receipts.contains(where: { $0.item == item.identity }) else {
       throw ComponentProgressionError.replayedItem
     }
+    let index = try validate(component, definition: definition, grades: grades)
+    guard !item.basisPoints.isEmpty,
+      item.basisPoints.allSatisfy({ axis, points in
+        component.origin.statistics[axis] != nil && [500, 1000, 1500].contains(points)
+      })
+    else { throw ComponentProgressionError.invalidEffect }
+    return index
+  }
+
+  private static func validate(
+    _ component: ComponentInstance, definition: ComponentFamilyDefinition,
+    grades: [ComponentTemplate]
+  ) throws -> Int {
+    guard component.family == definition.family else {
+      throw ComponentProgressionError.incompatibleFamily
+    }
+    let known = grades + definition.historicalOrigins
+    guard known.contains(component.origin) else { throw ComponentProgressionError.originMismatch }
     guard valid(component.statistics),
       Set(component.statistics.keys) == Set(component.origin.statistics.keys),
       let index = grades.firstIndex(where: { $0.identity == component.grade }),
@@ -309,14 +365,36 @@ public enum ComponentProgression {
       Set(component.receipts.map(\.item)).count == component.receipts.count,
       component.receipts.allSatisfy({
         $0.component == component.id && $0.origin == component.origin.identity
+          && validReceipt($0, origin: component.origin, known: known)
       })
     else { throw ComponentProgressionError.invalidInstance }
-    guard !item.basisPoints.isEmpty,
-      item.basisPoints.allSatisfy({ axis, points in
-        component.origin.statistics[axis] != nil && [500, 1000, 1500].contains(points)
-      })
-    else { throw ComponentProgressionError.invalidEffect }
     return index
+  }
+
+  private static func validReceipt(
+    _ receipt: ComponentUpgradeReceipt, origin: ComponentTemplate, known: [ComponentTemplate]
+  ) -> Bool {
+    guard let before = known.first(where: { $0.identity == receipt.gradeBefore }),
+      let after = known.first(where: { $0.identity == receipt.gradeAfter }),
+      before.identity.family == origin.identity.family,
+      after.identity.family == origin.identity.family,
+      after.order >= before.order, !receipt.appliedAbsoluteEffects.isEmpty,
+      receipt.appliedAbsoluteEffects.values.contains(where: { $0 != 0 })
+    else { return false }
+    return receipt.appliedAbsoluteEffects.allSatisfy { axis, effect in
+      origin.statistics[axis] != nil && effect.isFinite
+        && (axis.higherIsBetter ? effect >= 0 : effect <= 0)
+    }
+  }
+
+  private static func promotedIndex(
+    statistics: ComponentStatistics, from index: Int, grades: [ComponentTemplate]
+  ) -> Int {
+    var result = index
+    while result + 1 < grades.count && meets(statistics, template: grades[result + 1]) {
+      result += 1
+    }
+    return result
   }
 
   private static func improved(
