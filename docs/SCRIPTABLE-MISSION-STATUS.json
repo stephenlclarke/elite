@@ -3,7 +3,7 @@
   "branch": "feature/scriptable-mission-engine",
   "full_engine_ready": false,
   "default_bundled_campaigns": 3,
-  "example": "Thirteen optional original examples: courier, patrol, passengers, equipment loan, generated contracts, profiled skirmish, calendar contracts, station service, linked patrol, assignment choice/two follow-ups and repeatable station conversation; no historical research packet enabled.",
+  "example": "Fourteen optional original examples: courier, patrol, passengers, equipment loan, generated contracts, profiled skirmish, calendar contracts, station service, linked patrol, assignment choice/two follow-ups and repeatable station conversation and retained reference book; no historical research packet enabled.",
   "supported_capabilities": [
     "cargo-v2",
     "charter-passengers-v2",
@@ -28,7 +28,8 @@
     "completion-receipts-v2",
     "exclusive-choices-v2",
     "dialogue-choices-v2",
-    "compound-receipts-v2"
+    "compound-receipts-v2",
+    "library-books-basic-v2"
   ],
   "requirements": [
     {
@@ -264,9 +265,14 @@
         "docs/mission-packs/branch-patrol",
         "Sources/EliteCore/ScriptConversations.swift",
         "Tests/EliteCoreTests/ScriptConversationTests.swift",
-        "Tests/EliteCoreTests/ScriptCompletionTests.swift"
+        "Tests/EliteCoreTests/ScriptCompletionTests.swift",
+        "Sources/EliteCore/ScriptBooks.swift",
+        "Sources/EliteCore/ScriptLibrary.swift",
+        "Sources/EliteCore/ScriptLibraryDisplay.swift",
+        "Tests/EliteCoreTests/ScriptBookTests.swift",
+        "docs/mission-packs/reference-book"
       ],
-      "remaining": "Native receipt joins, explicitly allowed terminal-outcome sets, four-real-child mixed success/failure join and per-instance exclusive station choices with matching child filters implemented. Full campaign-parent instance management, shared contacts/dossiers/loans/books/services and full four-strand P19/source acceptance remain required."
+      "remaining": "Native receipt joins, explicitly allowed terminal-outcome sets, four-real-child mixed success/failure join and per-instance exclusive station choices with matching child filters implemented. Full campaign-parent instance management, shared contacts/dossiers/loans/services and rich book assets and full four-strand P19/source acceptance remain required. Immutable text books and native contents/reading/source pages now implemented, with retained ownership, original acquisition facts and saved cursors. Rich image assets, dossiers and shared financial services remain outstanding."
     },
     {
       "id": "R15",
@@ -300,7 +306,7 @@
         "Sources/EliteCore/ScriptConversations.swift",
         "Tests/EliteCoreTests/ScriptConversationTests.swift"
       ],
-      "remaining": "Format16 with calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, full source world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained. Bounded event acknowledgement watermarks and frozen native event provenance now implemented; complete world epochs, archival/replay and source/controller migrations remain required. Exact tagged integer/float storage and bounded legacy/new JSON decoding now implemented. Full world epochs, archive/replay, version/controller migrations and background writer scheduling remain required. Immutable new native terminal receipts and pinned joins now implemented; legacy flags do not become proof. Native choice receipts and frozen terminal branch filters now implemented. Original immutable ungrouped answer receipts and bounded history admission now implemented; unrestricted archives/replay and background writer still required."
+      "remaining": "Format17 with retained books/reading cursor and calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, full source world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained. Bounded event acknowledgement watermarks and frozen native event provenance now implemented; complete world epochs, archival/replay and source/controller migrations remain required. Exact tagged integer/float storage and bounded legacy/new JSON decoding now implemented. Full world epochs, archive/replay, version/controller migrations and background writer scheduling remain required. Immutable new native terminal receipts and pinned joins now implemented; legacy flags do not become proof. Native choice receipts and frozen terminal branch filters now implemented. Original immutable ungrouped answer receipts and bounded history admission now implemented; unrestricted archives/replay and background writer still required."
     },
     {
       "id": "R16",
@@ -332,9 +338,14 @@
         "Tests/EliteCoreTests/NativeViewTests.swift",
         "Sources/EliteCore/ScriptConversations.swift",
         "Tests/EliteCoreTests/ScriptConversationTests.swift",
-        "docs/mission-packs/station-conversation"
+        "docs/mission-packs/station-conversation",
+        "Sources/EliteCore/ScriptBooks.swift",
+        "Sources/EliteCore/ScriptLibrary.swift",
+        "Sources/EliteCore/ScriptLibraryDisplay.swift",
+        "Tests/EliteCoreTests/ScriptBookTests.swift",
+        "docs/mission-packs/reference-book"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1. Native bounded station choices, keyboard/click browsing, explicit Confirm/Back and contextual help now implemented. Rich shared dossiers/books/typed substitutions and full source UI remain required. Repeatable native questions, compact answer queries/success gates and pinned displayed dialogue tokens now implemented. Shared library/dossier pages and richer source presentation remain required."
+      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1. Native bounded station choices, keyboard/click browsing, explicit Confirm/Back and contextual help now implemented. Rich shared dossiers/book assets/typed substitutions and full source UI remain required. Repeatable native questions, compact answer queries/success gates and pinned displayed dialogue tokens now implemented. Rich library assets/dossier pages and richer source presentation remain required. Immutable text books and native contents/reading/source pages now implemented, with retained ownership, original acquisition facts and saved cursors. Rich image assets, dossiers and shared financial services remain outstanding."
     },
     {
       "id": "R18",
@@ -467,14 +478,25 @@
       "latest_clean_source": "5939431bc038c7a099ddee9b7bb2e3ffa7567553",
       "merged_main": "1ef005e0c73971a360a0e3bb52792a9286a761d3"
     },
-    "gui_lease": "Release GUI lease released; native AppKit integration test windows only."
+    "gui_lease": "Release GUI lease released; native AppKit integration test windows only.",
+    "navigation_integration": {
+      "status": "coder2 implementing alternative chart routes in separate feature worktree; not yet integrated",
+      "base": "1ef005e0c73971a360a0e3bb52792a9286a761d3",
+      "constraints": [
+        "Preview/activation cannot redirect pinned admitted destination/fuel or repeat calendar charge.",
+        "Manual selection/cancel keeps explicit admission-clearing paths.",
+        "Preserve chart/planning and Title/Continue time freeze.",
+        "Merge read-only Screen.library exclusions/control clearing in Game and ScreenNavigation."
+      ],
+      "gui_lease": "Coder2 currently owns route QA native window lease; engine native screenshots complete."
+    }
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 516,
-    "maintained_coverage_percent": 94.41,
-    "script_swift_coverage_percent": 97.65,
-    "encounter_coverage_percent": 97.75,
+    "tests_per_lane": 528,
+    "maintained_coverage_percent": 94.52,
+    "script_swift_coverage_percent": 97.68,
+    "encounter_coverage_percent": 98.07,
     "maintained_c_host_coverage_percent": 95.0,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.85,
@@ -486,7 +508,7 @@
     "contract_coverage_percent": 92.98,
     "profiled_npc_coverage_percent": 98.12,
     "module_loader_coverage_percent": 98.04,
-    "pack_loader_coverage_percent": 97.04,
+    "pack_loader_coverage_percent": 97.14,
     "calendar_coverage_percent": 97.58,
     "world_job_coverage_percent": 94.06,
     "event_history_coverage_percent": 100.0,
@@ -497,7 +519,8 @@
     "completion_receipt_coverage_percent": 99.32,
     "station_choices_coverage_percent": 100.0,
     "station_contact_ui_coverage_percent": 93.21,
-    "conversation_coverage_percent": 100.0
+    "conversation_coverage_percent": 100.0,
+    "reference_library_coverage_percent": 98.4
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -516,20 +539,26 @@
     ]
   },
   "examples": [
-    "Optional original scripted courier",
-    "Optional original physical classic patrol",
-    "Optional original humanoid charter passengers",
-    "Optional original identified equipment loan",
-    "Optional original main-orbital generated sample contracts",
-    "Optional original profiled NPC/component skirmish",
+    "docs/mission-packs/scripted-courier",
+    "docs/mission-packs/scripted-patrol",
+    "docs/mission-packs/linked-patrol",
+    "docs/mission-packs/branch-choice",
+    "docs/mission-packs/branch-patrol",
+    "docs/mission-packs/branch-courier",
+    "docs/mission-packs/station-conversation",
+    "docs/mission-packs/reference-book",
+    "docs/mission-packs/scripted-passengers",
+    "docs/mission-packs/scripted-equipment",
+    "docs/mission-packs/scripted-contracts",
     "docs/mission-packs/calendar-contracts",
-    "docs/mission-packs/station-maintenance"
+    "docs/mission-packs/station-maintenance",
+    "docs/mission-packs/profiled-skirmish"
   ],
   "source_data_follow_ups": [
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes516 tests per lane,94.41% maintained coverage; native conversations100.0%, choices100.0%, completion receipts99.32% and0leaks; exact543 source/resource/test/example/renderer-manifest hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes528 tests per lane,94.52% maintained coverage,97.68% script Swift,98.40% native book/library and0leaks; exact549 input hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -585,7 +614,7 @@
     "full_rrs_ready": false,
     "full_engine_ready": false
   },
-  "last_validated_commit": "461308e (preceding committed checkpoint; current source hashes in validation document)",
+  "last_validated_commit": "9dff670 (preceding committed checkpoint; current source hashes in validation document)",
   "npc_checkpoint": {
     "status": "validated with complete make ci,417 tests per lane; full source engine remains incomplete",
     "capability": "profiled-encounters-v2",
@@ -658,6 +687,12 @@
       "compound-receipts-v2"
     ],
     "save_format": 16,
+    "full_engine_ready": false
+  },
+  "reference_library_checkpoint": {
+    "status": "validated with complete make ci;528 tests per lane; full engine remains incomplete",
+    "capability": "library-books-basic-v2",
+    "save_format": 17,
     "full_engine_ready": false
   }
 }

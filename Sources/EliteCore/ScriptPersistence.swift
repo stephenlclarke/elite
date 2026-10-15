@@ -1,6 +1,7 @@
 import Foundation
 
 struct ScriptWorldSave: Codable, Sendable {
+  var libraryScreen: ScriptLibraryState?
   var simulation: ScriptSimulationSave?
   var referenceFrame: ScriptReferenceFrame?
   var contractScreen: ContractScreenSave?
@@ -20,7 +21,7 @@ struct ScriptWorldSave: Codable, Sendable {
   var nextBodyID: Int
   var valid: Bool {
     (simulation?.valid ?? true) && (referenceFrame?.valid ?? true)
-      && (contractScreen?.valid ?? true) && bodies.count <= 1024
+      && (contractScreen?.valid ?? true) && (libraryScreen?.valid ?? true) && bodies.count <= 1024
       && bodies.reduce(0, { $0 + $1.scriptNativeUnits }) <= 1024
       && Set(bodies.map(\.id)).count == bodies.count
       && Set(bodies.compactMap(\.missionActorID)).count
@@ -49,6 +50,11 @@ struct ScriptWorldSave: Codable, Sendable {
       && nextBodyID >= (bodies.map(\.id).max() ?? 0)
   }
   func consistent(with commander: Commander) -> Bool {
+    if screen == .library, let saved = libraryScreen, saved.mode != .books {
+      guard let selected = saved.selected, commander.scriptState.books[selected] != nil else {
+        return false
+      }
+    }
     let stationKey = "main-orbital:\(commander.galaxy):\(commander.system)"
     if let resource = commander.scriptState.stationResources[stationKey] {
       let actual = bodies.first { $0.id == 0 && $0.hull == .station }
@@ -162,7 +168,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 16, generation: generation,
+      format: "elite-script-save", schemaVersion: 17, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
     let bytes = try encoder.encode(pointer)
@@ -183,7 +189,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...16).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...17).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -247,7 +253,8 @@ enum ScriptSaveStore {
 extension Game {
   var scriptWorldSave: ScriptWorldSave {
     ScriptWorldSave(
-      simulation: scriptSimulationSave, referenceFrame: scriptReferenceFrame,
+      libraryScreen: library, simulation: scriptSimulationSave,
+      referenceFrame: scriptReferenceFrame,
       contractScreen: commander.contracts.boards.isEmpty ? nil : contractBoard.save, bodies: bodies,
       market: market, docked: docked,
       mainStation: dockedAtMainStation,
@@ -279,6 +286,14 @@ extension Game {
       contractBoard.previous = saved.previous
       contractBoard.action = saved.action
       contractBoard.scroll = saved.scroll
+    }
+    if world.screen == .library, let saved = world.libraryScreen {
+      library = saved
+      if [.handoff, .help, .library, .mission, .demo, .title, .gameOver].contains(library.previous)
+      {
+        library.previous = .status
+      }
+      screen = .library
     }
     if world.screen == .contracts, docked, dockedAtMainStation, let saved = world.contractScreen {
       screen = .contracts

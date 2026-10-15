@@ -7,6 +7,96 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test
+  func nativeReferenceLibraryMenuClicksAndOrderedSaveKeepReadingSeparateFromMissions() async throws
+  {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: folder)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    try JSONEncoder().encode(Commander()).write(to: file)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: file)
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: file, persistMigrations: false)
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
+        "docs/mission-packs/reference-book")
+    try await delegate.runtime.installScriptPack(
+      from: example, destination: folder.appendingPathComponent("packs"))
+    let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
+    delegate.applicationDidFinishLaunching(notification)
+    let window = try #require(delegate.window)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
+    window.setContentSize(NSSize(width: 512, height: 518))
+    let view = try #require(window.contentView as? GameView)
+    await delegate.runtime.setViewport(width: 512, height: 518)
+    await delegate.runtime.key("contacts-open")
+    await delegate.runtime.key("return")
+    await delegate.runtime.key("contacts-open")
+    await delegate.runtime.key("return")
+    let granted = await delegate.runtime.snapshot().commander
+    #expect(granted.scriptState.books.count == 1)
+    await delegate.processFrame(in: view, delta: { 0 })
+    let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
+    let item = try #require(menu.items.firstIndex { $0.title == "Mission Library" })
+    menu.performActionForItem(at: item)
+    await delegate.processPendingCommands(in: view)
+    await delegate.processFrame(in: view, delta: { 0 })
+    #expect(view.game.screen == .library && view.game.library.mode == .books)
+    let click = try #require(
+      NSEvent.mouseEvent(
+        with: .leftMouseDown,
+        location: .init(x: 50, y: view.bounds.height - 100), modifierFlags: [], timestamp: 0,
+        windowNumber: window.windowNumber, context: nil, eventNumber: 0, clickCount: 1, pressure: 1)
+    )
+    view.mouseDown(with: click)
+    #expect(view.pending.first?.hasPrefix("library-click:") == true)
+    await delegate.processPendingCommands(in: view)
+    #expect(await delegate.runtime.snapshot().library.mode == .contents)
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for page in ["contents", "reading", "source"] {
+      if page == "reading" {
+        await delegate.runtime.key("down")
+        await delegate.runtime.key("return")
+      }
+      if page == "source" { await delegate.runtime.key("i") }
+      let actual = await delegate.runtime.snapshot()
+      #expect(actual.commander == granted)
+      for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+        let image = try #require(imageForGame(actual, width: width, height: height, scale: scale))
+        #expect(image.width == width * scale && image.height == height * scale)
+        if let evidence {
+          let directory = URL(fileURLWithPath: evidence, isDirectory: true)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          let bytes = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try bytes.write(to: directory.appendingPathComponent("library-\(page)-\(width).png"))
+        }
+      }
+    }
+    await delegate.runtime.key("i")
+    view.pending = ["down", "commander-save:\(file.path)"]
+    await delegate.processPendingCommands(in: view)
+    let loaded = GameRuntime()
+    try await loaded.load(from: file, persistMigrations: false)
+    let restored = await loaded.snapshot()
+    #expect(
+      restored.screen == .library && restored.library.mode == .reading
+        && restored.library.scroll > 0)
+    #expect(restored.commander == granted)
+  }
+
   @MainActor @Test func nativeRepeatableConversationUsesRealAnswersInItsOwnGallerySave()
     async throws
   {

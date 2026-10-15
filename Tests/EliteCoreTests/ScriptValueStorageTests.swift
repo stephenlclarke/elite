@@ -187,7 +187,7 @@ private struct ValueStorageFixture {
   try await runtime.save(to: fixture.save)
   let original = try JSONDecoder().decode(
     ScriptSavePointer.self, from: Data(contentsOf: fixture.save))
-  #expect(original.schemaVersion == 16 && original.valueCodec == ScriptValueStorage.codec)
+  #expect(original.schemaVersion == 17 && original.valueCodec == ScriptValueStorage.codec)
   let before = await runtime.snapshot()
   for (version, codec) in [(13, nil), (13, "unknown"), (12, ScriptValueStorage.codec)]
     as [(Int, String?)]

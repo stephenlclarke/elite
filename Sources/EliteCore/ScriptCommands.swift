@@ -111,6 +111,10 @@ extension Game {
             && (pack.manifest.mission.requiredChoiceGroups ?? []).allSatisfy {
               state.choiceReceipts[$0] != nil
             }
+            && (pack.manifest.mission.requiredBooks ?? []).allSatisfy {
+              let book = candidate.scriptState.books[pack.manifest.id + "/" + $0]
+              return book?.version == pack.manifest.version && book?.digest == pack.digest
+            }
             && scriptAnswersSatisfied(pack, state: state)
             && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
             && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {

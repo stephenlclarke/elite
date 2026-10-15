@@ -198,6 +198,19 @@ public enum PlayerHelp {
           "ESC - BACK TO BOARD, THEN STATION", "SCROLL - READ LONG BRIEFINGS",
           "READING DOES NOT START A DEADLINE", "ACTIVE WORK REMAINS IN MISSION GALLERY",
         ])
+    case .library:
+      .init(
+        title: "MISSION LIBRARY",
+        rows: [
+          "UP / DOWN - SELECT OR SCROLL",
+          "RETURN / CLICK - OPEN BOOK OR CHAPTER",
+          "LEFT / RIGHT - PREVIOUS / NEXT CHAPTER",
+          "TAB - CONTENTS / READING",
+          "I - BOOK SOURCE / LICENCE",
+          "OPTION-UP/DOWN - PAGE TEXT",
+          "ESC - CONTENTS, BOOKS, PREVIOUS SCREEN",
+          "READ ONLY; FLIGHT IS PAUSED",
+        ])
     case .gallery:
       .init(
         title: "MISSION GALLERY",

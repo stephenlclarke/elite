@@ -22,6 +22,7 @@ The interpreter exposes base scalar/assert/error/type/iteration helpers and nume
 
 | Capability | Current executable support |
 | --- | --- |
+| `library-books-basic-v2` | Immutable mission-granted text books, native contents/reading/source pages, retained ownership and saved reading position. |
 | `script-lua-v1` | Bounded programmable handlers, fresh environment, validated explicit data and proposals. |
 | `story-v2` | Native scoped station dialogue/confirmation, journal, story milestones and terminal outcomes. |
 | `economy-v2` | Signed integer decicredit debits/rewards with checked balance and per-instance operation receipts. |
@@ -372,4 +373,26 @@ A researched parent may require a strand to be resolved even when its source-aut
 outcomes = ["complete", "failed"]
 ```
 
-Every declared requirement must still join its own genuine child instance. A four-child native test flies four actual patrol cohorts, reports three as successful and one as failed without its success payment, then joins all four exact receipts. It also verifies that a success-only requirement rejects that failed child and that the pinned joins survive reload. This proves the generic compound mechanism; full historical P19 strands, shared books/loans/services and whole-campaign acceptance still require their remaining native systems and source content.
+Every declared requirement must still join its own genuine child instance. A four-child native test flies four actual patrol cohorts, reports three as successful and one as failed without its success payment, then joins all four exact receipts. It also verifies that a success-only requirement rejects that failed child and that the pinned joins survive reload. This proves the generic compound mechanism; full historical P19 strands, rich book assets, shared loans/services and whole-campaign acceptance still require their remaining native systems and source content.
+
+## Retained reference books
+
+With `library-books-basic-v2`, a pack can declare up to32 text books in root `[[books]]` tables. Each book has a unique local `id`, a `title` of1-96 characters and1-64 ordered `chapters`. Each chapter has unique local `id`, `title`, `text` and hierarchy `level`0-4. Text must be valid UTF-8 with1-12000 bytes per chapter and at most131072 bytes per book; the existing whole-manifest bound still applies. Example:
+
+```toml
+[[books]]
+id = "field-notes"
+title = "Station field notes"
+chapters = [
+  {id="welcome", title="Welcome", level=0, text="Reference information for future station visits."},
+  {id="cargo", title="Preparing cargo", level=1, text="Check the actual free hold before accepting freight."}
+]
+```
+
+An active handler returns `{op="book.unlock", id="field-notes"}` to grant its own declared book as part of its normal atomic transaction. Native ownership retains exact provider/version/digest, copied text, source/licence, content hash, original instance/sequence/cause and committed revision/clock context. `book.unlocked` is a derived event for the still-active origin. A terminal mission does not regain execution rights. Repeat grants preserve the original record and reading position; different content requires an explicit migration. The global limit is64 owned books; a new grant at capacity is rejected as a whole. Books survive completion, failure, abandonment, hull changes, reload and removal of their original installed pack.
+
+The optional `[mission] requiredBooks=["field-notes"]` list is a native successful-finish gate over this provider's exact granted edition. A narrative flag or fabricated Lua value cannot satisfy it. `world.library` exposes compact ordered headers (`key`, `title`, `provider`, `version`, `digest`, chapter count), without copying full text into every callback.
+
+**Game > Mission Library** opens the native book list. Return/click opens contents and chapters; arrows/Page Up/Page Down scroll, Tab returns to contents, I opens source/licence, and Escape backs out to the preceding screen. Contextual K help explains the current page. The saved reading position restores on load. Long titles and source identifiers wrap within the pane. Reading is presentation-only: it does not invoke Lua/contact callbacks, change mission decisions or transfer money/property. Flight, combat and mission-local/calendar time freeze while reading; independently resource-owned loaded-world jobs retain their documented behavior. Source/hash validation occurs on native construction and decoding, not repeatedly during rendering.
+
+Format17 retains the book ledger and reading cursor. Older formats invent no book ownership. The [original reference-book demonstration](mission-packs/reference-book) grants its notes through a real station briefing, completes with no credit reward and remains readable afterward, including in its isolated Gallery trial. Native menu/click/paging/ordered-Save tests verify that reading does not alter commander mission state. This basic capability covers text and hierarchy; source images/logos, rich dossiers, shared financial services and full historical acceptance remain outstanding.

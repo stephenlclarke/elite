@@ -82,6 +82,7 @@ extension Game {
       "free_equipment_units": .integer(Int64(commander.passengerFit?.freeEquipmentUnits ?? 0)),
       "credits": .integer(Int64(commander.credits)),
       "commander": scriptCommanderQuery,
+      "library": .array(referenceBooks.map(\.header)),
       "free_tonnes": .integer(Int64(commander.tradeCargoCapacity - commander.cargoTonnes)),
       "flight_seconds": .number(commander.scriptState.flightSeconds),
       "local_seconds": .number(commander.scriptState.localSeconds),
@@ -228,7 +229,13 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
-          if command["op"]?.string == "world.job.ensure" {
+          if command["op"]?.string == "book.unlock" {
+            if let result = try candidate.unlockScriptBook(
+              command, pack: pack, state: next, event: event)
+            {
+              derivedEvents.append(result)
+            }
+          } else if command["op"]?.string == "world.job.ensure" {
             try candidate.ensureScriptWorldJob(command, pack: pack, state: next)
           } else if command["op"]?.string == "encounter.ensure" {
             guard let fields = command.object, Set(fields.keys) == ["op", "id"],

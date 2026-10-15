@@ -3,7 +3,7 @@ import Foundation
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
     equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, showroom, rumour,
-    gameOver, contracts
+    gameOver, contracts, library
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
@@ -323,6 +323,7 @@ public struct Game: Sendable {
   public var helpReturn: Screen = .title
   public var helpPage = 0
   public var gallery = MissionGalleryState()
+  public var library = ScriptLibraryState()
   public var mapColour: MapColourMode = .economy
   public var mapZoom: MapZoom = .jump
   public var mapSearch = PlanetSearchState()
@@ -375,6 +376,7 @@ public struct Game: Sendable {
     scriptChoiceSelection = 0
     migrateMissionProgress()
     gallery = MissionGalleryState()
+    library = ScriptLibraryState()
     showroom = ShowroomState()
     galacticBrowse = GalaxyBrowseState()
     systemInspection = nil
@@ -1162,7 +1164,7 @@ public struct Game: Sendable {
       if !paused { packOfferElapsed += dt }
       return
     }
-    if paused || screen == .help || screen == .gallery || screen == .navigation
+    if paused || screen == .help || screen == .gallery || screen == .library || screen == .navigation
       || screen == .handoff || screen == .rumour
     {
       return
@@ -1469,7 +1471,7 @@ public actor GameRuntime {
     let oldLocation = (game.commander.galaxy, game.commander.system)
     if key == "contacts-open" || (key == "b" && !game.acceptsTextInput), game.docked, !game.paused,
       ![
-        Screen.help, .gallery, .handoff, .mission, .showroom, .title, .demo, .gameOver,
+        Screen.help, .gallery, .library, .handoff, .mission, .showroom, .title, .demo, .gameOver,
         .secret, .navigation, .rumour,
       ].contains(game.screen)
     {
@@ -1490,7 +1492,7 @@ public actor GameRuntime {
       if game.dockingComputer { controls = Controls() }
     }
     if old != game.screen || key == "pause"
-      || [.gallery, .handoff, .showroom].contains(game.screen)
+      || [.gallery, .library, .handoff, .showroom].contains(game.screen)
     {
       controls = Controls()
     }
@@ -1518,7 +1520,7 @@ public actor GameRuntime {
     let location = (game.commander.galaxy, game.commander.system)
     let localActive =
       !game.paused
-      && ![Screen.demo, .title, .gameOver, .gallery, .help, .navigation].contains(game.screen)
+      && ![Screen.demo, .title, .gameOver, .gallery, .library, .help, .navigation].contains(game.screen)
     let flightActive =
       localActive && !game.docked
       && ![Screen.mission, .handoff, .rumour, .showroom, .secret].contains(game.screen)

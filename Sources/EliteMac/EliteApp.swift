@@ -152,6 +152,11 @@ final class GameView: NSView {
       pending.append("equipment-click:\(point.x):\(point.y)")
       return
     }
+    if game.screen == .library {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("library-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .gallery {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("gallery-click:\(point.x):\(point.y)")
@@ -166,7 +171,7 @@ final class GameView: NSView {
       pending.append("contract-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
       return
     }
-    if game.screen == .handoff {
+    if game.screen == .handoff || game.screen == .library {
       pending.append(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
       return
     }
@@ -404,6 +409,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         }
       } else if event.hasPrefix("contract-scroll:"), let amount = Int(event.dropFirst(16)) {
         await runtime.contractScroll(amount)
+      } else if event.hasPrefix("library-click:") {
+        let parts = event.split(separator: ":")
+        if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
+          await runtime.libraryClick(x: x, y: y)
+        }
       } else if event.hasPrefix("gallery-click:") {
         let parts = event.split(separator: ":")
         if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
@@ -509,6 +519,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       ("Station Rumours", "rumours-open"),
       ("Try Selected Mission", "gallery-trial"), ("Retry Selected Mission", "mission-resume"),
       ("Return to Commander", "trial-return"), ("Restart Mission Trial", "trial-restart"),
+      ("Mission Library", "library-open"),
     ] {
       let item = game.submenu?.addItem(
         withTitle: title, action: #selector(gameAction(_:)), keyEquivalent: "")

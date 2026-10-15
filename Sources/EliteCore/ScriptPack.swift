@@ -17,6 +17,7 @@ public struct ScriptMission: Codable, Sendable {
   public let requiredPassengerParties: [String]?
   public let requiredEquipmentReturns: [String]?
   public let requiredChoiceGroups: [String]?
+  public let requiredBooks: [String]?
 }
 public struct ScriptDialog: Codable, Sendable {
   public let id: String
@@ -50,6 +51,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let worldJobs: [ScriptWorldJobDefinition]?
   public let receiptRequirements: [ScriptReceiptRequirement]?
   public let answerRequirements: [ScriptAnswerRequirement]?
+  public let books: [ScriptBookDefinition]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -87,6 +89,7 @@ public enum ScriptCapabilities {
     "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2",
     "event-history-v2", "deterministic-plans-v2", "typed-save-values-v2", "commander-queries-v2",
     "completion-receipts-v2", "exclusive-choices-v2", "dialogue-choices-v2", "compound-receipts-v2",
+    "library-books-basic-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -109,7 +112,7 @@ public enum ScriptCapabilities {
     "ship.changed", "equipment.changed", "gear.consumed",
     "equipment.issued", "equipment.returned", "equipment.released",
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
-    "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen",
+    "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen", "book.unlocked",
   ]
 }
 
@@ -123,11 +126,11 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs receiptRequirements answerRequirements"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs receiptRequirements answerRequirements books"
     )
     try keys(
       root.table(forKey: "mission"),
-      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties requiredEquipmentReturns requiredChoiceGroups"
+      "id title briefing destination reward milestones requiredDestructionEncounters requiredPassengerParties requiredEquipmentReturns requiredChoiceGroups requiredBooks"
     )
     if root.contains(key: "board") {
       try keys(
@@ -155,6 +158,17 @@ public enum ScriptPackLibrary {
           for choice in 0..<choices.count {
             try keys(choices.table(atIndex: choice), "id label group")
           }
+        }
+      }
+    }
+    if root.contains(key: "books") {
+      let books = try root.array(forKey: "books")
+      for index in 0..<books.count {
+        let book = try books.table(atIndex: index)
+        try keys(book, "id title chapters")
+        let chapters = try book.array(forKey: "chapters")
+        for chapter in 0..<chapters.count {
+          try keys(chapters.table(atIndex: chapter), "id title text level")
         }
       }
     }
@@ -300,6 +314,7 @@ public enum ScriptPackLibrary {
     try validateWorldJobs(manifest)
     try validateChoices(manifest)
     try validateAnswers(manifest)
+    try validateBooks(manifest)
     let requirements = manifest.receiptRequirements ?? []
     guard requirements.count <= 32, Set(requirements.map(\.id)).count == requirements.count,
       requirements.allSatisfy(\.valid),

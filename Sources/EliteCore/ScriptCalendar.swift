@@ -70,7 +70,7 @@ extension Game {
     if docked && [Screen.chart, .shortChart, .system, .inventory].contains(screen) { return false }
     return !paused
       && ![
-        Screen.title, .demo, .gameOver, .gallery, .help, .navigation,
+        Screen.title, .demo, .gameOver, .gallery, .library, .help, .navigation,
         .mission, .handoff, .rumour, .secret, .showroom, .contracts,
       ].contains(screen)
   }
