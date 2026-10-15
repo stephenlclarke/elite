@@ -31,6 +31,8 @@ struct GameplayOrdnanceRuntimeTests {
     #expect(game.commander.missiles == 2 && !game.missileArmed && game.missileCooldown == 1)
     #expect(game.bodies[0].energy == target.energy && game.commander.kills == 0)
     #expect(state.origin.owner == player && state.origin.ordnance == missile.physical?.identity)
+    #expect(state.emissionPosition == game.commander.flightSimulation.pose.position)
+    #expect(missile.physical?.emissionPosition == state.emissionPosition)
     #expect(state.target == target.physical?.identity && missile.playerMissileTarget == target.id)
     #expect(missile.physical?.spawnIdentity?.producer == .ordnance)
     #expect(game.commander.legal == 40 && game.bodies[0].physical?.npc?.firstAggressor == player)
@@ -153,6 +155,64 @@ struct GameplayOrdnanceRuntimeTests {
       #expect((second.termination == .ecm) == (profile != .plasma))
       #expect(game.commander.kills == 0)
     }
+  }
+
+  @Test(arguments: [false, true])
+  func retaliationNeverTargetsAReplacementForTheActualMissileLauncher(
+    replaceAfterIdentification: Bool
+  ) throws {
+    var game = missileRuntimeGame(distance: 4000)
+    game.weaponsTargetID = nil
+    game.bodies[0].missiles = 1
+    game.commander.installTargetingComputer(.military)
+    game.commander.equipment.insert("E.C.M. System")
+    let owner = try #require(game.bodies[0].physical?.identity)
+    #expect(game.launchGameplayNPCMissile(bodyID: 70))
+    if replaceAfterIdentification { game.detectRetaliationSources() }
+    game.bodies.removeFirst()
+    game.bodies.append(.init(id: 70, hull: .cobra, position: .init(0, 0, 4000)))
+    game.ensurePhysicalActors()
+    let replacement = try #require(game.bodies.last?.physical?.identity)
+    #expect(owner != replacement)
+    game.ecm()
+    for _ in 0..<32 {
+      game.advanceGameplayOrdnance(allowEnemyECM: false)
+      game.ecmControl.advance()
+    }
+    game.ecmFrames = 0
+    game.advanceRetaliation()
+    #expect(game.commander.missiles == 3 && game.commander.legal == 0)
+    #expect(game.bodies.last?.energy == 100)
+    #expect(
+      !game.ecmControl.events.contains {
+        if case .missileLaunched = $0.announcement { return true }
+        return false
+      })
+    if !replaceAfterIdentification {
+      #expect(!game.ecmControl.events.contains { $0.announcement == .incomingIdentified })
+      #expect(game.weaponsTargetID == nil)
+    }
+  }
+
+  @Test func queuedReturnFireRechecksLauncherIdentityAfterECMConfirmation() throws {
+    var game = missileRuntimeGame(distance: 4000)
+    game.weaponsTargetID = nil
+    game.bodies[0].missiles = 1
+    game.commander.installTargetingComputer(.military)
+    game.commander.equipment.insert("E.C.M. System")
+    #expect(game.launchGameplayNPCMissile(bodyID: 70))
+    game.ecm()
+    #expect(game.ecmControl.events.contains { $0.announcement == .incomingIdentified })
+    game.bodies.removeFirst()
+    game.bodies.append(.init(id: 70, hull: .cobra, position: .init(0, 0, 4000)))
+    game.ensurePhysicalActors()
+    game.ecmFrames = 0
+    game.advanceRetaliation()
+    #expect(game.commander.missiles == 3 && game.commander.legal == 0)
+    #expect(
+      game.ecmControl.events.contains {
+        $0.announcement == .cannotRetaliate("Enemy craft no longer available")
+      })
   }
 
   @Test func missileMayLaunchInScoopableCoronaWithoutSpendingAmmoInsideTheSun() throws {
