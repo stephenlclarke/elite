@@ -29,3 +29,5 @@ spctl --assess --type execute --verbose=2 /path/to/Elite.app
 ```
 
 The local `make run` workflow remains a separate ad hoc signed debug build.
+
+After the ZIP and manifest are published on protected main, synchronize and validate the maintained Homebrew cask and the owner's tap using the [Homebrew release instructions](HOMEBREW.md). The cask always targets an already public, signed/notarized archive and retains quarantine and player saves.
