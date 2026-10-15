@@ -51,7 +51,90 @@ private func persistenceRoundtrip(_ ledger: NPCPersistenceLedger) throws -> NPCP
   try JSONDecoder().decode(NPCPersistenceLedger.self, from: JSONEncoder().encode(ledger))
 }
 
+private func persistenceContext(_ time: Double, radius: Double) -> EncounterContext {
+  let context = crimeTestContext(time)
+  return .init(
+    system: context.system, seed: context.seed, government: context.government,
+    visit: context.visit, revision: context.revision, physicalTime: time,
+    anchors: context.anchors, player: context.player, actors: context.actors,
+    protection: context.protection, budget: context.budget, perceptionRadius: radius)
+}
+
 struct NPCPersistenceLedgerTests {
+  @Test func outOfRangeRetentionAndWorldUpdatesReenterWithoutAllocatingRepeatedOffers() throws {
+    var ledger = NPCPersistenceLedger()
+    var snapshot = try persistenceSnapshot()
+    snapshot.position = .init(0, 0, 20000)
+    _ = ledger.capture(snapshot, protection: .init())
+    ledger.cull(actor: snapshot.actor)
+    let far = ledger
+    for time in [10.0, 11, 12] {
+      persistenceExpect(ledger.pendingSpawnRequests(context: crimeTestContext(time)).isEmpty)
+    }
+    #expect(ledger == far && ledger.unboundSnapshots == [snapshot.actor: snapshot])
+    snapshot.position = .init(0, 0, 10000)
+    snapshot.physicalTime = 13
+    snapshot.energy = 36
+    snapshot.rotation = 0.9
+    snapshot.npc.resources?.frontShield = 19
+    persistenceExpect(ledger.updateUnbound(logicalIdentity: snapshot.actor, snapshot: snapshot))
+    let edge = try persistenceRequire(
+      ledger.pendingSpawnRequests(context: crimeTestContext(13)).first)
+    #expect(edge.position == snapshot.position && edge.energy == 36 && edge.npc == snapshot.npc)
+    snapshot.position.z = 10001
+    snapshot.physicalTime = 14
+    persistenceExpect(ledger.updateUnbound(logicalIdentity: snapshot.actor, snapshot: snapshot))
+    persistenceExpect(ledger.pendingSpawnRequests(context: crimeTestContext(14)).isEmpty)
+    ledger = try persistenceRoundtrip(ledger)
+    snapshot.position = .init(0, 0, 2000)
+    snapshot.physicalTime = 15
+    persistenceExpect(ledger.updateUnbound(logicalIdentity: snapshot.actor, snapshot: snapshot))
+    let near = try persistenceRequire(
+      ledger.pendingSpawnRequests(context: crimeTestContext(15)).first)
+    #expect(near.identity == edge.identity && near.position == snapshot.position)
+    #expect(ledger.unboundSnapshots[snapshot.actor]?.rotation == 0.9)
+    for radius in [0, -1, Double.nan, .infinity] {
+      let before = ledger
+      persistenceExpect(
+        ledger.pendingSpawnRequests(context: persistenceContext(15, radius: radius)).isEmpty)
+      #expect(ledger == before)
+    }
+  }
+
+  @Test func unboundUpdatesRejectBoundTerminalStaleOrChangedActorWithoutMutation() throws {
+    var ledger = NPCPersistenceLedger()
+    let original = try persistenceSnapshot()
+    _ = ledger.capture(original, protection: .init())
+    #expect(ledger.unboundSnapshots.isEmpty)
+    let bound = ledger
+    persistenceExpect(!ledger.updateUnbound(logicalIdentity: original.actor, snapshot: original))
+    #expect(ledger == bound)
+    ledger.cull(actor: original.actor)
+    let unbound = ledger
+    var invalids = [original, original, original, original]
+    invalids[0].actor = crimeTestID(99)
+    invalids[1].actor = .init(system: .init(galaxy: 0, system: 9), visit: 1, entity: 2)
+    invalids[2].physicalTime = 9
+    invalids[3].energy = .nan
+    for invalid in invalids {
+      persistenceExpect(!ledger.updateUnbound(logicalIdentity: original.actor, snapshot: invalid))
+      #expect(ledger == unbound)
+    }
+    persistenceExpect(!ledger.updateUnbound(logicalIdentity: crimeTestID(99), snapshot: original))
+    let request = try persistenceRequire(
+      ledger.pendingSpawnRequests(context: crimeTestContext(10)).first)
+    let rebound = try persistenceRequire(
+      ledger.acknowledge(receipts: [
+        .init(request: request.identity, actor: crimeTestID(100), refusal: nil)
+      ]).first)
+    persistenceExpect(ledger.terminal(actor: rebound.actor, reason: .destroyed))
+    let terminal = ledger
+    #expect(ledger.unboundSnapshots.isEmpty)
+    persistenceExpect(
+      !ledger.updateUnbound(logicalIdentity: original.actor, snapshot: rebound.snapshot))
+    #expect(ledger == terminal && ledger.valid)
+  }
+
   @Test func actualBodyCaptureRetainsWorldPoseResourcesAndCatalogueAcrossCodableRoundtrip() throws {
     let body = persistenceBody()
     var pose = ShipPose(position: .init(1000, 2000, 3000))

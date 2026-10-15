@@ -122,6 +122,11 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
 
   public var count: Int { entries.count }
   public var livingCount: Int { entries.values.filter { $0.terminal == nil }.count }
+  public var unboundSnapshots: [ActorIdentity: NPCPersistenceSnapshot] {
+    entries.compactMapValues { entry in
+      entry.binding == nil && entry.terminal == nil ? entry.snapshot : nil
+    }
+  }
   public var valid: Bool {
     guard count <= Self.maximumEntries, highestActor < UInt64.max,
       nextOffer > 0, nextOffer < UInt64.max,
@@ -149,6 +154,21 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
 
   public func logicalIdentity(for actor: ActorIdentity) -> ActorIdentity? {
     entries.first { $0.value.binding == actor }?.key
+  }
+
+  /// The runtime may advance a retained craft in world space without admitting
+  /// another physical actor. Its logical identity and outstanding offer stay fixed.
+  public mutating func updateUnbound(
+    logicalIdentity: ActorIdentity, snapshot: NPCPersistenceSnapshot
+  ) -> Bool {
+    guard valid, snapshot.valid, var entry = entries[logicalIdentity],
+      entry.binding == nil, entry.terminal == nil,
+      snapshot.actor == entry.snapshot.actor, snapshot.actor.system == system,
+      snapshot.physicalTime >= entry.snapshot.physicalTime
+    else { return false }
+    entry.snapshot = snapshot
+    entries[logicalIdentity] = entry
+    return true
   }
 
   /// First registrations must follow the global actor allocator's increasing
@@ -198,7 +218,10 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
   }
 
   public mutating func pendingSpawnRequests(context: EncounterContext) -> [SpawnRequest] {
-    guard valid, context.system == system, context.physicalTime.isFinite else { return [] }
+    guard valid, context.system == system, context.physicalTime.isFinite,
+      context.perceptionRadius.isFinite, context.perceptionRadius > 0,
+      context.player.position.finite
+    else { return [] }
     var budget = context.budget
     var requests: [SpawnRequest] = []
     for logical in entries.keys.sorted(by: { $0.entity < $1.entity }) {
@@ -208,6 +231,7 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
       if entry.offer?.visit != context.visit { entry.offer = nil }
       let snapshot = entry.snapshot
       guard context.physicalTime >= snapshot.physicalTime,
+        (snapshot.position - context.player.position).length <= context.perceptionRadius,
         !context.protection.protectedActors.contains(logical),
         !context.protection.protectedActors.contains(snapshot.actor),
         !(context.protection.suppressAmbientShips && snapshot.population != .police),
