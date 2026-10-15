@@ -44,6 +44,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let board: ScriptBoardDefinition?
   public let npcs: [ScriptNPCDefinition]?
   public let models: [ScriptNPCModel]?
+  public let modules: [ScriptModuleDefinition]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -51,8 +52,19 @@ public struct ScriptPack: Sendable {
   public let source: Data
   public let manifestBytes: Data
   public let digest: String
-  public var models: [String: ShipDesign] = [:]
-  public var resourceBytes: [String: Data] = [:]
+  public let models: [String: ShipDesign]
+  public let resourceBytes: [String: Data]
+  public let entryBytes: Data?
+  init(manifest: ScriptManifest, source: Data, manifestBytes: Data, digest: String,
+    models: [String: ShipDesign] = [:], resourceBytes: [String: Data] = [:], entryBytes: Data? = nil) {
+    self.manifest = manifest
+    self.source = source
+    self.manifestBytes = manifestBytes
+    self.digest = digest
+    self.models = models
+    self.resourceBytes = resourceBytes
+    self.entryBytes = entryBytes
+  }
   public var missingCapabilities: [String] {
     Set(manifest.capabilities).subtracting(ScriptCapabilities.implemented).sorted()
   }
@@ -65,6 +77,7 @@ public enum ScriptCapabilities {
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
     "owned-equipment-v2",
     "contracts-basic-v2", "profiled-encounters-v2",
+    "pack-modules-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -101,7 +114,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -131,6 +144,10 @@ public enum ScriptPackLibrary {
       }
     }
     try validateNPCKeys(root)
+    if root.contains(key: "modules") {
+      let modules = try root.array(forKey: "modules")
+      for i in 0..<modules.count { try keys(modules.table(atIndex: i), "id path") }
+    }
     if root.contains(key: "passengerParties") {
       let parties = try root.array(forKey: "passengerParties")
       for index in 0..<parties.count {
@@ -144,16 +161,23 @@ public enum ScriptPackLibrary {
     }
     let manifest = try TOMLDecoder().decode(ScriptManifest.self, from: bytes)
     try validate(manifest)
-    let source = try readFile(manifest.module, in: directory)
-    guard String(data: source, encoding: .utf8) != nil, !source.contains(0) else {
+    let entry = try readFile(manifest.module, in: directory)
+    guard String(data: entry, encoding: .utf8) != nil, !entry.contains(0) else {
       throw MissionPackError("Mission Lua must be UTF-8 text without NUL bytes.")
     }
+    let modules = try compileModules(manifest.modules ?? [], entry: entry, directory: directory)
+    let source = modules.source
     let assets = try readNPCModels(manifest, directory: directory)
     try ScriptEvaluator.validate(
       source: source,
       handlers: manifest.handlers.map(\.function) + (manifest.board.map { [$0.generator] } ?? []))
     var digestInput = Data()
-    for (name, data) in [("manifest.toml", bytes), (manifest.module, source)] {
+    for (name, data) in [("manifest.toml", bytes), (manifest.module, entry)] {
+      digestInput.append(try ScriptWire.encode([.string(name), .integer(Int64(data.count))]))
+      digestInput.append(data)
+    }
+    for name in modules.resources.keys.sorted() {
+      let data = modules.resources[name]!
       digestInput.append(try ScriptWire.encode([.string(name), .integer(Int64(data.count))]))
       digestInput.append(data)
     }
@@ -164,7 +188,8 @@ public enum ScriptPackLibrary {
     }
     return ScriptPack(
       manifest: manifest, source: source, manifestBytes: bytes, digest: hash(digestInput),
-      models: assets.designs, resourceBytes: assets.bytes)
+      models: assets.designs, resourceBytes: assets.bytes.merging(modules.resources) { first, _ in first },
+      entryBytes: entry)
   }
   static func hash(_ data: Data) -> String {
     SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
@@ -244,6 +269,14 @@ public enum ScriptPackLibrary {
       throw MissionPackError("Invalid encounter declarations or missing native classic capability.")
     }
     try validateNPCDeclarations(manifest)
+    let modules = manifest.modules ?? []
+    let resourcePaths = [manifest.module] + modules.map(\.path) + (manifest.models ?? []).map(\.path)
+    guard modules.count <= 16, modules.allSatisfy(\.valid),
+      Set(modules.map(\.id)).count == modules.count,
+      Set(resourcePaths).count == resourcePaths.count,
+      modules.isEmpty || manifest.capabilities.contains("pack-modules-v2"),
+      manifest.handlers.count + (manifest.board == nil ? 0 : 1) <= 64
+    else { throw MissionPackError("Invalid, duplicate or unsupported pack module declarations.") }
     let parties = manifest.passengerParties ?? []
     guard
       !manifest.handlers.contains(where: {
@@ -340,8 +373,9 @@ public enum ScriptPackLibrary {
     let module = staging.appendingPathComponent(pack.manifest.module)
     try FileManager.default.createDirectory(
       at: module.deletingLastPathComponent(), withIntermediateDirectories: true)
-    try pack.source.write(to: module)
+    try (pack.entryBytes ?? pack.source).write(to: module)
     for (path, bytes) in pack.resourceBytes {
+      try Self.path(path)
       let target = staging.appendingPathComponent(path)
       try FileManager.default.createDirectory(
         at: target.deletingLastPathComponent(), withIntermediateDirectories: true)

@@ -550,6 +550,50 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   #expect(game.commander.scriptState.projectiles[shotIdentity] == nil)
 }
 
+@Test func actualNpcCrossfireRendersLiveRootAndComponentLaserColoursAndDisablesDestroyedTurrets()
+  throws
+{
+  let edits = [
+    ("kind = \"plasma\"", "kind = \"laser\""),
+    ("projectileSpeed = 2000.0\n", ""), ("lifetime = 3.0\n", ""),
+    ("collisionRadius = 2.0\n", ""), ("collisionDelay = 0.05\n", ""),
+    ("maximumHeat = 256.0", "maximumHeat = 256.0\ncolour = 4281597951"),
+  ]
+  let fixture = try NPCFixture(edits: edits)
+  defer { fixture.clean() }
+  var (game, id) = try fixture.game()
+  let shooter = try npcIndex(game, id)
+  let target = try npcIndex(game, id, "wing")
+  game.bodies[shooter].position = .init(200, 0, 1000)
+  game.bodies[target].position = .init(-200, 0, 1500)
+  var pose = Basis3()
+  pose.z = Vector3(-400, 0, 500).unit
+  pose.x = pose.y.cross(pose.z)
+  game.bodies[shooter].orientation = pose
+  try setNPCIntent(
+    &game, id: id, command: npcIntent("attack", request: "crossfire", target: "wing", speed: 0))
+  game.advanceScriptNPCWeapons(delta: 0.1)
+  #expect(game.bodies[shooter].scriptNPC?.shots == 2)
+  #expect(game.bodies[target].energy == 99)
+  game.commander.shipDisplayStyle = .shadedPanels
+  func colouredBeams(_ frame: Frame) -> Int {
+    frame.graphics.filter {
+      if case .panel(let panel) = $0 { return panel.colour == 4_281_597_951 }
+      return false
+    }.count
+  }
+  var frame = Frame()
+  Display.draw(game.bodies[shooter], game: game, into: &frame)
+  #expect(colouredBeams(frame) == 2)
+  let component = ScriptNPCHit(body: shooter, component: "turret", distance: 0)
+  game.damageScriptNPC(
+    component, amount: 40, player: false,
+    attacker: game.bodies[target].missionActorID)
+  frame = Frame()
+  Display.draw(game.bodies[shooter], game: game, into: &frame)
+  #expect(colouredBeams(frame) == 1)
+}
+
 @Test func nativeProfiledPatrolUsesActualPlayerLasersAutomaticDockingAndStationConfirmation()
   async throws
 {
@@ -654,7 +698,7 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   #expect(await runtime.snapshot().commander.scriptState.geometry.count == 2)
   for _ in 0..<30 { _ = await runtime.advance(delta: 0.1) }
   #expect(await runtime.snapshot().bodies.contains { ($0.scriptNPC?.shots ?? 0) > 0 })
-  try await runtime.saveForInterface()
+  _ = try await runtime.saveForInterface()
   try await runtime.restartScriptGalleryTrial()
   #expect(
     await runtime.snapshot().bodies.filter { $0.scriptNPC != nil }.allSatisfy {

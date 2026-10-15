@@ -1,9 +1,9 @@
 schemaVersion = 2
 missionAPI = 2
 id = "example.profiled-skirmish"
-version = "1.0.0"
+version = "1.0.1"
 minimumEngine = "2.0.0"
-capabilities = ["script-lua-v1", "story-v2", "economy-v2", "profiled-encounters-v2", "gallery-basic-v2"]
+capabilities = ["script-lua-v1", "story-v2", "economy-v2", "profiled-encounters-v2", "gallery-basic-v2", "pack-modules-v2"]
 priority = 600
 source = "Original physical NPC/component demonstration. Declared figures are project example values, not historical ship specifications or full Oolite combat parity."
 license = "MIT"
@@ -134,3 +134,7 @@ actors = [
   {id="lead", npc="training-craft", x=0.0, y=0.0, z=3000.0, hostile=true},
   {id="wing", npc="training-craft", x=1000.0, y=0.0, z=4500.0, hostile=true}
 ]
+
+[[modules]]
+id = "skirmish"
+path = "scripts/skirmish.lua"
