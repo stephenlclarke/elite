@@ -62,16 +62,7 @@ final class GameView: NSView {
   }
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
-  override var wantsUpdateLayer: Bool { true }
-  override func updateLayer() {
-    let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
-    guard
-      let image = imageForGame(
-        game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
-    else { return }
-    layer?.contentsScale = CGFloat(scale)
-    layer?.contents = image
-  }
+  override var isOpaque: Bool { true }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
