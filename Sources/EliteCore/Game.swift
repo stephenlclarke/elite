@@ -255,6 +255,7 @@ public struct Game: Sendable {
   public var paused = false
   public var isMissionTrial = false
   public var contractBoard = ContractBoardUI()
+  var scriptPledgeAdmission: ScriptPledgeAdmission?
   public var trialTitle: String?
   var trialDigest: String?
   var trialSeed: UInt64?

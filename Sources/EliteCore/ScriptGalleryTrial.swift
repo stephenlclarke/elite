@@ -98,7 +98,18 @@ extension Game {
       guard offers.indices.contains(index) else {
         throw MissionPackError("This trial has no generated offer at the selected position.")
       }
-      _ = try trial.acceptContract(board: key, offer: offers[index].id)
+      if pack.manifest.pledge != nil {
+        trial.openContractBoard()
+        guard
+          let selection = trial.contractBoard.rows.firstIndex(where: {
+            $0.offer?.id == offers[index].id
+          })
+        else { throw MissionPackError("This pledge trial has no available board review.") }
+        trial.contractBoard.selection = selection
+        trial.contractBoardKey("return")
+      } else {
+        _ = try trial.acceptContract(board: key, offer: offers[index].id)
+      }
     } else {
       _ = try trial.acceptScriptMission(pack, randomSeed: seed)
     }

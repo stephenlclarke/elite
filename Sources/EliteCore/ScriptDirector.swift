@@ -111,6 +111,7 @@ extension Game {
     fields["last_answer"] =
       instance.conversationReceipts.values.max { $0.sequence < $1.sequence }?.value ?? .null
     fields["contract"] = contractSnapshot(instance)
+    fields["pledge"] = pledgeQuery(instance)
     if let pack = scriptPack(for: instance) {
       fields["receipt_requirements"] = scriptReceiptQuery(pack, state: instance)
     }
@@ -260,7 +261,21 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
-          if command["op"]?.string == "child.ensure" {
+          if pack.manifest.pledge != nil,
+            !["milestone.ensure", "journal.append", "pledge.commit"].contains(
+              command["op"]?.string ?? "")
+          {
+            throw MissionPackError(
+              "A pledge handler may only record its objective and commit the native donation.")
+          }
+          if pack.manifest.pledge != nil, next.outcome != .active {
+            throw MissionPackError("A completed pledge cannot issue another command.")
+          }
+          if command["op"]?.string == "pledge.commit" {
+            try candidate.applyPledgeCommand(
+              command, event: event, pack: pack,
+              state: &next, candidate: &candidate.commander)
+          } else if command["op"]?.string == "child.ensure" {
             if let result = try candidate.ensureCampaignChild(
               command, pack: pack, state: &next, event: event)
             {
@@ -591,7 +606,8 @@ extension Game {
       name: job?.offer.title ?? pack.manifest.mission.title, status: status,
       objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
       briefing: (job?.offer.briefing ?? pack.manifest.mission.briefing)
-        + worldJobGallerySummary(origin: state?.id) + campaignGallerySummary(state),
+        + worldJobGallerySummary(origin: state?.id) + campaignGallerySummary(state)
+        + pledgeGallerySummary(state),
       destination: destination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
@@ -625,13 +641,19 @@ extension Game {
     for state in commander.scriptState.instances.values.sorted(by: {
       $0.id.uuidString < $1.id.uuidString
     }) where scriptPack(for: state) == nil {
+      let pledged = commander.scriptState.pledgeLedger?.receipt(instance: state.id) != nil
       entries.append(
         GalleryMission(
-          name: state.contract?.offer.title ?? state.definition, status: .locked,
-          objective: "Restore the exact saved mission pack.",
-          briefing: "Saved state and cargo remain intact." + campaignGallerySummary(state),
+          name: state.contract?.offer.title ?? state.definition,
+          status: pledged ? .complete : .locked,
+          objective: pledged
+            ? "Donation complete. Restore exact content for new offers."
+            : "Restore the exact saved mission pack.",
+          briefing: "Saved state and cargo remain intact." + campaignGallerySummary(state)
+            + pledgeGallerySummary(state),
           destination: "Pack missing",
-          reward: "Suspended", prerequisites: [], completed: state.milestones.count, milestones: [],
+          reward: pledged ? "Local standing recorded once" : "Suspended", prerequisites: [],
+          completed: state.milestones.count, milestones: [],
           savedInstance: state.id)
       )
     }

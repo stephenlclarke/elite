@@ -15,6 +15,9 @@ extension Game {
     else {
       throw MissionPackError("This station has no available contract provider for this pack.")
     }
+    if pack.manifest.pledge != nil, commander.system >= 256 {
+      throw MissionPackError("Station Aid pledges do not support this synthetic host site.")
+    }
     let key = pack.digest + "/" + definition.id + "/" + contractStation.key
     let revision = contractRevision(definition)
     if commander.contracts.boards[key]?.revision == revision { return key }
@@ -32,6 +35,7 @@ extension Game {
     var world = scriptSnapshot.object ?? [:]
     world["station_id"] = .string(contractStation.key)
     world["board_revision"] = .integer(revision)
+    world["board_seed_u32"] = .integer(Int64(Self.pledgeProfileSeed(initialSeed)))
     world["offer_draws"] = .array(draws)
     world["destinations"] = .array(
       knownSystems.sorted { $0.id < $1.id }.filter { $0.id < 256 }.map {
@@ -60,6 +64,19 @@ extension Game {
       group: pack.manifest.id + "/" + (definition.exclusiveGroup ?? definition.id), offers: offers)
     guard board.valid else {
       throw MissionPackError("Generated contract offers are invalid or duplicated.")
+    }
+    if pack.manifest.pledge != nil {
+      var checking = self
+      checking.commander.contracts.boards[key] = board
+      let expected = Set(
+        ["credits", "food"].flatMap { variant in
+          (1...3).map { variant + "-" + String($0) }
+        })
+      guard board.offers.count == 6, Set(board.offers.map(\.key)) == expected,
+        board.offers.allSatisfy({ (try? checking.pledgePreview(board: key, offer: $0.id)) != nil })
+      else {
+        throw MissionPackError("A pledge provider must generate its six exact native offers.")
+      }
     }
     // No generation side effects escape until the complete snapshot can be saved by the caller.
     commander.contracts.boards[key] = board
@@ -107,9 +124,11 @@ extension Game {
     do { _ = try candidate.acceptContract(board: key, offer: id) } catch {
       issues.append(error.localizedDescription)
     }
-    return .init(
+    var quote = ContractAcceptanceQuote(
       board: key, offer: id, issues: issues, resources: commander.contractQuoteResources,
       epoch: ecmControl.epoch)
+    quote.pledge = try? pledgePreview(board: key, offer: id)
+    return quote
   }
   mutating func confirmContract(_ quote: ContractAcceptanceQuote) throws -> UUID {
     guard quote.epoch == ecmControl.epoch else {
@@ -158,10 +177,31 @@ extension Game {
       offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline)
     let instanceID = Self.contractJobIdentity(id)
     var candidate = self
+    if let pledge = try pledgePreview(board: key, offer: id) {
+      try requirePledgeResources(pledge)
+      guard candidate.scriptPledgeAdmission == nil,
+        candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+      else { throw MissionPackError("A pledge confirmation cannot start in this context.") }
+      candidate.scriptPledgeAdmission = .init(
+        instance: instanceID, board: board, offer: offer,
+        preview: pledge, epoch: ecmControl.epoch,
+        sequence: commander.scriptState.nextEvent + 1,
+        cause: scriptEventContext(
+          .init(
+            id: instanceID, definition: pack.manifest.stateID,
+            version: pack.manifest.version, digest: pack.digest)))
+    }
     candidate.commander.credits -= offer.deposit
     candidate.commander.contracts.boards[key]?.offers[index].status = .accepted(instanceID)
     _ = try candidate.acceptScriptMission(
       pack, instanceID: instanceID, randomSeed: board.seed, contract: job)
+    if pack.manifest.pledge != nil {
+      candidate.scriptPledgeAdmission = nil
+      guard candidate.pledgeAcceptanceComplete(instanceID) else {
+        throw MissionPackError(
+          "Donation was not completed in its original confirmation; nothing transferred.")
+      }
+    }
     guard candidate.commander.valid else {
       throw MissionPackError("This contract cannot fit the current commander.")
     }

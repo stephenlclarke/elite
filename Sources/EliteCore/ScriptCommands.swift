@@ -99,6 +99,13 @@ extension Game {
       }
       state.journal.append(message)
     case "mission.finish":
+      if pack.manifest.pledge != nil, fields["outcome"]?.string == "complete" {
+        guard let receipt = candidate.scriptState.pledgeLedger?.receipt(instance: state.id),
+          state.pledgeReceiptID == receipt.id
+        else {
+          throw MissionPackError("A completed donation requires its native pledge receipt.")
+        }
+      }
       guard let outcome = ScriptOutcome(rawValue: try text("outcome")), outcome != .active,
         outcome != .complete
           || (state.milestones.count == pack.manifest.mission.milestones.count

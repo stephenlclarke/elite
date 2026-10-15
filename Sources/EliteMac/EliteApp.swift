@@ -85,7 +85,7 @@ final class GameView: NSView {
   }
   private func capturePaintedScriptPage() {
     var painted = game
-    if painted.screen == .gallery {
+    if [.gallery, .contracts].contains(painted.screen) {
       // Resize can paint new bounds before the runtime publishes the matching viewport.
       painted.viewportWidth = Double(bounds.width)
       painted.viewportHeight = Double(bounds.height)
@@ -107,7 +107,9 @@ final class GameView: NSView {
     return super.performKeyEquivalent(with: event)
   }
   private func scriptPageToken() -> String? {
-    if game.screen == .gallery, displayedScriptPageSize != bounds.size { return nil }
+    if [.gallery, .contracts].contains(game.screen), displayedScriptPageSize != bounds.size {
+      return nil
+    }
     let proof =
       displayedScriptPage ?? ScriptPagePresentation(epoch: game.ecmControl.epoch, page: nil)
     guard let bytes = try? JSONEncoder().encode(proof), bytes.count <= 1024 else { return nil }
@@ -116,6 +118,7 @@ final class GameView: NSView {
   private func enqueueKey(_ key: String) {
     if ScriptPagePresentation.controlKeys.contains(key)
       || ScriptPagePresentation.galleryContextKeys.contains(key)
+      || ScriptPagePresentation.contractContextKeys.contains(key)
       || (game.screen == .gallery
         && ["gallery-trial", "mission-resume"].contains(key))
     {
@@ -127,6 +130,10 @@ final class GameView: NSView {
   }
   func enqueueGalleryCommand(_ key: String) {
     guard game.screen == .gallery, ["gallery-trial", "mission-resume"].contains(key) else { return }
+    enqueueKey(key)
+  }
+  func enqueueContractCommand(_ key: String) {
+    guard ScriptPagePresentation.contractContextKeys.contains(key) else { return }
     enqueueKey(key)
   }
   override func keyDown(with event: NSEvent) {
@@ -156,9 +163,9 @@ final class GameView: NSView {
   override func mouseDown(with event: NSEvent) {
     if game.screen == .contracts {
       let point = convert(event.locationInWindow, from: nil)
-      let offer = game.contractBoard.quote?.offer.uuidString ?? "none"
+      guard let token = scriptPageToken() else { return }
       pending.append(
-        "contract-click:\(game.ecmControl.epoch):\(offer):\(game.contractBoard.detail ? 1 : 0):\(point.x):\(point.y)"
+        "script-page-click:" + token + ":\(point.x):\(point.y)"
       )
       return
     }
@@ -207,7 +214,7 @@ final class GameView: NSView {
   }
   override func scrollWheel(with event: NSEvent) {
     if game.screen == .contracts {
-      pending.append("contract-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+      enqueueKey(event.scrollingDeltaY > 0 ? "up" : "down")
       return
     }
     if game.screen == .handoff || game.screen == .library {
@@ -454,18 +461,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           await runtime.mapClick(x: x, y: y)
         }
       } else if event.hasPrefix("contract-click:") {
-        let parts = event.split(separator: ":")
-        if parts.count == 6, let epoch = UUID(uuidString: String(parts[1])),
-          parts[2] == "none" || UUID(uuidString: String(parts[2])) != nil,
-          let detail = Int(parts[3]), [0, 1].contains(detail), let x = Double(parts[4]),
-          let y = Double(parts[5])
-        {
-          await runtime.contractClick(
-            x: x, y: y, expectedOffer: UUID(uuidString: String(parts[2])), detail: detail == 1,
-            epoch: epoch)
-        }
-      } else if event.hasPrefix("contract-scroll:"), let amount = Int(event.dropFirst(16)) {
-        await runtime.contractScroll(amount)
+        // Coordinate-only legacy packets cannot authorize a new payment review.
+        continue
+      } else if event.hasPrefix("contract-scroll:") {
+        // A stale raw scroll cannot substitute the next payment target.
+        continue
       } else if event.hasPrefix("library-click:") {
         let parts = event.split(separator: ":")
         if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
@@ -674,6 +674,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let view = window?.contentView as? GameView
     if ["gallery-trial", "mission-resume"].contains(command) {
       view?.enqueueGalleryCommand(command)
+    } else if ScriptPagePresentation.contractContextKeys.contains(command) {
+      view?.enqueueContractCommand(command)
     } else {
       view?.pending.append(command)
     }

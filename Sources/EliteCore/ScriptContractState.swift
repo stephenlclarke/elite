@@ -145,6 +145,8 @@ public struct ContractAcceptanceQuote: Sendable {
   public var allowed: Bool { issues.isEmpty }
   let resources: Commander
   let epoch: UUID
+  public var pledge: ScriptPledgePreview? = nil
+  public var reviewToken: UUID = UUID()
 }
 extension Commander {
   var contractQuoteResources: Commander {

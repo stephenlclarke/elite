@@ -32,12 +32,14 @@ public enum ScriptPageIdentity: Codable, Sendable, Equatable {
   case offer(String)
   case question(ScriptQuestionIdentity)
   case gallery(ScriptGalleryPageIdentity)
+  case contract(ScriptContractPageIdentity)
   var valid: Bool {
     switch self {
     case .legacy(let page): page.valid
     case .offer(let digest): ScriptCompletionReceipt.validDigest(digest)
     case .question(let question): question.valid
     case .gallery(let page): page.valid
+    case .contract(let page): page.valid
     }
   }
 }
@@ -55,6 +57,7 @@ public struct ScriptPagePresentation: Codable, Sendable, Equatable {
   ]
   /// Preserve ordinary controls while capturing absence before a queued Gallery opening.
   public static let galleryContextKeys: Set<String> = ["t", "r", "tab", "l"]
+  public static let contractContextKeys: Set<String> = ["contracts-open", "contract-refresh"]
   var valid: Bool { page?.valid ?? true }
 }
 
@@ -76,6 +79,8 @@ extension Game {
           committed: offer.committed))
     } else if screen == .gallery {
       page = .gallery(scriptGalleryPageIdentity)
+    } else if screen == .contracts {
+      page = .contract(scriptContractPageIdentity)
     } else {
       page = nil
     }
@@ -88,10 +93,13 @@ extension GameRuntime {
     let allowed: Bool
     if case .gallery(let page)? = expected.page {
       allowed = page.allowedKeys.contains(key)
+    } else if case .contract(let page)? = expected.page {
+      allowed = page.allowedKeys.contains(key)
     } else if expected.page == nil {
       allowed =
         ScriptPagePresentation.controlKeys.contains(key)
         || ScriptPagePresentation.galleryContextKeys.contains(key)
+        || ScriptPagePresentation.contractContextKeys.contains(key)
     } else {
       allowed = ScriptPagePresentation.controlKeys.contains(key)
     }
@@ -112,6 +120,8 @@ extension GameRuntime {
     }
     if case .gallery? = expected.page {
       galleryClick(x: x, y: y)
+    } else if case .contract? = expected.page {
+      contractPageClick(x: x, y: y)
     } else {
       blackjackHandoffClick(x: x, y: y)
     }

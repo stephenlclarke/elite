@@ -168,7 +168,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 19, generation: generation,
+      format: "elite-script-save", schemaVersion: 20, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
     let bytes = try encoder.encode(pointer)
@@ -189,7 +189,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...19).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...20).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -228,6 +228,13 @@ enum ScriptSaveStore {
     if pointer.schemaVersion <= 4 { commander.migrateLegacyPassengerMarker() }
     commander.scriptState = try ScriptValueStorage.decoder(typed: typed).decode(
       ScriptEngineState.self, from: chunks["missions.json"]!)
+    guard
+      pointer.schemaVersion >= 20
+        || (commander.scriptState.pledgeLedger == nil
+          && commander.scriptState.instances.values.allSatisfy({ $0.pledgeReceiptID == nil }))
+    else {
+      throw SaveError.invalidCommander
+    }
     guard
       pointer.schemaVersion >= 19
         || commander.scriptState.instances.values.allSatisfy({
