@@ -120,7 +120,7 @@ extension Game {
     let cooldown = max(0, (bodies[index].blackjackLaserCooldown ?? 0) - delta)
     bodies[index].blackjackLaserCooldown = cooldown
     if distance < 1500 && cooldown == 0 {
-      applyDamage(BlackjackTarget.weaponEnergy, front: bodies[index].position.z >= 0)
+      emitLegacyNPCBeam(bodyID: bodies[index].id, damage: BlackjackTarget.weaponEnergy)
       bodies[index].blackjackLaserCooldown = LaserKind.pulse.firingInterval
     }
   }

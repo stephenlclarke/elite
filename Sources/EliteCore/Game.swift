@@ -320,7 +320,7 @@ public struct Game: Sendable {
   public var missionPage = 0
   public var missionClue: String?
   public var missionElapsed = 0.0
-  private var fireCooldown = 0.0
+  var fireCooldown = 0.0
   private var spawnClock = 0.0
   var missionLoopCounter: UInt8 = 0
   var missionSpawnDelay = 0
@@ -1010,10 +1010,7 @@ public struct Game: Sendable {
   }
   public mutating func energyBomb() {
     guard !docked, commander.equipment.remove("Energy Bomb") != nil else { return }
-    for index in bodies.indices where !bodies[index].hull.bombImmune {
-      bodies[index].energy = 0
-      bodies[index].destroyedByPlayer = true
-    }
+    applyAttributedEnergyBomb()
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
@@ -1123,24 +1120,6 @@ public struct Game: Sendable {
     }
     if screen != .gameOver { advanceMissionClock(dt) }
   }
-  private mutating func fireLaser() {
-    guard fireCooldown <= 0, laserHeat < 240, energy > 1 else { return }
-    guard let mount = LaserMount.from(screen), let laser = commander.laser(on: mount) else {
-      return
-    }
-    fireCooldown = laser.firingInterval
-    laserHeat += 10
-    energy -= 1
-    laserFlash = 0.08
-    if let index = bodies.firstIndex(where: {
-      let p = viewPosition($0.position)
-      return $0.hull != .station && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
-    }) {
-      bodies[index].energy -= commander.laserDamage(against: bodies[index].hull, mount: mount)
-      bodies[index].hostile = true
-      if bodies[index].energy <= 0 { bodies[index].destroyedByPlayer = true }
-    }
-  }
   public func viewPosition(_ p: Vector3) -> Vector3 {
     switch screen {
     case .rear: return .init(-p.x, p.y, -p.z)
@@ -1199,26 +1178,13 @@ public struct Game: Sendable {
     }
     if bodies[index].position.length < 1500 {
       let damage = dt * (bodies[index].hull.navalLaserDamage ?? 6) * 2
-      applyDamage(damage, front: bodies[index].position.z >= 0, energyMultiplier: 2)
+      emitLegacyNPCBeam(bodyID: bodies[index].id, damage: damage, energyMultiplier: 2)
     }
   }
   mutating func resolveDestroyed() {
     let destroyed = bodies.filter { $0.energy <= 0 }
-    for body in destroyed
-    where body.destroyedByPlayer == true && body.hull != .cargo && body.hull != .asteroid
-      && body.playerMissileTarget == nil
-      && !body.enemyMissile
-    {
-      let previousRank = commander.rank
-      commander.kills = (commander.kills + 1) & 0xffff
-      if commander.rank != previousRank { notify("RIGHT ON, COMMANDER") }
-      commander.credits =
-        (commander.credits
-          + (body.blackjackRole.map { $0.bountyCredits * 10 } ?? body.hull.navalBounty
-            ?? (body.hostile ? 50 : 0)))
-        & 0xffff_ffff
-      if !body.hostile { commander.legal += 8 }
-    }
+    ensurePhysicalActors()
+    for body in destroyed { settleLegacyCombatDeath(body) }
     for body in destroyed {
       missionTargetRemoved(body)
       clearRemovedTarget(body)
