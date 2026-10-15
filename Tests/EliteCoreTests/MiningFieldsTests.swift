@@ -18,7 +18,9 @@ import Testing
           (rock.position - anchors.sun.position).length >= 4 * anchors.sun.radius + rock.radius)
         #expect((rock.position - anchors.station.position).length >= 1200 + rock.radius)
         #expect((100...200).contains(rock.energy))
-        let pose = ShipPose(position: .init(400, -200, 100), orientation: .init())
+        var orientation = Basis3()
+        orientation.rotate(pitch: 0.73, roll: -0.4, yaw: 1.2)
+        let pose = ShipPose(position: .init(400, -200, 100), orientation: orientation)
         #expect((pose.systemPoint(pose.shipPoint(rock.position)) - rock.position).length < 0.000001)
       }
     }
