@@ -148,7 +148,7 @@ final class GameView: NSView {
       pending.append("gallery-click:\(point.x):\(point.y)")
       return
     }
-    guard game.screen == .chart || game.screen == .shortChart else { return }
+    guard [.chart, .shortChart, .navigation].contains(game.screen) else { return }
     let point = convert(event.locationInWindow, from: nil)
     pending.append("map-click:\(point.x):\(point.y)")
   }

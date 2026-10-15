@@ -139,6 +139,10 @@ extension Game {
       if key == "l" { openGallery() }
       return true
     }
+    if screen == .navigation && ["4", "5"].contains(key) {
+      navigationReturn = key == "5" ? .shortChart : .chart
+      return true
+    }
     if key.count == 1, let number = Int(key), (0...9).contains(number),
       [Screen.showroom, .gallery, .rumour, .navigation].contains(screen)
     {
