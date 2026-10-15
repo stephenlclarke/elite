@@ -4,6 +4,32 @@ import Testing
 @testable import EliteCore
 
 struct MiningLedgerTests {
+  @Test func destroyedOreStaysSettledAfterSaveAndSceneRebuild() throws {
+    var ledger = MiningLedger(seed: 42)
+    guard case .extracted(let pods) = ledger.hit(rock: rock(), incident: incident(1), damage: 200)
+    else {
+      Issue.record("Missing ore")
+      return
+    }
+    let pod = try #require(pods.first)
+    var protection = MissionProtection()
+    protection.protectedPayloads.insert(pod.identity)
+    let protected = ledger.destroy(payload: pod.identity, protection: protection)
+    #expect(!protected)
+    let removed = ledger.destroy(payload: pod.identity)
+    let duplicate = ledger.destroy(payload: pod.identity)
+    #expect(removed && !duplicate)
+    ledger = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
+    ledger.resetPhysicalBindings(system: system)
+    #expect(ledger.isDepleted(rock().identity))
+    #expect(!ledger.pendingPayloads.contains { $0.identity == pod.identity })
+    var cargo = Array(repeating: 0, count: 17)
+    #expect(
+      ledger.collect(
+        payload: pod.identity, into: &cargo, freeTonnes: 100,
+        hasScoops: true, approachAllowed: true, protection: .init()) == .refused(.unavailable))
+    #expect(cargo.allSatisfy { $0 == 0 })
+  }
   private let system = SystemIdentity(galaxy: 0, system: 7)
   private func rock(_ index: UInt16 = 0) -> MiningRock {
     MiningRock(
