@@ -99,7 +99,9 @@ extension Game {
       ),
       (String(format: "Cash: %.1f CR", Double(commander.credits) / 10), .white),
       ("Legal status: " + legal, .white),
-      ("Rating: " + commander.rank, .white), ("Lasers", .yellow),
+      ("Rating: " + commander.rank, .white),
+      ("Commander calendar: day \(calendarDay) (project epoch)", .cyan),
+      ("Lasers", .yellow),
     ]
     rows += commander.laserMountSummary.map { ("  " + $0, .cyan) }
     rows += [

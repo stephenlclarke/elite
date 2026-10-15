@@ -892,6 +892,10 @@ public struct Game: Sendable {
     return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    guard recordCalendarLaunch(wasDocked: docked) else {
+      notify("CALENDAR LIMIT - LAUNCH NOT COMMITTED")
+      return
+    }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
     retaliation.clear()
@@ -938,6 +942,7 @@ public struct Game: Sendable {
     rearShield = commander.shieldCapacity
     laserHeat = 0
     jumpCountdown = nil
+    cancelCalendarJourney()
     missileArmed = false
     clearCelestialFlight()
     notify("DOCKED")
@@ -970,6 +975,11 @@ public struct Game: Sendable {
       notify("MASS LOCKED")
       return
     }
+    let debit = Int((distance * 10).rounded())
+    guard admitCalendarJourney(destination: targetSystem, nativeFuelDebit: debit) else {
+      notify("CALENDAR LIMIT - JUMP NOT ADMITTED")
+      return
+    }
     jumpCountdown = commander.performance.spool
     notify("HYPERSPACE")
   }
@@ -986,11 +996,14 @@ public struct Game: Sendable {
     missileCooldown = 0
     spin.stop(immediate: true)
     cancelAutoTarget()
-    let cost = Int((currentSystem.distance(to: targetSystem) * 10).rounded())
+    let journey = completeCalendarJourney()
+    let destination = journey?.destination ?? selectedSystem
+    let cost =
+      journey?.nativeFuelDebit ?? Int((currentSystem.distance(to: targetSystem) * 10).rounded())
     if !commander.unlimitedFuel {
       commander.fuel = max(0, commander.fuel - cost)
     }
-    commander.system = selectedSystem
+    commander.system = destination
     if let plan = commander.navigationPlan, plan.nextSystem != commander.system {
       commander.navigationPlan = nil
       notify("ROUTE CANCELLED - OFF ROUTE")
@@ -1081,10 +1094,12 @@ public struct Game: Sendable {
     }
     _ = ecmControl.detect(bodies)
     detectRetaliationSources()
-    ecmControl.activate(destroyed: bodies.filter {
-      $0.hull == .missile && $0.scriptShot == nil && $0.energy > 0
-    }.count)
-    for missile in bodies where missile.hull == .missile && missile.scriptShot == nil && missile.energy > 0 {
+    ecmControl.activate(
+      destroyed: bodies.filter {
+        $0.hull == .missile && $0.scriptShot == nil && $0.energy > 0
+      }.count)
+    for missile in bodies
+    where missile.hull == .missile && missile.scriptShot == nil && missile.energy > 0 {
       confirmRetaliation(missile)
     }
     bodies.removeAll { $0.hull == .missile && $0.scriptShot == nil }
@@ -1232,13 +1247,16 @@ public struct Game: Sendable {
     case .left: direction = .init(-1, 0, 0)
     case .right: direction = .init(1, 0, 0)
     }
-    let hit = scriptNPCHit(from: .init(0, 0, 0), direction: direction, range: 40000, profiledOnly: true)
+    let hit = scriptNPCHit(
+      from: .init(0, 0, 0), direction: direction, range: 40000, profiledOnly: true)
     var classic = bodies.firstIndex(where: {
       let p = viewPosition($0.position)
       return $0.scriptNPC == nil && $0.scriptShot == nil && $0.hull != .station
         && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
     })
-    if hit != nil, let physical = scriptNPCHit(from: .init(0, 0, 0), direction: direction, range: 40000) {
+    if hit != nil,
+      let physical = scriptNPCHit(from: .init(0, 0, 0), direction: direction, range: 40000)
+    {
       if bodies[physical.body].scriptNPC != nil {
         damageScriptNPC(physical, amount: laser.damage, player: true, attacker: nil)
         return
@@ -1278,7 +1296,9 @@ public struct Game: Sendable {
         bodies[index].scriptNPC?.velocity = velocity.rotated(
           pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
       }
-      if bodies[index].scriptNPC == nil && bodies[index].scriptShot == nil && bodies[index].hostile && bodies[index].energy > 0 {
+      if bodies[index].scriptNPC == nil && bodies[index].scriptShot == nil && bodies[index].hostile
+        && bodies[index].energy > 0
+      {
         enemyAction(index: index, dt: dt)
       }
     }
@@ -1384,6 +1404,12 @@ public actor GameRuntime {
   var scriptSaveURL: URL?
   public init(game: Game = Game(), saveURL: URL? = nil) {
     self.game = game
+    let missingCalendar = self.game.commander.scriptState.calendarLedger == nil
+    self.game.ensureScriptCalendar(
+      origin: game.jumpCountdown == nil ? .newCommander : .inactiveLegacyMigration)
+    if missingCalendar, game.jumpCountdown != nil {
+      self.game.commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
+    }
     if game.isMissionTrial {
       let namespace = Self.newGalleryNamespace()
       galleryNamespace = namespace
@@ -1400,6 +1426,7 @@ public actor GameRuntime {
       .appendingPathComponent("elite-mission-gallery-" + UUID().uuidString, isDirectory: true)
     let target = namespace.appendingPathComponent("commander.json")
     var candidate = trialGame
+    candidate.ensureScriptCalendar(origin: .newCommander)
     candidate.scriptDurabilityAvailable = true
     candidate.isMissionTrial = true
     try Self.writeCommander(&candidate, to: target)
@@ -1484,7 +1511,10 @@ public actor GameRuntime {
       localActive && !game.docked
       && ![Screen.mission, .handoff, .rumour, .showroom, .secret].contains(game.screen)
     // Physical facts commit first. A failed script save must never undo a real hit/death.
+    let calendarActive = game.calendarActive
     game.scriptEventsDeferred = true
+    let clockAdvanced = game.advanceScriptClockValues(
+      delta: delta, flight: flightActive, local: localActive, calendar: calendarActive)
     game.tick(delta: delta, controls: controls)
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
     game.scriptEventsDeferred = false
@@ -1493,8 +1523,11 @@ public actor GameRuntime {
       game.restoreScriptActors()
     }
     if localActive { game.drainScriptEvents(publish: scriptPublisher()) }
-    game.advanceScriptClocks(
-      delta: delta, flight: flightActive, local: localActive, publish: scriptPublisher())
+    if clockAdvanced {
+      game.fireDueScriptTimers(
+        flight: flightActive, local: localActive, calendar: calendarActive,
+        publish: scriptPublisher())
+    }
     return game
   }
   public func save(to url: URL) throws {
@@ -1542,8 +1575,12 @@ public actor GameRuntime {
       candidate.viewportWidth = game.viewportWidth
       candidate.viewportHeight = game.viewportHeight
       candidate.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
+      migrateScriptCalendar(&candidate, untrackedJump: world.jumpCountdown != nil)
       candidate.restoreScriptWorld(world)
       candidate.suspendUnavailableScriptContent()
+      if persistMigrations && candidate.commander != commander {
+        try Self.writeCommander(&candidate, to: url)
+      }
       game = candidate
       controls = Controls()
       scriptSaveURL = url
@@ -1558,6 +1595,7 @@ public actor GameRuntime {
     commander.migrateLegacyPassengerMarker()
     var candidate = game
     guard candidate.load(commander) else { throw SaveError.invalidCommander }
+    migrateScriptCalendar(&candidate)
     if persistMigrations && candidate.commander != original {
       try Self.writeCommander(&candidate, to: url)
     }

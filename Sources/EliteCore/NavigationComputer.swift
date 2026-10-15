@@ -280,6 +280,7 @@ extension Game {
   public mutating func cancelNavigation() {
     commander.navigationPlan = nil
     jumpCountdown = nil
+    cancelCalendarJourney()
     selectedSystem = commander.system
     notify("NAVIGATION ROUTE CLEARED")
   }
@@ -289,6 +290,7 @@ extension Game {
       notify("ROUTE CLEARED - MANUAL DESTINATION")
     }
     jumpCountdown = nil
+    cancelCalendarJourney()
     selectedSystem = id
   }
   mutating func navigationDocked() {

@@ -147,8 +147,8 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let empty = game.commander.accommodation.ownedBerths[1].id
   try game.setPassengerBerthFitted(empty, fitted: false)
   _ = try game.acceptScriptMission(pack)
-  let commander = game.commander
   let runtime = GameRuntime(game: game)
+  let commander = await runtime.snapshot().commander
   let folder = FileManager.default.temporaryDirectory.appendingPathComponent(
     "passenger-save-" + UUID().uuidString)
   try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -218,7 +218,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let url = folder.appendingPathComponent("save.json")
   try await runtime.save(to: url)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 9)
+  #expect(pointer.schemaVersion == 10)
   let restored = GameRuntime()
   try await restored.load(from: url)
   #expect(await restored.snapshot().commander.accommodation == game.commander.accommodation)

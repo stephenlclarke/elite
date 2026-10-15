@@ -231,6 +231,7 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
   let save = directory.appendingPathComponent("commander.json")
   try await runtime.save(to: save)
   let firstPointer = try Data(contentsOf: save)
+  let firstSaved = await runtime.snapshot().commander
   let destination = GameRuntime()
   try await destination.load(from: save)
   let restored = await destination.snapshot()
@@ -239,7 +240,7 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
   try await runtime.save(to: save)
   let secondPointer = try Data(contentsOf: save)
   #expect(firstPointer != secondPointer)
-  #expect(try ScriptSaveStore.read(firstPointer, from: save).0 == game.commander)
+  #expect(try ScriptSaveStore.read(firstPointer, from: save).0 == firstSaved)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: secondPointer)
   let missions = save.appendingPathExtension("missions").appendingPathComponent(pointer.generation)
     .appendingPathComponent("missions.json")
@@ -261,13 +262,14 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: save)
   let original = try Data(contentsOf: save)
+  let before = await runtime.snapshot().commander
   let blocked = directory.appendingPathComponent("blocked")
   try Data().write(to: blocked)
   await #expect(throws: (any Error).self) {
     try await runtime.save(to: blocked.appendingPathComponent("save.json"))
   }
   #expect(try Data(contentsOf: save) == original)
-  #expect(await runtime.snapshot().commander == game.commander)
+  #expect(await runtime.snapshot().commander == before)
 }
 
 @Test func scriptRuntimeInstallationRecoveryAndDependencyGates() async throws {

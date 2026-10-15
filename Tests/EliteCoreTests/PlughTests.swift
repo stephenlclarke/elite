@@ -103,10 +103,11 @@ private func plughGame(galaxy: Int = 0) -> Game {
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   let runtime = GameRuntime(game: game)
+  let before = await runtime.snapshot().commander
   try await runtime.save(to: url)
   try await runtime.load(from: url)
   let saved = await runtime.snapshot()
-  #expect(saved.commander == game.commander && saved.currentSystem.name == "PLUGH")
+  #expect(saved.commander == before && saved.currentSystem.name == "PLUGH")
   var invalid = saved.commander
   invalid.plughDiscoveryMask = 0
   #expect(!invalid.valid)

@@ -10,7 +10,8 @@ extension Game {
   }
   mutating func ensureContractBoard(_ pack: ScriptPack) throws -> String {
     guard docked, dockedAtMainStation, !paused, let definition = pack.manifest.board,
-      scriptUnavailable(pack) == nil, definition.clock == .local || definition.clock == .flight
+      scriptUnavailable(pack) == nil,
+      [.local, .flight, .calendar].contains(definition.clock)
     else {
       throw MissionPackError("This station has no available contract provider for this pack.")
     }

@@ -184,7 +184,7 @@ private func sortedWorld(_ game: Game) throws -> Data {
   defer { try? FileManager.default.removeItem(at: namespace) }
   let saved = try await runtime.saveForInterface()
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: saved.url))
-  #expect(pointer.scope == "gallery" && pointer.schemaVersion == 9)
+  #expect(pointer.scope == "gallery" && pointer.schemaVersion == 10)
   let clone = GameRuntime(game: await runtime.snapshot(), saveURL: mainFile)
   let cloneNamespace = try #require(await clone.gallerySaveDirectory())
   defer { try? FileManager.default.removeItem(at: cloneNamespace) }
@@ -265,11 +265,12 @@ private func sortedWorld(_ game: Game) throws -> Data {
   game.scriptPacks = [unsupported]
   game.openGallery()
   let runtime = GameRuntime(game: game)
+  let before = await runtime.snapshot().commander
   await #expect(throws: MissionPackError.self) {
     try await runtime.startScriptGalleryTrial(packDigest: unsupported.digest)
   }
   #expect(await runtime.gallerySaveDirectory() == nil)
-  #expect(await runtime.snapshot().commander == game.commander)
+  #expect(await runtime.snapshot().commander == before)
   let pack = try galleryPack("scripted-courier")
   game.scriptPacks = [pack]
   let live = GameRuntime(game: game)

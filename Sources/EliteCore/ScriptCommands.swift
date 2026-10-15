@@ -15,6 +15,9 @@ extension Game {
       "dialogue.offer": ["op", "id"], "dialogue.commit": ["op", "id", "token"],
       "timer.ensure": ["op", "id", "domain", "after", "interval", "policy"],
       "timer.cancel": ["op", "id"],
+      "timer.counter.ensure": ["op", "id", "name", "enabled"],
+      "timer.counter.reset": ["op", "id", "name"],
+      "timer.counter.enable": ["op", "id", "name", "enabled"],
     ]
     guard let allowed = fieldsByOp[op], Set(fields.keys).isSubset(of: allowed) else {
       throw MissionPackError("Unsupported script command or field: " + op)
@@ -24,6 +27,8 @@ extension Game {
     case "credits": capability = "economy-v2"
     case "payload.add", "payload.remove": capability = "cargo-v2"
     case "timer.ensure", "timer.cancel": capability = "local-flight-clocks-v2"
+    case "timer.counter.ensure", "timer.counter.reset", "timer.counter.enable":
+      capability = "pulse-counters-v2"
     default: capability = "story-v2"
     }
     guard pack.manifest.capabilities.contains(capability) else {
@@ -144,7 +149,8 @@ extension Game {
       let id = try identifier("id")
       if state.timers[id] != nil { return }
       guard let domain = ScriptClockDomain(rawValue: try text("domain")),
-        [.flight, .local].contains(domain),
+        [.flight, .local].contains(domain)
+          || domain == .calendar && pack.manifest.capabilities.contains("calendar-clocks-v2"),
         let policy = ScriptTimerPolicy(rawValue: try text("policy")),
         let after = fields["after"]?.double, (0...1e9).contains(after),
         let interval = fields["interval"]?.double, (0...1e9).contains(interval),
@@ -154,6 +160,41 @@ extension Game {
         id: id, domain: domain, due: candidate.scriptState.clock(domain) + after,
         interval: interval, policy: policy)
     case "timer.cancel": state.timers.removeValue(forKey: try identifier("id"))
+    case "timer.counter.ensure", "timer.counter.reset", "timer.counter.enable":
+      let id = try identifier("id")
+      let name = try identifier("name")
+      guard var timer = state.timers[id] else {
+        throw MissionPackError("A named pulse counter requires its existing timer.")
+      }
+      if op == "timer.counter.ensure" {
+        if timer.counters[name] != nil { return }
+        guard timer.counters.count < 16 else {
+          throw MissionPackError("Pulse counter limit reached.")
+        }
+        var counter = ScriptPulseCounter()
+        if let value = fields["enabled"] {
+          guard case .bool(let enabled) = value else {
+            throw MissionPackError("Pulse counter enabled must be Boolean.")
+          }
+          counter.enabled = enabled
+        }
+        timer.counters[name] = counter
+      } else {
+        guard var counter = timer.counters[name] else {
+          throw MissionPackError("Declare the named pulse counter before changing it.")
+        }
+        if op == "timer.counter.reset" {
+          counter.enabled = true
+          counter.resetOnNextPulse = true
+        } else {
+          guard case .bool(let enabled) = fields["enabled"] else {
+            throw MissionPackError("Pulse counter enabled must be Boolean.")
+          }
+          counter.enabled = enabled
+        }
+        timer.counters[name] = counter
+      }
+      state.timers[id] = timer
     default: throw MissionPackError("Unsupported script command.")
     }
   }

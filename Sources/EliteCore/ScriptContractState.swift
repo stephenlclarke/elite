@@ -75,7 +75,7 @@ public struct ScriptContractBoard: Codable, Sendable, Equatable {
       && (1...1e9).contains(period)
       && group == provider + "/" + String(group.split(separator: "/").last ?? "")
       && PackValidation.localID(String(group.split(separator: "/").last ?? ""))
-      && (clock == .local || clock == .flight)
+      && [ScriptClockDomain.local, .flight, .calendar].contains(clock)
       && offers.count <= 16 && Set(offers.map(\.id)).count == offers.count
       && Set(offers.map(\.key)).count == offers.count && offers.allSatisfy(\.valid)
   }
@@ -115,7 +115,7 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
       && PackValidation.version(version)
       && digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
       && (deadline.map { $0.isFinite && $0 >= acceptedAt && $0 <= 1e12 } ?? true)
-      && (clock == .local || clock == .flight)
+      && [ScriptClockDomain.local, .flight, .calendar].contains(clock)
       && offer.status == .available
       && deadline == (offer.duration == 0 ? nil : acceptedAt + offer.duration)
       && (settled
@@ -152,6 +152,7 @@ extension Commander {
     copy.scriptState.flightSeconds = 0
     copy.scriptState.localSeconds = 0
     copy.scriptState.calendarSeconds = 0
+    copy.scriptState.calendarLedger = nil
     copy.scriptState.transitSeconds = 0
     return copy
   }

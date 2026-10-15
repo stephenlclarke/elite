@@ -257,6 +257,11 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let projectile = try #require(game.bodies.first { $0.scriptShot != nil })
   #expect(abs((projectile.scriptShot?.velocity.length ?? 0) - 2000) < 1e-8)
   #expect(projectile.scriptShot?.damage == 15 && projectile.scriptShot?.lifetime == 3)
+  let shotMesh = try #require(game.scriptNPCMesh(projectile))
+  #expect(shotMesh.vertices.count == 6 && shotMesh.faces.count == 8)
+  #expect(shotMesh.vertices.allSatisfy { abs($0.length - 2) < 1e-8 })
+  #expect(shotMesh.materials.first?.emissive == true)
+  #expect(shotMesh.materials.first?.colour == Ink.redOrange.rawValue)
   for _ in 0..<5 { game.advanceScriptNPCShots(delta: 0.1) }
   #expect(game.frontShield == shield - 21)
   game.resolveDestroyed()

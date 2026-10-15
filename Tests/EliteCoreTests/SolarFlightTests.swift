@@ -115,7 +115,11 @@ private func solarGame(distance: Double = 2970) -> Game {
   #expect(loaded)
   #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
   game.launch()
-  #expect(game.celestials == scene && game.commander == commander)
+  var preserved = game.commander
+  #expect(preserved.scriptState.calendarSeconds == commander.scriptState.calendarSeconds + 600)
+  preserved.scriptState.calendarSeconds = commander.scriptState.calendarSeconds
+  preserved.scriptState.calendarLedger = commander.scriptState.calendarLedger
+  #expect(game.celestials == scene && preserved == commander)
 }
 
 @Test func solarHUDReportsActualScoopAndThermalDanger() {

@@ -10,6 +10,13 @@ public struct ScriptTimer: Codable, Sendable, Equatable {
   public var interval: Double
   public var policy: ScriptTimerPolicy
   public var pulses = 0
+  public var lastDue: Double?
+  public var lastFiredAt: Double?
+  public var savedCounters: [String: ScriptPulseCounter]?
+  public var counters: [String: ScriptPulseCounter] {
+    get { savedCounters ?? [:] }
+    set { savedCounters = newValue.isEmpty ? nil : newValue }
+  }
 }
 public struct ScriptDialogue: Codable, Sendable, Equatable {
   public var id: String
@@ -54,6 +61,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  public var calendarLedger: ScriptCalendarLedger?
   public var savedProjectiles: [UUID: ScriptProjectileRecord]?
   public var projectiles: [UUID: ScriptProjectileRecord] {
     get { savedProjectiles ?? [:] }
@@ -93,28 +101,43 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    guard geometry.count <= 128, geometry.allSatisfy({ key, value in
-      ScriptPackLibrary.scriptGeometryValid(value)
-        && (try? ScriptPackLibrary.canonicalGeometry(value)).map(ScriptPackLibrary.hash) == key
-    }) else { return false }
-    guard projectiles.count <= 1024, projectiles.allSatisfy({ key, value in
-      key == value.body.scriptShot?.identity && value.valid
-        && instances[value.body.scriptShot!.instance]?.ownedEncounters.values.contains { encounter in
-          encounter.actors.values.contains { actor in
-            actor.identity == value.body.scriptShot!.owner
-              && (value.body.scriptShot!.component.map { component in
-                actor.body.scriptNPC?.components.values.contains { $0.identity == component } == true
-              } ?? true)
-          }
-        } == true
-    }) else { return false }
+    guard
+      calendarLedger.map({
+        $0.valid
+          && ($0.lastAdjustment.map { $0.after <= calendarSeconds } ?? true)
+          && ($0.pendingJourney.map { calendarSeconds <= 1e12 - $0.seconds } ?? true)
+      }) ?? true
+    else { return false }
+    guard geometry.count <= 128,
+      geometry.allSatisfy({ key, value in
+        ScriptPackLibrary.scriptGeometryValid(value)
+          && (try? ScriptPackLibrary.canonicalGeometry(value)).map(ScriptPackLibrary.hash) == key
+      })
+    else { return false }
+    guard projectiles.count <= 1024,
+      projectiles.allSatisfy({ key, value in
+        key == value.body.scriptShot?.identity && value.valid
+          && instances[value.body.scriptShot!.instance]?.ownedEncounters.values.contains {
+            encounter in
+            encounter.actors.values.contains { actor in
+              actor.identity == value.body.scriptShot!.owner
+                && (value.body.scriptShot!.component.map { component in
+                  actor.body.scriptNPC?.components.values.contains { $0.identity == component }
+                    == true
+                } ?? true)
+            }
+          } == true
+      })
+    else { return false }
     let identities = instances.values.flatMap {
       $0.ownedEncounters.values.flatMap { $0.actors.values.map(\.identity) }
     }
     let componentIdentities = instances.values.flatMap {
-      $0.ownedEncounters.values.flatMap { $0.actors.values.flatMap {
-        $0.body.scriptNPC?.components.values.map(\.identity) ?? []
-      } }
+      $0.ownedEncounters.values.flatMap {
+        $0.actors.values.flatMap {
+          $0.body.scriptNPC?.components.values.map(\.identity) ?? []
+        }
+      }
     }
     let physicalIdentities = identities + componentIdentities + Array(projectiles.keys)
     guard Set(physicalIdentities).count == physicalIdentities.count else { return false }
@@ -159,7 +182,17 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           && instance.timers.allSatisfy { key, timer in
             key == timer.id && PackValidation.localID(key) && timer.due.isFinite
               && (0...1e12).contains(timer.due)
-              && timer.interval.isFinite && (0...1e9).contains(timer.interval) && timer.pulses >= 0
+              && timer.interval.isFinite && (0...1e9).contains(timer.interval)
+              && (0...1_000_000_000).contains(timer.pulses)
+              && timer.counters.count <= 16
+              && timer.counters.allSatisfy {
+                PackValidation.localID($0.key) && $0.value.valid
+                  && $0.value.value <= Int64(timer.pulses)
+              }
+              && ((timer.lastDue == nil && timer.lastFiredAt == nil)
+                || (timer.lastDue.map { $0.isFinite && (0...1e12).contains($0) } == true
+                  && timer.lastFiredAt.map { $0.isFinite && (0...1e12).contains($0) } == true
+                  && timer.lastDue! <= timer.lastFiredAt!))
               && (timer.policy == .once || timer.interval > 0)
           }
           && instance.journal.count <= 512 && instance.journal.allSatisfy { $0.utf8.count <= 12000 }

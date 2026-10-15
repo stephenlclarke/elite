@@ -39,6 +39,7 @@ struct StartupSaveTests {
     commander.legal = 75
     let original = try JSONEncoder().encode(commander)
     try original.write(to: url)
+    commander.scriptState.calendarLedger = .init(origin: .inactiveLegacyMigration)
     let runtime = GameRuntime()
     try await runtime.load(from: url, persistMigrations: false)
     let restored = await runtime.snapshot()
@@ -66,6 +67,7 @@ struct StartupSaveTests {
     commander.system = 7
     let original = try JSONEncoder().encode(commander)
     try original.write(to: url)
+    commander.scriptState.calendarLedger = .init(origin: .inactiveLegacyMigration)
     let runtime = GameRuntime()
     try await runtime.restoreStartup(from: url)
     let restored = await runtime.snapshot()
@@ -81,13 +83,17 @@ struct StartupSaveTests {
 
   @Test func buildIdentityKeepsTheExactRevisionAndRejectsMissingOrMalformedMetadata() {
     let sha = "0123456789abcdef0123456789abcdef01234567"
-    let identity = BuildIdentity(info: ["CFBundleShortVersionString": "1.2.3", "EliteSourceRevision": sha])
+    let identity = BuildIdentity(info: [
+      "CFBundleShortVersionString": "1.2.3", "EliteSourceRevision": sha,
+    ])
     #expect(identity.versionLine == "VERSION 1.2.3")
     #expect(identity.revisionLine == sha)
     #expect(identity.legacyRevisionLines.joined() == sha)
     #expect(BuildIdentity(info: [:]).revisionLine == "COMMIT UNAVAILABLE")
     #expect(BuildIdentity(info: ["EliteSourceRevision": "short"]).revision == nil)
-    #expect(BuildIdentity(info: ["EliteSourceRevision": String(repeating: "z", count: 40)]).revision == nil)
+    #expect(
+      BuildIdentity(info: ["EliteSourceRevision": String(repeating: "z", count: 40)]).revision
+        == nil)
   }
 
   @Test func titleAndScrollingCreditsIncludeBuildIdentityWithinTheStartupDuration() {

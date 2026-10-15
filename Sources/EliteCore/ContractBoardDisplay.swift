@@ -46,8 +46,10 @@ extension Display {
           ? "No deadline."
           : String(
             format: "Time allowed after acceptance: %.1f seconds of %@.", offer.duration,
-            game.commander.contracts.boards[row.board]?.clock == .flight
-              ? "flight" : "loaded, unpaused play"),
+            game.commander.contracts.boards[row.board]?.clock == .calendar
+              ? "commander calendar time, including travel"
+              : (game.commander.contracts.boards[row.board]?.clock == .flight
+                ? "flight" : "loaded, unpaused play")),
         "Abandonment forfeits the deposit.", "Reading or Back does not accept or start the clock.",
       ]
       rows += game.contractBoard.quote?.issues ?? (row.reason.map { [$0] } ?? [])

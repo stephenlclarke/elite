@@ -67,6 +67,7 @@ extension Game {
     guard trial.scriptUnavailable(pack) == nil else {
       throw MissionPackError("This mission's native capabilities are not available for a trial.")
     }
+    trial.ensureScriptCalendar(origin: .newCommander)
     trial.seedScriptTrial(seed)
     if let scene = pack.manifest.trial {
       trial.commander.shipID = scene.ship

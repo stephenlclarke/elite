@@ -234,8 +234,8 @@ private func gearFolder() throws -> URL {
   game.showroom.selection = "SH001"
   game.commander.credits = 10_000_000
   game.commander.missiles = 4
-  let before = game.commander
   let runtime = GameRuntime(game: game, saveURL: file)
+  let before = await runtime.snapshot().commander
   try await runtime.save(to: file)
   let bytes = try Data(contentsOf: file)
   let backup = folder.appendingPathComponent("backup")

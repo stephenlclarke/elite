@@ -55,8 +55,10 @@ public struct ScriptPack: Sendable {
   public let models: [String: ShipDesign]
   public let resourceBytes: [String: Data]
   public let entryBytes: Data?
-  init(manifest: ScriptManifest, source: Data, manifestBytes: Data, digest: String,
-    models: [String: ShipDesign] = [:], resourceBytes: [String: Data] = [:], entryBytes: Data? = nil) {
+  init(
+    manifest: ScriptManifest, source: Data, manifestBytes: Data, digest: String,
+    models: [String: ShipDesign] = [:], resourceBytes: [String: Data] = [:], entryBytes: Data? = nil
+  ) {
     self.manifest = manifest
     self.source = source
     self.manifestBytes = manifestBytes
@@ -77,7 +79,7 @@ public enum ScriptCapabilities {
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
     "owned-equipment-v2",
     "contracts-basic-v2", "profiled-encounters-v2",
-    "pack-modules-v2",
+    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -188,7 +190,8 @@ public enum ScriptPackLibrary {
     }
     return ScriptPack(
       manifest: manifest, source: source, manifestBytes: bytes, digest: hash(digestInput),
-      models: assets.designs, resourceBytes: assets.bytes.merging(modules.resources) { first, _ in first },
+      models: assets.designs,
+      resourceBytes: assets.bytes.merging(modules.resources) { first, _ in first },
       entryBytes: entry)
   }
   static func hash(_ data: Data) -> String {
@@ -270,7 +273,8 @@ public enum ScriptPackLibrary {
     }
     try validateNPCDeclarations(manifest)
     let modules = manifest.modules ?? []
-    let resourcePaths = [manifest.module] + modules.map(\.path) + (manifest.models ?? []).map(\.path)
+    let resourcePaths =
+      [manifest.module] + modules.map(\.path) + (manifest.models ?? []).map(\.path)
     guard modules.count <= 16, modules.allSatisfy(\.valid),
       Set(modules.map(\.id)).count == modules.count,
       Set(resourcePaths).count == resourcePaths.count,
@@ -292,6 +296,7 @@ public enum ScriptPackLibrary {
       guard board.valid, manifest.capabilities.contains("contracts-basic-v2"),
         manifest.capabilities.contains("local-flight-clocks-v2"),
         board.clock == .local || board.clock == .flight
+          || board.clock == .calendar && manifest.capabilities.contains("calendar-clocks-v2")
           || manifest.capabilities.contains("world-clocks-v1")
       else {
         throw MissionPackError("Invalid contract board or missing clock/contract capability.")

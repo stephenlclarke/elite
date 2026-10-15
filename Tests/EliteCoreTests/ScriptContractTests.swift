@@ -390,6 +390,7 @@ private struct ContractFixture {
   game.commander.name = "KEEP"
   game.commander.credits = 7654
   let live = GameRuntime(game: game, saveURL: fixture.save)
+  let before = await live.snapshot().commander
   try await live.save(to: fixture.save)
   let bytes = try Data(contentsOf: fixture.save)
   let trial = try await live.scriptGalleryTrial(packDigest: fixture.pack.digest, seed: 123)
@@ -405,7 +406,7 @@ private struct ContractFixture {
   _ = try await trial.saveForInterface()
   _ = try await trial.loadForInterface()
   #expect(await trial.snapshot().commander == scene.commander)
-  #expect(await live.snapshot().commander == game.commander)
+  #expect(await live.snapshot().commander == before)
   #expect(try Data(contentsOf: fixture.save) == bytes)
 }
 
@@ -568,6 +569,7 @@ private struct ContractFixture {
   var game = fixture.game()
   game.scriptPacks = [pack]
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let before = await runtime.snapshot().commander
   await runtime.key("contracts-open")
   let reference = await runtime.snapshot()
   #expect(reference.screen == .contracts && reference.contractBoard.rows.count == 1)
@@ -580,5 +582,5 @@ private struct ContractFixture {
   await runtime.key("return")
   await runtime.key("right")
   await runtime.key("return")
-  #expect(await runtime.snapshot().commander == game.commander)
+  #expect(await runtime.snapshot().commander == before)
 }

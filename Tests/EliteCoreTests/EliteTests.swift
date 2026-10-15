@@ -601,12 +601,13 @@ import Testing
   game.key("8")
   #expect(game.commander.unlimitedCargo && game.message == "SELL EXCESS CARGO FIRST")
   let runtime = GameRuntime(game: game)
+  let savedCommander = await runtime.snapshot().commander
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  #expect(await restored.snapshot().commander == savedCommander)
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.key("8")
   game.key("9")

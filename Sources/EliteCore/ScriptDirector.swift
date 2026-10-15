@@ -80,6 +80,8 @@ extension Game {
       "flight_seconds": .number(commander.scriptState.flightSeconds),
       "local_seconds": .number(commander.scriptState.localSeconds),
       "calendar_seconds": .number(commander.scriptState.calendarSeconds),
+      "calendar_day": .integer(calendarDay),
+      "calendar_profile": commander.scriptState.calendarLedger.map { .string($0.profile) } ?? .null,
       "transit_seconds": .number(commander.scriptState.transitSeconds),
     ])
   }
@@ -89,13 +91,31 @@ extension Game {
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
     fields["contract"] = contractSnapshot(instance)
+    fields["timers"] = .object(
+      instance.timers.mapValues { timer in
+        .object([
+          "due": .number(timer.due), "domain": .string(timer.domain.rawValue),
+          "pulse": .integer(Int64(timer.pulses)), "has_been_run": .bool(timer.pulses > 0),
+          "last_due": timer.lastDue.map(ScriptValue.number) ?? .null,
+          "last_fired_at": timer.lastFiredAt.map(ScriptValue.number) ?? .null,
+          "counters": .object(
+            timer.counters.mapValues { counter in
+              .object([
+                "value": .integer(counter.value), "enabled": .bool(counter.enabled),
+                "reset_pending": .bool(counter.resetOnNextPulse),
+              ])
+            }),
+        ])
+      })
     if let anchor = scriptAnchor {
       let position = anchor.orientation.inverse(anchor.position * -1)
       let velocity = anchor.orientation.inverse(autoPilot.velocity + Vector3(0, 0, speed * 18))
-      fields["player"] = .object(["position": position.scriptVector,
+      fields["player"] = .object([
+        "position": position.scriptVector,
         "velocity": velocity.scriptVector, "ship": .string(commander.shipID),
         "energy": .number(energy), "front_shield": .number(frontShield),
-        "rear_shield": .number(rearShield), "laser_heat": .number(laserHeat)])
+        "rear_shield": .number(rearShield), "laser_heat": .number(laserHeat),
+      ])
     }
     fields["free_passenger_places"] = .integer(
       Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
@@ -125,6 +145,7 @@ extension Game {
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
     var candidate = self
+    candidate.ensureScriptCalendar(origin: .newCommander)
     if pack.manifest.capabilities.contains("owned-equipment-v2") {
       candidate.commander.synchronizeEquipmentInventory(force: true)
     }
@@ -247,18 +268,43 @@ extension Game {
     }
   }
   mutating func advanceScriptClocks(
-    delta: Double, flight: Bool, local: Bool, publish: ScriptPublisher? = nil
+    delta: Double, flight: Bool, local: Bool, calendar: Bool = false,
+    publish: ScriptPublisher? = nil
   ) {
-    guard !commander.scriptState.instances.isEmpty || !commander.contracts.boards.isEmpty,
+    guard advanceScriptClockValues(delta: delta, flight: flight, local: local, calendar: calendar)
+    else { return }
+    fireDueScriptTimers(flight: flight, local: local, calendar: calendar, publish: publish)
+  }
+  mutating func advanceScriptClockValues(delta: Double, flight: Bool, local: Bool, calendar: Bool)
+    -> Bool
+  {
+    let scripted = !commander.scriptState.instances.isEmpty || !commander.contracts.boards.isEmpty
+    guard scripted || calendar,
       delta.isFinite, delta > 0, !paused,
-      flight || local
+      flight || local || calendar
     else {
-      return
+      return false
     }
     let dt = min(delta, 0.1)
-    if local { commander.scriptState.localSeconds += dt }
-    if flight { commander.scriptState.flightSeconds += dt }
-    // Calendar/transit require explicit native travel admission; no invented wall-time progression.
+    if scripted && local {
+      commander.scriptState.localSeconds = min(1e12, commander.scriptState.localSeconds + dt)
+    }
+    if scripted && flight {
+      commander.scriptState.flightSeconds = min(1e12, commander.scriptState.flightSeconds + dt)
+    }
+    if calendar {
+      ensureScriptCalendar(origin: .newCommander)
+      let reserved = commander.scriptState.calendarLedger?.pendingJourney?.seconds ?? 0
+      commander.scriptState.calendarSeconds = min(
+        1e12 - reserved, commander.scriptState.calendarSeconds + dt)
+    }
+    return true
+  }
+  mutating func fireDueScriptTimers(
+    flight: Bool, local: Bool, calendar: Bool, publish: ScriptPublisher? = nil
+  ) {
+    guard !paused, flight || local || calendar else { return }
+    // Transit still requires a real admitted native wormhole journey.
     for id in orderedScriptInstances {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
         instance.suspension == nil
@@ -266,12 +312,25 @@ extension Game {
       for key in instance.timers.keys.sorted() {
         guard commander.scriptState.instances[id]?.suspension == nil,
           var timer = commander.scriptState.instances[id]?.timers[key],
-          (timer.domain == .flight && flight) || (timer.domain == .local && local),
+          (timer.domain == .flight && flight) || (timer.domain == .local && local)
+            || (timer.domain == .calendar && calendar),
           timer.due <= commander.scriptState.clock(timer.domain)
         else { continue }
         let firedAt = commander.scriptState.clock(timer.domain)
         let due = timer.due
+        guard timer.pulses < 1_000_000_000 else {
+          commander.scriptState.instances[id]?.suspension = "Native timer pulse limit reached."
+          continue
+        }
         timer.pulses += 1
+        timer.lastDue = due
+        timer.lastFiredAt = firedAt
+        var resets: [ScriptValue] = []
+        for name in timer.counters.keys.sorted() {
+          var counter = timer.counters[name]!
+          if counter.fire() { resets.append(.string(name)) }
+          timer.counters[name] = counter
+        }
         if timer.policy == .once {
           commander.scriptState.instances[id]?.timers.removeValue(forKey: key)
         } else {
@@ -286,6 +345,9 @@ extension Game {
           values: [
             "timer_id": .string(key), "pulse": .integer(Int64(timer.pulses)),
             "due": .number(due), "fired_at": .number(firedAt),
+            "has_been_run": .bool(true),
+            "counters": .object(timer.counters.mapValues { .integer($0.value) }),
+            "reset_counters": .array(resets),
           ], only: id, drain: false)
         // Process each callback before deciding whether another due timer still exists.
         drainScriptEvents(publish: publish)

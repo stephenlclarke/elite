@@ -27,9 +27,11 @@ struct ScriptWorldSave: Codable, Sendable {
         == bodies.filter { $0.missionActorID != nil }.count
       && bodies.allSatisfy { body in
         body.id >= 0 && (body.scriptNPC?.valid ?? true)
-          && (body.scriptNPC == nil || body.missionActorID != nil) && (body.scriptShot?.valid ?? true)
-          && (body.scriptShot == nil || body.hull == .missile && body.scriptNPC == nil
-            && body.missionActorID == nil && body.missionInstanceID == nil)
+          && (body.scriptNPC == nil || body.missionActorID != nil)
+          && (body.scriptShot?.valid ?? true)
+          && (body.scriptShot == nil
+            || body.hull == .missile && body.scriptNPC == nil
+              && body.missionActorID == nil && body.missionInstanceID == nil)
           && [
             body.position.x, body.position.y, body.position.z, body.energy, body.rotation,
             body.rotationRate,
@@ -62,12 +64,23 @@ struct ScriptWorldSave: Codable, Sendable {
       expectedShots.allSatisfy({ $0.galaxy == commander.galaxy && $0.system == commander.system })
     else { return false }
     for body in shotBodies {
-      guard let shot = body.scriptShot, let record = commander.scriptState.projectiles[shot.identity],
+      guard let shot = body.scriptShot,
+        let record = commander.scriptState.projectiles[shot.identity],
         record.presence == .present, record.body.id == body.id, let anchor = referenceFrame?.station
       else { return false }
       var canonical = shot
       canonical.velocity = anchor.orientation.inverse(shot.velocity)
       guard canonical == record.body.scriptShot else { return false }
+    }
+    if let ledger = commander.scriptState.calendarLedger {
+      if let journey = ledger.pendingJourney {
+        guard !docked, jumpCountdown != nil, journey.galaxy == commander.galaxy,
+          journey.origin == commander.system
+        else { return false }
+      } else if jumpCountdown != nil && !ledger.legacyUntrackedJourney {
+        return false
+      }
+      if ledger.legacyUntrackedJourney && (docked || jumpCountdown == nil) { return false }
     }
     let physical = bodies.filter { $0.missionActorID != nil }
     let expected = records.values.filter { $0.3.presence == .present }
@@ -103,7 +116,8 @@ enum ScriptSaveStore {
   static func write(
     commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander"
   ) throws {
-    guard ["commander", "gallery"].contains(scope), commander.valid, world.valid,
+    guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
+      commander.valid, world.valid,
       world.consistent(with: commander)
     else {
       throw SaveError.invalidCommander
@@ -133,7 +147,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 9, generation: generation,
+      format: "elite-script-save", schemaVersion: 10, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope)
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
@@ -152,7 +166,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...9).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...10).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -189,7 +203,9 @@ enum ScriptSaveStore {
       throw SaveError.invalidCommander
     }
     let world = try JSONDecoder().decode(ScriptWorldSave.self, from: chunks["world.json"]!)
-    guard commander.valid, world.valid, world.consistent(with: commander) else {
+    guard pointer.schemaVersion < 10 || commander.scriptState.calendarLedger != nil,
+      commander.valid, world.valid, world.consistent(with: commander)
+    else {
       throw SaveError.invalidCommander
     }
     return (commander, world)

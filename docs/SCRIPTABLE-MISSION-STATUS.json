@@ -17,7 +17,9 @@
     "pack-modules-v2",
     "profiled-encounters-v2",
     "script-lua-v1",
-    "story-v2"
+    "story-v2",
+    "calendar-clocks-v2",
+    "pulse-counters-v2"
   ],
   "requirements": [
     {
@@ -168,9 +170,12 @@
       "status": "partial",
       "current_evidence": [
         "Sources/EliteCore/ScriptMissionState.swift",
-        "Sources/EliteCore/ScriptDirector.swift"
+        "Sources/EliteCore/ScriptDirector.swift",
+        "Sources/EliteCore/ScriptCalendar.swift",
+        "Sources/EliteCore/ScriptCalendarState.swift",
+        "Tests/EliteCoreTests/ScriptCalendarTests.swift"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "remaining": "Commander calendar, native launch/travel provenance, calendar deadlines and skipped actual-pulse counters implemented. Transit, independent resource-owned world jobs and full Maenes source acceptance remain required; world-clocks-v1 stays gated."
     },
     {
       "id": "R11",
@@ -250,7 +255,7 @@
         "Sources/EliteCore/ScriptNPCPersistence.swift",
         "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
-      "remaining": "Format9 scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
+      "remaining": "Format10 with calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
     },
     {
       "id": "R16",
@@ -407,22 +412,23 @@
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 424,
-    "maintained_coverage_percent": 93.91,
-    "script_swift_coverage_percent": 97.04,
+    "tests_per_lane": 439,
+    "maintained_coverage_percent": 94.04,
+    "script_swift_coverage_percent": 97.39,
     "encounter_coverage_percent": 97.66,
     "maintained_c_host_coverage_percent": 95.0,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.85,
     "solar_save_coverage_percent": 100.0,
     "durable_transaction_coverage_percent": 100.0,
-    "gallery_trial_coverage_percent": 97.24,
+    "gallery_trial_coverage_percent": 97.25,
     "owned_equipment_coverage_percent": 94.97,
     "equipment_loan_coverage_percent": 97.58,
-    "contract_coverage_percent": 92.3,
-    "profiled_npc_coverage_percent": 96.67,
+    "contract_coverage_percent": 92.34,
+    "profiled_npc_coverage_percent": 97.92,
     "module_loader_coverage_percent": 98.04,
-    "pack_loader_coverage_percent": 96.71
+    "pack_loader_coverage_percent": 96.74,
+    "calendar_coverage_percent": 97.58
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -446,13 +452,14 @@
     "Optional original humanoid charter passengers",
     "Optional original identified equipment loan",
     "Optional original main-orbital generated sample contracts",
-    "Optional original profiled NPC/component skirmish"
+    "Optional original profiled NPC/component skirmish",
+    "docs/mission-packs/calendar-contracts"
   ],
   "source_data_follow_ups": [
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes424 tests per lane,93.91% maintained coverage,97.04% script coverage,98.04% module loader,96.67% profiled NPC/collision and0leaks; exact506 source/resource/test/example hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes439 tests per lane,94.04% maintained coverage,97.39% script coverage,97.58% calendar coverage and0leaks; exact511 source/resource/test/example hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -508,7 +515,7 @@
     "full_rrs_ready": false,
     "full_engine_ready": false
   },
-  "last_validated_commit": "cab172c",
+  "last_validated_commit": "1e3a670 (preceding checkpoint; current source hashes in validation document)",
   "npc_checkpoint": {
     "status": "validated with complete make ci,417 tests per lane; full source engine remains incomplete",
     "capability": "profiled-encounters-v2",
@@ -527,6 +534,15 @@
     "status": "validated with complete make ci,424 tests per lane; full engine remains incomplete",
     "capability": "pack-modules-v2",
     "scope": "closed lazy named imports, immutable loaded snapshots, exact authored helper hashes/install, shared protected VM budgets, fresh dispatch state",
+    "full_engine_ready": false
+  },
+  "calendar_checkpoint": {
+    "status": "validated with complete make ci;439 tests per lane; full engine remains incomplete",
+    "capabilities": [
+      "calendar-clocks-v2",
+      "pulse-counters-v2"
+    ],
+    "save_format": 10,
     "full_engine_ready": false
   }
 }

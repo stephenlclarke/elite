@@ -224,6 +224,7 @@ private func showroomGame() -> Game {
 @Test func showroomActorSavingAndConcurrentBrowsingKeepCommanderUnchanged() async throws {
   let game = showroomGame()
   let runtime = GameRuntime(game: game)
+  let before = await runtime.snapshot().commander
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   await withTaskGroup(of: Void.self) { tasks in
@@ -231,7 +232,7 @@ private func showroomGame() -> Game {
   }
   try await runtime.save(to: url)
   let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
-  #expect(saved == game.commander)
+  #expect(saved == before)
   #expect(await runtime.snapshot().time == game.time)
   try await runtime.load(from: url)
   #expect(await runtime.snapshot().screen == .status)
