@@ -128,6 +128,19 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     bindings = bindings.filter { $0.value != actor }
   }
 
+  /// Physical destruction settles a pod without credit; culling merely hides it.
+  @discardableResult
+  public mutating func destroy(
+    payload: PayloadIdentity, protection: MissionProtection = .init()
+  ) -> Bool {
+    guard case .ore = payload, !protection.protectedPayloads.contains(payload),
+      pending.removeValue(forKey: payload) != nil
+    else { return false }
+    bindings.removeValue(forKey: payload)
+    offers = offers.filter { $0.value != payload }
+    return true
+  }
+
   /// Use after rebuilding a scene from a save; old physical actors no longer exist.
   /// Pending cargo keeps its identity and amount and can be admitted again once.
   public mutating func resetPhysicalBindings(system: SystemIdentity) {
