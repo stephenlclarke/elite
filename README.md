@@ -244,6 +244,15 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 The [signed universal app](releases/macos/Elite-1.3.1-universal.zip) runs on Apple silicon and Intel Macs with macOS 14 or later. Extract the ZIP and move Elite.app to Applications. Check the [checksum](releases/macos/Elite-1.3.1-universal.sha256) and [build/signing manifest](releases/macos/Elite-1.3.1-universal.json).
 
+With Homebrew installed, install the same signed app from the project owner's tap:
+
+```sh
+brew install --cask stephenlclarke/tap/elite
+open -a Elite
+```
+
+For updates, quit Elite, run `brew update` and then `brew upgrade --cask stephenlclarke/tap/elite`. Remove the app with `brew uninstall --cask elite`; your commander and mission packs under `~/.xyzzy/elite/` remain intact. The [maintained cask](Casks/elite.rb) pins an immutable published archive and its checksum, preserves macOS quarantine and requires macOS 14 or later. See [Homebrew distribution](docs/HOMEBREW.md) for validation and release synchronization.
+
 This distribution uses Developer ID signing and the hardened runtime. Version 1.3.1 is **notarized by Apple**, includes a validated stapled ticket and passes Gatekeeper assessment. The [Apple submission log](releases/macos/Elite-1.3.1-universal-notarization.json) covers both architectures. This build includes the detailed hulls, Liberator, startup/profit fixes and celestial/station flight changes. Its manifest and title identify source checkpoint `7d008650a7842e7e6dbd3ad84b8f38770f55c285`; the later artifact commit does not relabel the executable. See the [packaging workflow](docs/MACOS-DISTRIBUTION.md) for verification and notarization configuration.
 
 ## Add mission packs
