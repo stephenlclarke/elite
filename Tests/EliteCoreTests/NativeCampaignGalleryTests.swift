@@ -78,15 +78,15 @@ func paintCampaignGalleryView(_ view: GameView) throws {
 private final class CampaignGalleryInputHarness {
   let fixture: CampaignGalleryFixture
   let first: (UUID, UUID)
-  let second: (UUID, UUID)
+  let second: (UUID, UUID)?
   let preferences: UserDefaults
   let delegate: AppDelegate
   var view: GameView
   var window: NSWindow?
   let originalMenu: NSMenu?
 
-  init(retryFault: Bool = false) async throws {
-    fixture = try CampaignGalleryFixture(retryFault: retryFault)
+  init(retryFault: Bool = false, contractRoot: Bool = false) async throws {
+    fixture = try CampaignGalleryFixture(parentOnly: contractRoot, retryFault: retryFault)
     preferences = try #require(UserDefaults(suiteName: fixture.directory.lastPathComponent))
     delegate = AppDelegate(
       restoreOnLaunch: false,
@@ -95,8 +95,14 @@ private final class CampaignGalleryInputHarness {
     view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
     originalMenu = NSApp?.mainMenu
     var game = fixture.game()
-    first = try fixture.start(&game)
-    second = try fixture.start(&game, parent: fixture.parents[1])
+    if contractRoot {
+      let campaign = try fixture.startContractCampaign(&game)
+      first = (campaign.root, campaign.child)
+      second = nil
+    } else {
+      first = try fixture.start(&game)
+      second = try fixture.start(&game, parent: fixture.parents[1])
+    }
     game.viewportWidth = 512
     game.viewportHeight = 518
     let configured = game
@@ -176,6 +182,55 @@ private final class CampaignGalleryInputHarness {
 }
 
 extension NativeViewTests {
+  @MainActor @Test func nativeCampaignGallerySavedContractChildRefusesKeyboardMenuAndPointerTrial()
+    async throws
+  {
+    let harness = try await CampaignGalleryInputHarness(contractRoot: true)
+    defer { harness.clean() }
+    try await harness.launchMenus()
+    try await harness.selectChild()
+    try await harness.frame()
+    let before = harness.view.game
+    let bytes = try Data(contentsOf: harness.fixture.save)
+    #expect(before.commander.valid)
+    #expect(before.campaignTrialRoot?.id == harness.first.0)
+    #expect(before.campaignImmediateOwner == harness.first.0)
+    #expect(before.campaignTrialReview == nil && !before.canReviewSelectedCampaignTrial)
+    #expect(
+      before.campaignTrialUnavailableReason
+        == "Trials of saved contract assignments are not supported.")
+    let (menu, trialIndex) = try harness.menuItem("gallery-trial")
+    #expect(!harness.delegate.validateMenuItem(menu.items[trialIndex]))
+    // Even a queued menu command must fail closed against this actual painted page.
+    harness.view.enqueueGalleryCommand("gallery-trial")
+    try harness.press("t")
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().gallery.campaignReview == nil)
+    try await harness.frame()
+    try harness.press("return")
+    await harness.drain()
+    try await harness.frame()
+    #expect(harness.view.game.gallery.campaignLinks)
+    let layout = GalleryLayout(width: 512, height: 518)
+    try harness.click(x: 20, y: 518 - layout.listTop - layout.linkHeight - 1)
+    await harness.drain()
+    let refused = await harness.delegate.runtime.snapshot()
+    #expect(refused.gallery.campaignReview == nil && !refused.isMissionTrial)
+    #expect(refused.ecmControl.epoch == before.ecmControl.epoch)
+    #expect(refused.commander == before.commander)
+    #expect(await harness.delegate.runtime.gallerySaveDirectory() == nil)
+    #expect(try Data(contentsOf: harness.fixture.save) == bytes)
+    try await harness.frame()
+    try harness.press("up")
+    try harness.press("return")
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().selectedGalleryMission?.savedInstance
+        == harness.first.0)
+    #expect(await harness.delegate.runtime.snapshot().commander == before.commander)
+    #expect(try Data(contentsOf: harness.fixture.save) == bytes)
+  }
+
   @MainActor @Test func nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview()
     async throws
   {

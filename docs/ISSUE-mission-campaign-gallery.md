@@ -6,4 +6,6 @@ Implement native relationship projections and navigation on engine base `81814a6
 
 Validate two campaigns sharing a child template, nested ownership, missing/unstarted/suspended/terminal cases, fresh deliberate root-trial review, native physical patrol/report/debrief, save/load/Return, foreign receipt rejection and compact/wide renderer evidence. Existing mission confirmation and noncampaign Gallery behaviour must remain intact. Finance and historical campaign activation are outside this change.
 
+Preserve normal saved-contract trial refusal when routing from an owned child. A contract-board root's provider template can generate a different offer, so it cannot stand in for the saved contract. Verify real board acceptance with owned children, including nested ownership, and retain independent provider-template trial support.
+
 Implementation: [PR-mission-campaign-gallery.md](PR-mission-campaign-gallery.md).

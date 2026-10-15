@@ -124,6 +124,124 @@ struct CampaignGalleryFixture {
     game.gallery.detail = true
     game.pinGallerySelection()
   }
+
+  func startContractCampaign(_ game: inout Game, nested: Bool = false) throws
+    -> (root: UUID, child: UUID, provider: ScriptPack)
+  {
+    let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-contracts")
+    let folder = directory.appendingPathComponent("contract-campaign")
+    try FileManager.default.copyItem(at: source, to: folder)
+    let member = nested ? parents[0] : child
+    let manifest = folder.appendingPathComponent("manifest.toml")
+    let declaration = """
+
+      [[children]]
+      id = "patrol"
+      definition = "\(member.manifest.stateID)"
+      version = "\(member.manifest.version)"
+      digest = "\(member.digest)"
+      terminalPolicy = "suspend"
+      """
+    let text = try String(contentsOf: manifest, encoding: .utf8)
+      .replacingOccurrences(
+        of: "\"durable-commands-v2\"]",
+        with: "\"durable-commands-v2\", \"scoped-campaigns-basic-v2\"]")
+    try (text + declaration + "\n").write(to: manifest, atomically: true, encoding: .utf8)
+    let module = folder.appendingPathComponent("scripts/main.lua")
+    let script = try String(contentsOf: module, encoding: .utf8)
+      .replacingOccurrences(
+        of: "{op = \"payload.add\", id = \"collect-samples\"",
+        with:
+          "{op = \"child.ensure\", id = \"patrol\"},\n      {op = \"payload.add\", id = \"collect-samples\""
+      )
+    try script.write(to: module, atomically: true, encoding: .utf8)
+    let provider = try ScriptPackLibrary.read(folder)
+    game.scriptPacks.append(provider)
+    let key = try game.ensureContractBoard(provider)
+    let offer = try #require(game.commander.contracts.boards[key]?.offers.first)
+    let root = try game.acceptContract(board: key, offer: offer.id)
+    for _ in 0..<8 { game.drainScriptEvents() }
+    let direct = try #require(
+      game.commander.scriptState.instances[root]?.campaignChildren["patrol"]?.child)
+    let selected =
+      nested
+      ? try #require(
+        game.commander.scriptState.instances[direct]?.campaignChildren["patrol"]?.child)
+      : direct
+    #expect(game.commander.valid)
+    #expect(game.commander.scriptState.instances[root]?.contract?.offer.id == offer.id)
+    #expect(game.commander.credits == 1000 - offer.deposit)
+    #expect(game.commander.contracts.boards[key]?.offers.first?.status == .accepted(root))
+    return (root, selected, provider)
+  }
+}
+
+@Test(arguments: [false, true])
+func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(nested: Bool)
+  async throws
+{
+  let fixture = try CampaignGalleryFixture(parentOnly: true)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let campaign = try fixture.startContractCampaign(&game, nested: nested)
+  let savedRoot = try #require(
+    game.missionCatalogue.first { $0.savedInstance == campaign.root })
+  #expect(savedRoot.trialDigest == nil)
+  try fixture.select(campaign.child, game: &game)
+  #expect(game.campaignTrialRoot?.id == campaign.root)
+  #expect(game.campaignImmediateOwner != nil)
+  #expect(
+    game.campaignTrialUnavailableReason == "Trials of saved contract assignments are not supported."
+  )
+  #expect(game.campaignTrialReview == nil && !game.canReviewSelectedCampaignTrial)
+  #expect(!game.canTrialSelectedMission)
+  let before = game.commander
+  let epoch = game.ecmControl.epoch
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  let bytes = try Data(contentsOf: fixture.save)
+  await runtime.key("t")
+  await runtime.key("return")
+  let links = await runtime.snapshot()
+  #expect(links.gallery.campaignLinks)
+  let layout = GalleryLayout(width: game.viewportWidth, height: game.viewportHeight)
+  await runtime.campaignGalleryClick(x: 20, y: layout.listTop + layout.linkHeight + 1)
+  #expect(await runtime.snapshot().gallery.campaignReview == nil)
+  #expect(await runtime.gallerySaveDirectory() == nil)
+  #expect(await runtime.snapshot().ecmControl.epoch == epoch)
+  #expect(await runtime.snapshot().commander == before)
+  await runtime.key("up")
+  await runtime.key("return")
+  #expect(
+    await runtime.snapshot().selectedGalleryMission?.savedInstance == game.campaignImmediateOwner)
+  #expect(try Data(contentsOf: fixture.save) == bytes)
+
+  var provider = await runtime.snapshot()
+  provider.gallery.campaignHistory = []
+  provider.gallery.campaignLinks = false
+  provider.gallery.campaignSelection = nil
+  provider.gallery.selection = try #require(
+    provider.missionCatalogue.firstIndex {
+      $0.savedInstance == nil && $0.trialDigest == campaign.provider.digest
+    })
+  provider.pinGallerySelection()
+  #expect(provider.canTrialSelectedMission)
+  let providerSelection = provider
+  await runtime.nativeCommand { @Sendable candidate in candidate = providerSelection }
+  await runtime.key("t")
+  let namespace = try #require(await runtime.gallerySaveDirectory())
+  defer { try? FileManager.default.removeItem(at: namespace) }
+  let trial = await runtime.snapshot()
+  #expect(trial.isMissionTrial && trial.trialDigest == campaign.provider.digest)
+  #expect(trial.commander.valid)
+  #expect(trial.commander.scriptState.instances[campaign.root] == nil)
+  #expect(trial.commander.scriptState.instances.values.contains { $0.contract != nil })
+  #expect(try Data(contentsOf: fixture.save) == bytes)
+  await runtime.key("trial-return")
+  #expect(await runtime.snapshot().commander == before)
+  #expect(try Data(contentsOf: fixture.save) == bytes)
 }
 
 @Test func campaignGalleryNavigatesTwoActualParentsByInstanceAndRestoresReadingPosition() throws {

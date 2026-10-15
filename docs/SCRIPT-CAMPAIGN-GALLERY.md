@@ -6,6 +6,8 @@ On campaign details, Return or the Campaign links action opens the relationship 
 
 Try campaign on an owned child opens a root-specific isolated-trial review. Back is initially selected. Repeated trial commands do not start it; choose Try campaign deliberately. The review revalidates the exact source instance, root, pinned content and commander epoch. Missing content, unavailable requirements, parent-only roots and existing trials remain unavailable. The existing standalone `canTrialSelectedMission` eligibility is preserved; owned-child routing is a separate review action.
 
+An owned assignment whose actual root is a saved contract cannot open a trial review: "Trials of saved contract assignments are not supported." View campaign still opens its actual owner. The separate board provider template remains eligible for its normal fresh isolated trial; it never substitutes a newly generated offer for the saved contract.
+
 All projections, previews and navigation are read-only. Trial creation and durable publication remain in GameRuntime. Save/Load/Restart/Return use the existing Gallery namespace and commander isolation. Finance APIs and historical facility support are outside this addition.
 
 Gallery input is scoped to its last successful native paint, including mode, exact selection, visible targets, retry revision/availability and coordinate layout. Root-review focus is separate, so one painted arrow-and-Return choice remains usable. Reading, Back, scroll and resize never create native mission events. Scroll/viewport/visible-row changes invalidate older coordinate packets. Returning from a trial refreshes transient Gallery generation so its old decisions cannot act again. All new proof/navigation state is transient; save format19 is unchanged.

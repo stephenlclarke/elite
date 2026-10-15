@@ -372,6 +372,9 @@ extension Game {
     guard let root = campaignTrialRoot else {
       return "Restore the original owning campaign relationship."
     }
+    guard root.contract == nil else {
+      return "Trials of saved contract assignments are not supported."
+    }
     guard let pack = scriptPack(for: root) else {
       return "Restore the exact root campaign content."
     }
