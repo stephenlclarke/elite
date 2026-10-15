@@ -39,7 +39,8 @@ struct MiningWorkToolTests {
     let flight = game.commander.flightSimulation
     let resources = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash].map(
       \.bitPattern)
-    #expect(!game.fireMiningWorkTool())
+    let didFire1 = game.fireMiningWorkTool()
+    #expect(!didFire1)
     #expect(game.bodies == bodies && game.miningFields == fields)
     #expect(game.commander.miningLedger == ledger && game.commander.crimeLedger == crime)
     #expect(game.commander.flightSimulation == flight)
@@ -101,7 +102,8 @@ struct MiningWorkToolTests {
     let tool = try #require(game.commander.fittedMiningWorkTool)
     for _ in 0..<5 where game.bodies[0].energy > 0 {
       game.fireCooldown = 0
-      #expect(game.fireMiningWorkTool())
+      let didFire2 = game.fireMiningWorkTool()
+      #expect(didFire2)
     }
     #expect(game.commander.miningLedger.isDepleted(rock.identity))
     let payloads = game.commander.miningLedger.pendingPayloads
@@ -142,20 +144,24 @@ struct MiningWorkToolTests {
     try workToolRock(&game)
     let energy = game.energy
     let rockEnergy = game.bodies[0].energy
-    #expect(game.fireMiningWorkTool())
+    let didFire3 = game.fireMiningWorkTool()
+    #expect(didFire3)
     #expect(game.bodies[0].energy == rockEnergy - LaserKind.mining.damage)
     #expect(game.energy == energy - 1 && game.laserHeat == 10)
     #expect(game.fireCooldown == LaserKind.mining.firingInterval)
     #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
-    #expect(!game.fireMiningWorkTool())
+    let didFire4 = game.fireMiningWorkTool()
+    #expect(!didFire4)
     for _ in 0..<4 where game.bodies[0].energy > 0 {
       game.fireCooldown = 0
-      #expect(game.fireMiningWorkTool())
+      let didFire5 = game.fireMiningWorkTool()
+      #expect(didFire5)
     }
     let rock = try #require(game.miningFields.first?.rocks.first)
     #expect(game.commander.miningLedger.isDepleted(rock.identity))
     let payloads = game.commander.miningLedger.pendingPayloads
-    #expect(!payloads.isEmpty && !game.fireMiningWorkTool())
+    let didFire6 = game.fireMiningWorkTool()
+    #expect(!payloads.isEmpty && !didFire6)
     #expect(game.commander.miningLedger.pendingPayloads == payloads)
   }
 
@@ -173,7 +179,8 @@ struct MiningWorkToolTests {
       }
       let energy = game.energy
       let rockEnergy = game.bodies[0].energy
-      #expect(!game.fireMiningWorkTool())
+      let didFire7 = game.fireMiningWorkTool()
+      #expect(!didFire7)
       #expect(game.bodies[0].energy == rockEnergy && game.energy == energy)
       #expect(game.bodies.last?.energy == (obstacle == 2 ? rockEnergy : 100))
       #expect(game.commander.legal == 0 && game.commander.kills == 0 && game.laserHeat == 0)
@@ -198,7 +205,8 @@ struct MiningWorkToolTests {
     }
     #expect(attempted == inventory)
     game.commander.shipID = "SH087"
-    #expect(!game.commander.hasMiningWorkTool && !game.fireMiningWorkTool())
+    let didFire8 = game.fireMiningWorkTool()
+    #expect(!game.commander.hasMiningWorkTool && !didFire8)
     #expect(throws: OwnedEquipmentError.unsupportedSlot) {
       try inventory.validate(
         context: EquipmentRuntimeCatalog.context(
@@ -217,7 +225,8 @@ struct MiningWorkToolTests {
         owner: inventory.owner, hull: inventory.activeHull,
         performance: game.commander.performance))
     game.commander.savedEquipmentInventory = inventory
-    #expect(!game.commander.hasMiningWorkTool && !game.fireMiningWorkTool())
+    let didFire9 = game.fireMiningWorkTool()
+    #expect(!game.commander.hasMiningWorkTool && !didFire9)
     #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
     #expect(inventory.items.first { $0.id == tool.id }?.location == nil)
   }
