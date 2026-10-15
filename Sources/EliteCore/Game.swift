@@ -8,6 +8,27 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedFlightSimulation: FlightSimulationState?
+  public var flightSimulation: FlightSimulationState {
+    get { savedFlightSimulation ?? FlightSimulationState() }
+    set { savedFlightSimulation = newValue }
+  }
+  private var savedCrimeLedger: CrimeLedger?
+  public var crimeLedger: CrimeLedger {
+    get { savedCrimeLedger ?? CrimeLedger() }
+    set { savedCrimeLedger = newValue }
+  }
+  private var savedStationSecurity: StationSecurity?
+  public var stationSecurity: StationSecurity {
+    get { savedStationSecurity ?? StationSecurity() }
+    set { savedStationSecurity = newValue }
+  }
+  public var encounterDirector: EncounterDirector?
+  private var savedMiningLedger: MiningLedger?
+  public var miningLedger: MiningLedger {
+    get { savedMiningLedger ?? MiningLedger() }
+    set { savedMiningLedger = newValue }
+  }
   private var savedMissionProgress: [String: MissionProgress]?
   public var missionProgress: [String: MissionProgress] {
     get { savedMissionProgress ?? [:] }
@@ -151,6 +172,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && cargoTonnes <= capacity
       && (navigationPlan?.valid ?? true) && blackjack.valid
+      && (savedFlightSimulation?.valid ?? true)
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -251,6 +273,8 @@ public struct Game: Sendable {
   public var chartInformationScroll = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
+  public var miningFields: [MiningField] = []
+  var gameplayRevision: UInt64 = 0
   public var starfield = Starfield()
   public var speed = 0.0
   public var pitch = 0.0
@@ -824,6 +848,7 @@ public struct Game: Sendable {
     ]
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     resetCelestialFlight()
+    beginGameplayVisit(arriving: false)
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
@@ -915,6 +940,7 @@ public struct Game: Sendable {
         hostile: currentSystem.government < 4),
     ]
     resetCelestialFlight()
+    beginGameplayVisit(arriving: true)
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
@@ -940,6 +966,8 @@ public struct Game: Sendable {
     }
     for index in bodies.indices { bodies[index].position.z -= 3000 }
     for index in celestials.indices { celestials[index].position.z -= 3000 }
+    commander.flightSimulation.pose.advanceView(
+      pitch: 0, roll: 0, yaw: 0, translation: .init(0, 0, 3000))
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -1028,7 +1056,12 @@ public struct Game: Sendable {
     if commander.unlimitedFuel { commander.fuel = commander.fuelCapacity }
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
-    guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
+    guard !docked, ![Screen.gameOver, .secret, .help, .title, .demo].contains(screen) else {
+      return
+    }
+    commander.flightSimulation.advancePhysicalTime(dt)
+    gameplayRevision &+= 1
+    ensurePhysicalActors()
     let craft = commander.performance
     speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
     pitch = controls.pitch * craft.pitch
@@ -1118,6 +1151,9 @@ public struct Game: Sendable {
   }
   private mutating func moveBodies(dt: Double) {
     autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+    commander.flightSimulation.pose.advanceView(
+      pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt,
+      translation: autoPilot.velocity * dt + Vector3(0, 0, speed * dt * 18))
     moveCelestials(delta: dt)
     for index in bodies.indices {
       bodies[index].position = bodies[index].position.rotated(
@@ -1137,13 +1173,13 @@ public struct Game: Sendable {
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
     persistBlackjackTargets()
-    let departing = bodies.filter { $0.leavesLocalBubble }
+    let departing = bodies.filter { $0.leavesLocalBubble && $0.id != 0 }
     for body in departing {
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.leavesLocalBubble }
+    bodies.removeAll { $0.leavesLocalBubble && $0.id != 0 }
   }
   private mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {

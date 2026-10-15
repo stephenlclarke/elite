@@ -7,6 +7,7 @@ public struct FlightSimulationState: Equatable, Codable, Sendable {
   public private(set) var nextActor: UInt64 = 2
   public private(set) var nextEmission: UInt64 = 1
   public private(set) var nextIncident: UInt64 = 1
+  public private(set) var nextSpawn: UInt64 = 1
   public private(set) var system: SystemIdentity?
   public var pose = ShipPose()
   public private(set) var anchors: SystemAnchors?
@@ -16,6 +17,7 @@ public struct FlightSimulationState: Equatable, Codable, Sendable {
       && nextActor >= 2 && nextActor < UInt64.max
       && nextEmission > 0 && nextEmission < UInt64.max
       && nextIncident > 0 && nextIncident < UInt64.max
+      && nextSpawn > 0 && nextSpawn < UInt64.max
       && (system.map { (0..<8).contains($0.galaxy) && (0...256).contains($0.system) } ?? true)
   }
 
@@ -58,6 +60,12 @@ public struct FlightSimulationState: Equatable, Codable, Sendable {
     return nextIncident
   }
 
+  public mutating func allocateSpawn() -> UInt64? {
+    guard nextSpawn < UInt64.max else { return nil }
+    defer { nextSpawn += 1 }
+    return nextSpawn
+  }
+
   public mutating func advancePhysicalTime(_ delta: Double) {
     guard delta.isFinite, delta > 0, (physicalTime + delta).isFinite else { return }
     physicalTime += delta
@@ -97,4 +105,9 @@ public struct PhysicalActorState: Equatable, Codable, Sendable {
   public var attackOrigin: AttackOrigin?
   public var emissionPosition: Vector3?
   public var deathOrigin: AttackOrigin?
+  public var spawnIdentity: SpawnIdentity?
+  public var blocksNavalEncounter = false
+  public var catalogueShipID: String?
+  public var angularVelocity = Vector3(0, 0, 0)
+  public var salvage: SalvageTargetMetadata?
 }
