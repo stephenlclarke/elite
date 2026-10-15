@@ -1,5 +1,5 @@
 {
-  "recorded_utc": "2026-10-15T12:30:02.378525+00:00",
+  "recorded_utc": "2026-10-15T13:59:14.675730+00:00",
   "branch": "feature/scriptable-mission-engine",
   "base_commit": "1ef005e0c73971a360a0e3bb52792a9286a761d3",
   "command": "make ci",
@@ -7,32 +7,32 @@
   "test_runs": [
     {
       "lane": "coverage",
-      "tests": 541,
+      "tests": 547,
       "suites": 2,
-      "seconds": 88.371
+      "seconds": 171.499
     },
     {
       "lane": "thread sanitizer",
-      "tests": 541,
+      "tests": 547,
       "suites": 2,
-      "seconds": 423.968
+      "seconds": 720.305
     },
     {
       "lane": "address sanitizer",
-      "tests": 541,
+      "tests": 547,
       "suites": 2,
-      "seconds": 1357.706
+      "seconds": 912.983
     }
   ],
   "coverage": {
-    "covered_lines": 17104,
-    "total_lines": 18082,
-    "percentage": 94.59
+    "covered_lines": 17199,
+    "total_lines": 18178,
+    "percentage": 94.61
   },
   "new_script_swift_coverage": {
-    "covered_lines": 5947,
-    "total_lines": 6084,
-    "percentage": 97.75
+    "covered_lines": 6008,
+    "total_lines": 6145,
+    "percentage": 97.77
   },
   "maintained_c_host_coverage": {
     "covered_lines": 247,
@@ -101,9 +101,11 @@
     "Actual partial lots preserve excess/unrelated/marked firearm cargo, earlier receipts, original cause/commit clocks and native t/kg/g totals; native success rejects story flags and changed terms.",
     "Actual hull exchange/reload preserve deliveries; stale quote refuses before Lua, zero availability/Help/Back/rendering do not transfer or suspend, failed filesystem retry creates exactly one lot; late invalid command rolls back a staged lot.",
     "Synthetic admitted1024 saved-receipt boundary refuses a whole extra genuine confirmation without truncation (not a claim of1024 played source handoffs). Six semantic tamper cases with updated chunk hash, including two Int.max quantities, reject load before replacing live state or cumulative arithmetic.",
-    "Native isolated Gallery purchases actual Radioactives and Platinum from the market, renders actual unit/quantity quotes at512 and1512@2, then ordered Confirm+Save persists exactly1001000g while live commander/file remain unchanged."
+    "Native isolated Gallery purchases actual Radioactives and Platinum from the market, renders actual unit/quantity quotes at512 and1512@2, then ordered Confirm+Save persists exactly1001000g while live commander/file remain unchanged.",
+    "Actual queued native Return/click packets cannot answer or accept a replacement page before it is painted; same-page navigation and Details remain usable.",
+    "Actual load/control epoch changes and malformed/oversized/unsupported packets refuse before mission dispatch. Native schema1 confirmation stays exactly once."
   ],
-  "raw_log_sha256": "c5c48e431d154215b92eae523c8024a259e0c4cfa733d68b887e574aa8daa4f8",
+  "raw_log_sha256": "5435d5aa041af82d063ed899e8cbbaf9f6586e91c1db855a053b8eae6500d4b8",
   "validated_file_sha256": {
     "Makefile": "9185525fd1d8b1f417cb1c45b1772f4eaad4c3692595cfed492e06953cb276f0",
     "Package.resolved": "23770167faec69f1722574eebb7fb62dd32655dd4b461735fec67a928686dd4d",
@@ -504,6 +506,7 @@
     "Sources/EliteCore/ScriptNPCValidation.swift": "05e261cbac04c6fa7e91a40b9bae4afdb03e7fa428cab2667e4db299a663d9b4",
     "Sources/EliteCore/ScriptNPCWeapons.swift": "714bd4c5fb93ed56c682e1933ff91435d3f218fea712047bb713fff93dc26a40",
     "Sources/EliteCore/ScriptPack.swift": "1069d86bf19cfc8e9be3bff59028ca03df23c68b33692b8a5b907f3a65bc40a1",
+    "Sources/EliteCore/ScriptPageInput.swift": "5d4b7ffaba2c2b3488b880fb58c9adc3da5d9a7dbb81fe6b1d9fffab623df890",
     "Sources/EliteCore/ScriptPersistence.swift": "64b69dac9a72a1e357930dedf740d68df07ccc26157a2761823b50a04aa89ffc",
     "Sources/EliteCore/ScriptRuntime.swift": "519481465d1c81cbb41323bfcff044738a86274767cea2c5efb64c15338870c7",
     "Sources/EliteCore/ScriptSaveJSONPreflight.swift": "285a32e61986521220e0b43ca2d60bd8c1957e26096972c2d74e46886f146b0c",
@@ -549,7 +552,7 @@
     "Sources/EliteMac/AppIconMedia.swift": "ed598bf487c503e334125ccb13090dd584494649c924c37a7b483d65e87881a9",
     "Sources/EliteMac/AudioPresenter.swift": "49a05a22e81255dedbfbcd102da398cbb7f52c989574c19f65e5f66ace52bebe",
     "Sources/EliteMac/CommanderSaveSession.swift": "38e347950a38b033ebc0a79225bc106fe8248199e70995ef3a46156ba97aad18",
-    "Sources/EliteMac/EliteApp.swift": "f25be387f375e42727463a985dbcd42d70adf9900393f33bc1ae7104ee24f9df",
+    "Sources/EliteMac/EliteApp.swift": "8e49b16e08513719f302ae437291dcdfa013d5a44b027be13a847a25f0e1bef0",
     "Sources/EliteMac/NativeGraphics.swift": "3df6baa46dc022f870555f8df08b59c64363295986e4c837a99ebbe0767bb70d",
     "Sources/EliteMac/PlanetRenderer.swift": "f1b2cbfe5ebdc3a07d6d2ccc59598e5b0e119c34f0f79f19c9695eab5ff6b7ac",
     "Sources/EliteMac/ShipMedia.swift": "f2f854fb0bbbcaee23382183d46439b86dc414ff375c6a27ee6005660335b55c",
@@ -571,7 +574,7 @@
     "Tests/EliteCoreTests/LiberatorTests.swift": "ea55dded8c6d2caf94a6170b7a18722c191aff36bf3497232b62b0098ce87cd5",
     "Tests/EliteCoreTests/MissionPackTests.swift": "a7164cfb05abaa91d02e4fed57ca27a287caeccaf22ac20e66877738ba46cf8c",
     "Tests/EliteCoreTests/NativeBlueprintTests.swift": "00ef6585e85b7276e7bccba0a3fae645246e0b1a405e230f8e8f5200511a12c4",
-    "Tests/EliteCoreTests/NativeViewTests.swift": "c1822d1929b70550be6350ed72b5e796833fd7ff096b49c051b1b9094a35aab1",
+    "Tests/EliteCoreTests/NativeViewTests.swift": "20c3fc48863a58eb2c124c3d07bb92011ea77c3e2413ed93265cd8773fa521cb",
     "Tests/EliteCoreTests/NavalMissionTests.swift": "130b4fae03359480f1c4cf337c7410e58c99a026ce56d983bcaf4d8caecb5f28",
     "Tests/EliteCoreTests/NavigationTests.swift": "42c5999eb8f8968e4f5461d9f4b8a0a0d49d68cc2628a653ad504886865952de",
     "Tests/EliteCoreTests/OwnedEquipmentTests.swift": "ab643c42e4fba12492cd6feaefdaf359c63a7aee7e337330ee8f937f50db8452",
@@ -598,6 +601,7 @@
     "Tests/EliteCoreTests/ScriptMissionTests.swift": "5b413a49f2e42661fc89d1b93567a179d62749f0f77a3dd8aff80cb7b913371b",
     "Tests/EliteCoreTests/ScriptModuleTests.swift": "e0217d01f9f927ed5dcfd16c076a4d00f2a60b318b0d0bf1e85b72a9a99cbc09",
     "Tests/EliteCoreTests/ScriptNPCTests.swift": "c1af186b62741d7f0f84fa401197ebe6b3f5665f5088cceb4032b5eb3e922d5e",
+    "Tests/EliteCoreTests/ScriptPageInputTests.swift": "f5dc325a181cd8b5ad6b2595373f12e5340bbcd9e67d0f6c6237ba923ec02342",
     "Tests/EliteCoreTests/ScriptSolarSaveTests.swift": "d815c1508f92044a7a0e59206733a87fb53dace9a61e378d215ffe40924dca03",
     "Tests/EliteCoreTests/ScriptTransactionTests.swift": "05f107dcca357a8c6f39bb07eebd84e55ebabe450f54eaa12123df14b38e92c0",
     "Tests/EliteCoreTests/ScriptValueStorageTests.swift": "fe71d20b14192a53d076bc566e6cbeea04e06fdba92dc0edea080b4f79bdedc5",
@@ -655,16 +659,16 @@
     "docs/mission-packs/station-conversation/scripts/main.lua": "13ddd6bcda0b9a6b1bc9d67f85d9e3b89ec58ead17f90e9b75534e69e5cf10b4",
     "docs/mission-packs/station-maintenance/manifest.toml": "fb98009ae34f77130e10a3752cd08c4ef9887a0910447142e51b68beade659bc",
     "docs/mission-packs/station-maintenance/scripts/main.lua": "51cbee6c8f411515d96d99a216175cabc18288803f28cdf24d4dc5c01cec09c5",
-    "docs/ships/manifest.json": "9ae83b661c3d1d045e01ac681c7271b87a2e483e03c8ef190a8a0b2e410a4d6b",
+    "docs/ships/manifest.json": "ffe78ab37bb408a265bcb68bb46f0b42e78c1e037492d59853bd7bd310fc04d7",
     "script/coverage.sh": "09a9c802156f79144290fc248a3a999eeb65be320f3c2a3331e3e747308374f7",
     "sonar-project.properties": "9678da010467df9603aeba7e4fcf452c8a65c3ee17bf6e6ebbf1f3a5134038ef"
   },
   "limits": "Validated protected main1ef005e integration plus immutable multi-module Lua helper content, bounded Lua/story/economy/cargo/local/flight/calendar clocks and saved native pulse counters, classic physical encounters, all159 player accommodation adapters, humanoid charter custody, solar/title continuity, durable staged transactions, isolated native Gallery trials, unique standard native equipment/storage/hull transfer scoped quest loans/consumption/returns, measured profiled NPC/components with bounded steering/laser/plasma/swept physical collision/projectile persistence, and saved generic main-orbital contract boards with local/flight/calendar deadlines and repeatable job identities. Full source gear condition/modification controllers, broker movement, pods/care, complete controllers/world-business, complete source AI/combat/transit, complete RRS/boards/jobs/campaigns, full-source Maenes/finance/RRS and rich historical Gallery scenarios remain incomplete. Format18 pins native calendar and admitted-journey provenance. Generic independently resource-owned local-world jobs are implemented. Transit and full source station/grid/care/finance/service adapters remain incomplete. Full historical Maenes/finance/RRS acceptance and remaining complete engine requirements are still gated. Native event contexts/watermarks and deterministic new plan IDs are implemented. Exact generic ScriptValue integer/float storage and bounded saved JSON decoding are implemented; full world epochs/archive/replay/source RNG and historical acceptance are still incomplete. Native commander snapshots, immutable new terminal receipts and pinned exact-content child joins are implemented. Shared campaign services/full campaign scoping and historical campaign acceptance remain incomplete. Native exclusive station choices and frozen matching-child branch filters implemented. Rich book assets, shared dossiers/loans, full campaign instance management and source acceptance remain incomplete. Repeatable native station answers, explicit successful-finish answer gates, compact saved-history queries, exact allowed child-outcome unions and pinned displayed-dialogue confirmations are implemented. Full rich library assets/dossiers/loans, campaign-instance management, archives/replay and historical acceptance remain incomplete. Immutable native-granted text books and hierarchy/contents/reading/source pages with retained ownership and saved cursors are implemented; logos/images, rich dossiers, shared financial services and full source acceptance remain required. Native fixed material collections, frozen quotes, genuine positive partial lot receipts and exact declared completion gates implemented. Full typed physical cargo/pod provenance and common mass fitting remain incomplete; existing BBC kg/g hold quantization is preserved.",
   "previous_checkpoint": {
-    "commit": "27426d487ca950200ef15c8749fad225e6da5c97",
-    "tests_per_lane": 528,
-    "maintained_coverage_percent": 94.52,
-    "note": "Native retained library checkpoint; evidence retained at that commit."
+    "commit": "94766896ed8ea976f3eed067bc3eda531ac1868a",
+    "tests_per_lane": 541,
+    "maintained_coverage_percent": 94.59,
+    "note": "Native partial collection checkpoint; evidence retained at that commit."
   },
   "native_encounter_coverage": {
     "covered_lines": 305,
@@ -850,31 +854,34 @@
     }
   },
   "sanitizer_timing_note": {
-    "result": "All lanes passed without a rerun or timing waiver; exact long rendering fixture durations retained.",
-    "same_lane_baseline_log": "/tmp/elite-reference-library-ci.log",
-    "current_log": "/tmp/elite-collections-ci.log",
-    "fixtures": [
-      {
-        "test": "everyModelRemainsVisibleFiniteAndFramedThroughoutFullRotation",
-        "previous_seconds": 995.915,
-        "current_seconds": 1310.946
-      },
-      {
-        "test": "titleShipStaysCompleteBetweenTextRows",
-        "previous_seconds": 722.772,
-        "current_seconds": 1125.398
-      },
-      {
-        "test": "eachComputerStorageAndFuelCombinationControlsRingsSearchAndActualJump",
-        "previous_seconds": 453.09,
-        "current_seconds": 793.496
-      },
-      {
-        "test": "normalizedComparisonsSortAndTOMLLoaderAreConsistent",
-        "previous_seconds": 535.42,
-        "current_seconds": 958.473
-      }
-    ]
+    "result": "All lanes passed once without a timing waiver. Only make parent paused after its ASan child completed, before leaks, to release CPU+GUI for a separate matched replay; no active test paused.",
+    "current_log": "/tmp/elite-script-page-ci.log",
+    "stage_boundary_pause": {
+      "make_pid": 75274,
+      "asan_helper": 17830,
+      "stopped_utc_unix": 1792071404.348397,
+      "reason": "Hold parent between ASan and leaks for user-priority matched fullscreen replay; ASan child not paused.",
+      "chain": [
+        {
+          "pid": 17830,
+          "parent": 16715,
+          "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper --test-bundle-path /Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests --scratch-path .build/asan --sanitize=address /Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests --testing-library swift-testing"
+        },
+        {
+          "pid": 16715,
+          "parent": 75274,
+          "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-test --scratch-path .build/asan --sanitize=address"
+        },
+        {
+          "pid": 75274,
+          "parent": 1,
+          "command": "make ci"
+        }
+      ],
+      "root": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite",
+      "resumed_utc_unix": 1792072611.745964,
+      "resume_reason": "Coder2 explicitly released CPU+GUI after both matched fullscreen replays completed and private apps exited."
+    }
   },
   "partial_collections_coverage": {
     "covered_lines": 228,
@@ -889,5 +896,27 @@
       "material-quote-1512.png": "8a2dae7574121a035e7dc09f2c8e367f3b345d33a063b5593ecced552129b712",
       "material-quote-512.png": "0168cf76eb55398f58e444da05b364947b852d1d092aed4d6b1db80dfcf8c6b0"
     }
+  },
+  "displayed_page_input_coverage": {
+    "covered_lines": 61,
+    "total_lines": 61,
+    "percentage": 100.0
+  },
+  "displayed_page_input_evidence": {
+    "red_log": "/tmp/elite-script-page-red.log",
+    "red_result": "Actual queued second Return answered an undisplayed question;2 answers versus expected1.",
+    "green_log": "/tmp/elite-script-page-green.log",
+    "green_seconds": 13.691,
+    "focused_log": "/tmp/elite-script-page-focused-coverage.log",
+    "focused_tests": 9,
+    "focused_seconds": 23.8,
+    "focused_helper_coverage_percent": 100.0,
+    "scope": "Headless actual NSEvent and AppKit pending queue; no new visual layout."
+  },
+  "process_exit": {
+    "pid": 75274,
+    "exit_status_raw": 0,
+    "exit_code": 0,
+    "observed_unix": 1792072711.63024
   }
 }

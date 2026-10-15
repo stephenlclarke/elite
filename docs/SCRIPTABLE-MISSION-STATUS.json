@@ -509,9 +509,9 @@
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 541,
-    "maintained_coverage_percent": 94.59,
-    "script_swift_coverage_percent": 97.75,
+    "tests_per_lane": 547,
+    "maintained_coverage_percent": 94.61,
+    "script_swift_coverage_percent": 97.77,
     "encounter_coverage_percent": 98.07,
     "maintained_c_host_coverage_percent": 95.0,
     "leaks": 0,
@@ -537,7 +537,8 @@
     "station_contact_ui_coverage_percent": 93.21,
     "conversation_coverage_percent": 100.0,
     "reference_library_coverage_percent": 98.4,
-    "partial_collections_coverage_percent": 99.13
+    "partial_collections_coverage_percent": 99.13,
+    "displayed_page_input_coverage_percent": 100.0
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -576,7 +577,7 @@
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete make ci541 tests/lane,94.59% maintained,97.75% script,99.13% partial collections and0leaks;553 exact input hashes verified.",
+  "integration_validation": "Complete make ci547 tests/lane,94.61% maintained,97.77% script,100% displayed-page helper and0leaks;555 exact input hashes verified.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -632,7 +633,7 @@
     "full_rrs_ready": false,
     "full_engine_ready": false
   },
-  "last_validated_commit": "27426d4 (preceding committed checkpoint; current source hashes in validation document)",
+  "last_validated_commit": "9476689 (preceding committed checkpoint; current source hashes in validation document)",
   "npc_checkpoint": {
     "status": "validated with complete make ci,417 tests per lane; full source engine remains incomplete",
     "capability": "profiled-encounters-v2",
@@ -719,5 +720,12 @@
     "save_format": 18,
     "full_engine_ready": false,
     "limits": "Native unreserved commodity units only; full typed world payload/custody and exact common mass fitting remain required."
+  },
+  "displayed_page_input_checkpoint": {
+    "status": "validated with complete make ci;547 tests per lane; full engine remains incomplete",
+    "save_format": 18,
+    "new_capability": false,
+    "full_engine_ready": false,
+    "scope": "Native painted-page context for script offers/questions/schema1 handoffs; queued keys/clicks cannot confirm an unseen replacement or different commander context."
   }
 }

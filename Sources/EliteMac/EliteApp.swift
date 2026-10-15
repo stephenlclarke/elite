@@ -25,6 +25,7 @@ final class GameView: NSView {
       if !acceptsTrackpadFlight || game.spin.mode != oldValue.spin.mode { trackpad.reset() }
     }
   }
+  private var displayedScriptPage: ScriptPagePresentation?
   let audio = AudioPresenter()
   var held: Set<String> = []
   var pressedKeys: [UInt16: String] = [:]
@@ -72,12 +73,14 @@ final class GameView: NSView {
     else { return }
     layer?.contentsScale = CGFloat(scale)
     layer?.contents = image
+    displayedScriptPage = game.scriptPagePresentation
   }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
     guard let context = NSGraphicsContext.current?.cgContext else { return }
     drawGame(game, context: context, rect: bounds)
+    displayedScriptPage = game.scriptPagePresentation
   }
   private func clearSteeringInput() {
     held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])
@@ -91,6 +94,20 @@ final class GameView: NSView {
       return true
     }
     return super.performKeyEquivalent(with: event)
+  }
+  private func scriptPageToken() -> String? {
+    let proof =
+      displayedScriptPage ?? ScriptPagePresentation(epoch: game.ecmControl.epoch, page: nil)
+    guard let bytes = try? JSONEncoder().encode(proof), bytes.count <= 1024 else { return nil }
+    return bytes.base64EncodedString()
+  }
+  private func enqueueKey(_ key: String) {
+    if ScriptPagePresentation.controlKeys.contains(key) {
+      guard let token = scriptPageToken() else { return }
+      pending.append("script-page-key:" + token + ":" + key)
+    } else {
+      pending.append(key)
+    }
   }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
@@ -111,7 +128,7 @@ final class GameView: NSView {
     let repeatNavigation =
       !game.screen.isFlight && ["up", "down", "left", "right", "pageup", "pagedown"].contains(key)
     let repeatText = game.acceptsTextInput && (key.count == 1 || key == "backspace")
-    if !event.isARepeat || repeatNavigation || repeatText { pending.append(key) }
+    if !event.isARepeat || repeatNavigation || repeatText { enqueueKey(key) }
   }
   override func keyUp(with event: NSEvent) {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
@@ -144,7 +161,8 @@ final class GameView: NSView {
     }
     if game.screen == .handoff {
       let point = convert(event.locationInWindow, from: nil)
-      pending.append("handoff-click:\(point.x):\(point.y)")
+      guard let token = scriptPageToken() else { return }
+      pending.append("script-page-click:" + token + ":\(point.x):\(point.y)")
       return
     }
     if game.screen == .equipment {
@@ -172,7 +190,7 @@ final class GameView: NSView {
       return
     }
     if game.screen == .handoff || game.screen == .library {
-      pending.append(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
+      enqueueKey(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
       return
     }
     if [.secret, .system, .status, .inventory, .market, .buy, .sell].contains(game.screen) {
@@ -356,6 +374,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   // The frame loop and native integration checks share one ordered command batch.
   // Awaiting this method acknowledges actual processing instead of elapsed time.
+  private func scriptPageProof(_ token: Substring) -> ScriptPagePresentation? {
+    guard token.utf8.count <= 1400, let bytes = Data(base64Encoded: String(token)),
+      bytes.count <= 1024
+    else { return nil }
+    return try? JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+  }
   func processPendingCommands(in view: GameView) async {
     let events = view.pending
     view.pending.removeAll()
@@ -385,6 +409,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       } else if event.hasPrefix("showroom-click:") {
         let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }
+      } else if event.hasPrefix("script-page-key:") {
+        let parts = event.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1)
+        if parts.count == 2, let proof = scriptPageProof(parts[0]) {
+          await runtime.scriptPageKey(String(parts[1]), expected: proof)
+        }
+      } else if event.hasPrefix("script-page-click:") {
+        let parts = event.dropFirst("script-page-click:".count).split(separator: ":")
+        if parts.count == 3, let proof = scriptPageProof(parts[0]),
+          let x = Double(parts[1]), let y = Double(parts[2])
+        {
+          await runtime.scriptPageClick(x: x, y: y, expected: proof)
+        }
       } else if event.hasPrefix("handoff-click:") {
         let values = event.dropFirst(14).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.blackjackHandoffClick(x: values[0], y: values[1]) }

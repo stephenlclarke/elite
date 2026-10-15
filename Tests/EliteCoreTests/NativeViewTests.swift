@@ -8,6 +8,157 @@ import Testing
 @Suite(.serialized)
 struct NativeViewTests {
   @MainActor @Test
+  func nativeOldFramesCannotAcceptNewOffersOrQuestionsButSamePageArrowConfirmWorks() async throws {
+    let harness = try await HeadlessScriptInput()
+    defer { harness.clean() }
+    await harness.frame()
+    try harness.press("b")
+    try harness.press("return")
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().commander.scriptState.instances.isEmpty)
+    #expect(await harness.delegate.runtime.snapshot().scriptAvailablePackDigest != nil)
+    try harness.press("return")
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().commander.scriptState.instances.isEmpty)
+    await harness.frame()
+    try harness.press("return")
+    await harness.drain()
+    let owner = try #require(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances.keys.first)
+    try harness.press("b")
+    try harness.press("return")
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+        .conversationReceipts.isEmpty == true)
+    await harness.frame()
+    try harness.press("down")
+    try harness.press("return")
+    await harness.drain()
+    let receipts = await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+      .conversationReceipts
+    #expect(receipts?.count == 1 && receipts?.values.first?.choice == "details")
+  }
+
+  @MainActor @Test
+  func nativeOldMouseClicksCannotConfirmAnUndisplayedChainedQuestion() async throws {
+    let harness = try await HeadlessScriptInput()
+    defer { harness.clean() }
+    let owner = try await harness.question()
+    try harness.clickConfirm()
+    try harness.clickConfirm()
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+        .conversationReceipts.count == 1)
+    try harness.clickConfirm()
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+        .conversationReceipts.count == 1)
+    await harness.frame()
+    try harness.clickConfirm()
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+        .conversationReceipts.count == 2)
+  }
+
+  @MainActor @Test
+  func nativeMalformedPagePacketsAndReloadedCommanderEpochCannotConfirmTheOldPage() async throws {
+    let harness = try await HeadlessScriptInput()
+    defer { harness.clean() }
+    let owner = try await harness.question()
+    let before = await harness.delegate.runtime.snapshot()
+    let token = try JSONEncoder().encode(before.scriptPagePresentation).base64EncodedString()
+    harness.view.pending = [
+      "script-page-key:%%%:return",
+      "script-page-key:" + String(repeating: "A", count: 1401) + ":return",
+      "script-page-click:%%%:1:1", "script-page-key:" + token + ":return:extra",
+      "script-page-click:" + token + ":nan:1", "script-page-click:" + token + ":1",
+    ]
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().commander == before.commander)
+    try await harness.delegate.runtime.load(from: harness.file, persistMigrations: false)
+    let restored = await harness.delegate.runtime.snapshot()
+    #expect(restored.ecmControl.epoch != before.ecmControl.epoch)
+    try harness.press("return")
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().commander == restored.commander)
+    try harness.press("b")
+    try harness.press("return")
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+        .conversationReceipts.isEmpty == true)
+    await harness.frame()
+    try harness.press("return")
+    await harness.drain()
+    #expect(
+      await harness.delegate.runtime.snapshot().commander.scriptState.instances[owner]?
+        .conversationReceipts.count == 1)
+  }
+
+  @MainActor @Test
+  func nativeQueuedReturnsCannotAnswerAnUndisplayedNextScriptQuestion() async throws {
+    let id = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: id))
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+      preferences.removePersistentDomain(forName: id)
+      try? FileManager.default.removeItem(at: folder)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    try JSONEncoder().encode(Commander()).write(to: file)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: file)
+    let delegate = AppDelegate(restoreOnLaunch: false, saves: saves)
+    try await delegate.runtime.load(from: file, persistMigrations: false)
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
+        "docs/mission-packs/station-conversation")
+    try await delegate.runtime.installScriptPack(
+      from: example,
+      destination: folder.appendingPathComponent("packs"))
+    await delegate.runtime.key("contacts-open")
+    await delegate.runtime.key("return")
+    await delegate.runtime.key("contacts-open")
+    // No NSWindow or app activation: exercise the real event/queue/actor path without taking focus.
+    let view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
+    view.game = await delegate.runtime.snapshot()
+    view.updateLayer()
+    let instance = try #require(view.game.scriptOffer)
+    let shown = try #require(view.game.scriptPresentedDialogue)
+    let enter = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero,
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+        characters: "\r", charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36))
+    view.keyDown(with: enter)
+    view.keyDown(with: enter)
+    #expect(view.pending.count == 2)
+    await delegate.processPendingCommands(in: view)
+    let answered = await delegate.runtime.snapshot()
+    let count = answered.commander.scriptState.instances[instance]?.conversationReceipts.count
+    #expect(count == 1)
+    guard count == 1 else { return }
+    #expect(answered.scriptPresentedDialogue?.token != shown.token)
+    // The model was updated by the command pump, but the next page has not been painted yet.
+    view.keyDown(with: enter)
+    await delegate.processPendingCommands(in: view)
+    #expect(
+      await delegate.runtime.snapshot().commander.scriptState.instances[instance]?
+        .conversationReceipts.count == 1)
+    view.game = await delegate.runtime.snapshot()
+    view.updateLayer()
+    view.keyDown(with: enter)
+    await delegate.processPendingCommands(in: view)
+    #expect(
+      await delegate.runtime.snapshot().commander.scriptState.instances[instance]?
+        .conversationReceipts.count == 2)
+  }
+
+  @MainActor @Test
   func nativeMaterialQuoteUsesRealPurchasedUnitsAndOrderedTrialSaveWithoutTouchingTheOwner()
     async throws
   {
@@ -761,7 +912,7 @@ struct NativeViewTests {
           windowNumber: 0, context: nil, characters: text, charactersIgnoringModifiers: text,
           isARepeat: false, keyCode: code))
       view.keyDown(with: event)
-      #expect(view.pending.last == expected && view.held.isEmpty)
+      #expect(nativeQueuedKey(view.pending.last) == expected && view.held.isEmpty)
       view.keyUp(with: event)
       #expect(!view.held.contains(expected))
     }
@@ -1029,7 +1180,7 @@ extension NativeViewTests {
         with: .leftMouseDown, location: .init(x: 100, y: 48), modifierFlags: [], timestamp: 0,
         windowNumber: 0, context: nil, eventNumber: 0, clickCount: 1, pressure: 1))
     view.mouseDown(with: click)
-    #expect(view.pending.first?.hasPrefix("handoff-click:") == true)
+    #expect(view.pending.first?.hasPrefix("script-page-click:") == true)
     view.game.key("k")
     #expect(PlayerHelp.pages(for: view.game).first?.title == "MISSION DIALOG")
   }
@@ -1128,9 +1279,9 @@ extension NativeViewTests {
     view.game.key("4")
     #expect(view.held.isEmpty && view.controls.throttle == 0 && !view.controls.fire)
     view.keyDown(with: try event(125, flags: .option))
-    #expect(view.pending.last == "pagedown")
+    #expect(nativeQueuedKey(view.pending.last) == "pagedown")
     view.keyDown(with: try event(126, flags: .option))
-    #expect(view.pending.last == "pageup")
+    #expect(nativeQueuedKey(view.pending.last) == "pageup")
     view.game.key("/")
     view.game.key("a")
     #expect(view.performKeyEquivalent(with: try event(51, flags: .command)))
@@ -1155,4 +1306,81 @@ extension NativeViewTests {
     #expect(view.held.isEmpty && !view.controls.fire)
   }
 
+}
+
+// Assert the native key protocol without treating the proof envelope as the user's key name.
+private func nativeQueuedKey(_ event: String?) -> String? {
+  guard let event else { return nil }
+  guard event.hasPrefix("script-page-key:") else { return event }
+  return event.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1).last.map(
+    String.init)
+}
+
+@MainActor
+private final class HeadlessScriptInput {
+  let folder: URL
+  let preferences: UserDefaults
+  let file: URL
+  let delegate: AppDelegate
+  let view: GameView
+  init() async throws {
+    let id = UUID().uuidString
+    folder = FileManager.default.temporaryDirectory.appendingPathComponent(id)
+    preferences = try #require(UserDefaults(suiteName: id))
+    file = folder.appendingPathComponent("commander.json")
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    try JSONEncoder().encode(Commander()).write(to: file)
+    delegate = AppDelegate(
+      restoreOnLaunch: false,
+      saves: CommanderSaveSession(preferences: preferences, defaultURL: file))
+    view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
+    do {
+      try await delegate.runtime.load(from: file, persistMigrations: false)
+      let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
+          "docs/mission-packs/station-conversation")
+      try await delegate.runtime.installScriptPack(
+        from: example,
+        destination: folder.appendingPathComponent("packs"))
+      await delegate.runtime.setViewport(width: 512, height: 518)
+    } catch {
+      clean()
+      throw error
+    }
+  }
+  func clean() {
+    preferences.removePersistentDomain(forName: folder.lastPathComponent)
+    try? FileManager.default.removeItem(at: folder)
+  }
+  func frame() async {
+    view.game = await delegate.runtime.snapshot()
+    view.updateLayer()
+  }
+  func question() async throws -> UUID {
+    await delegate.runtime.key("contacts-open")
+    await delegate.runtime.key("return")
+    await delegate.runtime.key("contacts-open")
+    await frame()
+    return try #require(view.game.scriptOffer)
+  }
+  func press(_ key: String) throws {
+    let code: UInt16 = key == "return" ? 36 : key == "down" ? 125 : 11
+    let text = key == "return" ? "\r" : key == "down" ? "" : "b"
+    let event = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero,
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: text,
+        charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
+    view.keyDown(with: event)
+  }
+  func clickConfirm() throws {
+    let location = view.convert(NSPoint(x: 40, y: 478), to: nil)
+    let event = try #require(
+      NSEvent.mouseEvent(
+        with: .leftMouseDown, location: location,
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+        eventNumber: 0, clickCount: 1, pressure: 1))
+    view.mouseDown(with: event)
+  }
+  func drain() async { await delegate.processPendingCommands(in: view) }
 }
