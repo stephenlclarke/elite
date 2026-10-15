@@ -359,6 +359,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         return
       }
       guard performanceTick < FlightPerformanceScenario.tickCount else {
+        FramePerformance.flush()
         loop?.cancel()
         return
       }
