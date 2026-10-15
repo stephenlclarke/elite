@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos sonar ci
+.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos sonar ci'
+	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -42,4 +42,9 @@ mission-packs-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/courier.toml
 package-macos:
 	python3 Tools/distribution/package_macos.py
-ci: ships-check showroom-check mission-packs-check coverage-check threads address leaks
+homebrew-cask:
+	python3 Tools/distribution/homebrew_cask.py --version "$(ELITE_HOMEBREW_VERSION)" --asset-commit "$(ELITE_HOMEBREW_COMMIT)" $(if $(ELITE_HOMEBREW_TAP),--tap "$(ELITE_HOMEBREW_TAP)")
+homebrew-cask-check:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/distribution -p 'test_*.py'
+	python3 Tools/distribution/homebrew_cask.py --check
+ci: homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check threads address leaks
