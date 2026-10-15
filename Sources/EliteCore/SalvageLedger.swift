@@ -81,11 +81,23 @@ public enum SalvageCollectionReceipt: Equatable, Codable, Sendable {
 public enum SalvageTransactionBinding: Equatable, Codable, Sendable {
   case equipment(
     target: SalvageUpgradeTarget, expectedComponentInstanceID: UUID?,
-    templateVersion: UInt32, axis: SalvageUpgradeAxis?, feature: SalvageFeature?)
-  case research(recipeID: String, expectedComponentInstanceID: UUID?, templateVersion: UInt32)
+    templateVersion: UInt32, axis: SalvageUpgradeAxis?, feature: SalvageFeature?,
+    location: ComponentFittingLocation? = nil)
+  case research(
+    recipeID: String, expectedComponentInstanceID: UUID?, templateVersion: UInt32,
+    location: ComponentFittingLocation? = nil)
   case alien(
     recipe: SalvageAlienRecipeID, target: SalvageAlienFittingTarget,
-    expectedComponentInstanceID: UUID?, templateVersion: UInt32)
+    expectedComponentInstanceID: UUID?, templateVersion: UInt32,
+    location: ComponentFittingLocation? = nil)
+
+  public var location: ComponentFittingLocation? {
+    switch self {
+    case .equipment(_, _, _, _, _, let location), .research(_, _, _, let location),
+      .alien(_, _, _, _, let location):
+      location
+    }
+  }
 }
 
 public struct SalvageSettlementProposal: Equatable, Codable, Sendable {
@@ -612,13 +624,21 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     action: SalvageDefinitionAction, lots: [SalvageLot]
   ) -> Bool {
     guard let binding else { return true }
+    guard binding.location?.slot.valid ?? true else { return false }
     switch binding {
-    case .equipment(let target, _, let version, let axis, let feature):
+    case .equipment(let target, _, let version, let axis, let feature, let location):
       guard version > 0, lots.count == 1, case .fit(let selectedAxis, let mount) = action,
         axis == selectedAxis, case .technology(let id, _, _) = lots[0].content,
         let definition = SalvageDefinitions.definition(id: id)
       else { return false }
       if case .laser(_, let targetMount, _) = target, targetMount != mount { return false }
+      if let location,
+        !validEquipmentLocation(
+          location, target: target, definition: definition,
+          axis: axis, mount: mount)
+      {
+        return false
+      }
       if case .feature(let expected) = definition.effect {
         return feature == expected && axis == nil && mount == nil
       }
@@ -627,16 +647,24 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
         return axis.map { axes.contains($0) } == true
       }
       return axis == nil
-    case .research(let recipeID, _, let version):
+    case .research(let recipeID, _, let version, let location):
       guard version > 0, action == .research,
         let recipe = SalvageDefinitions.researchRecipes.first(where: { $0.id == recipeID }),
         lots.count == recipe.requiredCount
       else { return false }
+      if let location {
+        switch recipe.destination {
+        case .navigation: guard location.slot == .navigation else { return false }
+        case .targeting: guard location.slot == .targetingCore else { return false }
+        case .alienPrecision:
+          guard [.navigation, .targetingCore].contains(location.slot) else { return false }
+        }
+      }
       return lots.allSatisfy {
         if case .technology(let id, _, _) = $0.content { return id == recipe.requiredDefinitionID }
         return false
       }
-    case .alien(let recipeID, let target, _, let version):
+    case .alien(let recipeID, let target, _, let version, let location):
       let recipe = SalvageAlienDefinitions.recipe(recipeID)
       guard version > 0, lots.count == recipe.requiredArtefactCount,
         lots.allSatisfy({
@@ -646,6 +674,15 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
           return false
         })
       else { return false }
+      if let location {
+        guard location.hullInstanceID == target.hull else { return false }
+        switch target {
+        case .shield: guard location.slot == .shield else { return false }
+        case .combatMount(_, let mount): guard location.slot == .laser(mount) else { return false }
+        case .missilePylon(_, let index):
+          guard location.slot == .missilePylon(index) else { return false }
+        }
+      }
       switch (recipeID, target) {
       case (.shieldRegenerator, .shield(_, let axis)):
         return [.frontShieldRecharge, .rearShieldRecharge].contains(axis)
@@ -656,6 +693,52 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
         return (0..<SalvageDefinitions.maximumNativePylons).contains(index)
           && action == .fit(axis: nil, mount: nil)
       default: return false
+      }
+    }
+  }
+
+  private func validEquipmentLocation(
+    _ location: ComponentFittingLocation,
+    target: SalvageUpgradeTarget, definition: SalvageTechnologyDefinition,
+    axis: SalvageUpgradeAxis?, mount: LaserMount?
+  ) -> Bool {
+    switch target {
+    case .hull(let hull): guard location.hullInstanceID == hull else { return false }
+    case .laser(let hull, let facing, _):
+      guard location.hullInstanceID == hull, location.slot == .laser(facing) else { return false }
+    case .commanderResearch: break
+    }
+    switch definition.category {
+    case .computerCore:
+      return [.navigation, .targetingCore, .targetingMining, .targetingSalvage].contains(
+        location.slot)
+        && axis.map { [.scanningRange, .acquisitionError, .automationError].contains($0) } == true
+    case .driveTechnology: return location.slot == .drive
+    case .laserTechnology:
+      guard let mount else { return false }
+      return location.slot == .laser(mount)
+    case .shieldTechnology: return location.slot == .shield
+    case .recoveredMissile:
+      if case .missilePylon = location.slot { return true }
+      return false
+    case .laserHardpoint:
+      guard let mount else { return false }
+      return location.slot == .hullStructure || location.slot == .laser(mount)
+    case .missilePylon:
+      if case .missilePylon = location.slot { return true }
+      return location.slot == .hullStructure
+    case .spareEscapePod:
+      if case .spareEscapePod = location.slot { return true }
+      return location.slot == .utility(.escapePod)
+    case .alienArtefact: return false
+    case .featureModule:
+      guard case .feature(let feature) = definition.effect else { return false }
+      switch feature {
+      case .miningTargetingModule: return location.slot == .targetingMining
+      case .salvageTargetingModule: return location.slot == .targetingSalvage
+      case .fuelScoops: return location.slot == .utility(.fuelScoops)
+      case .ecm: return location.slot == .utility(.ecm)
+      case .salvageCutter: return location.slot == .utility(.salvageCutter)
       }
     }
   }

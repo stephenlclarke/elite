@@ -672,4 +672,142 @@ struct SalvageLedgerTests {
       try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger)) == ledger)
   }
 
+  @Test func exactVacantPylonLocationPreventsSlotSubstitutionAndReplay() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger, section: section(technology: ["missile-standard"], seconds: 1), operation: 1)
+    let lot = try #require(ledger.pendingLots.first)
+    var cargo = Array(repeating: 0, count: 17)
+    _ = collect(&ledger, lot, cargo: &cargo)
+    let hull = UUID()
+    let command = UUID()
+    func binding(_ location: ComponentFittingLocation) -> SalvageTransactionBinding {
+      .equipment(
+        target: .hull(instance: hull), expectedComponentInstanceID: nil,
+        templateVersion: 1, axis: nil, feature: nil, location: location)
+    }
+    let pinned = binding(.init(hullInstanceID: hull, slot: .missilePylon(0)))
+    #expect(pinned.location?.slot == .missilePylon(0))
+    for invalid in [
+      ComponentFittingLocation(hullInstanceID: UUID(), slot: .missilePylon(0)),
+      .init(hullInstanceID: hull, slot: .missilePylon(32)),
+      .init(hullInstanceID: hull, slot: .drive),
+    ] {
+      #expect(
+        ledger.prepareSettlement(
+          command: UUID(), items: [lot.identity],
+          action: .fit(axis: nil, mount: nil), binding: binding(invalid)) == nil)
+    }
+    let quote = try #require(
+      ledger.prepareSettlement(
+        command: command, items: [lot.identity],
+        action: .fit(axis: nil, mount: nil), binding: pinned))
+    #expect(ledger.commitSettlement(quote) == .committed(quote))
+    let substituted = binding(.init(hullInstanceID: hull, slot: .missilePylon(1)))
+    #expect(
+      ledger.prepareSettlement(
+        command: command, items: [lot.identity],
+        action: .fit(axis: nil, mount: nil), binding: substituted) == nil)
+    let forged = SalvageSettlementProposal(
+      command: command, revision: quote.revision,
+      items: quote.items, action: quote.action, saleValueTenths: 0, binding: substituted)
+    #expect(ledger.commitSettlement(forged) == .refused)
+    #expect(
+      try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger)) == ledger)
+  }
+
+  @Test func locationMustMatchLaserFacingFeatureSlotAndAlienTargetIndex() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger,
+      section: section(
+        technology: [
+          "laser-technology", "feature-mining-targeting",
+          "alien-artefact",
+        ], seconds: 1), operation: 1)
+    let lots = ledger.pendingLots
+    var cargo = Array(repeating: 0, count: 17)
+    for lot in lots { _ = collect(&ledger, lot, cargo: &cargo) }
+    let hull = UUID()
+    let laser = lots[0]
+    let wrongLaser = SalvageTransactionBinding.equipment(
+      target: .laser(hull: hull, mount: .front, kind: .naval),
+      expectedComponentInstanceID: UUID(), templateVersion: 1, axis: .laserDamage, feature: nil,
+      location: .init(hullInstanceID: hull, slot: .laser(.left)))
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: [laser.identity],
+        action: .fit(axis: .laserDamage, mount: .front), binding: wrongLaser) == nil)
+    let module = lots[1]
+    let wrongModule = SalvageTransactionBinding.equipment(
+      target: .hull(instance: hull),
+      expectedComponentInstanceID: nil, templateVersion: 1, axis: nil,
+      feature: .miningTargetingModule,
+      location: .init(hullInstanceID: hull, slot: .targetingSalvage))
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: [module.identity],
+        action: .fit(axis: nil, mount: nil), binding: wrongModule) == nil)
+    let artefact = lots[2]
+    let wrongAlien = SalvageTransactionBinding.alien(
+      recipe: .seekerMissile,
+      target: .missilePylon(hull: hull, index: 0), expectedComponentInstanceID: nil,
+      templateVersion: 1,
+      location: .init(hullInstanceID: hull, slot: .missilePylon(1)))
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: [artefact.identity],
+        action: .fit(axis: nil, mount: nil), binding: wrongAlien) == nil)
+    let correctAlien = SalvageTransactionBinding.alien(
+      recipe: .seekerMissile,
+      target: .missilePylon(hull: hull, index: 0), expectedComponentInstanceID: nil,
+      templateVersion: 1,
+      location: .init(hullInstanceID: hull, slot: .missilePylon(0)))
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: [artefact.identity],
+        action: .fit(axis: nil, mount: nil), binding: correctAlien) != nil)
+  }
+
+  @Test func oldCommittedReceiptWithoutLocationRemainsDecodableAndReplayable() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger, section: section(technology: ["computer-core", "computer-core"], seconds: 1),
+      operation: 1)
+    var cargo = Array(repeating: 0, count: 17)
+    let lots = ledger.pendingLots
+    for lot in lots { _ = collect(&ledger, lot, cargo: &cargo) }
+    let binding = SalvageTransactionBinding.research(
+      recipeID: "navigation-2",
+      expectedComponentInstanceID: nil, templateVersion: 1)
+    let quote = try #require(
+      ledger.prepareSettlement(
+        command: UUID(), items: lots.map(\.identity),
+        action: .research, binding: binding))
+    #expect(ledger.commitSettlement(quote) == .committed(quote))
+    func removeLocation(_ value: Any) -> Any {
+      if var object = value as? [String: Any] {
+        object.removeValue(forKey: "location")
+        for (key, child) in object { object[key] = removeLocation(child) }
+        return object
+      }
+      if let array = value as? [Any] { return array.map(removeLocation) }
+      return value
+    }
+    let object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger))
+    let data = try JSONSerialization.data(withJSONObject: removeLocation(object))
+    var restored = try JSONDecoder().decode(SalvageLedger.self, from: data)
+    #expect(restored == ledger)
+    #expect(restored.settlementReceipt(for: quote.command) == .committed(quote))
+    #expect(restored.commitSettlement(quote) == .committed(quote))
+    let changed = SalvageTransactionBinding.research(
+      recipeID: "navigation-2",
+      expectedComponentInstanceID: nil, templateVersion: 1,
+      location: .init(hullInstanceID: UUID(), slot: .navigation))
+    #expect(
+      restored.prepareSettlement(
+        command: quote.command, items: lots.map(\.identity),
+        action: .research, binding: changed) == nil)
+  }
+
 }
