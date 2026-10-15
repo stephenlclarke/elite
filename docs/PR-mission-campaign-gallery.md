@@ -1,11 +1,20 @@
 # feat(gallery): navigate campaign assignments and review their root trials
 
-Campaign Gallery details gain actual assignment statuses/objectives and navigation to exact saved children and their immediate owners. An owned child's Try campaign action reviews its exact root campaign, with Back selected initially, before starting an isolated trial. Read-only declarations and missing content never create missions or erase saved property.
+Campaign Gallery details now show actual assignment objectives, outcomes and suspension reasons. Players can open an exact saved child and return to its immediate owner, including when two campaigns share a template. Unstarted and missing-content previews remain read-only, and Back restores the reading position.
 
-Implementation is based on engine commit `81814a69f26deb7ef8f5d4b4534b1537feac4e79`; its earlier validation is prerequisite evidence, not validation of this change. The assigned files are MissionGallery.swift, ScriptGalleryTrial.swift, ScriptCampaignGallery.swift and focused Gallery tests/docs. Researcher-owned campaign/schema/persistence/finance code remains outside this slice. The Orchestrator approved only the Gallery pointer forwarding, page identity/type-scoped dispatch and last-painted AppKit key/pointer/menu integration, plus one existing test paint call. Renderer, input pumping and other engine owners retain their broader files.
+Try campaign on an owned child reviews its exact root with Back initially selected. A deliberate confirmation starts the isolated root trial. Saved contract roots remain unavailable with an explicit reason; separate board provider templates retain normal fresh-offer trials. Keyboard, pointer and menu actions bind to the last successful paint, including exact selection, relationship targets, retry revision, scroll and actual viewport. Stale, unseen, malformed or repeated decisions cannot act on a replacement page.
 
-Validation in progress: checkpoint `8036f5c` passed 18 focused and existing-regression tests, including four outcome cases, native physical patrol/combat/docking/report/debrief from the owned-child Gallery action, isolated Save/Load/Return with unchanged live save bytes, foreign-receipt rejection, and compact/wide frame bounds. Strict Swift formatting, Markdown lint and diff checks pass. Painted-Gallery input source is implemented; its compile/regression runs, native image inspection, full CI and the required review cycle remain pending the coordinated validation lease. This draft must be updated with final immutable evidence before delivery.
+Based exactly on engine `81814a69f26deb7ef8f5d4b4534b1537feac4e79`. New navigation and proof state is transient; save format19 is retained. GameRuntime owns trial publication. Approved shared-file changes are limited to Gallery forwarding/proof capture/dispatch, one existing test paint call and serial AddressSanitizer execution. Campaign schemas, persistence, director, finance and renderer behavior are unchanged.
 
-Compatibility: existing saved campaign bindings and save format19 are retained; all new navigation/review state is transient. No finance services or historical mission activation are added. Existing noncampaign trials and retry rules retain their acceptance checks.
+Validated source/media commit: `c73ca75a071648e5fe192650370c901b25b61988`.
+
+- Focused: 24 tests passed, including direct/nested genuine board acceptance, provider trial isolation and physical patrol/combat/docking/report/debrief with Save/Load/Restart/Return and foreign-receipt rejection.
+- Native: 14 tests passed, including painted keyboard/menu/pointer contract refusal, stale/queued/malformed input, resize, existing offers/questions and live save isolation.
+- Canonical `make ci`: exit0 in 754.76s; coverage, ThreadSanitizer and AddressSanitizer each passed 590 tests; maintained coverage 94.82%; zero leaks. All 770 frozen inputs remained unchanged, with no process intervention.
+- Actual `make ships` and `make readme-media` passed. Thirteen original Gallery captures were regenerated; six committed compact/Retina evidence images match byte for byte. Strict Swift formatting, Markdown lint and diff checks pass.
+
+[Validation record](MISSION-CODER-GALLERY-VALIDATION.json) retains commands, input hashes, timings, coverage, image provenance and earlier attempts separately. Commander/save assertions use independent temporary fixtures; human saves and preferences were untouched.
+
+Researcher owner review and central integration are pending through the Orchestrator. Eventual publication still requires `@codex review`, fixes/re-review until clean and required checks on its final head; these local results do not claim PR approval. Authoritative Sonar analysis belongs to committed main with its exact SHA.
 
 Request: [ISSUE-mission-campaign-gallery.md](ISSUE-mission-campaign-gallery.md).
