@@ -92,7 +92,7 @@ extension GameRuntime {
   public func scriptPageKey(_ key: String, expected: ScriptPagePresentation) {
     let allowed: Bool
     if case .gallery(let page)? = expected.page {
-      allowed = page.allowedKeys.contains(key)
+      allowed = page.allowedKeys.contains(key) || key == "contracts-open"
     } else if case .contract(let page)? = expected.page {
       allowed = page.allowedKeys.contains(key)
     } else if expected.page == nil {

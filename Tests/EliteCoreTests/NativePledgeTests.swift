@@ -205,6 +205,7 @@ extension NativeViewTests {
     let harness = try await PledgeInputHarness()
     defer { harness.clean() }
     try await harness.launchMenus()
+    await harness.delegate.runtime.key("gallery-open")
     try await harness.frame()
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
     let item = try #require(
