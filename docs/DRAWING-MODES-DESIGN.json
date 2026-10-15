@@ -1,0 +1,97 @@
+{
+  "title": "Three consistent scene drawing modes",
+  "version": 3,
+  "date": "2026-10-15",
+  "status": "Planned implementation requirements; not a claim of released gameplay. Published player documentation and release notes identify available features.",
+  "request": "White wireframe should resemble original BBC Micro Elite and include wireframe planet and star; coloured wireframe uses the same drawing with colours; default shaded panels uses filled/drawn planet and star.",
+  "smooth_shaded_flight": {
+    "request": "User reports current shaded panels are still insufficiently smooth when flying past planet/star and asks what can improve graphics. Treat real near-body flyby smoothness as an explicit renderer acceptance scenario, extending current Coder2 performance work.",
+    "verified_source_findings": "Main PlanetRenderer performs main-actor CPU per-pixel shading and caches by exact displayed diameter plus quantized angle. Changing diameter during a flyby invalidates the single cached image; maximum surface is 768x768 pixels. EliteApp processes an update then sleeps 16ms, so elapsed work adds to frame timing. Existing Coder2 reports also identify native bitmap conversion cost; its GPU helper has isolated parity tests but whole-native-path smoothness is not yet established.",
+    "priorities": [
+      "Measure and fix end-to-end frame pacing first: refresh-aware presentation/deadlines rather than work-plus-fixed-sleep, bounded queues, input latency and simulation clock/pause correctness. Keep GameRuntime actor ownership and avoid driving simulation from arbitrary GPU completion times.",
+      "Avoid rebuilding full CPU planet images for changing on-screen size/phase: cache seeded terrain/textures, use reusable GPU shading/resources where proven beneficial, smooth interpolation/filtering and screen-size-aware resolution levels. Avoid allocation churn, expensive readbacks and implicit bitmap format conversions. Do not claim an isolated shader speedup proves native flight smoothness.",
+      "Test large sun/corona blending and overdraw separately from planet shading; maintain visible-limb/near-plane clipping without allocating huge offscreen images.",
+      "For jagged/shimmering edges, use appropriate scene antialiasing, texture filtering and stable celestial sampling/LOD; retain intentionally crisp pixel-font HUD. Do not blur the whole frame or alter wireframe BBC-style geometry.",
+      "Validate the optimized path on supported Apple silicon and Intel/fallback configurations, respecting the existing macOS14 baseline. Use a narrower proven optimization if a new renderer introduces synchronization/quality regressions."
+    ],
+    "measurements": "Compare exact baseline/candidate commits and identical saved/seeded scene at Retina normal/full-screen sizes: distant/large/near-limb planet, sun/corona, simultaneous ship traffic, offscreen celestial, held S/X/release/reversal and a continuous close lateral flyby. Record end-to-end presented frame intervals, median/p95/p99 and worst stalls, input-to-visible-response, CPU/GPU costs and resource use; distinguish CPU completion cadence from actual display presentation.",
+    "target": "Aim for consistent 60fps where the supported machine can sustain it (16.7ms frame budget), with no recurring visible stalls on flyby; adapt to actual refresh rate and show measured limits rather than promise120fps. Quality and stable timing are both required; no lower-resolution shortcut claimed as a general fix without side-by-side evidence.",
+    "delivery": "Coder2 owns the renderer/performance slice; Coder1 integrates agreed defaults/mode/persistence adapters. Native before/after evidence, pixel/geometry parity where applicable, input/time regression tests and integrated make ci precede release. Keep current frozen route release separate.",
+    "evidence_as_of_2026_10_15": {
+      "baseline_source": "85da3230e5057d06bf667081f0298c3025877308",
+      "candidate_source": "cea677229524a939ef765c52248adecee4be3273",
+      "fullscreen_pixels": [
+        3600,
+        2260
+      ],
+      "measurement": "NSView layer-update intervals and render wall-duration proxies, not physical scanout or input-event latency.",
+      "common_visible_median_ms": [
+        33.459416,
+        25.390042
+      ],
+      "common_overall_median_ms": [
+        25.131,
+        25.024167
+      ],
+      "common_overall_p95_ms": [
+        50.770083,
+        33.512166
+      ],
+      "common_overall_worst_ms": [
+        68.06625,
+        143.382959
+      ],
+      "distinct_drawn_ticks": [
+        480,
+        291
+      ],
+      "trajectory_wall_seconds": [
+        17.158,
+        8.594
+      ],
+      "interpretation": "Common-tick geometry matches and visible-planet callback cadence improves, but overall median is essentially flat, worst stall is worse and fewer visual states are drawn. Fixed-step replay takes different wall durations; this is not a same-real-time flight smoothness proof or a stable60fps claim. Candidate is diagnostic-only, not a normal-play release.",
+      "evidence_policy": "Local temporary diagnostics are not release artefacts. Coder2 must hand over durable reproducible evidence before any release performance claim."
+    }
+  },
+  "modes": [
+    {
+      "name": "White Wireframe",
+      "stable_id": "whiteWireframe",
+      "scene": "White outline/visible-edge ships, stations, asteroids, wrecks, debris, planet and sun on black. Planet and sun have clean projected circular limb outlines with no visible filled surface, texture, cloud shading, atmosphere fill or glow. Background star points remain white. Retain BBC-style sparse geometry rather than adding an unsolicited dense latitude/longitude grid."
+    },
+    {
+      "name": "Coloured Wireframe",
+      "stable_id": "colourWireframe",
+      "scene": "Exactly the same projected geometry, edge selection, limb outlines, clipping, placement and visibility as White Wireframe, changing object ink to the chosen family/body colours. No filled planet/sun, textured surface or glow. Preserve familiar family palettes."
+    },
+    {
+      "name": "Shaded Panels",
+      "stable_id": "shadedPanels",
+      "scene": "Filled/shaded ship and station panels with current details/colours, rendered textured/lit planet and filled/drawn sun with existing appropriate glow/corona. This is the default scene mode for normal and XYZZY commanders."
+    }
+  ],
+  "defaults_and_preferences": "New commanders, reset/default preferences and saves with no display preference use Shaded Panels. Explicitly saved White/Coloured selections persist across save/load and switching views; changing mode does not alter simulation. Preserve existing stable enum raw values/order and the same mode-cycling control. Honour the earlier explicit shaded startup/showroom presentation policy; document those preview exceptions instead of accidentally forcing flight mode or silently reverting user preference.",
+  "scope": "Scene objects and celestial previews honour scene mode, including all flight directions and system/planet data preview where applicable. Keep readable coloured cockpit/dashboard text, market rows, geopolitical chart symbols and existing information colour semantics; White Wireframe describes the space scene and does not remove separately requested UI colour coding.",
+  "verified_source_gap": "Current main Game.swift commander.shipDisplayStyle falls back to whiteWireframe. CelestialRendering.swift appends a textured .planet and filled sun .point/glow graphics unconditionally, ignoring shipDisplayStyle. Ship drawing already branches across the three styles. Fix shared celestial routing and default preference, not only a ship-renderer flag.",
+  "renderer_requirements": [
+    "Reuse the same perspective/frustum/limb projection and common ship/celestial ordering for every mode. Offscreen centres with visible limbs, very close approach, camera rotations and all viewport clips must remain finite/bounded and correct.",
+    "Wireframe paths emit actual outline/line commands; they must not enqueue textured planet or filled/glowing sun commands and merely recolour them. Do not run heavy texture generation for an outline-only celestial.",
+    "Coloured wireframe is geometrically identical to white, differing only in ink. Preserve object depth/occlusion semantics and never spill scene pixels into HUD/dashboard space.",
+    "Shaded planets/suns retain current lighting, procedural identity, texture detail and safe clipping. CPU/offscreen/game-rendered media and any optimized native/Metal renderer obey the same mode contract; optimize without losing mode parity.",
+    "Mode/default selection is runtime-owned simulation preference; AppKit display reads snapshots on main actor. No simulation/physics changes or new mode-specific random draws."
+  ],
+  "ownership": {
+    "Elite Coder 2": "Own the bounded celestial wireframe renderer/mode routing and focused renderer geometry/command/pixel tests, coordinated with existing native rendering/performance work. Proposed ownership CelestialRendering.swift plus dedicated rendering tests/helper files; confirm concrete paths with G1 before edits. Supply renderer-generated same-scene captures for all three modes.",
+    "Elite Coder 1": "Own Game/Commander defaults, explicit preference persistence/migration, help/docs/mode labels, central integration and final CI. Coordinate system-data preview adapter and shared renderer boundary with Coder2/UX owner; no competing edits.",
+    "UX changes": "Compatibility notice only for active chart/status work; no second renderer implementation."
+  },
+  "documentation": "README/display-controls/in-game help compare the three modes, default Shaded Panels, celestial treatment, persisted explicit preference and shaded startup/showroom preview exceptions. Any README media changes must come from actual game renderer via make readme-media.",
+  "acceptance": [
+    "Fresh normal and XYZZY commanders, reset and preference-less legacy saves use Shaded Panels; explicitly saved white/colour styles persist.",
+    "Same seeded scene with ship, station, asteroid, planet and sun: White has only white object lines/outlines; Coloured has exactly matching geometry with coloured ink; Shaded has filled panels and rendered planet/sun.",
+    "Wireframe scene emits no planet texture/fill/sun-glow draw commands or expensive unused celestial texture generation; default shaded still renders the existing filled bodies.",
+    "Near-plane, partially visible limb, behind-camera centre, all view directions, tiny/large body and compact/full-screen cases remain bounded/clipped and do not corrupt HUD or visibility ordering.",
+    "Native optimized display and CPU/offscreen renderer produce the same intended styles; saved switches and system preview are consistent. Startup/showroom retain explicitly requested shaded previews.",
+    "Focused renderer/default/migration tests and native renderer evidence pass, then final integrated make ci; do not patch frozen signed route-release source or publish unverified media."
+  ]
+}

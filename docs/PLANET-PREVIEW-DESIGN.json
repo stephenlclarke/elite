@@ -1,5 +1,6 @@
 {
   "date": "2026-10-13",
+  "revised": "2026-10-15",
   "feature": "Generated planet preview on screen 6 / system information",
   "user_request": "Show an image of the inspected planet, drawing visual inspiration from other Elite versions.",
   "references": [
@@ -20,24 +21,24 @@
     "wide": "Keep compact fixed-size facts on the left and place a substantial planet preview on the right. Use available screen width, not the existing 680-point text block for the complete layout. Aim for 320-520 logical-point diameter when space allows; fit the body region above the dashboard/footer.",
     "narrow": "Stack the globe below the facts; preserve long PLUGH notes and mission clues. Fit the globe into the remaining content rectangle rather than covering text or controls.",
     "typography": "Continue GameTypography.scale and GameTypography.row, including full screen. Resizing may enlarge the planet and layout space, never the glyph size.",
-    "style": "Black background, existing yellow title and rule, white facts, cyan accents. Planet should be shaded and visibly spherical, not just a wireframe circle."
+    "style": "Black background, existing yellow title and rule, white facts, cyan accents. In the default Shaded Panels mode, render a visibly spherical shaded planet. White and Coloured Wireframe modes instead use the same projected limb-outline geometry in white or the body's colour, with no filled/textured surface. Follow DRAWING-MODES-DESIGN.json; system information is not a forced-shaded preview exception."
   },
   "visual_design": {
-    "default": "Recognisable landmasses, oceans, sparse clouds, polar caps where appropriate, a thin atmosphere rim, one directional light and a gradual day/night boundary. Slow rotation helps reveal geography.",
+    "default": "In Shaded Panels mode: recognisable landmasses, oceans, sparse clouds, polar caps where appropriate, a thin atmosphere rim, one directional light and a gradual day/night boundary. Slow rotation helps reveal geography. Wireframe modes use bounded limb outlines and bypass textured surface generation.",
     "lave": "Original illustrative temperate/agricultural world: blue oceans, green land, white clouds and a thin blue atmosphere. Do not label invented coastlines or climate as historical fact.",
     "variation": "Vary terrain scale, coastlines, palette, ocean coverage, clouds and polar extent per system. Use existing physical/description data where available. Economy may guide an artistic preset but government is not a physical surface property; keep geopolitical colouring on maps/labels rather than painting entire worlds red or green.",
     "unknown_data": "Missing surface details are procedural illustration, not new gameplay or authoritative planetary statistics. A small Generated planet view caption is sufficient.",
     "determinism": "Key appearance by galaxy number, StarSystem.id and all SystemSeed words with a stable documented hash. Do not use Swift Hasher, unseeded random values, or the simulation RNG. Returning to the planet preserves geography; animation changes orientation only."
   },
   "integration": {
-    "screen": "Display.presentation dispatches .system into compactScreen in Sources/EliteCore/CompactScreens.swift. Extend this path; account for the legacy system renderer in Sources/EliteCore/Display.swift if still used by exports/tests.",
+    "screen": "Use the .system screen's current Display.presentation dispatch and system-information renderer. Keep any legacy system renderer/export path consistent; do not depend on an obsolete renderer filename.",
     "selection": "Use game.inspectedSystem and game.inspectedGalaxy, matching the displayed data. Do not use currentSystem or targetSystem when browsing another galaxy. Handle all 8 galaxies and PLUGH.",
     "rendering": "Implement in the game renderer using reusable native geometry or a cached procedurally generated texture. Do not ship a single static planet picture for all systems or require online image generation at runtime. Honour existing Frame/world graphics conventions.",
     "ownership": "Pure Sendable appearance data or cached resources with clear ownership. GameRuntime remains the owner of simulation state; AppKit drawing stays on the main actor. No simulation mutation from rendering.",
     "performance": "Cache terrain/texture by stable identity; animate the lightweight view, not expensive noise generation every frame. Honour pause/reduced animation settings when supported. No render-time network/file I/O."
   },
   "acceptance": [
-    "Screen 6 visibly shows a shaded planet while docked and in space.",
+    "Screen 6 visibly shows the planet while docked and in space: shaded/textured in Shaded Panels, white or coloured limb outlines in the corresponding wireframe modes.",
     "Selecting another planet or galaxy updates globe and facts together; returning preserves its terrain.",
     "Lave and several other systems are visibly distinct; same name in another galaxy has its own stable identity.",
     "Compact fonts stay the same logical size in small windows and full screen.",

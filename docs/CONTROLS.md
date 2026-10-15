@@ -86,14 +86,20 @@ Left/Right or clicking selects a planet. Docked charts 4/5 include all planet fa
 | Local-chart range | Z |
 | Open routes with fitted navigation computer | N |
 | Toggle automatic top-five profit scan | P on either chart or the navigation screen |
-| Choose route | Up/Down then Return |
+| Preview route candidate | Up/Down, or click a candidate |
+| Commit previewed route | Return, or click Set route |
+| Switch route-preview map scale | 4: galaxy / 5: local |
 | Read route details | Option-Up/Down |
 | Clear route | C |
-| Return from routes | Escape |
+| Cancel route preview, preserving active plan | Escape, or click Back |
 
 Profit scan starts enabled by XYZZY and its switch is saved with the commander. It recomputes up to five positive-profit destinations within the current fuel and jump limit. Gold rings and numbers 1-5 highlight them on the current galaxy charts; navigation details list credit estimates or explain that none qualify. Estimates compare sellable carried cargo with selling here, then add affordable exports using available hold space and current stock, at conservative destination prices. They exclude fuel costs and danger; no cargo is bought, route selected or jump started by scanning.
 
-Choosing a route does not jump. Dock at each stop, launch, and use H for the next jump. Foreign-galaxy browsing cannot initiate actual travel or route planning.
+N opens route alternatives with a graphical preview on either the galactic or short-range chart. Up/Down or clicking a candidate previews it without replacing the active plan. Return or **Set route** commits it; **Back** or Escape cancels the preview and preserves the active plan. Short-range legs clip to the local map, with an offscreen-continuation cue. 4/5 switches map scale while keeping the same candidates and preview.
+
+Alternatives compare Fewest Jumps, Safest and Trade Opportunities, with a Best Cargo Sale detour when it improves estimated sale return. Identical paths combine their labels. Basic searches within installed fuel capacity in LY plus 7 LY; Advanced adds 14 LY; Military searches the whole current galaxy. Legal hops respect the fitted computer cap: the first leg uses actual remaining fuel, and later legs assume station refuelling to installed capacity. Risk and conservative trade/cargo estimates remain summaries, not guaranteed profits or affordable refuelling.
+
+Setting a route does not jump. Successful Set route cancels any pending jump countdown before choosing the new next hop and reports that cancellation; stale candidates and Back preserve the countdown. Dock at each stop, launch, and use H for the next jump. Foreign-galaxy browsing cannot initiate actual travel or route planning.
 
 ## Ship showroom
 
