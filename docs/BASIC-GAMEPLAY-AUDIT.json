@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-15",
+  "scope": "Read-only source audit of basic gameplay requested by user. No runtime scenarios executed and no implementation changes made.",
+  "conclusion": "Basic combat, government-weighted random hostile encounters and legal labels exist. Mining and the described policing/security simulation are absent.",
+  "checks": [
+    {
+      "behaviour": "Pirates around anarchic planets",
+      "status": "partial",
+      "actual": "Arrival places one hostile Sidewinder when government index is below 4. Generic periodic spawning uses (randomByte & 7) > government, so anarchy is 7/8 hostile per spawn draw and corporate state 0/8. No distance-to-planet, patrol route, pirate base, traffic prey selection or pack formation.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:912",
+        "Sources/EliteCore/Game.swift:1079",
+        "Sources/EliteCore/Game.swift:1199"
+      ]
+    },
+    {
+      "behaviour": "Pirates in deep space",
+      "status": "basic_random_encounters_only",
+      "actual": "Generic spawn runs about every 18 simulation seconds below the body cap (10 normal, 18 executive). Hostiles appear 5000 units ahead irrespective of station/planet/sun geography and pursue/damage the player. No separate deep-space population model or NPC-versus-NPC piracy.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:1079",
+        "Sources/EliteCore/Game.swift:1148",
+        "Sources/EliteCore/Game.swift:1199"
+      ]
+    },
+    {
+      "behaviour": "Asteroid mining between planet and star",
+      "status": "absent",
+      "actual": "Launch creates one asteroid at a fixed local position. Periodic spawn creates Sidewinders, Cobras or cargo, not asteroid fields. Asteroid destruction removes it without ore/fragments. Mining Laser exists as equipment/damage but has no extraction rules. Cargo scooping accepts cargo or inactive Thargons; cargo always maps to commodity 0, not mined minerals.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:821",
+        "Sources/EliteCore/Game.swift:1169",
+        "Sources/EliteCore/Game.swift:1199",
+        "Sources/EliteCore/CargoScooping.swift:3",
+        "Sources/EliteCore/LaserSpecification.swift:4"
+      ]
+    },
+    {
+      "behaviour": "Police chase criminals or fugitives",
+      "status": "absent",
+      "actual": "Commander legal status exists but is not used to create police or choose pursuit targets. Viper hull exists and is referenced by a mission spawn-suppression guard, but normal spawn paths do not launch patrol Vipers. General AI has no per-NPC pursuit target or police role/state machine.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:1148",
+        "Sources/EliteCore/Game.swift:1199",
+        "Sources/EliteCore/NavalMissions.swift:165",
+        "Sources/EliteCore/Geometry.swift:120"
+      ]
+    },
+    {
+      "behaviour": "Station attack triggers police swarm",
+      "status": "absent",
+      "actual": "Lasers and player missile acquisition explicitly skip station targets; station-directed firing does not generate an attack incident/alarm or defensive launches. Station collision/docking checks are separate from security response.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:945",
+        "Sources/EliteCore/Game.swift:1102",
+        "Sources/EliteCore/Game.swift:1131"
+      ]
+    },
+    {
+      "behaviour": "Police investigate player shooting clean ships near station",
+      "status": "absent_and_legal_bug",
+      "actual": "No station security zone, witnesses, crime report or police investigation. Laser hit sets the victim hostile before kill resolution. Kill reward/penalty relies on current hostile flag, so an initially clean laser victim can lose the clean-kill penalty and even give the generic hostile bounty. Missile kill of a still-nonhostile victim can add legal status, but still no police response.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:1106",
+        "Sources/EliteCore/Game.swift:1179",
+        "Tests/EliteCoreTests/EliteTests.swift:263"
+      ]
+    },
+    {
+      "behaviour": "Police investigate an attack on player near station",
+      "status": "absent",
+      "actual": "Hostile AI directly damages the player; there is no attacker offence report, station alarm, patrol intervention, protection or NPC-on-NPC pursuit.",
+      "evidence": [
+        "Sources/EliteCore/Game.swift:1129",
+        "Sources/EliteCore/Game.swift:1148"
+      ]
+    }
+  ],
+  "existing_related_features": [
+    "Normal/executive equipment, combat, missiles and ECM",
+    "Cargo scooping and inactive Thargon collection",
+    "Solar fuel scooping with heat/overheat hazards (not asteroid mining)",
+    "Restricted-cargo legal marking on launch; Clean/Offender/Fugitive display",
+    "Constrictor/plans and Blackjack mission-specific encounters, independent of general police/pirate ecology"
+  ],
+  "bugs": [
+    {
+      "priority": "high",
+      "title": "Clean victim becomes hostile before crime/bounty decision",
+      "trigger": "Player fires laser at a clean normal ship; fireLaser sets hostile=true. resolveDestroyed uses that new flag for both bounty and legal penalty.",
+      "impact": "Self-defence hostility is conflated with criminal status/first aggressor; player can avoid clean-kill penalty and obtain hostile bounty.",
+      "recommended_model": "Track role, legal status/bounty, first aggressor, victim and combat intent separately. Record crime when unlawful attack occurs, not only after destruction; preserve lawful self-defence."
+    }
+  ],
+  "suggested_next_work_in_order": [
+    "Separate combat hostility from legal status and record attack/destruction attribution correctly.",
+    "Add station security zone and incident/witness rules with police targets, prioritisation, response timing, reinforcements and de-escalation.",
+    "Add government- and geography-aware traffic/pirate populations, including deep-space encounters and NPC-versus-NPC interactions.",
+    "Add deterministic mineable asteroid fields between planet and star, mining-laser fragmentation and typed scoopable ore cargo."
+  ],
+  "validation_needed_for_implementation": [
+    "Lawful clean victim first shot vs self-defence; crime survives victim retaliation and destruction.",
+    "Missile/laser/bomb incidents use consistent aggressor and bounty rules.",
+    "Offender/fugitive pursuit chooses actual target, including NPC criminals.",
+    "Attack station: first alarm and bounded reinforcement wave, not an unbounded spawn loop.",
+    "Attack clean craft inside/outside detection range; police help clean player under attack.",
+    "Anarchy vs lawful system and station vs lane vs deep space populations with seeded random draws.",
+    "Mining laser yields typed fragments; wrong laser, depleted asteroid, full hold and repeated collection handled.",
+    "Actor-isolated simulation ownership and make ci for implementation."
+  ],
+  "source_sha256": {
+    "Sources/EliteCore/Game.swift": "f11450f71bf3611ae50ca34e0d1542a3ba5c443160cd7c7a5ab27ab04e705ce9",
+    "Sources/EliteCore/Geometry.swift": "976e2306907c6c1cb38230f30dd5f3d0df3fff965823c909df9e54ce5965741f",
+    "Sources/EliteCore/NavalMissions.swift": "d5ee195151778f739b28a44a01e894b7ea5ebc43af37fa1bdff55a40b7a25c28",
+    "Sources/EliteCore/NavalCombat.swift": "15b97b54bfb881b55b7c6bec3ff76b4d14c88fe8f8711cce903c6c13a6749247",
+    "Sources/EliteCore/CargoScooping.swift": "b1c1e008992ce87680223c9195d392d4dc3366b77c382b1e91d5c50f3c18907e",
+    "Sources/EliteCore/CelestialFlight.swift": "f45b178cae99ffe4960164eaee9595dff67e55ae5a7ce7da3bfa898e8ef9fed6",
+    "Sources/EliteCore/LaserSpecification.swift": "1c519819510d94f7a1a44ce23398c22092b88edfbdd08e5ca51b42b4845d207c",
+    "Tests/EliteCoreTests/EliteTests.swift": "c404583e5b2348992652f5a8da064e0b6c91fd9fc5904a38bd20948b2bc5615c"
+  }
+}

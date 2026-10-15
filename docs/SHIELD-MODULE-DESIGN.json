@@ -1,0 +1,113 @@
+{
+  "title": "Basic Shield with add-on modules",
+  "version": 5,
+  "date": "2026-10-15",
+  "status": "Planned implementation requirements; not a claim of released gameplay. Published player documentation and release notes identify available features.",
+  "request": "Modify shields to be a basic shield with add-on modules like the targeting computer, and reflect this on all screens and in documentation.",
+  "model": {
+    "base": "Basic Shield is the hull's existing standard front/rear shield system. Its unmodified capacity and recharge come from authoritative ship performance; show it as fitted, with no invented additional purchase.",
+    "capacity_modules": [
+      "Basic II Shield Module",
+      "Intermediate Shield Module",
+      "Intermediate II Shield Module",
+      "Advanced Shield Module",
+      "Advanced II Shield Module",
+      "Elite Shield Module"
+    ],
+    "category_names": [
+      "Basic",
+      "Basic II",
+      "Intermediate",
+      "Intermediate II",
+      "Advanced",
+      "Advanced II",
+      "Elite"
+    ],
+    "rename_mapping": [
+      {
+        "previous": "Basic Shield",
+        "category": "Basic",
+        "role": "Hull standard shield"
+      },
+      {
+        "previous": "Pulse Shield Booster / Pulse Shield Module",
+        "category": "Basic II",
+        "role": "Capacity module"
+      },
+      {
+        "previous": "Mining Shield Booster / Mining Shield Module",
+        "category": "Intermediate",
+        "role": "Capacity module"
+      },
+      {
+        "previous": "Beam Shield Booster / Beam Shield Module",
+        "category": "Intermediate II",
+        "role": "Capacity module"
+      },
+      {
+        "previous": "Military Shield Booster / Military Shield Module",
+        "category": "Advanced",
+        "role": "Capacity module"
+      },
+      {
+        "previous": "Capital Ship Shield Booster / Capital Ship Shield Module",
+        "category": "Advanced II",
+        "role": "Elite reward capacity module"
+      }
+    ],
+    "progression": "Use the seven canonical grades and one authoritative monotonic actual-stat template table. Applied compatible upgrades accumulate real stats and promote the same component when next-grade requirements are met, retaining excess. Earlier non-monotonic laser-damage-derived multipliers are legacy migration evidence, not valid new ascending thresholds. Preserve saved effective strength and value. Prices retain their existing baseline unless an explained template/valuation correction is required; shop purchases require all prior module purchases.",
+    "installation": "One effective graded capacity component occupies the capacity-amplifier slot; independent compatible feature/recharge modules occupy their declared slots. Do not stack every grade multiplier. Actual installed grade, intrinsic upgrades and paid prerequisite history are distinct state. Preserve actual component instance through promotion and transfer.",
+    "salvaged_modules": "Recovered capacity/recharge/efficiency/feature modules fit through explicit compatible slots with the salvage design's limits and immediate Fit now/Store workflow. Compare exact before/after values and feature changes. Distinguish module ownership in cargo from installation. PLUGH alien shield fittings use its alien workshop rules.",
+    "capital": "Advanced II is the former Capital reward module. Keep the combat-Elite reward/earned flag, legacy migration and PLUGH availability policy separate from the new terminal Elite equipment grade. Preserve the Advanced II to Advanced capacity ratio in the corrected template where compatible with strength-preserving migration. XYZZY grants maximum Elite hardware without setting combat rank or claiming an earned reward.",
+    "calculation": "Compute Basic Shield plus installed module effects once from immutable base performance, then apply to actual damage/recharge/HUD/AI and comparisons. No repeated compounding on load or fit and no free healing by toggling modules; preserve current shield fraction safely when effective capacity changes."
+  },
+  "screen_requirements": [
+    {
+      "screen": "Equip Ship",
+      "change": "Use Shields heading, Basic Shield fitted/base specification row, and indented named capacity-module rows. Include salvaged feature/recharge module slots where supported. Right-align price/status, explain upgrade/replacement/prerequisites and retain keyboard/pointer/scroll access. No misleading generic shield system duplicates."
+    },
+    {
+      "screen": "Commander Status and equipment summaries",
+      "change": "Show Basic Shield and installed shield modules as a hierarchy, with effective front/rear capacity and recharge. Do not show only a bare SHIELDS: CAPITAL summary. Salvage hold separately lists owned unfitted items."
+    },
+    {
+      "screen": "Cockpit HUD",
+      "change": "Preserve compact readable Front Shield/Rear Shield charge bars normalized against effective module-adjusted capacity. Module summary/details use consistent names and effective stats without turning the HUD into a long equipment list."
+    },
+    {
+      "screen": "Target information",
+      "change": "Where the targeting capability discloses shields, show actual effective strength/recharge and known Basic Shield/module details. Honour tier/module disclosure rules rather than granting hidden information to Basic targeting."
+    },
+    {
+      "screen": "Showroom and ship comparison/trade",
+      "change": "Distinguish stock Basic Shield values, current installed modules and effective fitted values. Transfer compatible removable modules explicitly and preserve earned reward state; do not copy hull-bound modifications for free."
+    },
+    {
+      "screen": "Salvage, immediate fitting and PLUGH services",
+      "change": "Name shield add-on modules consistently and show exact slot compatibility, effects, replacement and costs. Fit/Store/Sell has one authoritative transaction and correct held-versus-installed status."
+    },
+    {
+      "screen": "Help, rewards, notifications and any remaining equipment display",
+      "change": "Audit all shield/booster strings and use Basic Shield plus module terminology in player-visible messages. Reward/fitting notifications use shared text/voice queue and fixed small typography at all window sizes."
+    }
+  ],
+  "documentation": "Update README, equipment/shield, targeting, salvage and PLUGH guides, in-game help and shop descriptions together. Include the seven-grade ladder, actual template values, stat-based promotion/excess, sequential purchase requirements, recharge/feature slots, recovered/alien modules, Advanced II combat-Elite reward versus Elite equipment quality, XYZZY and legacy migration. Derive numbers from authoritative implementation data and distinguish planned from shipped features.",
+  "compatibility": "Accept old '<name> Shield Booster' equipment names and normalize to the module model without losing strengths, current charge fraction, equipment entitlement, cash, legal state, mission state or earned Capital reward. Internal compatibility accessors may remain. Every renderer and simulation consumer must agree on effective shield stats.",
+  "ownership": {
+    "Elite Coder 1": "Own shield/equipment/runtime/save/purchase/controller/reward integration, player-visible naming across shared screens and documentation. Coordinate with G1 gameplay/targeting module work; keep separate from frozen route release source.",
+    "Elite Coder 2": "Supply shield salvage/alien item definitions and slot/effect metadata through agreed contracts, plus independent loot/effect test evidence. Do not concurrently edit central equipment/save/rendering files.",
+    "Mission researcher": "Compatibility review or separately transferred independent tests when free and both preferred coders busy; protect mission-dependent shield/weapon behaviour."
+  },
+  "acceptance": [
+    "Basic and every module grade show correct base-plus-module equipment/status data, real monotonic template stats, actual prices and full prior-purchase prerequisites.",
+    "A recovered compatible shield module can be fitted immediately; held/unfitted item never changes shields. Capacity and recharge effects are bounded and match real combat/AI/HUD.",
+    "Existing booster saves preserve effective shields and earned Capital state; repeated fit/unfit/save/reload cannot compound stats, heal freely or duplicate modules/rewards.",
+    "Compact/normal/full-screen views preserve the fixed small font, right-aligned prices, all rows reachable and no overlap/clipping; showroom and target details agree with actual mechanics.",
+    "Documentation, voice/text notifications, XYZZY defaults and PLUGH fittings use the same names and verified effects. Focused regressions and final integrated make ci gates pass."
+  ],
+  "related_specifications": [
+    "COMPONENT-PROGRESSION-DESIGN.json",
+    "EQUIPMENT-PURCHASE-PROGRESSION-DESIGN.json",
+    "SALVAGE-GAMEPLAY-DESIGN.json"
+  ]
+}

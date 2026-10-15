@@ -1,0 +1,69 @@
+{
+  "title": "Accumulating component upgrades and automatic grade promotion",
+  "version": 3,
+  "date": "2026-10-15",
+  "status": "Planned implementation requirements; not a claim of released gameplay. Published player documentation and release notes identify available features.",
+  "request": "Applied upgrades increase actual compatible component stats until the next grade template is met, then promote the same component and retain excess progress. Advanced II shields can reach Elite.",
+  "precedence": "Real stat-based promotion replaces display-only grading and incompatible lifetime caps. Purchases separately obey the full prerequisite graph; promotion never fabricates purchase receipts. New monotonic templates must preserve saved actual strength and accumulated value.",
+  "shield_grades": [
+    "Basic",
+    "Basic II",
+    "Intermediate",
+    "Intermediate II",
+    "Advanced",
+    "Advanced II",
+    "Elite"
+  ],
+  "names": "Canonical shield display names use Intermediate and Intermediate II, following the latest user purchase sequence. Intermediary/Intermediary II and old Pulse/Mining/Beam/Military/Capital labels are legacy aliases. Equipment Elite is distinct from commander combat rank.",
+  "component_state": "Each fitted/stored component has a stable instance ID, compatible family, authoritative grade, immutable family base/template version, accumulated intrinsic stat improvements and feature modules, plus applied-item receipt IDs. Grade is derived/reconciled when a valid upgrade transaction changes stats, not incremented each frame or inferred from a mutable display string.",
+  "upgrade_transaction": [
+    "Inspect a recovered compatible upgrade and show actual before/after values, any newly enabled feature, resulting grade and progress to next grade. Ordinary upgrades can be fitted immediately after salvage, including in space; alien fittings use PLUGH as already specified.",
+    "Apply its finite declared improvement to the selected physical component and consume the upgrade item once. Keep accumulated improvements intrinsic to that component; do not retain a second reusable item that can also be sold or fitted elsewhere.",
+    "Compare the component's real effective graded statistics with the next compatible grade's authoritative template. On reaching or exceeding all required graded thresholds, promote its item identity/specification to that grade. Merely accumulating an arbitrary number of upgrades or changing a label is insufficient.",
+    "Promotion keeps the same instance and provenance, existing compatible features, accumulated stats and receipts. It must not reset improvements, refill shields/fuel, create ammunition or charge the shop price of the new item.",
+    "Carry excess improvements forward toward the next grade. One large upgrade may cross several thresholds; resolve this deterministically once, with one concise final promotion notification and full history records.",
+    "If the upgrade improves only a non-grading feature, preserve that real improvement but do not falsely claim that all next-grade statistics are met. Show which threshold remains. Specialty capabilities retain their module/ownership requirements.",
+    "At Elite use an explicitly defined terminal family envelope and allow only compatible feature/axis improvements within its declared limits. Display maximum grade and cap details; do not create unnamed levels or allow unlimited compounding."
+  ],
+  "authoritative_templates": {
+    "owner": "Elite Coder 1, coordinated with Coder2 item/effect data before the next immutable contract checkpoint",
+    "requirements": [
+      "One shared data authority defines grade names, ordered templates, required axes, bounds, valuation and interpolation for each compatible component family. UI, fitting, simulation, save migration and tests use it.",
+      "Next-grade required benefit axes never decrease, and at least one improves. Reverse-cost axes such as heat/energy demand/spool time use lower-is-better thresholds. Optional specialty features do not silently replace required purchased targeting add-ons.",
+      "Capacity and recharge are actual shield stats. Grade progress shows both when both are required; a recharge-only upgrade must not pretend capacity increased. Preserve front/rear-specific improvements and require the documented system-level thresholds.",
+      "Grade promotion is within a compatible component family. Do not turn a Mining Laser into a combat laser merely because damage crosses a number or remove its extraction specialization. Do not grant separate Mining/Salvage targeting modules from improving computer speed/precision alone.",
+      "Replace the earlier generic 30-percent lifetime limit with per-grade/family limits that permit promotion, plus a finite Elite terminal envelope. Once applied, legacy cap rules must not clip already-earned stats during promotion.",
+      "Record the concrete monotonic shield table and its trade/upgrade values with the implementation handoff, then publish exact stats in the equipment documentation. Preserve existing item prices/earned rewards unless their change is explicitly necessary and explained as part of progression; do not use raw legacy multipliers as unvalidated thresholds."
+    ],
+    "verified_legacy_problem": "Current source LaserKind damage is Pulse=15, Mining=50, Beam=15, Military=23. ShieldBooster computes 1.5 times damage/Pulse, giving legacy multipliers 1.5, 5, 1.5, 2.3 and Capital=6.9. These cannot be used unchanged as an ascending Basic II/Intermediary/Intermediary II/Advanced/Advanced II threshold sequence. Correct the progression table without weakening a saved component's actual stats.",
+    "migration": "Retain exact saved effective stats, upgrades, cargo, cash, legal/mission state, installed module entitlements and Capital earned flag. Derive appropriate progress/grade from the new templates, preserving excess or grandfathered improvements. Never downgrade real strength to match a display category or silently erase earned value. Document label/grade normalization when legacy names and stats disagree."
+  },
+  "rewards_and_installation": {
+    "elite_reward": "The existing combat-Elite reward remains the Advanced II module formerly named Capital. Component upgrades can then progress Advanced II into Elite shield grade without requiring a new combat rank or claiming the reward again. Keep actual rank/earned flag separate from equipment quality.",
+    "xyzzymode": "User's existing maximum-equipment rule means new maximum-grade shield equipment in XYZZY is Elite once this progression is implemented. This grant does not set combat rank, earned reward state or unlimited cash. Do not regress higher-quality saved components.",
+    "ship_exchange": "Component grade and accumulated intrinsic effects travel with the actual compatible transferred module, not with a globally copied commander bonus. Hull-bound changes remain with their hull. Selling/removing an integrated upgrade cannot produce duplicated component instances or reusable consumed loot."
+  },
+  "presentation": {
+    "equipment_and_status": "Basic Shield plus module hierarchy remains. Show the actual current graded component, effective stats, applied improvements and next-grade progress; e.g. Basic II Shield - capacity 420 / next threshold 500, recharge 1.2 / 1.5. Example numbers are illustrative only. At promotion show the new actual item name on every screen.",
+    "fitting": "Preview whether the selected upgrade changes grade, which metrics improve, carried excess and remaining thresholds. State any compatibility or cap refusal before consuming the item.",
+    "hud_and_comparisons": "HUD normalization, damage/recharge, target disclosure, showroom/trade comparisons, salvage inventory and PLUGH services use the same promoted item and real stats. Maintain fixed small fonts and compact layout.",
+    "voice_and_docs": "Display and voice a one-time '<component> upgraded to <grade>' through the existing event queue. Update README, shield/equipment/targeting/salvage/PLUGH guides and in-game help with the full seven-grade ladder, actual thresholds, fit examples, excess carry, family-specific limits, reward/rank distinction and migration. Label pending behaviour until integration ships."
+  },
+  "ownership": {
+    "Elite Coder 1": "Authoritative template/stat/promotion/fit/save/migration/valuation integration, UI/docs/voice, shared component-instance ownership. Reconcile old shield damage-ratio progression in the separate gameplay feature, not frozen route release.",
+    "Elite Coder 2": "Recovered upgrade item/effect metadata, finite source-weighted loot, component-family/quality/threshold contract review and independent seeded tests. Avoid central shared-file edits; agree immutable template/effect checkpoint with G1.",
+    "Mission researcher": "Compatibility review or specifically transferred independent tests when available; preserve mission-specific shield/damage/provenance and reward rules."
+  },
+  "acceptance": [
+    "Upgrade Basic through Basic II, Intermediate, Intermediate II, Advanced, Advanced II and Elite using real finite compatible items; promotion occurs at the declared required stat thresholds.",
+    "A below-threshold upgrade changes actual stats and progress but not grade. Exact-threshold, excess, multiple-grade and reverse-cost improvements resolve correctly without loss or duplicate notifications.",
+    "Mixed capacity/recharge upgrades show truthful remaining thresholds. Mining/Salvage targeting entitlements and weapon specializations are not accidentally granted/replaced by numeric promotion.",
+    "Repeated application/save/reload/failure/retry/transfer cannot compound already-applied effects or clone items. Promotion preserves current shield fraction and finite ammo/fuel.",
+    "Legacy non-monotonic booster saves preserve actual strength and earned state through the new table. Component Elite is separate from combat Elite; Advanced II reward is one-time and XYZZY grants maximum hardware independently.",
+    "All shops/status/HUD/details/target information/showroom/salvage/PLUGH/voice/docs reflect the same actual graded item and stats. Focused boundary regressions and final integrated make ci pass."
+  ],
+  "related_specifications": [
+    "EQUIPMENT-PURCHASE-PROGRESSION-DESIGN.json",
+    "SHIELD-MODULE-DESIGN.json"
+  ]
+}
