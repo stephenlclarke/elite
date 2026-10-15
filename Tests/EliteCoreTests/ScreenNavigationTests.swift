@@ -193,11 +193,11 @@ import Testing
   game.viewportHeight = 518
   game.screen = .inventory
   game.key("k")
-  #expect(PlayerHelp.pages(for: game).first!.rows.contains("ALL ROWS VISIBLE"))
+  #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
   game.key("escape")
   game.key("8")
   game.key("k")
-  #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
+  #expect(PlayerHelp.pages(for: game).first!.rows.contains("ALL ROWS VISIBLE"))
   game.key("escape")
   game.key("6")
   game.showroom.selection = "SH013"

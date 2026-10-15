@@ -24,10 +24,10 @@ public enum PlayerHelp {
           title: game.docked ? "STATION SCREENS" : "SCREENS IN SPACE",
           rows: [
             game.docked ? "0 - LAUNCH" : "0 / 1 / 2 / 3 - FRONT/REAR/LEFT/RIGHT",
-            game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
+            game.docked ? "3 - EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
             game.docked ? "4 / 5 - CHARTS WITH PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
             game.docked ? "6 - SHIP SHOWROOM" : "7 - MARKET PRICES",
-            game.docked ? "7 - MARKET PRICES" : "8 / 9 - STATUS / INVENTORY",
+            game.docked ? "7 - MARKET: BUY / SELL" : "8 / 9 - STATUS / INVENTORY",
             game.docked ? "8 / 9 - STATUS / INVENTORY" : "ESC - PREVIOUS SCREEN / COCKPIT",
             "ARROWS - MOVE; RETURN - CHOOSE",
             "ESC - BACK ONE LEVEL; K - HELP",
@@ -103,14 +103,44 @@ public enum PlayerHelp {
       .init(
         title: "SYSTEM DATA",
         rows: ["UP / DOWN / SCROLL - LONG PLANET DATA", "ESC - PREVIOUS SCREEN", "K - HELP"])
-    case .buy, .sell:
+    case .market where !game.docked:
       .init(
-        title: screen == .buy ? "BUY CARGO" : "SELL CARGO",
+        title: "MARKET PRICES",
+        rows: [
+          "UP / DOWN / SCROLL - BROWSE PRICES",
+          "DOCK TO BUY OR SELL IN MARKET (7)",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .status:
+      .init(
+        title: "COMMANDER STATUS",
+        rows: [
+          "READINESS, LOCATION, CASH AND LEGAL STATUS",
+          "9 - INVENTORY: CARGO AND FULL FITTINGS",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .inventory:
+      .init(
+        title: "INVENTORY",
+        rows: [
+          "CARGO, MISSION PROPERTY AND FITTED EQUIPMENT",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          "OPTION-UP/DOWN - PAGE LONG LISTS",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .buy, .sell, .market:
+      .init(
+        title: "MARKET: BUY / SELL",
         rows: [
           "UP / DOWN / SCROLL - SELECT PRODUCT",
-          screen == .buy ? "RETURN - BUY ONE UNIT" : "RETURN - SELL ONE UNIT",
+          screen == .sell ? "RETURN - SELL ONE UNIT" : "RETURN - BUY ONE UNIT",
           "COLOUR: CATEGORY; ACTION: AVAILABILITY",
-          "1 / 2 - SWITCH BUY / SELL",
+          "TAB / CLICK BUY OR SELL - MODE",
+          "CLICK TRADE BUTTON - ONE UNIT",
+          "LEFT - SELL ONE; RIGHT - BUY ONE",
           "ESC - PREVIOUS SCREEN",
         ])
     case .equipment:

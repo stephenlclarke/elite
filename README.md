@@ -55,10 +55,11 @@ Start with **numbers, arrows, Return, Escape and K**. Numbers open game areas, a
 | Keys | At a station | In space |
 | --- | --- | --- |
 | 0 | Launch | Front view |
-| 1 / 2 / 3 | Buy / sell / equipment | Rear / left / right view |
+| 3 | Equipment | Right view |
+| 1 / 2 | Use Market (7) | Rear / left view |
 | 4 / 5 | Charts with full planet information | Galactic / short range chart |
 | 6 | Ship showroom | System data and planet view |
-| 7 / 8 / 9 | Prices / commander / cargo | Prices / commander / cargo |
+| 7 / 8 / 9 | Market / status summary / inventory | Prices / status summary / inventory |
 
 For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**, **Return fires**, and **Tab selects a target**. Selecting the station engages automatic docking with a suitable targeting computer; Q returns to manual control. The trackpad controls are below.
 
@@ -182,7 +183,9 @@ Military identifies the actual craft that launched a player-targeted missile and
 
 ## Trading colours
 
-Buy Cargo, Sell Cargo and Market Prices use consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD, RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
+The unified Market (7) shows prices, stock and holdings together. Click Buy/Sell or press Tab to choose a mode, then Return or Buy one/Sell one trades a unit. Left sells one and Right buys one. Keys 1/2 remain mode aliases, rather than separate destinations in the docked Screens menu. Commander Status (8) summarises readiness, location, cash and legal standing; Inventory (9) contains cargo, mission property and the full equipment/laser list.
+
+The Market uses consistent category colours: green Agricultural, cyan Consumer, yellow Industrial, blue Materials and orange Restricted cargo. A labelled legend explains the colours. Slaves, narcotics and firearms are the restricted goods in the implemented launch-legal-status rules. Category colours do not predict profit or imply that other goods are buyable. Separate Action text states BUY, SELL, NO STOCK, NO CASH, HOLD FULL, NONE HELD, RESERVED or DOCK TO TRADE, alongside price, stock and hold counts. Arrows or scrolling browse every commodity; category colours also appear in Inventory.
 
 ## Navigation, fuel storage and charts
 
