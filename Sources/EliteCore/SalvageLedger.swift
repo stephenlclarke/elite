@@ -631,6 +631,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
         axis == selectedAxis, case .technology(let id, _, _) = lots[0].content,
         let definition = SalvageDefinitions.definition(id: id)
       else { return false }
+      if case .commanderResearch = target, definition.category != .computerCore { return false }
       if case .laser(_, let targetMount, _) = target, targetMount != mount { return false }
       if let location,
         !validEquipmentLocation(
@@ -706,18 +707,23 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     case .hull(let hull): guard location.hullInstanceID == hull else { return false }
     case .laser(let hull, let facing, _):
       guard location.hullInstanceID == hull, location.slot == .laser(facing) else { return false }
-    case .commanderResearch: break
+    case .commanderResearch: guard definition.category == .computerCore else { return false }
     }
     switch definition.category {
     case .computerCore:
       return [.navigation, .targetingCore, .targetingMining, .targetingSalvage].contains(
         location.slot)
         && axis.map { [.scanningRange, .acquisitionError, .automationError].contains($0) } == true
-    case .driveTechnology: return location.slot == .drive
+    case .driveTechnology:
+      if let axis, [.spoolDuration, .jumpFuelCost, .jumpReach].contains(axis) {
+        return location.slot == .navigation
+      }
+      return location.slot == .drive
     case .laserTechnology:
       guard let mount else { return false }
       return location.slot == .laser(mount)
     case .shieldTechnology: return location.slot == .shield
+    case .energyTechnology: return location.slot == .energy
     case .recoveredMissile:
       if case .missilePylon = location.slot { return true }
       return false

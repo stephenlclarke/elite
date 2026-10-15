@@ -810,4 +810,79 @@ struct SalvageLedgerTests {
         action: .research, binding: changed) == nil)
   }
 
+  @Test func energyAndNavigationEffectsBindTheirActualDeviceSlots() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger, section: section(technology: ["energy-technology", "drive-technology"], seconds: 1),
+      operation: 1)
+    var cargo = Array(repeating: 0, count: 17)
+    let lots = ledger.pendingLots
+    for lot in lots { _ = collect(&ledger, lot, cargo: &cargo) }
+    let hull = UUID()
+    for (lot, axis, correct, wrong) in [
+      (
+        lots[0], SalvageUpgradeAxis.energyRecharge, ComponentFittingSlot.energy,
+        ComponentFittingSlot.drive
+      ),
+      (lots[1], .jumpReach, .navigation, .drive),
+      (lots[1], .spoolDuration, .navigation, .drive),
+      (lots[1], .maximumSpeed, .drive, .navigation),
+    ] {
+      func binding(_ slot: ComponentFittingSlot) -> SalvageTransactionBinding {
+        .equipment(
+          target: .hull(instance: hull), expectedComponentInstanceID: UUID(),
+          templateVersion: 1, axis: axis, feature: nil,
+          location: .init(hullInstanceID: hull, slot: slot))
+      }
+      #expect(
+        ledger.prepareSettlement(
+          command: UUID(), items: [lot.identity],
+          action: .fit(axis: axis, mount: nil), binding: binding(correct)) != nil)
+      #expect(
+        ledger.prepareSettlement(
+          command: UUID(), items: [lot.identity],
+          action: .fit(axis: axis, mount: nil), binding: binding(wrong)) == nil)
+    }
+  }
+
+  @Test func commanderResearchBindingsRemainSoftwareOnlyAndCannotPreparePhysicalFits() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger,
+      section: section(
+        technology: [
+          "energy-technology", "drive-technology",
+          "shield-technology", "computer-core",
+        ], seconds: 1), operation: 1)
+    var cargo = Array(repeating: 0, count: 17)
+    let lots = ledger.pendingLots
+    for lot in lots { _ = collect(&ledger, lot, cargo: &cargo) }
+    let hull = UUID()
+    for (lot, axis, slot) in [
+      (lots[0], SalvageUpgradeAxis.energyRecharge, ComponentFittingSlot.energy),
+      (lots[1], .jumpReach, .navigation), (lots[2], .frontShieldCapacity, .shield),
+    ] {
+      for location in [
+        ComponentFittingLocation?.none, .some(.init(hullInstanceID: hull, slot: slot)),
+      ] {
+        let binding = SalvageTransactionBinding.equipment(
+          target: .commanderResearch,
+          expectedComponentInstanceID: UUID(), templateVersion: 1, axis: axis, feature: nil,
+          location: location)
+        #expect(
+          ledger.prepareSettlement(
+            command: UUID(), items: [lot.identity],
+            action: .fit(axis: axis, mount: nil), binding: binding) == nil)
+      }
+    }
+    let software = SalvageTransactionBinding.equipment(
+      target: .commanderResearch,
+      expectedComponentInstanceID: UUID(), templateVersion: 1, axis: .scanningRange, feature: nil,
+      location: .init(hullInstanceID: hull, slot: .targetingCore))
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: [lots[3].identity],
+        action: .fit(axis: .scanningRange, mount: nil), binding: software) != nil)
+  }
+
 }
