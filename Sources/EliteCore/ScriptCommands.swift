@@ -121,6 +121,12 @@ extension Game {
         throw MissionPackError(
           "This contract's deadline has passed; use its declared failure handoff.")
       }
+      if outcome == .complete {
+        state.receiptJoins = try scriptReceiptJoins(
+          pack, stage: .acceptance, existing: state.receiptJoins ?? [:])
+        state.receiptJoins = try scriptReceiptJoins(
+          pack, stage: .completion, existing: state.receiptJoins ?? [:])
+      }
       try settleContract(outcome, state: &state, candidate: &candidate)
       state.outcome = outcome
       state.dialogue = nil

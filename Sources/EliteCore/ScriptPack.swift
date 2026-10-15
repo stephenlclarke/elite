@@ -46,6 +46,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let models: [ScriptNPCModel]?
   public let modules: [ScriptModuleDefinition]?
   public let worldJobs: [ScriptWorldJobDefinition]?
+  public let receiptRequirements: [ScriptReceiptRequirement]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -80,7 +81,9 @@ public enum ScriptCapabilities {
     "classic-encounters-v2", "charter-passengers-v2", "durable-commands-v2", "gallery-basic-v2",
     "owned-equipment-v2",
     "contracts-basic-v2", "profiled-encounters-v2",
-    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2", "event-history-v2", "deterministic-plans-v2", "typed-save-values-v2",
+    "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2",
+    "event-history-v2", "deterministic-plans-v2", "typed-save-values-v2", "commander-queries-v2",
+    "completion-receipts-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -103,7 +106,7 @@ public enum ScriptCapabilities {
     "ship.changed", "equipment.changed", "gear.consumed",
     "equipment.issued", "equipment.returned", "equipment.released",
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
-    "component.destroyed", "weapon.fired",
+    "component.destroyed", "weapon.fired", "mission.receipted",
   ]
 }
 
@@ -117,7 +120,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs receiptRequirements"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -129,6 +132,7 @@ public enum ScriptPackLibrary {
     }
     for (name, allowed) in [
       "handlers": "event function", "dialogs": "id text",
+      "receiptRequirements": "id stage definition version digest outcome minimumCount",
       "equipment": "id name quantity loan mount returnPolicy",
       "worldJobs":
         "id title handler owner galaxy system encounter actor firstDue interval policy counters controlledEncounters",
@@ -277,6 +281,15 @@ public enum ScriptPackLibrary {
     }
     try validateNPCDeclarations(manifest)
     try validateWorldJobs(manifest)
+    let requirements = manifest.receiptRequirements ?? []
+    guard requirements.count <= 32, Set(requirements.map(\.id)).count == requirements.count,
+      requirements.allSatisfy(\.valid),
+      requirements.allSatisfy({ $0.definition != manifest.stateID }),
+      requirements.isEmpty || manifest.capabilities.contains("completion-receipts-v2"),
+      !manifest.handlers.contains(where: { $0.event == "mission.receipted" })
+        || manifest.capabilities.contains("completion-receipts-v2")
+    else { throw MissionPackError("Invalid native completion receipt requirements.") }
+
     let modules = manifest.modules ?? []
     let resourcePaths =
       [manifest.module] + modules.map(\.path) + (manifest.models ?? []).map(\.path)

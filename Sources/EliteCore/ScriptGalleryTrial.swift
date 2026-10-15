@@ -40,7 +40,9 @@ extension Game {
     else { return false }
     var isolatedAvailability = self
     isolatedAvailability.scriptDurabilityAvailable = true
+    isolatedAvailability.commander.scriptState = ScriptEngineState()
     return isolatedAvailability.scriptUnavailable(pack) == nil
+      && isolatedAvailability.scriptAcceptanceIssue(pack) == nil
   }
   public var canRetrySelectedMission: Bool {
     guard let id = selectedGalleryMission?.savedInstance,

@@ -81,6 +81,7 @@ extension Game {
       "stored_equipment": commander.ownedGearCounts(fitted: false),
       "free_equipment_units": .integer(Int64(commander.passengerFit?.freeEquipmentUnits ?? 0)),
       "credits": .integer(Int64(commander.credits)),
+      "commander": scriptCommanderQuery,
       "free_tonnes": .integer(Int64(commander.tradeCargoCapacity - commander.cargoTonnes)),
       "flight_seconds": .number(commander.scriptState.flightSeconds),
       "local_seconds": .number(commander.scriptState.localSeconds),
@@ -96,6 +97,9 @@ extension Game {
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
     fields["contract"] = contractSnapshot(instance)
+    if let pack = scriptPack(for: instance) {
+      fields["receipt_requirements"] = scriptReceiptQuery(pack, state: instance)
+    }
     fields["timers"] = .object(
       instance.timers.mapValues { timer in
         .object([
@@ -141,9 +145,11 @@ extension Game {
       throw MissionPackError(
         "Mission unavailable, already accepted or saved under another version.")
     }
+    if let reason = scriptAcceptanceIssue(pack) { throw MissionPackError(reason) }
     var instance = ScriptInstance(
       id: instanceID, definition: pack.manifest.stateID,
       version: pack.manifest.version, digest: pack.digest)
+    instance.receiptJoins = try scriptReceiptJoins(pack, stage: .acceptance, existing: [:])
     instance.randomState = randomSeed
     instance.contract = contract
     if let contract, let due = contract.deadline {
@@ -250,8 +256,12 @@ extension Game {
         }
         next.revision += 1
         next.acknowledge(event.sequence)
+        if next.outcome != .active {
+          next.completionReceipt = candidate.completionReceipt(next, event: event, pack: pack)
+        }
         candidate.commander.scriptState.instances[next.id] = next
         candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
+        if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
         guard candidate.commander.valid else {
           throw MissionPackError(
             candidate.commander.passengerFit?.issues.first
@@ -416,7 +426,7 @@ extension Game {
       })
       .first(where: {
         $0.manifest.board == nil && !accepted.contains($0.manifest.stateID)
-          && scriptUnavailable($0) == nil
+          && scriptUnavailable($0) == nil && scriptAcceptanceIssue($0) == nil
       })
     else { return false }
     scriptAvailablePackDigest = pack.digest
@@ -447,7 +457,7 @@ extension Game {
     return scriptPack(for: instance)?.manifest.dialogs?.first { $0.id == dialogue.id }?.text
   }
   private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
-    let reason = scriptUnavailable(pack)
+    let reason = scriptUnavailable(pack) ?? (state == nil ? scriptAcceptanceIssue(pack) : nil)
     let suspension = state?.suspension ?? reason
     let status: GalleryStatus =
       suspension != nil

@@ -56,6 +56,8 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     self.digest = digest
   }
   public var data: ScriptValue = .object([:])
+  public var completionReceipt: ScriptCompletionReceipt?
+  public var receiptJoins: [String: [UUID]]?
   public var outcome: ScriptOutcome = .active
   public var suspension: String?
   public var revision: UInt64 = 0
@@ -173,7 +175,9 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     let physicalIdentities = identities + componentIdentities + Array(projectiles.keys)
     guard Set(physicalIdentities).count == physicalIdentities.count else { return false }
     let gearIdentities = instances.values.flatMap { $0.gearIssues.values.flatMap(\.items) }
+    let completionSequences = instances.values.compactMap { $0.completionReceipt?.sequence }
     return Set(identities).count == identities.count && instances.count <= 128
+      && Set(completionSequences).count == completionSequences.count
       && Set(gearIdentities).count == gearIdentities.count
       && pendingEvents.count <= 4096 && nextEvent < UInt64(Int64.max)
       && pendingEvents.map(\.sequence) == pendingEvents.map(\.sequence).sorted()
@@ -194,6 +198,20 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
             PackValidation.localID(dialogue.id) && dialogue.token.utf8.count <= 256
               && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
               && (0...256).contains(dialogue.system)
+          } ?? true)
+          && (instance.completionReceipt.map { $0.valid(for: instance, engine: self) } ?? true)
+          && (instance.receiptJoins.map { joins in
+            joins.count <= 32
+              && joins.allSatisfy { key, children in
+                PackValidation.localID(key) && (1...128).contains(children.count)
+                  && Set(children).count == children.count
+                  && children.allSatisfy { child in
+                    child != instance.id
+                      && instances[child]?.completionReceipt.map { receipt in
+                        instance.completionReceipt.map { receipt.sequence < $0.sequence } ?? true
+                      } == true
+                  }
+              }
           } ?? true)
           && instance.revision < UInt64(Int64.max) && instance.acknowledgedEvents.count <= 4096
           && instance.acknowledgedEvents.allSatisfy { $0 > 0 && $0 <= nextEvent }

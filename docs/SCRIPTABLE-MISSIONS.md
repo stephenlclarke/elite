@@ -27,6 +27,8 @@ The interpreter exposes base scalar/assert/error/type/iteration helpers and nume
 | `economy-v2` | Signed integer decicredit debits/rewards with checked balance and per-instance operation receipts. |
 | `cargo-v2` | Owned mission payload lots counted against the current hold, atomic issue/removal and receipts. |
 | `calendar-clocks-v2` | Saved commander calendar, explicit epoch, native launch/travel adjustments, calendar timers and contract deadlines. |
+| `commander-queries-v2` | Read-only native commander, stock, weapons, cargo, fitting and labelled common crew/accommodation queries. |
+| `completion-receipts-v2` | Native immutable terminal receipts, exact-content child joins, acceptance/success gates and scoped completion notifications. |
 | `typed-save-values-v2` | Exact integer/floating data and finite IEEE64 bits across saves, versioned unambiguous storage and bounded decoding. |
 | `event-history-v2` | Bounded acknowledgement watermarks, ordered native facts and original location/clock provenance through faults, saves and retries. |
 | `deterministic-plans-v2` | Versioned root/component plan identities without simulation RNG draws; existing plans retain their original IDs and condition. |
@@ -88,7 +90,7 @@ The [24-requirement status map](SCRIPTABLE-MISSION-STATUS.json) records partial 
 
 ## Validation and remaining implementation
 
-The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 480 tests in each coverage/thread/address lane, 94.19% maintained coverage and zero native diagnostic leaks.
+The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 495 tests in each coverage/thread/address lane, 94.31% maintained coverage and zero native diagnostic leaks.
 
 Run `make script-missions-check` for the eight authored examples, `make test` for behavior and `make ci` for repository gates. Tests cover script execution, quota faults, invalid output, initial acceptance rollback, whole-batch cargo/economy rollback, stale/Back/valid Confirm, terminal reward replay, missing content/cargo preservation, local timer skips, isolated trials, old saves, immutable generations and corrupt/failed saves. The maintained C shim is included in coverage; only unmodified third-party Lua is excluded from the maintained-code percentage and Sonar source scope. Compiled Lua still runs under sanitizers and leak checks.
 
@@ -239,3 +241,49 @@ Mission and contract chunks retain32MiB semantic limits; format13 permits up to1
 A structural pass checks saved JSON nesting, collection sizes, quoted escapes and string bounds before Foundation decodes large arrays/maps. A fresh decoder-local synchronized budget then enforces semantic depth32,16384 values and262144 wire-equivalent bytes per root script value, with a32MiB aggregate script-value budget per decoded chunk. Native validators continue checking the complete commander, worlds, ownership, content and resource fit before replacing live state. No oversized tree is truncated or partially accepted. The codec remains a consistency format, not a signature against deliberate save editing.
 
 Regression tests cover all value kinds, exact floating bits, genuine queued events and terminal-parent service retry, strict payment behavior before/after reload, primitive legacy values, malformed tags/markers, excessive depth/count/bytes, escaped delimiters and near-limit valid strings, and retention of the prior pointer after a rejected replacement.
+
+## Native commander queries
+
+`commander-queries-v2` adds `world.commander` without changing the existing flat snapshot fields. It is an ordinary copied Lua value: editing it never changes real stock, rank, funds or fit. The selected `elite-native-player-v1` profile describes this game's actual player simulation. It does not substitute player defaults for NPC fits or import another edition's physics.
+
+| Query | Native meaning |
+| --- | --- |
+| `name`, `ship_id`, `ship_name`, `kills`, `rank`, `legal_score` | Current commander, actual owned hull and native score/rank/legal state. |
+| `credits_decicredits` | Integer tenths of a credit; native financial commands still require integer amounts. |
+| `fuel_units`, `fuel_capacity_units`, `fuel_unit`, `jump_range_ly` | Actual fuel stock/capacity in tenths of a light year and actual native range. |
+| `missiles`, `missile_capacity`, `lasers` | Actual missile stock and four native facing mounts (`front`, `left`, `right`, `rear`); absent mounts are nil, fitted mounts expose kind/name/nominal damage/minimum interval. |
+| `native_maximum_speed`, `maximum_velocity_units_per_second` | Current hull's native speed and the same simulation's speed-times18 world-velocity scale. |
+| `energy_capacity`, `shield_capacity`, `energy`, `front_shield`, `rear_shield`, `laser_heat`, `cabin_temperature` | Actual native limits and current physical condition. |
+| `hold.capacity_tonnes`, `hold.trade_capacity_tonnes`, `hold.used_tonnes`, `hold.free_tonnes` | Current native hold/fit policy; used space includes mission payloads and fitted cabins. Assist flags are separate. |
+| `hold.commodities` | Ordered17 native commodities with integer ID, name, native unit, held quantity and sellable quantity; kg/g quantities keep their units. |
+| `equipment.fitted`, `equipment.stored`, `equipment.free_units` | Actual owned native equipment counts and compatible free equipment budget. |
+| `accommodation` | Selected `project-common-charter-v1` profile, required operating complement, intrinsic crew quarters, source/estimate status and basis, equipment capacity, actual fitted/stored/occupied/reserved/extra-crew berths and free compatible places. The required complement is not an assertion that a living crew roster exists. |
+| `assists` | Current unlimited cash/cargo/missile/fuel/jump flags; these do not bypass stricter native charter/contract fit. |
+| `location` | Actual galaxy/system/name/chart coordinates/economy/government/technology and genuine current docking/main-station status. |
+
+Unknown accommodation/fit results are nil. Native laser kills, missile consumption, hull exchange and passenger boarding update these queries through the same simulation paths used by the player.
+
+## Completion receipts and linked missions
+
+Every new validated `mission.finish` transition records an immutable native terminal receipt with instance/definition/version/digest/outcome, original cause sequence/kind/context, actual commit context/revision, settled milestones, genuine destroyed encounter names, delivered party names, returned equipment names and any native contract settlement amount. Cause and commit clocks are distinct when an event was delayed. Receipts publish in the same durable generation as the terminal effects. A failed publication creates neither a reward nor a receipt. Replayed facts cannot create a second completion. Old terminal flags remain readable but are never guessed into native completion proof.
+
+Declare `completion-receipts-v2` and one or more root `[[receiptRequirements]]` tables. Each requires an exact definition (`packID/missionID`), semantic version,64-character content digest, terminal outcome and distinct-instance count. `stage="acceptance"` locks qualifying child IDs when accepting and rechecks them before successful completion. `stage="completion"` permits earlier acceptance but blocks a successful finish until the native children qualify. Failed/abandoned outcomes retain their own outcome-specific receipts without claiming that successful child joins happened. Maximums are32 requirements and128 children per requirement, within the shared128-instance state limit. Self dependencies, invalid fields, active-outcome requirements and undeclared capabilities are rejected before installation.
+
+```toml
+[[receiptRequirements]]
+id = "patrol-report"
+stage = "completion"
+definition = "example.scripted-patrol/patrol"
+version = "1.0.0"
+digest = "f7c2123ea24e13e6d8e613a72270a052ae6b5a010e4edb678ab10a239f185906"
+outcome = "complete"
+minimumCount = 1
+```
+
+`world.receipt_requirements[id]` exposes `stage`, `required_count`, `matched_count`, `satisfied` and the pinned `joined_instances`. Matching uses actual native receipts, not Lua data, milestone flags, installed dependencies or similarly named actors. Native selection orders qualifying instances by receipt sequence and UUID. One child cannot count twice toward a required count. Saved joins retain their exact instance identities; inconsistent/self/future proofs are refused without replacing live state.
+
+A declared `mission.receipted` handler receives a native notification only when an exact matching child finishes. Its values are `receipt_instance_id`, `definition`, `version`, `digest` and `outcome`, with the usual native envelope context. This notification and the child's terminal receipt belong to the same published generation. The handler queries actual requirements; merely receiving a notification does not manufacture a join or bypass a native finish gate. Queue admission reserves the whole notification batch.
+
+Install the [linked patrol debrief](mission-packs/linked-patrol) alongside the exact [scripted patrol](mission-packs/scripted-patrol). Accept the debrief and patrol at Lave, fly the actual battle, dock and confirm the patrol report, then reopen Contacts to confirm the separate debrief. The debrief grants no additional money. Its fresh Gallery trial also requires playing the actual child mission in that isolated commander; it does not seed fake completion receipts. Use manual docking or fit the native docking computer normally. An acceptance-gated pack cannot start a fresh trial if its required receipts do not exist there. Rich historical checkpoint scenarios remain required.
+
+Format14 retains terminal receipts and their pinned joins in the mission chunk; formats2-13 remain readable without inventing earlier proof. This implements the generic receipt/join part of linked campaigns. Exclusive branch choices, shared dossiers/loans/services, complete campaign instance scoping and full P19/Maenes/finance/RRS acceptance remain required before `campaigns-v1` can be advertised.
