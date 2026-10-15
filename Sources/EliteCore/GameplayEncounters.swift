@@ -89,6 +89,10 @@ extension Game {
           && $0.physical?.spawnIdentity != nil
       }), let actor = context.actors.first(where: { $0.identity == intent.actor })
     else { return }
+    guard
+      bodies[index].physical?.suspendedNPCIntention == nil
+        || bodies[index].physical?.npc?.intention != nil
+    else { return }
     bodies[index].hostile = intent.action == .engage(context.player.identity)
     // A fleeing trader keeps its original destination for later recovery.
     if bodies[index].physical?.npc?.role != .trader {
