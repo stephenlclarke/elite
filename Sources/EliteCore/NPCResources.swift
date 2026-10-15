@@ -66,7 +66,9 @@ public struct NPCResources: Equatable, Codable, Sendable {
     laserHeat = max(0, laserHeat - delta * heatCooling)
   }
 
-  public var canFire: Bool { valid && (profile == .legacyEnergyOnly || laserHeat < heatCapacity) }
+  public var canFire: Bool {
+    valid && (profile == .legacyEnergyOnly || heatCapacity - laserHeat >= 10)
+  }
 
   public mutating func recordBeam(heat: Double) {
     guard valid, heat.isFinite, heat > 0 else { return }

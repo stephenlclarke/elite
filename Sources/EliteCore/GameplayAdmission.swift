@@ -50,7 +50,11 @@ extension Game {
             ?? ShipCatalogue.nativeShip(request.hull)?.game
         {
           npc?.resources = NPCResources.stock(performance)
-          body.energy = performance.energy
+        }
+        if let resources = npc?.resources {
+          body.energy = request.energy ?? resources.energyCapacity
+        } else if let energy = request.energy {
+          body.energy = energy
         }
         body.physical = .init(
           identity: actor, population: request.population, npc: npc,
@@ -119,7 +123,11 @@ extension Game {
       request.angularVelocity.finite
     else { return false }
     let radius = spawnRadius(request)
-    guard radius.isFinite, radius > 0,
+    guard request.npc?.resources?.valid ?? true,
+      request.energy.map({
+        $0.isFinite && $0 >= 0 && $0 <= (request.npc?.resources?.energyCapacity ?? 100000)
+      }) ?? true,
+      radius.isFinite, radius > 0,
       (request.position - context.anchors.planet.position).length > context.anchors.planet.radius
         + radius,
       (request.position - context.anchors.sun.position).length > context.anchors.sun.radius * 4

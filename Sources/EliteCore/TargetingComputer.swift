@@ -114,7 +114,7 @@ extension Game {
       fields += TargetTelemetry.fields(
         facts: telemetryFacts(for: body), tier: tier, targetIsShip: body.hull.isTargetShip,
         observerGalaxy: commander.galaxy, discloseLegal: true)
-      if tier >= .military {
+      if tier >= .military, body.hull.isTargetShip {
         fields += [
           .init(label: "Missiles", value: String(body.missiles)),
           .init(label: "ECM equipped", value: body.ecmEnabled ? "Yes" : "No"),

@@ -26,6 +26,76 @@ private func resourceGame() throws -> Game {
 }
 
 struct NPCResourceTests {
+  @Test func nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling() throws {
+    var game = try resourceGame()
+    game.commander.cargo[0] = 1
+    game.energy = 100000
+    game.frontShield = 100000
+    game.rearShield = 100000
+    game.bodies[0].physical?.npc?.role = .pirate
+    let spawn = SpawnIdentity(
+      system: game.systemIdentity, visit: game.commander.flightSimulation.visit, sequence: 1,
+      member: 0)
+    game.bodies[0].physical?.spawnIdentity = spawn
+    game.bodies[0].orientation.rotate(pitch: 0, roll: 0, yaw: .pi)
+    let first = game.commander.flightSimulation.nextEmission
+    var thermalWaits = 0
+    for _ in 0..<3000 {
+      game.commander.flightSimulation.advancePhysicalTime(0.02)
+      // Isolate this admitted pirate's actual steering/emitter from new traffic proposals.
+      game.commander.encounterDirector = EncounterDirector(
+        context: try #require(game.gameplayContext()))
+      let before = game.commander.flightSimulation.nextEmission
+      let cooldown = game.bodies[0].physical?.laserCooldown ?? 0
+      let heat = game.bodies[0].physical?.npc?.resources?.laserHeat ?? 0
+      game.advanceGameplayEncounters(delta: 0.02)
+      if cooldown <= 0.02 && heat > 230.24,
+        game.commander.flightSimulation.nextEmission == before
+      {
+        thermalWaits += 1
+      }
+    }
+    let shots = game.commander.flightSimulation.nextEmission - first
+    #expect(shots >= 80 && shots <= 100)
+    #expect(thermalWaits > 0)
+    #expect((game.bodies[0].physical?.npc?.resources?.laserHeat ?? 241) <= 240)
+  }
+
+  @Test func nonshipBuilderDoesNotInventShipArmamentOrResourceReadings() throws {
+    var game = try resourceGame()
+    game.commander.installTargetingComputer(.military)
+    for hull in [Hull.cargo, .asteroid, .missile] {
+      let info = try #require(
+        game.information(for: .init(id: 90, hull: hull, position: .init(0, 0, 500))))
+      #expect(info.fields.isEmpty)
+    }
+  }
+
+  @Test func explicitAdmissionInitializesFreshEnergyAndPreservesSpentEnergyOnReAdmission() throws {
+    for remaining in [Double?.none, .some(7)] {
+      var game = try resourceGame()
+      var npc = try #require(game.bodies[0].physical?.npc)
+      npc.resources?.frontShield = 12
+      game.bodies = []
+      var request = SpawnRequest(
+        identity: .init(
+          system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
+          sequence: 2, member: 0), population: .civilian, hull: .cobra,
+        position: game.commander.flightSimulation.pose.systemPoint(.init(1000, 0, 1000)),
+        orientation: Basis3(), velocity: .init(0, 0, 0), npc: npc, rock: nil, payload: nil,
+        priority: .ordinary)
+      request.energy = remaining
+      let plan = EncounterPlan(
+        system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
+        revision: game.gameplayRevision, batches: [.init(requests: [request], atomic: false)],
+        intents: [])
+      let receipts = game.admitEncounterPlan(plan)
+      #expect(receipts.first?.actor != nil)
+      #expect(game.bodies.first?.energy == (remaining ?? npc.resources?.energyCapacity))
+      #expect(game.bodies.first?.physical?.npc?.resources?.frontShield == 12)
+    }
+  }
+
   @Test func everyCargoAndResourceRowRemainsReadableAndReachableInCompactTargetPanel() throws {
     var game = try resourceGame()
     game.commander.installTargetingComputer(.military)

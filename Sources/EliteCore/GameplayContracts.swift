@@ -26,7 +26,7 @@ public enum PayloadIdentity: Hashable, Codable, Sendable {
 }
 
 public enum SpawnProducer: String, Codable, Sendable {
-  case ambient, asteroids, cargo, mining, salvage, security, mission
+  case ambient, asteroids, cargo, mining, salvage, security, mission, persistence
 }
 
 public struct SpawnIdentity: Hashable, Codable, Sendable {
@@ -208,6 +208,8 @@ public struct SpawnRequest: Equatable, Codable, Sendable {
   public let payload: PayloadIdentity?
   public let priority: AdmissionPriority
   public var catalogueShipID: String?
+  /// Persisted admissions supply their actual remaining hull energy.
+  public var energy: Double?
   public var angularVelocity = Vector3(0, 0, 0)
   public var salvage: SalvageTargetMetadata?
 }
