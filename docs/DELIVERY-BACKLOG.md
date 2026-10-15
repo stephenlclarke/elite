@@ -4,6 +4,7 @@ Version 1.3.1 includes the verified ship, startup, chart, control and flight cha
 
 | Request | Owner | Status | Implementation evidence | Acceptance evidence |
 | --- | --- | --- | --- | --- |
+| Visible, selectable alternative multi-jump routes on both charts | Coder 2 implementation / Coder 1 integration | In progress for 1.4.0 | `feature/route-alternatives`, based on protected main `1ef005e0c73971a360a0e3bb52792a9286a761d3`; reuse existing planner and navigation capabilities | Pending: graphical candidate previews on short/long charts; keyboard and pointer selection; explicit Set route; Back preserves active plan; fuel/capability revalidation; distinct candidate/active/profit overlays; local offscreen continuation; compact/Retina native checks; full CI, exact-main Sonar and verified signed/notarized download |
 | Fine detail across every project-generated hull | Coder 1 | Verified source | `refine-catalogue.py`, `surface-detail.py`, individual `[design]` records; 93 revised existing recipes | Complete: all 94 quarter-turn previews, representative 24-frame rotations, native Challenger/Liberator showroom |
 | Recognisable families; distinct Krait, Mandalay, Viper and Type silhouettes | Coder 1 | Verified source | `mechanical-hulls.py`, explicit per-TOML family/variant recipes | Complete: family geometry tests and full catalogue contact-sheet review |
 | Smooth, organic Thargoids | Coder 1 | Included in 1.3.0 | `organic-hulls.py`, 12 distinct forms; closed mesh/winding tests | Complete: smooth organic contact sheets and full-rotation renderer tests |
