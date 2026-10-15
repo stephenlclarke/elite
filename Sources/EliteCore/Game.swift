@@ -1081,11 +1081,13 @@ public struct Game: Sendable {
     }
     _ = ecmControl.detect(bodies)
     detectRetaliationSources()
-    ecmControl.activate(destroyed: bodies.filter { $0.hull == .missile && $0.energy > 0 }.count)
-    for missile in bodies where missile.hull == .missile && missile.energy > 0 {
+    ecmControl.activate(destroyed: bodies.filter {
+      $0.hull == .missile && $0.scriptShot == nil && $0.energy > 0
+    }.count)
+    for missile in bodies where missile.hull == .missile && missile.scriptShot == nil && missile.energy > 0 {
       confirmRetaliation(missile)
     }
-    bodies.removeAll { $0.hull == .missile }
+    bodies.removeAll { $0.hull == .missile && $0.scriptShot == nil }
     ecmFrames = 32
     enemyECMSource = nil
     energy -= 10
@@ -1223,10 +1225,27 @@ public struct Game: Sendable {
     laserHeat += 10
     energy -= 1
     laserFlash = 0.08
-    if let index = bodies.firstIndex(where: {
+    let direction: Vector3
+    switch mount {
+    case .front: direction = .init(0, 0, 1)
+    case .rear: direction = .init(0, 0, -1)
+    case .left: direction = .init(-1, 0, 0)
+    case .right: direction = .init(1, 0, 0)
+    }
+    let hit = scriptNPCHit(from: .init(0, 0, 0), direction: direction, range: 40000, profiledOnly: true)
+    var classic = bodies.firstIndex(where: {
       let p = viewPosition($0.position)
-      return $0.hull != .station && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
-    }) {
+      return $0.scriptNPC == nil && $0.scriptShot == nil && $0.hull != .station
+        && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
+    })
+    if hit != nil, let physical = scriptNPCHit(from: .init(0, 0, 0), direction: direction, range: 40000) {
+      if bodies[physical.body].scriptNPC != nil {
+        damageScriptNPC(physical, amount: laser.damage, player: true, attacker: nil)
+        return
+      }
+      classic = bodies[physical.body].hull == .station ? nil : physical.body
+    }
+    if let index = classic {
       bodies[index].energy -= commander.laserDamage(against: bodies[index].hull, mount: mount)
       bodies[index].hostile = true
       if bodies[index].energy <= 0 { bodies[index].destroyedByPlayer = true }
@@ -1251,8 +1270,21 @@ public struct Game: Sendable {
       bodies[index].position = bodies[index].position - autoPilot.velocity * dt
       bodies[index].position.z -= speed * dt * 18
       bodies[index].rotation += dt * bodies[index].rotationRate
-      if bodies[index].hostile && bodies[index].energy > 0 { enemyAction(index: index, dt: dt) }
+      if let velocity = bodies[index].scriptShot?.velocity {
+        bodies[index].scriptShot?.velocity = velocity.rotated(
+          pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+      }
+      if let velocity = bodies[index].scriptNPC?.velocity {
+        bodies[index].scriptNPC?.velocity = velocity.rotated(
+          pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+      }
+      if bodies[index].scriptNPC == nil && bodies[index].scriptShot == nil && bodies[index].hostile && bodies[index].energy > 0 {
+        enemyAction(index: index, dt: dt)
+      }
     }
+    advanceScriptNPCFlight(delta: dt)
+    advanceScriptNPCWeapons(delta: dt)
+    advanceScriptNPCShots(delta: dt)
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
         dock(atMainStation: station.id == 0)
@@ -1307,7 +1339,8 @@ public struct Game: Sendable {
       if commander.rank != previousRank { notify("RIGHT ON, COMMANDER") }
       commander.credits =
         (commander.credits
-          + (body.blackjackRole.map { $0.bountyCredits * 10 } ?? body.hull.navalBounty
+          + (body.scriptNPC?.fit.definition.bounty
+            ?? body.blackjackRole.map { $0.bountyCredits * 10 } ?? body.hull.navalBounty
             ?? (body.hostile ? 50 : 0)))
         & 0xffff_ffff
       if !body.hostile { commander.legal += 8 }

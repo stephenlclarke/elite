@@ -2,7 +2,8 @@ import Foundation
 
 public struct ScriptActorDefinition: Codable, Sendable {
   public let id: String
-  public let hull: Hull
+  public let hull: Hull?
+  public var npc: String? = nil
   public let x: Double
   public let y: Double
   public let z: Double
@@ -29,6 +30,9 @@ public struct ScriptOwnedActor: Codable, Sendable, Equatable {
     PackValidation.localID(alias) && body.missionActorID == identity
       && body.position.finite && body.position.length <= 1e9 && body.orientation.validRotation
       && body.energy.isFinite && (0...10_000_000).contains(body.energy)
+      && (body.scriptNPC?.valid ?? true)
+      && (body.scriptNPC.map { body.energy <= $0.fit.definition.energy
+        && body.missiles <= $0.fit.definition.missiles } ?? true)
       && body.rotation.isFinite && body.rotationRate.isFinite && (0...32).contains(body.missiles)
       && (-1..<1_000_000_000).contains(body.id)
       && (presence != .destroyed || body.energy == 0)
@@ -60,10 +64,14 @@ extension ScriptEncounterDefinition {
   ]
   var valid: Bool {
     PackValidation.localID(id) && (0..<8).contains(galaxy) && (0...256).contains(system)
-      && profile == "classic-local-freeze-v1" && (1...128).contains(actors.count)
+      && ["classic-local-freeze-v1", "profiled-local-freeze-v1"].contains(profile)
+      && (1...128).contains(actors.count)
       && Set(actors.map(\.id)).count == actors.count
       && actors.allSatisfy {
-        PackValidation.localID($0.id) && Self.classicHulls.contains($0.hull)
+        PackValidation.localID($0.id)
+          && (profile == "classic-local-freeze-v1"
+            ? $0.hull.map(Self.classicHulls.contains) == true && $0.npc == nil
+            : $0.hull == nil && $0.npc.map(PackValidation.localID) == true)
           && [$0.x, $0.y, $0.z].allSatisfy { $0.isFinite && abs($0) <= 1_000_000 }
       }
   }
@@ -82,7 +90,7 @@ public struct ScriptReferenceFrame: Codable, Sendable, Equatable {
 }
 
 extension Game {
-  private var scriptAnchor: SpaceBody? {
+  var scriptAnchor: SpaceBody? {
     if let actual = bodies.first(where: { $0.id == 0 && $0.hull == .station }) {
       return actual.energy > 0 ? actual : nil
     }
@@ -105,7 +113,7 @@ extension Game {
     scriptReferenceFrame = frame
   }
   private func scriptRadius(_ body: SpaceBody) -> Double {
-    Mesh.hull(body.hull).vertices.map(\.length).max() ?? 100
+    scriptNPCRadius(body)
   }
   func scriptEncounterSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     .object(
@@ -121,6 +129,9 @@ extension Game {
                 "identity": .string(actor.identity.uuidString),
                 "presence": .string(actor.presence.rawValue),
                 "energy": .number(actor.body.energy),
+                "position": .array([.number(actor.body.position.x), .number(actor.body.position.y),
+                  .number(actor.body.position.z)]),
+                "npc": scriptNPCSnapshot(actor.body.scriptNPC),
                 "missiles": .integer(Int64(actor.body.missiles)),
               ])
             }),
@@ -131,7 +142,9 @@ extension Game {
   mutating func ensureScriptEncounter(_ id: String, pack: ScriptPack, state: inout ScriptInstance)
     throws -> (String, [String: ScriptValue])
   {
-    guard state.outcome == .active, pack.manifest.capabilities.contains("classic-encounters-v2"),
+    guard state.outcome == .active,
+      (pack.manifest.capabilities.contains("classic-encounters-v2")
+        || pack.manifest.capabilities.contains("profiled-encounters-v2")),
       let definition = pack.manifest.encounters?.first(where: { $0.id == id })
     else {
       throw MissionPackError(
@@ -143,7 +156,16 @@ extension Game {
       for spec in definition.actors {
         let identity = UUID()
         var body = SpaceBody(
-          id: -1, hull: spec.hull, position: .init(spec.x, spec.y, spec.z), hostile: spec.hostile)
+          id: -1, hull: spec.hull ?? .cobra, position: .init(spec.x, spec.y, spec.z), hostile: spec.hostile)
+        if let npcID = spec.npc,
+          let definition = pack.manifest.npcs?.first(where: { $0.id == npcID })
+        {
+          body.scriptNPC = try makeScriptNPC(definition, pack: pack)
+          body.energy = definition.energy
+          body.missiles = definition.missiles
+          body.ecmEnabled = definition.ecm
+          body.rotationRate = 0
+        }
         body.missionActorID = identity
         body.missionInstanceID = state.id
         actors[spec.id] = ScriptOwnedActor(
@@ -163,7 +185,8 @@ extension Game {
     guard !docked, definition.galaxy == commander.galaxy, definition.system == commander.system,
       let anchor = scriptAnchor
     else { return pending("Enter the declared system in flight with its main station available.") }
-    guard bodies.count + encounter.actors.count <= 1024,
+    let proposedBodies = encounter.actors.values.map(\.body)
+    guard (bodies + proposedBodies).reduce(0, { $0 + $1.scriptNativeUnits }) <= 1024,
       nextBodyID <= 999_998_000 - encounter.actors.count
     else { return pending("The whole encounter needs more native actor capacity.") }
     var prepared: [SpaceBody] = []
@@ -175,6 +198,10 @@ extension Game {
         return pending("The complete cohort must fit the currently loaded space region.")
       }
       let radius = scriptRadius(body)
+      let playerRadius = scriptPlayerMesh.vertices.map(\.length).max() ?? 100
+      guard body.position.length > radius + playerRadius + 64 else {
+        return pending("An encounter placement overlaps the actual commander hull.")
+      }
       for other in bodies + prepared {
         guard (body.position - other.position).length > radius + scriptRadius(other) + 64 else {
           return pending("An encounter placement is obstructed; the saved plan will be retained.")
@@ -213,6 +240,7 @@ extension Game {
         galaxy: commander.galaxy, system: commander.system, station: actual)
     }
     guard let anchor = scriptAnchor else { return }
+    persistScriptShots(anchor: anchor, unloading: unloading)
     if unloading {
       for body in bodies where body.missionActorID != nil && body.energy <= 0 {
         recordScriptActorRemoval(body, destroyed: true)
@@ -235,6 +263,7 @@ extension Game {
           saved.body.energy = max(0, body.energy)
           saved.body.position = anchor.orientation.inverse(body.position - anchor.position)
           saved.body.orientation = body.orientation.relative(to: anchor.orientation)
+          saved.body.scriptNPC?.velocity = anchor.orientation.inverse(body.scriptNPC?.velocity ?? .init(0, 0, 0))
           if unloading && saved.presence == .present { saved.presence = .unloaded }
           encounter.actors[alias] = saved
         }
@@ -264,12 +293,16 @@ extension Game {
         else { continue }
         for alias in encounter.actors.keys.sorted() {
           guard var actor = encounter.actors[alias], actor.presence != .destroyed,
-            actor.presence != .prepared, !present.contains(actor.identity), bodies.count < 1024,
+            actor.presence != .prepared, !present.contains(actor.identity),
+            bodies.reduce(0, { $0 + $1.scriptNativeUnits }) + actor.body.scriptNativeUnits <= 1024,
             nextBodyID < 999_999_999
           else { continue }
           var body = actor.body
           body.position = anchor.position + anchor.orientation.apply(body.position)
           body.orientation = body.orientation.transformed(by: anchor.orientation)
+          if let velocity = body.scriptNPC?.velocity {
+            body.scriptNPC?.velocity = anchor.orientation.apply(velocity)
+          }
           guard !body.leavesLocalBubble, body.energy > 0 else { continue }
           // Integer scene IDs may change, but world identity, condition and spent stock never do.
           body.id = nextBodyID
@@ -284,8 +317,10 @@ extension Game {
       }
       commander.scriptState.instances[instanceID] = instance
     }
+    restoreScriptShots(anchor: anchor)
   }
   mutating func recordScriptActorRemoval(_ body: SpaceBody, destroyed: Bool) {
+    recordScriptShotRemoval(body)
     guard let identity = body.missionActorID, let instanceID = body.missionInstanceID,
       var instance = commander.scriptState.instances[instanceID]
     else { return }

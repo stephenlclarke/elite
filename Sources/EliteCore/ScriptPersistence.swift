@@ -21,11 +21,15 @@ struct ScriptWorldSave: Codable, Sendable {
   var valid: Bool {
     (simulation?.valid ?? true) && (referenceFrame?.valid ?? true)
       && (contractScreen?.valid ?? true) && bodies.count <= 1024
+      && bodies.reduce(0, { $0 + $1.scriptNativeUnits }) <= 1024
       && Set(bodies.map(\.id)).count == bodies.count
       && Set(bodies.compactMap(\.missionActorID)).count
         == bodies.filter { $0.missionActorID != nil }.count
       && bodies.allSatisfy { body in
-        body.id >= 0
+        body.id >= 0 && (body.scriptNPC?.valid ?? true)
+          && (body.scriptNPC == nil || body.missionActorID != nil) && (body.scriptShot?.valid ?? true)
+          && (body.scriptShot == nil || body.hull == .missile && body.scriptNPC == nil
+            && body.missionActorID == nil && body.missionInstanceID == nil)
           && [
             body.position.x, body.position.y, body.position.z, body.energy, body.rotation,
             body.rotationRate,
@@ -52,15 +56,33 @@ struct ScriptWorldSave: Codable, Sendable {
         }
       }
     }
+    let shotBodies = bodies.filter { $0.scriptShot != nil }
+    let expectedShots = commander.scriptState.projectiles.values.filter { $0.presence == .present }
+    guard shotBodies.count == expectedShots.count,
+      expectedShots.allSatisfy({ $0.galaxy == commander.galaxy && $0.system == commander.system })
+    else { return false }
+    for body in shotBodies {
+      guard let shot = body.scriptShot, let record = commander.scriptState.projectiles[shot.identity],
+        record.presence == .present, record.body.id == body.id, let anchor = referenceFrame?.station
+      else { return false }
+      var canonical = shot
+      canonical.velocity = anchor.orientation.inverse(shot.velocity)
+      guard canonical == record.body.scriptShot else { return false }
+    }
     let physical = bodies.filter { $0.missionActorID != nil }
     let expected = records.values.filter { $0.3.presence == .present }
     guard physical.count == expected.count,
       expected.allSatisfy({ $0.1 == commander.galaxy && $0.2 == commander.system })
     else { return false }
     for body in physical {
+      var canonicalNPC = body.scriptNPC
+      if let velocity = canonicalNPC?.velocity, let anchor = referenceFrame?.station {
+        canonicalNPC?.velocity = anchor.orientation.inverse(velocity)
+      }
       guard let identity = body.missionActorID, let record = records[identity],
         body.missionInstanceID == record.0, record.3.presence == .present,
         body.id == record.3.body.id, body.hull == record.3.body.hull,
+        canonicalNPC == record.3.body.scriptNPC,
         body.energy == record.3.body.energy, body.missiles == record.3.body.missiles,
         body.ecmEnabled == record.3.body.ecmEnabled, body.hostile == record.3.body.hostile
       else { return false }
@@ -111,7 +133,7 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: 8, generation: generation,
+      format: "elite-script-save", schemaVersion: 9, generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope)
     let bytes = try encoder.encode(pointer)
     try bytes.write(to: url, options: .atomic)
@@ -130,7 +152,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...8).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...9).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")

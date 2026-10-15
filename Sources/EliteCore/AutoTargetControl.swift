@@ -20,7 +20,8 @@ extension Vector3 {
 
 extension SpaceBody {
   public func modelVector(_ v: Vector3) -> Vector3 {
-    orientation.apply(v.rotated(pitch: hull == .station ? 0 : rotation * 0.4, roll: rotation))
+    if scriptNPC != nil { return orientation.apply(v) }
+    return orientation.apply(v.rotated(pitch: hull == .station ? 0 : rotation * 0.4, roll: rotation))
   }
   public var entrancePosition: Vector3 { position + modelVector(.init(0, 0, -90)) }
   public var entranceNormal: Vector3 { modelVector(.init(0, 0, -1)) }

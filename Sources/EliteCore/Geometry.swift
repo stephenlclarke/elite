@@ -128,6 +128,8 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var blackjackIdentity: UUID?
   public var blackjackRole: BlackjackTarget?
   public var blackjackLaserCooldown: Double?
+  public var scriptNPC: ScriptNPCState?
+  public var scriptShot: ScriptNPCShot?
   public var ecmEnabled = false
   public init(id: Int, hull: Hull, position: Vector3, hostile: Bool = false) {
     self.id = id

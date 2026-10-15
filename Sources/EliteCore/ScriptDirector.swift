@@ -89,6 +89,14 @@ extension Game {
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
     fields["contract"] = contractSnapshot(instance)
+    if let anchor = scriptAnchor {
+      let position = anchor.orientation.inverse(anchor.position * -1)
+      let velocity = anchor.orientation.inverse(autoPilot.velocity + Vector3(0, 0, speed * 18))
+      fields["player"] = .object(["position": position.scriptVector,
+        "velocity": velocity.scriptVector, "ship": .string(commander.shipID),
+        "energy": .number(energy), "front_shield": .number(frontShield),
+        "rear_shield": .number(rearShield), "laser_heat": .number(laserHeat)])
+    }
     fields["free_passenger_places"] = .integer(
       Int64(commander.passengerFit?.freeCompatiblePlaces ?? 0))
     return .object(fields)
@@ -189,6 +197,10 @@ extension Game {
               throw MissionPackError("Encounter request requires only op and declared id.")
             }
             derivedEvents.append(try candidate.ensureScriptEncounter(id, pack: pack, state: &next))
+          } else if command["op"]?.string == "actor.intent" {
+            if let result = try candidate.applyScriptNPCIntent(command, pack: pack, state: &next) {
+              derivedEvents.append(result)
+            }
           } else if ["gear.issue", "gear.return", "gear.release", "gear.store", "gear.refit"]
             .contains(command["op"]?.string ?? "")
           {

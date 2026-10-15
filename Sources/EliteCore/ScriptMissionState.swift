@@ -54,6 +54,16 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  public var savedProjectiles: [UUID: ScriptProjectileRecord]?
+  public var projectiles: [UUID: ScriptProjectileRecord] {
+    get { savedProjectiles ?? [:] }
+    set { savedProjectiles = newValue.isEmpty ? nil : newValue }
+  }
+  public var savedGeometry: [String: ShipDesign]?
+  public var geometry: [String: ShipDesign] {
+    get { savedGeometry ?? [:] }
+    set { savedGeometry = newValue.isEmpty ? nil : newValue }
+  }
   public var instances: [UUID: ScriptInstance] = [:]
   var pendingEvents: [ScriptEvent] = []
   public var nextEvent: UInt64 = 0
@@ -83,9 +93,31 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
+    guard geometry.count <= 128, geometry.allSatisfy({ key, value in
+      ScriptPackLibrary.scriptGeometryValid(value)
+        && (try? ScriptPackLibrary.canonicalGeometry(value)).map(ScriptPackLibrary.hash) == key
+    }) else { return false }
+    guard projectiles.count <= 1024, projectiles.allSatisfy({ key, value in
+      key == value.body.scriptShot?.identity && value.valid
+        && instances[value.body.scriptShot!.instance]?.ownedEncounters.values.contains { encounter in
+          encounter.actors.values.contains { actor in
+            actor.identity == value.body.scriptShot!.owner
+              && (value.body.scriptShot!.component.map { component in
+                actor.body.scriptNPC?.components.values.contains { $0.identity == component } == true
+              } ?? true)
+          }
+        } == true
+    }) else { return false }
     let identities = instances.values.flatMap {
       $0.ownedEncounters.values.flatMap { $0.actors.values.map(\.identity) }
     }
+    let componentIdentities = instances.values.flatMap {
+      $0.ownedEncounters.values.flatMap { $0.actors.values.flatMap {
+        $0.body.scriptNPC?.components.values.map(\.identity) ?? []
+      } }
+    }
+    let physicalIdentities = identities + componentIdentities + Array(projectiles.keys)
+    guard Set(physicalIdentities).count == physicalIdentities.count else { return false }
     let gearIdentities = instances.values.flatMap { $0.gearIssues.values.flatMap(\.items) }
     return Set(identities).count == identities.count && instances.count <= 128
       && Set(gearIdentities).count == gearIdentities.count
@@ -109,6 +141,9 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           && instance.ownedEncounters.allSatisfy {
             $0.key == $0.value.id && $0.value.valid
               && $0.value.actors.values.allSatisfy { $0.body.missionInstanceID == instance.id }
+              && $0.value.actors.values.allSatisfy { actor in
+                actor.body.scriptNPC?.fit.models.values.allSatisfy { geometry[$0] != nil } ?? true
+              }
           }
           && instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128
           && instance.gearIssues.count <= 64

@@ -3,7 +3,7 @@
   "branch": "feature/scriptable-mission-engine",
   "full_engine_ready": false,
   "default_bundled_campaigns": 3,
-  "example": "Five optional original courier, patrol, humanoid passenger, equipment-loan and generated contract demonstrations; no historical research packet enabled.",
+  "example": "Six optional original courier, classic patrol, humanoid passenger, equipment-loan, generated contract and profiled skirmish demonstrations; no historical research packet enabled.",
   "supported_capabilities": [
     "cargo-v2",
     "charter-passengers-v2",
@@ -14,6 +14,7 @@
     "gallery-basic-v2",
     "local-flight-clocks-v2",
     "owned-equipment-v2",
+    "profiled-encounters-v2",
     "script-lua-v1",
     "story-v2"
   ],
@@ -37,7 +38,14 @@
       "required_acceptance": "Changed digest/missing asset/duplicate ID/symlink/path escape rejected or intact suspension; no active reset.",
       "status": "partial",
       "current_evidence": [
-        "Sources/EliteCore/ScriptPack.swift"
+        "Sources/EliteCore/ScriptPack.swift",
+        "Sources/EliteCore/ScriptNPCProfile.swift",
+        "Sources/EliteCore/ScriptNPCAssets.swift",
+        "Sources/EliteCore/ScriptNPCFlight.swift",
+        "Sources/EliteCore/ScriptNPCWeapons.swift",
+        "Sources/EliteCore/ScriptNPCCollision.swift",
+        "Sources/EliteCore/ScriptNPCPersistence.swift",
+        "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -100,7 +108,14 @@
       "status": "partial",
       "current_evidence": [
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptNPCProfile.swift",
+        "Sources/EliteCore/ScriptNPCAssets.swift",
+        "Sources/EliteCore/ScriptNPCFlight.swift",
+        "Sources/EliteCore/ScriptNPCWeapons.swift",
+        "Sources/EliteCore/ScriptNPCCollision.swift",
+        "Sources/EliteCore/ScriptNPCPersistence.swift",
+        "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -112,7 +127,14 @@
       "status": "partial",
       "current_evidence": [
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptNPCProfile.swift",
+        "Sources/EliteCore/ScriptNPCAssets.swift",
+        "Sources/EliteCore/ScriptNPCFlight.swift",
+        "Sources/EliteCore/ScriptNPCWeapons.swift",
+        "Sources/EliteCore/ScriptNPCCollision.swift",
+        "Sources/EliteCore/ScriptNPCPersistence.swift",
+        "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -124,7 +146,14 @@
       "status": "partial",
       "current_evidence": [
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptNPCProfile.swift",
+        "Sources/EliteCore/ScriptNPCAssets.swift",
+        "Sources/EliteCore/ScriptNPCFlight.swift",
+        "Sources/EliteCore/ScriptNPCWeapons.swift",
+        "Sources/EliteCore/ScriptNPCCollision.swift",
+        "Sources/EliteCore/ScriptNPCPersistence.swift",
+        "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -209,9 +238,16 @@
         "Sources/EliteCore/ScriptEncounters.swift",
         "Tests/EliteCoreTests/ScriptEncounterTests.swift",
         "Sources/EliteCore/ScriptTransactions.swift",
-        "Sources/EliteCore/ScriptSolarSave.swift"
+        "Sources/EliteCore/ScriptSolarSave.swift",
+        "Sources/EliteCore/ScriptNPCProfile.swift",
+        "Sources/EliteCore/ScriptNPCAssets.swift",
+        "Sources/EliteCore/ScriptNPCFlight.swift",
+        "Sources/EliteCore/ScriptNPCWeapons.swift",
+        "Sources/EliteCore/ScriptNPCCollision.swift",
+        "Sources/EliteCore/ScriptNPCPersistence.swift",
+        "Tests/EliteCoreTests/ScriptNPCTests.swift"
       ],
-      "remaining": "Format8 scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
+      "remaining": "Format9 scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
     },
     {
       "id": "R16",
@@ -360,7 +396,7 @@
         "8115302",
         "dd27810"
       ],
-      "status": "Final protected main1ef005e integrated; all396-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
+      "status": "Final protected main1ef005e integrated; all417-test CI/sanitizer/leak gates pass. Engine stays separate from public1.3.1.",
       "latest_clean_source": "5939431bc038c7a099ddee9b7bb2e3ffa7567553",
       "merged_main": "1ef005e0c73971a360a0e3bb52792a9286a761d3"
     },
@@ -368,10 +404,10 @@
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 396,
-    "maintained_coverage_percent": 93.62,
-    "script_swift_coverage_percent": 96.86,
-    "encounter_coverage_percent": 97.73,
+    "tests_per_lane": 417,
+    "maintained_coverage_percent": 93.77,
+    "script_swift_coverage_percent": 96.51,
+    "encounter_coverage_percent": 97.66,
     "maintained_c_host_coverage_percent": 95.0,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.85,
@@ -380,7 +416,8 @@
     "gallery_trial_coverage_percent": 97.24,
     "owned_equipment_coverage_percent": 94.97,
     "equipment_loan_coverage_percent": 97.58,
-    "contract_coverage_percent": 92.3
+    "contract_coverage_percent": 92.3,
+    "profiled_npc_coverage_percent": 94.8
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -403,13 +440,14 @@
     "Optional original physical classic patrol",
     "Optional original humanoid charter passengers",
     "Optional original identified equipment loan",
-    "Optional original main-orbital generated sample contracts"
+    "Optional original main-orbital generated sample contracts",
+    "Optional original profiled NPC/component skirmish"
   ],
   "source_data_follow_ups": [
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes396 tests per lane,93.62% maintained coverage,96.86% script coverage,92.30% contracts and0leaks; exact bytes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes417 tests per lane,93.77% maintained coverage,96.51% script coverage,94.80% profiled NPC/collision coverage and0leaks; exact503 source/resource/test/example hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -464,5 +502,20 @@
     ],
     "full_rrs_ready": false,
     "full_engine_ready": false
+  },
+  "last_validated_commit": "afb8a2e",
+  "npc_checkpoint": {
+    "status": "validated with complete make ci,417 tests per lane; full source engine remains incomplete",
+    "capability": "profiled-encounters-v2",
+    "scope": "measured pinned models/solid components, explicit NPC energy/stock, bounded local steering, physical lasers/plasma, source-zero preservation, saved projectiles and independent Gallery example",
+    "full_source_combat_ai_ready": false,
+    "full_engine_ready": false,
+    "native_evidence": [
+      "actual player lasers, source-profile NPC weapons, AUTO docking and explicit station report",
+      "models/components transform and native render; source zeros; physical grazing/corner collision",
+      "whole admission/pending plan preservation and late command rollback",
+      "camera/dock/save condition and projectile conservation, future shot-identity replay parity",
+      "isolated physical Gallery trial/restart/return"
+    ]
   }
 }

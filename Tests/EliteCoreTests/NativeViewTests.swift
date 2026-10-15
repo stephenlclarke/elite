@@ -7,6 +7,62 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeProfiledShipsRenderMeasuredComponentsAndSourcePanels() async throws {
+    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: root) }
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+    let pack = try ScriptPackLibrary.read(example)
+    let runtime = GameRuntime(game: Game(executive: false))
+    try await runtime.installScriptPack(from: example, destination: root)
+    let trial = try await runtime.scriptGalleryTrial(packDigest: pack.digest, seed: 56)
+    let namespace = try #require(await trial.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    var actual = await trial.snapshot()
+    for _ in 0..<100 {
+      actual = await trial.advance(delta: 0.05)
+      if actual.bodies.contains(where: {
+        $0.scriptNPC?.guns["forward"]?.beamRange != nil
+          && ($0.scriptNPC?.guns["forward"]?.cooldown ?? 0) > 0.05
+      }) { break }
+    }
+    #expect(actual.isMissionTrial)
+    #expect(actual.bodies.contains { $0.scriptNPC?.guns["forward"]?.beamRange != nil })
+    let body = try #require(actual.bodies.first { $0.scriptNPC != nil })
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    if let evidence {
+      let directory = URL(fileURLWithPath: evidence)
+      try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+      let image = try #require(imageForGame(actual, width: 1512, height: 982, scale: 2))
+      let bytes = try #require(NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+      try bytes.write(to: directory.appendingPathComponent("npc-native-combat-1512.png"))
+    }
+    for rotated in [false, true] {
+      var game = actual
+      var body = body
+      body.position = .init(0, 0, 450)
+      if rotated {
+        body.orientation.x = body.orientation.x.rotated(pitch: 0.45, roll: 0.4, yaw: 0.7)
+        body.orientation.y = body.orientation.y.rotated(pitch: 0.45, roll: 0.4, yaw: 0.7)
+        body.orientation.z = body.orientation.z.rotated(pitch: 0.45, roll: 0.4, yaw: 0.7)
+      }
+      game.bodies = [body]
+      game.commander.shipDisplayStyle = .shadedPanels
+      for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+        let image = try #require(imageForGame(game, width: width, height: height, scale: scale))
+        #expect(image.width == width * scale && image.height == height * scale)
+        if let evidence {
+          let directory = URL(fileURLWithPath: evidence)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          let bytes = try #require(NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try bytes.write(to: directory.appendingPathComponent("npc-\(rotated ? "rotated" : "front")-\(width).png"))
+        }
+      }
+    }
+    #expect(await trial.snapshot().bodies == actual.bodies)
+  }
+
   @MainActor @Test func nativeContractBoardUsesExplicitActionsAndSavesThePrecedingAcceptance()
     async throws
   {

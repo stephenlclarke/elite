@@ -134,7 +134,7 @@ extension Game {
       }
     }
     return .init(
-      id: body.id, model: body.blackjackRole?.name ?? body.hull.modelName, status: status,
+      id: body.id, model: body.scriptNPC?.fit.definition.name ?? body.blackjackRole?.name ?? body.hull.modelName, status: status,
       fields: fields)
   }
 }
