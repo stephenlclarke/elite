@@ -37,6 +37,19 @@ public struct SalvageLot: Equatable, Codable, Sendable {
   public var velocity: Vector3
   public let halfExtents: Vector3
   public let massKg: Double
+  public let loot: SalvageLootItem?
+  public init(
+    identity: SalvageLotIdentity, content: SalvageLotContent, position: Vector3,
+    velocity: Vector3, halfExtents: Vector3, massKg: Double, loot: SalvageLootItem? = nil
+  ) {
+    self.identity = identity
+    self.content = content
+    self.position = position
+    self.velocity = velocity
+    self.halfExtents = halfExtents
+    self.massKg = massKg
+    self.loot = loot
+  }
   public var category: SalvageTargetCategory {
     switch content {
     case .commodity: return .cargo
@@ -55,12 +68,24 @@ public enum SalvageWorkResult: Equatable, Codable, Sendable {
 }
 
 public enum SalvageCollectionRefusal: String, Codable, Sendable {
-  case unavailable, protectedPayload, noScoops, unsafeApproach, oversized, fullHold, invalidCargo
+  case unavailable, protectedPayload, noScoops, unsafeApproach, oversized, fullHold, invalidCargo,
+    sparePodLimit
 }
 
 public enum SalvageCollectionReceipt: Equatable, Codable, Sendable {
   case collected(SalvageLot)
   case refused(SalvageCollectionRefusal)
+}
+
+/// G1 verifies the pinned physical component (nil means the slot must be vacant).
+public enum SalvageTransactionBinding: Equatable, Codable, Sendable {
+  case equipment(
+    target: SalvageUpgradeTarget, expectedComponentInstanceID: UUID?,
+    templateVersion: UInt32, axis: SalvageUpgradeAxis?, feature: SalvageFeature?)
+  case research(recipeID: String, expectedComponentInstanceID: UUID?, templateVersion: UInt32)
+  case alien(
+    recipe: SalvageAlienRecipeID, target: SalvageAlienFittingTarget,
+    expectedComponentInstanceID: UUID?, templateVersion: UInt32)
 }
 
 public struct SalvageSettlementProposal: Equatable, Codable, Sendable {
@@ -69,6 +94,18 @@ public struct SalvageSettlementProposal: Equatable, Codable, Sendable {
   public let items: [SalvageLot]
   public let action: SalvageDefinitionAction
   public let saleValueTenths: Int
+  public let binding: SalvageTransactionBinding?
+  public init(
+    command: UUID, revision: UInt64, items: [SalvageLot],
+    action: SalvageDefinitionAction, saleValueTenths: Int, binding: SalvageTransactionBinding? = nil
+  ) {
+    self.command = command
+    self.revision = revision
+    self.items = items
+    self.action = action
+    self.saleValueTenths = saleValueTenths
+    self.binding = binding
+  }
 }
 
 public enum SalvageSettlementReceipt: Equatable, Codable, Sendable {
@@ -76,8 +113,20 @@ public enum SalvageSettlementReceipt: Equatable, Codable, Sendable {
   case refused
 }
 
+private struct SalvagePlanProgress: Equatable, Codable, Sendable {
+  let plan: SalvageLootPlan
+  var issued: [Int]
+  var discarded: [Bool]
+  var nextLot: UInt32 = 0
+  var destroyed = false
+  let structuralUnits: Int
+  var issuedStructural = 0
+  var materialKind: CommodityIdentity?
+}
+
 /// G1 publishes this state with cargo, equipment and cash in one actor transaction.
 public struct SalvageLedger: Equatable, Codable, Sendable {
+  public static let maximumPlans = 256
   public static let maximumPending = 256
   public static let maximumInventory = 128
   public static let maximumPartial = 256
@@ -85,6 +134,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public static let maximumSettlements = 1024
   public static let maximumSettledItems = 2048
   private let seed: UInt64
+  private var plans: [WreckSectionIdentity: SalvagePlanProgress] = [:]
   private var motions: [WreckIdentity: SalvageWreckMotion] = [:]
   private var depleted: [WreckIdentity: UInt64] = [:]
   private var work: [WreckSectionIdentity: Double] = [:]
@@ -101,13 +151,16 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
 
   public init(seed: UInt64 = 0) { self.seed = seed }
   private enum CodingKeys: String, CodingKey {
-    case seed, motions, depleted, work, damagedTechnology, pending, stored, offers, bindings
+    case seed, plans, motions, depleted, work, damagedTechnology, pending, stored, offers, bindings
     case settlements, lastOperation, settledItemCount, sequence, revision
   }
 
   public init(from decoder: Decoder) throws {
     let values = try decoder.container(keyedBy: CodingKeys.self)
     seed = try values.decode(UInt64.self, forKey: .seed)
+    plans =
+      try values.decodeIfPresent([WreckSectionIdentity: SalvagePlanProgress].self, forKey: .plans)
+      ?? [:]
     motions =
       try values.decodeIfPresent([WreckIdentity: SalvageWreckMotion].self, forKey: .motions) ?? [:]
     depleted = try values.decode([WreckIdentity: UInt64].self, forKey: .depleted)
@@ -134,10 +187,13 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   }
 
   private var validState: Bool {
-    guard trackedWrecks.count <= Self.maximumWrecks,
+    guard plans.count <= Self.maximumPlans,
+      plans.allSatisfy({ validProgress($0.value, section: $0.key) }),
+      trackedWrecks.count <= Self.maximumWrecks,
       motions.allSatisfy({ Self.validWreck($0.key) && Self.validMotion($0.value) }),
       depleted.count <= Self.maximumWrecks, work.count <= Self.maximumPartial,
       pending.count <= Self.maximumPending, stored.count <= Self.maximumInventory,
+      storedPodCount <= SalvageDefinitions.maximumSparePods,
       offers.count <= pending.count, bindings.count <= pending.count,
       settlements.count <= Self.maximumSettlements,
       (0...Self.maximumSettledItems).contains(settledItemCount),
@@ -149,11 +205,11 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       }),
       pending.allSatisfy({
         $0.key == $0.value.identity && validLot($0.value)
-          && isDepleted($0.key.section) && stored[$0.key] == nil
+          && issuedSection($0.key.section) && stored[$0.key] == nil
       }),
       stored.allSatisfy({
         $0.key == $0.value.identity && isTechnology($0.value) && validLot($0.value)
-          && isDepleted($0.key.section)
+          && issuedSection($0.key.section)
       }),
       offers.allSatisfy({
         pending[$0.value] != nil && $0.key.producer == .salvage
@@ -170,8 +226,9 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       guard case .committed(let proposal) = receipt,
         proposal.command == command, !proposal.items.isEmpty,
         proposal.items.count <= Self.maximumInventory,
+        validBinding(proposal.binding, action: proposal.action, lots: proposal.items),
         proposal.items.allSatisfy({
-          isTechnology($0) && validLot($0) && isDepleted($0.identity.section)
+          isTechnology($0) && validLot($0) && issuedSection($0.identity.section)
             && stored[$0.identity] == nil && pending[$0.identity] == nil
         })
       else { return false }
@@ -182,13 +239,22 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
           case .technology(let id, _, let condition) = lot.content,
           let definition = SalvageDefinitions.definition(id: id)
         {
-          saleValue += SalvageDefinitions.saleValue(
-            definition: definition, conditionPercent: condition)
+          saleValue +=
+            lot.loot?.saleValueTenths
+            ?? SalvageDefinitions.saleValue(
+              definition: definition, conditionPercent: condition)
         }
       }
       guard proposal.saleValueTenths == saleValue else { return false }
     }
     return settled.count == settledItemCount
+  }
+
+  private var storedPodCount: Int {
+    stored.values.filter {
+      if case .technology(let id, _, _) = $0.content { return id == "spare-escape-pod" }
+      return false
+    }.count
   }
 
   private func isTechnology(_ lot: SalvageLot) -> Bool {
@@ -207,6 +273,22 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       lot.halfExtents.length.isFinite, lot.halfExtents.x > 0,
       lot.halfExtents.y > 0, lot.halfExtents.z > 0
     else { return false }
+    if let loot = lot.loot {
+      guard let record = plans[lot.identity.section],
+        let expected = issuedItem(record, lot: lot.identity),
+        loot == expected, lot.massKg == expected.massKg, lot.halfExtents == expected.halfExtents
+      else { return false }
+      switch (lot.content, expected.content) {
+      case (.commodity(let amount), .commodity(let native)): return amount == native
+      case (
+        .technology(let id, let quality, let condition),
+        .technology(let expectedID, let expectedQuality, let expectedCondition, _)
+      ):
+        return id == expectedID && quality == expectedQuality && condition == expectedCondition
+      default: return false
+      }
+    }
+    guard plans[lot.identity.section] == nil else { return false }
     switch lot.content {
     case .commodity(let amount):
       return amount.valid && amount.quantity == 1 && amount.tonnes == 1
@@ -220,7 +302,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   }
 
   private var trackedWrecks: Set<WreckIdentity> {
-    Set(motions.keys).union(depleted.keys).union(work.keys.map(\.wreck))
+    Set(motions.keys).union(depleted.keys).union(work.keys.map(\.wreck)).union(
+      plans.keys.map(\.wreck))
   }
 
   private func canTrack(_ wreck: WreckIdentity) -> Bool {
@@ -266,7 +349,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public mutating func advance(
     wreck: WreckIdentity, section: SalvageSectionProfile, pose: ShipPose,
     velocity: Vector3, angularVelocity: Vector3, tool: SalvageTool,
-    elapsed: Double, operation: UInt64, conditions: SalvageWorkConditions
+    elapsed: Double, operation: UInt64, conditions: SalvageWorkConditions,
+    source: SalvageLootSource? = nil
   ) -> SalvageWorkResult {
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
     guard Self.validWreck(wreck), section.index < 64, elapsed.isFinite, elapsed > 0, elapsed <= 1,
@@ -287,6 +371,12 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     guard canTrack(wreck),
       work[identity] != nil || work.count < Self.maximumPartial
     else { return .capacityRefused }
+    if source != nil || plans[identity] != nil {
+      return advancePlanned(
+        wreck: wreck, section: section, pose: pose, velocity: velocity,
+        angularVelocity: angularVelocity, tool: tool, elapsed: elapsed, operation: operation,
+        source: source)
+    }
     let next = min(section.workSeconds, progress(identity) + elapsed)
     if next < section.workSeconds {
       if tool == .miningLaser { damagedTechnology.insert(identity) }
@@ -323,6 +413,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     guard canTrack(section.wreck) else {
       return .capacityRefused
     }
+    plans[section]?.destroyed = true
     lastOperation = operation
     depleted[section.wreck, default: 0] |= 1 << section.section
     work.removeValue(forKey: section)
@@ -356,7 +447,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
           position: lot.position, orientation: .init(), velocity: lot.velocity, npc: nil,
           rock: nil, payload: payload, priority: .ordinary,
           salvage: .init(
-            category: lot.category, ownership: .abandoned, claimant: nil,
+            category: lot.category, ownership: lot.loot?.legality.ownership ?? .abandoned,
+            claimant: nil,
             wreck: lot.identity.section.wreck, section: lot.identity.section, lot: lot.identity,
             bounds: .init(center: .init(0, 0, 0), radius: lot.halfExtents.length), workSurfaces: [])
         ))
@@ -430,7 +522,12 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       case .refused(.fullHold): return .refused(.fullHold)
       case .refused: return .refused(.invalidCargo)
       }
-    case .technology:
+    case .technology(let definitionID, _, _):
+      if definitionID == "spare-escape-pod" {
+        guard SalvageDefinitions.canStoreSparePod(currentCount: storedPodCount) else {
+          return .refused(.sparePodLimit)
+        }
+      }
       guard stored.count < Self.maximumInventory,
         Int(ceil((inventoryMassKg + lot.massKg) / 1000)) - reservedTonnes <= freeTonnes
       else {
@@ -452,32 +549,44 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   /// Prepare without consuming. G1 validates and publishes the entire commander copy.
   public func prepareSettlement(
     command: UUID, items: [SalvageLotIdentity],
-    action: SalvageDefinitionAction
+    action: SalvageDefinitionAction, binding: SalvageTransactionBinding? = nil
   ) -> SalvageSettlementProposal? {
     if case .committed(let proposal) = settlements[command] {
-      return proposal.items.map(\.identity) == items && proposal.action == action ? proposal : nil
+      return proposal.items.map(\.identity) == items && proposal.action == action
+        && proposal.binding == binding ? proposal : nil
     }
     guard !items.isEmpty, Set(items).count == items.count,
       settlements.count < Self.maximumSettlements,
       items.count <= Self.maximumSettledItems - settledItemCount
     else { return nil }
     let lots = items.compactMap { stored[$0] }
-    guard lots.count == items.count else { return nil }
+    guard lots.count == items.count, validBinding(binding, action: action, lots: lots) else {
+      return nil
+    }
     var value = 0
     for lot in lots {
       guard case .technology(let id, _, let condition) = lot.content,
         let definition = SalvageDefinitions.definition(id: id)
       else { return nil }
+      let alienConversion: Bool
+      if case .alien = binding { alienConversion = true } else { alienConversion = false }
+      if !alienConversion, case .fit(let axis, _) = action, let loot = lot.loot,
+        case .technology(_, _, _, let fixedAxis) = loot.content, axis != fixedAxis
+      {
+        return nil
+      }
       if action == .sell {
-        let price = SalvageDefinitions.saleValue(
-          definition: definition, conditionPercent: condition)
+        let price =
+          lot.loot?.saleValueTenths
+          ?? SalvageDefinitions.saleValue(
+            definition: definition, conditionPercent: condition)
         guard price <= Int.max / 17 - value else { return nil }
         value += price
       }
     }
     return .init(
       command: command, revision: revision, items: lots, action: action,
-      saleValueTenths: value)
+      saleValueTenths: value, binding: binding)
   }
   public mutating func commitSettlement(_ proposal: SalvageSettlementProposal)
     -> SalvageSettlementReceipt
@@ -488,7 +597,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     guard proposal.revision == revision, settlements.count < Self.maximumSettlements,
       prepareSettlement(
         command: proposal.command, items: proposal.items.map(\.identity),
-        action: proposal.action) == proposal
+        action: proposal.action, binding: proposal.binding) == proposal
     else { return .refused }
     for lot in proposal.items { stored.removeValue(forKey: lot.identity) }
     let receipt = SalvageSettlementReceipt.committed(proposal)
@@ -496,6 +605,392 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     settledItemCount += proposal.items.count
     revision &+= 1
     return receipt
+  }
+
+  private func validBinding(
+    _ binding: SalvageTransactionBinding?,
+    action: SalvageDefinitionAction, lots: [SalvageLot]
+  ) -> Bool {
+    guard let binding else { return true }
+    switch binding {
+    case .equipment(let target, _, let version, let axis, let feature):
+      guard version > 0, lots.count == 1, case .fit(let selectedAxis, let mount) = action,
+        axis == selectedAxis, case .technology(let id, _, _) = lots[0].content,
+        let definition = SalvageDefinitions.definition(id: id)
+      else { return false }
+      if case .laser(_, let targetMount, _) = target, targetMount != mount { return false }
+      if case .feature(let expected) = definition.effect {
+        return feature == expected && axis == nil && mount == nil
+      }
+      guard feature == nil else { return false }
+      if case .scalar(let axes) = definition.effect {
+        return axis.map { axes.contains($0) } == true
+      }
+      return axis == nil
+    case .research(let recipeID, _, let version):
+      guard version > 0, action == .research,
+        let recipe = SalvageDefinitions.researchRecipes.first(where: { $0.id == recipeID }),
+        lots.count == recipe.requiredCount
+      else { return false }
+      return lots.allSatisfy {
+        if case .technology(let id, _, _) = $0.content { return id == recipe.requiredDefinitionID }
+        return false
+      }
+    case .alien(let recipeID, let target, _, let version):
+      let recipe = SalvageAlienDefinitions.recipe(recipeID)
+      guard version > 0, lots.count == recipe.requiredArtefactCount,
+        lots.allSatisfy({
+          if case .technology(let id, _, _) = $0.content {
+            return id == recipe.requiredDefinitionID
+          }
+          return false
+        })
+      else { return false }
+      switch (recipeID, target) {
+      case (.shieldRegenerator, .shield(_, let axis)):
+        return [.frontShieldRecharge, .rearShieldRecharge].contains(axis)
+          && action == .fit(axis: axis, mount: nil)
+      case (.plasmaEmitter, .combatMount(_, let mount)):
+        return action == .fit(axis: nil, mount: mount)
+      case (.seekerMissile, .missilePylon(_, let index)):
+        return (0..<SalvageDefinitions.maximumNativePylons).contains(index)
+          && action == .fit(axis: nil, mount: nil)
+      default: return false
+      }
+    }
+  }
+
+  /// Persist the original roll even when it is empty; changing source data cannot reroll it.
+  public mutating func inspectLoot(
+    wreck: WreckIdentity, section: SalvageSectionProfile,
+    source: SalvageLootSource
+  ) -> SalvageLootPlan? {
+    let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
+    if let existing = plans[identity] { return existing.plan }
+    guard Self.validWreck(wreck), section.index < 64, !isDepleted(identity),
+      plans.count < Self.maximumPlans, canTrack(wreck), validSource(source)
+    else { return nil }
+    let plan = SalvageLootProfiles.plan(section: identity, seed: seed, source: source)
+    guard validPlan(plan), estimatedLots(plan) <= 65535 else { return nil }
+    let units = section.structural && plan.profile != .asteroid ? structuralUnits(identity) : 0
+    plans[identity] = .init(
+      plan: plan, issued: Array(repeating: 0, count: plan.items.count),
+      discarded: Array(repeating: false, count: plan.items.count), structuralUnits: units)
+    revision &+= 1
+    return plan
+  }
+
+  public func remainingStructuralMaterial(for section: WreckSectionIdentity) -> Int {
+    guard let record = plans[section], !record.destroyed else { return 0 }
+    return record.structuralUnits - record.issuedStructural
+  }
+
+  /// Destruction is terminal for this issued lot. Culling only releases its actor binding.
+  @discardableResult public mutating func destroy(
+    lot: SalvageLotIdentity,
+    protection: MissionProtection
+  ) -> Bool {
+    guard let item = pending[lot], item.category != .occupiedPod,
+      !protection.protectedPayloads.contains(.salvage(lot))
+    else { return false }
+    pending.removeValue(forKey: lot)
+    bindings.removeValue(forKey: lot)
+    offers = offers.filter { $0.value != lot }
+    revision &+= 1
+    return true
+  }
+
+  private func issuedSection(_ section: WreckSectionIdentity) -> Bool {
+    isDepleted(section) || plans[section] != nil
+  }
+
+  private func validSource(_ source: SalvageLootSource) -> Bool {
+    (0...255).contains(source.legalValue) && (0...7).contains(source.economy)
+      && (0...14).contains(source.technology) && source.manifestSection < 64
+      && (source.manifest?.count ?? 0) <= 17
+  }
+
+  private func validPlan(_ plan: SalvageLootPlan) -> Bool {
+    guard Self.validWreck(plan.section.wreck), plan.section.section < 64,
+      validSource(plan.source),
+      plan.profile == SalvageLootProfiles.profile(roles: plan.source.roles),
+      plan.items.count <= 18, estimatedLots(plan) <= 65535,
+      plan.items.isEmpty || plan.emptyReason == nil,
+      plan.items.enumerated().allSatisfy({ index, item in
+        item.identity == SalvageLotIdentity(section: plan.section, lot: UInt16(index))
+          && validPlannedItem(item, source: plan.source)
+      })
+    else { return false }
+    if let profile = plan.profile {
+      guard
+        plan.bucket.map({ bucket in
+          SalvageLootProfiles.weights(for: profile).contains { $0.bucket == bucket }
+        })
+          ?? (plan.emptyReason == .invalidSection)
+      else { return false }
+    } else if plan.emptyReason != .unsupportedSource {
+      return false
+    }
+    if let manifest = plan.source.manifest, !manifest.allSatisfy(\.valid) {
+      return plan.items.isEmpty && plan.emptyReason == .invalidManifest
+    }
+    return true
+  }
+
+  private func validPlannedItem(_ item: SalvageLootItem, source: SalvageLootSource) -> Bool {
+    guard item.massKg.isFinite, item.massKg > 0, item.halfExtents.length.isFinite,
+      item.halfExtents.x > 0, item.halfExtents.y > 0, item.halfExtents.z > 0,
+      (0...Int.max / 17).contains(item.saleValueTenths),
+      item.legality.sourceLegalValue == source.legalValue,
+      item.legality.ownership == source.ownership,
+      item.legality.stolenProvenance == source.stolenProvenance
+    else { return false }
+    switch item.content {
+    case .commodity(let amount):
+      guard amount.valid, item.effect == nil, item.bonusBasisPoints == 0,
+        item.provenance == .human,
+        item.legality.commodityIllegal
+          == [.slaves, .narcotics, .firearms].contains(amount.commodity)
+      else { return false }
+      let mass = nativeMass(amount)
+      let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
+      let price = MarketItem.generate(economy: source.economy, fluctuation: 0)[
+        amount.commodity.rawValue
+      ].price
+      let (value, overflow) = amount.quantity.multipliedReportingOverflow(by: price)
+      return !overflow && item.saleValueTenths == value && item.massKg == mass
+        && item.halfExtents == Vector3(half, half, half)
+    case .technology(let id, let quality, let condition, let axis):
+      guard let definition = SalvageDefinitions.definition(id: id), (0...100).contains(condition),
+        item.massKg == definition.massKg, item.halfExtents == definition.halfExtents,
+        item.provenance == definition.provenance, !item.legality.commodityIllegal,
+        item.saleValueTenths
+          == SalvageDefinitions.saleValue(definition: definition, conditionPercent: condition),
+        !item.requiresChunking
+      else { return false }
+      if case .scalar(let axes) = definition.effect {
+        return axis.map { axes.contains($0) && item.effect == .scalar(axes: [$0]) } == true
+          && item.bonusBasisPoints == quality.bonusBasisPoints
+      }
+      return axis == nil && item.effect == definition.effect && item.bonusBasisPoints == 0
+    }
+  }
+
+  private func validProgress(_ record: SalvagePlanProgress, section: WreckSectionIdentity) -> Bool {
+    guard record.plan.section == section, validPlan(record.plan),
+      record.issued.count == record.plan.items.count, record.discarded.count == record.issued.count,
+      record.nextLot <= 65536, (0...5).contains(record.structuralUnits),
+      (0...record.structuralUnits).contains(record.issuedStructural),
+      record.issuedStructural == 0 || record.issuedStructural == record.structuralUnits,
+      record.materialKind == nil || [.alloys, .minerals].contains(record.materialKind!),
+      record.issuedStructural == 0 || record.materialKind != nil,
+      record.plan.profile != .asteroid || record.structuralUnits == 0
+    else { return false }
+    var count = record.issuedStructural > 0 ? 1 : 0
+    for index in record.issued.indices {
+      let item = record.plan.items[index]
+      let total = nativeQuantity(item)
+      let issued = record.issued[index]
+      guard (0...total).contains(issued) else { return false }
+      if record.discarded[index] {
+        guard case .technology = item.content, issued == 1 else { return false }
+      } else {
+        let limit = chunkLimit(item)
+        guard issued == total || issued % limit == 0 else { return false }
+        if issued > 0 { count += (issued - 1) / limit + 1 }
+      }
+    }
+    return count == Int(record.nextLot)
+      && (!isDepleted(section) || record.destroyed || fullyIssued(record))
+  }
+
+  private func fullyIssued(_ record: SalvagePlanProgress) -> Bool {
+    record.issuedStructural == record.structuralUnits
+      && zip(record.issued, record.plan.items).allSatisfy { $0 == nativeQuantity($1) }
+  }
+
+  private func nativeQuantity(_ item: SalvageLootItem) -> Int {
+    if case .commodity(let amount) = item.content { return amount.quantity }
+    return 1
+  }
+  private func chunkLimit(_ item: SalvageLootItem) -> Int {
+    guard case .commodity(let amount) = item.content else { return 1 }
+    switch amount.commodity.unit {
+    case "t": return 5
+    case "kg": return 1000
+    default: return 1_000_000
+    }
+  }
+  private func estimatedLots(_ plan: SalvageLootPlan) -> Int {
+    plan.items.reduce(0) { sum, item in
+      let quantity = nativeQuantity(item)
+      guard quantity > 0, quantity <= Int.max / 17 else { return 65537 }
+      return min(65537, sum + min(65537, (quantity - 1) / chunkLimit(item) + 1))
+    }
+  }
+  private func nativeMass(_ amount: CommodityAmount) -> Double {
+    Double(amount.quantity)
+      * (amount.commodity.unit == "t" ? 1000 : amount.commodity.unit == "kg" ? 1 : 0.001)
+  }
+  private func structuralUnits(_ section: WreckSectionIdentity) -> Int {
+    var value =
+      seed ^ 0x4855_4C4C_504C_4154 ^ section.wreck.lineage
+      ^ UInt64(section.wreck.site) << 32 ^ UInt64(section.section)
+      ^ UInt64(section.wreck.system.system) &* 0xBF58_476D_1CE4_E5B9
+      ^ UInt64(section.wreck.system.galaxy) &* 0x9E37_79B9_7F4A_7C15
+    value = (value ^ (value >> 30)) &* 0xBF58_476D_1CE4_E5B9
+    return 1 + Int((value ^ (value >> 27)) % 5)
+  }
+
+  private func chunk(_ item: SalvageLootItem, identity: SalvageLotIdentity, quantity: Int)
+    -> SalvageLootItem
+  {
+    guard case .commodity(let amount) = item.content else {
+      return .init(
+        identity: identity, content: item.content, effect: item.effect,
+        bonusBasisPoints: item.bonusBasisPoints, massKg: item.massKg, halfExtents: item.halfExtents,
+        provenance: item.provenance, saleValueTenths: item.saleValueTenths,
+        legality: item.legality, requiresChunking: false)
+    }
+    let chunkAmount = CommodityAmount(commodity: amount.commodity, quantity: quantity)
+    let mass = nativeMass(chunkAmount)
+    let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
+    return .init(
+      identity: identity, content: .commodity(chunkAmount), effect: nil, bonusBasisPoints: 0,
+      massKg: mass, halfExtents: .init(half, half, half), provenance: item.provenance,
+      saleValueTenths: item.saleValueTenths / nativeQuantity(item) * quantity,
+      legality: item.legality, requiresChunking: false)
+  }
+
+  private func structuralItem(_ record: SalvagePlanProgress, lot: SalvageLotIdentity)
+    -> SalvageLootItem
+  {
+    let amount = CommodityAmount(
+      commodity: record.materialKind ?? .minerals, quantity: record.structuralUnits)
+    let mass = nativeMass(amount)
+    let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
+    let source = record.plan.source
+    let price = MarketItem.generate(economy: source.economy, fluctuation: 0)[
+      amount.commodity.rawValue
+    ].price
+    return .init(
+      identity: lot, content: .commodity(amount), effect: nil, bonusBasisPoints: 0,
+      massKg: mass, halfExtents: .init(half, half, half), provenance: .human,
+      saleValueTenths: price * amount.quantity,
+      legality: .init(
+        commodityIllegal: false, sourceLegalValue: source.legalValue,
+        ownership: source.ownership, stolenProvenance: source.stolenProvenance),
+      requiresChunking: false)
+  }
+
+  private func issuedItem(_ record: SalvagePlanProgress, lot: SalvageLotIdentity)
+    -> SalvageLootItem?
+  {
+    guard lot.section == record.plan.section, UInt32(lot.lot) < record.nextLot else { return nil }
+    var cursor = 0
+    if record.issuedStructural > 0 {
+      if lot.lot == 0 { return structuralItem(record, lot: lot) }
+      cursor = 1
+    }
+    for index in record.issued.indices where !record.discarded[index] && record.issued[index] > 0 {
+      let item = record.plan.items[index]
+      let limit = chunkLimit(item)
+      let count = (record.issued[index] - 1) / limit + 1
+      if Int(lot.lot) < cursor + count {
+        let ordinal = Int(lot.lot) - cursor
+        return chunk(
+          item, identity: lot, quantity: min(limit, nativeQuantity(item) - ordinal * limit))
+      }
+      cursor += count
+    }
+    return nil
+  }
+
+  private mutating func advancePlanned(
+    wreck: WreckIdentity, section: SalvageSectionProfile,
+    pose: ShipPose, velocity: Vector3, angularVelocity: Vector3, tool: SalvageTool,
+    elapsed: Double, operation: UInt64, source: SalvageLootSource?
+  ) -> SalvageWorkResult {
+    let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
+    var staged = self
+    if staged.plans[identity] == nil {
+      guard let source, staged.inspectLoot(wreck: wreck, section: section, source: source) != nil
+      else { return .capacityRefused }
+    }
+    guard var record = staged.plans[identity], !record.destroyed else { return .alreadyDepleted }
+    if record.materialKind == nil { record.materialKind = tool == .cutter ? .alloys : .minerals }
+    if tool == .miningLaser || damagedTechnology.contains(identity) {
+      for index in record.issued.indices where record.issued[index] == 0 {
+        if case .technology = record.plan.items[index].content {
+          record.issued[index] = 1
+          record.discarded[index] = true
+        }
+      }
+    }
+    let next = min(section.workSeconds, progress(identity) + elapsed)
+    if next < section.workSeconds {
+      staged.plans[identity] = record
+      staged.work[identity] = next
+      staged.lastOperation = operation
+      self = staged
+      return .progress(seconds: next, required: section.workSeconds)
+    }
+    var items: [SalvageLootItem] = []
+    func append(_ item: SalvageLootItem) -> Bool {
+      guard record.nextLot < 65536 else { return false }
+      items.append(item)
+      record.nextLot += 1
+      return true
+    }
+    if record.issuedStructural < record.structuralUnits {
+      guard
+        append(structuralItem(record, lot: .init(section: identity, lot: UInt16(record.nextLot))))
+      else { return .capacityRefused }
+      record.issuedStructural = record.structuralUnits
+    }
+    for index in record.issued.indices {
+      let item = record.plan.items[index]
+      while record.issued[index] < nativeQuantity(item) && items.count < 8 {
+        guard record.nextLot < 65536 else { return .capacityRefused }
+        let quantity = min(chunkLimit(item), nativeQuantity(item) - record.issued[index])
+        let issued = chunk(
+          item, identity: .init(section: identity, lot: UInt16(record.nextLot)), quantity: quantity)
+        guard append(issued) else { return .capacityRefused }
+        record.issued[index] += quantity
+      }
+    }
+    guard pending.count + items.count <= Self.maximumPending else { return .capacityRefused }
+    let normal = pose.orientation.apply(section.normal) * (1 / section.normal.length)
+    let cardinal = abs(normal.x) < 0.8 ? Vector3(1, 0, 0) : Vector3(0, 1, 0)
+    let cross = normal.cross(cardinal)
+    let tangent = cross * (1 / cross.length)
+    let offset = pose.orientation.apply(section.localPosition)
+    let lots = items.enumerated().map { index, item -> SalvageLot in
+      let content: SalvageLotContent
+      switch item.content {
+      case .commodity(let amount): content = .commodity(amount)
+      case .technology(let id, let quality, let condition, _):
+        content = .technology(definitionID: id, quality: quality, conditionPercent: condition)
+      }
+      return .init(
+        identity: item.identity, content: content,
+        position: pose.position + offset + normal * (item.halfExtents.length + 10)
+          + tangent * Double(index % 5) * 8,
+        velocity: velocity + angularVelocity.cross(offset) + normal * 3,
+        halfExtents: item.halfExtents, massKg: item.massKg, loot: item)
+    }
+    guard lots.allSatisfy({ $0.position.length.isFinite && $0.velocity.length.isFinite }) else {
+      return .blocked
+    }
+    staged.plans[identity] = record
+    staged.work.removeValue(forKey: identity)
+    staged.damagedTechnology.remove(identity)
+    staged.lastOperation = operation
+    for lot in lots { staged.pending[lot.identity] = lot }
+    if fullyIssued(record) { staged.depleted[wreck, default: 0] |= 1 << section.index }
+    staged.revision &+= 1
+    self = staged
+    return lots.isEmpty ? .destroyed : .released(lots)
   }
 
   private func sorted(_ lots: Dictionary<SalvageLotIdentity, SalvageLot>.Values) -> [SalvageLot] {

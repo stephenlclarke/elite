@@ -316,4 +316,360 @@ struct SalvageLedgerTests {
     #expect(ledger.wreckMotion(for: .init(system: wreck.system, site: 999, lineage: 0)) == nil)
   }
 
+  private func source(
+    roles: Set<SalvageSourceRole> = [.commercialCarrier],
+    manifest: [CommodityAmount]? = nil
+  ) -> SalvageLootSource {
+    .init(
+      roles: roles, legalValue: 0, economy: 3, technology: 10,
+      ownership: .abandoned, manifest: manifest)
+  }
+
+  private func plannedAdvance(
+    _ ledger: inout SalvageLedger, profile: SalvageSectionProfile,
+    source: SalvageLootSource, operation: UInt64, tool: SalvageTool = .cutter
+  ) -> SalvageWorkResult {
+    ledger.advance(
+      wreck: wreck, section: profile, pose: .init(), velocity: .init(0, 0, 0),
+      angularVelocity: .init(0, 0, 0), tool: tool, elapsed: 1, operation: operation,
+      conditions: permitted, source: source)
+  }
+
+  @Test func fullCapitalManifestIsIssuedInFiniteManageableBatchesWithoutTruncation() throws {
+    let snapshot = source(manifest: [.init(commodity: .food, quantity: 6000)])
+    let identity = WreckSectionIdentity(wreck: wreck, section: 1)
+    let seed = try #require(
+      (0..<100).first {
+        SalvageLootProfiles.plan(section: identity, seed: UInt64($0), source: snapshot).items.count
+          == 1
+      })
+    var ledger = SalvageLedger(seed: UInt64(seed))
+    let profile = section(1, technology: [], seconds: 1)
+    let inspected = ledger.inspectLoot(wreck: wreck, section: profile, source: snapshot)
+    let plan = try #require(inspected)
+    #expect(plan.originalManifest == snapshot.manifest)
+    var cargo = Array(repeating: 0, count: 17)
+    var issued = Set<SalvageLotIdentity>()
+    for operation in 1...150 {
+      guard
+        case .released(let lots) = plannedAdvance(
+          &ledger, profile: profile,
+          source: snapshot, operation: UInt64(operation))
+      else {
+        Issue.record("Missing batch")
+        return
+      }
+      #expect(lots.count == 8)
+      for lot in lots {
+        #expect(issued.insert(lot.identity).inserted)
+        guard case .commodity(let amount) = lot.content else {
+          Issue.record("Unexpected cargo")
+          return
+        }
+        #expect(amount.commodity == .food && amount.quantity == 5)
+        #expect(lot.loot?.identity == lot.identity)
+        #expect(collect(&ledger, lot, cargo: &cargo, free: 6000) == .collected(lot))
+      }
+      #expect(ledger.isDepleted(identity) == (operation == 150))
+      if operation == 75 {
+        let decoded = try JSONDecoder().decode(
+          SalvageLedger.self, from: JSONEncoder().encode(ledger))
+        #expect(decoded == ledger)
+        ledger = decoded
+      }
+    }
+    #expect(cargo[CommodityIdentity.food.rawValue] == 6000)
+    #expect(issued.count == 1200 && ledger.pendingLots.isEmpty)
+    #expect(
+      plannedAdvance(&ledger, profile: profile, source: snapshot, operation: 151)
+        == .alreadyDepleted)
+    #expect(
+      ledger.inspectLoot(wreck: wreck, section: profile, source: source(manifest: [])) == plan)
+  }
+
+  @Test func emptyInspectionAndAsteroidOwnershipNeverRerollOrGrantSalvageOre() throws {
+    var ledger = SalvageLedger()
+    let profile = section(structural: true, technology: [], seconds: 1)
+    let asteroid = source(roles: [.asteroid])
+    let inspected = ledger.inspectLoot(wreck: wreck, section: profile, source: asteroid)
+    let original = try #require(inspected)
+    #expect(original.emptyReason == .miningLedgerOwnsOre)
+    #expect(ledger.remainingStructuralMaterial(for: original.section) == 0)
+    ledger = try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger))
+    #expect(
+      ledger.inspectLoot(
+        wreck: wreck, section: profile,
+        source: source(roles: [.militaryCapital])) == original)
+    #expect(plannedAdvance(&ledger, profile: profile, source: asteroid, operation: 1) == .destroyed)
+    #expect(ledger.pendingLots.isEmpty)
+  }
+
+  @Test func miningDiscardsUnissuedTechnologyButPlatingHasOneSharedFiniteYield() throws {
+    var ledger = SalvageLedger(seed: 3)
+    let snapshot = source(roles: [.thargoid])
+    let profile = section(structural: true, seconds: 2)
+    let inspected = ledger.inspectLoot(wreck: wreck, section: profile, source: snapshot)
+    let plan = try #require(inspected)
+    #expect(plan.items.count == 1)
+    let initial = ledger.remainingStructuralMaterial(for: plan.section)
+    #expect((1...5).contains(initial))
+    _ = plannedAdvance(
+      &ledger, profile: profile, source: snapshot, operation: 1, tool: .miningLaser)
+    ledger = try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger))
+    guard
+      case .released(let lots) = plannedAdvance(
+        &ledger, profile: profile,
+        source: snapshot, operation: 2)
+    else {
+      Issue.record("No plating yield")
+      return
+    }
+    #expect(lots.count == 1)
+    #expect(lots[0].content == .commodity(.init(commodity: .minerals, quantity: initial)))
+    #expect(ledger.remainingStructuralMaterial(for: plan.section) == 0)
+    #expect(ledger.isDepleted(plan.section))
+    #expect(ledger.inventory.isEmpty)
+  }
+
+  @Test func pendingLotDestructionIsTerminalWhileCullNeverDestroysAndProtectionRefuses() throws {
+    var ledger = SalvageLedger()
+    let snapshot = source(roles: [.thargoid])
+    _ = plannedAdvance(&ledger, profile: section(seconds: 1), source: snapshot, operation: 1)
+    let lot = try #require(ledger.pendingLots.first)
+    #expect(lot.loot?.provenance == .alien)
+    var protection = MissionProtection()
+    protection.protectedPayloads.insert(.salvage(lot.identity))
+    let refused = ledger.destroy(lot: lot.identity, protection: protection)
+    #expect(!refused && ledger.pendingLots.contains(lot))
+    let destroyed = ledger.destroy(lot: lot.identity, protection: .init())
+    #expect(destroyed)
+    ledger.resetPhysicalBindings(system: wreck.system)
+    ledger = try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger))
+    #expect(ledger.pendingLots.isEmpty && ledger.spawnRequests(context: ecologyContext()).isEmpty)
+    let retry = ledger.destroy(lot: lot.identity, protection: .init())
+    #expect(!retry)
+  }
+
+  @Test func sparePodStorageLimitRetainsThirdUntilAtomicFitFreesOneSlot() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger,
+      section: section(
+        technology: Array(repeating: "spare-escape-pod", count: 3),
+        seconds: 1), operation: 1)
+    let lots = ledger.pendingLots
+    var cargo = Array(repeating: 0, count: 17)
+    _ = collect(&ledger, lots[0], cargo: &cargo)
+    _ = collect(&ledger, lots[1], cargo: &cargo)
+    #expect(collect(&ledger, lots[2], cargo: &cargo) == .refused(.sparePodLimit))
+    #expect(ledger.inventory.count == 2 && ledger.pendingLots.contains(lots[2]))
+    let proposal = try #require(
+      ledger.prepareSettlement(
+        command: UUID(),
+        items: [lots[0].identity], action: .fit(axis: nil, mount: nil)))
+    #expect(ledger.commitSettlement(proposal) == .committed(proposal))
+    #expect(collect(&ledger, lots[2], cargo: &cargo) == .collected(lots[2]))
+    #expect(ledger.inventory.count == 2)
+  }
+
+  @Test func nativeKilogramsAndGramsKeepExactQuantitiesWithZeroTradeTonneReservation() throws {
+    let snapshot = source(manifest: [
+      .init(commodity: .gold, quantity: 2501),
+      .init(commodity: .gemstones, quantity: 2_000_001),
+    ])
+    let identity = WreckSectionIdentity(wreck: wreck, section: 1)
+    let seed = try #require(
+      (0..<100).first {
+        SalvageLootProfiles.plan(section: identity, seed: UInt64($0), source: snapshot).items.count
+          == 2
+      })
+    var ledger = SalvageLedger(seed: UInt64(seed))
+    guard
+      case .released(let lots) = plannedAdvance(
+        &ledger,
+        profile: section(1, technology: [], seconds: 1), source: snapshot, operation: 1)
+    else {
+      Issue.record("No native-unit fragments")
+      return
+    }
+    #expect(lots.count == 6)
+    var cargo = Array(repeating: 0, count: 17)
+    for lot in lots { #expect(collect(&ledger, lot, cargo: &cargo, free: 0) == .collected(lot)) }
+    #expect(cargo[CommodityIdentity.gold.rawValue] == 2501)
+    #expect(cargo[CommodityIdentity.gemstones.rawValue] == 2_000_001)
+    #expect(ledger.reservedTonnes == 0 && ledger.inventory.isEmpty)
+    #expect(
+      try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger)) == ledger)
+  }
+
+  @Test func immutablePlanCapacityRefusesWithoutEvictingEarlierEmptyRolls() throws {
+    var ledger = SalvageLedger()
+    let snapshot = source(roles: [.asteroid])
+    for index in 0..<SalvageLedger.maximumPlans {
+      let target = WreckIdentity(system: wreck.system, site: UInt32(index), lineage: 9)
+      #expect(ledger.inspectLoot(wreck: target, section: section(), source: snapshot) != nil)
+    }
+    let unchanged = ledger
+    let refused = ledger.inspectLoot(
+      wreck: .init(system: wreck.system, site: 999, lineage: 9),
+      section: section(), source: snapshot)
+    #expect(refused == nil && ledger == unchanged)
+    #expect(
+      try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger)) == ledger)
+  }
+
+  @Test func fixedLootEffectsAndLegalityRejectCorruptionOnReload() throws {
+    let snapshot = source(roles: [.militaryCapital])
+    let identity = WreckSectionIdentity(wreck: wreck, section: 0)
+    let seed = try #require(
+      (0..<100).first {
+        SalvageLootProfiles.plan(section: identity, seed: UInt64($0), source: snapshot).items
+          .contains {
+            if case .scalar = $0.effect { return true }
+            return false
+          }
+      })
+    var ledger = SalvageLedger(seed: UInt64(seed))
+    _ = plannedAdvance(&ledger, profile: section(seconds: 1), source: snapshot, operation: 1)
+    func corruptBonus(_ value: Any) -> Any {
+      if var object = value as? [String: Any] {
+        for (key, child) in object {
+          object[key] = key == "bonusBasisPoints" ? 4000 : corruptBonus(child)
+        }
+        return object
+      }
+      if let array = value as? [Any] { return array.map(corruptBonus) }
+      return value
+    }
+    let object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger))
+    let data = try JSONSerialization.data(withJSONObject: corruptBonus(object))
+    #expect(throws: DecodingError.self) { try JSONDecoder().decode(SalvageLedger.self, from: data) }
+  }
+
+  @Test func boundEquipmentReplayPinsHullComponentVersionAndExactEffect() throws {
+    var ledger = SalvageLedger()
+    _ = advance(&ledger, section: section(seconds: 1), operation: 1)
+    let lot = try #require(ledger.pendingLots.first)
+    var cargo = Array(repeating: 0, count: 17)
+    _ = collect(&ledger, lot, cargo: &cargo)
+    let command = UUID()
+    let hull = UUID()
+    let component = UUID()
+    let action = SalvageDefinitionAction.fit(axis: .scanningRange, mount: nil)
+    func binding(_ targetHull: UUID, _ expected: UUID?, _ version: UInt32)
+      -> SalvageTransactionBinding
+    {
+      .equipment(
+        target: .hull(instance: targetHull), expectedComponentInstanceID: expected,
+        templateVersion: version, axis: .scanningRange, feature: nil)
+    }
+    let pinned = binding(hull, component, 1)
+    let quote = try #require(
+      ledger.prepareSettlement(
+        command: command,
+        items: [lot.identity], action: action, binding: pinned))
+    #expect(ledger.commitSettlement(quote) == .committed(quote))
+    for changed in [
+      binding(UUID(), component, 1), binding(hull, UUID(), 1),
+      binding(hull, nil, 1), binding(hull, component, 2),
+    ] {
+      #expect(
+        ledger.prepareSettlement(
+          command: command, items: [lot.identity],
+          action: action, binding: changed) == nil)
+      let forged = SalvageSettlementProposal(
+        command: command, revision: quote.revision,
+        items: quote.items, action: action, saleValueTenths: 0, binding: changed)
+      #expect(ledger.commitSettlement(forged) == .refused)
+    }
+    #expect(
+      ledger.prepareSettlement(
+        command: command, items: [lot.identity],
+        action: action, binding: pinned) == quote)
+    let decoded = try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger))
+    #expect(decoded == ledger)
+    #expect(decoded.settlementReceipt(for: command) == .committed(quote))
+  }
+
+  @Test func researchBindingsRequireKnownRecipeAndPositiveTemplateVersion() throws {
+    var ledger = SalvageLedger()
+    _ = advance(
+      &ledger, section: section(technology: ["computer-core", "computer-core"], seconds: 1),
+      operation: 1)
+    var cargo = Array(repeating: 0, count: 17)
+    let lots = ledger.pendingLots
+    for lot in lots { _ = collect(&ledger, lot, cargo: &cargo) }
+    let identities = lots.map(\.identity)
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: identities, action: .research,
+        binding: .research(
+          recipeID: "unknown", expectedComponentInstanceID: nil,
+          templateVersion: 1)) == nil)
+    #expect(
+      ledger.prepareSettlement(
+        command: UUID(), items: identities, action: .research,
+        binding: .research(
+          recipeID: "navigation-2", expectedComponentInstanceID: nil,
+          templateVersion: 0)) == nil)
+    let quote = try #require(
+      ledger.prepareSettlement(
+        command: UUID(), items: identities,
+        action: .research,
+        binding: .research(
+          recipeID: "navigation-2",
+          expectedComponentInstanceID: nil, templateVersion: 1)))
+    #expect(ledger.commitSettlement(quote) == .committed(quote))
+    func corruptVersion(_ value: Any) -> Any {
+      if var object = value as? [String: Any] {
+        for (key, child) in object {
+          object[key] = key == "templateVersion" ? 0 : corruptVersion(child)
+        }
+        return object
+      }
+      if let array = value as? [Any] { return array.map(corruptVersion) }
+      return value
+    }
+    let object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger))
+    let data = try JSONSerialization.data(withJSONObject: corruptVersion(object))
+    #expect(throws: DecodingError.self) { try JSONDecoder().decode(SalvageLedger.self, from: data) }
+  }
+
+  @Test func boundAlienConversionPinsRecipeHullPylonAndComponentOnRetry() throws {
+    var ledger = SalvageLedger()
+    _ = advance(&ledger, section: section(technology: ["alien-artefact"], seconds: 1), operation: 1)
+    let lot = try #require(ledger.pendingLots.first)
+    var cargo = Array(repeating: 0, count: 17)
+    _ = collect(&ledger, lot, cargo: &cargo)
+    let command = UUID()
+    let hull = UUID()
+    let pinned = SalvageTransactionBinding.alien(
+      recipe: .seekerMissile,
+      target: .missilePylon(hull: hull, index: 0), expectedComponentInstanceID: nil,
+      templateVersion: 1)
+    let quote = try #require(
+      ledger.prepareSettlement(
+        command: command, items: [lot.identity],
+        action: .fit(axis: nil, mount: nil), binding: pinned))
+    #expect(ledger.commitSettlement(quote) == .committed(quote))
+    let changed = SalvageTransactionBinding.alien(
+      recipe: .seekerMissile,
+      target: .missilePylon(hull: hull, index: 1), expectedComponentInstanceID: nil,
+      templateVersion: 1)
+    #expect(
+      ledger.prepareSettlement(
+        command: command, items: [lot.identity],
+        action: .fit(axis: nil, mount: nil), binding: changed) == nil)
+    #expect(
+      ledger.prepareSettlement(
+        command: command, items: [lot.identity],
+        action: .fit(axis: .frontShieldRecharge, mount: nil),
+        binding: .alien(
+          recipe: .shieldRegenerator,
+          target: .shield(hull: hull, axis: .frontShieldRecharge), expectedComponentInstanceID: nil,
+          templateVersion: 1)) == nil)
+    #expect(
+      try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger)) == ledger)
+  }
+
 }

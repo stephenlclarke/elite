@@ -24,6 +24,24 @@ import Testing
     #expect(try #require(ShipCatalogue.all.first { $0.id == "SH161" }).game == nil)
   }
 
+  @Test func sourceRolesUseExplicitInstallationsAndReviewedHullRoles() throws {
+    let expected: [String: SalvageSourceRole] = [
+      "SH161": .militaryCapital, "SH043": .militaryCapital, "SH081": .militaryCapital,
+      "SH156": .weaponsPlatform, "SH164": .drugFactory, "SH102": .rockHermit,
+      "SH123": .thargoid, "SH079": .commercialCarrier, "SH005": .commercialTrader,
+      "SH012": .commercialTrader, "SH062": .commercialTrader, "SH028": .station,
+      "SH155": .generalShip, "SH171": .generalShip, "SH078": .generalShip,
+      "SH019": .generalShip, "SH045": .generalShip,
+    ]
+    for (id, role) in expected {
+      #expect(
+        try #require(SalvageCatalogue.profile(catalogueShipID: id)).sourceRoles.contains(role))
+    }
+    for profile in SalvageCatalogue.all {
+      #expect(SalvageLootProfiles.profile(roles: profile.sourceRoles) != nil)
+    }
+  }
+
   @Test func nonflyableObjectsAndOccupiedOrProtectedCounterpartsNeverBecomeFreeSalvage() {
     for id in ["SH162", "SH163", "SH040", "SH125", "SH023", "SH999"] {
       #expect(SalvageCatalogue.profile(catalogueShipID: id) == nil)
