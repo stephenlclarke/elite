@@ -145,7 +145,8 @@ extension Game {
       radius.isFinite, radius > 0,
       (request.position - context.anchors.planet.position).length > context.anchors.planet.radius
         + radius,
-      (request.position - context.anchors.sun.position).length > context.anchors.sun.radius * 4
+      (request.position - context.anchors.sun.position).length > context.anchors.sun.radius
+        * (request.population == .projectile ? 1 : 4)
         + radius
     else { return false }
     // An emitted projectile starts at its owner's muzzle; its collision resolver
