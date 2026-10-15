@@ -209,12 +209,17 @@ extension NativeViewTests {
     try await harness.frame()
     try harness.press("return")
     await harness.drain()
+    await harness.delegate.runtime.nativeCommand { @Sendable game in
+      game.message = "Awaiting pointer"
+    }
     try await harness.frame()
     #expect(harness.view.game.gallery.campaignLinks)
+    #expect(harness.view.game.campaignGalleryLinks[1].title == "Try campaign")
     let layout = GalleryLayout(width: 512, height: 518)
-    try harness.click(x: 20, y: 518 - layout.listTop - layout.linkHeight - 1)
+    try harness.click(x: 20, y: layout.listTop + layout.linkHeight + 1)
     await harness.drain()
     let refused = await harness.delegate.runtime.snapshot()
+    #expect(refused.message == "Trials of saved contract assignments are not supported.")
     #expect(refused.gallery.campaignReview == nil && !refused.isMissionTrial)
     #expect(refused.ecmControl.epoch == before.ecmControl.epoch)
     #expect(refused.commander == before.commander)
