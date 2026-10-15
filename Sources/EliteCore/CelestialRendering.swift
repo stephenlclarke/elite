@@ -78,6 +78,12 @@ extension Display {
     let nearestX = min(max(center.x, clip.x), clip.maxX)
     let nearestY = min(max(center.y, clip.y), clip.maxY)
     guard hypot(center.x - nearestX, center.y - nearestY) <= visibleRadius else { return }
+    if game.commander.shipDisplayStyle != .shadedPanels {
+      let ink: Ink = game.commander.shipDisplayStyle == .whiteWireframe
+        ? .white : (body.kind == .sun ? .gold : .blue)
+      celestialOutline(center: center, radius: radius, ink: ink, into: &frame)
+      return
+    }
     switch body.kind {
     case .planet:
       frame.graphics.append(
@@ -96,6 +102,20 @@ extension Display {
       frame.graphics.append(.point(center: center, radius: radius * 1.06, opacity: 0.3, ink: .gold))
       frame.graphics.append(.point(center: center, radius: radius, opacity: 1, ink: .gold))
       frame.graphics.append(.point(center: center, radius: radius * 0.86, opacity: 1, ink: .yellow))
+    }
+  }
+
+  /// Bounded limb segments use the same flight clip as ship edges in both wire modes.
+  private static func celestialOutline(
+    center: ScreenPoint, radius: Double, ink: Ink, into frame: inout Frame
+  ) {
+    let segments = min(512, max(32, Int(ceil(sqrt(radius) * 8))))
+    var previous = ScreenPoint(center.x + radius, center.y)
+    for index in 1...segments {
+      let angle = Double(index) * 2 * .pi / Double(segments)
+      let next = ScreenPoint(center.x + radius * cos(angle), center.y + radius * sin(angle))
+      frame.wire(previous.x, previous.y, next.x, next.y, ink)
+      previous = next
     }
   }
 
