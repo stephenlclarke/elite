@@ -56,6 +56,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     self.digest = digest
   }
   public var data: ScriptValue = .object([:])
+  public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
   public var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
   public var choiceReceipts: [String: ScriptChoiceReceipt] {
     get { savedChoiceReceipts ?? [:] }
@@ -180,8 +181,12 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     let physicalIdentities = identities + componentIdentities + Array(projectiles.keys)
     guard Set(physicalIdentities).count == physicalIdentities.count else { return false }
     let gearIdentities = instances.values.flatMap { $0.gearIssues.values.flatMap(\.items) }
+    let choiceSequences = instances.values.flatMap {
+      $0.choiceReceipts.values.map(\.sequence) + Array($0.conversationReceipts.keys)
+    }
     let completionSequences = instances.values.compactMap { $0.completionReceipt?.sequence }
     return Set(identities).count == identities.count && instances.count <= 128
+      && Set(choiceSequences).count == choiceSequences.count
       && Set(completionSequences).count == completionSequences.count
       && Set(gearIdentities).count == gearIdentities.count
       && pendingEvents.count <= 4096 && nextEvent < UInt64(Int64.max)
@@ -204,6 +209,11 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
               && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
               && (0...256).contains(dialogue.system)
           } ?? true)
+          && instance.conversationReceipts.count <= 1024
+          && instance.conversationReceipts.allSatisfy {
+            $0.key == $0.value.sequence && $0.value.group == nil
+              && $0.value.valid(for: instance, engine: self)
+          }
           && instance.choiceReceipts.count <= 64
           && instance.choiceReceipts.allSatisfy {
             $0.key == $0.value.group && $0.value.valid(for: instance, engine: self)

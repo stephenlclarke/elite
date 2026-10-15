@@ -7,14 +7,43 @@ private struct CompletionFixture {
   let root: URL
   let child: ScriptPack
   let parent: ScriptPack
-  init(stage: String = "completion", digest: String? = nil, outcome: String = "complete") throws {
+  init(
+    stage: String = "completion", digest: String? = nil, outcome: String = "complete",
+    allowedOutcomes: [String]? = nil, childID: String? = nil, failedChild: Bool = false
+  ) throws {
     root = FileManager.default.temporaryDirectory.appendingPathComponent(
       "native-completion-" + UUID().uuidString)
     let examples = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent(
         "docs/mission-packs")
-    child = try ScriptPackLibrary.read(examples.appendingPathComponent("scripted-patrol"))
     try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+    var childFolder = examples.appendingPathComponent("scripted-patrol")
+    if childID != nil || failedChild {
+      let local = root.appendingPathComponent("child")
+      try FileManager.default.copyItem(at: childFolder, to: local)
+      if let childID {
+        let file = local.appendingPathComponent("manifest.toml")
+        let text = try String(contentsOf: file, encoding: .utf8)
+        try text.replacingOccurrences(of: "example.scripted-patrol", with: childID)
+          .write(to: file, atomically: true, encoding: .utf8)
+      }
+      if failedChild {
+        let file = local.appendingPathComponent("scripts/main.lua")
+        let text = try String(contentsOf: file, encoding: .utf8)
+        try text.replacingOccurrences(of: "outcome='complete'", with: "outcome='failed'")
+          .replacingOccurrences(of: "amount=1000", with: "amount=0")
+          .replacingOccurrences(
+            of: "Paid 100 credits.", with: "Recorded failed report without payment."
+          )
+          .write(to: file, atomically: true, encoding: .utf8)
+      }
+      childFolder = local
+    }
+    child = try ScriptPackLibrary.read(childFolder)
+    let outcomeRule =
+      allowedOutcomes.map {
+        "outcomes=[" + $0.map { "\"" + $0 + "\"" }.joined(separator: ",") + "]"
+      } ?? "outcome=\"\(outcome)\""
     let folder = root.appendingPathComponent("parent")
     try FileManager.default.copyItem(
       at: examples.appendingPathComponent("scripted-courier"), to: folder)
@@ -24,7 +53,7 @@ private struct CompletionFixture {
     id="test.receipt-parent"
     version="1.0.0"
     minimumEngine="2.0.0"
-    capabilities=["script-lua-v1","story-v2","economy-v2","completion-receipts-v2"]
+    capabilities=["script-lua-v1","story-v2","economy-v2","completion-receipts-v2"\(allowedOutcomes == nil ? "" : ",\"compound-receipts-v2\"")]
     priority=700
     source="Original linked mission test."
     license="MIT"
@@ -43,7 +72,7 @@ private struct CompletionFixture {
     definition="\(child.manifest.stateID)"
     version="\(child.manifest.version)"
     digest="\(digest ?? child.digest)"
-    outcome="\(outcome)"
+    \(outcomeRule)
     minimumCount=1
     [[handlers]]
     event="mission.accepted"
@@ -82,7 +111,9 @@ private struct CompletionFixture {
     game.scriptPacks = [child, parent]
     return game
   }
-  func completePatrol(_ game: inout Game, report: Bool = true) throws -> UUID {
+  func completePatrol(_ game: inout Game, report: Bool = true, expected: ScriptOutcome = .complete)
+    throws -> UUID
+  {
     game.commander.installTargetingComputer(.docking)
     let id = try game.acceptScriptMission(child)
     game.launch()
@@ -107,7 +138,7 @@ private struct CompletionFixture {
     let offered = game.showScriptDialogue()
     #expect(offered && game.scriptOffer == id)
     game.confirmScriptDialogue()
-    #expect(game.commander.scriptState.instances[id]?.outcome == .complete)
+    #expect(game.commander.scriptState.instances[id]?.outcome == expected)
     return id
   }
 }
@@ -415,4 +446,96 @@ private struct CompletionFixture {
       .write(to: manifest, atomically: true, encoding: .utf8)
     #expect(throws: (any Error).self) { try ScriptPackLibrary.read(folder) }
   }
+}
+
+@Test func fourActualPatrolReportsJoinWithOnlyTheExplicitlyAllowedFailedOutcome() async throws {
+  let fixtures = try (0..<4).map { index in
+    try CompletionFixture(
+      allowedOutcomes: ["complete", "failed"], childID: "test.strand-\(index)",
+      failedChild: index == 3)
+  }
+  defer { fixtures.forEach { $0.clean() } }
+  let manifest = fixtures[0].root.appendingPathComponent("parent/manifest.toml")
+  var text = try String(contentsOf: manifest, encoding: .utf8)
+  text = text.replacingOccurrences(
+    of: "outcomes=[\"complete\",\"failed\"]", with: "outcome=\"complete\"")
+  for index in 1..<4 {
+    let child = fixtures[index].child
+    text += """
+
+      [[receiptRequirements]]
+      id="patrol\(index)"
+      stage="completion"
+      definition="\(child.manifest.stateID)"
+      version="\(child.manifest.version)"
+      digest="\(child.digest)"
+      \(index == 3 ? "outcomes=[\"complete\",\"failed\"]" : "outcome=\"complete\"")
+      minimumCount=1
+      """
+  }
+  try text.write(to: manifest, atomically: true, encoding: .utf8)
+  let parent = try ScriptPackLibrary.read(manifest.deletingLastPathComponent())
+  var game = fixtures[0].game()
+  game.scriptPacks = fixtures.map(\.child) + [parent]
+  let parentID = try game.acceptScriptMission(parent)
+  var children: [UUID] = []
+  for index in 0..<4 {
+    children.append(
+      try fixtures[index].completePatrol(&game, expected: index == 3 ? .failed : .complete))
+    #expect(game.commander.scriptState.instances[parentID]?.outcome == .active)
+  }
+  game.drainScriptEvents()
+  #expect(game.commander.kills == 8)
+  let balance = game.commander.credits
+  game.emitScriptEvent("contact.requested", only: parentID)
+  let state = try #require(game.commander.scriptState.instances[parentID])
+  #expect(state.outcome == .complete && state.receiptJoins?.count == 4)
+  #expect(state.data["notifications"] == .integer(4))
+  #expect(Set(state.receiptJoins?.values.flatMap { $0 } ?? []) == Set(children))
+  #expect(game.commander.scriptState.instances[children[3]]?.completionReceipt?.outcome == .failed)
+  #expect(game.commander.credits == balance + 100 && game.commander.valid)
+  let save = fixtures[0].root.appendingPathComponent("save/commander.json")
+  let runtime = GameRuntime(game: game)
+  try await runtime.save(to: save)
+  let loaded = GameRuntime(game: fixtures[0].game())
+  try await loaded.load(from: save)
+  #expect(
+    await loaded.snapshot().commander.scriptState.instances[parentID]?.receiptJoins
+      == state.receiptJoins)
+  #expect(
+    await loaded.snapshot().commander.scriptState.instances[children[3]]?.completionReceipt?.outcome
+      == .failed)
+}
+
+@Test func aFailedNativeChildDoesNotMatchASuccessOnlyCompoundRequirement() throws {
+  let fixture = try CompletionFixture(allowedOutcomes: ["complete"], failedChild: true)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let parent = try game.acceptScriptMission(fixture.parent)
+  _ = try fixture.completePatrol(&game, expected: .failed)
+  game.drainScriptEvents()
+  let balance = game.commander.credits
+  game.emitScriptEvent("contact.requested", only: parent)
+  #expect(game.commander.scriptState.instances[parent]?.outcome == .active)
+  #expect(game.commander.scriptState.instances[parent]?.completionReceipt == nil)
+  #expect(game.commander.credits == balance && game.commander.valid)
+}
+
+@Test func ambiguousActiveDuplicateAndUnsupportedCompoundOutcomesCannotInstall() throws {
+  let fixture = try CompletionFixture(allowedOutcomes: ["complete", "failed"])
+  defer { fixture.clean() }
+  let folder = fixture.root.appendingPathComponent("parent")
+  let file = folder.appendingPathComponent("manifest.toml")
+  let original = try String(contentsOf: file, encoding: .utf8)
+  for replacement in [
+    "outcomes=[]", "outcomes=[\"active\"]", "outcomes=[\"complete\",\"complete\"]",
+    "outcomes=[\"complete\",\"unknown\"]", "outcome=\"complete\"\noutcomes=[\"failed\"]",
+  ] {
+    try original.replacingOccurrences(of: "outcomes=[\"complete\",\"failed\"]", with: replacement)
+      .write(to: file, atomically: true, encoding: .utf8)
+    #expect(throws: (any Error).self) { try ScriptPackLibrary.read(folder) }
+  }
+  try original.replacingOccurrences(of: ",\"compound-receipts-v2\"", with: "")
+    .write(to: file, atomically: true, encoding: .utf8)
+  #expect(throws: (any Error).self) { try ScriptPackLibrary.read(folder) }
 }

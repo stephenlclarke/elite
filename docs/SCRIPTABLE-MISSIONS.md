@@ -28,6 +28,8 @@ The interpreter exposes base scalar/assert/error/type/iteration helpers and nume
 | `cargo-v2` | Owned mission payload lots counted against the current hold, atomic issue/removal and receipts. |
 | `calendar-clocks-v2` | Saved commander calendar, explicit epoch, native launch/travel adjustments, calendar timers and contract deadlines. |
 | `commander-queries-v2` | Read-only native commander, stock, weapons, cargo, fitting and labelled common crew/accommodation queries. |
+| `dialogue-choices-v2` | Repeatable station answers with immutable native receipts, compact queries, explicit answer gates and linked question screens. |
+| `compound-receipts-v2` | Parent joins accept only explicitly declared sets of terminal child outcomes, including source-authorized resolved failures. |
 | `exclusive-choices-v2` | Genuine orbital-station dialogue choices, immutable one-per-group receipts and matching child-branch filters. |
 | `completion-receipts-v2` | Native immutable terminal receipts, exact-content child joins, acceptance/success gates and scoped completion notifications. |
 | `typed-save-values-v2` | Exact integer/floating data and finite IEEE64 bits across saves, versioned unambiguous storage and bounded decoding. |
@@ -91,9 +93,9 @@ The [24-requirement status map](SCRIPTABLE-MISSION-STATUS.json) records partial 
 
 ## Validation and remaining implementation
 
-The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 504 tests in each coverage/thread/address lane, 94.37% maintained coverage and zero native diagnostic leaks.
+The [validated checkpoint](SCRIPTABLE-MISSION-VALIDATION.json) passes 516 tests in each coverage/thread/address lane, 94.41% maintained coverage and zero native diagnostic leaks.
 
-Run `make script-missions-check` for the twelve authored examples, `make test` for behavior and `make ci` for repository gates. Tests cover script execution, quota faults, invalid output, initial acceptance rollback, whole-batch cargo/economy rollback, stale/Back/valid Confirm, terminal reward replay, missing content/cargo preservation, local timer skips, isolated trials, old saves, immutable generations and corrupt/failed saves. The maintained C shim is included in coverage; only unmodified third-party Lua is excluded from the maintained-code percentage and Sonar source scope. Compiled Lua still runs under sanitizers and leak checks.
+Run `make script-missions-check` for the thirteen authored examples, `make test` for behavior and `make ci` for repository gates. Tests cover script execution, quota faults, invalid output, initial acceptance rollback, whole-batch cargo/economy rollback, stale/Back/valid Confirm, terminal reward replay, missing content/cargo preservation, local timer skips, isolated trials, old saves, immutable generations and corrupt/failed saves. The maintained C shim is included in coverage; only unmodified third-party Lua is excluded from the maintained-code percentage and Sonar source scope. Compiled Lua still runs under sanitizers and leak checks.
 
 The full design additionally requires actual owned fleets/components and admission, native AI/docking/wormholes/weapons/death objectives, all source clock domains and persistent station jobs, people/life support/crew/berths, full source-specific gear condition/modification adapters, full source station/contract adapters and world services, compound campaign receipts, complete physical save/migration/replay services, deterministic plans, full Gallery scenes/tools and native Maenes/finance/RRS acceptance. These remain unsupported, with no historical mission rewritten into a courier to bypass them.
 
@@ -268,7 +270,7 @@ Unknown accommodation/fit results are nil. Native laser kills, missile consumpti
 
 Every new validated `mission.finish` transition records an immutable native terminal receipt with instance/definition/version/digest/outcome, original cause sequence/kind/context, actual commit context/revision, settled milestones, genuine destroyed encounter names, delivered party names, returned equipment names and any native contract settlement amount. Cause and commit clocks are distinct when an event was delayed. Receipts publish in the same durable generation as the terminal effects. A failed publication creates neither a reward nor a receipt. Replayed facts cannot create a second completion. Old terminal flags remain readable but are never guessed into native completion proof.
 
-Declare `completion-receipts-v2` and one or more root `[[receiptRequirements]]` tables. Each requires an exact definition (`packID/missionID`), semantic version,64-character content digest, terminal outcome and distinct-instance count. `stage="acceptance"` locks qualifying child IDs when accepting and rechecks them before successful completion. `stage="completion"` permits earlier acceptance but blocks a successful finish until the native children qualify. Failed/abandoned outcomes retain their own outcome-specific receipts without claiming that successful child joins happened. Maximums are32 requirements and128 children per requirement, within the shared128-instance state limit. Self dependencies, invalid fields, active-outcome requirements and undeclared capabilities are rejected before installation.
+Declare `completion-receipts-v2` and one or more root `[[receiptRequirements]]` tables. Each requires an exact definition (`packID/missionID`), semantic version,64-character content digest, terminal outcome (or an explicitly declared outcome set) and distinct-instance count. `stage="acceptance"` locks qualifying child IDs when accepting and rechecks them before successful completion. `stage="completion"` permits earlier acceptance but blocks a successful finish until the native children qualify. Failed/abandoned outcomes retain their own outcome-specific receipts without claiming that successful child joins happened. Maximums are32 requirements and128 children per requirement, within the shared128-instance state limit. Self dependencies, invalid fields, active-outcome requirements and undeclared capabilities are rejected before installation.
 
 ```toml
 [[receiptRequirements]]
@@ -328,3 +330,46 @@ choice = "courier"
 Install the [station assignment choice](mission-packs/branch-choice), [patrol follow-up](mission-packs/branch-patrol) and [courier follow-up](mission-packs/branch-courier) together. Accept the choice at Lave, reopen Contacts, select and Confirm one assignment, then reopen Contacts to accept its separate mission. The patrol uses the actual two-ship battle/report path; the courier uses actual one-tonne custody/travel/delivery. These are original demonstrations, not historical missions. A fresh Gallery trial of the chooser uses the same station choices in its separate commander; follow-ups do not receive invented parent receipts.
 
 Format15 saves the native choice records and the terminal receipt's frozen choices. Formats2-14 remain readable, without turning old story flags into a branch selection. This covers exclusive choices within one pinned mission instance. Shared dossiers/books/loans/services, full campaign-parent instance management and full P19/source acceptance remain required under the unavailable `campaigns-v1` capability.
+
+## Repeatable station conversations
+
+`dialogue-choices-v2` supports the same keyboard/click/Confirm interface for questions that may be answered repeatedly. Omit `group` from every choice in that dialogue. Each valid Confirm appends a separate native receipt; a deferred decision can be offered again. Exclusive groups continue using `exclusive-choices-v2` and retain their one-time behaviour. A single dialogue cannot mix grouped and ungrouped choices.
+
+```toml
+[[dialogs]]
+id = "decision"
+text = "You may defer and return later. Confirm records the selected answer."
+choices = [
+  {id="defer", label="Decide later"},
+  {id="details", label="Ask for details"},
+  {id="proceed", label="Proceed after asking for details"}
+]
+
+[[answerRequirements]]
+dialogue = "decision"
+choice = "details"
+minimumCount = 1
+```
+
+The manifest's root `answerRequirements` tables are native successful-finish gates over this instance's actual ungrouped answers. Every declaration must reference a declared question/choice; flags or copied Lua queries cannot satisfy it. Each pair is unique, counts are positive and their combined required minimum cannot exceed1024. These gates verify actual answers; authored Lua can additionally compare native sequences and current facts for its exact narrative ordering.
+
+`world.answers[dialogueID][choiceID]` contains compact native `count`, `first_sequence`, `last_sequence` and `label` summaries. `world.last_answer` exposes the latest native answer's `dialogue_id`, `choice_id`, `sequence`, original cause/commit contexts and `exclusive=false`. The original immutable records remain saved separately rather than copying the whole history into every interpreter call. `dialogue.chosen` for an ungrouped answer contains `group=nil` and its original `answer_sequence`; it is a result of the genuine confirmation, not another answer. Replayed or rejected confirmations cannot append a second record.
+
+A handler may commit an answer and offer its next declared dialogue in the same batch. After the protected callback returns, a bounded second queue pass settles answer observers before presenting that next question. This does not recursively call the interpreter inside a handler. An observer that changes the conversation should explicitly reoffer its pending dialogue so its revision is current. Back, Help, browsing and previewing remain pure. A failed publication preserves the earlier answers and the uncommitted next selection for exactly one real retry.
+
+The displayed question, token and choices are pinned when presented. If an autonomous event replaces that dialogue or changes its required revision, the view keeps the displayed question and marks the contact changed; Confirm refuses before dispatching a different question. Reopening Contacts presents the current question. Loading returns to Contacts instead of guessing that an old cursor meant consent.
+
+The bounded adapter retains up to1024 immutable ungrouped answers per instance. A new answer at capacity is rejected as a whole, with the previous records intact; no history or counter is silently truncated. The compact query remains usable at that saved boundary. Full archival/replay remains required for unrestricted long-running histories. Format16 stores these records; older formats retain their original state without inventing prior answers.
+
+The [repeatable conversation example](mission-packs/station-conversation) offers Defer, Details and Proceed at Lave. Defer can be confirmed repeatedly and survives reload. Asking for Details creates a genuine answer; reading its preview does not. Proceed completes only after the authored conditions and native answer requirements pass. There is no payment, loan, cargo or equipment transfer. Its isolated Gallery trial plays and saves the same real questions without altering the live commander.
+
+## Compound child outcomes
+
+A researched parent may require a strand to be resolved even when its source-authorized outcome is failure. With `compound-receipts-v2`, a receipt requirement can use `outcomes` instead of `outcome`. Declare exactly one form. The list contains one to three distinct terminal values from `complete`, `failed`, `abandoned`; active, unknown, duplicate or empty lists are invalid. Unlisted outcomes never qualify. All existing exact definition/version/digest/count/stage/branch checks still apply.
+
+```toml
+# In the parent's requirement for the shipment strand:
+outcomes = ["complete", "failed"]
+```
+
+Every declared requirement must still join its own genuine child instance. A four-child native test flies four actual patrol cohorts, reports three as successful and one as failed without its success payment, then joins all four exact receipts. It also verifies that a success-only requirement rejects that failed child and that the pinned joins survive reload. This proves the generic compound mechanism; full historical P19 strands, shared books/loans/services and whole-campaign acceptance still require their remaining native systems and source content.

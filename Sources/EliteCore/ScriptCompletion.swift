@@ -9,7 +9,9 @@ public struct ScriptReceiptRequirement: Codable, Sendable {
   public let definition: String
   public let version: String
   public let digest: String
-  public let outcome: ScriptOutcome
+  public let outcome: ScriptOutcome?
+  public let outcomes: [ScriptOutcome]?
+  public var acceptedOutcomes: [ScriptOutcome] { outcome.map { [$0] } ?? outcomes ?? [] }
   public let minimumCount: Int
   public let choiceGroup: String?
   public let choice: String?
@@ -18,14 +20,17 @@ public struct ScriptReceiptRequirement: Codable, Sendable {
     return PackValidation.localID(id) && parts.count == 2
       && parts.allSatisfy { PackValidation.identifier(String($0)) }
       && PackValidation.version(version) && ScriptCompletionReceipt.validDigest(digest)
-      && outcome != .active && (1...128).contains(minimumCount)
+      && ((outcome == nil) != (outcomes == nil))
+      && (1...3).contains(acceptedOutcomes.count)
+      && Set(acceptedOutcomes.map(\.rawValue)).count == acceptedOutcomes.count
+      && !acceptedOutcomes.contains(.active) && (1...128).contains(minimumCount)
       && ((choiceGroup == nil && choice == nil)
         || (choiceGroup.map(PackValidation.localID) == true
           && choice.map(PackValidation.localID) == true))
   }
   func matches(_ receipt: ScriptCompletionReceipt) -> Bool {
     receipt.definition == definition && receipt.version == version && receipt.digest == digest
-      && receipt.outcome == outcome
+      && acceptedOutcomes.contains(receipt.outcome)
       && (choiceGroup.map { receipt.choices?[$0]?.choice == choice } ?? true)
   }
 }
@@ -99,7 +104,7 @@ extension Game {
     where requirement.stage == .acceptance {
       if matchingScriptReceipts(requirement).count < requirement.minimumCount {
         return
-          "Requires \(requirement.minimumCount) verified \(requirement.outcome.rawValue) receipt(s): "
+          "Requires \(requirement.minimumCount) verified \(requirement.acceptedOutcomes.map(\.rawValue).sorted().joined(separator: "/")) receipt(s): "
           + requirement.definition + "@" + requirement.version
           + (requirement.choiceGroup.map { " with branch " + $0 + "/" + (requirement.choice ?? "") }
             ?? "")

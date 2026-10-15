@@ -111,6 +111,7 @@ extension Game {
             && (pack.manifest.mission.requiredChoiceGroups ?? []).allSatisfy {
               state.choiceReceipts[$0] != nil
             }
+            && scriptAnswersSatisfied(pack, state: state)
             && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
             && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {
               state.gearIssues[$0]?.status == .returned
@@ -142,7 +143,7 @@ extension Game {
         throw MissionPackError("Dialogue requires a declared contact at the orbital station.")
       }
       if let choices = pack.manifest.dialogs?.first(where: { $0.id == id })?.choices,
-        choices.contains(where: { state.choiceReceipts[$0.group] != nil })
+        choices.contains(where: { $0.group.map { state.choiceReceipts[$0] != nil } ?? false })
       {
         throw MissionPackError("This exclusive station branch has already been chosen.")
       }

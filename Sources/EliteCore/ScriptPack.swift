@@ -49,6 +49,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let modules: [ScriptModuleDefinition]?
   public let worldJobs: [ScriptWorldJobDefinition]?
   public let receiptRequirements: [ScriptReceiptRequirement]?
+  public let answerRequirements: [ScriptAnswerRequirement]?
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -85,7 +86,7 @@ public enum ScriptCapabilities {
     "contracts-basic-v2", "profiled-encounters-v2",
     "pack-modules-v2", "calendar-clocks-v2", "pulse-counters-v2", "world-resource-jobs-v2",
     "event-history-v2", "deterministic-plans-v2", "typed-save-values-v2", "commander-queries-v2",
-    "completion-receipts-v2", "exclusive-choices-v2",
+    "completion-receipts-v2", "exclusive-choices-v2", "dialogue-choices-v2", "compound-receipts-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -122,7 +123,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs receiptRequirements"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board npcs models modules worldJobs receiptRequirements answerRequirements"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -133,9 +134,10 @@ public enum ScriptPackLibrary {
         root.table(forKey: "board"), "id title generator clock refreshSeconds exclusiveGroup")
     }
     for (name, allowed) in [
+      "answerRequirements": "dialogue choice minimumCount",
       "handlers": "event function", "dialogs": "id text choices",
       "receiptRequirements":
-        "id stage definition version digest outcome minimumCount choiceGroup choice",
+        "id stage definition version digest outcome outcomes minimumCount choiceGroup choice",
       "equipment": "id name quantity loan mount returnPolicy",
       "worldJobs":
         "id title handler owner galaxy system encounter actor firstDue interval policy counters controlledEncounters",
@@ -297,13 +299,17 @@ public enum ScriptPackLibrary {
     try validateNPCDeclarations(manifest)
     try validateWorldJobs(manifest)
     try validateChoices(manifest)
+    try validateAnswers(manifest)
     let requirements = manifest.receiptRequirements ?? []
     guard requirements.count <= 32, Set(requirements.map(\.id)).count == requirements.count,
       requirements.allSatisfy(\.valid),
       requirements.allSatisfy({ $0.definition != manifest.stateID }),
       requirements.isEmpty || manifest.capabilities.contains("completion-receipts-v2"),
+      !requirements.contains(where: { $0.outcomes != nil })
+        || manifest.capabilities.contains("compound-receipts-v2"),
       !manifest.handlers.contains(where: { $0.event == "dialogue.chosen" })
-        || manifest.capabilities.contains("exclusive-choices-v2"),
+        || manifest.capabilities.contains("exclusive-choices-v2")
+        || manifest.capabilities.contains("dialogue-choices-v2"),
       !manifest.handlers.contains(where: { $0.event == "mission.receipted" })
         || manifest.capabilities.contains("completion-receipts-v2")
     else { throw MissionPackError("Invalid native completion receipt requirements.") }

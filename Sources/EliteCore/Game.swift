@@ -267,6 +267,7 @@ public struct Game: Sendable {
   public var scriptPacks: [ScriptPack] = []
   public var scriptAvailablePackDigest: String?
   public var scriptOffer: UUID?
+  public var scriptPresentedDialogue: ScriptDialogue?
   public var scriptConfirmSelected = true
   public var scriptChoiceSelection = 0
   public var missionPacks = MissionPackLibrary.bundled
@@ -369,6 +370,7 @@ public struct Game: Sendable {
     blackjackOffer = nil
     packOffer = nil
     scriptOffer = nil
+    scriptPresentedDialogue = nil
     scriptAvailablePackDigest = nil
     scriptChoiceSelection = 0
     migrateMissionProgress()

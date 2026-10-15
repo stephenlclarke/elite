@@ -73,6 +73,7 @@ extension Game {
     blackjackOffer = nil
     packOffer = nil
     scriptOffer = nil
+    scriptPresentedDialogue = nil
     scriptAvailablePackDigest = nil
     scriptChoiceSelection = 0
     screen = blackjackReturn
@@ -125,7 +126,11 @@ extension Display {
         left, height - 120 - game.scriptChoiceHeight, scale: font, ink: .cyan)
     }
     stationChoices(game, frame: &frame, left: left, width: contentWidth, height: height)
-    if game.messageTime > 0 {
+    if game.scriptDialogueStale {
+      frame.label(
+        "Contact changed. Reopen Contacts to confirm.", left, height - 100, scale: font,
+        ink: .orange)
+    } else if game.messageTime > 0 {
       let messages = MissionNotice.wrap(game.message, width: Int(contentWidth / (6 * font)))
       for (index, line) in messages.enumerated() {
         frame.label(line, left, height - 100 + Double(index) * 16, scale: font, ink: .orange)

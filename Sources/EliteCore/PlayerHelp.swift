@@ -216,9 +216,10 @@ public enum PlayerHelp {
         rows: (game.offeredScriptChoices.isEmpty
           ? ["ARROWS - CHOOSE CONFIRM / BACK"]
           : [
-            "UP / DOWN - BROWSE ASSIGNMENTS",
+            "UP / DOWN - BROWSE CHOICES",
             "LEFT / RIGHT - CHOOSE CONFIRM / BACK",
-            "READING / BACK DOES NOT CHOOSE A BRANCH",
+            game.offeredScriptChoices.allSatisfy { $0.group == nil }
+              ? "READING / BACK DOES NOT ANSWER" : "READING / BACK DOES NOT CHOOSE A BRANCH",
           ]) + [
             "RETURN / CLICK - SELECT",
             "ESC - BACK WITHOUT TRANSFER",

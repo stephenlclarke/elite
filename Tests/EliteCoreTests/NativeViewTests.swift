@@ -7,6 +7,58 @@ import Testing
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
+  @MainActor @Test func nativeRepeatableConversationUsesRealAnswersInItsOwnGallerySave()
+    async throws
+  {
+    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: root) }
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/station-conversation")
+    let owner = GameRuntime(game: Game(executive: false))
+    try await owner.installScriptPack(from: example, destination: root)
+    let original = await owner.snapshot()
+    let pack = try ScriptPackLibrary.read(example)
+    let trial = try await owner.scriptGalleryTrial(packDigest: pack.digest)
+    let namespace = try #require(await trial.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    await trial.key("contacts-open")
+    await trial.key("return")
+    await trial.key("down")
+    let preview = await trial.snapshot()
+    let id = try #require(preview.commander.scriptState.instances.keys.first)
+    #expect(preview.commander.scriptState.instances[id]?.conversationReceipts.count == 1)
+    let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+    for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
+      let image = try #require(imageForGame(preview, width: width, height: height, scale: scale))
+      #expect(image.width == width * scale && image.height == height * scale)
+      if let evidence {
+        let directory = URL(fileURLWithPath: evidence, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let bytes = try #require(
+          NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+        try bytes.write(to: directory.appendingPathComponent("conversation-details-\(width).png"))
+      }
+    }
+    #expect(await trial.snapshot().commander == preview.commander)
+    await trial.key("k")
+    #expect(
+      PlayerHelp.pages(for: await trial.snapshot()).flatMap(\.rows).contains(
+        "READING / BACK DOES NOT ANSWER"))
+    await trial.key("escape")
+    await trial.key("return")
+    await trial.key("down")
+    await trial.key("down")
+    await trial.key("return")
+    let complete = await trial.snapshot()
+    #expect(complete.commander.scriptState.instances[id]?.outcome == .complete)
+    #expect(complete.commander.scriptState.instances[id]?.conversationReceipts.count == 3)
+    #expect(complete.commander.credits == preview.commander.credits)
+    try await trial.load(from: namespace.appendingPathComponent("commander.json"))
+    #expect(await trial.snapshot().commander == complete.commander)
+    #expect(await owner.snapshot().commander == original.commander)
+  }
+
   @MainActor @Test func nativeStationChoicesRenderDistinctSelectionsWithoutCommittingABranch()
     async throws
   {

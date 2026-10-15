@@ -97,6 +97,9 @@ extension Game {
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
     fields["choices"] = .object(instance.choiceReceipts.mapValues(\.value))
+    fields["answers"] = scriptAnswersSnapshot(instance)
+    fields["last_answer"] =
+      instance.conversationReceipts.values.max { $0.sequence < $1.sequence }?.value ?? .null
     fields["contract"] = contractSnapshot(instance)
     if let pack = scriptPack(for: instance) {
       fields["receipt_requirements"] = scriptReceiptQuery(pack, state: instance)
@@ -266,6 +269,19 @@ extension Game {
               ]
             ))
         }
+        for sequence in next.conversationReceipts.keys.sorted()
+        where instance.conversationReceipts[sequence] == nil {
+          let answer = next.conversationReceipts[sequence]!
+          derivedEvents.append(
+            (
+              "dialogue.chosen",
+              [
+                "group": .null, "choice_id": .string(answer.choice),
+                "dialogue_id": .string(answer.dialogue),
+                "answer_sequence": .integer(Int64(sequence)),
+              ]
+            ))
+        }
         next.revision += 1
         next.acknowledge(event.sequence)
         if next.outcome != .active {
@@ -390,9 +406,9 @@ extension Game {
     }
     drainScriptEvents(publish: publish)
   }
-  mutating func showScriptDialogue() -> Bool {
+  mutating func showScriptDialogue(only: UUID? = nil) -> Bool {
     guard docked, dockedAtMainStation, scriptOffer == nil else { return false }
-    for id in orderedScriptInstances {
+    for id in orderedScriptInstances where only == nil || only == id {
       guard let state = commander.scriptState.instances[id], state.outcome == .active,
         state.suspension == nil,
         let dialogue = state.dialogue, dialogue.galaxy == commander.galaxy,
@@ -401,6 +417,7 @@ extension Game {
         pack.manifest.dialogs?.contains(where: { $0.id == dialogue.id }) == true
       else { continue }
       scriptOffer = id
+      scriptPresentedDialogue = dialogue
       scriptConfirmSelected = true
       scriptChoiceSelection = 0
       blackjackReturn = screen
@@ -417,6 +434,7 @@ extension Game {
     }
     guard let id = scriptOffer, let state = commander.scriptState.instances[id],
       let dialogue = state.dialogue,
+      dialogue == scriptPresentedDialogue,
       docked, dockedAtMainStation, dialogue.galaxy == commander.galaxy,
       dialogue.system == commander.system,
       dialogue.revision == state.revision, state.suspension == nil
@@ -431,6 +449,18 @@ extension Game {
     if let choice = selectedScriptChoice { values["choice_id"] = .string(choice.id) }
     emitScriptEvent("dialogue.confirmed", values: values, only: id)
     closeBlackjackHandoff()
+    if let next = commander.scriptState.instances[id], next.suspension == nil,
+      next.outcome == .active, let offered = next.dialogue, offered.token != dialogue.token
+    {
+      // A bounded second pass settles the answer observers before presenting the next question.
+      // The protected interpreter invocation has already returned; this is not recursive dispatch.
+      drainScriptEvents()
+      if let settled = commander.scriptState.instances[id], settled.suspension == nil,
+        settled.outcome == .active, let offered = settled.dialogue, offered.token != dialogue.token
+      {
+        _ = showScriptDialogue(only: id)
+      }
+    }
   }
   mutating func offerAvailableScriptMission() -> Bool {
     guard docked, dockedAtMainStation, screen != .handoff else { return false }
@@ -467,7 +497,7 @@ extension Game {
         + pack.manifest.mission.destination + "\nReward: " + pack.manifest.mission.reward
     }
     guard let id = scriptOffer, let instance = commander.scriptState.instances[id],
-      let dialogue = instance.dialogue
+      let dialogue = scriptPresentedDialogue
     else { return nil }
     return scriptPack(for: instance)?.manifest.dialogs?.first { $0.id == dialogue.id }?.text
   }

@@ -3,16 +3,17 @@ import Foundation
 public struct ScriptDialogChoice: Codable, Sendable {
   public let id: String
   public let label: String
-  public let group: String
+  public let group: String?
   var valid: Bool {
-    PackValidation.localID(id) && PackValidation.localID(group) && (1...80).contains(label.count)
+    PackValidation.localID(id) && (group.map(PackValidation.localID) ?? true)
+      && (1...80).contains(label.count)
   }
 }
 
 /// A genuine station confirmation, independent of mutable narrative data and later callbacks.
 public struct ScriptChoiceReceipt: Codable, Sendable, Equatable {
   public let instance: UUID
-  public let group: String
+  public let group: String?
   public let choice: String
   public let label: String
   public let dialogue: String
@@ -21,7 +22,8 @@ public struct ScriptChoiceReceipt: Codable, Sendable, Equatable {
   public let cause: ScriptEventContext?
   public let committed: ScriptEventContext
   func valid(for state: ScriptInstance, engine: ScriptEngineState) -> Bool {
-    instance == state.id && PackValidation.localID(group) && PackValidation.localID(choice)
+    instance == state.id && (group.map(PackValidation.localID) ?? true)
+      && PackValidation.localID(choice)
       && PackValidation.localID(dialogue) && (1...80).contains(label.count)
       && sequence > 0 && sequence <= engine.nextEvent && state.hasAcknowledged(sequence)
       && revision > 0 && revision <= state.revision && committed.revision == revision
@@ -40,7 +42,8 @@ public struct ScriptChoiceReceipt: Codable, Sendable, Equatable {
   }
   var value: ScriptValue {
     .object([
-      "group": .string(group), "choice_id": .string(choice), "label": .string(label),
+      "group": group.map(ScriptValue.string) ?? .null, "exclusive": .bool(group != nil),
+      "choice_id": .string(choice), "label": .string(label),
       "dialogue_id": .string(dialogue), "sequence": .integer(Int64(sequence)),
       "cause": cause?.value ?? .null, "committed": committed.value,
     ])
@@ -50,7 +53,7 @@ public struct ScriptChoiceReceipt: Codable, Sendable, Equatable {
 extension Game {
   var offeredScriptChoices: [ScriptDialogChoice] {
     guard let id = scriptOffer, let state = commander.scriptState.instances[id],
-      let dialogue = state.dialogue, let pack = scriptPack(for: state)
+      let dialogue = scriptPresentedDialogue, let pack = scriptPack(for: state)
     else { return [] }
     return pack.manifest.dialogs?.first { $0.id == dialogue.id }?.choices ?? []
   }
@@ -60,6 +63,13 @@ extension Game {
       ? nil : choices[choices.indices.contains(scriptChoiceSelection) ? scriptChoiceSelection : 0]
   }
   var scriptChoiceHeight: Double { offeredScriptChoices.isEmpty ? 0 : 90 }
+  var scriptDialogueStale: Bool {
+    guard let id = scriptOffer, let shown = scriptPresentedDialogue,
+      let state = commander.scriptState.instances[id]
+    else { return false }
+    return state.dialogue != shown || state.revision != shown.revision
+      || state.suspension != nil || state.outcome != .active
+  }
   mutating func moveScriptChoice(_ step: Int) {
     let count = offeredScriptChoices.count
     guard count > 0 else { return }
@@ -77,17 +87,28 @@ extension Game {
       }
       return
     }
-    guard pack.manifest.capabilities.contains("exclusive-choices-v2"),
-      event.context != nil,
+    guard event.context != nil,
       let id = event.values["choice_id"]?.string, fields["choice_id"]?.string == id,
-      let choice = choices.first(where: { $0.id == id }), state.choiceReceipts[choice.group] == nil
-    else { throw MissionPackError("Select and confirm one unused declared branch at the station.") }
+      let choice = choices.first(where: { $0.id == id })
+    else { throw MissionPackError("Select and confirm a declared choice at the station.") }
     var committed = state
     committed.revision += 1
-    state.choiceReceipts[choice.group] = .init(
+    let receipt = ScriptChoiceReceipt(
       instance: state.id, group: choice.group, choice: choice.id, label: choice.label,
       dialogue: dialogue.id, sequence: event.sequence, revision: committed.revision,
       cause: event.context, committed: scriptEventContext(committed))
+    if let group = choice.group {
+      guard pack.manifest.capabilities.contains("exclusive-choices-v2"),
+        state.choiceReceipts[group] == nil
+      else { throw MissionPackError("This station branch has already been chosen.") }
+      state.choiceReceipts[group] = receipt
+    } else {
+      guard pack.manifest.capabilities.contains("dialogue-choices-v2"),
+        state.conversationReceipts.count < 1024,
+        state.conversationReceipts[event.sequence] == nil
+      else { throw MissionPackError("The saved conversation receipt capacity is unavailable.") }
+      state.conversationReceipts[event.sequence] = receipt
+    }
   }
 }
 
@@ -95,7 +116,7 @@ extension ScriptPackLibrary {
   static func validateChoices(_ manifest: ScriptManifest) throws {
     let dialogs = manifest.dialogs ?? []
     let choices = dialogs.flatMap { $0.choices ?? [] }
-    let groups = Set(choices.map(\.group))
+    let groups = Set(choices.compactMap(\.group))
     let requirements = manifest.mission.requiredChoiceGroups ?? []
     guard groups.count <= 64,
       dialogs.allSatisfy({ dialog in
@@ -103,7 +124,10 @@ extension ScriptPackLibrary {
         return items.count <= 8 && items.allSatisfy(\.valid)
           && Set(items.map(\.id)).count == items.count && Set(items.map(\.group)).count <= 1
       }),
-      choices.isEmpty || manifest.capabilities.contains("exclusive-choices-v2"),
+      !choices.contains(where: { $0.group != nil })
+        || manifest.capabilities.contains("exclusive-choices-v2"),
+      !choices.contains(where: { $0.group == nil })
+        || manifest.capabilities.contains("dialogue-choices-v2"),
       Set(requirements).count == requirements.count && Set(requirements).isSubset(of: groups),
       !(manifest.receiptRequirements ?? []).contains(where: { $0.choiceGroup != nil })
         || manifest.capabilities.contains("exclusive-choices-v2")
