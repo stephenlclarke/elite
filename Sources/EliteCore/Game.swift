@@ -338,6 +338,7 @@ public struct Game: Sendable {
   var missionSpawnDelay = 0
   var ecmFrames = 0
   var enemyECMSource: Int?
+  var activeECMActivation: ECMActivationIdentity?
   public var ecmControl = ECMControl()
   public var retaliation = RetaliationControl()
   var missileCooldown = 0.0
@@ -1015,17 +1016,9 @@ public struct Game: Sendable {
           && (weaponsTargetID == nil || body.id == weaponsTargetID)
       })
     else { return false }
+    guard launchGameplayMissile(targetBodyID: bodies[target].id) else { return false }
     if !commander.unlimitedMissiles { commander.missiles -= 1 }
     missileCooldown = 1
-    if bodies[target].ecmEnabled {
-      var missile = SpaceBody(id: nextBodyID, hull: .missile, position: .init(0, 0, 24))
-      missile.playerMissileTarget = bodies[target].id
-      bodies.append(missile)
-      nextBodyID += 1
-    } else {
-      bodies[target].energy = 0
-      bodies[target].destroyedByPlayer = true
-    }
     notify("MISSILE AWAY", voiced: !retaliating)
     missileArmed = false
     return true
@@ -1034,16 +1027,22 @@ public struct Game: Sendable {
     guard !docked, commander.equipment.contains("E.C.M. System"), energy > 10, ecmFrames == 0 else {
       return
     }
+    ensurePhysicalActors()
+    guard let player = commander.flightSimulation.player, activateOrdnanceECM(emitter: player)
+    else { return }
     _ = ecmControl.detect(bodies)
     detectRetaliationSources()
-    ecmControl.activate(destroyed: bodies.filter { $0.hull == .missile && $0.energy > 0 }.count)
-    for missile in bodies where missile.hull == .missile && missile.energy > 0 {
+    ecmControl.activate(destroyed: 0)
+    for missile in bodies
+    where missile.hull == .missile && missile.energy > 0 && missile.physical?.ordnance == nil {
+      ecmControl.recordDestruction()
       confirmRetaliation(missile)
     }
-    bodies.removeAll { $0.hull == .missile }
+    bodies.removeAll { $0.hull == .missile && $0.physical?.ordnance == nil }
     ecmFrames = 32
     enemyECMSource = nil
     energy -= 10
+    advanceGameplayOrdnance(allowEnemyECM: false)
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
@@ -1139,7 +1138,10 @@ public struct Game: Sendable {
     advanceNavalMissiles(delta: dt)
     ecmControl.advance()
     ecmFrames = max(0, ecmFrames - 1)
-    if ecmFrames == 0 { enemyECMSource = nil }
+    if ecmFrames == 0 {
+      enemyECMSource = nil
+      activeECMActivation = nil
+    }
     advanceRetaliation()
     starfield.advance(
       delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity)
@@ -1210,6 +1212,9 @@ public struct Game: Sendable {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
     }
     for body in departing {
+      if var ordnance = body.physical?.ordnance {
+        endOrdnance(bodyID: body.id, state: &ordnance, reason: .culled)
+      }
       if let actor = body.physical?.identity {
         commander.miningLedger.cull(actor: actor)
         commander.cargoDebrisLedger.cull(actor: actor)

@@ -252,7 +252,7 @@ extension Game {
         hit = collision
         incident = applyCombatHit(
           collision, origin: state.origin, kind: state.profile.attackKind,
-          damage: state.profile.damage,
+          damage: ordnanceImpactDamage(state: state, hit: collision),
           emissionPosition: state.emissionPosition)
         let length = (motion.end - motion.start).length
         let fraction = length > 0 ? max(0, min(1, collision.distance / length)) : 0
@@ -307,7 +307,7 @@ extension Game {
       $0.physical?.identity == state.origin.owner && $0.energy > 0
     }) {
       center = commander.flightSimulation.pose.systemPoint(body.position)
-      mesh = .hull(body.hull)
+      mesh = gameplayMesh(for: body)
     } else {
       state.clearMuzzle()
       return
@@ -330,6 +330,19 @@ extension Game {
     return GameplayRaycast.segment(
       from: pose.shipPoint(motion.start), to: pose.shipPoint(motion.end),
       bodies: bodies.filter { $0.energy > 0 }, ignoring: ignored,
-      playerMesh: player && energy > 0 ? commander.playerMesh : nil, celestials: celestials)
+      playerMesh: player && energy > 0 ? commander.playerMesh : nil, celestials: celestials,
+      meshOverrides: gameplayMeshOverrides)
+  }
+
+  private func ordnanceImpactDamage(state: OrdnanceState, hit: GameplayHit) -> Double {
+    // Native energy-only targets were destroyed by one missile, including the 252-energy
+    // Constrictor. New shielded NPC profiles use the finite weapon's actual damage instead.
+    if state.profile == .standardMissile, case .body(let id) = hit.target,
+      let body = bodies.first(where: { $0.id == id }), body.hull.isTargetShip,
+      body.physical?.npc?.resources?.profile == .legacyEnergyOnly
+    {
+      return max(state.profile.damage, body.energy)
+    }
+    return state.profile.damage
   }
 }

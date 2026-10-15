@@ -21,6 +21,7 @@ extension Game {
   }
 
   mutating func beginGameplayVisit(arriving: Bool) {
+    activeECMActivation = nil
     let oldPlayer = commander.flightSimulation.player
     commander.flightSimulation.enter(systemIdentity, arriving: arriving)
     if let oldPlayer, let player = commander.flightSimulation.player {

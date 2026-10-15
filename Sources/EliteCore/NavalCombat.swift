@@ -17,24 +17,22 @@ extension Game {
       guard bodies[index].energy <= maximum / 2, remaining > 0,
         randomByte() & 31 < remaining, ecmFrames == 0
       else { continue }
-      bodies[index].missiles -= 1
-      guard bodies.count < (commander.executive ? 18 : 10) else { continue }
       let position = bodies[index].position
       if bodies[index].hull == .thargoid {
+        guard bodies.count < (commander.executive ? 18 : 10) else { continue }
+        bodies[index].missiles -= 1
         addNavalShip(.thargon, position: position)
-      } else {
-        var missile = SpaceBody(id: nextBodyID, hull: .missile, position: position, hostile: true)
-        missile.enemyMissile = true
-        missile.missileSourceID = id
-        bodies.append(missile)
-        nextBodyID += 1
+      } else if launchGameplayNPCMissile(bodyID: id) {
         notify("INCOMING MISSILE", voiced: false)
       }
     }
   }
 
   mutating func advanceNavalMissiles(delta: Double) {
-    let ids = bodies.filter { $0.playerMissileTarget != nil || $0.enemyMissile }.map(\.id)
+    advanceGameplayOrdnance()
+    let ids = bodies.filter {
+      ($0.playerMissileTarget != nil || $0.enemyMissile) && $0.physical?.ordnance == nil
+    }.map(\.id)
     for id in ids {
       guard let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].energy > 0 else {
         continue

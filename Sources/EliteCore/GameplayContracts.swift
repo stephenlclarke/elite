@@ -26,7 +26,7 @@ public enum PayloadIdentity: Hashable, Codable, Sendable {
 }
 
 public enum SpawnProducer: String, Codable, Sendable {
-  case ambient, asteroids, cargo, mining, salvage, security, mission, persistence
+  case ambient, asteroids, cargo, mining, salvage, security, mission, persistence, ordnance
 }
 
 public struct SpawnIdentity: Hashable, Codable, Sendable {

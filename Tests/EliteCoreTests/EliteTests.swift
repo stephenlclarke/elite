@@ -279,7 +279,7 @@ import Testing
   game.key("t")
   game.key("m")
   #expect(game.commander.missiles == 2 && !game.missileArmed)
-  game.tick(delta: 0.02)
+  for _ in 0..<100 where game.commander.kills < 2 { game.tick(delta: 0.02) }
   #expect(game.commander.kills == 2 && game.commander.legal == 40)
   game.commander.unlimitedMissiles = true
   game.bodies = [SpaceBody(id: 3, hull: .cobra, position: .init(0, 0, 1000))]

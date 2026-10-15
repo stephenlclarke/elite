@@ -336,7 +336,10 @@ private func finishMessage(_ game: inout Game) {
   game.bodies = [SpaceBody(id: 99, hull: .constrictor, position: .init(0, 0, 6000), hostile: true)]
   game.missileArmed = true
   game.fireMissile()
-  for _ in 0..<256 { game.advanceNavalMissiles(delta: 0.001) }
+  for _ in 0..<256 {
+    game.commander.flightSimulation.advancePhysicalTime(0.001)
+    game.advanceNavalMissiles(delta: 0.001)
+  }
   #expect(game.bodies[0].energy == 252 && game.ecmFrames == 32)
   #expect(game.bodies.last?.energy == 0)
   game.ecmFrames = 0
