@@ -1,0 +1,15 @@
+# Configure daily dependency maintenance and PR review
+
+## Motivation and implementation
+
+Add daily Swift and GitHub Actions Dependabot updates, grouping minor/patch versions by ecosystem with five open version-update PRs per ecosystem. Both target main and use Conventional Commit prefixes. Major versions remain separate. A new Dependency Review workflow runs on every PR to main, including Dependabot PRs, with contents-read permission, credential persistence disabled and no PR comments, secrets, privileged trigger or automatic merge. It rejects introduced recognized advisories at low severity or above. Its official v5.0.0 action is pinned to `a1d282b36b6f3519aa1f3fc636f609c47dddb294`.
+
+The repository action allowlist adds only `actions/dependency-review-action@*`, preserving checkout/upload-artifact entries, disabled broad GitHub/verified-owner allowances and mandatory full-SHA pinning. Dependency graph, alerts and security updates were already enabled and were verified rather than re-enabled. README retains CI/Sonar badges and adds a real workflow-status badge, schedule-configuration badge and link to current GitHub dependency alerts. No badge claims all dependencies are safe. See [the requirement](ISSUE-dependency-maintenance.md).
+
+## Validation
+
+Actionlint, YAML lint, Dependabot JSON-schema validation, Markdown lint, action-pin/tag verification and diff hygiene are checked locally. Live workflow/badge checks and the actual `@codex review` result are recorded with the PR. The unchanged protected quality check still runs `make ci`; its final-head result is required before G1 merges. Sonar remains main-only with the exact committed SHA.
+
+## Compatibility and remaining gates
+
+The schedule becomes active only after the configuration reaches main. The first export lacks TOMLDecoder, so Swift advisory coverage is explicitly unverified despite documented ecosystem support; recognized dependencies and published advisories determine results. SHA-pinned Actions do not receive Dependabot vulnerability alerts. Version updates remain useful independently. No runtime, resource, release, cask, save or installation changes. G1 owns final merge after clean repeated review and required checks; this PR does not bypass either gate.
