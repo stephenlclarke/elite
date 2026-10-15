@@ -142,6 +142,8 @@ public struct RelativeWorkOutput: Sendable {
 
 /// Produces bounded requests only. The simulation remains the sole owner of pose and thrust.
 public struct RelativeWorkController: Sendable {
+  /// Positive proof headroom beyond the required hull-to-hull gap.
+  public static let workMargin = 1.0
   public let parent: ActorIdentity
   public let wreck: WreckIdentity?
   public let category: SalvageTargetCategory
@@ -176,7 +178,9 @@ public struct RelativeWorkController: Sendable {
     let clearance = max(120, 2 * input.playerRadius)
     let normal = target.pose.orientation.apply(target.surfaceNormal.unit)
     let surface = target.pose.systemPoint(target.surfacePoint)
-    let offset = target.pose.orientation.apply(target.surfacePoint) + normal * clearance
+    let offset =
+      target.pose.orientation.apply(target.surfacePoint) + normal
+      * (clearance + input.playerRadius + Self.workMargin)
     let work = target.pose.position + offset
     let workVelocity = target.velocity + target.angularVelocity.cross(offset)
     let workAcceleration = target.angularVelocity.cross(target.angularVelocity.cross(offset))
@@ -255,7 +259,7 @@ public struct RelativeWorkController: Sendable {
     guard [.rock, .wreck, .section].contains(category) else {
       return .unsupportedTarget
     }
-    guard metrics.clearance <= input.cutterRange else {
+    guard metrics.clearance + input.playerRadius + Self.workMargin <= input.cutterRange else {
       return .toolRange
     }
     guard workVelocity.length <= input.limits.speed + 1e-9 else {

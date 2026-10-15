@@ -21,7 +21,7 @@ private func rwTarget(
 
 private func rwInput(target: RelativeWorkTarget? = rwTarget()) -> RelativeWorkInput {
   var pose = ShipPose()
-  pose.position = .init(0, 0, -120)
+  pose.position = .init(0, 0, -151)
   return .init(
     ship: pose, velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0),
     target: target, playerRadius: 30, limits: rwLimits, delta: 0.02)
@@ -107,7 +107,7 @@ private func rwTick(
   target.angularVelocity = .init(0, 0, 0.1)
   target.velocity = .init(10, 0, 0)
   var input = rwInput(target: target)
-  input.ship.position = .init(100, 0, -120)
+  input.ship.position = .init(100, 0, -151)
   input.velocity = .init(10, 10, 0)
   input.angularVelocity = target.angularVelocity
   var controller = RelativeWorkController(parent: rwActor, wreck: rwWreck, category: .rock)
@@ -130,16 +130,16 @@ private func rwTick(
   var target = rwTarget()
   target.surfaceNormal = .init(0, 5, 0)
   var input = rwInput(target: target)
-  input.playerRadius = 100
-  input.ship.position = .init(0, 200, 0)
+  input.playerRadius = 90
+  input.ship.position = .init(0, 271, 0)
   input.ship.orientation.x = .init(0, 0, -1)
   input.ship.orientation.y = .init(1, 0, 0)
   input.ship.orientation.z = .init(0, -1, 0)
   var controller = RelativeWorkController(parent: rwActor, category: .rock)
   for _ in 0..<30 {
     let output = rwTick(&controller, &input)
-    #expect(output.requiredClearance == 200)
-    #expect(output.workPosition == Vector3(0, 200, 0))
+    #expect(output.requiredClearance == 180)
+    #expect(output.workPosition == Vector3(0, 271, 0))
     #expect(output.surfacePosition == Vector3(0, 0, 0))
     #expect(output.facingError < 1e-9)
   }
@@ -174,7 +174,7 @@ private func rwTick(
         $0.limits.speed = 1000
       }
     ),
-    (.toolRange, { $0.playerRadius = 151 }),
+    (.toolRange, { $0.playerRadius = 100 }),
     (.toolRange, { $0.cutterRange = 119 }),
   ]
   for (reason, change) in cases {
