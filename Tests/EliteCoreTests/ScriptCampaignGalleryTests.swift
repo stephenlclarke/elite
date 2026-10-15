@@ -1,0 +1,442 @@
+import Foundation
+import Testing
+
+@testable import EliteCore
+
+struct CampaignGalleryFixture {
+  let directory: URL
+  let child: ScriptPack
+  let parents: [ScriptPack]
+  let nested: ScriptPack
+  var save: URL { directory.appendingPathComponent("save/commander.json") }
+
+  init(unstarted: Bool = false, parentOnly: Bool = false, dependency: Bool = false) throws {
+    directory = FileManager.default.temporaryDirectory.appendingPathComponent(
+      "campaign-gallery-" + UUID().uuidString)
+    let examples = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs")
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let childFolder = directory.appendingPathComponent("child")
+    try FileManager.default.copyItem(
+      at: examples.appendingPathComponent("scripted-patrol"), to: childFolder)
+    if parentOnly {
+      let manifest = childFolder.appendingPathComponent("manifest.toml")
+      let text = try String(contentsOf: manifest, encoding: .utf8)
+        .replacingOccurrences(
+          of: "\"classic-encounters-v2\"]",
+          with: "\"classic-encounters-v2\", \"scoped-campaigns-basic-v2\"]"
+        )
+        .replacingOccurrences(of: "[mission]", with: "[mission]\nparentOnly=true")
+      try text.write(to: manifest, atomically: true, encoding: .utf8)
+    }
+    child = try ScriptPackLibrary.read(childFolder)
+    var loaded: [ScriptPack] = []
+    for index in 0..<2 {
+      let folder = directory.appendingPathComponent("parent\(index)")
+      try FileManager.default.copyItem(
+        at: examples.appendingPathComponent("scoped-patrol"), to: folder)
+      let manifest = folder.appendingPathComponent("manifest.toml")
+      var text = try String(contentsOf: manifest, encoding: .utf8)
+        .replacingOccurrences(of: "example.scoped-patrol", with: "test.gallery-\(index)")
+        .replacingOccurrences(
+          of: "Owned patrol campaign demonstration", with: "Campaign \(index + 1)"
+        )
+        .replacingOccurrences(
+          of: "f7c2123ea24e13e6d8e613a72270a052ae6b5a010e4edb678ab10a239f185906",
+          with: child.digest)
+      if dependency, index == 0 {
+        text = text.replacingOccurrences(
+          of: "priority = 540",
+          with: "priority = 540\ndependencies = [\"test.gallery-1@1.0.0\"]")
+      }
+      try text.write(to: manifest, atomically: true, encoding: .utf8)
+      if unstarted {
+        let module = folder.appendingPathComponent("scripts/main.lua")
+        let source = try String(contentsOf: module, encoding: .utf8)
+          .replacingOccurrences(
+            of: "commands={{op='child.ensure',id='patrol'}}}", with: "commands={}}")
+        try source.write(to: module, atomically: true, encoding: .utf8)
+      }
+      loaded.append(try ScriptPackLibrary.read(folder))
+    }
+    parents = loaded
+    let folder = directory.appendingPathComponent("nested")
+    try FileManager.default.copyItem(at: directory.appendingPathComponent("parent0"), to: folder)
+    let manifest = folder.appendingPathComponent("manifest.toml")
+    let text = try String(contentsOf: manifest, encoding: .utf8)
+      .replacingOccurrences(of: "test.gallery-0", with: "test.gallery-root")
+      .replacingOccurrences(of: "Campaign 1", with: "Root campaign")
+      .replacingOccurrences(of: child.manifest.stateID, with: parents[0].manifest.stateID)
+      .replacingOccurrences(of: child.digest, with: parents[0].digest)
+    try text.write(to: manifest, atomically: true, encoding: .utf8)
+    nested = try ScriptPackLibrary.read(folder)
+  }
+
+  func clean() { try? FileManager.default.removeItem(at: directory) }
+
+  func game() -> Game {
+    var game = Game(executive: false)
+    game.screen = .status
+    game.scriptPacks = [child] + parents + [nested]
+    game.scriptDurabilityAvailable = true
+    return game
+  }
+
+  func start(_ game: inout Game, parent: ScriptPack? = nil) throws -> (UUID, UUID) {
+    let id = try game.acceptScriptMission(parent ?? parents[0])
+    for _ in 0..<8 { game.drainScriptEvents() }
+    return (
+      id, try #require(game.commander.scriptState.instances[id]?.campaignChildren["patrol"]?.child)
+    )
+  }
+
+  func select(_ id: UUID, game: inout Game) throws {
+    if game.screen != .gallery { game.openGallery() }
+    game.gallery.selection = try #require(
+      game.missionCatalogue.firstIndex { $0.savedInstance == id })
+    game.gallery.detail = true
+    game.pinGallerySelection()
+  }
+}
+
+@Test func campaignGalleryNavigatesTwoActualParentsByInstanceAndRestoresReadingPosition() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let first = try fixture.start(&game)
+  let second = try fixture.start(&game, parent: fixture.parents[1])
+  let before = game.commander
+  for (parent, child) in [first, second] {
+    try fixture.select(parent, game: &game)
+    #expect(game.selectedCampaignAssignments.map(\.instance) == [child])
+    #expect(game.selectedCampaignAssignments[0].status == "Active")
+    #expect(!game.selectedCampaignAssignments[0].objective.isEmpty)
+    game.gallery.scroll = 4
+    game.key("return")
+    game.key("return")
+    #expect(game.selectedGalleryMission?.savedInstance == child)
+    #expect(game.campaignImmediateOwner == parent && game.campaignTrialRoot?.id == parent)
+    #expect(
+      game.galleryDetailLines(width: 480, font: GameTypography.scale).contains {
+        $0.hasPrefix("Part of Campaign")
+      })
+    game.key("escape")
+    #expect(game.selectedGalleryMission?.savedInstance == parent && game.gallery.scroll == 4)
+    #expect(game.gallery.campaignLinks)
+    game.key("return")
+    game.key("return")
+    game.key("return")
+    #expect(game.selectedGalleryMission?.savedInstance == parent)
+  }
+  #expect(game.commander == before)
+}
+
+@Test func campaignGalleryNestedChildUsesImmediateOwnerAndSeparateRootForTrial() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (root, owner) = try fixture.start(&game, parent: fixture.nested)
+  let child = try #require(
+    game.commander.scriptState.instances[owner]?.campaignChildren["patrol"]?.child)
+  try fixture.select(child, game: &game)
+  #expect(game.campaignImmediateOwner == owner && game.campaignTrialRoot?.id == root)
+  #expect(game.campaignTrialReview?.digest == fixture.nested.digest)
+  game.key("return")
+  game.key("return")
+  #expect(game.selectedGalleryMission?.savedInstance == owner)
+  #expect(game.campaignImmediateOwner == root)
+}
+
+@Test func campaignGalleryUnstartedPreviewAndMissingContentNeverCreateOrDiscardInstances() throws {
+  let fixture = try CampaignGalleryFixture(unstarted: true)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let parent = try game.acceptScriptMission(fixture.parents[0])
+  try fixture.select(parent, game: &game)
+  let before = game.commander
+  #expect(game.selectedCampaignAssignments[0].status == "Not started")
+  game.key("return")
+  game.key("return")
+  #expect(game.selectedGalleryMission?.savedInstance == nil)
+  #expect(game.selectedGalleryMission?.destination == "Not started")
+  #expect(game.campaignImmediateOwner == parent)
+  #expect(game.campaignTrialReview?.root == parent)
+  game.key("escape")
+  #expect(game.selectedGalleryMission?.savedInstance == parent)
+  game.scriptPacks.removeAll { $0.digest == fixture.child.digest }
+  #expect(
+    game.selectedCampaignAssignments[0].unavailableReason == "Restore the exact assignment content."
+  )
+  #expect(game.commander == before)
+}
+
+@Test(arguments: [ScriptOutcome.active, .complete, .failed, .abandoned])
+func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome: ScriptOutcome)
+  throws
+{
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  // Projection fixture only: terminal engine transitions are covered by physical-play acceptance.
+  game.commander.scriptState.instances[child]?.outcome = outcome
+  game.commander.scriptState.instances[child]?.suspension = "Restore the original ship model."
+  try fixture.select(parent, game: &game)
+  let before = game.commander
+  let row = try #require(game.selectedCampaignAssignments.first)
+  #expect(row.status == (outcome == .active ? "Suspended" : outcome.rawValue.capitalized))
+  #expect(row.unavailableReason == "Restore the original ship model.")
+  #expect(game.commander == before)
+}
+
+@Test func campaignGalleryMissingOwnerAndRootKeepChildVisibleAndTrialUnavailable() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  game.scriptPacks = [fixture.child]
+  try fixture.select(child, game: &game)
+  let before = game.commander
+  #expect(game.campaignTrialUnavailableReason == "Restore the exact root campaign content.")
+  game.key("return")
+  game.key("return")
+  #expect(game.selectedGalleryMission?.savedInstance == parent)
+  #expect(game.selectedCampaignAssignments[0].instance == child)
+  #expect(game.commander == before)
+}
+
+@Test func campaignGalleryOwnedTrialReviewRequiresChoiceAndRejectsChangedSelection() async throws {
+  let fixture = try CampaignGalleryFixture(parentOnly: true)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let first = try fixture.start(&game)
+  let second = try fixture.start(&game, parent: fixture.parents[1])
+  try fixture.select(first.1, game: &game)
+  #expect(!game.canTrialSelectedMission)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let before = await runtime.snapshot().commander
+  await runtime.key("t")
+  await runtime.key("t")
+  #expect(await runtime.gallerySaveDirectory() == nil)
+  #expect(await runtime.snapshot().gallery.campaignReview?.root == first.0)
+  await runtime.key("return")
+  #expect(await runtime.snapshot().gallery.campaignReview == nil)
+  await runtime.key("t")
+  await runtime.key("down")
+  let changedIndex = try #require(game.missionCatalogue.firstIndex { $0.savedInstance == second.1 })
+  await runtime.nativeCommand { $0.gallery.selection = changedIndex }
+  await runtime.key("return")
+  #expect(await runtime.gallerySaveDirectory() == nil)
+  #expect(await runtime.snapshot().commander == before)
+  #expect(await runtime.snapshot().message.contains("CAMPAIGN CHANGED"))
+}
+
+@Test func campaignGalleryPointerAndKeyboardChooseTheSameActualChild() async throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  try fixture.select(parent, game: &game)
+  let before = game.commander
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let layout = GalleryLayout(width: game.viewportWidth, height: game.viewportHeight)
+  await runtime.campaignGalleryClick(x: 20, y: layout.actionTop + 1)
+  await runtime.campaignGalleryClick(x: 20, y: layout.listTop + 1)
+  #expect(await runtime.snapshot().selectedGalleryMission?.savedInstance == child)
+  await runtime.key("escape")
+  #expect(await runtime.snapshot().selectedGalleryMission?.savedInstance == parent)
+  #expect(await runtime.snapshot().commander == before)
+}
+
+@Test func campaignGalleryRootTrialFliesItsOwnedPatrolAndRestoresLiveSaveBytes() async throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var live = fixture.game()
+  live.commander.name = "CAMPAIGN OWNER"
+  live.commander.credits = 76543
+  let first = try fixture.start(&live)
+  let second = try fixture.start(&live, parent: fixture.parents[1])
+  let runtime = GameRuntime(game: live, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  let original = await runtime.snapshot()
+  let bytes = try Data(contentsOf: fixture.save)
+  await runtime.key("gallery-open")
+  let index = try #require(original.missionCatalogue.firstIndex { $0.savedInstance == second.1 })
+  for _ in 0..<index { await runtime.key("down") }
+  await runtime.key("return")
+  let liveSelection = await runtime.snapshot()
+  await runtime.key("t")
+  #expect(await runtime.snapshot().gallery.campaignReview?.root == second.0)
+  await runtime.key("down")
+  await runtime.key("return")
+  let namespace = try #require(await runtime.gallerySaveDirectory())
+  defer { try? FileManager.default.removeItem(at: namespace) }
+  var actual = await runtime.advance(delta: 0.1)
+  let root = try #require(
+    actual.commander.scriptState.instances.values.first { $0.campaignParent == nil })
+  let child = try #require(root.campaignChildren["patrol"]?.child)
+  #expect(root.digest == fixture.parents[1].digest)
+  #expect(actual.commander.scriptState.instances[first.0] == nil)
+  #expect(actual.commander.scriptState.instances[second.0] == nil)
+  #expect(actual.commander.scriptState.instances[child]?.campaignParent?.parent == root.id)
+  #expect(actual.commander.scriptState.calendarSeconds == 0.1)
+  #expect(actual.ecmControl.epoch != liveSelection.ecmControl.epoch)
+  // Test hardware setup only; targets, destruction, docking and receipts use native gameplay.
+  await runtime.nativeCommand { $0.commander.installTargetingComputer(.docking) }
+  await runtime.key("0")
+  var firing = Controls()
+  firing.fire = true
+  await runtime.setControls(firing)
+  for _ in 0..<200 {
+    actual = await runtime.advance(delta: 0.1)
+    if actual.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
+    {
+      break
+    }
+  }
+  #expect(
+    actual.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true)
+  await runtime.setControls(Controls())
+  for _ in 0..<8 {
+    await runtime.key("r")
+    if await runtime.snapshot().autoPilot.targetID == 0 { break }
+  }
+  for _ in 0..<5000 {
+    actual = await runtime.advance(delta: 0.02)
+    if actual.docked { break }
+  }
+  #expect(actual.docked && actual.dockedAtMainStation)
+  await runtime.key("contacts-open")
+  #expect(await runtime.snapshot().scriptOffer == child)
+  let report = await runtime.snapshot().scriptPagePresentation
+  await runtime.scriptPageKey("return", expected: report)
+  _ = await runtime.advance(delta: 0.1)
+  await runtime.key("contacts-open")
+  #expect(await runtime.snapshot().scriptOffer == root.id)
+  let debrief = await runtime.snapshot().scriptPagePresentation
+  await runtime.scriptPageKey("return", expected: debrief)
+  let completed = await runtime.snapshot()
+  #expect(completed.commander.scriptState.instances[root.id]?.outcome == .complete)
+  #expect(
+    completed.commander.scriptState.instances[root.id]?.receiptJoins?["owned-report"] == [child])
+  let saved = try await runtime.saveForInterface(expectedEpoch: completed.ecmControl.epoch)
+  #expect(saved.isTrial && saved.url.path.hasPrefix(namespace.path + "/"))
+  _ = try await runtime.loadForInterface(expectedEpoch: completed.ecmControl.epoch)
+  #expect(await runtime.snapshot().commander == completed.commander)
+  #expect(try Data(contentsOf: fixture.save) == bytes)
+  await runtime.key("trial-return")
+  let restored = await runtime.snapshot()
+  #expect(restored.commander == original.commander)
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = .sortedKeys
+  #expect(
+    try encoder.encode(restored.scriptWorldSave) == encoder.encode(liveSelection.scriptWorldSave))
+  #expect(restored.gallery.selection == index && restored.gallery.detail)
+  #expect(restored.gallery.campaignReview == nil && !restored.gallery.campaignStartSelected)
+  #expect(restored.ecmControl.epoch == liveSelection.ecmControl.epoch)
+  #expect(try Data(contentsOf: fixture.save) == bytes)
+  await #expect(throws: MissionPackError.self) {
+    _ = try await runtime.saveForInterface(expectedEpoch: completed.ecmControl.epoch)
+  }
+}
+
+@Test func campaignGalleryUnavailableRequirementsAndExistingTrialCannotLaunchAnotherRoot()
+  async throws
+{
+  let fixture = try CampaignGalleryFixture(dependency: true)
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (_, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  game.scriptPacks.removeAll { $0.digest == fixture.parents[1].digest }
+  let before = game.commander
+  #expect(game.campaignTrialUnavailableReason == "Requires: test.gallery-1@1.0.0")
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  await runtime.key("t")
+  #expect(await runtime.snapshot().gallery.campaignReview == nil)
+  #expect(await runtime.gallerySaveDirectory() == nil)
+  #expect(await runtime.snapshot().commander == before)
+  game.scriptPacks.append(fixture.parents[1])
+  game.isMissionTrial = true
+  #expect(
+    game.campaignTrialUnavailableReason == "Return to your commander before starting another trial."
+  )
+  #expect(game.campaignTrialReview == nil)
+}
+
+@Test func campaignGalleryPointerBackAndScrollingPreserveExactRelationshipContext() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  let before = game.commander
+  game.key("return")
+  game.key("gallery-scroll:1")
+  #expect(game.gallery.campaignLinkSelection == 1)
+  game.key("pageup")
+  #expect(game.gallery.campaignLinkSelection == 0)
+  game.key("pagedown")
+  #expect(game.gallery.campaignLinkSelection == 1)
+  game.key("gallery-scroll:-1")
+  game.key("return")
+  #expect(game.selectedGalleryMission?.savedInstance == parent)
+  game.galleryClick(x: 30, y: 80)
+  #expect(game.selectedGalleryMission?.savedInstance == child)
+  #expect(game.gallery.campaignLinks)
+  #expect(game.commander == before)
+}
+
+@Test func campaignGalleryLayoutKeepsRelationshipTextAndActionsInsideBothViewports() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  for (width, height) in [(512.0, 518.0), (1512.0, 982.0)] {
+    game.viewportWidth = width
+    game.viewportHeight = height
+    for id in [parent, child] {
+      try fixture.select(id, game: &game)
+      game.gallery.campaignLinks = false
+      for links in [false, true] {
+        game.gallery.campaignLinks = links
+        let frame = Display.gallery(game, width: width, height: height)
+        #expect(
+          frame.labels.allSatisfy {
+            $0.bounds.x >= 0 && $0.bounds.maxX <= width
+              && $0.bounds.y >= 0 && $0.bounds.maxY <= height
+          })
+      }
+    }
+    game.gallery.detail = false
+    game.gallery.campaignLinks = false
+    if width >= 900 {
+      let layout = GalleryLayout(width: width, height: height)
+      game.galleryClick(x: layout.divider + 20, y: layout.actionTop + 1)
+      #expect(game.gallery.campaignLinks && game.gallery.detail)
+    }
+    game.openCampaignTrialReview()
+    let frame = Display.gallery(game, width: width, height: height)
+    #expect(frame.labels.contains { $0.text == "> Back" })
+    #expect(frame.labels.allSatisfy { $0.bounds.maxX <= width && $0.bounds.maxY <= height })
+    game.key("escape")
+  }
+}
+
+@Test func campaignGalleryMissingChildBlocksTheOwningRootTrialWithoutChangingItsSave() async throws
+{
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (_, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  let before = game.commander
+  game.scriptPacks.removeAll { $0.digest == fixture.child.digest }
+  #expect(game.selectedGalleryMission?.savedInstance == child)
+  #expect(game.campaignTrialUnavailableReason == "Restore the exact campaign assignment content.")
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  await runtime.key("t")
+  #expect(await runtime.gallerySaveDirectory() == nil)
+  #expect(await runtime.snapshot().commander == before)
+}
