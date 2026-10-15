@@ -116,6 +116,11 @@ final class GameView: NSView {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
+    if [.market, .buy, .sell].contains(game.screen) {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("market-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .secret {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("secret-click:\(point.x):\(point.y)")
@@ -342,6 +347,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           try await runtime.save(to: url)
           self.saves.didSave(to: url)
         } catch { self.show(error) }
+      } else if event.hasPrefix("market-click:") {
+        let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
+        if values.count == 2 { await runtime.marketClick(x: values[0], y: values[1]) }
       } else if event.hasPrefix("secret-click:") {
         let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
@@ -488,6 +496,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func menuNeedsUpdate(_ menu: NSMenu) {
     guard menu.title == "Screens", let view = window?.contentView as? GameView else { return }
     for item in menu.items {
+      item.isHidden = view.game.docked && [1, 2].contains(item.tag)
       item.title = "\(item.tag): " + Game.screenTitle(item.tag, docked: view.game.docked)
     }
   }

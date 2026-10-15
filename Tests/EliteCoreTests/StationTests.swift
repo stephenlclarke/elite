@@ -101,8 +101,10 @@ import Testing
   for screen in [Screen.status, .inventory] {
     game.screen = screen
     let rows = game.informationRows.map(\.0)
-    #expect(rows.contains("Lasers"))
-    for text in game.commander.laserMountSummary { #expect(rows.contains("  " + text)) }
+    #expect(rows.contains("Lasers") == (screen == .inventory))
+    for text in game.commander.laserMountSummary {
+      #expect(rows.contains("  " + text) == (screen == .inventory))
+    }
     for width in [512.0, 768, 3600] {
       game.viewportWidth = width
       game.viewportHeight = 518

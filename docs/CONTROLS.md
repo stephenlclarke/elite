@@ -7,13 +7,13 @@ The main pattern is the same everywhere: **numbers open areas, arrows move, Retu
 | Key | Docked | In flight |
 | --- | --- | --- |
 | 0 | Launch | Front view |
-| 1 | Buy cargo | Rear view |
-| 2 | Sell cargo | Left view |
+| 1 | Market, buy mode (alias) | Rear view |
+| 2 | Market, sell mode (alias) | Left view |
 | 3 | Equipment | Right view |
 | 4 | Galactic chart, planet facts and globe | Galactic chart |
 | 5 | Short range chart, planet facts and globe | Short range chart |
 | 6 | Ship showroom | System data and globe |
-| 7 | Market prices | Market prices |
+| 7 | Market: buy and sell | Market prices |
 | 8 | Commander status | Commander status |
 | 9 | Inventory | Inventory |
 
@@ -60,7 +60,9 @@ Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets
 
 ## Station tasks and mission dialogs
 
-Buy with 1, sell with 2, equip with 3. Up/Down or scrolling selects an item; Return trades one unit or purchases/refuels. Equipment headings are skipped. Left/Right or the visible Front/Left/Right/Rear controls choose a laser mount. Status and inventory use Up/Down or scrolling for more rows. Option-Up/Down moves a page. Market 7 shows prices; use 1/2 to trade.
+Open Market with 7. Prices, stock and your holdings stay in one table. Up/Down, scrolling or clicking selects a commodity. Tab or the visible Buy/Sell controls changes mode without changing the selected item; Return or Buy one/Sell one trades one unit. Left sells one and Right buys one. Repeat trades for multiple units. Keys 1/2 remain buy/sell mode aliases; the docked Screens menu exposes the single Market entry. In flight, 7 remains read-only prices and 1/2 remain rear/left views.
+
+Equipment remains on 3. Up/Down selects an item and Return purchases/refuels; Left/Right or the visible mount controls chooses its laser mount. Commander Status (8) is a readiness/location/finance/legal summary. Inventory (9) owns the cargo manifest, reserved mission property and complete laser/equipment list. Up/Down or scrolling reads additional rows; Option-Up/Down pages. Escape returns to the previous area, not through each Market mode.
 
 **Game > Mission Contacts** opens an eligible station contact. Mission dialogs use arrows to choose Confirm or Back, Return or a click to select, and Escape to return without a transfer. They return to the station screen that opened them. Initial enrolment and automatic naval orders/rewards retain their campaign rules.
 

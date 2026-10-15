@@ -83,6 +83,16 @@ extension Game {
         }
       }
       rows += [("Lasers", .yellow)] + commander.laserMountSummary.map { ("  " + $0, .cyan) }
+      rows += [
+        ("Equipment", .yellow),
+        ("  Targeting: " + (commander.targetingTier?.label ?? "None"), .white),
+        ("  Navigation: " + (commander.navigationTier?.label ?? "None"), .white),
+        ("  Fuel storage: \(commander.fuelStorageUnits)/4", .white),
+      ]
+      rows += commander.equipment.sorted().filter {
+        LaserKind.from($0) == nil && TargetingTier.from($0) == nil && NavigationTier.from($0) == nil
+          && !["Fuel", "Missile"].contains($0)
+      }.map { ("  " + $0, .white) }
       return rows
     }
     let criminalStatus = commander.legal < 50 ? "Offender" : "Fugitive"
@@ -99,19 +109,11 @@ extension Game {
       ),
       (String(format: "Cash: %.1f CR", Double(commander.credits) / 10), .white),
       ("Legal status: " + legal, .white),
-      ("Rating: " + commander.rank, .white), ("Lasers", .yellow),
+      ("Rating: " + commander.rank, .white),
+      ("Cargo used: \(commander.cargoTonnes)t", .white),
+      ("Missiles: \(commander.missiles)", .white),
+      ("Fittings and cargo manifest: Inventory (9)", .cyan),
     ]
-    rows += commander.laserMountSummary.map { ("  " + $0, .cyan) }
-    rows += [
-      ("Equipment", .yellow),
-      ("  Targeting: " + (commander.targetingTier?.label ?? "None"), .white),
-      ("  Navigation: " + (commander.navigationTier?.label ?? "None"), .white),
-      ("  Fuel storage: \(commander.fuelStorageUnits)/4", .white),
-    ]
-    rows += commander.equipment.sorted().filter {
-      LaserKind.from($0) == nil && TargetingTier.from($0) == nil && NavigationTier.from($0) == nil
-        && !["Fuel", "Missile"].contains($0)
-    }.map { ("  " + $0, .white) }
     if commander.missionStage != .notStarted { rows.append((commander.missionStage.status, .cyan)) }
     return rows
   }
@@ -119,22 +121,34 @@ extension Game {
 extension Display {
   public static func marketScreen(_ game: Game, width: Double, height: Double) -> Frame {
     var frame = cockpit(game, width: width, height: height)
-    let layout = StationLayout(game: game, width: width, height: height, footer: 92)
-    let marketTitle = game.screen == .sell ? "SELL CARGO" : "MARKET PRICES"
-    let title = game.screen == .buy ? "BUY CARGO" : marketTitle
-    frame.label(title, layout.left, 12, scale: layout.font, ink: .yellow)
+    let layout = StationLayout(game: game, width: width, height: height, footer: 144)
+    frame.label(
+      game.docked ? "MARKET - " + (game.screen == .sell ? "SELL" : "BUY") : "MARKET PRICES",
+      layout.left, 12, scale: layout.font, ink: .yellow)
+    let controls = MarketLayout(game: game, width: width, height: height)
+    if game.docked {
+      for (text, bounds, selected) in [
+        ("Buy", controls.buy, game.screen != .sell),
+        ("Sell", controls.sell, game.screen == .sell),
+        (game.screen == .sell ? "Sell one" : "Buy one", controls.trade, false),
+      ] {
+        frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, selected ? .yellow : .cyan)
+        frame.label(
+          text, bounds.x + 8, bounds.y + 6, scale: layout.font, ink: selected ? .yellow : .cyan)
+      }
+    }
     frame.label(
       String(format: "Cash %.1f CR", Double(game.commander.credits) / 10), layout.left, 32,
       scale: layout.font)
     let offsets = [0.0, 0.40, 0.55, 0.69, 0.83]
     for (index, label) in ["Product", "Price CR", "Stock", "Hold", "Action"].enumerated() {
       frame.label(
-        label, layout.left + offsets[index] * layout.width, 52, scale: layout.font, ink: .yellow)
+        label, layout.left + offsets[index] * layout.width, 90, scale: layout.font, ink: .yellow)
     }
     let start = max(0, min(game.selection - layout.count + 1, Commodity.all.count - layout.count))
     for index in start..<min(Commodity.all.count, start + layout.count) {
       let item = Commodity.all[index]
-      let y = 76 + Double(index - start) * layout.row
+      let y = 114 + Double(index - start) * layout.row
       frame.label(
         index == game.selection ? ">" : "", layout.left - 12, y, scale: layout.font, ink: .white)
       frame.label(
@@ -153,23 +167,26 @@ extension Display {
       let row = index / 3
       frame.label(
         category.rawValue, layout.left + Double(column) * layout.width / 3,
-        layout.bottom + 4 + Double(row) * layout.row, scale: layout.font, ink: category.ink)
+        layout.bottom + 40 + Double(row) * layout.row, scale: layout.font, ink: category.ink)
     }
     frame.label(
-      "Category colour; stock/cash/hold determine purchase.", layout.left, layout.bottom + 42,
+      "Category colour; stock/cash/hold determine purchase.", layout.left, layout.bottom + 78,
       scale: layout.font, ink: .cyan)
     frame.label(
-      "Restricted cargo affects legal status on launch.", layout.left, layout.bottom + 58,
+      "Restricted cargo affects legal status on launch.", layout.left, layout.bottom + 94,
       scale: layout.font, ink: .orange)
-    var actions = "Arrows: select  Return: trade  Esc: back  K: help"
-    if game.screen == .market {
-      actions =
-        game.docked
-        ? "Prices  1: buy  2: sell  Esc: back  K: help" : "Prices only  Esc: back  K: help"
-    }
+    let actions =
+      game.docked
+      ? "Up/Down: item  Tab: buy/sell  Return: trade one"
+      : "Prices only  Esc: back  K: help"
     frame.label(
-      actions, layout.left, layout.bottom + 74,
+      actions, layout.left, layout.bottom + 110,
       scale: layout.font, ink: .cyan)
+    if game.docked {
+      frame.label(
+        "Left: sell one  Right: buy one  Esc: back  K: help", layout.left,
+        layout.bottom + 126, scale: layout.font, ink: .cyan)
+    }
     return frame
   }
   public static func information(_ game: Game, width: Double, height: Double) -> Frame {

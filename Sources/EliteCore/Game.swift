@@ -623,7 +623,11 @@ public struct Game: Sendable {
           stage: commander.missionStage, galaxy: inspectedGalaxy,
           system: inspectedSystem.id, variation: variation) : nil
     }
-    navigatePrimary(to: destination)
+    if docked && [.buy, .sell].contains(screen) && [.buy, .sell].contains(destination) {
+      screen = destination
+    } else {
+      navigatePrimary(to: destination)
+    }
   }
   public mutating func selectNeighbour(direction: Int) {
     let known = knownSystems
@@ -1238,6 +1242,7 @@ public actor GameRuntime {
   public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
   public func secretClick(x: Double, y: Double) { game.secretClick(x: x, y: y) }
   public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
+  public func marketClick(x: Double, y: Double) { game.marketClick(x: x, y: y) }
   public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
