@@ -6,6 +6,8 @@ This feature starts from protected main `1ef005e0c73971a360a0e3bb52792a9286a761d
 
 G1 allocates physical `ActorIdentity` values. Existing body integer IDs remain renderer/targeting compatibility identifiers. Actor identities include system and visit; they are never reused within a visit. Spawn requests carry request identities and receive admission receipts. Rock and ore payload identities omit visit, so leaving and returning cannot replenish ore. Wreck identities include the destroyed actor and cargo lot.
 
+Spawn request producers have explicit ambient, mining, security and mission namespaces; they do not share an implicit sequence-number range. Mission-payload identities retain the complete mission instance UUID and opaque payload key for protection. Ordinary modules cannot collect, regenerate or repurpose them. Future engine actor/projectile UUID mappings must retain complete UUIDs and persisted allocator/origin references.
+
 All context, anchor, spawn, payload and intent positions use canonical system space. G1 maintains the ship pose and converts to the existing ship-relative rendering/physics frame. Station, arrival, planet and sun anchors survive body culling. Launch and hyperspace arrival choose ship poses relative to those anchors; they do not regenerate fields around the camera. `ShipPose` supplies the conversion boundary.
 
 `EncounterContext.physicalTime` is a dedicated persisted clock advanced at the actual flight physics admission point. It does not use `Game.time`, wall time, redraws or a UI timer. Existing pause, title, help, route planning, gallery, handoff, rumour and future mission-library exclusions remain intact. Context system, visit and revision must match before G1 accepts a returned plan.
@@ -21,6 +23,8 @@ G2 owns `EncounterDirector.swift`, `EncounterGeography.swift`, `TrafficIntent.sw
 ## Combat and cargo
 
 `AttackOrigin` preserves the original owner, emission identity/time and legal status even after the owner or ordnance disappears. `CombatIncident` captures the victim's legal status before mutation, first aggressor, attack/outcome, position and optional laser kind/facing. G1 assigns incident IDs and resolves lawful credit once. Interception/removal/culling is distinct from hull destruction. Hostility never creates bounty entitlement.
+
+Plasma has its own attack kind. Opaque source/victim part keys preserve component provenance; component destruction is a separate outcome that cannot settle a parent hull bounty, drop or kill objective. Future profiled geometry uses the engine's actual nearest solid component intersections. Mission protection prevents ambient culling/adoption/replacement rather than granting invulnerability. The ordinary 128-body/four-slot defaults are not engine ceilings: adapters must dynamically reserve/admit entire scripted cohorts against the engine's 1024-unit budget without truncating them.
 
 `CommodityIdentity` uses the existing seventeen market/save indices; native units derive from `Commodity.all`. Minerals and Alloys consume tonne capacity, Gold and Platinum are kilograms, and Gem-Stones are grams. Ordinary payloads exclude mission lots, people and equipment. G1 validates actual scoops and atomic cargo capacity/quantity bounds; a full tonne bay alone cannot reject kilograms. The separate mission engine's `Commander.sellableCargo` remains the future availability adapter.
 
