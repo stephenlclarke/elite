@@ -102,6 +102,12 @@ struct NPCPersistenceRuntimeTests {
       game.bodies.first { $0.physical?.identity == source }?.physical?.deathIncidentID == event)
     game.dock()
     #expect(!game.docked && game.hasUnsettledCargoDeaths)
+    game.commander.equipment.insert("Escape Pod")
+    game.commander.cargo[0] = 1
+    let beforeEscape = game.commander
+    game.escapePod()
+    #expect(!game.docked && game.commander == beforeEscape)
+    game.commander.cargo[0] = 0
     game.commander.equipment.insert("Fuel Scoops")
     game.admitPendingCargo()
     let pod = try #require(game.bodies.firstIndex { $0.physical?.payload != nil })

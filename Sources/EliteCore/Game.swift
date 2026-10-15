@@ -1052,12 +1052,19 @@ public struct Game: Sendable {
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
-    guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
-    commander.cargo = Array(repeating: 0, count: 17)
-    commander.cargo[10] = commander.markedFirearms
-    commander.legal = 0
-    commander.fuel = commander.fuelCapacity
-    dock()
+    guard !docked, commander.equipment.contains("Escape Pod") else { return }
+    var candidate = self
+    candidate.commander.equipment.remove("Escape Pod")
+    candidate.commander.cargo = Array(repeating: 0, count: 17)
+    candidate.commander.cargo[10] = candidate.commander.markedFirearms
+    candidate.commander.legal = 0
+    candidate.commander.fuel = candidate.commander.fuelCapacity
+    candidate.dock()
+    guard candidate.docked else {
+      notify(candidate.message)
+      return
+    }
+    self = candidate
   }
   mutating func randomByte() -> Int {
     randomState = randomState &* 6_364_136_223_846_793_005 &+ 1
