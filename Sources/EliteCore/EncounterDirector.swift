@@ -114,6 +114,12 @@ public struct EncounterDirector: Equatable, Codable, Sendable {
     let origin = outbound ? system : nearby
     let destination = outbound ? nearby : system
     var npc = NPCState(role: role, origin: origin, destination: destination)
+    // These facts describe this generated craft, not observed travel history.
+    npc.legalProvenance = .generated
+    npc.cargoProvenance = .generated
+    npc.routeProvenance = .generated
+    // Mining and piracy intents collect physical pods; traders only carry their manifest.
+    npc.hasFuelScoops = role == .miner || role == .pirate
     if pirate { npc.legal = .init(value: 16, bountyTenths: 50) }
     if role == .trader {
       let commodities: [CommodityIdentity] = [
@@ -154,6 +160,8 @@ public struct EncounterDirector: Equatable, Codable, Sendable {
       positions = []
     }
     guard positions.count == count else { return nil }
+    let hull: Hull = pirate ? .sidewinder : .cobra
+    let catalogueShipID = ShipCatalogue.nativeShip(hull)?.id
     return positions.enumerated().map { member, position in
       let heading =
         (!pirate && outbound
@@ -168,9 +176,9 @@ public struct EncounterDirector: Equatable, Codable, Sendable {
           identity: .init(
             system: system, visit: visit, sequence: decisionCount, member: UInt16(member),
             producer: .ambient),
-          population: pirate ? .pirate : .civilian, hull: pirate ? .sidewinder : .cobra,
+          population: pirate ? .pirate : .civilian, hull: hull,
           position: position, orientation: orientation, velocity: heading * 60, npc: npc,
-          rock: nil, payload: nil, priority: .ordinary)
+          rock: nil, payload: nil, priority: .ordinary, catalogueShipID: catalogueShipID)
     }
   }
 }
