@@ -178,6 +178,8 @@ public struct EncounterContext: Equatable, Codable, Sendable {
   public let protection: MissionProtection
   public let budget: AdmissionBudget
   public let perceptionRadius: Double
+  /// Current-system terminal rocks, independent of scene admission/culling.
+  public var depletedRocks: Set<RockIdentity> = []
 }
 
 public enum AdmissionPriority: Int, Comparable, Codable, Sendable {
