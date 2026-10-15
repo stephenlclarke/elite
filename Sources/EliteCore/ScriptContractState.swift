@@ -154,6 +154,15 @@ extension Commander {
     copy.scriptState.calendarSeconds = 0
     copy.scriptState.calendarLedger = nil
     copy.scriptState.transitSeconds = 0
+    // Quotes bind real property/assignments; autonomous progress is rechecked by acceptance.
+    copy.scriptState.pendingEvents = []
+    copy.scriptState.nextEvent = 0
+    copy.scriptState.worldJobs = [:]
+    copy.scriptState.projectiles = [:]
+    copy.scriptState.geometry = [:]
+    let instances = copy.scriptState.instances.mapValues { $0.contractQuoteState }
+    copy.scriptState.instances = instances
+    for id in copy.missionProgress.keys { copy.missionProgress[id]?.seconds = 0 }
     return copy
   }
   var contractsValid: Bool {
@@ -180,5 +189,22 @@ extension Commander {
         && (instance.outcome == .active
           ? !job.settled : job.settled && job.settlementOutcome == instance.outcome)
     }
+  }
+}
+
+extension ScriptInstance {
+  fileprivate var contractQuoteState: ScriptInstance {
+    var copy = self
+    copy.data = .object([:])
+    copy.revision = 0
+    copy.acknowledgedThrough = nil
+    copy.acknowledgedEvents = []
+    copy.receipts = []
+    copy.timers = [:]
+    copy.dialogue = nil
+    copy.journal = []
+    copy.randomState = 0
+    copy.ownedEncounters = [:]
+    return copy
   }
 }

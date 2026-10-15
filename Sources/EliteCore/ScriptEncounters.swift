@@ -161,14 +161,15 @@ extension Game {
     if plan == nil {
       var actors: [String: ScriptOwnedActor] = [:]
       for spec in definition.actors {
-        let identity = UUID()
+        let identity = ScriptIdentity.uuid(
+          "script-actor-v2:\(state.id):\(pack.digest):\(id):\(spec.id)")
         var body = SpaceBody(
           id: -1, hull: spec.hull ?? .cobra, position: .init(spec.x, spec.y, spec.z),
           hostile: spec.hostile)
         if let npcID = spec.npc,
           let definition = pack.manifest.npcs?.first(where: { $0.id == npcID })
         {
-          body.scriptNPC = try makeScriptNPC(definition, pack: pack)
+          body.scriptNPC = try makeScriptNPC(definition, pack: pack, identity: identity)
           body.energy = definition.energy
           body.missiles = definition.missiles
           body.ecmEnabled = definition.ecm

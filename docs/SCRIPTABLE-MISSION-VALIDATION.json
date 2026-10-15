@@ -1,5 +1,5 @@
 {
-  "recorded_utc": "2026-10-15T02:04:00.055112+00:00",
+  "recorded_utc": "2026-10-15T03:27:53.033624+00:00",
   "branch": "feature/scriptable-mission-engine",
   "base_commit": "1ef005e0c73971a360a0e3bb52792a9286a761d3",
   "command": "make ci",
@@ -7,32 +7,32 @@
   "test_runs": [
     {
       "lane": "coverage",
-      "tests": 459,
+      "tests": 469,
       "suites": 2,
-      "seconds": 36.524
+      "seconds": 35.652
     },
     {
       "lane": "thread sanitizer",
-      "tests": 459,
+      "tests": 469,
       "suites": 2,
-      "seconds": 171.399
+      "seconds": 176.479
     },
     {
       "lane": "address sanitizer",
-      "tests": 459,
+      "tests": 469,
       "suites": 2,
-      "seconds": 435.408
+      "seconds": 707.887
     }
   ],
   "coverage": {
-    "covered_lines": 15488,
-    "total_lines": 16466,
-    "percentage": 94.06
+    "covered_lines": 15564,
+    "total_lines": 16535,
+    "percentage": 94.13
   },
   "new_script_swift_coverage": {
-    "covered_lines": 4412,
-    "total_lines": 4544,
-    "percentage": 97.1
+    "covered_lines": 4485,
+    "total_lines": 4613,
+    "percentage": 97.23
   },
   "maintained_c_host_coverage": {
     "covered_lines": 247,
@@ -70,9 +70,13 @@
     "Independently resource-owned jobs continue after complete/failed/abandoned missions without reward rights; saved owner identities, actual station destruction cancellation/tombstones, station condition across native dock/launch and two-way hyperspace, read-only local time and unloaded/title/pause freezes",
     "Native service example retains actual prepared deployment identities while docked, admits both actual ships after launch and completes only after the native admission snapshot; isolated trial and parent outcome/balance remain correct",
     "Saved skipped-pulse/reset/enabled counters, terminal-parent Gallery Retry of original pending sequence, missing exact content suspension, real filesystem publication failure preserving settled physics and retrying only the uncommitted repair",
-    "Native service Gallery pixels inspected at512x518@1 and1512x982@2; source-coded rights prevent world jobs issuing mission outcomes, credits, cargo/people/equipment or undeclared fleets; repeating clocks at ceiling preserve valid final stamps without fabricated future pulses"
+    "Native service Gallery pixels inspected at512x518@1 and1512x982@2; source-coded rights prevent world jobs issuing mission outcomes, credits, cargo/people/equipment or undeclared fleets; repeating clocks at ceiling preserve valid final stamps without fabricated future pulses",
+    "5000 actual native timer callbacks keep acknowledgement memory bounded across reload; legacy acknowledgement sets compact and replayed native envelopes do not execute handlers again; earlier faulted facts preserve original dock/undock context and order through actual reload/Retry",
+    "Original native envelope fields resist value shadowing; unknown legacy contexts remain unknown; malformed contexts, unordered facts and impossible future watermarks are refused before replacing live state",
+    "New root/component plan identities are deterministic for actual origin/content/cohort/alias and do not consume simulation RNG; separate origins remain disjoint; actual earlier-format prepared plans keep random legacy identities and damaged condition on later native admission",
+    "A frozen contract quote remains usable while mission timers and station services prepare actual patrol identities; confirmation retains terms and all autonomous progress; real fitting/property and hourly stale-offer checks still pass"
   ],
-  "raw_log_sha256": "009f8bfd6ec8cff76adfe9e058bc134903be9642960c85882878b0fc12cee74c",
+  "raw_log_sha256": "6c00d7587b71f00cd8088f964a27ff9f412a54fbba97b7fc006494a2851685cf",
   "validated_file_sha256": {
     "Makefile": "0624ef35d86c3d33d0d9106e2c76faec412312c07b2169887de685473a58b92f",
     "Package.resolved": "23770167faec69f1722574eebb7fb62dd32655dd4b461735fec67a928686dd4d",
@@ -444,16 +448,18 @@
     "Sources/EliteCore/ScriptCalendar.swift": "764e604b1f3f266214946c0c33d1369c8259b702361986ff6f6dcf923e7ad19f",
     "Sources/EliteCore/ScriptCalendarState.swift": "b27f46c7ea117cacef9828b80fcded3b1a9eed7c7bca0bac441f88130341b5d0",
     "Sources/EliteCore/ScriptCommands.swift": "09aa07da66de875d3218d9430f06ced391d7441112037180665cf70726f3b164",
-    "Sources/EliteCore/ScriptContractCore.swift": "8fff63a8cdecb0c4925f8698085eab9cd866d3e0babd192d05b7f8778530845e",
-    "Sources/EliteCore/ScriptContractState.swift": "83bdef7674db625d5e5d72487fa6b419c861a0cce5a4824edf532a31db0f7619",
-    "Sources/EliteCore/ScriptDirector.swift": "b1205c9b47421ae1641c019bf40e6f462b67343fc33b2c0c62819654e8695c19",
-    "Sources/EliteCore/ScriptEncounters.swift": "da7eddd4c398aa688c64affe4158b7988cfc37a784f348b043c84105e1ae38bd",
+    "Sources/EliteCore/ScriptContractCore.swift": "20e18f5d7d70acf78d52687d312e1e55489bc9728c8856d76bfe50e11fd20a02",
+    "Sources/EliteCore/ScriptContractState.swift": "0ab539a6ef72a727fddb0a1805c4dc5d574b92bef0c7c7153d509019b19a563f",
+    "Sources/EliteCore/ScriptDirector.swift": "9a747529b1a59b34490f6a56c3465f17b4e500824d0de494c75ba9ef1561428c",
+    "Sources/EliteCore/ScriptEncounters.swift": "9066a29e82b131dec69560ab9474c88b7db5bc3a38b83e2944fd5c646b61b7ae",
     "Sources/EliteCore/ScriptEquipment.swift": "4ca55e96d536bc7e782a3a9c66c06755f292d665995a7939b6015a2d664899e0",
     "Sources/EliteCore/ScriptEvaluator.swift": "89e05f0eb25b1558610cdc8db0e36d10be9f7a0e6788a939b26775a1d610c687",
+    "Sources/EliteCore/ScriptEventContext.swift": "70c8a51aedbac9b89dc38edb2c464ce4683578f4abfebd2e6b4f1392b9391c58",
     "Sources/EliteCore/ScriptGalleryTrial.swift": "74218eeb6e0456e73567e95001b1043266ac73c6b92742946a02e592fa32a83f",
-    "Sources/EliteCore/ScriptMissionState.swift": "7c8f034f340c0710766fa95ae959bd5c25b27289396ed1e25e808628c9fd1db5",
+    "Sources/EliteCore/ScriptIdentity.swift": "da767c593d920b68a060cef8dd259d68e8405dfc3e268294c0f591ba289148cc",
+    "Sources/EliteCore/ScriptMissionState.swift": "d981b1223e18c77502393325dfd55d8e73448c3375e4e2ddd4386475a3436f9e",
     "Sources/EliteCore/ScriptModules.swift": "3a84eb374589f9a02a98b8e4659b3509d09ba38a6223c775b6185c7bc6580ee2",
-    "Sources/EliteCore/ScriptNPCAssets.swift": "9bc314404ee1e13adb980c1f064dd54468fc7c241cc57478f8d54f20596e1217",
+    "Sources/EliteCore/ScriptNPCAssets.swift": "98b33aab8fcdfd678c6b5fb2ff125b1ce97d70ffcd0b6a3a009b760f5e28b5fe",
     "Sources/EliteCore/ScriptNPCCollision.swift": "1cdff10c52c18ed9f888bdbdb874ceecfc48f6b1699782467fba13760463f272",
     "Sources/EliteCore/ScriptNPCFlight.swift": "b2c98dec3051e9123d8387c81895bf1fd07900b313da3e69edd8fa184059ffb2",
     "Sources/EliteCore/ScriptNPCPersistence.swift": "8d779a1e408537f26eccc849ea5003bdac2dcc99d8893db3ba1fd6b2dace7ba7",
@@ -461,9 +467,9 @@
     "Sources/EliteCore/ScriptNPCRendering.swift": "f24a5fa0110b169b94c3fa3702a3b2306a84c44451eb29f6a76c272fc4ab0e6d",
     "Sources/EliteCore/ScriptNPCSnapshot.swift": "154036da6808df2503242f19dbdcec4bc3d988d0a4acdba26185ed4715a206ea",
     "Sources/EliteCore/ScriptNPCValidation.swift": "05e261cbac04c6fa7e91a40b9bae4afdb03e7fa428cab2667e4db299a663d9b4",
-    "Sources/EliteCore/ScriptNPCWeapons.swift": "c3e57bc67427c68c5de0d0564a38067b92ff17a06167e94cf3ddab86d1486f9f",
-    "Sources/EliteCore/ScriptPack.swift": "b598f155faa0aeda8a5a1062458d293ef0375f1a80a43f10403a5759628d8d62",
-    "Sources/EliteCore/ScriptPersistence.swift": "2ac67049e579055a680a3ece686ca2a47e0197c5fe90957e36d93fdc4c8adc95",
+    "Sources/EliteCore/ScriptNPCWeapons.swift": "714bd4c5fb93ed56c682e1933ff91435d3f218fea712047bb713fff93dc26a40",
+    "Sources/EliteCore/ScriptPack.swift": "f14b1325f3765a43738d60f3d243840c5ba5f29e624dece414d8296669b39835",
+    "Sources/EliteCore/ScriptPersistence.swift": "3695496cc28b3ece3dee7e4b7818c3069a0735a0d183337e4516dd2b7e25857b",
     "Sources/EliteCore/ScriptRuntime.swift": "519481465d1c81cbb41323bfcff044738a86274767cea2c5efb64c15338870c7",
     "Sources/EliteCore/ScriptSimulationSave.swift": "d3f2f34185402ba4ad9317e32ec229479d55ccd127e0b44f6011bf283e48556e",
     "Sources/EliteCore/ScriptSolarSave.swift": "fe3bba47a98a7d4da995b11ab6ec0a44fe552cce29067ac3ba028867d2ff0359",
@@ -472,7 +478,7 @@
     "Sources/EliteCore/ScriptValue.swift": "4c88d7d8e4e957edefa78d7471213c54816730e4c248877a06f401a120a44e3a",
     "Sources/EliteCore/ScriptWorldJobCommands.swift": "1c4e0df9ff6f95a6c48b1d5dae5049b745d6f461d3bcc8d53ed671afa7a02b51",
     "Sources/EliteCore/ScriptWorldJobState.swift": "97c87623a416e905c8f0a5ea896a01b49a982c9bc463a670b60eb56e2193fa6c",
-    "Sources/EliteCore/ScriptWorldJobs.swift": "c0643a68937e36cba155ef28d6b6ff577fdacf46d5bcb04e4d15aff659558967",
+    "Sources/EliteCore/ScriptWorldJobs.swift": "5ba5aadaf05d4030d33bc955ddb6aba67a2032fab551651bf17ab9daf762b561",
     "Sources/EliteCore/ScrollWindow.swift": "fccf9d299be8da85c0aae5837f12aa4a3034d96b26f489d55fb8380212e0ee3e",
     "Sources/EliteCore/SecretChoices.swift": "2c58456c378a8610fe9374cd63b89968533ad2a765727fcb1048bba2f7237e95",
     "Sources/EliteCore/SecretMenu.swift": "184d1c19e255fa95abf3fc4d60e590e1b237d1fdadf343f7dd62cffc1a8e67b3",
@@ -532,7 +538,7 @@
     "Tests/EliteCoreTests/NavalMissionTests.swift": "130b4fae03359480f1c4cf337c7410e58c99a026ce56d983bcaf4d8caecb5f28",
     "Tests/EliteCoreTests/NavigationTests.swift": "42c5999eb8f8968e4f5461d9f4b8a0a0d49d68cc2628a653ad504886865952de",
     "Tests/EliteCoreTests/OwnedEquipmentTests.swift": "ab643c42e4fba12492cd6feaefdaf359c63a7aee7e337330ee8f937f50db8452",
-    "Tests/EliteCoreTests/PassengerCustodyTests.swift": "b460ee65ceb7821dab1c0f9cd17a328f03654bb5dabd59d86ff18f70d85e682b",
+    "Tests/EliteCoreTests/PassengerCustodyTests.swift": "6bd9ee4060b18d6852b0ba070a0bca1467b58ef9c665584ae2ac27472ef496b3",
     "Tests/EliteCoreTests/PlanetTests.swift": "bebc944b6b0f7154e1c3bc7ba264c869ce59138c663efb73af52fff501544a5d",
     "Tests/EliteCoreTests/PlughTests.swift": "7d1f98be3fc7a8e878edb269ec43db8a4351b3e2f46e2037dab41f2829435557",
     "Tests/EliteCoreTests/ProfitScanTests.swift": "ccf318cb8152b629a863964be052b7edd18c3ec2e833a06436333ce8c1b1dfa0",
@@ -540,10 +546,12 @@
     "Tests/EliteCoreTests/ScreenNavigationTests.swift": "0eab0c881855a53a2c55e90c2ccc4395e9c9287ec083eccecafefb32f8046c56",
     "Tests/EliteCoreTests/ScriptCalendarTests.swift": "6b31c6694d679ea96be2598e82cbb9891bb3044d494c8fa1493ca0f7c8f51758",
     "Tests/EliteCoreTests/ScriptContractTests.swift": "c831fdb73e1768ea393410991a85265db36523e9de5ce76ed289d112fd98da7d",
-    "Tests/EliteCoreTests/ScriptEncounterTests.swift": "6c583a6e8f8d64290e332c9fbf15fe39e387f040da96ed435786c53b686be195",
+    "Tests/EliteCoreTests/ScriptEncounterTests.swift": "59ebdc8ab5e450866876110d625fcb09cecc2e65a64eef31f1674af14bde0781",
     "Tests/EliteCoreTests/ScriptEquipmentTests.swift": "daad2c5ef9d1a10b33bd47f394da0e268fa8b2a62fc5c027b358d9ccbc093094",
     "Tests/EliteCoreTests/ScriptEvaluatorTests.swift": "758c6d84fbbca30d5b68364920d477d17ce0845af60dfaf1aa2b3e5e8a8ab6d0",
-    "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift": "fdfbc2dc1f5931da8ceca59e4191706a6aaf790a11c0f35ca378d4fbd51b52c2",
+    "Tests/EliteCoreTests/ScriptEventHistoryTests.swift": "9c0c7f7f78c7c7b2a9b60c0e7baec2c979db366be2a43a067fdf9e398144e066",
+    "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift": "597f6a6e2203d1210cb121cf69f0bae0adc360320a5f357148f3a2372709da43",
+    "Tests/EliteCoreTests/ScriptIdentityTests.swift": "514bcae450ab1619ad816fa04a8d6ef9a005b53c60a3728db35317841d0b1abd",
     "Tests/EliteCoreTests/ScriptMissionTests.swift": "5b413a49f2e42661fc89d1b93567a179d62749f0f77a3dd8aff80cb7b913371b",
     "Tests/EliteCoreTests/ScriptModuleTests.swift": "e0217d01f9f927ed5dcfd16c076a4d00f2a60b318b0d0bf1e85b72a9a99cbc09",
     "Tests/EliteCoreTests/ScriptNPCTests.swift": "c1af186b62741d7f0f84fa401197ebe6b3f5665f5088cceb4032b5eb3e922d5e",
@@ -589,21 +597,21 @@
     "docs/mission-packs/scripted-patrol/scripts/main.lua": "cffd39023bbdbeea102039d62e54ed9c98d5b878256145a5175c1d8a1085b686",
     "docs/mission-packs/station-maintenance/manifest.toml": "fb98009ae34f77130e10a3752cd08c4ef9887a0910447142e51b68beade659bc",
     "docs/mission-packs/station-maintenance/scripts/main.lua": "51cbee6c8f411515d96d99a216175cabc18288803f28cdf24d4dc5c01cec09c5",
-    "docs/ships/manifest.json": "dd3f115ba8215c7ee37f0d5d0d7bed1c8874a568cd7e376ac70c40188b87c579",
+    "docs/ships/manifest.json": "da6324bf2cb7558965bc7b651f44b39e5019acd1c6c2b596d2e3a583abe60e62",
     "script/coverage.sh": "09a9c802156f79144290fc248a3a999eeb65be320f3c2a3331e3e747308374f7",
     "sonar-project.properties": "9678da010467df9603aeba7e4fcf452c8a65c3ee17bf6e6ebbf1f3a5134038ef"
   },
-  "limits": "Validated protected main1ef005e integration plus immutable multi-module Lua helper content, bounded Lua/story/economy/cargo/local/flight/calendar clocks and saved native pulse counters, classic physical encounters, all159 player accommodation adapters, humanoid charter custody, solar/title continuity, durable staged transactions, isolated native Gallery trials, unique standard native equipment/storage/hull transfer scoped quest loans/consumption/returns, measured profiled NPC/components with bounded steering/laser/plasma/swept physical collision/projectile persistence, and saved generic main-orbital contract boards with local/flight/calendar deadlines and repeatable job identities. Full source gear condition/modification controllers, broker movement, pods/care, complete controllers/world-business, complete source AI/combat/transit, complete RRS/boards/jobs/campaigns, full-source Maenes/finance/RRS and rich historical Gallery scenarios remain incomplete. Format11 pins native calendar and admitted-journey provenance. Generic independently resource-owned local-world jobs are implemented. Transit and full source station/grid/care/finance/service adapters remain incomplete. Full historical Maenes/finance/RRS acceptance and remaining complete engine requirements are still gated.",
+  "limits": "Validated protected main1ef005e integration plus immutable multi-module Lua helper content, bounded Lua/story/economy/cargo/local/flight/calendar clocks and saved native pulse counters, classic physical encounters, all159 player accommodation adapters, humanoid charter custody, solar/title continuity, durable staged transactions, isolated native Gallery trials, unique standard native equipment/storage/hull transfer scoped quest loans/consumption/returns, measured profiled NPC/components with bounded steering/laser/plasma/swept physical collision/projectile persistence, and saved generic main-orbital contract boards with local/flight/calendar deadlines and repeatable job identities. Full source gear condition/modification controllers, broker movement, pods/care, complete controllers/world-business, complete source AI/combat/transit, complete RRS/boards/jobs/campaigns, full-source Maenes/finance/RRS and rich historical Gallery scenarios remain incomplete. Format12 pins native calendar and admitted-journey provenance. Generic independently resource-owned local-world jobs are implemented. Transit and full source station/grid/care/finance/service adapters remain incomplete. Full historical Maenes/finance/RRS acceptance and remaining complete engine requirements are still gated. Native event contexts/watermarks and deterministic new plan IDs are implemented. Exact generic ScriptValue integer/float storage remains a required persistence follow-up; full world epochs/archive/replay/source RNG and historical acceptance are still incomplete.",
   "previous_checkpoint": {
-    "commit": "87a157b28f8d90b2e77e1f32d52572ed0a2d2116",
-    "tests_per_lane": 439,
-    "maintained_coverage_percent": 94.04,
-    "note": "Commander-calendar/native pulse counter checkpoint; original evidence retained at that commit."
+    "commit": "19eb996fd518d5b73e25b94631ec48236e81b7ce",
+    "tests_per_lane": 459,
+    "maintained_coverage_percent": 94.06,
+    "note": "Resource-owned world jobs checkpoint; original evidence retained at that commit."
   },
   "native_encounter_coverage": {
-    "covered_lines": 303,
-    "total_lines": 310,
-    "percentage": 97.74
+    "covered_lines": 304,
+    "total_lines": 311,
+    "percentage": 97.75
   },
   "charter_accommodation_coverage": {
     "covered_lines": 350,
@@ -636,9 +644,9 @@
     "percentage": 97.58
   },
   "contract_coverage": {
-    "covered_lines": 615,
-    "total_lines": 666,
-    "percentage": 92.34
+    "covered_lines": 636,
+    "total_lines": 684,
+    "percentage": 92.98
   },
   "native_contract_ui": {
     "test": "nativeContractBoardUsesExplicitActionsAndSavesThePrecedingAcceptance",
@@ -653,9 +661,9 @@
     "evidence_commit": "afb8a2e"
   },
   "profiled_npc_coverage": {
-    "covered_lines": 941,
-    "total_lines": 961,
-    "percentage": 97.92
+    "covered_lines": 939,
+    "total_lines": 957,
+    "percentage": 98.12
   },
   "native_profiled_ui": {
     "test": "nativeProfiledShipsRenderMeasuredComponentsAndSourcePanels",
@@ -686,9 +694,9 @@
     "percentage": 97.58
   },
   "world_job_coverage": {
-    "covered_lines": 448,
-    "total_lines": 476,
-    "percentage": 94.12
+    "covered_lines": 443,
+    "total_lines": 471,
+    "percentage": 94.06
   },
   "native_world_job_ui": {
     "test": "nativeGalleryDisplaysIndependentServiceAfterAuthorizationCompletes",
@@ -697,6 +705,17 @@
     "image_sha256": {
       "services-active-512.png": "5ab1101f999984d0459b4b0ba647f3e869c0e6ec6bb9595acc78dac90d0fbcca",
       "services-active-1512.png": "c6848d2ac61e8bb4d676fd221acc9b7393c354ba6dea262a377653a6664fb7d3"
-    }
+    },
+    "evidence_commit": "19eb996"
+  },
+  "event_history_coverage": {
+    "covered_lines": 38,
+    "total_lines": 38,
+    "percentage": 100.0
+  },
+  "identity_coverage": {
+    "covered_lines": 8,
+    "total_lines": 8,
+    "percentage": 100.0
   }
 }

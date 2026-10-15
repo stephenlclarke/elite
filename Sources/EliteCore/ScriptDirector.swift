@@ -5,9 +5,13 @@ struct ScriptEvent: Codable, Sendable, Equatable {
   let kind: String
   let instance: UUID
   let values: [String: ScriptValue]
+  var context: ScriptEventContext? = nil
   var value: ScriptValue {
     .object(
-      values.merging(["kind": .string(kind), "sequence": .integer(Int64(sequence))]) { _, native in
+      values.merging([
+        "kind": .string(kind), "sequence": .integer(Int64(sequence)),
+        "instance_id": .string(instance.uuidString), "context": context?.value ?? .null,
+      ]) { _, native in
         native
       })
   }
@@ -177,7 +181,8 @@ extension Game {
       commander.scriptState.nextEvent += 1
       commander.scriptState.pendingEvents.append(
         ScriptEvent(
-          sequence: commander.scriptState.nextEvent, kind: kind, instance: id, values: values))
+          sequence: commander.scriptState.nextEvent, kind: kind, instance: id, values: values,
+          context: scriptEventContext(instance)))
     }
     if drain { drainScriptEvents() }
   }
@@ -196,7 +201,7 @@ extension Game {
           "Restore the exact saved mission version and its requirements."
         continue
       }
-      if instance.outcome != .active || instance.acknowledgedEvents.contains(event.sequence) {
+      if instance.outcome != .active || instance.hasAcknowledged(event.sequence) {
         commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
         continue
       }
@@ -244,7 +249,7 @@ extension Game {
           }
         }
         next.revision += 1
-        next.acknowledgedEvents.insert(event.sequence)
+        next.acknowledge(event.sequence)
         candidate.commander.scriptState.instances[next.id] = next
         candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
         guard candidate.commander.valid else {

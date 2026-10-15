@@ -95,12 +95,7 @@ extension Game {
     return offer
   }
   private static func contractNamespace(_ value: String) -> UUID {
-    let b = Array(SHA256.hash(data: Data(value.utf8)))
-    return UUID(
-      uuid: (
-        b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11], b[12], b[13],
-        b[14], b[15]
-      ))
+    ScriptIdentity.uuid(value)
   }
   static func contractJobIdentity(_ offer: UUID) -> UUID {
     contractNamespace("contract-job-v1:\(offer)")

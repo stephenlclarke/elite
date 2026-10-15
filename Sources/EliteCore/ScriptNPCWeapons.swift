@@ -1,4 +1,3 @@
-import CryptoKit
 import Foundation
 
 extension Game {
@@ -111,12 +110,7 @@ extension Game {
       only: instance, drain: false)
   }
   private static func scriptShotIdentity(owner: UUID, shot: UInt64) -> UUID {
-    let b = Array(SHA256.hash(data: Data("npc-shot-v1:\(owner):\(shot)".utf8)))
-    return UUID(
-      uuid: (
-        b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7],
-        b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]
-      ))
+    ScriptIdentity.uuid("npc-shot-v1:\(owner):\(shot)")
   }
   private static func scriptWeaponAim(_ current: Vector3, toward desired: Vector3, step: Double)
     -> Vector3

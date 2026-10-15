@@ -20,7 +20,9 @@
     "story-v2",
     "calendar-clocks-v2",
     "pulse-counters-v2",
-    "world-resource-jobs-v2"
+    "world-resource-jobs-v2",
+    "event-history-v2",
+    "deterministic-plans-v2"
   ],
   "requirements": [
     {
@@ -89,7 +91,11 @@
       "current_evidence": [
         "Sources/EliteCore/ScriptDirector.swift",
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptEventContext.swift",
+        "Sources/EliteCore/ScriptIdentity.swift",
+        "Tests/EliteCoreTests/ScriptEventHistoryTests.swift",
+        "Tests/EliteCoreTests/ScriptIdentityTests.swift"
       ],
       "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
     },
@@ -258,9 +264,13 @@
         "Sources/EliteCore/ScriptNPCWeapons.swift",
         "Sources/EliteCore/ScriptNPCCollision.swift",
         "Sources/EliteCore/ScriptNPCPersistence.swift",
-        "Tests/EliteCoreTests/ScriptNPCTests.swift"
+        "Tests/EliteCoreTests/ScriptNPCTests.swift",
+        "Sources/EliteCore/ScriptEventContext.swift",
+        "Sources/EliteCore/ScriptIdentity.swift",
+        "Tests/EliteCoreTests/ScriptEventHistoryTests.swift",
+        "Tests/EliteCoreTests/ScriptIdentityTests.swift"
       ],
-      "remaining": "Format11 with calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, full source world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained."
+      "remaining": "Format12 with calendar/admitted-journey migration and pulse counters; scope-tagged immutable generations, synchronous actor barriers, atomic explicit Save/migration preparation, solar/native classic state and queued cause/result receipts are implemented. Complete controllers, full source world jobs/transit/care, explicit content migrations, archival/replay and background input/writer scheduling remain required. Gear and scoped loan custody are restored before combined validation; missing content suspends active instances immediately. Contract snapshots use their own hashed chunk and join accepted receipts to frozen jobs/settlements; board cursor state is retained. Bounded event acknowledgement watermarks and frozen native event provenance now implemented; complete world epochs, archival/replay and source/controller migrations remain required. Exact integer/float generic-value persistence is also required; legacy primitive JSON normalizes integral floats on reload."
     },
     {
       "id": "R16",
@@ -270,9 +280,13 @@
       "status": "partial",
       "current_evidence": [
         "Sources/EliteCore/ScriptEncounters.swift",
-        "Tests/EliteCoreTests/ScriptEncounterTests.swift"
+        "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+        "Sources/EliteCore/ScriptEventContext.swift",
+        "Sources/EliteCore/ScriptIdentity.swift",
+        "Tests/EliteCoreTests/ScriptEventHistoryTests.swift",
+        "Tests/EliteCoreTests/ScriptIdentityTests.swift"
       ],
-      "remaining": "Full researched-source native acceptance is not established. See SCRIPTABLE-MISSIONS.md and original design v1."
+      "remaining": "New root/component plans use pinned versioned identities without simulation RNG draws; old prepared/admitted identities and condition survive reload and subsequent admission. Native board seeds and actual projectile shot identities remain stable. Full source-profile RNG/constructor adapters, world epochs and archival/replay acceptance remain required."
     },
     {
       "id": "R17",
@@ -421,10 +435,10 @@
   },
   "validated_checkpoint": "SCRIPTABLE-MISSION-VALIDATION.json",
   "validation_result": {
-    "tests_per_lane": 459,
-    "maintained_coverage_percent": 94.06,
-    "script_swift_coverage_percent": 97.1,
-    "encounter_coverage_percent": 97.74,
+    "tests_per_lane": 469,
+    "maintained_coverage_percent": 94.13,
+    "script_swift_coverage_percent": 97.23,
+    "encounter_coverage_percent": 97.75,
     "maintained_c_host_coverage_percent": 95.0,
     "leaks": 0,
     "charter_accommodation_coverage_percent": 94.85,
@@ -433,12 +447,14 @@
     "gallery_trial_coverage_percent": 97.27,
     "owned_equipment_coverage_percent": 94.97,
     "equipment_loan_coverage_percent": 97.58,
-    "contract_coverage_percent": 92.34,
-    "profiled_npc_coverage_percent": 97.92,
+    "contract_coverage_percent": 92.98,
+    "profiled_npc_coverage_percent": 98.12,
     "module_loader_coverage_percent": 98.04,
     "pack_loader_coverage_percent": 96.77,
     "calendar_coverage_percent": 97.58,
-    "world_job_coverage_percent": 94.12
+    "world_job_coverage_percent": 94.06,
+    "event_history_coverage_percent": 100.0,
+    "identity_coverage_percent": 100.0
   },
   "in_progress_physical_checkpoint": {
     "status": "validated bounded milestone; full engine remains incomplete",
@@ -470,7 +486,7 @@
     "SH128 selected player hold remains release-pinned at0; research twelve-tonne correction awaits separate validated import.",
     "Sunray/Minnow/Stingray imports and once-owned Sunray starter cabin await separate validated data update."
   ],
-  "integration_validation": "Complete combined make ci passes459 tests per lane,94.06% maintained coverage,97.10% script coverage,94.12% world-job coverage and0leaks; exact518 source/resource/test/example/renderer-manifest hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
+  "integration_validation": "Complete combined make ci passes469 tests per lane,94.13% maintained coverage,100% event-history/identity helpers and0leaks; exact522 source/resource/test/example/renderer-manifest hashes pinned in SCRIPTABLE-MISSION-VALIDATION.json.",
   "liberator_accommodation": {
     "status": "explicit project estimate",
     "crew_including_commander": 4,
@@ -526,7 +542,7 @@
     "full_rrs_ready": false,
     "full_engine_ready": false
   },
-  "last_validated_commit": "87a157b (preceding committed checkpoint; current source hashes in validation document)",
+  "last_validated_commit": "19eb996 (preceding committed checkpoint; current source hashes in validation document)",
   "npc_checkpoint": {
     "status": "validated with complete make ci,417 tests per lane; full source engine remains incomplete",
     "capability": "profiled-encounters-v2",
@@ -560,6 +576,15 @@
     "status": "validated with complete make ci;459 tests per lane; full engine remains incomplete",
     "capability": "world-resource-jobs-v2",
     "save_format": 11,
+    "full_engine_ready": false
+  },
+  "event_history_checkpoint": {
+    "status": "validated with complete make ci;469 tests per lane; full engine remains incomplete",
+    "capabilities": [
+      "event-history-v2",
+      "deterministic-plans-v2"
+    ],
+    "save_format": 12,
     "full_engine_ready": false
   }
 }

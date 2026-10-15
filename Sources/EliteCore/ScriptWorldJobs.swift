@@ -1,14 +1,8 @@
-import CryptoKit
 import Foundation
 
 extension Game {
   static func worldResourceIdentity(_ name: String) -> UUID {
-    let b = Array(SHA256.hash(data: Data(name.utf8)))
-    return UUID(
-      uuid: (
-        b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7],
-        b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]
-      ))
+    ScriptIdentity.uuid(name)
   }
   mutating func ensureScriptWorldJob(
     _ command: ScriptValue, pack: ScriptPack,

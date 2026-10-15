@@ -184,7 +184,7 @@ private func sortedWorld(_ game: Game) throws -> Data {
   defer { try? FileManager.default.removeItem(at: namespace) }
   let saved = try await runtime.saveForInterface()
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: saved.url))
-  #expect(pointer.scope == "gallery" && pointer.schemaVersion == 11)
+  #expect(pointer.scope == "gallery" && pointer.schemaVersion == 12)
   let clone = GameRuntime(game: await runtime.snapshot(), saveURL: mainFile)
   let cloneNamespace = try #require(await clone.gallerySaveDirectory())
   defer { try? FileManager.default.removeItem(at: cloneNamespace) }

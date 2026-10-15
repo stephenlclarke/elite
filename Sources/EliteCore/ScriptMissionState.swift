@@ -60,6 +60,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var suspension: String?
   public var revision: UInt64 = 0
   public var acknowledgedEvents: Set<UInt64> = []
+  public var acknowledgedThrough: UInt64?
   public var receipts: Set<String> = []
   public var milestones: Set<Int> = []
   public var payloads: [String: Int] = [:]
@@ -175,7 +176,13 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     return Set(identities).count == identities.count && instances.count <= 128
       && Set(gearIdentities).count == gearIdentities.count
       && pendingEvents.count <= 4096 && nextEvent < UInt64(Int64.max)
-      && pendingEvents.allSatisfy { $0.sequence <= nextEvent && instances[$0.instance] != nil }
+      && pendingEvents.map(\.sequence) == pendingEvents.map(\.sequence).sorted()
+      && pendingEvents.allSatisfy { event in
+        event.sequence > 0 && event.sequence <= nextEvent
+          && instances[event.instance].map { instance in
+            event.context.map { $0.valid && $0.revision <= instance.revision } ?? true
+          } == true
+      }
       && [flightSeconds, localSeconds, calendarSeconds, transitSeconds].allSatisfy {
         $0.isFinite && (0...1e12).contains($0)
       }
@@ -188,7 +195,9 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
               && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
               && (0...256).contains(dialogue.system)
           } ?? true)
-          && instance.revision < UInt64.max - 1 && instance.acknowledgedEvents.count <= 4096
+          && instance.revision < UInt64(Int64.max) && instance.acknowledgedEvents.count <= 4096
+          && instance.acknowledgedEvents.allSatisfy { $0 > 0 && $0 <= nextEvent }
+          && (instance.acknowledgedThrough.map { $0 <= nextEvent } ?? true)
           && instance.receipts.count <= 4096 && instance.receipts.allSatisfy(PackValidation.localID)
           && instance.ownedEncounters.count <= 64
           && instance.ownedEncounters.allSatisfy {

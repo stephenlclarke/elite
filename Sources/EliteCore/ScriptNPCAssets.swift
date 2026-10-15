@@ -48,7 +48,8 @@ extension ScriptPackLibrary {
 }
 
 extension Game {
-  mutating func makeScriptNPC(_ definition: ScriptNPCDefinition, pack: ScriptPack) throws
+  mutating func makeScriptNPC(_ definition: ScriptNPCDefinition, pack: ScriptPack, identity: UUID)
+    throws
     -> ScriptNPCState
   {
     var hashes: [String: String] = [:]
@@ -65,7 +66,8 @@ extension Game {
         (
           $0.id,
           ScriptNPCComponentState(
-            identity: UUID(), energy: $0.energy,
+            identity: ScriptIdentity.uuid("script-component-v2:\(identity):\($0.id)"),
+            energy: $0.energy,
             guns: Dictionary(
               uniqueKeysWithValues: ($0.weapons ?? []).map {
                 ($0.id, ScriptNPCGunState())
