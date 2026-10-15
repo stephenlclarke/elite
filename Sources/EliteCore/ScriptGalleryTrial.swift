@@ -31,7 +31,9 @@ public struct CommanderFileReceipt: Sendable {
 }
 extension Game {
   var selectedGalleryMission: GalleryMission? {
+    if let preview = gallery.campaignPreview { return preview }
     let missions = missionCatalogue
+    if let pinned = gallery.campaignSelection { return missions.first { pinned.matches($0) } }
     return missions.indices.contains(gallery.selection) ? missions[gallery.selection] : nil
   }
   public var canTrialSelectedMission: Bool {
@@ -146,6 +148,7 @@ extension GameRuntime {
       throw MissionPackError("This standalone trial has no live commander to return to.")
     }
     game = parent.game
+    game.gallery.presentationGeneration = UUID()
     controls = parent.controls
     scriptSaveURL = parent.saveURL
     galleryNamespace = nil
@@ -192,7 +195,20 @@ extension GameRuntime {
       return true
     }
     guard game.screen == .gallery else { return false }
+    if game.gallery.campaignReview != nil {
+      if key == "return", game.gallery.campaignStartSelected {
+        commitCampaignGalleryTrial()
+        return true
+      }
+      if ["t", "gallery-trial", "r", "mission-resume"].contains(key) { return true }
+      return false
+    }
     if ["t", "gallery-trial"].contains(key) {
+      if game.campaignImmediateOwner != nil {
+        game.openCampaignTrialReview()
+        return true
+      }
+      game.gallery.presentationGeneration = UUID()
       do {
         guard game.canTrialSelectedMission, let digest = game.selectedGalleryMission?.trialDigest
         else {
@@ -203,6 +219,7 @@ extension GameRuntime {
       return true
     }
     if ["r", "mission-resume"].contains(key) {
+      game.gallery.presentationGeneration = UUID()
       do {
         guard game.canRetrySelectedMission, let id = game.selectedGalleryMission?.savedInstance
         else {
@@ -214,5 +231,33 @@ extension GameRuntime {
       return true
     }
     return false
+  }
+
+  func commitCampaignGalleryTrial() {
+    game.gallery.campaignTrialRequested = false
+    game.gallery.presentationGeneration = UUID()
+    guard let review = game.gallery.campaignReview,
+      review == game.campaignTrialReview, game.gallery.campaignStartSelected
+    else {
+      game.gallery.campaignReview = nil
+      game.notify("CAMPAIGN CHANGED - REVIEW ITS TRIAL AGAIN")
+      return
+    }
+    let browsing = game.gallery
+    game.gallery.campaignReview = nil
+    game.gallery.campaignStartSelected = false
+    do {
+      try startScriptGalleryTrial(packDigest: review.digest)
+    } catch {
+      game.gallery = browsing
+      game.gallery.campaignStartSelected = false
+      game.notify(error.localizedDescription)
+    }
+  }
+
+  /// Runtime forwarding keeps trial creation and save publication inside the simulation actor.
+  public func campaignGalleryClick(x: Double, y: Double) {
+    game.galleryClick(x: x, y: y)
+    if game.gallery.campaignTrialRequested { commitCampaignGalleryTrial() }
   }
 }

@@ -14,7 +14,7 @@ coverage coverage-check:
 threads:
 	swift test --scratch-path .build/tsan --sanitize=thread
 address:
-	ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address
+	ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel
 leaks:
 	swift build
 	mkdir -p reports

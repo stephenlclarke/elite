@@ -26,6 +26,7 @@ final class GameView: NSView {
     }
   }
   private var displayedScriptPage: ScriptPagePresentation?
+  private var displayedScriptPageSize: NSSize?
   let audio = AudioPresenter()
   var held: Set<String> = []
   var pressedKeys: [UInt16: String] = [:]
@@ -73,14 +74,24 @@ final class GameView: NSView {
     else { return }
     layer?.contentsScale = CGFloat(scale)
     layer?.contents = image
-    displayedScriptPage = game.scriptPagePresentation
+    capturePaintedScriptPage()
   }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
     guard let context = NSGraphicsContext.current?.cgContext else { return }
     drawGame(game, context: context, rect: bounds)
-    displayedScriptPage = game.scriptPagePresentation
+    capturePaintedScriptPage()
+  }
+  private func capturePaintedScriptPage() {
+    var painted = game
+    if painted.screen == .gallery {
+      // Resize can paint new bounds before the runtime publishes the matching viewport.
+      painted.viewportWidth = Double(bounds.width)
+      painted.viewportHeight = Double(bounds.height)
+    }
+    displayedScriptPage = painted.scriptPagePresentation
+    displayedScriptPageSize = bounds.size
   }
   private func clearSteeringInput() {
     held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])
@@ -96,18 +107,27 @@ final class GameView: NSView {
     return super.performKeyEquivalent(with: event)
   }
   private func scriptPageToken() -> String? {
+    if game.screen == .gallery, displayedScriptPageSize != bounds.size { return nil }
     let proof =
       displayedScriptPage ?? ScriptPagePresentation(epoch: game.ecmControl.epoch, page: nil)
     guard let bytes = try? JSONEncoder().encode(proof), bytes.count <= 1024 else { return nil }
     return bytes.base64EncodedString()
   }
   private func enqueueKey(_ key: String) {
-    if ScriptPagePresentation.controlKeys.contains(key) {
+    if ScriptPagePresentation.controlKeys.contains(key)
+      || ScriptPagePresentation.galleryContextKeys.contains(key)
+      || (game.screen == .gallery
+        && ["gallery-trial", "mission-resume"].contains(key))
+    {
       guard let token = scriptPageToken() else { return }
       pending.append("script-page-key:" + token + ":" + key)
     } else {
       pending.append(key)
     }
+  }
+  func enqueueGalleryCommand(_ key: String) {
+    guard game.screen == .gallery, ["gallery-trial", "mission-resume"].contains(key) else { return }
+    enqueueKey(key)
   }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
@@ -177,7 +197,8 @@ final class GameView: NSView {
     }
     if game.screen == .gallery {
       let point = convert(event.locationInWindow, from: nil)
-      pending.append("gallery-click:\(point.x):\(point.y)")
+      guard let token = scriptPageToken() else { return }
+      pending.append("script-page-click:" + token + ":\(point.x):\(point.y)")
       return
     }
     guard game.screen == .chart || game.screen == .shortChart else { return }
@@ -451,10 +472,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           await runtime.libraryClick(x: x, y: y)
         }
       } else if event.hasPrefix("gallery-click:") {
-        let parts = event.split(separator: ":")
-        if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
-          await runtime.galleryClick(x: x, y: y)
-        }
+        // Old coordinate-only packets cannot authorize a newly displayed campaign action.
+        continue
       } else if event.hasPrefix("chart:") {
         let parts = event.split(separator: ":")
         if let x = Int(parts[1]), let y = Int(parts[2]) {
@@ -596,10 +615,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       }
       if command == "trial-return" || command == "trial-restart" { return game.isMissionTrial }
       if command == "gallery-trial" {
-        return game.screen == .gallery && game.canTrialSelectedMission
+        item.title =
+          game.selectedGalleryMissionIsOwnedAssignment ? "Try Campaign" : "Try Selected Mission"
+        return game.screen == .gallery
+          && (game.canTrialSelectedMission || game.canReviewSelectedCampaignTrial)
       }
       if command == "mission-resume" {
-        return game.screen == .gallery && game.canRetrySelectedMission
+        return game.screen == .gallery && game.canRetrySelectedGalleryEntry
       }
       if command.hasPrefix("screen:") {
         return !game.paused && !game.showroom.trading
@@ -649,7 +671,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   @objc private func gameAction(_ sender: NSMenuItem) {
     guard let command = sender.representedObject as? String else { return }
-    (window?.contentView as? GameView)?.pending.append(command)
+    let view = window?.contentView as? GameView
+    if ["gallery-trial", "mission-resume"].contains(command) {
+      view?.enqueueGalleryCommand(command)
+    } else {
+      view?.pending.append(command)
+    }
   }
   @objc private func showShipShowroom() {
     (window?.contentView as? GameView)?.pending.append("showroom-open")

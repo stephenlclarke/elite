@@ -1506,7 +1506,7 @@ public actor GameRuntime {
     nativeCommand { $0.equipmentClick(y: y, x: x) }
   }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
-  public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
+  public func galleryClick(x: Double, y: Double) { campaignGalleryClick(x: x, y: y) }
   public func setControls(_ value: Controls, expectedEpoch: UUID? = nil) {
     controls = expectedEpoch == nil || expectedEpoch == game.ecmControl.epoch ? value : Controls()
   }
