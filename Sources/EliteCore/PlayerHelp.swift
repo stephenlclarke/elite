@@ -116,6 +116,8 @@ public enum PlayerHelp {
         title: "COMMANDER STATUS",
         rows: [
           "LOCATION, CASH, CONDITION AND LEGALITY",
+          "FITTED SHIELD, NAVIGATION AND ENERGY",
+          "CORE AND SEPARATE SPECIALTY MODULES",
           "9 - INVENTORY: CARGO AND FULL FITTINGS",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
@@ -126,6 +128,8 @@ public enum PlayerHelp {
         title: "INVENTORY",
         rows: [
           "CARGO, MISSION PROPERTY AND FITTINGS",
+          "ACTUAL FITTED AND HELD EQUIPMENT",
+          "GRADE AND ACQUISITION SOURCE",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
           "OPTION-UP/DOWN - PAGE LONG LISTS",
@@ -149,10 +153,10 @@ public enum PlayerHelp {
         rows: [
           "UP / DOWN / SCROLL - SELECT ITEM",
           "RETURN - PURCHASE / REFUEL",
-          "LEFT / RIGHT - SELECT LASER MOUNT",
+          "LEFT / RIGHT - SELECT COMBAT MOUNT",
           "CLICK FRONT/LEFT/RIGHT/REAR - MOUNT",
           "CLICK AN ITEM TO SELECT IT",
-          "REWARD ITEMS ARE NOT FOR SALE",
+          "INVENTORY (9) - FITTED / HELD DETAILS",
           "ESC - PREVIOUS SCREEN",
         ])
     case .chart, .shortChart:

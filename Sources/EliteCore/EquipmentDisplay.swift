@@ -12,8 +12,20 @@ extension Display {
         text: text, x: right - Double(text.count) * 6 * layout.font, y: y, scale: layout.font,
         ink: ink)
     }
+    func equipmentName(_ item: Equipment) -> String {
+      guard let node = EquipmentRuntimeCatalog.node(for: item.name) else { return item.name }
+      return EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node }?.displayName ?? item.name
+    }
+    func requirementLabel(_ requirement: String) -> String {
+      for node in EquipmentRuntimeCatalog.graph.nodes {
+        for action in ["Buy", "Fit"] where requirement == action + " " + node.id.key + " first" {
+          return action + " " + node.displayName + " first"
+        }
+      }
+      return requirement
+    }
     for cell in layout.mounts {
-      let selected = cell.mount == game.equipmentMount
+      let selected = !game.equipmentWorkTool && cell.mount == game.equipmentMount
       let bounds = cell.bounds
       let ink: Ink = selected ? .cyan : .blue
       frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
@@ -28,8 +40,50 @@ extension Display {
         bounds.x + 8, bounds.y + 24, scale: layout.font,
         ink: selected ? .cyan : .white)
     }
+    if let bounds = layout.workToolBounds {
+      let ink: Ink = game.equipmentWorkTool ? .cyan : .blue
+      frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
+      frame.stroke(bounds.maxX, bounds.y, bounds.maxX, bounds.maxY, ink)
+      frame.stroke(bounds.maxX, bounds.maxY, bounds.x, bounds.maxY, ink)
+      frame.stroke(bounds.x, bounds.maxY, bounds.x, bounds.y, ink)
+      frame.label("Mining work tool", bounds.x + 8, bounds.y + 6, scale: layout.font, ink: ink)
+      frame.label(
+        game.commander.fittedMiningWorkTool == nil ? "Empty" : "Mining Laser",
+        bounds.x + 8, bounds.y + 24, scale: layout.font, ink: .white)
+    }
+    let buyingFor = game.equipmentWorkTool ? "Mining work tool" : game.equipmentMount.label
+    func ownership(_ item: Equipment) -> (fitted: Bool, held: Bool) {
+      if let inventory = game.commander.equipmentInventory,
+        let node = EquipmentRuntimeCatalog.node(for: item.name)
+      {
+        let slot =
+          LaserKind.from(item.name).map { _ in
+            game.equipmentWorkTool
+              ? ComponentFittingSlot.utility(.miningLaser) : .laser(game.equipmentMount)
+          } ?? EquipmentRuntimeCatalog.slot(for: node)
+        let matches = inventory.items.filter { owned in
+          if let component = owned.component,
+            let stock = EquipmentRuntimeCatalog.stockComponent(for: node, id: owned.id)
+          {
+            return component.family == stock.family && component.grade == stock.grade
+          }
+          return owned.node == node
+        }
+        return (
+          matches.contains { $0.location?.slot == slot && $0.location != nil },
+          matches.contains { $0.location == nil }
+        )
+      }
+      if game.equipmentWorkTool && LaserKind.from(item.name) != nil {
+        return (false, false)
+      }
+      return (
+        LaserKind.from(item.name).map { game.commander.laser(on: game.equipmentMount) == $0 }
+          ?? game.commander.equipment.contains(item.name), false
+      )
+    }
     frame.label(
-      "Buying for: " + game.equipmentMount.label, layout.left, layout.buyingTop,
+      "Buying for: " + buyingFor, layout.left, layout.buyingTop,
       scale: layout.font, ink: .cyan)
     frame.label(
       "Equipment", layout.left + 32, layout.listTop - 22,
@@ -42,19 +96,23 @@ extension Display {
         frame.label(title.uppercased(), layout.left, y, scale: layout.font, ink: .yellow)
       case .item(let index):
         let item = Equipment.all[index]
-        let fitted =
-          LaserKind.from(item.name).map { game.commander.laser(on: game.equipmentMount) == $0 }
-          ?? game.commander.equipment.contains(item.name)
-        let available = game.equipmentAvailable(item)
+        let owned = ownership(item)
+        let fitted = owned.fitted
+        let requirement = game.equipmentPurchaseRequirement(item)
+        let available = requirement == nil
         frame.label(
           index == game.selection ? ">" : "", layout.left + 14, y, scale: layout.font, ink: .cyan)
         frame.label(
-          item.name, layout.left + 32, y, scale: layout.font,
+          equipmentName(item), layout.left + 32, y, scale: layout.font,
           ink: available || fitted ? .white : .red)
         var status =
-          fitted ? "FITTED" : String(format: "%.1f CR", Double(game.shopPrice(item)) / 10)
+          fitted
+          ? "FITTED"
+          : owned.held ? "STORED" : String(format: "%.1f CR", Double(game.shopPrice(item)) / 10)
         if Equipment.isReward(item.name) && !game.atPlugh {
-          status = fitted ? "FITTED" : Equipment.rewardLabel(item.name).uppercased()
+          status =
+            fitted
+            ? "FITTED" : owned.held ? "STORED" : Equipment.rewardLabel(item.name).uppercased()
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "
@@ -64,8 +122,6 @@ extension Display {
           status =
             game.commander.fuel == game.commander.fuelCapacity
             ? "FULL" : String(format: "Refill %.1f CR", Double(game.refillCost) / 10)
-        } else if !available && !fitted {
-          status += " TL\(item.technology + 1)"
         }
         let statusInk: Ink = available ? .white : .red
         frame.labels.append(rightLabel(status, y: y, ink: fitted ? .green : statusInk))
@@ -77,25 +133,29 @@ extension Display {
     }
     if Equipment.all.indices.contains(game.selection) {
       let item = Equipment.all[game.selection]
-      var description = item.name + ": "
-      if Equipment.isReward(item.name) && !game.atPlugh {
-        description += Equipment.rewardLabel(item.name) + ". Not for sale."
-      } else if let laser = LaserKind.from(item.name) {
+      var description = equipmentName(item) + ": "
+      let owned = ownership(item)
+      if let requirement = game.equipmentPurchaseRequirement(item) {
+        description += requirementLabel(requirement) + ". "
+      }
+      if LaserKind.from(item.name) != nil {
+        description += "Buying for " + buyingFor + ". "
+      }
+      if let node = EquipmentRuntimeCatalog.node(for: item.name),
+        let slot = EquipmentRuntimeCatalog.slot(for: node),
+        let component = game.commander.fittedComponent(at: slot)
+      {
         description +=
-          "Mount " + game.equipmentMount.label + ". "
-          + (game.commander.laser(on: game.equipmentMount) == laser
-            ? "Fitted here. " : "Return fits/replaces only this mount. ")
-          + "Left/Right or click mount to choose."
-      } else if item.name == FuelStorage.equipmentName {
-        description +=
-          "Fitted \(game.commander.fuelStorageUnits)/4. Total fuel \(game.commander.fuelCapacity / 10) LY. Refuel separately."
-      } else if let booster = ShieldBooster.from(item.name) {
-        description += String(
-          format: "Front/rear capacity x%.4g. Recharge unchanged.", booster.multiplier)
-      } else if !game.equipmentAvailable(item) {
-        description += "Unavailable: requires tech level \(item.technology + 1)."
-      } else {
-        description += "Arrows: select. Return: buy. Esc: back."
+          "Fitted grade: "
+          + (EquipmentModuleTemplates.displayName(for: component.grade) ?? "Unknown") + ". "
+      } else if owned.fitted {
+        description += "Fitted. "
+      }
+      if owned.held { description += "Stored item owned. " }
+      if item.name == FuelStorage.equipmentName {
+        description += "Fuel storage \(game.commander.fuelStorageUnits)/4. Refuel separately."
+      } else if game.equipmentPurchaseRequirement(item) == nil {
+        description += "Return: buy. A weaker purchase is stored."
       }
       let lines = MissionNotice.wrap(
         description, width: Int(layout.contentWidth / (6 * layout.font)))
@@ -115,6 +175,7 @@ public struct EquipmentLayout: Sendable {
   public let left: Double
   public let listTop: Double
   public let buyingTop: Double
+  public let workToolBounds: CanvasRect?
   public let mounts: [(mount: LaserMount, bounds: CanvasRect)]
   public let font: Double
   public let row: Double
@@ -136,7 +197,11 @@ public struct EquipmentLayout: Sendable {
           width: columnWidth - 8, height: 44)
       )
     }
-    let mountBottom = mounts.last!.bounds.maxY
+    let combatBottom = mounts.last!.bounds.maxY
+    workToolBounds =
+      game.commander.nativePerformance.workTools?.contains(.miningLaser) == true
+      ? CanvasRect(x: left, y: combatBottom + 8, width: contentWidth - 8, height: 44) : nil
+    let mountBottom = workToolBounds?.maxY ?? combatBottom
     buyingTop = mountBottom + 14
     listTop = mountBottom + 66
     row = ceil(font * 7) + 9
