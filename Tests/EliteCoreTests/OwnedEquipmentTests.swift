@@ -64,16 +64,18 @@ import Testing
     ("Energy Bomb", ComponentFittingSlot.utility(.energyBomb)),
     ("Galactic Hyperdrive", .utility(.galacticHyperdrive)), ("Escape Pod", .utility(.escapePod)),
   ] {
-    var game = try missionGearGame()
-    try game.commander.grantEquipment(name, at: slot, provenance: .grant("consumption-fixture"))
-    let spare = try #require(game.commander.fittedEquipment(at: slot))
-    try missionStorePhysical(spare, in: &game)
-    let purchase = try #require(Equipment.all.first { $0.name == name })
-    game.commander.system = Plugh.systemID
-    game.commander.credits = 1_000_000
-    _ = try game.applyEquipmentPurchase(game.quoteEquipmentPurchase(purchase))
+    let fixture = try GearScriptFixture(
+      name: name, quantity: 2, loan: false, requiredReturn: false,
+      accepted:
+        "{op='gear.issue',id='issue',gear='kit',fit=false},{op='gear.refit',id='fit',gear='kit',index=0}"
+    )
+    defer { fixture.clean() }
+    var game = try fixture.game()
+    let record = try #require(game.commander.scriptState.instances.values.first?.gearIssues["kit"])
+    let spare = try #require(
+      game.commander.equipmentInventory?.items.first { $0.id == record.items[1] })
     let fitted = try #require(game.commander.fittedEquipment(at: slot))
-    #expect(fitted.id != spare.id)
+    #expect(fitted.id == record.items[0] && fitted.id != spare.id && spare.location == nil)
     game.launch()
     switch name {
     case "Energy Bomb": game.energyBomb()
@@ -82,7 +84,7 @@ import Testing
     }
     #expect(game.commander.equipmentInventory?.items.contains { $0.id == fitted.id } == false)
     #expect(
-      game.commander.equipmentInventory?.items.first { $0.id == spare.id } == spare.moved(to: nil))
+      game.commander.equipmentInventory?.items.first { $0.id == spare.id } == spare)
     #expect(game.commander.valid)
   }
 }
@@ -215,9 +217,11 @@ import Testing
   #expect(!stale.applied && (await runtime.snapshot().commander) == before)
   for paused in [false, true] {
     var blocked = game
+    let freshLaser = try #require(blocked.commander.fittedEquipment(at: .laser(.front)))
+    let fresh = try #require(blocked.inventoryActionPreview(for: .equipment(freshLaser)).command)
     blocked.paused = paused
     blocked.docked = paused
-    let refusal = blocked.performEquipmentMutation(.inventory(command))
+    let refusal = blocked.performEquipmentMutation(.inventory(fresh))
     #expect(!refusal.applied && blocked.commander == game.commander)
   }
 }
