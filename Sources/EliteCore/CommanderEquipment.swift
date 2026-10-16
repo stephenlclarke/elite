@@ -1,7 +1,7 @@
 import Foundation
 
 enum CommanderEquipmentError: Error, Equatable {
-  case invalidVersion, incompleteState
+  case invalidVersion, incompleteState, invalidRuntimeStatistics
   case unknownLegacyItem(String)
 }
 
@@ -18,6 +18,7 @@ extension Commander {
   var equipmentStateValid: Bool { (try? validateEquipmentState()) != nil }
 
   func validateEquipmentState() throws {
+    try validateEffectiveEquipmentStatistics()
     guard let inventory = savedEquipmentInventory else {
       guard savedEquipmentVersion == nil, savedEquipmentPurchaseHistory == nil else {
         throw CommanderEquipmentError.incompleteState

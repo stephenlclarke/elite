@@ -1,0 +1,7 @@
+# Validate fitted capacities, recharge, spool and fuel-cost arithmetic
+
+Commander equipment validity is checked immediately after the hull lookup, before fuel, missile or cargo admission uses derived mechanics. Equipment validation checks energy capacity/recharge, both shield capacities/recharge rates and jump spool products for finite nonnegative values, with positive energy capacity and spool. Fuel-cost admission checks the rounded cost of the maximum route possible with the existing eight-bit coordinates against finite Int representation. This is a runtime-safety bound, not a module tier limit.
+
+Four regression methods retain generically valid known components while testing eight unsafe fitted axes, whole-load rollback and unchanged source bytes, finite fuel costs outside Int range, safe grandfathered values above terminal thresholds, exact physical identity/save roundtrips, and a held unsafe component that remains owned but cannot replace the active energy system. Shield recharge overflow uses the actual higher-recharge SH171 hull rather than assuming the Cobra's unit recharge can overflow a finite operand.
+
+This repair is source-only and unexecuted. Strict formatting, syntax, Markdown and whitespace checks precede focused validation. Prior 026 gate results describe the earlier runtime. No receipt policy, grade reconciliation, resource refill or terminal clamp was added. Motivation: [issue handoff](ISSUE-effective-equipment-statistics.md).

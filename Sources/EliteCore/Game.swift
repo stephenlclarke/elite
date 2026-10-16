@@ -188,7 +188,7 @@ public struct Commander: Sendable, Equatable, Codable {
     ][thresholds.filter { kills >= $0 }.count]
   }
   public var valid: Bool {
-    ShipCatalogue.ship(shipID)?.game != nil && cargo.count == 17
+    ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
       && (0...256).contains(system) && (0..<8).contains(galaxy)
@@ -205,7 +205,6 @@ public struct Commander: Sendable, Equatable, Codable {
       && (savedFlightSimulation?.valid ?? true)
       && (savedCargoDebrisLedger?.valid ?? true)
       && (savedNPCPersistence?.valid ?? true)
-      && equipmentStateValid
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
   }
