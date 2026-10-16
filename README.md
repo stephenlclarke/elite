@@ -103,7 +103,7 @@ Keyboard alternatives are [ for anticlockwise, ] for clockwise, and held - / = o
 
 Prototype defaults are 12 degrees/second initially, 6 degrees/second of rate adjustment per second, a 60 degrees/second cap and a 24 degrees/second-per-second response limit. Contact counts must remain stable for 120 ms before changing rate. Circles need at least 300 degrees of consistent motion, 16 samples and 85% direction consistency, at a normalized radius of 0.12-0.46 around the pad centre; jumps over 45 degrees between samples are rejected. Two-finger aiming starts from a fresh reference whenever the count changes, with a 2% dead zone and full deflection after 25% of pad travel. These are tunable prototype values, not findings from player testing. Native touch hardware and macOS gesture interaction still require an on-device check; no global gesture settings are changed by the game.
 
-Commander saves, including secret options, live at `~/.xyzzy/elite/commander.json`. Saving is atomic; loading validates the entire commander before replacing actor state.
+Commander saves, including secret options, live at `~/.xyzzy/elite/commander.json`. Saving is atomic; loading validates the entire commander before replacing actor state. Save, Load and Open run in the order you choose them. Save As keeps the filename you selected, and a failed save or load leaves your current Commander and save location unchanged. Invalid saves and files larger than 4 MiB are refused.
 
 ## Original BBC naval missions
 
