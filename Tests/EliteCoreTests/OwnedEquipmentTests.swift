@@ -231,6 +231,22 @@ import Testing
   #expect(
     Set(outside.commander.equipmentInventory?.items.map(\.id) ?? [])
       == Set(original.items.map(\.id)))
+  let held = try #require(
+    outside.commander.equipmentInventory?.items.first { $0.id == outsideLaser.id })
+  let refitCommand = try #require(
+    outside.inventoryActionPreview(for: .equipment(held)).command)
+  let refitted = outside.performEquipmentMutation(.inventory(refitCommand))
+  #expect(refitted.applied && outside.commander.valid)
+  #expect(outside.commander.fittedEquipment(at: .laser(.front))?.id == outsideLaser.id)
+  #expect(
+    outside.commander.fittedEquipment(at: .laser(.front))?.component == outsideLaser.component)
+  #expect(
+    outside.commander.fittedEquipment(at: .laser(.front))?.provenance == outsideLaser.provenance)
+  #expect(outside.commander.equipmentInventory?.revision == original.revision + 2)
+  #expect(outside.commander.credits == game.commander.credits)
+  #expect(
+    Set(outside.commander.equipmentInventory?.items.map(\.id) ?? [])
+      == Set(original.items.map(\.id)))
   for paused in [false, true] {
     var blocked = game
     let freshLaser = try #require(blocked.commander.fittedEquipment(at: .laser(.front)))
