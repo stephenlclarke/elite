@@ -28,6 +28,10 @@ extension Commander {
   }
 
   mutating func prepareEquipment(legacy: Bool = true) throws {
+    if legacyOwnedEquipment != nil {
+      try migrateLegacyOwnedEquipment(owner: UUID(), hull: UUID()) { UUID() }
+      return
+    }
     guard equipmentInventory == nil else {
       try validateEquipmentState()
       if savedEquipmentVersion == 1 { try migrateFiniteAmmunition { UUID() } }

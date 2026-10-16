@@ -23,6 +23,24 @@ extension Commander {
       cargo.allSatisfy({ $0 >= 0 && $0 <= Int.max / 17 }),
       var total = checkedMissionPayloadTonnes
     else { return nil }
+    guard scriptState.instances.count <= 128, accommodation.ownedBerths.count <= 10000 else {
+      return nil
+    }
+    for instance in scriptState.instances.values {
+      guard instance.payloads.count <= 128,
+        instance.payloads.values.allSatisfy({ (0...1_000_000).contains($0) })
+      else { return nil }
+      for payload in instance.payloads.values {
+        let addition = total.addingReportingOverflow(payload)
+        guard !addition.overflow else { return nil }
+        total = addition.partialValue
+      }
+    }
+    let cabins = accommodation.fittedBerths.count.multipliedReportingOverflow(by: 5)
+    guard !cabins.overflow else { return nil }
+    let occupied = total.addingReportingOverflow(cabins.partialValue)
+    guard !occupied.overflow else { return nil }
+    total = occupied.partialValue
     let mass = salvageLedger.inventoryMassKg
     let tonnes = ceil(mass / 1000)
     guard mass.isFinite, mass >= 0, tonnes.isFinite, tonnes < Double(Int.max) else { return nil }

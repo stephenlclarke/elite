@@ -19,6 +19,14 @@ extension Commander {
 
   func validateEquipmentState() throws {
     try validateEffectiveEquipmentStatistics()
+    if let legacyOwnedEquipment {
+      guard savedEquipmentInventory == nil, savedEquipmentPurchaseHistory == nil,
+        savedEquipmentVersion == nil
+      else { throw EquipmentMigrationError.mixedRepresentations }
+      try legacyOwnedEquipment.validateIssues(in: scriptState)
+      guard legacyEquipmentMirrorsMatch else { throw EquipmentMigrationError.invalidCrosswalk }
+      return
+    }
     guard let inventory = savedEquipmentInventory else {
       guard savedEquipmentVersion == nil, savedEquipmentPurchaseHistory == nil else {
         throw CommanderEquipmentError.incompleteState
@@ -158,7 +166,7 @@ extension Commander {
     savedEquipmentVersion = 2
   }
 
-  private func migratedComponent(node: EquipmentNodeID, name: String, id: UUID) throws
+  func migratedComponent(node: EquipmentNodeID, name: String, id: UUID) throws
     -> ComponentInstance?
   {
     guard let definition = EquipmentRuntimeCatalog.definition(for: node.family) else { return nil }

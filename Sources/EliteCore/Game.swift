@@ -8,6 +8,31 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  private var savedContracts: ScriptContractState?
+  public var contracts: ScriptContractState {
+    get { savedContracts ?? ScriptContractState() }
+    set { savedContracts = newValue == ScriptContractState() ? nil : newValue }
+  }
+  var legacyOwnedEquipment: LegacyOwnedEquipmentInventory?
+  private var savedAccommodation: ShipAccommodation?
+  public var accommodation: ShipAccommodation {
+    get { savedAccommodation ?? ShipAccommodation() }
+    set { savedAccommodation = newValue }
+  }
+  private var savedScriptState: ScriptEngineState?
+  public var scriptState: ScriptEngineState {
+    get { savedScriptState ?? ScriptEngineState() }
+    set { savedScriptState = newValue == ScriptEngineState() ? nil : newValue }
+    _modify {
+      if savedScriptState == nil { savedScriptState = ScriptEngineState() }
+      defer {
+        if savedScriptState?.nextEvent == 0, savedScriptState == ScriptEngineState() {
+          savedScriptState = nil
+        }
+      }
+      yield &savedScriptState!
+    }
+  }
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
   var savedSalvageLedger: SalvageLedger?
@@ -171,6 +196,59 @@ public struct Commander: Sendable, Equatable, Codable {
       equipment.insert(Equipment.navalLaser)
     }
   }
+  private enum CodingKeys: String, CodingKey {
+    case savedContracts
+    case legacyOwnedEquipment = "ownedEquipment"
+    case savedAccommodation
+    case savedScriptState
+    case savedEquipmentInventory
+    case savedEquipmentPurchaseHistory
+    case savedSalvageLedger
+    case savedEquipmentVersion
+    case savedFlightSimulation
+    case savedCrimeLedger
+    case savedStationSecurity
+    case encounterDirector
+    case savedNPCPersistence
+    case savedCargoDebrisLedger
+    case savedMiningLedger
+    case savedMissionProgress
+    case wantedAmnesty
+    case ownedShipID
+    case name
+    case credits
+    case fuel
+    case galaxy
+    case system
+    case cargo
+    case equipment
+    case missiles
+    case kills
+    case legal
+    case unlimitedMissiles
+    case unlimitedCargo
+    case unlimitedCash
+    case unlimitedFuel
+    case unlimitedJumps
+    case autoTrade
+    case speech
+    case executive
+    case discoveredSecretPorts
+    case blackjackMission
+    case displayStyle
+    case navalMission
+    case xyzzyEnabled
+    case automaticProfitScan
+    case automaticECM
+    case automaticTargeting
+    case returnFireEnabled
+    case capitalReward
+    case navigationRoute
+    case storageUnitCount
+    case mountedLasers
+    case finiteXYZzyCash
+  }
+
   public init() {}
   public var availableCredits: Int { unlimitedCash ? Int.max : credits }
   public var capacity: Int {
@@ -200,6 +278,8 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...fuelCapacity).contains(fuel)
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
+      && scriptState.valid && accommodationValid && contractsValid
+      && (legacyOwnedEquipment != nil ? legacyIssueStateValid : issuedEquipmentValid)
       && (checkedCargoTonnes.map { $0 <= capacity } ?? false)
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && (savedFlightSimulation?.valid ?? true)
