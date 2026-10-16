@@ -148,3 +148,26 @@ struct CourierNativeFixture: Sendable {
     path: [0, 75, 95, 24], lowerBound: 258696.00000000006,
     offer: "F0BFD021-444E-D681-20F3-98143485BA6C")
 }
+
+@Test func courierSortedBreadthFirstRoutesChooseLowestStableTieWithoutWeightedDistance() throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  let game = fixture.game()
+  let reach = ScriptCourierReach(game.commander)
+  let routes = ScriptCourierGeneration.routes(origin: game.contractStation, reach: reach)
+  let systems = game.systems
+  let origin = game.commander.system
+  let first = (0..<256).filter {
+    $0 != origin && systems[origin].distance(to: systems[$0]) <= reach.firstReach
+  }
+  let full = min(reach.jumpCap, Double(reach.capacity) / 10)
+  var checked = 0
+  for destination in 0..<256 where destination != origin && !first.contains(destination) {
+    let alternatives = first.filter { systems[$0].distance(to: systems[destination]) <= full }
+    guard alternatives.count > 1 else { continue }
+    let actual = try #require(routes.first { $0.last == destination })
+    #expect(actual == [origin, alternatives.min()!, destination])
+    checked += 1
+  }
+  #expect(checked > 0)
+}

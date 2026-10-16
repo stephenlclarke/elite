@@ -74,7 +74,7 @@ func courierEveryFatalRuntimePathReservesPendingLossUntilPublication(mode: Strin
   try Data("blocked writer".utf8).write(to: fixture.save.appendingPathExtension("missions"))
   _ = await runtime.advance(delta: 0.1)
   let lost = await runtime.snapshot()
-  #expect(lost.screen == .gameOver)
+  #expect(lost.screen == .gameOver && lost.energy == 0)
   #expect(lost.commander.scriptState.instances[id]?.courier?.pendingLoss != nil)
   #expect(lost.commander.scriptState.instances[id]?.courier?.terminal == nil)
   #expect(lost.commander.cargoTonnes == 1 && lost.commander.valid)
@@ -86,7 +86,7 @@ func courierEveryFatalRuntimePathReservesPendingLossUntilPublication(mode: Strin
   try FileManager.default.moveItem(at: backup, to: fixture.save.appendingPathExtension("missions"))
   _ = await runtime.advance(delta: 0.1)
   let settled = await runtime.snapshot()
-  #expect(settled.screen == .gameOver && settled.commander.cargoTonnes == 0)
+  #expect(settled.screen == .gameOver && settled.energy == 0 && settled.commander.cargoTonnes == 0)
   #expect(settled.commander.scriptState.instances[id]?.courier?.terminal?.cause == .shipDestroyed)
   #expect(
     settled.commander.scriptState.instances[id]?.completionReceipt?.causeKind
@@ -214,4 +214,96 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
     #expect(delivered.commander.scriptState.instances[id]?.courier?.terminal?.proof.clock == due)
     #expect(delivered.commander.valid)
   }
+}
+
+@Test func courierClockCannotBeBorrowedByOrdinaryTimersOrUnsupportedManifests() throws {
+  let ordinary = ScriptTimer(
+    id: "borrowed", domain: .missionCalendar, due: 10, interval: 0, policy: .once)
+  #expect(!ordinary.valid)
+  for edit in [
+    { (text: String) in text.replacingOccurrences(of: "\"mission-calendar-v2\", ", with: "") },
+    { (text: String) in
+      text.replacingOccurrences(
+        of: "profile = \"PROJECT-SPACE-G02-1\"", with: "profile = \"other-profile\"")
+    },
+    { (text: String) in
+      text.replacingOccurrences(
+        of: "exclusiveGroup = \"g02-courier\"", with: "exclusiveGroup = \"other\"")
+    },
+  ] {
+    #expect(throws: MissionPackError.self) { try CourierFixture(manifestEdit: edit) }
+  }
+}
+
+@Test func courierClockJointCapsAndCanceledNativeTravelDoNotDoubleCharge() throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  _ = try fixture.offer(&game)
+  game.commander.scriptState.missionCalendar?.seconds = 1e12 - 599
+  game.commander.scriptState.calendarSeconds = 1e12 - 599
+  game.launch()
+  #expect(game.docked && game.commander.scriptState.missionCalendar?.seconds == 1e12 - 599)
+  game.commander.scriptState.calendarSeconds = 0
+  game.commander.scriptState.missionCalendar = .init(origin: 0, seconds: 0, lastNativeOperation: 0)
+  game.launch()
+  let launched = game.commander.scriptState.clock(.missionCalendar)
+  #expect(launched == 600)
+  game.launch()
+  #expect(game.commander.scriptState.clock(.missionCalendar) == launched)
+  game.bodies = []
+  game.celestials = []
+  let route = try #require(
+    game.commander.contracts.boards.values.first?.courierGeneration?.paths.first)
+  game.selectedSystem = route[1]
+  game.beginHyperspace()
+  #expect(game.commander.scriptState.calendarLedger?.pendingJourney != nil)
+  let before = game.commander.scriptState.clock(.missionCalendar)
+  game.cancelCalendarJourney()
+  game.jumpCountdown = nil
+  #expect(game.commander.scriptState.clock(.missionCalendar) == before)
+  #expect(game.commander.scriptState.calendarLedger?.pendingJourney == nil)
+  game.beginHyperspace()
+  let pending = try #require(game.commander.scriptState.calendarLedger?.pendingJourney)
+  game.arrive()
+  #expect(game.commander.scriptState.clock(.missionCalendar) == before + pending.seconds)
+  let arrived = game.commander.scriptState.clock(.missionCalendar)
+  let duplicate = game.completeCalendarJourney()
+  #expect(duplicate == nil && game.commander.scriptState.clock(.missionCalendar) == arrived)
+}
+
+@Test func courierFatalBarrierNormalizesOnlyFiniteActualDeathsAndPreservesOrdinaryFlight() async {
+  for fatal in [false, true] {
+    var game = Game(executive: false)
+    game.screen = .status
+    game.launch()
+    game.bodies = [.init(id: 1, hull: .sidewinder, position: .init(0, 0, 100), hostile: true)]
+    game.celestials = []
+    game.energy = fatal ? 0.01 : 30
+    game.frontShield = 0
+    let commander = game.commander
+    let runtime = GameRuntime(game: game)
+    _ = await runtime.advance(delta: 0.1)
+    let after = await runtime.snapshot()
+    #expect(
+      after.commander.credits == commander.credits && after.commander.cargo == commander.cargo
+        && after.commander.equipment == commander.equipment
+        && after.commander.shipID == commander.shipID)
+    #expect(after.commander.scriptState.instances.isEmpty)
+    if fatal {
+      #expect(after.screen == .gameOver && after.energy == 0 && after.scriptWorldSave.valid)
+    } else {
+      #expect(after.screen == .front && after.energy > 0 && after.energy < 30)
+    }
+  }
+  var invalid = Game(executive: false)
+  invalid.launch()
+  invalid.bodies = []
+  invalid.celestials = []
+  invalid.energy = -.infinity
+  let runtime = GameRuntime(game: invalid)
+  _ = await runtime.advance(delta: 0.1)
+  let rejected = await runtime.snapshot()
+  #expect(rejected.screen == .gameOver && rejected.energy == -.infinity)
+  #expect(!rejected.scriptWorldSave.valid)
 }

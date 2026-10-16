@@ -1542,7 +1542,10 @@ public actor GameRuntime {
       delta: delta, flight: flightActive, local: localActive, calendar: calendarActive,
       missionCalendar: game.missionCalendarActive)
     game.tick(delta: delta, controls: controls)
-    if wasLive && game.screen == .gameOver { game.markCourierFatalLoss() }
+    if wasLive && game.screen == .gameOver {
+      if game.energy.isFinite && game.energy < 0 { game.energy = 0 }
+      game.markCourierFatalLoss()
+    }
     game.resolveCourierTerminals(publish: scriptPublisher())
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
     game.scriptEventsDeferred = false
