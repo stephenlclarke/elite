@@ -61,8 +61,9 @@ struct NativeMissionProjectileTests {
     let bodyID = game.nextBodyID
     let receipt = try game.admitRetainedMissionProjectile(identity)
     let body = try #require(game.bodies.first { $0.id == receipt.bodyID })
+    let system = try #require(before.system)
     #expect(receipt.bodyID == bodyID && game.nextBodyID == bodyID + 1)
-    #expect(receipt.actor.system == before.system && receipt.actor.visit == before.visit)
+    #expect(receipt.actor.system == system && receipt.actor.visit == before.visit)
     #expect(game.commander.flightSimulation.nextActor == before.nextActor + 1)
     #expect(game.commander.flightSimulation.nextSpawn == before.nextSpawn + 1)
     #expect((body.position - position).length < 1e-8)
@@ -86,7 +87,11 @@ struct NativeMissionProjectileTests {
   ) throws {
     var (game, identity, _, _, _) = try retainedNativeProjectile()
     if exhausted {
-      game.commander.flightSimulation.nextSpawn = UInt64.max
+      let bytes = try JSONEncoder().encode(game.commander.flightSimulation)
+      var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+      object["nextSpawn"] = NSNumber(value: UInt64.max)
+      game.commander.flightSimulation = try JSONDecoder().decode(
+        FlightSimulationState.self, from: JSONSerialization.data(withJSONObject: object))
     } else {
       for index in 0..<PopulationClass.projectile.maximum {
         let actor = try #require(game.commander.flightSimulation.allocateActor())
