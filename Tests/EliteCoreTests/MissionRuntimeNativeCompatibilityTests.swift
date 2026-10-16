@@ -4,6 +4,34 @@ import Testing
 @testable import EliteCore
 
 struct MissionRuntimeNativeCompatibilityTests {
+  @Test func activeNativeTrialSaveUsesItsPrivateWriterAndCannotOverwriteTheLiveCommander()
+    async throws
+  {
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let live = folder.appendingPathComponent("live.json")
+    let original = Data("original live commander".utf8)
+    try original.write(to: live)
+    var game = Game(executive: false)
+    game.isMissionTrial = true
+    let runtime = GameRuntime(game: game, saveURL: live)
+    let namespace = try #require(await runtime.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    let receipt = try await runtime.commanderFileOperationForInterface(
+      .save(live), activePath: true)
+    #expect(receipt.isTrial && receipt.url.deletingLastPathComponent() == namespace)
+    #expect(try Data(contentsOf: live) == original)
+    let trialBytes = try Data(contentsOf: receipt.url)
+    var refused = false
+    do {
+      _ = try await runtime.commanderFileOperationForInterface(.save(live), activePath: false)
+    } catch { refused = true }
+    let afterLive = try Data(contentsOf: live)
+    #expect(refused && afterLive == original)
+    #expect(try Data(contentsOf: receipt.url) == trialBytes)
+  }
+
   @Test func ordinaryActorInitFlightAndSaveKeepTheExistingDirectCommanderJSONContract() async throws
   {
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)

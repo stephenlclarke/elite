@@ -9,6 +9,13 @@ enum NativeCommanderFileIntent: Sendable, Equatable {
   case reloadActive
   case open(URL)
 
+  var usesActivePath: Bool {
+    switch self {
+    case .saveActive, .reloadActive: true
+    case .saveAs, .open: false
+    }
+  }
+
   func operation(activeURL: URL) -> CommanderFileOperation {
     switch self {
     case .saveActive: .save(activeURL)

@@ -472,14 +472,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         }
       } else if event == "commander-file" {
         guard files.indices.contains(fileIndex) else { continue }
-        let operation = files[fileIndex].operation(activeURL: saves.activeURL)
+        let intent = files[fileIndex]
+        let operation = intent.operation(activeURL: saves.activeURL)
         fileIndex += 1
         do {
-          try await runtime.commanderFileOperation(operation)
+          let receipt = try await runtime.commanderFileOperationForInterface(
+            operation,
+            activePath: intent.usesActivePath)
           switch operation {
-          case .save(let url): saves.didSave(to: url)
-          case .load(let url, _):
-            saves.activeURL = url
+          case .save:
+            if !receipt.isTrial { saves.didSave(to: receipt.url) }
+          case .load:
+            if !receipt.isTrial { saves.activeURL = receipt.url }
             view.held.removeAll()
             view.pressedKeys.removeAll()
             view.trackpad.reset()
