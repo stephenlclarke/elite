@@ -5,7 +5,29 @@ extension Game {
   /// ammunition, identities, cash and target state unchanged.
   mutating func launchGameplayMissile(targetBodyID: Int) -> Bool {
     var candidate = self
-    guard candidate.admitGameplayMissile(ownerBodyID: nil, targetBodyID: targetBodyID) else {
+    do {
+      try candidate.commander.prepareEquipment()
+      guard let inventory = candidate.commander.equipmentInventory else {
+        throw CommanderEquipmentError.incompleteState
+      }
+      let context = EquipmentRuntimeCatalog.context(
+        owner: inventory.owner, hull: inventory.activeHull,
+        performance: candidate.commander.nativePerformance)
+      let obligations = try candidate.commander.equipmentIssueObligations()
+      let quote = try StandardAmmunitionTransactions.quoteConsumption(
+        unlimited: candidate.commander.unlimitedMissiles, inventory: inventory,
+        context: context, obligations: obligations)
+      let application = try StandardAmmunitionTransactions.applyConsumption(
+        quote: quote, inventory: inventory, context: context, obligations: obligations)
+      candidate.commander.savedEquipmentInventory = application.inventory
+      candidate.commander.mirrorFittedEquipment()
+      if let removed = application.removedItem { try candidate.stageGearConsumption(removed) }
+      guard candidate.commander.valid,
+        candidate.admitGameplayMissile(
+          ownerBodyID: nil, targetBodyID: targetBodyID,
+          playerAmmunition: application.source)
+      else { return false }
+    } catch {
       return false
     }
     self = candidate
@@ -25,7 +47,9 @@ extension Game {
     return true
   }
 
-  private mutating func admitGameplayMissile(ownerBodyID: Int?, targetBodyID: Int?) -> Bool {
+  private mutating func admitGameplayMissile(
+    ownerBodyID: Int?, targetBodyID: Int?, playerAmmunition: PlayerAmmunitionSource? = nil
+  ) -> Bool {
     ensurePhysicalActors()
     guard let context = gameplayContext(), energy > 0,
       let owner = missileActor(bodyID: ownerBodyID, context: context), owner.energy > 0,
@@ -51,7 +75,9 @@ extension Game {
         batches: [.init(requests: [request], atomic: true)], intents: []))
     guard let actor = receipts.first?.actor,
       let index = bodies.firstIndex(where: { $0.physical?.identity == actor }),
-      let origin = makeAttackOrigin(owner: owner.identity, ordnance: actor),
+      let origin = makeAttackOrigin(
+        owner: owner.identity, ordnance: actor,
+        playerAmmunition: playerAmmunition),
       let state = OrdnanceState(
         profile: .standardMissile, origin: origin,
         target: target.identity, position: position, direction: direction,

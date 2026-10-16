@@ -78,19 +78,22 @@ extension Game {
     commander.crimeLedger.finishEmission(origin.emissionID)
   }
 
-  mutating func applyAttributedEnergyBomb() {
+  @discardableResult mutating func applyAttributedEnergyBomb() -> Bool {
     ensurePhysicalActors()
     guard let player = commander.flightSimulation.player,
       let origin = makeAttackOrigin(owner: player)
-    else { return }
+    else { return false }
     let launch = commander.flightSimulation.pose.position
     for body in bodies where body.energy > 0 {
-      applyCombatHit(
-        .init(target: .body(body.id), distance: body.position.length, point: body.position),
-        origin: origin, kind: .bomb, damage: body.hull.bombImmune ? 0 : body.energy,
-        emissionPosition: launch)
+      guard
+        applyCombatHit(
+          .init(target: .body(body.id), distance: body.position.length, point: body.position),
+          origin: origin, kind: .bomb, damage: body.hull.bombImmune ? 0 : body.energy,
+          emissionPosition: launch) != nil
+      else { return false }
     }
     commander.crimeLedger.finishEmission(origin.emissionID)
+    return true
   }
 
   /// Destruction created by an older scripted path uses the same once-only

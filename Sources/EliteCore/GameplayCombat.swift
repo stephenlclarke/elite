@@ -3,7 +3,8 @@ import Foundation
 extension Game {
   /// Capture the emitter once. Projectiles retain this origin even if it disappears.
   mutating func makeAttackOrigin(
-    owner: ActorIdentity, ordnance: ActorIdentity? = nil, sourcePart: String? = nil
+    owner: ActorIdentity, ordnance: ActorIdentity? = nil, sourcePart: String? = nil,
+    playerAmmunition: PlayerAmmunitionSource? = nil
   ) -> AttackOrigin? {
     ensurePhysicalActors()
     guard let context = gameplayContext(),
@@ -12,7 +13,8 @@ extension Game {
     else { return nil }
     return .init(
       emissionID: emission, owner: owner, ordnance: ordnance,
-      emittedAt: context.physicalTime, ownerLegalAtEmission: actor.legal, sourcePart: sourcePart)
+      emittedAt: context.physicalTime, ownerLegalAtEmission: actor.legal, sourcePart: sourcePart,
+      playerAmmunition: playerAmmunition)
   }
 
   /// Record before changing health or hostility so legal/bounty evidence stays original.

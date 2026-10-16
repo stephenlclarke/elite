@@ -199,13 +199,13 @@ struct EquipmentRuntimeTransactionTests {
     let bomb = try #require(game.commander.fittedEquipment(at: .utility(.energyBomb)))
     try game.storeEquipment(bomb, expectedRevision: game.commander.equipmentInventory!.revision)
     let before = game.commander
-    let heldActed = game.commander.consumeEquipped("Energy Bomb")
+    let heldActed = try game.consumeNativeEquipment("Energy Bomb")
     #expect(!heldActed && game.commander == before)
     let held = try #require(game.commander.equipmentInventory?.items.first { $0.id == bomb.id })
     try game.fitEquipment(
       held, at: .utility(.energyBomb), expectedRevision: game.commander.equipmentInventory!.revision
     )
-    let fittedActed = game.commander.consumeEquipped("Energy Bomb")
+    let fittedActed = try game.consumeNativeEquipment("Energy Bomb")
     #expect(fittedActed && !game.commander.equipment.contains("Energy Bomb"))
     #expect(game.commander.equipmentInventory?.items.contains { $0.id == bomb.id } == false)
     #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)

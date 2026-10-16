@@ -1039,16 +1039,26 @@ public struct Game: Sendable {
   }
   public mutating func galacticJump() {
     guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
+    var candidate = self
+    do {
+      guard try candidate.performGalacticJump() else {
+        notify(candidate.message)
+        return
+      }
+      self = candidate
+    } catch { notify("GALACTIC JUMP REFUSED") }
+  }
+  private mutating func performGalacticJump() throws -> Bool {
     resolveDestroyed()
     guard !hasUnsettledWreckDeaths else {
       notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
-      return
+      return false
     }
     guard persistSalvagePoses() else {
       notify("JUMP DEFERRED: SALVAGE STATE UNAVAILABLE")
-      return
+      return false
     }
-    guard commander.consumeEquipped("Galactic Hyperdrive") else { return }
+    guard try consumeNativeEquipment("Galactic Hyperdrive") else { return false }
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
@@ -1062,6 +1072,7 @@ public struct Game: Sendable {
     selectedSystem = commander.system
     arrive()
     commander.fuel = commander.fuelCapacity
+    return true
   }
   public mutating func inSystemJump() {
     guard !docked, !massLocked else {
@@ -1082,7 +1093,6 @@ public struct Game: Sendable {
       })
     else { return false }
     guard launchGameplayMissile(targetBodyID: bodies[target].id) else { return false }
-    if !commander.unlimitedMissiles { commander.missiles -= 1 }
     missileCooldown = 1
     notify("MISSILE AWAY", voiced: !retaliating)
     missileArmed = false
@@ -1111,14 +1121,25 @@ public struct Game: Sendable {
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
-    guard !docked, commander.consumeEquipped("Energy Bomb") else { return }
-    applyAttributedEnergyBomb()
-    notify("ENERGY BOMB")
+    guard !docked else { return }
+    var candidate = self
+    do {
+      guard try candidate.consumeNativeEquipment("Energy Bomb"),
+        candidate.applyAttributedEnergyBomb()
+      else { return }
+      candidate.notify("ENERGY BOMB")
+      self = candidate
+    } catch { notify("ENERGY BOMB REFUSED") }
   }
   public mutating func escapePod() {
     guard !docked, commander.equipment.contains("Escape Pod") else { return }
     var candidate = self
-    guard candidate.commander.consumeEquipped("Escape Pod") else { return }
+    do {
+      guard try candidate.consumeNativeEquipment("Escape Pod") else { return }
+    } catch {
+      notify("ESCAPE POD REFUSED")
+      return
+    }
     candidate.commander.cargo = Array(repeating: 0, count: 17)
     candidate.commander.cargo[10] = candidate.commander.markedFirearms
     candidate.commander.legal = 0

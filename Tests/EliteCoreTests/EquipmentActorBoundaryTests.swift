@@ -45,7 +45,7 @@ private func boundaryRecoveredGame() throws -> Game {
 }
 
 struct EquipmentActorBoundaryTests {
-  @Test func concurrentFuelAndMissileDuplicateIntentsCommitOnceWithoutInventoryRevisionChange()
+  @Test func concurrentFuelAndPhysicalMissileDuplicateIntentsCommitOnce()
     async throws
   {
     for name in ["Fuel", "Missile"] {
@@ -58,10 +58,18 @@ struct EquipmentActorBoundaryTests {
       #expect(results.filter(\.applied).count == 1)
       #expect(results.contains(.refused(.staleContext)))
       let after = await runtime.snapshot()
-      #expect(
-        after.commander.equipmentInventory?.revision
-          == before.commander.equipmentInventory?.revision)
-      #expect(after.commander.equipmentPurchaseHistory == before.commander.equipmentPurchaseHistory)
+      let oldInventory = try #require(before.commander.equipmentInventory)
+      let nextInventory = try #require(after.commander.equipmentInventory)
+      if name == "Fuel" {
+        #expect(nextInventory == oldInventory)
+        #expect(
+          after.commander.equipmentPurchaseHistory == before.commander.equipmentPurchaseHistory)
+      } else {
+        #expect(nextInventory.revision == oldInventory.revision + 1)
+        #expect(nextInventory.items.count == oldInventory.items.count + 1)
+        #expect(after.commander.equipmentPurchaseHistory?.paid.count == 1)
+        #expect(nextInventory.items.contains { $0.node == EquipmentRuntimeCatalog.standardMissile })
+      }
       #expect(
         after.commander.credits == before.commander.credits
           - before.shopPrice(Equipment.all[before.selection]))

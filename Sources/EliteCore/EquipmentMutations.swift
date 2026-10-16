@@ -102,11 +102,6 @@ extension Commander {
     self = candidate
   }
 
-  /// Consumption removes the actual fitted device. Held spares cannot fire or escape for it.
-  mutating func consumeEquipped(_ name: String) -> Bool {
-    (try? removeFittedEquipment(name)) ?? false
-  }
-
   /// Mission transactions may treat absence as a no-op, but must not hide failed custody checks.
   @discardableResult mutating func removeFittedEquipment(_ name: String) throws -> Bool {
     guard var inventory = equipmentInventory else { return equipment.remove(name) != nil }

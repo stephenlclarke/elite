@@ -23,3 +23,9 @@ The final implementation must add sealed issue and ammunition transactions, once
 The next source checkpoint imports the version-1 finite missile counter once while preserving existing owner, hull, physical item identities and purchase-history revision. Legacy initialization creates the actual rounds at real pylons. Version-2 saves require the persisted missile mirror to match fitted physical rounds; an empty rack stays empty and mismatches reject the whole load. Native missile purchases use the paid physical inventory transaction with one revision, and inventory offers real vacant pylons. Unlimited supply toggles preserve finite rounds; explicit maximum-hardware grants fill vacant pylons while preserving held devices.
 
 Six additional migration and native purchase regressions are authored but not executed. The physical firing, native consumable and reciprocal Script adapters are still being composed; this intermediate branch is not a playable or release-qualified version-2 build.
+
+## Native physical consumption work
+
+Player missile launch stages the sealed ammunition application, exact removed-item mission delta, existing `gear.consumed` event, explicit immutable ammunition source, projectile admission and combat allocators on one copied Game. A refused launch publishes none of those changes. Energy bombs, escape pods and galactic drives use exact throwing physical consumable applications, preserving held spares. Event capacity refuses consumption rather than dropping a required event. Unlimited launches preserve finite inventory and its revision.
+
+Three actual native launch regressions and the revised concurrent shop boundary regression are authored but unexecuted. These source adapters depend on the MC1 Script state/event seams and G2 sealed providers, which are not yet imported into this checkout. Parsing and formatting are source checks only; this checkpoint is not a complete build.
