@@ -112,6 +112,7 @@ struct EquipmentOwnershipDisplayTests {
     #expect(throws: EquipmentRuntimeError.noSlot) { try game.quoteEquipmentPurchase(beam) }
     for (width, height) in [(512.0, 518.0), (768.0, 768.0)] {
       let refusal = try #require(game.equipmentPurchaseRequirement(beam))
+      #expect(refusal == "Cannot fit selected destination")
       let frame = Display.equipmentScreen(game, width: width, height: height)
       let text = frame.labels.map(\.text).joined(separator: " ")
       #expect(text.contains(refusal))
@@ -138,6 +139,7 @@ struct EquipmentOwnershipDisplayTests {
     #expect(throws: EquipmentRuntimeError.alreadyOwned) { try game.quoteEquipmentPurchase(basic) }
     for (width, height) in [(512.0, 518.0), (768.0, 768.0)] {
       let refusal = try #require(game.equipmentPurchaseRequirement(basic))
+      #expect(refusal == "Already owned")
       let frame = Display.equipmentScreen(game, width: width, height: height)
       let text = frame.labels.map(\.text).joined(separator: " ")
       #expect(text.contains(refusal))
