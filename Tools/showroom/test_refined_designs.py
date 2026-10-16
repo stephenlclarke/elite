@@ -58,8 +58,17 @@ class RefinedDesignTests(unittest.TestCase):
         source_count = 0
         for ident, record in baseline.items():
             ship = ships[ident]
+            preserved = copy.deepcopy({k: v for k, v in ship.items() if k != "design"})
+            if ident == "SH023":
+                # Independent utility fittings were added after this visual baseline.
+                # Check that addition exactly while keeping every original field pinned.
+                self.assertEqual(
+                    preserved["game"].pop("workTools", None),
+                    ["miningLaser", "salvageCutter"],
+                    ident,
+                )
             self.assertEqual(
-                digest({k: v for k, v in ship.items() if k != "design"}),
+                digest(preserved),
                 record["unchangedRecord"],
                 ident,
             )
