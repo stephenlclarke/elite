@@ -155,7 +155,7 @@ import Testing
   #expect(game.commander.cargo[1] == 20)
 }
 
-@Test func equipmentPurchases() {
+@Test func equipmentPurchases() throws {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.fuel = 60
@@ -166,15 +166,17 @@ import Testing
   #expect(game.commander.missiles == 4 && game.commander.credits == 680)
   game.purchase()
   #expect(game.message == "MISSILE RACK FULL")
-  game.selection = 9
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
+  let unavailable = game.commander
   game.purchase()
-  #expect(game.message == "NOT AVAILABLE")
+  #expect(game.message == "NOT AVAILABLE" && game.commander == unavailable)
   game.commander.credits = 100000
-  game.selection = 2
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Large Cargo Bay" })
   game.purchase()
   #expect(game.commander.capacity == 35 && game.commander.credits == 96000)
+  let owned = game.commander
   game.purchase()
-  #expect(game.message == "ALREADY FITTED")
+  #expect(game.message == "ALREADY OWNED" && game.commander == owned)
   game.selection = 99
   game.purchase()
   game.docked = false

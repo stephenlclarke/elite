@@ -851,6 +851,8 @@ public struct Game: Sendable {
       notify("STANDARD OR ACQUISITION HARDWARE - NOT FOR SALE")
     } catch EquipmentPurchaseError.insufficientFunds {
       notify("NOT ENOUGH CASH")
+    } catch EquipmentRuntimeError.unavailable {
+      notify("NOT AVAILABLE")
     } catch EquipmentRuntimeError.alreadyOwned {
       notify("ALREADY OWNED")
     } catch EquipmentRuntimeError.noSlot {
