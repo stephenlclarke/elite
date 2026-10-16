@@ -102,9 +102,22 @@ public struct AutoTargetControl: Sendable {
     status = "FACING TARGET"
   }
 
-  mutating func steer(target: SpaceBody, delta: Double, aimTolerance: Double = 0.001) -> (
+  /// Standalone callers retain the original controller policy. Runtime supplies actual hull limits.
+  static let policyLimits = RelativeWorkLimits(
+    acceleration: 240, speed: 144, pitchRate: 0.8, yawRate: 0.8, rollRate: 1)
+
+  mutating func steer(
+    target: SpaceBody, delta: Double, aimTolerance: Double = 0.001,
+    limits: RelativeWorkLimits = Self.policyLimits
+  ) -> (
     pitch: Double, yaw: Double, roll: Double?
   ) {
+    guard delta.isFinite, delta > 0,
+      [limits.acceleration, limits.speed, limits.pitchRate, limits.yawRate, limits.rollRate]
+        .allSatisfy({ $0.isFinite && $0 > 0 })
+    else { return (0, 0, target.hull == .station ? 0 : nil) }
+    let pitchLimit = min(Self.policyLimits.pitchRate, limits.pitchRate)
+    let yawLimit = min(Self.policyLimits.yawRate, limits.yawRate)
     let station = target.hull == .station
     let aim: Vector3
     if station {
@@ -122,18 +135,19 @@ public struct AutoTargetControl: Sendable {
     let pitchAngle = atan2(aim.y, hypot(aim.x, aim.z))
     let yawAngle = atan2(aim.x, aim.z)
     facingError = hypot(pitchAngle, yawAngle)
-    let pitch = max(-0.8, min(0.8, pitchAngle * 1.8))
-    let yaw = max(-0.8, min(0.8, yawAngle * 1.8))
+    let pitch = max(-pitchLimit, min(pitchLimit, pitchAngle * 1.8))
+    let yaw = max(-yawLimit, min(yawLimit, yawAngle * 1.8))
     guard station else {
       let motion = targetMotion(aim, delta: delta)
       status = facingError < aimTolerance ? "TRACKING TARGET" : "FACING TARGET"
       return (
-        max(-0.8, min(0.8, pitchAngle * 4 + motion.pitch)),
-        max(-0.8, min(0.8, yawAngle * 4 + motion.yaw)), nil
+        max(-pitchLimit, min(pitchLimit, pitchAngle * 4 + motion.pitch)),
+        max(-yawLimit, min(yawLimit, yawAngle * 4 + motion.yaw)), nil
       )
     }
+    rollRate = max(-limits.rollRate, min(limits.rollRate, rollRate))
     let previousRate = rollRate
-    alignStation(target, delta: delta)
+    alignStation(target, delta: delta, limits: limits)
     return (pitch, yaw, (previousRate + rollRate) / 2)
   }
 
@@ -154,36 +168,60 @@ public struct AutoTargetControl: Sendable {
 
   mutating func setApproachVelocity(_ value: Vector3) { velocity = value }
 
-  private mutating func alignStation(_ target: SpaceBody, delta: Double) {
+  private mutating func alignStation(
+    _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits
+  ) {
+    let acceleration = min(Self.policyLimits.acceleration, limits.acceleration)
+    let maximumSpeed = min(Self.policyLimits.speed, limits.speed)
+    let maximumRoll = min(Self.policyLimits.rollRate, limits.rollRate)
     phaseError = atan2(target.entranceUp.x, target.entranceUp.y)
     let matchRate = -target.rotationRate * target.orientation.z.z
+    let spinFeasible = abs(matchRate) <= maximumRoll
+    if !spinFeasible && (stationStaged || finalApproach) {
+      finalApproach = false
+      stationStaged = true
+    }
     let command =
-      stationStaged || finalApproach ? max(-1, min(1, matchRate + phaseError * 1.8)) : 0
+      stationStaged || finalApproach
+      ? max(-maximumRoll, min(maximumRoll, matchRate + phaseError * 1.8)) : 0
     rollRate += max(-0.8 * delta, min(0.8 * delta, command - rollRate))
     rateError = abs(rollRate - matchRate)
     let goal = target.entrancePosition + target.entranceNormal * 1000
     positionError = goal.length
     ready =
-      stationStaged && positionError < 40 && facingError < 0.02 && abs(phaseError) < 0.03
+      spinFeasible && stationStaged && positionError < 40 && facingError < 0.02
+      && abs(phaseError) < 0.03
       && rateError < 0.02 && velocity.length < 1
     if ready { finalApproach = true }
     let desired: Vector3
     if finalApproach {
-      desired = finalVelocity(target)
+      desired = finalVelocity(target, acceleration: acceleration)
     } else if stationStaged {
       // Hold at the safe external goal while facing the doorway and matching spin.
       desired = .init(0, 0, 0)
-      status = facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN"
+      status =
+        !spinFeasible
+        ? "STATION SPIN EXCEEDS HULL LIMIT" : (facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN")
     } else {
       // Existing cruise momentum brakes under the acceleration limit. Once the
       // waypoint is ahead, thrust follows the same bearing as the forward view.
       desired = facingError < 0.12 ? approachWaypoint(target, goal: goal) * 0.8 : .init(0, 0, 0)
       status = "APPROACHING"
     }
-    velocity = velocity + (desired.limited(to: 144) - velocity).limited(to: 240 * delta)
-    if !finalApproach { keepOutsideStation(target, delta: delta) }
+    let safeDesired =
+      finalApproach
+      ? desired
+      : stationClearanceVelocity(
+        target, desired: desired, acceleration: acceleration,
+        delta: delta)
+    // One thrust budget covers approach, braking and station avoidance. Existing
+    // overspeed coasts down within that budget rather than projecting velocity instantly.
+    velocity =
+      velocity
+      + (safeDesired.limited(to: maximumSpeed) - velocity)
+      .limited(to: acceleration * delta)
   }
-  private mutating func finalVelocity(_ target: SpaceBody) -> Vector3 {
+  private mutating func finalVelocity(_ target: SpaceBody, acceleration: Double) -> Vector3 {
     let door = target.entrancePosition
     let normal = target.entranceNormal
     let distance = -door.dot(normal)
@@ -195,7 +233,7 @@ public struct AutoTargetControl: Sendable {
       return lateral * 1.8 + normal * (distance < 200 ? 40 : 0)
     }
     status = "FINAL APPROACH"
-    let speed = min(distance < 200 ? 48.0 : 96.0, sqrt(max(0, distance + 20) * 240))
+    let speed = min(distance < 200 ? 48.0 : 96.0, sqrt(max(0, distance + 20) * acceleration))
     return lateral * 1.8 - normal * speed
   }
   private func approachWaypoint(_ target: SpaceBody, goal: Vector3) -> Vector3 {
@@ -209,13 +247,23 @@ public struct AutoTargetControl: Sendable {
     if abs(tangent.dot(radial)) > 0.8 { tangent = target.orientation.y }
     return target.position + (radial + tangent * 0.8).unit * 600
   }
-  private mutating func keepOutsideStation(_ target: SpaceBody, delta: Double) {
-    if (target.position - velocity * delta).length < 400 {
-      let outward = target.position.unit * -1
-      let inward = velocity.dot(outward)
-      if inward < 0 { velocity = velocity - outward * inward }
-      if target.position.length < 400 { velocity = outward * 80 }
+  private mutating func stationClearanceVelocity(
+    _ target: SpaceBody, desired: Vector3, acceleration: Double, delta: Double
+  ) -> Vector3 {
+    let distance = target.position.length
+    let outward = target.position.unit * -1
+    let inwardSpeed = max(0, -velocity.dot(outward))
+    let stoppingDistance = inwardSpeed * inwardSpeed / (2 * acceleration) + inwardSpeed * delta
+    if distance < 400 + stoppingDistance {
+      // If engagement starts too close to stop, apply the strongest legal outward
+      // thrust. Avoidance cannot erase momentum or promise physically impossible clearance.
+      status = "BRAKING FOR CLEARANCE"
+      return outward * 80
     }
+    if (target.position - desired * delta).length < 400 {
+      return desired - outward * min(0, desired.dot(outward))
+    }
+    return desired
   }
 
   mutating func rotateVelocity(pitch: Double, roll: Double, yaw: Double) {
@@ -371,7 +419,8 @@ extension Game {
     let previousPhase = autoPilot.status
     let focal = CockpitLayout(game: self, width: viewportWidth, height: viewportHeight).projection
       .focal
-    let steering = autoPilot.steer(target: target, delta: delta, aimTolerance: 1.5 / focal)
+    let steering = autoPilot.steer(
+      target: target, delta: delta, aimTolerance: 1.5 / focal, limits: workLimits)
     if station && previousPhase != autoPilot.status { notify("AUTO DOCKING: " + autoPilot.status) }
     pitch = steering.pitch
     yaw = steering.yaw
