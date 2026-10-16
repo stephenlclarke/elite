@@ -242,4 +242,50 @@ struct NativeMissionActorAdmissionTests {
     }
   }
 
+  @Test func unboundLiveObstacleRefusesBeforeCapacityOrAlreadyPresentNoop() throws {
+    var (game, instance, _) = try unloadedAdmissionGame()
+    let sources = try game.retainedMissionActorAdmissionSources()
+    let source = try #require(sources.first { $0.instanceID == instance })
+    let template = try #require(source.actors.first)
+    let anchor = try #require(game.scriptAnchor)
+    let bodyID = game.nextBodyID
+    game.nextBodyID += 1
+    game.bodies.append(
+      .init(
+        id: bodyID, hull: .cargo,
+        position: anchor.position + anchor.orientation.apply(template.canonicalBody.position)))
+    let before = game
+    var exactRefusal = false
+    do {
+      _ = try game.prepareMissionActorAdmission(source)
+      Issue.record(
+        "A live obstacle without native binding must not disappear from admission context")
+    } catch let error as NativeMissionActorAdmissionError {
+      exactRefusal = error == .invalidScene
+    } catch { Issue.record("Expected invalidScene, received \(error)") }
+    #expect(exactRefusal)
+    #expect(
+      game.commander == before.commander && game.bodies == before.bodies
+        && game.nextBodyID == before.nextBodyID)
+    var (present, presentInstance, _) = try actualMissionBridgeGame()
+    present.ensurePhysicalActors()
+    let presentSources = try present.retainedMissionActorAdmissionSources()
+    let presentSource = try #require(presentSources.first { $0.instanceID == presentInstance })
+    let ordinaryIndex = try #require(
+      present.bodies.firstIndex { $0.missionActorID == nil && $0.id != 0 })
+    present.bodies[ordinaryIndex].physical = nil
+    let presentBefore = present
+    var noopRefused = false
+    do {
+      _ = try present.prepareMissionActorAdmission(presentSource)
+      Issue.record("Unbound live scene state must be checked before already-present no-op")
+    } catch let error as NativeMissionActorAdmissionError {
+      noopRefused = error == .invalidScene
+    } catch { Issue.record("Expected invalidScene, received \(error)") }
+    #expect(noopRefused)
+    #expect(
+      present.commander == presentBefore.commander && present.bodies == presentBefore.bodies
+        && present.nextBodyID == presentBefore.nextBodyID)
+  }
+
 }
