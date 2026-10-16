@@ -331,3 +331,172 @@ extension NativeViewTests {
     }
   }
 }
+
+extension NativeEquipmentFixture {
+  func queueInventoryKey(_ code: UInt16, text: String = "") throws {
+    for type in [NSEvent.EventType.keyDown, .keyUp] {
+      let event = try #require(
+        NSEvent.keyEvent(
+          with: type, location: .zero, modifierFlags: [], timestamp: 0,
+          windowNumber: window.windowNumber, context: nil, characters: text,
+          charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
+      if type == .keyDown { view.keyDown(with: event) } else { view.keyUp(with: event) }
+    }
+  }
+
+  func queueInventoryMouse(_ bounds: CanvasRect) throws {
+    let local = NSPoint(x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2)
+    let event = try #require(
+      NSEvent.mouseEvent(
+        with: .leftMouseDown, location: view.convert(local, to: nil), modifierFlags: [],
+        timestamp: 0, windowNumber: window.windowNumber, context: nil, eventNumber: 1,
+        clickCount: 1, pressure: 1))
+    view.mouseDown(with: event)
+  }
+
+  func revealInventoryActions(recovered: Bool = false) async throws {
+    try await press(25, text: "9", expected: "9")
+    let rows = view.game.inventoryInformationRows(width: view.bounds.width)
+    let first = try #require(
+      rows.firstIndex { row in
+        guard row.preview?.command != nil else { return false }
+        if recovered {
+          if case .recovered = row.subject { return true }
+          return false
+        }
+        return true
+      })
+    let target = min(first, view.game.informationWindow.last)
+    for _ in 0..<target { try await press(125, expected: "down") }
+  }
+}
+
+extension NativeViewTests {
+  @MainActor @Test func nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn()
+    async throws
+  {
+    let fixture = try await NativeEquipmentFixture.open(
+      commander: nativeEquipmentCommander(heldGrants: 2), width: 512, height: 518)
+    defer { fixture.close() }
+    fixture.window.orderOut(nil)
+    try await fixture.revealInventoryActions()
+    let before = fixture.view.game.commander
+    #expect(fixture.view.paintedInventoryInteraction == nil)
+    try fixture.queueInventoryKey(36, text: "\r")
+    #expect(fixture.view.pendingInventoryCommands.isEmpty)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander == before)
+    _ = try fixture.capture("inventory-before-focus", scale: 1)
+    let painted = try #require(fixture.view.paintedInventoryInteraction)
+    #expect(painted.controls.count > 1)
+    let oldPrimary = try #require(painted.primary)
+    try fixture.queueInventoryKey(48, text: "\t")
+    try fixture.queueInventoryKey(36, text: "\r")
+    #expect(fixture.view.pending == ["tab"] && fixture.view.pendingInventoryCommands.isEmpty)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander == before)
+    _ = try fixture.capture("inventory-after-focus", scale: 1)
+    let chosen = try #require(fixture.view.paintedInventoryInteraction?.primary)
+    #expect(chosen != oldPrimary)
+    try fixture.queueInventoryKey(36, text: "\r")
+    try fixture.queueInventoryKey(36, text: "\r")
+    #expect(fixture.view.pendingInventoryCommands == [chosen, chosen])
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    if case .fit(let item, let slot) = chosen.action {
+      #expect(fixture.view.game.commander.fittedEquipment(at: slot)?.id == item.id)
+    } else {
+      Issue.record("Tab should select the next visible held-device Fit action")
+    }
+    #expect(fixture.view.game.commander.targetingTier == .basic)
+    #expect(
+      fixture.view.game.commander.equipmentInventory?.revision == before.equipmentInventory!
+        .revision + 1)
+    #expect(fixture.view.game.commander.credits == before.credits)
+    #expect(fixture.view.game.commander.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
+    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+  }
+
+  @MainActor @Test func nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext() async throws
+  {
+    let fixture = try await NativeEquipmentFixture.open(
+      commander: nativeEquipmentCommander(heldGrants: 2), width: 512, height: 518)
+    defer { fixture.close() }
+    fixture.window.orderOut(nil)
+    try await fixture.revealInventoryActions()
+    _ = try fixture.capture("inventory-before-load", scale: 1)
+    let presentation = try #require(fixture.view.paintedInventoryInteraction)
+    let control = try #require(
+      presentation.controls.first {
+        if case .fit = $0.command.action { return true }
+        return false
+      })
+    let before = fixture.view.game.commander
+    try fixture.queueInventoryMouse(.init(x: 0, y: 0, width: 2, height: 2))
+    #expect(fixture.view.pendingInventoryCommands.isEmpty)
+    fixture.window.setContentSize(.init(width: 600, height: 518))
+    try fixture.queueInventoryMouse(control.bounds)
+    #expect(fixture.view.pendingInventoryCommands.isEmpty)
+    fixture.window.setContentSize(.init(width: 512, height: 518))
+    fixture.view.pending.append("inventory-click:0:0")
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander == before)
+    try await fixture.delegate.runtime.load(from: fixture.save, persistMigrations: false)
+    fixture.view.game = await fixture.delegate.runtime.snapshot()
+    try await fixture.revealInventoryActions()
+    #expect(fixture.view.game.commander.equipmentOwnerID == control.command.owner)
+    #expect(fixture.view.game.commander.hullInstanceID == control.command.hull)
+    #expect(
+      fixture.view.game.commander.equipmentInventory?.revision == control.command.ownedRevision)
+    try fixture.queueInventoryKey(36, text: "\r")
+    #expect(fixture.view.pendingInventoryCommands.isEmpty)
+    let loaded = fixture.view.game.commander
+    let acceptedOld = await fixture.delegate.runtime.inventoryCommand(control.command)
+    #expect(!acceptedOld)
+    #expect(await fixture.delegate.runtime.snapshot().commander == loaded)
+    _ = try fixture.capture("inventory-restored-paint", scale: 1)
+    let fresh = try #require(
+      fixture.view.paintedInventoryInteraction?.controls.first {
+        if case .fit = $0.command.action { return true }
+        return false
+      })
+    try fixture.queueInventoryMouse(fresh.bounds)
+    #expect(fixture.view.pendingInventoryCommands == [fresh.command])
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    if case .fit(let item, let slot) = fresh.command.action {
+      #expect(fixture.view.game.commander.fittedEquipment(at: slot)?.id == item.id)
+    }
+    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+  }
+
+  @MainActor @Test func nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()
+    async throws
+  {
+    let source = try recoveredEquipmentGame("shield-technology")
+    let fixture = try await NativeEquipmentFixture.open(
+      commander: source.commander, width: 512, height: 518)
+    defer { fixture.close() }
+    fixture.window.orderOut(nil)
+    try await fixture.press(29, text: "0", expected: "0")
+    #expect(!fixture.view.game.docked)
+    try await fixture.revealInventoryActions(recovered: true)
+    _ = try fixture.capture("inventory-in-space-upgrade", scale: 1)
+    let control = try #require(
+      fixture.view.paintedInventoryInteraction?.controls.first {
+        if case .upgrade = $0.command.action { return true }
+        return false
+      })
+    let before = fixture.view.game.commander
+    try fixture.queueInventoryMouse(control.bounds)
+    try fixture.queueInventoryMouse(control.bounds)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    let after = fixture.view.game.commander
+    #expect(!fixture.view.game.docked && after.salvageLedger.inventory.isEmpty)
+    #expect(after.fittedComponent(at: .shield)?.receipts.count == 1)
+    #expect(after.shieldCapacity > before.shieldCapacity)
+    #expect(
+      after.credits == before.credits && after.fuel == before.fuel
+        && after.missiles == before.missiles)
+    #expect(after.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
+    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+  }
+}
