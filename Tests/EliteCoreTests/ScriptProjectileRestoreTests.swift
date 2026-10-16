@@ -65,7 +65,8 @@ struct ScriptProjectileRestoreTests {
     throws
   {
     var (game, oldID) = try retainedProjectileGame(archived: false)
-    let template = try #require(game.commander.scriptState.projectiles.removeValue(forKey: oldID))
+    let removedTemplate = game.commander.scriptState.projectiles.removeValue(forKey: oldID)
+    let template = try #require(removedTemplate)
     let shot = try #require(template.body.scriptShot)
     let firstID = UUID(uuidString: "81000000-0000-0000-0000-000000000001")!
     let secondID = UUID(uuidString: "81000000-0000-0000-0000-000000000002")!
