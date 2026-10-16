@@ -81,9 +81,11 @@ struct MissionUICompositionTests {
       action: .library, game: parent, presentation: parent.scriptPagePresentation)
     #expect(oldIntent.isCurrent(in: parent))
     try await runtime.startScriptGalleryTrial(packDigest: pack.digest, seed: 42)
-    let namespace = try #require(await runtime.gallerySaveDirectory())
+    let trialDirectory = await runtime.gallerySaveDirectory()
+    let namespace = try #require(trialDirectory)
     defer { try? FileManager.default.removeItem(at: namespace) }
-    #expect(await runtime.snapshot().isMissionTrial)
+    let trial = await runtime.snapshot()
+    #expect(trial.isMissionTrial)
     try await runtime.returnFromScriptGalleryTrial()
     let restored = await runtime.snapshot()
     #expect(!restored.isMissionTrial)
