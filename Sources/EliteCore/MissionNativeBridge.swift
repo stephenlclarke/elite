@@ -1108,6 +1108,7 @@ private struct MissionReadyGun {
   let muzzle: Vector3
   let direction: Vector3
   let nextShot: UInt64
+  let intendedTarget: GameplayHitTarget
 }
 
 extension Game {
@@ -1187,12 +1188,15 @@ extension Game {
       let intent = npc.intent, intent.mode == .attack
     else { return nil }
     let target: Vector3
+    let intendedTarget: GameplayHitTarget
     if intent.player {
       target = .init(0, 0, 0)
+      intendedTarget = .player
     } else {
       let candidates = bodies.filter { $0.missionActorID == intent.target && $0.energy > 0 }
       guard candidates.count == 1, let actual = candidates.first else { return nil }
       target = actual.position
+      intendedTarget = .body(actual.id)
     }
     let difference = target - muzzle
     guard difference.finite, difference.length > 1e-6, difference.length <= weapon.range else {
@@ -1207,7 +1211,7 @@ extension Game {
       bodyID: bodyID, bodyIndex: bodyIndex, owner: owner, instance: instance,
       component: componentID,
       componentAlias: alias, weapon: weapon, gun: gun, muzzle: muzzle,
-      direction: direction, nextShot: npc.shots + 1)
+      direction: direction, nextShot: npc.shots + 1, intendedTarget: intendedTarget)
   }
 
   private mutating func commitMissionGun(_ ready: MissionReadyGun, gun original: ScriptNPCGunState)
