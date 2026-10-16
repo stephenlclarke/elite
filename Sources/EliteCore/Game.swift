@@ -809,57 +809,7 @@ public struct Game: Sendable {
   }
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
-    let item = Equipment.all[selection]
-    if Equipment.isReward(item.name) && !atPlugh {
-      notify(Equipment.rewardLabel(item.name).uppercased() + " - NOT FOR SALE")
-      return
-    }
-    if item.name == FuelStorage.equipmentName
-      && commander.fuelStorageUnits >= FuelStorage.maximumCount
-    {
-      notify("FUEL STORAGE FULL")
-      return
-    }
-    if item.name == "Fuel" || item.name == "Missile" {
-      let cost = shopPrice(item)
-      guard equipmentAvailable(item), commander.availableCredits >= cost else {
-        notify("NOT AVAILABLE")
-        return
-      }
-      if item.name == "Fuel" {
-        commander.fuel = commander.fuelCapacity
-      } else {
-        guard commander.missiles < commander.missileCapacity else {
-          notify("MISSILE RACK FULL")
-          return
-        }
-        commander.missiles += 1
-      }
-      if !commander.unlimitedCash { commander.credits -= cost }
-      notify("EQUIPMENT FITTED")
-      return
-    }
-    do {
-      let quote = try quoteEquipmentPurchase(item)
-      let fitted = try applyEquipmentPurchase(quote)
-      notify(fitted ? "EQUIPMENT FITTED" : "EQUIPMENT STORED - CURRENT FIT RETAINED")
-    } catch EquipmentPurchaseError.missingPrerequisite(let node) {
-      notify("BUY " + node.key.uppercased() + " FIRST")
-    } catch EquipmentPurchaseError.missingFittedPrerequisite(let node) {
-      notify("FIT " + node.key.uppercased() + " FIRST")
-    } catch EquipmentPurchaseError.notForSale {
-      notify("STANDARD OR ACQUISITION HARDWARE - NOT FOR SALE")
-    } catch EquipmentPurchaseError.insufficientFunds {
-      notify("NOT ENOUGH CASH")
-    } catch EquipmentRuntimeError.unavailable {
-      notify("NOT AVAILABLE")
-    } catch EquipmentRuntimeError.alreadyOwned {
-      notify("ALREADY OWNED")
-    } catch EquipmentRuntimeError.noSlot {
-      notify("NO COMPATIBLE FREE FITTING")
-    } catch {
-      notify("PURCHASE REFUSED")
-    }
+    _ = purchaseImmediately()
   }
   /// Sells the hold, then buys the most profitable exports for a destination.
   /// Government changes route risk, while commodity prices follow Elite's economy rules.
@@ -1442,13 +1392,18 @@ public actor GameRuntime {
   }
   func invalidateInventoryContext() { game.inventoryContextEpoch = .init() }
   public func inventoryCommand(_ command: InventoryCommand) -> Bool {
-    game.performInventoryCommand(command)
+    equipmentTransaction(.inventory(command)).applied
   }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     let old = game.screen
-    game.key(key)
-    if old != game.screen { invalidateInventoryContext() }
+    let wasPaused = game.paused
+    if key.lowercased() == "return", let context = game.equipmentPurchaseContext {
+      _ = equipmentTransaction(.purchase(context))
+    } else {
+      game.key(key)
+    }
+    if old != game.screen || wasPaused != game.paused { invalidateInventoryContext() }
     if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
     {
       controls.pitch = 0

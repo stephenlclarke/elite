@@ -30,12 +30,15 @@ final class GameView: NSView {
   var pressedKeys: [UInt16: String] = [:]
   var pending: [String] = []
   var pendingInventoryCommands: [InventoryCommand] = []
+  var pendingEquipmentPurchases: [EquipmentPurchaseContext] = []
   private(set) var inventoryInputGeneration: UInt64 = 0
   var processedInventoryInputGeneration: UInt64 = 0
   private var modelInventoryInputGeneration: UInt64 = 0
   private var paintedInventoryInputGeneration: UInt64 = 0
   private(set) var paintedInventoryInteraction: InventoryInteraction?
   private var paintedInventoryState: InventoryPaintState?
+  private var paintedPurchaseContext: EquipmentPurchaseContext?
+  private var paintedPurchaseBounds: NSRect?
   var trackpad = TrackpadInput()
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -83,6 +86,8 @@ final class GameView: NSView {
       InventoryPaintState(game: snapshot, bounds: bounds)
     }
     paintedInventoryInputGeneration = modelInventoryInputGeneration
+    paintedPurchaseContext = snapshot.equipmentPurchaseContext
+    paintedPurchaseBounds = paintedPurchaseContext == nil ? nil : bounds
   }
   private struct InventoryPaintState: Equatable {
     let context: InventoryContextEpoch
@@ -133,6 +138,18 @@ final class GameView: NSView {
     pendingInventoryCommands.append(command)
     pending.append("inventory-command")
   }
+  private func queuePaintedEquipmentPurchase() {
+    guard pendingEquipmentPurchases.count < 64,
+      inventoryInputGeneration == paintedInventoryInputGeneration,
+      paintedPurchaseBounds == bounds, let context = paintedPurchaseContext,
+      context == game.equipmentPurchaseContext
+    else {
+      needsDisplay = true
+      return
+    }
+    pendingEquipmentPurchases.append(context)
+    pending.append("equipment-purchase")
+  }
   private func clearSteeringInput() {
     held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])
     trackpad.reset()
@@ -159,6 +176,10 @@ final class GameView: NSView {
       if !event.isARepeat { queuePaintedInventoryCommand() }
       return
     }
+    if game.screen == .equipment, key == "return" {
+      if !event.isARepeat { queuePaintedEquipmentPurchase() }
+      return
+    }
     if ["r", "tab"].contains(key) && !event.isARepeat && game.screen.isFlight {
       clearSteeringInput()
     }
@@ -170,7 +191,7 @@ final class GameView: NSView {
       !game.screen.isFlight && ["up", "down", "left", "right", "pageup", "pagedown"].contains(key)
     let repeatText = game.acceptsTextInput && (key.count == 1 || key == "backspace")
     if !event.isARepeat || repeatNavigation || repeatText {
-      if game.screen == .inventory { inventoryInputGeneration &+= 1 }
+      if game.screen == .inventory || game.screen == .equipment { inventoryInputGeneration &+= 1 }
       pending.append(key)
     }
   }
@@ -212,6 +233,7 @@ final class GameView: NSView {
     }
     if game.screen == .equipment {
       let point = convert(event.locationInWindow, from: nil)
+      inventoryInputGeneration &+= 1
       pending.append("equipment-click:\(point.x):\(point.y)")
       return
     }
@@ -246,6 +268,7 @@ final class GameView: NSView {
       pending.append("showroom-\(region):\(event.scrollingDeltaY > 0 ? -1 : 1)")
     }
     if game.screen == .equipment {
+      inventoryInputGeneration &+= 1
       pending.append("equipment-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
     }
     if game.screen == .navigation {
@@ -418,10 +441,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     view.pending.removeAll()
     let inventoryCommands = view.pendingInventoryCommands
     view.pendingInventoryCommands.removeAll(keepingCapacity: true)
+    let purchases = view.pendingEquipmentPurchases
+    view.pendingEquipmentPurchases.removeAll(keepingCapacity: true)
     let inventoryGeneration = view.inventoryInputGeneration
     var inventoryCommandIndex = 0
+    var purchaseIndex = 0
     for event in events {
-      if event == "inventory-command" {
+      if event == "equipment-purchase" {
+        if purchases.indices.contains(purchaseIndex) {
+          _ = await runtime.equipmentTransaction(.purchase(purchases[purchaseIndex]))
+          purchaseIndex += 1
+        }
+      } else if event == "inventory-command" {
         if inventoryCommands.indices.contains(inventoryCommandIndex) {
           _ = await runtime.inventoryCommand(inventoryCommands[inventoryCommandIndex])
           inventoryCommandIndex += 1

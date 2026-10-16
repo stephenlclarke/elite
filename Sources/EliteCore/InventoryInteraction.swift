@@ -196,14 +196,18 @@ extension Game {
 
   @discardableResult
   public mutating func performInventoryCommand(_ command: InventoryCommand) -> Bool {
-    guard screen == .inventory, let inventory = commander.equipmentInventory,
+    performInventoryMutation(command).applied
+  }
+
+  mutating func performInventoryMutation(_ command: InventoryCommand) -> EquipmentMutationResult {
+    guard screen == .inventory, !paused, let inventory = commander.equipmentInventory,
       inventoryContextEpoch == command.context,
       commander.shipID == command.shipID,
       inventory.owner == command.owner, inventory.activeHull == command.hull,
       inventory.revision == command.ownedRevision
     else {
       notify("FITTING CHANGED - REFRESH INVENTORY")
-      return false
+      return .refused(.staleContext)
     }
     var candidate = self
     do {
@@ -236,11 +240,21 @@ extension Game {
         else { throw RecoveredEquipmentError.staleQuote }
         try candidate.applyRecoveredUpgrade(quote)
       }
+      candidate.inventoryContextEpoch = .init()
       self = candidate
-      return true
+      return .applied(
+        .inventory(
+          ownedRevision: candidate.commander.equipmentInventory?.revision ?? inventory.revision,
+          sourceRevision: candidate.commander.salvageLedger.revision))
     } catch {
       notify("FITTING REFUSED - CHECK CURRENT INVENTORY")
-      return false
+      if error as? RecoveredEquipmentError == .staleQuote
+        || error as? RecoveredFeatureError == .staleQuote
+        || error as? OwnedEquipmentError == .staleRevision
+      {
+        return .refused(.staleContext)
+      }
+      return .refused(.fittingUnavailable)
     }
   }
 
