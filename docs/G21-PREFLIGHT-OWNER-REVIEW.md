@@ -26,3 +26,11 @@ Reported passing subsets remain scoped to their actual checkpoints: core118 test
 ## Ownership
 
 Researcher leaves Mission Coder's reserved source regions untouched. Extra approved hooks are the precise raw legacy loader guard above and the single Gallery header band; all other new mission work remains exclusively through Orchestrator. The already approved pledgeReceiptID reverse link and actual-painted native fixture modernization remain in force. Separate finance/loan infrastructure, general equipment integration and remaining historical mission blockers are unchanged.
+
+## Follow-up source review at8eda441
+
+Reviewed exact `5870151883289b1bda079ad53b5840e114cc904f..8eda441b6def0e846c5240f0d6002871d02772aa`, source-only. Raw-loader9b5fcf1 puts the approved guard immediately after raw decode and before migration; genuine old/raw and trusted-memory/versioned positive paths remain. Swift amount formatting and human issuer/receipt text preserve exact native ledger/query facts. The Gallery header now emits one label, prioritizing trial context, active message and ordinary status. Those three original corrections are resolved in source; new presentation tests and corrected native captures remain unexecuted/pending.
+
+**P1 introduced regression, source closure blocked:** the revised donation Lua generator calls `string.format` at line9. The actual protected host in `Sources/MissionScript/MissionScript.c` lines219-230 opens only base and math libraries; it never opens the string library. Accessing the absent string global on the first credit offer therefore prevents board generation, including all six offers and the donation trial. Prior-source passing tests cannot validate this unexecuted presentation change.
+
+Fix only the authored Lua label expression with supported concatenation of its known integer amounts and a literal `.0 CR` (or `" CR"`). Do not expose additional sandbox libraries or change amounts, native arithmetic or host capabilities for display formatting. Re-run genuine generator/all-tier/native acceptance on the corrected immutable candidate under the assigned lease. Return its source diff for closure before final gates. No Researcher source edits or test/native execution occurred, and no final clean/canonical approval is granted by this follow-up.
