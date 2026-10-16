@@ -483,7 +483,9 @@ public struct Game: Sendable {
         targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))
         return
       case "q":
+        let engaged = autoPilot.targetID != nil || workGuidance != nil || workBraking != nil
         cancelAutoTarget()
+        if engaged { notify("MANUAL CONTROL") }
         return
       case "f":
         cycleWorkTargetFilter()

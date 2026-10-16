@@ -365,6 +365,7 @@ extension NativeViewTests {
     let delta = 0.005
     let budget = before.commander.performance.acceleration * 18 * delta
     try #require(before.manualResidualFlight && initial.length > budget)
+    #expect(before.message == "MANUAL CONTROL")
     fixture.view.keyDown(with: try fixture.event(51, "", down: true))
     #expect(fixture.view.held.contains("backspace") && fixture.view.controls.throttle == -1)
     await fixture.frame(delta)
@@ -377,6 +378,7 @@ extension NativeViewTests {
     await fixture.frame(delta)
     let cruise = await fixture.delegate.runtime.snapshot()
     #expect((cruise.flightWorldVelocity - braked.flightWorldVelocity).length < 1e-8)
+    #expect(cruise.message == "MANUAL CONTROL")
     #expect(cruise.commander.salvageLedger.boundActor(for: lot) == actor)
     #expect(cruise.commander.cargo == before.commander.cargo)
     #expect(cruise.commander.equipmentInventory == before.commander.equipmentInventory)
