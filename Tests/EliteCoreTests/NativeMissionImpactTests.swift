@@ -187,7 +187,7 @@ struct NativeMissionImpactTests {
     let retained = try #require(
       game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors["lead"])
     #expect(retained.identity == identity && retained.presence == .outside)
-    #expect(retained.body.energy > 0 && !retained.destroyedByPlayer)
+    #expect(retained.body.energy > 0 && retained.destroyedByPlayer != true)
     #expect(retained.body.scriptNPC?.components == condition)
     #expect(!game.bodies.contains { $0.missionActorID == identity })
     #expect(!game.commander.scriptState.pendingEvents.contains { $0.kind == "actor.destroyed" })
