@@ -14,7 +14,7 @@ private func withArchive(
     nativeAttribution: archive)
 }
 
-private func retainedProjectileGame(archived: Bool = true) throws -> (Game, UUID) {
+func retainedProjectileGame(archived: Bool = true) throws -> (Game, UUID) {
   var (game, sample) = try actualShotArchiveFixture()
   let anchor = try #require(game.scriptAnchor)
   var shot = withArchive(sample, archived ? sample.nativeAttribution : nil)
