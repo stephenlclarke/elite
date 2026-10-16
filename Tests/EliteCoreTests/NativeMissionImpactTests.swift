@@ -18,7 +18,71 @@ private func actualLaserImpactGame(towardPlayer: Bool) throws -> (Game, MissionN
   return (game, proof)
 }
 
+private func actualRestoredImpactGame(immuneStation: Bool) throws -> (Game, MissionNativeImpactProof) {
+  var (game, sample) = try actualShotArchiveFixture()
+  var target = try #require(
+    game.bodies.first {
+      immuneStation ? $0.id == 0 : $0.missionActorID != nil && $0.missionActorID != sample.owner
+    })
+  let station = try #require(game.bodies.first { $0.id == 0 })
+  target.position = .init(0, immuneStation ? 0 : -25, 1000)
+  target.orientation = .init()
+  target.rotation = 0
+  target.rotationRate = 0
+  game.bodies = immuneStation ? [target] : [station, target]
+  game.celestials = []
+  let anchor = try #require(game.scriptAnchor)
+  let velocity = Vector3(0, 0, sample.velocity.length)
+  let shot = ScriptNPCShot(
+    identity: sample.identity, owner: sample.owner, instance: sample.instance,
+    weapon: sample.weapon, component: sample.component,
+    velocity: anchor.orientation.inverse(velocity), age: 0.1, lifetime: sample.lifetime,
+    damage: sample.damage, radius: sample.radius, collisionDelay: sample.collisionDelay,
+    nativeAttribution: sample.nativeAttribution)
+  var saved = SpaceBody(
+    id: 900_000_000, hull: .missile,
+    position: anchor.orientation.inverse(Vector3(0, 0, 700) - anchor.position))
+  saved.orientation = Basis3().relative(to: anchor.orientation)
+  saved.scriptShot = shot
+  saved.energy = 1
+  game.commander.scriptState.projectiles[shot.identity] = .init(
+    galaxy: game.commander.galaxy, system: game.commander.system, body: saved, presence: .unloaded)
+  let receipt = try game.admitRetainedMissionProjectile(shot.identity)
+  game.commander.scriptState.projectiles[shot.identity]?.body.id = receipt.bodyID
+  game.commander.scriptState.projectiles[shot.identity]?.presence = .present
+  let proof = try #require(game.missionNativeImpactProof(projectileID: shot.identity, delta: 0.5))
+  try #require(proof.hit.target == .body(target.id) && proof.currentSource == nil)
+  return (game, proof)
+}
+
 struct NativeMissionImpactTests {
+  @Test(arguments: [false, true])
+  func actualRestoredPlasmaConsumesOnceAndPreservesImmuneContactSemantics(immune: Bool) throws {
+    var (game, proof) = try actualRestoredImpactGame(immuneStation: immune)
+    let target = try #require(proof.targetBody)
+    let incident = game.commander.flightSimulation.nextIncident
+    let receipt = try game.applyMissionImpact(proof)
+    #expect(receipt.adjudication == .unknown && receipt.originalOrigin == proof.originalOrigin)
+    #expect(receipt.damage == proof.damage && receipt.damageAdmitted == !immune)
+    #expect(game.commander.flightSimulation.nextIncident == incident + 1)
+    #expect(game.bodies.first { $0.scriptShot?.identity == proof.shotID }?.energy == 0)
+    let actual = try #require(game.bodies.first { $0.id == target.id })
+    if immune {
+      #expect(actual.energy == target.energy)
+    } else {
+      try #require(proof.victimPart == "turret")
+      let before = try #require(target.scriptNPC?.components["turret"]?.energy)
+      #expect(actual.energy == target.energy)
+      #expect(actual.scriptNPC?.components["turret"]?.energy == max(0, before - proof.damage))
+    }
+    let commander = game.commander
+    let bodies = game.bodies
+    #expect(throws: (any Error).self) { try game.applyMissionImpact(proof) }
+    #expect(game.commander == commander && game.bodies == bodies)
+    game.projectScriptMissionImpact(receipt)
+    #expect(game.commander.scriptState.projectiles[proof.shotID] == nil)
+  }
+
   @Test(arguments: [false, true])
   func actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit: Bool) throws {
     var (game, proof) = try actualLaserImpactGame(towardPlayer: hit)
