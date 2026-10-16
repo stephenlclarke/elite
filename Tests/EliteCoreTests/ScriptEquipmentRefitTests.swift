@@ -10,9 +10,10 @@ struct ScriptEquipmentRefitTests {
       operation == "issue"
       ? ""
       : "{op='gear.issue',id='issue',gear='kit',fit=\(operation == "refit" ? "false" : "true")}"
+    let selection = ["refit", "store"].contains(operation) ? ",index=0" : ""
     let fixture = try GearScriptFixture(
       requiredReturn: false, accepted: initial,
-      contact: "{op='gear.\(operation)',id='request',gear='kit',index=0}")
+      contact: "{op='gear.\(operation)',id='request',gear='kit'\(selection)}")
     defer { fixture.clean() }
     var game = try fixture.game()
     let id = try #require(game.commander.scriptState.instances.keys.first)
