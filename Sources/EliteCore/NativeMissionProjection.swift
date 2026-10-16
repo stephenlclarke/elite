@@ -23,3 +23,9 @@ extension SpaceBody {
       }.count
   }
 }
+
+extension Game {
+  var scriptPlayerMesh: Mesh {
+    commander.ship.nativeDesign?.rawMesh ?? commander.ship.design.rawMesh
+  }
+}
