@@ -40,7 +40,7 @@ Checked cargo arithmetic validates Script payload quantities and collection boun
 
 Native fitting and storage of active issued devices use the sealed issue provider, actual projected accommodation budget and retained Script receipt application together. This includes held loan missiles and active nonloan issues. Native previews reuse their already captured context as a discarded planning binding; actual user actions allocate one fresh command. Personal missile loading uses the standard ammunition provider. Foreign active loan occupants cannot be displaced by personal fitting, shop replacements or hardware grants, and active loans cannot be graded or erased through generic removal.
 
-Four native regressions are authored, not executed: loan-round fitting/storage, exact personal laser restoration after native refit and return, foreign-loan refusal, and repeated unchanged previews. The composition still awaits remaining engine/core lifecycle hooks and a dedicated validation lease.
+Five native regressions are authored, not executed: loan-round fitting/storage, exact personal laser restoration after native refit and return, foreign-loan refusal, repeated unchanged previews, and an actual Commander hull transfer followed by mission settlement. The transfer regression uses the native transfer operation and Script settlement adapter to verify the same personal UUID, component, provenance and metadata return to the compatible new hull while the original displacement evidence remains unchanged. The composition still awaits remaining engine/core lifecycle hooks and a dedicated validation lease.
 
 ## Actor and native storage composition
 

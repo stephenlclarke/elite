@@ -116,6 +116,46 @@ struct NativeLoanFittingTests {
     #expect(game.commander == before)
   }
 
+  @Test func actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser()
+    throws
+  {
+    var (game, mission, id) = try heldIssue(.laser(.beam), slot: .laser(.front))
+    let personal = try #require(game.commander.fittedEquipment(at: .laser(.front)))
+    let loan = try #require(game.commander.equipmentInventory?.items.first { $0.id == id })
+    try game.fitEquipment(
+      loan, at: .laser(.front), expectedRevision: game.commander.equipmentInventory!.revision)
+    let originalRecord = try #require(
+      game.commander.scriptState.instances[mission]?.gearIssues["hardware"])
+    let originalInventory = try #require(game.commander.equipmentInventory)
+    let history = game.commander.equipmentPurchaseHistory
+    let newHull = UUID()
+    try game.commander.transferEquipment(to: "SH043", hullID: newHull)
+    #expect(game.commander.equipmentInventory?.activeHull == newHull)
+    #expect(game.commander.equipmentInventory?.revision == originalInventory.revision + 1)
+    #expect(game.commander.scriptState.instances[mission]?.gearIssues["hardware"] == originalRecord)
+    #expect(game.commander.fittedEquipment(at: .laser(.front))?.id == loan.id)
+    #expect(game.commander.valid)
+
+    var instance = try #require(game.commander.scriptState.instances[mission])
+    var candidate = game.commander
+    let event = try game.settleScriptGear(
+      originalRecord, release: false, command: UUID(), state: &instance, candidate: &candidate)
+    candidate.scriptState.instances[mission] = instance
+    let restored = try #require(candidate.fittedEquipment(at: .laser(.front)))
+    #expect(event.0 == "equipment.returned")
+    #expect(restored.id == personal.id && restored.component == personal.component)
+    #expect(restored.provenance == personal.provenance)
+    #expect(restored.preferredSlot == personal.preferredSlot)
+    #expect(restored.retainedLegacyState == personal.retainedLegacyState)
+    #expect(restored.location == .init(hullInstanceID: newHull, slot: .laser(.front)))
+    #expect(candidate.equipmentInventory?.items.contains { $0.id == loan.id } == false)
+    #expect(candidate.scriptState.instances[mission]?.gearIssues["hardware"]?.status == .returned)
+    #expect(
+      candidate.scriptState.instances[mission]?.gearIssues["hardware"]?.displacements
+        == originalRecord.displacements)
+    #expect(candidate.equipmentPurchaseHistory == history && candidate.valid)
+  }
+
   @Test func repeatedNativeLoanPreviewsPreserveAllCommanderAndContextState() throws {
     let (game, _, _) = try heldIssue(.missile, slot: .missilePylon(3))
     let commander = game.commander
