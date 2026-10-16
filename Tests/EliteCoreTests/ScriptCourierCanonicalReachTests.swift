@@ -179,7 +179,7 @@ struct ScriptCourierCanonicalReachTests {
     let bytes = try Data(contentsOf: url)
     try #require(
       ScriptPackLibrary.hash(bytes)
-        == "299c143f9ddc937641da1345d69809bc000acff2a57a6a22c72649e13c6c8c93")
+        == "c43c49e178ee1c58493f36ceb66a839ae6f222ddb04bb397b03895ca9c12c88e")
     let golden = try JSONDecoder().decode(Golden.self, from: bytes)
     let key = golden.board.cacheKey
     let id = golden.instance.id

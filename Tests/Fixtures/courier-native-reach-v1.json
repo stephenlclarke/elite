@@ -146,7 +146,7 @@
       {
         "briefing": "PROJECT ESTIMATES. Carry this unique consignment to ORGETIBE main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
         "courier": {
-          "calendarLowerBoundSeconds": 237960.00000000003,
+          "calendarLowerBoundSeconds": 237960.0,
           "capabilities": [
             "contracts-basic-v2",
             "courier-contracts-basic-v2",
