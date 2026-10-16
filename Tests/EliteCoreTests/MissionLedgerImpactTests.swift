@@ -79,14 +79,16 @@ private func ledgerImpactFixture(
       target.energy = rock!.energy
       game.miningFields = [.init(position: rock!.position, rocks: [rock!])]
       game.ensurePhysicalActors()
-      let identity = try #require(game.commander.flightSimulation.allocateActor())
+      let evaluatedResult1 = game.commander.flightSimulation.allocateActor()
+      let identity = try #require(evaluatedResult1)
       target.physical = .init(identity: identity, population: .asteroid, rock: generated.identity)
     }
     game.bodies.append(target)
   }
   game.ensurePhysicalActors()
   let context = try #require(game.gameplayContext())
-  let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+  let evaluatedResult2 = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(evaluatedResult2)
   let request = SpawnRequest(
     identity: .init(
       system: context.system, visit: context.visit, sequence: sequence, member: 0,
@@ -106,9 +108,11 @@ private func ledgerImpactFixture(
   game.commander.scriptState.projectiles[id] = .init(
     galaxy: game.commander.galaxy, system: game.commander.system, body: game.bodies[index],
     presence: .present)
-  let proof = try #require(game.missionNativeImpactProof(projectileID: id, delta: 0.6))
+  let evaluatedResult3 = try game.missionNativeImpactProof(projectileID: id, delta: 0.6)
+  let proof = try #require(evaluatedResult3)
   let current = try #require(game.gameplayContext())
-  let event = try #require(game.commander.flightSimulation.allocateIncident())
+  let evaluatedResult4 = game.commander.flightSimulation.allocateIncident()
+  let event = try #require(evaluatedResult4)
   return .init(
     game: game, proof: proof, context: current, origin: origin, eventID: event, rock: rock)
 }
@@ -127,7 +131,8 @@ struct MissionLedgerImpactTests {
       position: fixture.context.player.position,
       victimLegalBeforeAttack: fixture.context.player.legal,
       firstAggressor: nil, victimRole: nil, victimIsStation: false)
-    #expect(!ordinary.record(incident, context: fixture.context).accepted)
+    let evaluatedResult5 = !ordinary.record(incident, context: fixture.context).accepted
+    #expect(evaluatedResult5)
     let beforeArchive = fixture.proof.archive
     var ledger = CrimeLedger()
     let result = ledger.recordMissionReentryImpact(
@@ -137,10 +142,10 @@ struct MissionLedgerImpactTests {
     #expect(result.firstAggressor == fixture.proof.currentSource)
     #expect(result.death == nil && fixture.proof.archive == beforeArchive)
     let saved = ledger
-    #expect(
-      !ledger.recordMissionReentryImpact(
-        fixture.proof, eventID: fixture.eventID, outcome: .hit, context: fixture.context
-      ).accepted)
+    let evaluatedResult6 = !ledger.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .hit, context: fixture.context
+    ).accepted
+    #expect(evaluatedResult6)
     #expect(ledger == saved)
   }
 
@@ -176,10 +181,10 @@ struct MissionLedgerImpactTests {
     changed.gameplayRevision += 1
     let stale = try #require(changed.gameplayContext())
     let before = scoped
-    #expect(
-      !scoped.recordMissionReentryImpact(
-        fixture.proof, eventID: fixture.eventID + 1, outcome: .hit, context: stale
-      ).accepted)
+    let evaluatedResult7 = !scoped.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID + 1, outcome: .hit, context: stale
+    ).accepted
+    #expect(evaluatedResult7)
     #expect(scoped == before)
   }
 
@@ -199,10 +204,11 @@ struct MissionLedgerImpactTests {
       rock: rock, proof: fixture.proof, eventID: fixture.eventID, context: fixture.context)
     #expect(actual == expected && scoped == ordinary && scoped.pendingPayloads.isEmpty)
     let before = scoped
-    #expect(
+    let evaluatedResult8 =
       scoped.hit(
         rock: rock, proof: fixture.proof, eventID: fixture.eventID, context: fixture.context)
-        == .ignored)
+      == .ignored
+    #expect(evaluatedResult8)
     #expect(scoped == before)
   }
   @Test func unknownPhysicalDeathPreventsALaterOrdinaryDeathBenefit() throws {
@@ -213,14 +219,16 @@ struct MissionLedgerImpactTests {
     try #require(unknown.accepted && unknown.death == nil)
     let victim = try #require(
       fixture.context.actors.first { $0.identity == fixture.proof.currentVictim })
-    let next = try #require(fixture.game.commander.flightSimulation.allocateIncident())
+    let evaluatedResult9 = fixture.game.commander.flightSimulation.allocateIncident()
+    let next = try #require(evaluatedResult9)
     let incident = CombatIncident(
       id: next, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
       victim: victim.identity, kind: .plasma, outcome: .destruction, position: victim.position,
       victimLegalBeforeAttack: victim.legal, firstAggressor: nil, victimRole: victim.npc?.role,
       victimIsStation: false)
     var control = CrimeLedger()
-    try #require(control.record(incident, context: fixture.context).death != nil)
+    let evaluatedResult10 = control.record(incident, context: fixture.context).death != nil
+    try #require(evaluatedResult10)
     let replay = ledger.record(incident, context: fixture.context)
     #expect(replay.accepted && replay.death == nil && replay.report == nil)
     #expect(replay.legalPenalty == 0 && replay.firstAggressor == nil)
@@ -244,10 +252,10 @@ struct MissionLedgerImpactTests {
     let current = try #require(changed.gameplayContext())
     var ledger = CrimeLedger()
     let before = ledger
-    #expect(
-      !ledger.recordMissionReentryImpact(
-        fixture.proof, eventID: fixture.eventID, outcome: .hit, context: current
-      ).accepted)
+    let evaluatedResult11 = !ledger.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .hit, context: current
+    ).accepted
+    #expect(evaluatedResult11)
     #expect(ledger == before)
   }
 
@@ -275,11 +283,13 @@ struct MissionLedgerImpactTests {
     let before = ledger
     // The next native allocation is newer than the retained ledger's previous physical event.
     var host = fixture.game
-    let event = try #require(host.commander.flightSimulation.allocateIncident())
-    #expect(
+    let evaluatedResult12 = host.commander.flightSimulation.allocateIncident()
+    let event = try #require(evaluatedResult12)
+    let evaluatedResult13 =
       ledger.hit(
         rock: rock, proof: fixture.proof, eventID: event,
-        context: fixture.context) == .capacityRefused)
+        context: fixture.context) == .capacityRefused
+    #expect(evaluatedResult13)
     #expect(ledger == before && !ledger.isDepleted(rock.identity))
     #expect(ledger.remainingEnergy(for: rock) == rock.energy && ledger.pendingPayloads.isEmpty)
   }
@@ -296,10 +306,11 @@ struct MissionLedgerImpactTests {
       firstAggressor: nil, victimRole: nil, victimIsStation: false)
     let expected = ordinary.hit(rock: rock, incident: incident, damage: fixture.proof.damage)
     #expect(expected == .destroyed)
-    #expect(
+    let evaluatedResult14 =
       scoped.hit(
         rock: rock, proof: fixture.proof, eventID: fixture.eventID,
-        context: fixture.context) == expected)
+        context: fixture.context) == expected
+    #expect(evaluatedResult14)
     #expect(
       scoped == ordinary && scoped.isDepleted(rock.identity) && scoped.pendingPayloads.isEmpty)
     #expect(scoped.valid)
@@ -318,7 +329,8 @@ struct MissionLedgerImpactTests {
           system: .init(galaxy: 1, system: index / 48),
           field: UInt16((index % 48) / 12), rock: UInt16(index % 12)),
         position: .init(100, 200, 300), radius: 40, energy: 1)
-      let event = try #require(fixture.game.commander.flightSimulation.allocateIncident())
+      let evaluatedResult15 = fixture.game.commander.flightSimulation.allocateIncident()
+      let event = try #require(evaluatedResult15)
       let ordinary = CombatIncident(
         id: event, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
         victim: fixture.proof.currentVictim, kind: .laser, outcome: .destruction,
@@ -332,11 +344,13 @@ struct MissionLedgerImpactTests {
     try #require(reachedCapacity && ledger.valid && !ledger.pendingPayloads.isEmpty)
     let custody = ledger.pendingPayloads
     let rock = try #require(fixture.rock)
-    let event = try #require(fixture.game.commander.flightSimulation.allocateIncident())
-    #expect(
+    let evaluatedResult16 = fixture.game.commander.flightSimulation.allocateIncident()
+    let event = try #require(evaluatedResult16)
+    let evaluatedResult17 =
       ledger.hit(
         rock: rock, proof: fixture.proof, eventID: event,
-        context: fixture.context) == .destroyed)
+        context: fixture.context) == .destroyed
+    #expect(evaluatedResult17)
     #expect(ledger.pendingPayloads == custody && ledger.isDepleted(rock.identity) && ledger.valid)
   }
 
@@ -350,10 +364,10 @@ struct MissionLedgerImpactTests {
     let current = try #require(earlier.gameplayContext())
     var ledger = CrimeLedger()
     let before = ledger
-    #expect(
-      !ledger.recordMissionReentryImpact(
-        fixture.proof, eventID: fixture.eventID, outcome: .destruction, context: current
-      ).accepted)
+    let evaluatedResult18 = !ledger.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .destruction, context: current
+    ).accepted
+    #expect(evaluatedResult18)
     #expect(ledger == before)
     let exact = ledger.recordMissionReentryImpact(
       fixture.proof, eventID: fixture.eventID, outcome: .hit, context: fixture.context)
@@ -362,10 +376,10 @@ struct MissionLedgerImpactTests {
     later.commander.flightSimulation.advancePhysicalTime(1)
     let olderLaunch = try #require(later.gameplayContext())
     var independent = CrimeLedger()
-    #expect(
-      independent.recordMissionReentryImpact(
-        fixture.proof, eventID: fixture.eventID, outcome: .hit, context: olderLaunch
-      ).accepted)
+    let evaluatedResult19 = independent.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .hit, context: olderLaunch
+    ).accepted
+    #expect(evaluatedResult19)
   }
 
 }
