@@ -2,6 +2,10 @@
 
 Source-only assessment, 16 October 2026, against immutable engine/Gallery integration `1e4e622da7313b4b55a47637f234d334fabbe535`. The Gallery slice is locally integrated. This assessment does not activate another mission or establish central/main integration. Mission Researcher retains research and finance-engine ownership. All implementation assignments go through Orchestrator to Mission Coder 1.
 
+## Current checkpoint
+
+G21 station donations and the two-phase Gallery trial repair are locally integrated at `848d7b7e8359f921aab395a6204405df47806542`, preserving all789 acceptance inputs from canonical `51cb55617a2e8dd21fddde6e67b425ee978a7bdd`. Full CI passed615 methods/692 cases in each test lane with zero leaks. The table below remains the original pre-G21 assessment; its G21 prerequisite is now closed. The next packet is the [G02 courier native design brief](MISSION-CODER-G02-DESIGN-BRIEF.md). Historical missions and the full engine remain incomplete.
+
 ## Findings
 
 No additional historical mission assessed below can honestly be handed over as pack-only implementation on this base. Completed research is distinct from available native mechanics. In particular, the presence of schema2 dialogue, credits, cargo, NPCs or a contract board does not establish each source's custody, facility, generator or AI contract.
@@ -25,9 +29,9 @@ At this base, `ScriptEncounters.ensureScriptEncounter` creates an owned plan fro
 
 The exact profiles and their provenance/fixtures remain in `/Users/sclarke/github/elite/docs/research/`. Necessary project estimates remain labelled; no missing engine mechanic is converted into an assumed historical fact or a placeholder mission.
 
-## Next assignment boundary
+## Original pre-G21 assignment boundary
 
-The next researched gameplay packet needs its identified native prerequisite first. The clearest small noncombat candidate is G21 after a reviewed typed pledge/issuer-reputation adapter, covering all three difficulty amounts and both credit/food variants. That adapter needs a concrete engine design and an explicit Orchestrator ownership assignment before code; this document is not that API design or an implementation-ready mission packet.
+The original next packet was G21 after a reviewed typed pledge/issuer-reputation adapter, covering all three difficulty amounts and both credit/food variants. That adapter and complete mission are now locally integrated as recorded above. G02 remains blocked on the explicit native design in its linked brief; it is not a pack-only conversion.
 
 Mission Researcher continues the already-owned shared native finance design/implementation. The existing detailed loan research and `/Users/sclarke/github/elite/docs/STATION-FINANCE-DESIGN.md` are suitable source material for a separately bounded controller or UI task only once its engine boundary is explicitly assigned. Do not start a competing finance implementation or wire a fake UI to assumed APIs. Mission Coder's next pack should use the resulting actual reviewed primitives, with native physical/transaction/save/Gallery acceptance.
 
