@@ -69,9 +69,9 @@ private func nativeSalvageScene() throws -> (Game, ActorIdentity, SalvageLotIden
   let conditions = SalvageWorkConditions(
     toolInstalled: true, inRange: true, aligned: true, lineOfSight: true,
     resourcesAvailable: true, ownershipAuthorized: true)
-  var operation: UInt64 = 0
   for _ in 0..<(Int(ceil(section.workSeconds)) + 1) {
-    operation += 1
+    let allocated = game.commander.flightSimulation.allocateIncident()
+    let operation = try #require(allocated)
     let result = game.commander.salvageLedger.advance(
       wreck: wreck, section: section,
       pose: .init(position: game.commander.flightSimulation.pose.position + .init(0, 0, 2000)),
