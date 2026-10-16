@@ -77,7 +77,7 @@ extension Game {
     return receipts
   }
 
-  private func batchRefusal(_ requests: [SpawnRequest]) -> AdmissionRefusal? {
+  private mutating func batchRefusal(_ requests: [SpawnRequest]) -> AdmissionRefusal? {
     guard let context = gameplayContext() else { return .staleContext }
     let fresh = requests.filter { request in
       !bodies.contains { $0.physical?.spawnIdentity == request.identity }
@@ -132,7 +132,7 @@ extension Game {
     return nil
   }
 
-  private func safeSpawn(_ request: SpawnRequest, context: EncounterContext) -> Bool {
+  private mutating func safeSpawn(_ request: SpawnRequest, context: EncounterContext) -> Bool {
     guard request.position.finite, request.velocity.finite,
       request.orientation.x.finite, request.orientation.y.finite, request.orientation.z.finite,
       request.angularVelocity.finite
@@ -156,13 +156,18 @@ extension Game {
     guard (request.position - context.player.position).length > radius + playerRadius + 8 else {
       return false
     }
-    return !context.actors.contains { actor in
+    for actor in context.actors {
       let otherRadius =
         actor.salvage.map { $0.bounds.radius + $0.bounds.center.length }
         ?? (Mesh.hull(actor.hull).vertices.map(\.length).max() ?? 80)
-      return actor.energy > 0
-        && (request.position - actor.position).length < radius + otherRadius + 8
+      if actor.energy > 0,
+        (request.position - actor.position).length < radius + otherRadius + 8,
+        !releasedFragmentClearsParent(request, parent: actor, context: context)
+      {
+        return false
+      }
     }
+    return true
   }
 
   private func spawnRadius(_ request: SpawnRequest) -> Double {

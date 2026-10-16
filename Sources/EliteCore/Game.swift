@@ -315,6 +315,7 @@ public struct Game: Sendable {
   public var bodies: [SpaceBody] = []
   public var miningFields: [MiningField] = []
   var gameplayRevision: UInt64 = 0
+  var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] = [:]
   public var starfield = Starfield()
   public var speed = 0.0
   public var pitch = 0.0

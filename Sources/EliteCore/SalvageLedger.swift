@@ -394,6 +394,10 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public var pendingLots: [SalvageLot] { sorted(pending.values) }
   /// The acknowledged live body is the only scene actor allowed to transfer this lot.
   public func boundActor(for lot: SalvageLotIdentity) -> ActorIdentity? { bindings[lot] }
+  /// Admission may inspect only a still-pending lot offered under this exact spawn identity.
+  public func offeredLot(for request: SpawnIdentity) -> SalvageLot? {
+    offers[request].flatMap { pending[$0] }
+  }
   public var inventory: [SalvageLot] { sorted(stored.values) }
   public var inventoryMassKg: Double { stored.values.reduce(0) { $0 + $1.massKg } }
   public var reservedTonnes: Int { Int(ceil(inventoryMassKg / 1000)) }

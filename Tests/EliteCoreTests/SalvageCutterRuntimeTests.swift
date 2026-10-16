@@ -167,13 +167,12 @@ private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageL
 }
 
 extension SalvageCutterRuntimeTests {
-  @Test func diagnosticReleasedFragmentAdmissionOutsideTheActualSourceFace() throws {
-    var (game, lot) = try pendingCutterGame()
-    let context = try #require(game.gameplayContext())
-    let requests = game.commander.salvageLedger.spawnRequests(context: context)
-    let request = try #require(requests.first { $0.payload == .salvage(lot.identity) })
+  @Test func actualReleasedFragmentInsideParentBoundsHasVerifiedMeshClearanceAndOneActor() throws {
+    let (game, lot, bodyID) = try releasedCutterGame()
     let parent = try #require(
-      game.bodies.first { $0.physical?.salvage?.wreck == lot.identity.section.wreck })
+      game.bodies.first {
+        $0.physical?.salvage?.wreck == lot.identity.section.wreck && $0.physical?.payload == nil
+      })
     let profile = try #require(
       parent.physical?.catalogueShipID.flatMap(SalvageCatalogue.profile(catalogueShipID:)))
     let section = try #require(profile.sections.first { $0.index == lot.identity.section.section })
@@ -185,22 +184,19 @@ extension SalvageCutterRuntimeTests {
         direction: game.commander.flightSimulation.pose.shipVector(normal * -1), maxDistance: 300,
         bodies: [parent], meshOverrides: game.gameplayMeshOverrides))
     let radius = lot.halfExtents.length
-    let receipts = game.admitEncounterPlan(
-      .init(
-        system: context.system, visit: context.visit, revision: context.revision,
-        batches: [.init(requests: [request], atomic: false)], intents: []))
-    let receipt = try #require(receipts.first)
+    let prepared = try PreparedHull(mesh: game.gameplayMesh(for: parent))
+    let placement = HullSweepSafety.validatePlacement(
+      center: lot.position, radius: radius, hull: prepared, pose: pose, requiredClearance: 8)
     #expect(ray.target == .body(parent.id) && ray.distance > radius + 8)
-    #expect(receipt.refusal == .unsafePosition && receipt.actor == nil)
+    #expect(placement.safe && (placement.minimumSampledClearance ?? 0) > 8)
     #expect(
       (lot.position - pose.position).length < profile.bounds.radius + profile.bounds.center.length
         + radius + 8)
-    print(
-      "SALVAGE_ADMISSION_DIAGNOSTIC", profile.catalogueShipID, section.index,
-      "faceGap", ray.distance, "lotRadius", radius,
-      "parentDistance", (lot.position - pose.position).length,
-      "parentRadius", profile.bounds.radius + profile.bounds.center.length,
-      "refusal", String(describing: receipt.refusal))
+    let admitted = game.bodies.filter { $0.physical?.payload == .salvage(lot.identity) }
+    #expect(admitted.count == 1 && admitted[0].id == bodyID)
+    #expect(
+      game.commander.salvageLedger.boundActor(for: lot.identity) == admitted[0].physical?.identity)
+    #expect(game.salvageAdmissionGeometry[profile.catalogueShipID] != nil)
     if let path = ProcessInfo.processInfo.environment["ELITE_ADMISSION_EVIDENCE_PATH"] {
       struct Evidence: Encodable {
         let catalogue: String
@@ -211,15 +207,18 @@ extension SalvageCutterRuntimeTests {
         let lot: SalvageLot
         let vertices: [Vector3]
         let faces: [[Int]]
-        let actualSurfaceDistance: Double
-        let refusal: String
+        let normalRayDistance: Double
+        let actualMeshClearance: Double?
+        let admittedActor: ActorIdentity
       }
       let actor = try #require(parent.physical?.identity)
+      let admittedActor = try #require(admitted[0].physical?.identity)
       let evidence = Evidence(
         catalogue: profile.catalogueShipID, section: section, actor: actor, pose: pose,
         bounds: profile.bounds, lot: lot, vertices: profile.mesh.vertices,
         faces: profile.mesh.faces,
-        actualSurfaceDistance: ray.distance, refusal: String(describing: receipt.refusal))
+        normalRayDistance: ray.distance, actualMeshClearance: placement.minimumSampledClearance,
+        admittedActor: admittedActor)
       let encoder = JSONEncoder()
       encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
       try encoder.encode(evidence).write(to: URL(fileURLWithPath: path), options: .atomic)
@@ -285,5 +284,112 @@ extension SalvageCutterRuntimeTests {
     #expect(game.commander == before && game.bodies == bodies)
     #expect(game.bodies.contains { $0.id == original.id })
     #expect(game.commander.salvageLedger.pendingLots.contains { $0.identity == referenced })
+  }
+}
+
+private func offeredFragmentGame() throws -> (Game, SalvageLot, SpawnRequest) {
+  var (game, lot) = try pendingCutterGame()
+  let fragments = game.bodies.filter { $0.physical?.payload != nil }
+  for body in fragments {
+    if let actor = body.physical?.identity { game.commander.salvageLedger.cull(actor: actor) }
+  }
+  game.bodies.removeAll { $0.physical?.payload != nil }
+  let context = try #require(game.gameplayContext())
+  let requests = game.commander.salvageLedger.spawnRequests(context: context)
+  let request = try #require(requests.first { $0.payload == .salvage(lot.identity) })
+  #expect(game.commander.salvageLedger.offeredLot(for: request.identity) == lot)
+  return (game, lot, request)
+}
+
+private func changedFragmentRequest(
+  _ original: SpawnRequest, identity: SpawnIdentity? = nil,
+  position: Vector3? = nil, metadata: SalvageTargetMetadata? = nil
+) -> SpawnRequest {
+  var result = SpawnRequest(
+    identity: identity ?? original.identity, population: original.population, hull: original.hull,
+    position: position ?? original.position, orientation: original.orientation,
+    velocity: original.velocity, npc: original.npc, rock: original.rock,
+    payload: original.payload, priority: original.priority,
+    salvage: metadata ?? original.salvage)
+  result.catalogueShipID = original.catalogueShipID
+  result.energy = original.energy
+  result.angularVelocity = original.angularVelocity
+  return result
+}
+
+extension SalvageCutterRuntimeTests {
+  @Test(arguments: [
+    "unoffered", "changed position", "changed bounds", "protected parent", "wrong wreck",
+    "stale parent", "foreign parent", "unrelated obstacle", "inside mesh",
+  ])
+  func fragmentAdmissionKeepsExactOfferContextProtectionAndCollisionGuards(mismatch: String) throws
+  {
+    var (game, lot, request) = try offeredFragmentGame()
+    let parentIndex = try #require(
+      game.bodies.firstIndex { $0.physical?.salvage?.wreck == lot.identity.section.wreck })
+    switch mismatch {
+    case "unoffered":
+      request = changedFragmentRequest(
+        request,
+        identity: .init(
+          system: request.identity.system, visit: request.identity.visit,
+          sequence: UInt64.max - 1, member: 0, producer: .salvage))
+    case "changed position":
+      request = changedFragmentRequest(request, position: request.position + .init(0.01, 0, 0))
+    case "changed bounds":
+      let metadata = try #require(request.salvage)
+      request = changedFragmentRequest(
+        request,
+        metadata: .init(
+          category: metadata.category, ownership: metadata.ownership, claimant: metadata.claimant,
+          wreck: metadata.wreck, section: metadata.section, lot: metadata.lot,
+          bounds: .init(center: .init(0, 0, 0), radius: 0.1), workSurfaces: []))
+    case "protected parent": game.bodies[parentIndex].navalTarget = true
+    case "wrong wreck":
+      let metadata = try #require(game.bodies[parentIndex].physical?.salvage)
+      let wrong = WreckIdentity(system: game.systemIdentity, site: 89, lineage: 99)
+      game.bodies[parentIndex].physical?.salvage = .init(
+        category: metadata.category, ownership: metadata.ownership, claimant: nil,
+        wreck: wrong, section: nil, lot: nil, bounds: metadata.bounds,
+        workSurfaces: metadata.workSurfaces)
+    case "stale parent", "foreign parent":
+      let physical = try #require(game.bodies[parentIndex].physical)
+      let system =
+        mismatch == "foreign parent"
+        ? SystemIdentity(
+          galaxy: physical.identity.system.galaxy,
+          system: (physical.identity.system.system + 1) % 256)
+        : physical.identity.system
+      let actor = ActorIdentity(
+        system: system, visit: physical.identity.visit + (mismatch == "stale parent" ? 1 : 0),
+        entity: physical.identity.entity)
+      game.bodies[parentIndex].physical = .init(
+        identity: actor, population: physical.population, velocity: physical.velocity,
+        catalogueShipID: physical.catalogueShipID, angularVelocity: physical.angularVelocity,
+        salvage: physical.salvage)
+    case "unrelated obstacle":
+      let allocated = game.commander.flightSimulation.allocateActor()
+      let actor = try #require(allocated)
+      var blocker = SpaceBody(
+        id: 990, hull: .cargo,
+        position: game.commander.flightSimulation.pose.shipPoint(lot.position) + .init(0, 0, 15))
+      blocker.physical = .init(identity: actor, population: .cargo)
+      game.bodies.append(blocker)
+    case "inside mesh":
+      let center = game.modelPose(of: game.bodies[parentIndex]).position
+      game.commander.salvageLedger.updateLot(lot.identity, position: center, velocity: lot.velocity)
+      request = changedFragmentRequest(request, position: center)
+    default: Issue.record("Unknown fixture mutation")
+    }
+    let context = try #require(game.gameplayContext())
+    let before = game.commander
+    let bodies = game.bodies
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: [request], atomic: false)], intents: []))
+    #expect(
+      receipts.count == 1 && receipts[0].refusal == .unsafePosition && receipts[0].actor == nil)
+    #expect(game.commander == before && game.bodies == bodies)
   }
 }
