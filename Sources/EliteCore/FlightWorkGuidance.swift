@@ -376,12 +376,25 @@ extension Game {
     }
   }
 
+  private func workBlockMessage(_ reason: RelativeWorkBlock) -> String {
+    switch reason {
+    case .invalidInput: "TARGET MOTION UNAVAILABLE"
+    case .unsupportedTarget: "TARGET NOT SUITABLE"
+    case .identityMismatch: "TARGET CHANGED"
+    case .toolRange: "OUTSIDE TOOL RANGE"
+    case .speedLimit: "TARGET TOO FAST"
+    case .accelerationLimit: "THRUST LIMIT"
+    case .turnLimit: "TARGET SPIN TOO FAST"
+    case .clearance: "PATH NOT CLEAR"
+    }
+  }
+
   func workStatus(_ status: RelativeWorkStatus) -> String {
     switch status {
     case .idle, .approaching: "APPROACHING WORK SURFACE"
     case .matching: "MATCHING TARGET MOTION"
     case .holding: "HOLDING - RETURN OPERATES SELECTED TOOL"
-    case .blocked(let reason): "HOLD BLOCKED: " + String(describing: reason).uppercased()
+    case .blocked(let reason): "HOLD BLOCKED: " + workBlockMessage(reason)
     case .cancelled: "CANCELLED"
     case .targetLost, .changedPrimary: "TARGET LOST"
     }
@@ -392,7 +405,7 @@ extension Game {
     case .approaching: "APPROACHING SCOOP TARGET"
     case .matching: "MATCHING SCOOP TARGET MOTION"
     case .ready: "SCOOP ALIGNED"
-    case .blocked(let reason): "SCOOP BLOCKED: " + String(describing: reason).uppercased()
+    case .blocked(let reason): "SCOOP BLOCKED: " + workBlockMessage(reason)
     case .cancelled: "CANCELLED"
     case .targetLost, .changedPrimary: "TARGET LOST"
     }
