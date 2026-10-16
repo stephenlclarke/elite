@@ -1,0 +1,1464 @@
+{
+  "board": {
+    "clock": "missionCalendar",
+    "courierGeneration": {
+      "draws": [
+        898330452,
+        1415163876,
+        1426520566,
+        3442991530,
+        290823243,
+        4182313349
+      ],
+      "finalState": 4182313349,
+      "indices": [
+        3,
+        6,
+        6,
+        15,
+        1,
+        18
+      ],
+      "initialState": 1295021068,
+      "origin": {
+        "galaxy": 0,
+        "stationClass": "main-orbital",
+        "system": 0
+      },
+      "paths": [
+        [
+          0,
+          19
+        ],
+        [
+          0,
+          75,
+          95,
+          24
+        ],
+        [
+          0,
+          19,
+          27
+        ],
+        [
+          0,
+          71,
+          53,
+          38
+        ],
+        [
+          0,
+          19,
+          27,
+          39
+        ],
+        [
+          0,
+          71,
+          53
+        ],
+        [
+          0,
+          71
+        ],
+        [
+          0,
+          19,
+          72
+        ],
+        [
+          0,
+          75
+        ],
+        [
+          0,
+          75,
+          95
+        ],
+        [
+          0,
+          19,
+          193,
+          147
+        ],
+        [
+          0,
+          19,
+          27,
+          155
+        ],
+        [
+          0,
+          19,
+          165
+        ],
+        [
+          0,
+          71,
+          53,
+          173
+        ],
+        [
+          0,
+          19,
+          27,
+          192
+        ],
+        [
+          0,
+          19,
+          193
+        ],
+        [
+          0,
+          71,
+          53,
+          235
+        ],
+        [
+          0,
+          19,
+          239
+        ],
+        [
+          0,
+          75,
+          95,
+          245
+        ]
+      ],
+      "reach": {
+        "capacity": 70,
+        "firstReach": 7,
+        "fuel": 70,
+        "hull": "SH023",
+        "jumpCap": 7,
+        "revision": "elite-880d3a-native-reach-v1",
+        "storage": 0
+      },
+      "revision": 1
+    },
+    "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+    "group": "project.generated-couriers/g02-courier",
+    "id": "courier-jobs",
+    "offers": [
+      {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to ORGETIBE main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 237960.00000000003,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 0
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 38,
+        "duration": 172800,
+        "failureReward": 0,
+        "id": "DFBDEF4C-31CA-54A6-A807-3C8E252FFBD1",
+        "key": "data-1",
+        "parameters": {
+          "difficulty": 1,
+          "variant": "data"
+        },
+        "refundOnFailure": false,
+        "reward": 14000,
+        "status": {
+          "available": {}
+        },
+        "title": "Difficulty 1 - Encrypted data to ORGETIBE"
+      },
+      {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to EDINSO main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 9816.000000000002,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 1
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 71,
+        "duration": 172800,
+        "failureReward": 0,
+        "id": "70307AE4-B576-E769-C614-CD429B7D7D2F",
+        "key": "package-1",
+        "parameters": {
+          "difficulty": 1,
+          "variant": "package"
+        },
+        "refundOnFailure": false,
+        "reward": 8000,
+        "status": {
+          "accepted": {
+            "_0": "47D441D2-0FFB-00E1-0258-A8662DEBA84B"
+          }
+        },
+        "title": "Difficulty 1 - Sealed package to EDINSO"
+      },
+      {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to EDINSO main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 9816.000000000002,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 2
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 71,
+        "duration": 172800,
+        "failureReward": 0,
+        "id": "3A038D95-1A17-D856-E13A-2BAEBD2A4DC7",
+        "key": "data-2",
+        "parameters": {
+          "difficulty": 2,
+          "variant": "data"
+        },
+        "refundOnFailure": false,
+        "reward": 10500,
+        "status": {
+          "available": {}
+        },
+        "title": "Difficulty 2 - Encrypted data to EDINSO"
+      },
+      {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to ORRERE main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 206256.00000000003,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 3
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 193,
+        "duration": 172800,
+        "failureReward": 0,
+        "id": "CBE3DA12-0494-5E5C-73EC-FC3BF38B1929",
+        "key": "package-2",
+        "parameters": {
+          "difficulty": 2,
+          "variant": "package"
+        },
+        "refundOnFailure": false,
+        "reward": 13500,
+        "status": {
+          "available": {}
+        },
+        "title": "Difficulty 2 - Sealed package to ORRERE"
+      },
+      {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to CEINZALA main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 258696.00000000006,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 4
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 24,
+        "duration": 259200,
+        "failureReward": 0,
+        "id": "F0BFD021-444E-D681-20F3-98143485BA6C",
+        "key": "data-3",
+        "parameters": {
+          "difficulty": 3,
+          "variant": "data"
+        },
+        "refundOnFailure": false,
+        "reward": 19000,
+        "status": {
+          "available": {}
+        },
+        "title": "Difficulty 3 - Encrypted data to CEINZALA"
+      },
+      {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to ARA main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 308808.00000000006,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 5
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 245,
+        "duration": 259200,
+        "failureReward": 0,
+        "id": "4DCAD8D9-A1EB-B668-CBB1-01B47735E2EB",
+        "key": "package-3",
+        "parameters": {
+          "difficulty": 3,
+          "variant": "package"
+        },
+        "refundOnFailure": false,
+        "reward": 19000,
+        "status": {
+          "available": {}
+        },
+        "title": "Difficulty 3 - Sealed package to ARA"
+      }
+    ],
+    "period": 3600,
+    "provider": "project.generated-couriers",
+    "revision": 0,
+    "seed": 5318087094851105804,
+    "station": {
+      "galaxy": 0,
+      "stationClass": "main-orbital",
+      "system": 0
+    },
+    "title": "Courier jobs / PROJECT ESTIMATES",
+    "version": "1.0.0"
+  },
+  "calendarSeconds": 12.5,
+  "instance": {
+    "acknowledgedEvents": [],
+    "acknowledgedThrough": 1,
+    "contract": {
+      "acceptedAt": 12.5,
+      "boardKey": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369/courier-jobs/main-orbital:0:0",
+      "boardRevision": 0,
+      "clock": "missionCalendar",
+      "deadline": 172812.5,
+      "deadlinePolicy": "inclusiveConfirmation",
+      "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+      "group": "project.generated-couriers/g02-courier",
+      "offer": {
+        "briefing": "PROJECT ESTIMATES. Carry this unique consignment to EDINSO main orbital station and confirm the Courier Receiving Officer handoff. Reopening keeps these offers. A later scheduled refresh may list new jobs.",
+        "courier": {
+          "calendarLowerBoundSeconds": 9816.000000000002,
+          "capabilities": [
+            "contracts-basic-v2",
+            "courier-contracts-basic-v2",
+            "durable-commands-v2",
+            "mission-calendar-v2",
+            "story-v2"
+          ],
+          "declaration": {
+            "abandonContact": "courier-abandon",
+            "deliveryContact": "courier-delivery",
+            "generatorRevision": 1,
+            "profile": "PROJECT-SPACE-G02-1"
+          },
+          "generation": {
+            "draws": [
+              898330452,
+              1415163876,
+              1426520566,
+              3442991530,
+              290823243,
+              4182313349
+            ],
+            "finalState": 4182313349,
+            "indices": [
+              3,
+              6,
+              6,
+              15,
+              1,
+              18
+            ],
+            "initialState": 1295021068,
+            "origin": {
+              "galaxy": 0,
+              "stationClass": "main-orbital",
+              "system": 0
+            },
+            "paths": [
+              [
+                0,
+                19
+              ],
+              [
+                0,
+                75,
+                95,
+                24
+              ],
+              [
+                0,
+                19,
+                27
+              ],
+              [
+                0,
+                71,
+                53,
+                38
+              ],
+              [
+                0,
+                19,
+                27,
+                39
+              ],
+              [
+                0,
+                71,
+                53
+              ],
+              [
+                0,
+                71
+              ],
+              [
+                0,
+                19,
+                72
+              ],
+              [
+                0,
+                75
+              ],
+              [
+                0,
+                75,
+                95
+              ],
+              [
+                0,
+                19,
+                193,
+                147
+              ],
+              [
+                0,
+                19,
+                27,
+                155
+              ],
+              [
+                0,
+                19,
+                165
+              ],
+              [
+                0,
+                71,
+                53,
+                173
+              ],
+              [
+                0,
+                19,
+                27,
+                192
+              ],
+              [
+                0,
+                19,
+                193
+              ],
+              [
+                0,
+                71,
+                53,
+                235
+              ],
+              [
+                0,
+                19,
+                239
+              ],
+              [
+                0,
+                75,
+                95,
+                245
+              ]
+            ],
+            "reach": {
+              "capacity": 70,
+              "firstReach": 7,
+              "fuel": 70,
+              "hull": "SH023",
+              "jumpCap": 7,
+              "revision": "elite-880d3a-native-reach-v1",
+              "storage": 0
+            },
+            "revision": 1
+          },
+          "row": 1
+        },
+        "deposit": 0,
+        "destinationGalaxy": 0,
+        "destinationSystem": 71,
+        "duration": 172800,
+        "failureReward": 0,
+        "id": "70307AE4-B576-E769-C614-CD429B7D7D2F",
+        "key": "package-1",
+        "parameters": {
+          "difficulty": 1,
+          "variant": "package"
+        },
+        "refundOnFailure": false,
+        "reward": 8000,
+        "status": {
+          "available": {}
+        },
+        "title": "Difficulty 1 - Sealed package to EDINSO"
+      },
+      "provider": "project.generated-couriers",
+      "settled": false,
+      "station": {
+        "galaxy": 0,
+        "stationClass": "main-orbital",
+        "system": 0
+      },
+      "version": "1.0.0"
+    },
+    "courier": {
+      "issue": {
+        "clock": 12.5,
+        "epoch": "20000000-0000-0000-0000-000000000001",
+        "revision": 0,
+        "sequence": 1,
+        "station": {
+          "galaxy": 0,
+          "stationClass": "main-orbital",
+          "system": 0
+        },
+        "token": "10000000-0000-0000-0000-000000000001"
+      },
+      "item": "193D7594-A8EB-3159-3400-BB449B2714A0"
+    },
+    "data": {},
+    "definition": "project.generated-couriers/courier",
+    "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+    "id": "47D441D2-0FFB-00E1-0258-A8662DEBA84B",
+    "journal": [
+      "Collected one identified courier consignment. Native mission-time deadline started."
+    ],
+    "milestones": [
+      0
+    ],
+    "outcome": "active",
+    "payloads": {
+      "courier-consignment": 1
+    },
+    "randomState": 5318087094851105804,
+    "receiptJoins": {},
+    "receipts": [
+      "issue-consignment"
+    ],
+    "revision": 1,
+    "timers": {},
+    "version": "1.0.0"
+  },
+  "nextEvent": 1,
+  "provenance": {
+    "historicalSourceCommit": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+    "historicalSourceSHA256": {
+      "ScriptCalendarState.swift": "b27f46c7ea117cacef9828b80fcded3b1a9eed7c7bca0bac441f88130341b5d0",
+      "ScriptContractCore.swift": "fa0ffac14f1c09fc3a2ac398c1e75d142a448f851081923024050be38953313b",
+      "ScriptContractState.swift": "bfa4bc3584bd7553ae565323f69b4d77a48b0e6a8f0d2fb0b81f57717e76a4b7",
+      "ScriptCourierGeneration.swift": "29f2f02c1f95b9b95a488769eea9e3409432c5b6ded443d8919127687986ad4b",
+      "ScriptCourierState.swift": "52e1820b034bf58bd45b24134cdf8197b9e9d311153dd7d01bc7affdfb9be6e4",
+      "ScriptIdentity.swift": "da767c593d920b68a060cef8dd259d68e8405dfc3e268294c0f591ba289148cc",
+      "Universe.swift": "ebb57698aa8db1ddc8fa33bc3fd436419faaa7e883ef70b86d0563ddd4ee4344"
+    },
+    "integratedSourceCommit": "d12311d8fca20277aefc150f487acafb7377b0e4",
+    "kind": "independent-version-pinned-v1-golden-vector",
+    "nativeAnchor": "CourierNativeFixture.rows row 1 and preserved 51615ee-fixture-provenance.json",
+    "nativeAnchorCommit": "51615ee",
+    "note": "Source-only historical transcription, not a native captured save. Acceptance time/token/epoch are explicit fixed inputs permitted by the pinned protocol. No current v2 board generation or revision substitution."
+  }
+}

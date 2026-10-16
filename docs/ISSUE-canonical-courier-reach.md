@@ -29,7 +29,13 @@ before compilation. No shared heavy validation lease was used.
 The staged regression group is `ScriptCourierCanonicalReachTests`: five methods
 and seven declared cases covering actual purchased navigation and recovered drive
 upgrades, efficient first and later legs, retained stock navigation refitting,
-legacy board reload without rerolling, an admitted grandfathered Military
-zero-cost save, and malformed versioned facts. Source
+independently pinned v1 board and accepted package reload without rerolling,
+an admitted grandfathered Military zero-cost save, and malformed versioned facts. Source
 formatting and whitespace checks passed. Composed focused tests and `make ci`
 remain required before publication.
+
+The v1 compatibility fixture is immutable historical-source golden data, not a
+current v2 board rewritten to claim v1. It preserves the board, accepted job,
+absolute deadline, protected consignment and issue receipt through actual native
+load, a legitimate retained stock navigation refit and format-21 reload. Its
+provenance and original native anchors are recorded beside the JSON fixture.

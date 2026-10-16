@@ -165,45 +165,70 @@ struct ScriptCourierCanonicalReachTests {
     #expect(game.commander == before)
   }
 
-  @Test func v1FrozenBoardReloadKeepsOriginalDrawsRoutesRewardsAndDeadlines() throws {
+  @Test func v1GoldenBoardAndAcceptedPackageSurviveCanonicalLoadRefitAndReload() async throws {
     let fixture = try CourierFixture()
     defer { fixture.clean() }
-    let origin = try #require(Universe.galaxy().first { $0.technology >= 10 }?.id)
-    var game = fixture.game(system: origin)
-    let (key, _) = try fixture.offer(&game)
-    let current = try #require(game.commander.contracts.boards[key])
-    func legacy(_ value: Any) -> Any {
-      if let values = value as? [Any] { return values.map(legacy) }
-      guard var object = value as? [String: Any] else { return value }
-      if object["revision"] as? String == "elite-canonical-native-reach-v2" {
-        object["revision"] = "elite-880d3a-native-reach-v1"
-        object.removeValue(forKey: "jumpFuelMultiplier")
-        object.removeValue(forKey: "fullTankReach")
-      }
-      return object.mapValues(legacy)
+    struct Golden: Decodable {
+      let board: ScriptContractBoard
+      let instance: ScriptInstance
+      let calendarSeconds: Double
+      let nextEvent: UInt64
     }
-    let old = try JSONDecoder().decode(
-      ScriptContractBoard.self,
-      from: JSONSerialization.data(
-        withJSONObject: legacy(JSONSerialization.jsonObject(with: JSONEncoder().encode(current)))))
-    #expect(old.valid && old.courierGeneration?.reach.jumpFuelMultiplier == nil)
-    #expect(old.courierGeneration?.draws == current.courierGeneration?.draws)
-    #expect(old.courierGeneration?.paths == current.courierGeneration?.paths)
-    #expect(old.offers.map(\.id) == current.offers.map(\.id))
-    #expect(old.offers.map(\.reward) == current.offers.map(\.reward))
-    #expect(old.offers.map(\.duration) == current.offers.map(\.duration))
-    game.commander.contracts.boards[key] = old
-    let navigation = try #require(
-      Equipment.all.first { $0.name == NavigationTier.advanced.equipmentName })
-    _ = try game.applyEquipmentPurchase(game.quoteEquipmentPurchase(navigation))
-    #expect(game.commander.jumpCap > old.courierGeneration!.reach.jumpCap)
-    #expect(game.commander.contracts.boards[key] == old && old.valid)
+    let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().appendingPathComponent("Fixtures/courier-native-reach-v1.json")
+    let bytes = try Data(contentsOf: url)
+    try #require(
+      ScriptPackLibrary.hash(bytes)
+        == "299c143f9ddc937641da1345d69809bc000acff2a57a6a22c72649e13c6c8c93")
+    let golden = try JSONDecoder().decode(Golden.self, from: bytes)
+    let key = golden.board.cacheKey
+    let id = golden.instance.id
+    let job = try #require(golden.instance.contract)
+    try #require(golden.board.valid && job.valid)
+    #expect(golden.board.seed == 5_318_087_094_851_105_804)
+    #expect(
+      golden.board.courierGeneration?.draws
+        == [898_330_452, 1_415_163_876, 1_426_520_566, 3_442_991_530, 290_823_243, 4_182_313_349])
+    #expect(job.offer.courier?.path == [0, 71] && job.offer.reward == 8000)
+    #expect(job.acceptedAt == 12.5 && job.deadline == 172_812.5 && !job.settled)
+    #expect(id.uuidString == "47D441D2-0FFB-00E1-0258-A8662DEBA84B")
+    #expect(golden.instance.courier?.item.uuidString == "193D7594-A8EB-3159-3400-BB449B2714A0")
+    #expect(golden.instance.receipts == ["issue-consignment"])
+    #expect(golden.instance.payloads == ["courier-consignment": 1])
+    #expect(golden.instance.courier?.terminal == nil && golden.instance.completionReceipt == nil)
+    let prepared = try canonicalCourierGame(fixture, axis: .jumpReach)
+    var game = prepared.0
+    game.commander.system = golden.board.station.system
+    game.commander.contracts.boards[key] = golden.board
+    game.commander.scriptState.instances[id] = golden.instance
+    game.commander.scriptState.calendarSeconds = golden.calendarSeconds
+    game.commander.scriptState.missionCalendar?.seconds = golden.calendarSeconds
+    game.commander.scriptState.nextEvent = golden.nextEvent
+    try #require(game.commander.valid)
+    #expect(game.commander.jumpCap > golden.board.courierGeneration!.reach.jumpCap)
     try GameRuntime.writeCommander(&game, to: fixture.save)
-    let (loaded, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
-    #expect(loaded.contracts.boards[key] == old)
-    #expect(loaded.contracts.boards[key]?.courierGeneration?.valid == true)
+    let runtime = GameRuntime(game: game, saveURL: fixture.save)
+    try await runtime.load(from: fixture.save)
+    let admitted = await runtime.snapshot()
+    #expect(admitted.commander.valid && admitted.commander.contracts.boards[key] == golden.board)
+    #expect(admitted.commander.scriptState.instances[id] == golden.instance)
+    let loaded = game.load(admitted.commander)
+    try #require(loaded)
+    let stock = try #require(game.commander.equipmentInventory?.items.first { $0.id == prepared.1 })
+    try game.fitEquipment(
+      stock, at: .navigation, expectedRevision: game.commander.equipmentInventory!.revision)
+    #expect(game.commander.fittedEquipment(at: .navigation)?.id == stock.id)
+    #expect(game.commander.contracts.boards[key] == golden.board)
+    #expect(game.commander.scriptState.instances[id] == golden.instance)
+    try GameRuntime.writeCommander(&game, to: fixture.save)
+    let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
+    #expect(saved.valid && saved.contracts.boards[key] == golden.board)
+    #expect(saved.scriptState.instances[id] == golden.instance)
+    #expect(saved.scriptState.instances[id]?.courier?.issue == golden.instance.courier?.issue)
+    #expect(saved.scriptState.instances[id]?.contract?.deadline == 172_812.5)
     #expect(try game.ensureContractBoard(fixture.pack) == key)
-    #expect(game.commander.contracts.boards[key] == old)
+    #expect(game.commander.contracts.boards[key] == golden.board)
+    #expect(game.commander.scriptState.instances.count == 1)
   }
 
   @Test func reachVersionsRefuseMissingMixedUnknownAndIncoherentFacts() throws {
