@@ -16,7 +16,7 @@ struct NativeMissionFrameTests {
     let pack = try ScriptPackLibrary.read(directory)
     let definition = try #require(pack.manifest.npcs?.first)
     let identity = UUID()
-    var npc = game.makeScriptNPC(definition, pack: pack, identity: identity)
+    var npc = try game.makeScriptNPC(definition, pack: pack, identity: identity)
     npc.velocity = .init(13, -7, 31)
     try #require(npc.valid)
     var body = SpaceBody(id: 90, hull: .cobra, position: .init(500, 100, 4000))
