@@ -223,7 +223,7 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
     game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.actors["lead"]?.body
       .position)
   #expect(abs(canonical.z - oldCanonical.z) <= 6.01)  // Existing classic NPC actually advances at 60 units/s.
-  game.restoreScriptActors()
+  try game.restoreScriptActors()
   #expect(game.bodies.filter { $0.id == 0 }.count == 1)
   #expect(game.bodies.filter { $0.missionActorID == lead.missionActorID }.count == 1)
 }
