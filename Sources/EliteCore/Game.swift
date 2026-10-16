@@ -345,6 +345,7 @@ public struct Game: Sendable {
   public var rearShield = 255.0
   public var laserHeat = 0.0
   public var laserFlash = 0.0
+  public var dischargeAudio = DischargeAudioState()
   public var altitude = 1.0
   public var celestials: [CelestialBody] = []
   public var solarScoopState: SolarScoopState = .inactive
@@ -449,6 +450,7 @@ public struct Game: Sendable {
     missionSpawnDelay = 0
     ecmFrames = 0
     ecmControl = ECMControl()
+    dischargeAudio = DischargeAudioState()
     retaliation.clear()
     weaponsTargetID = nil
     missileCooldown = 0
