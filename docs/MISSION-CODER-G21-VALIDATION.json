@@ -3,7 +3,7 @@
   "assignment": "G21 native station pledge prerequisite and one six-offer project family",
   "engine_packet_base": "ea87bc57083926349a45f5a22694b25250705fac",
   "source_test_checkpoint": "1353a6b07e70ac60aeef87c9ede0c933194890df",
-  "status": "Core and native acceptance passed; source-owner review, actual media/refreeze and final canonical gates pending",
+  "status": "Prior-source core/native acceptance retained. Approved raw legacy loader correction and eight downgrade/legacy cases authored but uncompiled/unexecuted; owner review and future gates pending.",
   "canonical_make_ci_passed": false,
   "checkout": "/Users/sclarke/.codex/worktrees/mission-station-pledges/elite",
   "lanes": {
@@ -43,8 +43,8 @@
           "8.623"
         ]
       ],
-      "production_inputs_match_latest": true,
-      "case_invocations": 44
+      "case_invocations": 44,
+      "production_matches_recorded_acceptance_checkpoint": true
     },
     "core": {
       "command": [
@@ -84,8 +84,8 @@
           "20.172"
         ]
       ],
-      "production_inputs_match_latest": true,
-      "case_invocations": 166
+      "case_invocations": 166,
+      "production_matches_recorded_acceptance_checkpoint": true
     },
     "native": {
       "command": [
@@ -123,8 +123,8 @@
           "11.302"
         ]
       ],
-      "production_inputs_match_latest": true,
-      "case_invocations": 21
+      "case_invocations": 21,
+      "production_matches_recorded_acceptance_checkpoint": true
     },
     "native-stale": {
       "command": [
@@ -162,8 +162,8 @@
           "8.352"
         ]
       ],
-      "production_inputs_match_latest": true,
-      "case_invocations": 1
+      "case_invocations": 1,
+      "production_matches_recorded_acceptance_checkpoint": true
     }
   },
   "original_renderer_images": [
@@ -1189,11 +1189,17 @@
   "consistency_limits": "Typed receipt/marker/standing validation checks retained internal consistency, not authenticity against coordinated rewrite/removal of all related evidence. Current Food native sellable equals raw Food; separate schema1/schema2 payload and passenger hold do not substitute for ordinary Food.",
   "pending_gates": [
     "Researcher exact-diff source review through Orchestrator",
-    "Source policy for new pledge evidence in raw unversioned Commander files",
+    "Execute approved raw legacy loader guard regression and relevant acceptance on corrected source",
     "Actual make ships/readme-media and immutable media/source refreeze",
     "Uninterrupted canonical make ci, exact coverage/sanitizer/leak evidence",
     "Central integration and final-head required checks",
     "Eventual actual @codex review/fix/re-review until clean before central merge"
   ],
-  "renderer_capture_checkpoint": "d5a0c3aa28e7cfcee7da05aa2142fe24f5a4c039"
+  "renderer_capture_checkpoint": "d5a0c3aa28e7cfcee7da05aa2142fe24f5a4c039",
+  "unvalidated_source_correction": {
+    "scope": "GameRuntime.load raw Commander branch only, after decode before original/migrations/candidate.load",
+    "guard": "ledger nil and every instance receipt marker nil; otherwise invalidCommander",
+    "tests": "6 genuine raw-downgrade shapes/migration-mode cases plus2 genuine legacy neither-data modes; versioned/missing-content/trusted-memory positives",
+    "execution": "None; G1 lease active"
+  }
 }

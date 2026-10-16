@@ -1608,6 +1608,10 @@ public actor GameRuntime {
       throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
+    // Native pledge evidence belongs to versioned missions chunks.
+    guard commander.scriptState.pledgeLedger == nil,
+      commander.scriptState.instances.values.allSatisfy({ $0.pledgeReceiptID == nil })
+    else { throw SaveError.invalidCommander }
     let original = commander
     commander.migrateLegacyPassengerMarker()
     var candidate = game

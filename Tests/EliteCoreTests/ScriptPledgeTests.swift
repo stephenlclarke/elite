@@ -149,7 +149,8 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
     }
   }
   var synthetic = fixture.game(system: 256)
-  synthetic.commander.plughDiscoveryMask = 1  // A valid previously discovered native host-site fixture.
+  // A valid previously discovered native host-site fixture.
+  synthetic.commander.plughDiscoveryMask = 1
   #expect(synthetic.commander.valid)
   #expect(throws: MissionPackError.self) { try synthetic.ensureContractBoard(fixture.pack) }
   synthetic.openContractBoard()
@@ -683,4 +684,97 @@ func pledgeClosedDeclarationAndGeneratedTermsRefuseUnsupportedAuthority(mode: St
   #expect(
     await missing.snapshot().commander.scriptState.pledgeLedger?.receipt(instance: id)
       == ledger.receipt(instance: id))
+}
+
+struct PledgeRawLoadCase: Sendable {
+  let shape: String
+  let persistMigrations: Bool
+  static let cases = ["both", "ledger-only", "marker-only"].flatMap { shape in
+    [false, true].map { PledgeRawLoadCase(shape: shape, persistMigrations: $0) }
+  }
+}
+
+@Test(arguments: PledgeRawLoadCase.cases)
+func pledgeRawLegacyEvidenceRefusesBeforeChangingLiveContext(testcase: PledgeRawLoadCase)
+  async throws
+{
+  let fixture = try PledgeFixture()
+  defer { fixture.clean() }
+  var donated = fixture.game()
+  let (board, offer) = try fixture.offer(&donated)
+  let id = try donated.confirmContract(
+    donated.contractAcceptanceQuote(board: board, offer: offer.id))
+  #expect(
+    donated.commander.valid && donated.commander.scriptState.instances[id]?.outcome == .complete)
+  var raw = donated.commander
+  if testcase.shape == "ledger-only" { raw.scriptState.instances[id]?.pledgeReceiptID = nil }
+  if testcase.shape == "marker-only" { raw.scriptState.pledgeLedger = nil }
+  let bytes = try JSONEncoder().encode(raw)
+  let input = fixture.directory.appendingPathComponent("raw-downgrade.json")
+  try bytes.write(to: input)
+  if testcase.shape == "both" {
+    let decoded = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: bytes)
+    #expect(decoded.valid)  // A genuine native donation, not a malformed-Commander rejection.
+    var trusted = fixture.game()
+    let loaded = trusted.load(decoded)
+    #expect(
+      loaded
+        && trusted.commander.scriptState.pledgeLedger == donated.commander.scriptState.pledgeLedger)
+  }
+  var live = fixture.game(cash: 34321, food: 2)
+  live.commander.name = "LIVE OWNER"
+  live.openContractBoard()
+  live.contractBoardKey("return")
+  let runtime = GameRuntime(game: live, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  let before = await runtime.snapshot()
+  let world = try ScriptValueStorage.encoder().encode(before.scriptWorldSave)
+  let pointer = try Data(contentsOf: fixture.save)
+  let target = await runtime.scriptSaveURL
+  await #expect(throws: SaveError.self) {
+    try await runtime.load(from: input, persistMigrations: testcase.persistMigrations)
+  }
+  let after = await runtime.snapshot()
+  let afterWorld = try ScriptValueStorage.encoder().encode(after.scriptWorldSave)
+  #expect(after.commander == before.commander && afterWorld == world)
+  #expect(after.screen == before.screen && after.ecmControl.epoch == before.ecmControl.epoch)
+  #expect(after.scriptPagePresentation == before.scriptPagePresentation)
+  #expect(await runtime.scriptSaveURL == target)
+  #expect(try Data(contentsOf: input) == bytes)
+  #expect(try Data(contentsOf: fixture.save) == pointer)
+  // The same genuine pledge still loads through its required versioned chunked save.
+  let versioned = fixture.directory.appendingPathComponent("versioned-pledge.json")
+  try GameRuntime.writeCommander(&donated, to: versioned)
+  let missing = GameRuntime(game: Game(executive: false))
+  try await missing.load(from: versioned, persistMigrations: testcase.persistMigrations)
+  #expect(
+    await missing.snapshot().commander.scriptState.pledgeLedger
+      == donated.commander.scriptState.pledgeLedger)
+  #expect(
+    await missing.snapshot().commander.scriptState.instances[id]?.pledgeReceiptID
+      == donated.commander.scriptState.instances[id]?.pledgeReceiptID)
+}
+
+@Test(arguments: [false, true])
+func pledgeRawLegacyWithoutNativeEvidenceStillLoadsWithoutInventedStanding(persistMigrations: Bool)
+  async throws
+{
+  let fixture = try PledgeFixture()
+  defer { fixture.clean() }
+  var legacy = Commander()
+  legacy.name = "OLD OWNER"
+  legacy.credits = 12345
+  legacy.cargo[Game.pledgeFood] = 1
+  let bytes = try JSONEncoder().encode(legacy)
+  let input = fixture.directory.appendingPathComponent("genuine-legacy.json")
+  try bytes.write(to: input)
+  let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+  try await runtime.load(from: input, persistMigrations: persistMigrations)
+  let loaded = await runtime.snapshot()
+  #expect(loaded.commander.name == legacy.name && loaded.commander.credits == legacy.credits)
+  #expect(
+    loaded.commander.cargo == legacy.cargo && loaded.commander.scriptState.pledgeLedger == nil)
+  #expect(loaded.commander.scriptState.instances.values.allSatisfy { $0.pledgeReceiptID == nil })
+  #expect(await runtime.scriptSaveURL == input)
+  if !persistMigrations { #expect(try Data(contentsOf: input) == bytes) }
 }
