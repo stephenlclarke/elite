@@ -22,16 +22,16 @@ extension Game {
     let priorities = Dictionary(
       scriptPacks.map { ($0.manifest.stateID + "@" + $0.digest, $0.manifest.priority) },
       uniquingKeysWith: { first, _ in first })
-    return commander.scriptState.instances.keys.sorted { a, b in
-      let left = commander.scriptState.instances[a]!
-      let right = commander.scriptState.instances[b]!
-      return (
-        priorities[left.definition + "@" + left.digest] ?? 1001, left.definition, a.uuidString
+    let order = commander.scriptState.instances.map { id, instance in
+      (
+        id: id, priority: priorities[instance.definition + "@" + instance.digest] ?? 1001,
+        definition: instance.definition, identity: id.uuidString
       )
-        < (
-          priorities[right.definition + "@" + right.digest] ?? 1001, right.definition, b.uuidString
-        )
     }
+    return order.sorted { left, right in
+      (left.priority, left.definition, left.identity)
+        < (right.priority, right.definition, right.identity)
+    }.map { $0.id }
   }
   mutating func observeScriptLocation(wasDocked: Bool, galaxy: Int, system: Int) {
     if galaxy != commander.galaxy || system != commander.system {
