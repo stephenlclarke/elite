@@ -235,8 +235,9 @@ struct ScriptCourierCanonicalReachTests {
     let fixture = try CourierFixture()
     defer { fixture.clean() }
     let reach = ScriptCourierReach(fixture.game().commander)
-    let object = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(reach)) as? [String: Any])
+    let encodedReach = try JSONEncoder().encode(reach)
+    let rawReach = try JSONSerialization.jsonObject(with: encodedReach)
+    let object = try #require(rawReach as? [String: Any])
     func decode(_ changed: [String: Any]) throws -> ScriptCourierReach {
       try JSONDecoder().decode(
         ScriptCourierReach.self, from: JSONSerialization.data(withJSONObject: changed))
