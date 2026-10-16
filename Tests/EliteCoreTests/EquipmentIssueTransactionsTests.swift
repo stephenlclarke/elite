@@ -23,7 +23,7 @@ private func issueBudget(capacity: Int = 100, occupied: Int = 0) -> EquipmentFit
       uniqueKeysWithValues: EquipmentRuntimeCatalog.graph.nodes.map {
         let node = $0.id
         let cost: Int
-        if $0.policy == .standardFoundation || node.family == EquipmentRuntimeCatalog.laserFamily
+        if node.family == EquipmentRuntimeCatalog.laserFamily
           || node.family.rawValue == "ammunition"
         {
           cost = 0
@@ -489,6 +489,93 @@ struct EquipmentIssueTransactionsTests {
         inventory: issued.inventory, context: context, obligations: [obligation],
         budget: budgetBlocked)
     }
+  }
+
+  @Test func targetingTierDowngradeRefusesAdmissionAndRefitWhileEqualTierReplacementIsAllowed()
+    throws
+  {
+    let context = try issueContext()
+    let military = try #require(EquipmentRuntimeCatalog.node(for: "Targeting: Military"))
+    let location = ComponentFittingLocation(hullInstanceID: issueHull, slot: .targetingCore)
+    let current = OwnedEquipmentItem(
+      id: issueUUID(70), node: military,
+      provenance: .grant("personal military core"), location: location)
+    let inventory = try OwnedEquipmentInventory(
+      owner: issueOwner, activeHull: issueHull, items: [current])
+    let basic = try issueRequest(
+      "Targeting: Basic",
+      fitting: .fitAll([
+        .init(item: issueUUID(100), location: location, replacing: current)
+      ]))
+    #expect(throws: EquipmentIssueError.unsupportedReplacement) {
+      try issueAdmit(basic, inventory: inventory, context: context)
+    }
+    let heldRequest = try issueRequest("Targeting: Basic")
+    let heldResult = try issueAdmit(heldRequest, inventory: inventory, context: context)
+    let obligation = issueObligation(heldRequest)
+    let held = try #require(heldResult.inventory.items.first { $0.id == issueUUID(100) })
+    let before = heldResult.inventory
+    #expect(throws: EquipmentIssueError.unsupportedReplacement) {
+      try EquipmentIssueTransactions.quoteFitting(
+        command: issueUUID(71), obligation: obligation,
+        item: held, destination: location, replacing: current, inventory: before,
+        context: context, obligations: [obligation], budget: issueBudget())
+    }
+    #expect(heldResult.inventory == before && inventory.items == [current])
+    let equal = try issueRequest(
+      "Targeting: Military",
+      fitting: .fitAll([
+        .init(item: issueUUID(100), location: location, replacing: current)
+      ]))
+    let replacement = try issueAdmit(equal, inventory: inventory, context: context)
+    #expect(replacement.inventory.items.first { $0.id == issueUUID(100) }?.location == location)
+    #expect(replacement.inventory.items.first { $0.id == current.id }?.location == nil)
+  }
+
+  @Test func onlyActualFittedStandardFoundationsAreFreeAndHeldDevicesDoNotSpendFitBudget() throws {
+    let context = try issueContext()
+    let node = try #require(EquipmentRuntimeCatalog.node(for: "Navigation: Basic"))
+    let location = ComponentFittingLocation(hullInstanceID: issueHull, slot: .navigation)
+    let standard = OwnedEquipmentItem(
+      id: issueUUID(72), node: node, provenance: .standard,
+      component: EquipmentRuntimeCatalog.stockComponent(for: node, id: issueUUID(72)),
+      location: location)
+    let inventory = try OwnedEquipmentInventory(
+      owner: issueOwner, activeHull: issueHull, items: [standard])
+    let heldRequest = try issueRequest("Targeting: Basic")
+    let heldResult = try issueAdmit(
+      heldRequest, inventory: inventory,
+      context: context, budget: issueBudget(capacity: 0))
+    #expect(heldResult.inventory.items.count == 2)
+    #expect(heldResult.inventory.items.first { $0.id == issueUUID(100) }?.location == nil)
+    let mission = try issueRequest(
+      "Navigation: Basic",
+      fitting: .fitAll([
+        .init(item: issueUUID(100), location: location, replacing: standard)
+      ]))
+    #expect(throws: EquipmentIssueError.invalidBudget) {
+      try issueAdmit(
+        mission, inventory: inventory, context: context, budget: issueBudget(capacity: 0))
+    }
+    #expect(inventory.items == [standard] && inventory.revision == 0)
+    let charged = try issueAdmit(
+      mission, inventory: inventory,
+      context: context, budget: issueBudget(capacity: 1))
+    #expect(charged.inventory.items.first { $0.id == issueUUID(100) }?.location == location)
+    let basicTargeting = try #require(EquipmentRuntimeCatalog.node(for: "Targeting: Basic"))
+    let purchased = OwnedEquipmentItem(
+      id: issueUUID(73), node: basicTargeting,
+      provenance: .paid(owner: issueOwner, transaction: issueUUID(74)),
+      location: .init(hullInstanceID: issueHull, slot: .targetingCore))
+    let paidInventory = try OwnedEquipmentInventory(
+      owner: issueOwner, activeHull: issueHull,
+      items: [standard, purchased])
+    #expect(throws: EquipmentIssueError.invalidBudget) {
+      try issueAdmit(
+        try issueRequest("Fuel Scoops"), inventory: paidInventory,
+        context: context, budget: issueBudget(capacity: 0))
+    }
+    #expect(paidInventory.items == [standard, purchased] && paidInventory.revision == 0)
   }
 
 }

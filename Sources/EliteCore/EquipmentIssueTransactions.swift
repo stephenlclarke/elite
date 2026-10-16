@@ -252,6 +252,24 @@ public enum EquipmentIssueTransactions {
           index: index, packDigest: obligation.source.packDigest)
   }
 
+  /// Only the three native basic foundations are intrinsic equipment-capacity exemptions.
+  /// Acquisition provenance and actual fitted slot matter even when node identities match.
+  public static func isIntrinsicFoundation(_ item: OwnedEquipmentItem) -> Bool {
+    guard item.provenance == .standard,
+      EquipmentRuntimeCatalog.graph.nodes.contains(where: {
+        $0.id == item.node && $0.policy == .standardFoundation
+      }), let slot = item.location?.slot
+    else { return false }
+    switch (item.node.family, slot) {
+    case (EquipmentPurchaseCatalog.shields, .shield),
+      (EquipmentPurchaseCatalog.energy, .energy),
+      (EquipmentPurchaseCatalog.navigation, .navigation):
+      return true
+    default:
+      return false
+    }
+  }
+
   private static func validateBudget(
     _ budget: EquipmentFitBudgetSnapshot,
     items: [OwnedEquipmentItem]
@@ -262,6 +280,7 @@ public enum EquipmentIssueTransactions {
     else { throw EquipmentIssueError.invalidBudget }
     var used = budget.reservedEquipmentUnits
     for item in items where item.location != nil {
+      if isIntrinsicFoundation(item) { continue }
       guard let cost = budget.nodeEquipmentUnits[item.node], cost <= budget.equipmentCapacity - used
       else { throw EquipmentIssueError.invalidBudget }
       used += cost
@@ -491,6 +510,14 @@ public enum EquipmentIssueTransactions {
       }
       if let before = actual.component, let after = item.component,
         EquipmentRuntimeCatalog.reducesStatistics(after, from: before)
+      {
+        throw EquipmentIssueError.unsupportedReplacement
+      }
+      if destination.slot == .targetingCore,
+        actual.node.family == EquipmentPurchaseCatalog.targeting,
+        item.node.family == EquipmentPurchaseCatalog.targeting,
+        let before = TargetingTier.from(actual.node.key),
+        let after = TargetingTier.from(item.node.key), after < before
       {
         throw EquipmentIssueError.unsupportedReplacement
       }
