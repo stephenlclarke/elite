@@ -305,21 +305,36 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
     worldJob: UUID? = nil, pulse: UInt64? = nil
   ) throws -> MissionActorAdmissionSource {
+    guard commander.scriptState.instances[state.id]?.ownedEncounters[encounter.id]?.admitted != true
+    else {
+      throw MissionPackError("An admitted retained cohort cannot become a fresh prepared source.")
+    }
+    let authority = try missionActorAdmissionAuthority(
+      pack: pack, state: state, encounterID: encounter.id,
+      galaxy: encounter.galaxy, system: encounter.system, worldJob: worldJob, pulse: pulse)
+    return try sealMissionActorAdmissionSource(
+      mode: .prepared, authority: authority, pack: pack, state: state, encounter: encounter)
+  }
+
+  private func missionActorAdmissionAuthority(
+    pack: ScriptPack, state: ScriptInstance, encounterID: String,
+    galaxy: Int, system: Int, worldJob: UUID?, pulse: UInt64?
+  ) throws -> MissionActorAdmissionAuthority {
     guard let stored = commander.scriptState.instances[state.id], stored.id == state.id,
       stored.definition == state.definition, stored.version == state.version,
       stored.digest == state.digest, stored.revision == state.revision
     else { throw MissionPackError("Prepared actors require the actual command candidate owner.") }
-    guard stored.ownedEncounters[encounter.id]?.admitted != true else {
-      throw MissionPackError("An admitted retained cohort cannot become a fresh prepared source.")
-    }
+    guard state.definition == pack.manifest.stateID, state.version == pack.manifest.version,
+      state.digest == pack.digest, scriptPack(for: stored)?.digest == pack.digest
+    else { throw MissionPackError("Prepared authority requires its exact installed content.") }
     let authority: MissionActorAdmissionAuthority
     if let worldJob, let pulse {
       guard let job = commander.scriptState.worldJobs[worldJob], job.identity == worldJob,
         job.origin == state.id, job.status == .active, job.suspension == nil,
         job.pending?.sequence == pulse, job.valid, worldJobOwnerAlive(job),
         pack.manifest.worldJobs?.contains(job.definition) == true,
-        job.definition.controlledEncounters?.contains(encounter.id) == true,
-        job.definition.galaxy == encounter.galaxy, job.definition.system == encounter.system
+        job.definition.controlledEncounters?.contains(encounterID) == true,
+        job.definition.galaxy == galaxy, job.definition.system == system
       else { throw MissionPackError("The actual pending world job must control this encounter.") }
       authority = .worldJob(identity: worldJob, pulse: pulse)
     } else {
@@ -329,8 +344,7 @@ extension Game {
       }
       authority = .missionHandler
     }
-    return try sealMissionActorAdmissionSource(
-      mode: .prepared, authority: authority, pack: pack, state: state, encounter: encounter)
+    return authority
   }
 
   private func sealMissionActorAdmissionSource(
@@ -586,6 +600,9 @@ extension Game {
       throw MissionPackError(
         "Declare the classic encounter capability and an exact encounter definition.")
     }
+    _ = try missionActorAdmissionAuthority(
+      pack: pack, state: state, encounterID: id, galaxy: definition.galaxy,
+      system: definition.system, worldJob: worldJobID, pulse: worldJobPulse)
     var plan = state.ownedEncounters[id]
     if plan == nil {
       var actors: [String: ScriptOwnedActor] = [:]
@@ -619,9 +636,9 @@ extension Game {
     func pending(_ reason: String) -> (String, [String: ScriptValue]) {
       ("encounter.pending", ["encounter_id": .string(id), "reason": .string(reason)])
     }
-    state.ownedEncounters[id] = encounter
     _ = try preparedMissionActorAdmissionSource(
       pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
+    state.ownedEncounters[id] = encounter
     guard !docked, definition.galaxy == commander.galaxy, definition.system == commander.system,
       let anchor = scriptAnchor
     else { return pending("Enter the declared system in flight with its main station available.") }
