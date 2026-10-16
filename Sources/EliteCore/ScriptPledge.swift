@@ -1,5 +1,12 @@
 import Foundation
 
+extension ScriptPledgeVariant {
+  func displayAmount(_ amount: Int) -> String {
+    if self == .credits { return String(format: "%.1f CR", Double(amount) / 10) }
+    return "\(amount) \(amount == 1 ? "tonne" : "tonnes") Food"
+  }
+}
+
 public struct ScriptPledgePreview: Sendable, Equatable {
   public let declaration: ScriptPledgeDefinition
   public let station: ContractStationIdentity
@@ -9,8 +16,7 @@ public struct ScriptPledgePreview: Sendable, Equatable {
   public let profileSeed: UInt32
   public let before: ScriptPledgeAssets
   public var charge: String {
-    variant == .credits
-      ? String(format: "%.1f CR", Double(amount) / 10) : "\(amount) tonnes Food"
+    variant.displayAmount(amount)
   }
   public var terms: [String] {
     let place = Universe.systemsIncludingPlugh(number: station.galaxy)[station.system].name
@@ -18,19 +24,19 @@ public struct ScriptPledgePreview: Sendable, Equatable {
     let afterFood = variant == .food ? before.food - amount : before.food
     return [
       declaration.title + " / local station standing",
-      "Provider: " + declaration.provider,
+      "Provider: " + declaration.title,
       "Issuer: Galaxy \(station.galaxy + 1), \(place) main orbital station.",
       "Difficulty \(difficulty) / \(variant.rawValue). Full pledge: \(charge).",
       String(format: "Real cash: %.1f CR.", Double(before.cash) / 10),
       "Food: \(before.food) tonnes aboard; \(before.unreservedFood) tonnes unreserved.",
       afterCash >= 0 && afterFood >= 0
-        ? String(
-          format: "After donation: %.1f CR; %d tonnes Food.", Double(afterCash) / 10, afterFood)
+        ? String(format: "After donation: %.1f CR; ", Double(afterCash) / 10)
+          + "\(ScriptPledgeVariant.food.displayAmount(afterFood))."
         : "Acquire the full required resource before donating. No partial pledge.",
       before.standing < 128
         ? "Local Station Aid standing: \(before.standing) -> \(before.standing + 1)."
         : "Local standing: \(before.standing). The retained record limit has been reached.",
-      "One full transfer, standing receipt and completion. No cash reward or deadline.",
+      "One complete donation raises local standing by one. No cash reward or deadline.",
       "Back changes nothing. Decline only consumes this offer.",
       "Amounts and standing are project estimates; no faction or trading privileges.",
     ]
@@ -215,9 +221,9 @@ extension Game {
     let station = Universe.systemsIncludingPlugh(number: receipt.creditedAt.galaxy)[
       receipt.creditedAt.system
     ].name
-    return "\n\nNative donation receipt: \(receipt.amount) \(receipt.unit)."
+    return "\n\nDonation: \(receipt.variant.displayAmount(receipt.amount))."
       + "\n\(receipt.declaration.title) / Galaxy \(receipt.creditedAt.galaxy + 1), \(station) main station."
-      + "\nLocal standing \(receipt.before.standing) -> \(receipt.after.standing); once-only receipt \(receipt.id)."
+      + "\nLocal standing \(receipt.before.standing) -> \(receipt.after.standing). Completed once."
   }
 }
 

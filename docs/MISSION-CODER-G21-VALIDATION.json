@@ -3,7 +3,7 @@
   "assignment": "G21 native station pledge prerequisite and one six-offer project family",
   "engine_packet_base": "ea87bc57083926349a45f5a22694b25250705fac",
   "source_test_checkpoint": "1353a6b07e70ac60aeef87c9ede0c933194890df",
-  "status": "Prior-source core/native acceptance retained. Approved raw legacy loader correction and eight downgrade/legacy cases authored but uncompiled/unexecuted; owner review and future gates pending.",
+  "status": "Prior core/native and raw-loader acceptance retained; owner-requested player prose and single Gallery header source corrections authored but uncompiled/unexecuted.",
   "canonical_make_ci_passed": false,
   "checkout": "/Users/sclarke/.codex/worktrees/mission-station-pledges/elite",
   "lanes": {
@@ -164,6 +164,44 @@
       ],
       "case_invocations": 1,
       "production_matches_recorded_acceptance_checkpoint": true
+    },
+    "raw-legacy": {
+      "command": [
+        "swift",
+        "test",
+        "--jobs",
+        "2",
+        "--filter",
+        "pledgeRawLegacy|pledgeOlderPointers|pledgeRehashedReceiptLink|pledgeMalformedReceipts|pledgeHullChanges|saveCodecMarkers|typedStorageKeeps|alteredOrLinkedContractChunks|wholeValuedFloatingData"
+      ],
+      "exit_code": 0,
+      "started_utc": "2026-10-16T00:54:56.989042+00:00",
+      "wall_seconds": 36.17267141700722,
+      "inputs_sha256": "4dc1e1e7f0390bce88ed1f7d0f04a2cdca54a4cb10d422c115953356d28da083",
+      "input_count": 787,
+      "changed_inputs": [],
+      "phases": [
+        {
+          "phase": "build",
+          "observed_wall_seconds": 27.48176712496206,
+          "exit_code": 0
+        },
+        {
+          "phase": "test",
+          "observed_wall_seconds": 8.586827834136784,
+          "exit_code": 0
+        }
+      ],
+      "checkpoint": "9b5fcf1e42922106adfda197e5a4bd0acb49a1fb",
+      "log_path": "reports/pledge-validation/raw-legacy.log",
+      "log_sha256": "f44c8cd32f069463c964a69f11f0cc4b6f31376558434782bd03a8b395d8ed32",
+      "test_runs": [
+        [
+          "10",
+          "8.232"
+        ]
+      ],
+      "case_invocations": 30
     }
   },
   "original_renderer_images": [
@@ -175,7 +213,8 @@
       ],
       "sha256": "1d00e8549663b514dbe9a4826576f050c3e65c1d9cfdb540fc40c3ca9c2ef3ac",
       "durable_path": "docs/pledge-validation/pledge-completed-receipt-1512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-completed-receipt-1512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-completed-receipt-512.png",
@@ -185,7 +224,8 @@
       ],
       "sha256": "36f64711acb93d46830b9758d2a0f840f92d5aaf58cd93b5989c247f6f880746",
       "durable_path": "docs/pledge-validation/pledge-completed-receipt-512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-completed-receipt-512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-completed-receipt-scrolled-1512.png",
@@ -195,7 +235,8 @@
       ],
       "sha256": "1d00e8549663b514dbe9a4826576f050c3e65c1d9cfdb540fc40c3ca9c2ef3ac",
       "durable_path": null,
-      "durable_byte_identical": null
+      "durable_byte_identical": null,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-completed-receipt-scrolled-1512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-completed-receipt-scrolled-512.png",
@@ -205,7 +246,8 @@
       ],
       "sha256": "43e405d66f7e3468e27faa8473628bdd9b793701172706bbda1fcd42a727de6b",
       "durable_path": "docs/pledge-validation/pledge-completed-receipt-scrolled-512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-completed-receipt-scrolled-512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-credit-review-1512.png",
@@ -215,7 +257,8 @@
       ],
       "sha256": "67bdbc4d37d363f07227901a8763b8fd0ddcc29238bf24f9d1df5d627d74a026",
       "durable_path": null,
-      "durable_byte_identical": null
+      "durable_byte_identical": null,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-credit-review-1512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-credit-review-512.png",
@@ -225,7 +268,8 @@
       ],
       "sha256": "09d4468d0de5a9802c0cc5c63194a7eb719dedbf8dc084afa61a4df70c0f82a8",
       "durable_path": "docs/pledge-validation/pledge-credit-review-512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-credit-review-512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-food-review-1512.png",
@@ -235,7 +279,8 @@
       ],
       "sha256": "0a57bcf4fb190773277dfd829e97d8d8b3e916523f93a214f9d29b85d16747a2",
       "durable_path": "docs/pledge-validation/pledge-food-review-1512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-food-review-1512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-food-review-512.png",
@@ -245,7 +290,8 @@
       ],
       "sha256": "f03695e0daaf3806705718d8f40e05bada2657e3272c20912cf9dacd2e8df56f",
       "durable_path": "docs/pledge-validation/pledge-food-review-512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-food-review-512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-trial-review-1512.png",
@@ -255,7 +301,8 @@
       ],
       "sha256": "f5c084dba16abd66e1bb7bbc39159f8abbb0d89218830a5a7fb66face933809c",
       "durable_path": null,
-      "durable_byte_identical": null
+      "durable_byte_identical": null,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-trial-review-1512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-trial-review-512.png",
@@ -265,7 +312,8 @@
       ],
       "sha256": "50fe85df2027ac9f408c067db2bb4e24f75a39ab52cee6a1d0cf5ac28bec1e52",
       "durable_path": "docs/pledge-validation/pledge-trial-review-512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-trial-review-512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-unavailable-food-1512.png",
@@ -275,7 +323,8 @@
       ],
       "sha256": "aec9b2277f7205031959375431288ced235402c0d0c2ae645db752b973987a4f",
       "durable_path": null,
-      "durable_byte_identical": null
+      "durable_byte_identical": null,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-unavailable-food-1512.png"
     },
     {
       "path": "reports/pledge-ui/pledge-unavailable-food-512.png",
@@ -285,7 +334,8 @@
       ],
       "sha256": "0832f1801bdd1c530b01752d4b76e3b1f38a27ae10714dfdd8515539c73a0f4d",
       "durable_path": "docs/pledge-validation/pledge-unavailable-food-512.png",
-      "durable_byte_identical": true
+      "durable_byte_identical": true,
+      "preserved_prior_path": "reports/pledge-ui-pre-presentation/pledge-unavailable-food-512.png"
     }
   ],
   "retained_prior_attempts": [
@@ -1189,7 +1239,7 @@
   "consistency_limits": "Typed receipt/marker/standing validation checks retained internal consistency, not authenticity against coordinated rewrite/removal of all related evidence. Current Food native sellable equals raw Food; separate schema1/schema2 payload and passenger hold do not substitute for ordinary Food.",
   "pending_gates": [
     "Researcher exact-diff source review through Orchestrator",
-    "Execute approved raw legacy loader guard regression and relevant acceptance on corrected source",
+    "Execute affected core/native presentation/header assertions and recapture corrected originals",
     "Actual make ships/readme-media and immutable media/source refreeze",
     "Uninterrupted canonical make ci, exact coverage/sanitizer/leak evidence",
     "Central integration and final-head required checks",
@@ -1197,9 +1247,9 @@
   ],
   "renderer_capture_checkpoint": "d5a0c3aa28e7cfcee7da05aa2142fe24f5a4c039",
   "unvalidated_source_correction": {
-    "scope": "GameRuntime.load raw Commander branch only, after decode before original/migrations/candidate.load",
-    "guard": "ledger nil and every instance receipt marker nil; otherwise invalidCommander",
-    "tests": "6 genuine raw-downgrade shapes/migration-mode cases plus2 genuine legacy neither-data modes; versioned/missing-content/trusted-memory positives",
-    "execution": "None; G1 lease active"
-  }
+    "scope": "Human player amount/provider/completion prose, authored pack briefing/journal; only Display.gallery header priority trial > active message > dock/flight status",
+    "tests": "Owned core exact native query provenance and finite stock formatting; owned native prose/opaque-ID/header-count/trial-priority assertions and fresh captures",
+    "execution": "None; previous images preserved before presentation fix"
+  },
+  "raw_legacy_guard_validated_checkpoint": "9b5fcf1e42922106adfda197e5a4bd0acb49a1fb"
 }

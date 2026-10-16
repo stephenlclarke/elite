@@ -90,6 +90,12 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
   let receipt = try #require(game.commander.scriptState.pledgeLedger?.receipt(instance: id))
   #expect(game.commander.valid && receipt.valid(engine: game.commander.scriptState))
   #expect(receipt.amount == amount && receipt.variant == scenario.variant)
+  let completedState = try #require(game.commander.scriptState.instances[id])
+  let query = game.pledgeQuery(completedState)
+  #expect(query["amount"]?.integer == Int64(amount) && query["unit"]?.string == receipt.unit)
+  #expect(
+    query["provider"]?.string == receipt.declaration.provider
+      && query["receipt"]?.string == receipt.id.uuidString)
   #expect(receipt.before.standing == 0 && receipt.after.standing == 1)
   #expect(game.commander.credits == before.credits - (scenario.variant == .credits ? amount : 0))
   #expect(
@@ -191,6 +197,16 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
   #expect(game.commander.cargo[Game.pledgeFood] == 0 && game.commander.credits == chargeBefore)
   #expect(game.commander.scriptState.instances[protectedID] == protected)
   #expect(game.commander.scriptState.payloadTonnes == before.scriptState.payloadTonnes)
+  let largeFood = Int(Int32.max) + 10
+  var stocked = fixture.game(food: largeFood)
+  stocked.commander.unlimitedCargo = true  // Finite native starting stock, not created by a pledge.
+  #expect(stocked.commander.valid)
+  let (largeBoard, largeOffer) = try fixture.offer(&stocked, variant: .food)
+  let largeQuote = stocked.contractAcceptanceQuote(board: largeBoard, offer: largeOffer.id)
+  #expect(largeQuote.allowed)
+  #expect(
+    largeQuote.pledge?.terms.contains { $0.contains("\(largeFood - 1) tonnes Food.") } == true)
+  #expect(stocked.commander.cargo[Game.pledgeFood] == largeFood)
 }
 
 @Test(arguments: [
@@ -673,7 +689,7 @@ func pledgeClosedDeclarationAndGeneratedTermsRefuseUnsupportedAuthority(mode: St
   #expect(restored.commander.scriptState.pledgeLedger == ledger)
   #expect(restored.commander.scriptState.instances[id]?.outcome == .complete)
   let row = try #require(restored.missionCatalogue.first { $0.savedInstance == id })
-  #expect(row.status == .complete && row.briefing.contains("Native donation receipt"))
+  #expect(row.status == .complete && row.briefing.contains("Donation: 500.0 CR."))
   let next = try await missing.generateContractBoard(packDigest: updated.pack.digest)
   let nextOffer = try #require(
     await missing.snapshot().commander.contracts.boards[next]?.offers.first)

@@ -6,12 +6,12 @@ return {
     local offers = {}
     for _, variant in ipairs({"credits", "food"}) do
       for tier = 1, 3 do
-        local charge = variant == "credits" and (credits[tier] .. " CR")
-          or (food[tier] .. " tonnes Food")
+        local charge = variant == "credits" and string.format("%.1f CR", credits[tier])
+          or (food[tier] .. (food[tier] == 1 and " tonne Food" or " tonnes Food"))
         offers[#offers + 1] = {
           key = variant .. "-" .. tier,
           title = "Station Aid / difficulty " .. tier .. " / " .. charge,
-          briefing = "Voluntarily donate " .. charge .. " in one complete native transfer."
+          briefing = "Voluntarily donate " .. charge .. " in one complete donation."
             .. " Receive one Station Aid standing point at this actual main orbital station."
             .. " No cash reward, journey or deadline. Back changes nothing."
             .. " Amounts and local standing are project estimates, not historical/server tuning.",
@@ -27,7 +27,7 @@ return {
   accepted = function(e, w, d)
     return {data = d, commands = {
       {op = "milestone.ensure", index = 0},
-      {op = "journal.append", text = "Confirmed the complete native Station Aid pledge. See its retained station standing receipt."},
+      {op = "journal.append", text = "Donation completed once. Station Aid standing increased at this main station."},
       {op = "pledge.commit"}
     }}
   end

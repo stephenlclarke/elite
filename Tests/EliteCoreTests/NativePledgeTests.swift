@@ -129,6 +129,10 @@ extension NativeViewTests {
         let before = harness.view.game.commander
         let quote = try #require(harness.view.game.contractBoard.quote)
         let pledge = try #require(quote.pledge)
+        let prose = Display.contractDetailRows(harness.view.game, width: 512).joined(separator: " ")
+        #expect(prose.contains(pledge.charge) && prose.contains("Provider: Station Aid"))
+        #expect(!prose.contains(harness.fixture.pack.manifest.id))
+        #expect(!prose.lowercased().contains("native") && !prose.contains("decicredits"))
         #expect(harness.view.game.contractBoard.action == .back)
         #expect(
           Display.contractBoard(harness.view.game, width: 512, height: 518).labels.contains {
@@ -322,12 +326,34 @@ extension NativeViewTests {
     let activeURL = harness.delegate.saves.activeURL
     await harness.delegate.runtime.key("gallery-open")
     let gallery = await harness.delegate.runtime.snapshot()
+    #expect(gallery.messageTime > 0)
+    for (width, height) in [(512.0, 518.0), (1512.0, 982.0)] {
+      let header = Display.gallery(gallery, width: width, height: height).labels.filter {
+        $0.y == 62
+      }
+      #expect(header.count == 1 && header.first?.text == gallery.message)
+      var quiet = gallery  // Presentation-only expired-message fixture.
+      quiet.messageTime = 0
+      let fallback = Display.gallery(quiet, width: width, height: height).labels.filter {
+        $0.y == 62
+      }
+      #expect(fallback.count == 1 && fallback.first?.text == "Docked - read-only catalogue")
+    }
     let savedIndex = try #require(
       gallery.missionCatalogue.firstIndex {
         $0.savedInstance != nil && $0.name.contains("Station Aid")
       })
     for _ in 0..<savedIndex { await harness.delegate.runtime.key("down") }
     await harness.delegate.runtime.key("return")
+    let completedGallery = await harness.delegate.runtime.snapshot()
+    let completedID = try #require(completedGallery.selectedGalleryMission?.savedInstance)
+    let receipt = try #require(
+      completedGallery.commander.scriptState.pledgeLedger?.receipt(instance: completedID))
+    let briefing = try #require(completedGallery.selectedGalleryMission?.briefing)
+    #expect(briefing.contains("Donation: 500.0 CR.") && briefing.contains("Completed once."))
+    #expect(
+      !briefing.contains(receipt.id.uuidString) && !briefing.contains(receipt.declaration.provider))
+    #expect(!briefing.lowercased().contains("native") && !briefing.contains("decicredits"))
     try capturePledgeState(await harness.delegate.runtime.snapshot(), name: "completed-receipt")
     await harness.delegate.runtime.key("pagedown")
     try capturePledgeState(
@@ -362,6 +388,16 @@ extension NativeViewTests {
     await harness.drain()
     let donated = await harness.delegate.runtime.snapshot()
     #expect(donated.commander.scriptState.pledgeLedger?.receipts.count == 1)
+    await harness.delegate.runtime.key("gallery-open")
+    let trialGallery = await harness.delegate.runtime.snapshot()
+    #expect(trialGallery.messageTime > 0 && trialGallery.isMissionTrial)
+    for (width, height) in [(512.0, 518.0), (1512.0, 982.0)] {
+      let header = Display.gallery(trialGallery, width: width, height: height).labels.filter {
+        $0.y == 62
+      }
+      #expect(header.count == 1 && header.first?.text == "Trial - live commander unchanged")
+    }
+    try capturePledgeState(trialGallery, name: "trial-completed-header")
     _ = try await harness.delegate.runtime.loadForInterface(expectedEpoch: donated.ecmControl.epoch)
     #expect(await harness.delegate.runtime.snapshot().commander == donated.commander)
     try await harness.delegate.runtime.restartScriptGalleryTrial()

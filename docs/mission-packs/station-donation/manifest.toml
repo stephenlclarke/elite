@@ -12,11 +12,11 @@ module = "scripts/main.lua"
 
 [mission]
 id = "donation"
-title = "Station Aid donations (G21 project family)"
-briefing = "Read six voluntary credit/Food pledge offers on Station Contracts. Choose a difficulty and variant, then deliberately Donate the full amount at the actual offering main station. Back transfers nothing. One native transfer completes the pledge and adds one Station Aid point local to this station. Amounts and standing are project estimates; this grants no faction, legal or trading privileges."
+title = "Station Aid donations"
+briefing = "Read six voluntary credit/Food pledge offers on Station Contracts. Choose a difficulty and variant, then deliberately Donate the full amount at the actual offering main station. Back transfers nothing. One complete donation adds one Station Aid point local to this station. Amounts and standing are project estimates; this grants no faction, legal or trading privileges."
 destination = "The actual offering main orbital station; no travel."
 reward = "One local Station Aid standing point. No cash reward."
-milestones = ["Confirm one full native donation"]
+milestones = ["Confirm one full donation"]
 
 [board]
 id = "station-aid"
