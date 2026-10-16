@@ -3,9 +3,12 @@ import Testing
 
 @testable import EliteCore
 
-private func withArchive(_ shot: ScriptNPCShot, _ archive: MissionLaunchArchive?) -> ScriptNPCShot {
+private func withArchive(
+  _ shot: ScriptNPCShot, _ archive: MissionLaunchArchive?, identity: UUID? = nil
+) -> ScriptNPCShot {
   .init(
-    identity: shot.identity, owner: shot.owner, instance: shot.instance, weapon: shot.weapon,
+    identity: identity ?? shot.identity, owner: shot.owner, instance: shot.instance,
+    weapon: shot.weapon,
     component: shot.component, velocity: shot.velocity, age: shot.age, lifetime: shot.lifetime,
     damage: shot.damage, radius: shot.radius, collisionDelay: shot.collisionDelay,
     nativeAttribution: archive)
@@ -56,6 +59,41 @@ private func fillActualNativeProjectileBudget(_ game: inout Game) throws {
 }
 
 struct ScriptProjectileRestoreTests {
+  @Test func laterInvalidLiveBindingCannotPartiallyRestoreEarlierShotOrMissionActors() throws {
+    var (game, oldID) = try retainedProjectileGame(archived: false)
+    let template = try #require(game.commander.scriptState.projectiles.removeValue(forKey: oldID))
+    let shot = try #require(template.body.scriptShot)
+    let firstID = UUID(uuidString: "81000000-0000-0000-0000-000000000001")!
+    let secondID = UUID(uuidString: "81000000-0000-0000-0000-000000000002")!
+    var first = template
+    first.body.scriptShot = withArchive(shot, nil, identity: firstID)
+    var second = template
+    second.body.id += 1
+    second.body.scriptShot = withArchive(shot, nil, identity: secondID)
+    game.commander.scriptState.projectiles[firstID] = first
+    game.commander.scriptState.projectiles[secondID] = second
+    let receipt = try game.admitRetainedMissionProjectile(secondID)
+    game.commander.scriptState.projectiles[secondID]?.body.id = receipt.bodyID
+    game.commander.scriptState.projectiles[secondID]?.presence = .present
+    let index = try #require(game.bodies.firstIndex { $0.scriptShot?.identity == secondID })
+    game.bodies[index].id += 10_000
+    game.bodies.removeAll { $0.missionActorID != nil }
+    try #require(game.commander.valid)
+    try #require(game.commander.scriptState.projectileArchiveValid(first))
+    try #require(
+      game.commander.scriptState.projectileArchiveValid(
+        #require(game.commander.scriptState.projectiles[secondID])))
+    let before = game.commander
+    let bodies = game.bodies
+    let nextID = game.nextBodyID
+    // A sorts first and is admissible. B has a real native identity but its live address is
+    // malformed; failure must precede A's admission and the missing owners' restoration.
+    #expect(throws: NativeMissionProjectileAdmissionError.invalidRecord) {
+      try game.restoreScriptActors()
+    }
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == nextID)
+  }
+
   @Test(arguments: ["owner", "component"])
   func retainedSourceMismatchFailsBeforeNativeAllocationOrAnyActorRestoration(field: String) throws
   {
