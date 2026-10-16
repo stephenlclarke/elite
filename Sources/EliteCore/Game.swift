@@ -204,6 +204,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && (savedFlightSimulation?.valid ?? true)
       && (savedCargoDebrisLedger?.valid ?? true)
+      && (savedMiningLedger?.valid ?? true)
       && (savedNPCPersistence?.valid ?? true)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -379,7 +380,11 @@ public struct Game: Sendable {
   var fireCooldown = 0.0
   var missionLoopCounter: UInt8 = 0
   var missionSpawnDelay = 0
-  var ecmFrames = 0
+  // Legacy callers share ECMControl's physical-time clock; there is no second countdown.
+  var ecmFrames: Int {
+    get { ecmControl.legacyFrames }
+    set { ecmControl.setLegacyFrames(newValue) }
+  }
   var enemyECMSource: Int?
   var activeECMActivation: ECMActivationIdentity?
   public var ecmControl = ECMControl()
@@ -1210,8 +1215,7 @@ public struct Game: Sendable {
     if !workScenePlanned && missionLoopCounter & 7 == 0 { navalTactics() }
     detectIncomingMissiles()
     advanceNavalMissiles(delta: dt)
-    ecmControl.advance()
-    ecmFrames = max(0, ecmFrames - 1)
+    ecmControl.advance(delta: dt)
     if ecmFrames == 0 {
       enemyECMSource = nil
       activeECMActivation = nil
