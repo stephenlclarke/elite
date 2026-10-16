@@ -137,26 +137,29 @@ extension Game {
           exitDirection: normal),
         arrival: canonical.arrival, planet: canonical.planet, sun: canonical.sun)
     }
-    let actors = bodies.compactMap { body -> ActorSnapshot? in
+    let actors: [ActorSnapshot] = bodies.compactMap { body -> ActorSnapshot? in
       guard let physical = body.physical else { return nil }
+      let native: ShipPerformance? = physical.catalogueShipID.flatMap {
+        ShipCatalogue.ship($0)?.game
+      }
+      let maximumEnergy: Double =
+        physical.npc?.resources?.energyCapacity ?? native?.energy ?? body.hull.navalEnergy ?? 100
+      let maximumSpeed: Double =
+        native?.speed ?? ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20
+      let legal: LegalRecord = physical.npc?.legal ?? LegalRecord()
+      let cargo: [CommodityAmount] = physical.npc?.ordinaryCargo ?? []
       var orientation = Basis3()
       orientation.x = flight.pose.orientation.apply(body.orientation.x)
       orientation.y = flight.pose.orientation.apply(body.orientation.y)
       orientation.z = flight.pose.orientation.apply(body.orientation.z)
-      return .init(
+      return ActorSnapshot(
         identity: physical.identity, hull: body.hull,
         position: flight.pose.systemPoint(body.position), orientation: orientation,
         velocity: physical.velocity, energy: body.energy,
-        maximumEnergy: physical.npc?.resources?.energyCapacity
-          ?? physical.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.energy }
-          ?? body.hull.navalEnergy ?? 100,
-        maximumSpeedUnitsPerSecond: (physical.catalogueShipID.flatMap {
-          ShipCatalogue.ship($0)?.game?.speed
-        }
-          ?? ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20) * 18,
-        legal: physical.npc?.legal ?? LegalRecord(), npc: physical.npc,
+        maximumEnergy: maximumEnergy, maximumSpeedUnitsPerSecond: maximumSpeed * 18,
+        legal: legal, npc: physical.npc,
         rock: physical.rock, payload: physical.payload,
-        ordinaryCargo: physical.npc?.ordinaryCargo ?? [],
+        ordinaryCargo: cargo,
         catalogueShipID: physical.catalogueShipID, angularVelocity: physical.angularVelocity,
         salvage: physical.salvage)
     }
