@@ -145,11 +145,13 @@ struct MissionActorAdmissionSource: Sendable {
   /// Exact pre-admission retention snapshot, for a prevalidated native retention patch.
   let retention: ScriptOwnedEncounter
   let actors: [MissionActorAdmissionTemplate]
+  fileprivate let installedBaseEncounter: ScriptOwnedEncounter?
 
   fileprivate init(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
     instance: ScriptInstance, pack: ScriptPack, encounter: ScriptOwnedEncounter,
-    definition: ScriptEncounterDefinition, actors: [MissionActorAdmissionTemplate]
+    definition: ScriptEncounterDefinition, actors: [MissionActorAdmissionTemplate],
+    installedBaseEncounter: ScriptOwnedEncounter?
   ) {
     self.mode = mode
     self.authority = authority
@@ -163,6 +165,7 @@ struct MissionActorAdmissionSource: Sendable {
     profile = definition.profile
     retention = encounter
     self.actors = actors
+    self.installedBaseEncounter = installedBaseEncounter
   }
 }
 
@@ -231,6 +234,46 @@ extension MissionActorAdmissionSource {
 }
 
 extension Game {
+  /// Rechecks a sealed source against actual installed authority without a caller snapshot.
+  /// Prepared retention stays private to its adapter and must also match the staged patch.
+  func validateMissionActorAdmissionSource(_ source: MissionActorAdmissionSource) throws {
+    guard let owner = commander.scriptState.instances[source.instanceID],
+      owner.id == source.instanceID, owner.revision == source.instanceRevision,
+      owner.digest == source.packDigest, owner.definition == source.definition,
+      owner.version == source.version, let pack = scriptPack(for: owner),
+      pack.digest == source.packDigest,
+      owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
+      source.retention.id == source.encounterID,
+      source.system == .init(galaxy: source.retention.galaxy, system: source.retention.system)
+    else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
+    let refreshed: MissionActorAdmissionSource
+    switch source.mode {
+    case .retained:
+      guard source.authority == .retained,
+        owner.ownedEncounters[source.encounterID] == source.retention,
+        source.system == .init(galaxy: commander.galaxy, system: commander.system)
+      else { throw MissionPackError("Retained actor admission source changed before publication.") }
+      refreshed = try sealMissionActorAdmissionSource(
+        mode: .retained, authority: .retained, pack: pack, state: owner,
+        encounter: source.retention)
+    case .prepared:
+      switch source.authority {
+      case .missionHandler:
+        refreshed = try preparedMissionActorAdmissionSource(
+          pack: pack, state: owner, encounter: source.retention)
+      case .worldJob(let identity, let pulse):
+        refreshed = try preparedMissionActorAdmissionSource(
+          pack: pack, state: owner, encounter: source.retention,
+          worldJob: identity, pulse: pulse)
+      case .retained:
+        throw MissionPackError("A prepared cohort cannot substitute retained admission authority.")
+      }
+    }
+    guard refreshed.profile == source.profile else {
+      throw MissionPackError("Actor admission profile changed before publication.")
+    }
+  }
+
   /// Reads only actual installed retained ownership; there is no caller-supplied state/body path.
   func retainedMissionActorAdmissionSources() throws -> [MissionActorAdmissionSource] {
     var sources: [MissionActorAdmissionSource] = []
@@ -349,7 +392,9 @@ extension Game {
     }
     return .init(
       mode: mode, authority: authority, instance: state, pack: pack,
-      encounter: encounter, definition: definition, actors: templates)
+      encounter: encounter, definition: definition, actors: templates,
+      installedBaseEncounter: commander.scriptState.instances[state.id]?.ownedEncounters[
+        encounter.id])
   }
 
   private func missionActorAdmissionTemplate(
