@@ -181,7 +181,7 @@ extension Game {
         else { return false }
       }
     }
-    commander.salvageLedger = ledger
+    if ledger != commander.salvageLedger { commander.salvageLedger = ledger }
     return true
   }
 }

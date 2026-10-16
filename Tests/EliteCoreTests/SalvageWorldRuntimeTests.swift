@@ -64,6 +64,52 @@ private func actualWreckHit(_ game: inout Game, id: Int, damage: Double) throws 
 }
 
 struct SalvageWorldRuntimeTests {
+  @Test func noOpPosePersistenceDockingAndSavingKeepTheAbsentLedgerAbsent() async throws {
+    var game = Game(executive: false)
+    game.screen = .status
+    let before = game.commander
+    #expect(game.commander.savedSalvageLedger == nil)
+    let unchanged = game.persistSalvagePoses()
+    #expect(unchanged && game.commander == before)
+    game.dock()
+    #expect(game.commander == before && game.commander.savedSalvageLedger == nil)
+    let runtime = GameRuntime(game: game)
+    let ready = await runtime.snapshot()
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: url) }
+    try await runtime.save(to: url)
+    let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+    #expect(saved == ready.commander && saved.savedSalvageLedger == nil)
+    #expect(await runtime.snapshot().commander == ready.commander)
+    game.commander.salvageLedger = .init()
+    let explicitEmpty = game.commander
+    let retainedEmpty = game.persistSalvagePoses()
+    #expect(retainedEmpty && game.commander == explicitEmpty)
+    #expect(game.commander.savedSalvageLedger != nil)
+  }
+
+  @Test func changedActualWreckPoseStillPublishesAndAnIdenticalCaptureIsIdempotent() throws {
+    var (game, site) = try salvageWorldGame()
+    let index = try #require(
+      game.bodies.firstIndex { $0.physical?.salvage?.wreck == site.identity })
+    let before = game.commander.salvageLedger
+    game.bodies[index].position = game.bodies[index].position + .init(11, -7, 3)
+    game.bodies[index].physical?.velocity = .init(1, 2, 3)
+    game.bodies[index].physical?.angularVelocity = .init(0.01, 0.02, 0.03)
+    game.bodies[index].energy -= 1
+    let body = game.bodies[index]
+    let expected = SalvageWreckMotion(
+      pose: game.modelPose(of: body), velocity: .init(1, 2, 3),
+      angularVelocity: .init(0.01, 0.02, 0.03), energy: body.energy)
+    let accepted = game.persistSalvagePoses()
+    #expect(accepted)
+    #expect(game.commander.salvageLedger != before)
+    #expect(game.commander.salvageLedger.wreckMotion(for: site.identity) == expected)
+    let published = game.commander
+    let repeated = game.persistSalvagePoses()
+    #expect(repeated && game.commander == published)
+  }
+
   @Test func generatedSiteRetainsCanonicalDriftSpinAndDamageThroughCullAndRealSaveReload()
     async throws
   {
