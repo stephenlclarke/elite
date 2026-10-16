@@ -7,7 +7,7 @@ private struct ActorAdmissionFixture {
   let directory: URL
   let pack: ScriptPack
 
-  init(worldJob: Bool = false, failingPulse: Bool = false) throws {
+  init(worldJob: Bool = false, failingPulse: Bool = false, laterOutside: Bool = false) throws {
     directory = FileManager.default.temporaryDirectory.appendingPathComponent(
       "actor-admission-source-" + UUID().uuidString)
     let original = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
@@ -23,7 +23,7 @@ private struct ActorAdmissionFixture {
       galaxy=0
       system=7
       profile='profiled-local-freeze-v1'
-      actors=[{id='later',npc='training-craft',x=10000.0,y=0.0,z=10000.0,hostile=true}]
+      actors=[{id='later',npc='training-craft',x=\(laterOutside ? "100000.0" : "10000.0"),y=0.0,z=10000.0,hostile=true}]
       """
     if worldJob {
       text = text.replacingOccurrences(
@@ -269,6 +269,61 @@ struct ScriptActorAdmissionSourceTests {
     #expect(throws: (any Error).self) { try game.restoreScriptActors() }
     #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == nextID)
     #expect(!game.bodies.contains { $0.missionActorID.map(identities.contains) ?? false })
+  }
+
+  @Test(arguments: ["rotation", "angular"])
+  func preparedOutsideCohortCannotStagePrivateOwnerBeforeDifferentLiveBindingHardFailure(
+    field: String
+  )
+    throws
+  {
+    let fixture = try ActorAdmissionFixture(worldJob: true, laterOutside: true)
+    defer { fixture.clean() }
+    var (game, instance) = try fixture.game()
+    var owner = try #require(game.commander.scriptState.instances[instance])
+    try #require(owner.ownedEncounters["z-later"] == nil)
+    // A real valid-scene control proves the requested cohort is a temporary outside proposal.
+    var control = game
+    var controlOwner = owner
+    let pending = try control.ensureScriptEncounter(
+      "z-later", pack: fixture.pack, state: &controlOwner)
+    #expect(pending.0 == "encounter.pending")
+    #expect(controlOwner.ownedEncounters["z-later"]?.admitted == false)
+    #expect(control.bodies == game.bodies && control.nextBodyID == game.nextBodyID)
+    let live = try #require(owner.ownedEncounters["opponents"]?.actors["lead"])
+    let index = try #require(game.bodies.firstIndex { $0.missionActorID == live.identity })
+    try #require(game.bodies[index].physical != nil)
+    if field == "rotation" {
+      game.bodies[index].rotation = .nan
+    } else {
+      game.bodies[index].physical?.angularVelocity.x = .nan
+    }
+    let beforeOwner = owner
+    let before = game.commander
+    let beforeBodies = game.bodies
+    let nextID = game.nextBodyID
+    let reference = game.scriptReferenceFrame
+    #expect(throws: NativeMissionActorAdmissionError.invalidScene) {
+      try game.ensureScriptEncounter("z-later", pack: fixture.pack, state: &owner)
+    }
+    #expect(owner == beforeOwner && game.commander == before)
+    #expect(owner.ownedEncounters["z-later"] == nil)
+    #expect(game.nextBodyID == nextID && game.scriptReferenceFrame == reference)
+    // NaN is unequal to itself. Check its exact bits and compare every remaining scene field.
+    var expected = beforeBodies
+    var actual = game.bodies
+    if field == "rotation" {
+      #expect(actual[index].rotation.bitPattern == expected[index].rotation.bitPattern)
+      expected[index].rotation = 0
+      actual[index].rotation = 0
+    } else {
+      #expect(
+        actual[index].physical?.angularVelocity.x.bitPattern
+          == expected[index].physical?.angularVelocity.x.bitPattern)
+      expected[index].physical?.angularVelocity.x = 0
+      actual[index].physical?.angularVelocity.x = 0
+    }
+    #expect(actual == expected)
   }
 
   @Test func retentionPatchStagesOnlyAddressesAndRefusesStaleOwnerWithoutPublishing() throws {
