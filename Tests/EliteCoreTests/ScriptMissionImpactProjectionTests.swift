@@ -105,6 +105,59 @@ struct ScriptMissionImpactProjectionTests {
     #expect(terminal.count == (component ? 0 : 1))
   }
 
+  @Test func actualClassicMissionConstrictorImmunityProducesNoDamageOrTerminalScriptEvents() throws
+  {
+    var (game, _, sourceID, _) = try projectionActors(component: false)
+    let original = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-patrol")
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(
+      "immune-mission-target-" + UUID().uuidString)
+    try FileManager.default.copyItem(at: original, to: directory)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let manifest = directory.appendingPathComponent("manifest.toml")
+    let text = try String(contentsOf: manifest, encoding: .utf8)
+    try text.replacingOccurrences(of: "hull=\"sidewinder\"", with: "hull=\"constrictor\"").write(
+      to: manifest, atomically: true, encoding: .utf8)
+    let pack = try ScriptPackLibrary.read(directory)
+    game.scriptPacks.append(pack)
+    game.scriptEventsDeferred = false
+    let instance = try game.acceptScriptMission(pack)
+    game.emitScriptEvent("station.undocked", only: instance)
+    game.drainScriptEvents()
+    let actor = try #require(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["raiders"]?.actors["lead"])
+    let targetIndex = try #require(game.bodies.firstIndex { $0.missionActorID == actor.identity })
+    let targetID = game.bodies[targetIndex].id
+    try #require(game.bodies[targetIndex].hull == .constrictor)
+    try #require(game.bodies[targetIndex].scriptNPC == nil)
+    game.bodies[targetIndex].position = .init(0, 0, 2000)
+    game.bodies[targetIndex].orientation = Basis3()
+    game.bodies = game.bodies.filter { $0.id == sourceID || $0.id == targetID }
+    game.ensurePhysicalActors()
+    game.scriptEventsDeferred = true
+    let target = try #require(game.bodies.first { $0.id == targetID })
+    let proof = try producedLaser(&game, sourceID: sourceID, targetID: targetID, component: false)
+    try #require(proof.hit?.target == .body(targetID))
+    let sequence = game.commander.scriptState.nextEvent
+    let receipt = try game.applyMissionImpact(proof)
+    #expect(receipt.damage > 0 && !receipt.damageAdmitted)
+    #expect(!receipt.hullDestroyed && !receipt.componentDestroyed)
+    #expect(
+      receipt.targetMissionInstanceID == instance && receipt.targetMissionActorID == actor.identity)
+    #expect(game.bodies.first { $0.id == targetID }?.energy == target.energy)
+    let physical = game.bodies
+    let law = game.commander.crimeLedger
+    game.projectScriptMissionImpact(receipt)
+    game.resolveDestroyed()
+    #expect(game.bodies == physical && game.commander.crimeLedger == law)
+    #expect(game.commander.scriptState.nextEvent == sequence)
+    #expect(!game.commander.scriptState.pendingEvents.contains { $0.sequence > sequence })
+    #expect(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["raiders"]?.actors["lead"]?
+        .presence == .present)
+  }
+
   @Test func actualPlayerNativeContactProducesPlayerReceiptAndNullScriptAttacker() throws {
     var (game, _, sourceID, targetID) = try projectionActors(component: true)
     let sourceIndex = try #require(game.bodies.firstIndex { $0.id == sourceID })
