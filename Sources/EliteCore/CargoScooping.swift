@@ -8,21 +8,25 @@ extension Game {
         && body.position.length < 85
     }
     for body in candidates {
-      if let work = workGuidance, case .autoScoop = work.mode,
-        work.parent == body.physical?.identity
-      {
+      if workGuidance != nil || workBraking != nil {
         let aperture = commander.flightSimulation.pose.orientation.apply(Vector3(0, -45, 55))
-        let apertureVelocity = flightWorldVelocity + work.angularVelocity.cross(aperture)
+        let omega = workGuidance?.angularVelocity ?? workBraking?.angularVelocity ?? .init(0, 0, 0)
+        let apertureVelocity = flightWorldVelocity + omega.cross(aperture)
         guard let velocity = body.physical?.velocity, velocity.finite,
           (velocity - apertureVelocity).length <= ScoopApproachController.maximumRelativeSpeed,
-          let context = gameplayContext(),
-          automaticScoopShapeCompatible(body, context: context),
-          let candidate = workTargetCandidate(for: body, context: context, frontVisible: true),
-          WorkTargetSelection.evaluate(
-            candidate, system: context.system, visit: context.visit,
-            capabilities: workTargetCapabilities
-          ).mode == work.mode
+          let context = gameplayContext(), automaticScoopShapeCompatible(body, context: context)
         else { continue }
+        if let work = workGuidance, case .autoScoop = work.mode,
+          work.parent == body.physical?.identity
+        {
+          guard
+            let candidate = workTargetCandidate(for: body, context: context, frontVisible: true),
+            WorkTargetSelection.evaluate(
+              candidate, system: context.system, visit: context.visit,
+              capabilities: workTargetCapabilities
+            ).mode == work.mode
+          else { continue }
+        }
       }
       if let payload = body.physical?.payload {
         guard let context = gameplayContext() else { continue }

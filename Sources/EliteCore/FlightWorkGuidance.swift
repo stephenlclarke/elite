@@ -18,6 +18,7 @@ struct FlightWorkGuidance: Sendable {
   var angularVelocity: Vector3
   var status = "APPROACHING"
   var holding = false
+  var manualToolOverride = false
 }
 
 struct FlightWorkBraking: Sendable {
@@ -236,7 +237,9 @@ extension Game {
       for transition in output.transitions {
         switch transition {
         case .selectTool(let tool):
-          selectedFlightTool = tool == .miningLaser ? .miningLaser : .salvageCutter
+          if !state.manualToolOverride {
+            selectedFlightTool = tool == .miningLaser ? .miningLaser : .salvageCutter
+          }
         case .workComplete: notify("SECTION EXHAUSTED - HOLDING POSITION")
         case .status: break
         }

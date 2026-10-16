@@ -15,6 +15,7 @@ public enum FlightWorkTool: CaseIterable, Sendable, Equatable {
 extension Game {
   public mutating func selectFlightTool(_ tool: FlightWorkTool) {
     guard !docked, screen.isFlight else { return }
+    workGuidance?.manualToolOverride = true
     selectedFlightTool = tool
     let installed: Bool
     switch tool {
@@ -38,7 +39,11 @@ extension Game {
   /// An unavailable selected utility never falls through to a combat weapon.
   mutating func fireSelectedFlightTool(delta: Double) {
     guard !workFireSuspended else { return }
-    if let work = workGuidance, selectedFlightTool != .combatLaser, !work.holding { return }
+    if let work = workGuidance, !work.holding,
+      !(selectedFlightTool == .combatLaser && work.manualToolOverride)
+    {
+      return
+    }
     switch selectedFlightTool {
     case .combatLaser: fireLaser()
     case .miningLaser: _ = fireMiningWorkTool()

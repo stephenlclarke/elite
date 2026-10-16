@@ -29,7 +29,8 @@ private func workRuntimeGame(module: WorkTargetSpecialty = .salvage, scoops: Boo
 }
 
 private func addWorkCargo(
-  _ game: inout Game, position: Vector3, velocity: Vector3 = .init(0, 0, 0), oversized: Bool = false
+  _ game: inout Game, position: Vector3, velocity: Vector3 = .init(0, 0, 0),
+  oversized: Bool = false, preserveBodies: Bool = false
 ) throws -> ActorIdentity {
   // Issue a real structural lot, then admit and acknowledge it through the runtime allocator.
   let selectedProfile =
@@ -72,11 +73,15 @@ private func addWorkCargo(
   for other in game.commander.salvageLedger.pendingLots where other.identity != lot.identity {
     _ = game.commander.salvageLedger.destroy(lot: other.identity, protection: .init())
   }
-  for old in game.bodies {
-    if let actor = old.physical?.identity { game.commander.salvageLedger.cull(actor: actor) }
+  if !preserveBodies {
+    for old in game.bodies {
+      if let actor = old.physical?.identity { game.commander.salvageLedger.cull(actor: actor) }
+    }
+    game.bodies = []
+    game.nextBodyID = 88
+  } else {
+    game.nextBodyID = (game.bodies.map(\.id).max() ?? 87) + 1
   }
-  game.bodies = []
-  game.nextBodyID = 88
   game.admitPendingSalvage()
   let index = try #require(
     game.bodies.firstIndex { $0.physical?.payload == .salvage(lot.identity) })
@@ -350,10 +355,11 @@ struct FlightWorkGuidanceRuntimeTests {
     #expect(game.bodies[0].energy == beforeEnergy)
     try game.commander.grantEquipment(
       "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("child fixture"))
-    game.bodies.append(.init(id: 90, hull: .cargo, position: .init(0, -45, 55)))
-    game.ensurePhysicalActors()
+    let child = try addWorkCargo(&game, position: .init(0, -45, 55), preserveBodies: true)
+    let before = game.commander.cargoTonnes
     game.scoopCargo()
-    #expect(!game.bodies.contains { $0.id == 90 })
+    #expect(game.commander.cargoTonnes == before + 1)
+    #expect(!game.bodies.contains { $0.physical?.identity == child })
     #expect(game.workGuidance?.parent == parent && game.autoPilot.targetActor == parent)
     #expect(game.workGuidance?.mode == .hold(.salvage))
   }
