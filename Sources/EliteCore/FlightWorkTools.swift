@@ -142,23 +142,39 @@ extension Game {
     commander.salvageLedger.acknowledge(receipts: receipts)
   }
 
-  mutating func persistSalvagePoses() {
+  @discardableResult
+  mutating func persistSalvagePoses() -> Bool {
+    var ledger = commander.salvageLedger
     for body in bodies {
       guard let physical = body.physical else { continue }
       if let payload = physical.payload, case .salvage(let lot) = payload {
-        commander.salvageLedger.updateLot(
-          lot, position: commander.flightSimulation.pose.systemPoint(body.position),
-          velocity: physical.velocity)
+        if body.energy <= 0 { continue }
+        let position = commander.flightSimulation.pose.systemPoint(body.position)
+        guard physical.identity.system == systemIdentity,
+          physical.identity.visit == commander.flightSimulation.visit,
+          lot.section.wreck.system == systemIdentity,
+          ledger.boundActor(for: lot) == physical.identity,
+          position.finite, position.length.isFinite,
+          physical.velocity.finite, physical.velocity.length.isFinite, body.energy.isFinite
+        else { return false }
+        ledger.updateLot(lot, position: position, velocity: physical.velocity)
       }
       if let metadata = physical.salvage, let wreck = metadata.wreck,
         [.wreck, .section].contains(metadata.category)
       {
-        _ = commander.salvageLedger.updateWreck(
-          identity: wreck,
-          motion: .init(
-            pose: modelPose(of: body), velocity: physical.velocity,
-            angularVelocity: physical.angularVelocity, energy: body.energy))
+        if body.energy <= 0 { continue }
+        guard physical.identity.system == systemIdentity,
+          physical.identity.visit == commander.flightSimulation.visit,
+          wreck.system == systemIdentity,
+          ledger.updateWreck(
+            identity: wreck,
+            motion: .init(
+              pose: modelPose(of: body), velocity: physical.velocity,
+              angularVelocity: physical.angularVelocity, energy: body.energy))
+        else { return false }
       }
     }
+    commander.salvageLedger = ledger
+    return true
   }
 }

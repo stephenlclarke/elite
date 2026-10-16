@@ -945,7 +945,11 @@ public struct Game: Sendable {
       return
     }
     persistCargoPoses()
-    persistSalvagePoses()
+    persistOrePoses()
+    guard persistSalvagePoses() else {
+      notify("DOCKING DEFERRED: SALVAGE STATE UNAVAILABLE")
+      return
+    }
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
     retaliation.clear()
@@ -1010,6 +1014,12 @@ public struct Game: Sendable {
       notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
       return
     }
+    guard persistSalvagePoses() else {
+      jumpCountdown = nil
+      notify("JUMP DEFERRED: SALVAGE STATE UNAVAILABLE")
+      return
+    }
+    persistOrePoses()
     if selectedSystem != commander.system { departOrdinarySimulation() }
     persistBlackjackTargets()
     retaliation.clear()
@@ -1045,10 +1055,14 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
   }
   public mutating func galacticJump() {
-    guard !docked else { return }
+    guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
     resolveDestroyed()
     guard !hasUnsettledWreckDeaths else {
       notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
+    guard persistSalvagePoses() else {
+      notify("JUMP DEFERRED: SALVAGE STATE UNAVAILABLE")
       return
     }
     guard commander.consumeEquipped("Galactic Hyperdrive") else { return }
@@ -1056,6 +1070,7 @@ public struct Game: Sendable {
     commander.navigationPlan = nil
     persistBlackjackTargets()
     departOrdinarySimulation()
+    bodies = []
     commander.galaxy = (commander.galaxy + 1) & 7
     if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
     galacticBrowse = GalaxyBrowseState()
@@ -1275,7 +1290,13 @@ public struct Game: Sendable {
     }
     persistBlackjackTargets()
     persistCargoPoses()
-    persistSalvagePoses()
+    persistOrePoses()
+    guard persistSalvagePoses() else {
+      if message != "SALVAGE STATE UNAVAILABLE" || messageTime <= 0 {
+        notify("SALVAGE STATE UNAVAILABLE")
+      }
+      return
+    }
     let retainedNPCs = persistNPCStates()
     let departing = bodies.filter {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
@@ -1419,7 +1440,8 @@ public actor GameRuntime {
     candidate.commander.mirrorFittedEquipment()
     candidate.resolveDestroyed()
     candidate.persistCargoPoses()
-    candidate.persistSalvagePoses()
+    candidate.persistOrePoses()
+    guard candidate.persistSalvagePoses() else { throw SaveError.invalidCommander }
     candidate.persistBlackjackTargets()
     let refusedNPCs = candidate.persistNPCStates()
     guard refusedNPCs.isEmpty, !candidate.hasUnsettledWreckDeaths, candidate.commander.valid,

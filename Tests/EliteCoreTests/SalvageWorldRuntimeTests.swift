@@ -186,3 +186,95 @@ struct SalvageWorldRuntimeTests {
     }
   }
 }
+
+extension SalvageWorldRuntimeTests {
+  @Test(arguments: [false, true])
+  func actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic: Bool) throws
+  {
+    var (game, site) = try salvageWorldGame()
+    let originalSystem = game.commander.system
+    let originalGalaxy = game.commander.galaxy
+    let observer = game.commander.flightSimulation.pose.position
+    let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    if galactic {
+      try game.commander.grantEquipment(
+        "Galactic Hyperdrive", at: .utility(.galacticHyperdrive), provenance: .grant("fixture"))
+    }
+    try actualWreckHit(&game, id: body.id, damage: 17)
+    let remaining = try #require(game.bodies.first { $0.id == body.id }?.energy)
+    #expect(game.commander.salvageLedger.wreckMotion(for: site.identity)?.energy != remaining)
+    if galactic {
+      game.galacticJump()
+      #expect(
+        game.commander.galaxy != originalGalaxy
+          && !game.commander.equipment.contains("Galactic Hyperdrive"))
+    } else {
+      let destination = try #require(
+        game.knownSystems.first {
+          $0.id != originalSystem
+            && game.currentSystem.distance(to: $0) <= game.commander.maximumJumpDistance
+        })
+      game.selectedSystem = destination.id
+      game.arrive()
+      #expect(game.commander.system == destination.id)
+    }
+    #expect(game.commander.salvageLedger.wreckMotion(for: site.identity)?.energy == remaining)
+    var returned = Game(executive: false)
+    returned.commander = game.commander
+    returned.commander.system = originalSystem
+    returned.commander.galaxy = originalGalaxy
+    returned.launch()
+    returned.bodies = []
+    relocateWreckObserver(&returned, to: observer)
+    returned.activateNearbySalvageSites()
+    let restored = try #require(
+      returned.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    #expect(restored.energy == remaining)
+  }
+
+  @Test func invalidLiveSnapshotCannotPublishPartialMotionOrConsumeTheGalacticDrive() async throws {
+    var (game, site) = try salvageWorldGame()
+    try game.commander.grantEquipment(
+      "Galactic Hyperdrive", at: .utility(.galacticHyperdrive), provenance: .grant("fixture"))
+    let index = try #require(
+      game.bodies.firstIndex { $0.physical?.salvage?.wreck == site.identity })
+    game.bodies[index].physical?.angularVelocity = .init(.infinity, 0, 0)
+    let before = game.commander
+    let stored = game.persistSalvagePoses()
+    #expect(!stored && game.commander == before)
+    game.dock()
+    #expect(!game.docked && game.commander == before)
+    game.arrive()
+    #expect(game.commander == before)
+    game.galacticJump()
+    #expect(game.commander == before && game.commander.equipment.contains("Galactic Hyperdrive"))
+    let runtime = GameRuntime(game: game)
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: url) }
+    var refused = false
+    do { try await runtime.save(to: url) } catch { refused = true }
+    #expect(refused && !FileManager.default.fileExists(atPath: url.path))
+    #expect(await runtime.snapshot().commander == before)
+  }
+
+  @Test func optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth() throws {
+    let (game, site) = try salvageWorldGame()
+    let initial = try #require(game.commander.salvageLedger.wreckMotion(for: site.identity))
+    var fields = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(initial)) as? [String: Any])
+    fields.removeValue(forKey: "energy")
+    let legacy = try JSONDecoder().decode(
+      SalvageWreckMotion.self, from: JSONSerialization.data(withJSONObject: fields))
+    #expect(legacy.energy == nil && legacy.pose == initial.pose)
+    var ledger = game.commander.salvageLedger
+    for energy in [0, -1, Double.infinity, Double.nan, 100001] {
+      let before = ledger
+      let accepted = ledger.updateWreck(
+        identity: site.identity,
+        motion: .init(
+          pose: initial.pose, velocity: initial.velocity, angularVelocity: initial.angularVelocity,
+          energy: energy))
+      #expect(!accepted && ledger == before)
+    }
+  }
+}

@@ -39,6 +39,13 @@ extension Game {
           }
           continue
         }
+        if case .ore(let rock, _) = payload {
+          guard let actor = body.physical?.identity,
+            actor.system == context.system, actor.visit == context.visit,
+            rock.system == context.system,
+            commander.miningLedger.boundActor(for: payload) == actor
+          else { continue }
+        }
         let receipt = collectOrdinaryPayload(
           payload: payload, into: &cargo,
           freeTonnes: freeTonnes,

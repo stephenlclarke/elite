@@ -24,6 +24,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   public var pendingPayloads: [TypedCargoPayload] {
     pending.values.sorted { key($0.identity) < key($1.identity) }
   }
+  public func boundActor(for payload: PayloadIdentity) -> ActorIdentity? { bindings[payload] }
 
   public func isDepleted(_ identity: RockIdentity) -> Bool {
     guard let bit = bit(identity) else { return false }

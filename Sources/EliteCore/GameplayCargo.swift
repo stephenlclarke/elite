@@ -73,7 +73,23 @@ extension Game {
     }
   }
 
+  /// Actor isolation makes this the current canonical snapshot, before any binding is culled.
+  mutating func persistOrePoses() {
+    let pose = commander.flightSimulation.pose
+    for body in bodies where body.energy > 0 {
+      guard let physical = body.physical, let payload = physical.payload,
+        case .ore(let rock, _) = payload, rock.system == systemIdentity,
+        physical.identity.system == systemIdentity,
+        physical.identity.visit == commander.flightSimulation.visit
+      else { continue }
+      _ = commander.miningLedger.updateOreMotion(
+        payload: payload, actor: physical.identity,
+        position: pose.systemPoint(body.position), velocity: physical.velocity)
+    }
+  }
+
   mutating func departOrdinarySimulation() {
+    persistOrePoses()
     commander.cargoDebrisLedger.depart(system: systemIdentity)
     commander.miningLedger.depart(system: systemIdentity)
     commander.npcPersistence.depart(system: systemIdentity)
