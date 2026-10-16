@@ -429,35 +429,42 @@ extension Game {
       }
       nearest = candidate
     }
-    func valid(_ mesh: Mesh) -> Bool {
-      !mesh.vertices.isEmpty && !mesh.faces.isEmpty && mesh.vertices.allSatisfy(finite)
-        && mesh.faces.allSatisfy { $0.count >= 3 && $0.allSatisfy(mesh.vertices.indices.contains) }
-        && triangles(mesh) != nil
-    }
-    // Ear clipping preserves concave authored polygons; a triangle fan would fill their notches.
-    func triangles(_ mesh: Mesh) -> [[Int]]? {
+    // The native ray path accepts rounded nonplanar polygons and skips individual
+    // degenerate faces. Project into the same dominant axis to select ears, retaining the
+    // original 3D vertices for the sweep instead of flattening authored geometry.
+    func prepare(_ mesh: Mesh) throws -> [[Int]] {
+      guard !mesh.vertices.isEmpty, !mesh.faces.isEmpty, mesh.vertices.allSatisfy(finite),
+        mesh.faces.allSatisfy({
+          $0.count >= 3 && $0.allSatisfy(mesh.vertices.indices.contains)
+        })
+      else { throw MissionNativeBridgeError.invalidGeometry }
       var result: [[Int]] = []
+      var usableFaces = 0
       for face in mesh.faces {
         var polygon = face
         if polygon.first == polygon.last { polygon.removeLast() }
-        guard polygon.count >= 3, Set(polygon).count == polygon.count else { return nil }
         let first = mesh.vertices[polygon[0]]
+        guard
+          let normal = (1..<(polygon.count - 1)).lazy.map({
+            (mesh.vertices[polygon[$0]] - first).cross(mesh.vertices[polygon[$0 + 1]] - first)
+          }).first(where: { $0.length > 0 })
+        else { continue }
+        guard finite(normal) else { throw MissionNativeBridgeError.invalidGeometry }
+        usableFaces += 1
+        // Exact zero-radius intersections use native authored-polygon clipping, not ear clips.
+        if radius == 0 { continue }
+        guard Set(polygon).count == polygon.count else {
+          throw MissionNativeBridgeError.invalidGeometry
+        }
         let scale = polygon.map { (mesh.vertices[$0] - first).length }.max() ?? 0
-        guard scale.isFinite, scale > 0 else { return nil }
-        // Normalize each polygon before its predicates so accepted small component scales do
-        // not turn valid faces into degeneracies merely because of an absolute area tolerance.
+        guard scale.isFinite, scale > 0 else { throw MissionNativeBridgeError.invalidGeometry }
         let points = Dictionary(
           uniqueKeysWithValues: polygon.map {
             ($0, (mesh.vertices[$0] - first) * (1 / scale))
           })
-        guard points.values.allSatisfy(finite),
-          let normal = (1..<(polygon.count - 1)).lazy.map({
-            points[polygon[$0]]!.cross(points[polygon[$0 + 1]]!)
-          }).first(where: { $0.length > 1e-12 })
-        else { return nil }
-        let unit = normal.unit
-        guard polygon.allSatisfy({ abs(points[$0]!.dot(unit)) <= 1e-6 })
-        else { return nil }
+        guard points.values.allSatisfy(finite) else {
+          throw MissionNativeBridgeError.invalidGeometry
+        }
         let axis = [abs(normal.x), abs(normal.y), abs(normal.z)].enumerated().max {
           $0.element < $1.element
         }!.offset
@@ -471,13 +478,48 @@ extension Game {
           let r = point(c)
           return (q.0 - p.0) * (r.1 - p.1) - (q.1 - p.1) * (r.0 - p.0)
         }
+        // Reject crossing edges rather than filling a malformed polygon's overlapping regions.
+        for edge in polygon.indices {
+          let next = (edge + 1) % polygon.count
+          for other in polygon.indices where other > edge {
+            let otherNext = (other + 1) % polygon.count
+            if next == other || otherNext == edge { continue }
+            let a = polygon[edge]
+            let b = polygon[next]
+            let c = polygon[other]
+            let d = polygon[otherNext]
+            let abC = cross(a, b, c)
+            let abD = cross(a, b, d)
+            let cdA = cross(c, d, a)
+            let cdB = cross(c, d, b)
+            if ((abC > 0 && abD < 0) || (abC < 0 && abD > 0))
+              && ((cdA > 0 && cdB < 0) || (cdA < 0 && cdB > 0))
+            {
+              throw MissionNativeBridgeError.invalidGeometry
+            }
+          }
+        }
         let area = polygon.indices.reduce(0.0) { total, index in
           let p = point(polygon[index])
           let q = point(polygon[(index + 1) % polygon.count])
           return total + p.0 * q.1 - q.0 * p.1
         }
-        guard area.isFinite, abs(area) > 1e-9 else { return nil }
+        guard area.isFinite, area != 0 else { throw MissionNativeBridgeError.invalidGeometry }
         let sign = area > 0 ? 1.0 : -1.0
+        let convex = polygon.indices.allSatisfy { index in
+          cross(
+            polygon[(index + polygon.count - 1) % polygon.count],
+            polygon[index], polygon[(index + 1) % polygon.count]) * sign >= 0
+        }
+        if convex {
+          // Preserve the native fan's diagonal and original warped surface on convex faces.
+          for index in 1..<(polygon.count - 1) {
+            result.append([polygon[0], polygon[index], polygon[index + 1]])
+          }
+          continue
+        }
+        // Concave sweeps use projected ears with original vertices: inflated fan triangles
+        // would otherwise fill authored notches that the zero-radius native path clips away.
         while polygon.count > 3 {
           var removed = false
           for index in polygon.indices {
@@ -485,7 +527,7 @@ extension Game {
             let b = polygon[index]
             let c = polygon[(index + 1) % polygon.count]
             let turn = cross(a, b, c) * sign
-            if abs(turn) <= 1e-9 {
+            if turn == 0 {
               polygon.remove(at: index)
               removed = true
               break
@@ -493,9 +535,9 @@ extension Game {
             guard turn > 0 else { continue }
             let occupied = polygon.contains { other in
               other != a && other != b && other != c
-                && cross(a, b, other) * sign >= -1e-9
-                && cross(b, c, other) * sign >= -1e-9
-                && cross(c, a, other) * sign >= -1e-9
+                && cross(a, b, other) * sign >= 0
+                && cross(b, c, other) * sign >= 0
+                && cross(c, a, other) * sign >= 0
             }
             if !occupied {
               result.append([a, b, c])
@@ -504,20 +546,46 @@ extension Game {
               break
             }
           }
-          guard removed else { return nil }
+          guard removed else { throw MissionNativeBridgeError.invalidGeometry }
         }
         result.append(polygon)
       }
+      guard usableFaces > 0 else { throw MissionNativeBridgeError.invalidGeometry }
       return result
     }
     func swept(
       _ mesh: Mesh, transform: (Vector3) -> Vector3, target: GameplayHitTarget,
       body: SpaceBody? = nil, part: String? = nil, component: UUID? = nil
     ) -> Bool {
-      guard valid(mesh) else { return false }
+      guard let faces = try? prepare(mesh) else { return false }
       let vertices = mesh.vertices.map(transform)
-      guard vertices.allSatisfy(finite) else { return false }
-      guard let faces = triangles(mesh) else { return false }
+      guard vertices.allSatisfy(finite), let first = vertices.first else { return false }
+      var lower = first
+      var upper = first
+      for vertex in vertices.dropFirst() {
+        lower = .init(min(lower.x, vertex.x), min(lower.y, vertex.y), min(lower.z, vertex.z))
+        upper = .init(max(upper.x, vertex.x), max(upper.y, vertex.y), max(upper.z, vertex.z))
+      }
+      lower = lower - .init(radius, radius, radius)
+      upper = upper + .init(radius, radius, radius)
+      guard finite(lower), finite(upper) else { return false }
+      var entry = 0.0
+      var exit = range
+      for (start, motion, low, high) in [
+        (origin.x, direction.x, lower.x, upper.x),
+        (origin.y, direction.y, lower.y, upper.y),
+        (origin.z, direction.z, lower.z, upper.z),
+      ] {
+        if motion == 0 {
+          if start < low || start > high { return true }
+        } else {
+          let a = (low - start) / motion
+          let b = (high - start) / motion
+          entry = max(entry, min(a, b))
+          exit = min(exit, max(a, b))
+          if entry > exit { return true }
+        }
+      }
       for face in faces {
         if let distance = ScriptSweptCollision.triangle(
           origin: origin, direction: direction, range: range, radius: radius,
@@ -545,16 +613,12 @@ extension Game {
         abs(axes[0].dot(axes[1])) < 1e-6, abs(axes[0].dot(axes[2])) < 1e-6,
         abs(axes[1].dot(axes[2])) < 1e-6
       else { throw MissionNativeBridgeError.invalidGeometry }
-      if body.scriptNPC == nil, !valid(gameplayMesh(for: body)) {
-        throw MissionNativeBridgeError.invalidGeometry
-      }
-    }
-    if includePlayer, !valid(commander.playerMesh) {
-      throw MissionNativeBridgeError.invalidGeometry
     }
     // Native zero-radius rays retain the existing exact authored-polygon clipping path.
     if radius == 0 {
       let native = live.filter { $0.scriptNPC == nil }
+      for body in native { _ = try prepare(gameplayMesh(for: body)) }
+      if includePlayer { _ = try prepare(commander.playerMesh) }
       if let hit = GameplayRaycast.nearest(
         origin: origin, direction: direction, maxDistance: range,
         bodies: native, playerMesh: includePlayer ? commander.playerMesh : nil,
@@ -574,21 +638,21 @@ extension Game {
         body.rotation.isFinite
       else { throw MissionNativeBridgeError.invalidGeometry }
       if let npc = body.scriptNPC {
-        guard npc.valid, let root = scriptModel(npc.fit.definition.model, fit: npc.fit), valid(root)
+        guard npc.valid, let root = scriptModel(npc.fit.definition.model, fit: npc.fit)
         else { throw MissionNativeBridgeError.invalidGeometry }
         func custom(
           _ mesh: Mesh, position: Vector3, orientation: Basis3, scale: Double,
           part: String? = nil, component: UUID? = nil
         ) -> Bool {
           guard finite(position), orientation.validRotation, scale.isFinite, scale > 0,
-            npc.fit.definition.scale.isFinite, npc.fit.definition.scale > 0, valid(mesh)
+            npc.fit.definition.scale.isFinite, npc.fit.definition.scale > 0
           else { return false }
           let local = Mesh(
             vertices: mesh.vertices.map {
               (position + orientation.apply($0 * scale)) * npc.fit.definition.scale
             }, faces: mesh.faces, preserveWinding: true)
-          guard valid(local) else { return false }
           if radius == 0 {
+            guard (try? prepare(local)) != nil else { return false }
             if let hit = GameplayRaycast.nearest(
               origin: origin, direction: direction,
               maxDistance: range, bodies: [body], meshOverrides: [body.id: local])
@@ -727,6 +791,7 @@ extension Game {
       bodies.lazy.filter({ $0.id == body.id }).count == 1,
       let shot = body.scriptShot, let descriptor = shot.missionDescriptor,
       let record = commander.scriptState.projectiles[projectileID], record.valid,
+      commander.scriptState.projectileArchiveValid(record),
       record.presence == .present, record.body.id == body.id,
       record.galaxy == commander.galaxy, record.system == commander.system,
       let retained = record.body.scriptShot,
