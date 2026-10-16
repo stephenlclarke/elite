@@ -266,6 +266,9 @@ extension Game {
       stored.definition == state.definition, stored.version == state.version,
       stored.digest == state.digest, stored.revision == state.revision
     else { throw MissionPackError("Prepared actors require the actual command candidate owner.") }
+    guard stored.ownedEncounters[encounter.id]?.admitted != true else {
+      throw MissionPackError("An admitted retained cohort cannot become a fresh prepared source.")
+    }
     let authority: MissionActorAdmissionAuthority
     if let worldJob, let pulse {
       guard let job = commander.scriptState.worldJobs[worldJob], job.identity == worldJob,
@@ -311,7 +314,38 @@ extension Game {
             "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
         actor.body.missionInstanceID == state.id, actor.body.scriptShot == nil
       else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
-      templates.append(try missionActorAdmissionTemplate(actor, specification: spec, pack: pack))
+      let template = try missionActorAdmissionTemplate(actor, specification: spec, pack: pack)
+      if mode == .prepared {
+        guard actor.body.id == -1, actor.body.physical == nil,
+          actor.body.position == .init(spec.x, spec.y, spec.z),
+          actor.body.orientation == Basis3(), actor.body.energy == template.maximumHullEnergy,
+          actor.body.hostile == spec.hostile,
+          template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
+        else {
+          throw MissionPackError(
+            "A prepared actor must retain its actual authored initial condition.")
+        }
+        if let npc = actor.body.scriptNPC {
+          guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
+            npc.velocity == .init(0, 0, 0),
+            actor.body.missiles == npc.fit.definition.missiles,
+            actor.body.ecmEnabled == npc.fit.definition.ecm,
+            npc.guns.values.allSatisfy({ $0 == ScriptNPCGunState() }),
+            npc.components.values.allSatisfy({
+              $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
+            })
+          else {
+            throw MissionPackError("Prepared NPC resources cannot substitute spent retained state.")
+          }
+        } else {
+          guard actor.body.missiles == actor.body.hull.navalMissiles,
+            actor.body.ecmEnabled == actor.body.hull.hasECM
+          else {
+            throw MissionPackError("Prepared classic stock differs from its actual hull defaults.")
+          }
+        }
+      }
+      templates.append(template)
     }
     return .init(
       mode: mode, authority: authority, instance: state, pack: pack,
