@@ -211,34 +211,42 @@ extension Game {
         throw MissionPackError("A completed donation requires its native pledge receipt.")
       }
     }
-    guard outcome != .active,
-      outcome != .complete
-        || (state.milestones.count == pack.manifest.mission.milestones.count
-          && (pack.manifest.mission.requiredDestructionEncounters ?? []).allSatisfy {
-            state.ownedEncounters[$0]?.destroyed == true
-          }
-          && (pack.manifest.mission.requiredPassengerParties ?? []).allSatisfy {
-            passengersDelivered($0, pack: pack, instance: state, commander: candidate)
-          }
-          && (pack.manifest.mission.requiredChoiceGroups ?? []).allSatisfy {
-            state.choiceReceipts[$0] != nil
-          }
-          && (pack.manifest.mission.requiredBooks ?? []).allSatisfy {
-            let book = candidate.scriptState.books[pack.manifest.id + "/" + $0]
-            return book?.version == pack.manifest.version && book?.digest == pack.digest
-          }
-          && (pack.manifest.mission.requiredCollections ?? []).allSatisfy { id in
-            state.collections[id]?.complete == true
-              && state.collections[id]?.definition
-                == pack.manifest.collections?.first(where: { $0.id == id })
-          }
-          && scriptAnswersSatisfied(pack, state: state)
-          && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
-          && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {
-            state.gearIssues[$0]?.status == .returned
-          })
-    else {
-      throw MissionPackError("Complete every required objective before reporting.")
+    func requireObjective(_ satisfied: Bool) throws {
+      guard satisfied else {
+        throw MissionPackError("Complete every required objective before reporting.")
+      }
+    }
+    try requireObjective(outcome != .active)
+    if outcome == .complete {
+      try requireObjective(state.milestones.count == pack.manifest.mission.milestones.count)
+      for id in pack.manifest.mission.requiredDestructionEncounters ?? [] {
+        try requireObjective(state.ownedEncounters[id]?.destroyed == true)
+      }
+      for id in pack.manifest.mission.requiredPassengerParties ?? [] {
+        try requireObjective(
+          passengersDelivered(id, pack: pack, instance: state, commander: candidate))
+      }
+      for id in pack.manifest.mission.requiredChoiceGroups ?? [] {
+        try requireObjective(state.choiceReceipts[id] != nil)
+      }
+      for id in pack.manifest.mission.requiredBooks ?? [] {
+        let book = candidate.scriptState.books[pack.manifest.id + "/" + id]
+        try requireObjective(book?.version == pack.manifest.version && book?.digest == pack.digest)
+      }
+      for id in pack.manifest.mission.requiredCollections ?? [] {
+        try requireObjective(
+          state.collections[id]?.complete == true
+            && state.collections[id]?.definition
+              == pack.manifest.collections?.first(where: { $0.id == id })
+        )
+      }
+      try requireObjective(scriptAnswersSatisfied(pack, state: state))
+      for issue in state.gearIssues.values {
+        try requireObjective(!issue.loan || issue.status != .issued)
+      }
+      for id in pack.manifest.mission.requiredEquipmentReturns ?? [] {
+        try requireObjective(state.gearIssues[id]?.status == .returned)
+      }
     }
     if outcome == .complete, let job = state.contract, let due = job.deadline,
       candidate.scriptState.clock(job.clock) >= due
