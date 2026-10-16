@@ -6,7 +6,7 @@ Mission engine pages need routes through the current UI. Add contract/library pr
 
 ## Implementation
 
-`MissionUIAction` centralizes menu titles, availability and exact-page requirements. `MissionUIIntent.isCurrent(in:)` rejects stale epochs and changed page proofs before actor dispatch. `NativeMissionMenu` installs explicit menu items without keyboard equivalents, preserves existing items and validates against the latest snapshot. Gallery replacement keeps legacy identifiers and actual saved-instance/template identities stable before clamping removed selections.
+`MissionUIAction` centralizes menu titles, availability and exact-page requirements. `MissionUIIntent.isCurrent(in:)` rejects changed screen, inventory context, ECM epoch and page proofs before actor dispatch. `NativeMissionMenu` installs explicit menu items without keyboard equivalents, preserves existing items and validates availability against the latest snapshot and requires an explicit matching actual-painted-page proof for contracts, Try and Retry. Gallery replacement keeps legacy identifiers and actual saved-instance/template identities stable before clamping removed selections.
 
 The accepted `ContractBoardDisplay.swift` and `ScriptLibraryDisplay.swift` are already present at the base and are reused without modification. Existing finite-mesh projection, inventory interactions, fonts, HUD and flight controls are preserved.
 
@@ -16,7 +16,7 @@ Follow `MISSION-UI-INTEGRATION.md` in this directory. The isolated slice intenti
 
 ## Validation
 
-Authored `MissionUICompositionTests` and `NativeMissionMenuTests` cover availability, read-only library return, current numbered navigation, stale epoch/availability, responsive routes, native menu idempotence, preserved accelerators and captured proof. Formatting and `git diff --check` pass. Tests, compilation, native interactions, sanitizers, coverage and leak gates are unexecuted under the active shared lease. Run focused tests after composition, then the shared `make ci` lane. Independent review remains required.
+Authored `MissionUICompositionTests` and `NativeMissionMenuTests` cover availability, read-only library return, current numbered navigation, stale epoch/availability, responsive routes, native menu idempotence, preserved accelerators and captured proof. Review follow-up adds successful trial-start/return parent-intent refusal despite the same restored screen/ECM epoch, same-epoch screen changes, and painted/latest mismatch, absence and bounds refusal. Formatting and `git diff --check` pass. Tests, compilation, native interactions, sanitizers, coverage and leak gates are unexecuted under the active shared lease. Run focused tests after composition, then the shared `make ci` lane. Independent review remains required.
 
 ## Links and risks
 

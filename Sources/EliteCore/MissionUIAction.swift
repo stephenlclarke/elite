@@ -64,15 +64,20 @@ public enum MissionUIAction: String, CaseIterable, Sendable {
 public struct MissionUIIntent: Sendable, Equatable {
   public let action: MissionUIAction
   public let presentation: ScriptPagePresentation
+  public let screen: Screen
+  public let inventoryContext: InventoryContextEpoch
   /// Check again inside GameRuntime immediately before dispatch, without an intervening await.
   public func isCurrent(in game: Game) -> Bool {
-    presentation.epoch == game.scriptPagePresentation.epoch && action.isEnabled(in: game)
+    screen == game.screen && inventoryContext == game.inventoryContextEpoch
+      && presentation.epoch == game.scriptPagePresentation.epoch && action.isEnabled(in: game)
       && (!action.requiresPageProof || presentation == game.scriptPagePresentation)
   }
 
-  public init(action: MissionUIAction, presentation: ScriptPagePresentation) {
+  public init(action: MissionUIAction, game: Game, presentation: ScriptPagePresentation) {
     self.action = action
     self.presentation = presentation
+    screen = game.screen
+    inventoryContext = game.inventoryContextEpoch
   }
 }
 

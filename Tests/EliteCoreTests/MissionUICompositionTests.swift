@@ -42,28 +42,60 @@ struct MissionUICompositionTests {
     var game = Game(executive: false)
     game.screen = .status
     game.docked = true
-    let intent = MissionUIIntent(action: .contracts, presentation: game.scriptPagePresentation)
+    let intent = MissionUIIntent(
+      action: .contracts, game: game, presentation: game.scriptPagePresentation)
     #expect(intent.isCurrent(in: game))
     let stale = MissionUIIntent(
-      action: .contracts, presentation: .init(epoch: UUID(), page: nil))
+      action: .contracts, game: game, presentation: .init(epoch: UUID(), page: nil))
     #expect(!stale.isCurrent(in: game))
     game.docked = false
     #expect(!intent.isCurrent(in: game))
   }
 
-  @Test func actorRejectsStaleIntentThenDispatchesCurrentReadOnlyLibraryIntent() async {
+  @Test func sameEpochDifferentScreenRefusesNonPageAction() {
     var game = Game(executive: false)
     game.screen = .status
+    let intent = MissionUIIntent(
+      action: .library, game: game, presentation: game.scriptPagePresentation)
+    let epoch = game.scriptPagePresentation.epoch
+    game.screen = .front
+    #expect(game.scriptPagePresentation.epoch == epoch)
+    #expect(MissionUIAction.library.isEnabled(in: game))
+    #expect(!intent.isCurrent(in: game))
+  }
+
+  @Test func successfulTrialReturnDoesNotReviveParentNonPageIntent() async throws {
+    let examples = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-passengers")
+    let pack = try ScriptPackLibrary.read(examples)
+    var game = Game(executive: false)
+    game.screen = .status
+    game.scriptPacks = [pack]
+    game.openGallery()
     let runtime = GameRuntime(game: game)
-    let stale = MissionUIIntent(
-      action: .library, presentation: .init(epoch: UUID(), page: nil))
-    await runtime.missionUICommand(stale)
-    let unchanged = await runtime.snapshot()
-    #expect(unchanged.screen == .status && unchanged.commander == game.commander)
+    let parent = await runtime.snapshot()
+    let oldIntent = MissionUIIntent(
+      action: .library, game: parent, presentation: parent.scriptPagePresentation)
+    #expect(oldIntent.isCurrent(in: parent))
+    try await runtime.startScriptGalleryTrial(packDigest: pack.digest, seed: 42)
+    let namespace = try #require(await runtime.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    #expect(await runtime.snapshot().isMissionTrial)
+    try await runtime.returnFromScriptGalleryTrial()
+    let restored = await runtime.snapshot()
+    #expect(!restored.isMissionTrial)
+    #expect(restored.screen == parent.screen)
+    #expect(restored.ecmControl.epoch == parent.ecmControl.epoch)
+    #expect(restored.inventoryContextEpoch != parent.inventoryContextEpoch)
+    #expect(!oldIntent.isCurrent(in: restored))
+    await runtime.missionUICommand(oldIntent)
+    let refused = await runtime.snapshot()
+    #expect(refused.screen == parent.screen && refused.commander == parent.commander)
     await runtime.missionUICommand(
-      .init(action: .library, presentation: unchanged.scriptPagePresentation))
+      .init(action: .library, game: refused, presentation: refused.scriptPagePresentation))
     let opened = await runtime.snapshot()
-    #expect(opened.screen == .library && opened.commander == game.commander)
+    #expect(opened.screen == .library && opened.commander == parent.commander)
   }
 
   @Test func missionPanelsUseResponsivePresentationAtSupportedViewportSizes() {
