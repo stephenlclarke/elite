@@ -29,6 +29,7 @@ struct NativeMissionWeaponGeometryTests {
     game.bodies.append(.init(id: targetID, hull: .sidewinder, position: .init(0, 0, 2000)))
     game.ensurePhysicalActors()
     let source = try #require(game.bodies.first { $0.id == sourceID })
+    let targetEnergy = try #require(game.bodies.first { $0.id == targetID }?.energy)
     let contact = try game.nearestMissionCollision(
       from: .init(0, 0, 24), direction: .init(0, 0, 1), range: 700,
       radius: 0, includePlayer: false)
@@ -57,7 +58,7 @@ struct NativeMissionWeaponGeometryTests {
     let damaged = try #require(game.bodies.first { $0.id == sourceID })
     #expect(damaged.energy == source.energy)
     #expect(damaged.scriptNPC?.components["turret"]?.energy == 0)
-    #expect(game.bodies.first { $0.id == targetID }?.energy == Hull.sidewinder.navalEnergy ?? 100)
+    #expect(game.bodies.first { $0.id == targetID }?.energy == targetEnergy)
     #expect(game.bodies.first { $0.id == missile.id }?.physical?.ordnance?.termination == .impact)
     #expect(game.bodies.first { $0.id == missile.id }?.energy == 0)
     #expect(game.commander.credits == credits)

@@ -8,10 +8,11 @@ extension Game {
     let flight = commander.flightSimulation
     guard !docked, !commander.scriptState.instances.isEmpty,
       !bodies.contains(where: { $0.id == 0 }),
-      flight.system == systemIdentity,
+      flight.valid, flight.system == systemIdentity,
       let anchors = flight.anchors, anchors.system == systemIdentity,
       anchors.station.identity.system == systemIdentity,
       anchors.station.identity.visit == flight.visit,
+      anchors.station.identity.entity == 1, anchors.station.identity.entity < flight.nextActor,
       !bodies.contains(where: { $0.physical?.identity == anchors.station.identity }),
       let frame = scriptReferenceFrame, frame.valid,
       frame.galaxy == commander.galaxy, frame.system == commander.system,

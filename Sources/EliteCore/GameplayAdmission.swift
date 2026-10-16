@@ -150,14 +150,18 @@ extension Game {
         request.population == .mission,
         request.hull == template.canonicalBody.hull,
         request.energy == template.canonicalBody.energy,
-        request.npc?.resources?.energyCapacity == template.maximumHullEnergy,
+        request.npc?.resources.map { $0.energyCapacity == template.maximumHullEnergy }
+          ?? (template.canonicalBody.scriptNPC != nil && template.maximumHullEnergy > 100000),
         !bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
       else { return .staleContext }
       if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
         return refusal
       }
       let radius = template.radius
-      guard spawnParametersSafe(request, context: context, measuredRadius: radius),
+      guard
+        spawnParametersSafe(
+          request, context: context, measuredRadius: radius,
+          measuredMaximumEnergy: template.maximumHullEnergy),
         (request.position - context.player.position).length > radius + playerRadius + 64
       else { return .unsafePosition }
       for actor in context.actors where actor.energy > 0 {
@@ -224,17 +228,18 @@ extension Game {
   }
 
   private func spawnParametersSafe(
-    _ request: SpawnRequest, context: EncounterContext, measuredRadius: Double? = nil
+    _ request: SpawnRequest, context: EncounterContext, measuredRadius: Double? = nil,
+    measuredMaximumEnergy: Double? = nil
   ) -> Bool {
     guard request.position.finite, request.velocity.finite,
       request.orientation.x.finite, request.orientation.y.finite, request.orientation.z.finite,
       request.angularVelocity.finite
     else { return false }
     let radius = measuredRadius ?? spawnRadius(request)
+    let maximumEnergy = measuredMaximumEnergy ?? request.npc?.resources?.energyCapacity ?? 100000
     guard request.npc?.resources?.valid ?? true,
-      request.energy.map({
-        $0.isFinite && $0 >= 0 && $0 <= (request.npc?.resources?.energyCapacity ?? 100000)
-      }) ?? true,
+      maximumEnergy.isFinite, maximumEnergy > 0,
+      request.energy.map({ $0.isFinite && $0 >= 0 && $0 <= maximumEnergy }) ?? true,
       radius.isFinite, radius > 0,
       (request.position - context.anchors.planet.position).length > context.anchors.planet.radius
         + radius,
