@@ -41,9 +41,9 @@ import Testing
   game.commander.fuel = 0
   game.ensureMissionCalendar()
   let before = game.commander
-  let random = game.randomState
+  let random = game.scriptSimulationSave.randomState
   #expect(throws: MissionPackError.self) { try game.ensureContractBoard(fixture.pack) }
-  #expect(game.commander == before && game.randomState == random)
+  #expect(game.commander == before && game.scriptSimulationSave.randomState == random)
 }
 
 @Test func courierAllDisabledLongRangeRowsKeepAllSixDrawsAndNeverReroll() throws {
