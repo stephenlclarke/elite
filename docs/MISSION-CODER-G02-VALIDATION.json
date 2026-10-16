@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "approved standalone Gallery phase helper and real failed-handler rollback regression committed but uncompiled/unexecuted; full014coverage/TSan old-source passes and ASanfailure preserved",
+  "stage": "standalone trial correction passed exact native ASan, related30/32 ASan and affected149/239 coverage; required fresh media/refreeze/full canonical pending",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,10 +280,9 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "New numbered exact failing standalone native Gallery ASan FIRST for approved helper",
-    "If passing: owned failed-handler rollback plus related native/campaign/legacy/courier/G21 proof",
-    "Required media/refreeze and one fresh full canonical including completeASan/leaks",
-    "Final owner acceptance, integration/formal PR; separate G1/Inventory composition"
+    "Fresh numbered renderer regeneration/commit/refreeze then ONE fresh complete make ci",
+    "Final source-owner acceptance and central integration/formal PR review/fix/review/merge",
+    "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
     "commit": "f55b5db2cfc6346220db2f5b098e949792e4f3b6",
@@ -2658,11 +2657,164 @@
     "ownerRecordCommit": "db424ceea5e6ba8258415029c2c69e5306d032ce",
     "localOwnerRecord": "9442dc6402255ef27e1b5fc622c2c61b7d8ea633",
     "scope": "Only non-board trial branch/private straight-line acceptance candidate helper and one owned real-Lua-error direct-prepare atomicity test. Normal standalone API, board/fullquote, actor/settings, flight and runtime publication unchanged.",
-    "status": "uncompiled/unexecuted; G1 registry016 heavyexclusive",
+    "status": "bounded source-specific passed on42ceeef; not fullCI",
     "firstSelector": "nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview",
     "firstFlags": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel",
     "negativeSelector": "courierStandaloneTrialHandlerFailurePreservesOriginalGame",
     "analysis": "/tmp/elite-g02-standalone-trial-phase-analysis.json",
     "limits": "Structural frame lifetime hypothesis, no runtime peak or guaranteed remedy. All014fullASanfailure artifacts retained; no furtherbuild/native/media."
+  },
+  "standaloneTrialBoundedCheckpoint": {
+    "candidate": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+    "runs": {
+      "first-native-asan": {
+        "methods": 1,
+        "caseInvocations": 1,
+        "result": {
+          "commit": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-017",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-016",
+            "purpose": "Exactapproved2778BstandaloneTrialphase repair samecanonicalserialASan nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview FIRST; onlyifpass ownedLuaerrorrollback+boundedrelatedASan/defaultcoverage. No media/fullCI/sourcechange/repairretry/waiver."
+          },
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=0",
+            "swift",
+            "test",
+            "--scratch-path",
+            ".build/asan",
+            "--sanitize=address",
+            "--no-parallel",
+            "--filter",
+            "nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview"
+          ],
+          "startUTC": "2026-10-16T09:07:53.123916+00:00",
+          "endUTC": "2026-10-16T09:08:28.258934+00:00",
+          "seconds": 35.13494341704063,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "978978eeb1b2a5e0c117e478a9d783def448bfda043ff3c62f286a73c3461f29"
+        }
+      },
+      "related-asan": {
+        "methods": 30,
+        "caseInvocations": 32,
+        "result": {
+          "commit": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-017",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-016",
+            "purpose": "Exactapproved2778BstandaloneTrialphase repair samecanonicalserialASan nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview FIRST; onlyifpass ownedLuaerrorrollback+boundedrelatedASan/defaultcoverage. No media/fullCI/sourcechange/repairretry/waiver."
+          },
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=0",
+            "swift",
+            "test",
+            "--scratch-path",
+            ".build/asan",
+            "--sanitize=address",
+            "--no-parallel",
+            "--filter",
+            "nativeCampaignGallery|nativeGalleryCampaign|nativePledge|nativeCourier|courierStandaloneTrialHandlerFailurePreservesOriginalGame|courierRejectedTrialPreparationKeepsParentNamespaceWriterAndControls|campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial|courierScriptState|campaignCapacityRefusesTheWholeRootWhenItsChildCannotFit|childAcceptanceWaitsForItsParentProposalAndNeverReissuesAfterAChildFault|failedNativeCampaignAcceptanceLeavesNoChildAndRetryKeepsOneOriginalPair"
+          ],
+          "startUTC": "2026-10-16T09:10:50.639205+00:00",
+          "endUTC": "2026-10-16T09:11:43.090090+00:00",
+          "seconds": 52.450816083932295,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "6ca1247b003517d33a58f5c6adc3f18b7fd658cd437e1f3dcd689f88b7eddd20"
+        }
+      },
+      "affected-coverage": {
+        "methods": 149,
+        "caseInvocations": 239,
+        "result": {
+          "commit": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-017",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-016",
+            "purpose": "Exactapproved2778BstandaloneTrialphase repair samecanonicalserialASan nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview FIRST; onlyifpass ownedLuaerrorrollback+boundedrelatedASan/defaultcoverage. No media/fullCI/sourcechange/repairretry/waiver."
+          },
+          "command": [
+            "swift",
+            "test",
+            "--enable-code-coverage",
+            "--filter",
+            "[Cc]ampaign|[Rr]eceipt|[Cc]ontract|[Pp]ledge|[Cc]ourier"
+          ],
+          "startUTC": "2026-10-16T09:13:29.926852+00:00",
+          "endUTC": "2026-10-16T09:14:04.110228+00:00",
+          "seconds": 34.183307541999966,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "ade2ea37109d3577501c5e8082add058141ea48afa3d5a1f32fa9aa321c0e133"
+        }
+      }
+    },
+    "affectedCoverageMethods": 149,
+    "affectedCoverageCases": 239,
+    "relatedASanMethods": 30,
+    "relatedASanCases": 32,
+    "nativeMethodsInAffected": 25,
+    "ownedCourierMethods": 37,
+    "ownedCourierCases": 54,
+    "unchangedTrackedInputs": 935,
+    "productionSavePreferences": "unchanged in every phase",
+    "emittedEvidence": {
+      "path": "/tmp/elite-g02-standalone-phase-checkpoint/standalone-trial-ASan-phase-comparison.json",
+      "sha256": "2e515d4469866028d842508e92267e60943dd5f4bcbc9a9c07cf424ef539a192",
+      "prepareFixedAdjustmentBytes": [
+        3440,
+        3184
+      ],
+      "helperFixedAdjustmentBytes": 1488,
+      "limits": "Initial fixed adjustments exclude saved registers/alignment/dynamic metadata allocations; no runtime peak measurement. Straight-line helper accepts/returns before separate drain; board prepare frame not enlarged."
+    },
+    "lease017ExplicitlyReleased": true,
+    "remaining": "Required renderer regeneration/committed full input refreeze and fresh complete makeci; actual fullASan/leaks then owner acceptance/integration/formalPR"
   }
 }
