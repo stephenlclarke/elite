@@ -1,5 +1,15 @@
 import Foundation
 
+extension OwnedEquipmentItem {
+  /// Every actual physical consumption emits these values, including personal devices with no issue delta.
+  public var scriptConsumptionValues: [String: ScriptValue] {
+    let name =
+      retainedLegacyState?.originalEquipmentName
+      ?? (node == EquipmentRuntimeCatalog.standardMissile ? "Missile" : node.key)
+    return ["item": .string(id.uuidString), "name": .string(name)]
+  }
+}
+
 extension LegacyOwnedEquipmentInventory {
   /// Explicit old-save admission only. Historical nonloan absence does not imply consumption.
   public func validateIssues(in engine: ScriptEngineState) throws {
@@ -182,7 +192,7 @@ extension ScriptEngineState {
     }
     return .init(
       source: source, item: removed.id, before: before, after: after,
-      values: ["item": .string(removed.id.uuidString), "name": .string(before.kind.name)])
+      values: removed.scriptConsumptionValues)
   }
 
   public func applying(_ delta: ScriptGearConsumptionDelta) throws -> Self {

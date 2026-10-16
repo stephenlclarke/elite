@@ -87,9 +87,12 @@ struct ScriptLegacyGearPersistenceTests {
     try await runtime.load(from: file, persistMigrations: false)
     let loaded = await runtime.snapshot()
     try fixture.verify(loaded.commander)
-    #expect(loaded.commander.scriptState.instances[fixture.mission]?.suspension != nil)
     #expect(loaded.commander.scriptState.calendarLedger?.origin == .inactiveLegacyMigration)
     #expect(try Data(contentsOf: file) == bytes)
+    _ = await runtime.advance(delta: 0.1)
+    let unavailable = await runtime.snapshot()
+    try fixture.verify(unavailable.commander)
+    #expect(unavailable.commander.scriptState.instances[fixture.mission]?.suspension != nil)
   }
 
   @Test func genuineContainer20LegacyChunksJoinThenMigrateAndReturnTheActualHeldOriginal() throws {

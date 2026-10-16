@@ -168,6 +168,10 @@ struct ScriptEquipmentSeamTests {
     let personal = OwnedEquipmentItem(
       id: item, node: EquipmentRuntimeCatalog.standardMissile, provenance: .standard)
     #expect(try engine.gearConsumptionDelta(for: personal) == nil)
+    #expect(
+      personal.scriptConsumptionValues == [
+        "item": .string(item.uuidString), "name": .string("Missile"),
+      ])
     let orphan = OwnedEquipmentItem(
       id: item, node: EquipmentRuntimeCatalog.standardMissile,
       provenance: .missionIssue(
