@@ -426,7 +426,7 @@ public struct RelativeWorkController: Sendable {
       max(-limits.rollRate, min(limits.rollRate, rates.z)))
   }
 
-  private static func rotated(_ basis: Basis3, omega: Vector3, delta: Double) -> Basis3 {
+  static func rotated(_ basis: Basis3, omega: Vector3, delta: Double) -> Basis3 {
     guard omega.length > 1e-9 else { return basis }
     var result = basis
     result.x = rotate(basis.x, axis: omega.unit, angle: omega.length * delta)
