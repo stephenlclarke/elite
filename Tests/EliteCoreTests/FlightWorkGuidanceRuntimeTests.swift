@@ -220,6 +220,7 @@ struct FlightWorkGuidanceRuntimeTests {
     game.advanceWorkGuidance(delta: 0.1)
     let motion = try #require(game.approvedWorkMotion)
     let beforeCargo = game.modelPose(of: game.bodies[0])
+    let cargoVelocity = try #require(game.bodies[0].physical?.velocity)
     #expect(motion.start == start && motion.acceleration.length > 0)
     let moved = game.moveWorkFrame(delta: 0.1)
     #expect(moved)
@@ -227,7 +228,9 @@ struct FlightWorkGuidanceRuntimeTests {
     #expect(game.approvedWorkMotion == nil && game.lastAppliedWorkMotion == motion)
     #expect(
       (game.flightWorldVelocity - motion.initialVelocity - motion.acceleration * 0.1).length < 1e-9)
-    #expect((game.modelPose(of: game.bodies[0]).position - beforeCargo.position).length < 1e-8)
+    #expect(
+      (game.modelPose(of: game.bodies[0]).position - beforeCargo.position - cargoVelocity * 0.1)
+        .length < 1e-8)
     let correct = start.position + motion.initialVelocity * 0.1 + motion.acceleration * 0.005
     #expect((motion.end.position - correct).length < 1e-9)
     #expect((motion.end.position - start.position - game.flightWorldVelocity * 0.1).length > 1e-4)
@@ -236,9 +239,17 @@ struct FlightWorkGuidanceRuntimeTests {
   @Test func realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary() throws {
     var game = try workRuntimeGame()
     let collectedActor = try addWorkCargo(
-      &game, position: .init(0, -45, 55), velocity: .init(0, 0, 10))
+      &game, position: .init(0, 0, 500), velocity: .init(0, 0, 10))
     engageWorkCargo(&game)
-    game.workGuidance?.velocity = .init(0, 0, 10)
+    // Engage while facing the actual front face, then start the capture check at its aperture.
+    game.bodies[0].position = .init(0, -45, 55)
+    game.workGuidance?.velocity = game.bodies[0].physical?.velocity ?? .init(0, 0, 0)
+    if let payload = game.bodies[0].physical?.payload, case .salvage(let lot) = payload {
+      game.commander.salvageLedger.updateLot(
+        lot,
+        position: game.commander.flightSimulation.pose.systemPoint(game.bodies[0].position),
+        velocity: game.bodies[0].physical?.velocity ?? .init(0, 0, 0))
+    }
     let before = game.commander.cargoTonnes
     game.tick(delta: 0.02)
     #expect(game.commander.cargoTonnes == before + 1)
@@ -490,15 +501,20 @@ struct FlightWorkGuidanceRuntimeTests {
     let body = try #require(game.bodies.first { $0.physical?.payload == payload.identity })
     let actor = try #require(body.physical?.identity)
     #expect(game.commander.miningLedger.boundActor(for: payload.identity) == actor)
-    #expect(game.workGuidance?.mode == .autoScoop(.mining))
-    #expect(game.workGuidance?.parent == actor)
+    #expect(game.workRecoveryRock == rock.identity)
+    #expect(game.workBraking != nil || game.workGuidance?.mode == .autoScoop(.mining))
     let native = Mesh.hull(.cargo)
     #expect(game.gameplayMesh(for: body).vertices == native.vertices)
     let before = game.commander.cargo[payload.amount.commodity.rawValue]
+    var interceptedActualOre = false
     for _ in 0..<600 {
+      if game.workGuidance?.mode == .autoScoop(.mining), game.workGuidance?.parent == actor {
+        interceptedActualOre = true
+      }
       game.tick(delta: 0.1)
       if game.commander.miningLedger.boundActor(for: payload.identity) == nil { break }
     }
+    #expect(interceptedActualOre)
     #expect(
       game.commander.cargo[payload.amount.commodity.rawValue] == before + payload.amount.quantity)
     #expect(
@@ -531,8 +547,12 @@ struct FlightWorkGuidanceRuntimeTests {
     #expect(game.automaticScoopShapeCompatible(game.bodies[index], context: context))
     let anchors = try #require(game.commander.flightSimulation.anchors)
     let fields = MiningFields.generate(anchors: anchors, seed: game.gameplaySeed)
-    let rock = try #require(fields.flatMap(\.rocks).first { $0.radius > 45 })
-    game.miningFields = fields
+    let generated = try #require(fields.flatMap(\.rocks).first)
+    // Deliberately author a custom large override; generated rocks have radii 18..<40.
+    let rock = MiningRock(
+      identity: generated.identity, position: generated.position,
+      radius: 100, energy: generated.energy)
+    game.miningFields = [.init(position: rock.position, rocks: [rock])]
     game.bodies[index].physical?.rock = rock.identity
     let scaled = game.gameplayMesh(for: game.bodies[index])
     #expect(scaled.vertices != Mesh.hull(.cargo).vertices)

@@ -109,6 +109,8 @@ private func solarGame(distance: Double = 2970) -> Game {
   #expect(Set(game.celestials.map(\.kind)) == [.sun, .planet])
   let scene = game.celestials
   game.cabinTemperature = 0.6
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
   let commander = try JSONDecoder().decode(
     Commander.self, from: JSONEncoder().encode(game.commander))
   let loaded = game.load(commander)

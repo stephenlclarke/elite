@@ -91,6 +91,9 @@ private func computerGame(_ tier: TargetingTier) -> Game {
     target.missiles = 2
     target.ecmEnabled = true
     game.bodies = [target]
+    game.ensurePhysicalActors()
+    // This disclosure fixture intentionally has no observed resource readings.
+    game.bodies[0].physical?.npc?.resources = nil
     game.key("r")
     let info = game.targetInformation
     #expect(info?.id == 17)
@@ -117,6 +120,9 @@ private func computerGame(_ tier: TargetingTier) -> Game {
   var game = computerGame(.military)
   game.commander.shipDisplayStyle = .whiteWireframe
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 1000))]
+  game.ensurePhysicalActors()
+  // An explicitly unknown route must remain unknown in the independent camera.
+  game.bodies[0].physical?.npc?.routeProvenance = nil
   game.key("r")
   game.screen = .rear
   game.targetPanelExpanded = true
