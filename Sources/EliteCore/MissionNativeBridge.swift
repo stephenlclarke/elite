@@ -852,9 +852,12 @@ extension Game {
     try MissionNativeBridge.validateArchive(
       shot.nativeAttribution, shot: descriptor, packDigest: instance.digest)
     if let archive = shot.nativeAttribution {
-      guard archive.origin.owner.system == context.system else {
-        throw MissionNativeBridgeError.invalidArchive
-      }
+      // Archive shape is context-free. Its historical emission must also be possible in the
+      // actual persisted native clock before this producer can grant an impact capability.
+      guard archive.origin.owner.system == context.system,
+        context.physicalTime.isFinite, context.physicalTime >= 0,
+        archive.origin.emittedAt <= context.physicalTime
+      else { throw MissionNativeBridgeError.invalidArchive }
     }
     // Stored pose, velocity and age may be older or in the station frame. Immutable source and
     // tuning join above; motion below comes exclusively from the current physical shot.

@@ -780,6 +780,38 @@ struct MissionNativeBridgeTests {
     let known = try #require(game.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
     #expect(known.hit.target == .player && known.currentSource == binding.nativeActor)
     #expect(known.originalOrigin == origin && known.frozenJudgement == law)
+    var older = game
+    older.commander.flightSimulation.advancePhysicalTime(1)
+    let historical = try #require(older.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    #expect(historical.originalOrigin == origin && historical.frozenJudgement == law)
+    #expect(origin.emittedAt < older.commander.flightSimulation.physicalTime)
+    var shotJSON = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(shot)) as? [String: Any])
+    var archiveJSON = try #require(shotJSON["nativeAttribution"] as? [String: Any])
+    var judgementJSON = try #require(archiveJSON["judgement"] as? [String: Any])
+    var factsJSON = try #require(judgementJSON["facts"] as? [String: Any])
+    var originJSON = try #require(factsJSON["origin"] as? [String: Any])
+    originJSON["emittedAt"] = game.commander.flightSimulation.physicalTime + 100
+    factsJSON["origin"] = originJSON
+    judgementJSON["facts"] = factsJSON
+    archiveJSON["judgement"] = judgementJSON
+    shotJSON["nativeAttribution"] = archiveJSON
+    let futureShot = try JSONDecoder().decode(
+      ScriptNPCShot.self,
+      from: JSONSerialization.data(withJSONObject: shotJSON))
+    let futureArchive = try #require(futureShot.nativeAttribution)
+    #expect(futureArchive.valid && futureShot.valid)
+    var future = game
+    future.bodies[index].scriptShot = futureShot
+    future.bodies[index].physical?.attackOrigin = futureArchive.origin
+    future.commander.scriptState.projectiles[shotID]?.body.scriptShot = futureShot
+    future.commander.scriptState.projectiles[shotID]?.body.physical?.attackOrigin =
+      futureArchive.origin
+    let futureBefore = future
+    #expect(throws: MissionNativeBridgeError.invalidArchive) {
+      try future.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    }
+    #expect(future.commander == futureBefore.commander && future.bodies == futureBefore.bodies)
     var absent = game
     absent.bodies.removeAll { $0.id == sourceBody.id }
     let unknown = try #require(absent.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
