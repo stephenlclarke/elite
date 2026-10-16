@@ -557,9 +557,6 @@ extension Game {
     frame.station.rotation += frame.station.rotationRate * delta
     scriptReferenceFrame = frame
   }
-  private func scriptRadius(_ body: SpaceBody) -> Double {
-    scriptNPCRadius(body)
-  }
   func scriptEncounterSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     .object(
       instance.ownedEncounters.mapValues { encounter in
@@ -629,65 +626,40 @@ extension Game {
       plan = ScriptOwnedEncounter(
         id: id, galaxy: definition.galaxy, system: definition.system, actors: actors)
     }
-    guard var encounter = plan else { throw MissionPackError("Encounter plan was not prepared.") }
+    guard let encounter = plan else { throw MissionPackError("Encounter plan was not prepared.") }
     if encounter.admitted {
       return ("encounter.admitted", ["encounter_id": .string(id), "existing": .bool(true)])
     }
     func pending(_ reason: String) -> (String, [String: ScriptValue]) {
       ("encounter.pending", ["encounter_id": .string(id), "reason": .string(reason)])
     }
-    _ = try preparedMissionActorAdmissionSource(
+    let source = try preparedMissionActorAdmissionSource(
       pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
     state.ownedEncounters[id] = encounter
-    guard !docked, definition.galaxy == commander.galaxy, definition.system == commander.system,
-      let anchor = scriptAnchor
-    else { return pending("Enter the declared system in flight with its main station available.") }
-    let proposedBodies = encounter.actors.values.map(\.body)
-    guard (bodies + proposedBodies).reduce(0, { $0 + $1.scriptNativeUnits }) <= 1024,
-      nextBodyID <= 999_998_000 - encounter.actors.count
-    else { return pending("The whole encounter needs more native actor capacity.") }
-    var prepared: [SpaceBody] = []
-    for alias in encounter.actors.keys.sorted() {
-      var body = encounter.actors[alias]!.body
-      body.position = anchor.position + anchor.orientation.apply(body.position)
-      body.orientation = body.orientation.transformed(by: anchor.orientation)
-      guard !body.leavesLocalBubble else {
+    switch try prepareMissionActorAdmission(source) {
+    case .pending(let reason):
+      switch reason {
+      case .unavailableArrival:
+        return pending("Enter the declared system in flight with its main station available.")
+      case .outsideLocalBubble:
         return pending("The complete cohort must fit the currently loaded space region.")
+      case .nativeUnits, .allocatorCapacity:
+        return pending("The whole encounter needs more native actor capacity.")
+      case .native:
+        return pending("The whole encounter awaits native capacity or unobstructed placement.")
       }
-      let radius = scriptRadius(body)
-      let playerRadius = scriptPlayerMesh.vertices.map(\.length).max() ?? 100
-      guard body.position.length > radius + playerRadius + 64 else {
-        return pending("An encounter placement overlaps the actual commander hull.")
-      }
-      for other in bodies + prepared {
-        guard (body.position - other.position).length > radius + scriptRadius(other) + 64 else {
-          return pending("An encounter placement is obstructed; the saved plan will be retained.")
-        }
-      }
-      body.id = nextBodyID + prepared.count
-      prepared.append(body)
+    case .unchanged:
+      throw MissionPackError("A fresh prepared cohort requires complete native admission.")
+    case .ready(let plan):
+      let staged = try plan.retentionPatch.preparingInstance(state)
+      let count = plan.sceneBodyIDs.count
+      _ = try commitMissionActorAdmission(plan)
+      state = staged
+      return (
+        "encounter.admitted",
+        ["encounter_id": .string(id), "count": .integer(Int64(count)), "existing": .bool(false)]
+      )
     }
-    // All placements and capacity were checked before any body becomes visible.
-    for body in prepared {
-      guard
-        let alias = encounter.actors.first(where: { $0.value.identity == body.missionActorID })?.key
-      else {
-        throw MissionPackError("Encounter identity mapping changed during admission.")
-      }
-      encounter.actors[alias]?.body.id = body.id
-      encounter.actors[alias]?.presence = .present
-    }
-    encounter.admitted = true
-    state.ownedEncounters[id] = encounter
-    bodies.append(contentsOf: prepared)
-    nextBodyID += prepared.count
-    return (
-      "encounter.admitted",
-      [
-        "encounter_id": .string(id), "count": .integer(Int64(prepared.count)),
-        "existing": .bool(false),
-      ]
-    )
   }
   /// Native facts retain canonical location/condition and never infer death from disappearance.
   mutating func persistScriptActors(unloading: Bool = false) {
@@ -734,52 +706,34 @@ extension Game {
       commander.scriptState.instances[instanceID] = instance
     }
   }
+  /// Every cohort's hard native/source checks precede any restoration publication. Plans are
+  /// deliberately discarded here; later preparation uses fresh counters after earlier commits.
+  @discardableResult
+  func validateRetainedMissionActorRestoration() throws -> [MissionActorAdmissionSource] {
+    let sources = try retainedMissionActorAdmissionSources()
+    for source in sources { _ = try prepareMissionActorAdmission(source) }
+    return sources
+  }
+
   /// Reprojects the same world actor after genuine native launch/arrival/camera travel.
   mutating func restoreScriptActors() throws {
     try validateRetainedMissionProjectileRestoration()
-    _ = try retainedMissionActorAdmissionSources()
+    let sources = try validateRetainedMissionActorRestoration()
     guard !commander.scriptState.instances.isEmpty, !docked, let anchor = scriptAnchor else {
       return
     }
-    if !bodies.contains(where: { $0.id == 0 }), !anchor.leavesLocalBubble, bodies.count < 1024 {
-      bodies.append(anchor)
-    }
-    var present = Set(bodies.compactMap(\.missionActorID))
-    for instanceID in commander.scriptState.instances.keys.sorted(by: {
-      $0.uuidString < $1.uuidString
-    }) {
-      guard var instance = commander.scriptState.instances[instanceID],
-        scriptPack(for: instance) != nil
-      else { continue }
-      for encounterID in instance.ownedEncounters.keys.sorted() {
-        guard var encounter = instance.ownedEncounters[encounterID], encounter.admitted,
-          encounter.galaxy == commander.galaxy, encounter.system == commander.system
-        else { continue }
-        for alias in encounter.actors.keys.sorted() {
-          guard var actor = encounter.actors[alias], actor.presence != .destroyed,
-            actor.presence != .prepared, !present.contains(actor.identity),
-            bodies.reduce(0, { $0 + $1.scriptNativeUnits }) + actor.body.scriptNativeUnits <= 1024,
-            nextBodyID < 999_999_999
-          else { continue }
-          var body = actor.body
-          body.position = anchor.position + anchor.orientation.apply(body.position)
-          body.orientation = body.orientation.transformed(by: anchor.orientation)
-          if let velocity = body.scriptNPC?.velocity {
-            body.scriptNPC?.velocity = anchor.orientation.apply(velocity)
-          }
-          guard !body.leavesLocalBubble, body.energy > 0 else { continue }
-          // Integer scene IDs may change, but world identity, condition and spent stock never do.
-          body.id = nextBodyID
-          nextBodyID += 1
-          bodies.append(body)
-          present.insert(actor.identity)
-          actor.body.id = body.id
-          actor.presence = .present
-          encounter.actors[alias] = actor
+    for source in sources {
+      switch try prepareMissionActorAdmission(source) {
+      case .pending, .unchanged: continue
+      case .ready(let plan):
+        let instanceID = source.instanceID
+        guard let current = commander.scriptState.instances[instanceID] else {
+          throw MissionPackError("Retained actor owner disappeared before native preparation.")
         }
-        instance.ownedEncounters[encounterID] = encounter
+        let staged = try plan.retentionPatch.preparingInstance(current)
+        _ = try commitMissionActorAdmission(plan)
+        commander.scriptState.instances[instanceID] = staged
       }
-      commander.scriptState.instances[instanceID] = instance
     }
     try restoreScriptShots(anchor: anchor)
   }
