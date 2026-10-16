@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "focused33/49 and native5 passed; broad regression/full CI and final owner acceptance pending",
+  "stage": "native5/focused33/49 passed; canonical CI stopped at legacy nested Gallery coverage stack overflow; proposed correction unapplied",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,10 +280,11 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "broad old-pack regression and complete make ci coverage/TSan/ASan/leak gates",
-    "final source-owner acceptance",
-    "central integration and actual @codex review/fix/review/final-head/merge",
-    "separate G1 equipment statistics and Inventory epoch composition"
+    "Independent source review of unapplied ordering-key stack-footprint proposal",
+    "Approved correction/refreeze/required focused regression and fresh full CI under later numbered lease",
+    "Final source-owner acceptance",
+    "Central integration and actual @codex review/fix/review/final-head/merge",
+    "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
     "commit": "f55b5db2cfc6346220db2f5b098e949792e4f3b6",
@@ -1126,5 +1127,306 @@
       "Native and focused checks are separate bounded runs, not full CI.",
       "Private admission references preserve immutable same-action authority; full quote/two-phase preparation retained."
     ]
+  },
+  "finalPreparation": {
+    "sourceBuildMetadataCommit": "b0b5660f2705f3a6d22264fc904275558909321e",
+    "sourceMediaFreeze": "52686c0298e63ab4e0350d3f036be59350fc803f",
+    "maintainedPackChecks": 18,
+    "ships": {
+      "commit": "b0b5660f2705f3a6d22264fc904275558909321e",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-005",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "b0b5660f2705f3a6d22264fc904275558909321e",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-004",
+        "purpose": "Authorized G02 final ships/README media preparation, immutable final refreeze, ONE fresh canonical make ci; no source edits during gate, stop on failure before repair/retry"
+      },
+      "command": [
+        "make",
+        "ships"
+      ],
+      "startUTC": "2026-10-16T06:20:44.855557+00:00",
+      "endUTC": "2026-10-16T06:21:29.724796+00:00",
+      "seconds": 44.86916554183699,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 934,
+      "changedInputs": [
+        "docs/ships/manifest.json"
+      ],
+      "logSHA256": "92f30858ed095b99051674e21b4b2fa97327b6e4b9dd1b55b5ecac22b8bc144b"
+    },
+    "readmeMedia": {
+      "commit": "52686c0298e63ab4e0350d3f036be59350fc803f",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-005",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "52686c0298e63ab4e0350d3f036be59350fc803f",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-004",
+        "purpose": "Authorized G02 final ships/README media preparation, immutable final refreeze, ONE fresh canonical make ci; no source edits during gate, stop on failure before repair/retry"
+      },
+      "command": [
+        "make",
+        "readme-media"
+      ],
+      "startUTC": "2026-10-16T06:21:50.783195+00:00",
+      "endUTC": "2026-10-16T06:21:59.644960+00:00",
+      "seconds": 8.861640375107527,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 934,
+      "changedInputs": [],
+      "logSHA256": "2b3a118c3e74a29431c7a46dff6b80a807fa835215197c68ac644ce920473bdd"
+    },
+    "freeze": {
+      "base": "880d3a65478ed9304cc926fc21fbf3db9bf6d140",
+      "sourceAndTestsNativeFocusedValidatedAt": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+      "sourceBuildMetadataCommit": "b0b5660f2705f3a6d22264fc904275558909321e",
+      "sourceAndMediaFreeze": "52686c0298e63ab4e0350d3f036be59350fc803f",
+      "trackedInputs": 934,
+      "frozenInputManifestSHA256": "bc732632d631abbb76275837ca9b6c74ad09296f59b700af02709af9ca885d78",
+      "evidenceInputCount": 228,
+      "frozenEvidenceManifestSHA256": "ed41fcfdf4f2ac0545508ebbeab79750075bf4cb3f250e0841a4c664077d9569",
+      "passingOriginalPNG": 54,
+      "durablePNG": 16,
+      "rendererMedia": "make ships regenerated168 byte-identical GIFs, source fingerprints updated; make readme-media regenerated byte-identical PNG/GIF/ICNS",
+      "gate": "one fresh make ci; no source/test/media/evidence input mutation allowed during gate"
+    }
+  },
+  "canonicalFinalAttempt": {
+    "commit": "52686c0298e63ab4e0350d3f036be59350fc803f",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-005",
+      "state": "active",
+      "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+      "candidate": "52686c0298e63ab4e0350d3f036be59350fc803f",
+      "mayUpdateCandidateWithinApprovedScope": true,
+      "previousLeaseId": "elite-validation-004",
+      "purpose": "Authorized G02 final ships/README media preparation, immutable final refreeze, ONE fresh canonical make ci; no source edits during gate, stop on failure before repair/retry"
+    },
+    "command": [
+      "make",
+      "ci"
+    ],
+    "startUTC": "2026-10-16T06:22:50.516359+00:00",
+    "endUTC": "2026-10-16T06:25:00.666511+00:00",
+    "seconds": 130.1501649999991,
+    "exit": 2,
+    "productionBefore": {
+      "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+      "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+    },
+    "productionAfter": {
+      "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+      "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+    },
+    "inputCount": 934,
+    "changedInputs": [],
+    "logSHA256": "4ce1348aeff1a47a3bb1fba16d2eb0dd0a97c9e8dca1789494063df9bd424dc6",
+    "phaseTimeline": [
+      {
+        "secondsFromStart": 0.003369125071913004,
+        "command": "python3 Tools/showroom/ship-reference.py --check"
+      },
+      {
+        "secondsFromStart": 3.0771122921723872,
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'"
+      },
+      {
+        "secondsFromStart": 17.09046075004153,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/courier.toml"
+      },
+      {
+        "secondsFromStart": 19.5161120002158,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-courier"
+      },
+      {
+        "secondsFromStart": 20.545767959207296,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-patrol"
+      },
+      {
+        "secondsFromStart": 21.581567542161793,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/linked-patrol"
+      },
+      {
+        "secondsFromStart": 29.28265295899473,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scoped-patrol"
+      },
+      {
+        "secondsFromStart": 36.75321637513116,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/branch-choice"
+      },
+      {
+        "secondsFromStart": 44.1982990000397,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/branch-patrol"
+      },
+      {
+        "secondsFromStart": 45.22468500002287,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/branch-courier"
+      },
+      {
+        "secondsFromStart": 46.26810691715218,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/station-conversation"
+      },
+      {
+        "secondsFromStart": 53.87215650011785,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/reference-book"
+      },
+      {
+        "secondsFromStart": 61.409358584089205,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/material-collection"
+      },
+      {
+        "secondsFromStart": 68.99309858400375,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-passengers"
+      },
+      {
+        "secondsFromStart": 76.66506233415566,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-equipment"
+      },
+      {
+        "secondsFromStart": 77.71998950000852,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-contracts"
+      },
+      {
+        "secondsFromStart": 78.7466196671594,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/generated-couriers"
+      },
+      {
+        "secondsFromStart": 86.38011045916937,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/station-donation"
+      },
+      {
+        "secondsFromStart": 93.97228700015694,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/calendar-contracts"
+      },
+      {
+        "secondsFromStart": 95.00135145918466,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/station-maintenance"
+      },
+      {
+        "secondsFromStart": 96.02308475016616,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/profiled-skirmish"
+      },
+      {
+        "secondsFromStart": 103.60065404209308,
+        "command": "./script/coverage.sh"
+      }
+    ],
+    "triage": {
+      "candidate": "52686c0298e63ab4e0350d3f036be59350fc803f",
+      "phase": "coverage Swift tests; no coverage export, TSan, ASan or leaks reached",
+      "commandSeconds": 130.1501649999991,
+      "signal": {
+        "codes": "0x0000000000000002, 0x000000016b1afff8",
+        "message": "Thread stack size exceeded",
+        "rawCodes": [
+          2,
+          6091898872
+        ],
+        "type": "EXC_BAD_ACCESS",
+        "signal": "SIGBUS",
+        "subtype": "KERN_PROTECTION_FAILURE at 0x000000016b1afff8"
+      },
+      "vmRegion": "0x16b1afff8 is in 0x16b1ac000-0x16b1b0000;  bytes after start: 16376  bytes before end: 7\n      REGION TYPE                    START - END         [ VSIZE] PRT/MAX SHRMOD  REGION DETAIL\n      Stack                       16b198000-16b1ac000    [   80K] rw-/rwx SM=COW  thread 5\n--->  Stack Guard                 16b1ac000-16b1b0000    [   16K] ---/rwx SM=PRV  stack guard for thread 6\n      Stack                       16b1b0000-16b238000    [  544K] rw-/rwx SM=COW  thread 6",
+      "faultingQueue": "com.apple.root.default-qos.cooperative",
+      "faultingStack": [
+        "___chkstk_darwin",
+        "closure #3 in Game.orderedScriptInstances.getter",
+        "partial apply for closure #3 in Game.orderedScriptInstances.getter",
+        "MutableCollection<>._insertionSort(within:sortedEnd:by:)",
+        "UnsafeMutableBufferPointer._stableSortImpl(by:)",
+        "Sequence.sorted(by:)",
+        "Game.orderedScriptInstances.getter",
+        "Game.emitScriptEvent(_:values:only:drain:)",
+        "Game.acceptScriptMission(_:instanceID:randomSeed:contract:campaignParent:drainAccepted:)",
+        "Game.ensureCampaignChild(_:pack:state:event:)",
+        "Game.drainScriptEvents(publish:)",
+        "Game.emitScriptEvent(_:values:only:drain:)",
+        "Game.acceptScriptMission(_:instanceID:randomSeed:contract:campaignParent:drainAccepted:)",
+        "Game.acceptContract(board:offer:confirmationToken:)",
+        "Game.prepareScriptTrial(packDigest:seed:)",
+        "GameRuntime.startScriptGalleryTrial(packDigest:seed:)",
+        "GameRuntime.galleryAction(_:)",
+        "GameRuntime.key(_:)",
+        "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(nested:)",
+        "$s14EliteCoreTests069campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderK04TestfMp_16d4d8279ac81ed841fMu_@Sendable (nested:)",
+        "thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Bool) -> (@error @owned Error)",
+        "partial apply for thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Bool) -> (@error @owned Error)",
+        "<deduplicated_symbol>",
+        "<deduplicated_symbol>",
+        "specialized static Runner._applyScopingTraits(for:testCase:_:)",
+        "specialized closure #1 in closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "<deduplicated_symbol>",
+        "specialized static Issue.withErrorRecording(at:configuration:isolation:_:)",
+        "closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "<deduplicated_symbol>",
+        "specialized closure #1 in TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized static Test.Case.withCurrent<A>(_:perform:)",
+        "static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Runner._runTestCase(_:within:in:)",
+        "closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "<deduplicated_symbol>",
+        "<deduplicated_symbol>",
+        "<deduplicated_symbol>",
+        "specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "<deduplicated_symbol>",
+        "completeTaskWithClosure(swift::AsyncContext*, swift::SwiftError*)"
+      ],
+      "crashSHA256": "2db909406ca14a8bf23a07ed7717fe6cc77d648471453f1325f3316a1c4b472c",
+      "trackedInputCount": 934,
+      "changedTrackedInputs": [],
+      "frozenEvidenceInputCount": 228,
+      "changedFrozenEvidenceInputs": [],
+      "proposal": {
+        "path": "/tmp/elite-g02-order-key-proposal.patch",
+        "sha256": "e72cc1be315edd8b4d9bd54c16a05d6596b3b1cce8d78d53686d3264c370bf1d",
+        "applied": false,
+        "description": "Precompute the exact existing priority/definition/UUID sort keys once, then sort only these lightweight keys. Preserve same priority1001 fallback and exact total order. Avoid comparator capturing Game and copying two full ScriptInstance values at every comparison. No event/queue/acceptance/transaction/validation/stack/test policy change. Source-only owner review required before any repair or rerun.",
+        "limits": "Root cause observed at stack guard in comparator; proposed footprint relief remains unmeasured/uncompiled/unexecuted. Nested legacy provider-child Gallery path is different from passing native courier trial. No peak-stack claim."
+      }
+    },
+    "failedBuildArtifacts": [
+      {
+        "original": ".build/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests",
+        "copy": "/tmp/elite-g02-final/failed-coverage-build/EliteCoreTests",
+        "sha256": "a4a477dad0f60bbacc668847800d1f4574db13337b91181d8bf5a767480f627f",
+        "bytes": 39668576
+      },
+      {
+        "original": ".build/out/Products/Debug/codecov/XCTest11087709211362716758_0.43044.profraw",
+        "copy": "/tmp/elite-g02-final/failed-coverage-build/XCTest11087709211362716758_0.43044.profraw",
+        "sha256": "ad345cdded9cf59665b47fb3bf6fb1a3d0a09de1b63e7bc53853428b55f4c404",
+        "bytes": 794512
+      }
+    ],
+    "coverage": null,
+    "newCodeCoverage": null,
+    "sanitizers": "not reached",
+    "leaks": "not reached",
+    "leaseReleasedExplicitly": true
   }
 }
