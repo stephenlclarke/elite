@@ -1,0 +1,54 @@
+{
+  "lease": "elite-validation-027",
+  "source": "d72a18198dd40c825b69dff563b79da484de4ea2",
+  "baseline": {
+    "methods": 1,
+    "expectedFailures": 8,
+    "errors": 0,
+    "seconds": 0.7682448751293123,
+    "allReachedOfflineScanner": true,
+    "source": "b2d882e719ff3906b6c390c0df1ae57cfabae6e3"
+  },
+  "fixed": {
+    "methods": 9,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 2.1211048748809844
+  },
+  "shellSyntaxExit": 0,
+  "trackedInputsUnchanged": true,
+  "originalFailedAttemptRetained": true,
+  "logs": {
+    "focused-controlled.log": "d1e2bd630f0b7ea075dae7c22c3aa8db0a0657f68d4c9ebb3fff9ed807b31799",
+    "baseline-controlled.log": "c59bd73c67742f4c2130b171887b9647dc6af7a70a47bc1be6afb81861546cd9"
+  },
+  "validationKind": "Offline actualshellentrypoint withtemporaryGit repositories; no realanalysispublished; finalintegratedCIseparate",
+  "maintainedInputHashes": {
+    "script/sonar.sh": "c650a130e479176ca8b610671baafeee4919f8ce6084ceb692eefd8b0dd3b9e9",
+    "Tools/distribution/package_macos.py": "b51363eac27e2f2b52a9b3dbf016f732aac542973b0b528297d67c5075309861",
+    "Tools/distribution/test_sonar_checkpoint.py": "a7c31ac170b12ccc0e6e6ab0e56bdadba54761c8de42b0b115b39f1ab946d271"
+  },
+  "firstAttemptDisposition": {
+    "lease": "elite-validation-027",
+    "source": "5c7e1e5470f8a96503b6facdcea786da5fb39dca",
+    "baseline": {
+      "methodCount": 1,
+      "expectedSubtestFailures": 8,
+      "errors": 0,
+      "seconds": 37.810931249987334
+    },
+    "fixed": {
+      "methods": 9,
+      "failures": 2,
+      "errors": 0,
+      "seconds": 13.728686917107552
+    },
+    "shellSyntaxExit": 0,
+    "trackedInputsUnchanged": true,
+    "logs": {
+      "baseline.log": "16b25c1fc1341be3af0d12aa312609ee1f2971aeb6db533432f2f560c0ca3566",
+      "focused.log": "892a78aa3919664e2a1a0ef225fe0f857c2677eb21610fcd20caaec27ef93d95"
+    },
+    "disposition": "Failed fixture run preserved: inherited BASH_ENV/ENV replaced PATH, invoking installed scanner, which rejected missing project configuration before analysis. Baseline is not treated as a clean controlled reproduction. Fixed test fixture clears startup variables in its child environment only; repeat controlled baseline/focus has separate logs."
+  }
+}
