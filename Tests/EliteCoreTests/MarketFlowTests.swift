@@ -49,17 +49,23 @@ import Testing
   #expect(game.commander == paused)
 }
 
-@Test func statusSummaryAndInventoryHaveDistinctResponsibilities() {
+@Test func statusSummaryAndInventoryHaveDistinctResponsibilities() throws {
   var game = Game(executive: false)
-  game.commander.equipment.insert("Energy Bomb")
+  try game.commander.prepareEquipment(legacy: false)
+  try game.commander.grantEquipment(
+    "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("inventory display fixture"))
+  let before = game.commander
   game.screen = .status
   let summary = game.informationRows.map(\.0)
   #expect(summary.contains { $0.hasPrefix("Legal status:") })
-  #expect(!summary.contains("Lasers") && !summary.contains("  Energy Bomb"))
+  #expect(!summary.contains("Equipment - fitted and held") && !summary.contains("Energy Bomb"))
   game.screen = .inventory
   let inventory = game.informationRows.map(\.0)
-  #expect(inventory.contains("Lasers") && inventory.contains("  Energy Bomb"))
+  #expect(inventory.contains("Equipment - fitted and held") && inventory.contains("Energy Bomb"))
+  #expect(inventory.contains("  Fitted Energy bomb - Granted"))
+  #expect(game.commander.fittedEquipment(at: .utility(.energyBomb)) != nil)
   #expect(!inventory.contains { $0.hasPrefix("Legal status:") })
+  #expect(game.commander == before)
 }
 
 @Test func consolidatedMarketCannotSellReservedMissionCargoOrTradeWhilePaused() {

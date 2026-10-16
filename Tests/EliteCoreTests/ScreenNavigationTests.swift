@@ -197,8 +197,12 @@ import Testing
   #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
   game.key("escape")
   game.key("8")
+  let statusNeedsScroll = game.informationWindow.last > 0
   game.key("k")
-  #expect(PlayerHelp.pages(for: game).first!.rows.contains("ALL ROWS VISIBLE"))
+  let statusHelp = PlayerHelp.pages(for: game).first!
+  #expect(statusHelp.title == "COMMANDER STATUS")
+  #expect(statusHelp.rows.contains("ALL ROWS VISIBLE") == !statusNeedsScroll)
+  #expect(statusHelp.rows.contains("UP / DOWN / SCROLL - MORE ROWS") == statusNeedsScroll)
   game.key("escape")
   game.key("6")
   game.showroom.selection = "SH013"
