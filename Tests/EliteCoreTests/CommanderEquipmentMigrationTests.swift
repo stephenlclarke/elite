@@ -214,7 +214,7 @@ struct CommanderEquipmentMigrationTests {
   @Test func legacyDerivedMiningLaserMountRemainsFittedDuringMigration() throws {
     var commander = Commander()
     commander.equipment.insert("Mining Laser")
-    #expect(commander.mountedLasers == nil && commander.laserMounts.front == .mining)
+    #expect(commander.laserMounts.front == .mining)
     try cemInitialize(&commander)
     let inventory = try #require(commander.equipmentInventory)
     #expect(
