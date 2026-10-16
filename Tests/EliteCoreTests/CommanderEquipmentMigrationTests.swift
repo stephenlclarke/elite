@@ -193,7 +193,9 @@ struct CommanderEquipmentMigrationTests {
   @Test func highCoreAndHeldMiningLaserCannotInventSpecialistModuleOwnership() throws {
     var commander = Commander()
     commander.installTargetingComputer(.military)
+    commander.laserMounts = .init(front: .pulse)
     commander.equipment.insert("Mining Laser")
+    #expect(commander.laserMounts.front == .pulse)
     try cemInitialize(&commander)
     let inventory = try #require(commander.equipmentInventory)
     #expect(inventory.items.contains { $0.node.key == "Mining Laser" && $0.location == nil })
@@ -207,5 +209,18 @@ struct CommanderEquipmentMigrationTests {
           || $0.node.family == EquipmentPurchaseCatalog.salvage
       })
     try EquipmentPurchaseProgression.validate(EquipmentRuntimeCatalog.graph)
+  }
+
+  @Test func legacyDerivedMiningLaserMountRemainsFittedDuringMigration() throws {
+    var commander = Commander()
+    commander.equipment.insert("Mining Laser")
+    #expect(commander.mountedLasers == nil && commander.laserMounts.front == .mining)
+    try cemInitialize(&commander)
+    let inventory = try #require(commander.equipmentInventory)
+    #expect(
+      inventory.items.contains {
+        $0.node.key == "Mining Laser" && $0.location?.slot == .laser(.front)
+      })
+    #expect(commander.laserMounts.front == .mining && commander.valid)
   }
 }
