@@ -206,9 +206,14 @@ public struct EquipmentLayout: Sendable {
     listTop = mountBottom + 66
     row = ceil(font * 7) + 9
     let top = CockpitLayout(game: game, width: width, height: height).dashboardTop
-    count = max(2, Int((top - listTop - 82) / row))
+    // Include the last row only when its complete glyph fits above the message reserve.
+    // Compact cockpits may have room for the selected item without its category heading.
+    let available = top - 82 - listTop - 7 * font
+    count = max(1, Int(floor(available / row)) + 1)
     let selected = EquipmentGroups.rows.firstIndex(of: .item(game.selection)) ?? 1
-    var candidate = max(0, min(selected - count + 2, EquipmentGroups.rows.count - count))
+    var candidate =
+      count == 1
+      ? selected : max(0, min(selected - count + 2, EquipmentGroups.rows.count - count))
     // Keep an item's category visible even when the list is scrolled into its middle.
     if case .item = EquipmentGroups.rows[candidate], candidate > 0,
       selected < candidate + count - 1,
