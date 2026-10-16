@@ -265,6 +265,125 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     return result
   }
 
+  /// Reentry uses only sealed current contacts and immutable launch law. Ordinary incident
+  /// admission remains same-visit; this entry point never invents a replacement attack origin.
+  mutating func recordMissionReentryImpact(
+    _ proof: MissionNativeImpactProof, eventID: UInt64, outcome: AttackOutcome,
+    context: EncounterContext
+  ) -> CrimeResolution {
+    var result = CrimeResolution()
+    guard proof.system == context.system, proof.visit == context.visit,
+      proof.sceneRevision == context.revision, context.visit > 0, context.visit < UInt64.max,
+      context.physicalTime.isFinite, context.physicalTime >= 0, proof.hit.point.finite,
+      context.player.position.finite, context.player.orientation.validRotation,
+      let projectile = proof.projectileBody.physical?.identity,
+      context.actors.filter({
+        $0.identity == projectile && $0.energy == proof.projectileBody.energy && $0.energy > 0
+      }).count == 1,
+      eventID > 0, eventID < UInt64.max,
+      lastIncidentID.map({ eventID > $0 }) ?? true,
+      [.hit, .destruction, .componentDestruction, .ordnanceInterception].contains(outcome)
+    else { return result }
+    let impactPosition =
+      context.player.position + context.player.orientation.apply(proof.hit.point)
+    guard impactPosition.finite else { return result }
+    if case .body(let id) = proof.hit.target {
+      guard let body = proof.targetBody, body.id == id,
+        body.physical?.identity == proof.currentVictim,
+        context.actors.filter({
+          $0.identity == proof.currentVictim && $0.hull == body.hull && $0.energy == body.energy
+            && $0.npc == body.physical?.npc
+        }).count == 1
+      else { return result }
+    } else if case .player = proof.hit.target {
+      guard proof.currentVictim == context.player.identity else { return result }
+    }
+    lastIncidentID = eventID
+    result.accepted = true
+    guard outcome != .ordnanceInterception,
+      let victimID = proof.currentVictim, let victim = snapshot(victimID, context: context),
+      victimID.system == context.system, victimID.visit == context.visit,
+      ![Hull.cargo, .asteroid, .missile].contains(victim.hull),
+      !settledDeaths.contains(victimID)
+    else { return result }
+    if let salvage = victim.salvage, [.wreck, .section].contains(salvage.category),
+      salvage.ownership == .abandoned, salvage.claimant == nil, victim.npc == nil,
+      victim.hull != .station, !context.protection.protectedActors.contains(victimID)
+    {
+      return result
+    }
+    guard let frozen = proof.frozenJudgement, frozen.valid,
+      let ownerID = proof.currentSource, let owner = snapshot(ownerID, context: context),
+      ownerID != victimID, ownerID.system == context.system, ownerID.visit == context.visit,
+      owner.energy.isFinite, owner.energy > 0, owner.npc?.role == .mission,
+      let archive = proof.archive
+    else {
+      // Physical death still becomes irreversible, without attributing it to an unknown actor.
+      if outcome == .destruction { settledDeaths.insert(victimID) }
+      return result
+    }
+    switch archive.intendedTarget {
+    case .player:
+      guard case .player = proof.hit.target else { return result }
+    case .actor(let instance, let actor, _):
+      guard proof.targetBody?.missionInstanceID == instance,
+        proof.targetBody?.missionActorID == actor
+      else { return result }
+    }
+    let aggressor: ActorIdentity
+    if frozen.firstAggressor == frozen.origin.owner {
+      aggressor = ownerID
+    } else if frozen.firstAggressor == frozen.victim {
+      aggressor = victimID
+    } else {
+      if outcome == .destruction { settledDeaths.insert(victimID) }
+      return result
+    }
+    let first =
+      frozen.firstInWindow
+      && !attacks.contains {
+        $0.owner == ownerID && $0.victim == victimID && context.physicalTime - $0.lastAttack <= 10
+      }
+    let window = AttackWindow(
+      owner: ownerID, victim: victimID, victimLegal: frozen.victimLegal,
+      victimRole: frozen.victimRole, firstAggressor: aggressor, unlawful: frozen.unlawful,
+      offence: frozen.offence, authorityAction: frozen.authorityAction,
+      lastAttack: context.physicalTime)
+    let judgement = AttackJudgement(
+      window: window, firstInWindow: first, lawful: frozen.lawful,
+      selfDefence: frozen.lawfulSelfDefence, entitlement: nil)
+    result.unlawful = frozen.unlawful
+    result.lawfulSelfDefence = frozen.lawfulSelfDefence
+    result.firstAggressor = aggressor
+    if frozen.unlawful {
+      result.offender = ownerID
+      if first {
+        result.legalPenalty = penalty(for: frozen.offence)
+        result.notices.append(.unlawfulAttack)
+      }
+      // Resolve the actual current contact through the camera carried by this context.
+      if victim.hull == .station
+        || (impactPosition - context.anchors.station.position).length <= 6000
+        || context.actors.contains(where: {
+          $0.identity != ownerID && $0.npc?.role == .police && $0.energy > 0
+            && !context.protection.protectedActors.contains($0.identity)
+            && ($0.position - impactPosition).length <= 2500
+        })
+      {
+        result.report = .init(
+          incidentID: eventID, offender: ownerID, victim: victimID, kind: frozen.offence,
+          physicalTime: context.physicalTime, position: impactPosition)
+      }
+    }
+    attacks.removeAll { $0.owner == ownerID && $0.victim == victimID }
+    attacks.append(window)
+    settleDeath(
+      judgement, outcome: outcome, victimIsStation: frozen.victimIsStation,
+      emissionID: nil, result: &result)
+    result.legalPenalty = min(result.legalPenalty, max(0, 255 - owner.legal.value))
+    return result
+  }
+
   private func accepts(_ incident: CombatIncident, context: EncounterContext) -> Bool {
     incident.physicalTime.isFinite && context.physicalTime.isFinite
       && incident.physicalTime >= 0 && incident.physicalTime <= context.physicalTime + 1e-8
@@ -472,11 +591,20 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
   private mutating func settleDeath(
     _ judgement: AttackJudgement, incident: CombatIncident, result: inout CrimeResolution
   ) {
+    settleDeath(
+      judgement, outcome: incident.outcome, victimIsStation: incident.victimIsStation,
+      emissionID: incident.origin.emissionID, result: &result)
+  }
+
+  private mutating func settleDeath(
+    _ judgement: AttackJudgement, outcome: AttackOutcome, victimIsStation: Bool,
+    emissionID: UInt64?, result: inout CrimeResolution
+  ) {
     let attack = judgement.window
-    guard incident.outcome == .destruction, settledDeaths.insert(attack.victim).inserted else {
+    guard outcome == .destruction, settledDeaths.insert(attack.victim).inserted else {
       return
     }
-    if attack.unlawful && !incident.victimIsStation && !attack.victimLegal.wanted {
+    if attack.unlawful && !victimIsStation && !attack.victimLegal.wanted {
       result.legalPenalty += penalty(for: attack.victimRole == .police ? .policeMurder : .murder)
     }
     let lawful = judgement.lawful && !attack.unlawful
@@ -484,7 +612,7 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
       lawful ? (judgement.entitlement?.amountTenths ?? max(0, attack.victimLegal.bountyTenths)) : 0
     result.death = .init(
       victim: attack.victim, owner: attack.owner, lawful: lawful, bountyTenths: bounty)
-    finishEmission(incident.origin.emissionID)
+    if let emissionID { finishEmission(emissionID) }
   }
 
   private mutating func missedDischarge(

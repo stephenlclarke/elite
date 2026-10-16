@@ -146,20 +146,53 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   public mutating func hit(rock: MiningRock, incident: CombatIncident, damage: Double)
     -> MiningHitResult
   {
-    guard incident.victimPart == nil, damage.isFinite, damage > 0, rock.energy.isFinite,
+    guard incident.victimPart == nil,
+      incident.outcome == .hit || incident.outcome == .destruction
+    else { return .ignored }
+    return physicalHit(
+      rock: rock, eventID: incident.id, damage: damage,
+      mining: incident.kind == .laser && incident.laser == .mining)
+  }
+
+  /// Only an actual sealed plasma contact may enter without an ordinary combat incident.
+  mutating func hit(
+    rock: MiningRock, proof: MissionNativeImpactProof, eventID: UInt64,
+    context: EncounterContext
+  ) -> MiningHitResult {
+    guard proof.system == context.system, proof.visit == context.visit,
+      proof.sceneRevision == context.revision, context.physicalTime.isFinite,
+      context.physicalTime >= 0, proof.kind == .plasma, proof.victimPart == nil,
+      let projectile = proof.projectileBody.physical?.identity,
+      context.actors.filter({
+        $0.identity == projectile && $0.energy == proof.projectileBody.energy && $0.energy > 0
+      }).count == 1,
+      case .body(let id) = proof.hit.target, let body = proof.targetBody,
+      body.id == id, body.physical?.rock == rock.identity,
+      rock.identity.system == context.system,
+      let identity = body.physical?.identity, identity == proof.currentVictim,
+      context.actors.filter({
+        $0.identity == identity && $0.rock == rock.identity && $0.hull == body.hull
+          && $0.energy == body.energy
+      }).count == 1
+    else { return .ignored }
+    return physicalHit(rock: rock, eventID: eventID, damage: proof.damage, mining: false)
+  }
+
+  private mutating func physicalHit(
+    rock: MiningRock, eventID: UInt64, damage: Double, mining: Bool
+  ) -> MiningHitResult {
+    guard damage.isFinite, damage > 0, rock.energy.isFinite,
       rock.energy > 0, Self.validMotion(rock.position),
       bit(rock.identity) != nil, !isDepleted(rock.identity),
-      incident.outcome == .hit || incident.outcome == .destruction,
-      incident.id > 0, incident.id < UInt64.max,
-      lastIncident.map({ incident.id > $0 }) ?? true
+      eventID > 0, eventID < UInt64.max,
+      lastIncident.map({ eventID > $0 }) ?? true
     else { return .ignored }
     let remaining = max(0, remainingEnergy(for: rock) - damage)
-    let mining = incident.kind == .laser && incident.laser == .mining
     let payloads = remaining == 0 && mining ? yield(for: rock) : []
     guard pending.count + payloads.count <= Self.maximumPending,
       remaining == 0 || partial[rock.identity] != nil || partial.count < Self.maximumPartial
     else { return .capacityRefused }
-    lastIncident = incident.id
+    lastIncident = eventID
     if remaining > 0 {
       partial[rock.identity] = remaining
       return .damaged(remaining)
