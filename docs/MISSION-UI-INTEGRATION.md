@@ -21,7 +21,7 @@ public func missionUICommand(_ intent: MissionUIIntent) {
 }
 ```
 
-The accepted runtime key dispatcher must handle `gallery-trial`, `mission-resume`, `trial-return` and `trial-restart` through its actual trial/campaign lifecycle. Preserve saveForInterface trial routing and epoch resets; ordinary `Game.interfaceKey` cannot execute those actor-owned operations. The shared script-page guard already allows explicit contracts and gallery action names. Exact page proof is required for contracts, trial and retry; every action also rechecks epoch and availability.
+The accepted runtime key dispatcher must handle `gallery-trial`, `mission-resume`, `trial-return` and `trial-restart` through its actual trial/campaign lifecycle. Preserve saveForInterface trial routing and epoch resets; ordinary `Game.interfaceKey` cannot execute those actor-owned operations. The shared script-page guard already allows explicit contracts and gallery action names. Exact page proof is required for contracts, trial and retry; every action also rechecks screen, the existing InventoryContextEpoch, ECM epoch and availability. Do not rotate physical ECM or invent a new epoch. Trial return restores the parent ECM epoch but rotates inventory context, so a captured parent action stays invalid.
 
 ## Native menu retention and ordered event queue
 
@@ -31,6 +31,9 @@ Add `var missionMenu: NativeMissionMenu?` to AppDelegate and `var pendingMission
 let target = NativeMissionMenu(
   snapshot: { [weak self] in
     (self?.window?.contentView as? GameView)?.game
+  },
+  paintedPresentation: { [weak self] in
+    (self?.window?.contentView as? GameView)?.paintedMissionMenuPresentation
   },
   enqueue: { [weak self] intent in
     guard let view = self?.window?.contentView as? GameView,
@@ -42,6 +45,17 @@ let target = NativeMissionMenu(
 missionMenu = target
 target.install(in: game.submenu!)
 ```
+
+Expose this read-only accessor inside GameView using the accepted private painted fields. It must return nil before paint or after bounds change; never substitute the latest `game.scriptPagePresentation`:
+
+```swift
+var paintedMissionMenuPresentation: ScriptPagePresentation? {
+  guard displayedScriptPageSize == bounds.size else { return nil }
+  return displayedScriptPage
+}
+```
+
+The helper compares that painted proof to the latest snapshot for contracts, Try and Retry, both when validating a menu item and immediately when choosing it. Non-page menu actions still capture the latest snapshot's screen and inventory context. The pending actor dispatch checks both again.
 
 Remove obsolete mission menu creation at its existing installation site if it would duplicate these items. Preserve pause/spin and other Game items. The helper only removes existing items whose representedObject is one of its nine explicit action strings and assigns no keyboard equivalents.
 
@@ -66,4 +80,4 @@ Use the accepted `ScriptPagePresentation` input bridge when composing EliteApp. 
 
 ## Validation ownership
 
-Run `MissionUICompositionTests`, `NativeMissionMenuTests`, existing `MissionCatalogueReplacementTests`, accepted campaign/trial/page-identity tests and native FIFO/focus tests only under the next assigned lease. Add an actor test that captures an intent, changes runtime epoch by restore/load/trial lifecycle, then verifies refusal without commander mutation. Check docked main station, secondary station, flight, paused library, trial return/restart and campaign review manually. Finally run the shared full `make ci` gates. This slice has performed no builds, tests or native launches.
+Run `MissionUICompositionTests`, `NativeMissionMenuTests`, existing `MissionCatalogueReplacementTests`, accepted campaign/trial/page-identity tests and native FIFO/focus tests only under the next assigned lease. The authored actor regression performs a real successful trial start and return, checks the same restored ECM epoch and screen with a changed inventory context, and proves refusal of the parent library intent without commander mutation. Native tests cover painted A/latest B mismatch, missing paint, changed bounds and fresh B dispatch. Check docked main station, secondary station, flight, paused library, trial return/restart and campaign review manually. Finally run the shared full `make ci` gates. This slice has performed no builds, tests or native launches.

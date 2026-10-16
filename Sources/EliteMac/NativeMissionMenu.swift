@@ -5,10 +5,16 @@ import EliteCore
 @MainActor
 final class NativeMissionMenu: NSObject, NSMenuItemValidation {
   private let snapshot: () -> Game?
+  private let paintedPresentation: () -> ScriptPagePresentation?
   private let enqueue: (MissionUIIntent) -> Void
 
-  init(snapshot: @escaping () -> Game?, enqueue: @escaping (MissionUIIntent) -> Void) {
+  init(
+    snapshot: @escaping () -> Game?,
+    paintedPresentation: @escaping () -> ScriptPagePresentation?,
+    enqueue: @escaping (MissionUIIntent) -> Void
+  ) {
     self.snapshot = snapshot
+    self.paintedPresentation = paintedPresentation
     self.enqueue = enqueue
   }
 
@@ -33,14 +39,24 @@ final class NativeMissionMenu: NSObject, NSMenuItemValidation {
       let action = MissionUIAction(rawValue: command), let game = snapshot()
     else { return false }
     item.title = action.title(in: game)
-    return action.isEnabled(in: game)
+    return action.isEnabled(in: game) && presentation(for: action, in: game) != nil
   }
 
   @discardableResult
   func choose(_ action: MissionUIAction) -> Bool {
-    guard let game = snapshot(), action.isEnabled(in: game) else { return false }
-    enqueue(.init(action: action, presentation: game.scriptPagePresentation))
+    guard let game = snapshot(), action.isEnabled(in: game),
+      let proof = presentation(for: action, in: game)
+    else { return false }
+    enqueue(.init(action: action, game: game, presentation: proof))
     return true
+  }
+
+  private func presentation(for action: MissionUIAction, in game: Game) -> ScriptPagePresentation? {
+    guard action.requiresPageProof else { return game.scriptPagePresentation }
+    guard let painted = paintedPresentation(), painted == game.scriptPagePresentation else {
+      return nil
+    }
+    return painted
   }
 
   @objc private func perform(_ sender: NSMenuItem) {
