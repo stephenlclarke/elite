@@ -1,0 +1,37 @@
+# Mission equipment composition requirements
+
+## Review disposition
+
+Source-only review on16October2026 supports the architecture in `/tmp/elite-mission-canonical-composition-plan.json`: one canonical physical inventory, with mission obligations referencing the same item identities. This is design agreement, not approval of an unseen implementation or an assignment to change frozen G02 inputs. Finish G02 acceptance first. All Researcher-origin implementation tasks route through Orchestrator exclusively to Mission Coder1; central source ownership remains with the existing central integrator.
+
+The inspected central source is `d896f02ea2f2bff73df3170ff1af4ec05572c19f`; inspected Mission equipment source is `58be809e9d29356a1c4d635284883576349fa519`, unchanged in the subsequent guarded/contract-phase runtime checkpoint. The final composed source must also preserve the separately reviewed standalone-trial correction when validated. No combined runtime has been built or accepted by this review.
+
+## Exact issue and ownership boundary
+
+`Sources/EliteCore/EquipmentMutations.swift` central `grantMissionEquipment` is insufficient for scripted `gear.issue`: its underlying grant can return when the same device is fitted, reuse a held personal device, or generate a random UUID. Script issue requires the declared quantity of newly issued physical items with deterministic original UUIDs. Do not attach an obligation to an invented identity or appropriate a paid spare. Provide an explicit canonical admission result using caller-supplied identities and mission/resource provenance, with no paid prerequisite history fabricated. Preserve the existing legacy grant policy separately.
+
+Mission `ScriptEquipment.swift` issues held items by default. Explicit fitting must either fit every requested item under the actual hull constraints or reject the whole candidate transaction. Return requires the original unconsumed identities; an all-items policy refuses consumed originals, whereas remaining-items policy permits recorded actual consumption. Release removes the outstanding loan obligation while retaining the physical items and their source. Item/source/issue/consumed/returned references must validate in both directions, including missing-content saves. Staging both physical inventory and mission ledger must complete before full candidate validity/publication.
+
+Every actual canonical consumer must respect those obligations: shop/replacement, fitting/storage, reward/grant, legacy mission removal, hull transfer and consumable use. Distinguish an absent device, where a legacy removal may be a no-op, from blocked or invalid custody, which must reject its transaction. `consumeEquipped` currently collapses throwing removal failures to false and cannot serve as the only authoritative mission transaction result. Define whether modification of a loan is permitted before implementing that path; upgrades must not erase its identity, recovered provenance or outstanding return obligation.
+
+## Standard round identity prerequisite
+
+Use the canonical inventory for standard finite loaded missile rounds, with actual hull pylon locations. The compatibility missile count reflects fitted rounds. Once-only versioned migration may convert legacy count N into N stable round identities; an explicitly empty migrated inventory must remain empty. Held rounds, fitting and firing preserve the original identity. Admission/removal, launched projectile source, mission consumption receipt and ordinary native effects publish together, or all roll back. Virtual unlimited shots must not fabricate consumption of a real loaned round. No automatic refill, missile variants or additional structural pylons are introduced by this prerequisite.
+
+The canonical256-item capacity includes physical rounds. Validate real hull capacity, pylon bounds and duplicate identities; reject unsupported/overflowing migration while preserving the original save. The previous Mission bag's10000-item limit cannot justify silently discarding items to fit the canonical inventory.
+
+## Migration and retained state
+
+Mission `Sources/EliteCore/OwnedEquipment.swift` is the old physical model; a differently named legacy decoder is acceptable only as a migration DTO. Do not retain it as a second live inventory or continue equipment-name/count synchronization that removes and recreates physical items. Mixed representations require an explicit verified identity crosswalk or rejection; name matching alone is insufficient. Preserve original UUIDs, condition, modifications, issue/source/loan metadata and hull attachments. Unsupported mappings must refuse safely rather than silently drop data or invent graded/recovered receipts.
+
+Preserve canonical component statistics/grades, acquisition provenance, recovered receipts, paid purchase history and hull binding, as well as native resource fractions, cargo/legal/navigation/crew state and original Executive behavior. Add canonical inventory state to the mission durability/validation boundary. Native save-version and path-scoped field guards must reject incompatible combinations without rejecting legitimate arbitrary mission payload keys.
+
+## Gallery inventory context
+
+During composition, use the existing central `GameRuntime.invalidateInventoryContext()` after successful Gallery trial Start and Restart private preparation/save/publication, and after successful Return restores the parent. Failed construction, preparation, save or load must preserve the previous context. Restoring the parent's old epoch must not revive old painted Inventory commands just because owner, hull and revisions match. Do not mint epochs in getters or renderers. Verify actual typed old commands are refused after each successful transition, with legitimate current commands retained after failed transitions.
+
+## Required composed evidence
+
+Keep the accepted script-state modifier/default guard, two-phase trial construction/preparation and contract-root drain separation. Review the final composition diff against those fixes and the standalone-trial correction; separately passing branches do not prove the combined Game's stack behavior.
+
+Use meaningful positive and negative tests for deterministic issue/paid-spare preservation, partial-fit rollback, original-item return/release/consumption, migration missing-versus-empty and overflow, missing-content obligation retention, exact round firing rollback, hull transfer and stale Gallery inventory commands. Exercise all maintained packs and actual native Gallery/contract paths. Regenerate renderer assets, freeze the final source and evidence, then run complete `make ci` with coverage, thread/address sanitizers and leaks under Orchestrator's exclusive validation slot. Formal PR/final-head checks and committed-main exact-SHA Sonar remain separate central-owner gates.
