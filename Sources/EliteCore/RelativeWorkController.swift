@@ -101,7 +101,7 @@ public struct RelativeWorkInput: Sendable {
 
 /// The caller must test actual hulls and rotating swept protrusions, not just centres/radii.
 public struct RelativeWorkSweep: Sendable {
-  public enum Purpose: Sendable, Equatable { case work, braking }
+  public enum Purpose: Sendable, Equatable { case work, braking, scoop }
   public let purpose: Purpose
   public let start: ShipPose
   public let end: ShipPose
