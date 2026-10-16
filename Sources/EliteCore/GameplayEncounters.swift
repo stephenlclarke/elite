@@ -39,7 +39,37 @@ extension Game {
       let cooldown = max(0, (bodies[index].physical?.laserCooldown ?? 0) - delta)
       bodies[index].physical?.laserCooldown = cooldown
     }
+    advanceClassicMissionActors(context: live, delta: delta)
     for intent in intents { applyGameplayIntent(intent, context: live, delta: delta) }
+  }
+
+  /// Retained classic hulls use native steering and weapons, with one later translation owner.
+  /// Profiled craft keep their authored driver; unjoined bodies gain no mission AI authority.
+  private mutating func advanceClassicMissionActors(context: EncounterContext, delta: Double) {
+    let bodyIDs = bodies.filter {
+      $0.energy > 0 && $0.scriptNPC == nil && $0.scriptShot == nil
+        && $0.missionActorID != nil && $0.physical?.spawnIdentity != nil
+    }.map(\.id)
+    for bodyID in bodyIDs {
+      guard let descriptor = currentMissionActorDescriptor(bodyID: bodyID),
+        let body = bodies.first(where: { $0.id == bodyID }),
+        let binding = try? MissionNativeBridge.bindActor(
+          descriptor: descriptor, body: body, context: context),
+        let instance = commander.scriptState.instances[descriptor.instanceID],
+        let pack = scriptPack(for: instance),
+        let encounter = pack.manifest.encounters?.first(where: { $0.id == descriptor.encounterID }),
+        let declared = encounter.actors.first(where: { $0.id == descriptor.alias }),
+        let action = body.physical?.npc?.intention
+      else { continue }
+      switch action {
+      case .engage(let target):
+        guard declared.hostile, target == context.player.identity else { continue }
+      case .navigate, .flee, .dock: break
+      case .mine, .scoop: continue
+      }
+      applyGameplayIntent(
+        .init(actor: binding.nativeActor, action: action), context: context, delta: delta)
+    }
   }
 
   mutating func activateNearbyMiningFields() {
