@@ -571,6 +571,26 @@ struct MissionNativeBridgeTests {
     #expect(game.commander.flightSimulation.nextEmission == emission + 1)
     #expect(game.bodies == original.bodies)
     #expect(game.commander.scriptState == original.commander.scriptState)
+    let freshBefore = game
+    try game.validateMissionNativeLaserProof(proof)
+    #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
+    var sourceChanged = game
+    let sourceIndex = try #require(sourceChanged.bodies.firstIndex { $0.id == source.id })
+    sourceChanged.bodies[sourceIndex].energy -= 1
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try sourceChanged.validateMissionNativeLaserProof(proof)
+    }
+    var laterEmission = game
+    let allocatedLater = laterEmission.makeAttackOrigin(owner: proof.source.nativeActor)
+    #expect(allocatedLater != nil)
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try laterEmission.validateMissionNativeLaserProof(proof)
+    }
+    var laterClock = game
+    laterClock.commander.flightSimulation.advancePhysicalTime(0.01)
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try laterClock.validateMissionNativeLaserProof(proof)
+    }
   }
 
   @Test func actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift() throws
@@ -648,6 +668,21 @@ struct MissionNativeBridgeTests {
       proof.shot.radius == shot.radius && proof.shot.lifetime == lifetime
         && proof.shot.collisionDelay == delay)
     #expect(game.commander == before.commander && game.bodies == before.bodies)
+    let freshBefore = game
+    try game.validateMissionNativeImpactProof(proof)
+    #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
+    for scenario in 0..<4 {
+      var changed = game
+      switch scenario {
+      case 0: changed.bodies[0].position.x += 1
+      case 1: changed.bodies[0].scriptShot?.age += 0.01
+      case 2: changed.bodies[1].position.x += 1000
+      default: changed.commander.flightSimulation.advancePhysicalTime(0.01)
+      }
+      #expect(throws: MissionNativeBridgeError.staleBinding) {
+        try changed.validateMissionNativeImpactProof(proof)
+      }
+    }
     let waiting = try game.missionNativeImpactProof(projectileID: shotID, delta: delay / 2)
     #expect(waiting == nil)
     var expired = game
@@ -780,6 +815,15 @@ struct MissionNativeBridgeTests {
     let known = try #require(game.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
     #expect(known.hit.target == .player && known.currentSource == binding.nativeActor)
     #expect(known.originalOrigin == origin && known.frozenJudgement == law)
+    let freshKnownBefore = game
+    try game.validateMissionNativeImpactProof(known)
+    #expect(game.commander == freshKnownBefore.commander && game.bodies == freshKnownBefore.bodies)
+    var changedSource = game
+    let sourceIndex = try #require(changedSource.bodies.firstIndex { $0.id == sourceBody.id })
+    changedSource.bodies[sourceIndex].energy -= 1
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try changedSource.validateMissionNativeImpactProof(known)
+    }
     var older = game
     older.commander.flightSimulation.advancePhysicalTime(1)
     let historical = try #require(older.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
