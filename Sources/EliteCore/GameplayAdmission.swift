@@ -100,28 +100,9 @@ extension Game {
     }
     var budget = context.budget
     for request in fresh {
-      guard request.identity.system == context.system, request.identity.visit == context.visit
-      else {
-        return .staleContext
+      if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
+        return refusal
       }
-      if context.protection.suppressAmbientShips,
-        [.civilian, .pirate].contains(request.population), request.priority == .ordinary
-      {
-        return .missionSuppression
-      }
-      guard budget.active[request.population, default: 0] < request.population.maximum else {
-        return .populationLimit
-      }
-      let reserve: Int
-      switch request.priority {
-      case .mission: reserve = 0
-      case .police: reserve = max(0, budget.missionReserve - budget.active[.mission, default: 0])
-      case .ordinary:
-        reserve =
-          max(0, budget.policeReserve - budget.active[.police, default: 0])
-          + max(0, budget.missionReserve - budget.active[.mission, default: 0])
-      }
-      guard budget.total < budget.maximum - reserve else { return .reservedCapacity }
       guard safeSpawn(request, context: context) else { return .unsafePosition }
       budget.total += 1
       budget.active[request.population, default: 0] += 1
@@ -138,7 +119,50 @@ extension Game {
     return nil
   }
 
-  private mutating func safeSpawn(_ request: SpawnRequest, context: EncounterContext) -> Bool {
+  /// A pure emission path shares the native population/reserve and celestial policy without
+  /// entering unrelated salvage geometry caches or adopting actors.
+  func gameplayProjectileAdmissionRefusal(_ request: SpawnRequest, context: EncounterContext)
+    -> AdmissionRefusal?
+  {
+    guard request.population == .projectile, request.hull == .missile, request.npc == nil,
+      request.rock == nil, request.payload == nil, request.salvage == nil,
+      !bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
+    else { return .staleContext }
+    if let refusal = admissionCapacityRefusal(request, context: context, budget: context.budget) {
+      return refusal
+    }
+    return spawnParametersSafe(request, context: context) ? nil : .unsafePosition
+  }
+
+  private func admissionCapacityRefusal(
+    _ request: SpawnRequest, context: EncounterContext, budget: AdmissionBudget
+  ) -> AdmissionRefusal? {
+    guard request.identity.system == context.system, request.identity.visit == context.visit
+    else {
+      return .staleContext
+    }
+    if context.protection.suppressAmbientShips,
+      [.civilian, .pirate].contains(request.population), request.priority == .ordinary
+    {
+      return .missionSuppression
+    }
+    guard budget.active[request.population, default: 0] < request.population.maximum else {
+      return .populationLimit
+    }
+    let reserve: Int
+    switch request.priority {
+    case .mission: reserve = 0
+    case .police: reserve = max(0, budget.missionReserve - budget.active[.mission, default: 0])
+    case .ordinary:
+      reserve =
+        max(0, budget.policeReserve - budget.active[.police, default: 0])
+        + max(0, budget.missionReserve - budget.active[.mission, default: 0])
+    }
+    guard budget.total < budget.maximum - reserve else { return .reservedCapacity }
+    return nil
+  }
+
+  private func spawnParametersSafe(_ request: SpawnRequest, context: EncounterContext) -> Bool {
     guard request.position.finite, request.velocity.finite,
       request.orientation.x.finite, request.orientation.y.finite, request.orientation.z.finite,
       request.angularVelocity.finite
@@ -155,6 +179,12 @@ extension Game {
         * (request.population == .projectile ? 1 : 4)
         + radius
     else { return false }
+    return true
+  }
+
+  private mutating func safeSpawn(_ request: SpawnRequest, context: EncounterContext) -> Bool {
+    guard spawnParametersSafe(request, context: context) else { return false }
+    let radius = spawnRadius(request)
     // An emitted projectile starts at its owner's muzzle; its collision resolver
     // excludes that owner. Other admissions must be separated from live hulls.
     if request.population == .projectile { return true }
