@@ -748,6 +748,27 @@ extension Game {
   }
 }
 
+/// Read-only physical/source facts for resource and event-capacity planning. This query carries
+/// no emission identity or damage authority and can only be constructed by the actual provider.
+struct MissionNativeLaserQuery: Sendable {
+  let source: MissionActorBinding
+  let weapon: MissionWeaponDescriptor
+  let sourceComponentID: UUID?
+  let contact: MissionCollisionContact?
+  let context: EncounterContext
+
+  fileprivate init(
+    source: MissionActorBinding, weapon: MissionWeaponDescriptor, component: UUID?,
+    contact: MissionCollisionContact?, context: EncounterContext
+  ) {
+    self.source = source
+    self.weapon = weapon
+    sourceComponentID = component
+    self.contact = contact
+    self.context = context
+  }
+}
+
 /// Current-visit instant emission. A miss remains a real laser discharge without inventing a shot.
 struct MissionNativeLaserProof: Sendable {
   let source: MissionActorBinding
@@ -785,12 +806,11 @@ struct MissionNativeLaserProof: Sendable {
 }
 
 extension Game {
-  /// Called within the fire turn after the actual gun's resource preflight. Collision and durable
-  /// joins can refuse before the native emission allocator is touched; no simulated shot is made.
-  mutating func makeMissionNativeLaserProof(
+  /// Resolve actual source, weapon and nearest contact without allocating an emission.
+  func queryMissionNativeLaser(
     sourceBodyID: Int, weapon: ScriptNPCWeapon, component: UUID?,
     muzzle: Vector3, direction: Vector3
-  ) throws -> MissionNativeLaserProof {
+  ) throws -> MissionNativeLaserQuery {
     guard let context = gameplayContext() else {
       throw MissionNativeBridgeError.invalidNativeBinding
     }
@@ -798,24 +818,39 @@ extension Game {
     guard
       let actual = missionWeaponDescriptor(
         weapon, source: source.descriptor.body, component: component,
-        muzzle: muzzle, direction: direction), actual.kind == .laser,
-      commander.flightSimulation.valid,
-      commander.flightSimulation.nextEmission < UInt64.max
+        muzzle: muzzle, direction: direction), actual.kind == .laser
     else { throw MissionNativeBridgeError.unsupportedWeapon }
     let contact = try nearestMissionCollision(
       from: actual.muzzle, direction: actual.direction, range: actual.range, radius: 0,
       excludingBodyIDs: [sourceBodyID], includePlayer: true)
+    return .init(
+      source: source, weapon: actual, component: component, contact: contact, context: context)
+  }
+
+  /// Called within the fire turn after the actual gun's resource preflight. Collision and durable
+  /// joins can refuse before the native emission allocator is touched; no simulated shot is made.
+  mutating func makeMissionNativeLaserProof(
+    sourceBodyID: Int, weapon: ScriptNPCWeapon, component: UUID?,
+    muzzle: Vector3, direction: Vector3
+  ) throws -> MissionNativeLaserProof {
+    let query = try queryMissionNativeLaser(
+      sourceBodyID: sourceBodyID, weapon: weapon, component: component,
+      muzzle: muzzle, direction: direction)
+    guard commander.flightSimulation.valid,
+      commander.flightSimulation.nextEmission < UInt64.max
+    else { throw MissionNativeBridgeError.unsupportedWeapon }
     // Use the native allocator directly after every fallible physical/source check. Unlike the
     // general adoption helper, this path must not adopt unrelated bodies while sealing a hit.
     guard let emission = commander.flightSimulation.allocateEmission() else {
       throw MissionNativeBridgeError.invalidNativeBinding
     }
     let origin = AttackOrigin(
-      emissionID: emission, owner: source.nativeActor, emittedAt: context.physicalTime,
-      ownerLegalAtEmission: source.actorSnapshot.legal, sourcePart: component?.uuidString)
+      emissionID: emission, owner: query.source.nativeActor, emittedAt: query.context.physicalTime,
+      ownerLegalAtEmission: query.source.actorSnapshot.legal,
+      sourcePart: query.sourceComponentID?.uuidString)
     return .init(
-      source: source, weapon: actual, component: component,
-      origin: origin, contact: contact, context: context)
+      source: query.source, weapon: query.weapon, component: query.sourceComponentID,
+      origin: origin, contact: query.contact, context: query.context)
   }
 }
 
