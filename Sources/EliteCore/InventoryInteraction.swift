@@ -15,10 +15,15 @@ public struct InventoryInformationRow: Sendable, Equatable {
   public let text: String
   public let ink: Ink
   public let subject: InventorySubject?
-  init(_ text: String, _ ink: Ink, subject: InventorySubject? = nil) {
+  public let preview: InventoryActionPreview?
+  init(
+    _ text: String, _ ink: Ink, subject: InventorySubject? = nil,
+    preview: InventoryActionPreview? = nil
+  ) {
     self.text = text
     self.ink = ink
     self.subject = subject
+    self.preview = preview
   }
 }
 
@@ -43,6 +48,13 @@ public struct InventoryActionPreview: Sendable, Equatable {
   public let label: String
   public let detail: String
   public let command: InventoryCommand?
+  public let extraDetails: [String]
+  init(label: String, detail: String, command: InventoryCommand?, extraDetails: [String] = []) {
+    self.label = label
+    self.detail = detail
+    self.command = command
+    self.extraDetails = extraDetails
+  }
 }
 
 public struct InventoryControl: Sendable, Equatable {
@@ -155,7 +167,8 @@ extension Game {
         .upgrade(
           item, lot, axis, slot, before: effect.progression.before,
           after: effect.progression.after, grade: effect.progression.resultingGrade),
-        inventory: inventory, source: commander.salvageLedger.revision))
+        inventory: inventory, source: commander.salvageLedger.revision),
+      extraDetails: inventoryUpgradeDetails(effect.progression))
   }
 
   @discardableResult
@@ -252,7 +265,33 @@ extension Game {
     default: "Component statistic"
     }
   }
-  private func inventoryStatChange(_ axis: ComponentAxis, before: Double, after: Double) -> String {
+  private func inventoryUpgradeDetails(_ quote: ComponentUpgradeQuote) -> [String] {
+    let grade = EquipmentModuleTemplates.displayName(for: quote.resultingGrade) ?? "Unknown"
+    let next = quote.nextGrade.flatMap(EquipmentModuleTemplates.displayName) ?? "terminal envelope"
+    return ["Resulting grade: " + grade, "Next " + next + " (actual / required)"]
+      + quote.progress.map { progress in
+        inventoryComponentAxisLabel(progress.axis) + ": "
+          + inventoryStatChange(
+            progress.axis, before: progress.actual, after: progress.threshold, separator: " / ")
+      }
+  }
+  private func inventoryComponentAxisLabel(_ axis: ComponentAxis) -> String {
+    switch axis {
+    case .frontShieldCapacity: "Front capacity"
+    case .rearShieldCapacity: "Rear capacity"
+    case .frontShieldRecharge: "Front recharge"
+    case .rearShieldRecharge: "Rear recharge"
+    case .energyCapacity: "Energy capacity"
+    case .energyRecharge: "Energy recharge"
+    case .jumpSpool: "Jump spool"
+    case .jumpFuelCost: "Fuel cost"
+    case .jumpReach: "Jump reach"
+    default: "Statistic"
+    }
+  }
+  private func inventoryStatChange(
+    _ axis: ComponentAxis, before: Double, after: Double, separator: String = " -> "
+  ) -> String {
     let factor: Double
     let unit: String
     switch axis {
@@ -281,6 +320,6 @@ extension Game {
       factor = 1
       unit = ""
     }
-    return String(format: "%.4g%@ -> %.4g%@", before * factor, unit, after * factor, unit)
+    return String(format: "%.4g%@%@%.4g%@", before * factor, unit, separator, after * factor, unit)
   }
 }
