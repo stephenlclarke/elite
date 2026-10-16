@@ -179,7 +179,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     else { return false }
     guard projectiles.count <= 1024,
       projectiles.allSatisfy({ key, value in
-        key == value.body.scriptShot?.identity && value.valid
+        key == value.body.scriptShot?.identity && value.valid && projectileArchiveValid(value)
           && instances[value.body.scriptShot!.instance]?.ownedEncounters.values.contains {
             encounter in
             encounter.actors.values.contains { actor in
