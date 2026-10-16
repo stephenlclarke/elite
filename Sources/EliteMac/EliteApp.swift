@@ -39,6 +39,7 @@ final class GameView: NSView {
   var pendingInventoryCommands: [InventoryCommand] = []
   var pendingEquipmentPurchases: [EquipmentPurchaseContext] = []
   var pendingCommanderFiles: [NativeCommanderFileIntent] = []
+  var pendingMissionUI: [MissionUIIntent] = []
   private(set) var inventoryInputGeneration: UInt64 = 0
   var processedInventoryInputGeneration: UInt64 = 0
   private var modelInventoryInputGeneration: UInt64 = 0
@@ -399,6 +400,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   var window: NSWindow?
   let runtime = GameRuntime()
   var loop: Task<Void, Never>?
+  var missionMenu: NativeMissionMenu?
   let saves: CommanderSaveSession
   let windowSize: NSSize
   let restoreOnLaunch: Bool
@@ -509,12 +511,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     view.pendingEquipmentPurchases.removeAll(keepingCapacity: true)
     let files = view.pendingCommanderFiles
     view.pendingCommanderFiles.removeAll(keepingCapacity: true)
+    let missionIntents = view.pendingMissionUI
+    view.pendingMissionUI.removeAll(keepingCapacity: true)
     let inventoryGeneration = view.inventoryInputGeneration
     var inventoryCommandIndex = 0
     var purchaseIndex = 0
     var fileIndex = 0
+    var missionUIIndex = 0
     for event in events {
-      if event == "equipment-purchase" {
+      if event == "mission-ui" {
+        guard missionIntents.indices.contains(missionUIIndex) else { continue }
+        let intent = missionIntents[missionUIIndex]
+        missionUIIndex += 1
+        await runtime.missionUICommand(intent)
+      } else if event == "equipment-purchase" {
         if purchases.indices.contains(purchaseIndex) {
           _ = await runtime.equipmentTransaction(.purchase(purchases[purchaseIndex]))
           purchaseIndex += 1
@@ -677,15 +687,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     game.title = "Game"
     menu.addItem(game)
     game.submenu = NSMenu(title: "Game")
-    for (title, command) in [
-      ("Mission Gallery", "gallery-open"), ("Mission Contacts", "contacts-open"),
-      ("Station Rumours", "rumours-open"),
-    ] {
-      let item = game.submenu?.addItem(
-        withTitle: title, action: #selector(gameAction(_:)), keyEquivalent: "")
-      item?.representedObject = command
-      item?.target = self
-    }
     let pause = game.submenu?.addItem(
       withTitle: "Pause / Resume", action: #selector(togglePause), keyEquivalent: "p")
     pause?.target = self
@@ -695,6 +696,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let stop = game.submenu?.addItem(
       withTitle: "Stop Spin", action: #selector(stopSpin), keyEquivalent: "")
     stop?.target = self
+    let missionMenu = NativeMissionMenu(
+      snapshot: { [weak self] in (self?.window?.contentView as? GameView)?.game },
+      paintedPresentation: { [weak self] in
+        (self?.window?.contentView as? GameView)?.paintedMissionMenuPresentation
+      },
+      enqueue: { [weak self] intent in
+        guard let view = self?.window?.contentView as? GameView,
+          view.pendingMissionUI.count < 64
+        else { return }
+        view.pendingMissionUI.append(intent)
+        view.pending.append("mission-ui")
+      })
+    self.missionMenu = missionMenu
+    if let submenu = game.submenu { missionMenu.install(in: submenu) }
     let help = NSMenuItem()
     help.title = "Help"
     menu.addItem(help)

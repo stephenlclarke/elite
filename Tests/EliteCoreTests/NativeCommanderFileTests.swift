@@ -57,6 +57,40 @@ private final class NativeCommanderFileFixture {
 }
 
 extension NativeViewTests {
+  @MainActor @Test func nativeMissionIntentsKeepTheirFIFOPositionAndRefuseAfterAnEarlierLoad()
+    async throws
+  {
+    let fixture = try NativeCommanderFileFixture()
+    defer { fixture.close() }
+    let a = try fixture.write("A", credits: 1234)
+    let b = try fixture.write("B", credits: 5678)
+    let before = try await fixture.loadInitial(a)
+    let bytesA = try Data(contentsOf: a)
+    let bytesB = try Data(contentsOf: b)
+    let old = MissionUIIntent(
+      action: .library, game: before, presentation: before.scriptPagePresentation)
+    fixture.delegate.queueCommanderFile(.open(b))
+    fixture.view.pendingMissionUI.append(old)
+    fixture.view.pending.append("mission-ui")
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    let loaded = await fixture.delegate.runtime.snapshot()
+    #expect(loaded.commander.name == "B" && loaded.screen == .status)
+    #expect(loaded.inventoryContextEpoch != before.inventoryContextEpoch)
+    #expect(fixture.view.pendingMissionUI.isEmpty && fixture.view.pending.isEmpty)
+
+    let fresh = MissionUIIntent(
+      action: .library, game: loaded, presentation: loaded.scriptPagePresentation)
+    fixture.view.pendingMissionUI.append(fresh)
+    fixture.view.pending.append(contentsOf: ["mission-ui", "escape"])
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    let closed = await fixture.delegate.runtime.snapshot()
+    #expect(closed.screen == .status && closed.commander == loaded.commander)
+    #expect(fixture.view.pendingMissionUI.isEmpty && fixture.view.pending.isEmpty)
+    #expect(try Data(contentsOf: a) == bytesA)
+    #expect(try Data(contentsOf: b) == bytesB)
+    #expect(fixture.errors.isEmpty)
+  }
+
   @MainActor @Test func nativeSaveOpenAndSaveActiveFollowOneOrderedTypedStream() async throws {
     let fixture = try NativeCommanderFileFixture()
     defer { fixture.close() }
