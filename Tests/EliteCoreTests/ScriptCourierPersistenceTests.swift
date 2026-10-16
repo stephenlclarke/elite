@@ -274,3 +274,53 @@ extension CourierFixture {
   held.commander.scriptState.instances[heldID]?.completionReceipt = original.completionReceipt
   #expect(!held.commander.valid)
 }
+
+@Test func courierMissingContentAndNativeHullExchangePreserveExactCustodyAndBlockBadFit()
+  async throws
+{
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  game.commander.credits = 100_000_000
+  let id = try fixture.accept(&game, variant: .package)
+  let original = try #require(game.commander.scriptState.instances[id]?.courier)
+  let frozen = game.commander.scriptState.instances[id]?.contract
+  try GameRuntime.writeCommander(&game, to: fixture.save)
+  let missing = GameRuntime(game: Game(executive: false))
+  try await missing.load(from: fixture.save)
+  let held = await missing.snapshot()
+  #expect(held.commander.scriptState.instances[id]?.courier == original)
+  #expect(
+    held.commander.scriptState.instances[id]?.suspension != nil && held.commander.cargoTonnes == 1)
+  #expect(
+    held.courierGallerySummary(held.commander.scriptState.instances[id]).contains(
+      "Held - mission content unavailable"))
+  let pack = fixture.pack
+  await missing.nativeCommand { @Sendable game in game.scriptPacks = [pack] }
+  try await missing.resumeScriptMission(id)
+  game = await missing.snapshot()
+  #expect(game.commander.scriptState.instances[id]?.suspension == nil)
+  game.commander.cargo[0] = game.commander.standardCargoCapacity - 1
+  game.key("6")
+  game.showroom.selection = "SH001"
+  let blocked = try #require(game.shipTradeQuote)
+  #expect(!blocked.allowed)
+  let before = game.commander
+  game.key("showroom-trade")
+  game.key("right")
+  game.key("return")
+  #expect(game.commander == before && game.commander.scriptState.instances[id]?.courier == original)
+  game.key("escape")
+  game.commander.cargo[0] = 0
+  game.showroom.selection = "SH013"
+  let permitted = try #require(game.shipTradeQuote)
+  #expect(permitted.allowed)
+  let missiles = game.commander.missiles
+  game.key("showroom-trade")
+  game.key("right")
+  game.key("return")
+  #expect(game.commander.shipID == "SH013" && game.commander.missiles <= missiles)
+  #expect(game.commander.scriptState.instances[id]?.courier == original)
+  #expect(game.commander.scriptState.instances[id]?.contract == frozen)
+  #expect(game.commander.cargoTonnes == 1 && game.commander.valid)
+}

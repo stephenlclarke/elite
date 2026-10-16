@@ -73,6 +73,15 @@ public struct ScriptCourierActionProof: Codable, Sendable, Equatable {
 }
 public enum ScriptCourierTerminalCause: String, Codable, Sendable {
   case delivered, expired, abandoned, escapePod, shipDestroyed
+  var title: String {
+    switch self {
+    case .delivered: "Delivered"
+    case .expired: "Expired"
+    case .abandoned: "Abandoned"
+    case .escapePod: "Lost - ship abandoned with escape pod"
+    case .shipDestroyed: "Lost - ship destroyed"
+    }
+  }
   var outcome: ScriptOutcome {
     switch self {
     case .delivered: .complete

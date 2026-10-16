@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "pinned expanded source; focused run pending",
+  "stage": "core focused passed; native AppKit source checkpoint pending lease",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -98,6 +98,54 @@
       "logSHA256": "37b4a8b76fa2c1c65d4098397a27006113575323601e17612a454f6724105c7a",
       "inputManifestPath": "/tmp/elite-g02-checkpoint/51615ee-inputs.json",
       "inputManifestSHA256": "43c3e1fb58343ae03b283e87f62ae67e71a91b1f981829cf87c6f271abb5b960"
+    },
+    {
+      "commit": "87c8b20b74936eb03f6cb40eb111f9d7b99cc449",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courier"
+      ],
+      "seconds": 24.149669083068147,
+      "exit": 1,
+      "logPath": "/tmp/elite-g02-checkpoint/87c8b20-focused.log",
+      "logSHA256": "596cc3cf6d866f793d50072cc1a89b455ac9ad245b03176241f9fb212d34822e",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/87c8b20-inputs.json",
+      "inputManifestSHA256": "e20aab7461dd752ccfb4c464b172238380b634493899bbb2f1958babbaf27c91"
+    },
+    {
+      "commit": "3b5fa417d45d978dbe428bdc7541c379f32e83e3",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courierEveryFatalRuntimePathReservesPendingLossUntilPublication"
+      ],
+      "seconds": 15.452402792172506,
+      "exit": 0,
+      "logPath": "/tmp/elite-g02-checkpoint/3b5fa41-fatal.log",
+      "logSHA256": "5bdd58ca14d7bb060ac9796cfec2bbcc02f37445cbd3d481834bf9b5e4edb107",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/3b5fa41-inputs.json",
+      "inputManifestSHA256": "69160598072d55e1a18b7f17d6a6057fef0a887ff9b2f84a361afa73796e5ad5"
+    },
+    {
+      "commit": "3b5fa417d45d978dbe428bdc7541c379f32e83e3",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courier"
+      ],
+      "seconds": 21.4968057081569,
+      "exit": 0,
+      "logPath": "/tmp/elite-g02-checkpoint/3b5fa41-focused.log",
+      "logSHA256": "a005a942bcc7abcdae18995b2b9ee47d27b3a2227fefd87761b5049365778378",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/3b5fa41-inputs.json",
+      "inputManifestSHA256": "69160598072d55e1a18b7f17d6a6057fef0a887ff9b2f84a361afa73796e5ad5"
     }
   ],
   "earlyCheckpoint": {
@@ -313,6 +361,44 @@
   },
   "sourceOwnerClosures": [
     "523d1c6 shared native completion interoperability closed by source; execution pending at that review",
-    "576baae job-only obsolete queue cleanup and exact shared terminal receipt linkage closed by source; current focused execution pending"
-  ]
+    "576baae job-only obsolete queue cleanup and exact shared terminal receipt linkage closed by source; current focused execution pending",
+    "3b5fa417 focused/fatal checkpoint independently verified: exact authorized delta,917 unchanged Git inputs, four fatal and31 methods/47case passes; native/full gates pending"
+  ],
+  "focusedCheckpoint": {
+    "commit": "3b5fa417d45d978dbe428bdc7541c379f32e83e3",
+    "status": "focused-pass",
+    "methods": 31,
+    "caseInvocations": 47,
+    "frozenInputs": 917,
+    "changedInputs": [],
+    "productionSaveSHA256": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+    "fatalCommandSeconds": 15.452402792172506,
+    "focusedCommandSeconds": 21.4968057081569,
+    "pending": [
+      "native AppKit proof",
+      "broad regression/full CI",
+      "owner final acceptance"
+    ]
+  },
+  "fatalFailureTriage": {
+    "commit": "87c8b20b74936eb03f6cb40eb111f9d7b99cc449",
+    "frozenInputs": 917,
+    "inputsChanged": [],
+    "productionSaveSHA256": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+    "methods": 27,
+    "caseInvocations": 43,
+    "passingEvidence": [
+      "all six runtime travel/contact/reload",
+      "six real48/72h multihop boundary cases",
+      "native shared receipt consumer and4096queue rollback",
+      "terminal receipt corruption",
+      "legacy/raw positive compatibility",
+      "escape andcontrols rollback/data survival",
+      "sun/planet/overheat pending loss retry",
+      "Gallery flow"
+    ],
+    "failure": "Only energy fatal retry: three assertions in one case; native death/pending fact retained, terminal publication fails",
+    "inferredCause": "applyDamage allows negative energy; Game.tick enters gameOver without clamping; ScriptWorldSave.valid requires nonnegative energy"
+  },
+  "fatalFailureDisposition": "Owner-approved only finite-negative energy normalization after real Runtime death, before pending loss/publisher/observers; exact failure now passes with retained pending/reserved custody on failed writer and once-only recovery."
 }

@@ -31,7 +31,9 @@
     "compound-receipts-v2",
     "library-books-basic-v2",
     "partial-collections-v2",
-    "scoped-campaigns-basic-v2"
+    "scoped-campaigns-basic-v2",
+    "courier-contracts-basic-v2",
+    "mission-calendar-v2"
   ],
   "requirements": [
     {
@@ -752,5 +754,21 @@
     "save_format": 19,
     "full_engine_ready": false,
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
+  },
+  "generated_courier_checkpoint": {
+    "status": "native source and31-method47-case focused checkpoint validated; AppKit/native evidence and full CI remain pending",
+    "profile": "PROJECT-SPACE-G02-1",
+    "capabilities": [
+      "courier-contracts-basic-v2",
+      "mission-calendar-v2"
+    ],
+    "save_format": 21,
+    "full_engine_ready": false,
+    "authority": "mission-specifications/g02-research-authority.json",
+    "source_owner_review": "G02-DESIGN-OWNER-REVIEW.md",
+    "validation": "MISSION-CODER-G02-VALIDATION.json",
+    "example": "mission-packs/generated-couriers",
+    "project_estimates": true,
+    "limits": "One ordinary same-chart unique data/package item; fixed six-draw shortest-hop profile and inclusive menu-excluding deadline. No recovered server parity, dynamic navigation health, finance or general equipment integration. G1 statistics and Inventory epoch composition remain pending."
   }
 }

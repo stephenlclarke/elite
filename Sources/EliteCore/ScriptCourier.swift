@@ -27,9 +27,9 @@ public struct ScriptCourierPreview: Sendable, Equatable {
       String(
         format: "Time allowed: %.0f hours of mission game time from acceptance.",
         terms.duration / 3600),
-      "Menus and pause do not count. Native launch and travel time count.",
+      "Menus and pause do not count. Launch and hyperspace travel time count.",
       "First hop uses current fuel; later station refuelling costs your money. Affordability is not guaranteed.",
-      "Route fixes the reward. Alternative native travel is allowed.",
+      "Route fixes the reward. You may travel by another route.",
       "No deposit or failure fee. Failure or abandonment pays 0 CR. One active courier job.",
       "Abandon explicitly with the origin Courier Dispatch Officer. Back changes nothing.",
       "Reopening keeps these offers. A later scheduled refresh may list new jobs.",
@@ -253,7 +253,7 @@ extension Game {
           sequence: proof.sequence,
           cause: custody.pendingLoss?.context ?? candidate.scriptEventContext(old))
         if state.journal.count < 512 {
-          state.journal.append("Courier " + cause.rawValue + ". Paid: 0 CR.")
+          state.journal.append("Courier " + cause.title + ". Paid: 0 CR.")
         }
         candidate.commander.scriptState.instances[id] = state
         candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
@@ -308,7 +308,7 @@ extension Game {
     if custody.pendingLoss != nil {
       status = "Lost - recording outcome. Not deliverable."
     } else if let terminal = custody.terminal {
-      status = terminal.cause.rawValue.capitalized
+      status = terminal.cause.title
     } else {
       status = state.suspension == nil ? "Held" : "Held - mission content unavailable"
     }
