@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "ordering-key source correction compiled and reduced comparator fixed frame; exact same-flags Gallery regression still crashes; accessor proposal unapplied",
+  "stage": "approved script-state inout accessor and copy/dispatch semantics tests committed; uncompiled/unexecuted pending new numbered same-flags diagnostic",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,9 +280,8 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Exact owner source approval before unapplied script-state accessor/test proposal",
-    "Future numbered same-flags exact Gallery diagnostic before broader checks",
-    "Bounded affected compatibility/ASan, required media/refreeze and fresh canonical full CI",
+    "New numbered same-flags coverage compile/frame/copy diagnostics and exact failed nested Gallery case plus inout semantics",
+    "If passing: bounded affected compatibility/native/ASan, required media/refreeze and fresh canonical full CI",
     "Final source-owner acceptance and central integration/formal PR",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
@@ -1541,5 +1540,16 @@
     },
     "lease007ExplicitlyReleased": true,
     "broaderCompatibilityASanMediaFullCI": "not run because exact first regression failed"
+  },
+  "scriptStateCorrection": {
+    "approvedPatchSHA256": "91390701a30047b183d56827b09dd391e7a1dc88a86178ecdf6cf004d1b6a999",
+    "approvedPatchBytes": 1724,
+    "exactPatchSourceCommit": "a9a96b6f37005d1d6b530a2c51db27561288c63c",
+    "additionalOwnedSemanticsTestsCommit": "a7c272ee0aae5148d3ea7f68988aee113c9baad1",
+    "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md",
+    "scope": "Only seven-line Commander.scriptState _modify plus owned ScriptCourierPersistenceTests; original get/set/private optional storage/Codable and every other accessor unchanged.",
+    "tests": "First nil inout access, thrown mutation writeback/JSON roundtrip/default bytes; nonempty Commander and Game copy isolation across instance/data/timer/queue mutation+throw, nested clear to default bytes; actual native contract/child admission+multi-instance event sequence/context append and sibling retention for both nested variants. Existing command/filesystem rollback tests retained.",
+    "status": "uncompiled/unexecuted; released007 grants no further heavy work",
+    "limits": "Defer still creates a default ScriptEngineState. Only read/modify/write temporary relief is proposed; no guaranteed remedy or runtime peak-stack claim."
   }
 }
