@@ -1422,7 +1422,6 @@ public struct Game: Sendable {
       reconcileEliteReward()
       return
     }
-    advanceScriptNPCFlight(delta: dt)
     advanceSolarFlight(delta: dt)
     guard screen != .gameOver else { return }
     scoopCargo()
@@ -1486,7 +1485,8 @@ public struct Game: Sendable {
         bodies[index].rotation += dt * bodies[index].rotationRate
         advanceCanonicalModelSpin(at: index, delta: dt)
         if let physical = bodies[index].physical, physical.spawnIdentity != nil,
-          physical.ordnance == nil, bodies[index].scriptShot == nil
+          physical.ordnance == nil, bodies[index].scriptShot == nil,
+          bodies[index].scriptNPC == nil
         {
           bodies[index].position =
             bodies[index].position
@@ -1509,6 +1509,10 @@ public struct Game: Sendable {
       applyDamage(dt * 100, front: true)
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
+    advanceScriptNPCFlight(delta: dt)
+    synchronizeScriptNPCPhysicalVelocities()
+    advanceScriptNPCWeapons(delta: dt)
+    advanceScriptNPCShots(delta: dt)
     persistBlackjackTargets()
     persistCargoPoses()
     persistOrePoses()

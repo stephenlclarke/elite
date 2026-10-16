@@ -1,6 +1,15 @@
 import Foundation
 
 extension Game {
+  /// The profiled flight pass is the sole motion owner. Its current view velocity supplies
+  /// native snapshots and wreck motion without translating the body a second time.
+  mutating func synchronizeScriptNPCPhysicalVelocities() {
+    for index in bodies.indices {
+      guard let velocity = bodies[index].scriptNPC?.velocity else { continue }
+      bodies[index].physical?.velocity = commander.flightSimulation.pose.orientation.apply(velocity)
+    }
+  }
+
   /// Mission actor and shot velocities are view-relative. Change their basis once;
   /// their respective flight/shot passes remain the sole translation integrations.
   mutating func rotateScriptNPCVelocities(from before: ShipPose, to after: ShipPose) {
