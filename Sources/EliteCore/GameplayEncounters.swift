@@ -29,6 +29,7 @@ extension Game {
     director.acknowledge(receipts: admitEncounterPlan(plan))
     commander.encounterDirector = director
     activateNearbyMiningFields()
+    activateNearbySalvageSites()
     admitPendingOre()
     admitPendingCargo()
     admitPendingSalvage()

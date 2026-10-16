@@ -26,7 +26,8 @@ public enum PayloadIdentity: Hashable, Codable, Sendable {
 }
 
 public enum SpawnProducer: String, Codable, Sendable {
-  case ambient, asteroids, cargo, mining, salvage, security, mission, persistence, ordnance
+  case ambient, asteroids, cargo, mining, salvage, security, mission, persistence, ordnance,
+    derelicts
 }
 
 public struct SpawnIdentity: Hashable, Codable, Sendable {
@@ -148,11 +149,12 @@ public struct MissionProtection: Equatable, Codable, Sendable {
 }
 
 public enum PopulationClass: String, CaseIterable, Codable, Sendable {
-  case civilian, pirate, police, asteroid, cargo, projectile, mission
+  case civilian, pirate, police, asteroid, cargo, projectile, mission, wreck
   public var maximum: Int {
     switch self {
     case .civilian, .pirate, .police: return 8
     case .asteroid: return 24
+    case .wreck: return 4
     case .cargo, .projectile: return 32
     case .mission: return Int.max
     }

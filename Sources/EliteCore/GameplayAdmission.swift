@@ -40,6 +40,11 @@ extension Game {
         body.orientation.y = pose.shipVector(request.orientation.y)
         body.orientation.z = pose.shipVector(request.orientation.z)
         body.rotationRate = request.npc == nil ? 0.5 : 0
+        if request.identity.producer == .derelicts {
+          body.rotationRate = 0
+          body.missiles = 0
+          body.ecmEnabled = false
+        }
         body.hostile = request.npc?.intention == .engage(context.player.identity)
         if let rock = miningFields.flatMap(\.rocks).first(where: { $0.identity == request.rock }) {
           body.energy = commander.miningLedger.remainingEnergy(for: rock)

@@ -165,10 +165,15 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
       !settledDeaths.contains(victim),
       incident.victimIsStation || incident.victimLegalBeforeAttack != nil
     else { return nil }
-    if let hull = snapshot(victim, context: context)?.hull,
-      [.cargo, .asteroid, .missile].contains(hull)
-    {
-      return nil
+    if let actor = snapshot(victim, context: context) {
+      if [.cargo, .asteroid, .missile].contains(actor.hull) { return nil }
+      if let salvage = actor.salvage, [.wreck, .section].contains(salvage.category),
+        salvage.ownership == .abandoned, salvage.claimant == nil, actor.npc == nil,
+        !incident.victimIsStation,
+        !context.protection.protectedActors.contains(actor.identity)
+      {
+        return nil
+      }
     }
     return victim
   }

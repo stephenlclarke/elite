@@ -157,7 +157,7 @@ extension Game {
           identity: wreck,
           motion: .init(
             pose: modelPose(of: body), velocity: physical.velocity,
-            angularVelocity: physical.angularVelocity))
+            angularVelocity: physical.angularVelocity, energy: body.energy))
       }
     }
   }

@@ -4,10 +4,12 @@ public struct SalvageWreckMotion: Equatable, Codable, Sendable {
   public let pose: ShipPose
   public let velocity: Vector3
   public let angularVelocity: Vector3
-  public init(pose: ShipPose, velocity: Vector3, angularVelocity: Vector3) {
+  public let energy: Double?
+  public init(pose: ShipPose, velocity: Vector3, angularVelocity: Vector3, energy: Double? = nil) {
     self.pose = pose
     self.velocity = velocity
     self.angularVelocity = angularVelocity
+    self.energy = energy
   }
 }
 
@@ -350,6 +352,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     let epsilon = 0.00001
     return motion.pose.position.length.isFinite && motion.velocity.length.isFinite
       && motion.angularVelocity.length.isFinite
+      && (motion.energy.map { $0.isFinite && $0 > 0 && $0 <= 100000 } ?? true)
       && abs(basis.x.length - 1) < epsilon && abs(basis.y.length - 1) < epsilon
       && abs(basis.z.length - 1) < epsilon && abs(basis.x.dot(basis.y)) < epsilon
       && abs(basis.x.dot(basis.z)) < epsilon && abs(basis.y.dot(basis.z)) < epsilon

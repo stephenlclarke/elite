@@ -39,6 +39,7 @@ extension Game {
           radius: anchors.sun.radius),
       ]
       miningFields = MiningFields.generate(anchors: anchors, seed: gameplaySeed)
+      salvageSites = SalvageSites.generate(anchors: anchors, seed: gameplaySeed)
     }
     commander.miningLedger.resetPhysicalBindings(system: systemIdentity)
     commander.cargoDebrisLedger.resetPhysicalBindings(system: systemIdentity)

@@ -314,6 +314,7 @@ public struct Game: Sendable {
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
   public var miningFields: [MiningField] = []
+  public var salvageSites: [SalvageSite] = []
   var gameplayRevision: UInt64 = 0
   var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] = [:]
   public var starfield = Starfield()
@@ -931,6 +932,10 @@ public struct Game: Sendable {
   }
   public mutating func dock(atMainStation: Bool = true) {
     resolveDestroyed()
+    guard !hasUnsettledWreckDeaths else {
+      notify("DOCKING DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
     guard !hasUnsettledCargoDeaths else {
       notify("DOCKING DEFERRED: CARGO SETTLEMENT PENDING")
       return
@@ -999,6 +1004,12 @@ public struct Game: Sendable {
       || celestials.contains { $0.position.length < $0.radius * 4 }
   }
   public mutating func arrive() {
+    resolveDestroyed()
+    guard !hasUnsettledWreckDeaths else {
+      jumpCountdown = nil
+      notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
     if selectedSystem != commander.system { departOrdinarySimulation() }
     persistBlackjackTargets()
     retaliation.clear()
@@ -1034,7 +1045,13 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
   }
   public mutating func galacticJump() {
-    guard !docked, commander.consumeEquipped("Galactic Hyperdrive") else { return }
+    guard !docked else { return }
+    resolveDestroyed()
+    guard !hasUnsettledWreckDeaths else {
+      notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
+    guard commander.consumeEquipped("Galactic Hyperdrive") else { return }
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
@@ -1234,6 +1251,7 @@ public struct Game: Sendable {
       bodies[index].position = bodies[index].position - autoPilot.velocity * dt
       bodies[index].position.z -= speed * dt * 18
       bodies[index].rotation += dt * bodies[index].rotationRate
+      advanceCanonicalWreckSpin(at: index, delta: dt)
       if let physical = bodies[index].physical, physical.spawnIdentity != nil,
         physical.ordnance == nil
       {
@@ -1305,7 +1323,8 @@ public struct Game: Sendable {
     let initial = bodies.filter { $0.energy <= 0 }
     if !initial.isEmpty { ensurePhysicalActors() }
     for body in initial { settleLegacyCombatDeath(body) }
-    let deferred = registerDestroyedCargo()
+    var deferred = registerDestroyedCargo()
+    deferred.formUnion(registerDestroyedWrecks())
     let destroyed = bodies.filter { $0.energy <= 0 && !deferred.contains($0.id) }
     for body in destroyed {
       if let payload = body.physical?.payload {
@@ -1403,7 +1422,7 @@ public actor GameRuntime {
     candidate.persistSalvagePoses()
     candidate.persistBlackjackTargets()
     let refusedNPCs = candidate.persistNPCStates()
-    guard refusedNPCs.isEmpty, candidate.commander.valid,
+    guard refusedNPCs.isEmpty, !candidate.hasUnsettledWreckDeaths, candidate.commander.valid,
       !candidate.bodies.contains(where: {
         $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
           && $0.physical?.npc?.role != .mission

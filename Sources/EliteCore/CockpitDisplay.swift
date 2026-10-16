@@ -34,7 +34,8 @@ public struct CockpitLayout: Sendable {
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
     let toolLines = ["TOOL: " + game.selectedFlightTool.label.uppercased() + " / W CHANGE"]
     extraLines =
-      (game.autoHUDLines + toolLines + game.solarHUDLines + weaponLines + game.spin.hudLines)
+      (game.autoHUDLines + toolLines + game.salvageHUDLines + game.solarHUDLines + weaponLines
+      + game.spin.hudLines)
       .flatMap {
         MissionNotice.wrap($0, width: textColumns)
       }
