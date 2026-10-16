@@ -176,6 +176,9 @@ extension GameRuntime {
     let result = game.performEquipmentMutation(intent)
     guard result.applied else { return result }
     do {
+      if before.requiresScriptDurability || game.requiresScriptDurability, scriptSaveURL == nil {
+        throw SaveError.invalidCommander
+      }
       try commitScriptCommand(from: before)
       return result
     } catch {

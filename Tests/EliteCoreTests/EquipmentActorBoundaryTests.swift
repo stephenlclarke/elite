@@ -45,6 +45,105 @@ private func boundaryRecoveredGame() throws -> Game {
 }
 
 struct EquipmentActorBoundaryTests {
+  @Test(arguments: [false, true])
+  func purchaseWithoutDestinationRequiresOnlyRetainedStateDurability(retainedState: Bool)
+    async throws
+  {
+    var game = try boundaryGame("Beam Laser")
+    if retainedState { game.ensureScriptCalendar(origin: .newCommander) }
+    let runtime = GameRuntime(game: game)
+    let before = await runtime.snapshot()
+    #expect(before.requiresScriptDurability == retainedState)
+    let context = try #require(before.equipmentPurchaseContext)
+    let result = await runtime.equipmentTransaction(.purchase(context))
+    let after = await runtime.snapshot()
+    if retainedState {
+      #expect(result == .refused(.invalidState))
+      #expect(after.commander == before.commander)
+      #expect(after.inventoryContextEpoch == before.inventoryContextEpoch)
+      #expect(after.energy == before.energy && after.frontShield == before.frontShield)
+      #expect(after.rearShield == before.rearShield)
+    } else {
+      #expect(result.applied)
+      #expect(
+        after.commander.credits
+          == before.commander.credits - before.shopPrice(Equipment.all[before.selection]))
+      #expect(after.commander.laser(on: .front) == .beam)
+      #expect(after.commander.equipmentPurchaseHistory?.paid.count == 1)
+    }
+  }
+
+  @Test func retainedStateRecoveredUpgradeWithoutDestinationPreservesItsSourceAndComponent()
+    async throws
+  {
+    var game = try boundaryRecoveredGame()
+    game.ensureScriptCalendar(origin: .newCommander)
+    let runtime = GameRuntime(game: game)
+    let before = await runtime.snapshot()
+    let lot = try #require(before.commander.salvageLedger.inventory.first)
+    let command = try #require(before.inventoryActionPreview(for: .recovered(lot)).command)
+    let result = await runtime.equipmentTransaction(.inventory(command))
+    #expect(result == .refused(.invalidState))
+    let after = await runtime.snapshot()
+    #expect(after.commander == before.commander)
+    #expect(after.inventoryContextEpoch == before.inventoryContextEpoch)
+    #expect(after.energy == before.energy && after.frontShield == before.frontShield)
+    #expect(after.rearShield == before.rearShield)
+  }
+
+  @Test func retainedStatePurchasePublishesExactSavedCommanderAndReplayPreservesSaveBytes()
+    async throws
+  {
+    var game = try boundaryGame("Beam Laser")
+    game.ensureScriptCalendar(origin: .newCommander)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let file = directory.appendingPathComponent("commander.json")
+    let runtime = GameRuntime(game: game, saveURL: file)
+    let before = await runtime.snapshot()
+    let context = try #require(before.equipmentPurchaseContext)
+    let result = await runtime.equipmentTransaction(.purchase(context))
+    #expect(result.applied)
+    let after = await runtime.snapshot()
+    let bytes = try Data(contentsOf: file)
+    let (saved, _) = try ScriptSaveStore.read(bytes, from: file)
+    #expect(saved == after.commander)
+    #expect(
+      after.commander.credits == before.commander.credits
+        - before.shopPrice(Equipment.all[before.selection]))
+    #expect(after.commander.laser(on: .front) == .beam)
+    #expect(after.commander.equipmentPurchaseHistory?.paid.count == 1)
+    let replay = await runtime.equipmentTransaction(.purchase(context))
+    #expect(replay == .refused(.staleContext))
+    let replayed = await runtime.snapshot()
+    #expect(replayed.commander == after.commander)
+    #expect(try Data(contentsOf: file) == bytes)
+  }
+
+  @Test func retainedStatePurchaseWriterFailurePreservesCashItemsContextAndResources()
+    async throws
+  {
+    var game = try boundaryGame("Beam Laser")
+    game.ensureScriptCalendar(origin: .newCommander)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let blocker = directory.appendingPathComponent("blocked-parent")
+    let original = Data("existing file blocks the save directory".utf8)
+    try original.write(to: blocker)
+    let runtime = GameRuntime(game: game, saveURL: blocker.appendingPathComponent("commander.json"))
+    let before = await runtime.snapshot()
+    let context = try #require(before.equipmentPurchaseContext)
+    let result = await runtime.equipmentTransaction(.purchase(context))
+    #expect(result == .refused(.invalidState))
+    let after = await runtime.snapshot()
+    #expect(after.commander == before.commander)
+    #expect(after.inventoryContextEpoch == before.inventoryContextEpoch)
+    #expect(after.energy == before.energy && after.frontShield == before.frontShield)
+    #expect(after.rearShield == before.rearShield)
+    #expect(try Data(contentsOf: blocker) == original)
+  }
+
   @Test func concurrentFuelAndPhysicalMissileDuplicateIntentsCommitOnce()
     async throws
   {
