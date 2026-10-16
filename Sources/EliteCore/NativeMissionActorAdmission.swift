@@ -203,6 +203,17 @@ extension Game {
             || $0.sequence < flight.nextSpawn)
       })
     else { throw NativeMissionActorAdmissionError.invalidScene }
+    for body in bodies {
+      guard body.physical?.velocity.finite ?? true,
+        body.physical?.velocity.length.isFinite ?? true,
+        body.physical?.npc?.resources?.valid ?? true
+      else { throw NativeMissionActorAdmissionError.invalidCondition }
+      if body.scriptNPC != nil {
+        guard currentMissionActorDescriptor(bodyID: body.id) != nil else {
+          throw NativeMissionActorAdmissionError.invalidScene
+        }
+      }
+    }
   }
 
   private func validateMissionActorAdmissionTemplate(
