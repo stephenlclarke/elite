@@ -62,7 +62,7 @@ import Testing
   game.screen = .inventory
   let inventory = game.informationRows.map(\.0)
   #expect(inventory.contains("Equipment - fitted and held") && inventory.contains("Energy Bomb"))
-  #expect(inventory.contains("  Fitted Energy bomb - Granted"))
+  #expect(inventory.contains("Fitted Energy bomb - Granted"))
   #expect(game.commander.fittedEquipment(at: .utility(.energyBomb)) != nil)
   #expect(!inventory.contains { $0.hasPrefix("Legal status:") })
   #expect(game.commander == before)

@@ -121,7 +121,7 @@ import Testing
     #expect(initialRows.contains("Equipment - fitted and held") == (screen == .inventory))
     for mount in LaserMount.allCases {
       #expect(
-        initialRows.contains { $0.hasPrefix("  Fitted " + mount.label + " combat mount - ") }
+        initialRows.contains { $0.hasPrefix("Fitted " + mount.label + " combat mount - ") }
           == (screen == .inventory))
     }
     for width in [512.0, 768, 3600] {
