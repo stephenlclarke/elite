@@ -176,6 +176,59 @@ extension Game {
       adjudication: .currentVisit, terminalShot: nil, player: false)
   }
 
+  /// Actual native weapon callers retain their ordinary origin and weapon statistics. A sealed
+  /// custom-geometry contact uses this same damage plan for authored hulls and components.
+  mutating func applyNativeMissionContact(
+    _ contact: MissionCollisionContact, origin: AttackOrigin, damage: Double,
+    laser: LaserKind?, mount: LaserMount?, emissionPosition: Vector3
+  ) throws -> NativeMissionImpactReceipt {
+    guard let target = contact.selectedTargetBody, target.scriptNPC != nil,
+      bodies.filter({ $0.id == target.id }) == [target],
+      let context = gameplayContext(),
+      origin.owner.system == context.system, origin.owner.visit == context.visit,
+      origin.emittedAt == context.physicalTime, emissionPosition.finite,
+      origin.emissionID > consumedMissionLaserEmission,
+      origin.emissionID < commander.flightSimulation.nextEmission,
+      origin.owner == context.player.identity
+        || context.actors.contains(where: { $0.identity == origin.owner && $0.energy > 0 })
+    else { throw NativeMissionImpactError.staleProof }
+    var flight = commander.flightSimulation
+    guard let eventID = flight.allocateIncident() else {
+      throw NativeMissionImpactError.unavailableAllocator
+    }
+    var mining = commander.miningLedger
+    let preliminary = missionCombatIncident(
+      eventID: eventID, origin: origin, kind: .laser, hit: contact.hit, outcome: .hit,
+      part: contact.victimPart, context: context, laser: laser, mount: mount)
+    let plan = try missionDamagePlan(
+      hit: contact.hit, victimPart: contact.victimPart, component: contact.componentUUID,
+      damage: damage, kind: .laser, laser: laser, eventID: eventID, mining: &mining,
+      projectile: nil, incident: preliminary, context: context)
+    let incident = missionCombatIncident(
+      eventID: eventID, origin: origin, kind: .laser, hit: contact.hit, outcome: plan.outcome,
+      part: contact.victimPart, context: context, laser: laser, mount: mount)
+    var law = commander.crimeLedger
+    let resolution = law.record(
+      incident, context: context, emissionPosition: emissionPosition,
+      missionEntitlement: combatMissionEntitlement(
+        contact.hit.target, owner: origin.owner, context: context))
+    guard resolution.accepted else { throw NativeMissionImpactError.refusedLedger }
+    commander.flightSimulation = flight
+    commander.miningLedger = mining
+    commander.crimeLedger = law
+    consumedMissionLaserEmission = origin.emissionID
+    commitMissionDamage(plan, damage: damage, origin: origin, eventID: eventID)
+    applyNativeCrimeResolution(
+      resolution, target: contact.hit.target, attacker: origin.owner, context: context)
+    let source = bodies.first(where: { $0.physical?.identity == origin.owner })
+    return missionImpactReceipt(
+      kind: .laser, hit: contact.hit, part: contact.victimPart,
+      component: contact.componentUUID, damage: damage, plan: plan, eventID: eventID,
+      sourceInstance: source?.missionInstanceID, sourceActor: source?.missionActorID,
+      sourceComponent: nil, origin: origin, adjudication: .currentVisit, terminalShot: nil,
+      player: origin.owner == context.player.identity)
+  }
+
   private func missionDamagePlan(
     hit: GameplayHit, victimPart: String?, component: UUID?, damage: Double,
     kind: AttackKind, laser: LaserKind?, eventID: UInt64, mining: inout MiningLedger,
@@ -276,7 +329,8 @@ extension Game {
 
   private func missionCombatIncident(
     eventID: UInt64, origin: AttackOrigin, kind: AttackKind, hit: GameplayHit?,
-    outcome: AttackOutcome, part: String?, context: EncounterContext
+    outcome: AttackOutcome, part: String?, context: EncounterContext,
+    laser: LaserKind? = nil, mount: LaserMount? = nil
   ) -> CombatIncident {
     let victim: ActorSnapshot?
     switch hit?.target {
@@ -292,7 +346,7 @@ extension Game {
       position: commander.flightSimulation.pose.systemPoint(hit?.point ?? .init(0, 0, 0)),
       victimLegalBeforeAttack: victim?.legal, firstAggressor: victim?.npc?.firstAggressor,
       victimRole: victim?.npc?.role, victimIsStation: victim?.hull == .station,
-      laser: nil, mount: nil, victimPart: part)
+      laser: laser, mount: mount, victimPart: part)
   }
 
   private func missionImpactReceipt(

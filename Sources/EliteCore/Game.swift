@@ -1532,7 +1532,7 @@ public struct Game: Sendable {
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
-      recordScriptActorRemoval(body, destroyed: true)
+      recordScriptActorRemoval(body, destroyed: false)
     }
     bodies.removeAll {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
@@ -1581,6 +1581,7 @@ public struct Game: Sendable {
       missionTargetRemoved(body)
       clearRemovedTarget(body)
       blackjackTargetDestroyed(body)
+      recordScriptActorRemoval(body, destroyed: true)
     }
     bodies.removeAll { $0.energy <= 0 && !deferred.contains($0.id) }
     if !bodies.contains(where: { $0.hull == .thargoid }) {

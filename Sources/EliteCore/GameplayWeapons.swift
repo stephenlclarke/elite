@@ -8,14 +8,6 @@ extension Game {
       let mount = LaserMount.from(screen), let laser = commander.laser(on: mount)
     else { return }
     ensurePhysicalActors()
-    guard let player = commander.flightSimulation.player,
-      let origin = makeAttackOrigin(owner: player)
-    else { return }
-    fireCooldown = laser.firingInterval
-    laserHeat += 10
-    energy -= 1
-    laserFlash = 0.08
-    dischargeAudio.record(.combatLaser)
     let direction: Vector3
     switch mount {
     case .front: direction = .init(0, 0, 1)
@@ -23,13 +15,19 @@ extension Game {
     case .left: direction = .init(-1, 0, 0)
     case .right: direction = .init(1, 0, 0)
     }
+    let contact: MissionCollisionContact?
+    do {
+      contact = try nearestMissionCollision(
+        from: .init(0, 0, 0), direction: direction, range: 6000, radius: 0,
+        excludingBodyIDs: [], includePlayer: false)
+    } catch { return }
+    let flightBeforeEmission = commander.flightSimulation
+    guard let player = commander.flightSimulation.player,
+      let origin = makeAttackOrigin(owner: player)
+    else { return }
     let emissionPosition = commander.flightSimulation.pose.position
-    guard
-      let hit = GameplayRaycast.nearest(
-        origin: .init(0, 0, 0), direction: direction, maxDistance: 6000,
-        bodies: bodies.filter { $0.energy > 0 }, celestials: celestials,
-        meshOverrides: gameplayMeshOverrides)
-    else {
+    guard let contact else {
+      recordPlayerLaserDischarge(laser)
       recordCombat(
         origin: origin, kind: .laser, outcome: .discharge, target: nil,
         worldPosition: emissionPosition, emissionPosition: emissionPosition,
@@ -37,43 +35,82 @@ extension Game {
       commander.crimeLedger.finishEmission(origin.emissionID)
       return
     }
+    let hit = contact.hit
     let damage: Double
     if case .body(let id) = hit.target, let body = bodies.first(where: { $0.id == id }) {
       damage = commander.laserDamage(against: body.hull, mount: mount)
     } else {
       damage = laser.damage
     }
-    applyCombatHit(
-      hit, origin: origin, kind: .laser, damage: damage, laser: laser, mount: mount,
-      emissionPosition: emissionPosition)
+    if contact.selectedTargetBody?.scriptNPC != nil {
+      do {
+        let receipt = try applyNativeMissionContact(
+          contact, origin: origin, damage: damage, laser: laser, mount: mount,
+          emissionPosition: emissionPosition)
+        projectScriptMissionImpact(receipt)
+      } catch {
+        commander.flightSimulation = flightBeforeEmission
+        return
+      }
+    } else {
+      applyCombatHit(
+        hit, origin: origin, kind: .laser, damage: damage, laser: laser, mount: mount,
+        emissionPosition: emissionPosition)
+    }
+    recordPlayerLaserDischarge(laser)
     commander.crimeLedger.finishEmission(origin.emissionID)
+  }
+
+  private mutating func recordPlayerLaserDischarge(_ laser: LaserKind) {
+    fireCooldown = laser.firingInterval
+    laserHeat += 10
+    energy -= 1
+    laserFlash = 0.08
+    dischargeAudio.record(.combatLaser)
   }
 
   /// A legacy scripted beam still obeys occlusion and records its real emitter.
   /// Script-specific cadence/damage remains with the original encounter.
   mutating func emitLegacyNPCBeam(bodyID: Int, damage: Double, energyMultiplier: Double = 1) {
     ensurePhysicalActors()
+    let flightBeforeEmission = commander.flightSimulation
     guard let body = bodies.first(where: { $0.id == bodyID && $0.energy > 0 }),
       let owner = body.physical?.identity, let origin = makeAttackOrigin(owner: owner),
       body.position.length > 0
     else { return }
     let launch = commander.flightSimulation.pose.systemPoint(body.position)
-    if let index = bodies.firstIndex(where: { $0.id == bodyID }) {
-      bodies[index].physical?.npc?.resources?.recordBeam(heat: min(10, damage * 10 / 15))
+    let contact: MissionCollisionContact?
+    do {
+      contact = try nearestMissionCollision(
+        from: body.position, direction: body.position.unit * -1,
+        range: body.position.length + 1, radius: 0,
+        excludingBodyIDs: [bodyID], includePlayer: true)
+    } catch {
+      commander.flightSimulation = flightBeforeEmission
+      return
     }
-    let hit = GameplayRaycast.nearest(
-      origin: body.position, direction: body.position * -1, maxDistance: body.position.length + 1,
-      bodies: bodies.filter { $0.energy > 0 }, ignoring: [bodyID],
-      playerMesh: commander.playerMesh, celestials: celestials,
-      meshOverrides: gameplayMeshOverrides)
-    if let hit {
-      applyCombatHit(
-        hit, origin: origin, kind: .laser, damage: damage, emissionPosition: launch,
-        energyMultiplier: energyMultiplier)
+    if let contact {
+      if contact.selectedTargetBody?.scriptNPC != nil {
+        guard let receipt = try? applyNativeMissionContact(
+          contact, origin: origin, damage: damage, laser: nil, mount: nil,
+          emissionPosition: launch)
+        else {
+          commander.flightSimulation = flightBeforeEmission
+          return
+        }
+        projectScriptMissionImpact(receipt)
+      } else {
+        applyCombatHit(
+          contact.hit, origin: origin, kind: .laser, damage: damage, emissionPosition: launch,
+          energyMultiplier: energyMultiplier)
+      }
     } else {
       recordCombat(
         origin: origin, kind: .laser, outcome: .discharge, target: nil,
         worldPosition: launch, emissionPosition: launch)
+    }
+    if let index = bodies.firstIndex(where: { $0.id == bodyID }) {
+      bodies[index].physical?.npc?.resources?.recordBeam(heat: min(10, damage * 10 / 15))
     }
     commander.crimeLedger.finishEmission(origin.emissionID)
   }

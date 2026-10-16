@@ -208,26 +208,37 @@ extension Game {
     let range = mining ? 500.0 : 1500.0
     guard direction.length <= range,
       bodies[index].orientation.z.dot(direction.unit) > 0.98,
-      let hit = GameplayRaycast.nearest(
-        origin: position, direction: direction, maxDistance: range,
-        bodies: bodies.filter { $0.energy > 0 }, ignoring: [bodyID],
-        playerMesh: commander.playerMesh, celestials: celestials,
-        meshOverrides: gameplayMeshOverrides)
+      let contact = try? nearestMissionCollision(
+        from: position, direction: direction.unit, range: range, radius: 0,
+        excludingBodyIDs: [bodyID], includePlayer: true)
     else { return }
+    let hit = contact.hit
     let intended =
       identity == context.player.identity
       ? hit.target == .player
       : bodies.first(where: { $0.physical?.identity == identity }).map {
         hit.target == .body($0.id)
       } == true
+    let flightBeforeEmission = commander.flightSimulation
     guard intended, let origin = makeAttackOrigin(owner: actor.identity) else { return }
     let laser: LaserKind = mining ? .mining : .pulse
+    if contact.selectedTargetBody?.scriptNPC != nil {
+      guard let receipt = try? applyNativeMissionContact(
+        contact, origin: origin, damage: laser.damage, laser: laser, mount: .front,
+        emissionPosition: commander.flightSimulation.pose.systemPoint(position))
+      else {
+        commander.flightSimulation = flightBeforeEmission
+        return
+      }
+      projectScriptMissionImpact(receipt)
+    } else {
+      applyCombatHit(
+        hit, origin: origin, kind: .laser, damage: laser.damage, laser: laser, mount: .front,
+        emissionPosition: commander.flightSimulation.pose.systemPoint(position))
+    }
     bodies[index].physical?.laserCooldown = laser.firingInterval
     bodies[index].energy -= 1
     bodies[index].physical?.npc?.resources?.recordBeam(heat: 10)
-    applyCombatHit(
-      hit, origin: origin, kind: .laser, damage: laser.damage, laser: laser, mount: .front,
-      emissionPosition: commander.flightSimulation.pose.systemPoint(position))
     commander.crimeLedger.finishEmission(origin.emissionID)
   }
 
