@@ -145,7 +145,8 @@ struct NativeMissionProjectileTests {
         start: start, end: end, initialVelocity: .init(0, 0, 0),
         acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
         duration: 0.1, playerRadius: 1)
-      try #require(game.moveWorkFrame(delta: 0.1))
+      let moved = game.moveWorkFrame(delta: 0.1)
+      try #require(moved)
     } else {
       var controls = Controls()
       controls.pitch = 0.3
