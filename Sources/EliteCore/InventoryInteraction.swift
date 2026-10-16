@@ -68,6 +68,8 @@ public struct InventoryControl: Sendable, Equatable {
 
 /// Kept by the native view only after the corresponding frame was successfully painted.
 public struct InventoryInteraction: Sendable, Equatable {
+  public static let actionWidth = 90.0
+  public static let actionGap = 12.0
   public var controls: [InventoryControl] = []
   public var selected = 0
   public init() {}

@@ -55,59 +55,7 @@ extension Game {
   }
   public var informationRows: [(String, Ink)] {
     if screen == .inventory {
-      var rows: [(String, Ink)] = [
-        (
-          "Cargo: \(commander.cargoTonnes) tonnes"
-            + (commander.unlimitedCargo ? " (unlimited capacity)" : "/\(commander.capacity)"),
-          .white
-        )
-      ]
-      rows += commander.cargo.indices.filter { commander.cargo[$0] > 0 }.map { index in
-        (
-          Commodity.all[index].name + ": \(commander.cargo[index]) \(Commodity.all[index].unit)"
-            + (index == 10 && commander.markedFirearms > 0 ? " (1 mission item)" : ""),
-          CommodityCategory.at(index).ink
-        )
-      }
-      for id in commander.missionProgress.keys.sorted() {
-        let title =
-          missionPacks.entries.first { $0.pack.stateID == id }?.pack.mission.title ?? "Missing pack"
-        for (key, quantity) in commander.missionProgress[id]!.payloads.sorted(by: {
-          $0.key < $1.key
-        }) where quantity > 0 {
-          rows.append(
-            (
-              "Reserved " + String(title.prefix(18)) + ": " + String(key.prefix(14))
-                + " \(quantity)t", .cyan
-            ))
-        }
-      }
-      rows.append(("Equipment - fitted and held", .yellow))
-      if let history = commander.equipmentPurchaseHistory {
-        rows.append(("Recorded purchases: \(history.paid.count)", .cyan))
-      }
-      if let inventory = commander.equipmentInventory {
-        for item in inventory.items.sorted(by: {
-          let left = equipmentName($0)
-          let right = equipmentName($1)
-          return left == right ? $0.id.uuidString < $1.id.uuidString : left < right
-        }) {
-          rows.append((equipmentName(item), .white))
-          let fitting =
-            item.location.map { location in
-              equipmentSlot(location.slot)
-                + (location.hullInstanceID == inventory.activeHull ? "" : " (other hull)")
-            } ?? "Held"
-          rows.append(("  " + fitting + " - " + equipmentOrigin(item.provenance), .cyan))
-        }
-      } else {
-        rows.append(("Legacy fittings - acquisition unknown", .cyan))
-        rows += commander.laserMountSummary.map { ("  " + $0, .white) }
-        rows += commander.equipment.sorted().filter {
-          LaserKind.from($0) == nil && !["Fuel", "Missile"].contains($0)
-        }.map { ("  " + $0, .white) }
-      }
-      return rows
+      return inventoryInformationRows(width: viewportWidth).map { ($0.text, $0.ink) }
     }
     let criminalStatus = commander.legal < 50 ? "Offender" : "Fugitive"
     let legal = commander.legal == 0 ? "Clean" : criminalStatus
@@ -183,7 +131,7 @@ extension Game {
     return label + ": " + (installed ? "module fitted" : "no module")
       + "; core: " + core
   }
-  private func equipmentName(_ item: OwnedEquipmentItem) -> String {
+  func equipmentName(_ item: OwnedEquipmentItem) -> String {
     let canonical =
       EquipmentRuntimeCatalog.graph.nodes.first { $0.id == item.node }?.displayName
       ?? item.node.key
@@ -199,7 +147,7 @@ extension Game {
     }
     return grade + " " + family
   }
-  private func equipmentOrigin(_ origin: EquipmentAcquisitionProvenance) -> String {
+  func equipmentOrigin(_ origin: EquipmentAcquisitionProvenance) -> String {
     switch origin {
     case .standard: "Standard"
     case .paid: "Purchased"
@@ -223,7 +171,7 @@ extension Game {
     case .galacticHyperdrive: "Galactic hyperdrive"
     }
   }
-  private func equipmentSlot(_ slot: ComponentFittingSlot) -> String {
+  func equipmentSlot(_ slot: ComponentFittingSlot) -> String {
     switch slot {
     case .shield: "Fitted shield"
     case .energy: "Fitted energy"
