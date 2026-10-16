@@ -50,7 +50,7 @@ struct MissionShotDescriptor: Equatable, Sendable {
 
 enum MissionNativeBridgeError: Error, Equatable, Sendable {
   case invalidDescriptor, sourceMismatch, missingActor, invalidNativeBinding, staleBinding
-  case unsupportedWeapon, invalidShot, invalidArchive
+  case unsupportedWeapon, invalidShot, invalidArchive, invalidGeometry
 }
 
 /// Seals only the checked native binding and projected facts, not the external durable join.
@@ -373,5 +373,443 @@ extension Game {
     else { throw MissionNativeBridgeError.sourceMismatch }
     try MissionNativeBridge.validateBinding(
       binding, descriptor: descriptor, body: body, context: context)
+  }
+}
+
+/// Constructed only by the physical query in this file; no damage or custody authority.
+struct MissionCollisionContact: Sendable {
+  let hit: GameplayHit
+  let victimPart: String?
+  let componentUUID: UUID?
+  let selectedTargetBody: SpaceBody?
+  fileprivate init(hit: GameplayHit, victimPart: String?, componentUUID: UUID?, body: SpaceBody?) {
+    self.hit = hit
+    self.victimPart = victimPart
+    self.componentUUID = componentUUID
+    self.selectedTargetBody = body
+  }
+}
+
+extension Game {
+  /// Inputs and returned points use the current camera-relative physical frame.
+  func nearestMissionCollision(
+    from origin: Vector3, direction: Vector3, range: Double, radius: Double,
+    excludingBodyIDs: Set<Int> = [], includePlayer: Bool
+  ) throws -> MissionCollisionContact? {
+    func finite(_ vector: Vector3) -> Bool { vector.finite && vector.length.isFinite }
+    guard finite(origin), finite(direction), abs(direction.length - 1) <= 1e-6,
+      range.isFinite, range > 0, radius.isFinite, radius >= 0
+    else { throw MissionNativeBridgeError.invalidGeometry }
+    let direction = direction.unit
+    guard finite(origin + direction * range) else { throw MissionNativeBridgeError.invalidGeometry }
+    var nearest: MissionCollisionContact?
+    func rank(_ contact: MissionCollisionContact) -> (Int, Int, String) {
+      switch contact.hit.target {
+      case .body(let id): return (1, id, contact.victimPart ?? "")
+      case .player: return (2, 0, "")
+      case .celestial(.planet): return (0, 0, "")
+      case .celestial(.sun): return (0, 1, "")
+      }
+    }
+    func consider(
+      _ distance: Double, target: GameplayHitTarget, body: SpaceBody? = nil,
+      part: String? = nil, component: UUID? = nil
+    ) {
+      guard distance.isFinite, (0...range).contains(distance) else { return }
+      let point = origin + direction * distance
+      guard finite(point) else { return }
+      let candidate = MissionCollisionContact(
+        hit: .init(target: target, distance: distance, point: point),
+        victimPart: part, componentUUID: component, body: body)
+      if let previous = nearest {
+        guard
+          distance < previous.hit.distance
+            || (distance == previous.hit.distance && rank(candidate) < rank(previous))
+        else { return }
+      }
+      nearest = candidate
+    }
+    func valid(_ mesh: Mesh) -> Bool {
+      !mesh.vertices.isEmpty && !mesh.faces.isEmpty && mesh.vertices.allSatisfy(finite)
+        && mesh.faces.allSatisfy { $0.count >= 3 && $0.allSatisfy(mesh.vertices.indices.contains) }
+        && triangles(mesh) != nil
+    }
+    // Ear clipping preserves concave authored polygons; a triangle fan would fill their notches.
+    func triangles(_ mesh: Mesh) -> [[Int]]? {
+      var result: [[Int]] = []
+      for face in mesh.faces {
+        var polygon = face
+        if polygon.first == polygon.last { polygon.removeLast() }
+        guard polygon.count >= 3, Set(polygon).count == polygon.count else { return nil }
+        let first = mesh.vertices[polygon[0]]
+        let scale = polygon.map { (mesh.vertices[$0] - first).length }.max() ?? 0
+        guard scale.isFinite, scale > 0 else { return nil }
+        // Normalize each polygon before its predicates so accepted small component scales do
+        // not turn valid faces into degeneracies merely because of an absolute area tolerance.
+        let points = Dictionary(
+          uniqueKeysWithValues: polygon.map {
+            ($0, (mesh.vertices[$0] - first) * (1 / scale))
+          })
+        guard points.values.allSatisfy(finite),
+          let normal = (1..<(polygon.count - 1)).lazy.map({
+            points[polygon[$0]]!.cross(points[polygon[$0 + 1]]!)
+          }).first(where: { $0.length > 1e-12 })
+        else { return nil }
+        let unit = normal.unit
+        guard polygon.allSatisfy({ abs(points[$0]!.dot(unit)) <= 1e-6 })
+        else { return nil }
+        let axis = [abs(normal.x), abs(normal.y), abs(normal.z)].enumerated().max {
+          $0.element < $1.element
+        }!.offset
+        func point(_ index: Int) -> (Double, Double) {
+          let v = points[index]!
+          return axis == 0 ? (v.y, v.z) : axis == 1 ? (v.x, v.z) : (v.x, v.y)
+        }
+        func cross(_ a: Int, _ b: Int, _ c: Int) -> Double {
+          let p = point(a)
+          let q = point(b)
+          let r = point(c)
+          return (q.0 - p.0) * (r.1 - p.1) - (q.1 - p.1) * (r.0 - p.0)
+        }
+        let area = polygon.indices.reduce(0.0) { total, index in
+          let p = point(polygon[index])
+          let q = point(polygon[(index + 1) % polygon.count])
+          return total + p.0 * q.1 - q.0 * p.1
+        }
+        guard area.isFinite, abs(area) > 1e-9 else { return nil }
+        let sign = area > 0 ? 1.0 : -1.0
+        while polygon.count > 3 {
+          var removed = false
+          for index in polygon.indices {
+            let a = polygon[(index + polygon.count - 1) % polygon.count]
+            let b = polygon[index]
+            let c = polygon[(index + 1) % polygon.count]
+            let turn = cross(a, b, c) * sign
+            if abs(turn) <= 1e-9 {
+              polygon.remove(at: index)
+              removed = true
+              break
+            }
+            guard turn > 0 else { continue }
+            let occupied = polygon.contains { other in
+              other != a && other != b && other != c
+                && cross(a, b, other) * sign >= -1e-9
+                && cross(b, c, other) * sign >= -1e-9
+                && cross(c, a, other) * sign >= -1e-9
+            }
+            if !occupied {
+              result.append([a, b, c])
+              polygon.remove(at: index)
+              removed = true
+              break
+            }
+          }
+          guard removed else { return nil }
+        }
+        result.append(polygon)
+      }
+      return result
+    }
+    func swept(
+      _ mesh: Mesh, transform: (Vector3) -> Vector3, target: GameplayHitTarget,
+      body: SpaceBody? = nil, part: String? = nil, component: UUID? = nil
+    ) -> Bool {
+      guard valid(mesh) else { return false }
+      let vertices = mesh.vertices.map(transform)
+      guard vertices.allSatisfy(finite) else { return false }
+      guard let faces = triangles(mesh) else { return false }
+      for face in faces {
+        if let distance = ScriptSweptCollision.triangle(
+          origin: origin, direction: direction, range: range, radius: radius,
+          a: vertices[face[0]], b: vertices[face[1]], c: vertices[face[2]])
+        {
+          consider(distance, target: target, body: body, part: part, component: component)
+        }
+      }
+      return true
+    }
+    let live = bodies.filter { $0.energy > 0 && !excludingBodyIDs.contains($0.id) }
+    for body in live {
+      let axes = [
+        body.modelVector(.init(1, 0, 0)), body.modelVector(.init(0, 1, 0)),
+        body.modelVector(.init(0, 0, 1)),
+      ]
+      guard finite(body.position), body.rotation.isFinite, body.orientation.validRotation,
+        axes.allSatisfy(finite), axes.allSatisfy({ abs($0.dot($0) - 1) < 1e-6 }),
+        abs(axes[0].dot(axes[1])) < 1e-6, abs(axes[0].dot(axes[2])) < 1e-6,
+        abs(axes[1].dot(axes[2])) < 1e-6
+      else { throw MissionNativeBridgeError.invalidGeometry }
+      if body.scriptNPC == nil, !valid(gameplayMesh(for: body)) {
+        throw MissionNativeBridgeError.invalidGeometry
+      }
+    }
+    if includePlayer, !valid(commander.playerMesh) {
+      throw MissionNativeBridgeError.invalidGeometry
+    }
+    // Native zero-radius rays retain the existing exact authored-polygon clipping path.
+    if radius == 0 {
+      let native = live.filter { $0.scriptNPC == nil }
+      if let hit = GameplayRaycast.nearest(
+        origin: origin, direction: direction, maxDistance: range,
+        bodies: native, playerMesh: includePlayer ? commander.playerMesh : nil,
+        meshOverrides: gameplayMeshOverrides)
+      {
+        let body: SpaceBody?
+        if case .body(let id) = hit.target {
+          body = native.first { $0.id == id }
+        } else {
+          body = nil
+        }
+        consider(hit.distance, target: hit.target, body: body)
+      }
+    }
+    for body in live {
+      guard finite(body.position), body.orientation.validRotation,
+        body.rotation.isFinite
+      else { throw MissionNativeBridgeError.invalidGeometry }
+      if let npc = body.scriptNPC {
+        guard npc.valid, let root = scriptModel(npc.fit.definition.model, fit: npc.fit), valid(root)
+        else { throw MissionNativeBridgeError.invalidGeometry }
+        func custom(
+          _ mesh: Mesh, position: Vector3, orientation: Basis3, scale: Double,
+          part: String? = nil, component: UUID? = nil
+        ) -> Bool {
+          guard finite(position), orientation.validRotation, scale.isFinite, scale > 0,
+            npc.fit.definition.scale.isFinite, npc.fit.definition.scale > 0, valid(mesh)
+          else { return false }
+          let local = Mesh(
+            vertices: mesh.vertices.map {
+              (position + orientation.apply($0 * scale)) * npc.fit.definition.scale
+            }, faces: mesh.faces, preserveWinding: true)
+          guard valid(local) else { return false }
+          if radius == 0 {
+            if let hit = GameplayRaycast.nearest(
+              origin: origin, direction: direction,
+              maxDistance: range, bodies: [body], meshOverrides: [body.id: local])
+            {
+              consider(
+                hit.distance, target: hit.target, body: body, part: part, component: component)
+            }
+            return true
+          }
+          return swept(
+            local, transform: { body.position + body.modelVector($0) },
+            target: .body(body.id), body: body, part: part, component: component)
+        }
+        guard custom(root, position: .init(0, 0, 0), orientation: .init(), scale: 1) else {
+          throw MissionNativeBridgeError.invalidGeometry
+        }
+        for spec in npc.fit.definition.components ?? [] where spec.solid {
+          guard let state = npc.components[spec.id], state.energy > 0 else { continue }
+          guard let mesh = scriptModel(spec.model, fit: npc.fit),
+            custom(
+              mesh, position: spec.position, orientation: spec.orientation, scale: spec.scale,
+              part: spec.id, component: state.identity)
+          else { throw MissionNativeBridgeError.invalidGeometry }
+        }
+      } else if radius > 0 {
+        guard
+          swept(
+            gameplayMesh(for: body), transform: { body.position + body.modelVector($0) },
+            target: .body(body.id), body: body)
+        else { throw MissionNativeBridgeError.invalidGeometry }
+      }
+    }
+    if radius > 0, includePlayer {
+      guard swept(commander.playerMesh, transform: { $0 }, target: .player) else {
+        throw MissionNativeBridgeError.invalidGeometry
+      }
+    }
+    for celestial in celestials {
+      let inflated = celestial.radius + radius
+      guard finite(celestial.position), celestial.radius.isFinite, celestial.radius > 0,
+        inflated.isFinite, inflated > 0
+      else {
+        throw MissionNativeBridgeError.invalidGeometry
+      }
+      if let distance = ScriptSweptCollision.sphere(
+        origin: origin - celestial.position,
+        direction: direction, radius: inflated)
+      {
+        consider(distance, target: .celestial(celestial.kind))
+      }
+    }
+    return nearest
+  }
+}
+
+/// Current-visit instant emission. A miss remains a real laser discharge without inventing a shot.
+struct MissionNativeLaserProof: Sendable {
+  let source: MissionActorBinding
+  let weapon: MissionWeaponDescriptor
+  let sourceComponentID: UUID?
+  let origin: AttackOrigin
+  let contact: MissionCollisionContact?
+  let system: SystemIdentity
+  let visit: UInt64
+  let sceneRevision: UInt64
+  let instanceRevision: UInt64
+  var kind: AttackKind { .laser }
+  var damage: Double { weapon.damage }
+  var hit: GameplayHit? { contact?.hit }
+  var victimPart: String? { contact?.victimPart }
+  var victimComponentID: UUID? { contact?.componentUUID }
+  var targetBody: SpaceBody? { contact?.selectedTargetBody }
+  var sourceInstanceID: UUID { source.instanceID }
+  var sourceActorID: UUID { source.actorID }
+
+  fileprivate init(
+    source: MissionActorBinding, weapon: MissionWeaponDescriptor, component: UUID?,
+    origin: AttackOrigin, contact: MissionCollisionContact?, context: EncounterContext
+  ) {
+    self.source = source
+    self.weapon = weapon
+    sourceComponentID = component
+    self.origin = origin
+    self.contact = contact
+    system = context.system
+    visit = context.visit
+    sceneRevision = context.revision
+    instanceRevision = source.descriptor.instanceRevision
+  }
+}
+
+extension Game {
+  /// Called within the fire turn after the actual gun's resource preflight. Collision and durable
+  /// joins can refuse before the native emission allocator is touched; no simulated shot is made.
+  mutating func makeMissionNativeLaserProof(
+    sourceBodyID: Int, weapon: ScriptNPCWeapon, component: UUID?,
+    muzzle: Vector3, direction: Vector3
+  ) throws -> MissionNativeLaserProof {
+    let source = try currentMissionNativeBinding(bodyID: sourceBodyID)
+    guard let context = gameplayContext(),
+      let actual = missionWeaponDescriptor(
+        weapon, source: source.descriptor.body, component: component,
+        muzzle: muzzle, direction: direction), actual.kind == .laser,
+      commander.flightSimulation.valid,
+      commander.flightSimulation.nextEmission < UInt64.max
+    else { throw MissionNativeBridgeError.unsupportedWeapon }
+    let contact = try nearestMissionCollision(
+      from: actual.muzzle, direction: actual.direction, range: actual.range, radius: 0,
+      excludingBodyIDs: [sourceBodyID], includePlayer: true)
+    // Use the native allocator directly after every fallible physical/source check. Unlike the
+    // general adoption helper, this path must not adopt unrelated bodies while sealing a hit.
+    guard let emission = commander.flightSimulation.allocateEmission() else {
+      throw MissionNativeBridgeError.invalidNativeBinding
+    }
+    let origin = AttackOrigin(
+      emissionID: emission, owner: source.nativeActor, emittedAt: context.physicalTime,
+      ownerLegalAtEmission: source.actorSnapshot.legal, sourcePart: component?.uuidString)
+    return .init(
+      source: source, weapon: actual, component: component,
+      origin: origin, contact: contact, context: context)
+  }
+}
+
+extension Game {
+  /// Derive an impact only from the actual live shot, retained record and this step's motion.
+  /// It never accepts caller-selected damage, a target index or a historical native owner.
+  func missionNativeImpactProof(projectileID: UUID, delta: Double) throws
+    -> MissionNativeImpactProof?
+  {
+    guard delta.isFinite, delta > 0,
+      let body = bodies.first(where: { $0.scriptShot?.identity == projectileID }),
+      bodies.lazy.filter({ $0.scriptShot?.identity == projectileID }).count == 1,
+      let shot = body.scriptShot, let descriptor = shot.missionDescriptor,
+      let record = commander.scriptState.projectiles[projectileID], record.valid,
+      record.presence == .present, record.body.id == body.id,
+      record.galaxy == commander.galaxy, record.system == commander.system,
+      let retained = record.body.scriptShot,
+      retained.identity == shot.identity, retained.owner == shot.owner,
+      retained.instance == shot.instance, retained.weapon == shot.weapon,
+      retained.component == shot.component, retained.lifetime == shot.lifetime,
+      abs(retained.velocity.length - shot.velocity.length)
+        <= max(1, max(retained.velocity.length, shot.velocity.length)) * 1e-6,
+      retained.damage == shot.damage, retained.radius == shot.radius,
+      retained.collisionDelay == shot.collisionDelay,
+      retained.nativeAttribution == shot.nativeAttribution,
+      let instance = commander.scriptState.instances[shot.instance], instance.id == shot.instance,
+      let context = gameplayContext(), let physical = body.physical,
+      physical.population == .projectile, physical.npc == nil, physical.ordnance == nil,
+      physical.spawnIdentity?.system == context.system,
+      physical.spawnIdentity?.visit == context.visit,
+      physical.spawnIdentity?.producer == .ordnance,
+      physical.attackOrigin == shot.nativeAttribution?.origin,
+      physical.identity.system == context.system, physical.identity.visit == context.visit,
+      physical.identity.entity >= 2, physical.identity.entity < UInt64.max,
+      bodies.lazy.filter({ $0.physical?.identity == physical.identity }).count == 1,
+      body.hull == .missile, body.scriptNPC == nil,
+      body.missionActorID == nil, body.missionInstanceID == nil,
+      body.energy.isFinite, body.energy > 0, body.position.finite
+    else { throw MissionNativeBridgeError.invalidShot }
+    try MissionNativeBridge.validateArchive(
+      shot.nativeAttribution, shot: descriptor, packDigest: instance.digest)
+    if let archive = shot.nativeAttribution {
+      guard archive.origin.owner.system == context.system else {
+        throw MissionNativeBridgeError.invalidArchive
+      }
+    }
+    // Stored pose, velocity and age may be older or in the station frame. Immutable source and
+    // tuning join above; motion below comes exclusively from the current physical shot.
+    let duration = min(delta, shot.lifetime - shot.age)
+    let inactive = max(0, shot.collisionDelay - shot.age)
+    guard duration > inactive else { return nil }
+    let ownerBodies = bodies.filter {
+      $0.missionInstanceID == shot.instance && $0.missionActorID == shot.owner && $0.energy > 0
+    }
+    let source: MissionActorBinding?
+    if ownerBodies.count == 1 {
+      source = try? currentMissionNativeBinding(bodyID: ownerBodies[0].id)
+    } else {
+      source = nil
+    }
+    var excluded: Set<Int> = [body.id]
+    if let source { excluded.insert(source.bodyID) }
+    let direction = shot.velocity.unit
+    let origin = body.position + shot.velocity * inactive
+    let range = shot.velocity.length * (duration - inactive)
+    guard
+      let contact = try nearestMissionCollision(
+        from: origin, direction: direction, range: range, radius: shot.radius,
+        excludingBodyIDs: excluded, includePlayer: true)
+    else { return nil }
+    let victim: ActorIdentity?
+    let targetBinding: MissionActorBinding?
+    switch contact.hit.target {
+    case .player:
+      victim = context.player.identity
+      targetBinding = nil
+    case .body(let id):
+      guard let identity = contact.selectedTargetBody?.physical?.identity,
+        identity.system == context.system, identity.visit == context.visit,
+        context.actors.filter({ $0.identity == identity }).count == 1
+      else { throw MissionNativeBridgeError.invalidNativeBinding }
+      victim = identity
+      targetBinding = try? currentMissionNativeBinding(bodyID: id)
+    case .celestial:
+      victim = nil
+      targetBinding = nil
+    }
+    var attribution = MissionImpactAttribution.unknown
+    if source != nil, let archive = shot.nativeAttribution {
+      switch archive.intendedTarget {
+      case .player:
+        if case .player = contact.hit.target { attribution = .frozenLaunch }
+      case .actor(let targetInstance, let targetActor, let digest):
+        if let targetBinding,
+          targetBinding.instanceID == targetInstance, targetBinding.actorID == targetActor,
+          targetBinding.descriptor.packDigest == digest
+        {
+          attribution = .frozenLaunch
+        }
+      }
+    }
+    return .init(
+      shot: descriptor, archive: shot.nativeAttribution, hit: contact.hit,
+      victimPart: contact.victimPart, victimComponentID: contact.componentUUID,
+      currentSource: source?.nativeActor, currentVictim: victim, attribution: attribution,
+      system: context.system, visit: context.visit, sceneRevision: context.revision,
+      instanceRevision: instance.revision, projectileBody: body,
+      targetBody: contact.selectedTargetBody)
   }
 }
