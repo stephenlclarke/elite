@@ -53,11 +53,12 @@ extension Game {
     -> NativeMissionActorAdmissionPreparation
   {
     try validateMissionActorAdmissionSource(source)
-    try validateMissionActorAdmissionScene()
+    let currentContext = gameplayContext()
+    try validateMissionActorAdmissionScene(context: currentContext)
     for template in source.actors {
       try validateMissionActorAdmissionTemplate(template, source: source)
     }
-    guard !docked, source.system == systemIdentity, let context = gameplayContext(),
+    guard !docked, source.system == systemIdentity, let context = currentContext,
       let anchor = scriptAnchor
     else { return .pending(.unavailableArrival) }
     guard anchor.position.finite, anchor.position.length.isFinite, anchor.orientation.validRotation,
@@ -173,8 +174,9 @@ extension Game {
     -> NativeMissionActorAdmissionReceipt
   {
     try validateMissionActorAdmissionSource(plan.source)
-    try validateMissionActorAdmissionScene()
-    guard !docked, gameplayContext() == plan.context, scriptAnchor == plan.anchor,
+    let context = gameplayContext()
+    try validateMissionActorAdmissionScene(context: context)
+    guard !docked, context == plan.context, scriptAnchor == plan.anchor,
       commander.flightSimulation == plan.previousFlight, nextBodyID == plan.previousBodyID,
       bodies == plan.previousBodies
     else { throw NativeMissionActorAdmissionError.stalePlan }
@@ -185,7 +187,7 @@ extension Game {
     return receipt
   }
 
-  private func validateMissionActorAdmissionScene() throws {
+  private func validateMissionActorAdmissionScene(context: EncounterContext?) throws {
     let flight = commander.flightSimulation
     let identities = bodies.compactMap { $0.physical?.identity }
     let spawns = bodies.compactMap { $0.physical?.spawnIdentity }
@@ -220,9 +222,15 @@ extension Game {
       if body.energy > 0,
         body.missionActorID != nil || body.missionInstanceID != nil || body.scriptNPC != nil
       {
-        guard currentMissionActorDescriptor(bodyID: body.id) != nil,
+        guard let context, let descriptor = currentMissionActorDescriptor(bodyID: body.id),
           body.physical?.population == .mission, body.physical?.npc?.role == .mission
         else { throw NativeMissionActorAdmissionError.invalidScene }
+        do {
+          _ = try MissionNativeBridge.bindActor(
+            descriptor: descriptor, body: body, context: context)
+        } catch {
+          throw NativeMissionActorAdmissionError.invalidScene
+        }
       }
     }
   }
