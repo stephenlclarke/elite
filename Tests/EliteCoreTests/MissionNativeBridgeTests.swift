@@ -306,4 +306,59 @@ struct MissionNativeBridgeTests {
     }
   }
 
+  @Test func actualRetainedProfiledPackResolverRechecksRevisionBodyAndInstalledContent() throws {
+    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+    let pack = try ScriptPackLibrary.read(directory)
+    var game = Game(executive: false)
+    game.screen = .status
+    game.scriptPacks = [pack]
+    let instance = try game.acceptScriptMission(pack)
+    game.launch()
+    game.emitScriptEvent("station.undocked")
+    game.drainScriptEvents()
+    game.ensurePhysicalActors()
+    let body = try #require(
+      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+    let binding = try game.currentMissionNativeBinding(bodyID: body.id)
+    #expect(binding.actorID == body.missionActorID && binding.instanceID == instance)
+    try game.validateMissionNativeBinding(binding)
+    let original = game
+    game.commander.scriptState.instances[instance]?.revision += 1
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try game.validateMissionNativeBinding(binding)
+    }
+    game = original
+    let index = try #require(game.bodies.firstIndex { $0.id == body.id })
+    game.bodies[index].energy -= 1
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try game.validateMissionNativeBinding(binding)
+    }
+    game = original
+    game.scriptPacks = []
+    #expect(throws: MissionNativeBridgeError.sourceMismatch) {
+      try game.validateMissionNativeBinding(binding)
+    }
+  }
+
+  @Test func fabricatedNativeBodyCannotPassActualResolverWithoutRetainedMissionAuthority() throws {
+    var game = Game(executive: false)
+    game.launch()
+    var body = SpaceBody(id: 42, hull: .constrictor, position: .init(0, 0, 2000))
+    body.missionActorID = bridgeActor
+    body.missionInstanceID = bridgeInstance
+    game.bodies = [body]
+    game.ensurePhysicalActors()
+    let native = try #require(game.bodies.first)
+    let context = try #require(game.gameplayContext())
+    let pure = try MissionNativeBridge.bindActor(
+      descriptor: bridgeDescriptor(native, context),
+      body: native, context: context)
+    #expect(pure.bodyID == native.id)
+    #expect(throws: MissionNativeBridgeError.sourceMismatch) {
+      try game.currentMissionNativeBinding(bodyID: native.id)
+    }
+  }
+
 }
