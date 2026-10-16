@@ -189,10 +189,17 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     let judgement = adjudicate(
       incident, victim: victim, context: context, inNoFireZone: inNoFireZone,
       missionEntitlement: missionEntitlement)
-    applyOffence(judgement, incident: incident, context: context, result: &result)
+    // Capture current consumer addresses before settlement retires the missile entry.
+    // The judgement and death owner retain the immutable emission attribution.
+    let currentAttack = currentThreat(judgement.window, incident: incident)
+    applyOffence(
+      judgement, currentAttack: currentAttack, incident: incident,
+      context: context, result: &result)
     remember(judgement.window, incident: incident)
     settleDeath(judgement, incident: incident, result: &result)
-    let currentLegal = actor?.legal.value ?? incident.origin.ownerLegalAtEmission.value
+    let currentLegal =
+      snapshot(currentAttack.owner, context: context)?.legal.value
+      ?? incident.origin.ownerLegalAtEmission.value
     result.legalPenalty = min(result.legalPenalty, max(0, 255 - currentLegal))
     return result
   }
@@ -292,10 +299,9 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
   }
 
   private func applyOffence(
-    _ judgement: AttackJudgement, incident: CombatIncident, context: EncounterContext,
-    result: inout CrimeResolution
+    _ judgement: AttackJudgement, currentAttack attack: AttackWindow,
+    incident: CombatIncident, context: EncounterContext, result: inout CrimeResolution
   ) {
-    let attack = judgement.window
     result.unlawful = attack.unlawful
     result.lawfulSelfDefence = judgement.selfDefence
     result.firstAggressor = attack.firstAggressor
@@ -312,19 +318,27 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     }
   }
 
-  private mutating func remember(_ attack: AttackWindow, incident: CombatIncident) {
+  private func currentThreat(_ attack: AttackWindow, incident: CombatIncident) -> AttackWindow {
     var threat = attack
-    if incident.kind == .missile,
+    guard incident.kind == .missile,
       let launch = missiles.first(where: {
         $0.emissionID == incident.origin.emissionID && $0.attack.owner == incident.origin.owner
-          && ($0.currentVictim ?? $0.attack.victim) == attack.victim
       })
-    {
-      threat.owner = launch.currentOwner ?? attack.owner
+    else { return threat }
+    threat.owner = launch.currentOwner ?? attack.owner
+    if attack.victim == launch.attack.victim || attack.victim == launch.currentVictim {
       threat.victim = launch.currentVictim ?? attack.victim
-      if threat.firstAggressor == launch.attack.owner { threat.firstAggressor = threat.owner }
-      if threat.firstAggressor == launch.attack.victim { threat.firstAggressor = threat.victim }
     }
+    if attack.firstAggressor == launch.attack.owner {
+      threat.firstAggressor = launch.currentOwner ?? attack.firstAggressor
+    } else if attack.firstAggressor == launch.attack.victim {
+      threat.firstAggressor = launch.currentVictim ?? attack.firstAggressor
+    }
+    return threat
+  }
+
+  private mutating func remember(_ attack: AttackWindow, incident: CombatIncident) {
+    let threat = currentThreat(attack, incident: incident)
     attacks.removeAll { $0.owner == threat.owner && $0.victim == threat.victim }
     attacks.append(threat)
     if incident.kind == .missile && incident.outcome == .targetedLaunch,

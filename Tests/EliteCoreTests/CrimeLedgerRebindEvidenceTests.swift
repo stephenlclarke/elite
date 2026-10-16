@@ -95,6 +95,27 @@ struct CrimeLedgerRebindEvidenceTests {
     #expect(charge.unlawful && charge.legalPenalty == 2)
   }
 
+  @Test func delayedUnlawfulSettlementCapsCurrentLegalButKeepsOriginalDeathOwner() {
+    var ledger = CrimeLedger()
+    let original = crimeTestActor(2)
+    let victim = crimeTestActor(3)
+    _ = ledger.record(
+      crimeTestIncident(
+        1, time: 1, owner: original, victim: victim,
+        kind: .missile, outcome: .targetedLaunch, ordnance: crimeTestID(99)),
+      context: crimeTestContext(1, actors: [original, victim]))
+    let current = crimeTestActor(20, legal: .init(value: 250, bountyTenths: 0))
+    ledger.rebindActors([original.identity: current.identity])
+    let death = ledger.record(
+      crimeTestIncident(
+        2, time: 30, owner: original, victim: victim,
+        kind: .missile, outcome: .destruction, ordnance: crimeTestID(99)),
+      context: crimeTestContext(30, actors: [current, victim]))
+    #expect(death.offender == current.identity && death.firstAggressor == current.identity)
+    #expect(death.report?.offender == current.identity && death.legalPenalty == 5)
+    #expect(death.death?.owner == original.identity && death.death?.lawful == false)
+  }
+
   @Test func crossVisitAndNonAdvancingMappingsDoNotCarryCrimeIntoAnotherIdentity() {
     var ledger = CrimeLedger()
     let original = crimeTestActor(2)

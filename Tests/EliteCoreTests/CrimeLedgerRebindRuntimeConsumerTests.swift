@@ -82,8 +82,10 @@ struct CrimeLedgerRebindRuntimeConsumerTests {
     let offender = try #require(game.bodies.first { $0.physical?.identity == currentShooter })
     #expect(offender.physical?.npc?.legal.value == launchLegal + 32)
     let report = try #require(try latestReport(game.commander.stationSecurity))
+    // Native reports retain the launch offence; settlement adds the murder penalty separately.
     #expect(
-      report.kind == .murder && report.offender == currentShooter && report.victim == currentVictim)
+      report.kind == .assault && report.offender == currentShooter && report.victim == currentVictim
+    )
     let saved = try JSONEncoder().encode(game.commander.stationSecurity)
     let restored = try JSONDecoder().decode(StationSecurity.self, from: saved)
     #expect(try latestReport(restored) == report)
