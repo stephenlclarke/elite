@@ -62,6 +62,9 @@ class SonarCheckpointTests(unittest.TestCase):
 
     def run_entrypoint(self):
         environment = os.environ.copy()
+        # Shell startup files can replace PATH and escape the offline fixtures.
+        environment.pop("BASH_ENV", None)
+        environment.pop("ENV", None)
         # A local sentinel only; the settings/scanner fixtures never contact a service.
         environment["SONAR_TOKEN"] = "offline-checkpoint-fixture"
         environment["PATH"] = str(self.root / "bin") + os.pathsep + environment["PATH"]
