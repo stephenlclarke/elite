@@ -426,8 +426,14 @@ extension Game {
   private func interceptedNativeEmission(_ plan: MissionDamagePlan, context: EncounterContext)
     -> UInt64?
   {
-    guard plan.outcome == .ordnanceInterception, let body = plan.body,
-      body.scriptShot == nil, let physical = body.physical,
+    guard plan.outcome == .ordnanceInterception, let body = plan.body else { return nil }
+    return currentNativeOrdnanceEmission(body, context: context)
+  }
+
+  /// Historical Script shot archives never retire an unrelated live native missile threat.
+  /// Both the ordinary hit path and mission kernel use the actual current ordnance binding.
+  func currentNativeOrdnanceEmission(_ body: SpaceBody, context: EncounterContext) -> UInt64? {
+    guard body.scriptShot == nil, let physical = body.physical,
       let ordnance = physical.ordnance, ordnance.valid, ordnance.termination == nil,
       physical.identity == ordnance.origin.ordnance,
       physical.attackOrigin == ordnance.origin,

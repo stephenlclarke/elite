@@ -25,8 +25,24 @@ extension Game {
     laser: LaserKind? = nil, mount: LaserMount? = nil, victimPart: String? = nil
   ) -> CombatIncident? {
     ensurePhysicalActors()
+    guard let context = gameplayContext() else { return nil }
+    return recordCombatWithEntitlement(
+      origin: origin, kind: kind, outcome: outcome, target: target,
+      worldPosition: worldPosition, emissionPosition: emissionPosition, laser: laser, mount: mount,
+      victimPart: victimPart, context: context,
+      entitlement: combatMissionEntitlement(target, owner: origin.owner, context: context))
+  }
+
+  /// The only caller carrying an entitlement across mutation is this file's uninterrupted
+  /// native body-hit/death path. The live-only retained factory remains unchanged.
+  private mutating func recordCombatWithEntitlement(
+    origin: AttackOrigin, kind: AttackKind, outcome: AttackOutcome,
+    target: GameplayHitTarget?, worldPosition: Vector3, emissionPosition: Vector3?,
+    laser: LaserKind?, mount: LaserMount?, victimPart: String?, context: EncounterContext,
+    entitlement: MissionBountyEntitlement?
+  ) -> CombatIncident? {
     guard worldPosition.finite, emissionPosition?.finite ?? true,
-      let context = gameplayContext(), origin.owner.system == context.system,
+      origin.owner.system == context.system,
       origin.owner.visit == context.visit, origin.emittedAt.isFinite,
       origin.emittedAt >= 0, origin.emittedAt <= context.physicalTime
     else { return nil }
@@ -41,7 +57,9 @@ extension Game {
       laser: laser, mount: mount, victimPart: victimPart)
     let resolution = commander.crimeLedger.record(
       incident, context: context, emissionPosition: emissionPosition,
-      missionEntitlement: combatMissionEntitlement(target, owner: origin.owner, context: context))
+      missionEntitlement: entitlement.flatMap {
+        $0.owner == origin.owner && $0.victim == victim?.identity ? $0 : nil
+      })
     guard resolution.accepted else { return nil }
     applyCrimeResolution(resolution, target: target, origin: origin, context: context)
     return incident
@@ -80,18 +98,20 @@ extension Game {
     laser: LaserKind?, mount: LaserMount?, emissionPosition: Vector3?
   ) -> CombatIncident? {
     guard case .body(let id) = hit.target,
-      let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].energy > 0
+      let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].energy > 0,
+      let context = gameplayContext()
     else { return nil }
+    let entitlement = combatMissionEntitlement(hit.target, owner: origin.owner, context: context)
     let interception = bodies[index].hull == .missile
     let world = commander.flightSimulation.pose.systemPoint(hit.point)
     guard
-      let incident = recordCombat(
+      let incident = recordCombatWithEntitlement(
         origin: origin, kind: kind, outcome: interception ? .ordnanceInterception : .hit,
         target: hit.target, worldPosition: world, emissionPosition: emissionPosition,
-        laser: laser, mount: mount)
+        laser: laser, mount: mount, victimPart: nil, context: context, entitlement: entitlement)
     else { return nil }
     if interception {
-      if let emission = bodies[index].physical?.attackOrigin?.emissionID {
+      if let emission = currentNativeOrdnanceEmission(bodies[index], context: context) {
         commander.crimeLedger.finishEmission(emission)
       }
       bodies[index].energy = 0
@@ -101,10 +121,11 @@ extension Game {
     if bodies[index].energy <= 0 {
       bodies[index].physical?.deathOrigin = origin
       bodies[index].destroyedByPlayer = origin.owner == commander.flightSimulation.player
-      if !interception {
-        let destruction = recordCombat(
+      if !interception, let deathContext = gameplayContext() {
+        let destruction = recordCombatWithEntitlement(
           origin: origin, kind: kind, outcome: .destruction, target: hit.target,
-          worldPosition: world, emissionPosition: emissionPosition, laser: laser, mount: mount)
+          worldPosition: world, emissionPosition: emissionPosition, laser: laser, mount: mount,
+          victimPart: nil, context: deathContext, entitlement: entitlement)
         bodies[index].physical?.deathIncidentID = destruction?.id
       }
     }
@@ -241,6 +262,21 @@ extension Game {
     guard owner == context.player.identity, case .body(let id) = target,
       let body = bodies.first(where: { $0.id == id }), let victim = body.physical?.identity
     else { return nil }
+    if let descriptor = currentMissionActorDescriptor(bodyID: id),
+      let binding = try? MissionNativeBridge.bindActor(
+        descriptor: descriptor, body: body, context: context), binding.nativeActor == victim,
+      let instance = commander.scriptState.instances[descriptor.instanceID],
+      let pack = scriptPack(for: instance),
+      let encounter = pack.manifest.encounters?.first(where: { $0.id == descriptor.encounterID }),
+      let declared = encounter.actors.first(where: { $0.id == descriptor.alias })
+    {
+      let amount =
+        body.scriptNPC?.fit.definition.bounty ?? body.hull.navalBounty
+        ?? (declared.hostile ? 50 : 0)
+      return .init(
+        owner: owner, victim: victim, amountTenths: amount,
+        authorizesAttack: declared.hostile)
+    }
     if let role = body.blackjackRole, commander.galaxy == 1,
       commander.system == role.system, commander.blackjack.stage == role.requiredStage
     {
