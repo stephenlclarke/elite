@@ -378,7 +378,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       backing: .buffered, defer: false)
     window.title = "XYZZY Elite - Right-On Commander"
     window.contentView = view
-    window.minSize = NSSize(width: 512, height: 540)
+    window.contentMinSize = NSSize(width: 512, height: 518)
     window.delegate = self
     window.center()
     window.makeKeyAndOrderFront(nil)
