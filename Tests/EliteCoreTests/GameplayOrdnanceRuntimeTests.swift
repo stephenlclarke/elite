@@ -54,7 +54,8 @@ struct GameplayOrdnanceRuntimeTests {
     }
     game.ensurePhysicalActors()
     let before = game
-    #expect(!game.fireMissile())
+    let launched = game.fireMissile()
+    #expect(!launched)
     #expect(game.commander == before.commander && game.bodies == before.bodies)
     #expect(game.nextBodyID == before.nextBodyID && game.missileCooldown == 0)
     #expect(game.missileArmed && game.weaponsTargetID == before.weaponsTargetID)
@@ -64,7 +65,8 @@ struct GameplayOrdnanceRuntimeTests {
     var game = missileRuntimeGame(distance: 4000)
     game.bodies.append(.init(id: 0, hull: .station, position: .init(0, 0, 2000)))
     let targetEnergy = game.bodies[0].energy
-    #expect(game.fireMissile())
+    let launched = game.fireMissile()
+    #expect(launched)
     missileRuntimeAdvance(&game, delta: 5)
     let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
     #expect(missile.physical?.ordnance?.termination == .impact)
@@ -81,7 +83,8 @@ struct GameplayOrdnanceRuntimeTests {
       frontShield: 500, rearShield: 500, heatCapacity: 240, heatCooling: 12,
       fuel: 70, fuelCapacity: 70)
     game.bodies[0].physical?.npc?.resources = resources
-    #expect(game.fireMissile())
+    let launched = game.fireMissile()
+    #expect(launched)
     missileRuntimeAdvance(&game, delta: 2)
     let remaining = try #require(game.bodies[0].physical?.npc?.resources)
     #expect(game.bodies[0].energy == 100 && game.commander.kills == 0)
@@ -91,7 +94,8 @@ struct GameplayOrdnanceRuntimeTests {
   @Test func originalConstrictorStillDiesToOneCloseMissileBeforeItCanActivateECM() throws {
     var game = missileRuntimeGame(hull: .constrictor, distance: 100)
     game.bodies[0].navalTarget = true
-    #expect(game.fireMissile() && game.bodies[0].energy == 252)
+    let launched = game.fireMissile()
+    #expect(launched && game.bodies[0].energy == 252)
     missileRuntimeAdvance(&game, delta: 0.1)
     #expect(game.bodies[0].energy == 0 && game.ecmFrames == 0)
     #expect(game.bodies.last?.physical?.ordnance?.termination == .impact)
@@ -99,7 +103,8 @@ struct GameplayOrdnanceRuntimeTests {
 
   @Test func lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID() throws {
     var game = missileRuntimeGame()
-    #expect(game.fireMissile())
+    let launched = game.fireMissile()
+    #expect(launched)
     let original = try #require(game.bodies[0].physical?.identity)
     game.bodies.removeFirst()
     game.bodies.append(.init(id: 70, hull: .cobra, position: .init(0, 0, 1000)))
@@ -114,8 +119,10 @@ struct GameplayOrdnanceRuntimeTests {
     var game = missileRuntimeGame(distance: 1000)
     game.bodies[0].missiles = 1
     let owner = try #require(game.bodies[0].physical?.identity)
-    #expect(game.launchGameplayNPCMissile(bodyID: 70))
-    #expect(game.bodies[0].missiles == 0 && !game.launchGameplayNPCMissile(bodyID: 70))
+    let launched = game.launchGameplayNPCMissile(bodyID: 70)
+    #expect(launched)
+    let secondLaunch = game.launchGameplayNPCMissile(bodyID: 70)
+    #expect(game.bodies[0].missiles == 0 && !secondLaunch)
     let missile = try #require(game.bodies.last)
     #expect(missile.enemyMissile && missile.missileSourceID == 70)
     game.bodies.removeFirst()
@@ -129,7 +136,8 @@ struct GameplayOrdnanceRuntimeTests {
   @Test func actualECMFieldRespectsTypedPlasmaAndOneActivationSeekerResistance() throws {
     for profile in OrdnanceProfile.allCases {
       var game = missileRuntimeGame(distance: 4000)
-      #expect(game.fireMissile())
+      let launched = game.fireMissile()
+      #expect(launched)
       let index = try #require(
         game.bodies.indices.first { game.bodies[$0].physical?.ordnance != nil })
       let old = try #require(game.bodies[index].physical?.ordnance)
@@ -167,7 +175,8 @@ struct GameplayOrdnanceRuntimeTests {
     game.commander.installTargetingComputer(.military)
     game.commander.equipment.insert("E.C.M. System")
     let owner = try #require(game.bodies[0].physical?.identity)
-    #expect(game.launchGameplayNPCMissile(bodyID: 70))
+    let launched = game.launchGameplayNPCMissile(bodyID: 70)
+    #expect(launched)
     if replaceAfterIdentification { game.detectRetaliationSources() }
     game.bodies.removeFirst()
     game.bodies.append(.init(id: 70, hull: .cobra, position: .init(0, 0, 4000)))
@@ -200,7 +209,8 @@ struct GameplayOrdnanceRuntimeTests {
     game.bodies[0].missiles = 1
     game.commander.installTargetingComputer(.military)
     game.commander.equipment.insert("E.C.M. System")
-    #expect(game.launchGameplayNPCMissile(bodyID: 70))
+    let launched = game.launchGameplayNPCMissile(bodyID: 70)
+    #expect(launched)
     game.ecm()
     #expect(game.ecmControl.events.contains { $0.announcement == .incomingIdentified })
     game.bodies.removeFirst()
@@ -219,10 +229,12 @@ struct GameplayOrdnanceRuntimeTests {
     var game = missileRuntimeGame()
     let anchors = try #require(game.commander.flightSimulation.anchors)
     game.commander.flightSimulation.pose.position = anchors.sun.position + .init(0, 0, -3000)
-    #expect(game.fireMissile())
+    let launched = game.fireMissile()
+    #expect(launched)
     game = missileRuntimeGame()
     game.commander.flightSimulation.pose.position = anchors.sun.position
     let before = game.commander
-    #expect(!game.fireMissile() && game.commander == before && game.missileArmed)
+    let unsafeLaunch = game.fireMissile()
+    #expect(!unsafeLaunch && game.commander == before && game.missileArmed)
   }
 }
