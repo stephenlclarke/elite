@@ -201,6 +201,33 @@ extension NativeViewTests {
     #expect(
       await harness.delegate.runtime.snapshot().commander.scriptState.pledgeLedger?.receipts.count
         == 1)
+    for mode in ["scroll", "row", "refresh", "source", "station", "reorder"] {
+      let stale = try await PledgeInputHarness()
+      defer { stale.clean() }
+      try await stale.review(tier: 2)
+      if mode == "row" { await stale.delegate.runtime.key("escape") }
+      try await stale.frame()
+      switch mode {
+      case "scroll": await stale.delegate.runtime.key("pagedown")
+      case "row": await stale.delegate.runtime.key("down")
+      case "refresh": await stale.delegate.runtime.key("contract-refresh")
+      case "source":
+        await stale.delegate.runtime.nativeCommand { @Sendable game in game.scriptPacks = [] }
+      case "station":
+        await stale.delegate.runtime.nativeCommand { @Sendable game in game.commander.system = 129 }
+      default:
+        // A transient host row reorder must not substitute a different offer under old controls.
+        await stale.delegate.runtime.nativeCommand { @Sendable game in
+          game.contractBoard.rows.reverse()
+        }
+      }
+      let unchanged = await stale.delegate.runtime.snapshot().commander
+      try stale.press("right")
+      try stale.press("return")
+      await stale.drain()
+      #expect(await stale.delegate.runtime.snapshot().commander == unchanged)
+      #expect(await stale.delegate.runtime.snapshot().commander.scriptState.pledgeLedger == nil)
+    }
   }
 
   @MainActor @Test func nativePledgeRawMalformedOldEpochAndMenuPacketsDoNotBorrowReviews()
