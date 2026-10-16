@@ -45,12 +45,7 @@ extension Game {
       kind = .activeStation
     } else if let metadata = recoverableMetadata(for: body, context: context) {
       kind = .recoverable(metadata, payload: physical.payload)
-      let half = collectibleHalfExtents(body)
-      compatible =
-        half.map {
-          $0.finite && $0.x > 0 && $0.y > 0 && $0.z > 0
-            && $0.x <= 16 && $0.y <= 16 && $0.z <= 16
-        } ?? false
+      compatible = automaticScoopShapeCompatible(body, context: context)
     } else if body.hull.isTargetShip {
       kind = .ship
     } else {
@@ -115,6 +110,41 @@ extension Game {
       category: metadata.category, ownership: .missionProtected, claimant: metadata.claimant,
       wreck: metadata.wreck, section: metadata.section, lot: metadata.lot,
       bounds: metadata.bounds, workSurfaces: metadata.workSurfaces)
+  }
+
+  /// Original ordinary canisters keep their existing capture contract. The exception is
+  /// limited to actual current-bound native ore/debris; salvage retains its 16-unit aperture.
+  func automaticScoopShapeCompatible(_ body: SpaceBody, context: EncounterContext) -> Bool {
+    if body.hull == .cargo, let physical = body.physical,
+      physical.identity.system == context.system, physical.identity.visit == context.visit,
+      physical.catalogueShipID == nil, physical.npc == nil, physical.ordnance == nil,
+      let payload = physical.payload
+    {
+      switch payload {
+      case .ore(let source, _):
+        if source.system == context.system,
+          commander.miningLedger.boundActor(for: payload) == physical.identity,
+          commander.miningLedger.pendingPayloads.contains(where: {
+            $0.identity == payload && $0.amount.valid
+          })
+        {
+          return true
+        }
+      case .wreck(let source, _):
+        if source.system == context.system,
+          commander.cargoDebrisLedger.boundActor(for: payload) == physical.identity,
+          commander.cargoDebrisLedger.pendingPayloads.contains(where: {
+            $0.identity == payload && $0.amount.valid
+          })
+        {
+          return true
+        }
+      case .salvage, .mission: break
+      }
+    }
+    guard let half = collectibleHalfExtents(body) else { return false }
+    return half.finite && half.x > 0 && half.y > 0 && half.z > 0
+      && half.x <= 16 && half.y <= 16 && half.z <= 16
   }
 
   func collectibleHalfExtents(_ body: SpaceBody) -> Vector3? {

@@ -11,13 +11,12 @@ extension Game {
       if let work = workGuidance, case .autoScoop = work.mode,
         work.parent == body.physical?.identity
       {
-        let half = collectibleHalfExtents(body)
         let aperture = commander.flightSimulation.pose.orientation.apply(Vector3(0, -45, 55))
         let apertureVelocity = flightWorldVelocity + work.angularVelocity.cross(aperture)
         guard let velocity = body.physical?.velocity, velocity.finite,
           (velocity - apertureVelocity).length <= ScoopApproachController.maximumRelativeSpeed,
-          let half, half.finite, half.x <= 16, half.y <= 16, half.z <= 16,
           let context = gameplayContext(),
+          automaticScoopShapeCompatible(body, context: context),
           let candidate = workTargetCandidate(for: body, context: context, frontVisible: true),
           WorkTargetSelection.evaluate(
             candidate, system: context.system, visit: context.visit,

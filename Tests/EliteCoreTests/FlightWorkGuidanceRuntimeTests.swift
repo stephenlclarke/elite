@@ -29,11 +29,20 @@ private func workRuntimeGame(module: WorkTargetSpecialty = .salvage, scoops: Boo
 }
 
 private func addWorkCargo(
-  _ game: inout Game, position: Vector3, velocity: Vector3 = .init(0, 0, 0)
+  _ game: inout Game, position: Vector3, velocity: Vector3 = .init(0, 0, 0), oversized: Bool = false
 ) throws -> ActorIdentity {
   // Issue a real structural lot, then admit and acknowledge it through the runtime allocator.
-  let profile = try #require(SalvageCatalogue.profile(catalogueShipID: "SH005"))
-  let section = try #require(profile.sections.first { $0.structural })
+  let selectedProfile =
+    oversized
+    ? SalvageCatalogue.all.first {
+      $0.sections.contains { $0.technologyDefinitionIDs.contains("spare-escape-pod") }
+    }
+    : SalvageCatalogue.profile(catalogueShipID: "SH005")
+  let profile = try #require(selectedProfile)
+  let section = try #require(
+    profile.sections.first {
+      oversized ? $0.technologyDefinitionIDs.contains("spare-escape-pod") : $0.structural
+    })
   let incident = game.commander.flightSimulation.allocateIncident()
   let lineage = try #require(incident)
   let wreck = WreckIdentity(system: game.systemIdentity, site: 88, lineage: lineage)
@@ -54,7 +63,12 @@ private func addWorkCargo(
     }
   }
   let lot = try #require(
-    game.commander.salvageLedger.pendingLots.first { $0.identity.section.wreck == wreck })
+    game.commander.salvageLedger.pendingLots.first {
+      guard $0.identity.section.wreck == wreck else { return false }
+      if !oversized { return true }
+      if case .technology(let id, _, _) = $0.content { return id == "spare-escape-pod" }
+      return false
+    })
   for other in game.commander.salvageLedger.pendingLots where other.identity != lot.identity {
     _ = game.commander.salvageLedger.destroy(lot: other.identity, protection: .init())
   }
@@ -74,7 +88,8 @@ private func addWorkCargo(
   game.commander.salvageLedger.updateLot(
     lot.identity,
     position: game.commander.flightSimulation.pose.systemPoint(position), velocity: velocity)
-  #expect(lot.halfExtents.x <= 16 && lot.halfExtents.y <= 16 && lot.halfExtents.z <= 16)
+  #expect(
+    oversized || (lot.halfExtents.x <= 16 && lot.halfExtents.y <= 16 && lot.halfExtents.z <= 16))
   return actor
 }
 
@@ -380,6 +395,121 @@ struct FlightWorkGuidanceRuntimeTests {
     controls.fire = true
     game.tick(delta: 0.02, controls: controls)
     #expect(game.commander.salvageLedger.progress(section) > before && game.laserHeat > heat)
+  }
+
+  @Test func genuineDestroyedNPCDebrisUsesNativeCanisterGeometryAndCollectsOnlyOnce() throws {
+    var game = try workRuntimeGame()
+    var source = SpaceBody(id: 44, hull: .cobra, position: .init(0, 0, 1500))
+    source.energy = 1
+    game.bodies = [source]
+    game.ensurePhysicalActors()
+    game.bodies[0].physical?.npc?.ordinaryCargo = [.init(commodity: .food, quantity: 1)]
+    let sourceActor = try #require(game.bodies[0].physical?.identity)
+    let player = try #require(game.commander.flightSimulation.player)
+    let allocated = game.makeAttackOrigin(owner: player)
+    let origin = try #require(allocated)
+    _ = game.applyCombatHit(
+      .init(target: .body(44), distance: 1500, point: source.position),
+      origin: origin, kind: .laser, damage: 1000, laser: .pulse)
+    game.commander.crimeLedger.finishEmission(origin.emissionID)
+    game.resolveDestroyed()
+    game.admitPendingCargo()
+    let payload = try #require(game.commander.cargoDebrisLedger.pendingPayloads.first)
+    guard case .wreck(let original, _) = payload.identity else { throw SaveError.invalidCommander }
+    #expect(original == sourceActor)
+    let index = try #require(game.bodies.firstIndex { $0.physical?.payload == payload.identity })
+    let actor = try #require(game.bodies[index].physical?.identity)
+    let native = Mesh.hull(.cargo)
+    #expect(game.gameplayMesh(for: game.bodies[index]).vertices == native.vertices)
+    game.bodies[index].position = .init(0, -45, 55)
+    game.bodies[index].rotationRate = 0
+    game.persistCargoPoses()
+    engageWorkCargo(&game)
+    #expect(game.workGuidance?.parent == actor)
+    let largeAxis = try #require(game.collectibleHalfExtents(game.bodies[index]))
+    #expect(max(largeAxis.x, max(largeAxis.y, largeAxis.z)) > 16)
+    game.workGuidance?.velocity = game.bodies[index].physical?.velocity ?? .init(0, 0, 0)
+    let before = game.commander.cargo[0]
+    game.scoopCargo()
+    #expect(game.commander.cargo[0] == before + 1)
+    #expect(game.commander.cargoDebrisLedger.boundActor(for: payload.identity) == nil)
+    #expect(!game.bodies.contains { $0.physical?.identity == actor })
+    #expect(game.workBraking != nil && game.workGuidance == nil)
+    let snapshot = game.workObstacles(excluding: nil, delta: 0.02)
+    let obstacles = try #require(snapshot)
+    #expect(!obstacles.contains { $0.identity == actor })
+    game.scoopCargo()
+    #expect(game.commander.cargo[0] == before + 1)
+  }
+
+  @Test func unknownNativeCanisterCannotBorrowTheBoundOrdinaryPayloadException() throws {
+    var game = try workRuntimeGame()
+    game.bodies = [.init(id: 41, hull: .cargo, position: .init(0, -45, 55))]
+    game.ensurePhysicalActors()
+    let context = try #require(game.gameplayContext())
+    #expect(!game.automaticScoopShapeCompatible(game.bodies[0], context: context))
+    engageWorkCargo(&game)
+    #expect(game.workGuidance == nil)
+    #expect(game.message == "ITEM TOO LARGE FOR SCOOPS")
+  }
+
+  @Test func genuinelyGeneratedRockHandsItsAcknowledgedOreToAutomaticRecovery() throws {
+    var game = try workRuntimeGame(module: .mining)
+    try game.commander.grantEquipment(
+      "Mining Laser", at: .utility(.miningLaser), provenance: .grant("mining fixture"))
+    let anchors = try #require(game.commander.flightSimulation.anchors)
+    let field = try #require(MiningFields.generate(anchors: anchors, seed: game.gameplaySeed).first)
+    let rock = try #require(field.rocks.first)
+    game.miningFields = [.init(position: field.position, rocks: [rock])]
+    game.commander.flightSimulation.pose.position = rock.position - .init(0, 0, 500)
+    game.activateNearbyMiningFields()
+    let original = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
+    game.workTargetFilter = .mining
+    game.key("r")
+    #expect(game.workGuidance?.parent == original.physical?.identity)
+    var controls = Controls()
+    controls.fire = true
+    for _ in 0..<800 {
+      game.tick(delta: 0.1, controls: controls)
+      if game.commander.miningLedger.isDepleted(rock.identity) { break }
+    }
+    #expect(game.commander.miningLedger.isDepleted(rock.identity))
+    let payload = try #require(game.commander.miningLedger.pendingPayloads.first)
+    let body = try #require(game.bodies.first { $0.physical?.payload == payload.identity })
+    let actor = try #require(body.physical?.identity)
+    #expect(game.commander.miningLedger.boundActor(for: payload.identity) == actor)
+    #expect(game.workGuidance?.mode == .autoScoop(.mining))
+    #expect(game.workGuidance?.parent == actor)
+    let native = Mesh.hull(.cargo)
+    #expect(game.gameplayMesh(for: body).vertices == native.vertices)
+    let before = game.commander.cargo[payload.amount.commodity.rawValue]
+    for _ in 0..<600 {
+      game.tick(delta: 0.1)
+      if game.commander.miningLedger.boundActor(for: payload.identity) == nil { break }
+    }
+    #expect(
+      game.commander.cargo[payload.amount.commodity.rawValue] == before + payload.amount.quantity)
+    #expect(
+      !game.commander.miningLedger.pendingPayloads.contains { $0.identity == payload.identity })
+    #expect(!game.bodies.contains { $0.physical?.identity == actor })
+    let cargo = game.commander.cargo
+    game.scoopCargo()
+    #expect(game.commander.cargo == cargo)
+  }
+
+  @Test func actualOversizedSalvageCannotBorrowOrdinaryCanisterCaptureRules() throws {
+    var game = try workRuntimeGame()
+    let actor = try addWorkCargo(&game, position: .init(0, -45, 55), oversized: true)
+    let lot = try #require(game.commander.salvageLedger.pendingLots.first)
+    #expect(lot.halfExtents.z > 16)
+    let context = try #require(game.gameplayContext())
+    #expect(!game.automaticScoopShapeCompatible(game.bodies[0], context: context))
+    engageWorkCargo(&game)
+    #expect(game.workGuidance == nil && game.message == "ITEM TOO LARGE FOR SCOOPS")
+    let before = game.commander
+    game.scoopCargo()
+    #expect(game.commander == before && game.bodies.contains { $0.physical?.identity == actor })
+    #expect(game.message == "SALVAGE: OVERSIZED")
   }
 
   @Test func canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex() throws {
