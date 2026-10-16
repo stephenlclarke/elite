@@ -411,6 +411,9 @@ public struct Game: Sendable {
   public var miningFields: [MiningField] = []
   public var salvageSites: [SalvageSite] = []
   var gameplayRevision: UInt64 = 0
+  // A laser capability is consumed synchronously in the same actor turn that emitted it.
+  // Bounded and ephemeral: capabilities are never restored from a commander save.
+  var consumedMissionLaserEmission: UInt64 = 0
   var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] = [:]
   public var starfield = Starfield()
   public var speed = 0.0
@@ -1529,6 +1532,7 @@ public struct Game: Sendable {
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
+      recordScriptActorRemoval(body, destroyed: true)
     }
     bodies.removeAll {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)

@@ -166,6 +166,15 @@ extension Game {
     _ resolution: CrimeResolution, target: GameplayHitTarget?, origin: AttackOrigin,
     context: EncounterContext
   ) {
+    applyNativeCrimeResolution(
+      resolution, target: target, attacker: origin.owner, context: context)
+  }
+
+  /// Apply a verified ledger result without manufacturing a current origin for old ordnance.
+  mutating func applyNativeCrimeResolution(
+    _ resolution: CrimeResolution, target: GameplayHitTarget?, attacker: ActorIdentity?,
+    context: EncounterContext
+  ) {
     if resolution.offender == context.player.identity {
       let baseline = max(0, min(255, commander.legal))
       let penalty = max(0, min(255, resolution.legalPenalty))
@@ -183,9 +192,10 @@ extension Game {
       let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].hull.isTargetShip
     {
       bodies[index].physical?.npc?.firstAggressor = resolution.firstAggressor
-      let attacker = resolution.offender ?? origin.owner
-      bodies[index].physical?.npc?.intention = .engage(attacker)
-      if attacker == context.player.identity { bodies[index].hostile = true }
+      if let attacker = resolution.offender ?? attacker {
+        bodies[index].physical?.npc?.intention = .engage(attacker)
+        if attacker == context.player.identity { bodies[index].hostile = true }
+      }
     }
     if let report = resolution.report { commander.stationSecurity.receive(report) }
     for notice in resolution.notices where message != notice.text || messageTime <= 0 {
@@ -225,7 +235,7 @@ extension Game {
       ? context.player : context.actors.first { $0.identity == identity }
   }
 
-  private func combatMissionEntitlement(
+  func combatMissionEntitlement(
     _ target: GameplayHitTarget?, owner: ActorIdentity, context: EncounterContext
   ) -> MissionBountyEntitlement? {
     guard owner == context.player.identity, case .body(let id) = target,
