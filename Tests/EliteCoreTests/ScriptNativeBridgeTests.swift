@@ -201,7 +201,7 @@ struct ScriptNativeBridgeTests {
     let projected = try #require(shot.missionDescriptor)
     #expect(projected.component == component && projected.instance == instanceID)
     #expect(projected.owner == game.bodies[index].missionActorID)
-    #expect(projected.velocity.length == 2000 && projected.lifetime == 3)
+    #expect(abs(projected.velocity.length - 2000) < 1e-8 && projected.lifetime == 3)
     #expect(projected.damage == 15 && projected.radius == 2 && projected.collisionDelay == 0.05)
     // Old shots retain physical fields even after the source is absent; no replacement owner is minted.
     game.bodies.removeAll { $0.missionActorID == shot.owner }
