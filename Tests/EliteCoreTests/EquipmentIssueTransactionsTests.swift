@@ -714,4 +714,100 @@ struct EquipmentIssueTransactionsTests {
     #expect(transferred.items.count == issued.inventory.items.count)
   }
 
+  @Test func originalDockingAliasSurvivesHeldFitStoreAndRefitWithoutChangingCanonicalNode() throws {
+    let context = try issueContext()
+    let empty = try OwnedEquipmentInventory(owner: issueOwner, activeHull: issueHull)
+    let node = try #require(EquipmentRuntimeCatalog.node(for: Equipment.legacyDockingComputer))
+    let request = EquipmentIssueRequest(
+      command: issueUUID(92), source: issueSource,
+      devices: [
+        .init(
+          id: issueUUID(100), node: node, index: 0, preferredSlot: .targetingCore,
+          originalEquipmentName: Equipment.legacyDockingComputer)
+      ], fitting: .held)
+    let issued = try issueAdmit(request, inventory: empty, context: context)
+    let obligation = issueObligation(request)
+    var current = issued.inventory
+    for destination in [
+      ComponentFittingLocation(hullInstanceID: issueHull, slot: .targetingCore),
+      nil, ComponentFittingLocation(hullInstanceID: issueHull, slot: .targetingCore),
+    ] {
+      let item = try #require(current.items.first)
+      #expect(
+        item.node == node
+          && item.retainedLegacyState?.originalEquipmentName == Equipment.legacyDockingComputer)
+      #expect(item.retainedLegacyState?.conditionBasisPoints == 10000)
+      #expect(item.retainedLegacyState?.modifications.isEmpty == true)
+      let quote = try EquipmentIssueTransactions.quoteFitting(
+        command: issueUUID(93),
+        obligation: obligation, item: item, destination: destination, replacing: nil,
+        inventory: current, context: context, obligations: [obligation], budget: issueBudget())
+      let application = try EquipmentIssueTransactions.applyFitting(
+        quote: quote,
+        inventory: current, context: context, obligations: [obligation], budget: issueBudget())
+      current = application.inventory
+    }
+    #expect(
+      current.items.first?.retainedLegacyState == issued.inventory.items.first?.retainedLegacyState)
+    let modern = try issueRequest("Targeting: Docking")
+    let modernResult = try issueAdmit(modern, inventory: empty, context: context)
+    #expect(modernResult.inventory.items.first?.retainedLegacyState == nil)
+  }
+
+  @Test func invalidOriginalAliasAndWrongCanonicalNodeRefuseAndMetadataChangesInvalidateQuote()
+    throws
+  {
+    let context = try issueContext()
+    let empty = try OwnedEquipmentInventory(owner: issueOwner, activeHull: issueHull)
+    let docking = try #require(EquipmentRuntimeCatalog.node(for: "Targeting: Docking"))
+    let ammo = EquipmentNodeID(family: .init("ammunition"), key: "missile-standard")
+    let fuel = try #require(EquipmentRuntimeCatalog.node(for: "Fuel Scoops"))
+    for (node, name) in [
+      (docking, "unknown alias"), (fuel, Equipment.legacyDockingComputer),
+      (ammo, Equipment.legacyDockingComputer),
+    ] {
+      let bad = EquipmentIssueRequest(
+        command: issueUUID(94), source: issueSource,
+        devices: [
+          .init(
+            id: issueUUID(100), node: node, index: 0, preferredSlot: nil,
+            originalEquipmentName: name)
+        ], fitting: .held)
+      #expect(throws: EquipmentIssueError.invalidRequest) {
+        try issueAdmit(bad, inventory: empty, context: context)
+      }
+      #expect(empty.items.isEmpty && empty.revision == 0)
+    }
+    let request = EquipmentIssueRequest(
+      command: issueUUID(95), source: issueSource,
+      devices: [
+        .init(
+          id: issueUUID(100), node: docking, index: 0, preferredSlot: .targetingCore,
+          originalEquipmentName: Equipment.legacyDockingComputer)
+      ], fitting: .held)
+    let issued = try issueAdmit(request, inventory: empty, context: context)
+    let obligation = issueObligation(request)
+    let item = try #require(issued.inventory.items.first)
+    let quote = try EquipmentIssueTransactions.quoteFitting(
+      command: issueUUID(96), obligation: obligation,
+      item: item, destination: .init(hullInstanceID: issueHull, slot: .targetingCore),
+      replacing: nil,
+      inventory: issued.inventory, context: context, obligations: [obligation],
+      budget: issueBudget())
+    let changedItem = OwnedEquipmentItem(
+      id: item.id, node: item.node, provenance: item.provenance,
+      component: item.component, location: item.location, boundHull: item.boundHull,
+      preferredSlot: item.preferredSlot,
+      retainedLegacyState: .init(conditionBasisPoints: 10000, modifications: [:]))
+    let changed = try OwnedEquipmentInventory(
+      owner: issueOwner, activeHull: issueHull,
+      revision: issued.inventory.revision, items: [changedItem])
+    #expect(throws: (any Error).self) {
+      try EquipmentIssueTransactions.applyFitting(
+        quote: quote, inventory: changed,
+        context: context, obligations: [obligation], budget: issueBudget())
+    }
+    #expect(changed.items == [changedItem] && issued.inventory.items == [item])
+  }
+
 }

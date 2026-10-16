@@ -321,6 +321,11 @@ public enum EquipmentIssueTransactions {
     else { throw OwnedEquipmentError.unknownNode }
     var items = inventory.items
     for device in request.devices {
+      if let original = device.originalEquipmentName {
+        guard original == Equipment.legacyDockingComputer,
+          EquipmentRuntimeCatalog.node(for: original) == device.node
+        else { throw EquipmentIssueError.invalidRequest }
+      }
       guard !items.contains(where: { $0.id == device.id }) else {
         throw OwnedEquipmentError.duplicateItem
       }
@@ -346,7 +351,10 @@ public enum EquipmentIssueTransactions {
           component: EquipmentRuntimeCatalog.stockComponent(for: node, id: device.id),
           boundHull: node == EquipmentRuntimeCatalog.node(for: "Large Cargo Bay")
             ? inventory.activeHull : nil,
-          preferredSlot: device.preferredSlot))
+          preferredSlot: device.preferredSlot,
+          retainedLegacyState: device.originalEquipmentName.map {
+            .init(conditionBasisPoints: 10000, modifications: [:], originalEquipmentName: $0)
+          }))
     }
     var displacements: [EquipmentIssueDisplacement] = []
     if case .fitAll(let plans) = request.fitting {
