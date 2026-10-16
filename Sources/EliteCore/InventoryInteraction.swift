@@ -31,6 +31,7 @@ public struct InventoryCommand: Sendable, Equatable {
   enum Action: Sendable, Equatable {
     case fit(OwnedEquipmentItem, ComponentFittingSlot)
     case store(OwnedEquipmentItem)
+    case installFeature(SalvageLot, definition: RecoveredFeatureDefinition)
     case upgrade(
       OwnedEquipmentItem, SalvageLot, SalvageUpgradeAxis, ComponentFittingSlot,
       before: ComponentStatistics, after: ComponentStatistics, grade: ComponentTemplateVersion)
@@ -139,9 +140,14 @@ extension Game {
   ) throws -> InventoryActionPreview {
     guard commander.salvageLedger.inventory.contains(lot),
       case .technology(let id, _, _) = lot.content,
-      let definition = SalvageDefinitions.definition(id: id),
-      case .scalar(let axes) = definition.effect
+      let definition = SalvageDefinitions.definition(id: id)
     else { return .init(label: "", detail: "No ordinary compatible fitting", command: nil) }
+    if case .feature(let feature) = definition.effect {
+      return try inventoryRecoveredFeaturePreview(lot, feature: feature, inventory: inventory)
+    }
+    guard case .scalar(let axes) = definition.effect else {
+      return .init(label: "", detail: "No ordinary compatible fitting", command: nil)
+    }
     let choices = axes.compactMap {
       axis -> (SalvageUpgradeAxis, ComponentFittingSlot, SalvageComponentUpgradeQuote)? in
       guard let slot = SalvageComponentEffects.fittingSlot(for: axis),
@@ -173,6 +179,21 @@ extension Game {
       extraDetails: inventoryUpgradeDetails(effect.progression))
   }
 
+  private func inventoryRecoveredFeaturePreview(
+    _ lot: SalvageLot, feature: SalvageFeature, inventory: OwnedEquipmentInventory
+  ) throws -> InventoryActionPreview {
+    if feature.requiresTargetingCore && commander.targetingTier == nil {
+      return .init(label: "", detail: "Fit a targeting computer core first", command: nil)
+    }
+    let quote = try commander.quoteRecoveredFeature(lot: lot.identity)
+    return .init(
+      label: "Fit now", detail: "Enable " + inventorySlotLabel(quote.definition.slot),
+      command: inventoryCommand(
+        .installFeature(lot, definition: quote.definition),
+        inventory: inventory, source: commander.salvageLedger.revision),
+      extraDetails: ["Fits the selected device; keeps its recovery record"])
+  }
+
   @discardableResult
   public mutating func performInventoryCommand(_ command: InventoryCommand) -> Bool {
     guard screen == .inventory, let inventory = commander.equipmentInventory,
@@ -194,6 +215,15 @@ extension Game {
         guard inventoryMayStore(item) else { throw EquipmentRuntimeError.incompatibleFit }
         try candidate.storeEquipment(item, expectedRevision: command.ownedRevision)
         candidate.notify("EQUIPMENT STORED")
+      case .installFeature(let lot, let definition):
+        guard candidate.commander.salvageLedger.revision == command.sourceRevision,
+          candidate.commander.salvageLedger.inventory.contains(lot)
+        else { throw RecoveredEquipmentError.staleQuote }
+        let quote = try candidate.commander.quoteRecoveredFeature(lot: lot.identity)
+        guard quote.definition == definition else {
+          throw RecoveredEquipmentError.staleQuote
+        }
+        try candidate.applyRecoveredFeature(quote)
       case .upgrade(let item, let lot, let axis, let slot, let before, let after, let grade):
         guard candidate.commander.salvageLedger.revision == command.sourceRevision,
           candidate.commander.salvageLedger.inventory.contains(lot),

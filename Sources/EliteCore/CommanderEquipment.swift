@@ -32,6 +32,8 @@ extension Commander {
     try inventory.validate(
       context: EquipmentRuntimeCatalog.context(
         owner: inventory.owner, hull: inventory.activeHull, performance: performance))
+    try RecoveredFeatureDevices.validateRecoveredFeatures(
+      inventory: inventory, ledger: salvageLedger)
   }
 
   /// Called explicitly at a runtime mutation boundary, never by a getter or decoder.

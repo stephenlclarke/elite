@@ -60,6 +60,14 @@ extension Game {
               + ($0.hullInstanceID == inventory.activeHull ? "" : " (other hull)")
           } ?? "Held"
         append("  " + fitting + " - " + equipmentOrigin(item.provenance), .cyan)
+        if let source = RecoveredFeatureDevices.source(for: item, ledger: commander.salvageLedger),
+          case .technology(_, let quality, let condition) = source.content
+        {
+          append(
+            String(
+              format: "  Recovered quality %d; condition %d%%; mass %.1f kg",
+              quality.rawValue, condition, source.massKg), .cyan)
+        }
         action(.equipment(item))
       }
     } else {

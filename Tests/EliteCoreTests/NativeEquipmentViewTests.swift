@@ -158,6 +158,7 @@ private struct NativeEquipmentFixture {
   }
 
   func capture(_ name: String, scale: Int) throws -> CGImage {
+    let actualStarted = ProcessInfo.processInfo.systemUptime
     let width = Int(view.bounds.width)
     let height = Int(view.bounds.height)
     let context = try #require(
@@ -172,19 +173,35 @@ private struct NativeEquipmentFixture {
     view.draw(view.bounds)
     NSGraphicsContext.restoreGraphicsState()
     let image = try #require(context.makeImage())
+    let actualSeconds = ProcessInfo.processInfo.systemUptime - actualStarted
     #expect(image.width == width * scale && image.height == height * scale)
+    let oracleStarted = ProcessInfo.processInfo.systemUptime
     let exported = try #require(imageForGame(view.game, width: width, height: height, scale: scale))
+    let oracleSeconds = ProcessInfo.processInfo.systemUptime - oracleStarted
     let drawnBytes = try #require(image.dataProvider?.data)
     let exportedBytes = try #require(exported.dataProvider?.data)
     // Same drawing path and pixel format: this catches a blank or stale native view.
-    #expect(CFEqual(drawnBytes, exportedBytes))
+    let identical = CFEqual(drawnBytes, exportedBytes)
+    #expect(identical)
+    try #require(actualSeconds > 0 && oracleSeconds > 0)
+    let ratio = actualSeconds / oracleSeconds
     if let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
       let output = URL(fileURLWithPath: evidence, isDirectory: true)
       try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
       let data = try #require(
         NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
       try data.write(to: output.appendingPathComponent("equipment-\(name)-\(width)-\(scale)x.png"))
+      let timings: [String: Any] = [
+        "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"] ?? "local",
+        "fixture": name, "width": width, "height": height, "scale": scale,
+        "actualDrawSeconds": actualSeconds, "oracleSeconds": oracleSeconds,
+        "actualToOracleRatio": ratio, "byteParity": identical,
+      ]
+      try JSONSerialization.data(withJSONObject: timings, options: [.prettyPrinted, .sortedKeys])
+        .write(
+          to: output.appendingPathComponent("equipment-\(name)-\(width)-\(scale)x-timing.json"))
     }
+    #expect(ratio < 10)
     return image
   }
 }
@@ -498,5 +515,53 @@ extension NativeViewTests {
         && after.missiles == before.missiles)
     #expect(after.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
     #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+  }
+
+  @MainActor @Test func nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()
+    async throws
+  {
+    for (id, width, height, scale) in [
+      ("feature-mining-targeting", 512, 518, 1), ("feature-fuel-scoops", 1512, 982, 2),
+    ] {
+      var source = try recoveredEquipmentGame(id)
+      try source.commander.grantEquipment(
+        TargetingTier.basic.equipmentName, at: .targetingCore,
+        provenance: .grant("native recovered feature fixture"))
+      let lot = try #require(source.commander.salvageLedger.inventory.first)
+      let fixture = try await NativeEquipmentFixture.open(
+        commander: source.commander, width: width, height: height)
+      defer { fixture.close() }
+      fixture.window.orderOut(nil)
+      try await fixture.press(29, text: "0", expected: "0")
+      #expect(!fixture.view.game.docked)
+      try await fixture.revealInventoryActions(recovered: true)
+      _ = try fixture.capture("recovered-feature-before", scale: scale)
+      let control = try #require(
+        fixture.view.paintedInventoryInteraction?.controls.first {
+          if case .installFeature = $0.command.action { return true }
+          return false
+        })
+      guard case .installFeature(_, let definition) = control.command.action else {
+        throw RecoveredEquipmentError.invalidBinding
+      }
+      let before = fixture.view.game.commander
+      try fixture.queueInventoryMouse(control.bounds)
+      try fixture.queueInventoryMouse(control.bounds)
+      #expect(fixture.view.pendingInventoryCommands == [control.command, control.command])
+      await fixture.delegate.processPendingCommands(in: fixture.view)
+      let after = fixture.view.game.commander
+      let item = try #require(after.fittedEquipment(at: definition.slot))
+      #expect(!fixture.view.game.docked && after.salvageLedger.inventory.isEmpty)
+      #expect(RecoveredFeatureDevices.source(for: item, ledger: after.salvageLedger) == lot)
+      #expect(after.equipmentInventory!.items.count == before.equipmentInventory!.items.count + 1)
+      #expect(after.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
+      #expect(
+        after.credits == before.credits && after.fuel == before.fuel
+          && after.missiles == before.missiles)
+      #expect(after.equipment.contains(definition.node.key))
+      _ = try fixture.capture("recovered-feature-after", scale: scale)
+      #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+      #expect(fixture.preferences.persistentDomain(forName: fixture.identifier) == nil)
+    }
   }
 }
