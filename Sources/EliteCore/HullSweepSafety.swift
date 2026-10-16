@@ -160,6 +160,41 @@ public enum HullSweepSafety {
     }
   }
 
+  /// Static admission only; moving work still requires the continuous sweep validator.
+  public static func validatePlacement(
+    center: Vector3, radius: Double, hull: PreparedHull, pose: ShipPose,
+    requiredClearance: Double = 0, budget: HullSweepBudget = .standard
+  ) -> HullSweepResult {
+    var work = SweepWork(budget: budget)
+    do {
+      guard sweepFinite(center), radius.isFinite, radius > 0, sweepValid(pose),
+        requiredClearance.isFinite, requiredClearance >= 0,
+        budget.distanceQueries > 0, budget.triangleTests > 0, budget.nodeVisits > 0,
+        (0...20).contains(budget.subdivisionDepth)
+      else { throw HullSweepFailure.invalidMotion }
+      let point = pose.shipPoint(center)
+      guard sweepFinite(point) else { throw HullSweepFailure.invalidMotion }
+      try work.query()
+      let separation = try pointDistance(point, hull: hull, work: &work) - radius
+      guard separation.isFinite else { throw HullSweepFailure.invalidMotion }
+      work.minimum = separation
+      // Open components with ambiguous containment fail closed in the shared query.
+      if try contains(point, hull: hull, work: &work) { throw HullSweepFailure.insideHull }
+      guard separation > requiredClearance, separation > 1e-9 else {
+        throw HullSweepFailure.clearanceViolation
+      }
+      let numerical =
+        1e-8 * max(1, hull.radius + radius + center.length + pose.position.length)
+      guard numerical.isFinite else { throw HullSweepFailure.invalidMotion }
+      guard separation - requiredClearance > numerical else { throw HullSweepFailure.unproven }
+      return result(nil, obstacle: nil, work: work)
+    } catch let failure as HullSweepFailure {
+      return result(failure, obstacle: nil, work: work)
+    } catch {
+      return result(.unproven, obstacle: nil, work: work)
+    }
+  }
+
   private static func result(
     _ failure: HullSweepFailure?, obstacle: ActorIdentity?, work: SweepWork
   ) -> HullSweepResult {
