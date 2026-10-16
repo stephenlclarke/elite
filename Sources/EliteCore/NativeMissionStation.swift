@@ -7,6 +7,7 @@ extension Game {
   mutating func restoreNativeMissionStationIfEligible() -> Bool {
     let flight = commander.flightSimulation
     guard !docked, !commander.scriptState.instances.isEmpty,
+      commander.scriptState.stationResources[contractStation.key]?.destroyed != true,
       !bodies.contains(where: { $0.id == 0 }),
       flight.valid, flight.system == systemIdentity,
       let anchors = flight.anchors, anchors.system == systemIdentity,
