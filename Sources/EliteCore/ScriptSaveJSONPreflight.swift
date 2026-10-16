@@ -49,7 +49,7 @@ enum ScriptSaveJSONPreflight {
 
 extension ScriptSaveJSONPreflight {
   enum CourierLocation { case rawCommander, missions, contracts }
-  /// Inspect native schema paths only. Authored ScriptValue data/payload keys are not schema.
+  /// Inspect version-21 native schema paths only. Authored data/payload keys are not schema.
   static func rejectCourierFields(_ data: Data, location: CourierLocation) throws {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
       throw SaveError.invalidCommander
@@ -75,6 +75,15 @@ extension ScriptSaveJSONPreflight {
       return instances.contains { raw in
         guard let instance = raw as? [String: Any] else { return false }
         if instance.keys.contains("courier") || job(instance["contract"]) { return true }
+        let newGearFields: Set<String> = [
+          "savedGearVersion", "source", "node", "displacements", "legacyMissingItems",
+        ]
+        if dictionaryValues(instance["savedGearIssues"]).contains(where: { raw in
+          guard let record = raw as? [String: Any] else { return false }
+          return !newGearFields.isDisjoint(with: record.keys)
+        }) {
+          return true
+        }
         let timers = instance["timers"] as? [String: Any] ?? [:]
         return timers.values.contains {
           ($0 as? [String: Any])?["domain"] as? String == "missionCalendar"
