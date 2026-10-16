@@ -430,10 +430,10 @@ struct MissionNativeBridgeTests {
       (component.position + component.orientation.apply(Vector3(1, 6, 0) * component.scale)) * 2
     let point = body.position + body.modelVector(local)
     let direction = body.modelVector(.init(0, 0, 1)).unit
-    let contact = try #require(
-      game.nearestMissionCollision(
-        from: point - direction * 50,
-        direction: direction, range: 100, radius: 0.1, includePlayer: false))
+    let contactValue = try game.nearestMissionCollision(
+      from: point - direction * 50,
+      direction: direction, range: 100, radius: 0.1, includePlayer: false)
+    let contact = try #require(contactValue)
     #expect(contact.victimPart == "wing" && contact.componentUUID == bridgeActor)
     #expect(contact.selectedTargetBody?.id == 42)
     let expectedVertex = (component.position + orientation.apply(Vector3(10, 0, 0) * 3)) * 2
@@ -653,12 +653,13 @@ struct MissionNativeBridgeTests {
       galaxy: game.commander.galaxy,
       system: game.commander.system, body: live, presence: .present)
     let before = game
-    let proof = try #require(game.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
-    let collision = try #require(
-      game.nearestMissionCollision(
-        from: live.position + shot.velocity * delay, direction: shot.velocity.unit,
-        range: speed * (0.5 - delay), radius: shot.radius, excludingBodyIDs: [projectileBodyID],
-        includePlayer: true))
+    let proofValue = try game.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    let proof = try #require(proofValue)
+    let collisionValue = try game.nearestMissionCollision(
+      from: live.position + shot.velocity * delay, direction: shot.velocity.unit,
+      range: speed * (0.5 - delay), radius: shot.radius, excludingBodyIDs: [projectileBodyID],
+      includePlayer: true)
+    let collision = try #require(collisionValue)
     #expect(proof.hit == collision.hit && proof.hit.target == .body(101))
     #expect(proof.sourceActorID == owner && proof.sourceInstanceID == instance)
     #expect(
@@ -733,8 +734,8 @@ struct MissionNativeBridgeTests {
     var rotated = game
     rotated.bodies[0].scriptShot?.velocity = .init(speed, 0, 0)
     rotated.bodies[1].position = .init(400, 0, 1000)
-    let rotatedProof = try #require(
-      rotated.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    let rotatedProofValue = try rotated.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    let rotatedProof = try #require(rotatedProofValue)
     #expect(rotatedProof.hit.target == .body(101) && rotatedProof.originalOrigin == nil)
   }
 
@@ -812,7 +813,8 @@ struct MissionNativeBridgeTests {
     game.commander.scriptState.projectiles[shotID] = .init(
       galaxy: game.commander.galaxy,
       system: game.commander.system, body: live, presence: .present)
-    let known = try #require(game.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    let knownValue = try game.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    let known = try #require(knownValue)
     #expect(known.hit.target == .player && known.currentSource == binding.nativeActor)
     #expect(known.originalOrigin == origin && known.frozenJudgement == law)
     let freshKnownBefore = game
@@ -826,7 +828,8 @@ struct MissionNativeBridgeTests {
     }
     var older = game
     older.commander.flightSimulation.advancePhysicalTime(1)
-    let historical = try #require(older.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    let historicalValue = try older.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    let historical = try #require(historicalValue)
     #expect(historical.originalOrigin == origin && historical.frozenJudgement == law)
     #expect(origin.emittedAt < older.commander.flightSimulation.physicalTime)
     var shotJSON = try #require(
@@ -858,14 +861,15 @@ struct MissionNativeBridgeTests {
     #expect(future.commander == futureBefore.commander && future.bodies == futureBefore.bodies)
     var absent = game
     absent.bodies.removeAll { $0.id == sourceBody.id }
-    let unknown = try #require(absent.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    let unknownValue = try absent.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    let unknown = try #require(unknownValue)
     #expect(unknown.hit.target == .player && unknown.currentSource == nil)
     #expect(unknown.originalOrigin == origin && unknown.frozenJudgement == nil)
     var incidental = game
     incidental.bodies.append(.init(id: 999, hull: .cargo, position: .init(0, 0, 250)))
     incidental.ensurePhysicalActors()
-    let blocked = try #require(
-      incidental.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    let blockedValue = try incidental.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    let blocked = try #require(blockedValue)
     #expect(blocked.hit.target == .body(999) && blocked.currentVictim != nil)
     #expect(blocked.originalOrigin == origin && blocked.frozenJudgement == nil)
     var malformed = game
@@ -985,16 +989,16 @@ struct MissionNativeBridgeTests {
       GameplayRaycast.nearest(
         origin: origin, direction: direction,
         maxDistance: 20, bodies: [body], meshOverrides: [body.id: design.rawMesh]))
-    let zero = try #require(
-      game.nearestMissionCollision(
-        from: origin, direction: direction,
-        range: 20, radius: 0, includePlayer: false))
+    let zeroValue = try game.nearestMissionCollision(
+      from: origin, direction: direction,
+      range: 20, radius: 0, includePlayer: false)
+    let zero = try #require(zeroValue)
     #expect(zero.hit == native)
     #expect(abs(zero.hit.distance - 9.6) < 1e-8)
-    let swept = try #require(
-      game.nearestMissionCollision(
-        from: origin, direction: direction,
-        range: 20, radius: 0.001, includePlayer: false))
+    let sweptValue = try game.nearestMissionCollision(
+      from: origin, direction: direction,
+      range: 20, radius: 0.001, includePlayer: false)
+    let swept = try #require(sweptValue)
     #expect(swept.hit.target == .body(42))
     #expect(abs(swept.hit.distance - zero.hit.distance) < 0.002)
     #expect(swept.hit.distance < zero.hit.distance)
