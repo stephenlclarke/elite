@@ -425,13 +425,16 @@ public enum EquipmentIssueTransactions {
       for displacement in obligation.displacements {
         let index = try index(displacement.item, in: items)
         let retained = items[index]
-        guard activeLoan(for: retained, obligations: obligations) == nil,
-          displacement.location.hullInstanceID == inventory.activeHull
-        else { throw EquipmentIssueError.unsupportedReplacement }
-        guard
-          !items.contains(where: { $0.id != retained.id && $0.location == displacement.location })
-        else { throw OwnedEquipmentError.occupiedSlot }
-        items[index] = retained.moved(to: displacement.location)
+        guard activeLoan(for: retained, obligations: obligations) == nil else {
+          throw EquipmentIssueError.unsupportedReplacement
+        }
+        // A portable hull exchange changes the restoration destination, never the history.
+        let destination = ComponentFittingLocation(
+          hullInstanceID: inventory.activeHull, slot: displacement.location.slot)
+        guard !items.contains(where: { $0.id != retained.id && $0.location == destination }) else {
+          throw OwnedEquipmentError.occupiedSlot
+        }
+        items[index] = retained.moved(to: destination)
         affected.append(retained.id)
       }
       receiptOperation = .returned

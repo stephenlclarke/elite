@@ -12,6 +12,8 @@ The outer runtime remains responsible for atomically publishing the physical can
 
 Targeting-core replacement refuses a strictly lower existing targeting tier on both admission and refitting; explicit equal-tier replacements remain allowed. Capacity exemptions use one shared predicate over actual item provenance, canonical foundation policy and fitted shield, energy or navigation slot. An issued copy of the same basic node and a purchased basic targeting computer retain their ordinary costs.
 
+After a compatible portable hull exchange, return restores each actual retained personal device to the same historical slot on the current hull. The historical displacement reference keeps its original hull and slot. Missing, occupied, incompatible, foreign-loan and capacity failures still refuse the complete return. This refinement and its new two-hull tests are source-only pending separate validation; the recorded lease 030 result applies to the earlier tested source.
+
 ## Validation
 
 Validation lease 030 compiled source `217d5a4341af1aa53b384b91d33552b3bb6767ba` and passed all 78 selected methods in 7.762 seconds, including thirteen issue, eight ammunition and six schema methods plus 51 existing inventory, purchase and component compatibility methods. Tracked inputs, the production save and preferences remained unchanged. The initial discovery filter matched one extra older test; execution stopped until a reviewed filter correction matched the exact 78-method map. Strict source formatting passes. Native and script consumer integration and the final composed full CI remain separate; this focused result makes no sanitizer, leak or native UI claim.
