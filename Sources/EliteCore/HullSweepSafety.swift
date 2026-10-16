@@ -53,16 +53,20 @@ public struct HullSweepObstacle: Sendable {
   public let pose: ShipPose
   public let velocity: Vector3
   public let angularVelocity: Vector3
+  /// Nil inherits the work stand-off; zero still requires proven positive collision separation.
+  public let clearanceOverride: Double?
 
   public init(
     identity: ActorIdentity? = nil, hull: PreparedHull, pose: ShipPose,
-    velocity: Vector3 = .init(0, 0, 0), angularVelocity: Vector3 = .init(0, 0, 0)
+    velocity: Vector3 = .init(0, 0, 0), angularVelocity: Vector3 = .init(0, 0, 0),
+    clearanceOverride: Double? = nil
   ) {
     self.identity = identity
     self.hull = hull
     self.pose = pose
     self.velocity = velocity
     self.angularVelocity = angularVelocity
+    self.clearanceOverride = clearanceOverride
   }
 }
 
@@ -147,10 +151,14 @@ public enum HullSweepSafety {
         velocity: sweep.target.velocity, angularVelocity: sweep.target.angularVelocity)
       for obstacle in [primary] + obstacles {
         obstacleID = obstacle.identity
-        guard sweepValid(obstacle.pose), sweepFinite(obstacle.velocity),
+        let requiredClearance = obstacle.clearanceOverride ?? sweep.requiredClearance
+        guard requiredClearance.isFinite, requiredClearance >= 0, sweepValid(obstacle.pose),
+          sweepFinite(obstacle.velocity),
           sweepFinite(obstacle.angularVelocity)
         else { throw HullSweepFailure.invalidMotion }
-        try prove(sweep, obstacle: obstacle, player: player, work: &work)
+        try prove(
+          sweep, obstacle: obstacle, player: player, requiredClearance: requiredClearance,
+          work: &work)
       }
       return result(nil, obstacle: nil, work: work)
     } catch let failure as HullSweepFailure {
@@ -236,17 +244,22 @@ public enum HullSweepSafety {
 
   private static func prove(
     _ sweep: RelativeWorkSweep, obstacle: HullSweepObstacle, player: PreparedHull?,
-    work: inout SweepWork
+    requiredClearance: Double, work: inout SweepWork
   ) throws {
     // Endpoints are necessary but insufficient: every interval needs a motion-envelope proof.
-    _ = try distance(sweep, obstacle: obstacle, player: player, at: 0, work: &work)
-    _ = try distance(sweep, obstacle: obstacle, player: player, at: sweep.duration, work: &work)
+    _ = try distance(
+      sweep, obstacle: obstacle, player: player, at: 0, requiredClearance: requiredClearance,
+      work: &work)
+    _ = try distance(
+      sweep, obstacle: obstacle, player: player, at: sweep.duration,
+      requiredClearance: requiredClearance, work: &work)
     var intervals: [(Double, Double, Int)] = [(0, sweep.duration, 0)]
     while let (start, end, depth) = intervals.popLast() {
       let middle = (start + end) * 0.5
       let half = (end - start) * 0.5
       let separation = try distance(
-        sweep, obstacle: obstacle, player: player, at: middle, work: &work)
+        sweep, obstacle: obstacle, player: player, at: middle, requiredClearance: requiredClearance,
+        work: &work)
       let relativeSpeed =
         (sweep.initialVelocity + sweep.acceleration * middle - obstacle.velocity).length
         + sweep.acceleration.length * half
@@ -262,7 +275,7 @@ public enum HullSweepSafety {
           1,
           obstacle.hull.radius + sweep.playerRadius + sweep.start.position.length
             + obstacle.pose.position.length)
-      if separation - envelope - numerical > sweep.requiredClearance { continue }
+      if separation - envelope - numerical > requiredClearance { continue }
       guard depth < work.budget.subdivisionDepth else { throw HullSweepFailure.unproven }
       intervals.append((middle, end, depth + 1))
       intervals.append((start, middle, depth + 1))
@@ -271,7 +284,7 @@ public enum HullSweepSafety {
 
   private static func distance(
     _ sweep: RelativeWorkSweep, obstacle: HullSweepObstacle, player: PreparedHull?, at time: Double,
-    work: inout SweepWork
+    requiredClearance: Double, work: inout SweepWork
   ) throws -> Double {
     try work.query()
     let ship = shipPose(sweep, at: time)
@@ -292,7 +305,7 @@ public enum HullSweepSafety {
     }
     guard separation.isFinite else { throw HullSweepFailure.invalidMotion }
     work.minimum = min(work.minimum, separation)
-    guard separation >= sweep.requiredClearance, separation > 1e-9 else {
+    guard separation >= requiredClearance, separation > 1e-9 else {
       throw HullSweepFailure.clearanceViolation
     }
     return separation
