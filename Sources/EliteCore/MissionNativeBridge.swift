@@ -528,6 +528,12 @@ extension Game {
       }
       return true
     }
+    var activeIDs: Set<Int> = []
+    for body in bodies where body.energy > 0 {
+      guard activeIDs.insert(body.id).inserted else {
+        throw MissionNativeBridgeError.invalidGeometry
+      }
+    }
     let live = bodies.filter { $0.energy > 0 && !excludingBodyIDs.contains($0.id) }
     for body in live {
       let axes = [
@@ -718,6 +724,7 @@ extension Game {
     guard delta.isFinite, delta > 0,
       let body = bodies.first(where: { $0.scriptShot?.identity == projectileID }),
       bodies.lazy.filter({ $0.scriptShot?.identity == projectileID }).count == 1,
+      bodies.lazy.filter({ $0.id == body.id }).count == 1,
       let shot = body.scriptShot, let descriptor = shot.missionDescriptor,
       let record = commander.scriptState.projectiles[projectileID], record.valid,
       record.presence == .present, record.body.id == body.id,

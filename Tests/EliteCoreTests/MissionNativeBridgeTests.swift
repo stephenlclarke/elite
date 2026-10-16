@@ -466,6 +466,15 @@ struct MissionNativeBridgeTests {
         range: 1000, radius: 1, includePlayer: false)
       #expect(hit?.hit.target == .body(3))
     }
+    var duplicateID = game
+    var duplicateBody = second
+    duplicateBody.position.x += 100
+    duplicateID.bodies.append(duplicateBody)
+    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+      try duplicateID.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1),
+        range: 1000, radius: 1, includePlayer: false)
+    }
     game.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: 10)]
     let celestial = try game.nearestMissionCollision(
       from: .init(0, 0, 0), direction: .init(0, 0, 1),
@@ -643,6 +652,11 @@ struct MissionNativeBridgeTests {
     expired.bodies[0].scriptShot?.age = lifetime
     let afterLife = try expired.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
     #expect(afterLife == nil)
+    var duplicateBodyID = game
+    duplicateBodyID.bodies[1].id = projectileBodyID
+    #expect(throws: MissionNativeBridgeError.invalidShot) {
+      try duplicateBodyID.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    }
     var faster = game
     faster.bodies[0].scriptShot?.velocity.z += 1
     #expect(throws: MissionNativeBridgeError.invalidShot) {
@@ -669,6 +683,102 @@ struct MissionNativeBridgeTests {
     let rotatedProof = try #require(
       rotated.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
     #expect(rotatedProof.hit.target == .body(101) && rotatedProof.originalOrigin == nil)
+  }
+
+  @Test func actualArchivedPlasmaProofUsesFrozenLawOnlyForCurrentSourceAndIntendedVictim() throws {
+    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+    let pack = try ScriptPackLibrary.read(directory)
+    var game = Game(executive: false)
+    game.screen = .status
+    game.scriptPacks = [pack]
+    let instance = try game.acceptScriptMission(pack)
+    game.launch()
+    game.emitScriptEvent("station.undocked")
+    game.drainScriptEvents()
+    game.ensurePhysicalActors()
+    let sourceBody = try #require(
+      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+    game.bodies = [sourceBody]
+    game.celestials = []
+    let binding = try game.currentMissionNativeBinding(bodyID: sourceBody.id)
+    let componentSpec = try #require(
+      sourceBody.scriptNPC?.fit.definition.components?.first {
+        ($0.weapons ?? []).contains { $0.kind == .plasma }
+      })
+    let weapon = try #require(componentSpec.weapons?.first { $0.kind == .plasma })
+    let componentID = try #require(sourceBody.scriptNPC?.components[componentSpec.id]?.identity)
+    let allocatedOrigin = game.makeAttackOrigin(
+      owner: binding.nativeActor, sourcePart: componentID.uuidString)
+    let origin = try #require(allocatedOrigin)
+    let context = try #require(game.gameplayContext())
+    let launchPosition = Vector3(0, 0, 500)
+    let law = try game.commander.crimeLedger.freezeMissionLaunchJudgement(
+      origin: origin,
+      intendedVictim: context.player,
+      emissionPosition: game.commander.flightSimulation.pose.systemPoint(launchPosition),
+      context: context)
+    let speed = try #require(weapon.projectileSpeed)
+    let lifetime = try #require(weapon.lifetime)
+    let radius = try #require(weapon.collisionRadius)
+    let delay = try #require(weapon.collisionDelay)
+    let shotID = UUID(uuidString: "00000000-0000-0000-0000-000000000060")!
+    let descriptor = MissionShotDescriptor(
+      identity: shotID, owner: binding.actorID,
+      instance: binding.instanceID, weapon: weapon.id, component: componentID,
+      velocity: .init(0, 0, -speed), age: 0, lifetime: lifetime, damage: weapon.damage,
+      radius: radius, collisionDelay: delay)
+    let archive = try MissionNativeBridge.makeLaunchArchive(
+      shot: descriptor, source: binding,
+      intendedTarget: nil, judgement: law)
+    let shot = ScriptNPCShot(
+      identity: shotID, owner: binding.actorID, instance: binding.instanceID,
+      weapon: weapon.id, component: componentID, velocity: descriptor.velocity, age: 0,
+      lifetime: lifetime, damage: weapon.damage, radius: radius, collisionDelay: delay,
+      nativeAttribution: archive)
+    let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
+    let sequence = try #require(allocatedSpawn)
+    let request = SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit,
+        sequence: sequence, member: 0, producer: .ordnance), population: .projectile,
+      hull: .missile, position: game.commander.flightSimulation.pose.systemPoint(launchPosition),
+      orientation: .init(), velocity: descriptor.velocity, npc: nil, rock: nil, payload: nil,
+      priority: .ordinary)
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit,
+        revision: context.revision, batches: [.init(requests: [request], atomic: true)], intents: []
+      ))
+    let actor = try #require(receipts.first?.actor)
+    let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+    game.bodies[index].scriptShot = shot
+    game.bodies[index].physical?.attackOrigin = archive.origin
+    let live = game.bodies[index]
+    game.commander.scriptState.projectiles[shotID] = .init(
+      galaxy: game.commander.galaxy,
+      system: game.commander.system, body: live, presence: .present)
+    let known = try #require(game.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    #expect(known.hit.target == .player && known.currentSource == binding.nativeActor)
+    #expect(known.originalOrigin == origin && known.frozenJudgement == law)
+    var absent = game
+    absent.bodies.removeAll { $0.id == sourceBody.id }
+    let unknown = try #require(absent.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    #expect(unknown.hit.target == .player && unknown.currentSource == nil)
+    #expect(unknown.originalOrigin == origin && unknown.frozenJudgement == nil)
+    var incidental = game
+    incidental.bodies.append(.init(id: 999, hull: .cargo, position: .init(0, 0, 250)))
+    incidental.ensurePhysicalActors()
+    let blocked = try #require(
+      incidental.missionNativeImpactProof(projectileID: shotID, delta: 0.5))
+    #expect(blocked.hit.target == .body(999) && blocked.currentVictim != nil)
+    #expect(blocked.originalOrigin == origin && blocked.frozenJudgement == nil)
+    var malformed = game
+    malformed.bodies[index].physical?.attackOrigin = nil
+    #expect(throws: MissionNativeBridgeError.invalidShot) {
+      try malformed.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    }
   }
 
 }
