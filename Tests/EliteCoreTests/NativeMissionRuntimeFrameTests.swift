@@ -21,8 +21,10 @@ struct NativeMissionRuntimeFrameTests {
       game.bodies[i].scriptNPC?.intent = nil
       game.bodies[i].scriptNPC?.velocity = .init(0, 0, 0)
     }
-    game.bodies[index].orientation = .init(
-      x: .init(-1, 0, 0), y: .init(0, 1, 0), z: .init(0, 0, -1))
+    game.bodies[index].orientation = Basis3()
+    game.bodies[index].orientation.x = .init(-1, 0, 0)
+    game.bodies[index].orientation.y = .init(0, 1, 0)
+    game.bodies[index].orientation.z = .init(0, 0, -1)
     game.bodies[index].scriptNPC?.intent = .init(
       request: "runtime-fire", mode: .attack, target: nil, player: true,
       offset: .init(0, 0, 0), speed: 0, tolerance: 1)
@@ -125,8 +127,10 @@ struct NativeMissionRuntimeFrameTests {
     let i = try #require(game.bodies.firstIndex { $0.missionActorID == saved.identity })
     try #require(game.bodies[i].scriptNPC == nil && game.bodies[i].physical?.spawnIdentity != nil)
     game.bodies[i].position = .init(0, 0, 1000)
-    game.bodies[i].orientation = .init(
-      x: .init(hostile ? -1 : 1, 0, 0), y: .init(0, 1, 0), z: .init(0, 0, hostile ? -1 : 1))
+    game.bodies[i].orientation = Basis3()
+    game.bodies[i].orientation.x = .init(hostile ? -1 : 1, 0, 0)
+    game.bodies[i].orientation.y = .init(0, 1, 0)
+    game.bodies[i].orientation.z = .init(0, 0, hostile ? -1 : 1)
     game.bodies[i].rotation = 0
     game.bodies[i].rotationRate = 0
     game.bodies[i].hostile = !hostile
