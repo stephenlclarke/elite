@@ -83,7 +83,8 @@ public enum PlayerHelp {
         rows: [
           "ARROWS - PITCH / ROLL",
           "SPACE - ACCELERATE; DELETE - BRAKE",
-          "RETURN - FIRE LASER (HOLD)",
+          "RETURN - USE SELECTED TOOL (HOLD)",
+          "W - COMBAT / MINING / SALVAGE CUTTER",
           "TAB - NEXT TARGET / STATION AUTO DOCK",
           "Q - CANCEL AUTOMATIC GUIDANCE",
           "4 / 5 - CHART; H - HYPERSPACE",

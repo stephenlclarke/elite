@@ -340,6 +340,7 @@ public struct Game: Sendable {
   public var cabinTemperature = 0.0
   public var equipmentMount: LaserMount = .front
   public var equipmentWorkTool = false
+  public var selectedFlightTool: FlightWorkTool = .combatLaser
   public internal(set) var inventoryContextEpoch = InventoryContextEpoch()
   public var inventoryActionSelection = 0
   public var inventoryUpgradeChoice = 0
@@ -469,6 +470,9 @@ public struct Game: Sendable {
         return
       case "q":
         cancelAutoTarget()
+        return
+      case "w":
+        cycleFlightTool()
         return
       case "v":
         if autoTargetBody?.hull == .station { cancelAutoTarget() }
@@ -934,6 +938,7 @@ public struct Game: Sendable {
       return
     }
     persistCargoPoses()
+    persistSalvagePoses()
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
     retaliation.clear()
@@ -1164,7 +1169,7 @@ public struct Game: Sendable {
     energy = min(craft.energy, energy + dt * craft.recharge * commander.energyRechargeMultiplier)
     frontShield = min(commander.shieldCapacity, frontShield + dt * commander.frontShieldRecharge)
     rearShield = min(commander.rearShieldCapacity, rearShield + dt * commander.rearShieldRecharge)
-    if controls.fire && screen.isFlight { fireLaser() }
+    if controls.fire && screen.isFlight { fireSelectedFlightTool(delta: dt) }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
       if remaining <= dt { arrive() }
@@ -1249,6 +1254,7 @@ public struct Game: Sendable {
     }
     persistBlackjackTargets()
     persistCargoPoses()
+    persistSalvagePoses()
     let retainedNPCs = persistNPCStates()
     let departing = bodies.filter {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
@@ -1257,6 +1263,7 @@ public struct Game: Sendable {
       if let actor = body.physical?.identity {
         commander.miningLedger.cull(actor: actor)
         commander.cargoDebrisLedger.cull(actor: actor)
+        commander.salvageLedger.cull(actor: actor)
         commander.npcPersistence.cull(actor: actor)
       }
       clearRemovedTarget(body)
@@ -1299,6 +1306,9 @@ public struct Game: Sendable {
         _ = commander.miningLedger.destroy(payload: payload)
         _ = commander.cargoDebrisLedger.destroy(
           payload: payload, protection: gameplayContext()?.protection)
+        if case .salvage(let lot) = payload, let context = gameplayContext() {
+          _ = commander.salvageLedger.destroy(lot: lot, protection: context.protection)
+        }
       }
       if let actor = body.physical?.identity {
         _ = commander.npcPersistence.terminal(actor: actor, reason: .destroyed)
@@ -1384,6 +1394,7 @@ public actor GameRuntime {
     candidate.commander.mirrorFittedEquipment()
     candidate.resolveDestroyed()
     candidate.persistCargoPoses()
+    candidate.persistSalvagePoses()
     candidate.persistBlackjackTargets()
     let refusedNPCs = candidate.persistNPCStates()
     guard refusedNPCs.isEmpty, candidate.commander.valid,

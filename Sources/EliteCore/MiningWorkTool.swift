@@ -24,7 +24,8 @@ extension Game {
   /// verified rock with a clear physical ray; ships/stations occlude it without taking damage.
   @discardableResult
   mutating func fireMiningWorkTool() -> Bool {
-    guard !docked, screen == .front, let tool = commander.fittedMiningWorkTool,
+    guard !docked, screen == .front,
+      commander.hasMiningWorkTool || commander.laser(on: .front) == .mining,
       energy.isFinite, laserHeat.isFinite, fireCooldown.isFinite,
       fireCooldown <= 0, laserHeat <= 230, energy > 1
     else { return false }
@@ -45,7 +46,10 @@ extension Game {
       commander.miningLedger.remainingEnergy(for: rock).isFinite,
       commander.miningLedger.remainingEnergy(for: rock) > 0,
       let player = commander.flightSimulation.player,
-      let origin = makeAttackOrigin(owner: player, sourcePart: "work-tool:" + tool.id.uuidString)
+      let origin = makeAttackOrigin(
+        owner: player,
+        sourcePart: commander.fittedMiningWorkTool.map { "work-tool:" + $0.id.uuidString }
+          ?? "mining:front")
     else { return false }
     guard
       applyCombatHit(

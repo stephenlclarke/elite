@@ -31,6 +31,7 @@ extension Game {
     activateNearbyMiningFields()
     admitPendingOre()
     admitPendingCargo()
+    admitPendingSalvage()
     guard let live = gameplayContext() else { return }
     let intents = TrafficIntent.intents(context: live) + security.encounters.intents
     for index in bodies.indices where bodies[index].physical?.spawnIdentity != nil {

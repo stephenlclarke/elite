@@ -41,6 +41,7 @@ extension Game {
     }
     commander.miningLedger.resetPhysicalBindings(system: systemIdentity)
     commander.cargoDebrisLedger.resetPhysicalBindings(system: systemIdentity)
+    commander.salvageLedger.resetPhysicalBindings(system: systemIdentity)
     commander.npcPersistence.resetPhysicalBindings(system: systemIdentity)
     gameplayRevision &+= 1
     ensurePhysicalActors()

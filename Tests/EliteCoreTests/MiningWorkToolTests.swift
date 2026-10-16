@@ -31,6 +31,60 @@ private func workToolGame() throws -> Game {
 }
 
 struct MiningWorkToolTests {
+  @Test func flightToolSelectionDoesNotFireAndReturnUsesMiningInsteadOfTheNavalLaser() throws {
+    var game = try workToolGame()
+    let id = try workToolRock(&game)
+    let inventory = game.commander.equipmentInventory
+    let before = try #require(game.bodies.first { $0.id == id }?.energy)
+    game.key("w")
+    #expect(game.selectedFlightTool == .miningLaser)
+    #expect(game.bodies.first { $0.id == id }?.energy == before)
+    #expect(game.commander.equipmentInventory == inventory)
+    var controls = Controls()
+    controls.fire = true
+    game.tick(delta: 0.02, controls: controls)
+    #expect(game.bodies.first { $0.id == id }?.energy == before - LaserKind.mining.damage)
+    #expect(game.commander.laser(on: .front) == .naval)
+    #expect(game.commander.equipmentInventory == inventory)
+    game.key("w")
+    #expect(game.selectedFlightTool == .salvageCutter)
+    game.key("w")
+    #expect(game.selectedFlightTool == .combatLaser)
+  }
+
+  @Test func selectedMissingCutterDoesNotFallThroughToACombatLaser() throws {
+    var game = try workToolGame()
+    let cutter = try #require(game.commander.fittedEquipment(at: .utility(.salvageCutter)))
+    try game.commander.storeEquipment(
+      cutter, expectedRevision: game.commander.equipmentInventory!.revision)
+    game.bodies = [.init(id: 20, hull: .sidewinder, position: .init(0, 0, 200))]
+    game.ensurePhysicalActors()
+    game.selectFlightTool(.salvageCutter)
+    #expect(game.message == "FIT SALVAGE CUTTER")
+    let before = game.commander
+    let bodies = game.bodies
+    let resources = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash]
+    game.fireSelectedFlightTool(delta: 0.05)
+    #expect(game.commander == before && game.bodies == bodies)
+    #expect([game.energy, game.laserHeat, game.fireCooldown, game.laserFlash] == resources)
+  }
+
+  @Test func actualMiningFrontFitRemainsUsableWithoutTheSeparateUtility() throws {
+    var game = try workToolGame()
+    let tool = try #require(game.commander.fittedMiningWorkTool)
+    try game.commander.storeEquipment(
+      tool, expectedRevision: game.commander.equipmentInventory!.revision)
+    let held = try #require(game.commander.equipmentInventory?.items.first { $0.id == tool.id })
+    try game.commander.fitEquipment(
+      held, at: .laser(.front), expectedRevision: game.commander.equipmentInventory!.revision)
+    #expect(!game.commander.hasMiningWorkTool && game.commander.laser(on: .front) == .mining)
+    let id = try workToolRock(&game)
+    let before = try #require(game.bodies.first { $0.id == id }?.energy)
+    game.selectFlightTool(.miningLaser)
+    game.fireSelectedFlightTool(delta: 0.05)
+    #expect(game.bodies.first { $0.id == id }?.energy == before - LaserKind.mining.damage)
+  }
+
   private func expectRefusalWithoutMutation(_ game: inout Game) {
     let bodies = game.bodies
     let fields = game.miningFields
