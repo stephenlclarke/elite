@@ -30,6 +30,37 @@ private func legacyIssueFixture(
 }
 
 struct ScriptEquipmentSeamTests {
+  @Test(arguments: ["instance", "resource"])
+  func returnedObligationsStillRequireExactDictionaryAddressesWithoutWholeCommanderValidation(
+    field: String
+  )
+    throws
+  {
+    let fixture = try GearScriptFixture(contact: "{op='gear.return',id='return',gear='kit'}")
+    defer { fixture.clean() }
+    var game = try fixture.game()
+    game.emitScriptEvent("contact.requested")
+    var commander = game.commander
+    let id = try #require(commander.scriptState.instances.keys.first)
+    var instance = try #require(commander.scriptState.instances[id])
+    let record = try #require(instance.gearIssues["kit"])
+    try #require(record.status == .returned)
+    if field == "resource" {
+      instance.gearIssues.removeValue(forKey: "kit")
+      instance.gearIssues["incorrect"] = record
+      commander.scriptState.instances[id] = instance
+    } else {
+      commander.scriptState.instances.removeValue(forKey: id)
+      commander.scriptState.instances[UUID(uuidString: "30000000-0000-0000-0000-000000000099")!] =
+        instance
+    }
+    let before = commander
+    #expect(throws: EquipmentMigrationError.obligationMismatch) {
+      try commander.equipmentIssueObligations()
+    }
+    #expect(commander == before)
+  }
+
   @Test(arguments: ["personal", "issuer", "resource", "loan", "kind"])
   func presentOriginalCannotBeSubstitutedByPersonalOrMismatchedLegacyGear(field: String) throws {
     let fixture = legacyIssueFixture()
