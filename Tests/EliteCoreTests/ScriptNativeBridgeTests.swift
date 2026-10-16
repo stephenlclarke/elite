@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-private func actualMissionBridgeGame() throws -> (Game, UUID, Int) {
+func actualMissionBridgeGame() throws -> (Game, UUID, Int) {
   let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
     .deletingLastPathComponent().deletingLastPathComponent()
     .appendingPathComponent("docs/mission-packs/profiled-skirmish")
