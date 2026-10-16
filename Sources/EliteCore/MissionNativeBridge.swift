@@ -1112,6 +1112,37 @@ private struct MissionReadyGun {
 }
 
 extension Game {
+  /// Typed current-gun entry point used by the frame loop. A successful plasma discharge
+  /// returns no impact receipt; its actual retained projectile carries the later effect.
+  @discardableResult
+  mutating func fireMissionNativeWeapon(bodyID: Int, weaponID: String, componentID: UUID?) throws
+    -> NativeMissionImpactReceipt?
+  {
+    guard
+      let ready = try readyMissionGun(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+    else { return nil }
+    switch ready.weapon.kind {
+    case .laser:
+      return try fireMissionNativeLaser(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+    case .plasma:
+      let source = try currentMissionNativeBinding(bodyID: bodyID)
+      _ = try planScriptMissionImpactEvents(
+        target: nil, damage: 0, damageAdmitted: false, victimPart: nil,
+        victimComponentID: nil, componentDestroyed: false, hullDestroyed: false,
+        sourceWeaponInstanceID: ready.instance)
+      let plan = try prepareMissionProjectileAdmission(
+        source: source, weapon: ready.weapon, component: ready.component,
+        muzzle: ready.muzzle, direction: ready.direction, intendedTarget: ready.intendedTarget)
+      _ = try commitMissionProjectileAdmission(plan)
+      // Admission appends a projectile and preserves the source's index. No fallible work
+      // remains between the native commit and the selected gun debit/firing event.
+      commitMissionGun(ready, gun: ready.gun)
+      return nil
+    }
+  }
+
   /// The frame loop owns cooling and aim. This synchronous boundary owns final resource
   /// preflight, actual native effect, selected gun debit and the one firing event.
   @discardableResult
