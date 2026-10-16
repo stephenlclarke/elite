@@ -12,4 +12,6 @@ The corrected implementation preserves an ordinary NPC's intended target when th
 
 This PR includes the existing gameplay, crime, mining, admission, renderer and station-control foundations required by the validated NPC integration. Pure component, salvage and ordnance helpers are support code; playable fitting, salvage controls, plasma and variant weapon selection remain incomplete. Separate equipment-runtime, actual typed-missile runtime and mission-engine branches are excluded. Automatic NPC hyperspace fuel consumption is not claimed because ordinary NPCs do not yet perform that action. Five defensive persistence-adapter lines remain uncovered: invalid/refused snapshot paths and a missing accepted-body condition after synchronous binding. Native tests and GPU reference checks do not establish physical scanout or input latency.
 
-Remaining delivery gates are a clean requested public PR review and final-head hosted checks before merge, followed by authoritative Sonar analysis from committed main with the exact commit SHA. No published release or merged-main claim is made for this source. Motivation: [issue handoff](ISSUE-npc-resources-persistence.md).
+Remaining delivery gates are a clean requested public PR review and final-head hosted checks before merge, followed by authoritative Sonar analysis from committed main with the exact commit SHA. No published release or merged-main claim is made for this source. Motivation: [issue handoff](ISSUE-18.md).
+
+Closes #18.
