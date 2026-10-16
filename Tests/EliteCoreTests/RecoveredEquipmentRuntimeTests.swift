@@ -5,14 +5,21 @@ import Testing
 
 private func recoveredEquipmentLedger(_ definition: String) throws -> SalvageLedger {
   var ledger = SalvageLedger(seed: 123)
-  let wreck = WreckIdentity(system: .init(galaxy: 0, system: 7), site: 0, lineage: 1)
+  try addRecoveredEquipmentLot(definition, site: 0, ledger: &ledger)
+  return ledger
+}
+
+private func addRecoveredEquipmentLot(
+  _ definition: String, site: UInt32, ledger: inout SalvageLedger
+) throws {
+  let wreck = WreckIdentity(system: .init(galaxy: 0, system: 7), site: site, lineage: 1)
   let section = SalvageSectionProfile(
     index: 0, kind: .computer, localPosition: .init(0, 0, 0), normal: .init(0, 0, 1),
     radius: 10, workSeconds: 1, structural: false,
     technologyDefinitionIDs: [definition], sourceFaceIndex: 0)
   _ = ledger.advance(
     wreck: wreck, section: section, pose: .init(), velocity: .init(0, 0, 0),
-    angularVelocity: .init(0, 0, 0), tool: .cutter, elapsed: 1, operation: 1,
+    angularVelocity: .init(0, 0, 0), tool: .cutter, elapsed: 1, operation: UInt64(site) + 1,
     conditions: .init(
       toolInstalled: true, inRange: true, aligned: true, lineOfSight: true,
       resourcesAvailable: true, ownershipAuthorized: true))
@@ -22,7 +29,6 @@ private func recoveredEquipmentLedger(_ definition: String) throws -> SalvageLed
     lot: lot.identity, cargo: &cargo, freeTonnes: 20, apertureHalfExtents: .init(100, 100, 100),
     hasScoops: true, approachAllowed: true, protection: .init())
   #expect(collected == .collected(lot))
-  return ledger
 }
 
 private func recoveredEquipmentGame(_ definition: String) throws -> Game {
@@ -153,11 +159,76 @@ struct RecoveredEquipmentRuntimeTests {
     } else {
       #expect(game.commander.performance.spool < before.performance.spool)
       #expect(game.commander.jumpCap == before.jumpCap)
+      game.launch()
+      game.bodies = []
+      game.celestials = []
+      game.selectedSystem = try #require(
+        game.knownSystems.first {
+          let distance = game.currentSystem.distance(to: $0)
+          return distance > 0 && distance <= game.commander.maximumJumpDistance
+        }?.id)
+      game.beginHyperspace()
+      #expect(game.jumpCountdown == game.commander.performance.spool)
+      #expect(try #require(game.jumpCountdown) < before.performance.spool)
     }
     #expect(NavigationTier.advanced.equipmentName == "Navigation: Advanced")
     #expect(NavigationTier.advanced.label == "Intermediate")
     #expect(NavigationTier.military.equipmentName == "Navigation: Military")
     #expect(NavigationTier.military.label == "Advanced")
+  }
+
+  @Test func actualAdditionalRecoveryInvalidatesTheSourceRevisionWithoutConsumingEitherLot() throws
+  {
+    var game = try recoveredEquipmentGame("shield-technology")
+    let lot = try #require(game.commander.salvageLedger.inventory.first)
+    let quote = try game.commander.quoteRecoveredUpgrade(
+      lot: lot.identity, axis: .frontShieldCapacity, slot: .shield)
+    let ownedRevision = game.commander.equipmentInventory!.revision
+    var ledger = game.commander.salvageLedger
+    try addRecoveredEquipmentLot("energy-technology", site: 1, ledger: &ledger)
+    game.commander.salvageLedger = ledger
+    #expect(ledger.revision > quote.sourceRevision && ledger.inventory.count == 2)
+    #expect(game.commander.equipmentInventory?.revision == ownedRevision)
+    let before = game.commander
+    #expect(throws: RecoveredEquipmentError.staleQuote) { try game.applyRecoveredUpgrade(quote) }
+    #expect(game.commander == before && game.commander.salvageLedger.inventory.count == 2)
+  }
+
+  @Test(arguments: [false, true])
+  func anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull: Bool) throws {
+    var game = try recoveredEquipmentGame("shield-technology")
+    let lot = try #require(game.commander.salvageLedger.inventory.first)
+    let quote = try game.commander.quoteRecoveredUpgrade(
+      lot: lot.identity, axis: .frontShieldCapacity, slot: .shield)
+    if changeHull {
+      try game.commander.transferEquipment(to: "SH013", hullID: UUID())
+      #expect(game.commander.equipmentOwnerID == quote.owner)
+      #expect(game.commander.hullInstanceID != quote.hull)
+    } else {
+      game = try recoveredEquipmentGame("shield-technology")
+      #expect(game.commander.equipmentOwnerID != quote.owner)
+    }
+    let before = game.commander
+    #expect(throws: RecoveredEquipmentError.staleQuote) { try game.applyRecoveredUpgrade(quote) }
+    #expect(game.commander == before && game.commander.salvageLedger.inventory.count == 1)
+  }
+
+  @Test func anActualShieldPurchaseReplacesTheQuotedInstanceWithoutConsumingItsRecoveredSource()
+    throws
+  {
+    var game = try recoveredEquipmentGame("shield-technology")
+    game.commander.credits = 100_000
+    game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+    let lot = try #require(game.commander.salvageLedger.inventory.first)
+    let quote = try game.commander.quoteRecoveredUpgrade(
+      lot: lot.identity, axis: .frontShieldCapacity, slot: .shield)
+    let item = try #require(Equipment.all.first { $0.name == ShieldBooster.pulse.equipmentName })
+    let purchase = try game.quoteEquipmentPurchase(item)
+    _ = try game.applyEquipmentPurchase(purchase)
+    #expect(game.commander.fittedEquipment(at: .shield)?.id != quote.item.id)
+    let before = game.commander
+    #expect(throws: RecoveredEquipmentError.staleQuote) { try game.applyRecoveredUpgrade(quote) }
+    #expect(game.commander == before && game.commander.salvageLedger.inventory.count == 1)
   }
 
   @Test func changedPhysicalCustodyCannotConsumeTheOriginalUpgradeForAnotherComponent() throws {
