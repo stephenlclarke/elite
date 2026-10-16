@@ -94,6 +94,40 @@ struct EffectiveEquipmentValidationTests {
     #expect(try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url)) == commander)
   }
 
+  @Test func tinyFuelCostsCannotOverflowSearchRadiusOrItsChartInteger() throws {
+    for cost in [0, 1e-308, 1e-18] {
+      let commander = try commanderWithRatio(slot: .navigation, axis: .jumpFuelCost, value: cost)
+      #expect(!commander.valid)
+      #expect(throws: CommanderEquipmentError.self) { try commander.validateEquipmentState() }
+    }
+    let supported = try commanderWithRatio(slot: .navigation, axis: .jumpFuelCost, value: 1e-12)
+    #expect(supported.valid)
+    var game = Game(executive: false)
+    let loaded = game.load(supported)
+    #expect(loaded)
+    game.mapZoom = .search
+    #expect(game.chartScaleFuel > 0 && game.jumpReach.search?.isFinite == true)
+  }
+
+  @Test func invalidLegacyTankCountsRejectBeforeDerivedCapacityAndPreserveLoadState() async throws {
+    let runtime = GameRuntime()
+    let before = await runtime.snapshot()
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: url) }
+    for count in [Int.min, -1, 5, Int.max] {
+      var commander = Commander()
+      commander.fuelStorageUnits = count
+      #expect(!commander.valid)
+      let original = try JSONEncoder().encode(commander)
+      try original.write(to: url)
+      await #expect(throws: SaveError.self) { try await runtime.load(from: url) }
+      let after = await runtime.snapshot()
+      #expect(after.commander == before.commander && after.bodies == before.bodies)
+      #expect(after.inventoryContextEpoch == before.inventoryContextEpoch)
+      #expect(try Data(contentsOf: url) == original)
+    }
+  }
+
   @Test func heldUnsafeDeviceStaysOwnedButCannotReplaceAnOperatingSystem() throws {
     var commander = try commanderWithRatio(
       slot: .energy, axis: .energyCapacity, value: 1e308, held: true)
