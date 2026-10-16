@@ -757,7 +757,7 @@
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
   },
   "generated_courier_checkpoint": {
-    "status": "focused33-method49-case and native5-method checkpoint passed; canonical CI at52686c0 stopped on legacy nested Gallery coverage stack overflow; final acceptance pending",
+    "status": "focused33/49 and native5 historical checkpoint passed; canonical CI coverage stack overflow preserved; approved exact ordering-key correction committed but uncompiled/unexecuted",
     "profile": "PROJECT-SPACE-G02-1",
     "capabilities": [
       "courier-contracts-basic-v2",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "native5/focused33/49 passed; canonical CI stopped at legacy nested Gallery coverage stack overflow; proposed correction unapplied",
+  "stage": "approved ordering-key correction applied; same-flags coverage regression and fresh final gates pending",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,8 +280,9 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Independent source review of unapplied ordering-key stack-footprint proposal",
-    "Approved correction/refreeze/required focused regression and fresh full CI under later numbered lease",
+    "Same-flags coverage diagnostics and both nested cases of actual failing Gallery regression",
+    "Bounded affected campaign/receipt/G21/courier/native and ASan checks under a later numbered lease",
+    "Required media/refreeze and fresh canonical full CI",
     "Final source-owner acceptance",
     "Central integration and actual @codex review/fix/review/final-head/merge",
     "Separate G1 equipment statistics and Inventory epoch composition"
@@ -1428,5 +1429,16 @@
     "sanitizers": "not reached",
     "leaks": "not reached",
     "leaseReleasedExplicitly": true
+  },
+  "orderingCorrection": {
+    "sourceCommit": "f5d75aa1b448ed3deb1cbd9988f7a25963500b50",
+    "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md",
+    "patchSHA256": "e72cc1be315edd8b4d9bd54c16a05d6596b3b1cce8d78d53686d3264c370bf1d",
+    "patchBytes": 1291,
+    "appliedExactApprovedSource": true,
+    "status": "uncompiled/unexecuted; Root006 lease active",
+    "preservedCoverageObjects": "/tmp/elite-g02-final/failed-coverage-objects",
+    "beforeCodeFrameEvidence": "/tmp/elite-g02-final/52686c0-ordering-code-only-frames.json",
+    "next": "Both nested variants of actual failing legacy Gallery test with --enable-code-coverage/default cooperative scheduling; no serial or stack override; after frame/copy diagnostics then bounded affected regressions under new numbered lease"
   }
 }
