@@ -329,7 +329,9 @@ final class GameView: NSView {
     }
     if game.mapSearch.active { pending.append("map-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)") }
     if game.screen == .gallery {
-      pending.append("gallery-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
+      guard let token = scriptPageToken() else { return }
+      pending.append(
+        "script-page-gallery-scroll:" + token + ":\(event.scrollingDeltaY > 0 ? -1 : 1)")
     }
   }
   var controls: Controls {
@@ -568,6 +570,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         if parts.count == 2, let proof = scriptPageProof(parts[0]) {
           await runtime.scriptPageKey(String(parts[1]), expected: proof)
         }
+      } else if event.hasPrefix("script-page-gallery-scroll:") {
+        let parts = event.dropFirst("script-page-gallery-scroll:".count).split(separator: ":")
+        if parts.count == 2, let proof = scriptPageProof(parts[0]), let amount = Int(parts[1]) {
+          await runtime.scriptPageGalleryScroll(amount, expected: proof)
+        }
       } else if event.hasPrefix("script-page-click:") {
         let parts = event.dropFirst("script-page-click:".count).split(separator: ":")
         if parts.count == 3, let proof = scriptPageProof(parts[0]),
@@ -587,7 +594,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           await runtime.mapClick(x: x, y: y)
         }
       } else if event.hasPrefix("gallery-click:") || event.hasPrefix("contract-click:")
-        || event.hasPrefix("contract-scroll:")
+        || event.hasPrefix("contract-scroll:") || event.hasPrefix("gallery-scroll:")
       {
         // Old unproved packets cannot select a new campaign or payment target.
         continue

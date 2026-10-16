@@ -6,6 +6,50 @@ import Testing
 
 // Join the existing serialized native suite; AppKit menus and windows are process-wide.
 extension NativeViewTests {
+  @MainActor @Test func nativeGalleryWheelRequiresCurrentPaintAndPreservesLinkSelectionSemantics()
+    async throws
+  {
+    let harness = try await CampaignGalleryInputHarness()
+    defer { harness.clean() }
+    try await harness.selectChild()
+    await harness.delegate.runtime.nativeCommand { game in
+      game.gallery.campaignLinks = true
+      game.gallery.campaignLinkSelection = 0
+    }
+    harness.view.game = await harness.delegate.runtime.snapshot()
+    try #require(harness.view.game.campaignGalleryLinks.count >= 2)
+    let downCG = try #require(
+      CGEvent(
+        scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: -1, wheel2: 0, wheel3: 0)
+    )
+    let down = try #require(NSEvent(cgEvent: downCG))
+    harness.view.scrollWheel(with: down)
+    #expect(harness.view.pending.isEmpty)
+
+    try await harness.frame()
+    harness.view.scrollWheel(with: down)
+    try #require(harness.view.pending.last?.hasPrefix("script-page-gallery-scroll:") == true)
+    await harness.delegate.runtime.nativeCommand { game in game.gallery.campaignLinkSelection = 1 }
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().gallery.campaignLinkSelection == 1)
+    harness.view.setFrameSize(.init(width: 768, height: 768))
+    harness.view.scrollWheel(with: down)
+    #expect(harness.view.pending.isEmpty)
+
+    await harness.delegate.runtime.setViewport(width: 768, height: 768)
+    try await harness.frame()
+    let upCG = try #require(
+      CGEvent(
+        scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
+    let up = try #require(NSEvent(cgEvent: upCG))
+    harness.view.scrollWheel(with: up)
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().gallery.campaignLinkSelection == 0)
+    harness.view.pending.append("gallery-scroll:1")
+    await harness.drain()
+    #expect(await harness.delegate.runtime.snapshot().gallery.campaignLinkSelection == 0)
+  }
+
   @MainActor @Test func nativeCampaignGalleryRendersRelationshipsAndTrialReviewAtBothSizes() throws
   {
     let fixture = try CampaignGalleryFixture()
