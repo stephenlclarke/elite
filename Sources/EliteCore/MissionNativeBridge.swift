@@ -108,7 +108,9 @@ enum MissionNativeBridge {
       descriptor.encounterAdmitted, descriptor.presence == "present"
     else { throw MissionNativeBridgeError.invalidDescriptor }
     guard descriptor.missionActorID == descriptor.actorID,
-      descriptor.missionInstanceID == descriptor.instanceID, descriptor.body == body,
+      descriptor.missionInstanceID == descriptor.instanceID,
+      body.missionActorID == descriptor.actorID, body.missionInstanceID == descriptor.instanceID,
+      descriptor.body == body,
       descriptor.system == context.system
     else { throw MissionNativeBridgeError.sourceMismatch }
     guard body.id >= 0, body.energy.isFinite, body.energy > 0,
