@@ -91,6 +91,67 @@ private struct AttackJudgement {
   let entitlement: MissionBountyEntitlement?
 }
 
+/// Persisted native launch facts are data, never an authority proof after decoding.
+public struct MissionLaunchJudgement: Equatable, Codable, Sendable {
+  fileprivate let facts: MissionLaunchLawFacts
+  public var origin: AttackOrigin { facts.origin }
+  public var victim: ActorIdentity { facts.victim }
+  public var victimLegal: LegalRecord { facts.victimLegal }
+  public var victimRole: NPCRole? { facts.victimRole }
+  public var victimIsStation: Bool { facts.victimIsStation }
+  public var firstAggressor: ActorIdentity { facts.firstAggressor }
+  public var lawful: Bool { facts.lawful }
+  public var unlawful: Bool { facts.unlawful }
+  public var lawfulSelfDefence: Bool { facts.selfDefence }
+  public var authorityAction: Bool { facts.authorityAction }
+  public var inNoFireZone: Bool { facts.inNoFireZone }
+  public var offence: CrimeKind { facts.offence }
+  public var firstInWindow: Bool { facts.firstInWindow }
+  public var emissionPosition: Vector3 { facts.emissionPosition }
+  /// Freezing is pure; it neither charges an offence nor creates a threat or incident.
+  public var launchEffectsApplied: Bool { false }
+  public var valid: Bool {
+    func identityValid(_ value: ActorIdentity) -> Bool {
+      (0..<8).contains(value.system.galaxy) && (0...256).contains(value.system.system)
+        && value.visit > 0 && value.visit < UInt64.max && value.entity < UInt64.max
+    }
+    return identityValid(origin.owner) && identityValid(victim)
+      && identityValid(firstAggressor) && origin.owner != victim
+      && victim.system == origin.owner.system && victim.visit == origin.owner.visit
+      && firstAggressor.system == origin.owner.system && firstAggressor.visit == origin.owner.visit
+      && origin.emissionID > 0 && origin.emissionID < UInt64.max
+      && origin.emittedAt.isFinite && origin.emittedAt >= 0 && emissionPosition.finite
+      && (0...255).contains(origin.ownerLegalAtEmission.value)
+      && origin.ownerLegalAtEmission.bountyTenths >= 0
+      && (0...255).contains(victimLegal.value) && victimLegal.bountyTenths >= 0
+      && (origin.sourcePart.map { $0.utf8.count <= 256 } ?? true)
+      && (origin.ordnance.map {
+        identityValid($0) && $0.system == origin.owner.system && $0.visit == origin.owner.visit
+      } ?? true)
+  }
+}
+
+private struct MissionLaunchLawFacts: Equatable, Codable, Sendable {
+  let origin: AttackOrigin
+  let victim: ActorIdentity
+  let victimLegal: LegalRecord
+  let victimRole: NPCRole?
+  let victimIsStation: Bool
+  let firstAggressor: ActorIdentity
+  let lawful: Bool
+  let unlawful: Bool
+  let selfDefence: Bool
+  let authorityAction: Bool
+  let inNoFireZone: Bool
+  let offence: CrimeKind
+  let firstInWindow: Bool
+  let emissionPosition: Vector3
+}
+
+public enum MissionLaunchLawError: Error, Sendable {
+  case invalidLaunchFacts
+}
+
 /// Pure value state. Runtime integration applies the returned delta and credit atomically.
 public struct CrimeLedger: Equatable, Codable, Sendable {
   private var lastIncidentID: UInt64?
@@ -234,21 +295,78 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     return victim
   }
 
+  /// Pure plasma launch adjudication. Call only after actual native emission admission.
+  /// Persisting this value does not grant reentry authority; the bridge revalidates its joins.
+  public func freezeMissionLaunchJudgement(
+    origin: AttackOrigin, intendedVictim: ActorSnapshot, emissionPosition: Vector3,
+    context: EncounterContext
+  ) throws -> MissionLaunchJudgement {
+    guard context.physicalTime.isFinite, context.physicalTime >= 0,
+      origin.owner.system == context.system, origin.owner.visit == context.visit,
+      origin.emittedAt == context.physicalTime,
+      let owner = snapshot(origin.owner, context: context), owner.energy > 0,
+      owner.legal == origin.ownerLegalAtEmission,
+      snapshot(intendedVictim.identity, context: context) == intendedVictim,
+      intendedVictim.identity != origin.owner, intendedVictim.energy > 0,
+      intendedVictim.identity.system == context.system,
+      intendedVictim.identity.visit == context.visit,
+      ![Hull.cargo, .asteroid, .missile].contains(intendedVictim.hull),
+      !settledDeaths.contains(intendedVictim.identity), emissionPosition.finite
+    else { throw MissionLaunchLawError.invalidLaunchFacts }
+    if let salvage = intendedVictim.salvage, [.wreck, .section].contains(salvage.category),
+      salvage.ownership == .abandoned, salvage.claimant == nil, intendedVictim.npc == nil,
+      intendedVictim.hull != .station,
+      !context.protection.protectedActors.contains(intendedVictim.identity)
+    {
+      throw MissionLaunchLawError.invalidLaunchFacts
+    }
+    let inZone = (emissionPosition - context.anchors.station.position).length <= 1200
+    let judgement = judgeAttack(
+      origin: origin, kind: .plasma, isDestruction: false,
+      victim: intendedVictim.identity, victimLegal: intendedVictim.legal,
+      victimRole: intendedVictim.npc?.role, victimIsStation: intendedVictim.hull == .station,
+      time: context.physicalTime, context: context, inNoFireZone: inZone, missionEntitlement: nil)
+    let value = MissionLaunchJudgement(
+      facts: .init(
+        origin: origin, victim: intendedVictim.identity, victimLegal: judgement.window.victimLegal,
+        victimRole: judgement.window.victimRole, victimIsStation: intendedVictim.hull == .station,
+        firstAggressor: judgement.window.firstAggressor, lawful: judgement.lawful,
+        unlawful: judgement.window.unlawful, selfDefence: judgement.selfDefence,
+        authorityAction: judgement.window.authorityAction, inNoFireZone: inZone,
+        offence: judgement.window.offence, firstInWindow: judgement.firstInWindow,
+        emissionPosition: emissionPosition))
+    guard value.valid else { throw MissionLaunchLawError.invalidLaunchFacts }
+    return value
+  }
+
   private func adjudicate(
     _ incident: CombatIncident, victim: ActorIdentity, context: EncounterContext,
     inNoFireZone: Bool, missionEntitlement: MissionBountyEntitlement?
   ) -> AttackJudgement {
-    let owner = incident.origin.owner
-    let time = incident.physicalTime
+    judgeAttack(
+      origin: incident.origin, kind: incident.kind, isDestruction: incident.outcome == .destruction,
+      victim: victim, victimLegal: incident.victimLegalBeforeAttack,
+      victimRole: incident.victimRole,
+      victimIsStation: incident.victimIsStation, time: incident.physicalTime,
+      context: context, inNoFireZone: inNoFireZone, missionEntitlement: missionEntitlement)
+  }
+
+  private func judgeAttack(
+    origin: AttackOrigin, kind: AttackKind, isDestruction: Bool,
+    victim: ActorIdentity, victimLegal: LegalRecord?, victimRole: NPCRole?, victimIsStation: Bool,
+    time: Double, context: EncounterContext, inNoFireZone: Bool,
+    missionEntitlement: MissionBountyEntitlement?
+  ) -> AttackJudgement {
+    let owner = origin.owner
     let defence = attacks.first {
       $0.owner == victim && $0.victim == owner && $0.unlawful
-        && threatActive($0, time: time, context: context, dying: incident.outcome == .destruction)
+        && threatActive($0, time: time, context: context, dying: isDestruction)
     }
     let entitlement = missionEntitlement.flatMap {
       $0.owner == owner && $0.victim == victim && $0.amountTenths >= 0 ? $0 : nil
     }
     let missileLaunch = missiles.first {
-      incident.kind == .missile && $0.emissionID == incident.origin.emissionID
+      kind == .missile && $0.emissionID == origin.emissionID
         && $0.attack.owner == owner && ($0.currentVictim ?? $0.attack.victim) == victim
     }
     let previous =
@@ -256,22 +374,22 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
       ?? attacks.first {
         $0.owner == owner && $0.victim == victim && time - $0.lastAttack <= 10
       }
-    let legalBefore = previous?.victimLegal ?? incident.victimLegalBeforeAttack ?? LegalRecord()
-    let roleBefore = previous?.victimRole ?? incident.victimRole
+    let legalBefore = previous?.victimLegal ?? victimLegal ?? LegalRecord()
+    let roleBefore = previous?.victimRole ?? victimRole
     let authority =
       missileLaunch?.attack.authorityAction
       ?? lawfulAuthority(
         owner: owner, victim: victim, legal: legalBefore, time: time, context: context)
     let lawful =
       missileLaunch.map { !$0.attack.unlawful }
-      ?? (!incident.victimIsStation
+      ?? (!victimIsStation
         && (defence != nil || authority
           || (!inNoFireZone && (legalBefore.wanted || entitlement?.authorizesAttack == true))))
     let firstAggressor = previous?.firstAggressor ?? defence?.firstAggressor ?? owner
     let window = AttackWindow(
       owner: owner, victim: victim, victimLegal: legalBefore, victimRole: roleBefore,
       firstAggressor: firstAggressor, unlawful: previous?.unlawful ?? !lawful,
-      offence: offence(station: incident.victimIsStation, role: roleBefore, legal: legalBefore),
+      offence: offence(station: victimIsStation, role: roleBefore, legal: legalBefore),
       authorityAction: authority, lastAttack: time)
     return .init(
       window: window, firstInWindow: previous == nil, lawful: lawful,
