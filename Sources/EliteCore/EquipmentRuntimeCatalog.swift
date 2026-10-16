@@ -20,7 +20,7 @@ enum EquipmentRuntimeCatalog {
     let lasers = LaserKind.allCases.map { kind in
       EquipmentPurchaseNode(
         id: .init(family: laserFamily, key: kind.equipmentName), displayName: kind.equipmentName,
-        policy: .repeatable(maximumCount: 4))
+        policy: .repeatable(maximumCount: kind == .mining ? 5 : 4))
     }
     let utilityNodes = utilities.map { name, utility in
       EquipmentPurchaseNode(id: .init(family: utilityFamily(utility), key: name), displayName: name)

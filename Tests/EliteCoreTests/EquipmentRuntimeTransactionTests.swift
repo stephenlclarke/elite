@@ -18,6 +18,41 @@ private func equipmentShopBuy(_ name: String, game: inout Game) throws {
 }
 
 struct EquipmentRuntimeTransactionTests {
+  @Test(arguments: [false, true])
+  func actualShopAllowsAllFourMiningFacingsAndTheDeclaredIndependentTool(toolFirst: Bool) throws {
+    var game = try equipmentShopGame()
+    let before = game.commander.credits
+    if toolFirst {
+      game.equipmentWorkTool = true
+      try equipmentShopBuy(LaserKind.mining.equipmentName, game: &game)
+    }
+    game.equipmentWorkTool = false
+    for mount in LaserMount.allCases {
+      game.equipmentMount = mount
+      try equipmentShopBuy(LaserKind.mining.equipmentName, game: &game)
+    }
+    if !toolFirst {
+      game.equipmentWorkTool = true
+      try equipmentShopBuy(LaserKind.mining.equipmentName, game: &game)
+    }
+    let inventory = try #require(game.commander.equipmentInventory)
+    let mining = inventory.items.filter { $0.node.key == LaserKind.mining.equipmentName }
+    #expect(mining.count == 5 && mining.allSatisfy { $0.location != nil })
+    #expect(Set(mining.map(\.id)).count == 5)
+    #expect(game.commander.equipmentPurchaseHistory?.paid.count == 5)
+    #expect(game.commander.credits == before - 5 * 8000)
+    #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .mining })
+    let tool = try #require(game.commander.fittedMiningWorkTool)
+    try game.storeEquipment(tool, expectedRevision: inventory.revision)
+    game.equipmentWorkTool = true
+    let held = game.commander
+    let item = try #require(Equipment.all.first { $0.name == LaserKind.mining.equipmentName })
+    #expect(throws: EquipmentPurchaseError.maximumCount(tool.node, 5)) {
+      try game.quoteEquipmentPurchase(item)
+    }
+    #expect(game.commander == held)
+  }
+
   @Test func aFabricatedShopPriceOrTechnologyCannotBecomeAnAuthoritativeReceipt() throws {
     let game = try equipmentShopGame()
     let before = game.commander
