@@ -21,6 +21,113 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   private var sequence: UInt64 = 0
 
   public init(seed: UInt64 = 0) { self.seed = seed }
+  private enum CodingKeys: String, CodingKey {
+    case seed, terminal, partial, pending, offers, bindings, lastIncident, sequence
+  }
+
+  public init(from decoder: Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    seed = try values.decode(UInt64.self, forKey: .seed)
+    terminal = try Self.decodeBounded(
+      SystemIdentity.self, UInt64.self,
+      from: values, key: .terminal, maximum: 8 * 257)
+    partial = try Self.decodeBounded(
+      RockIdentity.self, Double.self,
+      from: values, key: .partial, maximum: Self.maximumPartial)
+    pending = try Self.decodeBounded(
+      PayloadIdentity.self, TypedCargoPayload.self,
+      from: values, key: .pending, maximum: Self.maximumPending)
+    offers = try Self.decodeBounded(
+      SpawnIdentity.self, PayloadIdentity.self,
+      from: values, key: .offers, maximum: Self.maximumPending)
+    bindings = try Self.decodeBounded(
+      PayloadIdentity.self, ActorIdentity.self,
+      from: values, key: .bindings, maximum: Self.maximumPending)
+    lastIncident = try values.decodeIfPresent(UInt64.self, forKey: .lastIncident)
+    sequence = try values.decode(UInt64.self, forKey: .sequence)
+    guard valid else {
+      throw DecodingError.dataCorrupted(
+        .init(
+          codingPath: decoder.codingPath, debugDescription: "Invalid mining ledger"))
+    }
+  }
+
+  private static func decodeBounded<Key: Hashable & Decodable, Value: Decodable>(
+    _ keyType: Key.Type, _ valueType: Value.Type,
+    from values: KeyedDecodingContainer<CodingKeys>, key: CodingKeys, maximum: Int
+  ) throws -> [Key: Value] {
+    var records = try values.nestedUnkeyedContainer(forKey: key)
+    var result: [Key: Value] = [:]
+    while !records.isAtEnd {
+      guard result.count < maximum else {
+        throw DecodingError.dataCorrupted(
+          .init(
+            codingPath: records.codingPath, debugDescription: "Mining collection exceeds bound"))
+      }
+      let identity = try records.decode(Key.self)
+      guard result[identity] == nil else {
+        throw DecodingError.dataCorrupted(
+          .init(
+            codingPath: records.codingPath, debugDescription: "Duplicate mining key"))
+      }
+      result[identity] = try records.decode(Value.self)
+    }
+    return result
+  }
+
+  public var valid: Bool {
+    let mask = (UInt64(1) << 48) - 1
+    guard terminal.count <= 8 * 257, partial.count <= Self.maximumPartial,
+      pending.count <= Self.maximumPending, offers.count <= Self.maximumPending,
+      bindings.count <= Self.maximumPending,
+      terminal.allSatisfy({ Self.validSystem($0.key) && $0.value > 0 && $0.value & ~mask == 0 }),
+      partial.allSatisfy({
+        bit($0.key) != nil && !isDepleted($0.key)
+          && $0.value.isFinite && $0.value > 0
+      }),
+      pending.allSatisfy({ identity, item in
+        guard identity == item.identity, case .ore(let rock, let fragment) = identity,
+          bit(rock) != nil, isDepleted(rock), fragment < 7,
+          item.amount.quantity == 1,
+          [.minerals, .alloys, .gold, .platinum].contains(item.amount.commodity)
+        else { return false }
+        let canonical = self.yield(
+          for: MiningRock(
+            identity: rock, position: .init(0, 0, 0), radius: 1, energy: 1))
+        return canonical.contains { $0.identity == identity && $0.amount == item.amount }
+          && Self.validMotion(item.position) && Self.validMotion(item.velocity)
+      }),
+      offers.allSatisfy({ spawn, payload in
+        guard case .ore(let rock, _) = payload else { return false }
+        return pending[payload] != nil && bindings[payload] == nil
+          && spawn.system == rock.system && Self.validSystem(spawn.system)
+          && spawn.producer == .mining && spawn.member == 0
+          && spawn.visit > 0 && spawn.visit < UInt64.max
+          && spawn.sequence > 0 && spawn.sequence < UInt64.max && spawn.sequence <= sequence
+      }),
+      Set(offers.values).count == offers.count,
+      Set(bindings.values).count == bindings.count,
+      bindings.allSatisfy({ payload, actor in
+        guard case .ore(let rock, _) = payload else { return false }
+        return pending[payload] != nil && actor.system == rock.system
+          && Self.validSystem(actor.system) && actor.entity >= 2 && actor.entity < UInt64.max
+          && actor.visit > 0 && actor.visit < UInt64.max
+      })
+    else { return false }
+    guard sequence < UInt64.max,
+      lastIncident.map({ $0 > 0 && $0 < UInt64.max }) ?? true
+    else { return false }
+    return (terminal.isEmpty && partial.isEmpty && pending.isEmpty) || lastIncident != nil
+  }
+
+  private static func validSystem(_ system: SystemIdentity) -> Bool {
+    (0..<8).contains(system.galaxy) && (0...256).contains(system.system)
+  }
+
+  private static func validMotion(_ vector: Vector3) -> Bool {
+    vector.x.isFinite && vector.y.isFinite && vector.z.isFinite && vector.length.isFinite
+  }
+
   public var pendingPayloads: [TypedCargoPayload] {
     pending.values.sorted { key($0.identity) < key($1.identity) }
   }
@@ -40,9 +147,10 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     -> MiningHitResult
   {
     guard incident.victimPart == nil, damage.isFinite, damage > 0, rock.energy.isFinite,
-      rock.energy > 0,
+      rock.energy > 0, Self.validMotion(rock.position),
       bit(rock.identity) != nil, !isDepleted(rock.identity),
       incident.outcome == .hit || incident.outcome == .destruction,
+      incident.id > 0, incident.id < UInt64.max,
       lastIncident.map({ incident.id > $0 }) ?? true
     else { return .ignored }
     let remaining = max(0, remainingEnergy(for: rock) - damage)
@@ -78,7 +186,8 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       guard requests.count < capacity, case .ore(let rock, _) = payload.identity,
         rock.system == context.system, identities.contains(rock), bindings[payload.identity] == nil,
         !reserved.contains(payload.identity),
-        !context.protection.protectedPayloads.contains(payload.identity)
+        !context.protection.protectedPayloads.contains(payload.identity),
+        context.visit > 0, context.visit < UInt64.max, sequence < UInt64.max - 1
       else { continue }
       sequence &+= 1
       let identity = SpawnIdentity(
@@ -101,7 +210,9 @@ public struct MiningLedger: Equatable, Codable, Sendable {
         continue
       }
       if let actor = receipt.actor, receipt.refusal == nil,
-        actor.system == receipt.request.system, actor.visit == receipt.request.visit
+        actor.system == receipt.request.system, actor.visit == receipt.request.visit,
+        actor.entity >= 2, actor.entity < UInt64.max, actor.visit > 0, actor.visit < UInt64.max,
+        !bindings.values.contains(actor)
       {
         bindings[payload] = actor
       }

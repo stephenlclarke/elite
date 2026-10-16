@@ -212,11 +212,16 @@ struct MiningLedgerTests {
     let retry = ledger.pendingSpawnRequests(context: context, fields: fields)
     #expect(retry.count == requests.count)
     ledger.acknowledge(
-      receipts: retry.map {
-        SpawnReceipt(request: $0.identity, actor: actor, refusal: nil)
+      receipts: retry.enumerated().map { index, request in
+        SpawnReceipt(
+          request: request.identity,
+          actor: .init(system: system, visit: 1, entity: actor.entity + UInt64(index)), refusal: nil
+        )
       })
     #expect(ledger.pendingSpawnRequests(context: context, fields: fields).isEmpty)
-    ledger.cull(actor: actor)
+    for index in retry.indices {
+      ledger.cull(actor: .init(system: system, visit: 1, entity: actor.entity + UInt64(index)))
+    }
     #expect(ledger.pendingSpawnRequests(context: context, fields: fields).count == requests.count)
     ledger = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
     ledger.resetPhysicalBindings(system: system)
