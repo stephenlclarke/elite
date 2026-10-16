@@ -1154,6 +1154,10 @@ extension Game {
         bodyID: bodyID, weaponID: weaponID, componentID: componentID)
     else { return nil }
     guard ready.weapon.kind == .laser else { throw MissionNativeBridgeError.unsupportedWeapon }
+    let query = try queryMissionNativeLaser(
+      sourceBodyID: bodyID, weapon: ready.weapon, component: componentID,
+      muzzle: ready.muzzle, direction: ready.direction)
+    _ = try preflightMissionNativeLaser(query)
     // Only the producer's small native emission allocation precedes the kernel. The kernel
     // stages every fallible effect; restore that allocator if it refuses, without a Game copy.
     let flight = commander.flightSimulation
