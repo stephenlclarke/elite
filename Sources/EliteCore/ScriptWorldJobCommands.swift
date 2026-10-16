@@ -44,7 +44,7 @@ extension Game {
           derived.append(
             try candidate.ensureScriptEncounter(
               encounter, pack: pack,
-              state: &owner, worldJobAuthorized: true))
+              state: &owner, worldJobID: id, worldJobPulse: pulse.sequence))
         case "actor.repair":
           try candidate.applyWorldJobRepair(command, job: &next, origin: &owner)
         case "job.finish":
