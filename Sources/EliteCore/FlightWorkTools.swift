@@ -146,7 +146,7 @@ extension Game {
       guard let physical = body.physical else { continue }
       if let payload = physical.payload, case .salvage(let lot) = payload {
         commander.salvageLedger.updateLot(
-          identity: lot, position: commander.flightSimulation.pose.systemPoint(body.position),
+          lot, position: commander.flightSimulation.pose.systemPoint(body.position),
           velocity: physical.velocity)
       }
       if let metadata = physical.salvage, let wreck = metadata.wreck,
