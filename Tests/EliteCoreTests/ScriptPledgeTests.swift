@@ -315,9 +315,13 @@ func pledgeRejectedAcceptedHandlersNeverPublishAnUnpaidAssignment(mode: String) 
   #expect(try game.ensureContractBoard(fixture.pack) == key)
   #expect(game.commander.contracts.boards[key]?.offers[0].status == .declined)
   game.paused = true
-  #expect(!game.advanceScriptClockValues(delta: 0.1, flight: false, local: true, calendar: false))
+  let pausedAdvance = game.advanceScriptClockValues(
+    delta: 0.1, flight: false, local: true, calendar: false)
+  #expect(!pausedAdvance)
   game.paused = false
-  #expect(game.advanceScriptClockValues(delta: 0.1, flight: false, local: true, calendar: false))
+  let activeAdvance = game.advanceScriptClockValues(
+    delta: 0.1, flight: false, local: true, calendar: false)
+  #expect(activeAdvance)
   #expect(game.commander.scriptState.localSeconds == 3600)
   _ = try game.ensureContractBoard(fixture.pack)
   let next = try #require(game.commander.contracts.boards[key])
