@@ -156,7 +156,10 @@ struct ScriptEquipmentReceiptTests {
         .init(item: receiptID(21), location: fixture.location)
       ])
     }
-    fixture.engine.instances[fixture.source.mission]?.gearIssues[fixture.source.resource] = changed
+    let source = fixture.source
+    var selected = try #require(fixture.engine.instances[source.mission])
+    selected.gearIssues[source.resource] = changed
+    fixture.engine.instances[source.mission] = selected
     let before = fixture.engine
     #expect(throws: EquipmentIssueError.staleObligation) { try fixture.engine.applying(receipt) }
     #expect(fixture.engine == before)
