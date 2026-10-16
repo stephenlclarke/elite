@@ -27,6 +27,34 @@ private func ownershipDisplayBytes(_ commander: Commander) throws -> Data {
 }
 
 struct EquipmentOwnershipDisplayTests {
+  @Test func compactEquipmentKeepsEverySelectedItemAboveAnActiveMessageWithTargetingHUD() throws {
+    var game = try ownershipDisplayGame()
+    try game.commander.grantEquipment(
+      TargetingTier.basic.equipmentName, at: .targetingCore, provenance: .grant("layout fixture"))
+    game.viewportWidth = 512
+    game.viewportHeight = 518
+    game.notify("EQUIPMENT FITTED")
+    let before = game.commander
+    for index in EquipmentGroups.itemIndices {
+      game.selection = index
+      let layout = EquipmentLayout(game: game, width: 512, height: 518)
+      let cockpit = CockpitLayout(game: game, width: 512, height: 518)
+      let frame = Display.equipmentScreen(game, width: 512, height: 518)
+      let selected = try #require(frame.labels.first { $0.text == ">" })
+      #expect(layout.count == 1 && layout.mounts.count == 4 && layout.workToolBounds != nil)
+      #expect(selected.y == layout.listTop && selected.bounds.maxY <= cockpit.dashboardTop - 82)
+      #expect(selected.scale == GameTypography.scale)
+      #expect(frame.labels.contains { $0.text == "EQUIPMENT FITTED" })
+      for price in frame.labels.filter({ $0.text.hasSuffix(" CR") }) {
+        #expect(abs(price.bounds.maxX - (layout.left + layout.contentWidth)) < 0.0001)
+      }
+      // The same one-row geometry must remain a usable pointer target after scrolling.
+      game.equipmentClick(y: selected.y + 1, x: layout.left + 33)
+      #expect(game.selection == index)
+    }
+    #expect(game.commander == before)
+  }
+
   @Test func requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership() throws {
     var game = try ownershipDisplayGame()
     let basic = try #require(Equipment.all.first { $0.name == TargetingTier.basic.equipmentName })

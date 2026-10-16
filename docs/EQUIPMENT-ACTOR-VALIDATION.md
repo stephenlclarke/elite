@@ -1,0 +1,9 @@
+# Equipment actor validation evidence
+
+The first focused validation used committed candidate `09b19a4434e14839204e8569fe24a5002d8d6f4b`. Renderer generation passed: all 168 ship references were regenerated, with only the reference manifest changing, and README media generation completed without changing tracked images. Production and test compilation passed.
+
+The affected ordinary run completed 64 test methods in eight suites. All six actor-boundary methods and the seven existing native equipment methods passed. The new painted-shop native method reported four encoded-Commander equality failures, all at checkpoints after its successful reload. The three checkpoints before reload passed. Validation stopped there; Thread Sanitizer, Address Sanitizer, and the full CI gate were not run on that candidate.
+
+The correction retains a whole-Commander equality assertion across reload, including physical identities, ownership history, and resources. It then takes the encoded baseline from the actual loaded state for subsequent blocked actions. JSON object-key sorting does not canonicalize arrays encoded from Sets, so a pre-load byte baseline cannot independently distinguish changed state from changed Set iteration order. The original save-file byte checks remain unchanged. This correction does not yet establish whether the original failures were solely encoding order; the whole-Commander assertion must pass in the next run.
+
+The failed run's raw log, input maps, result maps, and 52 native evidence files remain preserved under `/tmp/elite-equipment-actor-boundary-023`. Tracked inputs, private native preference files, and the production commander save were unchanged. These native captures demonstrate offscreen drawing and event processing, not physical display scanout. The source correction requires independent review and a fresh validation lease before execution.

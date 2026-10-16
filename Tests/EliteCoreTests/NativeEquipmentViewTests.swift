@@ -115,8 +115,11 @@ private struct NativeEquipmentFixture {
           windowNumber: window.windowNumber, context: nil, characters: text,
           charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
     }
+    let equipmentReturn = code == 36 && view.game.screen == .equipment
+    if equipmentReturn { _ = try capture("before-return", scale: 1) }
     view.keyDown(with: try event(.keyDown))
-    #expect(view.pending.last == expected)
+    #expect(view.pending.last == (equipmentReturn ? "equipment-purchase" : expected))
+    if equipmentReturn { #expect(view.pendingEquipmentPurchases.count == 1) }
     view.keyUp(with: try event(.keyUp))
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty && view.held.isEmpty)
@@ -208,6 +211,114 @@ private struct NativeEquipmentFixture {
 
 // Inherit the existing suite's serialization; AppKit still has one application/event loop.
 extension NativeViewTests {
+  @MainActor @Test func nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce()
+    async throws
+  {
+    let commander = try nativeEquipmentCommander()
+    let fixture = try await NativeEquipmentFixture.open(
+      commander: commander, width: 768, height: 768)
+    defer { fixture.close() }
+    fixture.window.orderOut(nil)
+    try await fixture.selectItem(named: "Fuel Scoops")
+    let beforeCommander = fixture.view.game.commander
+    var before = try nativeEquipmentBytes(beforeCommander)
+    let paid = try #require(fixture.view.game.commander.equipmentPurchaseHistory?.paid.count)
+    func enqueue(_ code: UInt16, _ text: String) throws {
+      func event(_ type: NSEvent.EventType) throws -> NSEvent {
+        try #require(
+          NSEvent.keyEvent(
+            with: type, location: .zero, modifierFlags: [],
+            timestamp: 0, windowNumber: fixture.window.windowNumber, context: nil,
+            characters: text, charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
+      }
+      fixture.view.keyDown(with: try event(.keyDown))
+      fixture.view.keyUp(with: try event(.keyUp))
+    }
+    // Selection changed since the last paint: Return has no trusted displayed context.
+    try enqueue(36, "\r")
+    #expect(fixture.view.pendingEquipmentPurchases.isEmpty)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    try fixture.verifyUnchanged(before)
+
+    _ = try fixture.capture("shop-navigation-guard", scale: 1)
+    try enqueue(125, "")
+    try enqueue(36, "\r")
+    #expect(fixture.view.pendingEquipmentPurchases.isEmpty)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    try fixture.verifyUnchanged(before)
+    try await fixture.selectItem(named: "Fuel Scoops")
+
+    _ = try fixture.capture("shop-bounds-guard", scale: 1)
+    let bounds = fixture.view.bounds
+    fixture.view.setBoundsSize(NSSize(width: bounds.width - 1, height: bounds.height))
+    try enqueue(36, "\r")
+    #expect(fixture.view.pendingEquipmentPurchases.isEmpty)
+    fixture.view.setBoundsSize(bounds.size)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    try fixture.verifyUnchanged(before)
+
+    _ = try fixture.capture("shop-load-guard", scale: 1)
+    try enqueue(36, "\r")
+    #expect(fixture.view.pendingEquipmentPurchases.count == 1)
+    try await fixture.delegate.runtime.load(from: fixture.save, persistMigrations: false)
+    let loaded = await fixture.delegate.runtime.snapshot()
+    #expect(loaded.commander == beforeCommander)
+    #expect(loaded.commander.equipmentInventory == beforeCommander.equipmentInventory)
+    #expect(loaded.commander.equipmentPurchaseHistory == beforeCommander.equipmentPurchaseHistory)
+    // Codable Sets can change array order across decoding. Actions must preserve the loaded bytes.
+    before = try nativeEquipmentBytes(loaded.commander)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander.equipmentPurchaseHistory?.paid.count == paid)
+    try fixture.verifyUnchanged(before)
+    try await fixture.press(20, text: "3", expected: "3")
+    try await fixture.selectItem(named: "Fuel Scoops")
+
+    _ = try fixture.capture("shop-pause-guard", scale: 1)
+    func togglePauseThroughMenu() async throws {
+      let event = try #require(
+        NSEvent.keyEvent(
+          with: .keyDown, location: .zero,
+          modifierFlags: .command, timestamp: 0, windowNumber: fixture.window.windowNumber,
+          context: nil, characters: "p", charactersIgnoringModifiers: "p", isARepeat: false,
+          keyCode: 35))
+      let handled = try #require(NSApp.mainMenu).performKeyEquivalent(with: event)
+      #expect(handled && fixture.view.pending.last == "pause")
+      await fixture.delegate.processPendingCommands(in: fixture.view)
+    }
+    try await togglePauseThroughMenu()
+    try enqueue(36, "\r")
+    #expect(fixture.view.pendingEquipmentPurchases.isEmpty)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.paused)
+    try fixture.verifyUnchanged(before)
+    try await togglePauseThroughMenu()
+
+    let layout = EquipmentLayout(game: fixture.view.game, width: 768, height: 768)
+    try await fixture.click(try #require(layout.mounts.first).bounds)
+    try fixture.verifyUnchanged(before)
+    try await fixture.selectItem(named: "Fuel Scoops")
+    let rows = EquipmentLayout(game: fixture.view.game, width: 768, height: 768)
+    let visual = try #require(
+      EquipmentGroups.rows.firstIndex(of: .item(fixture.view.game.selection)))
+    let row = visual - rows.start
+    try await fixture.click(
+      .init(
+        x: rows.left + 32,
+        y: rows.listTop + Double(row) * rows.row, width: rows.contentWidth - 32, height: rows.row))
+    try fixture.verifyUnchanged(before)
+    _ = try fixture.capture("shop-duplicate-return", scale: 1)
+    try enqueue(36, "\r")
+    try enqueue(36, "\r")
+    #expect(fixture.view.pendingEquipmentPurchases.count == 2)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    let after = fixture.view.game.commander
+    #expect(after.equipmentPurchaseHistory?.paid.count == paid + 1)
+    #expect(after.equipmentInventory?.items.filter { $0.node.key == "Fuel Scoops" }.count == 1)
+    #expect(after.credits < commander.credits)
+    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+    #expect(fixture.delegate.saves.activeURL == fixture.save)
+  }
+
   @MainActor @Test func nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing() async throws {
     let commander = try nativeEquipmentCommander()
     for (width, height) in [(512, 518), (1512, 982)] {
