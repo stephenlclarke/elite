@@ -1,5 +1,15 @@
 import Foundation
 
+struct NativeMissionProjectileEmissionReceipt: Sendable, Equatable {
+  let bodyID: Int
+  let actor: ActorIdentity
+
+  fileprivate init(bodyID: Int, actor: ActorIdentity) {
+    self.bodyID = bodyID
+    self.actor = actor
+  }
+}
+
 /// A transient native admission prepared from the actual retained source and authored fit.
 /// Only this file may construct it; decoded mission data never supplies admission authority.
 struct NativeMissionProjectileEmissionPlan: Sendable {
@@ -130,7 +140,7 @@ extension Game {
   /// The caller finishes its prevalidated selected-gun fields and event projection immediately
   /// after this successful commit in the same actor turn, with no await or fallible operation.
   mutating func commitMissionProjectileAdmission(_ plan: NativeMissionProjectileEmissionPlan) throws
-    -> NativeMissionProjectileReceipt
+    -> NativeMissionProjectileEmissionReceipt
   {
     guard let context = gameplayContext(), context == plan.context else {
       throw MissionNativeBridgeError.staleBinding
