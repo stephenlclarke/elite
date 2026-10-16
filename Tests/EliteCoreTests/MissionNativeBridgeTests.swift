@@ -306,4 +306,76 @@ struct MissionNativeBridgeTests {
     }
   }
 
+  @Test func actorTargetArchivePinsActualSecondProtectedBindingAndRejectsWrongNativeVictimOrSource()
+    throws
+  {
+    var game = Game(executive: false)
+    game.launch()
+    let targetID = UUID(uuidString: "00000000-0000-0000-0000-000000000010")!
+    let targetInstance = UUID(uuidString: "00000000-0000-0000-0000-000000000011")!
+    var sourceBody = SpaceBody(id: 42, hull: .constrictor, position: .init(0, 0, 2000))
+    sourceBody.missionActorID = bridgeActor
+    sourceBody.missionInstanceID = bridgeInstance
+    var targetBody = SpaceBody(id: 77, hull: .thargoid, position: .init(100, 0, 2500))
+    targetBody.missionActorID = targetID
+    targetBody.missionInstanceID = targetInstance
+    game.bodies = [sourceBody, targetBody]
+    game.ensurePhysicalActors()
+    let context = try #require(game.gameplayContext())
+    let source = try #require(game.bodies.first { $0.id == 42 })
+    let target = try #require(game.bodies.first { $0.id == 77 })
+    let sourceBinding = try MissionNativeBridge.bindActor(
+      descriptor: bridgeDescriptor(source, context), body: source, context: context)
+    let digest = String(repeating: "b", count: 64)
+    let targetDescriptor = MissionActorDescriptor(
+      instanceID: targetInstance, instanceRevision: 3,
+      packDigest: digest, encounterID: "second-encounter", encounterAdmitted: true,
+      system: context.system, alias: "target", actorID: targetID, presence: "present",
+      missionActorID: targetID, missionInstanceID: targetInstance, body: target)
+    let targetBinding = try MissionNativeBridge.bindActor(
+      descriptor: targetDescriptor, body: target, context: context)
+    let sourceSnapshot = try #require(
+      context.actors.first { $0.identity == sourceBinding.nativeActor })
+    let targetSnapshot = try #require(
+      context.actors.first { $0.identity == targetBinding.nativeActor })
+    let origin = AttackOrigin(
+      emissionID: 1, owner: sourceBinding.nativeActor, ordnance: nil,
+      emittedAt: context.physicalTime, ownerLegalAtEmission: sourceSnapshot.legal)
+    let ledger = CrimeLedger()
+    let judgement = try ledger.freezeMissionLaunchJudgement(
+      origin: origin,
+      intendedVictim: targetSnapshot, emissionPosition: sourceSnapshot.position, context: context)
+    let shot = MissionShotDescriptor(
+      identity: targetInstance, owner: bridgeActor,
+      instance: bridgeInstance, weapon: "cannon", component: nil, velocity: .init(0, 0, 777),
+      age: 0, lifetime: 4, damage: 23, radius: 2, collisionDelay: 0.2)
+    let archive = try MissionNativeBridge.makeLaunchArchive(
+      shot: shot, source: sourceBinding,
+      intendedTarget: targetBinding, judgement: judgement)
+    #expect(
+      archive.intendedTarget
+        == .actor(instance: targetInstance, actor: targetID, packDigest: digest))
+    #expect(
+      archive.judgement.victim == targetSnapshot.identity && archive.sourceActorID == bridgeActor)
+    let wrongVictim = try ledger.freezeMissionLaunchJudgement(
+      origin: origin,
+      intendedVictim: context.player, emissionPosition: sourceSnapshot.position, context: context)
+    #expect(throws: MissionNativeBridgeError.invalidArchive) {
+      try MissionNativeBridge.makeLaunchArchive(
+        shot: shot, source: sourceBinding,
+        intendedTarget: targetBinding, judgement: wrongVictim)
+    }
+    let otherOrigin = AttackOrigin(
+      emissionID: 2, owner: targetBinding.nativeActor, ordnance: nil,
+      emittedAt: context.physicalTime, ownerLegalAtEmission: targetSnapshot.legal)
+    let wrongSource = try ledger.freezeMissionLaunchJudgement(
+      origin: otherOrigin,
+      intendedVictim: context.player, emissionPosition: targetSnapshot.position, context: context)
+    #expect(throws: MissionNativeBridgeError.invalidArchive) {
+      try MissionNativeBridge.makeLaunchArchive(
+        shot: shot, source: sourceBinding,
+        intendedTarget: nil, judgement: wrongSource)
+    }
+  }
+
 }
