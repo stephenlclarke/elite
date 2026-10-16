@@ -30,12 +30,34 @@ extension Game {
     }
     let context = EquipmentRuntimeCatalog.context(
       owner: inventory.owner, hull: inventory.activeHull, performance: candidate.nativePerformance)
-    let fittings = try devices.map { device -> IssueFitting in
-      guard let slot = device.preferredSlot else { throw EquipmentIssueError.invalidRequest }
-      let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
-      return .init(
-        item: device.id, location: location,
-        replacing: inventory.items.first { $0.location == location })
+    var allocated: Set<ComponentFittingSlot> = []
+    let fittings: [IssueFitting]
+    if fit {
+      fittings = try devices.map { device -> IssueFitting in
+        let choices: [ComponentFittingSlot]
+        switch kind {
+        case .missile:
+          choices = (0..<max(0, min(32, candidate.nativePerformance.missiles))).map {
+            .missilePylon($0)
+          }
+        case .fuelStorage:
+          choices = (0..<FuelStorage.maximumCount).map { .fuelStorage($0) }
+        default:
+          choices = device.preferredSlot.map { [$0] } ?? []
+        }
+        let available = choices.filter { !allocated.contains($0) }
+        let free = available.first { slot in
+          !inventory.items.contains { $0.location?.slot == slot }
+        }
+        guard let slot = free ?? available.first else { throw OwnedEquipmentError.unsupportedSlot }
+        allocated.insert(slot)
+        let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
+        return .init(
+          item: device.id, location: location,
+          replacing: inventory.items.first { $0.location == location })
+      }
+    } else {
+      fittings = []
     }
     let request = EquipmentIssueRequest(
       command: command, source: source, devices: devices, fitting: fit ? .fitAll(fittings) : .held)
@@ -136,12 +158,23 @@ extension Game {
       let inventory = candidate.equipmentInventory, let obligation = record.obligation,
       let item = inventory.items.first(where: { $0.id == record.items[Int(index)] })
     else { throw MissionPackError("The exact original equipment item is required.") }
+    guard !fitted || item.location == nil else {
+      throw MissionPackError("Only a stored issued item can be refitted.")
+    }
     let slot: ComponentFittingSlot?
     if let value = fields["mount"] {
       guard let name = value.string, let mount = LaserMount(rawValue: name),
         case .laser = record.kind
       else { throw MissionPackError("A known laser mount is required.") }
       slot = .laser(mount)
+    } else if fitted, case .missile = record.kind {
+      slot = (0..<max(0, min(32, candidate.nativePerformance.missiles)))
+        .map(ComponentFittingSlot.missilePylon).first { requested in
+          !inventory.items.contains { $0.location?.slot == requested }
+        }
+    } else if fitted, case .fuelStorage = record.kind {
+      slot = (0..<FuelStorage.maximumCount).map(ComponentFittingSlot.fuelStorage)
+        .first { requested in !inventory.items.contains { $0.location?.slot == requested } }
     } else {
       slot = item.preferredSlot ?? EquipmentRuntimeCatalog.slot(for: item.node)
     }
@@ -153,6 +186,10 @@ extension Game {
       } : nil
     let replacing = destination.flatMap { target in
       inventory.items.first { $0.location == target && $0.id != item.id }
+    }
+    guard replacing.map(EquipmentIssueTransactions.isIntrinsicFoundation) ?? true else {
+      throw MissionPackError(
+        "Store or return the actual occupied item before refitting this issue.")
     }
     let projected = inventory.items.map { current in
       if current.id == item.id { return current.moved(to: destination) }

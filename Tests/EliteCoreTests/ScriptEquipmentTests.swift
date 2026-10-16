@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-private struct GearScriptFixture {
+struct GearScriptFixture {
   let root: URL
   let pack: ScriptPack
   init(
@@ -96,7 +96,7 @@ private struct GearScriptFixture {
     if scene.commander.system == 129 { break }
   }
   #expect(scene.commander.system == 129 && scene.commander.fuel < 70)
-  #expect(scene.commander.ownedEquipment?.items.contains { $0.id == unit } == true)
+  #expect(scene.commander.equipmentInventory?.items.contains { $0.id == unit } == true)
   for _ in 0..<8 {
     await runtime.key("r")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
@@ -109,7 +109,7 @@ private struct GearScriptFixture {
   let returned = await runtime.snapshot().commander
   #expect(
     returned.scriptState.instances[id]?.outcome == .complete && returned.credits == cash + 500)
-  #expect(returned.ownedEquipment?.items.contains { $0.id == unit } == false)
+  #expect(returned.equipmentInventory?.items.contains { $0.id == unit } == false)
 }
 
 @Test func declaredLaserAndTankLoansUseActualMountsStorageAndFuelWithoutARefill() throws {
@@ -201,7 +201,7 @@ private struct GearScriptFixture {
   #expect(
     completed.credits == before.credits + 100
       && completed.scriptState.instances.values.first?.outcome == .complete)
-  #expect(completed.ownedEquipment?.items.contains { $0.loanOwner != nil } == false)
+  #expect(try completed.equipmentIssueObligations().allSatisfy { !$0.loan || $0.status != .issued })
   let restored = GameRuntime()
   try await restored.load(from: file)
   #expect(await restored.snapshot().commander == completed)
@@ -225,7 +225,7 @@ private struct GearScriptFixture {
     let before = game.commander
     game.emitScriptEvent("contact.requested")
     #expect(
-      game.commander.ownedEquipment == before.ownedEquipment
+      game.commander.equipmentInventory == before.equipmentInventory
         && game.commander.credits == before.credits)
     #expect(
       game.commander.scriptState.instances.values.first?.suspension != nil && game.commander.valid)
@@ -242,26 +242,32 @@ private struct GearScriptFixture {
   let issue = try #require(game.commander.scriptState.instances[id]?.gearIssues["kit"])
   game.commander.credits = 10_000_000
   game.key("6")
-  game.showroom.selection = "SH001"
+  game.showroom.selection = "SH013"
   game.key("showroom-trade")
   game.key("right")
   game.key("return")
-  #expect(game.commander.shipID == "SH001")
-  #expect(game.commander.ownedEquipment?.items.first { $0.id == issue.items[0] }?.loanOwner == id)
+  #expect(game.commander.shipID == "SH013")
+  #expect(
+    game.commander.equipmentInventory?.items.first { $0.id == issue.items[0] }?.provenance
+      == .missionIssue(mission: id, resource: "kit", index: 0, packDigest: fixture.pack.digest))
   let file = fixture.root.appendingPathComponent("commander.json")
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: file)
   let missing = GameRuntime(game: Game(executive: false))
   try await missing.load(from: file)
-  #expect(await missing.snapshot().commander.ownedEquipment == game.commander.ownedEquipment)
+  #expect(
+    await missing.snapshot().commander.equipmentInventory == game.commander.equipmentInventory)
   _ = await missing.advance(delta: 0.1)
   #expect(await missing.snapshot().commander.scriptState.instances[id]?.suspension != nil)
   game.launch()
-  let property = game.commander.ownedEquipment
+  let property = game.commander.equipmentInventory
   game.emitScriptEvent("contact.requested")
-  #expect(game.commander.ownedEquipment == property && game.commander.valid)
+  #expect(game.commander.equipmentInventory == property && game.commander.valid)
   var corrupt = game.commander
-  corrupt.ownedEquipment?.items.removeAll { $0.id == issue.items[0] }
+  let inventory = try #require(corrupt.equipmentInventory)
+  corrupt.savedEquipmentInventory = try .init(
+    owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
+    items: inventory.items.filter { $0.id != issue.items[0] })
   corrupt.equipment.remove("E.C.M. System")
   #expect(!corrupt.valid)
 }
@@ -277,16 +283,22 @@ private struct GearScriptFixture {
   let runtime = GameRuntime(game: try fixture.game(), saveURL: file)
   let accepted = await runtime.snapshot().commander
   let state = try #require(accepted.scriptState.instances.values.first)
-  let item = try #require(accepted.ownedEquipment?.items.first { $0.issuedBy == state.id })
-  #expect(item.loanOwner == state.id && item.fittedSlot == .module("E.C.M. System"))
+  let original = try #require(state.gearIssues["kit"]?.items.first)
+  let item = try #require(accepted.equipmentInventory?.items.first { $0.id == original })
+  #expect(
+    item.provenance
+      == .missionIssue(
+        mission: state.id, resource: "kit", index: 0, packDigest: fixture.pack.digest))
+  #expect(item.location?.slot == .utility(.ecm))
   await runtime.key("contacts-open")
   #expect(
-    await runtime.snapshot().commander.ownedEquipment?.stored.contains { $0.id == item.id } == true)
+    await runtime.snapshot().commander.equipmentInventory?.items.first { $0.id == item.id }?
+      .location == nil)
   await runtime.key("return")
   let completed = await runtime.snapshot().commander
   #expect(completed.scriptState.instances[state.id]?.outcome == .complete)
   #expect(completed.scriptState.instances[state.id]?.gearIssues["kit"]?.status == .returned)
-  #expect(completed.ownedEquipment?.items.contains { $0.id == item.id } == false)
+  #expect(completed.equipmentInventory?.items.contains { $0.id == item.id } == false)
   #expect(!completed.equipment.contains("E.C.M. System") && completed.valid)
   let restored = GameRuntime(game: Game(executive: false))
   try await restored.load(from: file)
@@ -308,7 +320,7 @@ private struct GearScriptFixture {
     #expect(game.commander.scriptState.instances[id]?.outcome == .active)
     #expect(game.commander.scriptState.instances[id]?.milestones.isEmpty == true)
     #expect(game.commander.scriptState.instances[id]?.suspension != nil)
-    #expect(game.commander.ownedEquipment == before.ownedEquipment && game.commander.valid)
+    #expect(game.commander.equipmentInventory == before.equipmentInventory && game.commander.valid)
   }
 }
 
@@ -361,12 +373,12 @@ private struct GearScriptFixture {
   game.selection = Equipment.all.firstIndex { $0.name == "Missile" }!
   game.purchase()
   #expect(game.commander.missiles == 4)
-  #expect(game.commander.ownedEquipment?.items.contains { $0.id == original } == false)
-  let property = game.commander.ownedEquipment
+  #expect(game.commander.equipmentInventory?.items.contains { $0.id == original } == false)
+  let property = game.commander.equipmentInventory
   game.emitScriptEvent("contact.requested")
   #expect(game.commander.scriptState.instances[id]?.suspension != nil)
   #expect(game.commander.scriptState.instances[id]?.gearIssues["kit"]?.status == .issued)
-  #expect(game.commander.ownedEquipment == property && game.commander.valid)
+  #expect(game.commander.equipmentInventory == property && game.commander.valid)
 }
 
 @Test func loanReleaseIsExplicitAndCannotSatisfyARequiredReturn() throws {
@@ -385,8 +397,8 @@ private struct GearScriptFixture {
       game.commander.scriptState.instances[id]?.gearIssues["kit"]?.status
         == (required ? .issued : .released))
     #expect(
-      game.commander.ownedEquipment?.items.first { $0.issuedBy == id }?.loanOwner
-        == (required ? id : nil))
+      try game.commander.equipmentIssueObligations().first { $0.source.mission == id }?.status
+        == (required ? .issued : .released))
     #expect(game.commander.valid)
   }
 }
@@ -402,6 +414,7 @@ private struct GearScriptFixture {
     game.scriptPacks = [fixture.pack]
     let before = game.commander
     #expect(throws: MissionPackError.self) { try game.acceptScriptMission(fixture.pack) }
-    #expect(game.commander == before && game.commander.ownedEquipment == nil)
+    #expect(
+      game.commander == before && game.commander.equipmentInventory == before.equipmentInventory)
   }
 }
