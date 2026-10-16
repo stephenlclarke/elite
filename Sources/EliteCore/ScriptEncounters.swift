@@ -389,6 +389,7 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
     definition: ScriptEncounterDefinition
   ) throws -> MissionActorAdmissionSource {
+    let currentScriptState = commander.scriptState
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       guard let actor = encounter.actors[spec.id], actor.alias == spec.id,
@@ -397,7 +398,9 @@ extension Game {
             "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
         actor.body.missionInstanceID == state.id, actor.body.scriptShot == nil
       else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
-      let template = try missionActorAdmissionTemplate(actor, specification: spec, pack: pack)
+      let template = try Self.missionActorAdmissionTemplate(
+        actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
+        installedModels: pack.models, geometry: currentScriptState.geometry)
       if mode == .prepared {
         guard actor.body.id == -1, actor.body.physical == nil,
           actor.body.position == .init(spec.x, spec.y, spec.z),
@@ -433,39 +436,43 @@ extension Game {
     return .init(
       mode: mode, authority: authority, instance: state, pack: pack,
       encounter: encounter, definition: definition, actors: templates,
-      installedBaseEncounter: commander.scriptState.instances[state.id]?.ownedEncounters[
-        encounter.id])
+      installedBaseEncounter: currentScriptState.instances[state.id]?.ownedEncounters[encounter.id])
   }
 
-  private func missionActorAdmissionTemplate(
-    _ actor: ScriptOwnedActor, specification: ScriptActorDefinition, pack: ScriptPack
+  /// Uses the current invocation's immutable dictionaries; no Game or interpreter is captured.
+  private static func measuredMissionActorAdmissionMesh(
+    _ reference: String, modelHashes: [String: String], installedModels: [String: ShipDesign],
+    geometry: [String: ShipDesign], scale: Double, offset: Vector3, pose: Basis3
+  ) throws -> Mesh {
+    guard let digest = modelHashes[reference], let installed = installedModels[reference],
+      geometry[digest] == installed, ScriptPackLibrary.scriptGeometryValid(installed)
+    else { throw MissionPackError("Exact admitted NPC geometry is unavailable or changed.") }
+    let raw = installed.rawMesh
+    return Mesh(
+      vertices: raw.vertices.map { offset + pose.apply($0 * scale) }, faces: raw.faces,
+      preserveWinding: true)
+  }
+
+  private static func missionActorAdmissionTemplate(
+    _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
+    npcDefinitions: [ScriptNPCDefinition], installedModels: [String: ShipDesign],
+    geometry: [String: ShipDesign]
   ) throws -> MissionActorAdmissionTemplate {
     var parts: [MissionActorAdmissionPart] = []
     let maximumEnergy: Double
     if let npcID = specification.npc {
       guard actor.body.hull == .cobra, let npc = actor.body.scriptNPC,
-        let definition = pack.manifest.npcs?.first(where: { $0.id == npcID }),
+        let definition = npcDefinitions.first(where: { $0.id == npcID }),
         definition == npc.fit.definition
       else { throw MissionPackError("Retained NPC fit differs from its actual declaration.") }
       maximumEnergy = definition.energy
-      func measured(_ reference: String, scale: Double, offset: Vector3, pose: Basis3) throws
-        -> Mesh
-      {
-        guard let digest = npc.fit.models[reference], let installed = pack.models[reference],
-          commander.scriptState.geometry[digest] == installed,
-          ScriptPackLibrary.scriptGeometryValid(installed)
-        else { throw MissionPackError("Exact admitted NPC geometry is unavailable or changed.") }
-        let raw = installed.rawMesh
-        return Mesh(
-          vertices: raw.vertices.map { offset + pose.apply($0 * scale) }, faces: raw.faces,
-          preserveWinding: true)
-      }
       parts.append(
         .init(
           alias: nil, componentID: nil, energy: actor.body.energy, maximumEnergy: maximumEnergy,
           solid: true,
-          mesh: try measured(
-            definition.model, scale: definition.scale, offset: .init(0, 0, 0), pose: Basis3())))
+          mesh: try measuredMissionActorAdmissionMesh(
+            definition.model, modelHashes: npc.fit.models, installedModels: installedModels,
+            geometry: geometry, scale: definition.scale, offset: .init(0, 0, 0), pose: Basis3())))
       for spec in definition.components ?? [] {
         guard let state = npc.components[spec.id],
           state.identity == ScriptIdentity.uuid("script-component-v2:\(actor.identity):\(spec.id)")
@@ -474,8 +481,9 @@ extension Game {
           .init(
             alias: spec.id, componentID: state.identity, energy: state.energy,
             maximumEnergy: spec.energy, solid: spec.solid,
-            mesh: try measured(
-              spec.model, scale: spec.scale * definition.scale,
+            mesh: try measuredMissionActorAdmissionMesh(
+              spec.model, modelHashes: npc.fit.models, installedModels: installedModels,
+              geometry: geometry, scale: spec.scale * definition.scale,
               offset: spec.position * definition.scale, pose: spec.orientation)))
       }
     } else {
