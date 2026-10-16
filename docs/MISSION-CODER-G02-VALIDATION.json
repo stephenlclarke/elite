@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "approved ordering-key correction applied; same-flags coverage regression and fresh final gates pending",
+  "stage": "ordering-key source correction compiled and reduced comparator fixed frame; exact same-flags Gallery regression still crashes; accessor proposal unapplied",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,11 +280,10 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Same-flags coverage diagnostics and both nested cases of actual failing Gallery regression",
-    "Bounded affected campaign/receipt/G21/courier/native and ASan checks under a later numbered lease",
-    "Required media/refreeze and fresh canonical full CI",
-    "Final source-owner acceptance",
-    "Central integration and actual @codex review/fix/review/final-head/merge",
+    "Exact owner source approval before unapplied script-state accessor/test proposal",
+    "Future numbered same-flags exact Gallery diagnostic before broader checks",
+    "Bounded affected compatibility/ASan, required media/refreeze and fresh canonical full CI",
+    "Final source-owner acceptance and central integration/formal PR",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
@@ -1436,9 +1435,111 @@
     "patchSHA256": "e72cc1be315edd8b4d9bd54c16a05d6596b3b1cce8d78d53686d3264c370bf1d",
     "patchBytes": 1291,
     "appliedExactApprovedSource": true,
-    "status": "uncompiled/unexecuted; Root006 lease active",
+    "status": "coverage-build passed; same-flags exact both-nested regression SIGBUS, no broader checks run",
     "preservedCoverageObjects": "/tmp/elite-g02-final/failed-coverage-objects",
     "beforeCodeFrameEvidence": "/tmp/elite-g02-final/52686c0-ordering-code-only-frames.json",
     "next": "Both nested variants of actual failing legacy Gallery test with --enable-code-coverage/default cooperative scheduling; no serial or stack override; after frame/copy diagnostics then bounded affected regressions under new numbered lease"
+  },
+  "orderingCoverageDiagnostic": {
+    "candidate": "036a28f04e85f20df3a9af20224c6a3d9311d214",
+    "build": {
+      "commit": "036a28f04e85f20df3a9af20224c6a3d9311d214",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-007",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "036a28f04e85f20df3a9af20224c6a3d9311d214",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-006",
+        "purpose": "Short approved scalar-order fix coverage frame/copy diagnostics and exact failed nested campaign case first, then bounded affected/ASan checks if passing; no media/full CI yet"
+      },
+      "command": [
+        "swift",
+        "build",
+        "--build-tests",
+        "--enable-code-coverage"
+      ],
+      "startUTC": "2026-10-16T07:01:14.337825+00:00",
+      "endUTC": "2026-10-16T07:01:19.019461+00:00",
+      "seconds": 4.681527459062636,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "9e4a38b74c1e69d0deedc29e7903c317ab57eea9d50cb6150ba60564421dc529"
+    },
+    "exactRegression": {
+      "commit": "036a28f04e85f20df3a9af20224c6a3d9311d214",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-007",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "036a28f04e85f20df3a9af20224c6a3d9311d214",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-006",
+        "purpose": "Short approved scalar-order fix coverage frame/copy diagnostics and exact failed nested campaign case first, then bounded affected/ASan checks if passing; no media/full CI yet"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--enable-code-coverage",
+        "--filter",
+        "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial"
+      ],
+      "startUTC": "2026-10-16T07:02:03.030251+00:00",
+      "endUTC": "2026-10-16T07:02:12.707249+00:00",
+      "seconds": 9.6768811668735,
+      "exit": 1,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "66c7860106e01ef99bf795a5cdb017d1bb5266f530d2a6f67ef8f1488d0522f2"
+    },
+    "crashArtifacts": {
+      "crashPath": "/tmp/elite-g02-ordering-checkpoint/036a28f-exact-coverage-crash.ips",
+      "crashSHA256": "a385746e8431d1385ec570339e49c7571d76f4ba67cab3e4c10d871b6220f760",
+      "binaryPath": "/tmp/elite-g02-ordering-checkpoint/036a28f-coverage-test-binary",
+      "binarySHA256": "1eaaa442eb2fdd72090220c0057f9535611cba370d235e0393c2fad3266fc4ee",
+      "faultingThread": 3,
+      "faultingQueue": "com.apple.root.default-qos.cooperative"
+    },
+    "frames": {
+      "path": "/tmp/elite-g02-ordering-checkpoint/ordering-coverage-frame-comparison.json",
+      "sha256": "e5347335a17a0dd9fd5a9e2858297fe0f99d22fc7ae48a4a5b58e303a8c3f331",
+      "oldComparatorFixedBytesExcludingSavedRegisters": 1200,
+      "oldComparatorSavedRegisterBytes": 48,
+      "newComparatorFixedBytesIncludingSavedRegisters": 160,
+      "newMappingFixedBytesIncludingSavedRegisters": 288,
+      "getterFixedIncreaseBytes": 96,
+      "limits": "Static instructions only. Mapping still reads each complete instance once; tuple comparator has no ScriptInstance lookup/stack-probe references. Metadata-dependent allocations/runtime peak unmeasured; actual regression remains failed."
+    },
+    "cause": "SIGBUS explicit thread stack exceeded on544K cooperative worker: default Dictionary init -> ScriptEngineState.init -> Commander.scriptState.setter -> child accepted-event -> parent/child/contract/Gallery stack. Both nested variants started, no assertion; no recursion loop established.",
+    "accessorDisassembly": "/tmp/elite-g02-ordering-checkpoint/036a28f-script-state-accessors.json",
+    "proposal": {
+      "path": "/tmp/elite-g02-script-state-modify-proposal.patch",
+      "sha256": "91390701a30047b183d56827b09dd391e7a1dc88a86178ecdf6cf004d1b6a999",
+      "bytes": 1724,
+      "applied": false,
+      "scope": "Only explicit Commander.scriptState _modify accessor plus one owned persistence regression. Preserve existing get/set/private optional Codable storage and default nil canonicalization.",
+      "limits": "Uncompiled/unexecuted footprint hypothesis, not a guaranteed remedy."
+    },
+    "lease007ExplicitlyReleased": true,
+    "broaderCompatibilityASanMediaFullCI": "not run because exact first regression failed"
   }
 }
