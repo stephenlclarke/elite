@@ -51,7 +51,8 @@ extension GameRuntime {
   public func scriptGalleryTrial(packDigest: String, seed: UInt64 = 0x45_4c49_5445) throws
     -> GameRuntime
   {
-    let trial = try game.makeScriptTrial(packDigest: packDigest, seed: seed)
+    var trial = try game.constructScriptTrial(packDigest: packDigest, seed: seed)
+    try trial.prepareScriptTrial(packDigest: packDigest, seed: seed)
     return try GameRuntime(trialGame: trial)
   }
 }

@@ -803,3 +803,66 @@ func pledgeRawLegacyWithoutNativeEvidenceStillLoadsWithoutInventedStanding(persi
   #expect(await runtime.scriptSaveURL == input)
   if !persistMigrations { #expect(try Data(contentsOf: input) == bytes) }
 }
+
+@Test(arguments: ["start", "standalone", "restart-write"])
+func pledgeTrialPreparationAndRestartWriteFailuresKeepThePreviousRuntime(mode: String) async throws
+{
+  let fixture = try PledgeFixture(
+    manifestEdit: {
+      mode == "restart-write" ? $0 : $0.replacingOccurrences(of: "offer = 0", with: "offer = 15")
+    })
+  defer { fixture.clean() }
+  var live = fixture.game()
+  live.openGallery()
+  let runtime = GameRuntime(game: live, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  let liveBytes = try Data(contentsOf: fixture.save)
+  var namespace: URL?
+  var backup: URL?
+  var trialBytes: Data?
+  defer {
+    if let namespace { try? FileManager.default.removeItem(at: namespace) }
+    if let backup { try? FileManager.default.removeItem(at: backup) }
+  }
+  if mode == "restart-write" {
+    try await runtime.startScriptGalleryTrial(packDigest: fixture.pack.digest)
+    let own = try #require(await runtime.gallerySaveDirectory())
+    let copy = fixture.directory.appendingPathComponent("trial-backup")
+    trialBytes = try Data(contentsOf: own.appendingPathComponent("commander.json"))
+    try FileManager.default.moveItem(at: own, to: copy)
+    namespace = own
+    backup = copy
+    try Data("blocked trial folder".utf8).write(to: own)
+  }
+  var held = Controls()
+  held.roll = 0.25
+  held.fire = true
+  await runtime.setControls(held)
+  let before = await runtime.snapshot()
+  let beforeNamespace = await runtime.gallerySaveDirectory()
+  let beforeURL = await runtime.scriptSaveURL
+  let beforeParent = await runtime.galleryParent?.game.commander
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = .sortedKeys
+  let world = try encoder.encode(before.scriptWorldSave)
+  await #expect(throws: (any Error).self) {
+    switch mode {
+    case "start": try await runtime.startScriptGalleryTrial(packDigest: fixture.pack.digest)
+    case "standalone": _ = try await runtime.scriptGalleryTrial(packDigest: fixture.pack.digest)
+    default: try await runtime.restartScriptGalleryTrial()
+    }
+  }
+  let after = await runtime.snapshot()
+  let controls = await runtime.controls
+  #expect(after.commander == before.commander && after.ecmControl.epoch == before.ecmControl.epoch)
+  #expect(after.screen == before.screen && after.isMissionTrial == before.isMissionTrial)
+  #expect(try encoder.encode(after.scriptWorldSave) == world)
+  #expect(controls.roll == held.roll && controls.fire == held.fire)
+  #expect(await runtime.gallerySaveDirectory() == beforeNamespace)
+  #expect(await runtime.scriptSaveURL == beforeURL)
+  #expect(await runtime.galleryParent?.game.commander == beforeParent)
+  #expect(try Data(contentsOf: fixture.save) == liveBytes)
+  if let backup {
+    #expect(try Data(contentsOf: backup.appendingPathComponent("commander.json")) == trialBytes)
+  }
+}

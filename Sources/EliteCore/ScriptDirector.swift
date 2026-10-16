@@ -272,9 +272,8 @@ extension Game {
             throw MissionPackError("A completed pledge cannot issue another command.")
           }
           if command["op"]?.string == "pledge.commit" {
-            let pledgeContext = try candidate.pledgeCommandContext(next)
-            try ScriptPledgeTransaction.apply(
-              command, event: event, pack: pack, context: pledgeContext,
+            try candidate.applyPledgeCommand(
+              command, event: event, pack: pack,
               state: &next, candidate: &candidate.commander)
           } else if command["op"]?.string == "child.ensure" {
             if let result = try candidate.ensureCampaignChild(

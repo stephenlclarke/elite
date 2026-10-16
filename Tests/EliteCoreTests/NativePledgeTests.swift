@@ -312,6 +312,7 @@ extension NativeViewTests {
   {
     let harness = try await PledgeInputHarness()
     defer { harness.clean() }
+    try await harness.launchMenus()
     try await harness.review()
     try await harness.frame()
     try capturePledgeState(harness.view.game, name: "credit-review")
@@ -400,7 +401,18 @@ extension NativeViewTests {
     try capturePledgeState(trialGallery, name: "trial-completed-header")
     _ = try await harness.delegate.runtime.loadForInterface(expectedEpoch: donated.ecmControl.epoch)
     #expect(await harness.delegate.runtime.snapshot().commander == donated.commander)
-    try await harness.delegate.runtime.restartScriptGalleryTrial()
+    try await harness.frame()
+    let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
+    let restart = try #require(
+      menu.items.firstIndex { ($0.representedObject as? String) == "trial-restart" })
+    #expect(harness.delegate.validateMenuItem(menu.items[restart]))
+    menu.performActionForItem(at: restart)
+    await harness.drain()
+    let restarted = await harness.delegate.runtime.snapshot()
+    #expect(restarted.ecmControl.epoch != donated.ecmControl.epoch && restarted.isMissionTrial)
+    #expect(await harness.delegate.runtime.gallerySaveDirectory() == namespace)
+    #expect(restarted.contractBoard.detail && restarted.contractBoard.action == .back)
+    #expect(restarted.commander.scriptState.instances.isEmpty)
     #expect(await harness.delegate.runtime.snapshot().commander.scriptState.pledgeLedger == nil)
     try await harness.delegate.runtime.returnFromScriptGalleryTrial()
     #expect(await harness.delegate.runtime.snapshot().commander == live)

@@ -189,8 +189,17 @@ extension Game {
   func passengersDelivered(
     _ partyID: String, pack: ScriptPack, instance: ScriptInstance, commander: Commander
   ) -> Bool {
-    ScriptMissionCompletion.passengersDelivered(
-      partyID, pack: pack, instance: instance, commander: commander)
+    guard let party = pack.manifest.passengerParties?.first(where: { $0.id == partyID }) else {
+      return false
+    }
+    return party.names.indices.allSatisfy { index in
+      let id = ShipAccommodation.personID(mission: instance.id, party: partyID, index: index)
+      guard let person = commander.accommodation.people[id], person.id == id,
+        person.mission == instance.id, person.party == partyID
+      else { return false }
+      return person.location
+        == .delivered(galaxy: party.destinationGalaxy, system: party.destinationSystem)
+    }
   }
   func scriptPassengerSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     .array(

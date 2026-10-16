@@ -102,9 +102,7 @@ extension Game {
       guard let outcome = ScriptOutcome(rawValue: try text("outcome")) else {
         throw MissionPackError("Complete every required objective before reporting.")
       }
-      try ScriptMissionCompletion.finish(
-        outcome, pack: pack, receiptView: commander.scriptState,
-        state: &state, candidate: &candidate)
+      try finishScriptMission(outcome, pack: pack, state: &state, candidate: &candidate)
     case "dialogue.offer":
       let id = try identifier("id")
       guard pack.manifest.dialogs?.contains(where: { $0.id == id }) == true,
@@ -195,5 +193,68 @@ extension Game {
     default: throw MissionPackError("Unsupported script command.")
     }
   }
-
+  // Native donations and authored finishes share every completion and settlement guard.
+  func finishScriptMission(
+    _ outcome: ScriptOutcome, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
+    guard pack.manifest.capabilities.contains("story-v2") else {
+      throw MissionPackError("Command requires declared story-v2")
+    }
+    guard state.outcome == .active else {
+      throw MissionPackError("Terminal mission cannot issue more actions.")
+    }
+    if pack.manifest.pledge != nil, outcome == .complete {
+      guard let receipt = candidate.scriptState.pledgeLedger?.receipt(instance: state.id),
+        state.pledgeReceiptID == receipt.id
+      else {
+        throw MissionPackError("A completed donation requires its native pledge receipt.")
+      }
+    }
+    guard outcome != .active,
+      outcome != .complete
+        || (state.milestones.count == pack.manifest.mission.milestones.count
+          && (pack.manifest.mission.requiredDestructionEncounters ?? []).allSatisfy {
+            state.ownedEncounters[$0]?.destroyed == true
+          }
+          && (pack.manifest.mission.requiredPassengerParties ?? []).allSatisfy {
+            passengersDelivered($0, pack: pack, instance: state, commander: candidate)
+          }
+          && (pack.manifest.mission.requiredChoiceGroups ?? []).allSatisfy {
+            state.choiceReceipts[$0] != nil
+          }
+          && (pack.manifest.mission.requiredBooks ?? []).allSatisfy {
+            let book = candidate.scriptState.books[pack.manifest.id + "/" + $0]
+            return book?.version == pack.manifest.version && book?.digest == pack.digest
+          }
+          && (pack.manifest.mission.requiredCollections ?? []).allSatisfy { id in
+            state.collections[id]?.complete == true
+              && state.collections[id]?.definition
+                == pack.manifest.collections?.first(where: { $0.id == id })
+          }
+          && scriptAnswersSatisfied(pack, state: state)
+          && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }
+          && (pack.manifest.mission.requiredEquipmentReturns ?? []).allSatisfy {
+            state.gearIssues[$0]?.status == .returned
+          })
+    else {
+      throw MissionPackError("Complete every required objective before reporting.")
+    }
+    if outcome == .complete, let job = state.contract, let due = job.deadline,
+      candidate.scriptState.clock(job.clock) >= due
+    {
+      throw MissionPackError(
+        "This contract's deadline has passed; use its declared failure handoff.")
+    }
+    if outcome == .complete {
+      state.receiptJoins = try scriptReceiptJoins(
+        pack, stage: .acceptance, existing: state.receiptJoins ?? [:], parent: state)
+      state.receiptJoins = try scriptReceiptJoins(
+        pack, stage: .completion, existing: state.receiptJoins ?? [:], parent: state)
+    }
+    try settleContract(outcome, state: &state, candidate: &candidate)
+    state.outcome = outcome
+    state.dialogue = nil
+    state.timers = [:]
+  }
 }
