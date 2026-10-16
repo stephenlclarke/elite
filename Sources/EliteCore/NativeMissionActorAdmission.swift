@@ -126,8 +126,11 @@ extension Game {
         for: prepared[index], identity: actor, spawnIdentity: spawn, velocity: velocity)
       if var condition = template.retainedNativeCondition {
         // Condition is retained; references to former visit addresses are not authority.
-        condition.firstAggressor = nil
-        condition.intention = physical.npc?.intention
+        condition.firstAggressor = condition.firstAggressor.flatMap {
+          currentMissionActorTarget($0, context: context) ? $0 : nil
+        }
+        condition.intention = restoredMissionActorIntention(
+          condition.intention, template: template, context: context)
         condition.resources = condition.resources ?? physical.npc?.resources
         physical.npc = condition
       }
@@ -203,6 +206,47 @@ extension Game {
             || $0.sequence < flight.nextSpawn)
       })
     else { throw NativeMissionActorAdmissionError.invalidScene }
+    for body in bodies {
+      guard body.physical?.velocity.finite ?? true,
+        body.physical?.velocity.length.isFinite ?? true,
+        body.physical?.npc?.resources?.valid ?? true
+      else { throw NativeMissionActorAdmissionError.invalidCondition }
+      if body.scriptNPC != nil {
+        guard currentMissionActorDescriptor(bodyID: body.id) != nil else {
+          throw NativeMissionActorAdmissionError.invalidScene
+        }
+      }
+    }
+  }
+
+  private func currentMissionActorTarget(_ target: ActorIdentity, context: EncounterContext) -> Bool
+  {
+    target == context.player.identity
+      || context.actors.contains { $0.identity == target && $0.energy > 0 }
+  }
+
+  /// Address-free navigation survives reentry. Native-address actions require an actual
+  /// current target; a new attack target is derived only from immutable declared hostility.
+  private func restoredMissionActorIntention(
+    _ intention: NPCAction?, template: MissionActorAdmissionTemplate, context: EncounterContext
+  ) -> NPCAction? {
+    switch intention {
+    case .navigate: return intention
+    case .engage(let target):
+      guard template.declaredHostile else { return nil }
+      return .engage(
+        currentMissionActorTarget(target, context: context) ? target : context.player.identity)
+    case .flee(let target):
+      return currentMissionActorTarget(target, context: context) ? intention : nil
+    case .dock(let target):
+      return target == context.anchors.station.identity ? intention : nil
+    case .mine(let rock):
+      return miningFields.contains { $0.rocks.contains { $0.identity == rock } }
+        && !context.depletedRocks.contains(rock) ? intention : nil
+    case .scoop(let payload):
+      return context.actors.contains { $0.payload == payload && $0.energy > 0 } ? intention : nil
+    case nil: return nil
+    }
   }
 
   private func validateMissionActorAdmissionTemplate(
@@ -224,6 +268,14 @@ extension Game {
       template.retainedNativeLaserCooldown.map({ $0.isFinite && $0 >= 0 }) ?? true
     else { throw NativeMissionActorAdmissionError.invalidTemplate }
     if let condition = template.retainedNativeCondition {
+      if case .navigate(let position, let speed) = condition.intention {
+        let maximumSpeed =
+          body.scriptNPC?.fit.definition.speed
+          ?? ((ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20) * 18)
+        guard position.finite, position.length.isFinite, speed.isFinite,
+          speed >= 0, speed <= maximumSpeed
+        else { throw NativeMissionActorAdmissionError.invalidCondition }
+      }
       guard condition.role == .mission, (0...255).contains(condition.legal.value),
         condition.legal.bountyTenths >= 0, condition.resources?.valid ?? true,
         condition.resources.map({ $0.energyCapacity == template.maximumHullEnergy }) ?? true
