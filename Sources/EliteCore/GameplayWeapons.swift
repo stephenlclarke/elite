@@ -91,6 +91,11 @@ extension Game {
           origin: origin, kind: .bomb, damage: body.hull.bombImmune ? 0 : body.energy,
           emissionPosition: launch) != nil
       else { return false }
+      if let damaged = bodies.first(where: { $0.id == body.id }), damaged.energy <= 0,
+        damaged.hull != .missile, damaged.physical?.deathIncidentID == nil
+      {
+        return false
+      }
     }
     commander.crimeLedger.finishEmission(origin.emissionID)
     return true

@@ -25,7 +25,7 @@ extension Game {
       guard candidate.commander.valid,
         candidate.admitGameplayMissile(
           ownerBodyID: nil, targetBodyID: targetBodyID,
-          playerAmmunition: application.source)
+          playerAmmunition: application.source), candidate.commander.valid
       else { return false }
     } catch {
       return false

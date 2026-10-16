@@ -1041,7 +1041,7 @@ public struct Game: Sendable {
     guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
     var candidate = self
     do {
-      guard try candidate.performGalacticJump() else {
+      guard try candidate.performGalacticJump(), candidate.commander.valid else {
         notify(candidate.message)
         return
       }
@@ -1125,7 +1125,7 @@ public struct Game: Sendable {
     var candidate = self
     do {
       guard try candidate.consumeNativeEquipment("Energy Bomb"),
-        candidate.applyAttributedEnergyBomb()
+        candidate.applyAttributedEnergyBomb(), candidate.commander.valid
       else { return }
       candidate.notify("ENERGY BOMB")
       self = candidate
@@ -1145,7 +1145,7 @@ public struct Game: Sendable {
     candidate.commander.legal = 0
     candidate.commander.fuel = candidate.commander.fuelCapacity
     candidate.dock()
-    guard candidate.docked else {
+    guard candidate.docked, candidate.commander.valid else {
       notify(candidate.message)
       return
     }

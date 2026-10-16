@@ -31,22 +31,32 @@ extension Game {
   /// Capacity failure refuses the physical action; it cannot silently drop the
   /// consumption event or publish a partial issue ledger/allocator change.
   mutating func stageGearConsumption(_ removed: OwnedEquipmentItem) throws {
-    guard let delta = try commander.scriptState.gearConsumptionDelta(for: removed) else { return }
-    var staged = try commander.scriptState.applying(delta)
-    guard let instance = staged.instances[delta.source.mission] else {
-      throw EquipmentMigrationError.obligationMismatch
+    var staged = commander.scriptState
+    let values: [String: ScriptValue]
+    if let delta = try staged.gearConsumptionDelta(for: removed) {
+      staged = try staged.applying(delta)
+      values = delta.values
+    } else {
+      guard
+        let definition = EquipmentRuntimeCatalog.graph.nodes.first(where: { $0.id == removed.node })
+      else { throw EquipmentRuntimeError.unavailable }
+      values = ["item": .string(removed.id.uuidString), "name": .string(definition.displayName)]
     }
-    if instance.outcome == .active {
-      guard staged.nextEvent < UInt64(Int64.max) - 1, staged.pendingEvents.count < 4096 else {
-        throw EquipmentIssueError.invalidRequest
-      }
-      staged.nextEvent += 1
-      staged.pendingEvents.append(
-        ScriptEvent(
-          sequence: staged.nextEvent, kind: "gear.consumed",
-          instance: instance.id, values: delta.values, context: scriptEventContext(instance)))
+    let recipients = orderedScriptInstances.compactMap { id in
+      staged.instances[id].flatMap { $0.outcome == .active ? $0 : nil }
     }
+    guard recipients.count <= 4096, staged.pendingEvents.count <= 4096 - recipients.count,
+      staged.nextEvent <= UInt64(Int64.max) - 1 - UInt64(recipients.count)
+    else { throw EquipmentIssueError.invalidRequest }
     commander.scriptState = staged
+    for instance in recipients {
+      commander.scriptState.nextEvent += 1
+      let context = scriptEventContext(instance)
+      commander.scriptState.pendingEvents.append(
+        ScriptEvent(
+          sequence: commander.scriptState.nextEvent, kind: "gear.consumed",
+          instance: instance.id, values: values, context: context))
+    }
   }
 
   /// Called only on an outer copied Game; all effects of the native action share

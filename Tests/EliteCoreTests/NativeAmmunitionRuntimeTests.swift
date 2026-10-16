@@ -80,4 +80,125 @@ struct NativeAmmunitionRuntimeTests {
     #expect(game.commander.crimeLedger == original.commander.crimeLedger)
     #expect(game.commander.scriptState == original.commander.scriptState)
   }
+
+  private func observer(_ definition: String, outcome: ScriptOutcome = .active) -> ScriptInstance {
+    var instance = ScriptInstance(
+      id: UUID(), definition: definition, version: "1.0.0",
+      digest: String(repeating: "a", count: 64))
+    instance.outcome = outcome
+    return instance
+  }
+
+  @Test func personalPhysicalConsumptionBroadcastsToEveryActiveObserver() throws {
+    var game = try flight()
+    let observers = [observer("observer/first"), observer("observer/second")]
+    for instance in observers { game.commander.scriptState.instances[instance.id] = instance }
+    #expect(game.commander.valid)
+    let round = try #require(game.commander.fittedEquipment(at: .missilePylon(2)))
+    let launched = game.fireMissile()
+    #expect(launched && game.commander.valid)
+    let events = game.commander.scriptState.pendingEvents
+    #expect(events.count == 2 && Set(events.map(\.instance)) == Set(observers.map(\.id)))
+    #expect(
+      events.allSatisfy {
+        $0.kind == "gear.consumed" && $0.values["item"] == .string(round.id.uuidString)
+          && $0.values["name"] == .string("Missile")
+      })
+    #expect(events.map(\.sequence) == [1, 2])
+  }
+
+  @Test func inactiveIssuerStillRecordsConsumptionAndItsActiveObserverReceivesTheEvent() throws {
+    var game = try flight()
+    var issuer = observer("issuer/rounds", outcome: .abandoned)
+    let watcher = observer("observer/active")
+    let round = try #require(game.commander.fittedEquipment(at: .missilePylon(2)))
+    let source = EquipmentIssueSource(
+      mission: issuer.id, resource: "rounds", packDigest: issuer.digest)
+    issuer.gearIssues["rounds"] = .init(
+      resource: "rounds", kind: .missile, items: [round.id],
+      loan: true, returnRemaining: true, savedGearVersion: 2, source: source, node: round.node,
+      displacements: [])
+    game.commander.scriptState.instances = [issuer.id: issuer, watcher.id: watcher]
+    let inventory = try #require(game.commander.equipmentInventory)
+    let issued = OwnedEquipmentItem(
+      id: round.id, node: round.node,
+      provenance: .missionIssue(
+        mission: issuer.id, resource: "rounds", index: 0, packDigest: issuer.digest),
+      location: round.location)
+    game.commander.savedEquipmentInventory = try inventory.applyingBatch(
+      items: inventory.items.map { $0.id == round.id ? issued : $0 },
+      expectedRevision: inventory.revision,
+      context: EquipmentRuntimeCatalog.context(
+        owner: inventory.owner, hull: inventory.activeHull,
+        performance: game.commander.nativePerformance))
+    #expect(game.commander.valid)
+    let launched = game.fireMissile()
+    #expect(launched && game.commander.valid)
+    #expect(
+      game.commander.scriptState.instances[issuer.id]?.gearIssues["rounds"]?.consumed == [round.id])
+    #expect(game.commander.scriptState.pendingEvents.map(\.instance) == [watcher.id])
+  }
+
+  @Test func anInsufficientWholeBroadcastBudgetRefusesEveryPhysicalAndQueueEffect() throws {
+    for queueFull in [false, true] {
+      var game = try flight()
+      let observers = [observer("observer/first"), observer("observer/second")]
+      for instance in observers { game.commander.scriptState.instances[instance.id] = instance }
+      if queueFull {
+        game.commander.scriptState.nextEvent = 4095
+        let context = game.scriptEventContext(observers[0])
+        game.commander.scriptState.pendingEvents = (1...4095).map { sequence in
+          ScriptEvent(
+            sequence: UInt64(sequence), kind: "fixture", instance: observers[0].id,
+            values: [:], context: context)
+        }
+      } else {
+        game.commander.scriptState.nextEvent = UInt64(Int64.max) - 2
+      }
+      #expect(game.commander.valid)
+      let before = game
+      let launched = game.fireMissile()
+      #expect(!launched && game.commander == before.commander && game.bodies == before.bodies)
+      #expect(
+        game.inventoryContextEpoch == before.inventoryContextEpoch
+          && game.nextBodyID == before.nextBodyID)
+    }
+  }
+
+  private func pinAllocator(_ key: String, game: inout Game) throws {
+    var object = try #require(
+      JSONSerialization.jsonObject(
+        with: JSONEncoder().encode(game.commander.flightSimulation)) as? [String: Any])
+    object[key] = NSNumber(value: UInt64.max - 1)
+    game.commander.flightSimulation = try JSONDecoder().decode(
+      FlightSimulationState.self,
+      from: JSONSerialization.data(withJSONObject: object))
+    #expect(game.commander.valid)
+  }
+
+  @Test func validNearBoundaryNativeAllocatorsCannotPublishAnInvalidLaunch() throws {
+    for key in ["nextActor", "nextSpawn", "nextEmission", "nextIncident"] {
+      var game = try flight()
+      try pinAllocator(key, game: &game)
+      let before = game
+      let launched = game.fireMissile()
+      #expect(!launched && game.commander == before.commander && game.bodies == before.bodies)
+      #expect(
+        game.inventoryContextEpoch == before.inventoryContextEpoch
+          && game.nextBodyID == before.nextBodyID)
+    }
+  }
+
+  @Test func aBombWhoseRequiredDeathIncidentCannotBeRecordedRetainsItsDeviceAndVictim() throws {
+    var game = try flight()
+    try game.commander.grantEquipment(
+      "Energy Bomb", at: .utility(.energyBomb), provenance: .standard)
+    try pinAllocator("nextIncident", game: &game)
+    let before = game
+    game.energyBomb()
+    #expect(game.commander == before.commander && game.bodies == before.bodies)
+    #expect(
+      game.inventoryContextEpoch == before.inventoryContextEpoch
+        && game.nextBodyID == before.nextBodyID)
+  }
 }
