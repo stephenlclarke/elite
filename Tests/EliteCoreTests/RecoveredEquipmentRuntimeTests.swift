@@ -31,7 +31,7 @@ private func addRecoveredEquipmentLot(
   #expect(collected == .collected(lot))
 }
 
-private func recoveredEquipmentGame(_ definition: String) throws -> Game {
+func recoveredEquipmentGame(_ definition: String) throws -> Game {
   var game = Game(executive: false)
   game.screen = .inventory
   try game.commander.prepareEquipment(legacy: false)
