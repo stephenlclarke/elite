@@ -605,6 +605,11 @@ extension Game {
     _ = try missionActorAdmissionAuthority(
       pack: pack, state: state, encounterID: id, galaxy: definition.galaxy,
       system: definition.system, worldJob: worldJobID, pulse: worldJobPulse)
+    let previousGeometry = commander.scriptState.geometry
+    var publishesGeometry = false
+    defer {
+      if !publishesGeometry { commander.scriptState.geometry = previousGeometry }
+    }
     var plan = state.ownedEncounters[id]
     if plan == nil {
       var actors: [String: ScriptOwnedActor] = [:]
@@ -640,9 +645,10 @@ extension Game {
     }
     let source = try preparedMissionActorAdmissionSource(
       pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
-    state.ownedEncounters[id] = encounter
     switch try prepareMissionActorAdmission(source) {
     case .pending(let reason):
+      state.ownedEncounters[id] = encounter
+      publishesGeometry = true
       switch reason {
       case .unavailableArrival:
         return pending("Enter the declared system in flight with its main station available.")
@@ -656,10 +662,13 @@ extension Game {
     case .unchanged:
       throw MissionPackError("A fresh prepared cohort requires complete native admission.")
     case .ready(let plan):
-      let staged = try plan.retentionPatch.preparingInstance(state)
+      var selected = state
+      selected.ownedEncounters[id] = encounter
+      let staged = try plan.retentionPatch.preparingInstance(selected)
       let count = plan.sceneBodyIDs.count
       _ = try commitMissionActorAdmission(plan)
       state = staged
+      publishesGeometry = true
       return (
         "encounter.admitted",
         ["encounter_id": .string(id), "count": .integer(Int64(count)), "existing": .bool(false)]
