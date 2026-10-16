@@ -107,6 +107,22 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     }
   }
 
+  /// Persist canonical world motion only for the currently acknowledged ore actor.
+  /// The caller supplies its latest live snapshot before releasing the binding.
+  @discardableResult
+  public mutating func updateOreMotion(
+    payload: PayloadIdentity, actor: ActorIdentity, position: Vector3, velocity: Vector3
+  ) -> Bool {
+    guard case .ore(let rock, _) = payload, rock.system == actor.system,
+      let item = pending[payload], item.identity == payload, bindings[payload] == actor,
+      position.finite, velocity.finite, position.length.isFinite, velocity.length.isFinite,
+      item.position != position || item.velocity != velocity
+    else { return false }
+    pending[payload] = TypedCargoPayload(
+      identity: item.identity, amount: item.amount, position: position, velocity: velocity)
+    return true
+  }
+
   public mutating func collect(
     payload: PayloadIdentity, into cargo: inout [Int], freeTonnes: Int,
     hasScoops: Bool, approachAllowed: Bool, protection: MissionProtection
