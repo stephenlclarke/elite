@@ -120,7 +120,15 @@ extension ScriptEngineState {
   /// Saved archive shape is untrusted until joined to the retained source version and system.
   func projectileArchiveValid(_ record: ScriptProjectileRecord) -> Bool {
     guard let shot = record.body.scriptShot, let descriptor = shot.missionDescriptor,
-      let instance = instances[shot.instance], instance.id == shot.instance
+      let instance = instances[shot.instance], instance.id == shot.instance,
+      instance.ownedEncounters.values.contains(where: { encounter in
+        encounter.actors.values.contains { actor in
+          actor.identity == shot.owner
+            && (shot.component.map { component in
+              actor.body.scriptNPC?.components.values.contains { $0.identity == component } == true
+            } ?? true)
+        }
+      })
     else { return false }
     if let archive = shot.nativeAttribution,
       archive.origin.owner.system != SystemIdentity(galaxy: record.galaxy, system: record.system)
