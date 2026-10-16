@@ -61,7 +61,7 @@ Start with **numbers, arrows, Return, Escape and K**. Numbers open game areas, a
 | 6 | Ship showroom | System data and planet view |
 | 7 / 8 / 9 | Market / status summary / inventory | Prices / status summary / inventory |
 
-For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**, **Return fires**, and **Tab selects a target**. Selecting the station engages automatic docking with a suitable targeting computer; Q returns to manual control. The trackpad controls are below.
+For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**, **Return uses the selected tool**, **W cycles Combat Laser / Mining Laser / Salvage Cutter**, and **Tab selects a target**. Selecting the station engages automatic docking with a suitable targeting computer; Q returns to manual control. The trackpad controls are below.
 
 Escape never launches an escape pod. Use **Flight > Launch Escape Pod** or **Command-Shift-E** deliberately. Help and pause close before the screen beneath them; search closes before its browser. Mission dialogs return without transferring anything when you press Escape.
 
