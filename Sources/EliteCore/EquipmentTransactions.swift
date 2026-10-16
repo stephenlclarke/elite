@@ -30,6 +30,7 @@ extension Commander {
   mutating func prepareEquipment(legacy: Bool = true) throws {
     guard equipmentInventory == nil else {
       try validateEquipmentState()
+      if savedEquipmentVersion == 1 { try migrateFiniteAmmunition { UUID() } }
       return
     }
     try initializeEquipment(owner: UUID(), hull: UUID(), legacy: legacy) { UUID() }
@@ -67,10 +68,16 @@ extension Commander {
         if case .fuelStorage = $0.location?.slot { return true }
         return false
       }.count
+    if savedEquipmentVersion == 2 {
+      missiles =
+        inventory.items.filter {
+          $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+        }.count
+    }
   }
 
   mutating func acceptEquipmentPurchase(_ quote: EquipmentRuntimePurchaseQuote) throws -> Bool {
-    guard self == quote.prepared, var inventory = equipmentInventory,
+    guard self == quote.prepared, let inventory = equipmentInventory,
       let history = equipmentPurchaseHistory
     else { throw EquipmentRuntimeError.staleCommander }
     let application = try EquipmentPurchaseProgression.apply(
@@ -83,15 +90,15 @@ extension Commander {
       component: EquipmentRuntimeCatalog.stockComponent(
         for: application.item.node, id: application.item.id),
       boundHull: quote.location?.slot == .utility(.cargoExpansion) ? inventory.activeHull : nil)
-    try inventory.admit(item, expectedRevision: inventory.revision, context: context)
+    var items = inventory.items
     if let location = quote.location {
-      let occupied = inventory.items.first { $0.location == location }
-      try inventory.fit(
-        expected: item, at: location, replacing: occupied, expectedRevision: inventory.revision,
-        context: context)
+      items = items.map { $0.location == location ? $0.moved(to: nil) : $0 }
     }
+    items.append(item.moved(to: quote.location))
+    let next = try inventory.applyingBatch(
+      items: items, expectedRevision: inventory.revision, context: context)
     var candidate = self
-    candidate.savedEquipmentInventory = inventory
+    candidate.savedEquipmentInventory = next
     candidate.savedEquipmentPurchaseHistory = application.history
     if !candidate.unlimitedCash { candidate.credits -= application.requiredDebit }
     candidate.mirrorFittedEquipment()
@@ -205,6 +212,13 @@ extension Game {
       guard commander.fittedEquipment(at: slot)?.node != node else {
         throw EquipmentRuntimeError.alreadyOwned
       }
+    } else if node == EquipmentRuntimeCatalog.standardMissile {
+      guard
+        let pylon = (0..<commander.missileCapacity).first(where: {
+          commander.fittedEquipment(at: .missilePylon($0)) == nil
+        })
+      else { throw EquipmentRuntimeError.noSlot }
+      slot = .missilePylon(pylon)
     } else if node.family == EquipmentRuntimeCatalog.storageFamily {
       guard
         let unit = (0..<FuelStorage.maximumCount).first(where: {

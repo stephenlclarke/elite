@@ -117,19 +117,15 @@ extension Game {
         throw ShopRefusal(.storageFull)
       }
       let receipt: EquipmentMutationReceipt
-      if item.name == "Fuel" || item.name == "Missile" {
+      if item.name == "Missile", commander.missiles >= commander.missileCapacity {
+        throw ShopRefusal(.missileRackFull)
+      }
+      if item.name == "Fuel" {
         guard equipmentAvailable(item), commander.availableCredits >= context.price else {
           throw ShopRefusal(.unavailable)
         }
         var planned = commander
-        if item.name == "Fuel" {
-          planned.fuel = commander.fuelCapacity
-        } else {
-          guard commander.missiles < commander.missileCapacity else {
-            throw ShopRefusal(.missileRackFull)
-          }
-          planned.missiles += 1
-        }
+        planned.fuel = commander.fuelCapacity
         if !commander.unlimitedCash { planned.credits -= context.price }
         guard planned.valid else { throw ShopRefusal(.invalidState) }
         commander = planned

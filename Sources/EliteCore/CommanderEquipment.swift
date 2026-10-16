@@ -25,23 +25,33 @@ extension Commander {
       }
       return
     }
-    guard savedEquipmentVersion == 1 else { throw CommanderEquipmentError.invalidVersion }
+    guard savedEquipmentVersion == 1 || savedEquipmentVersion == 2 else {
+      throw CommanderEquipmentError.invalidVersion
+    }
     guard let history = savedEquipmentPurchaseHistory, history.owner == inventory.owner else {
       throw CommanderEquipmentError.incompleteState
     }
-    // This schema pin does not silently enable version-2 runtime admission. Migration
-    // and native/mission consumers are integrated together in the following milestone.
-    guard
-      inventory.items.allSatisfy({ item in
-        if case .missionIssue = item.provenance { return false }
-        return item.preferredSlot == nil && item.retainedLegacyState == nil
-          && item.node.family != EquipmentRuntimeCatalog.ammunitionFamily
-      }),
-      !history.paid.contains(where: { $0.node.family == EquipmentRuntimeCatalog.ammunitionFamily }),
-      !history.legacy.contains(where: {
-        $0.source.node.family == EquipmentRuntimeCatalog.ammunitionFamily
-      })
-    else { throw CommanderEquipmentError.invalidVersion }
+    if savedEquipmentVersion == 1 {
+      guard
+        inventory.items.allSatisfy({ item in
+          if case .missionIssue = item.provenance { return false }
+          return item.preferredSlot == nil && item.retainedLegacyState == nil
+            && item.node.family != EquipmentRuntimeCatalog.ammunitionFamily
+        }),
+        !history.paid.contains(where: { $0.node.family == EquipmentRuntimeCatalog.ammunitionFamily }
+        ),
+        !history.legacy.contains(where: {
+          $0.source.node.family == EquipmentRuntimeCatalog.ammunitionFamily
+        })
+      else { throw EquipmentMigrationError.mixedRepresentations }
+    } else {
+      guard
+        missiles
+          == inventory.items.filter({
+            $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+          }).count
+      else { throw EquipmentMigrationError.invalidCrosswalk }
+    }
     try EquipmentPurchaseProgression.validateHistory(history, graph: EquipmentRuntimeCatalog.graph)
     try inventory.validate(
       context: EquipmentRuntimeCatalog.context(
@@ -122,6 +132,10 @@ extension Commander {
     for unit in 0..<fuelStorageUnits {
       try append(FuelStorage.equipmentName, at: .fuelStorage(unit))
     }
+    guard (0...missileCapacity).contains(missiles) else {
+      throw EquipmentMigrationError.invalidLegacyCount
+    }
+    for pylon in 0..<missiles { try append("Missile", at: .missilePylon(pylon)) }
     // Old sets can retain replaced devices. Preserve them as held items; aliases name
     // the same device and do not create a second physical copy.
     for name in equipment.sorted() where name != "Fuel" && name != "Missile" {
@@ -141,7 +155,7 @@ extension Commander {
     }
     savedEquipmentInventory = inventory
     savedEquipmentPurchaseHistory = .init(owner: owner, legacy: legacyEntitlements)
-    savedEquipmentVersion = 1
+    savedEquipmentVersion = 2
   }
 
   private func migratedComponent(node: EquipmentNodeID, name: String, id: UUID) throws

@@ -34,6 +34,41 @@ extension Commander {
       try candidate.grantEquipment(
         FuelStorage.equipmentName, at: .fuelStorage(unit), provenance: .xyzzy)
     }
+    try candidate.grantMaximumMissiles()
+    self = candidate
+  }
+
+  /// An explicit secret hardware grant, never a capability getter or unlimited shot.
+  private mutating func grantMaximumMissiles() throws {
+    guard let inventory = equipmentInventory else { throw CommanderEquipmentError.incompleteState }
+    var items = inventory.items
+    for index in 0..<missileCapacity {
+      let location = ComponentFittingLocation(
+        hullInstanceID: inventory.activeHull, slot: .missilePylon(index))
+      if items.contains(where: { $0.location == location }) { continue }
+      if let held = items.firstIndex(where: { item in
+        if case .missionIssue = item.provenance { return false }
+        return item.node == EquipmentRuntimeCatalog.standardMissile && item.location == nil
+          && (item.retainedLegacyState?.pristine ?? true)
+      }) {
+        items[held] = items[held].moved(to: location)
+      } else {
+        items.append(
+          .init(
+            id: UUID(), node: EquipmentRuntimeCatalog.standardMissile,
+            provenance: .xyzzy, location: location))
+      }
+    }
+    if items == inventory.items { return }
+    let next = try inventory.applyingBatch(
+      items: items, expectedRevision: inventory.revision,
+      context: EquipmentRuntimeCatalog.context(
+        owner: inventory.owner, hull: inventory.activeHull,
+        performance: nativePerformance))
+    var candidate = self
+    candidate.savedEquipmentInventory = next
+    candidate.mirrorFittedEquipment()
+    guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
     self = candidate
   }
 

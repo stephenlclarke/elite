@@ -626,7 +626,6 @@ public struct Game: Sendable {
     case "c": restoreXYZzyCobra()
     case "3":
       commander.unlimitedMissiles.toggle()
-      commander.missiles = commander.missileCapacity
       notify("MISSILE SUPPLY UPDATED")
     case "4":
       commander.unlimitedFuel.toggle()
@@ -713,9 +712,9 @@ public struct Game: Sendable {
   private mutating func refitXYZzyCobra() throws {
     try commander.prepareEquipment()
     if commander.shipID != "SH023" {
-      // This explicit secret refit grants full tanks and racks below.
+      // Hull exchange preserves every portable item and refuses incompatible fittings.
+      // The explicit maximum-hardware grant fills only vacant compatible pylons.
       commander.fuel = 0
-      commander.missiles = 0
       commander.unlimitedCargo = true
       try commander.transferEquipment(to: "SH023", hullID: UUID())
     }
@@ -741,7 +740,6 @@ public struct Game: Sendable {
   }
   private mutating func refillMaximumHardware() {
     commander.fuel = commander.fuelCapacity
-    commander.missiles = commander.missileCapacity
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
     rearShield = commander.rearShieldCapacity

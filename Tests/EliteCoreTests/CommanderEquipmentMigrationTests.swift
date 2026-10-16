@@ -52,11 +52,12 @@ struct CommanderEquipmentMigrationTests {
     try cemInitialize(&commander, legacy: false)
     let inventory = try #require(commander.equipmentInventory)
     #expect(
-      inventory.owner == cemOwner && inventory.activeHull == cemHull && inventory.items.count == 4)
+      inventory.owner == cemOwner && inventory.activeHull == cemHull && inventory.items.count == 7)
     #expect(inventory.items.allSatisfy { $0.provenance == .standard && $0.location != nil })
     #expect(
       Set(inventory.items.compactMap { $0.location?.slot }) == [
-        .shield, .energy, .navigation, .laser(.front),
+        .shield, .energy, .navigation, .laser(.front), .missilePylon(0), .missilePylon(1),
+        .missilePylon(2),
       ])
     #expect(commander.equipmentPurchaseHistory?.paid.isEmpty == true)
     #expect(commander.equipmentPurchaseHistory?.legacy.isEmpty == true)
@@ -200,7 +201,7 @@ struct CommanderEquipmentMigrationTests {
     try cemInitialize(&commander)
     commander.savedEquipmentVersion = 99
     #expect(!commander.equipmentStateValid && !commander.valid)
-    commander.savedEquipmentVersion = 1
+    commander.savedEquipmentVersion = 2
     let history = try #require(commander.equipmentPurchaseHistory)
     commander.savedEquipmentPurchaseHistory = .init(owner: UUID(), legacy: history.legacy)
     #expect(!commander.equipmentStateValid && !commander.valid)

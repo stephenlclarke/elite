@@ -17,3 +17,9 @@ Six focused schema regressions cover metadata preservation and round trips, old 
 ## Compatibility and remaining work
 
 The final implementation must add sealed issue and ammunition transactions, once-only Commander migration, native inventory/shop/ordnance and consumable adapters, reciprocal Script issue validation, Gallery lifecycle fixes and actual-reach courier generation. It must preserve format 21 and the current production save. Full validation, formal review, main-only SonarQube analysis and release remain outstanding. See [the issue record](ISSUE-canonical-mission-equipment.md).
+
+## Version-2 native migration work
+
+The next source checkpoint imports the version-1 finite missile counter once while preserving existing owner, hull, physical item identities and purchase-history revision. Legacy initialization creates the actual rounds at real pylons. Version-2 saves require the persisted missile mirror to match fitted physical rounds; an empty rack stays empty and mismatches reject the whole load. Native missile purchases use the paid physical inventory transaction with one revision, and inventory offers real vacant pylons. Unlimited supply toggles preserve finite rounds; explicit maximum-hardware grants fill vacant pylons while preserving held devices.
+
+Six additional migration and native purchase regressions are authored but not executed. The physical firing, native consumable and reciprocal Script adapters are still being composed; this intermediate branch is not a playable or release-qualified version-2 build.

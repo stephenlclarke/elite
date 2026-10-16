@@ -259,6 +259,14 @@ extension Game {
   }
 
   private func inventoryFitSlot(_ node: EquipmentNodeID) throws -> ComponentFittingSlot {
+    if node == EquipmentRuntimeCatalog.standardMissile {
+      guard
+        let pylon = (0..<commander.missileCapacity).first(where: {
+          commander.fittedEquipment(at: .missilePylon($0)) == nil
+        })
+      else { throw EquipmentRuntimeError.noSlot }
+      return .missilePylon(pylon)
+    }
     if node.family == EquipmentRuntimeCatalog.laserFamily {
       if equipmentWorkTool {
         guard node.key == LaserKind.mining.equipmentName else { throw EquipmentRuntimeError.noSlot }
@@ -298,6 +306,7 @@ extension Game {
       case .galacticHyperdrive: "Galactic Hyperdrive"
       }
     case .fuelStorage(let unit): "fuel storage \(unit + 1)"
+    case .missilePylon(let index): "missile pylon \(index + 1)"
     case .shield: "shield"
     case .energy: "energy"
     case .navigation: "navigation"
