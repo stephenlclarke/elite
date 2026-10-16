@@ -61,10 +61,6 @@ public struct InventoryActionPreview: Sendable, Equatable {
 public struct InventoryControl: Sendable, Equatable {
   public let bounds: CanvasRect
   public let command: InventoryCommand
-  init(bounds: CanvasRect, command: InventoryCommand) {
-    self.bounds = bounds
-    self.command = command
-  }
 }
 
 /// Kept by the native view only after the corresponding frame was successfully painted.
