@@ -82,17 +82,31 @@ extension Game {
             ))
         }
       }
-      rows += [("Lasers", .yellow)] + commander.laserMountSummary.map { ("  " + $0, .cyan) }
-      rows += [
-        ("Equipment", .yellow),
-        ("  Targeting: " + (commander.targetingTier?.label ?? "None"), .white),
-        ("  Navigation: " + (commander.navigationTier?.label ?? "None"), .white),
-        ("  Fuel storage: \(commander.fuelStorageUnits)/4", .white),
-      ]
-      rows += commander.equipment.sorted().filter {
-        LaserKind.from($0) == nil && TargetingTier.from($0) == nil && NavigationTier.from($0) == nil
-          && !["Fuel", "Missile"].contains($0)
-      }.map { ("  " + $0, .white) }
+      rows.append(("Equipment - fitted and held", .yellow))
+      if let history = commander.equipmentPurchaseHistory {
+        rows.append(("Recorded purchases: \(history.paid.count)", .cyan))
+      }
+      if let inventory = commander.equipmentInventory {
+        for item in inventory.items.sorted(by: {
+          let left = equipmentName($0)
+          let right = equipmentName($1)
+          return left == right ? $0.id.uuidString < $1.id.uuidString : left < right
+        }) {
+          rows.append((equipmentName(item), .white))
+          let fitting =
+            item.location.map { location in
+              equipmentSlot(location.slot)
+                + (location.hullInstanceID == inventory.activeHull ? "" : " (other hull)")
+            } ?? "Held"
+          rows.append(("  " + fitting + " - " + equipmentOrigin(item.provenance), .cyan))
+        }
+      } else {
+        rows.append(("Legacy fittings - acquisition unknown", .cyan))
+        rows += commander.laserMountSummary.map { ("  " + $0, .white) }
+        rows += commander.equipment.sorted().filter {
+          LaserKind.from($0) == nil && !["Fuel", "Missile"].contains($0)
+        }.map { ("  " + $0, .white) }
+      }
       return rows
     }
     let criminalStatus = commander.legal < 50 ? "Offender" : "Fugitive"
@@ -112,10 +126,119 @@ extension Game {
       ("Rating: " + commander.rank, .white),
       ("Cargo used: \(commander.cargoTonnes)t", .white),
       ("Missiles: \(commander.missiles)", .white),
+      (
+        "Shield: "
+          + fittedSummary(.shield, fallback: commander.shieldBooster?.equipmentName ?? "Basic")
+          + String(
+            format: " - front %.0f / rear %.0f", commander.shieldCapacity,
+            commander.rearShieldCapacity), .white
+      ),
+      (
+        "Navigation: "
+          + fittedSummary(
+            .navigation,
+            fallback: commander.navigationTier?.label ?? "Basic"), .white
+      ),
+      (
+        "Energy: "
+          + fittedSummary(
+            .energy,
+            fallback:
+              commander.equipment.contains(Equipment.navalEnergyUnit)
+              ? Equipment.navalEnergyUnit
+              : commander.equipment.contains("Extra Energy Unit") ? "Extra Energy Unit" : "Basic"),
+        .white
+      ),
+      (
+        "Targeting core: " + (commander.targetingTier?.label ?? "None")
+          + (commander.targetingTier.map { $0 > .basic } == true
+            ? " (includes lower core tiers)" : ""),
+        .white
+      ),
+      (specialtySummary("Mining", slot: .targetingMining), .white),
+      (specialtySummary("Salvage", slot: .targetingSalvage), .white),
       ("Fittings and cargo manifest: Inventory (9)", .cyan),
     ]
     if commander.missionStage != .notStarted { rows.append((commander.missionStage.status, .cyan)) }
     return rows
+  }
+  private func fittedSummary(_ slot: ComponentFittingSlot, fallback: String) -> String {
+    guard let item = commander.fittedEquipment(at: slot) else {
+      guard commander.equipmentInventory == nil else { return "None" }
+      let canonical =
+        EquipmentRuntimeCatalog.node(for: fallback).flatMap { node in
+          EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node }?.displayName
+        } ?? fallback
+      return canonical + " (legacy)"
+    }
+    return equipmentName(item)
+  }
+  private func specialtySummary(_ label: String, slot: ComponentFittingSlot) -> String {
+    let module = commander.fittedEquipment(at: slot)?.node.key
+    let legacy =
+      commander.equipmentInventory == nil
+      && commander.equipment.contains("Targeting: " + label + " Module")
+    let installed = module != nil || legacy
+    let core = commander.targetingTier?.label ?? "none"
+    return label + ": " + (installed ? "module fitted" : "no module")
+      + "; core: " + core
+  }
+  private func equipmentName(_ item: OwnedEquipmentItem) -> String {
+    let canonical =
+      EquipmentRuntimeCatalog.graph.nodes.first { $0.id == item.node }?.displayName
+      ?? item.node.key
+    guard let component = item.component,
+      let grade = EquipmentModuleTemplates.displayName(for: component.grade)
+    else { return canonical }
+    let family: String
+    switch component.family {
+    case EquipmentModuleTemplates.shieldFamily: family = "Shield"
+    case EquipmentModuleTemplates.navigationFamily: family = "Navigation"
+    case EquipmentModuleTemplates.energyFamily: family = "Energy"
+    default: return canonical
+    }
+    return grade + " " + family
+  }
+  private func equipmentOrigin(_ origin: EquipmentAcquisitionProvenance) -> String {
+    switch origin {
+    case .standard: "Standard"
+    case .paid: "Purchased"
+    case .grant: "Granted"
+    case .recovered: "Recovered"
+    case .reward: "Reward"
+    case .earned: "Earned"
+    case .xyzzy: "XYZZY grant"
+    case .legacyUnknown: "Acquisition unknown"
+    }
+  }
+  private func utilityName(_ utility: ComponentUtility) -> String {
+    switch utility {
+    case .miningLaser: "Mining work tool"
+    case .salvageCutter: "Salvage cutter"
+    case .fuelScoops: "Fuel scoops"
+    case .ecm: "ECM system"
+    case .escapePod: "Escape pod"
+    case .energyBomb: "Energy bomb"
+    case .cargoExpansion: "Cargo expansion"
+    case .galacticHyperdrive: "Galactic hyperdrive"
+    }
+  }
+  private func equipmentSlot(_ slot: ComponentFittingSlot) -> String {
+    switch slot {
+    case .shield: "Fitted shield"
+    case .energy: "Fitted energy"
+    case .navigation: "Fitted navigation"
+    case .targetingCore: "Fitted targeting core"
+    case .targetingMining: "Fitted mining targeting"
+    case .targetingSalvage: "Fitted salvage targeting"
+    case .drive: "Fitted drive"
+    case .laser(let mount): "Fitted " + mount.label + " combat mount"
+    case .missilePylon(let index): "Fitted pylon \(index + 1)"
+    case .utility(let utility): "Fitted " + utilityName(utility)
+    case .fuelStorage(let index): "Fitted fuel storage \(index + 1)"
+    case .spareEscapePod(let index): "Spare escape pod \(index + 1)"
+    case .hullStructure: "Hull structure"
+    }
   }
 }
 extension Display {
