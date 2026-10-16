@@ -22,7 +22,11 @@ public enum TargetingTier: Int, Sendable, Codable, CaseIterable, Comparable {
 }
 extension Commander {
   public var targetingTier: TargetingTier? {
-    (equipment.compactMap(TargetingTier.from)
+    if equipmentInventory != nil {
+      return fittedEquipment(at: .targetingCore).flatMap { TargetingTier.from($0.node.key) }
+    }
+    return
+      (equipment.compactMap(TargetingTier.from)
       + (equipment.contains(Equipment.legacyDockingComputer) ? [.docking] : [])).max()
   }
   public var hasAutomaticDocking: Bool { targetingTier.map { $0 >= .docking } ?? false }

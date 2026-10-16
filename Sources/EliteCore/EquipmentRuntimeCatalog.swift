@@ -20,7 +20,7 @@ enum EquipmentRuntimeCatalog {
     let lasers = LaserKind.allCases.map { kind in
       EquipmentPurchaseNode(
         id: .init(family: laserFamily, key: kind.equipmentName), displayName: kind.equipmentName,
-        policy: kind == .naval ? .acquisitionOnly : .repeatable(maximumCount: 4))
+        policy: .repeatable(maximumCount: 4))
     }
     let utilityNodes = utilities.map { name, utility in
       EquipmentPurchaseNode(id: .init(family: utilityFamily(utility), key: name), displayName: name)
@@ -46,6 +46,43 @@ enum EquipmentRuntimeCatalog {
     case EquipmentPurchaseCatalog.energy: EquipmentModuleTemplates.energy
     default: nil
     }
+  }
+
+  static func stockComponent(for node: EquipmentNodeID, id: UUID) -> ComponentInstance? {
+    guard let definition = definition(for: node.family) else { return nil }
+    let familyNodes = graph.nodes.filter { $0.id.family == node.family }
+    guard let index = familyNodes.firstIndex(where: { $0.id == node }),
+      definition.grades.indices.contains(index)
+    else { return nil }
+    let template = definition.grades[index]
+    return .init(
+      id: id, origin: template, statistics: template.statistics, grade: template.identity)
+  }
+
+  static func reducesStatistics(_ after: ComponentInstance, from before: ComponentInstance) -> Bool
+  {
+    before.statistics.contains { axis, value in
+      guard let next = after.statistics[axis] else { return true }
+      return axis.higherIsBetter ? next < value : next > value
+    }
+  }
+
+  static func purchaseLocation(_ location: ComponentFittingLocation?) -> EquipmentFittingLocation? {
+    guard let location else { return nil }
+    let slot: String
+    switch location.slot {
+    case .laser(let mount): slot = "laser." + mount.rawValue
+    case .utility(let utility): slot = "utility." + utility.rawValue
+    case .fuelStorage(let unit): slot = "fuel-storage.\(unit)"
+    case .shield: slot = "shield"
+    case .energy: slot = "energy"
+    case .navigation: slot = "navigation"
+    case .targetingCore: slot = "targeting.core"
+    case .targetingMining: slot = "targeting.mining"
+    case .targetingSalvage: slot = "targeting.salvage"
+    default: return nil
+    }
+    return .init(hull: location.hullInstanceID, slot: slot)
   }
 
   static func slot(for node: EquipmentNodeID) -> ComponentFittingSlot? {

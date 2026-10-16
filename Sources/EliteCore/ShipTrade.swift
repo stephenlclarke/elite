@@ -15,7 +15,8 @@ public struct ShipTradeQuote: Sendable {
       String(format: "Trade-in allowance: %.1f CR", Double(allowance) / 10),
       String(format: "Net %@: %.1f CR", net < 0 ? "credit" : "cost", Double(abs(net)) / 10),
       String(format: "Resulting cash: %.1f CR", Double(balance) / 10),
-      "All cargo, fuel, equipment and mission property transfer.",
+      "Cargo, fuel, portable equipment and mission property transfer.",
+      "Hull-bound fittings leave with the sold hull.",
       "No new lasers, missiles or free fuel are included.",
     ] + (issues.isEmpty ? ["Compatible fit. Confirm to exchange hulls."] : issues)
   }
@@ -33,7 +34,16 @@ extension Game {
     if balance < 0 { issues.append("Insufficient cash for this exchange.") }
     if balance > 4_294_967_295 { issues.append("Credit would exceed the account limit.") }
     var projected = commander
-    projected.shipID = selected.id
+    if let inventory = commander.equipmentInventory {
+      do {
+        try projected.transferEquipment(to: selected.id, hullID: inventory.activeHull)
+      } catch {
+        issues.append("Physical fittings or carried resources are incompatible with this hull.")
+        projected.shipID = selected.id
+      }
+    } else {
+      projected.shipID = selected.id
+    }
     issues += shipTransferIssues(to: projected)
     return .init(
       selected: selected, purchase: purchase, allowance: allowance, net: net, balance: balance,
@@ -47,7 +57,9 @@ extension Game {
         "Sell cargo first: hold requires \(commander.cargoTonnes)t; new capacity \(projected.capacity)t. Mission cargo cannot be sold."
       )
     }
-    if commander.equipment.contains("Large Cargo Bay") && next.cargoExpansion == 0 {
+    if commander.equipmentInventory == nil,
+      commander.equipment.contains("Large Cargo Bay") && next.cargoExpansion == 0
+    {
       issues.append("Cargo expansion cannot transfer to this hull. Choose a compatible hull.")
     }
     for mount in LaserMount.allCases
@@ -74,12 +86,17 @@ extension Game {
   mutating func confirmShipTrade() {
     guard !paused, showroom.trading, let quote = shipTradeQuote, quote.allowed else { return }
     // Re-evaluate the quote at confirmation; no state changes happen on opening or Back.
-    commander.shipID = quote.selected.id
-    commander.credits = quote.balance
-    speed = 0
-    energy = commander.performance.energy
-    frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    var candidate = self
+    do {
+      try candidate.commander.prepareEquipment()
+      try candidate.commander.transferEquipment(to: quote.selected.id, hullID: UUID())
+    } catch {
+      notify("HULL EXCHANGE REFUSED - FITTINGS OR RESOURCES INCOMPATIBLE")
+      return
+    }
+    candidate.commander.credits = quote.balance
+    candidate.preserveEquipmentResourceFractions(from: self)
+    self = candidate
     showroom.baseline = commander.shipID
     showroom.baselineUsesCurrent = true
     showroom.trading = false

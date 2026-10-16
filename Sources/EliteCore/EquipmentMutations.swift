@@ -1,0 +1,171 @@
+import Foundation
+
+extension Commander {
+  mutating func grantMaximumHardware() throws {
+    var candidate = self
+    try candidate.prepareEquipment()
+    for (name, slot) in [
+      (ShieldBooster.capital.equipmentName, ComponentFittingSlot.shield),
+      (NavigationTier.military.equipmentName, .navigation),
+      (Equipment.navalEnergyUnit, .energy),
+      (TargetingTier.military.equipmentName, .targetingCore),
+      ("Targeting: Mining Module", .targetingMining),
+      ("Targeting: Salvage Module", .targetingSalvage),
+    ] {
+      try candidate.grantEquipment(name, at: slot, provenance: .xyzzy)
+    }
+    for mount in LaserMount.allCases where candidate.performance.supports(mount) {
+      try candidate.grantEquipment(Equipment.navalLaser, at: .laser(mount), provenance: .xyzzy)
+    }
+    for (name, utility) in EquipmentRuntimeCatalog.utilities {
+      if utility == .cargoExpansion && candidate.performance.cargoExpansion == 0 { continue }
+      if utility == .salvageCutter,
+        candidate.performance.workTools?.contains(.salvageCutter) != true
+      {
+        continue
+      }
+      try candidate.grantEquipment(name, at: .utility(utility), provenance: .xyzzy)
+    }
+    if candidate.performance.workTools?.contains(.miningLaser) == true {
+      try candidate.grantEquipment(
+        LaserKind.mining.equipmentName, at: .utility(.miningLaser), provenance: .xyzzy)
+    }
+    for unit in 0..<FuelStorage.maximumCount {
+      try candidate.grantEquipment(
+        FuelStorage.equipmentName, at: .fuelStorage(unit), provenance: .xyzzy)
+    }
+    self = candidate
+  }
+
+  mutating func storeEquipment(_ item: OwnedEquipmentItem, expectedRevision: UInt64) throws {
+    guard var inventory = equipmentInventory else { throw CommanderEquipmentError.incompleteState }
+    let context = EquipmentRuntimeCatalog.context(
+      owner: inventory.owner, hull: inventory.activeHull, performance: performance)
+    try inventory.store(expected: item, expectedRevision: expectedRevision, context: context)
+    var candidate = self
+    candidate.savedEquipmentInventory = inventory
+    candidate.mirrorFittedEquipment()
+    guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
+    self = candidate
+  }
+
+  mutating func fitEquipment(
+    _ item: OwnedEquipmentItem, at slot: ComponentFittingSlot, expectedRevision: UInt64
+  ) throws {
+    guard var inventory = equipmentInventory else { throw CommanderEquipmentError.incompleteState }
+    let context = EquipmentRuntimeCatalog.context(
+      owner: inventory.owner, hull: inventory.activeHull, performance: performance)
+    let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
+    let occupied = inventory.items.first { $0.location == location }
+    try inventory.fit(
+      expected: item, at: location, replacing: occupied, expectedRevision: expectedRevision,
+      context: context)
+    var candidate = self
+    candidate.savedEquipmentInventory = inventory
+    candidate.mirrorFittedEquipment()
+    guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
+    self = candidate
+  }
+
+  /// Consumption removes the actual fitted device. Held spares cannot fire or escape for it.
+  mutating func consumeEquipped(_ name: String) -> Bool {
+    (try? removeFittedEquipment(name)) ?? false
+  }
+
+  /// Mission transactions may treat absence as a no-op, but must not hide failed custody checks.
+  @discardableResult mutating func removeFittedEquipment(_ name: String) throws -> Bool {
+    guard var inventory = equipmentInventory else { return equipment.remove(name) != nil }
+    let context = EquipmentRuntimeCatalog.context(
+      owner: inventory.owner, hull: inventory.activeHull, performance: performance)
+    try validateEquipmentState()
+    guard let node = EquipmentRuntimeCatalog.node(for: name) else {
+      throw EquipmentRuntimeError.unavailable
+    }
+    guard let item = inventory.items.first(where: { $0.node == node && $0.location != nil }) else {
+      return false
+    }
+    try inventory.remove(expected: item, expectedRevision: inventory.revision, context: context)
+    var candidate = self
+    candidate.savedEquipmentInventory = inventory
+    candidate.mirrorFittedEquipment()
+    guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
+    self = candidate
+    return true
+  }
+
+  mutating func grantMissionEquipment(_ name: String, digest: String) throws {
+    guard let node = EquipmentRuntimeCatalog.node(for: name) else {
+      throw EquipmentRuntimeError.unavailable
+    }
+    let slot =
+      EquipmentRuntimeCatalog.slot(for: node)
+      ?? LaserKind.from(name).map { _ in ComponentFittingSlot.laser(.front) }
+    guard let slot else { throw EquipmentRuntimeError.noSlot }
+    try grantEquipment(name, at: slot, provenance: .grant("mission-pack:" + digest))
+  }
+
+  /// Rewards/grants preserve their source and never create paid prerequisite history.
+  mutating func grantEquipment(
+    _ name: String, at slot: ComponentFittingSlot,
+    provenance: EquipmentAcquisitionProvenance
+  ) throws {
+    var candidate = self
+    try candidate.prepareEquipment()
+    guard let node = EquipmentRuntimeCatalog.node(for: name),
+      var inventory = candidate.equipmentInventory
+    else { throw EquipmentRuntimeError.unavailable }
+    if candidate.fittedEquipment(at: slot)?.node == node { return }
+    let context = EquipmentRuntimeCatalog.context(
+      owner: inventory.owner, hull: inventory.activeHull, performance: candidate.performance)
+    let item: OwnedEquipmentItem
+    if let held = inventory.items.first(where: { $0.node == node && $0.location == nil }) {
+      item = held
+    } else {
+      let id = UUID()
+      item = .init(
+        id: id, node: node, provenance: provenance,
+        component: EquipmentRuntimeCatalog.stockComponent(for: node, id: id),
+        boundHull: slot == .utility(.cargoExpansion) ? inventory.activeHull : nil)
+      try inventory.admit(item, expectedRevision: inventory.revision, context: context)
+    }
+    let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
+    let occupied = inventory.items.first { $0.location == location }
+    let weaker =
+      occupied?.component.flatMap { before in
+        item.component.map { EquipmentRuntimeCatalog.reducesStatistics($0, from: before) }
+      } ?? false
+    let lowerCore =
+      occupied.flatMap { TargetingTier.from($0.node.key) }.flatMap { old in
+        TargetingTier.from(item.node.key).map { $0 < old }
+      } ?? false
+    if !weaker && !lowerCore {
+      try inventory.fit(
+        expected: item, at: location, replacing: occupied,
+        expectedRevision: inventory.revision, context: context)
+    }
+    candidate.savedEquipmentInventory = inventory
+    candidate.mirrorFittedEquipment()
+    guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
+    self = candidate
+  }
+}
+
+extension Game {
+  mutating func storeEquipment(_ item: OwnedEquipmentItem, expectedRevision: UInt64) throws {
+    guard docked else { throw EquipmentRuntimeError.unavailable }
+    var candidate = self
+    try candidate.commander.storeEquipment(item, expectedRevision: expectedRevision)
+    candidate.preserveEquipmentResourceFractions(from: self)
+    self = candidate
+  }
+
+  mutating func fitEquipment(
+    _ item: OwnedEquipmentItem, at slot: ComponentFittingSlot, expectedRevision: UInt64
+  ) throws {
+    guard docked else { throw EquipmentRuntimeError.unavailable }
+    var candidate = self
+    try candidate.commander.fitEquipment(item, at: slot, expectedRevision: expectedRevision)
+    candidate.preserveEquipmentResourceFractions(from: self)
+    self = candidate
+  }
+}

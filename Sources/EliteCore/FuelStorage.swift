@@ -7,6 +7,10 @@ public enum FuelStorage {
 extension Commander {
   public var fuelCapacity: Int { performance.fuel + FuelStorage.unitCapacity * fuelStorageUnits }
   public var availableJumpFuel: Int { fuel }
-  public var jumpCap: Double { max(performance.jump, navigationTier?.jumpCap ?? 0) }
+  public var jumpCap: Double {
+    max(
+      nativePerformance.jump,
+      fittedComponent(at: .navigation)?.statistics[.jumpReach] ?? navigationTier?.jumpCap ?? 0)
+  }
   public var maximumJumpDistance: Double { min(jumpCap, Double(availableJumpFuel) / 10) }
 }

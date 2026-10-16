@@ -37,8 +37,30 @@ public enum ShieldBooster: Int, Sendable, CaseIterable, Comparable {
 }
 extension Commander {
   public static let eliteThreshold = 6400
-  public var shieldBooster: ShieldBooster? { equipment.compactMap(ShieldBooster.from).max() }
-  public var shieldCapacity: Double { performance.shield * (shieldBooster?.multiplier ?? 1) }
+  public var shieldBooster: ShieldBooster? {
+    if equipmentInventory != nil {
+      return fittedEquipment(at: .shield).flatMap { ShieldBooster.from($0.node.key) }
+    }
+    return equipment.compactMap(ShieldBooster.from).max()
+  }
+  public var shieldCapacity: Double {
+    nativePerformance.shield
+      * (fittedComponent(at: .shield)?.statistics[.frontShieldCapacity]
+        ?? shieldBooster?.multiplier ?? 1)
+  }
+  public var rearShieldCapacity: Double {
+    nativePerformance.shield
+      * (fittedComponent(at: .shield)?.statistics[.rearShieldCapacity]
+        ?? shieldBooster?.multiplier ?? 1)
+  }
+  public var frontShieldRecharge: Double {
+    nativePerformance.shieldRecharge
+      * (fittedComponent(at: .shield)?.statistics[.frontShieldRecharge] ?? 1)
+  }
+  public var rearShieldRecharge: Double {
+    nativePerformance.shieldRecharge
+      * (fittedComponent(at: .shield)?.statistics[.rearShieldRecharge] ?? 1)
+  }
   public var effectiveLaser: String { activeLaser?.equipmentName ?? "None" }
   public mutating func installShieldBooster(_ booster: ShieldBooster) {
     let effective = max(booster, shieldBooster ?? booster)
@@ -58,11 +80,17 @@ extension Game {
   }
   mutating func reconcileEliteReward() {
     guard commander.rank == "ELITE", !commander.capitalRewardClaimed else { return }
-    commander.capitalRewardClaimed = true
-    let oldCapacity = commander.shieldCapacity
-    commander.installShieldBooster(.capital)
-    frontShield = frontShield / oldCapacity * commander.shieldCapacity
-    rearShield = rearShield / oldCapacity * commander.shieldCapacity
+    var candidate = self
+    do {
+      try candidate.commander.grantEquipment(
+        ShieldBooster.capital.equipmentName, at: .shield, provenance: .reward("elite-rank"))
+    } catch {
+      notify("ELITE BONUS DEFERRED - EQUIPMENT CUSTODY FULL")
+      return
+    }
+    candidate.commander.capitalRewardClaimed = true
+    candidate.preserveEquipmentResourceFractions(from: self)
+    self = candidate
     notify("ELITE BONUS: CAPITAL SHIP SHIELD BOOSTER")
   }
 }

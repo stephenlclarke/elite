@@ -26,8 +26,8 @@ extension Commander {
     case "killsWrapped": kills = (kills + amount) & 0xffff
     case "legalSet": legal = amount
     case "legalFloor": legal = max(legal, amount)
-    case "equipmentAdd": equipment.insert(key)
-    case "equipmentRemove": equipment.remove(key)
+    case "equipmentAdd": try grantMissionEquipment(key, digest: state.digest)
+    case "equipmentRemove": try removeFittedEquipment(key)
     case "flagSet": state.flags[key] = amount
     case "receipt": state.receipts.insert(key)
     case "payloadAdd":

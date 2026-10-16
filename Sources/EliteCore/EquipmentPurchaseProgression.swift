@@ -266,34 +266,10 @@ public enum EquipmentPurchaseProgression {
       !snapshot.items.contains(where: { $0.id == request.newItem }),
       !history.paid.contains(where: { $0.binding.request.newItem == request.newItem })
     else { throw EquipmentPurchaseError.invalidRequest }
-    let id = try prepared.resolve(request.offer.node)
-    let node = prepared.nodes[id]!
-    switch node.policy {
-    case .standardFoundation, .acquisitionOnly: throw EquipmentPurchaseError.notForSale(id)
-    case .shop: break
-    case .repeatable(let maximum):
-      let count = snapshot.items.filter { $0.node == id }.count
-      guard count < maximum else { throw EquipmentPurchaseError.maximumCount(id, maximum) }
-    }
-    let lineage = prepared.lineage(id)
-    let entitled = Set(history.paid.map(\.node)).union(history.legacy.flatMap(\.lineage))
-    for ancestor in lineage where ancestor.id != id {
-      if ancestor.policy != .standardFoundation && !entitled.contains(ancestor.id) {
-        throw EquipmentPurchaseError.missingPrerequisite(ancestor.id)
-      }
-    }
-    for required in node.fittedPrerequisites {
-      let installed = snapshot.items.contains { item in
-        guard item.location?.hull == snapshot.activeHull, item.node.family == required.family else {
-          return false
-        }
-        return prepared.lineage(item.node).contains { $0.id == required }
-      }
-      guard installed else { throw EquipmentPurchaseError.missingFittedPrerequisite(required) }
-    }
-    guard snapshot.funds >= request.offer.price else {
-      throw EquipmentPurchaseError.insufficientFunds
-    }
+    let eligibility = try eligible(
+      offer: request.offer, snapshot: snapshot, history: history, prepared: prepared)
+    let id = eligibility.id
+    let lineage = eligibility.lineage
     let binding = EquipmentPurchaseBinding(
       request: request, snapshot: snapshot, historyRevision: history.revision,
       graphRevision: graph.revision, lineage: lineage)
@@ -335,6 +311,55 @@ public enum EquipmentPurchaseProgression {
         paid: history.paid + [receipt], legacy: history.legacy),
       receipt: receipt, item: item, requiredDebit: quote.requiredDebit,
       expectedSnapshotRevision: snapshot.revision, expectedHistoryRevision: history.revision)
+  }
+
+  /// Read-only shop eligibility uses the same graph and history rules as quote/apply.
+  /// It creates no item, transaction identity, receipt or ownership mutation.
+  public static func validateEligibility(
+    offer: EquipmentPurchaseOffer, snapshot: EquipmentPurchaseSnapshot,
+    history: EquipmentPurchaseHistory, graph: EquipmentPurchaseGraph
+  ) throws {
+    let prepared = try Prepared(graph)
+    try validate(history, prepared: prepared)
+    guard history.owner == snapshot.owner else { throw EquipmentPurchaseError.ownerMismatch }
+    try validate(snapshot, prepared: prepared)
+    guard offer.price > 0, !offer.shop.isEmpty else { throw EquipmentPurchaseError.invalidRequest }
+    _ = try eligible(offer: offer, snapshot: snapshot, history: history, prepared: prepared)
+  }
+
+  private static func eligible(
+    offer: EquipmentPurchaseOffer, snapshot: EquipmentPurchaseSnapshot,
+    history: EquipmentPurchaseHistory, prepared: Prepared
+  ) throws -> (id: EquipmentNodeID, lineage: [EquipmentPurchaseNode]) {
+    let id = try prepared.resolve(offer.node)
+    let node = prepared.nodes[id]!
+    switch node.policy {
+    case .standardFoundation, .acquisitionOnly: throw EquipmentPurchaseError.notForSale(id)
+    case .shop: break
+    case .repeatable(let maximum):
+      let count = snapshot.items.filter { $0.node == id }.count
+      guard count < maximum else { throw EquipmentPurchaseError.maximumCount(id, maximum) }
+    }
+    let lineage = prepared.lineage(id)
+    let entitled = Set(history.paid.map(\.node)).union(history.legacy.flatMap(\.lineage))
+    for ancestor in lineage where ancestor.id != id {
+      if ancestor.policy != .standardFoundation && !entitled.contains(ancestor.id) {
+        throw EquipmentPurchaseError.missingPrerequisite(ancestor.id)
+      }
+    }
+    for required in node.fittedPrerequisites {
+      let installed = snapshot.items.contains { item in
+        guard item.location?.hull == snapshot.activeHull, item.node.family == required.family else {
+          return false
+        }
+        return prepared.lineage(item.node).contains { $0.id == required }
+      }
+      guard installed else { throw EquipmentPurchaseError.missingFittedPrerequisite(required) }
+    }
+    guard snapshot.funds >= offer.price else {
+      throw EquipmentPurchaseError.insufficientFunds
+    }
+    return (id, lineage)
   }
 
   private static func checkReplay(

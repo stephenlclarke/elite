@@ -106,7 +106,16 @@ public struct Commander: Sendable, Equatable, Codable {
   private var storageUnitCount: Int?
   private var mountedLasers: LaserMounts?
   public var laserMounts: LaserMounts {
-    get { mountedLasers ?? LaserMounts(front: legacyLaser) }
+    get {
+      guard equipmentInventory != nil else {
+        return mountedLasers ?? LaserMounts(front: legacyLaser)
+      }
+      var mounts = LaserMounts()
+      for mount in LaserMount.allCases {
+        mounts[mount] = fittedEquipment(at: .laser(mount)).flatMap { LaserKind.from($0.node.key) }
+      }
+      return mounts
+    }
     set { mountedLasers = newValue }
   }
   private var finiteXYZzyCash: Bool?
@@ -115,7 +124,13 @@ public struct Commander: Sendable, Equatable, Codable {
     set { finiteXYZzyCash = newValue }
   }
   public var fuelStorageUnits: Int {
-    get { storageUnitCount ?? 0 }
+    get {
+      guard let inventory = equipmentInventory else { return storageUnitCount ?? 0 }
+      return inventory.items.filter {
+        if case .some(.fuelStorage) = $0.location?.slot { return true }
+        return false
+      }.count
+    }
     set { storageUnitCount = newValue }
   }
   public var navigationPlan: NavigationPlan? {
@@ -203,6 +218,7 @@ public struct Equipment: Sendable {
   public static var validNames: Set<String> {
     Set(all.map(\.name)).subtracting([FuelStorage.equipmentName]).union([
       navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
+      "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
     ])
   }
   public static var maximumHardware: Set<String> {
@@ -243,6 +259,10 @@ public struct Equipment: Sendable {
     + NavigationTier.allCases.map {
       .init(name: $0.equipmentName, price: $0.price, technology: $0.technology)
     } + [
+      // Initial project balancing in tenths of a credit; these are new independent devices.
+      .init(name: "Targeting: Mining Module", price: 12000, technology: 7),
+      .init(name: "Targeting: Salvage Module", price: 24000, technology: 8),
+      .init(name: "Salvage Cutter", price: 16000, technology: 8),
       .init(name: FuelStorage.equipmentName, price: FuelStorage.price, technology: 0),
       .init(name: navalLaser, price: 0, technology: 0),
       .init(name: navalEnergyUnit, price: 0, technology: 0),
@@ -316,6 +336,7 @@ public struct Game: Sendable {
   var solarFuelRemainder = 0.0
   public var cabinTemperature = 0.0
   public var equipmentMount: LaserMount = .front
+  public var equipmentWorkTool = false
   public var dockingComputer = false
   public var missileArmed = false
   public var message = ""
@@ -363,6 +384,12 @@ public struct Game: Sendable {
     messageTime = 4
   }
   public mutating func load(_ value: Commander) -> Bool {
+    var candidate = self
+    guard candidate.loadCommander(value) else { return false }
+    self = candidate
+    return true
+  }
+  private mutating func loadCommander(_ value: Commander) -> Bool {
     guard value.valid else { return false }
     commander = value
     if commander.npcPersistence.count > 0 {
@@ -382,12 +409,11 @@ public struct Game: Sendable {
     commander.migrateXYZzyPolicy()
     commander.migrateLegacyXYZzyMounts()
     mapSearch = PlanetSearchState()
-    if let tier = commander.targetingTier { commander.installTargetingComputer(tier) }
-    if let tier = commander.navigationTier { commander.installNavigationComputer(tier) }
-    if let booster = commander.shieldBooster { commander.installShieldBooster(booster) }
+    do { try commander.prepareEquipment() } catch { return false }
+    commander.mirrorFittedEquipment()
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
     targetPanelExpanded = nil
     targetPanelScroll = 0
     systems = Universe.systemsIncludingPlugh(number: value.galaxy)
@@ -530,11 +556,18 @@ public struct Game: Sendable {
       commander.shipDisplayStyle = commander.shipDisplayStyle.next
       notify(commander.shipDisplayStyle.label)
     case "1":
-      commander.installTargetingComputer(.docking)
+      if commander.targetingTier.map({ $0 >= .docking }) != true {
+        do {
+          try commander.grantEquipment(
+            TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .xyzzy)
+        } catch {
+          notify("DOCKING COMPUTER REFIT REFUSED")
+          return
+        }
+      }
       notify("DOCKING TARGETING COMPUTER FITTED")
     case "2":
       fitMaximumHardware()
-      notify("MAXIMUM HARDWARE FITTED")
     case "c": restoreXYZzyCobra()
     case "3":
       commander.unlimitedMissiles.toggle()
@@ -570,7 +603,12 @@ public struct Game: Sendable {
       if !commander.retaliationEnabled { retaliation.clear() }
       notify("MILITARY RETURN FIRE UPDATED")
     case "f":
-      commander.equipment.insert("Fuel Scoops")
+      do {
+        try commander.grantEquipment("Fuel Scoops", at: .utility(.fuelScoops), provenance: .xyzzy)
+      } catch {
+        notify("FUEL SCOOP REFIT REFUSED")
+        return
+      }
       notify("FUEL SCOOPS FITTED")
     case "e":
       commander.autoECM.toggle()
@@ -588,26 +626,46 @@ public struct Game: Sendable {
     }
   }
   mutating func enableXYZzy() {
-    commander.xyzzyActive = true
-    commander.profitScanEnabled = true
-    commander.shipDisplayStyle = .shadedPanels
-    commander.retaliationEnabled = true
-    commander.unlimitedMissiles = true
-    commander.unlimitedFuel = true
-    commander.unlimitedJumps = false
-    commander.unlimitedCargo = true
-    commander.startXYZzyCash()
-    commander.autoTrade = true
-    commander.speech = true
-    commander.autoECM = true
-    commander.autoTarget = true
-    restoreXYZzyCobra()
-    if docked { autoTrade() }
+    var candidate = self
+    candidate.commander.xyzzyActive = true
+    candidate.commander.profitScanEnabled = true
+    candidate.commander.shipDisplayStyle = .shadedPanels
+    candidate.commander.retaliationEnabled = true
+    candidate.commander.unlimitedMissiles = true
+    candidate.commander.unlimitedFuel = true
+    candidate.commander.unlimitedJumps = false
+    candidate.commander.unlimitedCargo = true
+    candidate.commander.startXYZzyCash()
+    candidate.commander.autoTrade = true
+    candidate.commander.speech = true
+    candidate.commander.autoECM = true
+    candidate.commander.autoTarget = true
+    do { try candidate.refitXYZzyCobra() } catch {
+      notify("MAXIMUM REFIT REFUSED")
+      return
+    }
+    if candidate.docked { candidate.autoTrade() }
+    self = candidate
   }
   mutating func restoreXYZzyCobra() {
-    commander.shipID = "SH023"
-    fitMaximumHardware()
-    // A secret refit preserves cargo even when a larger former hold was full.
+    var candidate = self
+    do { try candidate.refitXYZzyCobra() } catch {
+      notify("MAXIMUM REFIT REFUSED")
+      return
+    }
+    self = candidate
+  }
+  private mutating func refitXYZzyCobra() throws {
+    try commander.prepareEquipment()
+    if commander.shipID != "SH023" {
+      // This explicit secret refit grants full tanks and racks below.
+      commander.fuel = 0
+      commander.missiles = 0
+      commander.unlimitedCargo = true
+      try commander.transferEquipment(to: "SH023", hullID: UUID())
+    }
+    try commander.grantMaximumHardware()
+    refillMaximumHardware()
     if commander.cargoTonnes > commander.standardCargoCapacity { commander.unlimitedCargo = true }
     speed = min(speed, commander.performance.speed)
     showroom.selection = commander.shipID
@@ -617,17 +675,21 @@ public struct Game: Sendable {
     notify("COBRA MK III RESTORED - MAXIMUM HARDWARE")
   }
   mutating func fitMaximumHardware() {
-    commander.equipment = Equipment.maximumHardware
-    for mount in LaserMount.allCases where commander.performance.supports(mount) {
-      commander.installLaser(.naval, on: mount)
+    var candidate = self
+    do { try candidate.commander.grantMaximumHardware() } catch {
+      notify("MAXIMUM REFIT REFUSED")
+      return
     }
-    if commander.performance.cargoExpansion == 0 { commander.equipment.remove("Large Cargo Bay") }
-    commander.fuelStorageUnits = FuelStorage.maximumCount
+    candidate.refillMaximumHardware()
+    self = candidate
+    notify("MAXIMUM HARDWARE FITTED")
+  }
+  private mutating func refillMaximumHardware() {
     commander.fuel = commander.fuelCapacity
     commander.missiles = commander.missileCapacity
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
   }
   mutating func functionKey(_ number: Int) {
     if number == 6 && docked {
@@ -696,98 +758,45 @@ public struct Game: Sendable {
   }
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
-    let catalogueItem = Equipment.all[selection]
-    let item = Equipment(
-      name: catalogueItem.name, price: shopPrice(catalogueItem),
-      technology: catalogueItem.technology)
-    if item.name == FuelStorage.equipmentName {
-      guard commander.fuelStorageUnits < FuelStorage.maximumCount else {
-        notify("FUEL STORAGE FULL")
+    let item = Equipment.all[selection]
+    if item.name == "Fuel" || item.name == "Missile" {
+      let cost = shopPrice(item)
+      guard equipmentAvailable(item), commander.availableCredits >= cost else {
+        notify("NOT AVAILABLE")
         return
       }
-      let price = item.price
-      guard commander.availableCredits >= price else {
-        notify("NOT ENOUGH CASH")
-        return
-      }
-      if !commander.unlimitedCash { commander.credits -= price }
-      commander.fuelStorageUnits += 1
-      notify("FUEL STORAGE UNIT FITTED - REFUEL SEPARATELY")
-      return
-    }
-    if Equipment.isReward(item.name) && !atPlugh {
-      notify(Equipment.rewardLabel(item.name).uppercased() + " - NOT FOR SALE")
-      return
-    }
-    if item.name == "Extra Energy Unit" && commander.equipment.contains(Equipment.navalEnergyUnit) {
-      notify("NAVAL ENERGY UNIT FITTED")
-      return
-    }
-    if let tier = TargetingTier.from(item.name), let fitted = commander.targetingTier,
-      fitted >= tier
-    {
-      notify("TARGETING COMPUTER ALREADY FITTED")
-      return
-    }
-    if let tier = NavigationTier.from(item.name), let fitted = commander.navigationTier,
-      fitted >= tier
-    {
-      notify("NAVIGATIONAL COMPUTER ALREADY FITTED")
-      return
-    }
-    if let booster = ShieldBooster.from(item.name), let fitted = commander.shieldBooster,
-      fitted >= booster
-    {
-      notify(
-        booster.multiplier < fitted.multiplier
-          ? "WOULD REDUCE SHIELD CAPACITY" : "SHIELD BOOSTER ALREADY FITTED")
-      return
-    }
-    if let kind = LaserKind.from(item.name) {
-      purchaseLaser(kind, item: item)
-      return
-    }
-    if item.name == "Large Cargo Bay" && commander.performance.cargoExpansion == 0 {
-      notify("THIS HULL CANNOT FIT A CARGO EXPANSION")
-      return
-    }
-    let cost =
-      item.price
-    guard equipmentAvailable(item), commander.availableCredits >= cost else {
-      notify("NOT AVAILABLE")
-      return
-    }
-    if item.name == "Fuel" {
-      commander.fuel = commander.fuelCapacity
-    } else if item.name == "Missile" {
-      guard commander.missiles < commander.missileCapacity else {
-        notify("MISSILE RACK FULL")
-        return
-      }
-      commander.missiles += 1
-    } else {
-      guard !commander.equipment.contains(item.name) else {
-        notify("ALREADY FITTED")
-        return
-      }
-      if let tier = TargetingTier.from(item.name) {
-        commander.installTargetingComputer(tier)
-      } else if let tier = NavigationTier.from(item.name) {
-        commander.installNavigationComputer(tier)
-      } else if let booster = ShieldBooster.from(item.name) {
-        let oldCapacity = commander.shieldCapacity
-        commander.installShieldBooster(booster)
-        frontShield = frontShield / oldCapacity * commander.shieldCapacity
-        rearShield = rearShield / oldCapacity * commander.shieldCapacity
+      if item.name == "Fuel" {
+        commander.fuel = commander.fuelCapacity
       } else {
-        if item.name == Equipment.navalEnergyUnit {
-          commander.equipment.remove("Extra Energy Unit")
+        guard commander.missiles < commander.missileCapacity else {
+          notify("MISSILE RACK FULL")
+          return
         }
-        commander.equipment.insert(item.name)
+        commander.missiles += 1
       }
+      if !commander.unlimitedCash { commander.credits -= cost }
+      notify("EQUIPMENT FITTED")
+      return
     }
-    if !commander.unlimitedCash { commander.credits -= cost }
-    notify("EQUIPMENT FITTED")
+    do {
+      let quote = try quoteEquipmentPurchase(item)
+      let fitted = try applyEquipmentPurchase(quote)
+      notify(fitted ? "EQUIPMENT FITTED" : "EQUIPMENT STORED - CURRENT FIT RETAINED")
+    } catch EquipmentPurchaseError.missingPrerequisite(let node) {
+      notify("BUY " + node.key.uppercased() + " FIRST")
+    } catch EquipmentPurchaseError.missingFittedPrerequisite(let node) {
+      notify("FIT " + node.key.uppercased() + " FIRST")
+    } catch EquipmentPurchaseError.notForSale {
+      notify("STANDARD OR ACQUISITION HARDWARE - NOT FOR SALE")
+    } catch EquipmentPurchaseError.insufficientFunds {
+      notify("NOT ENOUGH CASH")
+    } catch EquipmentRuntimeError.alreadyOwned {
+      notify("ALREADY OWNED")
+    } catch EquipmentRuntimeError.noSlot {
+      notify("NO COMPATIBLE FREE FITTING")
+    } catch {
+      notify("PURCHASE REFUSED")
+    }
   }
   /// Sells the hold, then buys the most profitable exports for a destination.
   /// Government changes route risk, while commodity prices follow Elite's economy rules.
@@ -910,7 +919,7 @@ public struct Game: Sendable {
     bodies = []
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
     laserHeat = 0
     jumpCountdown = nil
     missileArmed = false
@@ -988,7 +997,7 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
   }
   public mutating func galacticJump() {
-    guard !docked, commander.equipment.remove("Galactic Hyperdrive") != nil else { return }
+    guard !docked, commander.consumeEquipped("Galactic Hyperdrive") else { return }
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
@@ -1052,14 +1061,14 @@ public struct Game: Sendable {
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
-    guard !docked, commander.equipment.remove("Energy Bomb") != nil else { return }
+    guard !docked, commander.consumeEquipped("Energy Bomb") else { return }
     applyAttributedEnergyBomb()
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
     guard !docked, commander.equipment.contains("Escape Pod") else { return }
     var candidate = self
-    candidate.commander.equipment.remove("Escape Pod")
+    guard candidate.commander.consumeEquipped("Escape Pod") else { return }
     candidate.commander.cargo = Array(repeating: 0, count: 17)
     candidate.commander.cargo[10] = candidate.commander.markedFirearms
     candidate.commander.legal = 0
@@ -1123,8 +1132,8 @@ public struct Game: Sendable {
     fireCooldown = max(0, fireCooldown - dt)
     missileCooldown = max(0, missileCooldown - dt)
     energy = min(craft.energy, energy + dt * craft.recharge * commander.energyRechargeMultiplier)
-    frontShield = min(commander.shieldCapacity, frontShield + dt * craft.shieldRecharge)
-    rearShield = min(commander.shieldCapacity, rearShield + dt * craft.shieldRecharge)
+    frontShield = min(commander.shieldCapacity, frontShield + dt * commander.frontShieldRecharge)
+    rearShield = min(commander.rearShieldCapacity, rearShield + dt * commander.rearShieldRecharge)
     if controls.fire && screen.isFlight { fireLaser() }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
@@ -1285,7 +1294,15 @@ public enum SaveError: Error { case invalidCommander }
 public actor GameRuntime {
   var game: Game
   private var controls = Controls()
-  public init(game: Game = Game()) { self.game = game }
+  public init(game: Game = Game()) {
+    var prepared = game
+    if (try? prepared.commander.prepareEquipment()) != nil {
+      prepared.commander.mirrorFittedEquipment()
+      self.game = prepared
+    } else {
+      self.game = game
+    }
+  }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     let old = game.screen
@@ -1321,7 +1338,14 @@ public actor GameRuntime {
     return game
   }
   public func save(to url: URL) throws {
-    var candidate = game
+    let prepared = try prepareSave(game)
+    try writeSave(prepared.data, to: url)
+    game = prepared.game
+  }
+  private func prepareSave(_ value: Game) throws -> (game: Game, data: Data) {
+    var candidate = value
+    try candidate.commander.prepareEquipment()
+    candidate.commander.mirrorFittedEquipment()
     candidate.resolveDestroyed()
     candidate.persistCargoPoses()
     candidate.persistBlackjackTargets()
@@ -1338,10 +1362,12 @@ public actor GameRuntime {
     }
     let data = try JSONEncoder().encode(persistedCommander)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
+    return (candidate, data)
+  }
+  private func writeSave(_ data: Data, to url: URL) throws {
     try FileManager.default.createDirectory(
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
-    game = candidate
   }
   public func restoreStartup(from url: URL) throws {
     try load(from: url, persistMigrations: false)
@@ -1352,8 +1378,14 @@ public actor GameRuntime {
     let data = try Data(contentsOf: url)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
     let commander = try JSONDecoder().decode(Commander.self, from: data)
-    guard game.load(commander) else { throw SaveError.invalidCommander }
-    if persistMigrations && game.commander != commander { try save(to: url) }
+    var candidate = game
+    guard candidate.load(commander) else { throw SaveError.invalidCommander }
+    if persistMigrations && candidate.commander != commander {
+      let prepared = try prepareSave(candidate)
+      try writeSave(prepared.data, to: url)
+      candidate = prepared.game
+    }
+    game = candidate
   }
 }
 

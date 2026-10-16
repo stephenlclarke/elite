@@ -64,7 +64,8 @@ extension Commander {
       items.append(
         .init(
           id: id, node: node, provenance: provenance, component: component,
-          location: slot.map { .init(hullInstanceID: hull, slot: $0) }))
+          location: slot.map { .init(hullInstanceID: hull, slot: $0) },
+          boundHull: slot == .utility(.cargoExpansion) ? hull : nil))
       represented.insert(node)
     }
     let shield = shieldBooster?.equipmentName ?? "Basic Shield"
@@ -82,7 +83,10 @@ extension Commander {
     try append(energy, at: .energy, standard: energy == "Basic Energy System")
     if let core = targetingTier { try append(core.equipmentName, at: .targetingCore) }
     for mount in LaserMount.allCases {
-      if let laser = laser(on: mount) { try append(laser.equipmentName, at: .laser(mount)) }
+      if let laser = laser(on: mount) {
+        try append(
+          laser.equipmentName, at: .laser(mount), standard: laser == .pulse && mount == .front)
+      }
     }
     if xyzzyGrant && equipment.contains(LaserKind.mining.equipmentName),
       performance.workTools?.contains(.miningLaser) == true

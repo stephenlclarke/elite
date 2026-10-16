@@ -50,7 +50,17 @@ public struct RouteAlternative: Sendable {
   public let tradeEstimate: Double
 }
 extension Commander {
-  public var navigationTier: NavigationTier? { equipment.compactMap(NavigationTier.from).max() }
+  public var navigationTier: NavigationTier? {
+    if equipmentInventory != nil {
+      guard let component = fittedComponent(at: .navigation),
+        let index = EquipmentModuleTemplates.navigation.grades.firstIndex(where: {
+          $0.identity == component.grade
+        })
+      else { return nil }
+      return NavigationTier(rawValue: index + 1)
+    }
+    return equipment.compactMap(NavigationTier.from).max()
+  }
   public mutating func installNavigationComputer(_ tier: NavigationTier) {
     let effective = max(tier, navigationTier ?? tier)
     equipment.subtract(NavigationTier.allCases.map(\.equipmentName))

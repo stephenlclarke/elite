@@ -5,7 +5,7 @@ public struct ShipPerformance: Codable, Sendable, Equatable {
   public let cargo: Int
   public let speed: Double
   public let acceleration: Double
-  public let energy: Double
+  public var energy: Double
   public let recharge: Double
   public let roll: Double
   public let pitch: Double
@@ -14,7 +14,7 @@ public struct ShipPerformance: Codable, Sendable, Equatable {
   public let shieldRecharge: Double
   public let fuel: Int
   public let jump: Double
-  public let spool: Double
+  public var spool: Double
   public let missiles: Int
   public let facings: Int
   public let cargoExpansion: Int
@@ -43,7 +43,17 @@ public struct ShipPerformance: Codable, Sendable, Equatable {
 }
 extension Commander {
   public var ship: CatalogueShip { ShipCatalogue.ship(shipID)! }
-  public var performance: ShipPerformance { ship.game! }
+  public var nativePerformance: ShipPerformance { ship.game! }
+  public var performance: ShipPerformance {
+    var result = nativePerformance
+    if let ratio = fittedComponent(at: .energy)?.statistics[.energyCapacity] {
+      result.energy *= ratio
+    }
+    if let ratio = fittedComponent(at: .navigation)?.statistics[.jumpSpool] {
+      result.spool *= ratio
+    }
+    return result
+  }
   public var missileCapacity: Int { performance.missiles }
   public var standardCargoCapacity: Int {
     performance.cargo + (equipment.contains("Large Cargo Bay") ? performance.cargoExpansion : 0)
