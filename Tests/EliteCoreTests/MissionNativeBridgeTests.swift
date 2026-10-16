@@ -473,7 +473,7 @@ struct MissionNativeBridgeTests {
     #expect(throws: MissionNativeBridgeError.invalidGeometry) {
       try duplicateID.nearestMissionCollision(
         from: .init(0, 0, 0), direction: .init(0, 0, 1),
-        range: 1000, radius: 1, includePlayer: false)
+        range: 1000, radius: 1, excludingBodyIDs: [3], includePlayer: false)
     }
     game.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: 10)]
     let celestial = try game.nearestMissionCollision(
