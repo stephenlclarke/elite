@@ -6,7 +6,7 @@ return {
     local offers = {}
     for _, variant in ipairs({"credits", "food"}) do
       for tier = 1, 3 do
-        local charge = variant == "credits" and string.format("%.1f CR", credits[tier])
+        local charge = variant == "credits" and (credits[tier] .. ".0 CR")
           or (food[tier] .. (food[tier] == 1 and " tonne Food" or " tonnes Food"))
         offers[#offers + 1] = {
           key = variant .. "-" .. tier,

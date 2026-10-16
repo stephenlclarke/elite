@@ -118,8 +118,17 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
   let key = try game.ensureContractBoard(fixture.pack)
   let board = try #require(game.commander.contracts.boards[key])
   #expect(board.offers.count == 6 && Set(board.offers.map(\.key)).count == 6)
+  let expectedTitles = [
+    "credits-1": "Station Aid / difficulty 1 / 500.0 CR",
+    "credits-2": "Station Aid / difficulty 2 / 1500.0 CR",
+    "credits-3": "Station Aid / difficulty 3 / 3000.0 CR",
+    "food-1": "Station Aid / difficulty 1 / 1 tonne Food",
+    "food-2": "Station Aid / difficulty 2 / 3 tonnes Food",
+    "food-3": "Station Aid / difficulty 3 / 5 tonnes Food",
+  ]
   let before = game.commander
   for offer in board.offers {
+    #expect(offer.title == expectedTitles[offer.key])
     let quote = game.contractAcceptanceQuote(board: key, offer: offer.id)
     #expect(quote.allowed && quote.pledge?.profileSeed != 0)
     #expect(offer.reward == 0 && offer.deposit == 0 && offer.duration == 0)
