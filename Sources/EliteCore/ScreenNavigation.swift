@@ -117,6 +117,14 @@ extension Game {
       openStationRumour()
       return true
     }
+    if key == "library-open" {
+      openReferenceLibrary()
+      return true
+    }
+    if key == "contracts-open" {
+      openContractBoard()
+      return true
+    }
     if key == "gallery-open" {
       openGallery()
       return true
@@ -133,7 +141,7 @@ extension Game {
       if screen == .chart { searchKey(key) } else { showroomKey(key) }
       return true
     }
-    if paused && ![Screen.gallery, .showroom, .rumour].contains(screen) {
+    if paused && ![Screen.gallery, .library, .showroom, .rumour].contains(screen) {
       if key == "escape" { paused = false }
       if key == ":" { commander.speech.toggle() }
       if key == "l" { openGallery() }
@@ -144,7 +152,7 @@ extension Game {
       return true
     }
     if key.count == 1, let number = Int(key), (0...9).contains(number),
-      [Screen.showroom, .gallery, .rumour, .navigation].contains(screen)
+      [Screen.showroom, .gallery, .library, .contracts, .rumour, .navigation].contains(screen)
     {
       openNumberedScreen(number)
       return true
@@ -158,6 +166,12 @@ extension Game {
       return true
     case .handoff:
       blackjackHandoffKey(key)
+      return true
+    case .library:
+      libraryKey(key)
+      return true
+    case .contracts:
+      contractBoardKey(key)
       return true
     case .gallery:
       galleryKey(key)
@@ -233,6 +247,8 @@ extension Game {
     showroom.searching = false
     switch screen {
     case .showroom: closeShowroom()
+    case .library: screen = library.previous
+    case .contracts: screen = contractBoard.previous
     case .gallery: closeGallery()
     case .rumour: screen = rumourReturn
     case .navigation: screen = navigationReturn
