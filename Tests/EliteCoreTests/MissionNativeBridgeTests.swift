@@ -47,6 +47,29 @@ private func bridgeWeapon(
     muzzle: .init(1, 2, 3), direction: .init(0, 0, 1))
 }
 
+private func bridgeArchiveFixture() throws -> (MissionLaunchArchive, MissionShotDescriptor) {
+  let (body, context) = try bridgeFixture()
+  let source = try MissionNativeBridge.bindActor(
+    descriptor: bridgeDescriptor(body, context), body: body, context: context)
+  let actor = try #require(context.actors.first { $0.identity == source.nativeActor })
+  let component = UUID(uuidString: "00000000-0000-0000-0000-000000000003")!
+  // Pure shape/law fixture: does not claim an actual firing allocator or retained MC1 factory.
+  let origin = AttackOrigin(
+    emissionID: 1, owner: source.nativeActor, ordnance: nil,
+    emittedAt: context.physicalTime, ownerLegalAtEmission: actor.legal,
+    sourcePart: component.uuidString)
+  let judgement = try CrimeLedger().freezeMissionLaunchJudgement(
+    origin: origin, intendedVictim: context.player, emissionPosition: actor.position,
+    context: context)
+  let shot = MissionShotDescriptor(
+    identity: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
+    owner: source.actorID, instance: source.instanceID, weapon: "cannon", component: component,
+    velocity: .init(0, 0, 777), age: 0, lifetime: 4, damage: 23, radius: 2, collisionDelay: 0.2)
+  let archive = try MissionNativeBridge.makeLaunchArchive(
+    shot: shot, source: source, intendedTarget: nil, judgement: judgement)
+  return (archive, shot)
+}
+
 struct MissionNativeBridgeTests {
   @Test func realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity() throws {
     let (body, context) = try bridgeFixture()
@@ -216,4 +239,71 @@ struct MissionNativeBridgeTests {
       }
     }
   }
+  @Test func actualFrozenNativeLawArchiveRoundTripsExactSourceAndAcceptsAbsentLegacyHistory() throws
+  {
+    let (archive, shot) = try bridgeArchiveFixture()
+    #expect(archive.valid && archive.schemaVersion == 1)
+    #expect(archive.sourceActorID == bridgeActor && archive.instanceID == bridgeInstance)
+    #expect(
+      archive.sourceComponentID == shot.component
+        && archive.origin.sourcePart == shot.component?.uuidString)
+    #expect(archive.intendedTarget == .player && archive.judgement.victim.entity == 0)
+    #expect(!archive.judgement.launchEffectsApplied)
+    let decoded = try JSONDecoder().decode(
+      MissionLaunchArchive.self, from: JSONEncoder().encode(archive))
+    #expect(
+      decoded == archive && decoded.judgement == archive.judgement
+        && decoded.origin == archive.origin)
+    try MissionNativeBridge.validateArchive(decoded, shot: shot, packDigest: archive.packDigest)
+    try MissionNativeBridge.validateArchive(nil, shot: shot, packDigest: archive.packDigest)
+  }
+
+  @Test func presentArchiveWrongShotSourceDigestOrComponentIsHardErrorNotUnknownHistory() throws {
+    let (archive, shot) = try bridgeArchiveFixture()
+    for scenario in 0..<4 {
+      let other = UUID(uuidString: "00000000-0000-0000-0000-000000000099")!
+      let changed = MissionShotDescriptor(
+        identity: scenario == 0 ? other : shot.identity,
+        owner: scenario == 1 ? other : shot.owner,
+        instance: scenario == 2 ? other : shot.instance, weapon: shot.weapon,
+        component: scenario == 3 ? other : shot.component, velocity: shot.velocity,
+        age: shot.age, lifetime: shot.lifetime, damage: shot.damage, radius: shot.radius,
+        collisionDelay: shot.collisionDelay)
+      #expect(throws: MissionNativeBridgeError.invalidArchive) {
+        try MissionNativeBridge.validateArchive(
+          archive, shot: changed, packDigest: archive.packDigest)
+      }
+    }
+    #expect(throws: MissionNativeBridgeError.invalidArchive) {
+      try MissionNativeBridge.validateArchive(
+        archive, shot: shot, packDigest: String(repeating: "b", count: 64))
+    }
+  }
+
+  @Test func decodedMalformedPresentArchiveVersionAndLawAreRejectedInsteadOfBecomingNil() throws {
+    let (archive, _) = try bridgeArchiveFixture()
+    let encoded = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(archive)) as? [String: Any])
+    for version in [0, 2, -1] {
+      var object = encoded
+      object["schemaVersion"] = version
+      let data = try JSONSerialization.data(withJSONObject: object)
+      #expect(throws: MissionNativeBridgeError.invalidArchive) {
+        try JSONDecoder().decode(MissionLaunchArchive.self, from: data)
+      }
+    }
+    var malformed = encoded
+    malformed["packDigest"] = "invalid"
+    let data = try JSONSerialization.data(withJSONObject: malformed)
+    #expect(throws: MissionNativeBridgeError.invalidArchive) {
+      try JSONDecoder().decode(MissionLaunchArchive.self, from: data)
+    }
+    malformed = encoded
+    malformed.removeValue(forKey: "judgement")
+    let missing = try JSONSerialization.data(withJSONObject: malformed)
+    #expect(throws: (any Error).self) {
+      try JSONDecoder().decode(MissionLaunchArchive.self, from: missing)
+    }
+  }
+
 }
