@@ -34,6 +34,48 @@ private func projectileSaveFolder() throws -> URL {
 }
 
 struct ScriptProjectileRestoreTests {
+  @Test(arguments: ["owner", "component"])
+  func retainedSourceMismatchFailsBeforeNativeAllocationOrAnyActorRestoration(field: String) throws
+  {
+    var (game, id) = try retainedProjectileGame()
+    let shot = try #require(game.commander.scriptState.projectiles[id]?.body.scriptShot)
+    var instance = try #require(game.commander.scriptState.instances[shot.instance])
+    var encounter = try #require(instance.ownedEncounters["opponents"])
+    let old = try #require(encounter.actors["lead"])
+    var body = old.body
+    let identity: UUID
+    if field == "owner" {
+      identity = UUID()
+      body.missionActorID = identity
+    } else {
+      identity = old.identity
+      let component = try #require(body.scriptNPC?.components["turret"])
+      body.scriptNPC?.components["turret"] = .init(
+        identity: UUID(), energy: component.energy, guns: component.guns)
+    }
+    let altered = ScriptOwnedActor(
+      identity: identity, alias: old.alias, body: body, presence: old.presence,
+      destroyedByPlayer: old.destroyedByPlayer)
+    try #require(altered.valid)
+    encounter.actors["lead"] = altered
+    instance.ownedEncounters["opponents"] = encounter
+    game.commander.scriptState.instances[shot.instance] = instance
+    game.bodies.removeAll { $0.missionActorID != nil }
+    let before = game.commander
+    let bodies = game.bodies
+    let next = game.nextBodyID
+    #expect(
+      !game.commander.scriptState.projectileArchiveValid(
+        try #require(game.commander.scriptState.projectiles[id])))
+    #expect(throws: NativeMissionProjectileAdmissionError.invalidRecord) {
+      try game.admitRetainedMissionProjectile(id)
+    }
+    #expect(throws: NativeMissionProjectileAdmissionError.invalidRecord) {
+      try game.restoreScriptActors()
+    }
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == next)
+  }
+
   @Test(arguments: [false, true])
   func format21RuntimeRestoresThroughNativeAdmissionOnceAndRetainsExactShotHistory(archived: Bool)
     async throws
