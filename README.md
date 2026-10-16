@@ -168,9 +168,9 @@ Each galaxy has a hidden **PLUGH** port. Ask for station rumours with U while do
 
 ## Targeting computers and target information
 
-See the [targeting-computer player guide](docs/TARGETING-COMPUTERS.md) for core prices, tech requirements, controls and ECM rules, plus clearly marked pending Mining/Salvage add-ons and worked examples.
+See the [targeting-computer player guide](docs/TARGETING-COMPUTERS.md) for core prices, prerequisites, controls and ECM rules, plus the independent Mining/Salvage modules and work tools implemented in the current development source. F cycles work-target filters, W selects the tool and Return uses it. These additions still require integrated native and quality acceptance; this is not a claim that they shipped in version 1.4.0.
 
-Upgrades are cumulative, with one effective installed tier. Prices are in credits; Basic and Military use twice their matching laser prices, with graduated intermediate prices following the requested laser-related scale. Equipment rows use a compact font and a right-aligned credit column inside a centred table capped at 680 points, keeping names and prices close in full screen.
+Upgrades are cumulative, with one effective installed tier. The current development shop requires recorded prerequisite purchases; Mining and Salvage modules are separate fittings and require a fitted Basic-or-higher core. Prices are in credits; Basic and Military use twice their matching laser prices, with graduated intermediate prices following the requested laser-related scale. Equipment rows use a compact font and a right-aligned credit column inside a centred table capped at 680 points, keeping names and prices close in full screen.
 
 | Computer | Price (CR) | Added capability |
 | --- | ---: | --- |

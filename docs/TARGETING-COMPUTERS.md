@@ -1,6 +1,6 @@
 # Targeting computers, mining and salvage
 
-The six core models below are implemented. The independent Mining Module, Salvage Module and Salvage Cutter described later are **pending**: their version-6 design is an implementation contract, not evidence of playable features. Existing Mining Lasers and Fuel Scoops do not yet enable that specialized automation.
+The current development source implements six cumulative targeting cores, independent Mining and Salvage modules, and separate work tools. This guide describes that source behavior; it does not claim these additions are in the published 1.4.0 app or that integrated native, save and quality acceptance has passed. Check the build identity of the app you are using.
 
 ## Installed core models
 
@@ -12,10 +12,10 @@ Buy equipment while docked: **3** opens Equip Ship, **Up/Down** or scrolling sel
 | Advanced | 2,000 | 5 | Also acquire known offscreen ships | Cash and local availability |
 | Docking | 4,000 | 7 | Also acquire stations and complete automatic docking | A live station and a safe approach |
 | Identification | 6,000 | 9 | Live target preview, model name and Hostile/Neutral status | A selected target |
-| Pirate | 10,000 | 10 | Cargo, origin and destination fields | These fields currently report unavailable/unknown |
+| Pirate | 10,000 | 10 | Cargo, origin and destination fields | Actual ordinary manifest and recorded route; unrecorded values remain unknown |
 | Military | 12,000 | 11 | Missile/ECM information and conditional ECM-confirmed return fire; additional resource fields | Return fire needs ECM confirmation, ammunition and a forward lock |
 
-You may buy a higher model directly; buying each intermediate model is not a prerequisite. One effective highest core is installed, and it includes the lower models' capabilities. An upgrade costs its full listed shop price. Rebuying the same model or buying a lower one is blocked. Neither Military nor any lower core alone grants the pending Mining or Salvage Module.
+One effective core is fitted, and its capabilities include the lower models. Ordinary shop upgrades require the recorded prerequisite purchases in the core lineage; a higher model cannot bypass unpaid prerequisites. Each purchase uses its listed price and the current cash, technology and fitting checks. Mining and Salvage are separate fittings: Military does not grant either module. Buying either module requires the Basic core entitlement and a fitted Basic-or-higher core.
 
 ### Select, track and dock
 
@@ -45,60 +45,45 @@ The yellow station compass works without any computer. It shows the station's be
 
 With Military and return fire enabled, an incoming enemy missile identifies its actual living launching ship and establishes a weapons lock. This does not take over steering or enable Spin Hold. If your own ECM confirms destruction of that missile, the computer can launch one retaliatory missile per attacker per ECM activation. It waits for the ECM field to end and the normal one-second missile cooldown, uses ammunition unless unlimited, and requires the source still to be alive and in the forward hemisphere. An order expires after three game seconds; a missing source, ammunition or lock reports failure rather than a launch.
 
-**T** arms a missile, **M** fires it and **U** disarms, clears the weapons lock and cancels queued return fire. **Return** fires the laser fitted to the current view while held. Return fire defaults to enabled with Military; XYZZY's **B** preference can disable it and clears queued orders. These are combat controls, not pending cutter or mining-automation bindings.
+**T** arms a missile, **M** fires it and **U** disarms, clears the weapons lock and cancels queued return fire. **Return** uses the selected flight tool while held; with Combat laser selected, it fires the laser fitted to the current view. Return fire defaults to enabled with Military; XYZZY's **B** preference can disable it and clears queued orders. **W** cycles Combat laser, Mining laser and Salvage cutter; choosing a missing tool reports the required fitting instead of substituting a combat weapon.
 
-## Pending independent work modules
+## Independent work modules and tools
 
-**Everything in this section is intended behavior, awaiting integration and verification.** No new module price, technology gate, filter shortcut or tool selection key is claimed as shipped here. The implementation must expose its actual controls and costs in Equip Ship and contextual help before this section can become a playable guide.
+The development shop and runtime use the following separate fittings. Prices are CR and technology levels use the shop's displayed one-based numbering. Hardware availability and fitting compatibility still apply; a module purchase does not include its tool, Fuel Scoops or the other module.
 
-| Planned fitting | Requires | Intended capability |
-| --- | --- | --- |
-| Mining Module | Basic-or-higher core | Asteroid/rock approach, motion-matched hold, fitted Mining Laser selection and ore collection |
-| Salvage Module | Basic-or-higher core | Eligible ship/wreck hold, section work and generic loose-debris collection |
-| Mining Laser | A usable supported mining fitting | Extract asteroid material; separate from module ownership |
-| Salvage Cutter | A separate utility fitting | Detach attached ship/wreck sections without replacing the four combat laser fittings |
-| Fuel Scoops | Physical scoop/cargo compatibility and free capacity | Collect released ore/salvage and single-scoop items |
+| Fitting | Price (CR) | Minimum displayed TL | Requirements and role |
+| --- | ---: | ---: | --- |
+| Mining Module | 2,000 | 6 | Basic entitlement and a fitted Basic-or-higher core; rock guidance and ore recovery |
+| Salvage Module | 4,000 | 8 | Basic entitlement and a fitted Basic-or-higher core; eligible wreck and debris guidance |
+| Mining Laser | 800 | 11 | Supported mining utility fitting or a usable forward Mining Laser; extracts rock material |
+| Salvage Cutter | 2,500 | 7 | Supported cutter utility fitting; works on accessible wreck sections |
+| Fuel Scoops | 525 | 6 | Compatible scoop fitting and available cargo capacity; collects physically reachable material |
 
-The existing Mining Laser costs **800 CR** at displayed **TL11**; Fuel Scoops cost **525 CR** at displayed **TL6**. Those are shipped equipment prices, not prices for either new module. Buying a work module must not imply a free tool, scoops or the other module. Mining-only enables asteroid work and its ore collection; Salvage-only enables wreck work and generic debris collection. A missing module must report the requirement without engaging its controller through either keyboard or pointer selection. Manual tool use remains separate from automation.
+**F** cycles Ships, Mining, Salvage and All filters. **Tab** or **R** selects the next eligible target in the current filter. Eligibility checks report missing cores, modules or compatible targets; single-scoop collection also requires Fuel Scoops. **W** cycles the selected tool; **Return** uses it while held. Manual tool use is separate from automatic guidance. The cutter and mining utility do not replace the four combat laser mounts.
 
-### Intended example: asteroid mining
+### Rock work
 
-1. Fit a core, Mining Module, usable Mining Laser and Fuel Scoops; leave cargo space for ore. Select an asteroid using the implemented mining target controls.
-2. The computer approaches with actual hull clearance, matches motion and establishes a safe hold. **Only on that stable-hold transition** does it select the usable Mining Laser and announce the choice. Selection does not fire.
-3. Activate the selected tool yourself. Extraction then enables fitted scoops to recover released ore through the real capture volume. The Salvage Module is not required for this ore collection. Missing or inaccessible tools report the requirement while preserving a safe hold; no combat laser is substituted.
+Fit a core and Mining Module for guidance, plus a usable Mining Laser for extraction and Fuel Scoops for collection. Choose the Mining filter with F, then select a rock with Tab or R. Guidance approaches and establishes a hold; on the stable-hold transition it selects the appropriate tool unless you have overridden the tool choice. Selection alone does not fire. Use Return to work, keeping cargo capacity available for released ore. Salvage module ownership is not required for ore recovery.
 
-### Intended example: a large wreck
+### Wrecks and loose debris
 
-1. Fit a core, Salvage Module, Salvage Cutter and Fuel Scoops. Check the target's Abandoned/Claimed/Occupied/Mission protected state and available cargo space. A hostile or disabled ship is not automatically lawful salvage.
-2. Select the eligible wreck. It becomes the persistent primary target. The computer approaches a safe surface work position, matches drift and spin, and holds there. Excessive motion, rotating protrusions or an unreachable surface must block the approach with a reason, without teleporting the ship.
-3. After a stable hold, the fitted cutter is selected once and announced. Activate it to cut; that same activation enables fitted scoops. Released fragments remain children of the wreck: collection must not replace the parent lock. Safe local corrections collect reachable debris, then resume the work position and section queue. No second scoop key or collection confirmation is needed.
-4. Release the cutter to stop cutting while retaining the hold and parent lock; already reachable debris may finish collection. Depleted sections have finite rewards. When none remain, show Salvage complete and retain the selectable, physically present wreck until cancellation or an explained interruption.
+Use the Salvage filter and module for eligible wrecks and generic debris. A hostile or disabled ship is not automatically lawful salvage: ownership, claimant and mission protection checks still apply. Section work needs a fitted cutter and an accessible work surface; loose compatible items can be collected without a cutter. Fuel Scoops, scoop aperture and cargo capacity constrain physical collection. Oversized or obstructed items remain in space rather than becoming virtual rewards.
 
-### Intended example: loose debris
+Guidance keeps the work parent selected during section work and collection. Manual steering, Q, a new target or Spin Hold cancels guidance; incoming damage interrupts work. W records a manual tool override so stable guidance does not repeatedly replace your selection. Space remains live during work, including combat, collisions and resource use.
 
-1. Fit a core, the matching module and Fuel Scoops. Generic cargo, loose technology, detached modules, disabled drones and empty pods use Salvage; loose ore can use Mining. Check that the item fits the scoop aperture and cargo capacity.
-2. Select a single-scoop item. Selection alone starts a safe drift-aware intercept, enables scoops and collects it through the actual capture volume. No cutter, tool fire or second confirmation is needed.
-3. A successful one-item recovery stops safely and reports the collected item. It is not reported as Target lost. An attached or oversized object instead needs suitable section work or an incompatibility explanation.
-
-### Intended limits, cancellation and persistence
-
-Manual flight input, **Q**, a new primary target or an explicit Cancel ends the work controller immediately. Automatic tool choice occurs when a new stable hold is established; it must not overwrite a later manual tool choice every frame. Incoming attack interrupts cutting and warns without silently resuming it. Space remains live: police, pirates, missiles, collisions, heat and energy still matter. Existing menu/pause time rules remain in effect.
-
-Missing scoops, full or reserved cargo capacity, an obstructed fragment or an unsafe work position must leave material in space and explain the blockage. Capacity is checked again at transfer. Ownership and mission protection apply before cutting; unauthorized damage is an attack. Occupied rescue capsules use mission/passenger custody, never spare-equipment or commodity rewards. Empty serviceable pods can be recoverable equipment. Loss or destruction of the actual parent must be distinguished from completed recovery of a child item.
-
-Mining and Salvage must be independently saved installed entitlements, preserved when the core upgrades and when a compatible ship exchange transfers equipment. XYZZY must grant each module explicitly, alongside its tools and scoops; Military's inherited core capabilities must never substitute for these grants. This persistence and grant behavior is pending with the modules.
+These source paths still need the composed build's end-to-end native acceptance: purchase and fit the prerequisites, approach and hold, use each tool, collect finite material, cancel safely, then save and reload. A source implementation or an authored test is not evidence that those checks have executed successfully.
 
 ## Saves, ship changes and presentation
 
 The implemented core is saved as equipment. Loading normalizes duplicate older core entries to the highest tier; legacy Docking Computers become at least Docking without downgrading a higher core. Loaded commanders start docked with transient locks, ECM activity and pending return-fire orders cleared. Compatible ship exchanges preserve the core and existing paid equipment; incompatible cargo, laser mounts, fuel or missile fits block exchange with an explanation.
 
-Normal Commander Jameson starts without a targeting computer. XYZZY makes Commander Clarke's maximum fit include Military, ECM and Fuel Scoops. A Mining Laser equipment entry is also retained, but the maximum refit mounts Naval lasers on every supported facing; it does not supply a usable Mining Laser mount. Its Auto Target, Auto ECM and return-fire preferences are separate saved choices. Turning Auto Target off does not remove the core; explicit Tab/R can still request manual guidance. New module grants remain pending as described above.
+Normal Commander Jameson starts without a targeting computer. In the current source, XYZZY explicitly grants Military, both independent work modules, ECM and Fuel Scoops. It fits Naval lasers on supported combat mounts and separately grants the mining utility and cutter where the hull supports them. Auto Target, Auto ECM and return-fire preferences remain separate saved choices. Turning Auto Target off does not remove the core; Tab/R can still request guidance. The modules occupy independent inventory slots, so a core upgrade does not stand in for module ownership; ship exchange must pass actual fitting compatibility checks.
 
-Equip Ship currently groups the six cores under Targeting Computers, uses the small fixed game font, indents item names and right-aligns prices/status. The pending presentation must keep that alignment and show one Targeting Computer with named core capabilities and separate Mining/Salvage module rows. Commander Status must distinguish inherited lower capabilities from separately purchased add-ons, without duplicate paid entries. Contextual help and selected shop-row descriptions must agree with runtime prerequisites and controls, remain readable at compact/full-screen sizes, and scroll to every fitting. **K** or **Command-K** opens the current contextual key guide.
+Equip Ship groups core choices and separate Mining/Salvage module rows under Targeting Computers. Commander Status shows the fitted core and separate Mining and Salvage summaries. **K** or **Command-K** opens contextual help, including F, W and Return. Compact/full-screen readability and agreement with the actual shop prerequisites remain part of integrated native acceptance.
 
 ## Implementation references
 
-Core behavior and prices: [TargetingComputer.swift](../Sources/EliteCore/TargetingComputer.swift), [AutoTargetControl.swift](../Sources/EliteCore/AutoTargetControl.swift), [TargetPanel.swift](../Sources/EliteCore/TargetPanel.swift), [RetaliationControl.swift](../Sources/EliteCore/RetaliationControl.swift), [ECMControl.swift](../Sources/EliteCore/ECMControl.swift), [Game.swift](../Sources/EliteCore/Game.swift), [Plugh.swift](../Sources/EliteCore/Plugh.swift), [ShipTrade.swift](../Sources/EliteCore/ShipTrade.swift), [EquipmentDisplay.swift](../Sources/EliteCore/EquipmentDisplay.swift) and [PlayerHelp.swift](../Sources/EliteCore/PlayerHelp.swift). The pending work follows the primary checkout's `SALVAGE-GAMEPLAY-DESIGN.json`, version 6, dated 2026-10-15; it does not replace those implemented sources.
+Core behavior and prices: [TargetingComputer.swift](../Sources/EliteCore/TargetingComputer.swift), [AutoTargetControl.swift](../Sources/EliteCore/AutoTargetControl.swift), [TargetPanel.swift](../Sources/EliteCore/TargetPanel.swift), [RetaliationControl.swift](../Sources/EliteCore/RetaliationControl.swift), [ECMControl.swift](../Sources/EliteCore/ECMControl.swift), [Game.swift](../Sources/EliteCore/Game.swift), [Plugh.swift](../Sources/EliteCore/Plugh.swift), [ShipTrade.swift](../Sources/EliteCore/ShipTrade.swift), [EquipmentDisplay.swift](../Sources/EliteCore/EquipmentDisplay.swift) and [PlayerHelp.swift](../Sources/EliteCore/PlayerHelp.swift). Work behavior is implemented in [WorkTargetRuntime.swift](../Sources/EliteCore/WorkTargetRuntime.swift), [FlightWorkGuidance.swift](../Sources/EliteCore/FlightWorkGuidance.swift), [FlightWorkTools.swift](../Sources/EliteCore/FlightWorkTools.swift) and [MiningWorkTool.swift](../Sources/EliteCore/MiningWorkTool.swift). Paid prerequisites and explicit maximum-hardware grants are defined in [EquipmentPurchaseProgression.swift](../Sources/EliteCore/EquipmentPurchaseProgression.swift) and [EquipmentMutations.swift](../Sources/EliteCore/EquipmentMutations.swift).
 
 Target details wrap within the cockpit panel. Use I to expand it and Option-Up/Down to page long manifests and resource readings. Legacy mission ships keep their original energy-only combat rules; zero shield capacity describes that profile and does not grant them modern shields.
 
