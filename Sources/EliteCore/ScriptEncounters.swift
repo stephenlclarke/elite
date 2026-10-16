@@ -351,6 +351,18 @@ extension Game {
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter
   ) throws -> MissionActorAdmissionSource {
+    let definition = try validateMissionActorAdmissionEncounter(
+      mode: mode, pack: pack, state: state, encounter: encounter)
+    return try constructMissionActorAdmissionSource(
+      mode: mode, authority: authority, pack: pack, state: state, encounter: encounter,
+      definition: definition)
+  }
+
+  /// Finish full record validation before any template-construction frame becomes active.
+  private func validateMissionActorAdmissionEncounter(
+    mode: MissionActorAdmissionMode, pack: ScriptPack, state: ScriptInstance,
+    encounter: ScriptOwnedEncounter
+  ) throws -> ScriptEncounterDefinition {
     guard state.definition == pack.manifest.stateID, state.version == pack.manifest.version,
       state.digest == pack.digest, scriptPack(for: state)?.digest == pack.digest,
       encounter.valid,
@@ -363,9 +375,18 @@ extension Game {
         definition.profile == "classic-local-freeze-v1"
           ? "classic-encounters-v2" : "profiled-encounters-v2")
     else { throw MissionPackError("The actor source must match its exact installed encounter.") }
+    return definition
+  }
+
+  /// The encounter and every actor/NPC were validated above on this same immutable value.
+  private func constructMissionActorAdmissionSource(
+    mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
+    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
+    definition: ScriptEncounterDefinition
+  ) throws -> MissionActorAdmissionSource {
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
-      guard let actor = encounter.actors[spec.id], actor.alias == spec.id, actor.valid,
+      guard let actor = encounter.actors[spec.id], actor.alias == spec.id,
         actor.identity
           == ScriptIdentity.uuid(
             "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
@@ -417,7 +438,7 @@ extension Game {
     var parts: [MissionActorAdmissionPart] = []
     let maximumEnergy: Double
     if let npcID = specification.npc {
-      guard actor.body.hull == .cobra, let npc = actor.body.scriptNPC, npc.valid,
+      guard actor.body.hull == .cobra, let npc = actor.body.scriptNPC,
         let definition = pack.manifest.npcs?.first(where: { $0.id == npcID }),
         definition == npc.fit.definition
       else { throw MissionPackError("Retained NPC fit differs from its actual declaration.") }
