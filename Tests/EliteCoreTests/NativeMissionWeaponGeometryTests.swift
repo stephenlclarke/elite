@@ -105,4 +105,69 @@ struct NativeMissionWeaponGeometryTests {
     #expect(unobstructed)
     #expect(game.bodies.first { $0.id == id }?.energy == rock.energy - LaserKind.mining.damage)
   }
+
+  @Test func authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage() throws {
+    var (game, _, sourceID) = try actualComponentOccluder(distance: 100)
+    try game.commander.grantEquipment(
+      "Salvage Cutter", at: .utility(.salvageCutter), provenance: .grant("geometry fixture"))
+    try #require(game.commander.fittedEquipment(at: .utility(.salvageCutter)) != nil)
+    try #require(game.commander.performance.workTools?.contains(.salvageCutter) == true)
+    let allocation = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocation)
+    let wreck = WreckIdentity(system: game.systemIdentity, site: 88, lineage: 99)
+    let id = game.nextBodyID
+    game.nextBodyID += 1
+    var selected: SpaceBody?
+    for profile in SalvageCatalogue.all {
+      for section in profile.sections {
+        let z = section.normal.unit * -1
+        let cardinal = abs(z.y) < 0.8 ? Vector3(0, 1, 0) : .init(1, 0, 0)
+        var axes = Basis3()
+        axes.z = z
+        axes.x = cardinal.cross(z).unit
+        axes.y = z.cross(axes.x).unit
+        let orientation = axes.transposed
+        var body = SpaceBody(
+          id: id, hull: .cobra,
+          position: Vector3(0, 0, 200) - orientation.apply(section.localPosition))
+        body.orientation = orientation
+        body.rotationRate = 0
+        body.physical = .init(
+          identity: actor, population: .civilian, catalogueShipID: profile.catalogueShipID,
+          salvage: .init(
+            category: .wreck, ownership: .abandoned, claimant: nil, wreck: wreck,
+            section: nil, lot: nil, bounds: profile.bounds,
+            workSurfaces: profile.surfaces(wreck: wreck)))
+        let hit = GameplayRaycast.nearest(
+          origin: .init(0, 0, 0), direction: .init(0, 0, 1), maxDistance: 300,
+          bodies: [body], meshOverrides: [id: game.gameplayMesh(for: body)])
+        if hit?.target == .body(id), let point = hit?.point,
+          (point - Vector3(0, 0, 200)).length < 0.001
+        {
+          selected = body
+          break
+        }
+      }
+      if selected != nil { break }
+    }
+    let target = try #require(selected)
+    game.bodies.append(target)
+    let contact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 300,
+      radius: 0, includePlayer: false)
+    try #require(contact?.hit.target == .body(sourceID) && contact?.victimPart == "turret")
+    let commander = game.commander
+    let bodies = game.bodies
+    let resources = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash]
+    let audio = game.dischargeAudio.events
+    let accepted = game.fireSalvageCutter(delta: 0.1)
+    #expect(!accepted && game.commander == commander && game.bodies == bodies)
+    #expect([game.energy, game.laserHeat, game.fireCooldown, game.laserFlash] == resources)
+    #expect(game.dischargeAudio.events == audio)
+    game.bodies.removeAll { $0.id == sourceID }
+    let unobstructed = game.fireSalvageCutter(delta: 0.1)
+    #expect(unobstructed)
+    #expect(game.bodies.first { $0.id == id }?.energy == target.energy)
+  }
+
 }
