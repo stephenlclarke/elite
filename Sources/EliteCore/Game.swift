@@ -872,11 +872,11 @@ public struct Game: Sendable {
   }
   private func routeScore(_ destination: StarSystem) -> Double {
     let exports = profitableExports(to: destination)
-    let gross = exports.reduce(0) {
-      $0 + $1.profit * min(commander.capacity, market[$1.index].quantity)
+    let gross = exports.reduce(0.0) {
+      $0 + Double($1.profit) * Double(min(commander.capacity, market[$1.index].quantity))
     }
     let risk = Double(7 - destination.government) * 0.15
-    return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
+    return gross / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
     persistBlackjackTargets()
