@@ -29,18 +29,22 @@ private func salvageWorldGame() throws -> (Game, SalvageSite) {
       let anchors = game.commander.flightSimulation.anchors,
       let profile = SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID)
     else { continue }
-    let offset = profile.bounds.radius + profile.bounds.center.length + 2000
-    let directions = [
+    let offset: Double = profile.bounds.radius + profile.bounds.center.length + 2000
+    let directions: [Vector3] = [
       Vector3(0, 0, 1), .init(0, 0, -1), .init(1, 0, 0), .init(-1, 0, 0), .init(0, 1, 0),
       .init(0, -1, 0),
     ]
-    guard
-      let observer = directions.map({ site.position + $0 * offset }).first(where: {
-        ($0 - anchors.planet.position).length > anchors.planet.radius * 2
-          && ($0 - anchors.sun.position).length > anchors.sun.radius * 4
-          && ($0 - anchors.station.position).length > 1200
-      })
-    else { continue }
+    let candidates: [Vector3] = directions.map { direction in
+      site.position + direction * offset
+    }
+    let observer: Vector3? = candidates.first { position in
+      let planetClearance: Double = (position - anchors.planet.position).length
+      let sunClearance: Double = (position - anchors.sun.position).length
+      let stationClearance: Double = (position - anchors.station.position).length
+      return planetClearance > anchors.planet.radius * 2
+        && sunClearance > anchors.sun.radius * 4 && stationClearance > 1200
+    }
+    guard let observer else { continue }
     relocateWreckObserver(&game, to: observer)
     game.activateNearbySalvageSites()
     guard game.bodies.contains(where: { $0.physical?.salvage?.wreck == site.identity }) else {
