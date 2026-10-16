@@ -46,7 +46,7 @@ extension GameRuntime {
       throw error
     }
   }
-  func nativeCommand(_ action: (inout Game) -> Void) {
+  func nativeCommand(_ action: @Sendable (inout Game) -> Void) {
     do { try scriptCommand(action) } catch {
       game.notify("MISSION SAVE FAILED - ACTION NOT COMMITTED")
     }
