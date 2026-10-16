@@ -156,6 +156,7 @@ extension Game {
     case .reward: "Reward"
     case .earned: "Earned"
     case .xyzzy: "XYZZY grant"
+    case .missionIssue: "Mission issued"
     case .legacyUnknown: "Acquisition unknown"
     }
   }

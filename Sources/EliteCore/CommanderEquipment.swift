@@ -29,6 +29,19 @@ extension Commander {
     guard let history = savedEquipmentPurchaseHistory, history.owner == inventory.owner else {
       throw CommanderEquipmentError.incompleteState
     }
+    // This schema pin does not silently enable version-2 runtime admission. Migration
+    // and native/mission consumers are integrated together in the following milestone.
+    guard
+      inventory.items.allSatisfy({ item in
+        if case .missionIssue = item.provenance { return false }
+        return item.preferredSlot == nil && item.retainedLegacyState == nil
+          && item.node.family != EquipmentRuntimeCatalog.ammunitionFamily
+      }),
+      !history.paid.contains(where: { $0.node.family == EquipmentRuntimeCatalog.ammunitionFamily }),
+      !history.legacy.contains(where: {
+        $0.source.node.family == EquipmentRuntimeCatalog.ammunitionFamily
+      })
+    else { throw CommanderEquipmentError.invalidVersion }
     try EquipmentPurchaseProgression.validateHistory(history, graph: EquipmentRuntimeCatalog.graph)
     try inventory.validate(
       context: EquipmentRuntimeCatalog.context(

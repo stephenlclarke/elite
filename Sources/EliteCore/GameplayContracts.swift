@@ -252,6 +252,20 @@ public struct AttackOrigin: Equatable, Codable, Sendable {
   public let emittedAt: Double
   public let ownerLegalAtEmission: LegalRecord
   public var sourcePart: String?
+  public let playerAmmunition: PlayerAmmunitionSource?
+  public init(
+    emissionID: UInt64, owner: ActorIdentity, ordnance: ActorIdentity? = nil, emittedAt: Double,
+    ownerLegalAtEmission: LegalRecord, sourcePart: String? = nil,
+    playerAmmunition: PlayerAmmunitionSource? = nil
+  ) {
+    self.emissionID = emissionID
+    self.owner = owner
+    self.ordnance = ordnance
+    self.emittedAt = emittedAt
+    self.ownerLegalAtEmission = ownerLegalAtEmission
+    self.sourcePart = sourcePart
+    self.playerAmmunition = playerAmmunition
+  }
 }
 
 public enum AttackKind: String, Codable, Sendable {

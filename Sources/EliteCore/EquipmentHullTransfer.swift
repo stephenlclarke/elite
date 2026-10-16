@@ -28,7 +28,8 @@ extension Commander {
     let portable = inventory.items.filter { $0.boundHull == nil }.map { item in
       OwnedEquipmentItem(
         id: item.id, node: item.node, provenance: item.provenance, component: item.component,
-        location: item.location.map { .init(hullInstanceID: hullID, slot: $0.slot) })
+        location: item.location.map { .init(hullInstanceID: hullID, slot: $0.slot) },
+        preferredSlot: item.preferredSlot, retainedLegacyState: item.retainedLegacyState)
     }
     let transferred = try OwnedEquipmentInventory(
       owner: inventory.owner, activeHull: hullID, revision: inventory.revision + 1, items: portable)

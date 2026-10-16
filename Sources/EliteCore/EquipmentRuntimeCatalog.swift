@@ -5,6 +5,8 @@ import Foundation
 enum EquipmentRuntimeCatalog {
   static let laserFamily = EquipmentFamilyID("laser")
   static let storageFamily = EquipmentFamilyID("fuel-storage")
+  static let ammunitionFamily = EquipmentFamilyID("ammunition")
+  static let standardMissile = EquipmentNodeID(family: ammunitionFamily, key: "missile-standard")
   static let utilities: [(String, ComponentUtility)] = [
     ("Fuel Scoops", .fuelScoops), ("E.C.M. System", .ecm), ("Escape Pod", .escapePod),
     ("Energy Bomb", .energyBomb), ("Large Cargo Bay", .cargoExpansion),
@@ -29,12 +31,18 @@ enum EquipmentRuntimeCatalog {
       id: .init(family: storageFamily, key: FuelStorage.equipmentName),
       displayName: FuelStorage.equipmentName,
       policy: .repeatable(maximumCount: FuelStorage.maximumCount))
+    let ammunition = EquipmentPurchaseNode(
+      id: standardMissile, displayName: "Missile", policy: .repeatable(maximumCount: 256))
     return .init(
-      revision: modular.revision, nodes: modular.nodes + lasers + utilityNodes + [storage],
-      aliases: modular.aliases)
+      revision: modular.revision,
+      nodes: modular.nodes + lasers + utilityNodes + [storage, ammunition],
+      aliases: modular.aliases + [
+        .init(alias: .init(family: ammunitionFamily, key: "Missile"), canonical: standardMissile)
+      ])
   }
 
   static func node(for savedKey: String) -> EquipmentNodeID? {
+    if savedKey == "Missile" { return standardMissile }
     if let node = graph.nodes.first(where: { $0.id.key == savedKey }) { return node.id }
     return graph.aliases.first(where: { $0.alias.key == savedKey })?.canonical
   }
@@ -74,6 +82,7 @@ enum EquipmentRuntimeCatalog {
     case .laser(let mount): slot = "laser." + mount.rawValue
     case .utility(let utility): slot = "utility." + utility.rawValue
     case .fuelStorage(let unit): slot = "fuel-storage.\(unit)"
+    case .missilePylon(let index): slot = "missile-pylon.\(index)"
     case .shield: slot = "shield"
     case .energy: slot = "energy"
     case .navigation: slot = "navigation"
@@ -101,6 +110,8 @@ enum EquipmentRuntimeCatalog {
   static func context(owner: UUID, hull: UUID, performance: ShipPerformance)
     -> OwnedEquipmentContext
   {
+    let pylonCount = (1...32).contains(performance.missiles) ? performance.missiles : 0
+    let pylonSlots = Set((0..<pylonCount).map(ComponentFittingSlot.missilePylon))
     var slots: Set<ComponentFittingSlot> = [
       .shield, .energy, .navigation, .targetingCore, .targetingMining, .targetingSalvage,
     ]
@@ -118,6 +129,7 @@ enum EquipmentRuntimeCatalog {
       slots.insert(.utility(.miningLaser))
     }
     slots.formUnion((0..<FuelStorage.maximumCount).map(ComponentFittingSlot.fuelStorage))
+    slots.formUnion(pylonSlots)
     var nodes: [EquipmentNodeID: OwnedEquipmentNodeCapability] = [:]
     var limits: [EquipmentFamilyID: Int] = [:]
     for node in graph.nodes {
@@ -129,6 +141,9 @@ enum EquipmentRuntimeCatalog {
         }
         allowed = laserSlots
         limits[node.id.family] = performance.workTools?.contains(.miningLaser) == true ? 5 : 4
+      } else if node.id.family == ammunitionFamily {
+        allowed = pylonSlots
+        limits[node.id.family] = pylonCount
       } else if node.id.family == storageFamily {
         allowed = Set((0..<FuelStorage.maximumCount).map(ComponentFittingSlot.fuelStorage))
         limits[node.id.family] = FuelStorage.maximumCount

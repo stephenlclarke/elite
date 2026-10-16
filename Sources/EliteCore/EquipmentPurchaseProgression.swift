@@ -79,6 +79,7 @@ public enum EquipmentAcquisitionProvenance: Equatable, Codable, Sendable {
   case reward(String)
   case earned(String)
   case xyzzy
+  case missionIssue(mission: UUID, resource: String, index: Int, packDigest: String)
   /// Only a migration adapter with genuinely unknown historical acquisition may use this case.
   case legacyUnknown
 }

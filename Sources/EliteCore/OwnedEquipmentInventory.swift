@@ -8,11 +8,14 @@ public struct OwnedEquipmentItem: Equatable, Codable, Sendable {
   public let location: ComponentFittingLocation?
   /// Permanent hull attachment survives storage; only the runtime can settle hull exchange.
   public let boundHull: UUID?
+  public let preferredSlot: ComponentFittingSlot?
+  public let retainedLegacyState: LegacyEquipmentState?
 
   public init(
     id: UUID, node: EquipmentNodeID, provenance: EquipmentAcquisitionProvenance,
     component: ComponentInstance? = nil, location: ComponentFittingLocation? = nil,
-    boundHull: UUID? = nil
+    boundHull: UUID? = nil, preferredSlot: ComponentFittingSlot? = nil,
+    retainedLegacyState: LegacyEquipmentState? = nil
   ) {
     self.id = id
     self.node = node
@@ -20,12 +23,14 @@ public struct OwnedEquipmentItem: Equatable, Codable, Sendable {
     self.component = component
     self.location = location
     self.boundHull = boundHull
+    self.preferredSlot = preferredSlot
+    self.retainedLegacyState = retainedLegacyState
   }
 
-  fileprivate func moved(to location: ComponentFittingLocation?) -> Self {
+  func moved(to location: ComponentFittingLocation?) -> Self {
     .init(
       id: id, node: node, provenance: provenance, component: component, location: location,
-      boundHull: boundHull)
+      boundHull: boundHull, preferredSlot: preferredSlot, retainedLegacyState: retainedLegacyState)
   }
 }
 
@@ -207,6 +212,9 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
   ) throws {
     try mutate(expectedRevision: expectedRevision, context: context) { items in
       let index = try Self.index(of: item, in: items)
+      guard item.retainedLegacyState?.pristine ?? true else {
+        throw OwnedEquipmentError.incompatibleComponent
+      }
       guard let before = item.component,
         let definition = context.definitions[before.family]
       else { throw OwnedEquipmentError.incompatibleComponent }
@@ -215,7 +223,8 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
         sourceInventoryRevision: sourceInventoryRevision)
       items[index] = .init(
         id: item.id, node: item.node, provenance: item.provenance,
-        component: application.component, location: item.location, boundHull: item.boundHull)
+        component: application.component, location: item.location, boundHull: item.boundHull,
+        preferredSlot: item.preferredSlot, retainedLegacyState: item.retainedLegacyState)
     }
   }
 
@@ -232,7 +241,34 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
         item.location.map({ $0.hullInstanceID == activeHull }) ?? true
       else { throw OwnedEquipmentError.wrongHull }
       guard item.location?.slot.valid ?? true else { throw OwnedEquipmentError.unsupportedSlot }
+      guard item.preferredSlot?.valid ?? true, item.retainedLegacyState?.valid ?? true,
+        item.location == nil || (item.retainedLegacyState?.pristine ?? true)
+      else { throw OwnedEquipmentError.invalidStructure }
+      if item.node.family == EquipmentRuntimeCatalog.ammunitionFamily {
+        guard item.node == EquipmentRuntimeCatalog.standardMissile, item.component == nil,
+          item.boundHull == nil
+        else { throw OwnedEquipmentError.invalidStructure }
+      }
+      if case .missionIssue(let mission, let resource, let index, let digest) = item.provenance {
+        guard (0..<32).contains(index),
+          EquipmentIssueSource(mission: mission, resource: resource, packDigest: digest).valid
+        else { throw OwnedEquipmentError.invalidStructure }
+      }
     }
+  }
+
+  /// Structural atomic primitive. Domain providers validate rights, receipts and budgets
+  /// before calling it; release uses the same batch even when the physical array is equal.
+  public func applyingBatch(
+    items: [OwnedEquipmentItem], expectedRevision: UInt64, context: OwnedEquipmentContext
+  ) throws -> Self {
+    guard revision == expectedRevision else { throw OwnedEquipmentError.staleRevision }
+    guard revision < UInt64.max else { throw OwnedEquipmentError.revisionExhausted }
+    try validate(context: context)
+    let candidate = try Self(
+      owner: owner, activeHull: activeHull, revision: revision + 1, items: items)
+    try candidate.validate(context: context)
+    return candidate
   }
 
   private static func index(of expected: OwnedEquipmentItem, in items: [OwnedEquipmentItem]) throws
