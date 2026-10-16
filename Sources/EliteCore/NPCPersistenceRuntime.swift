@@ -74,23 +74,72 @@ extension Game {
     }
     guard !rebindings.isEmpty else { return }
     for index in bodies.indices where bodies[index].physical?.npc != nil {
-      if let original = bodies[index].physical?.npc?.firstAggressor {
-        let rebound = reboundNPCReference(original, identities: identities)
-        bodies[index].physical?.npc?.firstAggressor = rebound
+      let saved = bodies[index].physical.flatMap { physical in
+        commander.npcPersistence.logicalIdentity(for: physical.identity).flatMap {
+          commander.npcPersistence.snapshot(for: $0)
+        }
       }
-      switch bodies[index].physical?.npc?.intention {
-      case .engage(let actor):
-        let target = reboundNPCReference(actor, identities: identities)
-        bodies[index].physical?.npc?.intention = .engage(target)
-      case .flee(let actor):
-        let target = reboundNPCReference(actor, identities: identities)
-        bodies[index].physical?.npc?.intention = .flee(target)
-      case .dock(let actor):
-        let target = reboundNPCReference(actor, identities: identities)
-        bodies[index].physical?.npc?.intention = .dock(target)
-      default: break
+      var body = bodies[index]
+      rebindFirstAggressor(in: &body, saved: saved, identities: identities)
+      rebindIntention(in: &body, saved: saved, identities: identities)
+      bodies[index] = body
+    }
+  }
+
+  private func rebindFirstAggressor(
+    in body: inout SpaceBody, saved: NPCPersistenceSnapshot?,
+    identities: [ActorIdentity: ActorIdentity]
+  ) {
+    guard let original = body.physical?.npc?.firstAggressor else { return }
+    if let binding = saved?.firstAggressorBinding, binding.sceneActor == original {
+      if let current = currentNPCReference(binding) { body.physical?.npc?.firstAggressor = current }
+    } else {
+      body.physical?.npc?.firstAggressor = reboundNPCReference(original, identities: identities)
+    }
+  }
+
+  private func rebindIntention(
+    in body: inout SpaceBody, saved: NPCPersistenceSnapshot?,
+    identities: [ActorIdentity: ActorIdentity]
+  ) {
+    guard let intention = body.physical?.npc?.intention ?? body.physical?.suspendedNPCIntention
+    else {
+      return
+    }
+    if let binding = saved?.intentionTargetBinding, binding.sceneActor == intention.referencedActor
+    {
+      if let current = currentNPCReference(binding) {
+        body.physical?.npc?.intention = intention.replacingReferencedActor(with: current)
+        body.physical?.suspendedNPCIntention = nil
+      } else {
+        // Missing, dead, refused or terminal targets cannot become a different active target.
+        body.physical?.npc?.intention = nil
+        body.physical?.suspendedNPCIntention = intention
+        body.hostile = false
+      }
+    } else {
+      body.physical?.suspendedNPCIntention = nil
+      if let actor = intention.referencedActor {
+        body.physical?.npc?.intention = intention.replacingReferencedActor(
+          with: reboundNPCReference(actor, identities: identities))
       }
     }
+  }
+
+  private func currentNPCReference(_ reference: NPCReferenceBinding) -> ActorIdentity? {
+    guard let current = commander.npcPersistence.binding(for: reference.logicalNPC),
+      bodies.contains(where: { body in
+        guard let physical = body.physical, let npc = physical.npc,
+          physical.identity == current
+        else { return false }
+        return body.energy > 0 && body.hull.isTargetShip && !body.navalTarget
+          && body.blackjackRole == nil && body.blackjackIdentity == nil && npc.role != .mission
+          && [.civilian, .pirate, .police].contains(physical.population)
+          && !physical.blocksNavalEncounter && physical.rock == nil && physical.payload == nil
+          && physical.ordnance == nil && physical.salvage == nil
+      })
+    else { return nil }
+    return current
   }
 
   private func reboundNPCReference(

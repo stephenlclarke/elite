@@ -20,6 +20,8 @@ public struct NPCPersistenceSnapshot: Equatable, Codable, Sendable {
   public var catalogueShipID: String?
   public var npc: NPCState
   public var physicalTime: Double
+  public var firstAggressorBinding: NPCReferenceBinding? = nil
+  public var intentionTargetBinding: NPCReferenceBinding? = nil
 
   public var valid: Bool {
     (0..<8).contains(actor.system.galaxy) && (0...256).contains(actor.system.system)
@@ -32,18 +34,24 @@ public struct NPCPersistenceSnapshot: Equatable, Codable, Sendable {
       && missiles >= 0 && position.finite && orientation.validRotation
       && velocity.finite && angularVelocity.finite && rotation.isFinite && rotationRate.isFinite
       && laserCooldown.isFinite && laserCooldown >= 0 && physicalTime.isFinite && physicalTime >= 0
+      && (firstAggressorBinding?.valid(for: npc.firstAggressor, system: actor.system) ?? true)
+      && (intentionTargetBinding?.valid(for: npc.intention?.referencedActor, system: actor.system)
+        ?? true)
   }
 
   public static func capture(
     body: SpaceBody, pose: ShipPose, physicalTime: Double, protection: MissionProtection
   ) -> Self? {
-    guard let physical = body.physical, let npc = physical.npc,
+    guard let physical = body.physical, var npc = physical.npc,
       !body.navalTarget, body.blackjackRole == nil, body.blackjackIdentity == nil,
       !physical.blocksNavalEncounter, physical.rock == nil, physical.payload == nil,
       physical.ordnance == nil, physical.salvage == nil,
       !protection.protectedActors.contains(physical.identity),
       pose.position.finite, pose.orientation.validRotation
     else { return nil }
+    if npc.intention == nil, let suspended = physical.suspendedNPCIntention {
+      npc.intention = suspended
+    }
     let snapshot = Self(
       actor: physical.identity, population: physical.population, hull: body.hull,
       position: pose.systemPoint(body.position),
@@ -93,6 +101,7 @@ public struct NPCRebind: Equatable, Codable, Sendable {
     body.hostile = snapshot.hostile
     physical.population = snapshot.population
     physical.npc = snapshot.npc
+    physical.suspendedNPCIntention = nil
     physical.velocity = snapshot.velocity
     physical.angularVelocity = snapshot.angularVelocity
     physical.laserCooldown = snapshot.laserCooldown
@@ -143,6 +152,10 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
           && !(entry.binding != nil && entry.offer != nil)
           && (entry.terminal == nil || (entry.binding == nil && entry.offer == nil))
           && (entry.offer.map { $0.system == system && $0.producer == .persistence } ?? true)
+          && [entry.snapshot.firstAggressorBinding, entry.snapshot.intentionTargetBinding]
+            .compactMap { $0 }.allSatisfy {
+              entries[$0.logicalNPC.firstActor] != nil && $0.sceneActor.entity <= highestActor
+            }
       }
   }
 
@@ -151,6 +164,11 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
   }
 
   public func binding(for logical: ActorIdentity) -> ActorIdentity? { entries[logical]?.binding }
+
+  public func binding(for logical: NPCLogicalIdentity) -> ActorIdentity? {
+    guard let entry = entries[logical.firstActor], entry.terminal == nil else { return nil }
+    return entry.binding
+  }
 
   public func logicalIdentity(for actor: ActorIdentity) -> ActorIdentity? {
     entries.first { $0.value.binding == actor }?.key
@@ -164,6 +182,8 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     guard valid, snapshot.valid, var entry = entries[logicalIdentity],
       entry.binding == nil, entry.terminal == nil,
       snapshot.actor == entry.snapshot.actor, snapshot.actor.system == system,
+      snapshot.firstAggressorBinding == entry.snapshot.firstAggressorBinding,
+      snapshot.intentionTargetBinding == entry.snapshot.intentionTargetBinding,
       snapshot.physicalTime >= entry.snapshot.physicalTime
     else { return false }
     entry.snapshot = snapshot
@@ -188,7 +208,7 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
       guard snapshot.physicalTime >= entry.snapshot.physicalTime else {
         return .refused(.staleTime)
       }
-      entry.snapshot = snapshot
+      entry.snapshot = bindingReferences(snapshot, previous: entry.snapshot, protection: protection)
       entries[logical] = entry
       return .updated(logical)
     }
@@ -196,8 +216,50 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     guard count < Self.maximumEntries else { return .refused(.capacity) }
     system = snapshot.actor.system
     highestActor = snapshot.actor.entity
-    entries[snapshot.actor] = .init(snapshot: snapshot, binding: snapshot.actor)
+    entries[snapshot.actor] = .init(
+      snapshot: bindingReferences(snapshot, previous: nil, protection: protection),
+      binding: snapshot.actor)
+    // A just-registered actor can be an existing snapshot's previously unregistered target.
+    // One bounded pass handles an initial batch without maintaining historical aliases.
+    for logical in entries.keys {
+      guard let previous = entries[logical]?.snapshot else { continue }
+      let normalized = bindingReferences(
+        previous, previous: previous, protection: protection)
+      entries[logical]?.snapshot = normalized
+    }
     return .registered(snapshot.actor)
+  }
+
+  private func bindingReferences(
+    _ snapshot: NPCPersistenceSnapshot, previous: NPCPersistenceSnapshot?,
+    protection: MissionProtection
+  ) -> NPCPersistenceSnapshot {
+    var result = snapshot
+    result.firstAggressorBinding = bindingReference(
+      snapshot.npc.firstAggressor, previous: previous?.firstAggressorBinding, protection: protection
+    )
+    result.intentionTargetBinding = bindingReference(
+      snapshot.npc.intention?.referencedActor, previous: previous?.intentionTargetBinding,
+      protection: protection)
+    return result
+  }
+
+  private func bindingReference(
+    _ actor: ActorIdentity?, previous: NPCReferenceBinding?, protection: MissionProtection
+  ) -> NPCReferenceBinding? {
+    guard let actor, actor.system == system, !protection.protectedActors.contains(actor) else {
+      return nil
+    }
+    if let logical = logicalIdentity(for: actor), !protection.protectedActors.contains(logical) {
+      return .init(sceneActor: actor, logicalNPC: .init(firstActor: logical))
+    }
+    if let previous, previous.sceneActor == actor,
+      entries[previous.logicalNPC.firstActor] != nil,
+      !protection.protectedActors.contains(previous.logicalNPC.firstActor)
+    {
+      return previous
+    }
+    return nil
   }
 
   /// Capture the final actual world state first; culling only releases a binding.
