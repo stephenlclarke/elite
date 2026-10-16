@@ -578,4 +578,140 @@ struct EquipmentIssueTransactionsTests {
     #expect(paidInventory.items == [standard, purchased] && paidInventory.revision == 0)
   }
 
+  @Test func portableHullExchangeRestoresHistoricalSlotOnCurrentHullWithoutChangingEvidence() throws
+  {
+    let context = try issueContext()
+    let node = try #require(EquipmentRuntimeCatalog.node(for: "Extra Energy Unit"))
+    let oldLocation = ComponentFittingLocation(hullInstanceID: issueHull, slot: .energy)
+    let personal = OwnedEquipmentItem(
+      id: issueUUID(80), node: node,
+      provenance: .paid(owner: issueOwner, transaction: issueUUID(81)),
+      component: EquipmentRuntimeCatalog.stockComponent(for: node, id: issueUUID(80)),
+      location: oldLocation, preferredSlot: .energy,
+      retainedLegacyState: .init(conditionBasisPoints: 10000, modifications: [:]))
+    let original = try OwnedEquipmentInventory(
+      owner: issueOwner, activeHull: issueHull, items: [personal])
+    let request = try issueRequest(
+      "Naval Energy Unit",
+      fitting: .fitAll([
+        .init(item: issueUUID(100), location: oldLocation, replacing: personal)
+      ]))
+    let issued = try issueAdmit(request, inventory: original, context: context)
+    let obligation = issueObligation(request, displacements: issued.receipt.displacements)
+    try issued.inventory.validate(context: context)
+    let newHull = issueUUID(82)
+    let transferred = try OwnedEquipmentInventory(
+      owner: issued.inventory.owner, activeHull: newHull, revision: issued.inventory.revision + 1,
+      items: issued.inventory.items.map { item in
+        item.moved(to: item.location.map { .init(hullInstanceID: newHull, slot: $0.slot) })
+      })
+    let newContext = EquipmentRuntimeCatalog.context(
+      owner: issueOwner, hull: newHull,
+      performance: try #require(ShipCatalogue.ship("SH043")?.game))
+    try transferred.validate(context: newContext)
+    let snapshot = transferred
+    let projected = try EquipmentIssueTransactions.projectSettlement(
+      operation: .returnOriginals,
+      obligation: obligation, inventory: transferred, context: newContext, obligations: [obligation]
+    )
+    let quote = try EquipmentIssueTransactions.quoteSettlement(
+      command: issueUUID(83),
+      operation: .returnOriginals, obligation: obligation, inventory: transferred,
+      context: newContext, obligations: [obligation], budget: issueBudget(capacity: 2))
+    let returned = try EquipmentIssueTransactions.applySettlement(
+      quote: quote, inventory: transferred,
+      context: newContext, obligations: [obligation], budget: issueBudget(capacity: 2))
+    #expect(returned.inventory.items == projected.items && transferred == snapshot)
+    let restored = try #require(returned.inventory.items.first)
+    #expect(restored.id == personal.id && restored.node == personal.node)
+    #expect(restored.location == .init(hullInstanceID: newHull, slot: .energy))
+    #expect(restored.component == personal.component && restored.provenance == personal.provenance)
+    #expect(
+      restored.preferredSlot == personal.preferredSlot
+        && restored.retainedLegacyState == personal.retainedLegacyState)
+    #expect(returned.receipt.displacements == [.init(item: personal.id, location: oldLocation)])
+    #expect(returned.inventory.revision == transferred.revision + 1)
+    #expect(throws: EquipmentIssueError.invalidBudget) {
+      try EquipmentIssueTransactions.quoteSettlement(
+        command: issueUUID(84), operation: .returnOriginals,
+        obligation: obligation, inventory: transferred, context: newContext,
+        obligations: [obligation], budget: issueBudget(capacity: 1))
+    }
+    #expect(transferred == snapshot)
+  }
+
+  @Test func exchangedHullRestorationCannotOverwriteOccupantOrUseUnsupportedSlot() throws {
+    let context = try issueContext()
+    let node = try #require(EquipmentRuntimeCatalog.node(for: "Fuel Scoops"))
+    let oldLocation = ComponentFittingLocation(
+      hullInstanceID: issueHull, slot: .utility(.fuelScoops))
+    let personal = OwnedEquipmentItem(
+      id: issueUUID(85), node: node,
+      provenance: .grant("portable scoop"), location: oldLocation)
+    let original = try OwnedEquipmentInventory(
+      owner: issueOwner, activeHull: issueHull, items: [personal])
+    let request = try issueRequest(
+      "Fuel Scoops",
+      fitting: .fitAll([
+        .init(item: issueUUID(100), location: oldLocation, replacing: personal)
+      ]))
+    let issued = try issueAdmit(request, inventory: original, context: context)
+    let obligation = issueObligation(request, displacements: issued.receipt.displacements)
+    try issued.inventory.validate(context: context)
+    let newHull = issueUUID(86)
+    let transferred = try OwnedEquipmentInventory(
+      owner: issued.inventory.owner, activeHull: newHull, revision: issued.inventory.revision + 1,
+      items: issued.inventory.items.map { item in
+        item.moved(to: item.location.map { .init(hullInstanceID: newHull, slot: $0.slot) })
+      })
+    let newContext = EquipmentRuntimeCatalog.context(
+      owner: issueOwner, hull: newHull,
+      performance: try #require(ShipCatalogue.ship("SH043")?.game))
+    try transferred.validate(context: newContext)
+    let issuedItem = try #require(transferred.items.first { $0.id == issueUUID(100) })
+    var occupied = transferred
+    try occupied.store(
+      expected: issuedItem, expectedRevision: occupied.revision, context: newContext)
+    let bothHeld = occupied
+    let occupant = OwnedEquipmentItem(
+      id: issueUUID(87), node: node, provenance: .grant("new personal scoop"),
+      location: .init(hullInstanceID: newHull, slot: .utility(.fuelScoops)))
+    try occupied.admit(occupant, expectedRevision: occupied.revision, context: newContext)
+    let before = occupied
+    #expect(throws: OwnedEquipmentError.occupiedSlot) {
+      try EquipmentIssueTransactions.projectSettlement(
+        operation: .returnOriginals,
+        obligation: obligation, inventory: occupied, context: newContext, obligations: [obligation])
+    }
+    #expect(throws: OwnedEquipmentError.occupiedSlot) {
+      try EquipmentIssueTransactions.quoteSettlement(
+        command: issueUUID(88),
+        operation: .returnOriginals, obligation: obligation, inventory: occupied,
+        context: newContext, obligations: [obligation], budget: issueBudget())
+    }
+    #expect(occupied == before)
+    let incompatible = OwnedEquipmentContext(
+      owner: newContext.owner, activeHull: newContext.activeHull,
+      supportedSlots: newContext.supportedSlots.subtracting([.utility(.fuelScoops)]),
+      nodes: newContext.nodes, familyLimits: newContext.familyLimits,
+      definitions: newContext.definitions)
+    try EquipmentIssueTransactions.validateObligations(
+      inventory: bothHeld, context: incompatible, obligations: [obligation])
+    let heldBefore = bothHeld
+    #expect(throws: OwnedEquipmentError.unsupportedSlot) {
+      try EquipmentIssueTransactions.projectSettlement(
+        operation: .returnOriginals,
+        obligation: obligation, inventory: bothHeld, context: incompatible,
+        obligations: [obligation])
+    }
+    #expect(throws: OwnedEquipmentError.unsupportedSlot) {
+      try EquipmentIssueTransactions.quoteSettlement(
+        command: issueUUID(89),
+        operation: .returnOriginals, obligation: obligation, inventory: bothHeld,
+        context: incompatible, obligations: [obligation], budget: issueBudget())
+    }
+    #expect(bothHeld == heldBefore)
+    #expect(transferred.items.count == issued.inventory.items.count)
+  }
+
 }
