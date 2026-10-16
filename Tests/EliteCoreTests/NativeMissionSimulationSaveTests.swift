@@ -78,7 +78,7 @@ struct NativeMissionSimulationSaveTests {
     let writer = GameRuntime(game: next)
     try await writer.save(to: nextURL)
     let saved = try ScriptSaveStore.read(Data(contentsOf: nextURL), from: nextURL)
-    #expect(saved.1?.simulation?.spawnClock == nil)
+    #expect(saved.1.simulation?.spawnClock == nil)
     #expect(saved.0.encounterDirector == raw.encounterDirector)
   }
 

@@ -51,6 +51,14 @@ extension Game {
     guard let context = gameplayContext() else {
       throw NativeMissionProjectileAdmissionError.invalidRecord
     }
+    var scriptUnits = 0
+    for body in bodies {
+      let units = body.scriptNativeUnits
+      guard units <= 1024 - scriptUnits else {
+        throw NativeMissionProjectileAdmissionError.refused(.reservedCapacity)
+      }
+      scriptUnits += units
+    }
     let matching = bodies.filter { $0.scriptShot?.identity == shotID }
     if !matching.isEmpty {
       guard matching.count == 1, let body = matching.first, body.id == record.body.id,
@@ -59,6 +67,8 @@ extension Game {
         shot.weapon == savedShot.weapon, shot.component == savedShot.component,
         shot.lifetime == savedShot.lifetime, shot.damage == savedShot.damage,
         shot.radius == savedShot.radius, shot.collisionDelay == savedShot.collisionDelay,
+        abs(shot.velocity.length - savedShot.velocity.length)
+          <= max(1, max(shot.velocity.length, savedShot.velocity.length)) * 1e-6,
         shot.nativeAttribution == savedShot.nativeAttribution,
         let physical = body.physical, physical.population == .projectile,
         physical.identity.system == context.system, physical.identity.visit == context.visit,
@@ -69,6 +79,10 @@ extension Game {
         context.actors.contains(where: { $0.identity == physical.identity && $0.energy > 0 })
       else { throw NativeMissionProjectileAdmissionError.invalidRecord }
       return .init(bodyID: body.id, actor: physical.identity)
+    }
+
+    guard record.body.scriptNativeUnits <= 1024 - scriptUnits else {
+      throw NativeMissionProjectileAdmissionError.refused(.reservedCapacity)
     }
 
     var restored = record.body
