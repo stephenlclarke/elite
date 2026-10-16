@@ -35,7 +35,7 @@ struct GameplayOrdnanceRuntimeTests {
     #expect(missile.physical?.emissionPosition == state.emissionPosition)
     #expect(state.target == target.physical?.identity && missile.playerMissileTarget == target.id)
     #expect(missile.physical?.spawnIdentity?.producer == .ordnance)
-    #expect(game.commander.legal == 40 && game.bodies[0].physical?.npc?.firstAggressor == player)
+    #expect(game.commander.legal == 8 && game.bodies[0].physical?.npc?.firstAggressor == player)
     missileRuntimeAdvance(&game, delta: 0.1)
     let moved = try #require(game.bodies.first { $0.id == missile.id }?.physical?.ordnance)
     #expect(abs(moved.propulsionTravel - 79.2) < 1e-8 && moved.termination == nil)
@@ -45,6 +45,18 @@ struct GameplayOrdnanceRuntimeTests {
     #expect(game.bodies[0].physical?.deathOrigin == state.origin)
     missileRuntimeAdvance(&game, delta: 1)
     #expect(game.commander.kills == 1)
+  }
+
+  @Test func actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam() throws {
+    var game = missileRuntimeGame(distance: 1000)
+    let launched = game.fireMissile()
+    #expect(launched)
+    let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
+    game.tick(delta: 0.02)
+    #expect(!game.bodies.contains { $0.id == missile.id })
+    #expect(game.bodies.first { $0.id == 70 }?.energy == 100)
+    #expect(game.commander.kills == 0 && game.commander.legal == 8)
+    #expect(game.commander.missiles == 2)
   }
 
   @Test func refusedFullProjectilePopulationPreservesAmmoIdentitiesTargetAndCrimeState() throws {
@@ -117,6 +129,7 @@ struct GameplayOrdnanceRuntimeTests {
 
   @Test func realNPCLauncherDoesNotLoseItsMissileOwnerWhenTheCraftIsRemoved() throws {
     var game = missileRuntimeGame(distance: 1000)
+    game.frontShield = 100
     game.bodies[0].missiles = 1
     let owner = try #require(game.bodies[0].physical?.identity)
     let launched = game.launchGameplayNPCMissile(bodyID: 70)
