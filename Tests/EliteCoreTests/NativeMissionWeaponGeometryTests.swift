@@ -50,7 +50,9 @@ struct NativeMissionWeaponGeometryTests {
       let bodies = game.bodies
       game.advanceGameplayOrdnance(allowEnemyECM: false)
       #expect(game.commander == commander && game.bodies == bodies)
+      game.scriptEventsDeferred = false
       game.drainScriptEvents()
+      game.scriptEventsDeferred = true
       try #require(game.commander.scriptState.pendingEvents.count < 4096)
     }
     let credits = game.commander.credits
