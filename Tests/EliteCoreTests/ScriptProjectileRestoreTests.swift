@@ -37,7 +37,8 @@ private func projectileSaveFolder() throws -> URL {
 }
 
 private func fillActualNativeProjectileBudget(_ game: inout Game) throws {
-  let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+  let allocatedSequence = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocatedSequence)
   let context = try #require(game.gameplayContext())
   let count = PopulationClass.projectile.maximum - context.budget.active[.projectile, default: 0]
   let requests = (0..<count).map { index in
@@ -237,8 +238,9 @@ struct ScriptProjectileRestoreTests {
     var engine = game.commander.scriptState
     let shot = try #require(engine.projectiles[id]?.body.scriptShot)
     let archive = try #require(shot.nativeAttribution)
-    var object = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(archive)) as? [String: Any])
+    let encodedArchive = try JSONEncoder().encode(archive)
+    let rawArchive = try JSONSerialization.jsonObject(with: encodedArchive)
+    var object = try #require(rawArchive as? [String: Any])
     object["packDigest"] = String(repeating: "f", count: 64)
     let mismatched = try JSONDecoder().decode(
       MissionLaunchArchive.self, from: JSONSerialization.data(withJSONObject: object))
@@ -257,6 +259,8 @@ struct ScriptProjectileRestoreTests {
     let after = await runtime.snapshot()
     #expect(after.commander == before.commander && after.bodies == before.bodies)
     #expect(after.inventoryContextEpoch == before.inventoryContextEpoch)
-    #expect(try Data(contentsOf: file) == bytes && Data(contentsOf: missions) == changed)
+    let afterPointerBytes = try Data(contentsOf: file)
+    let afterMissionBytes = try Data(contentsOf: missions)
+    #expect(afterPointerBytes == bytes && afterMissionBytes == changed)
   }
 }

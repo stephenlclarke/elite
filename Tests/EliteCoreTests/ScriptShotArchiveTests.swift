@@ -57,14 +57,16 @@ struct ScriptShotArchiveTests {
       archive.sourceComponentID == shot.component
         && archive.origin.sourcePart == shot.component?.uuidString)
     #expect(!archive.judgement.launchEffectsApplied)
-    var legacy = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+    let rawLegacy = try JSONSerialization.jsonObject(with: bytes)
+    var legacy = try #require(rawLegacy as? [String: Any])
     legacy.removeValue(forKey: "nativeAttribution")
     let old = try JSONDecoder().decode(
       ScriptNPCShot.self, from: JSONSerialization.data(withJSONObject: legacy))
     #expect(old.nativeAttribution == nil && old.valid)
     #expect(old.missionDescriptor == shot.missionDescriptor)
-    let encodedOld = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(old)) as? [String: Any])
+    let oldBytes = try JSONEncoder().encode(old)
+    let oldObject = try JSONSerialization.jsonObject(with: oldBytes)
+    let encodedOld = try #require(oldObject as? [String: Any])
     #expect(encodedOld["nativeAttribution"] == nil)
   }
 
@@ -73,8 +75,9 @@ struct ScriptShotArchiveTests {
   ])
   func presentMalformedOrMismatchedShotArchiveCannotDecodeAsUnknown(field: String) throws {
     let (_, shot) = try actualShotArchiveFixture()
-    var object = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(shot)) as? [String: Any])
+    let encodedShot = try JSONEncoder().encode(shot)
+    let rawShot = try JSONSerialization.jsonObject(with: encodedShot)
+    var object = try #require(rawShot as? [String: Any])
     var archive = try #require(object["nativeAttribution"] as? [String: Any])
     switch field {
     case "null": object["nativeAttribution"] = NSNull()
