@@ -1,6 +1,6 @@
 # Preserve absent salvage state during a no-op capture
 
-Docking and saving call `persistSalvagePoses` even when the scene has no salvage. The getter supplies an empty ledger for an absent saved record, but the capture unconditionally publishes that default. This changes the Commander despite there being no salvage work or motion to persist. The central 021 gate exposed the mutation in mission suspension and save comparisons; the independent actor purchase validation also exposed whole-Commander changes around native save/load input.
+Docking and saving call `persistSalvagePoses` even when the scene has no salvage. The getter supplies an empty ledger for an absent saved record, but the capture unconditionally publishes that default. This changes the Commander despite there being no salvage work or motion to persist. The central 021 gate exposed the mutation in mission suspension and save comparisons. The independent actor purchase validation reported encoded-data comparisons after load; those failures do not establish a logical Commander change or a connection to this defect.
 
 Publish the staged ledger only when its semantic value changed. Preserve every live pose, identity, health and custody check and every refusal. An explicitly stored empty ledger must also remain present. Actual changed wreck motion must still publish, and capturing that same motion again must be idempotent.
 
