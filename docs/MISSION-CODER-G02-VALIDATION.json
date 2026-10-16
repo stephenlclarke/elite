@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "guard same-flags coverage exact/semantics/affected148/238 passed; new canonical ASan native failure preserved; approved root phase boundary applied but unverified",
+  "stage": "root phase correction passed exact native ASan, legacy/semantics ASan+coverage, affected148/238 coverage and17 ASan methods; final media/refreeze/fullCI pending",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,10 +280,8 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Fresh numbered SAME ASan flags exact first native courier test for approved phase boundary",
-    "If passing: exact legacy both+semantics ASan/default coverage and bounded compatibility",
-    "Required media/refreeze and fresh canonical full CI",
-    "Final owner acceptance, central integration/formal PR",
+    "Fresh numbered renderer regeneration/commit/full input refreeze then ONE fresh complete make ci",
+    "Final owner acceptance and central integration/formal PR review/fix/review/merge",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
@@ -2065,7 +2063,7 @@
     "analysis": "/tmp/elite-g02-contract-phase-boundary-analysis-after-asan.json",
     "analysisSHA256": "9046392656e8f912f10f174eca4c3857844ea1a0123016e1599efdfaa9466120",
     "scope": "Only root acceptContract prepares with drainAccepted:false, returns the root preparation frame, then same private candidate synchronously drains and rechecks root suspension before unchanged admission/valid/publication gates.",
-    "status": "uncompiled/unexecuted; next native ASan failing test first under fresh numbered lease",
+    "status": "bounded executed pass onedde5f5; no fullCI claim",
     "firstSelector": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce",
     "firstFlags": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel",
     "limits": "Observed new ASan guard-region fault in full quote Lua path, no heap diagnostic or assumed old failure cause. Phase relief is a hypothesis; no peak/guarantee claim.",
@@ -2074,5 +2072,235 @@
       "sha256": "4f5ac9372c92dcbcb3a502bf9b3286210cdc8911e95ba675b2e018464ee640c7"
     },
     "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md"
+  },
+  "rootPhaseBoundedCheckpoint": {
+    "candidate": "edde5f52d14ccf4955134709be9d27f15e19224b",
+    "runs": {
+      "first-native-asan": {
+        "methods": 1,
+        "caseInvocations": 1,
+        "result": {
+          "commit": "edde5f52d14ccf4955134709be9d27f15e19224b",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-012",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "edde5f52d14ccf4955134709be9d27f15e19224b",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-011",
+            "purpose": "Exact799B rootphase repair samecanonicalASan realnativeCourierAllSix FIRST; ifpass exactlegacyboth+semantics ASan/defaultcoverage,boundedaffected; no media/fullCI/newrepair/settingswaiver"
+          },
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=0",
+            "swift",
+            "test",
+            "--scratch-path",
+            ".build/asan",
+            "--sanitize=address",
+            "--no-parallel",
+            "--filter",
+            "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce"
+          ],
+          "startUTC": "2026-10-16T08:14:45.582823+00:00",
+          "endUTC": "2026-10-16T08:15:28.559866+00:00",
+          "seconds": 42.97698416700587,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "e493286640b6fbb9ee233417855ddc1de0cfeae1a48ac873522cba93d6bd43b5"
+        }
+      },
+      "legacy-semantics-asan": {
+        "methods": 4,
+        "caseInvocations": 6,
+        "result": {
+          "commit": "edde5f52d14ccf4955134709be9d27f15e19224b",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-012",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "edde5f52d14ccf4955134709be9d27f15e19224b",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-011",
+            "purpose": "Exact799B rootphase repair samecanonicalASan realnativeCourierAllSix FIRST; ifpass exactlegacyboth+semantics ASan/defaultcoverage,boundedaffected; no media/fullCI/newrepair/settingswaiver"
+          },
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=0",
+            "swift",
+            "test",
+            "--scratch-path",
+            ".build/asan",
+            "--sanitize=address",
+            "--no-parallel",
+            "--filter",
+            "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial|courierScriptState"
+          ],
+          "startUTC": "2026-10-16T08:16:53.554499+00:00",
+          "endUTC": "2026-10-16T08:17:15.632246+00:00",
+          "seconds": 22.07759845792316,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "d9b398a7f40967bb79c9a7217302f64b32cab103988088282ab5eb06160c845e"
+        }
+      },
+      "legacy-semantics-coverage": {
+        "methods": 4,
+        "caseInvocations": 6,
+        "result": {
+          "commit": "edde5f52d14ccf4955134709be9d27f15e19224b",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-012",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "edde5f52d14ccf4955134709be9d27f15e19224b",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-011",
+            "purpose": "Exact799B rootphase repair samecanonicalASan realnativeCourierAllSix FIRST; ifpass exactlegacyboth+semantics ASan/defaultcoverage,boundedaffected; no media/fullCI/newrepair/settingswaiver"
+          },
+          "command": [
+            "swift",
+            "test",
+            "--enable-code-coverage",
+            "--filter",
+            "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial|courierScriptState"
+          ],
+          "startUTC": "2026-10-16T08:18:04.165080+00:00",
+          "endUTC": "2026-10-16T08:18:19.076708+00:00",
+          "seconds": 14.911522041074932,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "eaea3402a7584580b9368548c5646d1f13c180bb378c24f64dc40fd1a5898a21"
+        }
+      },
+      "affected-coverage": {
+        "methods": 148,
+        "caseInvocations": 238,
+        "result": {
+          "commit": "edde5f52d14ccf4955134709be9d27f15e19224b",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-012",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "edde5f52d14ccf4955134709be9d27f15e19224b",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-011",
+            "purpose": "Exact799B rootphase repair samecanonicalASan realnativeCourierAllSix FIRST; ifpass exactlegacyboth+semantics ASan/defaultcoverage,boundedaffected; no media/fullCI/newrepair/settingswaiver"
+          },
+          "command": [
+            "swift",
+            "test",
+            "--enable-code-coverage",
+            "--filter",
+            "[Cc]ampaign|[Rr]eceipt|[Cc]ontract|[Pp]ledge|[Cc]ourier"
+          ],
+          "startUTC": "2026-10-16T08:19:14.996803+00:00",
+          "endUTC": "2026-10-16T08:19:42.688880+00:00",
+          "seconds": 27.692006291123107,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "302f141d154f45776d2575763b05cf9959b129fa6f99abac2834afca1b2aa611"
+        }
+      },
+      "affected-native-negative-asan": {
+        "methods": 17,
+        "caseInvocations": 17,
+        "result": {
+          "commit": "edde5f52d14ccf4955134709be9d27f15e19224b",
+          "lease": {
+            "version": 1,
+            "leaseId": "elite-validation-012",
+            "state": "active",
+            "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+            "candidate": "edde5f52d14ccf4955134709be9d27f15e19224b",
+            "mayUpdateCandidateWithinApprovedScope": false,
+            "previousLeaseId": "elite-validation-011",
+            "purpose": "Exact799B rootphase repair samecanonicalASan realnativeCourierAllSix FIRST; ifpass exactlegacyboth+semantics ASan/defaultcoverage,boundedaffected; no media/fullCI/newrepair/settingswaiver"
+          },
+          "command": [
+            "env",
+            "ASAN_OPTIONS=detect_leaks=0",
+            "swift",
+            "test",
+            "--scratch-path",
+            ".build/asan",
+            "--sanitize=address",
+            "--no-parallel",
+            "--filter",
+            "nativeCourier(Stale|Trial|Origin|Unavailable)|nativePledge|courierOriginalEventCannotBorrowLaterConfirmationOrOutliveDrainBudget|courierCannotIssueFromDelayedOrMissingAcceptedCommand|courierFailedAcceptanceAndHandoffPublicationRetainOriginalGeneration|failedContractAcceptancePublicationKeepsTheOfferDepositAndCargoForRetry|campaignCapacityRefusesTheWholeRootWhenItsChildCannotFit|childAcceptanceWaitsForItsParentProposalAndNeverReissuesAfterAChildFault|failedNativeCampaignAcceptanceLeavesNoChildAndRetryKeepsOneOriginalPair"
+          ],
+          "startUTC": "2026-10-16T08:19:42.814979+00:00",
+          "endUTC": "2026-10-16T08:20:17.208201+00:00",
+          "seconds": 34.39300799998455,
+          "exit": 0,
+          "productionBefore": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "productionAfter": {
+            "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+            "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+          },
+          "inputCount": 935,
+          "changedInputs": [],
+          "logSHA256": "fe1f1f113f021a24cd55d4430c6c97e9522996cf2c5efba658fcc29677fc355c"
+        }
+      }
+    },
+    "sourceAndInputsUnchanged": 935,
+    "uniqueASanMethodsAcrossThreeRuns": 22,
+    "uniqueASanCaseInvocationsAcrossThreeRuns": 24,
+    "affectedCoverageMethods": 148,
+    "affectedCoverageCases": 238,
+    "affectedNativeMethods": 25,
+    "ownedCourierMethods": 36,
+    "ownedCourierCases": 53,
+    "staticCallArtifact": {
+      "path": "/tmp/elite-g02-phase-checkpoint/root-contract-ASan-phase-comparison.json",
+      "sha256": "d0773b71dbb481316dd12df738ed49ab24817a87622a070ff58366b49353793b",
+      "limits": "Fixed ASan acceptContract prologue unchanged. Emitted root preparation call returns before separate synchronous drain. Metadata-dependent allocations/runtime peak unmeasured. Full quote and default actor/ASan settings retained."
+    },
+    "lease012ExplicitlyReleased": true,
+    "remaining": "Required source-dependent renderer regeneration/commit/refreeze and ONE fresh full make ci including coverage/TSan/fullserialASan/leaks, owner final acceptance, central integration/formal PR"
   }
 }

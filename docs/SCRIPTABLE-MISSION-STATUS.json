@@ -757,7 +757,7 @@
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
   },
   "generated_courier_checkpoint": {
-    "status": "guard coverage exact1/2, semantics3/4, affected148/238 inclnative25 passed; canonical ASan first native failed; approved root phase-boundary correction committed but unverified",
+    "status": "bounded corrected source passed coverage148/238 inclnative25 and22 ASan methods/24 cases across ordered runs; final renderer refreeze/full CI and owner acceptance pending",
     "profile": "PROJECT-SPACE-G02-1",
     "capabilities": [
       "courier-contracts-basic-v2",
@@ -771,7 +771,7 @@
     "example": "mission-packs/generated-couriers",
     "project_estimates": true,
     "limits": "One ordinary same-chart unique data/package item; fixed six-draw shortest-hop profile and inclusive menu-excluding deadline. No recovered server parity, dynamic navigation health, finance or general equipment integration. G1 statistics and Inventory epoch composition remain pending.",
-    "validated_source": "8fc1632c33da3e21e6347e4b4e40f5048f692747"
+    "validated_source": "edde5f52d14ccf4955134709be9d27f15e19224b"
   },
   "optional_schema2_examples": 18
 }
