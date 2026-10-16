@@ -2,7 +2,7 @@ import Foundation
 
 extension LegacyOwnedEquipmentInventory {
   /// Explicit old-save admission only. Historical nonloan absence does not imply consumption.
-  func validateIssues(in engine: ScriptEngineState) throws {
+  public func validateIssues(in engine: ScriptEngineState) throws {
     guard valid else { throw EquipmentMigrationError.unsupportedLegacyState }
     let byID = Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
     for instance in engine.instances.values {
@@ -39,7 +39,7 @@ extension LegacyOwnedEquipmentInventory {
 
 extension Commander {
   /// Includes suspended/missing-content issues. Neither getters nor content presence create rights.
-  func equipmentIssueObligations() throws -> [EquipmentIssueObligationSnapshot] {
+  public func equipmentIssueObligations() throws -> [EquipmentIssueObligationSnapshot] {
     var result: [EquipmentIssueObligationSnapshot] = []
     for instance in scriptState.instances.values.sorted(by: { $0.id.uuidString < $1.id.uuidString })
     {
@@ -104,12 +104,12 @@ extension Commander {
   }
 }
 
-struct ScriptGearConsumptionDelta: Sendable {
-  let source: EquipmentIssueSource
-  let item: UUID
-  let before: ScriptGearIssue
-  let after: ScriptGearIssue
-  let values: [String: ScriptValue]
+public struct ScriptGearConsumptionDelta: Sendable {
+  public let source: EquipmentIssueSource
+  public let item: UUID
+  public let before: ScriptGearIssue
+  public let after: ScriptGearIssue
+  public let values: [String: ScriptValue]
   fileprivate init(
     source: EquipmentIssueSource, item: UUID, before: ScriptGearIssue, after: ScriptGearIssue,
     values: [String: ScriptValue]
@@ -124,7 +124,9 @@ struct ScriptGearConsumptionDelta: Sendable {
 
 extension ScriptEngineState {
   /// Receives the complete actual removed item. Virtual launches never call this physical adapter.
-  func gearConsumptionDelta(for removed: OwnedEquipmentItem) throws -> ScriptGearConsumptionDelta? {
+  public func gearConsumptionDelta(for removed: OwnedEquipmentItem) throws
+    -> ScriptGearConsumptionDelta?
+  {
     guard case .missionIssue(let mission, let resource, let index, let digest) = removed.provenance
     else { return nil }
     guard let instance = instances[mission], let before = instance.gearIssues[resource],
@@ -145,7 +147,7 @@ extension ScriptEngineState {
       values: ["item": .string(removed.id.uuidString), "name": .string(before.kind.name)])
   }
 
-  func applying(_ delta: ScriptGearConsumptionDelta) throws -> Self {
+  public func applying(_ delta: ScriptGearConsumptionDelta) throws -> Self {
     var expected = delta.before
     expected.consumed.insert(delta.item)
     guard instances[delta.source.mission]?.gearIssues[delta.source.resource] == delta.before,
