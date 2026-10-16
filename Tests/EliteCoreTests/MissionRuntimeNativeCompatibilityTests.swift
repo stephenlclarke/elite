@@ -58,7 +58,8 @@ struct MissionRuntimeNativeCompatibilityTests {
     var game = Game(executive: false)
     game.isMissionTrial = true
     let runtime = GameRuntime(game: game, saveURL: live)
-    let namespace = try #require(await runtime.gallerySaveDirectory())
+    let proposedNamespace = await runtime.gallerySaveDirectory()
+    let namespace = try #require(proposedNamespace)
     defer { try? FileManager.default.removeItem(at: namespace) }
     let receipt = try await runtime.commanderFileOperationForInterface(
       .save(live), activePath: true)
