@@ -70,6 +70,41 @@ public struct HullSweepObstacle: Sendable {
   }
 }
 
+/// Exact target-free motion; the simulation supplies every obstacle still present.
+public struct HullSceneMotion: Equatable, Sendable {
+  public let start: ShipPose
+  public let end: ShipPose
+  public let initialVelocity: Vector3
+  public let acceleration: Vector3
+  public let worldAngularVelocity: Vector3
+  public let duration: Double
+  public let playerRadius: Double
+  public let requiredClearance: Double
+
+  public init(
+    start: ShipPose, end: ShipPose, initialVelocity: Vector3, acceleration: Vector3,
+    worldAngularVelocity: Vector3, duration: Double, playerRadius: Double,
+    requiredClearance: Double = 0
+  ) {
+    self.start = start
+    self.end = end
+    self.initialVelocity = initialVelocity
+    self.acceleration = acceleration
+    self.worldAngularVelocity = worldAngularVelocity
+    self.duration = duration
+    self.playerRadius = playerRadius
+    self.requiredClearance = requiredClearance
+  }
+
+  public init(from sweep: RelativeWorkSweep) {
+    self.init(
+      start: sweep.start, end: sweep.end, initialVelocity: sweep.initialVelocity,
+      acceleration: sweep.acceleration, worldAngularVelocity: sweep.angularVelocity,
+      duration: sweep.duration, playerRadius: sweep.playerRadius,
+      requiredClearance: sweep.requiredClearance)
+  }
+}
+
 /// Immutable native triangles/BVH. Cache by geometry revision, never rebuild per physics step.
 public struct PreparedHull: Sendable {
   public let radius: Double
@@ -149,22 +184,49 @@ public enum HullSweepSafety {
       let primary = HullSweepObstacle(
         identity: sweep.target.identity, hull: target, pose: sweep.target.pose,
         velocity: sweep.target.velocity, angularVelocity: sweep.target.angularVelocity)
-      for obstacle in [primary] + obstacles {
-        obstacleID = obstacle.identity
-        let requiredClearance = obstacle.clearanceOverride ?? sweep.requiredClearance
-        guard requiredClearance.isFinite, requiredClearance >= 0, sweepValid(obstacle.pose),
-          sweepFinite(obstacle.velocity),
-          sweepFinite(obstacle.angularVelocity)
-        else { throw HullSweepFailure.invalidMotion }
-        try prove(
-          sweep, obstacle: obstacle, player: player, requiredClearance: requiredClearance,
-          work: &work)
-      }
+      try validateObstacles(
+        HullSceneMotion(from: sweep), player: player, obstacles: [primary] + obstacles,
+        work: &work, obstacleID: &obstacleID)
       return result(nil, obstacle: nil, work: work)
     } catch let failure as HullSweepFailure {
       return result(failure, obstacle: obstacleID, work: work)
     } catch {
       return result(.unproven, obstacle: obstacleID, work: work)
+    }
+  }
+
+  /// Continuous scene proof without a primary target; empty scenes still validate motion.
+  public static func validateSceneMotion(
+    _ motion: HullSceneMotion, player: PreparedHull? = nil,
+    obstacles: [HullSweepObstacle] = [], budget: HullSweepBudget = .standard
+  ) -> HullSweepResult {
+    var work = SweepWork(budget: budget)
+    var obstacleID: ActorIdentity?
+    do {
+      try validateMotion(motion, player: player, budget: budget)
+      try validateObstacles(
+        motion, player: player, obstacles: obstacles, work: &work, obstacleID: &obstacleID)
+      return result(nil, obstacle: nil, work: work)
+    } catch let failure as HullSweepFailure {
+      return result(failure, obstacle: obstacleID, work: work)
+    } catch {
+      return result(.unproven, obstacle: obstacleID, work: work)
+    }
+  }
+
+  private static func validateObstacles(
+    _ motion: HullSceneMotion, player: PreparedHull?, obstacles: [HullSweepObstacle],
+    work: inout SweepWork, obstacleID: inout ActorIdentity?
+  ) throws {
+    for obstacle in obstacles {
+      obstacleID = obstacle.identity
+      let requiredClearance = obstacle.clearanceOverride ?? motion.requiredClearance
+      guard requiredClearance.isFinite, requiredClearance >= 0, sweepValid(obstacle.pose),
+        sweepFinite(obstacle.velocity), sweepFinite(obstacle.angularVelocity)
+      else { throw HullSweepFailure.invalidMotion }
+      try prove(
+        motion, obstacle: obstacle, player: player, requiredClearance: requiredClearance,
+        work: &work)
     }
   }
 
@@ -215,35 +277,41 @@ public enum HullSweepSafety {
   private static func validateMotion(
     _ sweep: RelativeWorkSweep, player: PreparedHull?, budget: HullSweepBudget
   ) throws {
-    guard sweepValid(sweep.start), sweepValid(sweep.end), sweepValid(sweep.target.pose),
-      sweepValid(sweep.targetEnd), sweepFinite(sweep.initialVelocity),
-      sweepFinite(sweep.acceleration), sweepFinite(sweep.angularVelocity),
-      sweepFinite(sweep.target.velocity), sweepFinite(sweep.target.angularVelocity),
-      sweep.duration.isFinite, sweep.duration > 0,
-      sweep.playerRadius.isFinite, sweep.playerRadius >= 0,
-      sweep.requiredClearance.isFinite, sweep.requiredClearance >= 0,
-      budget.distanceQueries > 0, budget.triangleTests > 0, budget.nodeVisits > 0,
-      (0...20).contains(budget.subdivisionDepth),
-      player.map({ $0.radius <= sweep.playerRadius + 1e-8 }) ?? true
+    try validateMotion(HullSceneMotion(from: sweep), player: player, budget: budget)
+    guard sweepValid(sweep.target.pose), sweepValid(sweep.targetEnd),
+      sweepFinite(sweep.target.velocity), sweepFinite(sweep.target.angularVelocity)
     else { throw HullSweepFailure.invalidMotion }
-    let expected = shipPose(sweep, at: sweep.duration)
     let targetExpected = sweepPose(
       sweep.target.pose, velocity: sweep.target.velocity,
       omega: sweep.target.angularVelocity, time: sweep.duration)
-    guard sweepSame(expected, sweep.end), sweepSame(targetExpected, sweep.targetEnd) else {
-      throw HullSweepFailure.invalidMotion
-    }
+    guard sweepSame(targetExpected, sweep.targetEnd) else { throw HullSweepFailure.invalidMotion }
   }
 
-  private static func shipPose(_ sweep: RelativeWorkSweep, at time: Double) -> ShipPose {
+  private static func validateMotion(
+    _ motion: HullSceneMotion, player: PreparedHull?, budget: HullSweepBudget
+  ) throws {
+    guard sweepValid(motion.start), sweepValid(motion.end), sweepFinite(motion.initialVelocity),
+      sweepFinite(motion.acceleration), sweepFinite(motion.worldAngularVelocity),
+      motion.duration.isFinite, motion.duration > 0,
+      motion.playerRadius.isFinite, motion.playerRadius >= 0,
+      motion.requiredClearance.isFinite, motion.requiredClearance >= 0,
+      budget.distanceQueries > 0, budget.triangleTests > 0, budget.nodeVisits > 0,
+      (0...20).contains(budget.subdivisionDepth),
+      player.map({ $0.radius <= motion.playerRadius + 1e-8 }) ?? true
+    else { throw HullSweepFailure.invalidMotion }
+    let expected = shipPose(motion, at: motion.duration)
+    guard sweepSame(expected, motion.end) else { throw HullSweepFailure.invalidMotion }
+  }
+
+  private static func shipPose(_ sweep: HullSceneMotion, at time: Double) -> ShipPose {
     var pose = sweepPose(
-      sweep.start, velocity: sweep.initialVelocity, omega: sweep.angularVelocity, time: time)
+      sweep.start, velocity: sweep.initialVelocity, omega: sweep.worldAngularVelocity, time: time)
     pose.position = pose.position + sweep.acceleration * (0.5 * time * time)
     return pose
   }
 
   private static func prove(
-    _ sweep: RelativeWorkSweep, obstacle: HullSweepObstacle, player: PreparedHull?,
+    _ sweep: HullSceneMotion, obstacle: HullSweepObstacle, player: PreparedHull?,
     requiredClearance: Double, work: inout SweepWork
   ) throws {
     // Endpoints are necessary but insufficient: every interval needs a motion-envelope proof.
@@ -265,7 +333,7 @@ public enum HullSweepSafety {
         + sweep.acceleration.length * half
       let angularSpeed =
         obstacle.angularVelocity.length * obstacle.hull.radius
-        + (player == nil ? 0 : sweep.angularVelocity.length * sweep.playerRadius)
+        + (player == nil ? 0 : sweep.worldAngularVelocity.length * sweep.playerRadius)
       let envelope = (relativeSpeed + angularSpeed) * half
       guard envelope.isFinite else { throw HullSweepFailure.invalidMotion }
       // Keep numerical headroom as well as the continuous-motion envelope.
@@ -283,7 +351,7 @@ public enum HullSweepSafety {
   }
 
   private static func distance(
-    _ sweep: RelativeWorkSweep, obstacle: HullSweepObstacle, player: PreparedHull?, at time: Double,
+    _ sweep: HullSceneMotion, obstacle: HullSweepObstacle, player: PreparedHull?, at time: Double,
     requiredClearance: Double, work: inout SweepWork
   ) throws -> Double {
     try work.query()
