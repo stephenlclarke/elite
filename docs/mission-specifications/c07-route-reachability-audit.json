@@ -1,0 +1,1067 @@
+{
+  "status": "Static arithmetic audit of proposed C07 destination selector; no game runtime/build/test executed. Not historical mission evidence or a ship-specific live admission quote.",
+  "source_commit": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+  "universe_source_sha256": "ebb57698aa8db1ddc8fa33bc3fd436419faaa7e883ef70b86d0563ddd4ee4344",
+  "scope": "8 ordinary256system charts, native StarSystem.distance floor(sqrt(dx^2+(dy/2)^2))*0.4, full-tank7ly cap on every leg, arbitrary number of refuelled legs. Excludes Plugh, galactic travel, upgrades and actual first-leg fuel.",
+  "method": "Source-transcribed seed/8bitrotation/fourtwists-per-system; integer-equivalent decily distance4*(isqrt(4dx^2+dy^2)//2); connected components. Lave index7/name/x20/y173 sanity anchor only; no compiled native parity claim.",
+  "selector": "(issuer_system+17)%256",
+  "total_pairs": 2048,
+  "unreachable_pairs": 70,
+  "galaxies": [
+    {
+      "galaxy_zero_based": 0,
+      "component_sizes": [
+        256
+      ],
+      "unreachable_plus17_count": 0,
+      "unreachable_plus17_pairs": []
+    },
+    {
+      "galaxy_zero_based": 1,
+      "component_sizes": [
+        256
+      ],
+      "unreachable_plus17_count": 0,
+      "unreachable_plus17_pairs": []
+    },
+    {
+      "galaxy_zero_based": 2,
+      "component_sizes": [
+        254,
+        2
+      ],
+      "unreachable_plus17_count": 4,
+      "unreachable_plus17_pairs": [
+        {
+          "issuer": {
+            "id": 116,
+            "name": "BEENBEOR",
+            "x": 173,
+            "y": 112
+          },
+          "target": {
+            "id": 133,
+            "name": "DITERE",
+            "x": 68,
+            "y": 10
+          }
+        },
+        {
+          "issuer": {
+            "id": 133,
+            "name": "DITERE",
+            "x": 68,
+            "y": 10
+          },
+          "target": {
+            "id": 150,
+            "name": "RIQURI",
+            "x": 132,
+            "y": 182
+          }
+        },
+        {
+          "issuer": {
+            "id": 189,
+            "name": "RELEORAR",
+            "x": 169,
+            "y": 41
+          },
+          "target": {
+            "id": 206,
+            "name": "ATLAAR",
+            "x": 66,
+            "y": 1
+          }
+        },
+        {
+          "issuer": {
+            "id": 206,
+            "name": "ATLAAR",
+            "x": 66,
+            "y": 1
+          },
+          "target": {
+            "id": 223,
+            "name": "RILALELA",
+            "x": 237,
+            "y": 40
+          }
+        }
+      ]
+    },
+    {
+      "galaxy_zero_based": 3,
+      "component_sizes": [
+        254,
+        2
+      ],
+      "unreachable_plus17_count": 4,
+      "unreachable_plus17_pairs": [
+        {
+          "issuer": {
+            "id": 33,
+            "name": "SOED",
+            "x": 80,
+            "y": 23
+          },
+          "target": {
+            "id": 50,
+            "name": "TIZAATDI",
+            "x": 149,
+            "y": 24
+          }
+        },
+        {
+          "issuer": {
+            "id": 50,
+            "name": "TIZAATDI",
+            "x": 149,
+            "y": 24
+          },
+          "target": {
+            "id": 67,
+            "name": "VERETITE",
+            "x": 50,
+            "y": 133
+          }
+        },
+        {
+          "issuer": {
+            "id": 165,
+            "name": "TIORRA",
+            "x": 226,
+            "y": 191
+          },
+          "target": {
+            "id": 182,
+            "name": "ARDITI",
+            "x": 158,
+            "y": 4
+          }
+        },
+        {
+          "issuer": {
+            "id": 182,
+            "name": "ARDITI",
+            "x": 158,
+            "y": 4
+          },
+          "target": {
+            "id": 199,
+            "name": "CEBIMA",
+            "x": 64,
+            "y": 35
+          }
+        }
+      ]
+    },
+    {
+      "galaxy_zero_based": 4,
+      "component_sizes": [
+        256
+      ],
+      "unreachable_plus17_count": 0,
+      "unreachable_plus17_pairs": []
+    },
+    {
+      "galaxy_zero_based": 5,
+      "component_sizes": [
+        252,
+        2,
+        2
+      ],
+      "unreachable_plus17_count": 8,
+      "unreachable_plus17_pairs": [
+        {
+          "issuer": {
+            "id": 16,
+            "name": "USBEUS",
+            "x": 108,
+            "y": 222
+          },
+          "target": {
+            "id": 33,
+            "name": "TETIER",
+            "x": 221,
+            "y": 253
+          }
+        },
+        {
+          "issuer": {
+            "id": 24,
+            "name": "ANARE",
+            "x": 4,
+            "y": 79
+          },
+          "target": {
+            "id": 41,
+            "name": "BEANXEAT",
+            "x": 211,
+            "y": 180
+          }
+        },
+        {
+          "issuer": {
+            "id": 33,
+            "name": "TETIER",
+            "x": 221,
+            "y": 253
+          },
+          "target": {
+            "id": 50,
+            "name": "ENQURA",
+            "x": 166,
+            "y": 128
+          }
+        },
+        {
+          "issuer": {
+            "id": 38,
+            "name": "ISVETIMA",
+            "x": 3,
+            "y": 149
+          },
+          "target": {
+            "id": 55,
+            "name": "ESTEBIIN",
+            "x": 223,
+            "y": 243
+          }
+        },
+        {
+          "issuer": {
+            "id": 41,
+            "name": "BEANXEAT",
+            "x": 211,
+            "y": 180
+          },
+          "target": {
+            "id": 58,
+            "name": "TIESSOUS",
+            "x": 69,
+            "y": 75
+          }
+        },
+        {
+          "issuer": {
+            "id": 55,
+            "name": "ESTEBIIN",
+            "x": 223,
+            "y": 243
+          },
+          "target": {
+            "id": 72,
+            "name": "ERVEDIRA",
+            "x": 199,
+            "y": 127
+          }
+        },
+        {
+          "issuer": {
+            "id": 185,
+            "name": "INBIESTE",
+            "x": 215,
+            "y": 35
+          },
+          "target": {
+            "id": 202,
+            "name": "QUTIUS",
+            "x": 213,
+            "y": 199
+          }
+        },
+        {
+          "issuer": {
+            "id": 202,
+            "name": "QUTIUS",
+            "x": 213,
+            "y": 199
+          },
+          "target": {
+            "id": 219,
+            "name": "GEERMA",
+            "x": 87,
+            "y": 21
+          }
+        }
+      ]
+    },
+    {
+      "galaxy_zero_based": 6,
+      "component_sizes": [
+        229,
+        27
+      ],
+      "unreachable_plus17_count": 52,
+      "unreachable_plus17_pairs": [
+        {
+          "issuer": {
+            "id": 0,
+            "name": "DIZAEN",
+            "x": 128,
+            "y": 150
+          },
+          "target": {
+            "id": 17,
+            "name": "ESARXEVE",
+            "x": 45,
+            "y": 211
+          }
+        },
+        {
+          "issuer": {
+            "id": 10,
+            "name": "GEBEQUAT",
+            "x": 162,
+            "y": 173
+          },
+          "target": {
+            "id": 27,
+            "name": "ENENER",
+            "x": 11,
+            "y": 180
+          }
+        },
+        {
+          "issuer": {
+            "id": 13,
+            "name": "ESZAUSVE",
+            "x": 154,
+            "y": 0
+          },
+          "target": {
+            "id": 30,
+            "name": "BIRESO",
+            "x": 50,
+            "y": 246
+          }
+        },
+        {
+          "issuer": {
+            "id": 15,
+            "name": "ONTEISED",
+            "x": 1,
+            "y": 251
+          },
+          "target": {
+            "id": 32,
+            "name": "RIGETE",
+            "x": 121,
+            "y": 11
+          }
+        },
+        {
+          "issuer": {
+            "id": 17,
+            "name": "ESARXEVE",
+            "x": 45,
+            "y": 211
+          },
+          "target": {
+            "id": 34,
+            "name": "USVERA",
+            "x": 116,
+            "y": 249
+          }
+        },
+        {
+          "issuer": {
+            "id": 27,
+            "name": "ENENER",
+            "x": 11,
+            "y": 180
+          },
+          "target": {
+            "id": 44,
+            "name": "ESLEVE",
+            "x": 203,
+            "y": 172
+          }
+        },
+        {
+          "issuer": {
+            "id": 30,
+            "name": "BIRESO",
+            "x": 50,
+            "y": 246
+          },
+          "target": {
+            "id": 47,
+            "name": "ATREXEXE",
+            "x": 129,
+            "y": 91
+          }
+        },
+        {
+          "issuer": {
+            "id": 44,
+            "name": "ESLEVE",
+            "x": 203,
+            "y": 172
+          },
+          "target": {
+            "id": 61,
+            "name": "ISANESLE",
+            "x": 16,
+            "y": 173
+          }
+        },
+        {
+          "issuer": {
+            "id": 61,
+            "name": "ISANESLE",
+            "x": 16,
+            "y": 173
+          },
+          "target": {
+            "id": 78,
+            "name": "LECEAN",
+            "x": 149,
+            "y": 110
+          }
+        },
+        {
+          "issuer": {
+            "id": 62,
+            "name": "CEERTI",
+            "x": 1,
+            "y": 9
+          },
+          "target": {
+            "id": 79,
+            "name": "GELESOMA",
+            "x": 34,
+            "y": 219
+          }
+        },
+        {
+          "issuer": {
+            "id": 79,
+            "name": "GELESOMA",
+            "x": 34,
+            "y": 219
+          },
+          "target": {
+            "id": 96,
+            "name": "XEER",
+            "x": 204,
+            "y": 213
+          }
+        },
+        {
+          "issuer": {
+            "id": 80,
+            "name": "RASOSO",
+            "x": 171,
+            "y": 103
+          },
+          "target": {
+            "id": 97,
+            "name": "SOINSOAN",
+            "x": 20,
+            "y": 240
+          }
+        },
+        {
+          "issuer": {
+            "id": 93,
+            "name": "ISTITEAT",
+            "x": 135,
+            "y": 179
+          },
+          "target": {
+            "id": 110,
+            "name": "ERVEAN",
+            "x": 20,
+            "y": 241
+          }
+        },
+        {
+          "issuer": {
+            "id": 97,
+            "name": "SOINSOAN",
+            "x": 20,
+            "y": 240
+          },
+          "target": {
+            "id": 114,
+            "name": "TEZAXE",
+            "x": 64,
+            "y": 167
+          }
+        },
+        {
+          "issuer": {
+            "id": 98,
+            "name": "REATTE",
+            "x": 187,
+            "y": 231
+          },
+          "target": {
+            "id": 115,
+            "name": "ESAAN",
+            "x": 3,
+            "y": 162
+          }
+        },
+        {
+          "issuer": {
+            "id": 108,
+            "name": "GEUSXE",
+            "x": 246,
+            "y": 46
+          },
+          "target": {
+            "id": 125,
+            "name": "ISRAA",
+            "x": 29,
+            "y": 217
+          }
+        },
+        {
+          "issuer": {
+            "id": 110,
+            "name": "ERVEAN",
+            "x": 20,
+            "y": 241
+          },
+          "target": {
+            "id": 127,
+            "name": "QULEARBI",
+            "x": 47,
+            "y": 23
+          }
+        },
+        {
+          "issuer": {
+            "id": 113,
+            "name": "CERASO",
+            "x": 13,
+            "y": 1
+          },
+          "target": {
+            "id": 130,
+            "name": "ATAER",
+            "x": 14,
+            "y": 206
+          }
+        },
+        {
+          "issuer": {
+            "id": 115,
+            "name": "ESAAN",
+            "x": 3,
+            "y": 162
+          },
+          "target": {
+            "id": 132,
+            "name": "RIARONUS",
+            "x": 23,
+            "y": 84
+          }
+        },
+        {
+          "issuer": {
+            "id": 117,
+            "name": "ARZAGEAT",
+            "x": 84,
+            "y": 100
+          },
+          "target": {
+            "id": 134,
+            "name": "ERBIEDER",
+            "x": 1,
+            "y": 244
+          }
+        },
+        {
+          "issuer": {
+            "id": 120,
+            "name": "ENCEZAIS",
+            "x": 140,
+            "y": 6
+          },
+          "target": {
+            "id": 137,
+            "name": "ATLAESER",
+            "x": 2,
+            "y": 193
+          }
+        },
+        {
+          "issuer": {
+            "id": 122,
+            "name": "VEGEEDAT",
+            "x": 158,
+            "y": 13
+          },
+          "target": {
+            "id": 139,
+            "name": "TIZAON",
+            "x": 3,
+            "y": 170
+          }
+        },
+        {
+          "issuer": {
+            "id": 125,
+            "name": "ISRAA",
+            "x": 29,
+            "y": 217
+          },
+          "target": {
+            "id": 142,
+            "name": "ONUSAN",
+            "x": 180,
+            "y": 20
+          }
+        },
+        {
+          "issuer": {
+            "id": 130,
+            "name": "ATAER",
+            "x": 14,
+            "y": 206
+          },
+          "target": {
+            "id": 147,
+            "name": "ONDIRA",
+            "x": 231,
+            "y": 6
+          }
+        },
+        {
+          "issuer": {
+            "id": 134,
+            "name": "ERBIEDER",
+            "x": 1,
+            "y": 244
+          },
+          "target": {
+            "id": 151,
+            "name": "ARBERI",
+            "x": 40,
+            "y": 128
+          }
+        },
+        {
+          "issuer": {
+            "id": 136,
+            "name": "BEDILEXE",
+            "x": 129,
+            "y": 24
+          },
+          "target": {
+            "id": 153,
+            "name": "GEORINAR",
+            "x": 15,
+            "y": 198
+          }
+        },
+        {
+          "issuer": {
+            "id": 137,
+            "name": "ATLAESER",
+            "x": 2,
+            "y": 193
+          },
+          "target": {
+            "id": 154,
+            "name": "ATUSZAIS",
+            "x": 74,
+            "y": 172
+          }
+        },
+        {
+          "issuer": {
+            "id": 139,
+            "name": "TIZAON",
+            "x": 3,
+            "y": 170
+          },
+          "target": {
+            "id": 156,
+            "name": "ARESON",
+            "x": 106,
+            "y": 52
+          }
+        },
+        {
+          "issuer": {
+            "id": 144,
+            "name": "VEBIAN",
+            "x": 94,
+            "y": 17
+          },
+          "target": {
+            "id": 161,
+            "name": "AISLAXE",
+            "x": 41,
+            "y": 228
+          }
+        },
+        {
+          "issuer": {
+            "id": 153,
+            "name": "GEORINAR",
+            "x": 15,
+            "y": 198
+          },
+          "target": {
+            "id": 170,
+            "name": "QUONBI",
+            "x": 140,
+            "y": 152
+          }
+        },
+        {
+          "issuer": {
+            "id": 156,
+            "name": "ARESON",
+            "x": 106,
+            "y": 52
+          },
+          "target": {
+            "id": 173,
+            "name": "ORXETIBE",
+            "x": 59,
+            "y": 238
+          }
+        },
+        {
+          "issuer": {
+            "id": 169,
+            "name": "ISVEEDIN",
+            "x": 164,
+            "y": 19
+          },
+          "target": {
+            "id": 186,
+            "name": "INREERAR",
+            "x": 21,
+            "y": 235
+          }
+        },
+        {
+          "issuer": {
+            "id": 173,
+            "name": "ORXETIBE",
+            "x": 59,
+            "y": 238
+          },
+          "target": {
+            "id": 190,
+            "name": "LEVETI",
+            "x": 127,
+            "y": 149
+          }
+        },
+        {
+          "issuer": {
+            "id": 174,
+            "name": "REORAN",
+            "x": 115,
+            "y": 215
+          },
+          "target": {
+            "id": 191,
+            "name": "RIBIRAOR",
+            "x": 48,
+            "y": 215
+          }
+        },
+        {
+          "issuer": {
+            "id": 178,
+            "name": "XEONAR",
+            "x": 39,
+            "y": 181
+          },
+          "target": {
+            "id": 195,
+            "name": "TEABI",
+            "x": 154,
+            "y": 216
+          }
+        },
+        {
+          "issuer": {
+            "id": 186,
+            "name": "INREERAR",
+            "x": 21,
+            "y": 235
+          },
+          "target": {
+            "id": 203,
+            "name": "BEATLE",
+            "x": 156,
+            "y": 194
+          }
+        },
+        {
+          "issuer": {
+            "id": 188,
+            "name": "TIDICE",
+            "x": 96,
+            "y": 213
+          },
+          "target": {
+            "id": 205,
+            "name": "ESAQUBE",
+            "x": 33,
+            "y": 228
+          }
+        },
+        {
+          "issuer": {
+            "id": 191,
+            "name": "RIBIRAOR",
+            "x": 48,
+            "y": 215
+          },
+          "target": {
+            "id": 208,
+            "name": "EDCEA",
+            "x": 145,
+            "y": 59
+          }
+        },
+        {
+          "issuer": {
+            "id": 197,
+            "name": "XEGEARER",
+            "x": 133,
+            "y": 187
+          },
+          "target": {
+            "id": 214,
+            "name": "RIAREROR",
+            "x": 8,
+            "y": 164
+          }
+        },
+        {
+          "issuer": {
+            "id": 201,
+            "name": "ESVESOSO",
+            "x": 103,
+            "y": 133
+          },
+          "target": {
+            "id": 218,
+            "name": "SOBETEVE",
+            "x": 1,
+            "y": 202
+          }
+        },
+        {
+          "issuer": {
+            "id": 205,
+            "name": "ESAQUBE",
+            "x": 33,
+            "y": 228
+          },
+          "target": {
+            "id": 222,
+            "name": "TISO",
+            "x": 239,
+            "y": 200
+          }
+        },
+        {
+          "issuer": {
+            "id": 211,
+            "name": "MAARBI",
+            "x": 16,
+            "y": 46
+          },
+          "target": {
+            "id": 228,
+            "name": "ISTEESGE",
+            "x": 16,
+            "y": 175
+          }
+        },
+        {
+          "issuer": {
+            "id": 212,
+            "name": "REENRI",
+            "x": 61,
+            "y": 166
+          },
+          "target": {
+            "id": 229,
+            "name": "ARTICESO",
+            "x": 3,
+            "y": 137
+          }
+        },
+        {
+          "issuer": {
+            "id": 214,
+            "name": "RIAREROR",
+            "x": 8,
+            "y": 164
+          },
+          "target": {
+            "id": 231,
+            "name": "DIUSACE",
+            "x": 185,
+            "y": 64
+          }
+        },
+        {
+          "issuer": {
+            "id": 218,
+            "name": "SOBETEVE",
+            "x": 1,
+            "y": 202
+          },
+          "target": {
+            "id": 235,
+            "name": "LEEDEN",
+            "x": 153,
+            "y": 254
+          }
+        },
+        {
+          "issuer": {
+            "id": 220,
+            "name": "ZAERMA",
+            "x": 117,
+            "y": 22
+          },
+          "target": {
+            "id": 237,
+            "name": "ORANISEN",
+            "x": 40,
+            "y": 250
+          }
+        },
+        {
+          "issuer": {
+            "id": 228,
+            "name": "ISTEESGE",
+            "x": 16,
+            "y": 175
+          },
+          "target": {
+            "id": 245,
+            "name": "ARVEAA",
+            "x": 206,
+            "y": 28
+          }
+        },
+        {
+          "issuer": {
+            "id": 229,
+            "name": "ARTICESO",
+            "x": 3,
+            "y": 137
+          },
+          "target": {
+            "id": 246,
+            "name": "LARAEDLE",
+            "x": 79,
+            "y": 15
+          }
+        },
+        {
+          "issuer": {
+            "id": 231,
+            "name": "DIUSACE",
+            "x": 185,
+            "y": 64
+          },
+          "target": {
+            "id": 248,
+            "name": "VEGEINSO",
+            "x": 18,
+            "y": 250
+          }
+        },
+        {
+          "issuer": {
+            "id": 237,
+            "name": "ORANISEN",
+            "x": 40,
+            "y": 250
+          },
+          "target": {
+            "id": 254,
+            "name": "ONORTI",
+            "x": 126,
+            "y": 155
+          }
+        },
+        {
+          "issuer": {
+            "id": 248,
+            "name": "VEGEINSO",
+            "x": 18,
+            "y": 250
+          },
+          "target": {
+            "id": 9,
+            "name": "LEBEDIXE",
+            "x": 184,
+            "y": 185
+          }
+        },
+        {
+          "issuer": {
+            "id": 254,
+            "name": "ONORTI",
+            "x": 126,
+            "y": 155
+          },
+          "target": {
+            "id": 15,
+            "name": "ONTEISED",
+            "x": 1,
+            "y": 251
+          }
+        }
+      ]
+    },
+    {
+      "galaxy_zero_based": 7,
+      "component_sizes": [
+        255,
+        1
+      ],
+      "unreachable_plus17_count": 2,
+      "unreachable_plus17_pairs": [
+        {
+          "issuer": {
+            "id": 145,
+            "name": "TEVEBEBI",
+            "x": 191,
+            "y": 218
+          },
+          "target": {
+            "id": 162,
+            "name": "ORESRATI",
+            "x": 16,
+            "y": 255
+          }
+        },
+        {
+          "issuer": {
+            "id": 162,
+            "name": "ORESRATI",
+            "x": 16,
+            "y": 255
+          },
+          "target": {
+            "id": 179,
+            "name": "LAEDAT",
+            "x": 67,
+            "y": 95
+          }
+        }
+      ]
+    }
+  ]
+}
