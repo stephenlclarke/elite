@@ -33,7 +33,8 @@ func nearPlaneShipKeepsVisibleGeometryWhenItsCenterIsBehind(style: ShipDisplaySt
               && $0.y < frame.flightClip.maxY
           })
       case .wire(let line):
-        #expect([line.x0, line.y0, line.x1, line.y1].allSatisfy(\.isFinite))
+        let finite = [line.x0, line.y0, line.x1, line.y1].allSatisfy { $0.isFinite }
+        #expect(finite)
       default: Issue.record("Unexpected ship primitive")
       }
     }
