@@ -10,6 +10,8 @@ A sealed read-only settlement projection shares the actual restoration planner s
 
 The outer runtime remains responsible for atomically publishing the physical candidate, mission records, resources, events and ordnance. These helpers do not own mutable simulation state.
 
+Targeting-core replacement refuses a strictly lower existing targeting tier on both admission and refitting; explicit equal-tier replacements remain allowed. Capacity exemptions use one shared predicate over actual item provenance, canonical foundation policy and fitted shield, energy or navigation slot. An issued copy of the same basic node and a purchased basic targeting computer retain their ordinary costs.
+
 ## Validation
 
-Eleven issue and eight ammunition test methods are authored. Strict source formatting passes. Compilation and execution are pending a separate numbered validation lease; no successful runtime, sanitizer, leak or full-CI result is claimed by this source handoff.
+Thirteen issue and eight ammunition test methods are authored. Strict source formatting passes. Compilation and execution are pending a separate numbered validation lease; no successful runtime, sanitizer, leak or full-CI result is claimed by this source handoff.
