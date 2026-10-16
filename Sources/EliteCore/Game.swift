@@ -26,7 +26,9 @@ public struct Commander: Sendable, Equatable, Codable {
     _modify {
       if savedScriptState == nil { savedScriptState = ScriptEngineState() }
       defer {
-        if savedScriptState == ScriptEngineState() { savedScriptState = nil }
+        if savedScriptState?.nextEvent == 0, savedScriptState == ScriptEngineState() {
+          savedScriptState = nil
+        }
       }
       yield &savedScriptState!
     }

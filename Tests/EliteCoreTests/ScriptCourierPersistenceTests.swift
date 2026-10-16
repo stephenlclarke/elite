@@ -401,6 +401,8 @@ extension CourierFixture {
   #expect(sibling.commander == retained && game.commander == copy)
   copy.scriptState.instances.removeAll()
   copy.scriptState.pendingEvents.removeAll()
+  #expect(copy.scriptState.nextEvent == 2)
+  #expect(try encoder.encode(copy) != empty)
   copy.scriptState.nextEvent = 0
   #expect(try encoder.encode(copy) == empty)
   #expect(try encoder.encode(original) == retainedBytes)
