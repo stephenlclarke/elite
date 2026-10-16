@@ -39,13 +39,14 @@ import Testing
   game.key("]")
   game.key("r")
   game.tick(delta: 0.1)
-  let spin = game.spin
-  let targetID = game.autoPilot.targetID
-  let time = game.time
-  let bodies = game.bodies
-  let speed = game.speed
-  let commander = game.commander
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  let spin = ready.spin
+  let targetID = ready.autoPilot.targetID
+  let time = ready.time
+  let bodies = ready.bodies
+  let speed = ready.speed
+  let commander = ready.commander
   var controls = Controls()
   controls.fire = true
   controls.throttle = 1

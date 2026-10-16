@@ -28,12 +28,12 @@ def run(*arguments, capture=False, check=True):
     return result
 
 
-def source_checkpoint():
+def source_checkpoint(action="packaging"):
     """Refuse to label modified/untracked maintained source as a committed build."""
     if run(
         "git", "status", "--porcelain", "--untracked-files=no", capture=True
     ).stdout.strip():
-        raise RuntimeError("Commit tracked changes before packaging.")
+        raise RuntimeError(f"Commit tracked changes before {action}.")
     untracked = run(
         "git",
         "ls-files",
@@ -51,7 +51,7 @@ def source_checkpoint():
         capture=True,
     ).stdout
     if untracked.strip():
-        raise RuntimeError("Commit maintained source files before packaging.")
+        raise RuntimeError(f"Commit maintained source files before {action}.")
     return run("git", "rev-parse", "HEAD", capture=True).stdout.strip()
 
 

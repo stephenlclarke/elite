@@ -5,6 +5,33 @@ import Testing
 @testable import EliteCore
 @testable import EliteMac
 
+private func expectStartupEquipmentMigration(from legacy: Commander, to migrated: Commander) throws
+{
+  let inventory = try #require(migrated.equipmentInventory)
+  let history = try #require(migrated.equipmentPurchaseHistory)
+  #expect(migrated.valid && migrated.savedEquipmentVersion == 1)
+  #expect(migrated.credits == legacy.credits && migrated.fuel == legacy.fuel)
+  #expect(migrated.cargo == legacy.cargo && migrated.legal == legacy.legal)
+  #expect(history.owner == inventory.owner && history.paid.isEmpty && history.legacy.isEmpty)
+  #expect(inventory.items.count == 4 && inventory.items.allSatisfy { $0.provenance == .standard })
+  #expect(
+    Set(inventory.items.compactMap { $0.location?.slot }) == [
+      .shield, .energy, .navigation, .laser(.front),
+    ])
+  // Only the explicit equipment migration and its two compatibility mirrors may differ.
+  var expected = legacy
+  expected.laserMounts = legacy.laserMounts
+  expected.fuelStorageUnits = legacy.fuelStorageUnits
+  let expectedFields = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(expected)) as? [String: Any])
+  var actualFields = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(migrated)) as? [String: Any])
+  for key in ["savedEquipmentInventory", "savedEquipmentPurchaseHistory", "savedEquipmentVersion"] {
+    actualFields.removeValue(forKey: key)
+  }
+  #expect((actualFields as NSDictionary).isEqual(to: expectedFields))
+}
+
 @Suite(.serialized)
 struct StartupSaveTests {
   @MainActor @Test func lastSuccessfulSaveLocationAndFirstLaunchAreDeterministic() throws {
@@ -42,19 +69,24 @@ struct StartupSaveTests {
     let runtime = GameRuntime()
     try await runtime.load(from: url, persistMigrations: false)
     let restored = await runtime.snapshot()
-    #expect(restored.commander == commander && restored.docked && restored.screen == .status)
+    try expectStartupEquipmentMigration(from: commander, to: restored.commander)
+    #expect(restored.docked && restored.screen == .status)
     #expect(restored.energy == commander.performance.energy)
     #expect(try Data(contentsOf: url) == original)
     try Data("corrupt".utf8).write(to: url)
     await #expect(throws: (any Error).self) {
       try await runtime.load(from: url, persistMigrations: false)
     }
-    #expect(await runtime.snapshot().commander == commander)
+    let afterCorrupt = await runtime.snapshot()
+    #expect(afterCorrupt.commander == restored.commander)
+    #expect(afterCorrupt.inventoryContextEpoch == restored.inventoryContextEpoch)
     try FileManager.default.removeItem(at: url)
     await #expect(throws: (any Error).self) {
       try await runtime.load(from: url, persistMigrations: false)
     }
-    #expect(await runtime.snapshot().commander == commander)
+    let afterMissing = await runtime.snapshot()
+    #expect(afterMissing.commander == restored.commander)
+    #expect(afterMissing.inventoryContextEpoch == restored.inventoryContextEpoch)
   }
 
   @Test func restoredStartupWaitsAtTitleAndContinuesTheSameCommander() async throws {
@@ -70,24 +102,29 @@ struct StartupSaveTests {
     try await runtime.restoreStartup(from: url)
     let restored = await runtime.snapshot()
     #expect(restored.screen == .title && restored.time == 0)
-    #expect(restored.commander == commander && restored.docked)
+    try expectStartupEquipmentMigration(from: commander, to: restored.commander)
+    #expect(restored.docked)
     #expect(try Data(contentsOf: url) == original)
     await runtime.key(" ")
     let continued = await runtime.snapshot()
-    #expect(continued.screen == .status && continued.commander == commander)
+    #expect(continued.screen == .status && continued.commander == restored.commander)
     try await runtime.load(from: url)
     #expect(await runtime.snapshot().screen == .status)
   }
 
   @Test func buildIdentityKeepsTheExactRevisionAndRejectsMissingOrMalformedMetadata() {
     let sha = "0123456789abcdef0123456789abcdef01234567"
-    let identity = BuildIdentity(info: ["CFBundleShortVersionString": "1.2.3", "EliteSourceRevision": sha])
+    let identity = BuildIdentity(info: [
+      "CFBundleShortVersionString": "1.2.3", "EliteSourceRevision": sha,
+    ])
     #expect(identity.versionLine == "VERSION 1.2.3")
     #expect(identity.revisionLine == sha)
     #expect(identity.legacyRevisionLines.joined() == sha)
     #expect(BuildIdentity(info: [:]).revisionLine == "COMMIT UNAVAILABLE")
     #expect(BuildIdentity(info: ["EliteSourceRevision": "short"]).revision == nil)
-    #expect(BuildIdentity(info: ["EliteSourceRevision": String(repeating: "z", count: 40)]).revision == nil)
+    #expect(
+      BuildIdentity(info: ["EliteSourceRevision": String(repeating: "z", count: 40)]).revision
+        == nil)
   }
 
   @Test func titleAndScrollingCreditsIncludeBuildIdentityWithinTheStartupDuration() {

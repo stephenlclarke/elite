@@ -1,0 +1,369 @@
+{
+  "status": "Maintained producer and exact45focusedPASS; full031 gate pending",
+  "source": "0d2d0dc4038a862616b6a688e46532163c8a55a0",
+  "maintainedProducer": {
+    "source": "0d2d0dc4038a862616b6a688e46532163c8a55a0",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-031",
+      "state": "active",
+      "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "candidate": "0d2d0dc4038a862616b6a688e46532163c8a55a0",
+      "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+      "previousLeaseId": "elite-validation-030",
+      "mayUpdateCandidateWithinApprovedScope": true,
+      "candidateUpdateScope": "ONLYroot-reviewed hostedGameplayScene compilerdecomposition corrections ifactualfailure, meaningfulmatchingfocusedtests/docs; afterfocusPASS onlygeneratedmedia/fingerprint/docs freeze. No canonicalMission/schema/reader/alias/nativefitstoreimports ornewfeatures inrepairhead.",
+      "purpose": "Hostedcompilerrepair validation: maintainedmission-packs-check (actualhostedfailedproducer) thenexact45Scene/NPCresource/telemetry/encounter/persistence methods; checkactualstarted/discoveredset equalsmanifest, preserveallfailedattempts. OnPASS complete matchingdocs BEFOREmaterialbaseline, make ships/readme-media, inspectoriginals,commit/refreezegenerated/docs-only; ONEfullmakeci coverage/TSan/serialASan/leaks withdistinctperlaneoriginalarchives/source+protectedtracked/save/prefs hashes+monotonicdurations. Stopfirstrealgatefailure/reportactualcause, no blindretry/skip/waiver. Source-onlyothersSEPARATEcheckouts. No main/Sonar/release/nativeprofiling intohead. Explicitterminalrelease+noprocess, Rootaloneowner/state.",
+      "evidenceDirectory": "/tmp/elite-hosted-compiler-fix-031",
+      "selectionManifest": "/tmp/elite-compiler-fix-focus-selection-031.json",
+      "selectionSHA256": "51c6aec856ccab9beb3d301f974ad291558666df277d784bb153184bd03f695f",
+      "expectedMethods": 45,
+      "startedAt": "2026-10-16T16:07:17.028570+00:00"
+    },
+    "command": [
+      "make",
+      "mission-packs-check"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 5.609444499947131,
+    "changed_inputs": [],
+    "production_save_unchanged": true,
+    "summary": [],
+    "passed_methods": [],
+    "issues": []
+  },
+  "focused": {
+    "source": "0d2d0dc4038a862616b6a688e46532163c8a55a0",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-031",
+      "state": "active",
+      "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "candidate": "0d2d0dc4038a862616b6a688e46532163c8a55a0",
+      "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+      "previousLeaseId": "elite-validation-030",
+      "mayUpdateCandidateWithinApprovedScope": true,
+      "candidateUpdateScope": "ONLYroot-reviewed hostedGameplayScene compilerdecomposition corrections ifactualfailure, meaningfulmatchingfocusedtests/docs; afterfocusPASS onlygeneratedmedia/fingerprint/docs freeze. No canonicalMission/schema/reader/alias/nativefitstoreimports ornewfeatures inrepairhead.",
+      "purpose": "Hostedcompilerrepair validation: maintainedmission-packs-check (actualhostedfailedproducer) thenexact45Scene/NPCresource/telemetry/encounter/persistence methods; checkactualstarted/discoveredset equalsmanifest, preserveallfailedattempts. OnPASS complete matchingdocs BEFOREmaterialbaseline, make ships/readme-media, inspectoriginals,commit/refreezegenerated/docs-only; ONEfullmakeci coverage/TSan/serialASan/leaks withdistinctperlaneoriginalarchives/source+protectedtracked/save/prefs hashes+monotonicdurations. Stopfirstrealgatefailure/reportactualcause, no blindretry/skip/waiver. Source-onlyothersSEPARATEcheckouts. No main/Sonar/release/nativeprofiling intohead. Explicitterminalrelease+noprocess, Rootaloneowner/state.",
+      "evidenceDirectory": "/tmp/elite-hosted-compiler-fix-031",
+      "selectionManifest": "/tmp/elite-compiler-fix-focus-selection-031.json",
+      "selectionSHA256": "51c6aec856ccab9beb3d301f974ad291558666df277d784bb153184bd03f695f",
+      "expectedMethods": 45,
+      "startedAt": "2026-10-16T16:07:17.028570+00:00"
+    },
+    "command": [
+      "swift",
+      "test",
+      "--filter",
+      "actualBeamHeatLimitsCoolIndependentlyAndLegacyEnergyOnlyDoesNotGainShields|actualBodyCaptureRetainsWorldPoseResourcesAndCatalogueAcrossCodableRoundtrip|actualCullKeepsCoastingStateWithoutReAdmissionUntilPlayerReturns|actualDestroyedNPCSettlesCargoThenCannotReturnAsFreshStock|admissionRefusalReplayWrongVisitAndOldOfferNeverDuplicateOrRefill|allTerminalReasonsSurviveReloadAndStalePhysicalReplaysCannotResurrect|allocatorOrderStaleTimeAndWrongSystemUpdatesCannotOverwriteActualState|approachingARealFieldAdmitsBoundedUndepletedPhysicalRocks|attributedDamageUsesTheStruckNPCShieldThenHullAndRechargeUsesItsOwnProfile|blockedCargoSettlementPreventsDockAndCameraRemovalUntilCapacityReturns|capacityRefusalIsAtomicAndTerminalEntriesNeverEvictOrReleaseExtraShips|cullRebindNewActorRestoresExactDamageConsumablesAndRenderedPoseOnce|deadNPCOutsideBubbleSettlesBeforeCullAndNeverResurrects|dockAndNewVisitRetainExactSnapshotWithoutHiddenRechargeOrCoordinateReset|dockingSettlesPendingDeathBeforeDiscardingScene|everyCargoAndResourceRowRemainsReadableAndReachableInCompactTargetPanel|explicitAdmissionInitializesFreshEnergyAndPreservesSpentEnergyOnReAdmission|extractedOreIsAdmittedThenPhysicallyScoopedWithItsNativeQuantity|failedSaveCannotPublishNPCBindingsOrConsumeARecord|fuelChangesOnlyForAcceptedConsumptionOrActualNPCSolarScooping|gameplayFieldGenerationDoesNotConsumeMissionRandomStream|gameplayPhysicalClockFreezesOnExcludedScreensAndPause|gameplaySaveRoundTripAndOldSaveDefaultsPreserveCommanderProperty|gameplaySceneCreatesCanonicalFieldsAndIndependentActorIdentities|gameplaySceneWorldAnchorsStayFixedWhileCameraMoves|invalidSnapshotAndMismatchedRestoreRefuseWithoutMutation|invalidTimeCannotCorruptActualActorReadingsAndRearHitsRemainIndependent|missionProtectedAndNonShipBodiesAreExcludedWithoutOrdinaryFallbacks|nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling|newPopulationMovementUsesWorldVelocityAndDoesNotRunLegacyHostileDamage|nonshipBuilderDoesNotInventShipArmamentOrResourceReadings|outOfOrderReceiptsBindOnceAndRetiredPhysicalActorCannotBecomeAnotherShip|outOfRangeRetentionAndWorldUpdatesReenterWithoutAllocatingRepeatedOffers|policeReservePopulationCapsAndSuppressionUseCurrentAdmissionBudget|realSaveReloadAndLaunchRetainSpentStateAndRebindSceneReferences|spentResourcesAndProvenanceRoundTripWithoutRefillAndOldNPCStateIsUnknown|targetReadsNPCFactsRatherThanCommanderAndRespectsDisclosure|targetTelemetryDistinguishesEmptyUnknownAndNativeCargoUnitsWithoutTruncating|targetTelemetryGatesFactsByModuleAndTargetType|targetTelemetryInvalidActualResourcesStayUnknownIndependently|targetTelemetryLegalRecordIsIndependentOfHostility|targetTelemetryModelUsesActualCatalogueAndMissionOverrides|targetTelemetrySnapshotsFollowNPCManifestAndRouteWithoutPlayerInput|targetTelemetryUsesRouteOwnGalaxyPlughAndExplicitInferredProvenance|unboundUpdatesRejectBoundTerminalStaleOrChangedActorWithoutMutation"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 25.605837958864868,
+    "changed_inputs": [],
+    "production_save_unchanged": true,
+    "summary": [
+      "\u2714 Test run with 45 tests in 4 suites passed after 9.147 seconds."
+    ],
+    "passed_methods": [
+      [
+        "targetTelemetryLegalRecordIsIndependentOfHostility()",
+        "8.214 seconds."
+      ],
+      [
+        "targetTelemetryDistinguishesEmptyUnknownAndNativeCargoUnitsWithoutTruncating()",
+        "8.214 seconds."
+      ],
+      [
+        "targetTelemetryInvalidActualResourcesStayUnknownIndependently()",
+        "8.214 seconds."
+      ],
+      [
+        "targetTelemetryUsesRouteOwnGalaxyPlughAndExplicitInferredProvenance()",
+        "8.214 seconds."
+      ],
+      [
+        "targetTelemetrySnapshotsFollowNPCManifestAndRouteWithoutPlayerInput()",
+        "8.214 seconds."
+      ],
+      [
+        "targetTelemetryGatesFactsByModuleAndTargetType()",
+        "8.215 seconds."
+      ],
+      [
+        "actualBeamHeatLimitsCoolIndependentlyAndLegacyEnergyOnlyDoesNotGainShields()",
+        "8.215 seconds."
+      ],
+      [
+        "targetTelemetryModelUsesActualCatalogueAndMissionOverrides()",
+        "8.215 seconds."
+      ],
+      [
+        "nonshipBuilderDoesNotInventShipArmamentOrResourceReadings()",
+        "8.215 seconds."
+      ],
+      [
+        "invalidTimeCannotCorruptActualActorReadingsAndRearHitsRemainIndependent()",
+        "8.215 seconds."
+      ],
+      [
+        "spentResourcesAndProvenanceRoundTripWithoutRefillAndOldNPCStateIsUnknown()",
+        "8.215 seconds."
+      ],
+      [
+        "fuelChangesOnlyForAcceptedConsumptionOrActualNPCSolarScooping()",
+        "8.215 seconds."
+      ],
+      [
+        "attributedDamageUsesTheStruckNPCShieldThenHullAndRechargeUsesItsOwnProfile()",
+        "8.215 seconds."
+      ],
+      [
+        "actualDestroyedNPCSettlesCargoThenCannotReturnAsFreshStock()",
+        "8.215 seconds."
+      ],
+      [
+        "deadNPCOutsideBubbleSettlesBeforeCullAndNeverResurrects()",
+        "8.215 seconds."
+      ],
+      [
+        "targetReadsNPCFactsRatherThanCommanderAndRespectsDisclosure()",
+        "8.217 seconds."
+      ],
+      [
+        "allocatorOrderStaleTimeAndWrongSystemUpdatesCannotOverwriteActualState()",
+        "0.005 seconds."
+      ],
+      [
+        "outOfOrderReceiptsBindOnceAndRetiredPhysicalActorCannotBecomeAnotherShip()",
+        "0.005 seconds."
+      ],
+      [
+        "outOfRangeRetentionAndWorldUpdatesReenterWithoutAllocatingRepeatedOffers()",
+        "0.005 seconds."
+      ],
+      [
+        "unboundUpdatesRejectBoundTerminalStaleOrChangedActorWithoutMutation()",
+        "0.005 seconds."
+      ],
+      [
+        "policeReservePopulationCapsAndSuppressionUseCurrentAdmissionBudget()",
+        "0.005 seconds."
+      ],
+      [
+        "cullRebindNewActorRestoresExactDamageConsumablesAndRenderedPoseOnce()",
+        "0.005 seconds."
+      ],
+      [
+        "admissionRefusalReplayWrongVisitAndOldOfferNeverDuplicateOrRefill()",
+        "0.005 seconds."
+      ],
+      [
+        "invalidSnapshotAndMismatchedRestoreRefuseWithoutMutation()",
+        "0.005 seconds."
+      ],
+      [
+        "allTerminalReasonsSurviveReloadAndStalePhysicalReplaysCannotResurrect()",
+        "0.005 seconds."
+      ],
+      [
+        "actualBodyCaptureRetainsWorldPoseResourcesAndCatalogueAcrossCodableRoundtrip()",
+        "0.005 seconds."
+      ],
+      [
+        "missionProtectedAndNonShipBodiesAreExcludedWithoutOrdinaryFallbacks()",
+        "0.005 seconds."
+      ],
+      [
+        "dockAndNewVisitRetainExactSnapshotWithoutHiddenRechargeOrCoordinateReset()",
+        "0.005 seconds."
+      ],
+      [
+        "failedSaveCannotPublishNPCBindingsOrConsumeARecord()",
+        "8.222 seconds."
+      ],
+      [
+        "everyCargoAndResourceRowRemainsReadableAndReachableInCompactTargetPanel()",
+        "8.270 seconds."
+      ],
+      [
+        "capacityRefusalIsAtomicAndTerminalEntriesNeverEvictOrReleaseExtraShips()",
+        "0.116 seconds."
+      ],
+      [
+        "actualCullKeepsCoastingStateWithoutReAdmissionUntilPlayerReturns()",
+        "8.443 seconds."
+      ],
+      [
+        "explicitAdmissionInitializesFreshEnergyAndPreservesSpentEnergyOnReAdmission()",
+        "8.445 seconds."
+      ],
+      [
+        "blockedCargoSettlementPreventsDockAndCameraRemovalUntilCapacityReturns()",
+        "8.478 seconds."
+      ],
+      [
+        "dockingSettlesPendingDeathBeforeDiscardingScene()",
+        "8.563 seconds."
+      ],
+      [
+        "gameplayFieldGenerationDoesNotConsumeMissionRandomStream()",
+        "8.564 seconds."
+      ],
+      [
+        "gameplaySceneCreatesCanonicalFieldsAndIndependentActorIdentities()",
+        "8.564 seconds."
+      ],
+      [
+        "realSaveReloadAndLaunchRetainSpentStateAndRebindSceneReferences()",
+        "8.565 seconds."
+      ],
+      [
+        "extractedOreIsAdmittedThenPhysicallyScoopedWithItsNativeQuantity()",
+        "8.568 seconds."
+      ],
+      [
+        "newPopulationMovementUsesWorldVelocityAndDoesNotRunLegacyHostileDamage()",
+        "8.569 seconds."
+      ],
+      [
+        "gameplaySaveRoundTripAndOldSaveDefaultsPreserveCommanderProperty()",
+        "8.569 seconds."
+      ],
+      [
+        "gameplayPhysicalClockFreezesOnExcludedScreensAndPause()",
+        "8.569 seconds."
+      ],
+      [
+        "approachingARealFieldAdmitsBoundedUndepletedPhysicalRocks()",
+        "8.586 seconds."
+      ],
+      [
+        "gameplaySceneWorldAnchorsStayFixedWhileCameraMoves()",
+        "8.663 seconds."
+      ],
+      [
+        "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling()",
+        "9.147 seconds."
+      ],
+      [
+        "run with 45 tests in 4 suites",
+        "9.147 seconds."
+      ]
+    ],
+    "issues": []
+  },
+  "selection": {
+    "status": "Source-only selection; no heavy invocation",
+    "source": "0d2d0dc4038a862616b6a688e46532163c8a55a0",
+    "methodToFile": {
+      "gameplaySceneCreatesCanonicalFieldsAndIndependentActorIdentities": "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "gameplaySceneWorldAnchorsStayFixedWhileCameraMoves": "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "gameplayPhysicalClockFreezesOnExcludedScreensAndPause": "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "gameplaySaveRoundTripAndOldSaveDefaultsPreserveCommanderProperty": "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "gameplayFieldGenerationDoesNotConsumeMissionRandomStream": "Tests/EliteCoreTests/GameplaySceneTests.swift",
+      "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "nonshipBuilderDoesNotInventShipArmamentOrResourceReadings": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "explicitAdmissionInitializesFreshEnergyAndPreservesSpentEnergyOnReAdmission": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "everyCargoAndResourceRowRemainsReadableAndReachableInCompactTargetPanel": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "invalidTimeCannotCorruptActualActorReadingsAndRearHitsRemainIndependent": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "attributedDamageUsesTheStruckNPCShieldThenHullAndRechargeUsesItsOwnProfile": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "actualBeamHeatLimitsCoolIndependentlyAndLegacyEnergyOnlyDoesNotGainShields": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "fuelChangesOnlyForAcceptedConsumptionOrActualNPCSolarScooping": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "targetReadsNPCFactsRatherThanCommanderAndRespectsDisclosure": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "spentResourcesAndProvenanceRoundTripWithoutRefillAndOldNPCStateIsUnknown": "Tests/EliteCoreTests/NPCResourceTests.swift",
+      "targetTelemetryDistinguishesEmptyUnknownAndNativeCargoUnitsWithoutTruncating": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "targetTelemetryUsesRouteOwnGalaxyPlughAndExplicitInferredProvenance": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "targetTelemetryGatesFactsByModuleAndTargetType": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "targetTelemetryLegalRecordIsIndependentOfHostility": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "targetTelemetryInvalidActualResourcesStayUnknownIndependently": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "targetTelemetryModelUsesActualCatalogueAndMissionOverrides": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "targetTelemetrySnapshotsFollowNPCManifestAndRouteWithoutPlayerInput": "Tests/EliteCoreTests/TargetTelemetryTests.swift",
+      "approachingARealFieldAdmitsBoundedUndepletedPhysicalRocks": "Tests/EliteCoreTests/GameplayEncounterIntegrationTests.swift",
+      "extractedOreIsAdmittedThenPhysicallyScoopedWithItsNativeQuantity": "Tests/EliteCoreTests/GameplayEncounterIntegrationTests.swift",
+      "newPopulationMovementUsesWorldVelocityAndDoesNotRunLegacyHostileDamage": "Tests/EliteCoreTests/GameplayEncounterIntegrationTests.swift",
+      "deadNPCOutsideBubbleSettlesBeforeCullAndNeverResurrects": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "dockingSettlesPendingDeathBeforeDiscardingScene": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "blockedCargoSettlementPreventsDockAndCameraRemovalUntilCapacityReturns": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "realSaveReloadAndLaunchRetainSpentStateAndRebindSceneReferences": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "actualCullKeepsCoastingStateWithoutReAdmissionUntilPlayerReturns": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "actualDestroyedNPCSettlesCargoThenCannotReturnAsFreshStock": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "failedSaveCannotPublishNPCBindingsOrConsumeARecord": "Tests/EliteCoreTests/NPCPersistenceRuntimeTests.swift",
+      "outOfRangeRetentionAndWorldUpdatesReenterWithoutAllocatingRepeatedOffers": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "unboundUpdatesRejectBoundTerminalStaleOrChangedActorWithoutMutation": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "actualBodyCaptureRetainsWorldPoseResourcesAndCatalogueAcrossCodableRoundtrip": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "cullRebindNewActorRestoresExactDamageConsumablesAndRenderedPoseOnce": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "admissionRefusalReplayWrongVisitAndOldOfferNeverDuplicateOrRefill": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "capacityRefusalIsAtomicAndTerminalEntriesNeverEvictOrReleaseExtraShips": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "outOfOrderReceiptsBindOnceAndRetiredPhysicalActorCannotBecomeAnotherShip": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "allocatorOrderStaleTimeAndWrongSystemUpdatesCannotOverwriteActualState": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "missionProtectedAndNonShipBodiesAreExcludedWithoutOrdinaryFallbacks": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "allTerminalReasonsSurviveReloadAndStalePhysicalReplaysCannotResurrect": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "dockAndNewVisitRetainExactSnapshotWithoutHiddenRechargeOrCoordinateReset": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "policeReservePopulationCapsAndSuppressionUseCurrentAdmissionBudget": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift",
+      "invalidSnapshotAndMismatchedRestoreRefuseWithoutMutation": "Tests/EliteCoreTests/NPCPersistenceLedgerTests.swift"
+    },
+    "expectedMethodCount": 45,
+    "filterPath": "/tmp/elite-compiler-fix-focus-filter-031.txt",
+    "filterSHA256": "b842b03fb9ec6355d2ca226f711bc7f8ac9c0bea503e8bcdf76b07d21c1e6924",
+    "scope": "Actor snapshot exact facts, NPC resources/telemetry/encounter/persistence compatibility for typed expression decomposition; no mission integration.",
+    "filterQualification": "Unanchored exact unique method-name alternation follows maintained029successful Swift filter convention; actualstartedset/countmustmatch45manifest."
+  },
+  "actualMethods": [
+    "actualBeamHeatLimitsCoolIndependentlyAndLegacyEnergyOnlyDoesNotGainShields",
+    "actualBodyCaptureRetainsWorldPoseResourcesAndCatalogueAcrossCodableRoundtrip",
+    "actualCullKeepsCoastingStateWithoutReAdmissionUntilPlayerReturns",
+    "actualDestroyedNPCSettlesCargoThenCannotReturnAsFreshStock",
+    "admissionRefusalReplayWrongVisitAndOldOfferNeverDuplicateOrRefill",
+    "allTerminalReasonsSurviveReloadAndStalePhysicalReplaysCannotResurrect",
+    "allocatorOrderStaleTimeAndWrongSystemUpdatesCannotOverwriteActualState",
+    "approachingARealFieldAdmitsBoundedUndepletedPhysicalRocks",
+    "attributedDamageUsesTheStruckNPCShieldThenHullAndRechargeUsesItsOwnProfile",
+    "blockedCargoSettlementPreventsDockAndCameraRemovalUntilCapacityReturns",
+    "capacityRefusalIsAtomicAndTerminalEntriesNeverEvictOrReleaseExtraShips",
+    "cullRebindNewActorRestoresExactDamageConsumablesAndRenderedPoseOnce",
+    "deadNPCOutsideBubbleSettlesBeforeCullAndNeverResurrects",
+    "dockAndNewVisitRetainExactSnapshotWithoutHiddenRechargeOrCoordinateReset",
+    "dockingSettlesPendingDeathBeforeDiscardingScene",
+    "everyCargoAndResourceRowRemainsReadableAndReachableInCompactTargetPanel",
+    "explicitAdmissionInitializesFreshEnergyAndPreservesSpentEnergyOnReAdmission",
+    "extractedOreIsAdmittedThenPhysicallyScoopedWithItsNativeQuantity",
+    "failedSaveCannotPublishNPCBindingsOrConsumeARecord",
+    "fuelChangesOnlyForAcceptedConsumptionOrActualNPCSolarScooping",
+    "gameplayFieldGenerationDoesNotConsumeMissionRandomStream",
+    "gameplayPhysicalClockFreezesOnExcludedScreensAndPause",
+    "gameplaySaveRoundTripAndOldSaveDefaultsPreserveCommanderProperty",
+    "gameplaySceneCreatesCanonicalFieldsAndIndependentActorIdentities",
+    "gameplaySceneWorldAnchorsStayFixedWhileCameraMoves",
+    "invalidSnapshotAndMismatchedRestoreRefuseWithoutMutation",
+    "invalidTimeCannotCorruptActualActorReadingsAndRearHitsRemainIndependent",
+    "missionProtectedAndNonShipBodiesAreExcludedWithoutOrdinaryFallbacks",
+    "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling",
+    "newPopulationMovementUsesWorldVelocityAndDoesNotRunLegacyHostileDamage",
+    "nonshipBuilderDoesNotInventShipArmamentOrResourceReadings",
+    "outOfOrderReceiptsBindOnceAndRetiredPhysicalActorCannotBecomeAnotherShip",
+    "outOfRangeRetentionAndWorldUpdatesReenterWithoutAllocatingRepeatedOffers",
+    "policeReservePopulationCapsAndSuppressionUseCurrentAdmissionBudget",
+    "realSaveReloadAndLaunchRetainSpentStateAndRebindSceneReferences",
+    "spentResourcesAndProvenanceRoundTripWithoutRefillAndOldNPCStateIsUnknown",
+    "targetReadsNPCFactsRatherThanCommanderAndRespectsDisclosure",
+    "targetTelemetryDistinguishesEmptyUnknownAndNativeCargoUnitsWithoutTruncating",
+    "targetTelemetryGatesFactsByModuleAndTargetType",
+    "targetTelemetryInvalidActualResourcesStayUnknownIndependently",
+    "targetTelemetryLegalRecordIsIndependentOfHostility",
+    "targetTelemetryModelUsesActualCatalogueAndMissionOverrides",
+    "targetTelemetrySnapshotsFollowNPCManifestAndRouteWithoutPlayerInput",
+    "targetTelemetryUsesRouteOwnGalaxyPlughAndExplicitInferredProvenance",
+    "unboundUpdatesRejectBoundTerminalStaleOrChangedActorWithoutMutation"
+  ],
+  "productionPreferencesUnchanged": true,
+  "priorFailedHostedLogSHA256": "daa04df10a58588c2b9628866acbaaf0fad3703f867d8b7877fed0a2087489a7",
+  "artifacts": {
+    "/tmp/elite-hosted-compiler-fix-031/mission-precheck-031.log": "17c7d3942d2a0120864693bcccfa59b883a0ed07942254eb1fae112129b21993",
+    "/tmp/elite-hosted-compiler-fix-031/mission-precheck-031.json": "497b0c62b5f291b43676ad9c9216ed73d75e5d8c05052bbeeb618d0c19d5d91c",
+    "/tmp/elite-hosted-compiler-fix-031/mission-precheck-031-inputs.json": "74cc361edf6bfa8be4ac75e509d7fc99586247da3b6d92692c37bcf9a4bfcdea",
+    "/tmp/elite-hosted-compiler-fix-031/focus-031.log": "e638a9960aee1c92d251bbbf8bfbc2f77f0fa1d56db00677777c64f2f8190b69",
+    "/tmp/elite-hosted-compiler-fix-031/focus-031.json": "0b5661cf503184282f35a72fac300e14405db74e57a5f643757eb79b25599d62",
+    "/tmp/elite-hosted-compiler-fix-031/focus-031-inputs.json": "74cc361edf6bfa8be4ac75e509d7fc99586247da3b6d92692c37bcf9a4bfcdea"
+  },
+  "qualification": "Local Apple Swift6.4 verification does not substitute for fresh final-head hosted build. Original hostedcompile failure retained; no waived compilerlimit or test."
+}

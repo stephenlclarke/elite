@@ -15,11 +15,15 @@ public enum EquipmentGroups {
         ["Pulse Laser", "Mining Laser", "Beam Laser", "Military Laser", Equipment.navalLaser]
       ),
       ("Shield Boosters", ShieldBooster.allCases.map(\.equipmentName)),
-      ("Targeting Computers", TargetingTier.allCases.map(\.equipmentName)),
+      (
+        "Targeting Computers",
+        TargetingTier.allCases.map(\.equipmentName)
+          + ["Targeting: Mining Module", "Targeting: Salvage Module"]
+      ),
       ("Navigation Computers", NavigationTier.allCases.map(\.equipmentName)),
       ("Energy Systems", ["Extra Energy Unit", Equipment.navalEnergyUnit]),
       ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
-      ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops"]),
+      ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),
       ("Travel", ["Galactic Hyperdrive"]),
       ("Emergency Equipment", ["Escape Pod"]),
     ]

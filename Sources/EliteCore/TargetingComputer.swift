@@ -22,7 +22,11 @@ public enum TargetingTier: Int, Sendable, Codable, CaseIterable, Comparable {
 }
 extension Commander {
   public var targetingTier: TargetingTier? {
-    (equipment.compactMap(TargetingTier.from)
+    if equipmentInventory != nil {
+      return fittedEquipment(at: .targetingCore).flatMap { TargetingTier.from($0.node.key) }
+    }
+    return
+      (equipment.compactMap(TargetingTier.from)
       + (equipment.contains(Equipment.legacyDockingComputer) ? [.docking] : [])).max()
   }
   public var hasAutomaticDocking: Bool { targetingTier.map { $0 >= .docking } ?? false }
@@ -101,7 +105,12 @@ extension Game {
       return .init(id: body.id, model: nil, status: nil, fields: [])
     }
     let shipStatus = body.hostile ? "Hostile" : "Neutral"
-    let status = body.hull == .station ? autoPilot.status : shipStatus
+    let status: String
+    if let work = workGuidance, let identity = body.physical?.identity, work.parent == identity {
+      status = work.status
+    } else {
+      status = body.hull == .station ? autoPilot.status : shipStatus
+    }
     var fields: [TargetField] = []
     if body.hull == .station {
       fields = [
@@ -111,17 +120,11 @@ extension Game {
         .init(label: "Range", value: String(format: "%.0f units", body.position.length)),
       ]
     } else {
-      if tier >= .pirate {
+      fields += TargetTelemetry.fields(
+        facts: telemetryFacts(for: body), tier: tier, targetIsShip: body.hull.isTargetShip,
+        observerGalaxy: commander.galaxy, discloseLegal: true)
+      if tier >= .military, body.hull.isTargetShip {
         fields += [
-          .init(label: "Cargo", value: "Unavailable"), .init(label: "Origin", value: "Unknown"),
-          .init(label: "Destination", value: "Unknown"),
-        ]
-      }
-      if tier >= .military {
-        fields += [
-          .init(label: "Shields", value: "Unavailable"),
-          .init(label: "Laser heat", value: "Unavailable"),
-          .init(label: "Fuel", value: "Unavailable"),
           .init(label: "Missiles", value: String(body.missiles)),
           .init(label: "ECM equipped", value: body.ecmEnabled ? "Yes" : "No"),
           .init(
@@ -129,8 +132,27 @@ extension Game {
         ]
       }
     }
+    if let context = gameplayContext(),
+      let metadata = recoverableMetadata(for: body, context: context)
+    {
+      fields += [
+        .init(label: "Type", value: metadata.category.rawValue),
+        .init(label: "Custody", value: metadata.ownership.rawValue),
+      ]
+      if let work = workGuidance, work.parent == body.physical?.identity,
+        let section = work.surface.section
+      {
+        fields.append(
+          .init(
+            label: "Section",
+            value: commander.salvageLedger.isDepleted(section) ? "Exhausted" : "Available"))
+      }
+    }
     return .init(
-      id: body.id, model: body.blackjackRole?.name ?? body.hull.modelName, status: status,
+      id: body.id,
+      model: TargetTelemetry.modelName(
+        catalogueShipID: body.physical?.catalogueShipID, missionName: body.blackjackRole?.name,
+        fallbackHull: body.hull), status: status,
       fields: fields)
   }
 }

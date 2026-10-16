@@ -8,13 +8,48 @@ public enum Screen: String, Codable, Sendable, CaseIterable {
 }
 
 public struct Commander: Sendable, Equatable, Codable {
+  var savedEquipmentInventory: OwnedEquipmentInventory?
+  var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
+  var savedSalvageLedger: SalvageLedger?
+  var savedEquipmentVersion: Int?
+  private var savedFlightSimulation: FlightSimulationState?
+  public var flightSimulation: FlightSimulationState {
+    get { savedFlightSimulation ?? FlightSimulationState() }
+    set { savedFlightSimulation = newValue }
+  }
+  private var savedCrimeLedger: CrimeLedger?
+  public var crimeLedger: CrimeLedger {
+    get { savedCrimeLedger ?? CrimeLedger() }
+    set { savedCrimeLedger = newValue }
+  }
+  private var savedStationSecurity: StationSecurity?
+  public var stationSecurity: StationSecurity {
+    get { savedStationSecurity ?? StationSecurity() }
+    set { savedStationSecurity = newValue }
+  }
+  public var encounterDirector: EncounterDirector?
+  private var savedNPCPersistence: NPCPersistenceLedger?
+  public var npcPersistence: NPCPersistenceLedger {
+    get { savedNPCPersistence ?? NPCPersistenceLedger() }
+    set { savedNPCPersistence = newValue }
+  }
+  private var savedCargoDebrisLedger: CargoDebrisLedger?
+  public var cargoDebrisLedger: CargoDebrisLedger {
+    get { savedCargoDebrisLedger ?? CargoDebrisLedger() }
+    set { savedCargoDebrisLedger = newValue }
+  }
+  private var savedMiningLedger: MiningLedger?
+  public var miningLedger: MiningLedger {
+    get { savedMiningLedger ?? MiningLedger() }
+    set { savedMiningLedger = newValue }
+  }
   private var savedMissionProgress: [String: MissionProgress]?
   public var missionProgress: [String: MissionProgress] {
     get { savedMissionProgress ?? [:] }
     set { savedMissionProgress = newValue }
   }
   public var missionPayloadTonnes: Int {
-    missionProgress.values.reduce(0) { $0 + $1.payloads.values.reduce(0, +) }
+    checkedMissionPayloadTonnes ?? Int.max
   }
   private var wantedAmnesty: Bool?
   public var xyzzyWantedAmnesty: Bool {
@@ -71,7 +106,16 @@ public struct Commander: Sendable, Equatable, Codable {
   private var storageUnitCount: Int?
   private var mountedLasers: LaserMounts?
   public var laserMounts: LaserMounts {
-    get { mountedLasers ?? LaserMounts(front: legacyLaser) }
+    get {
+      guard equipmentInventory != nil else {
+        return mountedLasers ?? LaserMounts(front: legacyLaser)
+      }
+      var mounts = LaserMounts()
+      for mount in LaserMount.allCases {
+        mounts[mount] = fittedEquipment(at: .laser(mount)).flatMap { LaserKind.from($0.node.key) }
+      }
+      return mounts
+    }
     set { mountedLasers = newValue }
   }
   private var finiteXYZzyCash: Bool?
@@ -80,7 +124,13 @@ public struct Commander: Sendable, Equatable, Codable {
     set { finiteXYZzyCash = newValue }
   }
   public var fuelStorageUnits: Int {
-    get { storageUnitCount ?? 0 }
+    get {
+      guard let inventory = equipmentInventory else { return storageUnitCount ?? 0 }
+      return inventory.items.filter {
+        if case .some(.fuelStorage) = $0.location?.slot { return true }
+        return false
+      }.count
+    }
     set { storageUnitCount = newValue }
   }
   public var navigationPlan: NavigationPlan? {
@@ -112,7 +162,7 @@ public struct Commander: Sendable, Equatable, Codable {
     set { navalMission = newValue }
   }
   public var shipDisplayStyle: ShipDisplayStyle {
-    get { displayStyle ?? .whiteWireframe }
+    get { displayStyle ?? .shadedPanels }
     set { displayStyle = newValue }
   }
   mutating func migrateLegacyXYZzyMounts() {
@@ -128,7 +178,7 @@ public struct Commander: Sendable, Equatable, Codable {
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
-    zip(cargo, Commodity.all).reduce(missionPayloadTonnes) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
+    checkedCargoTonnes ?? Int.max
   }
   public var rank: String {
     let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
@@ -138,7 +188,7 @@ public struct Commander: Sendable, Equatable, Codable {
     ][thresholds.filter { kills >= $0 }.count]
   }
   public var valid: Bool {
-    ShipCatalogue.ship(shipID)?.game != nil && cargo.count == 17
+    ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
       && (0...256).contains(system) && (0..<8).contains(galaxy)
@@ -149,9 +199,13 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...FuelStorage.maximumCount).contains(fuelStorageUnits)
       && (0...fuelCapacity).contains(fuel)
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
-      && cargoTonnes <= capacity
-      && (navigationPlan?.valid ?? true) && blackjack.valid
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
+      && (checkedCargoTonnes.map { $0 <= capacity } ?? false)
+      && (navigationPlan?.valid ?? true) && blackjack.valid
+      && (savedFlightSimulation?.valid ?? true)
+      && (savedCargoDebrisLedger?.valid ?? true)
+      && (savedMiningLedger?.valid ?? true)
+      && (savedNPCPersistence?.valid ?? true)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
   }
@@ -164,6 +218,8 @@ public struct Equipment: Sendable {
   public static var validNames: Set<String> {
     Set(all.map(\.name)).subtracting([FuelStorage.equipmentName]).union([
       navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
+      "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
+      "Elite Shield Module",
     ])
   }
   public static var maximumHardware: Set<String> {
@@ -174,7 +230,7 @@ public struct Equipment: Sendable {
     )
     .union([
       TargetingTier.military.equipmentName, NavigationTier.military.equipmentName,
-      ShieldBooster.capital.equipmentName,
+      "Elite Shield Module",
     ])
   }
   public let name: String
@@ -204,6 +260,10 @@ public struct Equipment: Sendable {
     + NavigationTier.allCases.map {
       .init(name: $0.equipmentName, price: $0.price, technology: $0.technology)
     } + [
+      // Initial project balancing in tenths of a credit; these are new independent devices.
+      .init(name: "Targeting: Mining Module", price: 20000, technology: 5),
+      .init(name: "Targeting: Salvage Module", price: 40000, technology: 7),
+      .init(name: "Salvage Cutter", price: 25000, technology: 6),
       .init(name: FuelStorage.equipmentName, price: FuelStorage.price, technology: 0),
       .init(name: navalLaser, price: 0, technology: 0),
       .init(name: navalEnergyUnit, price: 0, technology: 0),
@@ -251,6 +311,10 @@ public struct Game: Sendable {
   public var chartInformationScroll = 0
   public var market = MarketItem.generate(economy: 5, fluctuation: 0)
   public var bodies: [SpaceBody] = []
+  public var miningFields: [MiningField] = []
+  public var salvageSites: [SalvageSite] = []
+  var gameplayRevision: UInt64 = 0
+  var salvageAdmissionGeometry: [String: PreparedSalvageAdmissionHull] = [:]
   public var starfield = Starfield()
   public var speed = 0.0
   public var pitch = 0.0
@@ -258,9 +322,20 @@ public struct Game: Sendable {
   public var yaw = 0.0
   public var spin = SpinControl()
   public var autoPilot = AutoTargetControl()
+  public var workTargetFilter: WorkTargetFilter = .ships
+  var workGuidance: FlightWorkGuidance?
+  var workBraking: FlightWorkBraking?
+  var workRecoveryRock: RockIdentity?
+  var approvedWorkMotion: HullSceneMotion?
+  var lastAppliedWorkMotion: HullSceneMotion?
+  var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]
+  var workScenePlanned = false
+  var workFireSuspended = false
+  var manualResidualFlight = false
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
   public var targetPanelExpanded: Bool?
+  public var targetPanelScroll = 0
   public var weaponsTargetID: Int?
   public var secretScroll = 0
   public var energy = 256.0
@@ -268,12 +343,18 @@ public struct Game: Sendable {
   public var rearShield = 255.0
   public var laserHeat = 0.0
   public var laserFlash = 0.0
+  public var dischargeAudio = DischargeAudioState()
   public var altitude = 1.0
   public var celestials: [CelestialBody] = []
   public var solarScoopState: SolarScoopState = .inactive
   var solarFuelRemainder = 0.0
   public var cabinTemperature = 0.0
   public var equipmentMount: LaserMount = .front
+  public var equipmentWorkTool = false
+  public var selectedFlightTool: FlightWorkTool = .combatLaser
+  public internal(set) var inventoryContextEpoch = InventoryContextEpoch()
+  public var inventoryActionSelection = 0
+  public var inventoryUpgradeChoice = 0
   public var dockingComputer = false
   public var missileArmed = false
   public var message = ""
@@ -296,12 +377,16 @@ public struct Game: Sendable {
   public var missionPage = 0
   public var missionClue: String?
   public var missionElapsed = 0.0
-  private var fireCooldown = 0.0
-  private var spawnClock = 0.0
+  var fireCooldown = 0.0
   var missionLoopCounter: UInt8 = 0
   var missionSpawnDelay = 0
-  var ecmFrames = 0
+  // Legacy callers share ECMControl's physical-time clock; there is no second countdown.
+  var ecmFrames: Int {
+    get { ecmControl.legacyFrames }
+    set { ecmControl.setLegacyFrames(newValue) }
+  }
   var enemyECMSource: Int?
+  var activeECMActivation: ECMActivationIdentity?
   public var ecmControl = ECMControl()
   public var retaliation = RetaliationControl()
   var missileCooldown = 0.0
@@ -322,8 +407,18 @@ public struct Game: Sendable {
     messageTime = 4
   }
   public mutating func load(_ value: Commander) -> Bool {
+    var candidate = self
+    guard candidate.loadCommander(value) else { return false }
+    self = candidate
+    return true
+  }
+  private mutating func loadCommander(_ value: Commander) -> Bool {
     guard value.valid else { return false }
     commander = value
+    if commander.npcPersistence.count > 0 {
+      commander.npcPersistence.resetPhysicalBindings(
+        system: .init(galaxy: value.galaxy, system: value.system))
+    }
     clearCelestialFlight()
     blackjackOffer = nil
     packOffer = nil
@@ -337,13 +432,13 @@ public struct Game: Sendable {
     commander.migrateXYZzyPolicy()
     commander.migrateLegacyXYZzyMounts()
     mapSearch = PlanetSearchState()
-    if let tier = commander.targetingTier { commander.installTargetingComputer(tier) }
-    if let tier = commander.navigationTier { commander.installNavigationComputer(tier) }
-    if let booster = commander.shieldBooster { commander.installShieldBooster(booster) }
+    do { try commander.prepareEquipment() } catch { return false }
+    commander.mirrorFittedEquipment()
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
     targetPanelExpanded = nil
+    targetPanelScroll = 0
     systems = Universe.systemsIncludingPlugh(number: value.galaxy)
     selectedSystem = value.system
     market = MarketItem.at(currentSystem, fluctuation: 0)
@@ -357,17 +452,24 @@ public struct Game: Sendable {
     missionSpawnDelay = 0
     ecmFrames = 0
     ecmControl = ECMControl()
+    dischargeAudio = DischargeAudioState()
     retaliation.clear()
     weaponsTargetID = nil
     missileCooldown = 0
     paused = false
     spin.stop(immediate: true)
     cancelAutoTarget()
+    clearManualResidualFlight()
     screen = .status
     screenHistory.removeAll()
     speed = 0
     reconcileEliteReward()
     navigationDocked()
+    inventoryContextEpoch = .init()
+    inventoryActionSelection = 0
+    inventoryUpgradeChoice = 0
+    equipmentMount = .front
+    equipmentWorkTool = false
     return true
   }
   public mutating func key(_ raw: String) {
@@ -378,26 +480,45 @@ public struct Game: Sendable {
       case "r", "tab":
         cycleAutoTarget()
         return
+      case "pageup", "pagedown":
+        pageTargetDetails(key == "pageup" ? -1 : 1)
+        return
       case "i":
         targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))
         return
       case "q":
+        let engaged = autoPilot.targetID != nil || workGuidance != nil || workBraking != nil
         cancelAutoTarget()
+        if engaged { notify("MANUAL CONTROL") }
+        return
+      case "f":
+        cycleWorkTargetFilter()
+        return
+      case "w":
+        cycleFlightTool()
         return
       case "v":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.toggleMode()
         return
       case "b":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.stop()
         return
       case "]", "spin:cw":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.begin(.clockwise)
         return
       case "[", "spin:ccw":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.begin(.anticlockwise)
         return
       default: break
@@ -406,7 +527,11 @@ public struct Game: Sendable {
     if screen == .demo { return }
     if screen == .title || screen == .gameOver {
       if key == " " || key == "return" {
-        if screen == .gameOver { self = Game(executive: commander.executive) }
+        if screen == .gameOver {
+          self = Game(executive: commander.executive)
+          try? commander.prepareEquipment(legacy: false)
+          commander.mirrorFittedEquipment()
+        }
         screen = .status
       }
       return
@@ -429,13 +554,18 @@ public struct Game: Sendable {
         selection = min(Commodity.all.count - 1, selection + 1)
       }
     case "left", "right":
-      if screen == .equipment {
-        equipmentMount = key == "right" ? equipmentMount.next : equipmentMount.previous
+      if screen == .equipment || screen == .inventory {
+        cycleEquipmentFitting(key == "right" ? 1 : -1)
+        if screen == .inventory {
+          inventoryUpgradeChoice &+= key == "right" ? 1 : -1
+        }
       } else if screen == .chart || screen == .shortChart {
         selectChartNeighbour(key == "left" ? -1 : 1)
       } else if screen == .buy || screen == .sell {
         trade(buy: key == "right")
       }
+    case "tab":
+      if screen == .inventory { inventoryActionSelection &+= 1 }
     case "return":
       if screen == .buy || screen == .sell { trade(buy: screen == .buy) }
       if screen == .equipment { purchase() }
@@ -481,11 +611,18 @@ public struct Game: Sendable {
       commander.shipDisplayStyle = commander.shipDisplayStyle.next
       notify(commander.shipDisplayStyle.label)
     case "1":
-      commander.installTargetingComputer(.docking)
+      if commander.targetingTier.map({ $0 >= .docking }) != true {
+        do {
+          try commander.grantEquipment(
+            TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .xyzzy)
+        } catch {
+          notify("DOCKING COMPUTER REFIT REFUSED")
+          return
+        }
+      }
       notify("DOCKING TARGETING COMPUTER FITTED")
     case "2":
       fitMaximumHardware()
-      notify("MAXIMUM HARDWARE FITTED")
     case "c": restoreXYZzyCobra()
     case "3":
       commander.unlimitedMissiles.toggle()
@@ -521,7 +658,12 @@ public struct Game: Sendable {
       if !commander.retaliationEnabled { retaliation.clear() }
       notify("MILITARY RETURN FIRE UPDATED")
     case "f":
-      commander.equipment.insert("Fuel Scoops")
+      do {
+        try commander.grantEquipment("Fuel Scoops", at: .utility(.fuelScoops), provenance: .xyzzy)
+      } catch {
+        notify("FUEL SCOOP REFIT REFUSED")
+        return
+      }
       notify("FUEL SCOOPS FITTED")
     case "e":
       commander.autoECM.toggle()
@@ -539,26 +681,46 @@ public struct Game: Sendable {
     }
   }
   mutating func enableXYZzy() {
-    commander.xyzzyActive = true
-    commander.profitScanEnabled = true
-    commander.shipDisplayStyle = .shadedPanels
-    commander.retaliationEnabled = true
-    commander.unlimitedMissiles = true
-    commander.unlimitedFuel = true
-    commander.unlimitedJumps = false
-    commander.unlimitedCargo = true
-    commander.startXYZzyCash()
-    commander.autoTrade = true
-    commander.speech = true
-    commander.autoECM = true
-    commander.autoTarget = true
-    restoreXYZzyCobra()
-    if docked { autoTrade() }
+    var candidate = self
+    candidate.commander.xyzzyActive = true
+    candidate.commander.profitScanEnabled = true
+    candidate.commander.shipDisplayStyle = .shadedPanels
+    candidate.commander.retaliationEnabled = true
+    candidate.commander.unlimitedMissiles = true
+    candidate.commander.unlimitedFuel = true
+    candidate.commander.unlimitedJumps = false
+    candidate.commander.unlimitedCargo = true
+    candidate.commander.startXYZzyCash()
+    candidate.commander.autoTrade = true
+    candidate.commander.speech = true
+    candidate.commander.autoECM = true
+    candidate.commander.autoTarget = true
+    do { try candidate.refitXYZzyCobra() } catch {
+      notify("MAXIMUM REFIT REFUSED")
+      return
+    }
+    if candidate.docked { candidate.autoTrade() }
+    self = candidate
   }
   mutating func restoreXYZzyCobra() {
-    commander.shipID = "SH023"
-    fitMaximumHardware()
-    // A secret refit preserves cargo even when a larger former hold was full.
+    var candidate = self
+    do { try candidate.refitXYZzyCobra() } catch {
+      notify("MAXIMUM REFIT REFUSED")
+      return
+    }
+    self = candidate
+  }
+  private mutating func refitXYZzyCobra() throws {
+    try commander.prepareEquipment()
+    if commander.shipID != "SH023" {
+      // This explicit secret refit grants full tanks and racks below.
+      commander.fuel = 0
+      commander.missiles = 0
+      commander.unlimitedCargo = true
+      try commander.transferEquipment(to: "SH023", hullID: UUID())
+    }
+    try commander.grantMaximumHardware()
+    refillMaximumHardware()
     if commander.cargoTonnes > commander.standardCargoCapacity { commander.unlimitedCargo = true }
     speed = min(speed, commander.performance.speed)
     showroom.selection = commander.shipID
@@ -568,17 +730,21 @@ public struct Game: Sendable {
     notify("COBRA MK III RESTORED - MAXIMUM HARDWARE")
   }
   mutating func fitMaximumHardware() {
-    commander.equipment = Equipment.maximumHardware
-    for mount in LaserMount.allCases where commander.performance.supports(mount) {
-      commander.installLaser(.naval, on: mount)
+    var candidate = self
+    do { try candidate.commander.grantMaximumHardware() } catch {
+      notify("MAXIMUM REFIT REFUSED")
+      return
     }
-    if commander.performance.cargoExpansion == 0 { commander.equipment.remove("Large Cargo Bay") }
-    commander.fuelStorageUnits = FuelStorage.maximumCount
+    candidate.refillMaximumHardware()
+    self = candidate
+    notify("MAXIMUM HARDWARE FITTED")
+  }
+  private mutating func refillMaximumHardware() {
     commander.fuel = commander.fuelCapacity
     commander.missiles = commander.missileCapacity
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
   }
   mutating func functionKey(_ number: Int) {
     if number == 6 && docked {
@@ -600,7 +766,11 @@ public struct Game: Sendable {
           stage: commander.missionStage, galaxy: inspectedGalaxy,
           system: inspectedSystem.id, variation: variation) : nil
     }
-    navigatePrimary(to: destination)
+    if docked && [.buy, .sell].contains(screen) && [.buy, .sell].contains(destination) {
+      screen = destination
+    } else {
+      navigatePrimary(to: destination)
+    }
   }
   public mutating func selectNeighbour(direction: Int) {
     let known = knownSystems
@@ -643,98 +813,7 @@ public struct Game: Sendable {
   }
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
-    let catalogueItem = Equipment.all[selection]
-    let item = Equipment(
-      name: catalogueItem.name, price: shopPrice(catalogueItem),
-      technology: catalogueItem.technology)
-    if item.name == FuelStorage.equipmentName {
-      guard commander.fuelStorageUnits < FuelStorage.maximumCount else {
-        notify("FUEL STORAGE FULL")
-        return
-      }
-      let price = item.price
-      guard commander.availableCredits >= price else {
-        notify("NOT ENOUGH CASH")
-        return
-      }
-      if !commander.unlimitedCash { commander.credits -= price }
-      commander.fuelStorageUnits += 1
-      notify("FUEL STORAGE UNIT FITTED - REFUEL SEPARATELY")
-      return
-    }
-    if Equipment.isReward(item.name) && !atPlugh {
-      notify(Equipment.rewardLabel(item.name).uppercased() + " - NOT FOR SALE")
-      return
-    }
-    if item.name == "Extra Energy Unit" && commander.equipment.contains(Equipment.navalEnergyUnit) {
-      notify("NAVAL ENERGY UNIT FITTED")
-      return
-    }
-    if let tier = TargetingTier.from(item.name), let fitted = commander.targetingTier,
-      fitted >= tier
-    {
-      notify("TARGETING COMPUTER ALREADY FITTED")
-      return
-    }
-    if let tier = NavigationTier.from(item.name), let fitted = commander.navigationTier,
-      fitted >= tier
-    {
-      notify("NAVIGATIONAL COMPUTER ALREADY FITTED")
-      return
-    }
-    if let booster = ShieldBooster.from(item.name), let fitted = commander.shieldBooster,
-      fitted >= booster
-    {
-      notify(
-        booster.multiplier < fitted.multiplier
-          ? "WOULD REDUCE SHIELD CAPACITY" : "SHIELD BOOSTER ALREADY FITTED")
-      return
-    }
-    if let kind = LaserKind.from(item.name) {
-      purchaseLaser(kind, item: item)
-      return
-    }
-    if item.name == "Large Cargo Bay" && commander.performance.cargoExpansion == 0 {
-      notify("THIS HULL CANNOT FIT A CARGO EXPANSION")
-      return
-    }
-    let cost =
-      item.price
-    guard equipmentAvailable(item), commander.availableCredits >= cost else {
-      notify("NOT AVAILABLE")
-      return
-    }
-    if item.name == "Fuel" {
-      commander.fuel = commander.fuelCapacity
-    } else if item.name == "Missile" {
-      guard commander.missiles < commander.missileCapacity else {
-        notify("MISSILE RACK FULL")
-        return
-      }
-      commander.missiles += 1
-    } else {
-      guard !commander.equipment.contains(item.name) else {
-        notify("ALREADY FITTED")
-        return
-      }
-      if let tier = TargetingTier.from(item.name) {
-        commander.installTargetingComputer(tier)
-      } else if let tier = NavigationTier.from(item.name) {
-        commander.installNavigationComputer(tier)
-      } else if let booster = ShieldBooster.from(item.name) {
-        let oldCapacity = commander.shieldCapacity
-        commander.installShieldBooster(booster)
-        frontShield = frontShield / oldCapacity * commander.shieldCapacity
-        rearShield = rearShield / oldCapacity * commander.shieldCapacity
-      } else {
-        if item.name == Equipment.navalEnergyUnit {
-          commander.equipment.remove("Extra Energy Unit")
-        }
-        commander.equipment.insert(item.name)
-      }
-    }
-    if !commander.unlimitedCash { commander.credits -= cost }
-    notify("EQUIPMENT FITTED")
+    _ = purchaseImmediately()
   }
   /// Sells the hold, then buys the most profitable exports for a destination.
   /// Government changes route risk, while commodity prices follow Elite's economy rules.
@@ -798,11 +877,11 @@ public struct Game: Sendable {
   }
   private func routeScore(_ destination: StarSystem) -> Double {
     let exports = profitableExports(to: destination)
-    let gross = exports.reduce(0) {
-      $0 + $1.profit * min(commander.capacity, market[$1.index].quantity)
+    let gross = exports.reduce(0.0) {
+      $0 + Double($1.profit) * Double(min(commander.capacity, market[$1.index].quantity))
     }
     let risk = Double(7 - destination.government) * 0.15
-    return Double(gross) / (1 + risk + currentSystem.distance(to: destination) * 0.05)
+    return gross / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
     persistBlackjackTargets()
@@ -811,6 +890,7 @@ public struct Game: Sendable {
     missileCooldown = 0
     spin.stop(immediate: true)
     cancelAutoTarget()
+    clearManualResidualFlight()
     docked = false
     screen = .front
     screenHistory.removeAll()
@@ -819,16 +899,38 @@ public struct Game: Sendable {
     dockingComputer = false
     bodies = [
       SpaceBody(id: 0, hull: .station, position: .init(0, 0, -500)),
-      SpaceBody(id: 1, hull: .cobra, position: .init(90, 20, 1400)),
       SpaceBody(id: 2, hull: .asteroid, position: .init(-280, 100, 2200)),
     ]
+    if commander.npcPersistence.count == 0 {
+      bodies.insert(.init(id: 1, hull: .cobra, position: .init(90, 20, 1400)), at: 1)
+    }
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     resetCelestialFlight()
+    beginGameplayVisit(arriving: false)
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
   }
   public mutating func dock(atMainStation: Bool = true) {
+    resolveDestroyed()
+    guard !hasUnsettledWreckDeaths else {
+      notify("DOCKING DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
+    guard !hasUnsettledCargoDeaths else {
+      notify("DOCKING DEFERRED: CARGO SETTLEMENT PENDING")
+      return
+    }
+    guard persistNPCStates().isEmpty else {
+      notify("DOCKING DEFERRED: NPC STATE UNAVAILABLE")
+      return
+    }
+    persistCargoPoses()
+    persistOrePoses()
+    guard persistSalvagePoses() else {
+      notify("DOCKING DEFERRED: SALVAGE STATE UNAVAILABLE")
+      return
+    }
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
     retaliation.clear()
@@ -836,6 +938,7 @@ public struct Game: Sendable {
     missileCooldown = 0
     spin.stop(immediate: true)
     cancelAutoTarget()
+    clearManualResidualFlight()
     docked = true
     screen = .status
     screenHistory.removeAll()
@@ -844,7 +947,7 @@ public struct Game: Sendable {
     bodies = []
     energy = commander.performance.energy
     frontShield = commander.shieldCapacity
-    rearShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
     laserHeat = 0
     jumpCountdown = nil
     missileArmed = false
@@ -887,13 +990,29 @@ public struct Game: Sendable {
       || celestials.contains { $0.position.length < $0.radius * 4 }
   }
   public mutating func arrive() {
+    resolveDestroyed()
+    guard !hasUnsettledWreckDeaths else {
+      jumpCountdown = nil
+      notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
+    guard persistSalvagePoses() else {
+      jumpCountdown = nil
+      notify("JUMP DEFERRED: SALVAGE STATE UNAVAILABLE")
+      return
+    }
+    persistOrePoses()
+    if selectedSystem != commander.system { departOrdinarySimulation() }
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
     missileCooldown = 0
     spin.stop(immediate: true)
+    let arrivalSpeed = min(commander.performance.speed, flightWorldVelocity.length / 18)
     cancelAutoTarget()
-    let cost = Int((currentSystem.distance(to: targetSystem) * 10).rounded())
+    clearManualResidualFlight()
+    speed = arrivalSpeed
+    let cost = commander.jumpFuelCost(distance: currentSystem.distance(to: targetSystem))
     if !commander.unlimitedFuel {
       commander.fuel = max(0, commander.fuel - cost)
     }
@@ -915,15 +1034,28 @@ public struct Game: Sendable {
         hostile: currentSystem.government < 4),
     ]
     resetCelestialFlight()
+    beginGameplayVisit(arriving: true)
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
   }
   public mutating func galacticJump() {
-    guard !docked, commander.equipment.remove("Galactic Hyperdrive") != nil else { return }
+    guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
+    resolveDestroyed()
+    guard !hasUnsettledWreckDeaths else {
+      notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
+      return
+    }
+    guard persistSalvagePoses() else {
+      notify("JUMP DEFERRED: SALVAGE STATE UNAVAILABLE")
+      return
+    }
+    guard commander.consumeEquipped("Galactic Hyperdrive") else { return }
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
+    departOrdinarySimulation()
+    bodies = []
     commander.galaxy = (commander.galaxy + 1) & 7
     if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
     galacticBrowse = GalaxyBrowseState()
@@ -940,6 +1072,8 @@ public struct Game: Sendable {
     }
     for index in bodies.indices { bodies[index].position.z -= 3000 }
     for index in celestials.indices { celestials[index].position.z -= 3000 }
+    commander.flightSimulation.pose.advanceView(
+      pitch: 0, roll: 0, yaw: 0, translation: .init(0, 0, 3000))
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -949,17 +1083,9 @@ public struct Game: Sendable {
           && (weaponsTargetID == nil || body.id == weaponsTargetID)
       })
     else { return false }
+    guard launchGameplayMissile(targetBodyID: bodies[target].id) else { return false }
     if !commander.unlimitedMissiles { commander.missiles -= 1 }
     missileCooldown = 1
-    if bodies[target].ecmEnabled {
-      var missile = SpaceBody(id: nextBodyID, hull: .missile, position: .init(0, 0, 24))
-      missile.playerMissileTarget = bodies[target].id
-      bodies.append(missile)
-      nextBodyID += 1
-    } else {
-      bodies[target].energy = 0
-      bodies[target].destroyedByPlayer = true
-    }
     notify("MISSILE AWAY", voiced: !retaliating)
     missileArmed = false
     return true
@@ -968,33 +1094,43 @@ public struct Game: Sendable {
     guard !docked, commander.equipment.contains("E.C.M. System"), energy > 10, ecmFrames == 0 else {
       return
     }
+    ensurePhysicalActors()
+    guard let player = commander.flightSimulation.player, activateOrdnanceECM(emitter: player)
+    else { return }
     _ = ecmControl.detect(bodies)
     detectRetaliationSources()
-    ecmControl.activate(destroyed: bodies.filter { $0.hull == .missile && $0.energy > 0 }.count)
-    for missile in bodies where missile.hull == .missile && missile.energy > 0 {
+    ecmControl.activate(destroyed: 0)
+    for missile in bodies
+    where missile.hull == .missile && missile.energy > 0 && missile.physical?.ordnance == nil {
+      ecmControl.recordDestruction()
       confirmRetaliation(missile)
     }
-    bodies.removeAll { $0.hull == .missile }
+    bodies.removeAll { $0.hull == .missile && $0.physical?.ordnance == nil }
     ecmFrames = 32
     enemyECMSource = nil
     energy -= 10
+    advanceGameplayOrdnance(allowEnemyECM: false)
     notify("E.C.M.", voiced: false)
   }
   public mutating func energyBomb() {
-    guard !docked, commander.equipment.remove("Energy Bomb") != nil else { return }
-    for index in bodies.indices where !bodies[index].hull.bombImmune {
-      bodies[index].energy = 0
-      bodies[index].destroyedByPlayer = true
-    }
+    guard !docked, commander.consumeEquipped("Energy Bomb") else { return }
+    applyAttributedEnergyBomb()
     notify("ENERGY BOMB")
   }
   public mutating func escapePod() {
-    guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
-    commander.cargo = Array(repeating: 0, count: 17)
-    commander.cargo[10] = commander.markedFirearms
-    commander.legal = 0
-    commander.fuel = commander.fuelCapacity
-    dock()
+    guard !docked, commander.equipment.contains("Escape Pod") else { return }
+    var candidate = self
+    guard candidate.commander.consumeEquipped("Escape Pod") else { return }
+    candidate.commander.cargo = Array(repeating: 0, count: 17)
+    candidate.commander.cargo[10] = candidate.commander.markedFirearms
+    candidate.commander.legal = 0
+    candidate.commander.fuel = candidate.commander.fuelCapacity
+    candidate.dock()
+    guard candidate.docked else {
+      notify(candidate.message)
+      return
+    }
+    self = candidate
   }
   mutating func randomByte() -> Int {
     randomState = randomState &* 6_364_136_223_846_793_005 &+ 1
@@ -1028,9 +1164,21 @@ public struct Game: Sendable {
     if commander.unlimitedFuel { commander.fuel = commander.fuelCapacity }
     messageTime = max(0, messageTime - dt)
     laserFlash = max(0, laserFlash - dt)
-    guard !docked, screen != .gameOver, screen != .secret, screen != .help else { return }
+    guard !docked, ![Screen.gameOver, .secret, .help, .title, .demo].contains(screen) else {
+      return
+    }
+    approvedWorkMotion = nil
+    lastAppliedWorkMotion = nil
+    plannedLegacyWorkMotion.removeAll(keepingCapacity: true)
+    workScenePlanned = false
+    if !controls.fire { workFireSuspended = false }
+    commander.flightSimulation.advancePhysicalTime(dt)
+    gameplayRevision &+= 1
+    ensurePhysicalActors()
     let craft = commander.performance
-    speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
+    if !manualResidualFlight && workGuidance == nil && workBraking == nil {
+      speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
+    }
     pitch = controls.pitch * craft.pitch
     yaw = controls.yaw * craft.yaw
     let previousSpinRate = spin.actualRate
@@ -1039,17 +1187,23 @@ public struct Game: Sendable {
       spin.mode || spin.actualRate != 0 || previousSpinRate != 0
       ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll * craft.roll
     applyAutoTarget(delta: dt, controls: controls)
+    applyManualResidualThrottle(delta: dt, throttle: controls.throttle)
     laserHeat = max(0, laserHeat - dt * 12)
     fireCooldown = max(0, fireCooldown - dt)
     missileCooldown = max(0, missileCooldown - dt)
     energy = min(craft.energy, energy + dt * craft.recharge * commander.energyRechargeMultiplier)
-    frontShield = min(commander.shieldCapacity, frontShield + dt * craft.shieldRecharge)
-    rearShield = min(commander.shieldCapacity, rearShield + dt * craft.shieldRecharge)
-    if controls.fire && screen.isFlight { fireLaser() }
+    frontShield = min(commander.shieldCapacity, frontShield + dt * commander.frontShieldRecharge)
+    rearShield = min(commander.rearShieldCapacity, rearShield + dt * commander.rearShieldRecharge)
+    if controls.fire && screen.isFlight { fireSelectedFlightTool(delta: dt) }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
       if remaining <= dt { arrive() }
     }
+    advanceGameplayEncounters(delta: dt)
+    planWorkScene(delta: dt)
+    advanceWorkGuidance(delta: dt)
+    let workCameraStart = commander.flightSimulation.pose
+    let usedWorkCamera = workGuidance != nil || workBraking != nil
     moveBodies(dt: dt)
     if docked {
       reconcileEliteReward()
@@ -1058,15 +1212,22 @@ public struct Game: Sendable {
     advanceSolarFlight(delta: dt)
     guard screen != .gameOver else { return }
     scoopCargo()
-    if missionLoopCounter & 7 == 0 { navalTactics() }
+    if !workScenePlanned && missionLoopCounter & 7 == 0 { navalTactics() }
     detectIncomingMissiles()
     advanceNavalMissiles(delta: dt)
-    ecmControl.advance()
-    ecmFrames = max(0, ecmFrames - 1)
-    if ecmFrames == 0 { enemyECMSource = nil }
+    ecmControl.advance(delta: dt)
+    if ecmFrames == 0 {
+      enemyECMSource = nil
+      activeECMActivation = nil
+    }
     advanceRetaliation()
-    starfield.advance(
-      delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity)
+    if usedWorkCamera {
+      starfield.advance(from: workCameraStart, to: commander.flightSimulation.pose)
+    } else {
+      starfield.advance(
+        delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity
+      )
+    }
     resolveDestroyed()
     persistBlackjackTargets()
     if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {
@@ -1076,11 +1237,6 @@ public struct Game: Sendable {
     reconcileEliteReward()
     missionLoopCounter &-= 1
     if missionLoopCounter == 0 { spawnNavalEncounter() }
-    spawnClock += dt
-    if spawnClock > 18 && bodies.count < (commander.executive ? 18 : 10) {
-      spawnClock = 0
-      spawn()
-    }
     if energy <= 0 {
       spin.stop(immediate: true)
       screen = .gameOver
@@ -1089,24 +1245,6 @@ public struct Game: Sendable {
       notify("ENERGY LOW,SIR")
     }
     if screen != .gameOver { advanceMissionClock(dt) }
-  }
-  private mutating func fireLaser() {
-    guard fireCooldown <= 0, laserHeat < 240, energy > 1 else { return }
-    guard let mount = LaserMount.from(screen), let laser = commander.laser(on: mount) else {
-      return
-    }
-    fireCooldown = laser.firingInterval
-    laserHeat += 10
-    energy -= 1
-    laserFlash = 0.08
-    if let index = bodies.firstIndex(where: {
-      let p = viewPosition($0.position)
-      return $0.hull != .station && p.z > 0 && abs(p.x / p.z) < 0.06 && abs(p.y / p.z) < 0.06
-    }) {
-      bodies[index].energy -= commander.laserDamage(against: bodies[index].hull, mount: mount)
-      bodies[index].hostile = true
-      if bodies[index].energy <= 0 { bodies[index].destroyedByPlayer = true }
-    }
   }
   public func viewPosition(_ p: Vector3) -> Vector3 {
     switch screen {
@@ -1117,16 +1255,33 @@ public struct Game: Sendable {
     }
   }
   private mutating func moveBodies(dt: Double) {
-    autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
-    moveCelestials(delta: dt)
-    for index in bodies.indices {
-      bodies[index].position = bodies[index].position.rotated(
-        pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
-      bodies[index].orientation.rotate(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
-      bodies[index].position = bodies[index].position - autoPilot.velocity * dt
-      bodies[index].position.z -= speed * dt * 18
-      bodies[index].rotation += dt * bodies[index].rotationRate
-      if bodies[index].hostile && bodies[index].energy > 0 { enemyAction(index: index, dt: dt) }
+    if !moveWorkFrame(delta: dt) {
+      autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+      commander.flightSimulation.pose.advanceView(
+        pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt,
+        translation: autoPilot.velocity * dt + Vector3(0, 0, speed * dt * 18))
+      moveCelestials(delta: dt)
+      for index in bodies.indices {
+        bodies[index].position = bodies[index].position.rotated(
+          pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+        bodies[index].orientation.rotate(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+        bodies[index].position = bodies[index].position - autoPilot.velocity * dt
+        bodies[index].position.z -= speed * dt * 18
+        bodies[index].rotation += dt * bodies[index].rotationRate
+        advanceCanonicalModelSpin(at: index, delta: dt)
+        if let physical = bodies[index].physical, physical.spawnIdentity != nil,
+          physical.ordnance == nil
+        {
+          bodies[index].position =
+            bodies[index].position
+            + commander.flightSimulation.pose.shipVector(physical.velocity) * dt
+        }
+        if bodies[index].hostile && bodies[index].energy > 0,
+          bodies[index].physical?.spawnIdentity == nil, !workScenePlanned
+        {
+          enemyAction(index: index, dt: dt)
+        }
+      }
     }
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
@@ -1137,15 +1292,37 @@ public struct Game: Sendable {
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
     persistBlackjackTargets()
-    let departing = bodies.filter { $0.leavesLocalBubble }
+    persistCargoPoses()
+    persistOrePoses()
+    guard persistSalvagePoses() else {
+      if message != "SALVAGE STATE UNAVAILABLE" || messageTime <= 0 {
+        notify("SALVAGE STATE UNAVAILABLE")
+      }
+      return
+    }
+    let retainedNPCs = persistNPCStates()
+    let departing = bodies.filter {
+      $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
+    }
     for body in departing {
+      if var ordnance = body.physical?.ordnance {
+        endOrdnance(bodyID: body.id, state: &ordnance, reason: .culled)
+      }
+      if let actor = body.physical?.identity {
+        commander.miningLedger.cull(actor: actor)
+        commander.cargoDebrisLedger.cull(actor: actor)
+        commander.salvageLedger.cull(actor: actor)
+        commander.npcPersistence.cull(actor: actor)
+      }
       clearRemovedTarget(body)
       missionTargetRemoved(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.leavesLocalBubble }
+    bodies.removeAll {
+      $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
+    }
   }
-  private mutating func enemyAction(index: Int, dt: Double) {
+  mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {
       advanceBlackjackNPC(index: index, delta: dt)
       return
@@ -1163,32 +1340,33 @@ public struct Game: Sendable {
     }
     if bodies[index].position.length < 1500 {
       let damage = dt * (bodies[index].hull.navalLaserDamage ?? 6) * 2
-      applyDamage(damage, front: bodies[index].position.z >= 0, energyMultiplier: 2)
+      emitLegacyNPCBeam(bodyID: bodies[index].id, damage: damage, energyMultiplier: 2)
     }
   }
   mutating func resolveDestroyed() {
-    let destroyed = bodies.filter { $0.energy <= 0 }
-    for body in destroyed
-    where body.destroyedByPlayer == true && body.hull != .cargo && body.hull != .asteroid
-      && body.playerMissileTarget == nil
-      && !body.enemyMissile
-    {
-      let previousRank = commander.rank
-      commander.kills = (commander.kills + 1) & 0xffff
-      if commander.rank != previousRank { notify("RIGHT ON, COMMANDER") }
-      commander.credits =
-        (commander.credits
-          + (body.blackjackRole.map { $0.bountyCredits * 10 } ?? body.hull.navalBounty
-            ?? (body.hostile ? 50 : 0)))
-        & 0xffff_ffff
-      if !body.hostile { commander.legal += 8 }
-    }
+    let initial = bodies.filter { $0.energy <= 0 }
+    if !initial.isEmpty { ensurePhysicalActors() }
+    for body in initial { settleLegacyCombatDeath(body) }
+    var deferred = registerDestroyedCargo()
+    deferred.formUnion(registerDestroyedWrecks())
+    let destroyed = bodies.filter { $0.energy <= 0 && !deferred.contains($0.id) }
     for body in destroyed {
+      if let payload = body.physical?.payload {
+        _ = commander.miningLedger.destroy(payload: payload)
+        _ = commander.cargoDebrisLedger.destroy(
+          payload: payload, protection: gameplayContext()?.protection)
+        if case .salvage(let lot) = payload, let context = gameplayContext() {
+          _ = commander.salvageLedger.destroy(lot: lot, protection: context.protection)
+        }
+      }
+      if let actor = body.physical?.identity {
+        _ = commander.npcPersistence.terminal(actor: actor, reason: .destroyed)
+      }
       missionTargetRemoved(body)
       clearRemovedTarget(body)
       blackjackTargetDestroyed(body)
     }
-    bodies.removeAll { $0.energy <= 0 }
+    bodies.removeAll { $0.energy <= 0 && !deferred.contains($0.id) }
     if !bodies.contains(where: { $0.hull == .thargoid }) {
       for index in bodies.indices where bodies[index].hull == .thargon {
         bodies[index].hostile = false
@@ -1196,17 +1374,7 @@ public struct Game: Sendable {
       }
     }
   }
-  private mutating func spawn() {
-    let hostile = randomByte() & 7 > currentSystem.government
-    let peacefulKind: Hull = nextBodyID % 4 == 0 ? .cargo : .cobra
-    let kind: Hull = hostile ? .sidewinder : peacefulKind
-    bodies.append(
-      SpaceBody(
-        id: nextBodyID, hull: kind,
-        position: .init(Double(randomByte() - 128) * 4, Double(randomByte() - 128) * 2, 5000),
-        hostile: hostile))
-    nextBodyID += 1
-  }
+
 }
 
 public enum SaveError: Error { case invalidCommander }
@@ -1215,11 +1383,30 @@ public enum SaveError: Error { case invalidCommander }
 public actor GameRuntime {
   var game: Game
   private var controls = Controls()
-  public init(game: Game = Game()) { self.game = game }
+  public init(game: Game = Game()) {
+    var prepared = game
+    prepared.inventoryContextEpoch = .init()
+    if (try? prepared.commander.prepareEquipment()) != nil {
+      prepared.commander.mirrorFittedEquipment()
+      self.game = prepared
+    } else {
+      self.game = prepared
+    }
+  }
+  func invalidateInventoryContext() { game.inventoryContextEpoch = .init() }
+  public func inventoryCommand(_ command: InventoryCommand) -> Bool {
+    equipmentTransaction(.inventory(command)).applied
+  }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     let old = game.screen
-    game.key(key)
+    let wasPaused = game.paused
+    if key.lowercased() == "return", let context = game.equipmentPurchaseContext {
+      _ = equipmentTransaction(.purchase(context))
+    } else {
+      game.key(key)
+    }
+    if old != game.screen || wasPaused != game.paused { invalidateInventoryContext() }
     if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
     {
       controls.pitch = 0
@@ -1236,6 +1423,7 @@ public actor GameRuntime {
   public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
   public func secretClick(x: Double, y: Double) { game.secretClick(x: x, y: y) }
   public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
+  public func marketClick(x: Double, y: Double) { game.marketClick(x: x, y: y) }
   public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
   public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
@@ -1250,11 +1438,35 @@ public actor GameRuntime {
     return game
   }
   public func save(to url: URL) throws {
-    game.resolveDestroyed()
-    game.persistBlackjackTargets()
-    guard game.commander.valid else { throw SaveError.invalidCommander }
-    let data = try JSONEncoder().encode(game.commander)
+    let prepared = try prepareSave(game)
+    try writeSave(prepared.data, to: url)
+    game = prepared.game
+  }
+  private func prepareSave(_ value: Game) throws -> (game: Game, data: Data) {
+    var candidate = value
+    try candidate.commander.prepareEquipment()
+    candidate.commander.mirrorFittedEquipment()
+    candidate.resolveDestroyed()
+    candidate.persistCargoPoses()
+    candidate.persistOrePoses()
+    guard candidate.persistSalvagePoses() else { throw SaveError.invalidCommander }
+    candidate.persistBlackjackTargets()
+    let refusedNPCs = candidate.persistNPCStates()
+    guard refusedNPCs.isEmpty, !candidate.hasUnsettledWreckDeaths, candidate.commander.valid,
+      !candidate.bodies.contains(where: {
+        $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
+          && $0.physical?.npc?.role != .mission
+      })
+    else { throw SaveError.invalidCommander }
+    var persistedCommander = candidate.commander
+    if persistedCommander.npcPersistence.count > 0 {
+      persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
+    }
+    let data = try JSONEncoder().encode(persistedCommander)
     guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
+    return (candidate, data)
+  }
+  private func writeSave(_ data: Data, to url: URL) throws {
     try FileManager.default.createDirectory(
       at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
@@ -1265,11 +1477,16 @@ public actor GameRuntime {
     game.time = 0
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
-    let data = try Data(contentsOf: url)
-    guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
+    let data = try CommanderSaveInput.read(from: url)
     let commander = try JSONDecoder().decode(Commander.self, from: data)
-    guard game.load(commander) else { throw SaveError.invalidCommander }
-    if persistMigrations && game.commander != commander { try save(to: url) }
+    var candidate = game
+    guard candidate.load(commander) else { throw SaveError.invalidCommander }
+    if persistMigrations && candidate.commander != commander {
+      let prepared = try prepareSave(candidate)
+      try writeSave(prepared.data, to: url)
+      candidate = prepared.game
+    }
+    game = candidate
   }
 }
 

@@ -1,0 +1,491 @@
+{
+  "status": "PASS full local gate only; final-head hosted CI and clean review remain required",
+  "source": "d29d64bc0cdeda934e352d4f9fb1ad7167c374e3",
+  "ci": {
+    "source": "d29d64bc0cdeda934e352d4f9fb1ad7167c374e3",
+    "lease": {
+      "version": 1,
+      "leaseId": "elite-validation-036",
+      "state": "active",
+      "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "candidate": "d29d64bc0cdeda934e352d4f9fb1ad7167c374e3",
+      "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+      "previousLeaseId": "elite-validation-035",
+      "mayUpdateCandidateWithinApprovedScope": false,
+      "purpose": "Ships-check then ONEfullmakeci coverage/TSan/serialASan/leaks frozenqualifiedd29(runtime9b8). Expected898tests69suites eachlane; distinct79nativeoriginals inclgeometryreceipt/timingpairs perlane. Preservealloriginalrawattempts/source/protectedtracked/save/prefs hashes/durations. Stopfirstactualfailure/reportno retry/skip/waiver. No source/docs/media changesduringbaseline. Canonical sourceworkers separatecheckouts only, nootherheavy/nativeGUI/profiling/Sonar. Explicitcompletion+noprocess andRootverification before release. FinalheadhostedCI+actualcleanreviewstillrequired, nopublishuntilgates.",
+      "evidenceDirectory": "/tmp/elite-native-window-fixture-036",
+      "runnerSHA256": "30fdbfe5493d23595d6a6501caca26c69a8281029db08c2f20b6b28e28e8728b",
+      "expectedTestsPerLane": 898,
+      "expectedSuitesPerLane": 69,
+      "expectedNativeOriginalsPerLane": 79,
+      "startedAt": "2026-10-16T17:59:17.139213+00:00"
+    },
+    "command": [
+      "make",
+      "ci"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 1383.1367046660744,
+    "changedTrackedInputs": [],
+    "protectedInputChanges": [],
+    "productionSaveUnchanged": true,
+    "preferencesUnchanged": true,
+    "nativeArchives": [
+      {
+        "lane": "coverage",
+        "path": "/tmp/elite-native-window-fixture-036/native-coverage-036",
+        "files": {
+          "chart-1512.png": "dc82e6e08d7e1979275530d9a35609b81b6e03ee84f96067b1f114403d568a2d",
+          "chart-512.png": "1861f0a2a52c6f006f675d027854ea4ade43b41f032f1c96c6c1d794616e1ab9",
+          "demo-1512.png": "8f73b885591d496bd56aecc3928d0d134fbe1d975a2f4fe52622b526ae6df3b3",
+          "demo-512.png": "2be1dee6a1374b22012157120ca45c7231e7b248cae111d6506e84075fc5be54",
+          "equipment-1512.png": "3ea6ddf459fe9048a1057dcef9bab89f100a2543599d012b42afb10fc6ec246c",
+          "equipment-512.png": "00d439070f11637ebb5b4f0c062cd64dc5d4fa443f1788bd6f8d61971f5fdbb8",
+          "equipment-before-return-1512-1x-timing.json": "97850a2a95e07e8eb3d57d883363a44d6f0723b82f5c89001678ce65d3a4277c",
+          "equipment-before-return-1512-1x.png": "ae5e8d5cd7e2a2172bd3a450946a606eb5623e25fd62ef09defb36911da9949a",
+          "equipment-before-return-512-1x-timing.json": "ae9a8a660f83a8961eb6762dcd11340319947fa31f876d0297fc85b441a0a49e",
+          "equipment-before-return-512-1x.png": "eda65d80dd6f33067303e9848fd56673d9a5dfe5a6f5c6f7d378c95f91cf239e",
+          "equipment-inventory-1512-2x-timing.json": "0333fa6daa0250fc8d27ca5c01c9776b988ccd55b64e5e4020cfcca8d0c9f5f4",
+          "equipment-inventory-1512-2x.png": "603e07c84eb6b1d3b7d2da53d92522ce98018f6918189d0191504ece2723ab85",
+          "equipment-inventory-512-1x-timing.json": "40134b6ec719db186bcc4171fc8caeb05dd0f009f31132d898d4e7c351927425",
+          "equipment-inventory-512-1x.png": "9ce57e615c1efc9a67f969eae5a8caaca430cf1da5e74d2d39bed8b0c22e1e2e",
+          "equipment-inventory-after-focus-512-1x-timing.json": "2fcfee0789c0df8311770e2b0d5a988e947dec28c90222cf065ebc4400ec4657",
+          "equipment-inventory-after-focus-512-1x.png": "f8cb007636e99b36d61f6966cfc42c240dff6138540c2d1f9afec225d568591b",
+          "equipment-inventory-before-focus-512-1x-timing.json": "921ac05002d1977f46ce5e32f1960b3ffba5e30c9e74bc76b2a72c79b2be8f10",
+          "equipment-inventory-before-focus-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-inventory-before-load-512-1x-timing.json": "a15ad902e0d7443e8587f65d717f14daa5bae518b41a3c2feb492238305ad356",
+          "equipment-inventory-before-load-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-inventory-in-space-upgrade-512-1x-timing.json": "995384de30df8826d6737c9b260c9887965fe41ca765430e9935033cfcc9a497",
+          "equipment-inventory-in-space-upgrade-512-1x.png": "f516012565ea6a62f44ac5fb63b493a34ac4836be57aa67d5d2fea1c106daef9",
+          "equipment-inventory-restored-paint-512-1x-timing.json": "3813c7e42c0d4cf34c65173eb0cb7ddda26810b23c26227f9a6be3d774581dd5",
+          "equipment-inventory-restored-paint-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-recovered-feature-after-1512-2x-timing.json": "b3d6bdf21cbb6131c1af8148fd86f59cb99abb3116727a8341bab2469a3a4343",
+          "equipment-recovered-feature-after-1512-2x.png": "39779c1edaa054f7d93ad5bedd4a6f513f49837476d4f3f9e954b8aaf912c418",
+          "equipment-recovered-feature-after-512-1x-timing.json": "433f09ef0f9a655eb9e66520d6b9ad718f8d40a468b742768a9ea32ca7019207",
+          "equipment-recovered-feature-after-512-1x.png": "6045ff439833b7da648f429d49506b67efbccd58623c7e73928e4fbf430e2886",
+          "equipment-recovered-feature-before-1512-2x-timing.json": "e5f3ebe5f66d35dd19e0989ab488338aef12536a50f9b32a516bea6e84dd288f",
+          "equipment-recovered-feature-before-1512-2x.png": "614591f368be4da96f22377b6faa8aa140daf6dbfa80a9c15b9beba2d5316ac1",
+          "equipment-recovered-feature-before-512-1x-timing.json": "a79c0ae3d3f9336eff31b4da7c82221a340b09d6c7d602b2f917cc5307262f20",
+          "equipment-recovered-feature-before-512-1x.png": "5193c2803d3494e48de29071bfc49c2b3f5e2c99dcadeadb69fe7e9ed0f45911",
+          "equipment-row-13-1512-2x-timing.json": "aa954b7fc0d597857eae045be5e20499df2991bd2599ff2b2c91c012b13fafb7",
+          "equipment-row-13-1512-2x.png": "c2f76472a2ea0c8f0e6b3c5a00663ef669e5536cae9f7ddd0239b66c56672a34",
+          "equipment-row-13-512-1x-timing.json": "253715248113bfc2a33cef06a089b2bff85cfdb40c911ce2bd55a1757f3f60a7",
+          "equipment-row-13-512-1x.png": "d14b2881f004e146a782ceb5b90a78565343b7deea83d2b7aaf2ed77d5fc2654",
+          "equipment-row-32-1512-2x-timing.json": "2efe41d5d18de3a992374abdf62d97a30e3f1e2f65126e748b94557632b7fb2d",
+          "equipment-row-32-1512-2x.png": "1f6c4cc63837c8888f48d4cbc75269fd0694c723ce058bfefe99135ae41a9ca5",
+          "equipment-row-32-512-1x-timing.json": "87eddc79b610d154709d1496e4de84fd51660b967c34aa1b78b90d4477923c06",
+          "equipment-row-32-512-1x.png": "1306458ef48a021a62d8c41abaebcbbf915d8066b3c424ed07a3311df86336b7",
+          "equipment-row-5-1512-2x-timing.json": "612fdc1c4e31dc89631f8c99b09b807f40d8cf35e726931ba08aa1ecd0dbb96c",
+          "equipment-row-5-1512-2x.png": "92b7e93c7dc0cef6d5163499d87058b5dd28b3724330de349267f211b98d2a9a",
+          "equipment-row-5-512-1x-timing.json": "a14264a058e0ce33b5751ad8cef4e4ca17af1b1056ec503ea82b617f66f9e12b",
+          "equipment-row-5-512-1x.png": "c0a2bc56976ac82813484e8d47c8232d54ed7a2f7c93c3b5dd18f3ba5e1cf915",
+          "equipment-shop-bounds-guard-768-1x-timing.json": "9f9e062f57723a39cbaf2f456bad2c2be859d0c7d44fa293ddb466eb23452841",
+          "equipment-shop-bounds-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-duplicate-return-768-1x-timing.json": "9ab38c6d248e08583a1350a5818fbd2f4230b1ea495b5e6abff8324079977210",
+          "equipment-shop-duplicate-return-768-1x.png": "5ea032f2972b08831f8ed4cebfb1e90bda97f8331acf9dfbbdc23521edc3961e",
+          "equipment-shop-load-guard-768-1x-timing.json": "e8132eb0c79e0d3f370ccd8947442bbc08637fd3d87aeb1df9a9f13cb9731b66",
+          "equipment-shop-load-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-navigation-guard-768-1x-timing.json": "28ef6f6bf220245b7b2af71fa6317a7b3f34a3b34b8c9a55e838efae71e2eedf",
+          "equipment-shop-navigation-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-pause-guard-768-1x-timing.json": "02886c74abbd94f876b6074ed986660826d6b4af6c4e169f90ac7a1e86bd4cfb",
+          "equipment-shop-pause-guard-768-1x.png": "5ea032f2972b08831f8ed4cebfb1e90bda97f8331acf9dfbbdc23521edc3961e",
+          "equipment-work-refusal-1512-2x-timing.json": "e886ac61f69e90dec141d5d2123eb3b4befe2f54f37e2b7ed8ff7a55a86c8376",
+          "equipment-work-refusal-1512-2x.png": "3e572100544d2ec1c45d36f5ff09e864d9d7e27b97c28067afae6b32b3d95b40",
+          "equipment-work-refusal-512-1x-timing.json": "850bf5156944dd131191babaa0bbfa792f2bb6f925e206202d1d768650a6e62f",
+          "equipment-work-refusal-512-1x.png": "a3cb530748201962a1330844c9386a7ae65efd7f707f94ee8f9eff1cb16c67ec",
+          "help-1512.png": "4960ef53c3486c27563c7b5922ed1137b7742e8e27a7bcbf05121653d8970e7a",
+          "help-512.png": "59ed51067fb93246d06f538f50d54c875e3c0303f82eb3c5b12fdaa8683f32a5",
+          "native-window-viewport-constraint.json": "cbe0cdad9e0ba64a93e98876ac876f4648ebf4b94f77b2fa5062cbefca31c8f2",
+          "secret-1512.png": "36c5c039c6e1b42663379457e295eabf323a594c82ec6343e59add9958867204",
+          "secret-512.png": "31f8c475920356e98db29364ec3b19e63ef7ddd0973261334da4ba262384e784",
+          "showroom-1512.png": "5b27ca3ec434f26281ae103945dff240ce1c8205b006fda72520cab850d04f12",
+          "showroom-512.png": "393ad8e2a0576eb8b4c434170280f9a9df05ad0caeab83616a1bb35419b2131d",
+          "system-1512.png": "88b038ca3d11267139e8211838463f5e074cfc0ff32ecb423c10842328cf6294",
+          "system-512.png": "43980eebf04dbe5a7413958a46c93293298caf8d335613179301f8aac924feb7",
+          "title-1512.png": "13709ee57335c947d99b6d34a9e68bc4085fa48518eeff533eef55cfa60610c6",
+          "title-512.png": "608f4cef4912142fe9329ec47cea9551cc9480f9fa161674c7415f39e998290e",
+          "work-salvage-brake-release-768-1x-timing.json": "cbbbce68e46bed656c2d5866fd087a5a0d5f5e464263c7d6913c7f221776bf7f",
+          "work-salvage-brake-release-768-1x.png": "aad5f98c55afcfabb7f7074f177d510a80e07ef76b8a24d4afc0ae743875c3f5",
+          "work-salvage-r-1512-2x-timing.json": "73f452f5ed45bfdb7977f7b10fc04e3625b33fcf22c293ec65b8e6078ca9000f",
+          "work-salvage-r-1512-2x.png": "1f4274856f64ec957205fcac4d173d3e5971fb03fceee713237da92fd7115b2f",
+          "work-salvage-r-512-1x-timing.json": "87e4a8fab98c8864b24e1973923846e667148d72188706b52976b2ce92cc5f45",
+          "work-salvage-r-512-1x.png": "b3d2befff1947447d2c048df7ab140b6dc48f25e97a1d2a458c6b25b568ca6c4",
+          "work-salvage-tab-1512-2x-timing.json": "ab240a58326ff030a87242be55527afd887ba6549f4a2c6d9aa877a23bd9f4a0",
+          "work-salvage-tab-1512-2x.png": "1f4274856f64ec957205fcac4d173d3e5971fb03fceee713237da92fd7115b2f",
+          "work-salvage-tab-512-1x-timing.json": "0b2365d905f5d45204f8f6b15f6dd1393d0df52e2272c2c6fea031a6ef6c9e3f",
+          "work-salvage-tab-512-1x.png": "b3d2befff1947447d2c048df7ab140b6dc48f25e97a1d2a458c6b25b568ca6c4"
+        }
+      },
+      {
+        "lane": "threads",
+        "path": "/tmp/elite-native-window-fixture-036/native-threads-036",
+        "files": {
+          "chart-1512.png": "dc82e6e08d7e1979275530d9a35609b81b6e03ee84f96067b1f114403d568a2d",
+          "chart-512.png": "1861f0a2a52c6f006f675d027854ea4ade43b41f032f1c96c6c1d794616e1ab9",
+          "demo-1512.png": "8f73b885591d496bd56aecc3928d0d134fbe1d975a2f4fe52622b526ae6df3b3",
+          "demo-512.png": "2be1dee6a1374b22012157120ca45c7231e7b248cae111d6506e84075fc5be54",
+          "equipment-1512.png": "3ea6ddf459fe9048a1057dcef9bab89f100a2543599d012b42afb10fc6ec246c",
+          "equipment-512.png": "00d439070f11637ebb5b4f0c062cd64dc5d4fa443f1788bd6f8d61971f5fdbb8",
+          "equipment-before-return-1512-1x-timing.json": "11b46d13b485891bdfff8d70c325ece9ac7683480e4ef818d624de9ecc74e5aa",
+          "equipment-before-return-1512-1x.png": "ae5e8d5cd7e2a2172bd3a450946a606eb5623e25fd62ef09defb36911da9949a",
+          "equipment-before-return-512-1x-timing.json": "f37ba8753a7e28f5f240832c8907f4f4a5284f96092f6db2d493067dcf1b0be3",
+          "equipment-before-return-512-1x.png": "eda65d80dd6f33067303e9848fd56673d9a5dfe5a6f5c6f7d378c95f91cf239e",
+          "equipment-inventory-1512-2x-timing.json": "b3b66964047b697d162515b78c63268d28abe393cddd94b67f4b43ba357ba791",
+          "equipment-inventory-1512-2x.png": "603e07c84eb6b1d3b7d2da53d92522ce98018f6918189d0191504ece2723ab85",
+          "equipment-inventory-512-1x-timing.json": "565bf73531638f94f4ebeea0a7274bd1e787070bc36148f3c70287adb88ccabb",
+          "equipment-inventory-512-1x.png": "9ce57e615c1efc9a67f969eae5a8caaca430cf1da5e74d2d39bed8b0c22e1e2e",
+          "equipment-inventory-after-focus-512-1x-timing.json": "8e508f0c52ef2c5ec2fd5c23163325f2a169732d670032671923cfda01ab51ee",
+          "equipment-inventory-after-focus-512-1x.png": "f8cb007636e99b36d61f6966cfc42c240dff6138540c2d1f9afec225d568591b",
+          "equipment-inventory-before-focus-512-1x-timing.json": "f5eb68e94b2477a8c649222ba1456d6069947a4fec98d59605cc8370429d15d4",
+          "equipment-inventory-before-focus-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-inventory-before-load-512-1x-timing.json": "4339c447265d2550e4fd1fa88f9375091d0ae8bb1e397ff171bdc0be3d244ec7",
+          "equipment-inventory-before-load-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-inventory-in-space-upgrade-512-1x-timing.json": "939d486a448a37573612a89f367815afd9cd74e5ccb1714cf4a3266f0e08e39e",
+          "equipment-inventory-in-space-upgrade-512-1x.png": "f516012565ea6a62f44ac5fb63b493a34ac4836be57aa67d5d2fea1c106daef9",
+          "equipment-inventory-restored-paint-512-1x-timing.json": "5bc8fec01abb81be3b0fd95c660644b46e0b2eff76f15d5d13623316752e6362",
+          "equipment-inventory-restored-paint-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-recovered-feature-after-1512-2x-timing.json": "f91e026e510d852dc7a5df6af346b100ac12a47e037367f2ef6cf0f201287f63",
+          "equipment-recovered-feature-after-1512-2x.png": "39779c1edaa054f7d93ad5bedd4a6f513f49837476d4f3f9e954b8aaf912c418",
+          "equipment-recovered-feature-after-512-1x-timing.json": "2503fdcf5730c181552400683d644013b361129aad2bb2d150459d42660a8878",
+          "equipment-recovered-feature-after-512-1x.png": "6045ff439833b7da648f429d49506b67efbccd58623c7e73928e4fbf430e2886",
+          "equipment-recovered-feature-before-1512-2x-timing.json": "be99dda4043708a869a381582e49c2b6069a332a61db128ec12a73049a1c74eb",
+          "equipment-recovered-feature-before-1512-2x.png": "614591f368be4da96f22377b6faa8aa140daf6dbfa80a9c15b9beba2d5316ac1",
+          "equipment-recovered-feature-before-512-1x-timing.json": "647f0df567b50de3f49a9da4548b199ac651350144c55f312b1bbecbf24b7ae6",
+          "equipment-recovered-feature-before-512-1x.png": "5193c2803d3494e48de29071bfc49c2b3f5e2c99dcadeadb69fe7e9ed0f45911",
+          "equipment-row-13-1512-2x-timing.json": "432a47f4ecf99dee238eb2cbe487810f99c365d617cc0cd8471ba3ec124769b8",
+          "equipment-row-13-1512-2x.png": "c2f76472a2ea0c8f0e6b3c5a00663ef669e5536cae9f7ddd0239b66c56672a34",
+          "equipment-row-13-512-1x-timing.json": "b085dfb308b58fa416156119b30fc93b6ed052cd034e4fcd706374578265c830",
+          "equipment-row-13-512-1x.png": "d14b2881f004e146a782ceb5b90a78565343b7deea83d2b7aaf2ed77d5fc2654",
+          "equipment-row-32-1512-2x-timing.json": "8c2fceb13845f486bd7e8fb3f7ec419b83abc17913222870f472dc711f1519d1",
+          "equipment-row-32-1512-2x.png": "1f6c4cc63837c8888f48d4cbc75269fd0694c723ce058bfefe99135ae41a9ca5",
+          "equipment-row-32-512-1x-timing.json": "414cd9fc600cc15b3a3ba3cdc8a123e8be2a89d27ea58f37d137a8805de8661e",
+          "equipment-row-32-512-1x.png": "1306458ef48a021a62d8c41abaebcbbf915d8066b3c424ed07a3311df86336b7",
+          "equipment-row-5-1512-2x-timing.json": "131eb32d5406a0112d47e8b6428767ef98a19230c704f6a14f2a4e09caa94a41",
+          "equipment-row-5-1512-2x.png": "92b7e93c7dc0cef6d5163499d87058b5dd28b3724330de349267f211b98d2a9a",
+          "equipment-row-5-512-1x-timing.json": "63d09d5584cc9e0fb3a0852a6e75fd8a201847e77f4f4d43556609eb1c2ac5c9",
+          "equipment-row-5-512-1x.png": "c0a2bc56976ac82813484e8d47c8232d54ed7a2f7c93c3b5dd18f3ba5e1cf915",
+          "equipment-shop-bounds-guard-768-1x-timing.json": "2445ce9beea14df851bd9a618b76d1d863e11f17ca661f0559d263acd6384d53",
+          "equipment-shop-bounds-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-duplicate-return-768-1x-timing.json": "11a81372b2b9cfc412c574c3e510d3e5db77720d3e44a1c57919a15d6d165287",
+          "equipment-shop-duplicate-return-768-1x.png": "5ea032f2972b08831f8ed4cebfb1e90bda97f8331acf9dfbbdc23521edc3961e",
+          "equipment-shop-load-guard-768-1x-timing.json": "fa2f0cdf6f5b0dfc84e3cf12c5df5a5c0f03f936a614fbc16aa66d94616aa517",
+          "equipment-shop-load-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-navigation-guard-768-1x-timing.json": "9b2eb7fe6d553491d44d7839bc7fb658e93f6df67905a5891aa709bb26186759",
+          "equipment-shop-navigation-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-pause-guard-768-1x-timing.json": "34d87c67d3cfb604c5dfac12cc18ebf298089f0718b0b51f3b72cf9cb6cba947",
+          "equipment-shop-pause-guard-768-1x.png": "5ea032f2972b08831f8ed4cebfb1e90bda97f8331acf9dfbbdc23521edc3961e",
+          "equipment-work-refusal-1512-2x-timing.json": "174b2d2ee3083ec13a4465535361b95165f63b4528ee4d18fc56251d3c852a25",
+          "equipment-work-refusal-1512-2x.png": "3e572100544d2ec1c45d36f5ff09e864d9d7e27b97c28067afae6b32b3d95b40",
+          "equipment-work-refusal-512-1x-timing.json": "f4e0f18948a3556e70882b724be3d8227f3ea9f99317a761eba78c87ad5ff911",
+          "equipment-work-refusal-512-1x.png": "a3cb530748201962a1330844c9386a7ae65efd7f707f94ee8f9eff1cb16c67ec",
+          "help-1512.png": "4960ef53c3486c27563c7b5922ed1137b7742e8e27a7bcbf05121653d8970e7a",
+          "help-512.png": "59ed51067fb93246d06f538f50d54c875e3c0303f82eb3c5b12fdaa8683f32a5",
+          "native-window-viewport-constraint.json": "cbe0cdad9e0ba64a93e98876ac876f4648ebf4b94f77b2fa5062cbefca31c8f2",
+          "secret-1512.png": "36c5c039c6e1b42663379457e295eabf323a594c82ec6343e59add9958867204",
+          "secret-512.png": "31f8c475920356e98db29364ec3b19e63ef7ddd0973261334da4ba262384e784",
+          "showroom-1512.png": "5b27ca3ec434f26281ae103945dff240ce1c8205b006fda72520cab850d04f12",
+          "showroom-512.png": "393ad8e2a0576eb8b4c434170280f9a9df05ad0caeab83616a1bb35419b2131d",
+          "system-1512.png": "88b038ca3d11267139e8211838463f5e074cfc0ff32ecb423c10842328cf6294",
+          "system-512.png": "43980eebf04dbe5a7413958a46c93293298caf8d335613179301f8aac924feb7",
+          "title-1512.png": "13709ee57335c947d99b6d34a9e68bc4085fa48518eeff533eef55cfa60610c6",
+          "title-512.png": "608f4cef4912142fe9329ec47cea9551cc9480f9fa161674c7415f39e998290e",
+          "work-salvage-brake-release-768-1x-timing.json": "0b2a5f80e3c280a6cc2ef130f3cb70a203422bd0b93bdc3c21208af2d68d7eda",
+          "work-salvage-brake-release-768-1x.png": "aad5f98c55afcfabb7f7074f177d510a80e07ef76b8a24d4afc0ae743875c3f5",
+          "work-salvage-r-1512-2x-timing.json": "08c37eb4355613122f1d26b511849968ec0ba40a237d222a47f10765ade4bf51",
+          "work-salvage-r-1512-2x.png": "1f4274856f64ec957205fcac4d173d3e5971fb03fceee713237da92fd7115b2f",
+          "work-salvage-r-512-1x-timing.json": "6c618f9d8185b9419c7c15fb85d72da111465634ddbeb3380bd4d5487034ca54",
+          "work-salvage-r-512-1x.png": "b3d2befff1947447d2c048df7ab140b6dc48f25e97a1d2a458c6b25b568ca6c4",
+          "work-salvage-tab-1512-2x-timing.json": "0d8f5c18f938645ff4ef29c3aab62d6a64b26e123070335fb9ba50b73c2e5baa",
+          "work-salvage-tab-1512-2x.png": "1f4274856f64ec957205fcac4d173d3e5971fb03fceee713237da92fd7115b2f",
+          "work-salvage-tab-512-1x-timing.json": "7c1fecfd60c23ff79413342aaf9c3b31f85b52e4f4990a4bfc20f5915ba8b53f",
+          "work-salvage-tab-512-1x.png": "b3d2befff1947447d2c048df7ab140b6dc48f25e97a1d2a458c6b25b568ca6c4"
+        }
+      },
+      {
+        "lane": "address",
+        "path": "/tmp/elite-native-window-fixture-036/native-address-036",
+        "files": {
+          "chart-1512.png": "dc82e6e08d7e1979275530d9a35609b81b6e03ee84f96067b1f114403d568a2d",
+          "chart-512.png": "1861f0a2a52c6f006f675d027854ea4ade43b41f032f1c96c6c1d794616e1ab9",
+          "demo-1512.png": "8f73b885591d496bd56aecc3928d0d134fbe1d975a2f4fe52622b526ae6df3b3",
+          "demo-512.png": "2be1dee6a1374b22012157120ca45c7231e7b248cae111d6506e84075fc5be54",
+          "equipment-1512.png": "3ea6ddf459fe9048a1057dcef9bab89f100a2543599d012b42afb10fc6ec246c",
+          "equipment-512.png": "00d439070f11637ebb5b4f0c062cd64dc5d4fa443f1788bd6f8d61971f5fdbb8",
+          "equipment-before-return-1512-1x-timing.json": "b2b7b1829e5799bc20bfa16a82f56e21547b9efb90211cf4d62a91dc360f3419",
+          "equipment-before-return-1512-1x.png": "ae5e8d5cd7e2a2172bd3a450946a606eb5623e25fd62ef09defb36911da9949a",
+          "equipment-before-return-512-1x-timing.json": "61875a48da229a6609968461ff7c9fcf2ff7360b7099b4c019f7e0f08886ab94",
+          "equipment-before-return-512-1x.png": "eda65d80dd6f33067303e9848fd56673d9a5dfe5a6f5c6f7d378c95f91cf239e",
+          "equipment-inventory-1512-2x-timing.json": "e34cd7feeae31385f66ea1589e7163dc9825f22acf9487fee2920cb9fc9eecfc",
+          "equipment-inventory-1512-2x.png": "603e07c84eb6b1d3b7d2da53d92522ce98018f6918189d0191504ece2723ab85",
+          "equipment-inventory-512-1x-timing.json": "cb7238206eb1fd759b70103170039d109aa130745e813dc37d484af06433f5df",
+          "equipment-inventory-512-1x.png": "9ce57e615c1efc9a67f969eae5a8caaca430cf1da5e74d2d39bed8b0c22e1e2e",
+          "equipment-inventory-after-focus-512-1x-timing.json": "50e203f84b7ad1cbb05416d63cfc5218e60969341e3d88ad36cb267313d30fb2",
+          "equipment-inventory-after-focus-512-1x.png": "f8cb007636e99b36d61f6966cfc42c240dff6138540c2d1f9afec225d568591b",
+          "equipment-inventory-before-focus-512-1x-timing.json": "04b33f2d82eeeddab34f0fd0f7e303bd9ec04f3544f3e64a75a158e9efb6855e",
+          "equipment-inventory-before-focus-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-inventory-before-load-512-1x-timing.json": "81f253300be68111bdce884342057af0264809c5ea9b77d8b225de9139ebaed4",
+          "equipment-inventory-before-load-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-inventory-in-space-upgrade-512-1x-timing.json": "f13f5895c30adb099af4506f4d7d90c6255b3a3eaf7f56c88397af62d4444a2b",
+          "equipment-inventory-in-space-upgrade-512-1x.png": "f516012565ea6a62f44ac5fb63b493a34ac4836be57aa67d5d2fea1c106daef9",
+          "equipment-inventory-restored-paint-512-1x-timing.json": "6cd940a9565e2df347734c567e7c3ce72961f0e9e4c7f8fe35c8df58f3d0cbf1",
+          "equipment-inventory-restored-paint-512-1x.png": "9f086feac8ab454646eb2da985cd7ac69dc46e96402e1ca6ca2badaf41c9fb11",
+          "equipment-recovered-feature-after-1512-2x-timing.json": "35178017627df9719fbf14e38ddfc843d7d2acc6b9547f5ac820d747f46f2dc4",
+          "equipment-recovered-feature-after-1512-2x.png": "39779c1edaa054f7d93ad5bedd4a6f513f49837476d4f3f9e954b8aaf912c418",
+          "equipment-recovered-feature-after-512-1x-timing.json": "1fd87125a96c0f2f9a0ee7d79f885eb5a196f9ca200c7fe2fe34ba602ee3dfdc",
+          "equipment-recovered-feature-after-512-1x.png": "6045ff439833b7da648f429d49506b67efbccd58623c7e73928e4fbf430e2886",
+          "equipment-recovered-feature-before-1512-2x-timing.json": "d27c092d587d028d9a9d185407c54ba6a85946467b27543dee88a3b145fd5993",
+          "equipment-recovered-feature-before-1512-2x.png": "614591f368be4da96f22377b6faa8aa140daf6dbfa80a9c15b9beba2d5316ac1",
+          "equipment-recovered-feature-before-512-1x-timing.json": "b968ad8315e8aed2eab8c4a1319abe91fa2b6fcf348dc870ad0252b44e67f96b",
+          "equipment-recovered-feature-before-512-1x.png": "5193c2803d3494e48de29071bfc49c2b3f5e2c99dcadeadb69fe7e9ed0f45911",
+          "equipment-row-13-1512-2x-timing.json": "fd2a24bbc5d62f6c56adcd0ceb5154c84a470ab369c1a4c27e829387ba721cb4",
+          "equipment-row-13-1512-2x.png": "c2f76472a2ea0c8f0e6b3c5a00663ef669e5536cae9f7ddd0239b66c56672a34",
+          "equipment-row-13-512-1x-timing.json": "3a912b9040f37dd1bb309a8834fa9b031e6f714471bdf3054fff71e06febf02e",
+          "equipment-row-13-512-1x.png": "d14b2881f004e146a782ceb5b90a78565343b7deea83d2b7aaf2ed77d5fc2654",
+          "equipment-row-32-1512-2x-timing.json": "41975b3ef202d046592abfd5480b577451cc10d92a4db5b1df07fcb07d3b252f",
+          "equipment-row-32-1512-2x.png": "1f6c4cc63837c8888f48d4cbc75269fd0694c723ce058bfefe99135ae41a9ca5",
+          "equipment-row-32-512-1x-timing.json": "f9b55dc46e49b27d98ae679e3569b08ab3705a9b8003892b3a115724be4f4432",
+          "equipment-row-32-512-1x.png": "1306458ef48a021a62d8c41abaebcbbf915d8066b3c424ed07a3311df86336b7",
+          "equipment-row-5-1512-2x-timing.json": "82e509e587db040916b0cd0f376116ad9717d3d58258d79373ba9909d52db2f8",
+          "equipment-row-5-1512-2x.png": "92b7e93c7dc0cef6d5163499d87058b5dd28b3724330de349267f211b98d2a9a",
+          "equipment-row-5-512-1x-timing.json": "aa1c0c4e65472b9e12fa010f51ba5e01e8eeb4db3c3abf58f9d33d3da21d177e",
+          "equipment-row-5-512-1x.png": "c0a2bc56976ac82813484e8d47c8232d54ed7a2f7c93c3b5dd18f3ba5e1cf915",
+          "equipment-shop-bounds-guard-768-1x-timing.json": "d3e76f3ef35353e4078dda15e7df52698e8749693d189087a1448fd6ea2b75ad",
+          "equipment-shop-bounds-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-duplicate-return-768-1x-timing.json": "080cc17a839018f0d745745faa3d5f4b99e433d31b9282b2c21b98764a055113",
+          "equipment-shop-duplicate-return-768-1x.png": "5ea032f2972b08831f8ed4cebfb1e90bda97f8331acf9dfbbdc23521edc3961e",
+          "equipment-shop-load-guard-768-1x-timing.json": "5835c6ca7f3944ea463505dcf2ceacea84ac1beaec0459ff32a9d77a31630b8b",
+          "equipment-shop-load-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-navigation-guard-768-1x-timing.json": "17750abf8240109c4c462e479784ac9b32151d80be5a932016a7c26eebcaa5f0",
+          "equipment-shop-navigation-guard-768-1x.png": "b6d1430ed611cacee0191c10e3c3df40ab73645d265a854aa59292d70d2bdfed",
+          "equipment-shop-pause-guard-768-1x-timing.json": "490c419247f4276b57ee858552cbdf8f939443cb9541ba2c02d88a5dd58bf249",
+          "equipment-shop-pause-guard-768-1x.png": "5ea032f2972b08831f8ed4cebfb1e90bda97f8331acf9dfbbdc23521edc3961e",
+          "equipment-work-refusal-1512-2x-timing.json": "1e83d1f01370b246dff725fb9c7f899471f2fc1d6e327810c361765759b48202",
+          "equipment-work-refusal-1512-2x.png": "3e572100544d2ec1c45d36f5ff09e864d9d7e27b97c28067afae6b32b3d95b40",
+          "equipment-work-refusal-512-1x-timing.json": "eed1d96f0fcce64e1cb92dec412fbd9315f931cda35ac460ed64d50ccb862433",
+          "equipment-work-refusal-512-1x.png": "a3cb530748201962a1330844c9386a7ae65efd7f707f94ee8f9eff1cb16c67ec",
+          "help-1512.png": "4960ef53c3486c27563c7b5922ed1137b7742e8e27a7bcbf05121653d8970e7a",
+          "help-512.png": "59ed51067fb93246d06f538f50d54c875e3c0303f82eb3c5b12fdaa8683f32a5",
+          "native-window-viewport-constraint.json": "cbe0cdad9e0ba64a93e98876ac876f4648ebf4b94f77b2fa5062cbefca31c8f2",
+          "secret-1512.png": "36c5c039c6e1b42663379457e295eabf323a594c82ec6343e59add9958867204",
+          "secret-512.png": "31f8c475920356e98db29364ec3b19e63ef7ddd0973261334da4ba262384e784",
+          "showroom-1512.png": "5b27ca3ec434f26281ae103945dff240ce1c8205b006fda72520cab850d04f12",
+          "showroom-512.png": "393ad8e2a0576eb8b4c434170280f9a9df05ad0caeab83616a1bb35419b2131d",
+          "system-1512.png": "88b038ca3d11267139e8211838463f5e074cfc0ff32ecb423c10842328cf6294",
+          "system-512.png": "43980eebf04dbe5a7413958a46c93293298caf8d335613179301f8aac924feb7",
+          "title-1512.png": "13709ee57335c947d99b6d34a9e68bc4085fa48518eeff533eef55cfa60610c6",
+          "title-512.png": "608f4cef4912142fe9329ec47cea9551cc9480f9fa161674c7415f39e998290e",
+          "work-salvage-brake-release-768-1x-timing.json": "c16655e1c704e212460b80f9bf6aed6d7cf61a07e813ef2c7dfc7621c9833486",
+          "work-salvage-brake-release-768-1x.png": "aad5f98c55afcfabb7f7074f177d510a80e07ef76b8a24d4afc0ae743875c3f5",
+          "work-salvage-r-1512-2x-timing.json": "e0fa9a7ffd7c64badea106ede313f1ed456f4dbbc997658c4cf5423be98ca04e",
+          "work-salvage-r-1512-2x.png": "1f4274856f64ec957205fcac4d173d3e5971fb03fceee713237da92fd7115b2f",
+          "work-salvage-r-512-1x-timing.json": "619ab2edc614e45e0543fd91a65187b34ca60e78df51612f02bc42be36f9d290",
+          "work-salvage-r-512-1x.png": "b3d2befff1947447d2c048df7ab140b6dc48f25e97a1d2a458c6b25b568ca6c4",
+          "work-salvage-tab-1512-2x-timing.json": "af93d03ba09eb77b5460f73e059718b485ae2fd25cc43fba552d85735bb41907",
+          "work-salvage-tab-1512-2x.png": "1f4274856f64ec957205fcac4d173d3e5971fb03fceee713237da92fd7115b2f",
+          "work-salvage-tab-512-1x-timing.json": "5f26e444dacc70fb871ff0ddf4001287b949d50a321ebc825f5e04b93433db78",
+          "work-salvage-tab-512-1x.png": "b3d2befff1947447d2c048df7ab140b6dc48f25e97a1d2a458c6b25b568ca6c4"
+        }
+      }
+    ],
+    "stageStarts": [
+      {
+        "stage": "coverage",
+        "startedSeconds": 23.86068004113622
+      },
+      {
+        "stage": "threads",
+        "startedSeconds": 108.17758475011215
+      },
+      {
+        "stage": "address",
+        "startedSeconds": 467.70785658294335
+      },
+      {
+        "stage": "leaks",
+        "startedSeconds": 1282.3393867909908
+      }
+    ],
+    "rawLogSha256": "63913c408f7163cfb294d5aeaa070b833fc9800cf6510bd41b10e4d70aa0506f",
+    "summaries": [
+      "All 168 TOMLs/GIFs/reference sections current",
+      "\u2714 Test run with 898 tests in 69 suites passed after 66.346 seconds.",
+      "\u2714 Test run with 898 tests in 69 suites passed after 343.805 seconds.",
+      "\u2714 Test run with 898 tests in 69 suites passed after 800.517 seconds.",
+      "Process 60058: 0 leaks for 0 total leaked bytes."
+    ]
+  },
+  "coverage": {
+    "coveredLines": 21438,
+    "executableLines": 22528,
+    "percent": 95.16157670454545
+  },
+  "lanes": [
+    {
+      "lane": "coverage",
+      "originals": 79,
+      "pairs": 31,
+      "allSource": true,
+      "allByteParity": true,
+      "minimumRatio": 0.7666765635239148,
+      "maximumRatio": 1.2864920723466247,
+      "geometry": {
+        "bounds": [
+          0,
+          0,
+          768,
+          1239
+        ],
+        "contentRect": [
+          0,
+          0,
+          768,
+          1239
+        ],
+        "defaultConstraint": [
+          0,
+          90,
+          768,
+          1039
+        ],
+        "frame": [
+          0,
+          0,
+          768,
+          1271
+        ],
+        "requested": [
+          768,
+          1239
+        ],
+        "screenFrame": [
+          0,
+          0,
+          1800,
+          1169
+        ],
+        "visibleFrame": [
+          0,
+          90,
+          1800,
+          1039
+        ]
+      }
+    },
+    {
+      "lane": "threads",
+      "originals": 79,
+      "pairs": 31,
+      "allSource": true,
+      "allByteParity": true,
+      "minimumRatio": 0.8887494819637979,
+      "maximumRatio": 1.1960046694845945,
+      "geometry": {
+        "bounds": [
+          0,
+          0,
+          768,
+          1239
+        ],
+        "contentRect": [
+          0,
+          0,
+          768,
+          1239
+        ],
+        "defaultConstraint": [
+          0,
+          90,
+          768,
+          1039
+        ],
+        "frame": [
+          0,
+          0,
+          768,
+          1271
+        ],
+        "requested": [
+          768,
+          1239
+        ],
+        "screenFrame": [
+          0,
+          0,
+          1800,
+          1169
+        ],
+        "visibleFrame": [
+          0,
+          90,
+          1800,
+          1039
+        ]
+      }
+    },
+    {
+      "lane": "address",
+      "originals": 79,
+      "pairs": 31,
+      "allSource": true,
+      "allByteParity": true,
+      "minimumRatio": 0.39947194913509665,
+      "maximumRatio": 1.4448718181621196,
+      "geometry": {
+        "bounds": [
+          0,
+          0,
+          768,
+          1239
+        ],
+        "contentRect": [
+          0,
+          0,
+          768,
+          1239
+        ],
+        "defaultConstraint": [
+          0,
+          90,
+          768,
+          1039
+        ],
+        "frame": [
+          0,
+          0,
+          768,
+          1271
+        ],
+        "requested": [
+          768,
+          1239
+        ],
+        "screenFrame": [
+          0,
+          0,
+          1800,
+          1169
+        ],
+        "visibleFrame": [
+          0,
+          90,
+          1800,
+          1039
+        ]
+      }
+    }
+  ],
+  "inputMap": {
+    "path": "/tmp/elite-native-window-fixture-036/ci-036.inputs.json",
+    "sha256": "e9f3bad0be8ef9b01eb5280756b3e34282ca10b65726879deb9eb039c0cbba84"
+  },
+  "qualification": "Runtime equals reviewed9b8; only qualified focus documentation before sourcefreeze. All tracked/source/save/preferences unchanged. No main/Sonar/release or canonical composition validation claimed.",
+  "handoff": {
+    "path": "/tmp/elite-native-window-fixture-036/final-handoff-036.json",
+    "sha256": "8e8a153b2bde0a01a05ad41b147946d93948f0b71d7c80ef826deed7138eef5a"
+  },
+  "independentVerification": {
+    "path": "/tmp/elite-native-window-fixture-036/root-full-ci-verification-036.json",
+    "sha256": "af4f2be6a64338c140a4ace0e6786778444036fbcc40c463e91053493d0a033c"
+  },
+  "runtimeSource": "9b8e76e833a9e1755a28b34ee2f41a7e2dce8f5d"
+}
