@@ -57,11 +57,11 @@ public struct CrimeResolution: Equatable, Codable, Sendable {
 }
 
 private struct AttackWindow: Equatable, Codable, Sendable {
-  let owner: ActorIdentity
-  let victim: ActorIdentity
+  var owner: ActorIdentity
+  var victim: ActorIdentity
   let victimLegal: LegalRecord
   let victimRole: NPCRole?
-  let firstAggressor: ActorIdentity
+  var firstAggressor: ActorIdentity
   let unlawful: Bool
   let offence: CrimeKind
   let authorityAction: Bool
@@ -69,7 +69,7 @@ private struct AttackWindow: Equatable, Codable, Sendable {
 }
 
 private struct MissWindow: Equatable, Codable, Sendable {
-  let owner: ActorIdentity
+  var owner: ActorIdentity
   var lastDischarge: Double
   var charged: Bool
 }
@@ -78,6 +78,9 @@ private struct MissileAttack: Equatable, Codable, Sendable {
   let emissionID: UInt64
   let ordnance: ActorIdentity?
   let attack: AttackWindow
+  // Tracking may follow a surviving NPC; launch judgement and emission attribution stay frozen.
+  var currentOwner: ActorIdentity? = nil
+  var currentVictim: ActorIdentity? = nil
 }
 
 private struct AttackJudgement {
@@ -103,6 +106,52 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     misses.removeAll { $0.owner.system != system || $0.owner.visit != visit }
     missiles.removeAll { $0.attack.owner.system != system || $0.attack.owner.visit != visit }
     settledDeaths = Set(settledDeaths.filter { $0.system == system && $0.visit == visit })
+  }
+
+  /// Only accepted living same-visit NPC rebindings may reconcile transient threat addresses.
+  /// Death replay identities and immutable missile launch evidence are never rewritten.
+  public mutating func rebindActors(_ identities: [ActorIdentity: ActorIdentity]) {
+    let accepted = identities.filter { old, new in
+      old.system == new.system && (0..<8).contains(old.system.galaxy)
+        && (0...256).contains(old.system.system)
+        && old.visit == new.visit && old.visit > 0 && old.visit < UInt64.max
+        && old.entity >= 2 && new.entity > old.entity && new.entity < UInt64.max
+    }
+    guard !accepted.isEmpty else { return }
+    func current(_ actor: ActorIdentity) -> ActorIdentity { accepted[actor] ?? actor }
+    var reconciled: [AttackWindow] = []
+    for var attack in attacks {
+      attack.owner = current(attack.owner)
+      attack.victim = current(attack.victim)
+      attack.firstAggressor = current(attack.firstAggressor)
+      if let index = reconciled.firstIndex(where: {
+        $0.owner == attack.owner && $0.victim == attack.victim
+      }) {
+        // A later window may carry a new legal judgement after the previous window expired.
+        if attack.lastAttack > reconciled[index].lastAttack { reconciled[index] = attack }
+      } else {
+        reconciled.append(attack)
+      }
+    }
+    attacks = reconciled
+    var reconciledMisses: [MissWindow] = []
+    for var miss in misses {
+      miss.owner = current(miss.owner)
+      if let index = reconciledMisses.firstIndex(where: { $0.owner == miss.owner }) {
+        if miss.lastDischarge > reconciledMisses[index].lastDischarge {
+          reconciledMisses[index] = miss
+        }
+      } else {
+        reconciledMisses.append(miss)
+      }
+    }
+    misses = reconciledMisses
+    for index in missiles.indices {
+      missiles[index].currentOwner = current(
+        missiles[index].currentOwner ?? missiles[index].attack.owner)
+      missiles[index].currentVictim = current(
+        missiles[index].currentVictim ?? missiles[index].attack.victim)
+    }
   }
 
   public mutating func endThreat(_ identity: ActorIdentity) {
@@ -193,7 +242,7 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     }
     let missileLaunch = missiles.first {
       incident.kind == .missile && $0.emissionID == incident.origin.emissionID
-        && $0.attack.owner == owner && $0.attack.victim == victim
+        && $0.attack.owner == owner && ($0.currentVictim ?? $0.attack.victim) == victim
     }
     let previous =
       missileLaunch?.attack
@@ -264,8 +313,20 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
   }
 
   private mutating func remember(_ attack: AttackWindow, incident: CombatIncident) {
-    attacks.removeAll { $0.owner == attack.owner && $0.victim == attack.victim }
-    attacks.append(attack)
+    var threat = attack
+    if incident.kind == .missile,
+      let launch = missiles.first(where: {
+        $0.emissionID == incident.origin.emissionID && $0.attack.owner == incident.origin.owner
+          && ($0.currentVictim ?? $0.attack.victim) == attack.victim
+      })
+    {
+      threat.owner = launch.currentOwner ?? attack.owner
+      threat.victim = launch.currentVictim ?? attack.victim
+      if threat.firstAggressor == launch.attack.owner { threat.firstAggressor = threat.owner }
+      if threat.firstAggressor == launch.attack.victim { threat.firstAggressor = threat.victim }
+    }
+    attacks.removeAll { $0.owner == threat.owner && $0.victim == threat.victim }
+    attacks.append(threat)
     if incident.kind == .missile && incident.outcome == .targetedLaunch,
       !missiles.contains(where: { $0.emissionID == incident.origin.emissionID })
     {
@@ -349,7 +410,8 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     else { return false }
     if time - attack.lastAttack <= 10 { return true }
     if missiles.contains(where: { missile in
-      missile.attack.owner == attack.owner && missile.attack.victim == attack.victim
+      (missile.currentOwner ?? missile.attack.owner) == attack.owner
+        && (missile.currentVictim ?? missile.attack.victim) == attack.victim
         && missile.ordnance.map { identity in
           context.actors.contains { $0.identity == identity && $0.energy > 0 }
         } == true

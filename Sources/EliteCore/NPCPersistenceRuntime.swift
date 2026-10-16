@@ -65,14 +65,17 @@ extension Game {
     let rebindings = commander.npcPersistence.acknowledge(receipts: receipts)
     var identities: [ActorIdentity: ActorIdentity] = [:]
     for rebind in rebindings {
-      if let old = prior[rebind.logicalIdentity]?.actor { identities[old] = rebind.actor }
       guard let index = bodies.firstIndex(where: { $0.physical?.identity == rebind.actor }) else {
         continue
       }
       var body = bodies[index]
-      if rebind.restore(body: &body, pose: commander.flightSimulation.pose) { bodies[index] = body }
+      if rebind.restore(body: &body, pose: commander.flightSimulation.pose) {
+        bodies[index] = body
+        if let old = prior[rebind.logicalIdentity]?.actor { identities[old] = rebind.actor }
+      }
     }
     guard !rebindings.isEmpty else { return }
+    commander.crimeLedger.rebindActors(identities)
     for index in bodies.indices where bodies[index].physical?.npc != nil {
       let saved = bodies[index].physical.flatMap { physical in
         commander.npcPersistence.logicalIdentity(for: physical.identity).flatMap {

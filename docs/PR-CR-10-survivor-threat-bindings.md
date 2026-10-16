@@ -1,0 +1,9 @@
+# CR-10: Reconcile threats after accepted living NPC rebindings
+
+Only successful same-system, same-visit living NPC restoration supplies the old-to-new scene identity map. CrimeLedger reconciles attack/discharge threat addresses and first aggressors, merging duplicate current addresses by their latest authoritative windows. It leaves settled deaths and the global incident replay barrier intact.
+
+Missile launch judgements and original emission owners stay frozen. Optional current threat bindings follow surviving craft for self-defence and bounded threat history; old saves that omit those optional bindings remain supported. Delayed impacts use current threat addresses for remembered windows while preserving original launch legality, bounty evidence and damage attribution.
+
+The pre-fix runtime regression on de3dd4ca7fc09fb5578b61dd8621dde0885d3d35 completed in 8.535 seconds and failed only its two bounded-history assertions: the actual persisted counts were 1 through 24, including 24 after roundtrip. The command took 31.336431750 seconds; raw log SHA-256 bd40a48bcdfe185da1387f6d331ea4cfafd02d3c6042653574fae666ce46eb27. The original log and input map remain in /tmp/elite-simulation-review-fixes-028. Tracked inputs, the production save and preferences were unchanged. This is living-rebind proof, not a reinstatement of the withdrawn unlimited-deaths claim.
+
+Post-fix execution is pending source review and a frozen checkpoint. Additional regressions cover recent and active-missile self-defence, frozen launch evidence, original-owner once-only bounty, missed-discharge windows, latest-window merging, rejected mappings and legacy decoding. No exact event threshold, session duration or performance improvement is claimed. Motivation: [issue](ISSUE-CR-10-survivor-threat-bindings.md).
