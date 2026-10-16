@@ -386,6 +386,7 @@ public enum ScriptPackLibrary {
         manifest.capabilities.contains("local-flight-clocks-v2"),
         board.clock == .local || board.clock == .flight
           || board.clock == .calendar && manifest.capabilities.contains("calendar-clocks-v2")
+          || board.clock == .missionCalendar && manifest.courier != nil
           || manifest.capabilities.contains("world-clocks-v1")
       else {
         throw MissionPackError("Invalid contract board or missing clock/contract capability.")

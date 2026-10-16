@@ -64,7 +64,8 @@ struct CourierFixture {
   }
   func requestContact(_ game: inout Game, id: UUID) throws {
     game.emitScriptEvent("contact.requested", only: id)
-    #expect(game.showScriptDialogue(only: id))
+    let shown = game.showScriptDialogue(only: id)
+    #expect(shown)
     #expect(!game.scriptConfirmSelected)
   }
   func travel(_ game: inout Game, id: UUID) throws {
