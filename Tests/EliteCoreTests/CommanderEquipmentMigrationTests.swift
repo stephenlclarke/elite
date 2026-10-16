@@ -19,6 +19,24 @@ private func cemInitialize(
 }
 
 struct CommanderEquipmentMigrationTests {
+  @Test func knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices() throws {
+    var commander = Commander()
+    commander.shipID = "SH001"
+    commander.missiles = 1
+    commander.equipment.formUnion([Equipment.navalLaser, "Large Cargo Bay"])
+    commander.laserMounts = .init(front: .naval, left: .naval, right: .naval, rear: .naval)
+    let before = commander
+    try cemInitialize(&commander)
+    let inventory = try #require(commander.equipmentInventory)
+    let lasers = inventory.items.filter { $0.node.key == Equipment.navalLaser }
+    #expect(lasers.count == 4)
+    #expect(lasers.filter { $0.location != nil }.count == 1)
+    #expect(inventory.items.contains { $0.node.key == "Large Cargo Bay" && $0.location == nil })
+    #expect(commander.credits == before.credits && commander.fuel == before.fuel)
+    #expect(commander.cargo == before.cargo && commander.missiles == before.missiles)
+    #expect(commander.valid)
+  }
+
   @Test func readingLegacyEquipmentNeverAllocatesOrChangesCommander() {
     let commander = Commander()
     let before = commander

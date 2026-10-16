@@ -19,7 +19,7 @@ struct MissionEquipmentBridgeTests {
   @Test func originalPlansDeliveryGrantsActualNavalHardwareAndCannotDuplicateAfterReload() throws {
     var game = try equipmentPlansDelivery()
     let entry = try #require(game.missionPacks.entries.first { $0.pack.id == "xyzzy.plans" })
-    let delivered = game.dispatchMission(.dock)
+    let delivered = game.dispatchMission(.dock, naval: true)
     #expect(delivered && game.commander.missionStage == .plansDelivered)
     #expect(game.commander.kills == 1536 && game.commander.credits == 1000)
     let reward = try #require(game.commander.fittedEquipment(at: .energy))
@@ -33,7 +33,7 @@ struct MissionEquipmentBridgeTests {
     let loaded = restored.load(decoded)
     #expect(loaded)
     let inventory = restored.commander.equipmentInventory
-    let second = restored.dispatchMission(.dock)
+    let second = restored.dispatchMission(.dock, naval: true)
     #expect(!second && restored.commander.kills == 1536)
     #expect(restored.commander.equipmentInventory == inventory)
     #expect(restored.commander.fittedEquipment(at: .energy)?.id == reward.id)
@@ -72,8 +72,9 @@ struct MissionEquipmentBridgeTests {
       items: inventory.items)
     #expect(game.commander.valid)
     let before = game.commander
-    let committed = game.dispatchMission(.dock)
-    #expect(!committed && game.commander == before)
+    let messageBefore = game.message
+    let committed = game.dispatchMission(.dock, naval: true)
+    #expect(!committed && game.commander == before && game.message != messageBefore)
     #expect(game.commander.missionStage == .carryingPlans && game.commander.kills == 1280)
     #expect(game.commander.fittedEquipment(at: .energy)?.node.key == "Basic Energy System")
   }

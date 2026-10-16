@@ -18,6 +18,18 @@ private func equipmentShopBuy(_ name: String, game: inout Game) throws {
 }
 
 struct EquipmentRuntimeTransactionTests {
+  @Test func aFabricatedShopPriceOrTechnologyCannotBecomeAnAuthoritativeReceipt() throws {
+    let game = try equipmentShopGame()
+    let before = game.commander
+    for item in [
+      Equipment(name: TargetingTier.basic.equipmentName, price: 1, technology: 3),
+      Equipment(name: TargetingTier.basic.equipmentName, price: 8000, technology: 0),
+    ] {
+      #expect(throws: EquipmentRuntimeError.unavailable) { try game.quoteEquipmentPurchase(item) }
+      #expect(game.commander == before)
+    }
+  }
+
   @Test func actualShopRequiresEveryPaidCoreAndRetainsReplacedPhysicalDevices() throws {
     var game = try equipmentShopGame()
     let before = game.commander
@@ -54,7 +66,7 @@ struct EquipmentRuntimeTransactionTests {
     try equipmentShopBuy("Targeting: Mining Module", game: &game)
     #expect(game.commander.fittedEquipment(at: .targetingMining) != nil)
     #expect(game.commander.fittedEquipment(at: .targetingSalvage) == nil)
-    #expect(game.commander.credits == before.credits - 8000 - 12000)
+    #expect(game.commander.credits == before.credits - 8000 - 20000)
     #expect(game.commander.equipmentPurchaseHistory?.paid.count == 2)
     #expect(game.commander.equipmentPurchaseHistory?.legacy.isEmpty == true)
   }
@@ -127,14 +139,14 @@ struct EquipmentRuntimeTransactionTests {
     #expect(game.commander.fittedEquipment(at: .utility(.salvageCutter)) != nil)
     #expect(game.commander.fittedEquipment(at: .targetingMining) == nil)
     #expect(game.commander.fittedEquipment(at: .targetingSalvage) == nil)
-    #expect(game.commander.credits == before.credits - 20000 - 8000 - 16000)
+    #expect(game.commander.credits == before.credits - 20000 - 8000 - 25000)
   }
 
   @Test func specialistAvailabilityAndIndependentPricesUseActualShopTechnology() throws {
     var game = try equipmentShopGame()
     for (name, price, technology) in [
-      ("Targeting: Mining Module", 12000, 7), ("Targeting: Salvage Module", 24000, 8),
-      ("Salvage Cutter", 16000, 8),
+      ("Targeting: Mining Module", 20000, 5), ("Targeting: Salvage Module", 40000, 7),
+      ("Salvage Cutter", 25000, 6),
     ] {
       let item = try #require(Equipment.all.first { $0.name == name })
       #expect(item.price == price && item.technology == technology)

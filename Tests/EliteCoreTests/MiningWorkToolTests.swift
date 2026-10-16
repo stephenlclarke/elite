@@ -122,17 +122,7 @@ struct MiningWorkToolTests {
 
   @Test func explicitWorkToolCoexistsWithFourNavalFacingsAndAnIndependentCutter() throws {
     var game = try workToolGame()
-    var inventory = try #require(game.commander.equipmentInventory)
-    let cutter = OwnedEquipmentItem(
-      id: UUID(),
-      node: try #require(EquipmentRuntimeCatalog.node(for: "Salvage Cutter")), provenance: .xyzzy,
-      location: .init(hullInstanceID: inventory.activeHull, slot: .utility(.salvageCutter)))
-    try inventory.admit(
-      cutter, expectedRevision: inventory.revision,
-      context: EquipmentRuntimeCatalog.context(
-        owner: inventory.owner, hull: inventory.activeHull,
-        performance: game.commander.performance))
-    game.commander.savedEquipmentInventory = inventory
+    let inventory = try #require(game.commander.equipmentInventory)
     #expect(game.commander.hasMiningWorkTool)
     #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
     #expect(

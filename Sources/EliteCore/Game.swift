@@ -261,9 +261,9 @@ public struct Equipment: Sendable {
       .init(name: $0.equipmentName, price: $0.price, technology: $0.technology)
     } + [
       // Initial project balancing in tenths of a credit; these are new independent devices.
-      .init(name: "Targeting: Mining Module", price: 12000, technology: 7),
-      .init(name: "Targeting: Salvage Module", price: 24000, technology: 8),
-      .init(name: "Salvage Cutter", price: 16000, technology: 8),
+      .init(name: "Targeting: Mining Module", price: 20000, technology: 5),
+      .init(name: "Targeting: Salvage Module", price: 40000, technology: 7),
+      .init(name: "Salvage Cutter", price: 25000, technology: 6),
       .init(name: FuelStorage.equipmentName, price: FuelStorage.price, technology: 0),
       .init(name: navalLaser, price: 0, technology: 0),
       .init(name: navalEnergyUnit, price: 0, technology: 0),
