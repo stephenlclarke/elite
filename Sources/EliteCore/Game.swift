@@ -23,6 +23,13 @@ public struct Commander: Sendable, Equatable, Codable {
   public var scriptState: ScriptEngineState {
     get { savedScriptState ?? ScriptEngineState() }
     set { savedScriptState = newValue == ScriptEngineState() ? nil : newValue }
+    _modify {
+      if savedScriptState == nil { savedScriptState = ScriptEngineState() }
+      defer {
+        if savedScriptState == ScriptEngineState() { savedScriptState = nil }
+      }
+      yield &savedScriptState!
+    }
   }
   private var savedMissionProgress: [String: MissionProgress]?
   public var missionProgress: [String: MissionProgress] {

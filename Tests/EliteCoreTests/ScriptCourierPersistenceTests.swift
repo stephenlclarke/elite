@@ -332,3 +332,22 @@ extension CourierFixture {
   #expect(game.commander.scriptState.instances[id]?.contract == frozen)
   #expect(game.commander.cargoTonnes == 1 && game.commander.valid)
 }
+
+@Test func courierScriptStateInoutWritebackPreservesDefaultEncodingAndThrownMutation() throws {
+  enum Stop: Error { case expected }
+  func change(_ state: inout ScriptEngineState) throws {
+    state.flightSeconds += 1
+    throw Stop.expected
+  }
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = [.sortedKeys]
+  var commander = Commander()
+  let empty = try encoder.encode(commander)
+  #expect(throws: Stop.self) { try change(&commander.scriptState) }
+  #expect(commander.scriptState.flightSeconds == 1)
+  let mutated = try encoder.encode(commander)
+  #expect(mutated != empty)
+  #expect(try JSONDecoder().decode(Commander.self, from: mutated).scriptState.flightSeconds == 1)
+  commander.scriptState.flightSeconds -= 1
+  #expect(try encoder.encode(commander) == empty)
+}
