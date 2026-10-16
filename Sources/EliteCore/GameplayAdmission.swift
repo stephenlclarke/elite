@@ -147,6 +147,7 @@ extension Game {
     let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
     for (request, template) in zip(requests, templates) {
       guard request.priority == .mission, request.identity.producer == .mission,
+        request.population == .mission,
         request.hull == template.canonicalBody.hull,
         request.energy == template.canonicalBody.energy,
         request.npc?.resources?.energyCapacity == template.maximumHullEnergy,
@@ -157,7 +158,7 @@ extension Game {
       }
       let radius = template.radius
       guard spawnParametersSafe(request, context: context, measuredRadius: radius),
-        (request.position - context.player.position).length > radius + playerRadius + 8
+        (request.position - context.player.position).length > radius + playerRadius + 64
       else { return .unsafePosition }
       for actor in context.actors where actor.energy > 0 {
         guard let body = bodies.first(where: { $0.physical?.identity == actor.identity }) else {
@@ -176,7 +177,7 @@ extension Game {
           otherRadius = gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
         }
         guard otherRadius.isFinite, otherRadius > 0,
-          (request.position - actor.position).length >= radius + otherRadius + 8
+          (request.position - actor.position).length >= radius + otherRadius + 64
         else { return .unsafePosition }
       }
       budget.total += 1
@@ -185,7 +186,7 @@ extension Game {
     for index in requests.indices {
       for other in requests.indices where other > index {
         if (requests[index].position - requests[other].position).length
-          < templates[index].radius + templates[other].radius + 8
+          < templates[index].radius + templates[other].radius + 64
         {
           return .unsafePosition
         }
