@@ -1,0 +1,9 @@
+# docs(missions): propose native G02 courier contracts
+
+This source-only design identifies the missing G02 mechanisms and proposes an exact implementation boundary before owner review. It covers six frozen offers, deterministic shortest routes/xorshift32, unique digital/physical custody, native handoff/loss, additive menu-excluding timing, inclusive confirmation deadlines, existing transactional saves and isolated Gallery trials.
+
+The [proposal](MISSION-CODER-G02-DESIGN-PROPOSAL.md) explicitly labels policy choices for graph/fuel/equipment, refresh/decline/exclusivity, causal timing and physical loss. It proposes guarded capabilities and format 21; none are implemented or advertised by this change. Existing calendar status-menu progression and exclusive deadlines explain the additive clock/policy boundary. Existing escape-pod preservation of protected payloads explains the proposed minimal loss hook.
+
+Validation is limited to source inspection, authority hash verification and documentation integrity checks. No builds, tests, native execution or media generation ran; Orchestrator owns the validation lease. All executable, native, corruption/rollback, coverage, sanitizer and leak gates remain pending implementation and a granted slot. No PR was raised, pushed or merged independently.
+
+Request: [ISSUE-generated-couriers.md](ISSUE-generated-couriers.md). Compatibility and risks: source names, clock projection, format, closed commands and project policies remain proposals pending Researcher review through Orchestrator. Finance/general equipment and unrelated engine completion are outside scope. The separate Inventory Start/Return epoch composition remains required. Central integrator owns integration and formal `@codex review`/fix/review/final-head/merge workflow.
