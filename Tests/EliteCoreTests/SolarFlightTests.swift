@@ -119,10 +119,15 @@ private func solarGame(distance: Double = 2970) -> Game {
   game.launch()
   #expect(game.celestials == scene)
   #expect(game.commander.flightSimulation.visit == commander.flightSimulation.visit + 1)
+  #expect(game.commander.equipment == commander.equipment)
+  #expect(game.commander.equipmentInventory == commander.equipmentInventory)
+  #expect(game.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
   var actual = try #require(
     JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
   var expected = try #require(
     JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
+  actual["equipment"] = game.commander.equipment.sorted()
+  expected["equipment"] = commander.equipment.sorted()
   for key in [
     "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
     "encounterDirector", "savedNPCPersistence",
