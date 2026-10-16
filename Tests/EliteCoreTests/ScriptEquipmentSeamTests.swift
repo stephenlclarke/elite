@@ -217,7 +217,8 @@ struct ScriptEquipmentSeamTests {
       #expect(removed == round && applied.source == .physical(item: round.id))
       #expect(
         applied.inventory.items.isEmpty && applied.inventory.revision == inventory.revision + 1)
-      let delta = try #require(engine.gearConsumptionDelta(for: removed))
+      let consumed = try engine.gearConsumptionDelta(for: removed)
+      let delta = try #require(consumed)
       #expect(delta.eventKind == "gear.consumed")
       #expect(delta.values == ["item": .string(round.id.uuidString), "name": .string("Missile")])
       let staged = try engine.applying(delta)
