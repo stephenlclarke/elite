@@ -1,0 +1,93 @@
+{
+  "scope": "Combined physical equipment, manual work tools, salvage custody, typed ordnance and NPC persistence",
+  "attempts": {
+    "first-focused": {
+      "source": "90b870cac5393ac47af97923463a811012ff21ef",
+      "exit_code": 1,
+      "duration_seconds": 12.27408454194665,
+      "filter": "MiningWorkToolTests|SalvageCutterRuntimeTests|WorkTargetSelectionTests|InventoryCommandTests|RecoveredEquipmentRuntimeTests|NativeShipShieldComparisonTests|SalvageWreckTerminalTests|SalvageLedgerTests|GameplayOrdnanceRuntimeTests|GameplayOrdnanceTests|militaryRetali|unlimitedRetaliation|automaticECM|ecmIgnores|navalMissile|constrictorResists|navalOrdnance|combatLasersMissilesAndBomb|NPCReferenceRuntimeTests|NPCPersistenceRuntimeTests|NPCPersistenceLedgerTests",
+      "changed_inputs": [],
+      "production_save_unchanged": true,
+      "log": "/tmp/elite-composed-first-focused.log",
+      "raw_log_sha256": "ab7c71b9b49902af584409c828ead39281aade58da5b64780426fa68e52f14f9",
+      "frozen_inputs": "/tmp/elite-composed-first-focused-inputs.json",
+      "frozen_inputs_sha256": "946753de72bb3fbdc7bd7b207d5d13daca3a6bfd9eb5cf3f77b907c96d00954b"
+    },
+    "macro-corrected-focused": {
+      "source": "94f2e5ad262ec4f597510cfc9f6389b69f94375a",
+      "exit_code": 1,
+      "duration_seconds": 19.804779874859378,
+      "filter": "MiningWorkToolTests|SalvageCutterRuntimeTests|WorkTargetSelectionTests|InventoryCommandTests|RecoveredEquipmentRuntimeTests|NativeShipShieldComparisonTests|SalvageWreckTerminalTests|SalvageLedgerTests|GameplayOrdnanceRuntimeTests|GameplayOrdnanceTests|militaryRetali|unlimitedRetaliation|automaticECM|ecmIgnores|navalMissile|constrictorResists|navalOrdnance|combatLasersMissilesAndBomb|NPCReferenceRuntimeTests|NPCPersistenceRuntimeTests|NPCPersistenceLedgerTests",
+      "changed_inputs": [],
+      "production_save_unchanged": true,
+      "log": "/tmp/elite-composed-macro-corrected-focused.log",
+      "raw_log_sha256": "ddef76e89be88874337cbc9f5cb0e2e05f84d3c28154fb50a87291f5eb7efcc0",
+      "frozen_inputs": "/tmp/elite-composed-macro-corrected-focused-inputs.json",
+      "frozen_inputs_sha256": "b0713dccddc67ffaf6d8a5753e04890bed3723edb893043fbdbfa2f97216f3b1"
+    },
+    "admission-diagnostic": {
+      "source": "91aaf04824aeb91ca5148ac008353f3423de0b95",
+      "exit_code": 0,
+      "duration_seconds": 15.590895125176758,
+      "filter": "diagnosticReleasedFragmentAdmissionOutsideTheActualSourceFace|failedSaveCannotPublishNPCBindingsOrConsumeARecord|navalMissileECMImpactAndEnergyUpgradePaths",
+      "changed_inputs": [],
+      "production_save_unchanged": true,
+      "log": "/tmp/elite-composed-admission-diagnostic.log",
+      "raw_log_sha256": "91bf1428a682abaaa72be960c516041ede04c69f9f139ec847f035f24f4929b1",
+      "frozen_inputs": "/tmp/elite-composed-admission-diagnostic-inputs.json",
+      "frozen_inputs_sha256": "a8e4b7aee3eaf19b79dd99439e41144b41605f727ec00d6ace80ec49f2a126b6"
+    },
+    "admission-geometry-diagnostic": {
+      "source": "9b32a65e7a359214f6b12f29a34139ff831968bb",
+      "exit_code": 0,
+      "duration_seconds": 17.613508833106607,
+      "filter": "diagnosticReleasedFragmentAdmissionOutsideTheActualSourceFace",
+      "changed_inputs": [],
+      "production_save_unchanged": true,
+      "log": "/tmp/elite-composed-admission-geometry-diagnostic.log",
+      "raw_log_sha256": "a29af163f9f644f2aaa0ac86c1620de81096ffee0c4eca792ef6755b5311c2d4",
+      "frozen_inputs": "/tmp/elite-composed-admission-geometry-diagnostic-inputs.json",
+      "frozen_inputs_sha256": "8871d4aea1680890faec132a08bc0e1acfa562fbd74512ab8efcdf4c36aa2f8c"
+    }
+  },
+  "first_executed_joint": {
+    "source": "94f2e5ad262ec4f597510cfc9f6389b69f94375a",
+    "test_methods": 132,
+    "suites": 13,
+    "test_seconds": 9.951,
+    "issues": 7,
+    "status": "failed"
+  },
+  "targeted_compatibility_and_admission_diagnostic": {
+    "source": "91aaf04824aeb91ca5148ac008353f3423de0b95",
+    "test_methods": 3,
+    "suites": 2,
+    "test_seconds": 8.533,
+    "status": "passed; diagnostic asserts the existing refusal, not fixed admission"
+  },
+  "exact_geometry_capture": {
+    "source": "9b32a65e7a359214f6b12f29a34139ff831968bb",
+    "test_methods": 1,
+    "test_seconds": 10.168,
+    "path": "docs/validation/salvage-admission-geometry.json",
+    "sha256": "bfe02fc7df3ed66d8b3971cf25bf38f32d997774a4f3abb6dc36cd7a3a5d527e",
+    "catalogue": "SH005",
+    "section": 0,
+    "face_gap": 28.80603689960958,
+    "fragment_radius": 18.806036899609577,
+    "parent_centre_distance": 82.76569292258648,
+    "parent_radius": 86.34244323258174,
+    "admission_refusal": "unsafePosition"
+  },
+  "qualification": "A ray establishes distance from the source face. Full sphere-to-mesh placement safety still needs the reviewed geometry verifier; this evidence does not prove clearance from every other face.",
+  "remaining": [
+    "Actual released-fragment scene admission and three runtime collection methods/five cases remain failing.",
+    "Pure placement helper and real admission exception have not been implemented.",
+    "The corrected full joint filter must pass; targeted compatibility passes are not full acceptance.",
+    "Automatic approach/hold, actual derelict production and terminal death dispatcher remain pending.",
+    "Native revalidation, renderer media, full make ci, formal clean review and final-head checks remain pending."
+  ],
+  "full_ci_passed": false,
+  "combined_focused_passed": false,
+  "production_save_sha256": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7"
+}
