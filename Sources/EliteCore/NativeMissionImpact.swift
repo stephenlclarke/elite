@@ -309,6 +309,57 @@ extension Game {
       player: origin.owner == context.player.identity)
   }
 
+  /// Native missiles retain their genuine original emission; no laser watermark is consulted.
+  mutating func applyMissionImpact(_ proof: NativeMissionOrdnanceImpactProof) throws -> (
+    receipt: NativeMissionImpactReceipt, incident: CombatIncident
+  ) {
+    try validateNativeMissionOrdnanceImpactProof(proof)
+    guard let target = proof.contact.selectedTargetBody, target.scriptNPC != nil,
+      let context = gameplayContext()
+    else { throw NativeMissionImpactError.staleProof }
+    let contact = proof.contact
+    let origin = proof.ordnance.origin
+    let kind = proof.ordnance.profile.attackKind
+    var flight = commander.flightSimulation
+    guard let eventID = flight.allocateIncident() else {
+      throw NativeMissionImpactError.unavailableAllocator
+    }
+    var mining = commander.miningLedger
+    let preliminary = missionCombatIncident(
+      eventID: eventID, origin: origin, kind: kind, hit: contact.hit, outcome: .hit,
+      part: contact.victimPart, context: context)
+    let plan = try missionDamagePlan(
+      hit: contact.hit, victimPart: contact.victimPart, component: contact.componentUUID,
+      damage: proof.damage, kind: kind, laser: nil, eventID: eventID, mining: &mining,
+      projectile: nil, incident: preliminary, context: context)
+    _ = try missionEventCapacity(
+      plan, damage: proof.damage, part: contact.victimPart, component: contact.componentUUID)
+    let incident = missionCombatIncident(
+      eventID: eventID, origin: origin, kind: kind, hit: contact.hit, outcome: plan.outcome,
+      part: contact.victimPart, context: context)
+    var law = commander.crimeLedger
+    let resolution = law.record(
+      incident, context: context, emissionPosition: proof.ordnance.emissionPosition,
+      missionEntitlement: combatMissionEntitlement(
+        contact.hit.target, owner: origin.owner, context: context))
+    guard resolution.accepted else { throw NativeMissionImpactError.refusedLedger }
+    commander.flightSimulation = flight
+    commander.miningLedger = mining
+    commander.crimeLedger = law
+    commitMissionDamage(plan, damage: proof.damage, origin: origin, eventID: eventID)
+    applyNativeCrimeResolution(
+      resolution, target: contact.hit.target, attacker: origin.owner, context: context)
+    let source = bodies.first(where: { $0.physical?.identity == origin.owner })
+    return (
+      missionImpactReceipt(
+        kind: kind, hit: contact.hit, part: contact.victimPart,
+        component: contact.componentUUID, damage: proof.damage, plan: plan, eventID: eventID,
+        sourceInstance: source?.missionInstanceID, sourceActor: source?.missionActorID,
+        sourceComponent: nil, origin: origin, adjudication: .currentVisit, terminalShot: nil,
+        player: origin.owner == context.player.identity), incident
+    )
+  }
+
   private func missionDamagePlan(
     hit: GameplayHit, victimPart: String?, component: UUID?, damage: Double,
     kind: AttackKind, laser: LaserKind?, eventID: UInt64, mining: inout MiningLedger,

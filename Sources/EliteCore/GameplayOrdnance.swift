@@ -219,6 +219,37 @@ public struct OrdnanceUpdate: Equatable, Sendable {
   public let endedNow: Bool
 }
 
+/// Sealed only by the actual native swept-ordnance producer below; never decoded from a save.
+struct NativeMissionOrdnanceImpactProof: Sendable {
+  let projectileBody: SpaceBody
+  let ordnance: OrdnanceState
+  let contact: MissionCollisionContact
+  let start: Vector3
+  let end: Vector3
+  let ignored: Set<Int>
+  let includePlayer: Bool
+  let physicalTime: Double
+  let sceneRevision: UInt64
+  let damage: Double
+
+  fileprivate init(
+    projectileBody: SpaceBody, ordnance: OrdnanceState, contact: MissionCollisionContact,
+    start: Vector3, end: Vector3, ignored: Set<Int>, includePlayer: Bool,
+    physicalTime: Double, sceneRevision: UInt64, damage: Double
+  ) {
+    self.projectileBody = projectileBody
+    self.ordnance = ordnance
+    self.contact = contact
+    self.start = start
+    self.end = end
+    self.ignored = ignored
+    self.includePlayer = includePlayer
+    self.physicalTime = physicalTime
+    self.sceneRevision = sceneRevision
+    self.damage = damage
+  }
+}
+
 extension Game {
   @discardableResult
   mutating func advanceOrdnance(
@@ -244,25 +275,51 @@ extension Game {
     let resisted = state.receiveECM(activeECM)
     var hit: GameplayHit?
     var incident: CombatIncident?
-    while let motion = state.move(context: context) {
-      updateMuzzleClearance(state: &state, position: motion.start, context: context)
-      if let collision = ordnanceCollision(
-        bodyID: bodyID, state: state, motion: motion, context: context)
-      {
-        hit = collision
-        incident = applyCombatHit(
-          collision, origin: state.origin, kind: state.profile.attackKind,
-          damage: ordnanceImpactDamage(state: state, hit: collision),
-          emissionPosition: state.emissionPosition)
-        let length = (motion.end - motion.start).length
-        let fraction = length > 0 ? max(0, min(1, collision.distance / length)) : 0
-        state.impact(
-          commander.flightSimulation.pose.systemPoint(collision.point), fraction: fraction,
-          motion: motion)
-        break
+    let beforeMotion = state
+    do {
+      while let motion = state.move(context: context) {
+        updateMuzzleClearance(state: &state, position: motion.start, context: context)
+        if let contact = try ordnanceCollision(
+          bodyID: bodyID, state: state, motion: motion, context: context)
+        {
+          let collision = contact.hit
+          if contact.selectedTargetBody?.scriptNPC != nil {
+            let policy = ordnanceCollisionPolicy(bodyID: bodyID, state: state, context: context)
+            let proof = NativeMissionOrdnanceImpactProof(
+              projectileBody: bodies[index], ordnance: try requireStoredOrdnance(bodyID),
+              contact: contact, start: commander.flightSimulation.pose.shipPoint(motion.start),
+              end: commander.flightSimulation.pose.shipPoint(motion.end), ignored: policy.ignored,
+              includePlayer: policy.includePlayer, physicalTime: context.physicalTime,
+              sceneRevision: context.revision,
+              damage: ordnanceImpactDamage(state: state, hit: collision))
+            let applied = try applyMissionImpact(proof)
+            projectScriptMissionImpact(applied.receipt)
+            incident = applied.incident
+          } else {
+            incident = applyCombatHit(
+              collision, origin: state.origin, kind: state.profile.attackKind,
+              damage: ordnanceImpactDamage(state: state, hit: collision),
+              emissionPosition: state.emissionPosition)
+          }
+          hit = collision
+          let length = (motion.end - motion.start).length
+          let fraction = length > 0 ? max(0, min(1, collision.distance / length)) : 0
+          state.impact(
+            commander.flightSimulation.pose.systemPoint(collision.point), fraction: fraction,
+            motion: motion)
+          break
+        }
+        updateMuzzleClearance(state: &state, position: motion.end, context: context)
+        state.enforceBounds()
       }
-      updateMuzzleClearance(state: &state, position: motion.end, context: context)
-      state.enforceBounds()
+    } catch {
+      // Admission/event pressure is retryable: neither an impact nor motion is committed.
+      state = beforeMotion
+      hit = nil
+      incident = nil
+      if !(error is ScriptMissionEventCapacityError) {
+        notify("ORDNANCE COLLISION UNAVAILABLE", voiced: false)
+      }
     }
     bodies[index].position = commander.flightSimulation.pose.shipPoint(state.position)
     bodies[index].physical?.velocity = state.velocity
@@ -299,39 +356,78 @@ extension Game {
   ) {
     guard !state.muzzleCleared else { return }
     let center: Vector3
-    let mesh: Mesh
+    let radius: Double
     if state.origin.owner == context.player.identity {
       center = context.player.position
-      mesh = commander.playerMesh
+      radius = commander.playerMesh.vertices.map(\.length).max() ?? 0
     } else if let body = bodies.first(where: {
       $0.physical?.identity == state.origin.owner && $0.energy > 0
     }) {
       center = commander.flightSimulation.pose.systemPoint(body.position)
-      mesh = gameplayMesh(for: body)
+      radius =
+        body.scriptNPC == nil
+        ? (gameplayMesh(for: body).vertices.map(\.length).max() ?? 0) : scriptNPCRadius(body)
     } else {
       state.clearMuzzle()
       return
     }
-    let radius = mesh.vertices.map(\.length).max() ?? 0
     if (position - center).length > radius + 1e-6 { state.clearMuzzle() }
   }
 
-  private func ordnanceCollision(
-    bodyID: Int, state: OrdnanceState, motion: OrdnanceMotion, context: EncounterContext
-  ) -> GameplayHit? {
+  private func requireStoredOrdnance(_ bodyID: Int) throws -> OrdnanceState {
+    guard let state = bodies.first(where: { $0.id == bodyID })?.physical?.ordnance else {
+      throw NativeMissionImpactError.staleProof
+    }
+    return state
+  }
+
+  private func ordnanceCollisionPolicy(
+    bodyID: Int, state: OrdnanceState, context: EncounterContext
+  ) -> (ignored: Set<Int>, includePlayer: Bool) {
     var ignored: Set<Int> = [bodyID]
     if !state.muzzleCleared,
       let owner = bodies.first(where: { $0.physical?.identity == state.origin.owner })
     {
       ignored.insert(owner.id)
     }
-    let player = state.muzzleCleared || state.origin.owner != context.player.identity
+    return (
+      ignored, energy > 0 && (state.muzzleCleared || state.origin.owner != context.player.identity)
+    )
+  }
+
+  private func ordnanceCollision(
+    bodyID: Int, state: OrdnanceState, motion: OrdnanceMotion, context: EncounterContext
+  ) throws -> MissionCollisionContact? {
     let pose = commander.flightSimulation.pose
-    return GameplayRaycast.segment(
-      from: pose.shipPoint(motion.start), to: pose.shipPoint(motion.end),
-      bodies: bodies.filter { $0.energy > 0 }, ignoring: ignored,
-      playerMesh: player && energy > 0 ? commander.playerMesh : nil, celestials: celestials,
-      meshOverrides: gameplayMeshOverrides)
+    let start = pose.shipPoint(motion.start)
+    let end = pose.shipPoint(motion.end)
+    let difference = end - start
+    guard difference.length > 1e-8 else { return nil }
+    let policy = ordnanceCollisionPolicy(bodyID: bodyID, state: state, context: context)
+    return try nearestMissionCollision(
+      from: start, direction: difference.unit, range: difference.length, radius: 0,
+      excludingBodyIDs: policy.ignored, includePlayer: policy.includePlayer)
+  }
+
+  func validateNativeMissionOrdnanceImpactProof(_ proof: NativeMissionOrdnanceImpactProof) throws {
+    guard let context = gameplayContext(), context.physicalTime == proof.physicalTime,
+      context.revision == proof.sceneRevision,
+      bodies.filter({ $0.id == proof.projectileBody.id }) == [proof.projectileBody],
+      proof.projectileBody.energy > 0, proof.projectileBody.scriptShot == nil,
+      proof.projectileBody.physical?.ordnance == proof.ordnance, proof.ordnance.valid,
+      proof.ordnance.termination == nil,
+      proof.projectileBody.physical?.identity == proof.ordnance.origin.ordnance,
+      proof.ordnance.origin.owner.system == context.system,
+      proof.ordnance.origin.owner.visit == context.visit,
+      proof.ordnance.lastUpdatedAt <= context.physicalTime,
+      proof.start.finite, proof.end.finite, (proof.end - proof.start).length > 1e-8,
+      proof.damage == ordnanceImpactDamage(state: proof.ordnance, hit: proof.contact.hit),
+      let contact = try nearestMissionCollision(
+        from: proof.start, direction: (proof.end - proof.start).unit,
+        range: (proof.end - proof.start).length, radius: 0,
+        excludingBodyIDs: proof.ignored, includePlayer: proof.includePlayer),
+      contact == proof.contact
+    else { throw NativeMissionImpactError.staleProof }
   }
 
   private func ordnanceImpactDamage(state: OrdnanceState, hit: GameplayHit) -> Double {
@@ -339,6 +435,7 @@ extension Game {
     // Constrictor. New shielded NPC profiles use the finite weapon's actual damage instead.
     if state.profile == .standardMissile, case .body(let id) = hit.target,
       let body = bodies.first(where: { $0.id == id }), body.hull.isTargetShip,
+      body.scriptNPC == nil,
       body.physical?.npc?.resources?.profile == .legacyEnergyOnly
     {
       return max(state.profile.damage, body.energy)

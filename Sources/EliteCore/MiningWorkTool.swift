@@ -31,11 +31,10 @@ extension Game {
     else { return false }
     ensurePhysicalActors()
     guard
-      let hit = GameplayRaycast.nearest(
-        origin: .init(0, 0, 0), direction: .init(0, 0, 1), maxDistance: 6000,
-        bodies: bodies.filter { $0.energy > 0 }, celestials: celestials,
-        meshOverrides: gameplayMeshOverrides),
-      case .body(let bodyID) = hit.target,
+      let contact = try? nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000,
+        radius: 0, includePlayer: false),
+      case .body(let bodyID) = contact.hit.target,
       let body = bodies.first(where: { $0.id == bodyID && $0.hull == .asteroid }),
       let physical = body.physical, let rockID = physical.rock,
       physical.identity.system == systemIdentity,
@@ -53,7 +52,7 @@ extension Game {
     else { return false }
     guard
       applyCombatHit(
-        hit, origin: origin, kind: .laser, damage: LaserKind.mining.damage,
+        contact.hit, origin: origin, kind: .laser, damage: LaserKind.mining.damage,
         laser: .mining, emissionPosition: commander.flightSimulation.pose.position) != nil
     else {
       commander.crimeLedger.finishEmission(origin.emissionID)

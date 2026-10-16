@@ -72,11 +72,10 @@ extension Game {
       energy.isFinite, laserHeat.isFinite, energy > energyCost,
       laserHeat + heatCost < 240,
       let context = gameplayContext(),
-      let hit = GameplayRaycast.nearest(
-        origin: .init(0, 0, 0), direction: .init(0, 0, 1), maxDistance: 300,
-        bodies: bodies.filter { $0.energy > 0 }, celestials: celestials,
-        meshOverrides: gameplayMeshOverrides),
-      case .body(let id) = hit.target,
+      let contact = try? nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 300,
+        radius: 0, includePlayer: false),
+      case .body(let id) = contact.hit.target,
       let body = bodies.first(where: { $0.id == id && $0.energy > 0 }),
       let physical = body.physical, physical.npc == nil, let metadata = physical.salvage,
       metadata.claimant == nil,
@@ -92,7 +91,7 @@ extension Game {
         == .allowed
     else { return false }
     let pose = modelPose(of: body)
-    let impact = commander.flightSimulation.pose.systemPoint(hit.point)
+    let impact = commander.flightSimulation.pose.systemPoint(contact.hit.point)
     // Work is tied to a real accessible section of the hit mesh, not the hull centre.
     guard
       let section = profile.sections.filter({ section in
