@@ -1,0 +1,161 @@
+{
+  "status": "PASS scoped local focus; final-head hosted full CI and clean review required",
+  "testedSource": "a2a729d0039e14a365da927ee5e07b5ebed4e844",
+  "runtimeReference": "277f4c62a6b5509adc8922c8b30b519f702fa28f",
+  "runtimeQualification": "All maintained Sources/Tools/script/Package/Makefile/media byte-identical to full031; only the salvage fixture test expression changed. No new full local gate or renderer invocation.",
+  "handoff": {
+    "path": "/tmp/elite-hosted-salvage-fixture-032/final-handoff-032.json",
+    "sha256": "8c439ae7aad44de8567a5e2451b2ee63eb4e0d79019152f647feca405e0f1911"
+  },
+  "selection": {
+    "path": "/tmp/elite-salvage-fixture-focus-selection-032.json",
+    "sha256": "58e2711c4437bdb8a6728fa46c18fcba6c812e6821bc53c4aa706135b993f6fa"
+  },
+  "stages": [
+    {
+      "stage": "ships-check",
+      "source": "a2a729d0039e14a365da927ee5e07b5ebed4e844",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-032",
+        "state": "active",
+        "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+        "candidate": "a2a729d0039e14a365da927ee5e07b5ebed4e844",
+        "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+        "previousLeaseId": "elite-validation-031",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "purpose": "Test-only compiler decomposition: maintained ships-check then exact 9 methods from immutable selection. Preserve all raw attempts, hashes, actual discovered/started/passed sets and protected save/prefs. No local global rerun or renderer needed because Sources/Tools/Package/media byte-identical to validated031. Final PR head hosted make ci remains mandatory. No canonical imports, GUI/profiling/Sonar, toolchain installs or gate changes. Root alone releases after explicit completion and no process.",
+        "evidenceDirectory": "/tmp/elite-hosted-salvage-fixture-032",
+        "selectionManifest": "/tmp/elite-salvage-fixture-focus-selection-032.json",
+        "selectionSHA256": "58e2711c4437bdb8a6728fa46c18fcba6c812e6821bc53c4aa706135b993f6fa",
+        "expectedMethods": 9,
+        "startedAt": "2026-10-16T17:21:41.634013+00:00"
+      },
+      "command": [
+        "make",
+        "ships-check"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 3.0837573749013245,
+      "rawLogSHA256": "76e52a27e2849d51e98011bfe184dfcaf6d3a1e50702e31e8e3a81a48befaa41",
+      "startedMethods": [],
+      "passedMethods": [],
+      "summaries": [
+        "All 168 TOMLs/GIFs/reference sections current"
+      ],
+      "changedInputs": [],
+      "productionSaveUnchanged": true,
+      "preferencesUnchanged": true
+    },
+    {
+      "stage": "focus",
+      "source": "a2a729d0039e14a365da927ee5e07b5ebed4e844",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-032",
+        "state": "active",
+        "ownerThreadId": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+        "candidate": "a2a729d0039e14a365da927ee5e07b5ebed4e844",
+        "worktree": "/Users/sclarke/.codex/worktrees/gameplay-ecology/elite",
+        "previousLeaseId": "elite-validation-031",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "purpose": "Test-only compiler decomposition: maintained ships-check then exact 9 methods from immutable selection. Preserve all raw attempts, hashes, actual discovered/started/passed sets and protected save/prefs. No local global rerun or renderer needed because Sources/Tools/Package/media byte-identical to validated031. Final PR head hosted make ci remains mandatory. No canonical imports, GUI/profiling/Sonar, toolchain installs or gate changes. Root alone releases after explicit completion and no process.",
+        "evidenceDirectory": "/tmp/elite-hosted-salvage-fixture-032",
+        "selectionManifest": "/tmp/elite-salvage-fixture-focus-selection-032.json",
+        "selectionSHA256": "58e2711c4437bdb8a6728fa46c18fcba6c812e6821bc53c4aa706135b993f6fa",
+        "expectedMethods": 9,
+        "startedAt": "2026-10-16T17:21:41.634013+00:00"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--filter",
+        "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick|changedActualWreckPoseStillPublishesAndAnIdenticalCaptureIsIdempotent|destroyingAnActualAbandonedSiteMarksTerminalWithoutLivingShipCrimeOrKillCredit|failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths|generatedSiteRetainsCanonicalDriftSpinAndDamageThroughCullAndRealSaveReload|invalidLiveSnapshotCannotPublishPartialMotionOrConsumeTheGalacticDrive|noOpPosePersistenceDockingAndSavingKeepTheAbsentLedgerAbsent|occupiedOrClaimedPhysicalHullsKeepTheirOrdinaryCrimeProtection|optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 22.474333374993876,
+      "rawLogSHA256": "f4dc1b761ccc0f2885c14bb51d83d2a1ed42eddd69909db8dfdcb40e01a30f52",
+      "startedMethods": [
+        "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth",
+        "generatedSiteRetainsCanonicalDriftSpinAndDamageThroughCullAndRealSaveReload",
+        "occupiedOrClaimedPhysicalHullsKeepTheirOrdinaryCrimeProtection",
+        "destroyingAnActualAbandonedSiteMarksTerminalWithoutLivingShipCrimeOrKillCredit",
+        "noOpPosePersistenceDockingAndSavingKeepTheAbsentLedgerAbsent",
+        "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths",
+        "invalidLiveSnapshotCannotPublishPartialMotionOrConsumeTheGalacticDrive",
+        "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick",
+        "changedActualWreckPoseStillPublishesAndAnIdenticalCaptureIsIdempotent"
+      ],
+      "passedMethods": [
+        "noOpPosePersistenceDockingAndSavingKeepTheAbsentLedgerAbsent",
+        "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth",
+        "changedActualWreckPoseStillPublishesAndAnIdenticalCaptureIsIdempotent",
+        "destroyingAnActualAbandonedSiteMarksTerminalWithoutLivingShipCrimeOrKillCredit",
+        "invalidLiveSnapshotCannotPublishPartialMotionOrConsumeTheGalacticDrive",
+        "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths",
+        "occupiedOrClaimedPhysicalHullsKeepTheirOrdinaryCrimeProtection",
+        "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick",
+        "generatedSiteRetainsCanonicalDriftSpinAndDamageThroughCullAndRealSaveReload"
+      ],
+      "summaries": [
+        "\u2714 Test run with 9 tests in 1 suite passed after 8.662 seconds."
+      ],
+      "changedInputs": [],
+      "productionSaveUnchanged": true,
+      "preferencesUnchanged": true,
+      "missingStarted": [],
+      "unexpectedStarted": [],
+      "missingPassed": [],
+      "unexpectedPassed": []
+    }
+  ],
+  "toolchain": {
+    "swift --version": {
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": "swift-driver version: 1.168.6 "
+    },
+    "xcrun swift --version": {
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": "swift-driver version: 1.168.6 "
+    },
+    "xcrun --find swift": {
+      "exitCode": 0,
+      "stdout": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift\n",
+      "stderr": ""
+    },
+    "xcodebuild -version": {
+      "exitCode": 0,
+      "stdout": "Xcode 27.1\nBuild version 27A9275\n",
+      "stderr": ""
+    },
+    "hosted": {
+      "run": 38933612270,
+      "source": "c4500da6f0620488b00e1681cfa876a854650459",
+      "image": "macos-15-arm64",
+      "imageVersion": "20260907.0337.1",
+      "manifestTag": "macos-15-arm64/20260907.0337",
+      "manifestDefaultXcode": "16.4 (16F6)",
+      "swiftVersion": "Not present in original log; exact compiler string unverified",
+      "evidence": {
+        "/tmp/elite-pr19-c450-hosted-complete.log": "a620229ae2a39867ffcaea88c6e981c6a55443930be7fb6a804011dbbbd10727",
+        "/tmp/elite-hosted-runner-readme-20260907.md": "a7d3d1445a726faf0ad548ff7906f6cb49df7ad29144666f9c27d79450079c03"
+      }
+    }
+  },
+  "priorHostedFailure": {
+    "source": "c4500da6f0620488b00e1681cfa876a854650459",
+    "run": "https://github.com/stephenlclarke/elite/actions/runs/38933612270",
+    "rawLog": "/tmp/elite-pr19-c450-hosted-failure.log",
+    "sha256": "8e44f0bc0b423ecd713f310f02d0c6b5b18f9bd79fc3f1c84ec2227cfca480fa",
+    "cause": "SalvageWorldRuntimeTests.swift generated observer expression could not be type-checked in reasonable time before tests."
+  },
+  "protection": {
+    "productionSaveUnchanged": true,
+    "preferencesUnchanged": true,
+    "trackedInputsUnchanged": true,
+    "remainingOwnedHeavyProcesses": false
+  },
+  "qualification": "The next hosted head adds readonly compiler-version output. No compiler choice, test selection, limits, sanitizer, coverage threshold, Sonar policy or review policy changes."
+}

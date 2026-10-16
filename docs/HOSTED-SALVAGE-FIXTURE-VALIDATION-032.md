@@ -1,0 +1,11 @@
+# Salvage fixture compiler validation: 16 October 2026
+
+All nine affected salvage methods in one suite passed on exact committed source `a2a729d0039e14a365da927ee5e07b5ebed4e844`, in 8.662 seconds (whole command 22.474333375 seconds). The actual started and passed method sets exactly match the immutable selection. The maintained `ships-check` passed for all 168 assets in 3.083757375 seconds. Tracked inputs, the production Commander save and private preferences remained unchanged. The coordinator independently verified the evidence and released validation slot 032 with no remaining heavy process.
+
+The prior [hosted run 38933612270](https://github.com/stephenlclarke/elite/actions/runs/38933612270) on `c4500da6f0620488b00e1681cfa876a854650459` failed before tests because the compiler could not type-check the generated salvage observer expression in reasonable time. The correction gives its candidate positions and clearances explicit types. It retains the same six directions, order, offset, first matching candidate, strict clearance predicates and assertions. The failed log remains preserved.
+
+All maintained runtime, tools, package configuration, scripts and renderer media match the fully validated [031 source](HOSTED-COMPILER-GATE-VALIDATION-031.md) byte for byte. Its 897-test coverage/sanitizer runs, 95.13% coverage and zero leaks remain evidence for that unchanged runtime. This focused test-only check does not claim a new full local run. The [machine record](HOSTED-SALVAGE-FIXTURE-VALIDATION-032.json) retains exact source, selection, raw log hashes, durations and unchanged-input results.
+
+Local compilation used Apple Swift 6.4 with Xcode 27.1. The failed hosted runner identifies image `macos-15-arm64/20260907.0337.1`; its published image manifest lists default Xcode 16.4, but the original log does not contain the exact Swift version string. The next hosted quality step prints actual Swift and Xcode versions before the unchanged `make ci` command. No toolchain selection, compiler limit, test, coverage threshold or sanitizer gate changes.
+
+Final-head hosted full CI and an actual clean requested review remain required. Reviewer service errors are not approval. Main-only exact-commit SonarQube analysis and release are still outstanding; the separate canonical mission composition is excluded from this repair branch.
