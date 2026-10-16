@@ -1542,6 +1542,15 @@ public actor GameRuntime {
     game = prepared.game
   }
   private func prepareSave(_ value: Game) throws -> (game: Game, data: Data) {
+    let prepared = try Self.prepareNativeSaveState(value)
+    let data = try JSONEncoder().encode(prepared.commander)
+    guard data.count <= CommanderSaveInput.maximumBytes else { throw SaveError.invalidCommander }
+    return (prepared.game, data)
+  }
+
+  /// Shared native persistence barrier before either ordinary JSON or Script chunks.
+  /// The returned live Game keeps bindings; only the disk Commander clears them.
+  static func prepareNativeSaveState(_ value: Game) throws -> (game: Game, commander: Commander) {
     var candidate = value
     try candidate.commander.prepareEquipment()
     candidate.commander.mirrorFittedEquipment()
@@ -1561,9 +1570,7 @@ public actor GameRuntime {
     if persistedCommander.npcPersistence.count > 0 {
       persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
     }
-    let data = try JSONEncoder().encode(persistedCommander)
-    guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
-    return (candidate, data)
+    return (candidate, persistedCommander)
   }
   private func writeSave(_ data: Data, to url: URL) throws {
     try FileManager.default.createDirectory(
