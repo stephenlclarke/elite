@@ -71,4 +71,29 @@ struct NativeMissionThreatIsolationTests {
     #expect(current.bodies.first { $0.id == missile.id }?.energy ?? 0 > 0)
     #expect(try actualMissileThreatBytes(current.commander.crimeLedger) == threats)
   }
+
+  @Test func actualNativeMissileInterceptionStillFinishesItsOwnCurrentThreat() throws {
+    var (game, _, index) = try actualMissionBridgeGame()
+    game.bodies[index].position = .init(2000, 0, 3000)
+    game.celestials = []
+    game.weaponsTargetID = game.bodies[index].id
+    game.missileArmed = true
+    let launched = game.fireMissile()
+    try #require(launched)
+    let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
+    _ = try actualMissileThreatBytes(game.commander.crimeLedger)
+    let contact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000,
+      radius: 0, includePlayer: false)
+    try #require(contact?.hit.target == .body(missile.id))
+    game.screen = .front
+    game.fireLaser()
+    #expect(game.bodies.first { $0.id == missile.id }?.energy == 0)
+    let bytes = try JSONEncoder().encode(game.commander.crimeLedger)
+    let decoded = try JSONSerialization.jsonObject(with: bytes)
+    let object = try #require(decoded as? [String: Any])
+    let threats = try #require(object["missiles"] as? [[String: Any]])
+    #expect(threats.isEmpty)
+  }
+
 }

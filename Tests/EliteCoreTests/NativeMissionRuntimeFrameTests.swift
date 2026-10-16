@@ -156,4 +156,22 @@ struct NativeMissionRuntimeFrameTests {
     #expect(frame.commander.scriptState.instances[instance]?.suspension == nil)
   }
 
+  @Test func actualActorOnlyInvalidBindingStopsTheRuntimeBeforeClockOrSceneMutation() async throws {
+    var (game, _, index) = try actualMissionBridgeGame()
+    try #require(game.commander.scriptState.projectiles.isEmpty)
+    game.bodies[index].rotation = .infinity
+    let folder = try frameSaveFolder()
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let runtime = GameRuntime(game: game, saveURL: folder.appendingPathComponent("commander.json"))
+    var controls = Controls()
+    controls.fire = true
+    await runtime.setControls(controls)
+    let frame = await runtime.advance(delta: 0.1)
+    #expect(frame.paused && frame.message == "MISSION FLIGHT RESTORE REFUSED - PAUSED")
+    #expect(frame.commander == game.commander && frame.bodies == game.bodies)
+    #expect(frame.time == game.time && frame.nextBodyID == game.nextBodyID)
+    #expect(frame.gameplayRevision == game.gameplayRevision)
+    #expect(frame.energy == game.energy && frame.fireCooldown == game.fireCooldown)
+  }
+
 }
