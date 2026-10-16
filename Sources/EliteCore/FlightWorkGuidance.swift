@@ -295,9 +295,11 @@ extension Game {
   }
 
   mutating func workTargetCollected(_ body: SpaceBody) {
-    guard workGuidance?.parent == body.physical?.identity else { return }
+    guard let work = workGuidance, let identity = body.physical?.identity,
+      work.parent == identity
+    else { return }
     let velocity = flightWorldVelocity
-    let omega = workGuidance?.angularVelocity ?? .init(0, 0, 0)
+    let omega = work.angularVelocity
     workGuidance = nil
     approvedWorkMotion = nil
     autoPilot.disengage()

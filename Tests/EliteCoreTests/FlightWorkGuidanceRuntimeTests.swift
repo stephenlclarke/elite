@@ -189,6 +189,47 @@ private func genuineNativeDebris() throws -> (Game, TypedCargoPayload, ActorIden
 }
 
 struct FlightWorkGuidanceRuntimeTests {
+  @Test func legacyDirectScoopDoesNotCreateWorkBrakingOrClearAnotherTrackingTarget() throws {
+    var game = try workRuntimeGame()
+    game.bodies = [.init(id: 81, hull: .cobra, position: .init(0, 0, 1500))]
+    game.key("r")
+    let tracked = try #require(game.autoPilot.targetID)
+    let weapons = game.weaponsTargetID
+    game.speed = 8
+    let velocity = game.flightWorldVelocity
+    let before = game.commander.cargo[0]
+    // Direct helper contract: normal tick adoption has deliberately not run for this new canister.
+    let canister = SpaceBody(id: 90, hull: .cargo, position: .init(0, -20, 40))
+    game.bodies.append(canister)
+    #expect(canister.physical == nil && game.workGuidance == nil)
+    game.scoopCargo()
+    #expect(game.commander.cargo[0] == before + 1 && !game.bodies.contains { $0.id == 90 })
+    #expect(game.workGuidance == nil && game.workBraking == nil)
+    #expect(game.autoPilot.targetID == tracked && game.weaponsTargetID == weapons)
+    #expect(game.speed == 8 && game.flightWorldVelocity == velocity)
+  }
+
+  @Test(arguments: [false, true])
+  func collectionOfAMissingOrDifferentPhysicalParentCannotTakeWorkAuthority(otherActor: Bool)
+    throws
+  {
+    var game = try workRuntimeGame()
+    let parent = try addWorkCargo(&game, position: .init(0, -45, 1800))
+    engageWorkCargo(&game)
+    let target = game.autoPilot.targetID
+    let weapons = game.weaponsTargetID
+    let velocity = game.flightWorldVelocity
+    var other = SpaceBody(id: 88, hull: .cargo, position: .init(0, -45, 55))
+    if otherActor {
+      let allocated = game.commander.flightSimulation.allocateActor()
+      other.physical = .init(identity: try #require(allocated), population: .cargo)
+    }
+    game.workTargetCollected(other)
+    #expect(game.workGuidance?.parent == parent && game.workBraking == nil)
+    #expect(game.autoPilot.targetID == target && game.weaponsTargetID == weapons)
+    #expect(game.flightWorldVelocity == velocity)
+  }
+
   @Test func filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault() throws {
     var game = try workRuntimeGame()
     _ = try addWorkCargo(&game, position: .init(0, -45, 500))

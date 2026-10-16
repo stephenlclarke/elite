@@ -105,9 +105,12 @@ extension Game {
       return .init(id: body.id, model: nil, status: nil, fields: [])
     }
     let shipStatus = body.hostile ? "Hostile" : "Neutral"
-    let status =
-      workGuidance?.parent == body.physical?.identity
-      ? workGuidance!.status : (body.hull == .station ? autoPilot.status : shipStatus)
+    let status: String
+    if let work = workGuidance, let identity = body.physical?.identity, work.parent == identity {
+      status = work.status
+    } else {
+      status = body.hull == .station ? autoPilot.status : shipStatus
+    }
     var fields: [TargetField] = []
     if body.hull == .station {
       fields = [
