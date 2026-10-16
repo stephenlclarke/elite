@@ -517,6 +517,10 @@ public struct Game: Sendable {
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
     guard value.valid else { return false }
+    // The loaded commander owns a different native allocation timeline. Invalidate old
+    // capabilities and allow that timeline's first genuine emission to be consumed once.
+    gameplayRevision &+= 1
+    consumedMissionLaserEmission = 0
     legacySimulationSpawnClock = nil
     bodies = []
     scriptReferenceFrame = nil

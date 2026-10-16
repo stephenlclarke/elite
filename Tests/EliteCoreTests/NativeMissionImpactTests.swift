@@ -49,6 +49,35 @@ struct NativeMissionImpactTests {
     #expect(game.commander == before && game.bodies == bodies && game.frontShield == shield)
   }
 
+  @Test func rawCommanderReplacementStartsItsOwnEmissionTimelineWithoutRevivingOldProof() throws {
+    var (game, oldProof) = try actualLaserImpactGame(towardPlayer: false)
+    _ = try game.applyMissionImpact(oldProof)
+    let pack = try #require(game.scriptPacks.first)
+    let raw = Game(executive: false).commander
+    try #require(game.load(raw))
+    game.screen = .status
+    let instance = try game.acceptScriptMission(pack)
+    game.launch()
+    game.emitScriptEvent("station.undocked")
+    game.drainScriptEvents()
+    game.ensurePhysicalActors()
+    let source = try #require(game.bodies.first { $0.missionInstanceID == instance })
+    let npc = try #require(source.scriptNPC)
+    let weapon = try #require(npc.fit.definition.lasers?.first { $0.kind == .laser })
+    game.bodies = [source]
+    game.celestials = []
+    let fresh = try game.makeMissionNativeLaserProof(
+      sourceBodyID: source.id, weapon: weapon, component: nil,
+      muzzle: source.position + source.orientation.apply(weapon.muzzle * npc.fit.definition.scale),
+      direction: .init(0, 1, 0))
+    try #require(fresh.origin.emissionID == oldProof.origin.emissionID)
+    #expect(throws: (any Error).self) { try game.applyMissionImpact(oldProof) }
+    _ = try game.applyMissionImpact(fresh)
+    let commander = game.commander
+    #expect(throws: (any Error).self) { try game.applyMissionImpact(fresh) }
+    #expect(game.commander == commander)
+  }
+
   @Test func actualPlayerLaserUsesAuthoredComponentGeometryAndSharedDamage() throws {
     var (game, _, index) = try actualMissionBridgeGame()
     game.ensurePhysicalActors()
