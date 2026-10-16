@@ -106,8 +106,8 @@ func courierEscapeUsesActualNativeActionAndCommandPublicationRollsBackControls(
   defer { fixture.clean() }
   var game = fixture.game()
   let id = try fixture.accept(&game, variant: variant)
-  game.commander.equipment.insert("Escape Pod")
-  game.commander.synchronizeEquipmentInventory(force: true)
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("courier-escape-regression"))
   game.launch()
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   var held = Controls()

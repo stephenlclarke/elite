@@ -283,14 +283,15 @@ private struct ContractFixture {
   defer { fixture.clean() }
   var game = fixture.game()
   game.screen = .secret
+  game.commander = Commander()
   game.commander.shipID = "SH013"
   game.commander.xyzzyActive = true
   game.commander.cargo[0] = 80
-  game.commander.installTargetingComputer(.basic)
-  game.commander.synchronizeEquipmentInventory(force: true)
+  game.commander.equipment.insert(TargetingTier.basic.equipmentName)
+  try game.commander.prepareEquipment(legacy: false)
   let original = try #require(
-    game.commander.ownedEquipment?.items.first {
-      $0.kind == .module(TargetingTier.basic.equipmentName)
+    game.commander.equipmentInventory?.items.first {
+      $0.node.key == TargetingTier.basic.equipmentName
     })
   let cash = game.commander.credits
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
@@ -298,7 +299,7 @@ private struct ContractFixture {
   let refitted = await runtime.snapshot().commander
   #expect(refitted.shipID == "SH023" && refitted.cargo[0] == 80 && refitted.credits == cash)
   #expect(refitted.unlimitedCargo && refitted.valid)
-  #expect(refitted.ownedEquipment?.stored.contains { $0.id == original.id } == true)
+  #expect(refitted.equipmentInventory?.items.first { $0.id == original.id }?.location == nil)
   let decoded = GameRuntime(game: fixture.game())
   try await decoded.load(from: fixture.save)
   #expect(await decoded.snapshot().commander == refitted)
@@ -310,15 +311,14 @@ private struct ContractFixture {
   await runtime.key("3")
   let snapshot = await runtime.snapshot()
   let item = try #require(
-    snapshot.commander.ownedEquipment?.fitted.first {
-      if case .module("E.C.M. System") = $0.kind { return true }
-      return false
+    snapshot.commander.equipmentInventory?.items.first {
+      $0.node.key == "E.C.M. System" && $0.location != nil
     })
-  let store = await runtime.ownedGearFitQuote(item.id, fitted: false)
-  #expect(store.allowed)
-  try await runtime.confirmOwnedGearFit(store)
-  #expect(
-    await runtime.snapshot().commander.ownedEquipment?.stored.contains { $0.id == item.id } == true)
+  let store = try #require(snapshot.inventoryActionPreview(for: .equipment(item)).command)
+  let stored = await runtime.equipmentTransaction(.inventory(store))
+  #expect(stored.applied)
+  let after = await runtime.snapshot()
+  #expect(after.commander.equipmentInventory?.items.first { $0.id == item.id }?.location == nil)
   #expect(await runtime.snapshot().commander.cargo[0] == 80)
 }
 
