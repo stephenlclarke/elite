@@ -132,8 +132,9 @@ public struct RelativeWorkOutput: Sendable {
   public let relativeSpeed: Double
   public let facingError: Double
   public let requiredClearance: Double
-  /// False means no candidate motion has passed the caller's actual-hull validation.
-  public let motionValidated: Bool
+  /// The exact motion accepted by the caller's actual-hull validation.
+  public let validatedSweep: RelativeWorkSweep?
+  public var motionValidated: Bool { validatedSweep != nil }
   public let transitions: [RelativeWorkTransition]
   public var active: Bool {
     ![.cancelled, .targetLost, .changedPrimary].contains(status)
@@ -236,7 +237,7 @@ public struct RelativeWorkController: Sendable {
     return Self.output(
       status: status, metrics: metrics, acceleration: acceleration,
       velocity: velocity,
-      rates: rates, validated: true, transitions: transitions)
+      rates: rates, validatedSweep: sweep, transitions: transitions)
   }
 
   private struct Metrics {
@@ -333,7 +334,7 @@ public struct RelativeWorkController: Sendable {
     return Self.output(
       status: next, metrics: nil, acceleration: .init(0, 0, 0),
       velocity: Self.finite(input.velocity) ? input.velocity : .init(0, 0, 0),
-      rates: .init(0, 0, 0), validated: false, transitions: change(to: next))
+      rates: .init(0, 0, 0), validatedSweep: nil, transitions: change(to: next))
   }
 
   private mutating func blocked(
@@ -353,12 +354,12 @@ public struct RelativeWorkController: Sendable {
     return Self.output(
       status: status, metrics: metrics, acceleration: safeAcceleration,
       velocity: input.velocity + safeAcceleration * input.delta, rates: .init(0, 0, 0),
-      validated: approved, transitions: transitions)
+      validatedSweep: approved ? sweep : nil, transitions: transitions)
   }
 
   private static func output(
     status: RelativeWorkStatus, metrics: Metrics?,
-    acceleration: Vector3, velocity: Vector3, rates: Vector3, validated: Bool,
+    acceleration: Vector3, velocity: Vector3, rates: Vector3, validatedSweep: RelativeWorkSweep?,
     transitions: [RelativeWorkTransition]
   ) -> RelativeWorkOutput {
     .init(
@@ -367,7 +368,7 @@ public struct RelativeWorkController: Sendable {
       workPosition: metrics?.work, surfacePosition: metrics?.surface,
       positionError: metrics?.error ?? 0, relativeSpeed: metrics?.speed ?? 0,
       facingError: metrics?.angle ?? 0, requiredClearance: metrics?.clearance ?? 0,
-      motionValidated: validated, transitions: transitions)
+      validatedSweep: validatedSweep, transitions: transitions)
   }
 
   private static func sweep(
