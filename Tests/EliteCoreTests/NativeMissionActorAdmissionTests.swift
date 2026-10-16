@@ -89,17 +89,34 @@ struct NativeMissionActorAdmissionTests {
     var (game, instance, _) = try unloadedAdmissionGame()
     let additional = 127 - game.bodies.count
     #expect(additional > 0)
-    for index in 0..<additional {
-      let id = game.nextBodyID
-      game.nextBodyID += 1
-      game.bodies.append(
-        .init(
-          id: id, hull: .cargo,
-          position: .init(
-            10000 + Double(index % 9) * 400,
-            10000 + Double(index / 9) * 400, 10000)))
-    }
     game.ensurePhysicalActors()
+    let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
+    let sequence = try #require(allocatedSpawn)
+    let context = try #require(game.gameplayContext())
+    let requests = (0..<additional).map { index -> SpawnRequest in
+      let position = Vector3(
+        10000 + Double(index % 9) * 400,
+        10000 + Double(index / 9) * 400, 10000)
+      var request = SpawnRequest(
+        identity: .init(
+          system: context.system, visit: context.visit,
+          sequence: sequence, member: UInt16(index), producer: .mission),
+        population: .mission, hull: .cobra,
+        position: game.commander.flightSimulation.pose.systemPoint(position),
+        orientation: .init(), velocity: .init(0, 0, 0),
+        npc: .init(role: .mission, origin: context.system, destination: context.system),
+        rock: nil, payload: nil, priority: .mission)
+      request.energy = 100
+      return request
+    }
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit,
+        revision: context.revision, batches: [.init(requests: requests, atomic: true)], intents: [])
+    )
+    #expect(
+      receipts.count == additional && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil })
+    #expect(game.bodies.count == 127)
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
     let before = game
