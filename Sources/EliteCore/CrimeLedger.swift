@@ -275,6 +275,9 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     guard proof.system == context.system, proof.visit == context.visit,
       proof.sceneRevision == context.revision, context.visit > 0, context.visit < UInt64.max,
       context.physicalTime.isFinite, context.physicalTime >= 0, proof.hit.point.finite,
+      proof.archive.map({
+        $0.origin.emittedAt.isFinite && $0.origin.emittedAt <= context.physicalTime
+      }) ?? true,
       context.player.position.finite, context.player.orientation.validRotation,
       let projectile = proof.projectileBody.physical?.identity,
       context.actors.filter({

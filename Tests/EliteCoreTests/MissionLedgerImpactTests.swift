@@ -15,7 +15,7 @@ private struct LedgerImpactFixture {
 /// Real retained pack, native allocators and geometric producer; no sealed constructor is used.
 private func ledgerImpactFixture(
   reentry: Bool = false, absentSource: Bool = false, incidental: Bool = false,
-  mining: Bool = false, fragileRock: Bool = false
+  mining: Bool = false, fragileRock: Bool = false, emissionTime: Double = 0
 ) throws -> LedgerImpactFixture {
   let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
     .deletingLastPathComponent().deletingLastPathComponent()
@@ -28,6 +28,7 @@ private func ledgerImpactFixture(
   game.launch()
   game.emitScriptEvent("station.undocked")
   game.drainScriptEvents()
+  game.commander.flightSimulation.advancePhysicalTime(emissionTime)
   game.ensurePhysicalActors()
   let source = try #require(
     game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
@@ -336,6 +337,34 @@ struct MissionLedgerImpactTests {
         rock: rock, proof: fixture.proof, eventID: event,
         context: fixture.context) == .destroyed)
     #expect(ledger.pendingPayloads == custody && ledger.isDepleted(rock.identity) && ledger.valid)
+  }
+
+  @Test func futurePresentLaunchRefusesBeforeEventOrDeathWhileExactNowAndOlderRemainValid() throws {
+    let fixture = try ledgerImpactFixture(reentry: true, emissionTime: 2)
+    try #require(fixture.proof.archive?.origin.emittedAt == 2)
+    var earlier = fixture.game
+    // Model an admitted persisted clock older than the retained launch; the proof itself
+    // came from the real producer at time two, without a fabricated sealed constructor.
+    earlier.commander.flightSimulation.physicalTime = 1
+    let current = try #require(earlier.gameplayContext())
+    var ledger = CrimeLedger()
+    let before = ledger
+    #expect(
+      !ledger.recordMissionReentryImpact(
+        fixture.proof, eventID: fixture.eventID, outcome: .destruction, context: current
+      ).accepted)
+    #expect(ledger == before)
+    let exact = ledger.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .hit, context: fixture.context)
+    #expect(exact.accepted && exact.unlawful)
+    var later = fixture.game
+    later.commander.flightSimulation.advancePhysicalTime(1)
+    let olderLaunch = try #require(later.gameplayContext())
+    var independent = CrimeLedger()
+    #expect(
+      independent.recordMissionReentryImpact(
+        fixture.proof, eventID: fixture.eventID, outcome: .hit, context: olderLaunch
+      ).accepted)
   }
 
 }
