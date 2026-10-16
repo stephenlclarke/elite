@@ -123,7 +123,7 @@ import Testing
         rows[String(terms.row)] = record
       }
       guard terms.path.count >= 3 else { continue }
-      for duration in [172800.0, 259200.0] {
+      for duration in [terms.duration] {
         let side = terms.calendarLowerBoundSeconds < duration ? "below" : "above"
         let label = String(Int(duration / 3600)) + "-" + side
         let distance = abs(terms.calendarLowerBoundSeconds - duration)
@@ -138,5 +138,8 @@ import Testing
   try JSONSerialization.data(withJSONObject: output, options: [.prettyPrinted, .sortedKeys]).write(
     to: path)
   #expect(rows.count == 6 && boundaries.count == 4)
+  for (label, record) in boundaries {
+    #expect(record["duration"] as? Double == (label.hasPrefix("48") ? 172800 : 259200))
+  }
   print("Native fixture provenance saved at " + path.path)
 }
