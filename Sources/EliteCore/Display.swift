@@ -24,6 +24,7 @@ public struct WireLine: Sendable, Equatable {
 }
 
 public struct Frame: Sendable, Equatable {
+  public var inventoryInteraction: InventoryInteraction?
   public var rasterizeGraphics = true
   public var graphics: [Graphic] = []
   public var worldGraphics: [Graphic] = []

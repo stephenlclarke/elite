@@ -16,6 +16,9 @@ public struct SalvageComponentUpgradeQuote: Sendable {
 /// Converts recovered deltas into the shared component engine's declared units.
 /// No equipment, resource level, fuel, cash or installation entitlement is changed here.
 public enum SalvageComponentEffects {
+  public static func fittingSlot(for axis: SalvageUpgradeAxis) -> ComponentFittingSlot? {
+    mapping(axis)?.slot
+  }
   public static func quote(
     lotID: SalvageLotIdentity, ledger: SalvageLedger,
     component: ComponentInstance?, liveLocation: ComponentFittingLocation?,

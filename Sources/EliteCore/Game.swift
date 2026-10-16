@@ -340,6 +340,9 @@ public struct Game: Sendable {
   public var cabinTemperature = 0.0
   public var equipmentMount: LaserMount = .front
   public var equipmentWorkTool = false
+  public internal(set) var inventoryContextEpoch = InventoryContextEpoch()
+  public var inventoryActionSelection = 0
+  public var inventoryUpgradeChoice = 0
   public var dockingComputer = false
   public var missileArmed = false
   public var message = ""
@@ -443,6 +446,11 @@ public struct Game: Sendable {
     speed = 0
     reconcileEliteReward()
     navigationDocked()
+    inventoryContextEpoch = .init()
+    inventoryActionSelection = 0
+    inventoryUpgradeChoice = 0
+    equipmentMount = .front
+    equipmentWorkTool = false
     return true
   }
   public mutating func key(_ raw: String) {
@@ -507,13 +515,18 @@ public struct Game: Sendable {
         selection = min(Commodity.all.count - 1, selection + 1)
       }
     case "left", "right":
-      if screen == .equipment {
+      if screen == .equipment || screen == .inventory {
         cycleEquipmentFitting(key == "right" ? 1 : -1)
+        if screen == .inventory {
+          inventoryUpgradeChoice = max(0, inventoryUpgradeChoice + (key == "right" ? 1 : -1))
+        }
       } else if screen == .chart || screen == .shortChart {
         selectChartNeighbour(key == "left" ? -1 : 1)
       } else if screen == .buy || screen == .sell {
         trade(buy: key == "right")
       }
+    case "tab":
+      if screen == .inventory { inventoryActionSelection &+= 1 }
     case "return":
       if screen == .buy || screen == .sell { trade(buy: screen == .buy) }
       if screen == .equipment { purchase() }
@@ -1309,17 +1322,23 @@ public actor GameRuntime {
   private var controls = Controls()
   public init(game: Game = Game()) {
     var prepared = game
+    prepared.inventoryContextEpoch = .init()
     if (try? prepared.commander.prepareEquipment()) != nil {
       prepared.commander.mirrorFittedEquipment()
       self.game = prepared
     } else {
-      self.game = game
+      self.game = prepared
     }
+  }
+  func invalidateInventoryContext() { game.inventoryContextEpoch = .init() }
+  public func inventoryCommand(_ command: InventoryCommand) -> Bool {
+    game.performInventoryCommand(command)
   }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     let old = game.screen
     game.key(key)
+    if old != game.screen { invalidateInventoryContext() }
     if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
     {
       controls.pitch = 0

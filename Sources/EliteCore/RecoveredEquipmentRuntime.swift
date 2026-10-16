@@ -18,9 +18,9 @@ struct RecoveredEquipmentQuote: Sendable {
 }
 
 extension Commander {
-  func quoteRecoveredUpgrade(
+  func previewRecoveredUpgrade(
     lot: SalvageLotIdentity, axis: SalvageUpgradeAxis, slot: ComponentFittingSlot
-  ) throws -> RecoveredEquipmentQuote {
+  ) throws -> SalvageComponentUpgradeQuote {
     try validateEquipmentState()
     guard let inventory = equipmentInventory,
       let item = fittedEquipment(at: slot), let component = item.component,
@@ -31,9 +31,20 @@ extension Commander {
     let binding = SalvageTransactionBinding.equipment(
       target: .hull(instance: inventory.activeHull), expectedComponentInstanceID: component.id,
       templateVersion: version, axis: axis, feature: nil, location: location)
-    let effect = try SalvageComponentEffects.quote(
+    return try SalvageComponentEffects.quote(
       lotID: lot, ledger: source, component: component,
       liveLocation: location, binding: binding)
+  }
+
+  func quoteRecoveredUpgrade(
+    lot: SalvageLotIdentity, axis: SalvageUpgradeAxis, slot: ComponentFittingSlot
+  ) throws -> RecoveredEquipmentQuote {
+    let effect = try previewRecoveredUpgrade(lot: lot, axis: axis, slot: slot)
+    guard let inventory = equipmentInventory, let item = fittedEquipment(at: slot) else {
+      throw RecoveredEquipmentError.missingComponent
+    }
+    let source = salvageLedger
+    let binding = effect.binding
     guard
       let settlement = source.prepareSettlement(
         command: UUID(), items: [lot], action: .fit(axis: axis, mount: nil), binding: binding)
