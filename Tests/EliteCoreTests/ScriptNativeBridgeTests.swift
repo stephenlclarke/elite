@@ -165,6 +165,20 @@ struct ScriptNativeBridgeTests {
     #expect(game.commander == before)
     if componentWeapon {
       let key = try #require(npc.components.first { $0.value.identity == component }?.key)
+      let original = try #require(npc.components[key])
+      let forgedID = UUID()
+      game.bodies[index].scriptNPC?.components[key] = .init(
+        identity: forgedID, energy: original.energy, guns: original.guns)
+      let forgedSource = game.bodies[index]
+      try #require(forgedSource.scriptNPC?.valid == true)
+      #expect(forgedSource.scriptNPC?.fit == npc.fit)
+      #expect(game.commander == before)
+      #expect(game.currentMissionActorDescriptor(bodyID: forgedSource.id) == nil)
+      #expect(
+        game.missionWeaponDescriptor(
+          weapon, source: forgedSource, component: forgedID, muzzle: muzzle,
+          direction: direction) == nil)
+      game.bodies[index].scriptNPC?.components[key] = original
       game.bodies[index].scriptNPC?.components[key]?.energy = 0
       let current = game.bodies[index]
       #expect(
