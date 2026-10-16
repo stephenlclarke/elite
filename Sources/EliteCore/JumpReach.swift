@@ -19,7 +19,7 @@ extension Game {
   public var jumpReach: JumpReach {
     .init(
       search: navigationPlanningRadius,
-      maximum: min(commander.jumpCap, Double(commander.fuelCapacity) / 10),
+      maximum: commander.fullTankJumpDistance,
       actual: commander.maximumJumpDistance,
       wholeGalaxyExtent: (knownSystems.map { currentSystem.distance(to: $0) }.max() ?? 0) + 0.4)
   }

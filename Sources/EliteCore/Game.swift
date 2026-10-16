@@ -178,7 +178,9 @@ public struct Commander: Sendable, Equatable, Codable {
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
-    zip(cargo, Commodity.all).reduce(missionPayloadTonnes) { $0 + ($1.1.unit == "t" ? $1.0 : 0) }
+    zip(cargo, Commodity.all).reduce(missionPayloadTonnes + salvageLedger.reservedTonnes) {
+      $0 + ($1.1.unit == "t" ? $1.0 : 0)
+    }
   }
   public var rank: String {
     let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
@@ -970,7 +972,7 @@ public struct Game: Sendable {
     missileCooldown = 0
     spin.stop(immediate: true)
     cancelAutoTarget()
-    let cost = Int((currentSystem.distance(to: targetSystem) * 10).rounded())
+    let cost = commander.jumpFuelCost(distance: currentSystem.distance(to: targetSystem))
     if !commander.unlimitedFuel {
       commander.fuel = max(0, commander.fuel - cost)
     }

@@ -52,13 +52,15 @@ extension Commander {
       field(
         "energy_recharge_per_second", "Energy recharge", p.recharge * energyRechargeMultiplier,
         "energy/s"),
-      field("fore_shield_max", "Shields (each)", shieldCapacity, "energy"),
-      field("fore_shield_recharge_per_second", "Shield recharge", p.shieldRecharge, "energy/s"),
+      field(
+        "fore_shield_max", shieldCapacity == rearShieldCapacity ? "Shields (each)" : "Front shield",
+        shieldCapacity, "energy"),
+      field("fore_shield_recharge_per_second", "Shield recharge", frontShieldRecharge, "energy/s"),
       field("roll_radians_per_second", "Roll", p.roll, "rad/s"),
       field("pitch_radians_per_second", "Pitch", p.pitch, "rad/s"),
       field("yaw_radians_per_second", "Yaw", p.yaw, "rad/s"),
       field("fuel_capacity_tenths_ly", "Fuel tank", Double(fuelCapacity) / 10, "LY"),
-      field("hyperspace_range_ly", "Jump capacity", min(jumpCap, Double(fuelCapacity) / 10), "LY"),
+      field("hyperspace_range_ly", "Jump capacity", fullTankJumpDistance, "LY"),
       field("jump_spool_seconds", "Jump charge", p.spool, "s"),
       field("missile_capacity", "Missile pylons", Double(missileCapacity), "pylons"),
       field(
@@ -66,6 +68,14 @@ extension Commander {
         "mounts"),
       field("price", "Hull price", Double(p.price), "CR"),
     ]
+    if shieldCapacity != rearShieldCapacity {
+      fields.append(field("aft_shield_max", "Rear shield", rearShieldCapacity, "energy"))
+    }
+    if frontShieldRecharge != rearShieldRecharge {
+      fields.append(
+        field(
+          "aft_shield_recharge_per_second", "Rear shield recharge", rearShieldRecharge, "energy/s"))
+    }
     if unlimitedCargo {
       fields[0] = .init(
         key: "cargo_tonnes", label: "Cargo", text: "Unlimited (XYZZY)", number: nil, unit: "t",

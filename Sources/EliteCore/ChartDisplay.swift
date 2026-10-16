@@ -377,7 +377,9 @@ extension Display {
     let nav =
       game.commander.navigationTier.map { tier in
         "Nav: " + tier.label + " "
-          + (tier.radius(capacity: game.commander.fuelCapacity).map {
+          + (tier.radius(
+            capacity: game.commander.fuelCapacity, fuelMultiplier: game.commander.jumpFuelMultiplier
+          ).map {
             String(format: "%.1f ly", $0)
           }
             ?? "Whole galaxy")

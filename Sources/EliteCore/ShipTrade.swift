@@ -76,7 +76,7 @@ extension Game {
     if let plan = commander.navigationPlan,
       zip(plan.path, plan.path.dropFirst()).contains(where: {
         systems[$0].distance(to: systems[$1])
-          > min(projected.jumpCap, Double(projected.fuelCapacity) / 10)
+          > projected.fullTankJumpDistance
       })
     {
       issues.append("Clear the incompatible navigation route before exchanging.")

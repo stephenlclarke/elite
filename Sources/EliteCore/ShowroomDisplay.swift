@@ -465,7 +465,9 @@ extension Display {
       String(
         format: "Fuel %.1f/%.1f LY; jump limit %.1f LY", Double(commander.fuel) / 10,
         Double(commander.fuelCapacity) / 10, commander.maximumJumpDistance),
-      String(format: "Front/rear shield capacity %.1f native units", commander.shieldCapacity),
+      String(
+        format: "Front/rear shield capacity %.1f / %.1f native units",
+        commander.shieldCapacity, commander.rearShieldCapacity),
       String(
         format: "Energy %.1f; top speed %.1f", commander.performance.energy,
         commander.performance.speed),

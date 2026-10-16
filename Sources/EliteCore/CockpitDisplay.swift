@@ -32,7 +32,8 @@ public struct CockpitLayout: Sendable {
     leftColumns = sideWidth >= 400 ? 2 : 1
     let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
-    extraLines = (game.autoHUDLines + game.solarHUDLines + weaponLines + game.spin.hudLines).flatMap {
+    extraLines = (game.autoHUDLines + game.solarHUDLines + weaponLines + game.spin.hudLines).flatMap
+    {
       MissionNotice.wrap($0, width: textColumns)
     }
     let rows = max(4, Int(ceil(6 / Double(leftColumns))))
@@ -174,7 +175,7 @@ extension Display {
   ) {
     let gauges: [(String, Double, Ink)] = [
       ("Front shield", game.frontShield / game.commander.shieldCapacity, .green),
-      ("Rear shield", game.rearShield / game.commander.shieldCapacity, .green),
+      ("Rear shield", game.rearShield / game.commander.rearShieldCapacity, .green),
       ("Fuel", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
       ("Cabin temp", game.cabinTemperature, .red), ("Laser heat", game.laserHeat / 255, .red),
       ("Altitude", game.altitude, .yellow),
