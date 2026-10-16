@@ -351,3 +351,27 @@ extension MissionNativeBridge {
     else { throw MissionNativeBridgeError.invalidArchive }
   }
 }
+
+extension Game {
+  /// Resolve the actual retained source before sealing its native binding. This read never
+  /// adopts a body, allocates an identity, infers a pack or accepts a caller-built descriptor.
+  func currentMissionNativeBinding(bodyID: Int) throws -> MissionActorBinding {
+    guard let descriptor = currentMissionActorDescriptor(bodyID: bodyID) else {
+      throw MissionNativeBridgeError.sourceMismatch
+    }
+    guard let body = bodies.first(where: { $0.id == bodyID }),
+      let context = gameplayContext()
+    else { throw MissionNativeBridgeError.invalidNativeBinding }
+    return try MissionNativeBridge.bindActor(descriptor: descriptor, body: body, context: context)
+  }
+
+  /// Current pack/fit/retained ownership is resolved again, not trusted from an older proof.
+  func validateMissionNativeBinding(_ binding: MissionActorBinding) throws {
+    guard let descriptor = currentMissionActorDescriptor(bodyID: binding.bodyID),
+      let body = bodies.first(where: { $0.id == binding.bodyID }),
+      let context = gameplayContext()
+    else { throw MissionNativeBridgeError.sourceMismatch }
+    try MissionNativeBridge.validateBinding(
+      binding, descriptor: descriptor, body: body, context: context)
+  }
+}
