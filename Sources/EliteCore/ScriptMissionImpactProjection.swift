@@ -7,7 +7,8 @@ extension Game {
     if let shot = receipt.terminalShotID {
       commander.scriptState.projectiles.removeValue(forKey: shot)
     }
-    if let instance = receipt.targetMissionInstanceID, let actor = receipt.targetMissionActorID,
+    if receipt.damageAdmitted,
+      let instance = receipt.targetMissionInstanceID, let actor = receipt.targetMissionActorID,
       receipt.damage.isFinite, receipt.damage > 0
     {
       var values: [String: ScriptValue] = [
