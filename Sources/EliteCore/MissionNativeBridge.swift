@@ -748,6 +748,27 @@ extension Game {
   }
 }
 
+/// Read-only physical/source facts for resource and event-capacity planning. This query carries
+/// no emission identity or damage authority and can only be constructed by the actual provider.
+struct MissionNativeLaserQuery: Sendable {
+  let source: MissionActorBinding
+  let weapon: MissionWeaponDescriptor
+  let sourceComponentID: UUID?
+  let contact: MissionCollisionContact?
+  let context: EncounterContext
+
+  fileprivate init(
+    source: MissionActorBinding, weapon: MissionWeaponDescriptor, component: UUID?,
+    contact: MissionCollisionContact?, context: EncounterContext
+  ) {
+    self.source = source
+    self.weapon = weapon
+    sourceComponentID = component
+    self.contact = contact
+    self.context = context
+  }
+}
+
 /// Current-visit instant emission. A miss remains a real laser discharge without inventing a shot.
 struct MissionNativeLaserProof: Sendable {
   let source: MissionActorBinding
@@ -785,12 +806,11 @@ struct MissionNativeLaserProof: Sendable {
 }
 
 extension Game {
-  /// Called within the fire turn after the actual gun's resource preflight. Collision and durable
-  /// joins can refuse before the native emission allocator is touched; no simulated shot is made.
-  mutating func makeMissionNativeLaserProof(
+  /// Resolve actual source, weapon and nearest contact without allocating an emission.
+  func queryMissionNativeLaser(
     sourceBodyID: Int, weapon: ScriptNPCWeapon, component: UUID?,
     muzzle: Vector3, direction: Vector3
-  ) throws -> MissionNativeLaserProof {
+  ) throws -> MissionNativeLaserQuery {
     guard let context = gameplayContext() else {
       throw MissionNativeBridgeError.invalidNativeBinding
     }
@@ -798,24 +818,39 @@ extension Game {
     guard
       let actual = missionWeaponDescriptor(
         weapon, source: source.descriptor.body, component: component,
-        muzzle: muzzle, direction: direction), actual.kind == .laser,
-      commander.flightSimulation.valid,
-      commander.flightSimulation.nextEmission < UInt64.max
+        muzzle: muzzle, direction: direction), actual.kind == .laser
     else { throw MissionNativeBridgeError.unsupportedWeapon }
     let contact = try nearestMissionCollision(
       from: actual.muzzle, direction: actual.direction, range: actual.range, radius: 0,
       excludingBodyIDs: [sourceBodyID], includePlayer: true)
+    return .init(
+      source: source, weapon: actual, component: component, contact: contact, context: context)
+  }
+
+  /// Called within the fire turn after the actual gun's resource preflight. Collision and durable
+  /// joins can refuse before the native emission allocator is touched; no simulated shot is made.
+  mutating func makeMissionNativeLaserProof(
+    sourceBodyID: Int, weapon: ScriptNPCWeapon, component: UUID?,
+    muzzle: Vector3, direction: Vector3
+  ) throws -> MissionNativeLaserProof {
+    let query = try queryMissionNativeLaser(
+      sourceBodyID: sourceBodyID, weapon: weapon, component: component,
+      muzzle: muzzle, direction: direction)
+    guard commander.flightSimulation.valid,
+      commander.flightSimulation.nextEmission < UInt64.max
+    else { throw MissionNativeBridgeError.unsupportedWeapon }
     // Use the native allocator directly after every fallible physical/source check. Unlike the
     // general adoption helper, this path must not adopt unrelated bodies while sealing a hit.
     guard let emission = commander.flightSimulation.allocateEmission() else {
       throw MissionNativeBridgeError.invalidNativeBinding
     }
     let origin = AttackOrigin(
-      emissionID: emission, owner: source.nativeActor, emittedAt: context.physicalTime,
-      ownerLegalAtEmission: source.actorSnapshot.legal, sourcePart: component?.uuidString)
+      emissionID: emission, owner: query.source.nativeActor, emittedAt: query.context.physicalTime,
+      ownerLegalAtEmission: query.source.actorSnapshot.legal,
+      sourcePart: query.sourceComponentID?.uuidString)
     return .init(
-      source: source, weapon: actual, component: component,
-      origin: origin, contact: contact, context: context)
+      source: query.source, weapon: query.weapon, component: query.sourceComponentID,
+      origin: origin, contact: query.contact, context: query.context)
   }
 }
 
@@ -1005,5 +1040,232 @@ extension Game {
     } catch {
       throw MissionNativeBridgeError.staleBinding
     }
+  }
+}
+
+extension Game {
+  /// One synchronous projectile step. The native kernel owns impact effects; this caller
+  /// projects its receipt exactly once before the central frame culls bodies or drains events.
+  @discardableResult
+  mutating func stepMissionNativeProjectile(projectileID: UUID, delta: Double) throws
+    -> NativeMissionImpactReceipt?
+  {
+    guard delta.isFinite, delta > 0, commander.flightSimulation.physicalTime.isFinite,
+      commander.flightSimulation.physicalTime >= 0
+    else { throw MissionNativeBridgeError.invalidShot }
+    guard let index = bodies.firstIndex(where: { $0.scriptShot?.identity == projectileID }),
+      bodies[index].energy > 0
+    else { return nil }
+    if let proof = try missionNativeImpactProof(projectileID: projectileID, delta: delta) {
+      let speed = proof.shot.velocity.length
+      let elapsed =
+        max(0, proof.shot.collisionDelay - proof.shot.age)
+        + proof.hit.distance / speed
+      let age = min(proof.shot.lifetime, proof.shot.age + elapsed)
+      guard age.isFinite, proof.hit.point.finite else {
+        throw MissionNativeBridgeError.invalidShot
+      }
+      let receipt = try applyMissionImpact(proof)
+      projectScriptMissionImpact(receipt)
+      // Preserve kernel effects and any projection changes; only locate the terminal shot's
+      // actual contact and age, rather than writing an older body snapshot over native state.
+      if let terminal = bodies.firstIndex(where: { $0.scriptShot?.identity == projectileID }) {
+        bodies[terminal].position = proof.hit.point
+        bodies[terminal].scriptShot?.age = age
+      }
+      return receipt
+    }
+    // A no-contact producer result has already validated retained/native joins, archive time
+    // and the actual physical shot. Stage its bounded movement before changing the live body.
+    guard let shot = bodies[index].scriptShot else { throw MissionNativeBridgeError.invalidShot }
+    let duration = min(delta, max(0, shot.lifetime - shot.age))
+    let position = bodies[index].position + shot.velocity * duration
+    let age = shot.age + duration
+    let velocity = commander.flightSimulation.pose.orientation.apply(shot.velocity)
+    guard position.finite, position.length.isFinite, age.isFinite, velocity.finite else {
+      throw MissionNativeBridgeError.invalidShot
+    }
+    bodies[index].position = position
+    bodies[index].scriptShot?.age = age
+    bodies[index].physical?.velocity = velocity
+    if age >= shot.lifetime {
+      bodies[index].energy = 0
+      recordScriptShotRemoval(bodies[index])
+    }
+    return nil
+  }
+}
+
+private struct MissionReadyGun {
+  let bodyID: Int
+  let bodyIndex: Int
+  let owner: UUID
+  let instance: UUID
+  let component: UUID?
+  let componentAlias: String?
+  let weapon: ScriptNPCWeapon
+  let gun: ScriptNPCGunState
+  let muzzle: Vector3
+  let direction: Vector3
+  let nextShot: UInt64
+  let intendedTarget: GameplayHitTarget
+}
+
+extension Game {
+  /// Typed current-gun entry point used by the frame loop. A successful plasma discharge
+  /// returns no impact receipt; its actual retained projectile carries the later effect.
+  @discardableResult
+  mutating func fireMissionNativeWeapon(bodyID: Int, weaponID: String, componentID: UUID?) throws
+    -> NativeMissionImpactReceipt?
+  {
+    guard
+      let ready = try readyMissionGun(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+    else { return nil }
+    switch ready.weapon.kind {
+    case .laser:
+      return try fireMissionNativeLaser(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+    case .plasma:
+      let source = try currentMissionNativeBinding(bodyID: bodyID)
+      _ = try planScriptMissionImpactEvents(
+        target: nil, damage: 0, damageAdmitted: false, victimPart: nil,
+        victimComponentID: nil, componentDestroyed: false, hullDestroyed: false,
+        sourceWeaponInstanceID: ready.instance)
+      let plan = try prepareMissionProjectileAdmission(
+        source: source, weapon: ready.weapon, component: ready.component,
+        muzzle: ready.muzzle, direction: ready.direction, intendedTarget: ready.intendedTarget)
+      _ = try commitMissionProjectileAdmission(plan)
+      // Admission appends a projectile and preserves the source's index. No fallible work
+      // remains between the native commit and the selected gun debit/firing event.
+      commitMissionGun(ready, gun: ready.gun)
+      return nil
+    }
+  }
+
+  /// The frame loop owns cooling and aim. This synchronous boundary owns final resource
+  /// preflight, actual native effect, selected gun debit and the one firing event.
+  @discardableResult
+  mutating func fireMissionNativeLaser(bodyID: Int, weaponID: String, componentID: UUID?) throws
+    -> NativeMissionImpactReceipt?
+  {
+    guard
+      let ready = try readyMissionGun(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+    else { return nil }
+    guard ready.weapon.kind == .laser else { throw MissionNativeBridgeError.unsupportedWeapon }
+    // Only the producer's small native emission allocation precedes the kernel. The kernel
+    // stages every fallible effect; restore that allocator if it refuses, without a Game copy.
+    let flight = commander.flightSimulation
+    let proof: MissionNativeLaserProof
+    let receipt: NativeMissionImpactReceipt
+    do {
+      proof = try makeMissionNativeLaserProof(
+        sourceBodyID: bodyID, weapon: ready.weapon, component: componentID,
+        muzzle: ready.muzzle, direction: ready.direction)
+      receipt = try applyMissionImpact(proof)
+    } catch {
+      commander.flightSimulation = flight
+      throw error
+    }
+    projectScriptMissionImpact(receipt)
+    var gun = ready.gun
+    gun.beamRange = proof.hit?.distance ?? ready.weapon.range
+    commitMissionGun(ready, gun: gun)
+    return receipt
+  }
+
+  /// Cheap eligibility comes before actual retained factories and the physical collision query.
+  /// Identifiers select current authored facts; callers cannot supply damage or gun state.
+  private func readyMissionGun(bodyID: Int, weaponID: String, componentID: UUID?) throws
+    -> MissionReadyGun?
+  {
+    guard let bodyIndex = bodies.firstIndex(where: { $0.id == bodyID }) else { return nil }
+    let body = bodies[bodyIndex]
+    guard body.energy > 0, let npc = body.scriptNPC, let owner = body.missionActorID,
+      let instance = body.missionInstanceID
+    else { return nil }
+    let weapon: ScriptNPCWeapon
+    let gun: ScriptNPCGunState
+    let pose: Basis3
+    let muzzle: Vector3
+    let alias: String?
+    if let componentID {
+      guard let entry = npc.components.first(where: { $0.value.identity == componentID }),
+        entry.value.energy > 0,
+        let spec = npc.fit.definition.components?.first(where: { $0.id == entry.key }),
+        let selected = spec.weapons?.first(where: { $0.id == weaponID }),
+        let selectedGun = entry.value.guns[weaponID]
+      else { throw MissionNativeBridgeError.unsupportedWeapon }
+      weapon = selected
+      gun = selectedGun
+      alias = entry.key
+      pose = spec.orientation.transformed(by: body.orientation)
+      muzzle =
+        body.position + body.orientation.apply(spec.position * npc.fit.definition.scale)
+        + pose.apply(weapon.muzzle * (spec.scale * npc.fit.definition.scale))
+    } else {
+      guard let selected = npc.fit.definition.lasers?.first(where: { $0.id == weaponID }),
+        let selectedGun = npc.guns[weaponID]
+      else { throw MissionNativeBridgeError.unsupportedWeapon }
+      weapon = selected
+      gun = selectedGun
+      alias = nil
+      pose = body.orientation
+      muzzle = body.position + pose.apply(weapon.muzzle * npc.fit.definition.scale)
+    }
+    guard gun.valid, gun.cooldown <= 0, gun.heat + weapon.heat <= weapon.maximumHeat,
+      body.energy > weapon.energy, npc.shots < UInt64(Int64.max) - 1,
+      let intent = npc.intent, intent.mode == .attack
+    else { return nil }
+    let target: Vector3
+    let intendedTarget: GameplayHitTarget
+    if intent.player {
+      target = .init(0, 0, 0)
+      intendedTarget = .player
+    } else {
+      let candidates = bodies.filter { $0.missionActorID == intent.target && $0.energy > 0 }
+      guard candidates.count == 1, let actual = candidates.first else { return nil }
+      target = actual.position
+      intendedTarget = .body(actual.id)
+    }
+    let difference = target - muzzle
+    guard difference.finite, difference.length > 1e-6, difference.length <= weapon.range else {
+      return nil
+    }
+    let desired = pose.inverse(difference.unit)
+    let direction = pose.apply(gun.aim ?? weapon.direction).unit
+    guard desired.dot(weapon.direction) >= cos(weapon.arc) - 1e-9,
+      direction.dot(difference.unit) > 0.999
+    else { return nil }
+    return .init(
+      bodyID: bodyID, bodyIndex: bodyIndex, owner: owner, instance: instance,
+      component: componentID,
+      componentAlias: alias, weapon: weapon, gun: gun, muzzle: muzzle,
+      direction: direction, nextShot: npc.shots + 1, intendedTarget: intendedTarget)
+  }
+
+  private mutating func commitMissionGun(_ ready: MissionReadyGun, gun original: ScriptNPCGunState)
+  {
+    // Kernel and projection never cull the source or mutate its selected gun. Keep their native
+    // legal/resource effects and other gun fields rather than restoring an old whole NPC value.
+    let index = ready.bodyIndex
+    var gun = original
+    gun.heat += ready.weapon.heat
+    gun.cooldown = ready.weapon.interval
+    bodies[index].energy = max(0, bodies[index].energy - ready.weapon.energy)
+    if let alias = ready.componentAlias {
+      bodies[index].scriptNPC?.components[alias]?.guns[ready.weapon.id] = gun
+    } else {
+      bodies[index].scriptNPC?.guns[ready.weapon.id] = gun
+    }
+    bodies[index].scriptNPC?.shots = ready.nextShot
+    emitScriptEvent(
+      "weapon.fired",
+      values: [
+        "actor_id": .string(ready.owner.uuidString), "weapon": .string(ready.weapon.id),
+        "shot": .integer(Int64(ready.nextShot)),
+        "component_id": ready.component.map { .string($0.uuidString) } ?? .null,
+      ], only: ready.instance, drain: false)
   }
 }
