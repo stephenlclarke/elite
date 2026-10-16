@@ -18,7 +18,9 @@ private func actualLaserImpactGame(towardPlayer: Bool) throws -> (Game, MissionN
   return (game, proof)
 }
 
-private func actualRestoredImpactGame(immuneStation: Bool) throws -> (Game, MissionNativeImpactProof) {
+private func actualRestoredImpactGame(immuneStation: Bool) throws -> (
+  Game, MissionNativeImpactProof
+) {
   var (game, sample) = try actualShotArchiveFixture()
   var target = try #require(
     game.bodies.first {
@@ -56,7 +58,98 @@ private func actualRestoredImpactGame(immuneStation: Bool) throws -> (Game, Miss
   return (game, proof)
 }
 
+private func fillActualMissionEvents(_ game: inout Game, instance: UUID, count: Int) throws {
+  let existing = game.commander.scriptState.pendingEvents.count
+  try #require(existing <= count)
+  for _ in existing..<count {
+    game.emitScriptEvent("capacity.probe", values: [:], only: instance, drain: false)
+  }
+  try #require(game.commander.scriptState.pendingEvents.count == count)
+}
+
 struct NativeMissionImpactTests {
+  @Test func actualLaserPreviewCountsDamageDeathAndSourceFireWithoutAllocating() throws {
+    var (game, instance, index) = try actualMissionBridgeGame()
+    game.ensurePhysicalActors()
+    var source = game.bodies[index]
+    var target = try #require(
+      game.bodies.first { $0.missionActorID != nil && $0.missionActorID != source.missionActorID })
+    source.orientation = .init()
+    source.rotation = 0
+    target.orientation = .init()
+    target.rotation = 0
+    target.position = source.position + .init(0, 0, 2000)
+    target.energy = 1
+    game.bodies = [source, target]
+    game.celestials = []
+    let npc = try #require(source.scriptNPC)
+    let weapon = try #require(npc.fit.definition.lasers?.first)
+    let query = try game.queryMissionNativeLaser(
+      sourceBodyID: source.id, weapon: weapon, component: nil,
+      muzzle: source.position + source.orientation.apply(weapon.muzzle * npc.fit.definition.scale),
+      direction: .init(0, 0, 1))
+    try #require(query.contact?.hit.target == .body(target.id))
+    try #require(query.contact?.victimPart == nil)
+    let before = game.commander
+    let bodies = game.bodies
+    let preview = try game.preflightMissionNativeLaser(query)
+    #expect(preview.requiredEvents == 3)
+    #expect(game.commander == before && game.bodies == bodies)
+    try fillActualMissionEvents(&game, instance: instance, count: 4094)
+    let full = game.commander
+    #expect(throws: ScriptMissionEventCapacityError.insufficientCapacity) {
+      try game.preflightMissionNativeLaser(query)
+    }
+    #expect(game.commander == full && game.bodies == bodies)
+  }
+
+  @Test func aFullActualQueueRefusesProjectileImpactAndAllowsRetryAfterRealEventDraining() throws {
+    var (game, proof) = try actualRestoredImpactGame(immuneStation: false)
+    try fillActualMissionEvents(&game, instance: proof.sourceInstanceID, count: 4096)
+    let before = game.commander
+    let bodies = game.bodies
+    #expect(throws: ScriptMissionEventCapacityError.insufficientCapacity) {
+      try game.applyMissionImpact(proof)
+    }
+    #expect(game.commander == before && game.bodies == bodies)
+    #expect(game.bodies.first { $0.scriptShot?.identity == proof.shotID }?.energy == 1)
+    game.drainScriptEvents()
+    try #require(game.commander.scriptState.pendingEvents.count < 4096)
+    let candidate = try game.missionNativeImpactProof(projectileID: proof.shotID, delta: 0.5)
+    let retry = try #require(candidate)
+    let receipt = try game.applyMissionImpact(retry)
+    game.projectScriptMissionImpact(receipt)
+    #expect(receipt.damageAdmitted && receipt.terminalShotID == proof.shotID)
+    #expect(game.commander.scriptState.projectiles[proof.shotID] == nil)
+    #expect(
+      game.commander.flightSimulation.nextIncident == before.flightSimulation.nextIncident + 1)
+    #expect(
+      game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.damaged" }.count == 1)
+  }
+
+  @Test func fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit() throws {
+    var (game, instance, index) = try actualMissionBridgeGame()
+    game.ensurePhysicalActors()
+    var target = game.bodies[index]
+    target.position = .init(0, -25, 1000)
+    target.orientation = .init()
+    target.rotation = 0
+    game.bodies = [target]
+    game.celestials = []
+    game.screen = .front
+    try fillActualMissionEvents(&game, instance: instance, count: 4096)
+    let commander = game.commander
+    let bodies = game.bodies
+    let heat = game.laserHeat
+    let energy = game.energy
+    let cooldown = game.fireCooldown
+    let audio = game.dischargeAudio
+    game.fireLaser()
+    #expect(game.commander == commander && game.bodies == bodies)
+    #expect(game.laserHeat == heat && game.energy == energy && game.fireCooldown == cooldown)
+    #expect(game.dischargeAudio == audio)
+  }
+
   @Test(arguments: [false, true])
   func actualRestoredPlasmaConsumesOnceAndPreservesImmuneContactSemantics(immune: Bool) throws {
     var (game, proof) = try actualRestoredImpactGame(immuneStation: immune)
@@ -221,6 +314,7 @@ struct NativeMissionImpactTests {
     game.resolveDestroyed()
     try game.restoreScriptActors()
     #expect(!game.bodies.contains { $0.missionActorID == identity })
-    #expect(game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.destroyed" } == events)
+    #expect(
+      game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.destroyed" } == events)
   }
 }
