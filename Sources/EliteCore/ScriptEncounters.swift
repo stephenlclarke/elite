@@ -287,7 +287,8 @@ extension Game {
     }
   }
   /// Reprojects the same world actor after genuine native launch/arrival/camera travel.
-  mutating func restoreScriptActors() {
+  mutating func restoreScriptActors() throws {
+    try validateRetainedMissionProjectileRestoration()
     guard !commander.scriptState.instances.isEmpty, !docked, let anchor = scriptAnchor else {
       return
     }
@@ -331,7 +332,7 @@ extension Game {
       }
       commander.scriptState.instances[instanceID] = instance
     }
-    restoreScriptShots(anchor: anchor)
+    try restoreScriptShots(anchor: anchor)
   }
   mutating func recordScriptActorRemoval(_ body: SpaceBody, destroyed: Bool) {
     if destroyed { recordScriptWorldResourceLoss(body) }
