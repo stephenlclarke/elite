@@ -261,8 +261,8 @@ extension NativeViewTests {
       #expect(fixture.view.game.screen == .inventory)
       let rows = fixture.view.game.informationRows.map { $0.0 }
       #expect(rows.contains("Recorded purchases: 1"))
-      #expect(rows.filter { $0 == "  Held - Granted" }.count == 24)
-      #expect(rows.contains("  Fitted targeting core - Purchased"))
+      #expect(rows.filter { $0 == "Held - Granted" }.count == 24)
+      #expect(rows.contains("Fitted targeting core - Purchased"))
       #expect(!rows.contains("  Held - Purchased"))
       var seen = Set<String>()
       let window = fixture.view.game.informationWindow
@@ -279,7 +279,7 @@ extension NativeViewTests {
       #expect(
         fixture.view.game.informationWindow.offset == fixture.view.game.informationWindow.last)
       #expect(
-        seen.contains("  Held - Granted") && seen.contains("  Fitted targeting core - Purchased"))
+        seen.contains("Held - Granted") && seen.contains("Fitted targeting core - Purchased"))
       #expect(seen.contains("Basic Shield") && seen.contains("Recorded purchases: 1"))
       try await fixture.press(126, flags: .option, expected: "pageup")
       #expect(fixture.view.game.informationWindow.offset < fixture.view.game.informationWindow.last)
