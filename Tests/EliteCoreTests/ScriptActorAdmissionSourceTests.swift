@@ -228,6 +228,49 @@ struct ScriptActorAdmissionSourceTests {
     #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == nextID)
   }
 
+  @Test(arguments: [false, true])
+  func laterBrokenActualLiveBindingCannotPublishEarlierEligibleCohort(firstOutside: Bool) throws {
+    let fixture = try ActorAdmissionFixture()
+    defer { fixture.clean() }
+    var (game, instance) = try fixture.game()
+    game.persistScriptActors()
+    let first = try #require(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"])
+    let identities = Set(first.actors.values.map(\.identity))
+    for alias in first.actors.keys {
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors[alias]?
+        .presence = .unloaded
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors[alias]?
+        .body.energy = 37
+      if firstOutside {
+        game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors[alias]?
+          .body.position = .init(100_000, 0, 100_000)
+      }
+    }
+    game.bodies.removeAll { $0.missionActorID.map(identities.contains) ?? false }
+    let later = try #require(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["z-later"]?.actors["later"])
+    let laterIndex = try #require(game.bodies.firstIndex { $0.missionActorID == later.identity })
+    // The retained source stays genuine; only the actual current native owner's join is broken.
+    game.bodies[laterIndex].missionInstanceID = UUID()
+    let sources = try game.retainedMissionActorAdmissionSources()
+    try #require(sources.count == 2)
+    let initial = try #require(sources.first { $0.encounterID == "opponents" })
+    let preparation = try game.prepareMissionActorAdmission(initial)
+    switch preparation {
+    case .ready: #expect(!firstOutside)
+    case .unchanged: #expect(firstOutside)
+    case .pending:
+      Issue.record("This fixture must isolate a valid first cohort or an outside no-op.")
+    }
+    let before = game.commander
+    let bodies = game.bodies
+    let nextID = game.nextBodyID
+    #expect(throws: (any Error).self) { try game.restoreScriptActors() }
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == nextID)
+    #expect(!game.bodies.contains { $0.missionActorID.map(identities.contains) ?? false })
+  }
+
   @Test func retentionPatchStagesOnlyAddressesAndRefusesStaleOwnerWithoutPublishing() throws {
     var (game, instance, _) = try actualMissionBridgeGame()
     game.persistScriptActors()
