@@ -46,10 +46,22 @@ public struct ECMControl: Sendable {
   private var ownedActivation = false
   private static let completionTolerance = 1e-10
   public var fieldActive: Bool { remainingDuration > 0 }
-  var legacyFrames: Int {
-    guard fieldActive else { return 0 }
-    let frames = ceil(max(0, remainingDuration * Self.referenceFramesPerSecond - 1e-9))
+  var legacyFrames: Int { Self.legacyFrames(forRemainingDuration: remainingDuration) ?? 0 }
+  static func legacyFrames(forRemainingDuration duration: Double) -> Int? {
+    guard duration.isFinite, duration >= 0 else { return nil }
+    guard duration > 0 else { return 0 }
+    let frames = ceil(max(0, duration * Self.referenceFramesPerSecond - 1e-9))
     return frames >= Double(Int.max) ? Int.max : Int(frames)
+  }
+  /// Explicit save admission restores time, without inheriting live activation ownership or events.
+  @discardableResult
+  mutating func restoreRemainingDuration(_ duration: Double) -> Bool {
+    guard duration.isFinite,
+      (0...(1024.0 / Self.referenceFramesPerSecond)).contains(duration)
+    else { return false }
+    self = ECMControl()
+    remainingDuration = duration
+    return true
   }
   /// Compatibility writes use the same clock; refreshing an owned field retains its owner.
   mutating func setLegacyFrames(_ frames: Int) {

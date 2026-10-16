@@ -490,6 +490,7 @@ public struct Game: Sendable {
   public var retaliation = RetaliationControl()
   var missileCooldown = 0.0
   var nextBodyID = 10
+  private var legacySimulationSpawnClock: Double?
   private var randomState: UInt64 = 0x45_4c49_5445
   public init(executive: Bool = true) {
     if executive {
@@ -1861,4 +1862,40 @@ public enum TradePlanner {
     }
     return prices
   }
+}
+
+extension Game {
+  var scriptSimulationSave: ScriptSimulationSave {
+    ScriptSimulationSave(
+      randomState: randomState, fireCooldown: fireCooldown, spawnClock: legacySimulationSpawnClock,
+      missionLoopCounter: missionLoopCounter, missionSpawnDelay: missionSpawnDelay,
+      ecmFrames: ecmFrames, ecmRemainingDuration: ecmControl.remainingDuration,
+      enemyECMSource: enemyECMSource, missileCooldown: missileCooldown,
+      cabinTemperature: cabinTemperature, altitude: altitude, solar: ScriptSolarSave(game: self))
+  }
+  mutating func restoreScriptSimulation(_ state: ScriptSimulationSave?) {
+    guard let state, state.valid else { return }
+    randomState = state.randomState
+    fireCooldown = state.fireCooldown
+    legacySimulationSpawnClock = state.spawnClock
+    missionLoopCounter = state.missionLoopCounter
+    missionSpawnDelay = state.missionSpawnDelay
+    let duration =
+      state.ecmRemainingDuration
+      ?? Double(state.ecmFrames) / ECMControl.referenceFramesPerSecond
+    _ = ecmControl.restoreRemainingDuration(duration)
+    activeECMActivation = nil
+    enemyECMSource = state.enemyECMSource
+    missileCooldown = state.missileCooldown
+    cabinTemperature = state.cabinTemperature
+    altitude = state.altitude
+    if let solar = state.solar {
+      solar.restore(into: &self)
+    } else {
+      celestials = []
+      solarFuelRemainder = 0
+      solarScoopState = .inactive
+    }
+  }
+  mutating func seedScriptTrial(_ seed: UInt64) { randomState = seed }
 }
