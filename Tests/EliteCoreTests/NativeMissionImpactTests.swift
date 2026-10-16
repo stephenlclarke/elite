@@ -118,7 +118,8 @@ struct NativeMissionImpactTests {
     _ = try game.applyMissionImpact(oldProof)
     let pack = try #require(game.scriptPacks.first)
     let raw = Game(executive: false).commander
-    try #require(game.load(raw))
+    let loaded = game.load(raw)
+    try #require(loaded)
     game.screen = .status
     let instance = try game.acceptScriptMission(pack)
     game.launch()
