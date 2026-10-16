@@ -1,0 +1,43 @@
+name: Native lifetime diagnostic
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/native-lifetime-diagnostic.yml
+      - Tools/CI/native-lifetime-diagnostic.py
+      - Tests/EliteCoreTests/NativeLifetimeDiagnosticTests.swift
+permissions:
+  contents: read
+concurrency:
+  group: elite-hosted-native-lifetime-diagnostic
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/test/hosted-native-lifetime-diagnostic') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'test/hosted-native-lifetime-diagnostic' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: macos-15
+    timeout-minutes: 25
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      ASAN_OPTIONS: detect_leaks=0
+      ELITE_DIAGNOSTIC_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: One instrumented compile and one focused native test
+        run: python3 Tools/CI/native-lifetime-diagnostic.py
+      - name: Retain all diagnostic originals even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-lifetime-diagnostic-${{ github.event.pull_request.head.sha || github.sha }}
+          path: reports/hosted-native-lifetime/
+          retention-days: 14
+          if-no-files-found: error

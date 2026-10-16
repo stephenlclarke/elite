@@ -19,11 +19,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Coverage, thread sanitizer, address sanitizer, and leak probe
-        run: |
-          swift --version
-          xcrun swift --version
-          xcodebuild -version
-          make ci
+        run: python3 Tools/CI/capture-quality.py
       - name: Install SonarScanner
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: brew install sonar-scanner
