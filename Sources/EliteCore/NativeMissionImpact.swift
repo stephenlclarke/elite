@@ -74,6 +74,80 @@ private struct MissionDamagePlan {
 }
 
 extension Game {
+  /// Plan the exact target and firing events before the gun's real emission allocator runs.
+  /// The same private damage policy stages the preview and the later physical commit.
+  func preflightMissionNativeLaser(_ query: MissionNativeLaserQuery) throws
+    -> ScriptMissionEventCapacityPlan
+  {
+    guard let context = gameplayContext(), context == query.context,
+      let descriptor = currentMissionActorDescriptor(bodyID: query.source.bodyID),
+      let source = bodies.first(where: { $0.id == query.source.bodyID })
+    else { throw NativeMissionImpactError.staleProof }
+    try MissionNativeBridge.validateBinding(
+      query.source, descriptor: descriptor, body: source, context: context)
+    let current = try nearestMissionCollision(
+      from: query.weapon.muzzle, direction: query.weapon.direction,
+      range: query.weapon.range, radius: 0, excludingBodyIDs: [query.source.bodyID],
+      includePlayer: true)
+    guard current == query.contact else { throw NativeMissionImpactError.staleProof }
+    return try preflightCurrentMissionContact(
+      query.contact, owner: query.source.nativeActor, sourcePart: query.sourceComponentID,
+      damage: query.weapon.damage, laser: nil, mount: nil, context: context,
+      sourceWeaponInstanceID: query.source.instanceID)
+  }
+
+  /// Native player/NPC callers use their real current emitter and weapon statistics. This is
+  /// readonly planning, never a damage capability or a replacement persisted attack origin.
+  func preflightNativeMissionContact(
+    _ contact: MissionCollisionContact, owner: ActorIdentity, damage: Double,
+    laser: LaserKind?, mount: LaserMount?
+  ) throws -> ScriptMissionEventCapacityPlan {
+    guard let context = gameplayContext(),
+      contact.selectedTargetBody.map({ selected in
+        bodies.filter({ $0.id == selected.id }) == [selected]
+      }) == true
+    else { throw NativeMissionImpactError.staleProof }
+    return try preflightCurrentMissionContact(
+      contact, owner: owner, sourcePart: nil, damage: damage, laser: laser, mount: mount,
+      context: context, sourceWeaponInstanceID: nil)
+  }
+
+  private func preflightCurrentMissionContact(
+    _ contact: MissionCollisionContact?, owner: ActorIdentity, sourcePart: UUID?,
+    damage: Double, laser: LaserKind?, mount: LaserMount?, context: EncounterContext,
+    sourceWeaponInstanceID: UUID?
+  ) throws -> ScriptMissionEventCapacityPlan {
+    let emitter =
+      owner == context.player.identity
+      ? context.player : context.actors.first(where: { $0.identity == owner })
+    guard let emitter, emitter.energy > 0,
+      owner.system == context.system, owner.visit == context.visit
+    else { throw NativeMissionImpactError.staleProof }
+    // These are the actual next native allocator values staged in a small value copy. No
+    // emission, incident, body, law or event is published during this capacity preview.
+    var flight = commander.flightSimulation
+    guard let emission = flight.allocateEmission(), let eventID = flight.allocateIncident(),
+      flight.valid
+    else { throw NativeMissionImpactError.unavailableAllocator }
+    let origin = AttackOrigin(
+      emissionID: emission, owner: owner, emittedAt: context.physicalTime,
+      ownerLegalAtEmission: emitter.legal, sourcePart: sourcePart?.uuidString)
+    var plan = MissionDamagePlan()
+    if let contact {
+      var mining = commander.miningLedger
+      let incident = missionCombatIncident(
+        eventID: eventID, origin: origin, kind: .laser, hit: contact.hit, outcome: .hit,
+        part: contact.victimPart, context: context, laser: laser, mount: mount)
+      plan = try missionDamagePlan(
+        hit: contact.hit, victimPart: contact.victimPart, component: contact.componentUUID,
+        damage: damage, kind: .laser, laser: laser, eventID: eventID, mining: &mining,
+        projectile: nil, incident: incident, context: context)
+    }
+    return try missionEventCapacity(
+      plan, damage: damage, part: contact?.victimPart, component: contact?.componentUUID,
+      sourceWeaponInstanceID: sourceWeaponInstanceID)
+  }
+
   /// Consume a live retained projectile capability. Every fallible check and ledger operation
   /// runs against pre-damage facts; the final commit also makes the projectile terminal.
   mutating func applyMissionImpact(_ proof: MissionNativeImpactProof) throws
@@ -94,6 +168,8 @@ extension Game {
       hit: proof.hit, victimPart: proof.victimPart, component: proof.victimComponentID,
       damage: proof.damage, kind: proof.kind, laser: nil, eventID: eventID,
       mining: &mining, projectile: proof, incident: nil, context: context)
+    _ = try missionEventCapacity(
+      plan, damage: proof.damage, part: proof.victimPart, component: proof.victimComponentID)
     var law = commander.crimeLedger
     let resolution = law.recordMissionReentryImpact(
       proof, eventID: eventID, outcome: plan.outcome, context: context)
@@ -148,6 +224,8 @@ extension Game {
     } else {
       plan.outcome = .discharge
     }
+    _ = try missionEventCapacity(
+      plan, damage: proof.damage, part: proof.victimPart, component: proof.victimComponentID)
     let incident = missionCombatIncident(
       eventID: eventID, origin: proof.origin, kind: .laser, hit: proof.hit,
       outcome: plan.outcome, part: proof.victimPart, context: context)
@@ -204,6 +282,8 @@ extension Game {
       hit: contact.hit, victimPart: contact.victimPart, component: contact.componentUUID,
       damage: damage, kind: .laser, laser: laser, eventID: eventID, mining: &mining,
       projectile: nil, incident: preliminary, context: context)
+    _ = try missionEventCapacity(
+      plan, damage: damage, part: contact.victimPart, component: contact.componentUUID)
     let incident = missionCombatIncident(
       eventID: eventID, origin: origin, kind: .laser, hit: contact.hit, outcome: plan.outcome,
       part: contact.victimPart, context: context, laser: laser, mount: mount)
@@ -256,7 +336,7 @@ extension Game {
       else { throw NativeMissionImpactError.invalidTarget }
       var body = bodies[index]
       if let part = victimPart, let component {
-        _ = try currentMissionNativeBinding(bodyID: id)
+        try validateMissionDamageTarget(body, context: context)
         guard var state = body.scriptNPC?.components[part], state.identity == component,
           state.energy.isFinite, state.energy > 0
         else { throw NativeMissionImpactError.invalidTarget }
@@ -271,7 +351,7 @@ extension Game {
       } else if body.scriptNPC != nil {
         // Authored condition applies only to an actual retained, installed and currently bound
         // profiled actor. Native hull immunity remains intact for every other body.
-        _ = try currentMissionNativeBinding(bodyID: id)
+        try validateMissionDamageTarget(body, context: context)
         body.energy = max(0, body.energy - damage)
         plan.damageAdmitted = true
       } else if body.hull != .station,
@@ -316,10 +396,31 @@ extension Game {
       plan.hullDestroyed = body.energy == 0
     }
     if plan.outcome != .ordnanceInterception {
-      if plan.hullDestroyed { plan.outcome = .destruction }
-      else if plan.componentDestroyed { plan.outcome = .componentDestruction }
+      if plan.hullDestroyed {
+        plan.outcome = .destruction
+      } else if plan.componentDestroyed {
+        plan.outcome = .componentDestruction
+      }
     }
     return plan
+  }
+
+  private func validateMissionDamageTarget(_ body: SpaceBody, context: EncounterContext) throws {
+    guard let descriptor = currentMissionActorDescriptor(bodyID: body.id) else {
+      throw NativeMissionImpactError.invalidTarget
+    }
+    _ = try MissionNativeBridge.bindActor(descriptor: descriptor, body: body, context: context)
+  }
+
+  private func missionEventCapacity(
+    _ plan: MissionDamagePlan, damage: Double, part: String?, component: UUID?,
+    sourceWeaponInstanceID: UUID? = nil
+  ) throws -> ScriptMissionEventCapacityPlan {
+    try planScriptMissionImpactEvents(
+      target: plan.body, damage: damage, damageAdmitted: plan.damageAdmitted,
+      victimPart: part, victimComponentID: component,
+      componentDestroyed: plan.componentDestroyed, hullDestroyed: plan.hullDestroyed,
+      sourceWeaponInstanceID: sourceWeaponInstanceID)
   }
 
   private func interceptedNativeEmission(_ plan: MissionDamagePlan, context: EncounterContext)

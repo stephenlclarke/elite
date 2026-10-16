@@ -21,7 +21,8 @@ private func actualEmissionPlan(_ game: Game, sourceID: Int) throws
 }
 
 struct NativeMissionEmissionTests {
-  @Test func actualPreparationHasNoEffectsAndCommitPublishesOneNativeBodyAndCanonicalRecord() throws {
+  @Test func actualPreparationHasNoEffectsAndCommitPublishesOneNativeBodyAndCanonicalRecord() throws
+  {
     var (game, _, index) = try actualMissionBridgeGame()
     game.ensurePhysicalActors()
     let source = game.bodies[index]
@@ -37,7 +38,8 @@ struct NativeMissionEmissionTests {
     #expect(actual.scriptShot?.nativeAttribution == plan.archive)
     #expect(game.commander.flightSimulation.nextActor == before.flightSimulation.nextActor + 1)
     #expect(game.commander.flightSimulation.nextSpawn == before.flightSimulation.nextSpawn + 1)
-    #expect(game.commander.flightSimulation.nextEmission == before.flightSimulation.nextEmission + 1)
+    #expect(
+      game.commander.flightSimulation.nextEmission == before.flightSimulation.nextEmission + 1)
     #expect(game.nextBodyID == next + 1)
     let saved = try #require(game.commander.scriptState.projectiles[plan.shotID])
     let anchor = try #require(game.scriptAnchor)
