@@ -157,12 +157,63 @@ public struct ScriptNPCShot: Codable, Sendable, Equatable {
   public let damage: Double
   public let radius: Double
   public let collisionDelay: Double
+  public let nativeAttribution: MissionLaunchArchive?
+
+  public init(
+    identity: UUID, owner: UUID, instance: UUID, weapon: String, component: UUID?,
+    velocity: Vector3,
+    age: Double, lifetime: Double, damage: Double, radius: Double, collisionDelay: Double,
+    nativeAttribution: MissionLaunchArchive? = nil
+  ) {
+    self.identity = identity
+    self.owner = owner
+    self.instance = instance
+    self.weapon = weapon
+    self.component = component
+    self.velocity = velocity
+    self.age = age
+    self.lifetime = lifetime
+    self.damage = damage
+    self.radius = radius
+    self.collisionDelay = collisionDelay
+    self.nativeAttribution = nativeAttribution
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case identity, owner, instance, weapon, component, velocity, age, lifetime, damage, radius
+    case collisionDelay, nativeAttribution
+  }
+
+  public init(from decoder: any Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    identity = try values.decode(UUID.self, forKey: .identity)
+    owner = try values.decode(UUID.self, forKey: .owner)
+    instance = try values.decode(UUID.self, forKey: .instance)
+    weapon = try values.decode(String.self, forKey: .weapon)
+    component = try values.decodeIfPresent(UUID.self, forKey: .component)
+    velocity = try values.decode(Vector3.self, forKey: .velocity)
+    age = try values.decode(Double.self, forKey: .age)
+    lifetime = try values.decode(Double.self, forKey: .lifetime)
+    damage = try values.decode(Double.self, forKey: .damage)
+    radius = try values.decode(Double.self, forKey: .radius)
+    collisionDelay = try values.decode(Double.self, forKey: .collisionDelay)
+    // Only an absent old field is unknown history. A present null or malformed archive refuses.
+    nativeAttribution =
+      values.contains(.nativeAttribution)
+      ? try values.decode(MissionLaunchArchive.self, forKey: .nativeAttribution) : nil
+    guard nativeAttribution == nil || valid else { throw MissionNativeBridgeError.invalidArchive }
+  }
+
   var valid: Bool {
     PackValidation.localID(weapon) && velocity.finite && (1...100_000).contains(velocity.length)
       && age.isFinite && (0...60).contains(age) && lifetime.isFinite
       && (0.01...60).contains(lifetime) && damage.isFinite && (0.001...100_000).contains(damage)
       && radius.isFinite && (0.01...100).contains(radius) && collisionDelay.isFinite
       && (0...lifetime).contains(collisionDelay)
+      && (nativeAttribution.map {
+        $0.valid && $0.shotID == identity && $0.instanceID == instance
+          && $0.sourceActorID == owner && $0.sourceComponentID == component
+      } ?? true)
   }
 }
 public struct ScriptNPCComponentState: Codable, Sendable, Equatable {
