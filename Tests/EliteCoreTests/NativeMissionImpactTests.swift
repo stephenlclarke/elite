@@ -50,7 +50,8 @@ private func actualRestoredImpactGame(immuneStation: Bool) throws -> (Game, Miss
   let receipt = try game.admitRetainedMissionProjectile(shot.identity)
   game.commander.scriptState.projectiles[shot.identity]?.body.id = receipt.bodyID
   game.commander.scriptState.projectiles[shot.identity]?.presence = .present
-  let proof = try #require(game.missionNativeImpactProof(projectileID: shot.identity, delta: 0.5))
+  let proposed = try game.missionNativeImpactProof(projectileID: shot.identity, delta: 0.5)
+  let proof = try #require(proposed)
   try #require(proof.hit.target == .body(target.id) && proof.currentSource == nil)
   return (game, proof)
 }
@@ -154,10 +155,10 @@ struct NativeMissionImpactTests {
     game.bodies = [target]
     game.celestials = []
     game.screen = .front
-    let contact = try #require(
-      game.nearestMissionCollision(
-        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000,
-        radius: 0, includePlayer: false))
+    let nearest = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000,
+      radius: 0, includePlayer: false)
+    let contact = try #require(nearest)
     try #require(contact.victimPart == "turret")
     let component = try #require(target.scriptNPC?.components["turret"])
     let damage = game.commander.laserDamage(against: target.hull, mount: .front)

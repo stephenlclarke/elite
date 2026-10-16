@@ -89,13 +89,15 @@ struct NativeMissionProjectileTests {
     var (game, identity, _, _, _) = try retainedNativeProjectile()
     if exhausted {
       let bytes = try JSONEncoder().encode(game.commander.flightSimulation)
-      var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+      let decoded = try JSONSerialization.jsonObject(with: bytes)
+      var object = try #require(decoded as? [String: Any])
       object["nextSpawn"] = NSNumber(value: UInt64.max)
       game.commander.flightSimulation = try JSONDecoder().decode(
         FlightSimulationState.self, from: JSONSerialization.data(withJSONObject: object))
     } else {
       for index in 0..<PopulationClass.projectile.maximum {
-        let actor = try #require(game.commander.flightSimulation.allocateActor())
+        let allocated = game.commander.flightSimulation.allocateActor()
+        let actor = try #require(allocated)
         var body = SpaceBody(
           id: 1000 + index, hull: .missile, position: .init(5000, 1000, 6000))
         body.physical = .init(identity: actor, population: .projectile)
