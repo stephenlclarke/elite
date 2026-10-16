@@ -757,7 +757,7 @@
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
   },
   "generated_courier_checkpoint": {
-    "status": "native source and31-method47-case focused checkpoint validated; AppKit/native evidence and full CI remain pending",
+    "status": "focused33-method49-case and native5-method checkpoint validated on8fc1632; broad regression/full CI and final owner acceptance remain pending",
     "profile": "PROJECT-SPACE-G02-1",
     "capabilities": [
       "courier-contracts-basic-v2",
@@ -770,7 +770,8 @@
     "validation": "MISSION-CODER-G02-VALIDATION.json",
     "example": "mission-packs/generated-couriers",
     "project_estimates": true,
-    "limits": "One ordinary same-chart unique data/package item; fixed six-draw shortest-hop profile and inclusive menu-excluding deadline. No recovered server parity, dynamic navigation health, finance or general equipment integration. G1 statistics and Inventory epoch composition remain pending."
+    "limits": "One ordinary same-chart unique data/package item; fixed six-draw shortest-hop profile and inclusive menu-excluding deadline. No recovered server parity, dynamic navigation health, finance or general equipment integration. G1 statistics and Inventory epoch composition remain pending.",
+    "validated_source": "8fc1632c33da3e21e6347e4b4e40f5048f692747"
   },
   "optional_schema2_examples": 18
 }
