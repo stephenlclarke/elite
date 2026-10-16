@@ -50,7 +50,7 @@ struct MissionShotDescriptor: Equatable, Sendable {
 
 enum MissionNativeBridgeError: Error, Equatable, Sendable {
   case invalidDescriptor, sourceMismatch, missingActor, invalidNativeBinding, staleBinding
-  case unsupportedWeapon, invalidShot
+  case unsupportedWeapon, invalidShot, invalidArchive
 }
 
 /// Seals only the checked native binding and projected facts, not the external durable join.
@@ -173,5 +173,181 @@ enum MissionNativeBridge {
       shot.radius.isFinite, (0.01...100).contains(shot.radius), shot.collisionDelay.isFinite,
       (0...shot.lifetime).contains(shot.collisionDelay)
     else { throw MissionNativeBridgeError.invalidShot }
+  }
+}
+
+/// Durable target identity is distinct from a native address allocated for one visit.
+public enum MissionLaunchTarget: Equatable, Codable, Sendable {
+  case player
+  case actor(instance: UUID, actor: UUID, packDigest: String)
+}
+
+/// Bounded historical data, never a capability after decoding.
+/// MC1 retains this unchanged as ScriptNPCShot.nativeAttribution and revalidates every join.
+public struct MissionLaunchArchive: Equatable, Codable, Sendable {
+  public let schemaVersion: Int
+  public let shotID: UUID
+  public let instanceID: UUID
+  public let packDigest: String
+  public let sourceActorID: UUID
+  public let sourceComponentID: UUID?
+  public let intendedTarget: MissionLaunchTarget
+  public let judgement: MissionLaunchJudgement
+  public var origin: AttackOrigin { judgement.origin }
+
+  fileprivate init(
+    shotID: UUID, instanceID: UUID, packDigest: String, sourceActorID: UUID,
+    sourceComponentID: UUID?, intendedTarget: MissionLaunchTarget,
+    judgement: MissionLaunchJudgement
+  ) {
+    schemaVersion = 1
+    self.shotID = shotID
+    self.instanceID = instanceID
+    self.packDigest = packDigest
+    self.sourceActorID = sourceActorID
+    self.sourceComponentID = sourceComponentID
+    self.intendedTarget = intendedTarget
+    self.judgement = judgement
+  }
+
+  /// Shape checks do not prove the archive belongs to an actual retained shot.
+  public var valid: Bool {
+    guard schemaVersion == 1, judgement.valid, origin.owner.entity >= 2,
+      origin.playerAmmunition == nil,
+      packDigest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil,
+      origin.sourcePart == sourceComponentID?.uuidString
+    else { return false }
+    switch intendedTarget {
+    case .player:
+      return judgement.victim.entity == 0
+    case .actor(_, _, let digest):
+      return judgement.victim.entity >= 2
+        && digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
+    }
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case schemaVersion, shotID, instanceID, packDigest, sourceActorID, sourceComponentID
+    case intendedTarget, judgement
+  }
+
+  public init(from decoder: any Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    schemaVersion = try values.decode(Int.self, forKey: .schemaVersion)
+    shotID = try values.decode(UUID.self, forKey: .shotID)
+    instanceID = try values.decode(UUID.self, forKey: .instanceID)
+    packDigest = try values.decode(String.self, forKey: .packDigest)
+    sourceActorID = try values.decode(UUID.self, forKey: .sourceActorID)
+    sourceComponentID = try values.decodeIfPresent(UUID.self, forKey: .sourceComponentID)
+    intendedTarget = try values.decode(MissionLaunchTarget.self, forKey: .intendedTarget)
+    judgement = try values.decode(MissionLaunchJudgement.self, forKey: .judgement)
+    guard valid else { throw MissionNativeBridgeError.invalidArchive }
+  }
+}
+
+/// Only a verified same intended durable victim/current binding can use frozen law.
+/// Historical source data remains available even when current adjudication is unknown.
+enum MissionImpactAttribution: Equatable, Sendable {
+  case unknown
+  case frozenLaunch
+}
+
+/// Mission-shot-only capability for G1's single damage kernel. Not persisted or constructible
+/// by native consumers. The actual resolver/geometry producer remains in this provider file.
+struct MissionNativeImpactProof: Sendable {
+  let shot: MissionShotDescriptor
+  let archive: MissionLaunchArchive?
+  let hit: GameplayHit
+  let victimPart: String?
+  let victimComponentID: UUID?
+  let currentSource: ActorIdentity?
+  let currentVictim: ActorIdentity?
+  let attribution: MissionImpactAttribution
+  let system: SystemIdentity
+  let visit: UInt64
+  let sceneRevision: UInt64
+  let instanceRevision: UInt64
+  let projectileBody: SpaceBody
+  let targetBody: SpaceBody?
+  var damage: Double { shot.damage }
+  var kind: AttackKind { .plasma }
+  var shotID: UUID { shot.identity }
+  var sourceInstanceID: UUID { shot.instance }
+  var sourceActorID: UUID { shot.owner }
+  var sourceComponentID: UUID? { shot.component }
+  var originalOrigin: AttackOrigin? { archive?.origin }
+  var frozenJudgement: MissionLaunchJudgement? {
+    switch attribution {
+    case .unknown: nil
+    case .frozenLaunch: archive?.judgement
+    }
+  }
+
+  fileprivate init(
+    shot: MissionShotDescriptor, archive: MissionLaunchArchive?, hit: GameplayHit,
+    victimPart: String?, victimComponentID: UUID?, currentSource: ActorIdentity?,
+    currentVictim: ActorIdentity?, attribution: MissionImpactAttribution,
+    system: SystemIdentity, visit: UInt64, sceneRevision: UInt64, instanceRevision: UInt64,
+    projectileBody: SpaceBody, targetBody: SpaceBody?
+  ) {
+    self.shot = shot
+    self.archive = archive
+    self.hit = hit
+    self.victimPart = victimPart
+    self.victimComponentID = victimComponentID
+    self.currentSource = currentSource
+    self.currentVictim = currentVictim
+    self.attribution = attribution
+    self.system = system
+    self.visit = visit
+    self.sceneRevision = sceneRevision
+    self.instanceRevision = instanceRevision
+    self.projectileBody = projectileBody
+    self.targetBody = targetBody
+  }
+}
+
+extension MissionNativeBridge {
+  /// G1's actual fire boundary must re-resolve the source/target factories before this call.
+  /// This seals bounded historical data only; it never allocates, fires or creates law facts.
+  static func makeLaunchArchive(
+    shot: MissionShotDescriptor, source: MissionActorBinding,
+    intendedTarget: MissionActorBinding?, judgement: MissionLaunchJudgement
+  ) throws -> MissionLaunchArchive {
+    try validateShot(shot)
+    guard judgement.valid, shot.owner == source.actorID, shot.instance == source.instanceID,
+      judgement.origin.owner == source.nativeActor,
+      judgement.origin.sourcePart == shot.component?.uuidString
+    else { throw MissionNativeBridgeError.invalidArchive }
+    let target: MissionLaunchTarget
+    if let intendedTarget {
+      guard judgement.victim == intendedTarget.nativeActor else {
+        throw MissionNativeBridgeError.invalidArchive
+      }
+      target = .actor(
+        instance: intendedTarget.instanceID, actor: intendedTarget.actorID,
+        packDigest: intendedTarget.descriptor.packDigest)
+    } else {
+      guard judgement.victim.entity == 0 else { throw MissionNativeBridgeError.invalidArchive }
+      target = .player
+    }
+    let archive = MissionLaunchArchive(
+      shotID: shot.identity, instanceID: source.instanceID,
+      packDigest: source.descriptor.packDigest, sourceActorID: source.actorID,
+      sourceComponentID: shot.component, intendedTarget: target, judgement: judgement)
+    guard archive.valid else { throw MissionNativeBridgeError.invalidArchive }
+    return archive
+  }
+
+  /// Nil is the old unknown-history case; malformed present evidence never degrades to nil.
+  static func validateArchive(
+    _ archive: MissionLaunchArchive?, shot: MissionShotDescriptor, packDigest: String
+  ) throws {
+    try validateShot(shot)
+    guard let archive else { return }
+    guard archive.valid, archive.shotID == shot.identity, archive.instanceID == shot.instance,
+      archive.sourceActorID == shot.owner, archive.sourceComponentID == shot.component,
+      archive.packDigest == packDigest
+    else { throw MissionNativeBridgeError.invalidArchive }
   }
 }
