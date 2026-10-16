@@ -347,3 +347,40 @@ extension NativeViewTests {
     try fixture.verifyPrivatePersistenceUnchanged()
   }
 }
+
+extension NativeViewTests {
+  @MainActor @Test func nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise() async throws {
+    let (game, actor, lot) = try nativeSalvageScene()
+    let fixture = try await NativeWorkFixture.open(game)
+    defer { fixture.close() }
+    try await fixture.press(3, "f")
+    try await fixture.press(3, "f")
+    try await fixture.press(15, "r")
+    await fixture.frame()
+    let active = await fixture.delegate.runtime.snapshot()
+    try #require(active.workGuidance?.parent == actor)
+    try await fixture.press(12, "q")
+    let before = await fixture.delegate.runtime.snapshot()
+    let initial = before.flightWorldVelocity
+    let delta = 0.005
+    let budget = before.commander.performance.acceleration * 18 * delta
+    try #require(before.manualResidualFlight && initial.length > budget)
+    fixture.view.keyDown(with: try fixture.event(51, "", down: true))
+    #expect(fixture.view.held.contains("backspace") && fixture.view.controls.throttle == -1)
+    await fixture.frame(delta)
+    let braked = await fixture.delegate.runtime.snapshot()
+    #expect(abs(braked.flightWorldVelocity.length - (initial.length - budget)) < 1e-8)
+    #expect((braked.flightWorldVelocity.unit - initial.unit).length < 1e-8)
+    #expect(braked.speed == 0 && braked.manualResidualFlight && braked.lastAppliedWorkMotion == nil)
+    fixture.view.keyUp(with: try fixture.event(51, "", down: false))
+    #expect(fixture.view.controls.throttle == 0 && !fixture.view.held.contains("backspace"))
+    await fixture.frame(delta)
+    let cruise = await fixture.delegate.runtime.snapshot()
+    #expect((cruise.flightWorldVelocity - braked.flightWorldVelocity).length < 1e-8)
+    #expect(cruise.commander.salvageLedger.boundActor(for: lot) == actor)
+    #expect(cruise.commander.cargo == before.commander.cargo)
+    #expect(cruise.commander.equipmentInventory == before.commander.equipmentInventory)
+    try fixture.capture(name: "brake-release", scale: 1)
+    try fixture.verifyPrivatePersistenceUnchanged()
+  }
+}

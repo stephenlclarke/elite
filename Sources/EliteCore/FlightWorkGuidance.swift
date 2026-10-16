@@ -83,6 +83,7 @@ extension Game {
       controller: .init(parent: actor, wreck: metadata.wreck, category: metadata.category),
       scoop: .init(parent: actor), velocity: velocity, angularVelocity: .init(0, 0, 0))
     workBraking = nil
+    manualResidualFlight = false
     approvedWorkMotion = nil
     spin.stop(immediate: true)
     speed = 0
@@ -95,8 +96,9 @@ extension Game {
     guard workGuidance != nil || workBraking != nil else { return }
     workFireSuspended = true
     let local = commander.flightSimulation.pose.shipVector(flightWorldVelocity)
-    speed = min(commander.performance.speed, max(0, local.z / 18))
-    autoPilot.setApproachVelocity(local - .init(0, 0, speed * 18))
+    speed = 0
+    manualResidualFlight = true
+    autoPilot.setApproachVelocity(local)
     workGuidance = nil
     workBraking = nil
     workRecoveryRock = nil

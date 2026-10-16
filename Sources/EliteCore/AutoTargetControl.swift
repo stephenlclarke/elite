@@ -249,7 +249,7 @@ extension Game {
     ]
   }
   mutating func cancelAutoTarget() {
-    let preserveMomentum = workGuidance != nil || workBraking != nil
+    let preserveMomentum = workGuidance != nil || workBraking != nil || manualResidualFlight
     releaseWorkGuidance()
     let remainingVelocity = autoPilot.velocity
     if autoTargetBody?.hull == .station {
@@ -287,6 +287,10 @@ extension Game {
       "\(tier.rawValue):\(workTargetFilter.label):\(Int(viewportWidth)):\(Int(viewportHeight))"
     autoPilot.cycle(
       eligible, frontIDs: frontIDs, signature: signature, manualEngagement: !targetingEnabled)
+    if manualResidualFlight {
+      speed = 0
+      autoPilot.setApproachVelocity(commander.flightSimulation.pose.shipVector(initialVelocity))
+    }
     weaponsTargetID = autoPilot.targetID
     screen = .front
     dockingComputer = autoTargetBody?.hull == .station
@@ -301,7 +305,7 @@ extension Game {
     {
       beginWorkGuidance(body: body, mode: choice.mode, velocity: initialVelocity)
     } else if dockingComputer {
-      beginStationGuidance()
+      beginStationGuidance(velocity: initialVelocity)
       notify("AUTO DOCKING ENGAGED")
     } else if autoTargetBody != nil {
       notify("AUTO TARGETING ENGAGED")
@@ -323,9 +327,10 @@ extension Game {
       }
     }
   }
-  private mutating func beginStationGuidance() {
+  private mutating func beginStationGuidance(velocity: Vector3) {
     spin.stop(immediate: true)
-    autoPilot.setApproachVelocity(.init(0, 0, speed * 18))
+    manualResidualFlight = false
+    autoPilot.setApproachVelocity(commander.flightSimulation.pose.shipVector(velocity))
     speed = 0
   }
   mutating func applyAutoTarget(delta: Double, controls: Controls) {
@@ -348,7 +353,7 @@ extension Game {
       : (targetingEnabled || autoPilot.manualEngagement)
     if !enabled
       || controls.pitch != 0 || controls.yaw != 0
-      || controls.roll != 0 || (station && controls.throttle != 0)
+      || controls.roll != 0 || ((station || manualResidualFlight) && controls.throttle != 0)
     {
       cancelAutoTarget()
       return

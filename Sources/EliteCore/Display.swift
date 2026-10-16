@@ -590,7 +590,7 @@ public enum Display {
       bar(&frame, 24, y, item.1, item.2, 46)
     }
     let right: [(String, Double)] = [
-      ("SP", game.speed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
+      ("SP", game.cockpitSpeed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
       ("DC", (game.pitch + 1) / 2),
     ]
     for (i, item) in right.enumerated() {

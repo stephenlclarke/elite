@@ -333,6 +333,7 @@ public struct Game: Sendable {
   var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]
   var workScenePlanned = false
   var workFireSuspended = false
+  var manualResidualFlight = false
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
   public var targetPanelExpanded: Bool?
@@ -454,6 +455,7 @@ public struct Game: Sendable {
     paused = false
     spin.stop(immediate: true)
     cancelAutoTarget()
+    clearManualResidualFlight()
     screen = .status
     screenHistory.removeAll()
     speed = 0
@@ -930,6 +932,7 @@ public struct Game: Sendable {
     missileCooldown = 0
     spin.stop(immediate: true)
     cancelAutoTarget()
+    clearManualResidualFlight()
     docked = false
     screen = .front
     screenHistory.removeAll()
@@ -977,6 +980,7 @@ public struct Game: Sendable {
     missileCooldown = 0
     spin.stop(immediate: true)
     cancelAutoTarget()
+    clearManualResidualFlight()
     docked = true
     screen = .status
     screenHistory.removeAll()
@@ -1046,7 +1050,10 @@ public struct Game: Sendable {
     weaponsTargetID = nil
     missileCooldown = 0
     spin.stop(immediate: true)
+    let arrivalSpeed = min(commander.performance.speed, flightWorldVelocity.length / 18)
     cancelAutoTarget()
+    clearManualResidualFlight()
+    speed = arrivalSpeed
     let cost = commander.jumpFuelCost(distance: currentSystem.distance(to: targetSystem))
     if !commander.unlimitedFuel {
       commander.fuel = max(0, commander.fuel - cost)
@@ -1211,7 +1218,9 @@ public struct Game: Sendable {
     gameplayRevision &+= 1
     ensurePhysicalActors()
     let craft = commander.performance
-    speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
+    if !manualResidualFlight && workGuidance == nil && workBraking == nil {
+      speed = min(craft.speed, max(0, speed + controls.throttle * dt * craft.acceleration))
+    }
     pitch = controls.pitch * craft.pitch
     yaw = controls.yaw * craft.yaw
     let previousSpinRate = spin.actualRate
@@ -1220,6 +1229,7 @@ public struct Game: Sendable {
       spin.mode || spin.actualRate != 0 || previousSpinRate != 0
       ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll * craft.roll
     applyAutoTarget(delta: dt, controls: controls)
+    applyManualResidualThrottle(delta: dt, throttle: controls.throttle)
     laserHeat = max(0, laserHeat - dt * 12)
     fireCooldown = max(0, fireCooldown - dt)
     missileCooldown = max(0, missileCooldown - dt)

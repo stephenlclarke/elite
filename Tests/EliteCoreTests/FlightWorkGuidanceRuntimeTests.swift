@@ -654,3 +654,184 @@ struct FlightWorkGuidanceRuntimeTests {
     #expect((game.bodies[0].physical?.angularVelocity.length ?? 0) > 0)
   }
 }
+
+private func releasedResidualGame(_ velocity: Vector3) throws -> Game {
+  var game = try workRuntimeGame()
+  _ = try addWorkCargo(&game, position: .init(0, -45, 1800))
+  engageWorkCargo(&game)
+  game.workGuidance?.velocity = velocity
+  game.key("q")
+  return game
+}
+
+struct ManualResidualFlightTests {
+  @Test(arguments: [Vector3(20, -10, 50), .init(90, 0, 0), .init(0, 0, -70)])
+  func actualQKeepsAllMomentumThroughNeutralSteering(velocity: Vector3) throws {
+    var game = try releasedResidualGame(velocity)
+    #expect(game.manualResidualFlight && game.speed == 0 && game.autoPilot.targetID == nil)
+    #expect((game.flightWorldVelocity - velocity).length < 1e-9)
+    let start = game.commander.flightSimulation.pose
+    var controls = Controls()
+    controls.pitch = 0.2
+    controls.yaw = -0.15
+    controls.roll = 0.1
+    game.tick(delta: 0.02, controls: controls)
+    #expect((game.flightWorldVelocity - velocity).length < 1e-8)
+    #expect(
+      (game.commander.flightSimulation.pose.position - start.position - velocity * 0.02).length
+        < 1e-8)
+    #expect(game.commander.flightSimulation.pose.orientation != start.orientation)
+    #expect(game.lastAppliedWorkMotion == nil)
+  }
+
+  @Test func firstSteerAndBrakeReleasesWorkAndBrakesTheWholeVectorOnce() throws {
+    var game = try workRuntimeGame()
+    _ = try addWorkCargo(&game, position: .init(0, -45, 1800))
+    engageWorkCargo(&game)
+    let initial = Vector3(80, -50, -120)
+    game.workGuidance?.velocity = initial
+    var controls = Controls()
+    controls.pitch = 0.2
+    controls.yaw = -0.1
+    controls.roll = 0.1
+    controls.throttle = -1
+    let budget = game.commander.performance.acceleration * 18 * 0.05
+    game.tick(delta: 0.05, controls: controls)
+    let expected = initial * ((initial.length - budget) / initial.length)
+    #expect(game.workGuidance == nil && game.manualResidualFlight && game.speed == 0)
+    #expect((game.flightWorldVelocity - expected).length < 1e-8)
+    #expect(abs((initial - game.flightWorldVelocity).length - budget) < 1e-8)
+    #expect(game.lastAppliedWorkMotion == nil)
+  }
+
+  @Test func brakeReleaseCruisesAndRepeatedBrakingStopsExactlyWithoutReversal() throws {
+    var game = try releasedResidualGame(.init(17, 9, 4))
+    var controls = Controls()
+    controls.throttle = -1
+    game.tick(delta: 0.02, controls: controls)
+    let cruise = game.flightWorldVelocity
+    controls.throttle = 0
+    game.tick(delta: 0.02, controls: controls)
+    #expect((game.flightWorldVelocity - cruise).length < 1e-8)
+    controls.throttle = -1
+    for _ in 0..<10 {
+      let before = game.flightWorldVelocity
+      game.tick(delta: 0.02, controls: controls)
+      #expect(before.dot(game.flightWorldVelocity) >= -1e-9)
+    }
+    #expect(game.flightWorldVelocity == .init(0, 0, 0))
+    #expect(!game.manualResidualFlight && game.speed == 0)
+  }
+
+  @Test func forwardThrustCapsTotalVelocityAndCannotSnapExternalOverspeed() throws {
+    let maximum = 32.0 * 18
+    for initial in [
+      Vector3(0, 0, maximum - 1), .init(maximum - 1, 0, 0), .init(0, 0, maximum + 100),
+    ] {
+      var game = try releasedResidualGame(initial)
+      #expect(game.commander.performance.speed * 18 == maximum)
+      let budget = game.commander.performance.acceleration * 18 * 0.1
+      var controls = Controls()
+      controls.throttle = 1
+      game.tick(delta: 0.1, controls: controls)
+      #expect((game.flightWorldVelocity - initial).length <= budget + 1e-8)
+      if initial.length <= maximum {
+        #expect(game.flightWorldVelocity.length <= maximum + 1e-8)
+        #expect(game.flightWorldVelocity.z >= initial.z)
+      } else {
+        #expect((game.flightWorldVelocity - initial).length < 1e-8)
+      }
+    }
+  }
+
+  @Test func actualSpeedGaugeShowsLateralDriftWithZeroScalarSpeed() throws {
+    let game = try releasedResidualGame(.init(90, 0, 0))
+    #expect(game.speed == 0 && game.cockpitSpeed == 5)
+    let layout = CockpitLayout(game: game, width: 768, height: 768)
+    let frame = Display.cockpit(game, width: 768, height: 768)
+    let lines = frame.graphics.compactMap { graphic -> WireLine? in
+      guard case .line(let line) = graphic,
+        abs(line.y0 - layout.instrumentsTop - 5) < 1e-8, line.x0 > 768 / 2
+      else { return nil }
+      return line
+    }
+    let background = try #require(lines.first { $0.ink == .blue })
+    let filled = try #require(lines.first { $0.ink == .green && $0.x1 > $0.x0 })
+    let ratio = (filled.x1 - filled.x0) / (background.x1 - background.x0)
+    #expect(abs(ratio - 5 / game.commander.performance.speed) < 1e-8)
+  }
+
+  @Test func successfulBoundariesClearResidualAndFailedSnapshotsPreserveIt() throws {
+    var game = try releasedResidualGame(.init(20, -10, 50))
+    let velocity = game.flightWorldVelocity
+    let commander = game.commander
+    game.bodies[0].physical?.velocity = .init(.nan, 0, 0)
+    game.dock()
+    #expect(!game.docked && game.manualResidualFlight && game.flightWorldVelocity == velocity)
+    game.arrive()
+    #expect(game.manualResidualFlight && game.flightWorldVelocity == velocity)
+    game.bodies[0].physical?.velocity = .init(0, 0, 0)
+    game.dock()
+    #expect(game.docked && !game.manualResidualFlight && game.autoPilot.velocity == .init(0, 0, 0))
+    game.launch()
+    #expect(
+      !game.manualResidualFlight && game.speed == 8 && game.autoPilot.velocity == .init(0, 0, 0))
+    let loaded = game.load(commander)
+    #expect(
+      loaded && game.docked && !game.manualResidualFlight
+        && game.flightWorldVelocity == .init(0, 0, 0))
+    game = try releasedResidualGame(velocity)
+    game.arrive()
+    #expect(!game.manualResidualFlight && game.autoPilot.velocity == .init(0, 0, 0))
+    #expect(abs(game.speed * 18 - velocity.length) < 1e-8)
+  }
+
+  @Test func newTargetSelectionPreservesReleasedMomentumUntilItsControllerTakesOwnership() throws {
+    let velocity = Vector3(20, -10, 50)
+    var game = try releasedResidualGame(velocity)
+    game.workTargetFilter = .ships
+    game.bodies.append(.init(id: 90, hull: .cobra, position: .init(0, 0, 3000)))
+    game.key("r")
+    #expect(game.autoTargetBody?.id == 90 && game.manualResidualFlight)
+    #expect((game.flightWorldVelocity - velocity).length < 1e-8)
+    var controls = Controls()
+    controls.throttle = -1
+    game.tick(delta: 0.02, controls: controls)
+    #expect(game.autoPilot.targetID == nil && game.flightWorldVelocity.length < velocity.length)
+    game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 10000))]
+    let before = game.flightWorldVelocity
+    game.key("r")
+    #expect(game.dockingComputer && !game.manualResidualFlight)
+    #expect((game.flightWorldVelocity - before).length < 1e-8)
+  }
+
+  @Test func solarScoopingUsesActualForwardCruiseAndRefusesLateralOrReverseDrift() throws {
+    for velocity in [Vector3(0, 0, 144), .init(144, 0, 0), .init(0, 0, -144)] {
+      var game = try releasedResidualGame(velocity)
+      game.commander.fuel = 0
+      game.celestials = [.init(kind: .sun, position: .init(0, 0, 3000), radius: 1100)]
+      game.tick(delta: 0.1)
+      game.tick(delta: 0.1)
+      if velocity.z > 0 {
+        #expect(game.commander.fuel > 0 && game.solarScoopState == .collecting)
+      } else {
+        #expect(game.commander.fuel == 0 && game.solarScoopState == .turnTowardSun)
+      }
+    }
+  }
+
+  @Test func ordinaryZeroResidualAndAngularTouchContractRemainUnchanged() throws {
+    var game = try workRuntimeGame()
+    game.speed = 10
+    var controls = Controls()
+    controls.throttle = -1
+    game.tick(delta: 0.1, controls: controls)
+    #expect(!game.manualResidualFlight && abs(game.speed - 8.8) < 1e-8)
+    var pad = TrackpadInput()
+    for count in [1, 2, 3] {
+      _ = pad.update(
+        positions: Array(repeating: SIMD2<Double>(0.5, 0.5), count: count), spinMode: true)
+      #expect(pad.spinControls.throttle == 0)
+    }
+  }
+}
