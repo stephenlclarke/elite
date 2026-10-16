@@ -5,34 +5,33 @@ typealias ScriptPublisher = @Sendable (inout Game) throws -> Void
 extension GameRuntime {
   /// Captures only value paths. No writer, actor or interpreter callback escapes this turn.
   func scriptPublisher() -> ScriptPublisher? {
-    guard let url = scriptSaveURL else { return nil }
+    guard game.requiresScriptDurability, let url = scriptSaveURL else { return nil }
     let namespace = galleryNamespace
     return { candidate in
       try Self.requireGalleryFileAccess(url, namespace: namespace)
-      candidate.persistBlackjackTargets()
+      if candidate.commander.scriptState.calendarLedger == nil {
+        let legacy =
+          candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
+        candidate.ensureScriptCalendar(origin: legacy ? .inactiveLegacyMigration : .newCommander)
+      }
       candidate.persistScriptActors()
+      let prepared = try Self.prepareNativeSaveState(candidate)
       try ScriptSaveStore.write(
-        commander: candidate.commander, world: candidate.scriptWorldSave, to: url,
+        commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
         scope: namespace == nil ? "commander" : "gallery")
+      candidate = prepared.game
     }
   }
   /// User commands are staged before a frame is published. Disk failure publishes no
   /// command effects; autonomous physics uses a separate proposal-only barrier.
   func commitScriptCommand(from before: Game) throws {
     let ownsPersistentState =
-      !before.commander.scriptState.instances.isEmpty
-      || !game.commander.scriptState.instances.isEmpty
-      || !before.commander.accommodation.ownedBerths.isEmpty
-      || !game.commander.accommodation.ownedBerths.isEmpty
-      || before.commander.scriptState.calendarLedger != nil
-      || game.commander.scriptState.calendarLedger != nil
-      || !before.commander.contracts.boards.isEmpty || !game.commander.contracts.boards.isEmpty
+      before.requiresScriptDurability || game.requiresScriptDurability
     let changed =
       before.commander != game.commander || before.docked != game.docked
       || before.bodies != game.bodies || before.jumpCountdown != game.jumpCountdown
     guard ownsPersistentState, changed, let publish = scriptPublisher() else { return }
     var candidate = game
-    candidate.resolveDestroyed()
     try publish(&candidate)
     game = candidate
   }
@@ -53,25 +52,24 @@ extension GameRuntime {
     }
   }
   static func writeCommander(_ candidate: inout Game, to url: URL) throws {
-    candidate.resolveDestroyed()
-    candidate.persistBlackjackTargets()
+    if candidate.requiresScriptDurability && candidate.commander.scriptState.calendarLedger == nil {
+      let legacy = candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
+      candidate.ensureScriptCalendar(origin: legacy ? .inactiveLegacyMigration : .newCommander)
+    }
     candidate.persistScriptActors()
-    guard candidate.commander.valid else { throw SaveError.invalidCommander }
-    if !candidate.commander.scriptState.instances.isEmpty
-      || !candidate.commander.accommodation.ownedBerths.isEmpty || candidate.isMissionTrial
-      || candidate.commander.scriptState.calendarLedger != nil
-      || !candidate.commander.contracts.boards.isEmpty
-    {
+    let prepared = try Self.prepareNativeSaveState(candidate)
+    if prepared.game.requiresScriptDurability {
       try ScriptSaveStore.write(
-        commander: candidate.commander, world: candidate.scriptWorldSave, to: url,
-        scope: candidate.isMissionTrial ? "gallery" : "commander")
+        commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
+        scope: prepared.game.isMissionTrial ? "gallery" : "commander")
     } else {
-      let data = try JSONEncoder().encode(candidate.commander)
+      let data = try JSONEncoder().encode(prepared.commander)
       guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
       try FileManager.default.createDirectory(
         at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
       try data.write(to: url, options: .atomic)
     }
+    candidate = prepared.game
   }
 }
 

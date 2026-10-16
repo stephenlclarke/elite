@@ -11,6 +11,7 @@ struct ScriptEquipmentRefitTests {
       contact: "{op='gear.refit',id='refit',gear='kit',index=0}")
     defer { fixture.clean() }
     var game = Game(executive: false)
+    try game.commander.prepareEquipment(legacy: false)
     game.scriptPacks = [fixture.pack]
     if name == FuelStorage.equipmentName {
       try game.commander.grantEquipment(
