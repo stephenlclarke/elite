@@ -79,7 +79,7 @@ import Testing
   #expect(!game.commander.unlimitedCargo && !game.commander.unlimitedMissiles)
 }
 
-@Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() {
+@Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() throws {
   var game = Game(executive: false)
   game.launch()
   game.speed = 0
@@ -106,9 +106,16 @@ import Testing
   game.tick(delta: 0.01)
   #expect(game.commander.cargo[16] == 1 && game.bodies.isEmpty)
   for key in "xyzzy" { game.key(String(key)) }
-  game.commander.equipment.remove("Fuel Scoops")
+  let scoops = try #require(game.commander.fittedEquipment(at: .utility(.fuelScoops)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  try game.commander.storeEquipment(scoops, expectedRevision: revision)
+  #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops)) == nil)
+  #expect(!game.commander.equipment.contains("Fuel Scoops"))
+  let cash = game.commander.credits
   game.key("f")
-  #expect(game.commander.equipment.contains("Fuel Scoops"))
+  #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops))?.id == scoops.id)
+  #expect(game.commander.equipment.contains("Fuel Scoops") && game.commander.credits == cash)
+  #expect(game.commander.valid)
 }
 
 @Test func assistanceHUDKeepsTargetAndFlightWarningsVisibleWithinTheViewport() {
