@@ -18,6 +18,6 @@ actual admitted native capacities while preserving the historical allowance.
 Native inventory actions retain docking semantics and Lua commands retain the
 mainstation guard. Full native composition, reviewed NPC bridges and scheduled
 tests plus `make ci` remain pending.
-Actual sealed laser and restored plasma producer regressions, native player attribution, classic Mission target immunity, event-capacity accounting and living/dead actor-owned job culling regressions are now authored. They remain uncompiled and unexecuted. Atomic discharge and native precommit capacity integration are pending exact owner APIs.
+Actual sealed laser and restored plasma producer regressions, native player attribution, classic Mission target immunity, event-capacity accounting and living/dead actor-owned job culling regressions are now authored. They remain uncompiled and unexecuted. The authored cooling and aim loop now delegates to the actual unified native firing API, and projectile updates delegate to its sealed step. Native target-event capacity precommit integration and scheduled compilation/runtime validation remain pending.
 
 The central integrator owns publishing, actual `@codex review`, resolution and re-review of findings, final-head checks and merging.
