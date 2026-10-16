@@ -147,8 +147,13 @@ extension Game {
         identity: physical.identity, hull: body.hull,
         position: flight.pose.systemPoint(body.position), orientation: orientation,
         velocity: physical.velocity, energy: body.energy,
-        maximumEnergy: physical.npc?.resources?.energyCapacity ?? body.hull.navalEnergy ?? 100,
-        maximumSpeedUnitsPerSecond: (ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20) * 18,
+        maximumEnergy: physical.npc?.resources?.energyCapacity
+          ?? physical.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.energy }
+          ?? body.hull.navalEnergy ?? 100,
+        maximumSpeedUnitsPerSecond: (physical.catalogueShipID.flatMap {
+          ShipCatalogue.ship($0)?.game?.speed
+        }
+          ?? ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20) * 18,
         legal: physical.npc?.legal ?? LegalRecord(), npc: physical.npc,
         rock: physical.rock, payload: physical.payload,
         ordinaryCargo: physical.npc?.ordinaryCargo ?? [],
