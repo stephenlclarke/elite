@@ -1,0 +1,70 @@
+{
+  "lease": "elite-validation-030",
+  "source": "217d5a4341af1aa53b384b91d33552b3bb6767ba",
+  "base": "61b496d51c76156e07ae31e435b808ed97f03dd4",
+  "result": "PASS",
+  "expectedMethods": 78,
+  "discoveredMethods": 78,
+  "executedMethods": 78,
+  "testDurationSeconds": 7.762,
+  "reportedSuites": 5,
+  "selectionCounts": {
+    "EquipmentIssueTransactionsTests": 13,
+    "StandardAmmunitionTransactionsTests": 8,
+    "EquipmentMissionIssueSchemaTests": 6,
+    "OwnedEquipmentInventoryTests": 7,
+    "EquipmentPurchaseProgressionTests": 14,
+    "ComponentProgressionTests": 15,
+    "ComponentLoadedStateTests": 8,
+    "SalvageComponentEffectsTests": 7
+  },
+  "filter": "EquipmentIssueTransactionsTests|StandardAmmunitionTransactionsTests|EquipmentMissionIssueSchemaTests|OwnedEquipmentInventoryTests|equipmentPurchase[A-Z]|componentProgression|componentLoaded|SalvageComponentEffectsTests",
+  "discovery": {
+    "phase": "discovery-attempt01",
+    "source": "217d5a4341af1aa53b384b91d33552b3bb6767ba",
+    "command": [
+      "swift",
+      "test",
+      "list"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 25.5327824158594,
+    "rawLogSha256": "878d56b986e00d4ae09edc0184529ac7e56415f0216cfc0535dae386e92756fc",
+    "changedTrackedInputs": [],
+    "productionSaveUnchanged": true,
+    "preferencesUnchanged": true
+  },
+  "focused": {
+    "phase": "focused-attempt01",
+    "source": "217d5a4341af1aa53b384b91d33552b3bb6767ba",
+    "command": [
+      "swift",
+      "test",
+      "--skip-build",
+      "--filter",
+      "EquipmentIssueTransactionsTests|StandardAmmunitionTransactionsTests|EquipmentMissionIssueSchemaTests|OwnedEquipmentInventoryTests|equipmentPurchase[A-Z]|componentProgression|componentLoaded|SalvageComponentEffectsTests"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 8.570188832934946,
+    "rawLogSha256": "a6c1411271a042d1239901e6567eef02f6c8f00d67f201c38088df46376cae4b",
+    "changedTrackedInputs": [],
+    "productionSaveUnchanged": true,
+    "preferencesUnchanged": true
+  },
+  "evidenceDirectory": "/tmp/elite-g2-canonical-focused-030",
+  "correctedSelectionSHA256": "af1d844e58f91204f0df95c7bfc5b2fec3d311877a6f3f9bcc7b95dc06e0278e",
+  "historicalSelectionMismatch": {
+    "expected": 78,
+    "discovered": 79,
+    "missing": [],
+    "extra": [
+      "equipmentPurchases"
+    ],
+    "disposition": "Stopped before execution; Root ratified filter-only correction equipmentPurchase[A-Z], exact same raw discovery then matched all 78; no source change or rebuild."
+  },
+  "processCheck": {
+    "remainingOwnedTestProcesses": [],
+    "clean": true
+  },
+  "limitations": "Pure provider focused check only. Native/script consumer integration and composed make ci remain with G1; no native media, sanitizer, leak or fullCI execution in this lease."
+}

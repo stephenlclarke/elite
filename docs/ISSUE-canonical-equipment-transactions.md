@@ -14,4 +14,4 @@ Targeting-core replacement refuses a strictly lower existing targeting tier on b
 
 ## Validation
 
-Thirteen issue and eight ammunition test methods are authored. Strict source formatting passes. Compilation and execution are pending a separate numbered validation lease; no successful runtime, sanitizer, leak or full-CI result is claimed by this source handoff.
+Validation lease 030 compiled source `217d5a4341af1aa53b384b91d33552b3bb6767ba` and passed all 78 selected methods in 7.762 seconds, including thirteen issue, eight ammunition and six schema methods plus 51 existing inventory, purchase and component compatibility methods. Tracked inputs, the production save and preferences remained unchanged. The initial discovery filter matched one extra older test; execution stopped until a reviewed filter correction matched the exact 78-method map. Strict source formatting passes. Native and script consumer integration and the final composed full CI remain separate; this focused result makes no sanitizer, leak or native UI claim.

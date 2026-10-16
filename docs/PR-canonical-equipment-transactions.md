@@ -8,4 +8,4 @@ Targeting-core replacement refuses a strictly lower existing targeting tier on b
 
 ## Validation
 
-Twenty-one focused test methods are authored and source formatting passes. Tests have not been compiled or run: the active shared validation environment is reserved for the repaired-build full CI run. This handoff changes only two new helper files, their two matching test files and these scoped documents; it does not wire native or script runtime consumers.
+The exact 78-method focused selection passed at source `217d5a4341af1aa53b384b91d33552b3bb6767ba` in 7.762 seconds. It includes all 21 new helper methods, six shared-schema methods and 51 inventory, purchase and component compatibility methods. Compilation and strict formatting pass; protected tracked inputs, the production save and preferences stayed unchanged. The discovery filter was corrected before execution to exclude one unrelated test. This handoff changes only two new helper files, their two matching test files and scoped documents; native and script runtime consumer integration and composed full CI remain separate.
