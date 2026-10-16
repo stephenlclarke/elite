@@ -463,7 +463,7 @@ func pledgeMalformedReceiptsRefuseBeforeArithmeticOrStandingUse(field: String) t
   try GameRuntime.writeCommander(&plain, to: fixture.save)
   let donated = try JSONDecoder().decode(
     ScriptSavePointer.self, from: Data(contentsOf: fixture.save))
-  #expect(donated.schemaVersion == 20)
+  #expect(donated.schemaVersion == 21)
   // Genuine new chunk hashes cannot authorize a ledger under an older claimed format.
   let hidden = ScriptSavePointer(
     format: donated.format, schemaVersion: 19,

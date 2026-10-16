@@ -41,9 +41,11 @@ public struct ScriptContractOffer: Codable, Sendable, Equatable, Identifiable {
   public let refundOnFailure: Bool
   public let duration: Double
   public let parameters: ScriptValue
+  public var courier: ScriptCourierTerms? = nil
   public var status: ContractOfferStatus = .available
   var valid: Bool {
-    PackValidation.localID(key) && (1...160).contains(title.count)
+    (courier.map { $0.matches(self) } ?? true)
+      && PackValidation.localID(key) && (1...160).contains(title.count)
       && (1...12000).contains(briefing.utf8.count)
       && (0..<8).contains(destinationGalaxy) && (0...255).contains(destinationSystem)
       && [reward, deposit, failureReward].allSatisfy { (0...4_294_967_295).contains($0) }
@@ -66,6 +68,7 @@ public struct ScriptContractBoard: Codable, Sendable, Equatable {
   public let period: Double
   public let group: String
   public var offers: [ScriptContractOffer]
+  public var courierGeneration: ScriptCourierGeneration? = nil
   public var cacheKey: String { digest + "/" + id + "/" + station.key }
   var valid: Bool {
     PackValidation.identifier(provider) && PackValidation.version(version)
@@ -75,7 +78,18 @@ public struct ScriptContractBoard: Codable, Sendable, Equatable {
       && (1...1e9).contains(period)
       && group == provider + "/" + String(group.split(separator: "/").last ?? "")
       && PackValidation.localID(String(group.split(separator: "/").last ?? ""))
-      && [ScriptClockDomain.local, .flight, .calendar].contains(clock)
+      && ([ScriptClockDomain.local, .flight, .calendar].contains(clock)
+        ? courierGeneration == nil && offers.allSatisfy { $0.courier == nil }
+        : clock == .missionCalendar && courierGeneration?.valid == true
+          && courierGeneration?.origin == station
+          && seed == Game.pledgeBoardSeed(cacheKey, revision: revision)
+          && courierGeneration?.initialState == Game.pledgeProfileSeed(seed) && offers.count == 6
+          && offers.enumerated().allSatisfy { index, offer in
+            offer.courier?.row == index && offer.courier?.generation == courierGeneration
+              && offer.id
+                == ScriptIdentity.uuid("contract-offer-v1:\(cacheKey):\(revision):\(offer.key)")
+          }
+          && period == 3600 && group == provider + "/g02-courier")
       && offers.count <= 16 && Set(offers.map(\.id)).count == offers.count
       && Set(offers.map(\.key)).count == offers.count && offers.allSatisfy(\.valid)
   }
@@ -92,6 +106,7 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
   public let clock: ScriptClockDomain
   public let acceptedAt: Double
   public let deadline: Double?
+  public var deadlinePolicy: ScriptContractDeadlinePolicy? = nil
   public var settled = false
   public var settlementOutcome: ScriptOutcome?
   public var settlementAmount: Int?
@@ -115,7 +130,17 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
       && PackValidation.version(version)
       && digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
       && (deadline.map { $0.isFinite && $0 >= acceptedAt && $0 <= 1e12 } ?? true)
-      && [ScriptClockDomain.local, .flight, .calendar].contains(clock)
+      && ([ScriptClockDomain.local, .flight, .calendar].contains(clock)
+        ? deadlinePolicy == nil && offer.courier == nil
+        : clock == .missionCalendar && deadlinePolicy == .inclusiveConfirmation
+          && offer.courier?.valid == true && offer.courier?.generation.origin == station
+          && group == provider + "/g02-courier"
+          && offer.courier!.calendarLowerBoundSeconds < offer.duration
+          && Game.pledgeBoardSeed(boardKey, revision: boardRevision).map { seed in
+            offer.courier?.generation.initialState == Game.pledgeProfileSeed(seed)
+          } == true
+          && offer.id
+            == ScriptIdentity.uuid("contract-offer-v1:\(boardKey):\(boardRevision):\(offer.key)"))
       && offer.status == .available
       && deadline == (offer.duration == 0 ? nil : acceptedAt + offer.duration)
       && (settled
@@ -125,7 +150,8 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
       && (settlementAmount.map { (0...8_589_934_590).contains($0) } ?? true)
       && (settledAt.map { $0.isFinite && $0 >= acceptedAt && $0 <= 1e12 } ?? true)
       && (!settled || settlementAmount == expectedPayment)
-      && (settlementOutcome != .complete || deadline == nil || settledAt! < deadline!)
+      && (settlementOutcome != .complete || deadline == nil
+        || (deadlinePolicy == nil ? settledAt! < deadline! : settledAt! <= deadline!))
   }
 }
 public struct ScriptContractState: Codable, Sendable, Equatable {
@@ -146,6 +172,7 @@ public struct ContractAcceptanceQuote: Sendable {
   let resources: Commander
   let epoch: UUID
   public var pledge: ScriptPledgePreview? = nil
+  public var courier: ScriptCourierPreview? = nil
   public var reviewToken: UUID = UUID()
 }
 extension Commander {
@@ -155,6 +182,7 @@ extension Commander {
     copy.scriptState.localSeconds = 0
     copy.scriptState.calendarSeconds = 0
     copy.scriptState.calendarLedger = nil
+    copy.scriptState.missionCalendar = nil
     copy.scriptState.transitSeconds = 0
     // Quotes bind real property/assignments; autonomous progress is rechecked by acceptance.
     copy.scriptState.pendingEvents = []

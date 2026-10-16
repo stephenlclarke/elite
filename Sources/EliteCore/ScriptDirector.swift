@@ -112,6 +112,13 @@ extension Game {
       instance.conversationReceipts.values.max { $0.sequence < $1.sequence }?.value ?? .null
     fields["contract"] = contractSnapshot(instance)
     fields["pledge"] = pledgeQuery(instance)
+    if let terms = instance.contract?.offer.courier {
+      fields["courier"] = .object([
+        "item": instance.courier.map { .string($0.item.uuidString) } ?? .null,
+        "difficulty": .integer(Int64(terms.difficulty)), "variant": .string(terms.variant.rawValue),
+        "clock": .number(commander.scriptState.clock(.missionCalendar)),
+      ])
+    }
     if let pack = scriptPack(for: instance) {
       fields["receipt_requirements"] = scriptReceiptQuery(pack, state: instance)
     }
@@ -171,6 +178,10 @@ extension Game {
       throw MissionPackError(
         "Mission unavailable, already accepted or saved under another version.")
     }
+    try ScriptPackLibrary.validateCourier(pack.manifest)
+    if pack.manifest.courier != nil, scriptCourierAdmission == nil {
+      throw MissionPackError("Courier requires its native board confirmation.")
+    }
     if let reason = scriptAcceptanceIssue(pack) { throw MissionPackError(reason) }
     var instance = ScriptInstance(
       id: instanceID, definition: pack.manifest.stateID,
@@ -184,7 +195,7 @@ extension Game {
         requirement.child.map { (requirement.id, $0) }
       })
     instance.savedCampaignReceiptScopes = scopes.isEmpty ? nil : scopes
-    if let contract, let due = contract.deadline {
+    if let contract, let due = contract.deadline, contract.offer.courier == nil {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
@@ -261,6 +272,14 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
+          if pack.manifest.courier != nil,
+            ![
+              "milestone.ensure", "journal.append", "dialogue.offer", "courier.issue",
+              "courier.deliver", "courier.abandon",
+            ].contains(command["op"]?.string ?? "")
+          {
+            throw MissionPackError("Courier handlers require closed native custody commands.")
+          }
           if pack.manifest.pledge != nil,
             !["milestone.ensure", "journal.append", "pledge.commit"].contains(
               command["op"]?.string ?? "")
@@ -271,7 +290,13 @@ extension Game {
           if pack.manifest.pledge != nil, next.outcome != .active {
             throw MissionPackError("A completed pledge cannot issue another command.")
           }
-          if command["op"]?.string == "pledge.commit" {
+          if ["courier.issue", "courier.deliver", "courier.abandon"].contains(
+            command["op"]?.string ?? "")
+          {
+            try candidate.applyCourierCommand(
+              command, event: event, pack: pack,
+              state: &next, candidate: &candidate.commander)
+          } else if command["op"]?.string == "pledge.commit" {
             try candidate.applyPledgeCommand(
               command, event: event, pack: pack,
               state: &next, candidate: &candidate.commander)
@@ -390,7 +415,10 @@ extension Game {
     else { return }
     fireDueScriptTimers(flight: flight, local: local, calendar: calendar, publish: publish)
   }
-  mutating func advanceScriptClockValues(delta: Double, flight: Bool, local: Bool, calendar: Bool)
+  mutating func advanceScriptClockValues(
+    delta: Double, flight: Bool, local: Bool, calendar: Bool,
+    missionCalendar: Bool = false
+  )
     -> Bool
   {
     let scripted = !commander.scriptState.instances.isEmpty || !commander.contracts.boards.isEmpty
@@ -412,6 +440,11 @@ extension Game {
       let reserved = commander.scriptState.calendarLedger?.pendingJourney?.seconds ?? 0
       commander.scriptState.calendarSeconds = min(
         1e12 - reserved, commander.scriptState.calendarSeconds + dt)
+    }
+    if missionCalendar, var clock = commander.scriptState.missionCalendar {
+      let reserved = commander.scriptState.calendarLedger?.pendingJourney?.seconds ?? 0
+      clock.seconds = min(1e12 - reserved, clock.seconds + dt)
+      commander.scriptState.missionCalendar = clock
     }
     return true
   }
@@ -486,7 +519,7 @@ extension Game {
       else { continue }
       scriptOffer = id
       scriptPresentedDialogue = dialogue
-      scriptConfirmSelected = true
+      scriptConfirmSelected = state.contract?.offer.courier == nil
       scriptChoiceSelection = 0
       blackjackReturn = screen
       packDialogScroll = 0
@@ -496,6 +529,7 @@ extension Game {
     return false
   }
   mutating func confirmScriptDialogue() {
+    resolveCourierTerminals()
     guard !paused else {
       notify("RESUME TO CONFIRM MISSION CONTACT")
       return
@@ -510,6 +544,13 @@ extension Game {
     else {
       notify("CONTACT CHANGED - OPEN THE CONTACT AGAIN")
       closeBlackjackHandoff()
+      return
+    }
+    if state.contract?.offer.courier != nil {
+      do {
+        try confirmCourierDialogue(id, dialogue: dialogue)
+        closeBlackjackHandoff()
+      } catch { notify(String(error.localizedDescription.prefix(512))) }
       return
     }
     if dialogue.collectionQuote?.positive == false {
@@ -607,7 +648,7 @@ extension Game {
       objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
       briefing: (job?.offer.briefing ?? pack.manifest.mission.briefing)
         + worldJobGallerySummary(origin: state?.id) + campaignGallerySummary(state)
-        + pledgeGallerySummary(state),
+        + pledgeGallerySummary(state) + courierGallerySummary(state),
       destination: destination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
@@ -650,7 +691,7 @@ extension Game {
             ? "Donation complete. Restore exact content for new offers."
             : "Restore the exact saved mission pack.",
           briefing: "Saved state and cargo remain intact." + campaignGallerySummary(state)
-            + pledgeGallerySummary(state),
+            + pledgeGallerySummary(state) + courierGallerySummary(state),
           destination: "Pack missing",
           reward: pledged ? "Local standing recorded once" : "Suspended", prerequisites: [],
           completed: state.milestones.count, milestones: [],

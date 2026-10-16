@@ -109,7 +109,7 @@ extension Game {
       guard offers.indices.contains(index) else {
         throw MissionPackError("This trial has no generated offer at the selected position.")
       }
-      if pack.manifest.pledge != nil {
+      if pack.manifest.pledge != nil || pack.manifest.courier != nil {
         openContractBoard()
         guard
           let selection = contractBoard.rows.firstIndex(where: {

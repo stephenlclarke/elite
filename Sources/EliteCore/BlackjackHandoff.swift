@@ -141,7 +141,8 @@ extension Display {
       ? game.scriptConfirmSelected
       : game.packOffer?.confirmSelected ?? game.blackjackOffer?.confirmSelected ?? true
     frame.label(
-      (selected ? "> " : "  ") + "Confirm / Continue", left, height - 48, scale: font, ink: .cyan)
+      (selected ? "> " : "  ") + (game.courierContactActionLabel ?? "Confirm / Continue"), left,
+      height - 48, scale: font, ink: .cyan)
     frame.label(
       (selected ? "  " : "> ") + "Back", left + contentWidth / 2, height - 48, scale: font,
       ink: .cyan)
@@ -159,7 +160,7 @@ extension Game {
     MissionNotice.wrap(
       packText(
         offeredScriptText ?? offeredDialog?.text ?? blackjackOffer?.action.text
-          ?? "Contact unavailable."),
+          ?? "Contact unavailable.") + courierContactDetails,
       width: max(10, Int(min(650, width - 48) / (6 * GameTypography.scale))))
   }
   var packDialogWindow: ScrollWindow {

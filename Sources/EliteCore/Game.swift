@@ -256,6 +256,7 @@ public struct Game: Sendable {
   public var isMissionTrial = false
   public var contractBoard = ContractBoardUI()
   var scriptPledgeAdmission: ScriptPledgeAdmission?
+  var scriptCourierAdmission: ScriptCourierAdmission?
   public var trialTitle: String?
   var trialDigest: String?
   var trialSeed: UInt64?
@@ -1135,6 +1136,7 @@ public struct Game: Sendable {
     recordOwnedGearConsumption(spent)
   }
   public mutating func escapePod() {
+    let before = self
     let spent = ownedFittedGear(named: "Escape Pod")
     guard !commander.accommodation.fittedBerths.contains(where: { $0.use.used }) else {
       notify("PASSENGERS CANNOT FIT THIS ESCAPE POD")
@@ -1142,6 +1144,11 @@ public struct Game: Sendable {
     }
     guard !docked, commander.equipment.remove("Escape Pod") != nil else { return }
     commander.synchronizeEquipmentInventory()
+    guard loseCourierPackagesOnEscape() else {
+      self = before
+      notify("COURIER LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
     commander.cargo = Array(repeating: 0, count: 17)
     commander.cargo[10] = commander.markedFirearms
     commander.legal = 0
@@ -1452,9 +1459,11 @@ public actor GameRuntime {
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     if galleryAction(key) { return }
+    game.resolveCourierTerminals(publish: scriptPublisher())
     let before = game
     let held = controls
     applyKey(key)
+    game.resolveCourierTerminals()
     game.scriptDurabilityAvailable = scriptSaveURL != nil
     if before.screen == .gameOver, [" ", "return"].contains(key) {
       game.scriptPacks = before.scriptPacks
@@ -1518,6 +1527,7 @@ public actor GameRuntime {
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
     let wasDocked = game.docked
+    let wasLive = game.screen != .gameOver
     let location = (game.commander.galaxy, game.commander.system)
     let localActive =
       !game.paused
@@ -1529,8 +1539,11 @@ public actor GameRuntime {
     let calendarActive = game.calendarActive
     game.scriptEventsDeferred = true
     let clockAdvanced = game.advanceScriptClockValues(
-      delta: delta, flight: flightActive, local: localActive, calendar: calendarActive)
+      delta: delta, flight: flightActive, local: localActive, calendar: calendarActive,
+      missionCalendar: game.missionCalendarActive)
     game.tick(delta: delta, controls: controls)
+    if wasLive && game.screen == .gameOver { game.markCourierFatalLoss() }
+    game.resolveCourierTerminals(publish: scriptPublisher())
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
     game.scriptEventsDeferred = false
     if localActive && !game.docked {
@@ -1549,6 +1562,7 @@ public actor GameRuntime {
   public func save(to url: URL) throws {
     try requireGalleryFileAccess(url)
     var candidate = game
+    candidate.resolveCourierTerminals()
     try Self.writeCommander(&candidate, to: url)
     game = candidate
     scriptSaveURL = url
@@ -1594,6 +1608,8 @@ public actor GameRuntime {
       candidate.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
       migrateScriptCalendar(&candidate, untrackedJump: world.jumpCountdown != nil)
       candidate.restoreScriptWorld(world)
+      try candidate.validateInstalledCourierContent()
+      candidate.resolveCourierTerminals()
       candidate.suspendUnavailableScriptContent()
       if persistMigrations && candidate.commander != commander {
         try Self.writeCommander(&candidate, to: url)
@@ -1607,6 +1623,7 @@ public actor GameRuntime {
     guard galleryNamespace == nil else {
       throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
+    try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.
     guard commander.scriptState.pledgeLedger == nil,

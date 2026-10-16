@@ -55,6 +55,9 @@ extension Game {
       }
       if let offer = row.offer {
         fields += [offer.briefing, String(describing: offer.status)]
+        if let terms = offer.courier {
+          fields += ScriptCourierPreview(terms: terms).review
+        }
       }
     }
     return .init(
