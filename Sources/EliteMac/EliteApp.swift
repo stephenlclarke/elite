@@ -15,6 +15,7 @@ final class GameView: NSView {
         }
       }
       if game.screen != oldValue.screen || game.paused != oldValue.paused
+        || game.inventoryContextEpoch != oldValue.inventoryContextEpoch
         || game.acceptsTextInput != oldValue.acceptsTextInput
       {
         held.removeAll()
@@ -24,6 +25,12 @@ final class GameView: NSView {
       if !acceptsTrackpadFlight || game.spin.mode != oldValue.spin.mode { trackpad.reset() }
       modelInventoryInputGeneration = processedInventoryInputGeneration
     }
+  }
+  private var displayedScriptPage: ScriptPagePresentation?
+  private var displayedScriptPageSize: NSSize?
+  var paintedMissionMenuPresentation: ScriptPagePresentation? {
+    guard displayedScriptPageSize == bounds.size else { return nil }
+    return displayedScriptPage
   }
   let audio = AudioPresenter()
   var held: Set<String> = []
@@ -89,6 +96,13 @@ final class GameView: NSView {
     paintedInventoryInputGeneration = modelInventoryInputGeneration
     paintedPurchaseContext = snapshot.equipmentPurchaseContext
     paintedPurchaseBounds = paintedPurchaseContext == nil ? nil : bounds
+    var painted = snapshot
+    if [.gallery, .contracts].contains(painted.screen) {
+      painted.viewportWidth = Double(bounds.width)
+      painted.viewportHeight = Double(bounds.height)
+    }
+    displayedScriptPage = painted.scriptPagePresentation
+    displayedScriptPageSize = bounds.size
   }
   private struct InventoryPaintState: Equatable {
     let context: InventoryContextEpoch
@@ -164,6 +178,35 @@ final class GameView: NSView {
     }
     return super.performKeyEquivalent(with: event)
   }
+  private func scriptPageToken() -> String? {
+    guard let proof = paintedMissionMenuPresentation,
+      let bytes = try? JSONEncoder().encode(proof), bytes.count <= 1024
+    else {
+      needsDisplay = true
+      return nil
+    }
+    return bytes.base64EncodedString()
+  }
+  private func enqueueKey(_ key: String) {
+    if ScriptPagePresentation.controlKeys.contains(key)
+      || ScriptPagePresentation.galleryContextKeys.contains(key)
+      || ScriptPagePresentation.contractContextKeys.contains(key)
+      || (game.screen == .gallery && ["gallery-trial", "mission-resume"].contains(key))
+    {
+      guard let token = scriptPageToken() else { return }
+      pending.append("script-page-key:" + token + ":" + key)
+    } else {
+      pending.append(key)
+    }
+  }
+  func enqueueGalleryCommand(_ key: String) {
+    guard game.screen == .gallery, ["gallery-trial", "mission-resume"].contains(key) else { return }
+    enqueueKey(key)
+  }
+  func enqueueContractCommand(_ key: String) {
+    guard ScriptPagePresentation.contractContextKeys.contains(key) else { return }
+    enqueueKey(key)
+  }
   override func keyDown(with event: NSEvent) {
     let key = Self.key(event)
     if event.modifierFlags.contains(.command), event.keyCode == 51,
@@ -193,7 +236,7 @@ final class GameView: NSView {
     let repeatText = game.acceptsTextInput && (key.count == 1 || key == "backspace")
     if !event.isARepeat || repeatNavigation || repeatText {
       if game.screen == .inventory || game.screen == .equipment { inventoryInputGeneration &+= 1 }
-      pending.append(key)
+      enqueueKey(key)
     }
   }
   override func keyUp(with event: NSEvent) {
@@ -227,9 +270,10 @@ final class GameView: NSView {
       }
       return
     }
-    if game.screen == .handoff {
+    if [.handoff, .gallery, .contracts].contains(game.screen) {
       let point = convert(event.locationInWindow, from: nil)
-      pending.append("handoff-click:\(point.x):\(point.y)")
+      guard let token = scriptPageToken() else { return }
+      pending.append("script-page-click:" + token + ":\(point.x):\(point.y)")
       return
     }
     if game.screen == .equipment {
@@ -238,9 +282,9 @@ final class GameView: NSView {
       pending.append("equipment-click:\(point.x):\(point.y)")
       return
     }
-    if game.screen == .gallery {
+    if game.screen == .library {
       let point = convert(event.locationInWindow, from: nil)
-      pending.append("gallery-click:\(point.x):\(point.y)")
+      pending.append("library-click:\(point.x):\(point.y)")
       return
     }
     guard [.chart, .shortChart, .navigation].contains(game.screen) else { return }
@@ -248,8 +292,12 @@ final class GameView: NSView {
     pending.append("map-click:\(point.x):\(point.y)")
   }
   override func scrollWheel(with event: NSEvent) {
-    if game.screen == .handoff {
-      pending.append(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
+    if game.screen == .contracts {
+      enqueueKey(event.scrollingDeltaY > 0 ? "up" : "down")
+      return
+    }
+    if game.screen == .handoff || game.screen == .library {
+      enqueueKey(event.scrollingDeltaY > 0 ? "pageup" : "pagedown")
       return
     }
     if [.secret, .system, .status, .inventory, .market, .buy, .sell].contains(game.screen) {
@@ -443,6 +491,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   // The frame loop and native integration checks share one ordered command batch.
   // Awaiting this method acknowledges actual processing instead of elapsed time.
+  private func scriptPageProof(_ token: Substring) -> ScriptPagePresentation? {
+    guard token.utf8.count <= 1400, let bytes = Data(base64Encoded: String(token)),
+      bytes.count <= 1024
+    else { return nil }
+    return try? JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+  }
   func processPendingCommands(in view: GameView) async {
     guard !processingPendingCommands else { return }
     processingPendingCommands = true
@@ -499,9 +553,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       } else if event.hasPrefix("showroom-click:") {
         let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }
+      } else if event.hasPrefix("script-page-key:") {
+        let parts = event.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1)
+        if parts.count == 2, let proof = scriptPageProof(parts[0]) {
+          await runtime.scriptPageKey(String(parts[1]), expected: proof)
+        }
+      } else if event.hasPrefix("script-page-click:") {
+        let parts = event.dropFirst("script-page-click:".count).split(separator: ":")
+        if parts.count == 3, let proof = scriptPageProof(parts[0]),
+          let x = Double(parts[1]), let y = Double(parts[2])
+        {
+          await runtime.scriptPageClick(x: x, y: y, expected: proof)
+        }
       } else if event.hasPrefix("handoff-click:") {
-        let values = event.dropFirst(14).split(separator: ":").compactMap { Double($0) }
-        if values.count == 2 { await runtime.blackjackHandoffClick(x: values[0], y: values[1]) }
+        // Coordinates alone cannot authorize a different contact after repaint or load.
+        continue
       } else if event.hasPrefix("equipment-click:") {
         let values = event.dropFirst(16).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.equipmentClick(y: values[1], x: values[0]) }
@@ -510,10 +576,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
           await runtime.mapClick(x: x, y: y)
         }
-      } else if event.hasPrefix("gallery-click:") {
+      } else if event.hasPrefix("gallery-click:") || event.hasPrefix("contract-click:")
+        || event.hasPrefix("contract-scroll:")
+      {
+        // Old unproved packets cannot select a new campaign or payment target.
+        continue
+      } else if event.hasPrefix("library-click:") {
         let parts = event.split(separator: ":")
         if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]) {
-          await runtime.galleryClick(x: x, y: y)
+          await runtime.libraryClick(x: x, y: y)
         }
       } else if event.hasPrefix("chart:") {
         let parts = event.split(separator: ":")
