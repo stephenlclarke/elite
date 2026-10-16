@@ -70,6 +70,43 @@ private func bridgeArchiveFixture() throws -> (MissionLaunchArchive, MissionShot
   return (archive, shot)
 }
 
+private func bridgeCollisionGame(components: [ScriptNPCComponent] = [], scale: Double = 1) throws
+  -> Game
+{
+  var game = Game(executive: false)
+  game.celestials = []
+  let vertices: [[Double]] = [
+    [0, 0, 0], [10, 0, 0], [10, 10, 0], [7, 10, 0], [7, 3, 0], [3, 3, 0], [3, 10, 0], [0, 10, 0],
+  ]
+  let face = Array(vertices.indices)
+  let bytes = try JSONSerialization.data(withJSONObject: [
+    "vertices": vertices,
+    "faces": [face, Array(face.reversed()), face, Array(face.reversed())],
+    "source": "test authored polygon", "license": "CC0",
+  ])
+  let design = try JSONDecoder().decode(ShipDesign.self, from: bytes)
+  #expect(ScriptPackLibrary.scriptGeometryValid(design))
+  let digest = ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(design))
+  game.commander.scriptState.geometry[digest] = design
+  let definition = ScriptNPCDefinition(
+    id: "collision", name: "Collision fixture", source: "test",
+    basis: "explicit native units", model: "asset:polygon", scale: scale, energy: 100,
+    recharge: 0, speed: 0, acceleration: 0, pitch: 0, yaw: 0, roll: 0,
+    missiles: 0, fuel: 0, ecm: false, bounty: 0, lasers: [], components: components)
+  let npc = ScriptNPCState(
+    fit: .init(definition: definition, models: ["asset:polygon": digest]),
+    fuel: 0, guns: [:],
+    components: Dictionary(
+      uniqueKeysWithValues: components.map {
+        ($0.id, ScriptNPCComponentState(identity: bridgeActor, energy: $0.energy, guns: [:]))
+      }))
+  #expect(npc.valid)
+  var body = SpaceBody(id: 42, hull: .cobra, position: .init(0, 0, 100))
+  body.scriptNPC = npc
+  game.bodies = [body]
+  return game
+}
+
 struct MissionNativeBridgeTests {
   @Test func realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity() throws {
     let (body, context) = try bridgeFixture()
@@ -359,6 +396,172 @@ struct MissionNativeBridgeTests {
     #expect(throws: MissionNativeBridgeError.sourceMismatch) {
       try game.currentMissionNativeBinding(bodyID: native.id)
     }
+  }
+
+  @Test func positiveRadiusRespectsConcaveAuthoredNotchAndMissingGeometryIsHardFailure() throws {
+    var game = try bridgeCollisionGame()
+    let notch = try game.nearestMissionCollision(
+      from: .init(5, 6, 0), direction: .init(0, 0, 1),
+      range: 200, radius: 0.2, includePlayer: false)
+    #expect(notch == nil)
+    let solid = try game.nearestMissionCollision(
+      from: .init(1, 6, 0), direction: .init(0, 0, 1),
+      range: 200, radius: 0.2, includePlayer: false)
+    #expect(solid?.hit.target == .body(42))
+    game.commander.scriptState.geometry = [:]
+    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+      try game.nearestMissionCollision(
+        from: .init(5, 6, 0), direction: .init(0, 0, 1),
+        range: 200, radius: 0.2, includePlayer: false)
+    }
+  }
+
+  @Test func customComponentUsesActualRenderingScaleOrientationSpinAndSolidLiveState() throws {
+    var orientation = Basis3()
+    orientation.rotate(pitch: 0, roll: 0.3, yaw: 0)
+    let component = ScriptNPCComponent(
+      id: "wing", model: "asset:polygon", scale: 3,
+      position: .init(20, 0, 0), orientation: orientation, energy: 10, solid: true, weapons: [])
+    var game = try bridgeCollisionGame(components: [component], scale: 2)
+    game.bodies[0].rotation = 0.4
+    let body = game.bodies[0]
+    let rendered = try #require(game.scriptNPCMesh(body))
+    let local =
+      (component.position + component.orientation.apply(Vector3(1, 6, 0) * component.scale)) * 2
+    let point = body.position + body.modelVector(local)
+    let direction = body.modelVector(.init(0, 0, 1)).unit
+    let contact = try #require(
+      game.nearestMissionCollision(
+        from: point - direction * 50,
+        direction: direction, range: 100, radius: 0.1, includePlayer: false))
+    #expect(contact.victimPart == "wing" && contact.componentUUID == bridgeActor)
+    #expect(contact.selectedTargetBody?.id == 42)
+    let expectedVertex = (component.position + orientation.apply(Vector3(10, 0, 0) * 3)) * 2
+    #expect(rendered.vertices.contains { ($0 - expectedVertex).length < 1e-9 })
+    game.bodies[0].scriptNPC?.components["wing"]?.energy = 0
+    let dead = try game.nearestMissionCollision(
+      from: point - direction * 50,
+      direction: direction, range: 100, radius: 0.1, includePlayer: false)
+    #expect(dead == nil)
+    let nonsolid = ScriptNPCComponent(
+      id: "wing", model: "asset:polygon", scale: 3,
+      position: component.position, orientation: orientation, energy: 10, solid: false, weapons: [])
+    var ghost = try bridgeCollisionGame(components: [nonsolid], scale: 2)
+    ghost.bodies[0].rotation = 0.4
+    #expect(
+      try ghost.nearestMissionCollision(
+        from: point - direction * 50,
+        direction: direction, range: 100, radius: 0.1, includePlayer: false) == nil)
+  }
+
+  @Test func nativeTiesUseStableBodyIDAndCelestialOcclusionIncludesProjectileRadius() throws {
+    var game = Game(executive: false)
+    game.celestials = []
+    let first = SpaceBody(id: 9, hull: .cargo, position: .init(0, 0, 500))
+    let second = SpaceBody(id: 3, hull: .cargo, position: first.position)
+    for bodies in [[first, second], [second, first]] {
+      game.bodies = bodies
+      let hit = try game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1),
+        range: 1000, radius: 1, includePlayer: false)
+      #expect(hit?.hit.target == .body(3))
+    }
+    game.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: 10)]
+    let celestial = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1),
+      range: 1000, radius: 2, includePlayer: false)
+    #expect(celestial?.hit.target == .celestial(.planet))
+    #expect(abs((celestial?.hit.distance ?? 0) - 188) < 1e-8)
+    game.bodies[0].energy = 0
+    game.bodies[1].energy = 0
+    game.celestials = []
+    #expect(
+      try game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1),
+        range: 1000, radius: 1, includePlayer: false) == nil)
+  }
+
+  @Test func degenerateZeroRayAndNegativeCelestialCannotExposeBehindTargetAndTinyScaleHits() throws
+  {
+    var degenerate = try bridgeCollisionGame()
+    let data = try JSONSerialization.data(withJSONObject: [
+      "vertices": [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3], [0, 1, 3], [1, 2, 3]], "source": "test", "license": "CC0",
+    ])
+    let design = try JSONDecoder().decode(ShipDesign.self, from: data)
+    let hash = try #require(degenerate.bodies[0].scriptNPC?.fit.models["asset:polygon"])
+    degenerate.commander.scriptState.geometry[hash] = design
+    degenerate.bodies.append(.init(id: 99, hull: .cargo, position: .init(0, 0, 500)))
+    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+      try degenerate.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1),
+        range: 1000, radius: 0, includePlayer: false)
+    }
+    var celestial = Game(executive: false)
+    celestial.bodies = []
+    celestial.celestials = [.init(kind: .planet, position: .init(0, 0, 100), radius: -1)]
+    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+      try celestial.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1),
+        range: 200, radius: 2, includePlayer: false)
+    }
+    let component = ScriptNPCComponent(
+      id: "tiny", model: "asset:polygon", scale: 0.001,
+      position: .init(20, 0, 0), orientation: .init(), energy: 10, solid: true, weapons: [])
+    let tiny = try bridgeCollisionGame(components: [component], scale: 0.001)
+    let point = Vector3(0.020001, 0.000006, 100)
+    let contact = try tiny.nearestMissionCollision(
+      from: point - Vector3(0, 0, 0.005),
+      direction: .init(0, 0, 1), range: 0.01, radius: 0, includePlayer: false)
+    #expect(contact?.victimPart == "tiny" && contact?.componentUUID == bridgeActor)
+  }
+
+  @Test func actualProfiledLaserProofAllocatesOnlyAfterPhysicalPreflightAndMissHasNoShot() throws {
+    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+    let pack = try ScriptPackLibrary.read(directory)
+    var game = Game(executive: false)
+    game.screen = .status
+    game.scriptPacks = [pack]
+    let instance = try game.acceptScriptMission(pack)
+    game.launch()
+    game.emitScriptEvent("station.undocked")
+    game.drainScriptEvents()
+    game.ensurePhysicalActors()
+    let source = try #require(
+      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+    let weapon = try #require(source.scriptNPC?.fit.definition.lasers?.first { $0.kind == .laser })
+    game.bodies = [source]
+    game.celestials = []
+    let muzzle =
+      source.position
+      + source.orientation.apply(weapon.muzzle * source.scriptNPC!.fit.definition.scale)
+    let original = game
+    #expect(throws: (any Error).self) {
+      try game.makeMissionNativeLaserProof(
+        sourceBodyID: source.id, weapon: weapon,
+        component: nil, muzzle: muzzle, direction: .init(0, 0, 0))
+    }
+    #expect(game.commander == original.commander && game.bodies == original.bodies)
+    var invalid = game
+    invalid.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: -1)]
+    let invalidBefore = invalid
+    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+      try invalid.makeMissionNativeLaserProof(
+        sourceBodyID: source.id, weapon: weapon,
+        component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
+    }
+    #expect(invalid.commander == invalidBefore.commander && invalid.bodies == invalidBefore.bodies)
+    let emission = game.commander.flightSimulation.nextEmission
+    let proof = try game.makeMissionNativeLaserProof(
+      sourceBodyID: source.id, weapon: weapon,
+      component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
+    #expect(proof.kind == .laser && proof.damage == weapon.damage && proof.contact == nil)
+    #expect(proof.sourceActorID == source.missionActorID && proof.origin.emissionID == emission)
+    #expect(game.commander.flightSimulation.nextEmission == emission + 1)
+    #expect(game.bodies == original.bodies)
+    #expect(game.commander.scriptState == original.commander.scriptState)
   }
 
 }
