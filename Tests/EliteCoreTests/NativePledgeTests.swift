@@ -57,10 +57,12 @@ import Testing
     view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
     originalMenu = NSApp?.mainMenu
     var game = fixture.game(cash: cash, food: food)
+    game.ensureScriptCalendar(origin: .newCommander)
     game.viewportWidth = 512
     game.viewportHeight = 518
     let initial = game
     await delegate.runtime.nativeCommand { @Sendable candidate in candidate = initial }
+    #expect(await delegate.runtime.snapshot().scriptPacks.map(\.digest) == [fixture.pack.digest])
     try await delegate.runtime.save(to: fixture.save)
   }
   func frame() async throws {
