@@ -220,12 +220,20 @@ extension Game {
         hit.target == .body($0.id)
       } == true
     let flightBeforeEmission = commander.flightSimulation
-    guard intended, let origin = makeAttackOrigin(owner: actor.identity) else { return }
+    guard intended else { return }
     let laser: LaserKind = mining ? .mining : .pulse
     if contact.selectedTargetBody?.scriptNPC != nil {
-      guard let receipt = try? applyNativeMissionContact(
-        contact, origin: origin, damage: laser.damage, laser: laser, mount: .front,
-        emissionPosition: commander.flightSimulation.pose.systemPoint(position))
+      do {
+        _ = try preflightNativeMissionContact(
+          contact, owner: actor.identity, damage: laser.damage, laser: laser, mount: .front)
+      } catch { return }
+    }
+    guard let origin = makeAttackOrigin(owner: actor.identity) else { return }
+    if contact.selectedTargetBody?.scriptNPC != nil {
+      guard
+        let receipt = try? applyNativeMissionContact(
+          contact, origin: origin, damage: laser.damage, laser: laser, mount: .front,
+          emissionPosition: commander.flightSimulation.pose.systemPoint(position))
       else {
         commander.flightSimulation = flightBeforeEmission
         return

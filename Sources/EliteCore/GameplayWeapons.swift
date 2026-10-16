@@ -21,10 +21,23 @@ extension Game {
         from: .init(0, 0, 0), direction: direction, range: 6000, radius: 0,
         excludingBodyIDs: [], includePlayer: false)
     } catch { return }
+    guard let player = commander.flightSimulation.player else { return }
+    let damage: Double
+    if let contact, case .body(let id) = contact.hit.target,
+      let body = bodies.first(where: { $0.id == id })
+    {
+      damage = commander.laserDamage(against: body.hull, mount: mount)
+    } else {
+      damage = laser.damage
+    }
+    if let contact, contact.selectedTargetBody?.scriptNPC != nil {
+      do {
+        _ = try preflightNativeMissionContact(
+          contact, owner: player, damage: damage, laser: laser, mount: mount)
+      } catch { return }
+    }
     let flightBeforeEmission = commander.flightSimulation
-    guard let player = commander.flightSimulation.player,
-      let origin = makeAttackOrigin(owner: player)
-    else { return }
+    guard let origin = makeAttackOrigin(owner: player) else { return }
     let emissionPosition = commander.flightSimulation.pose.position
     guard let contact else {
       recordPlayerLaserDischarge(laser)
@@ -36,12 +49,6 @@ extension Game {
       return
     }
     let hit = contact.hit
-    let damage: Double
-    if case .body(let id) = hit.target, let body = bodies.first(where: { $0.id == id }) {
-      damage = commander.laserDamage(against: body.hull, mount: mount)
-    } else {
-      damage = laser.damage
-    }
     if contact.selectedTargetBody?.scriptNPC != nil {
       do {
         let receipt = try applyNativeMissionContact(
@@ -73,9 +80,8 @@ extension Game {
   /// Script-specific cadence/damage remains with the original encounter.
   mutating func emitLegacyNPCBeam(bodyID: Int, damage: Double, energyMultiplier: Double = 1) {
     ensurePhysicalActors()
-    let flightBeforeEmission = commander.flightSimulation
     guard let body = bodies.first(where: { $0.id == bodyID && $0.energy > 0 }),
-      let owner = body.physical?.identity, let origin = makeAttackOrigin(owner: owner),
+      let owner = body.physical?.identity,
       body.position.length > 0
     else { return }
     let launch = commander.flightSimulation.pose.systemPoint(body.position)
@@ -85,15 +91,21 @@ extension Game {
         from: body.position, direction: body.position.unit * -1,
         range: body.position.length + 1, radius: 0,
         excludingBodyIDs: [bodyID], includePlayer: true)
-    } catch {
-      commander.flightSimulation = flightBeforeEmission
-      return
+    } catch { return }
+    if let contact, contact.selectedTargetBody?.scriptNPC != nil {
+      do {
+        _ = try preflightNativeMissionContact(
+          contact, owner: owner, damage: damage, laser: nil, mount: nil)
+      } catch { return }
     }
+    let flightBeforeEmission = commander.flightSimulation
+    guard let origin = makeAttackOrigin(owner: owner) else { return }
     if let contact {
       if contact.selectedTargetBody?.scriptNPC != nil {
-        guard let receipt = try? applyNativeMissionContact(
-          contact, origin: origin, damage: damage, laser: nil, mount: nil,
-          emissionPosition: launch)
+        guard
+          let receipt = try? applyNativeMissionContact(
+            contact, origin: origin, damage: damage, laser: nil, mount: nil,
+            emissionPosition: launch)
         else {
           commander.flightSimulation = flightBeforeEmission
           return
