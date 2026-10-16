@@ -681,8 +681,11 @@ extension Game {
     sourceBodyID: Int, weapon: ScriptNPCWeapon, component: UUID?,
     muzzle: Vector3, direction: Vector3
   ) throws -> MissionNativeLaserProof {
-    let source = try currentMissionNativeBinding(bodyID: sourceBodyID)
-    guard let context = gameplayContext(),
+    guard let context = gameplayContext() else {
+      throw MissionNativeBridgeError.invalidNativeBinding
+    }
+    let source = try resolveMissionNativeBinding(bodyID: sourceBodyID, context: context)
+    guard
       let actual = missionWeaponDescriptor(
         weapon, source: source.descriptor.body, component: component,
         muzzle: muzzle, direction: direction), actual.kind == .laser,
@@ -759,7 +762,7 @@ extension Game {
     }
     let source: MissionActorBinding?
     if ownerBodies.count == 1 {
-      source = try? currentMissionNativeBinding(bodyID: ownerBodies[0].id)
+      source = try? resolveMissionNativeBinding(bodyID: ownerBodies[0].id, context: context)
     } else {
       source = nil
     }
@@ -785,7 +788,7 @@ extension Game {
         context.actors.filter({ $0.identity == identity }).count == 1
       else { throw MissionNativeBridgeError.invalidNativeBinding }
       victim = identity
-      targetBinding = try? currentMissionNativeBinding(bodyID: id)
+      targetBinding = try? resolveMissionNativeBinding(bodyID: id, context: context)
     case .celestial:
       victim = nil
       targetBinding = nil
@@ -811,5 +814,18 @@ extension Game {
       system: context.system, visit: context.visit, sceneRevision: context.revision,
       instanceRevision: instance.revision, projectileBody: body,
       targetBody: contact.selectedTargetBody)
+  }
+}
+
+extension Game {
+  /// The physical producer supplies the one actual context captured within its actor turn.
+  /// Kept private so a caller-built context cannot become mission authority.
+  private func resolveMissionNativeBinding(bodyID: Int, context: EncounterContext) throws
+    -> MissionActorBinding
+  {
+    guard let descriptor = currentMissionActorDescriptor(bodyID: bodyID),
+      let body = bodies.first(where: { $0.id == bodyID })
+    else { throw MissionNativeBridgeError.sourceMismatch }
+    return try MissionNativeBridge.bindActor(descriptor: descriptor, body: body, context: context)
   }
 }
