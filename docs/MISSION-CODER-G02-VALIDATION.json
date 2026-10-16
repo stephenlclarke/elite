@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "core focused passed; native AppKit source checkpoint pending lease",
+  "stage": "focused33/49 and native5 passed; broad regression/full CI and final owner acceptance pending",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -146,6 +146,126 @@
       "logSHA256": "a005a942bcc7abcdae18995b2b9ee47d27b3a2227fefd87761b5049365778378",
       "inputManifestPath": "/tmp/elite-g02-checkpoint/3b5fa41-inputs.json",
       "inputManifestSHA256": "69160598072d55e1a18b7f17d6a6057fef0a887ff9b2f84a361afa73796e5ad5"
+    },
+    {
+      "commit": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-002",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "purpose": "Approved admission layout/frame before-after diagnostics, then corrected native trial first; native/core bounded checks only if passing, no media/full CI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState"
+      ],
+      "startUTC": "2026-10-16T05:45:47.923389+00:00",
+      "endUTC": "2026-10-16T05:46:08.801120+00:00",
+      "seconds": 20.877647208049893,
+      "exit": 0,
+      "evidenceDirectory": "/tmp/elite-g02-native-8fc1632-trial",
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "unchangedInputs": true,
+      "inputCount": 917,
+      "methods": 1,
+      "caseInvocations": 1,
+      "logPath": "/tmp/elite-g02-checkpoint/8fc1632-trial.log",
+      "logSHA256": "e83e13e9b2935bdde7dc4e16f87929bef0c370f42b8bc8a1bc7d6c2c1163e8f2",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/8fc1632-trial-inputs.json",
+      "inputManifestSHA256": "79215ccc02d27d25aa601b5ec9ba997de57046e1dcc228843c1ce74e7008de76"
+    },
+    {
+      "commit": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-002",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "purpose": "Approved admission layout/frame before-after diagnostics, then corrected native trial first; native/core bounded checks only if passing, no media/full CI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "nativeCourier(AllSix|Stale|Origin|Unavailable)"
+      ],
+      "startUTC": "2026-10-16T05:46:41.315723+00:00",
+      "endUTC": "2026-10-16T05:46:58.183321+00:00",
+      "seconds": 16.86749487509951,
+      "exit": 0,
+      "evidenceDirectory": "/tmp/elite-g02-native-8fc1632-remaining",
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "unchangedInputs": true,
+      "inputCount": 917,
+      "methods": 4,
+      "caseInvocations": 4,
+      "logPath": "/tmp/elite-g02-checkpoint/8fc1632-remaining-native.log",
+      "logSHA256": "a52c680f0c51a7d8de65604b71b5912f7d1588396480a27a68cb5f1089191f56",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/8fc1632-remaining-native-inputs.json",
+      "inputManifestSHA256": "79215ccc02d27d25aa601b5ec9ba997de57046e1dcc228843c1ce74e7008de76"
+    },
+    {
+      "commit": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-002",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "purpose": "Approved admission layout/frame before-after diagnostics, then corrected native trial first; native/core bounded checks only if passing, no media/full CI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courier"
+      ],
+      "startUTC": "2026-10-16T05:46:58.276281+00:00",
+      "endUTC": "2026-10-16T05:47:19.366116+00:00",
+      "seconds": 21.089868041919544,
+      "exit": 0,
+      "evidenceDirectory": null,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "unchangedInputs": true,
+      "inputCount": 917,
+      "methods": 33,
+      "caseInvocations": 49,
+      "logPath": "/tmp/elite-g02-checkpoint/8fc1632-focused.log",
+      "logSHA256": "dd18b875dff8d2b8a2ad1ff37bb77ca6ead6d89bbe543475a8a36bc1372865db",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/8fc1632-focused-inputs.json",
+      "inputManifestSHA256": "79215ccc02d27d25aa601b5ec9ba997de57046e1dcc228843c1ce74e7008de76"
     }
   ],
   "earlyCheckpoint": {
@@ -160,12 +280,10 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "expanded focused source checkpoint",
-    "native all-six/Gallery/renderer evidence",
-    "complete make ci coverage/TSan/ASan/leak gates",
-    "source-owner acceptance",
-    "central integration and formal PR review/merge",
-    "separate G1 equipment and Inventory epoch composition"
+    "broad old-pack regression and complete make ci coverage/TSan/ASan/leak gates",
+    "final source-owner acceptance",
+    "central integration and actual @codex review/fix/review/final-head/merge",
+    "separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
     "commit": "f55b5db2cfc6346220db2f5b098e949792e4f3b6",
@@ -532,6 +650,481 @@
       "ScriptContractCore.contractAcceptanceQuote candidate, acceptContract candidate",
       "ScriptDirector.acceptScriptMission candidate, drainScriptEvents candidate",
       "ScriptCourier.resolveCourierTerminals candidate, confirmCourierContact candidate"
+    ]
+  },
+  "boundedNativeCheckpoint": {
+    "commit": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+    "lease": "elite-validation-002",
+    "released": true,
+    "nativeMethods": 5,
+    "focusedMethods": 33,
+    "focusedCaseInvocations": 49,
+    "originalImages": 54,
+    "durableImages": 16,
+    "images": [
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-held-reload-1512.png",
+        "sha256": "e757a21e7594b5aed3158daf66f552119b679deb863025218ac8f90c959800c5",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-held-reload-512.png",
+        "sha256": "a73a00d9896e7246ccf4faa02be1b2dd1e319c3b27614455bf47465e1d3f8f6c",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-restart-1512.png",
+        "sha256": "517829f52d6876fb054a40393e4248a63ed604a092db877143fa246cf0b2866a",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-restart-512.png",
+        "sha256": "672a2cfb8b3a82dc6f450de7bd1a7d394d1b960201778cec932ec2fceb09253c",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-trial-restart-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-return-1512.png",
+        "sha256": "4b794eaeb160e7b696518d256e5c10159947df3de544eddada1a59a5ad017c7a",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-return-512.png",
+        "sha256": "7dd0c6e8747a2002ef1e34c25f4422e33677fa2c2d24a25d31eb76e6a01c6fb6",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-trial-return-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-review-1512.png",
+        "sha256": "517829f52d6876fb054a40393e4248a63ed604a092db877143fa246cf0b2866a",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-trial/courier-trial-review-512.png",
+        "sha256": "672a2cfb8b3a82dc6f450de7bd1a7d394d1b960201778cec932ec2fceb09253c",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-trial-review-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-origin-abandon-review-1512.png",
+        "sha256": "0a684d42f7a3a0323676edfe6da441e3cc4bb5075f3a7a39b6d8010335cb5899",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-origin-abandon-review-512.png",
+        "sha256": "a522782de8256cb017a2cd2313697e66b4654fbf5b1ffd7da006cb59c2cc9d73",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-origin-abandon-review-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-package-no-hold-1512.png",
+        "sha256": "3315c6fbdfb10a20f91f10ac34d55e8ab0e95b2ee72b2f44c7538b959023c794",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-package-no-hold-512.png",
+        "sha256": "0cd5a6e73aed9ea08de60fb476f55136f3cede237325051811b91fdfefd233fc",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-package-no-hold-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-package-no-hold-scrolled-1512.png",
+        "sha256": "3315c6fbdfb10a20f91f10ac34d55e8ab0e95b2ee72b2f44c7538b959023c794",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-package-no-hold-scrolled-512.png",
+        "sha256": "c982c0513d0d0a0b56866693cc56578386b27f1f58bf16135907d4b2424a9282",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-package-no-hold-scrolled-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-delivered-1512.png",
+        "sha256": "1e511a946a6e7a63ecc61de8bedceaafa5a818dadac3a5afb9bc03e4fc029c42",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-delivered-512.png",
+        "sha256": "3dd4fb035f3c27514d507d99c80cd65faf2cd876d655d68c505282215d0f19cd",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-physical-approach-1512.png",
+        "sha256": "3e13bf831f9c6e3a67f546d01dfec7d1488223e762c1f0c82f8629cb166892c6",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-physical-approach-512.png",
+        "sha256": "f1fc903d1cbff62745efed1c10c8b894de69dfdd0d5ac49f83390c548234976f",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-0-physical-approach-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-receiving-contact-1512.png",
+        "sha256": "1ac1ee1b3c0622b2e93e08ab0fd497a07e93af08fe10c63ad39164086f6a6867",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-receiving-contact-512.png",
+        "sha256": "c5250b328d781dae4ddea362be6e49f5ef19732c6af1a5d0658f1e6f05de574c",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-review-1512.png",
+        "sha256": "ebea9b8b04f00be7975d30f9c73a38d4b63d9575d1ee62d5dc35ae6b47a7deec",
+        "pixels": [
+          3024,
+          1964
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-0-review-1512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-0-review-512.png",
+        "sha256": "94b90c334a9792645b1fd894400e60e8ddcccc7cb041859cc791bac5927cef34",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-0-review-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-delivered-1512.png",
+        "sha256": "75113b75e298e26c84a5859afa06d8a142feb199b5324b2d51e18e9c4e4d4b81",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-delivered-512.png",
+        "sha256": "03747f16510f9887f3090631b374df4ad39d704ea7fd5427e7ad05cc1c521465",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-physical-approach-1512.png",
+        "sha256": "70f93af127884607f2e85e43fd28898cd5e3b8663808422b64f204d1651fdef5",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-physical-approach-512.png",
+        "sha256": "05748d1a9c6d0212182b4641842b66f07de0690f29a018876638c7be5814317e",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-1-physical-approach-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-receiving-contact-1512.png",
+        "sha256": "0ed3c1ebf9f8e190b49d4a29c23d6db4426131ef354ee2bf926165a2a82d097a",
+        "pixels": [
+          3024,
+          1964
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-1-receiving-contact-1512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-receiving-contact-512.png",
+        "sha256": "813838a39cbbd304748a42fd5d60b8df0ff6ae7c3c34e845202208c66a26140d",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-1-receiving-contact-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-review-1512.png",
+        "sha256": "5136349944d66c25606d4cffcc77f92dafd0bcc4ffe03f14e8474ab95ac959dc",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-1-review-512.png",
+        "sha256": "1bf11f35890c2fffb6d732c095015e7d3f1383e318a829095fa7084fd426f702",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-2-delivered-1512.png",
+        "sha256": "0dba6a7ac9e4c5d62ffecf6b8cd9dc5fcbedbe3a3aecbd3e97bbca6c02bb86fb",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-2-delivered-512.png",
+        "sha256": "8bffc691f2329d05ebe5612b85ff1500ae316edd2b31ef72d451457a95b70e8b",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-2-receiving-contact-1512.png",
+        "sha256": "19ace5c02763d70c4f7d1b8370dd67cd0dd4428fcf1785aaaea7e7dd7c862eb7",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-2-receiving-contact-512.png",
+        "sha256": "ae76744ef8ecb42fc74ae24bb9a0fd5a1bd40b4cb6ffafd95c6406269ee2b372",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-2-review-1512.png",
+        "sha256": "013619ed7832ca20576569d8412f79137c65422b5b662aca38d3d604cc661d0f",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-2-review-512.png",
+        "sha256": "cd9b945c436698f79fcc6d4f9acb80793dd36dcb864a1e8167488d84183f4666",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-3-delivered-1512.png",
+        "sha256": "746ea4a8200fd49f6187085e697ea79c7eb0824e7591e8e57291896b573cc729",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-3-delivered-512.png",
+        "sha256": "df6b7e275673bd5111d6d819f0d3f58e13f79e543a324685fcd499e5e2656e81",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-3-receiving-contact-1512.png",
+        "sha256": "36e7f35317a621d726825fb98bd2824fceca3f02b9aa5224f71a8a12fbd2d0e8",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-3-receiving-contact-512.png",
+        "sha256": "d66dec4af4f258c42c64108cec0dd22790342386af4ade77f61c42215e39a7b2",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-3-review-1512.png",
+        "sha256": "3bfa650a18a755a5369a345db63bdcdb0d40ea3abdd33549c93bc7ee2dcc9e57",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-3-review-512.png",
+        "sha256": "61872e3a595eb6f2c248a7bd787e7eef373533b695202c4c1d59b2b19aee261c",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-4-delivered-1512.png",
+        "sha256": "12c0d913afba6e46cc1a0a85493a2cacf1885e3e8cc572783403593a28ce0af8",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-4-delivered-512.png",
+        "sha256": "f81601b5a578752ed64e4c86c67411d17e6b0f1c608cc5a287bd08435795be9e",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-4-receiving-contact-1512.png",
+        "sha256": "4160d44f09d4f49c3cc84d38eee29bd557565e6faa33d8fcfda4d914feac8e4b",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-4-receiving-contact-512.png",
+        "sha256": "9cc78d6afb31ee6921bcd6da069986ba4eb8a312db5b8a1349e8d8b2788a1f09",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-4-review-1512.png",
+        "sha256": "3cd1b3d5db583148b410c03604acea0d2887c3283f398116d3115aef72ea924a",
+        "pixels": [
+          3024,
+          1964
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-4-review-1512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-4-review-512.png",
+        "sha256": "a15b51a69cc5a5cad9040c45a23dc3410a468042b6a97493f551500bbf0fb537",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-4-review-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-5-delivered-1512.png",
+        "sha256": "4905c7748dc160505e9f2bf0f98fe130cd9debb2163de49fe64cb1c01c119008",
+        "pixels": [
+          3024,
+          1964
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-5-delivered-1512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-5-delivered-512.png",
+        "sha256": "e0c9d7ed37b1b1acc8062d2c2c466dcce20e2854289db573b721c6b522194640",
+        "pixels": [
+          512,
+          518
+        ],
+        "durable": "docs/images/g02-couriers/courier-row-5-delivered-512.png"
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-5-receiving-contact-1512.png",
+        "sha256": "a8b007ca4bc6580eeb116a96e64ea5602693b2981b6d79b569e28a7f799c31bd",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-5-receiving-contact-512.png",
+        "sha256": "37f972290e26dee5a953e28e07ba5d154b97782e8b2df670679ca8088ef3bd38",
+        "pixels": [
+          512,
+          518
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-5-review-1512.png",
+        "sha256": "069cfcfebd7cbcc434a4d8460c260386e9e18423e7b75894cdab4b126c2cdc12",
+        "pixels": [
+          3024,
+          1964
+        ]
+      },
+      {
+        "original": "/tmp/elite-g02-native-8fc1632-remaining/courier-row-5-review-512.png",
+        "sha256": "bd397353a5a016e4899cebf05264974f73dcb327e869c2774d06b1f1ab9801a7",
+        "pixels": [
+          512,
+          518
+        ]
+      }
+    ],
+    "physicalApproach": "Pinned row0 data and row1 package retain actual launch/arrival traffic, station pose and celestials. Initially fitted native docking tier; public launch/system selection/hyperspace/target-cycle and actual actor frames reach real station docking before painted handoff. Other4 rows and core multi-hop tests use disclosed controlled native dock-operation fixtures.",
+    "visualInspection": [
+      "compact trial review",
+      "compact package receiving contact",
+      "compact real data approach",
+      "wide data receiving contact",
+      "compact difficulty3 delivered receipt",
+      "compact unavailable package scrolled terms",
+      "compact restored live Gallery"
+    ],
+    "limits": [
+      "No physical approach claim for remaining four controlled routes.",
+      "Native and focused checks are separate bounded runs, not full CI.",
+      "Private admission references preserve immutable same-action authority; full quote/two-phase preparation retained."
     ]
   }
 }
