@@ -132,4 +132,80 @@ struct NativeMissionActorAdmissionComponentTests {
     #expect(
       restored.allSatisfy { $0.scriptNPC?.components.count == 32 && $0.scriptNativeUnits == 33 })
   }
+  @Test func actualAuthoredHighEnergyMissionProfileRetainsUnseededPhysicalResources() throws {
+    let original = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+    let temporary = FileManager.default.temporaryDirectory.appendingPathComponent(
+      "elite-native-high-energy-" + UUID().uuidString, isDirectory: true)
+    try FileManager.default.copyItem(at: original, to: temporary)
+    defer { try? FileManager.default.removeItem(at: temporary) }
+    let manifest = temporary.appendingPathComponent("manifest.toml")
+    var text = try String(contentsOf: manifest, encoding: .utf8)
+    let energy = try #require(text.range(of: "energy = 120.0"))
+    text.replaceSubrange(energy, with: "energy = 500000.0")
+    try text.write(to: manifest, atomically: true, encoding: .utf8)
+    let pack = try ScriptPackLibrary.read(temporary)
+    var game = Game(executive: false)
+    game.screen = .status
+    try game.commander.prepareEquipment(legacy: false)
+    game.scriptPacks = [pack]
+    let instance = try game.acceptScriptMission(pack)
+    game.launch()
+    game.emitScriptEvent("station.undocked")
+    game.drainScriptEvents()
+    game.ensurePhysicalActors()
+    let initial = game.bodies.filter { $0.missionInstanceID == instance }
+    #expect(initial.count == 2)
+    #expect(
+      initial.allSatisfy { $0.energy == 500000 && $0.scriptNPC?.fit.definition.energy == 500000 })
+    #expect(initial.allSatisfy { $0.physical?.npc?.resources == nil })
+    #expect(NPCResources.legacyEnergyOnly(maximumEnergy: 500000) == nil)
+    let originalNative = Set(initial.compactMap { $0.physical?.identity })
+    #expect(originalNative.count == 2)
+    for index in game.bodies.indices where game.bodies[index].missionInstanceID == instance {
+      game.bodies[index].energy -= 123
+    }
+    game.persistScriptActors(unloading: true)
+    game.bodies.removeAll { $0.missionInstanceID == instance }
+    let sources = try game.retainedMissionActorAdmissionSources()
+    let source = try #require(sources.first { $0.instanceID == instance })
+    #expect(source.actors.count == 2)
+    #expect(
+      source.actors.allSatisfy {
+        $0.maximumHullEnergy == 500000 && $0.canonicalBody.energy == 499877
+      })
+    let preparation = try game.prepareMissionActorAdmission(source)
+    guard case .ready(let plan) = preparation else {
+      Issue.record("A valid500000HP Mission profile must retain its exact condition on readmission")
+      return
+    }
+    let before = game
+    let retained = try #require(game.commander.scriptState.instances[instance])
+    let staged = try plan.retentionPatch.preparingInstance(retained)
+    #expect(game.commander == before.commander && game.bodies == before.bodies)
+    let receipt = try game.commitMissionActorAdmission(plan)
+    game.commander.scriptState.instances[instance] = staged
+    let restored = game.bodies.filter { $0.missionInstanceID == instance }
+    #expect(restored.count == 2 && receipt.nativeActors.count == 2)
+    #expect(restored.allSatisfy { $0.energy == 499877 && $0.physical?.npc?.resources == nil })
+    let currentNative = Set(restored.compactMap { $0.physical?.identity })
+    #expect(currentNative.count == 2 && currentNative.isDisjoint(with: originalNative))
+    #expect(
+      game.commander.flightSimulation.nextActor == before.commander.flightSimulation.nextActor + 2)
+    #expect(
+      game.commander.flightSimulation.nextSpawn == before.commander.flightSimulation.nextSpawn + 1)
+    let context = try #require(game.gameplayContext())
+    let snapshots = context.actors.filter { currentNative.contains($0.identity) }
+    #expect(snapshots.count == 2)
+    #expect(
+      snapshots.allSatisfy {
+        $0.energy == 499877 && $0.maximumEnergy == 500000 && $0.maximumSpeedUnitsPerSecond == 100
+          && $0.npc?.resources == nil
+      })
+    #expect(
+      game.energy == before.energy && game.frontShield == before.frontShield
+        && game.rearShield == before.rearShield)
+  }
+
 }
