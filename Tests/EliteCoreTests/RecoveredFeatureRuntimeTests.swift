@@ -103,6 +103,24 @@ struct RecoveredFeatureRuntimeTests {
     _ = try installRecoveredFeature(&game)
     #expect(game.workTargetCapabilities.miningModule == (id == "feature-mining-targeting"))
     #expect(game.workTargetCapabilities.salvageModule == (id == "feature-salvage-targeting"))
+    let installed = try #require(
+      game.commander.equipmentInventory?.items.first {
+        $0.provenance == .recovered(lot.identity)
+      })
+    let fittedCore = try #require(game.commander.fittedEquipment(at: .targetingCore))
+    try game.commander.storeEquipment(
+      fittedCore, expectedRevision: game.commander.equipmentInventory!.revision)
+    #expect(game.commander.valid && game.workTargetCapabilities.core == nil)
+    #expect(game.commander.equipmentInventory?.items.contains(installed) == true)
+    #expect(
+      RecoveredFeatureDevices.source(for: installed, ledger: game.commander.salvageLedger) == lot)
+    let target = WorkTargetCandidate(
+      identity: try #require(game.commander.flightSimulation.player), kind: .ship,
+      isLive: true, frontVisible: true, distance: 100, singleScoopCompatible: false)
+    #expect(
+      WorkTargetSelection.evaluate(
+        target, system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
+        capabilities: game.workTargetCapabilities) == .refused(.missingCore))
   }
 
   @Test func changedOwnedAndSourceRevisionsRefuseAQuotedInstallWithoutLosingCustody() throws {
