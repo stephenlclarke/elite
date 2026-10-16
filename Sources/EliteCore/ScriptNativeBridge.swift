@@ -45,6 +45,9 @@ extension Game {
     }
     guard let npc = body.scriptNPC, npc.valid,
       npc.fit == retained.body.scriptNPC?.fit,
+      npc.components.allSatisfy({ alias, component in
+        retained.body.scriptNPC?.components[alias]?.identity == component.identity
+      }),
       let definition = pack.manifest.npcs?.first(where: { $0.id == npcID }),
       npc.fit.definition == definition
     else { return false }
