@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "root phase correction passed exact native ASan, legacy/semantics ASan+coverage, affected148/238 coverage and17 ASan methods; final media/refreeze/fullCI pending",
+  "stage": "fresh canonical coverage656/750 and TSan656/750 passed; full serial ASan standalone native Gallery guard fault; leaks not reached; trial-only proposal unapplied",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,8 +280,9 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Fresh numbered renderer regeneration/commit/full input refreeze then ONE fresh complete make ci",
-    "Final owner acceptance and central integration/formal PR review/fix/review/merge",
+    "Exact owner review before unapplied standalone Gallery phase helper/test",
+    "Future numbered exact failing native Gallery ASan first then affected proof/refreeze/full canonical as authorized",
+    "Full ASan completion and leak gate; final owner acceptance/integration/formal PR",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
@@ -2302,5 +2303,350 @@
     },
     "lease012ExplicitlyReleased": true,
     "remaining": "Required source-dependent renderer regeneration/commit/refreeze and ONE fresh full make ci including coverage/TSan/fullserialASan/leaks, owner final acceptance, central integration/formal PR"
+  },
+  "freshCanonical014": {
+    "candidate": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+    "preparation": {
+      "ships": {
+        "commit": "58be809e9d29356a1c4d635284883576349fa519",
+        "lease": {
+          "version": 1,
+          "leaseId": "elite-validation-014",
+          "state": "active",
+          "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+          "candidate": "58be809e9d29356a1c4d635284883576349fa519",
+          "mayUpdateCandidateWithinApprovedScope": true,
+          "previousLeaseId": "elite-validation-013",
+          "purpose": "Owner-authorized required ships/README renderer regeneration, commitgenerated/docinputfreeze then ONEfreshcanonical makeci all18packs coverage TSan serialASan leaks. Candidate-only updates approvedgenerated/docscope; edde runtime/tests unchanged; stopnewfailure/no repairretry."
+        },
+        "command": [
+          "make",
+          "ships"
+        ],
+        "startUTC": "2026-10-16T08:28:21.772982+00:00",
+        "endUTC": "2026-10-16T08:29:10.669840+00:00",
+        "seconds": 48.8967975419946,
+        "exit": 0,
+        "productionBefore": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "productionAfter": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "inputCount": 935,
+        "changedInputs": [
+          "docs/ships/manifest.json"
+        ],
+        "logSHA256": "cd8914552a4eaa20ee1ceb2634ce2497767e04d08e29f93a5e8f091307fc0180"
+      },
+      "readme": {
+        "commit": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+        "lease": {
+          "version": 1,
+          "leaseId": "elite-validation-014",
+          "state": "active",
+          "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+          "candidate": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+          "mayUpdateCandidateWithinApprovedScope": true,
+          "previousLeaseId": "elite-validation-013",
+          "purpose": "Owner-authorized required ships/README renderer regeneration, commitgenerated/docinputfreeze then ONEfreshcanonical makeci all18packs coverage TSan serialASan leaks. Candidate-only updates approvedgenerated/docscope; edde runtime/tests unchanged; stopnewfailure/no repairretry."
+        },
+        "command": [
+          "make",
+          "readme-media"
+        ],
+        "startUTC": "2026-10-16T08:30:51.776314+00:00",
+        "endUTC": "2026-10-16T08:31:02.383784+00:00",
+        "seconds": 10.607327916193753,
+        "exit": 0,
+        "productionBefore": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "productionAfter": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "inputCount": 935,
+        "changedInputs": [],
+        "logSHA256": "8a42e8406113b6d749484bff2a1fd4d0f57fb1aecc7c0901a935a13179472553"
+      },
+      "freeze": {
+        "base": "880d3a65478ed9304cc926fc21fbf3db9bf6d140",
+        "lastExecutableChange": "59938b5813075b1925df6e2d3ae11354c18ac85a",
+        "boundedValidatedSource": "edde5f52d14ccf4955134709be9d27f15e19224b",
+        "documentaryPreparation": "58be809e9d29356a1c4d635284883576349fa519",
+        "sourceMediaFreeze": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+        "priorBoundedInputCount": 935,
+        "currentInputCount": 935,
+        "changedFilesSinceBoundedSource": [
+          "docs/MISSION-CODER-G02-VALIDATION.json",
+          "docs/PR-generated-couriers.md",
+          "docs/SCRIPTABLE-MISSION-STATUS.json",
+          "docs/ships/manifest.json"
+        ],
+        "inputManifestSHA256": "2755038a88f60d3ae072f574fa047599b160ec593fecc6097300791644cd5baf",
+        "evidenceInputCount": 403,
+        "evidenceManifestSHA256": "867f8508e22707b13d7c68936ae537bbb2afae44d89631f3a2492b3f83c0dbd7",
+        "images": {
+          "historicalNativeCaptureSource": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+          "originalPassing": 54,
+          "byteIdenticalDurable": 16,
+          "failedOriginalStagesPreserved": true,
+          "allIndividuallyVisuallyInspected": false,
+          "currentRendererRegeneration": "168 byte-identical shipGIFs and READMEoutputs regenerated under final executable source; only fingerprints changed"
+        },
+        "gate": "ONE fresh complete make ci; no source/test/media/evidence input mutations during gate",
+        "lateOwnerRecord": "a7e5939 retained on owner branch; deferred to separated documentary handoff after gate per Orchestrator"
+      }
+    },
+    "result": {
+      "commit": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-014",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-013",
+        "purpose": "Owner-authorized required ships/README renderer regeneration, commitgenerated/docinputfreeze then ONEfreshcanonical makeci all18packs coverage TSan serialASan leaks. Candidate-only updates approvedgenerated/docscope; edde runtime/tests unchanged; stopnewfailure/no repairretry."
+      },
+      "command": [
+        "make",
+        "ci"
+      ],
+      "startUTC": "2026-10-16T08:32:51.045606+00:00",
+      "endUTC": "2026-10-16T08:40:11.716810+00:00",
+      "seconds": 440.6715336670168,
+      "exit": 2,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "d7d6c7db29e7b0e7143516b59f0a708b5c981640de84d97dabfbf2279e44c59f"
+    },
+    "summary": {
+      "coverage": {
+        "methods": 656,
+        "caseInvocations": 750,
+        "testSeconds": 43.285,
+        "phaseSeconds": 51.49074091599323
+      },
+      "TSan": {
+        "methods": 656,
+        "caseInvocations": 750,
+        "testSeconds": 207.658,
+        "phaseSeconds": 239.22650000010617
+      },
+      "ASan": {
+        "passed": false,
+        "completedMethodsBeforeCrash": 107,
+        "phaseSecondsBeforeFailure": 45.58056495897472,
+        "failedMethod": "nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview"
+      },
+      "leaks": "not reached",
+      "totalSeconds": 440.6715336670168
+    },
+    "coverage": {
+      "frozenSource": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+      "newCodeBase": "880d3a65478ed9304cc926fc21fbf3db9bf6d140",
+      "method": "Canonical generic Swift coverage XML excludingCLua. New-code executablelines intersect added/modified Source lines fromgitdiff-unified0 with reported executable lines; local directional metric, not published Sonar.",
+      "overall": {
+        "covered": 19594,
+        "executable": 20575,
+        "percentage": 95.23207776427704
+      },
+      "addedModifiedExecutableLines": {
+        "covered": 928,
+        "executable": 959,
+        "percentage": 96.7674661105318
+      },
+      "perChangedFile": {
+        "Sources/EliteCore/BlackjackHandoff.swift": {
+          "covered": 3,
+          "executable": 3,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ContractBoardDisplay.swift": {
+          "covered": 7,
+          "executable": 7,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/Game.swift": {
+          "covered": 26,
+          "executable": 29,
+          "uncoveredAddedExecutableLines": [
+            1157,
+            1158,
+            1159
+          ],
+          "percentage": 89.65517241379311
+        },
+        "Sources/EliteCore/ScriptCalendar.swift": {
+          "covered": 8,
+          "executable": 9,
+          "uncoveredAddedExecutableLines": [
+            63
+          ],
+          "percentage": 88.88888888888889
+        },
+        "Sources/EliteCore/ScriptCampaignGallery.swift": {
+          "covered": 1,
+          "executable": 1,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptCommands.swift": {
+          "covered": 9,
+          "executable": 10,
+          "uncoveredAddedExecutableLines": [
+            211
+          ],
+          "percentage": 90.0
+        },
+        "Sources/EliteCore/ScriptContractCore.swift": {
+          "covered": 60,
+          "executable": 62,
+          "uncoveredAddedExecutableLines": [
+            71,
+            227
+          ],
+          "percentage": 96.7741935483871
+        },
+        "Sources/EliteCore/ScriptContractPageInput.swift": {
+          "covered": 3,
+          "executable": 3,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptContractState.swift": {
+          "covered": 32,
+          "executable": 32,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptCourier.swift": {
+          "covered": 358,
+          "executable": 378,
+          "uncoveredAddedExecutableLines": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            73,
+            89,
+            90,
+            96,
+            146,
+            185,
+            197,
+            245,
+            293,
+            351,
+            387,
+            401,
+            402,
+            403,
+            404
+          ],
+          "percentage": 94.70899470899471
+        },
+        "Sources/EliteCore/ScriptCourierGeneration.swift": {
+          "covered": 118,
+          "executable": 118,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptCourierState.swift": {
+          "covered": 137,
+          "executable": 137,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptDirector.swift": {
+          "covered": 53,
+          "executable": 55,
+          "uncoveredAddedExecutableLines": [
+            183,
+            281
+          ],
+          "percentage": 96.36363636363636
+        },
+        "Sources/EliteCore/ScriptGalleryTrial.swift": {
+          "covered": 1,
+          "executable": 1,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptMissionCalendar.swift": {
+          "covered": 25,
+          "executable": 25,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptMissionState.swift": {
+          "covered": 10,
+          "executable": 10,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptPack.swift": {
+          "covered": 7,
+          "executable": 7,
+          "uncoveredAddedExecutableLines": [],
+          "percentage": 100.0
+        },
+        "Sources/EliteCore/ScriptPersistence.swift": {
+          "covered": 20,
+          "executable": 21,
+          "uncoveredAddedExecutableLines": [
+            64
+          ],
+          "percentage": 95.23809523809524
+        },
+        "Sources/EliteCore/ScriptSaveJSONPreflight.swift": {
+          "covered": 50,
+          "executable": 51,
+          "uncoveredAddedExecutableLines": [
+            55
+          ],
+          "percentage": 98.03921568627452
+        }
+      },
+      "coverageXMLSHA256": "034ed3b7c74409bddfbeaf256ccc567f135c2d9494e9dbbd5246b6b549efb52a",
+      "LCOVSHA256": "efeeecb1f2f5f4604e71fe2ff55a780e3672455d4e69ac1d2527d67b3cdfd74a"
+    },
+    "crashArtifacts": {
+      "crashPath": "/tmp/elite-g02-canonical-final/becc7a6-full-asan-crash.ips",
+      "crashSHA256": "5870ab14b53d2bdc805a96080cebc1195e8024d7713d8c3b1f22653f3197cda0",
+      "binaryPath": "/tmp/elite-g02-canonical-final/becc7a6-failed-ASan-test-binary",
+      "binarySHA256": "4e7b570a17ab9f45cd08e397f07278762acf7c00b565f9e5457cb3e471a11732",
+      "faultingThread": 9,
+      "faultingQueue": "com.apple.root.default-qos.cooperative"
+    },
+    "frozenEvidenceIntegrity": "All403 SHA inputs matched at read-only postfailure audit; all935 Gitinputs unchanged by gate.",
+    "proposal": {
+      "path": "/tmp/elite-g02-standalone-trial-phase-proposal.patch",
+      "sha256": "004b306d657991d87549e000835429bc8bcb063d0ffcdb402c33a148d1945f3a",
+      "bytes": 2778,
+      "applied": false,
+      "analysis": "/tmp/elite-g02-standalone-trial-phase-analysis.json",
+      "scope": "Only standalone Gallery trial root acceptance phase helper plus one owned failed-handler atomicity test; normal standalone API/board trial/flight/quote/settings unchanged.",
+      "limits": "New ASan guard-region/alloca_poison call chain, no heap finding or presumed old cause; structural hypothesis only, peak unmeasured."
+    },
+    "lease014ExplicitlyReleased": true,
+    "lateOwnerRecord": "a7e5939 retained separately on owner branch per Orchestrator; no C07 assignment or runtime change"
   }
 }

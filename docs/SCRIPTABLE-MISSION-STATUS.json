@@ -757,7 +757,7 @@
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
   },
   "generated_courier_checkpoint": {
-    "status": "bounded corrected source passed coverage148/238 inclnative25 and22 ASan methods/24 cases across ordered runs; final renderer refreeze/full CI and owner acceptance pending",
+    "status": "fresh canonical coverage656/750(95.232%,new96.767%) and TSan656/750 passed; full ASan standalone native Gallery failed, leaks not reached; trial-only correction proposed/unapplied",
     "profile": "PROJECT-SPACE-G02-1",
     "capabilities": [
       "courier-contracts-basic-v2",
