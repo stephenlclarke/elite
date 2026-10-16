@@ -149,6 +149,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   private var plans: [WreckSectionIdentity: SalvagePlanProgress] = [:]
   private var motions: [WreckIdentity: SalvageWreckMotion] = [:]
   private var depleted: [WreckIdentity: UInt64] = [:]
+  private var destroyedWrecks: Set<WreckIdentity> = []
   private var work: [WreckSectionIdentity: Double] = [:]
   private var damagedTechnology: Set<WreckSectionIdentity> = []
   private var pending: [SalvageLotIdentity: SalvageLot] = [:]
@@ -164,7 +165,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public init(seed: UInt64 = 0) { self.seed = seed }
   private enum CodingKeys: String, CodingKey {
     case seed, plans, motions, depleted, work, damagedTechnology, pending, stored, offers, bindings
-    case settlements, lastOperation, settledItemCount, sequence, revision
+    case settlements, lastOperation, settledItemCount, sequence, revision, destroyedWrecks
   }
 
   public init(from decoder: Decoder) throws {
@@ -176,6 +177,22 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     motions =
       try values.decodeIfPresent([WreckIdentity: SalvageWreckMotion].self, forKey: .motions) ?? [:]
     depleted = try values.decode([WreckIdentity: UInt64].self, forKey: .depleted)
+    if values.contains(.destroyedWrecks), try !values.decodeNil(forKey: .destroyedWrecks) {
+      var records = try values.nestedUnkeyedContainer(forKey: .destroyedWrecks)
+      var count = 0
+      while !records.isAtEnd {
+        guard count < Self.maximumWrecks else {
+          throw DecodingError.dataCorrupted(
+            .init(codingPath: records.codingPath, debugDescription: "Too many destroyed wrecks"))
+        }
+        let identity = try records.decode(WreckIdentity.self)
+        guard destroyedWrecks.insert(identity).inserted else {
+          throw DecodingError.dataCorrupted(
+            .init(codingPath: records.codingPath, debugDescription: "Duplicate destroyed wreck"))
+        }
+        count += 1
+      }
+    }
     work = try values.decode([WreckSectionIdentity: Double].self, forKey: .work)
     damagedTechnology =
       try values.decodeIfPresent(
@@ -202,7 +219,11 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     guard plans.count <= Self.maximumPlans,
       plans.allSatisfy({ validProgress($0.value, section: $0.key) }),
       trackedWrecks.count <= Self.maximumWrecks,
-      motions.allSatisfy({ Self.validWreck($0.key) && Self.validMotion($0.value) }),
+      destroyedWrecks.count <= Self.maximumWrecks,
+      destroyedWrecks.allSatisfy({ Self.validWreck($0) }),
+      motions.allSatisfy({
+        Self.validWreck($0.key) && !isWreckDestroyed($0.key) && Self.validMotion($0.value)
+      }),
       depleted.count <= Self.maximumWrecks, work.count <= Self.maximumPartial,
       pending.count <= Self.maximumPending, stored.count <= Self.maximumInventory,
       storedPodCount <= SalvageDefinitions.maximumSparePods,
@@ -212,7 +233,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       damagedTechnology.isSubset(of: Set(work.keys)),
       depleted.keys.allSatisfy({ Self.validWreck($0) }),
       work.allSatisfy({
-        Self.validWreck($0.key.wreck) && $0.key.section < 64
+        Self.validWreck($0.key.wreck) && !isWreckDestroyed($0.key.wreck) && $0.key.section < 64
           && !isDepleted($0.key) && $0.value.isFinite && $0.value > 0
       }),
       pending.allSatisfy({
@@ -315,7 +336,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
 
   private var trackedWrecks: Set<WreckIdentity> {
     Set(motions.keys).union(depleted.keys).union(work.keys.map(\.wreck)).union(
-      plans.keys.map(\.wreck))
+      plans.keys.map(\.wreck)
+    ).union(destroyedWrecks)
   }
 
   private func canTrack(_ wreck: WreckIdentity) -> Bool {
@@ -334,6 +356,25 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       && basis.x.cross(basis.y).dot(basis.z) > 1 - epsilon
   }
 
+  /// Whole-wreck death is separate from exhausted sections and survives visit/cull resets.
+  public func isWreckDestroyed(_ identity: WreckIdentity) -> Bool {
+    destroyedWrecks.contains(identity)
+  }
+
+  /// The runtime publishes this tombstone with actual death, never ordinary scene culling.
+  /// Issued fragments and their custody remain valid after their parent disappears.
+  @discardableResult public mutating func markWreckDestroyed(_ identity: WreckIdentity) -> Bool {
+    guard Self.validWreck(identity) else { return false }
+    if isWreckDestroyed(identity) { return true }
+    guard canTrack(identity), revision < UInt64.max else { return false }
+    destroyedWrecks.insert(identity)
+    motions.removeValue(forKey: identity)
+    work = work.filter { $0.key.wreck != identity }
+    damagedTechnology = damagedTechnology.filter { $0.wreck != identity }
+    revision += 1
+    return true
+  }
+
   public func wreckMotion(for identity: WreckIdentity) -> SalvageWreckMotion? { motions[identity] }
 
   /// Store live canonical motion on cull/save; this ledger never advances offscreen time.
@@ -341,7 +382,9 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     identity: WreckIdentity,
     motion: SalvageWreckMotion
   ) -> Bool {
-    guard Self.validWreck(identity), Self.validMotion(motion), canTrack(identity) else {
+    guard Self.validWreck(identity), !isWreckDestroyed(identity),
+      Self.validMotion(motion), canTrack(identity)
+    else {
       return false
     }
     motions[identity] = motion
@@ -367,7 +410,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     source: SalvageLootSource? = nil
   ) -> SalvageWorkResult {
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
-    guard Self.validWreck(wreck), section.index < 64, elapsed.isFinite, elapsed > 0, elapsed <= 1,
+    guard Self.validWreck(wreck), !isWreckDestroyed(wreck),
+      section.index < 64, elapsed.isFinite, elapsed > 0, elapsed <= 1,
       section.workSeconds.isFinite, section.workSeconds > 0,
       section.localPosition.length.isFinite, section.normal.length.isFinite,
       section.normal.length > 0, section.radius.isFinite, section.radius >= 0,
@@ -418,7 +462,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public mutating func destroy(section: WreckSectionIdentity, operation: UInt64)
     -> SalvageWorkResult
   {
-    guard Self.validWreck(section.wreck), section.section < 64,
+    guard Self.validWreck(section.wreck), !isWreckDestroyed(section.wreck), section.section < 64,
       lastOperation.map({ operation > $0 }) ?? true
     else {
       return .blocked
@@ -758,7 +802,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   ) -> SalvageLootPlan? {
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
     if let existing = plans[identity] { return existing.plan }
-    guard Self.validWreck(wreck), section.index < 64, !isDepleted(identity),
+    guard Self.validWreck(wreck), !isWreckDestroyed(wreck), section.index < 64,
+      !isDepleted(identity),
       plans.count < Self.maximumPlans, canTrack(wreck), validSource(source)
     else { return nil }
     let plan = SalvageLootProfiles.plan(section: identity, seed: seed, source: source)
@@ -772,7 +817,9 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   }
 
   public func remainingStructuralMaterial(for section: WreckSectionIdentity) -> Int {
-    guard let record = plans[section], !record.destroyed else { return 0 }
+    guard !isWreckDestroyed(section.wreck), let record = plans[section], !record.destroyed else {
+      return 0
+    }
     return record.structuralUnits - record.issuedStructural
   }
 
