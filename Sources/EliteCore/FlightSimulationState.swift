@@ -111,6 +111,7 @@ public struct PhysicalActorState: Equatable, Codable, Sendable {
   public var blocksNavalEncounter = false
   public var catalogueShipID: String?
   public var angularVelocity = Vector3(0, 0, 0)
+  public var canonicalSpin: Bool?
   public var salvage: SalvageTargetMetadata?
   /// A missing ordinary target suspends live AI, while its original intent remains in custody.
   public var suspendedNPCIntention: NPCAction?

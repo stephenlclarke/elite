@@ -70,6 +70,13 @@ extension Commander {
 }
 extension Game {
   mutating func applyDamage(_ damage: Double, front: Bool, energyMultiplier: Double = 1) {
+    if damage.isFinite, damage > 0,
+      workGuidance != nil || workBraking != nil || selectedFlightTool != .combatLaser
+    {
+      cancelAutoTarget()
+      workFireSuspended = true
+      notify("WORK INTERRUPTED - INCOMING DAMAGE")
+    }
     let shield = front ? frontShield : rearShield
     energy -= max(0, damage - shield) * energyMultiplier
     if front {

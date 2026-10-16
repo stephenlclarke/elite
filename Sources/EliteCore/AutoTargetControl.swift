@@ -29,6 +29,7 @@ extension SpaceBody {
 
 public struct AutoTargetControl: Sendable {
   public private(set) var targetID: Int?
+  public private(set) var targetActor: ActorIdentity?
   public private(set) var status = "OFF"
   public private(set) var ready = false
   public private(set) var finalApproach = false
@@ -49,6 +50,7 @@ public struct AutoTargetControl: Sendable {
   public init() {}
   public mutating func disengage() {
     targetID = nil
+    targetActor = nil
     manualEngagement = false
     previousAim = nil
     ready = false
@@ -91,6 +93,7 @@ public struct AutoTargetControl: Sendable {
     self.manualEngagement = manualEngagement
     previousAim = nil
     targetID = remaining.removeFirst()
+    targetActor = eligible.first { $0.id == targetID }?.physical?.identity
     if let targetID { visited.insert(targetID) }
     ready = false
     finalApproach = false
@@ -223,20 +226,37 @@ public struct AutoTargetControl: Sendable {
 
 extension Game {
   public var autoTargetBody: SpaceBody? {
-    bodies.first { $0.id == autoPilot.targetID && $0.energy > 0 }
+    bodies.first {
+      $0.id == autoPilot.targetID && $0.energy > 0
+        && (autoPilot.targetActor == nil || $0.physical?.identity == autoPilot.targetActor)
+    }
   }
   public var autoHUDLines: [String] {
     guard targetingEnabled || dockingComputer || autoPilot.manualEngagement else { return [] }
-    guard let target = autoTargetBody else { return ["AUTO: TAB SELECT TARGET / Q OFF"] }
+    if let work = workGuidance {
+      return [
+        "AUTO: " + work.status, "F FILTER: " + workTargetFilter.label.uppercased() + " / Q OFF",
+      ]
+    }
+    if workBraking != nil { return ["AUTO: BRAKING AFTER COLLECTION / Q OFF"] }
+    guard let target = autoTargetBody else {
+      return [
+        "AUTO: TAB SELECT TARGET / Q OFF", "F FILTER: " + workTargetFilter.label.uppercased(),
+      ]
+    }
     return [
       "AUTO: \(information(for: target)?.identifier ?? "Target #\(target.id)") - \(autoPilot.status)"
     ]
   }
   mutating func cancelAutoTarget() {
+    let preserveMomentum = workGuidance != nil || workBraking != nil
+    releaseWorkGuidance()
+    let remainingVelocity = autoPilot.velocity
     if autoTargetBody?.hull == .station {
       speed = max(speed, min(commander.performance.speed, max(0, autoPilot.velocity.z / 18)))
     }
     autoPilot.disengage()
+    if preserveMomentum { autoPilot.setApproachVelocity(remainingVelocity) }
     dockingComputer = false
   }
   mutating func cycleAutoTarget() {
@@ -246,30 +266,61 @@ extension Game {
       notify("FIT A TARGETING COMPUTER")
       return
     }
+    let initialVelocity = flightWorldVelocity
+    releaseWorkGuidance()
+    ensurePhysicalActors()
+    guard let context = gameplayContext() else { return }
     let layout = CockpitLayout(game: self, width: viewportWidth, height: viewportHeight)
     let frontIDs = Set(
       bodies.filter {
-        $0.hull.isTargetShip && Display.visibleInFront($0, game: self, layout: layout)
+        Display.visibleInFront($0, game: self, layout: layout)
       }.map(\.id))
-    let eligible = bodies.filter { body in
-      guard body.energy > 0 else { return false }
-      if body.hull == .station { return tier >= .docking }
-      return body.hull.isTargetShip && (tier >= .advanced || frontIDs.contains(body.id))
+    let candidates = bodies.compactMap {
+      workTargetCandidate(for: $0, context: context, frontVisible: frontIDs.contains($0.id))
     }
-    let signature = "\(tier.rawValue):\(Int(viewportWidth)):\(Int(viewportHeight))"
+    let choices = WorkTargetSelection.ordered(
+      candidates, filter: workTargetFilter, system: context.system, visit: context.visit,
+      capabilities: workTargetCapabilities)
+    let identities = Set(choices.map { $0.candidate.identity })
+    let eligible = bodies.filter { $0.physical.map { identities.contains($0.identity) } == true }
+    let signature =
+      "\(tier.rawValue):\(workTargetFilter.label):\(Int(viewportWidth)):\(Int(viewportHeight))"
     autoPilot.cycle(
       eligible, frontIDs: frontIDs, signature: signature, manualEngagement: !targetingEnabled)
     weaponsTargetID = autoPilot.targetID
     screen = .front
     dockingComputer = autoTargetBody?.hull == .station
-    if dockingComputer {
+    if let body = autoTargetBody,
+      let choice = choices.first(where: { $0.candidate.identity == body.physical?.identity }),
+      case .hold = choice.mode
+    {
+      beginWorkGuidance(body: body, mode: choice.mode, velocity: initialVelocity)
+    } else if let body = autoTargetBody,
+      let choice = choices.first(where: { $0.candidate.identity == body.physical?.identity }),
+      case .autoScoop = choice.mode
+    {
+      beginWorkGuidance(body: body, mode: choice.mode, velocity: initialVelocity)
+    } else if dockingComputer {
       beginStationGuidance()
       notify("AUTO DOCKING ENGAGED")
     } else if autoTargetBody != nil {
       notify("AUTO TARGETING ENGAGED")
     } else {
       let stationOnly = bodies.contains { $0.hull == .station && $0.energy > 0 } && tier < .docking
-      notify(stationOnly ? "DOCKING TARGETING TIER REQUIRED FOR STATIONS" : "NO ELIGIBLE TARGETS")
+      if workTargetFilter != .ships,
+        let refusal = candidates.compactMap({ candidate -> WorkTargetRefusal? in
+          guard case .recoverable = candidate.kind,
+            case .refused(let reason) = WorkTargetSelection.evaluate(
+              candidate, system: context.system,
+              visit: context.visit, capabilities: workTargetCapabilities)
+          else { return nil }
+          return reason
+        }).first
+      {
+        notify(workRefusalMessage(refusal))
+      } else {
+        notify(stationOnly ? "DOCKING TARGETING TIER REQUIRED FOR STATIONS" : "NO ELIGIBLE TARGETS")
+      }
     }
   }
   private mutating func beginStationGuidance() {
@@ -278,6 +329,17 @@ extension Game {
     speed = 0
   }
   mutating func applyAutoTarget(delta: Double, controls: Controls) {
+    if workGuidance != nil || workBraking != nil {
+      if controls.pitch != 0 || controls.yaw != 0 || controls.roll != 0 || controls.throttle != 0 {
+        cancelAutoTarget()
+        notify("WORK GUIDANCE CANCELLED - MANUAL CONTROL")
+      } else {
+        pitch = 0
+        yaw = 0
+        roll = 0
+        return
+      }
+    }
     guard autoPilot.targetID != nil else { return }
     let station = autoTargetBody?.hull == .station
     let enabled =

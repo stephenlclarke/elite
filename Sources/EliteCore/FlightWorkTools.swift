@@ -37,6 +37,8 @@ extension Game {
 
   /// An unavailable selected utility never falls through to a combat weapon.
   mutating func fireSelectedFlightTool(delta: Double) {
+    guard !workFireSuspended else { return }
+    if let work = workGuidance, selectedFlightTool != .combatLaser, !work.holding { return }
     switch selectedFlightTool {
     case .combatLaser: fireLaser()
     case .miningLaser: _ = fireMiningWorkTool()

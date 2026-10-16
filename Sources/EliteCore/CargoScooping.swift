@@ -8,6 +8,23 @@ extension Game {
         && body.position.length < 85
     }
     for body in candidates {
+      if let work = workGuidance, case .autoScoop = work.mode,
+        work.parent == body.physical?.identity
+      {
+        let half = collectibleHalfExtents(body)
+        let aperture = commander.flightSimulation.pose.orientation.apply(Vector3(0, -45, 55))
+        let apertureVelocity = flightWorldVelocity + work.angularVelocity.cross(aperture)
+        guard let velocity = body.physical?.velocity, velocity.finite,
+          (velocity - apertureVelocity).length <= ScoopApproachController.maximumRelativeSpeed,
+          let half, half.finite, half.x <= 16, half.y <= 16, half.z <= 16,
+          let context = gameplayContext(),
+          let candidate = workTargetCandidate(for: body, context: context, frontVisible: true),
+          WorkTargetSelection.evaluate(
+            candidate, system: context.system, visit: context.visit,
+            capabilities: workTargetCapabilities
+          ).mode == work.mode
+        else { continue }
+      }
       if let payload = body.physical?.payload {
         guard let context = gameplayContext() else { continue }
         var cargo = commander.cargo
@@ -25,6 +42,7 @@ extension Game {
           switch receipt {
           case .collected(let lot):
             commander.cargo = cargo
+            workTargetCollected(body)
             bodies.removeAll { $0.id == body.id }
             switch lot.content {
             case .commodity(let amount):
@@ -46,6 +64,13 @@ extension Game {
             commander.miningLedger.boundActor(for: payload) == actor
           else { continue }
         }
+        if case .wreck(let source, _) = payload {
+          guard let actor = body.physical?.identity,
+            actor.system == context.system, actor.visit == context.visit,
+            source.system == context.system,
+            commander.cargoDebrisLedger.boundActor(for: payload) == actor
+          else { continue }
+        }
         let receipt = collectOrdinaryPayload(
           payload: payload, into: &cargo,
           freeTonnes: freeTonnes,
@@ -53,6 +78,7 @@ extension Game {
         switch receipt {
         case .collected(let amount):
           commander.cargo = cargo
+          workTargetCollected(body)
           bodies.removeAll { $0.id == body.id }
           notify(
             "SCOOPED \(amount.quantity) \(amount.commodity.unit) "
@@ -71,6 +97,7 @@ extension Game {
         continue
       }
       commander.cargo[commodity] += 1
+      workTargetCollected(body)
       bodies.removeAll { $0.id == body.id }
       notify("SCOOPED " + Commodity.all[commodity].name)
     }

@@ -174,7 +174,7 @@ extension Game {
     let player = ActorSnapshot(
       identity: playerID, hull: .cobra, position: flight.pose.position,
       orientation: flight.pose.orientation,
-      velocity: flight.pose.orientation.apply(autoPilot.velocity + .init(0, 0, speed * 18)),
+      velocity: flightWorldVelocity,
       energy: energy, maximumEnergy: commander.performance.energy,
       maximumSpeedUnitsPerSecond: commander.performance.speed * 18,
       legal: .init(value: min(255, commander.legal)), npc: nil, rock: nil, payload: nil,

@@ -112,7 +112,9 @@ extension Game {
   var gameplayMeshOverrides: [Int: Mesh] {
     var result: [Int: Mesh] = [:]
     for body in bodies {
-      if body.physical?.catalogueShipID != nil || body.physical?.rock != nil {
+      if body.physical?.catalogueShipID != nil || body.physical?.rock != nil
+        || body.physical?.salvage?.lot != nil
+      {
         result[body.id] = gameplayMesh(for: body)
       }
     }
@@ -120,6 +122,22 @@ extension Game {
   }
 
   func gameplayMesh(for body: SpaceBody) -> Mesh {
+    if let payload = body.physical?.payload, case .salvage(let identity) = payload,
+      let lot = commander.salvageLedger.pendingLots.first(where: { $0.identity == identity })
+    {
+      let base = Mesh.hull(.cargo)
+      let x = base.vertices.map { abs($0.x) }.max() ?? 1
+      let y = base.vertices.map { abs($0.y) }.max() ?? 1
+      let z = base.vertices.map { abs($0.z) }.max() ?? 1
+      guard x > 0, y > 0, z > 0 else { return base }
+      return .init(
+        vertices: base.vertices.map {
+          .init(
+            $0.x * lot.halfExtents.x / x, $0.y * lot.halfExtents.y / y,
+            $0.z * lot.halfExtents.z / z)
+        }, faces: base.faces, details: base.details, materials: base.materials,
+        faceMaterials: base.faceMaterials, preserveWinding: true)
+    }
     if let id = body.physical?.catalogueShipID, let ship = ShipCatalogue.ship(id) {
       return ship.design.rawMesh
     }

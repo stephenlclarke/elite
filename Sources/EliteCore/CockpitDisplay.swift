@@ -200,7 +200,10 @@ extension Display {
     for (index, gauge) in [
       (
         "Speed",
-        (game.autoTargetBody?.hull == .station ? game.autoPilot.velocity.length / 18 : game.speed)
+        (game.workGuidance != nil || game.workBraking != nil
+          ? game.flightWorldVelocity.length / 18
+          : (game.autoTargetBody?.hull == .station
+            ? game.autoPilot.velocity.length / 18 : game.speed))
           / game.commander.performance.speed
       ), ("Roll", game.roll), ("Pitch", game.pitch),
     ]

@@ -324,6 +324,15 @@ public struct Game: Sendable {
   public var yaw = 0.0
   public var spin = SpinControl()
   public var autoPilot = AutoTargetControl()
+  public var workTargetFilter: WorkTargetFilter = .ships
+  var workGuidance: FlightWorkGuidance?
+  var workBraking: FlightWorkBraking?
+  var workRecoveryRock: RockIdentity?
+  var approvedWorkMotion: HullSceneMotion?
+  var lastAppliedWorkMotion: HullSceneMotion?
+  var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]
+  var workScenePlanned = false
+  var workFireSuspended = false
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
   public var targetPanelExpanded: Bool?
@@ -474,23 +483,34 @@ public struct Game: Sendable {
       case "q":
         cancelAutoTarget()
         return
+      case "f":
+        cycleWorkTargetFilter()
+        return
       case "w":
         cycleFlightTool()
         return
       case "v":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.toggleMode()
         return
       case "b":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.stop()
         return
       case "]", "spin:cw":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.begin(.clockwise)
         return
       case "[", "spin:ccw":
-        if autoTargetBody?.hull == .station { cancelAutoTarget() }
+        if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
+          cancelAutoTarget()
+        }
         spin.begin(.anticlockwise)
         return
       default: break
@@ -1182,6 +1202,11 @@ public struct Game: Sendable {
     guard !docked, ![Screen.gameOver, .secret, .help, .title, .demo].contains(screen) else {
       return
     }
+    approvedWorkMotion = nil
+    lastAppliedWorkMotion = nil
+    plannedLegacyWorkMotion.removeAll(keepingCapacity: true)
+    workScenePlanned = false
+    if !controls.fire { workFireSuspended = false }
     commander.flightSimulation.advancePhysicalTime(dt)
     gameplayRevision &+= 1
     ensurePhysicalActors()
@@ -1207,6 +1232,8 @@ public struct Game: Sendable {
       if remaining <= dt { arrive() }
     }
     advanceGameplayEncounters(delta: dt)
+    planWorkScene(delta: dt)
+    advanceWorkGuidance(delta: dt)
     moveBodies(dt: dt)
     if docked {
       reconcileEliteReward()
@@ -1215,7 +1242,7 @@ public struct Game: Sendable {
     advanceSolarFlight(delta: dt)
     guard screen != .gameOver else { return }
     scoopCargo()
-    if missionLoopCounter & 7 == 0 { navalTactics() }
+    if !workScenePlanned && missionLoopCounter & 7 == 0 { navalTactics() }
     detectIncomingMissiles()
     advanceNavalMissiles(delta: dt)
     ecmControl.advance()
@@ -1254,30 +1281,32 @@ public struct Game: Sendable {
     }
   }
   private mutating func moveBodies(dt: Double) {
-    autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
-    commander.flightSimulation.pose.advanceView(
-      pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt,
-      translation: autoPilot.velocity * dt + Vector3(0, 0, speed * dt * 18))
-    moveCelestials(delta: dt)
-    for index in bodies.indices {
-      bodies[index].position = bodies[index].position.rotated(
-        pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
-      bodies[index].orientation.rotate(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
-      bodies[index].position = bodies[index].position - autoPilot.velocity * dt
-      bodies[index].position.z -= speed * dt * 18
-      bodies[index].rotation += dt * bodies[index].rotationRate
-      advanceCanonicalWreckSpin(at: index, delta: dt)
-      if let physical = bodies[index].physical, physical.spawnIdentity != nil,
-        physical.ordnance == nil
-      {
-        bodies[index].position =
-          bodies[index].position
-          + commander.flightSimulation.pose.shipVector(physical.velocity) * dt
-      }
-      if bodies[index].hostile && bodies[index].energy > 0,
-        bodies[index].physical?.spawnIdentity == nil
-      {
-        enemyAction(index: index, dt: dt)
+    if !moveWorkFrame(delta: dt) {
+      autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+      commander.flightSimulation.pose.advanceView(
+        pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt,
+        translation: autoPilot.velocity * dt + Vector3(0, 0, speed * dt * 18))
+      moveCelestials(delta: dt)
+      for index in bodies.indices {
+        bodies[index].position = bodies[index].position.rotated(
+          pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+        bodies[index].orientation.rotate(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
+        bodies[index].position = bodies[index].position - autoPilot.velocity * dt
+        bodies[index].position.z -= speed * dt * 18
+        bodies[index].rotation += dt * bodies[index].rotationRate
+        advanceCanonicalModelSpin(at: index, delta: dt)
+        if let physical = bodies[index].physical, physical.spawnIdentity != nil,
+          physical.ordnance == nil
+        {
+          bodies[index].position =
+            bodies[index].position
+            + commander.flightSimulation.pose.shipVector(physical.velocity) * dt
+        }
+        if bodies[index].hostile && bodies[index].energy > 0,
+          bodies[index].physical?.spawnIdentity == nil, !workScenePlanned
+        {
+          enemyAction(index: index, dt: dt)
+        }
       }
     }
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
@@ -1319,7 +1348,7 @@ public struct Game: Sendable {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
     }
   }
-  private mutating func enemyAction(index: Int, dt: Double) {
+  mutating func enemyAction(index: Int, dt: Double) {
     if bodies[index].blackjackRole != nil {
       advanceBlackjackNPC(index: index, delta: dt)
       return

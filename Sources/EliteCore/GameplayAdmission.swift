@@ -66,6 +66,7 @@ extension Game {
           velocity: request.velocity, rock: request.rock, payload: request.payload,
           spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
           angularVelocity: request.angularVelocity, salvage: request.salvage)
+        if request.identity.producer == .derelicts { body.physical?.canonicalSpin = true }
         if request.identity.producer != .persistence,
           let snapshot = NPCPersistenceSnapshot.capture(
             body: body, pose: pose, physicalTime: context.physicalTime,

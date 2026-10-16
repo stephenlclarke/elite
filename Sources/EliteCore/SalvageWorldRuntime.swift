@@ -84,9 +84,9 @@ extension Game {
 
   /// Authored derelict angular velocity is canonical world motion, not an Euler
   /// preview animation. This is the same Rodrigues rotation used by work proofs.
-  mutating func advanceCanonicalWreckSpin(at index: Int, delta: Double) {
+  mutating func advanceCanonicalModelSpin(at index: Int, delta: Double) {
     guard let physical = bodies[index].physical,
-      physical.spawnIdentity?.producer == .derelicts, physical.angularVelocity.finite,
+      physical.canonicalSpin == true, physical.angularVelocity.finite,
       physical.angularVelocity.length.isFinite, delta.isFinite, delta > 0, delta <= 0.1
     else { return }
     let camera = commander.flightSimulation.pose.orientation

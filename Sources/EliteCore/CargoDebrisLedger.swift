@@ -54,6 +54,7 @@ public struct CargoDebrisLedger: Equatable, Codable, Sendable {
   public var pendingPayloads: [TypedCargoPayload] {
     pending.values.map(\.payload).sorted { Self.precedes($0.identity, $1.identity) }
   }
+  public func boundActor(for payload: PayloadIdentity) -> ActorIdentity? { bindings[payload] }
 
   public var valid: Bool {
     sources.count <= Self.maximumSources && pending.count <= Self.maximumPending

@@ -105,7 +105,9 @@ extension Game {
       return .init(id: body.id, model: nil, status: nil, fields: [])
     }
     let shipStatus = body.hostile ? "Hostile" : "Neutral"
-    let status = body.hull == .station ? autoPilot.status : shipStatus
+    let status =
+      workGuidance?.parent == body.physical?.identity
+      ? workGuidance!.status : (body.hull == .station ? autoPilot.status : shipStatus)
     var fields: [TargetField] = []
     if body.hull == .station {
       fields = [
@@ -125,6 +127,22 @@ extension Game {
           .init(
             label: "ECM active", value: ecmFrames > 0 && enemyECMSource == body.id ? "Yes" : "No"),
         ]
+      }
+    }
+    if let context = gameplayContext(),
+      let metadata = recoverableMetadata(for: body, context: context)
+    {
+      fields += [
+        .init(label: "Type", value: metadata.category.rawValue),
+        .init(label: "Custody", value: metadata.ownership.rawValue),
+      ]
+      if let work = workGuidance, work.parent == body.physical?.identity,
+        let section = work.surface.section
+      {
+        fields.append(
+          .init(
+            label: "Section",
+            value: commander.salvageLedger.isDepleted(section) ? "Exhausted" : "Available"))
       }
     }
     return .init(
