@@ -2063,11 +2063,16 @@
     "guardRetained": true,
     "actualFailedBase": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
     "analysis": "/tmp/elite-g02-contract-phase-boundary-analysis-after-asan.json",
-    "analysisSHA256": "4f5ac9372c92dcbcb3a502bf9b3286210cdc8911e95ba675b2e018464ee640c7",
+    "analysisSHA256": "9046392656e8f912f10f174eca4c3857844ea1a0123016e1599efdfaa9466120",
     "scope": "Only root acceptContract prepares with drainAccepted:false, returns the root preparation frame, then same private candidate synchronously drains and rechecks root suspension before unchanged admission/valid/publication gates.",
     "status": "uncompiled/unexecuted; next native ASan failing test first under fresh numbered lease",
     "firstSelector": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce",
     "firstFlags": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel",
-    "limits": "Observed new ASan guard-region fault in full quote Lua path, no heap diagnostic or assumed old failure cause. Phase relief is a hypothesis; no peak/guarantee claim."
+    "limits": "Observed new ASan guard-region fault in full quote Lua path, no heap diagnostic or assumed old failure cause. Phase relief is a hypothesis; no peak/guarantee claim.",
+    "historicalPreApplyAnalysis": {
+      "path": "/tmp/elite-g02-contract-phase-boundary-analysis-after-asan.pre-apply.json",
+      "sha256": "4f5ac9372c92dcbcb3a502bf9b3286210cdc8911e95ba675b2e018464ee640c7"
+    },
+    "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md"
   }
 }
