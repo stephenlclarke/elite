@@ -110,17 +110,9 @@ extension Game {
     else { throw EquipmentRuntimeError.unavailable }
     var prepared = commander
     try prepared.prepareEquipment()
-    let inventory = prepared.equipmentInventory!
     let history = prepared.equipmentPurchaseHistory!
-    let policy = EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node }!.policy
-    if policy == .shop,
-      history.paid.contains(where: { $0.node == node }),
-      inventory.items.contains(where: { $0.node == node })
-    {
-      throw EquipmentRuntimeError.alreadyOwned
-    }
+    let location = try equipmentPurchaseLocation(node, commander: prepared)
     let newID = UUID()
-    let location = try equipmentPurchaseLocation(node, commander: prepared, newID: newID)
     let shop = "galaxy:\(commander.galaxy)/system:\(commander.system)"
     let request = EquipmentPurchaseRequest(
       transaction: UUID(), newItem: newID,
@@ -144,6 +136,7 @@ extension Game {
       let node = EquipmentRuntimeCatalog.node(for: item.name)
     else { return nil }
     do {
+      _ = try equipmentPurchaseLocation(node, commander: commander)
       try EquipmentPurchaseProgression.validateEligibility(
         offer: .init(
           node: node, price: shopPrice(item),
@@ -151,6 +144,10 @@ extension Game {
         snapshot: commander.purchaseSnapshot(), history: history,
         graph: EquipmentRuntimeCatalog.graph)
       return nil
+    } catch EquipmentRuntimeError.alreadyOwned {
+      return "Already owned"
+    } catch EquipmentRuntimeError.noSlot {
+      return "Cannot fit selected destination"
     } catch EquipmentPurchaseError.missingPrerequisite(let required) {
       return "Buy " + required.key + " first"
     } catch EquipmentPurchaseError.missingFittedPrerequisite(let required) {
@@ -179,9 +176,19 @@ extension Game {
   }
 
   private func equipmentPurchaseLocation(
-    _ node: EquipmentNodeID, commander: Commander, newID: UUID
+    _ node: EquipmentNodeID, commander: Commander
   ) throws -> ComponentFittingLocation? {
-    let inventory = commander.equipmentInventory!
+    try commander.validateEquipmentState()
+    guard let inventory = commander.equipmentInventory,
+      let history = commander.equipmentPurchaseHistory,
+      let policy = EquipmentRuntimeCatalog.graph.nodes.first(where: { $0.id == node })?.policy
+    else { throw EquipmentRuntimeError.unavailable }
+    if policy == .shop,
+      history.paid.contains(where: { $0.node == node }),
+      inventory.items.contains(where: { $0.node == node })
+    {
+      throw EquipmentRuntimeError.alreadyOwned
+    }
     let slot: ComponentFittingSlot
     if node.family == EquipmentRuntimeCatalog.laserFamily {
       if equipmentWorkTool {
@@ -215,7 +222,7 @@ extension Game {
     guard context.supportedSlots.contains(slot) else { throw EquipmentRuntimeError.noSlot }
     if let installed = commander.fittedEquipment(at: slot) {
       if let before = installed.component,
-        let after = EquipmentRuntimeCatalog.stockComponent(for: node, id: newID),
+        let after = EquipmentRuntimeCatalog.stockComponent(for: node, id: before.id),
         EquipmentRuntimeCatalog.reducesStatistics(after, from: before)
       {
         return nil
