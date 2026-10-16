@@ -14,7 +14,7 @@ extension NativeViewTests {
     try await harness.selectChild()
     await harness.delegate.runtime.nativeCommand { game in
       game.gallery.campaignLinks = true
-      game.gallery.campaignLinkSelection = 0
+      game.gallery.campaignLinkSelection = 1
     }
     harness.view.game = await harness.delegate.runtime.snapshot()
     try #require(harness.view.game.campaignGalleryLinks.count >= 2)
@@ -27,9 +27,25 @@ extension NativeViewTests {
     #expect(harness.view.pending.isEmpty)
 
     try await harness.frame()
-    harness.view.scrollWheel(with: down)
+    let captured = try #require(harness.view.paintedMissionMenuPresentation)
+    let upCG = try #require(
+      CGEvent(
+        scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
+    let up = try #require(NSEvent(cgEvent: upCG))
+    harness.view.scrollWheel(with: up)
     try #require(harness.view.pending.last?.hasPrefix("script-page-gallery-scroll:") == true)
-    await harness.delegate.runtime.nativeCommand { game in game.gallery.campaignLinkSelection = 1 }
+    var differentPage = await harness.delegate.runtime.snapshot()
+    let second = try #require(harness.second)
+    try harness.fixture.select(second.1, game: &differentPage)
+    differentPage.gallery.campaignLinks = true
+    differentPage.gallery.campaignLinkSelection = 1
+    let configured = differentPage
+    await harness.delegate.runtime.nativeCommand { game in game = configured }
+    let changed = await harness.delegate.runtime.snapshot()
+    try #require(captured != changed.scriptPagePresentation)
+    var unguarded = changed
+    unguarded.key("gallery-scroll:-1")
+    try #require(unguarded.gallery.campaignLinkSelection == 0)
     await harness.drain()
     #expect(await harness.delegate.runtime.snapshot().gallery.campaignLinkSelection == 1)
     harness.view.setFrameSize(.init(width: 768, height: 768))
@@ -38,10 +54,6 @@ extension NativeViewTests {
 
     await harness.delegate.runtime.setViewport(width: 768, height: 768)
     try await harness.frame()
-    let upCG = try #require(
-      CGEvent(
-        scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
-    let up = try #require(NSEvent(cgEvent: upCG))
     harness.view.scrollWheel(with: up)
     await harness.drain()
     #expect(await harness.delegate.runtime.snapshot().gallery.campaignLinkSelection == 0)
