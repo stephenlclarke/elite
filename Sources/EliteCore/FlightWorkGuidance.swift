@@ -92,6 +92,7 @@ extension Game {
   /// Manual release retains actual world momentum; it never snaps velocity to zero.
   mutating func releaseWorkGuidance() {
     guard workGuidance != nil || workBraking != nil else { return }
+    workFireSuspended = true
     let local = commander.flightSimulation.pose.shipVector(flightWorldVelocity)
     speed = min(commander.performance.speed, max(0, local.z / 18))
     autoPilot.setApproachVelocity(local - .init(0, 0, speed * 18))
@@ -199,6 +200,7 @@ extension Game {
         capabilities: workTargetCapabilities
       ).mode == state.mode,
       let physical = body.physical,
+      workSurfaceStillAuthorized(state, body: body, context: context),
       let targetHull = preparedWorkHull(mesh: gameplayMesh(for: body), key: "target:\(body.id)"),
       let playerHull = preparedWorkHull(mesh: commander.playerMesh, key: "player"),
       let obstacles = workObstacles(excluding: state.parent, delta: delta)
@@ -259,6 +261,20 @@ extension Game {
     workGuidance = state
     authorizeWorkThrust(delta: delta)
     if previousStatus != state.status { notify("WORK: " + state.status) }
+  }
+
+  func workSurfaceStillAuthorized(
+    _ state: FlightWorkGuidance, body: SpaceBody, context: EncounterContext
+  ) -> Bool {
+    guard let section = state.surface.section else { return true }
+    guard let metadata = recoverableMetadata(for: body, context: context),
+      metadata.wreck == section.wreck,
+      metadata.section == nil || metadata.section == section
+    else { return false }
+    return metadata.workSurfaces.contains {
+      $0.section == section && $0.position == state.surface.point
+        && $0.normal == state.surface.normal
+    }
   }
 
   mutating func authorizeWorkThrust(delta: Double) {

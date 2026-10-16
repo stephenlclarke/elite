@@ -41,12 +41,16 @@ extension Game {
     else { return nil }
     let kind: WorkTargetKind
     var compatible = false
-    if body.hull == .station && body.id == 0 {
+    if body.hull == .station {
       kind = .activeStation
     } else if let metadata = recoverableMetadata(for: body, context: context) {
       kind = .recoverable(metadata, payload: physical.payload)
       let half = collectibleHalfExtents(body)
-      compatible = half.map { $0.x <= 16 && $0.y <= 16 && $0.z <= 16 } ?? false
+      compatible =
+        half.map {
+          $0.finite && $0.x > 0 && $0.y > 0 && $0.z > 0
+            && $0.x <= 16 && $0.y <= 16 && $0.z <= 16
+        } ?? false
     } else if body.hull.isTargetShip {
       kind = .ship
     } else {
