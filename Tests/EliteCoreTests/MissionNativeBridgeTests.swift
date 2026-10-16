@@ -914,6 +914,26 @@ struct MissionNativeBridgeTests {
   }
 
   @Test func allActualCatalogueAndNativeHullAssetsPermitFarMissWithoutInvalidGeometry() throws {
+    func assertActualCandidate(_ game: Game) throws {
+      let body = try #require(game.bodies.first)
+      let vertices = game.gameplayMesh(for: body).vertices.map {
+        body.position + body.modelVector($0)
+      }
+      let minX = try #require(vertices.map(\.x).min())
+      let maxX = try #require(vertices.map(\.x).max())
+      let minY = try #require(vertices.map(\.y).min())
+      let maxY = try #require(vertices.map(\.y).max())
+      let minZ = try #require(vertices.map(\.z).min())
+      let maxZ = try #require(vertices.map(\.z).max())
+      let origin = Vector3((minX + maxX) / 2, (minY + maxY) / 2, minZ - 1)
+      for radius in [0.0, 0.1] {
+        let candidate = try game.nearestMissionCollision(
+          from: origin,
+          direction: .init(0, 0, 1), range: maxZ - minZ + 2,
+          radius: radius, includePlayer: false)
+        if let candidate { #expect(candidate.hit.target == .body(body.id)) }
+      }
+    }
     var nativeHulls: Set<Hull> = []
     for ship in ShipCatalogue.all {
       var game = Game(executive: false)
@@ -928,6 +948,7 @@ struct MissionNativeBridgeTests {
           direction: .init(0, 0, 1), range: 10000, radius: radius, includePlayer: false)
         #expect(contact == nil, "Catalogue asset \(ship.id) radius \(radius)")
       }
+      try assertActualCandidate(game)
       if let hull = ship.nativeHull, nativeHulls.insert(hull).inserted {
         game.bodies[0].physical?.catalogueShipID = nil
         for radius in [0.0, 0.1] {
@@ -936,6 +957,7 @@ struct MissionNativeBridgeTests {
             direction: .init(0, 0, 1), range: 10000, radius: radius, includePlayer: false)
           #expect(contact == nil, "Actual native hull \(hull) radius \(radius)")
         }
+        try assertActualCandidate(game)
       }
     }
   }
