@@ -1,6 +1,42 @@
 import Foundation
 
 extension Game {
+  /// Pure and bounded: the Game boundary can run this before clocks or actor restoration.
+  func validateRetainedMissionProjectileRestoration() throws {
+    for (id, record) in commander.scriptState.projectiles
+    where record.galaxy == commander.galaxy && record.system == commander.system {
+      guard id == record.body.scriptShot?.identity, record.valid,
+        commander.scriptState.projectileArchiveValid(record)
+      else { throw NativeMissionProjectileAdmissionError.invalidRecord }
+    }
+  }
+
+  /// The native provider resolves the real anchor and owns every allocation and transform.
+  mutating func restoreScriptShots(anchor _: SpaceBody) throws {
+    try validateRetainedMissionProjectileRestoration()
+    for id in commander.scriptState.projectiles.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+      guard let record = commander.scriptState.projectiles[id],
+        record.galaxy == commander.galaxy, record.system == commander.system
+      else { continue }
+      do {
+        let receipt = try admitRetainedMissionProjectile(id)
+        guard var admitted = commander.scriptState.projectiles[id] else {
+          throw NativeMissionProjectileAdmissionError.missingRecord
+        }
+        admitted.body.id = receipt.bodyID
+        admitted.presence = .present
+        commander.scriptState.projectiles[id] = admitted
+      } catch let error as NativeMissionProjectileAdmissionError {
+        switch error {
+        case .outsideBubble, .unavailablePack, .allocatorExhausted, .refused(_):
+          continue
+        case .missingRecord, .invalidRecord:
+          throw error
+        }
+      }
+    }
+  }
+
   /// Save the same shot and launch archive in the existing station-relative frame.
   mutating func persistScriptShots(anchor: SpaceBody, unloading: Bool) {
     for body in bodies {

@@ -180,16 +180,6 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     guard projectiles.count <= 1024,
       projectiles.allSatisfy({ key, value in
         key == value.body.scriptShot?.identity && value.valid && projectileArchiveValid(value)
-          && instances[value.body.scriptShot!.instance]?.ownedEncounters.values.contains {
-            encounter in
-            encounter.actors.values.contains { actor in
-              actor.identity == value.body.scriptShot!.owner
-                && (value.body.scriptShot!.component.map { component in
-                  actor.body.scriptNPC?.components.values.contains { $0.identity == component }
-                    == true
-                } ?? true)
-            }
-          } == true
       })
     else { return false }
     let identities = instances.values.flatMap {
