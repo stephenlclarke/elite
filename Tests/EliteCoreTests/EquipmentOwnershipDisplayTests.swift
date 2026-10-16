@@ -101,6 +101,53 @@ struct EquipmentOwnershipDisplayTests {
     #expect(try ownershipDisplayBytes(game.commander) == before)
   }
 
+  @Test func beamLaserInMiningWorkSlotShowsRefusalWithoutPurchasePromptOrMutation() throws {
+    var game = try ownershipDisplayGame()
+    #expect(game.commander.nativePerformance.workTools?.contains(.miningLaser) == true)
+    game.equipmentWorkTool = true
+    game.selection = try #require(
+      Equipment.all.firstIndex { $0.name == LaserKind.beam.equipmentName })
+    let beam = Equipment.all[game.selection]
+    let before = try ownershipDisplayBytes(game.commander)
+    #expect(throws: EquipmentRuntimeError.noSlot) { try game.quoteEquipmentPurchase(beam) }
+    for (width, height) in [(512.0, 518.0), (768.0, 768.0)] {
+      let refusal = try #require(game.equipmentPurchaseRequirement(beam))
+      let frame = Display.equipmentScreen(game, width: width, height: height)
+      let text = frame.labels.map(\.text).joined(separator: " ")
+      #expect(text.contains(refusal))
+      #expect(!text.contains("Return: buy"))
+      #expect(frame.labels.contains { $0.text == "Buying for: Mining work tool" })
+      #expect(try ownershipDisplayBytes(game.commander) == before)
+    }
+  }
+
+  @Test func paidFittedCoreShowsAlreadyOwnedRefusalWithoutPurchasePromptOrMutation() throws {
+    var game = try ownershipDisplayGame()
+    game.selection = try #require(
+      Equipment.all.firstIndex { $0.name == TargetingTier.basic.equipmentName })
+    let basic = Equipment.all[game.selection]
+    let quote = try game.quoteEquipmentPurchase(basic)
+    let fitted = try game.applyEquipmentPurchase(quote)
+    #expect(fitted)
+    let core = try #require(game.commander.fittedEquipment(at: .targetingCore))
+    let history = try #require(game.commander.equipmentPurchaseHistory)
+    #expect(core.node == quote.purchase.node)
+    #expect(history.paid.count == 1)
+    #expect(history.paid.first?.node == core.node)
+    let before = try ownershipDisplayBytes(game.commander)
+    #expect(throws: EquipmentRuntimeError.alreadyOwned) { try game.quoteEquipmentPurchase(basic) }
+    for (width, height) in [(512.0, 518.0), (768.0, 768.0)] {
+      let refusal = try #require(game.equipmentPurchaseRequirement(basic))
+      let frame = Display.equipmentScreen(game, width: width, height: height)
+      let text = frame.labels.map(\.text).joined(separator: " ")
+      #expect(text.contains(refusal))
+      #expect(!text.contains("Return: buy"))
+      #expect(frame.labels.contains { $0.text == "FITTED" })
+      #expect(game.commander.fittedEquipment(at: .targetingCore) == core)
+      #expect(try ownershipDisplayBytes(game.commander) == before)
+    }
+  }
+
   @Test func combatCardsAndOptionalWorkToolKeepSelectionAndPricesReachableAtBothSizes() throws {
     let withTool = try #require(
       ShipCatalogue.all.first { $0.game?.workTools?.contains(.miningLaser) == true })
