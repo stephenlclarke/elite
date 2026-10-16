@@ -3,7 +3,7 @@ import Foundation
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
     equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, showroom, rumour,
-    gameOver
+    gameOver, contracts, library
   public var isFlight: Bool { [.front, .rear, .left, .right].contains(self) }
 }
 
@@ -371,8 +371,25 @@ public struct Game: Sendable {
   public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false
+  public var isMissionTrial = false
+  public var contractBoard = ContractBoardUI()
+  var scriptPledgeAdmission: ScriptPledgeAdmission?
+  var scriptCourierAdmission: ScriptCourierAdmission?
+  public var trialTitle: String?
+  var trialDigest: String?
+  var trialSeed: UInt64?
   public var docked = true
   public var dockedAtMainStation = true
+  var scriptReferenceFrame: ScriptReferenceFrame?
+  var scriptDispatching = false
+  var scriptEventsDeferred = false
+  var scriptDurabilityAvailable = false
+  public var scriptPacks: [ScriptPack] = []
+  public var scriptAvailablePackDigest: String?
+  public var scriptOffer: UUID?
+  public var scriptPresentedDialogue: ScriptDialogue?
+  public var scriptConfirmSelected = true
+  public var scriptChoiceSelection = 0
   public var missionPacks = MissionPackLibrary.bundled
   public var packOffer: PackOffer?
   public var packOfferElapsed = 0.0
@@ -441,11 +458,13 @@ public struct Game: Sendable {
   public var messageTime = 0.0
   public var jumpCountdown: Double? = nil
   public var time = 0.0
+  var scriptStartupTime: Double?
   public var secretBuffer = ""
   public var secretReturn: Screen = .status
   public var helpReturn: Screen = .title
   public var helpPage = 0
   public var gallery = MissionGalleryState()
+  public var library = ScriptLibraryState()
   public var mapColour: MapColourMode = .economy
   public var mapZoom: MapZoom = .jump
   public var mapSearch = PlanetSearchState()
@@ -494,6 +513,9 @@ public struct Game: Sendable {
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
     guard value.valid else { return false }
+    bodies = []
+    scriptReferenceFrame = nil
+    scriptStartupTime = nil
     commander = value
     if commander.npcPersistence.count > 0 {
       commander.npcPersistence.resetPhysicalBindings(
@@ -502,8 +524,13 @@ public struct Game: Sendable {
     clearCelestialFlight()
     blackjackOffer = nil
     packOffer = nil
+    scriptOffer = nil
+    scriptPresentedDialogue = nil
+    scriptAvailablePackDigest = nil
+    scriptChoiceSelection = 0
     migrateMissionProgress()
     gallery = MissionGalleryState()
+    library = ScriptLibraryState()
     showroom = ShowroomState()
     galacticBrowse = GalaxyBrowseState()
     systemInspection = nil
@@ -1481,8 +1508,11 @@ public enum SaveError: Error { case invalidCommander }
 /// Owns all mutable simulation state. Rendering consumes value snapshots only.
 public actor GameRuntime {
   var game: Game
-  private var controls = Controls()
-  public init(game: Game = Game()) {
+  var controls = Controls()
+  var galleryNamespace: URL?
+  var galleryParent: GalleryParentState?
+  var scriptSaveURL: URL?
+  public init(game: Game = Game(), saveURL: URL? = nil) {
     var prepared = game
     prepared.inventoryContextEpoch = .init()
     if (try? prepared.commander.prepareEquipment()) != nil {
@@ -1491,6 +1521,37 @@ public actor GameRuntime {
     } else {
       self.game = prepared
     }
+    if self.game.requiresScriptDurability {
+      let missingCalendar = self.game.commander.scriptState.calendarLedger == nil
+      self.game.ensureScriptCalendar(
+        origin: game.jumpCountdown == nil ? .newCommander : .inactiveLegacyMigration)
+      if missingCalendar, game.jumpCountdown != nil {
+        self.game.commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
+      }
+    }
+    if game.isMissionTrial {
+      let namespace = Self.newGalleryNamespace()
+      galleryNamespace = namespace
+      scriptSaveURL = namespace.appendingPathComponent("commander.json")
+      self.game.scriptDurabilityAvailable = true
+    } else {
+      self.game.scriptDurabilityAvailable = saveURL != nil
+      scriptSaveURL = saveURL
+    }
+  }
+  init(trialGame: Game) throws {
+    let namespace = Self.newGalleryNamespace()
+    let target = namespace.appendingPathComponent("commander.json")
+    var candidate = trialGame
+    try candidate.commander.prepareEquipment()
+    candidate.inventoryContextEpoch = .init()
+    candidate.ensureScriptCalendar(origin: .newCommander)
+    candidate.scriptDurabilityAvailable = true
+    candidate.isMissionTrial = true
+    try Self.writeCommander(&candidate, to: target)
+    game = candidate
+    galleryNamespace = namespace
+    scriptSaveURL = target
   }
   func invalidateInventoryContext() { game.inventoryContextEpoch = .init() }
   public func inventoryCommand(_ command: InventoryCommand) -> Bool {
@@ -1498,14 +1559,48 @@ public actor GameRuntime {
   }
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
+    if galleryAction(key) { return }
+    game.resolveCourierTerminals(publish: scriptPublisher())
+    let before = game
+    let held = controls
+    applyKey(key)
+    game.resolveCourierTerminals()
+    game.scriptDurabilityAvailable = scriptSaveURL != nil
+    if before.screen == .gameOver, [" ", "return"].contains(key) {
+      game.scriptPacks = before.scriptPacks
+      game.missionPacks = before.missionPacks
+    }
+    do { try commitScriptCommand(from: before) } catch {
+      game = before
+      controls = held
+      game.notify("MISSION SAVE FAILED - ACTION NOT COMMITTED")
+    }
+  }
+  private func applyKey(_ key: String) {
     let old = game.screen
     let wasPaused = game.paused
+    let wasDocked = game.docked
+    let oldLocation = (game.commander.galaxy, game.commander.system)
+    if key == "contacts-open" || (key == "b" && !game.acceptsTextInput), game.docked, !game.paused,
+      ![
+        Screen.help, .gallery, .library, .handoff, .mission, .showroom, .title, .demo, .gameOver,
+        .secret, .navigation, .rumour,
+      ].contains(game.screen)
+    {
+      game.emitScriptEvent("contact.requested")
+      if game.showScriptDialogue() || game.offerAvailableScriptMission() {
+        controls = Controls()
+        return
+      }
+    }
     if key.lowercased() == "return", let context = game.equipmentPurchaseContext {
-      _ = equipmentTransaction(.purchase(context))
+      _ = game.performEquipmentMutation(.purchase(context))
     } else {
       game.key(key)
     }
     if old != game.screen || wasPaused != game.paused { invalidateInventoryContext() }
+    if old == .handoff, game.screen == .contracts { game.refreshContractRows() }
+    game.observeScriptLocation(wasDocked: wasDocked, galaxy: oldLocation.0, system: oldLocation.1)
     if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
     {
       controls.pitch = 0
@@ -1514,38 +1609,78 @@ public actor GameRuntime {
       if game.dockingComputer { controls = Controls() }
     }
     if old != game.screen || key == "pause"
-      || [.gallery, .handoff, .showroom].contains(game.screen)
+      || [.gallery, .library, .handoff, .showroom].contains(game.screen)
     {
       controls = Controls()
     }
   }
-  public func blackjackHandoffClick(x: Double, y: Double) { game.blackjackHandoffClick(x: x, y: y) }
-  public func secretClick(x: Double, y: Double) { game.secretClick(x: x, y: y) }
-  public func showroomClick(x: Double, y: Double) { game.showroomClick(x: x, y: y) }
-  public func marketClick(x: Double, y: Double) { game.marketClick(x: x, y: y) }
-  public func equipmentClick(y: Double, x: Double? = nil) { game.equipmentClick(y: y, x: x) }
+  public func blackjackHandoffClick(x: Double, y: Double) {
+    nativeCommand { $0.blackjackHandoffClick(x: x, y: y) }
+  }
+  public func secretClick(x: Double, y: Double) { nativeCommand { $0.secretClick(x: x, y: y) } }
+  public func showroomClick(x: Double, y: Double) { nativeCommand { $0.showroomClick(x: x, y: y) } }
+  public func marketClick(x: Double, y: Double) { nativeCommand { $0.marketClick(x: x, y: y) } }
+  public func equipmentClick(y: Double, x: Double? = nil) {
+    nativeCommand { $0.equipmentClick(y: y, x: x) }
+  }
   public func mapClick(x: Double, y: Double) { game.mapClick(x: x, y: y) }
-  public func galleryClick(x: Double, y: Double) { game.galleryClick(x: x, y: y) }
-  public func setControls(_ value: Controls) { controls = value }
+  public func galleryClick(x: Double, y: Double) { campaignGalleryClick(x: x, y: y) }
+  public func setControls(_ value: Controls, expectedEpoch: UUID? = nil) {
+    controls = expectedEpoch == nil || expectedEpoch == game.ecmControl.epoch ? value : Controls()
+  }
   public func setViewport(width: Double, height: Double) {
     game.viewportWidth = width
     game.viewportHeight = height
   }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
+    let wasDocked = game.docked
+    let wasLive = game.screen != .gameOver
+    let location = (game.commander.galaxy, game.commander.system)
+    let localActive =
+      !game.paused
+      && ![Screen.demo, .title, .gameOver, .gallery, .library, .help, .navigation].contains(
+        game.screen)
+    let flightActive =
+      localActive && !game.docked
+      && ![Screen.mission, .handoff, .rumour, .showroom, .secret].contains(game.screen)
+    // Physical facts commit first. A failed script save must never undo a real hit/death.
+    let calendarActive = game.calendarActive
+    game.scriptEventsDeferred = true
+    let clockAdvanced =
+      game.requiresScriptDurability
+      && game.advanceScriptClockValues(
+        delta: delta, flight: flightActive, local: localActive, calendar: calendarActive,
+        missionCalendar: game.missionCalendarActive)
     game.tick(delta: delta, controls: controls)
+    if wasLive && game.screen == .gameOver {
+      if game.energy.isFinite && game.energy < 0 { game.energy = 0 }
+      game.markCourierFatalLoss()
+    }
+    game.resolveCourierTerminals(publish: scriptPublisher())
+    game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
+    game.scriptEventsDeferred = false
+    if localActive && !game.docked {
+      game.persistScriptActors()
+      game.restoreScriptActors()
+    }
+    if localActive { game.drainScriptEvents(publish: scriptPublisher()) }
+    if clockAdvanced {
+      game.fireDueScriptTimers(
+        flight: flightActive, local: localActive, calendar: calendarActive,
+        publish: scriptPublisher())
+    }
+    game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())
     return game
   }
   public func save(to url: URL) throws {
-    let prepared = try prepareSave(game)
-    try writeSave(prepared.data, to: url)
-    game = prepared.game
-  }
-  private func prepareSave(_ value: Game) throws -> (game: Game, data: Data) {
-    let prepared = try Self.prepareNativeSaveState(value)
-    let data = try JSONEncoder().encode(prepared.commander)
-    guard data.count <= CommanderSaveInput.maximumBytes else { throw SaveError.invalidCommander }
-    return (prepared.game, data)
+    try requireGalleryFileAccess(url)
+    var candidate = game
+    candidate.resolveCourierTerminals()
+    try Self.writeCommander(&candidate, to: url)
+    game = candidate
+    scriptSaveURL = url
+    game.scriptDurabilityAvailable = true
   }
 
   /// Shared native persistence barrier before either ordinary JSON or Script chunks.
@@ -1572,27 +1707,83 @@ public actor GameRuntime {
     }
     return (candidate, persistedCommander)
   }
-  private func writeSave(_ data: Data, to url: URL) throws {
-    try FileManager.default.createDirectory(
-      at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-    try data.write(to: url, options: .atomic)
-  }
+
   public func restoreStartup(from url: URL) throws {
     try load(from: url, persistMigrations: false)
+    if !game.commander.scriptState.instances.isEmpty
+      || !game.commander.accommodation.ownedBerths.isEmpty
+    {
+      game.scriptStartupTime = game.time
+    }
     game.screen = .title
     game.time = 0
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
+    try requireGalleryFileAccess(url)
     let data = try CommanderSaveInput.read(from: url)
-    let commander = try JSONDecoder().decode(Commander.self, from: data)
+    try ScriptSaveJSONPreflight.validate(data)
+    if let pointer = try? JSONDecoder().decode(ScriptSavePointer.self, from: data) {
+      if pointer.schemaVersion >= 6 {
+        guard (pointer.scope == "gallery") == (galleryNamespace != nil) else {
+          throw MissionPackError(
+            "Trial saves open only in Gallery trials; commander saves open in the live game.")
+        }
+      }
+      let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: url)
+      try Self.requireGalleryPathAccess(generation, namespace: galleryNamespace)
+      let (commander, world) = try ScriptSaveStore.read(data, from: url)
+      // v2 is already migrated/validated; ordinary docking/load callbacks must not replay here.
+      var candidate = Game(executive: false)
+      candidate.commander = commander
+      candidate.isMissionTrial = galleryNamespace != nil
+      candidate.trialTitle = game.trialTitle
+      candidate.trialDigest = game.trialDigest
+      candidate.trialSeed = game.trialSeed
+      candidate.missionPacks = game.missionPacks
+      candidate.scriptPacks = game.scriptPacks
+      candidate.scriptDurabilityAvailable = true
+      candidate.viewportWidth = game.viewportWidth
+      candidate.viewportHeight = game.viewportHeight
+      candidate.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
+      if candidate.requiresScriptDurability {
+        migrateScriptCalendar(&candidate, untrackedJump: world.jumpCountdown != nil)
+      }
+      candidate.restoreScriptWorld(world)
+      try candidate.validateInstalledCourierContent()
+      candidate.resolveCourierTerminals()
+      candidate.suspendUnavailableScriptContent()
+      guard candidate.commander.valid else { throw SaveError.invalidCommander }
+      if persistMigrations && candidate.commander != commander {
+        try Self.writeCommander(&candidate, to: url)
+      }
+      game = candidate
+      controls = Controls()
+      scriptSaveURL = url
+      game.scriptDurabilityAvailable = true
+      return
+    }
+    guard galleryNamespace == nil else {
+      throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
+    }
+    try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
+    var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
+    // Native pledge evidence belongs to versioned missions chunks.
+    guard commander.scriptState.pledgeLedger == nil,
+      commander.scriptState.instances.values.allSatisfy({ $0.pledgeReceiptID == nil })
+    else { throw SaveError.invalidCommander }
+    let original = commander
+    commander.migrateLegacyPassengerMarker()
     var candidate = game
     guard candidate.load(commander) else { throw SaveError.invalidCommander }
-    if persistMigrations && candidate.commander != commander {
-      let prepared = try prepareSave(candidate)
-      try writeSave(prepared.data, to: url)
-      candidate = prepared.game
+    if candidate.requiresScriptDurability { migrateScriptCalendar(&candidate) }
+    guard candidate.commander.valid else { throw SaveError.invalidCommander }
+    if persistMigrations && candidate.commander != original {
+      try Self.writeCommander(&candidate, to: url)
     }
     game = candidate
+    controls = Controls()
+    scriptSaveURL = url
+    game.scriptDurabilityAvailable = true
   }
 }
 

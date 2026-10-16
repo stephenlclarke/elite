@@ -172,6 +172,16 @@ private struct ShopRefusal: Error {
 extension GameRuntime {
   /// There is no suspension between validation and publication. Every reader sees one whole state.
   public func equipmentTransaction(_ intent: EquipmentMutationIntent) -> EquipmentMutationResult {
-    game.performEquipmentMutation(intent)
+    let before = game
+    let result = game.performEquipmentMutation(intent)
+    guard result.applied else { return result }
+    do {
+      try commitScriptCommand(from: before)
+      return result
+    } catch {
+      game = before
+      game.notify("MISSION SAVE FAILED - ACTION NOT COMMITTED")
+      return .refused(.invalidState)
+    }
   }
 }

@@ -115,6 +115,11 @@ extension Commander {
         owner: owner, hull: hull,
         performance: nativePerformance))
     var engine = scriptState
+    // This actual legacy-bag admission is a common-fit migration boundary. Retain
+    // its existing calendar marker after the obsolete physical bag is removed.
+    if engine.calendarLedger == nil {
+      engine.calendarLedger = .init(origin: .inactiveLegacyMigration)
+    }
     let surviving = Set(items.map(\.id))
     for id in engine.instances.keys {
       guard var instance = engine.instances[id] else { continue }
