@@ -996,15 +996,22 @@ public struct Game: Sendable {
       notify("CALENDAR LIMIT - LAUNCH NOT COMMITTED")
       return
     }
-    candidate.persistScriptActors(unloading: true)
-    candidate.performNativeLaunch()
+    do {
+      try candidate.preflightActiveMissionProjectiles()
+      candidate.persistScriptActors(unloading: true)
+      try candidate.performNativeLaunch()
+    } catch {
+      paused = true
+      notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
+      return
+    }
     guard candidate.commander.valid else {
       notify("LAUNCH REFUSED")
       return
     }
     self = candidate
   }
-  private mutating func performNativeLaunch() {
+  private mutating func performNativeLaunch() throws {
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -1032,7 +1039,7 @@ public struct Game: Sendable {
     preloadNavigation()
     restoreBlackjackEncounter()
     applyScriptStationResources()
-    restoreScriptActors()
+    try restoreScriptActors()
   }
   public mutating func dock(atMainStation: Bool = true) {
     resolveDestroyed()
@@ -1132,6 +1139,19 @@ public struct Game: Sendable {
       || celestials.contains { $0.position.length < $0.radius * 4 }
   }
   public mutating func arrive() {
+    var candidate = self
+    do {
+      try candidate.preflightActiveMissionProjectiles()
+      try candidate.performNativeArrival()
+      guard candidate.commander.valid else { throw SaveError.invalidCommander }
+    } catch {
+      paused = true
+      notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
+      return
+    }
+    self = candidate
+  }
+  private mutating func performNativeArrival() throws {
     resolveDestroyed()
     guard !hasUnsettledWreckDeaths else {
       jumpCountdown = nil
@@ -1186,7 +1206,7 @@ public struct Game: Sendable {
     notify(currentSystem.name)
     restoreBlackjackEncounter()
     applyScriptStationResources()
-    restoreScriptActors()
+    try restoreScriptActors()
   }
   public mutating func galacticJump() {
     guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
@@ -1710,6 +1730,14 @@ public actor GameRuntime {
     let flightActive =
       localActive && !game.docked
       && ![Screen.mission, .handoff, .rumour, .showroom, .secret].contains(game.screen)
+    if localActive && !game.docked {
+      do { try game.preflightActiveMissionProjectiles() } catch {
+        controls = Controls()
+        game.paused = true
+        game.notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
+        return game
+      }
+    }
     // Physical facts commit first. A failed script save must never undo a real hit/death.
     let calendarActive = game.calendarActive
     game.scriptEventsDeferred = true
@@ -1728,7 +1756,14 @@ public actor GameRuntime {
     game.scriptEventsDeferred = false
     if localActive && !game.docked {
       game.persistScriptActors()
-      game.restoreScriptActors()
+      do { try game.restoreScriptActors() } catch {
+        // Earlier physical effects stay committed. The restore operation's own
+        // all-record preflight prevents partial actor/projectile publication.
+        controls = Controls()
+        game.paused = true
+        game.notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
+        return game
+      }
     }
     if localActive { game.drainScriptEvents(publish: scriptPublisher()) }
     if clockAdvanced {
@@ -1899,4 +1934,14 @@ extension Game {
     }
   }
   mutating func seedScriptTrial(_ seed: UInt64) { randomState = seed }
+}
+
+extension Game {
+  fileprivate func preflightActiveMissionProjectiles() throws {
+    guard !commander.scriptState.projectiles.isEmpty else { return }
+    let identities: [UUID] = commander.scriptState.projectiles.compactMap { id, record in
+      record.galaxy == commander.galaxy && record.system == commander.system ? id : nil
+    }
+    try validateRetainedMissionProjectileAdmissions(identities)
+  }
 }
