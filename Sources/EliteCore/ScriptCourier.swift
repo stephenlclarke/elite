@@ -37,13 +37,21 @@ public struct ScriptCourierPreview: Sendable, Equatable {
   }
 }
 
-struct ScriptCourierAdmission: Sendable {
+/// Immutable one-action reference keeps complete causal proof off each nested Game value frame.
+final class ScriptCourierAdmission: Sendable {
   enum Kind: Sendable, Equatable { case issue, deliver, abandon }
   let kind: Kind
   let instance: UUID
   let item: UUID
   let proof: ScriptCourierActionProof
   let job: ScriptContractJob
+  init(kind: Kind, instance: UUID, item: UUID, proof: ScriptCourierActionProof, job: ScriptContractJob) {
+    self.kind = kind
+    self.instance = instance
+    self.item = item
+    self.proof = proof
+    self.job = job
+  }
 }
 
 extension Game {
