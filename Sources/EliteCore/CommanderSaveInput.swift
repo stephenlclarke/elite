@@ -5,10 +5,16 @@ public enum CommanderSaveInput {
   public static let maximumBytes = 4_194_304
 
   /// Bound allocation and work on the opened file, not a race-prone URL size hint.
-  public static func read(from url: URL) throws -> Data {
-    guard url.isFileURL else { throw SaveError.invalidCommander }
+  public static func read(
+    from url: URL, maximumBytes: Int = CommanderSaveInput.maximumBytes,
+    denySymbolicLinks: Bool = false
+  ) throws -> Data {
+    guard url.isFileURL, maximumBytes >= 0, maximumBytes < Int.max else {
+      throw SaveError.invalidCommander
+    }
+    let flags = O_RDONLY | O_NONBLOCK | O_CLOEXEC | (denySymbolicLinks ? O_NOFOLLOW : 0)
     let descriptor = url.withUnsafeFileSystemRepresentation { path in
-      path.map { Darwin.open($0, O_RDONLY | O_NONBLOCK | O_CLOEXEC) } ?? -1
+      path.map { Darwin.open($0, flags) } ?? -1
     }
     guard descriptor >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
     let file = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
