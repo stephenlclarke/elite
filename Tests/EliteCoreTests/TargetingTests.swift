@@ -32,7 +32,14 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
       let expected = hull == .station ? game.autoPilot.status : hostile ? "Hostile" : "Neutral"
       #expect(info?.status == expected)
       let frame = Display.cockpit(game, width: 512, height: 518)
-      #expect(frame.labels.contains { $0.text.contains("Status: " + expected) })
+      let statusRows = frame.labels.filter {
+        $0.x >= 256 && $0.y >= 32 && $0.y < 100 && $0.ink == .white
+      }.sorted { $0.y < $1.y }
+      #expect(statusRows.map(\.text).joined(separator: " ") == expected + " I: Detail")
+      #expect(
+        statusRows.allSatisfy {
+          $0.bounds.maxX <= 512 && $0.bounds.maxY <= frame.flightClip.maxY
+        })
     }
     // Looking at an unadopted target must not allocate a physical actor or a controller.
     #expect(game.bodies[0].physical == nil && game.workGuidance == nil)
