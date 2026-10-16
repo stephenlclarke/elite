@@ -580,6 +580,30 @@ struct FlightWorkGuidanceRuntimeTests {
       game.commander.cargoDebrisLedger.pendingPayloads.contains { $0.identity == payload.identity })
   }
 
+  @Test func compactLongWorkStatusAndHintRemainInsideTheActualTargetPanel() throws {
+    var game = try workRuntimeGame()
+    _ = try addWorkCargo(&game, position: .init(0, -45, 1800))
+    engageWorkCargo(&game)
+    game.advanceWorkGuidance(delta: 0.02)
+    game.viewportWidth = 512
+    game.viewportHeight = 518
+    let info = try #require(game.targetInformation)
+    #expect(info.status == "APPROACHING SCOOP TARGET")
+    for expanded in [false, true] {
+      game.targetPanelExpanded = expanded
+      let cockpit = CockpitLayout(game: game, width: 512, height: 518)
+      let panel = TargetPanelLayout(game: game, info: info, cockpit: cockpit)
+      #expect(panel.statuses.count > 1)
+      let frame = Display.presentation(game, width: 512, height: 518)
+      for line in panel.statuses {
+        let label = try #require(frame.labels.first { $0.text == line })
+        #expect(label.bounds.maxX <= 512 && label.bounds.maxY <= cockpit.flightClip.maxY)
+      }
+      #expect(panel.statuses.joined(separator: " ").contains(expanded ? "I: Hide" : "I: Detail"))
+      #expect(game.commander.salvageLedger.pendingLots.count == 1)
+    }
+  }
+
   @Test func canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex() throws {
     var game = try workRuntimeGame()
     let actor = try addWorkCargo(&game, position: .init(40, -55, 800))

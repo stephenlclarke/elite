@@ -7,6 +7,7 @@ struct TargetPanelLayout {
   let row = ceil(GameTypography.scale * 7) + 5
   let previewHeight: Double
   let headings: [String]
+  let statuses: [String]
   let fields: [String]
   let fieldY: Double
   let bottom: Double
@@ -18,8 +19,11 @@ struct TargetPanelLayout {
     previewHeight = cockpit.width >= 1100 ? 110 : 72
     let columns = max(1, Int((width - 8) / (6 * GameTypography.scale)))
     headings = ShowroomText.wrap(info.identifier, width: columns)
+    let expanded = game.targetPanelExpanded ?? (cockpit.width >= 1100)
+    statuses = ShowroomText.wrap(
+      (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail"), width: columns)
     fields = info.fields.flatMap { ShowroomText.wrap($0.text, width: columns) }
-    fieldY = y + row * Double(headings.count + 1) + previewHeight + 8
+    fieldY = y + row * Double(headings.count + statuses.count) + previewHeight + 8
     bottom = min(fieldY + row * Double(fields.count) + 8, cockpit.flightClip.maxY)
     let capacity = max(1, Int((bottom - fieldY - 4) / row))
     let visible = fields.count > capacity ? max(1, capacity - 1) : capacity
@@ -55,8 +59,9 @@ extension Display {
     let row = panel.row
     let previewHeight = panel.previewHeight
     let headingRows = Double(panel.headings.count)
+    let titleRows = headingRows + Double(panel.statuses.count)
     let bottom =
-      expanded ? panel.bottom : min(y + row * (headingRows + 1) + 12, layout.flightClip.maxY)
+      expanded ? panel.bottom : min(y + row * titleRows + 12, layout.flightClip.maxY)
     frame.graphics.append(
       .panel(
         .init(
@@ -68,10 +73,9 @@ extension Display {
     for (index, line) in panel.headings.enumerated() {
       frame.label(line, x, y + Double(index) * row, scale: font, ink: .cyan)
     }
-    frame.label(
-      (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail"), x,
-      y + row * headingRows, scale: font
-    )
+    for (index, line) in panel.statuses.enumerated() {
+      frame.label(line, x, y + row * (headingRows + Double(index)), scale: font)
+    }
     guard expanded, var body = game.informationTargetBody else { return }
     // The target camera copies its pose. It never changes the flight camera or simulation.
     body.position = .init(0, 0, 350)
@@ -79,9 +83,9 @@ extension Display {
     camera.screen = .front
     let savedClip = frame.flightClip
     frame.flightClip = .init(
-      x: x, y: y + row * (headingRows + 1) + 4, width: width - 8, height: previewHeight)
+      x: x, y: y + row * titleRows + 4, width: width - 8, height: previewHeight)
     let projection = FlightProjection(
-      center: .init(x + (width - 8) / 2, y + row * (headingRows + 1) + 4 + previewHeight / 2),
+      center: .init(x + (width - 8) / 2, y + row * titleRows + 4 + previewHeight / 2),
       focal: previewHeight * 2)
     let previewMesh = body.physical?.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.previewMesh }
     draw(body, game: camera, into: &frame, projection: projection, mesh: previewMesh)

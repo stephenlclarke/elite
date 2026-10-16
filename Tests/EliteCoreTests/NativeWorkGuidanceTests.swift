@@ -189,6 +189,7 @@ private struct NativeWorkFixture {
     #expect(preferences.persistentDomain(forName: identifier) == nil)
   }
   func capture(name: String, scale: Int) throws {
+    let actualStarted = ProcessInfo.processInfo.systemUptime
     let width = Int(view.bounds.width)
     let height = Int(view.bounds.height)
     let context = try #require(
@@ -203,9 +204,15 @@ private struct NativeWorkFixture {
     view.draw(view.bounds)
     NSGraphicsContext.restoreGraphicsState()
     let actual = try #require(context.makeImage())
+    let actualSeconds = ProcessInfo.processInfo.systemUptime - actualStarted
+    let oracleStarted = ProcessInfo.processInfo.systemUptime
     let expected = try #require(imageForGame(view.game, width: width, height: height, scale: scale))
-    #expect(
-      CFEqual(try #require(actual.dataProvider?.data), try #require(expected.dataProvider?.data)))
+    let oracleSeconds = ProcessInfo.processInfo.systemUptime - oracleStarted
+    let identical = CFEqual(
+      try #require(actual.dataProvider?.data), try #require(expected.dataProvider?.data))
+    #expect(identical)
+    try #require(actualSeconds > 0 && oracleSeconds > 0)
+    let ratio = actualSeconds / oracleSeconds
     if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
       let output = URL(fileURLWithPath: path, isDirectory: true)
       try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
@@ -213,7 +220,17 @@ private struct NativeWorkFixture {
         NSBitmapImageRep(cgImage: actual).representation(using: .png, properties: [:]))
       try png.write(
         to: output.appendingPathComponent("work-salvage-\(name)-\(width)-\(scale)x.png"))
+      let timings: [String: Any] = [
+        "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"] ?? "local",
+        "fixture": name, "width": width, "height": height, "scale": scale,
+        "actualDrawSeconds": actualSeconds, "oracleSeconds": oracleSeconds,
+        "actualToOracleRatio": ratio, "byteParity": identical,
+      ]
+      try JSONSerialization.data(withJSONObject: timings, options: [.prettyPrinted, .sortedKeys])
+        .write(
+          to: output.appendingPathComponent("work-salvage-\(name)-\(width)-\(scale)x-timing.json"))
     }
+    #expect(ratio < 10)
     try verifyPrivatePersistenceUnchanged()
   }
 }
