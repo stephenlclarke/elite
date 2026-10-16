@@ -275,11 +275,12 @@ import Testing
   #expect(game.commander.kills == 1 && game.commander.credits == 1050 && game.bodies.isEmpty)
   game.fireMissile()
   #expect(game.commander.missiles == 3)
-  game.bodies = [SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 1000))]
+  // Keep this damage/bounty fixture outside immediate NPC beam-interception range.
+  game.bodies = [SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 1800))]
   game.key("t")
   game.key("m")
   #expect(game.commander.missiles == 2 && !game.missileArmed)
-  for _ in 0..<100 where game.commander.kills < 2 { game.tick(delta: 0.02) }
+  for _ in 0..<150 where game.commander.kills < 2 { game.tick(delta: 0.02) }
   #expect(game.commander.kills == 2 && game.commander.legal == 40)
   game.commander.unlimitedMissiles = true
   game.bodies = [SpaceBody(id: 3, hull: .cobra, position: .init(0, 0, 1000))]
