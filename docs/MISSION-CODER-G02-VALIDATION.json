@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "fresh canonical coverage656/750 and TSan656/750 passed; full serial ASan standalone native Gallery guard fault; leaks not reached; trial-only proposal unapplied",
+  "stage": "approved standalone Gallery phase helper and real failed-handler rollback regression committed but uncompiled/unexecuted; full014coverage/TSan old-source passes and ASanfailure preserved",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,10 +280,10 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Exact owner review before unapplied standalone Gallery phase helper/test",
-    "Future numbered exact failing native Gallery ASan first then affected proof/refreeze/full canonical as authorized",
-    "Full ASan completion and leak gate; final owner acceptance/integration/formal PR",
-    "Separate G1 equipment statistics and Inventory epoch composition"
+    "New numbered exact failing standalone native Gallery ASan FIRST for approved helper",
+    "If passing: owned failed-handler rollback plus related native/campaign/legacy/courier/G21 proof",
+    "Required media/refreeze and one fresh full canonical including completeASan/leaks",
+    "Final owner acceptance, integration/formal PR; separate G1/Inventory composition"
   ],
   "expandedFailureTriage": {
     "commit": "f55b5db2cfc6346220db2f5b098e949792e4f3b6",
@@ -2648,5 +2648,21 @@
     },
     "lease014ExplicitlyReleased": true,
     "lateOwnerRecord": "a7e5939 retained separately on owner branch per Orchestrator; no C07 assignment or runtime change"
+  },
+  "standaloneTrialPhaseCorrection": {
+    "sourceCommit": "93191f009eedd5f206fee8ecf72c0bac909010b9",
+    "approvedPatchSHA256": "004b306d657991d87549e000835429bc8bcb063d0ffcdb402c33a148d1945f3a",
+    "patchBytes": 2778,
+    "appliedExactApprovedSource": true,
+    "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md",
+    "ownerRecordCommit": "db424ceea5e6ba8258415029c2c69e5306d032ce",
+    "localOwnerRecord": "9442dc6402255ef27e1b5fc622c2c61b7d8ea633",
+    "scope": "Only non-board trial branch/private straight-line acceptance candidate helper and one owned real-Lua-error direct-prepare atomicity test. Normal standalone API, board/fullquote, actor/settings, flight and runtime publication unchanged.",
+    "status": "uncompiled/unexecuted; G1 registry016 heavyexclusive",
+    "firstSelector": "nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview",
+    "firstFlags": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel",
+    "negativeSelector": "courierStandaloneTrialHandlerFailurePreservesOriginalGame",
+    "analysis": "/tmp/elite-g02-standalone-trial-phase-analysis.json",
+    "limits": "Structural frame lifetime hypothesis, no runtime peak or guaranteed remedy. All014fullASanfailure artifacts retained; no furtherbuild/native/media."
   }
 }
