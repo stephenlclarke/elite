@@ -67,11 +67,16 @@ private func clearTravelArea(_ game: inout Game) {
   game.celestials = []
 }
 
-@Test func commanderCalendarStartsOncePersistsBeforeMissionsAndFreezesReadOnlyAndPausedTime()
+@Test func passengerBerthActivatesCalendarOnceBeforeMissionsAndFreezesReadOnlyAndPausedTime()
   async throws
 {
   var game = Game(executive: false)
   game.screen = .status
+  game.commander.credits = 100_000
+  try game.commander.prepareEquipment(legacy: false)
+  try game.confirmPassengerBerth(game.passengerBerthQuote)
+  try #require(game.commander.accommodation != ShipAccommodation())
+  try #require(game.commander.scriptState.instances.isEmpty)
   let runtime = GameRuntime(game: game)
   #expect(await runtime.snapshot().commander.scriptState.calendarLedger?.origin == .newCommander)
   _ = await runtime.advance(delta: 0.1)
@@ -87,8 +92,13 @@ private func clearTravelArea(_ game: inout Game) {
   #expect(await runtime.snapshot().commander.scriptState.calendarSeconds == before)
 }
 
-@Test func realLaunchChargesOnceAndCalendarDistanceRetainsSelectedO08IntegerTruncation() throws {
-  var game = Game(executive: false)
+@Test
+func activatedMissionRealLaunchChargesOnceAndCalendarDistanceRetainsSelectedO08IntegerTruncation()
+  throws
+{
+  let fixture = try CalendarFixture()
+  defer { fixture.clean() }
+  var (game, _) = try fixture.game()
   game.screen = .status
   game.launch()
   #expect(game.commander.scriptState.calendarSeconds == 600)
@@ -107,8 +117,13 @@ private func clearTravelArea(_ game: inout Game) {
   #expect(pair.0.scriptCalendarDistance(to: pair.1) == expected)
 }
 
-@Test func admittedJumpPinsActualDestinationAndNativeFuelWhileCalendarUsesItsOwnMetric() throws {
-  var game = Game(executive: false)
+@Test
+func activatedMissionAdmittedJumpPinsActualDestinationAndNativeFuelWhileCalendarUsesItsOwnMetric()
+  throws
+{
+  let fixture = try CalendarFixture()
+  defer { fixture.clean() }
+  var (game, _) = try fixture.game()
   game.launch()
   clearTravelArea(&game)
   let destination = try #require(
@@ -135,11 +150,15 @@ private func clearTravelArea(_ game: inout Game) {
   #expect(game.commander.scriptState.calendarSeconds == clock)
 }
 
-@Test func explicitNavigationAndDockCancellationClearTheActualAdmissionWithoutChargingTravel()
+@Test
+func
+  activatedMissionExplicitNavigationAndDockCancellationClearTheActualAdmissionWithoutChargingTravel()
   throws
 {
+  let fixture = try CalendarFixture()
+  defer { fixture.clean() }
   for cancel in 0..<3 {
-    var game = Game(executive: false)
+    var (game, _) = try fixture.game()
     game.launch()
     clearTravelArea(&game)
     let destination = try #require(
@@ -250,9 +269,14 @@ private func clearTravelArea(_ game: inout Game) {
       == journey.operation)
 }
 
-@Test func applyingNativeTravelCalendarTimeCannotMoveCelestialsHeatScoopOrPhysicalCounters() throws
+@Test
+func
+  activatedMissionApplyingNativeTravelCalendarTimeCannotMoveCelestialsHeatScoopOrPhysicalCounters()
+  throws
 {
-  var game = Game(executive: false)
+  let fixture = try CalendarFixture()
+  defer { fixture.clean() }
+  var (game, _) = try fixture.game()
   game.launch()
   clearTravelArea(&game)
   let destination = try #require(
@@ -276,19 +300,29 @@ private func clearTravelArea(_ game: inout Game) {
   #expect(game.celestials == scene && game.time == time)
 }
 
-@Test func inactiveLegacyCalendarMigrationIsRecordedOnceWithoutOfflineTimeOrReset() async throws {
+@Test func retainedLegacyMissionActivatesCalendarMigrationOnceWithoutOfflineTimeOrReset()
+  async throws
+{
   let fixture = try CalendarFixture()
   defer { fixture.clean() }
   try FileManager.default.createDirectory(
     at: fixture.save.deletingLastPathComponent(), withIntermediateDirectories: true)
-  var original = Commander()
+  let (active, id) = try fixture.game()
+  var original = active.commander
   original.credits = 12345
+  // Preserve the actual accepted mission in an archive from before the optional calendar ledger.
+  original.scriptState.calendarLedger = nil
+  try #require(original.scriptState.instances[id] != nil)
   let bytes = try JSONEncoder().encode(original)
   try bytes.write(to: fixture.save)
-  let runtime = GameRuntime()
+  var host = Game(executive: false)
+  host.scriptPacks = [fixture.pack]
+  let runtime = GameRuntime(game: host)
   try await runtime.load(from: fixture.save, persistMigrations: false)
   let imported = await runtime.snapshot()
   #expect(imported.commander.credits == 12345)
+  #expect(imported.commander.scriptState.instances[id]?.definition == fixture.pack.manifest.stateID)
+  #expect(imported.commander.scriptState.instances[id]?.suspension == nil)
   #expect(imported.commander.scriptState.calendarLedger?.origin == .inactiveLegacyMigration)
   #expect(imported.commander.scriptState.calendarSeconds == 0)
   #expect(try Data(contentsOf: fixture.save) == bytes)

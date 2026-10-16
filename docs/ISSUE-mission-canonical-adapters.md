@@ -33,11 +33,16 @@ commander. Gallery context changes follow private write and publication, or
 parent restoration. Trial hardware starts from an explicitly configured fresh
 Commander before canonical initialization.
 
+## Save and compatibility coverage
+
+Persistence now joins all typed chunks before canonical migration and whole-state validation, rejects native version-2 issue fields in legacy containers, and preserves authored payload keys. Extended save publication uses G1's shared native preparation barrier. Raw legacy and genuine format-20 fixtures retain original IDs, condition, modifications, receipts and authorized nonloan absence. All four previously excluded legacy equipment test files now have canonical adapters.
+
+Consumption and obligation seams validate instance and resource dictionary addresses even when no physical original survives. Producer regression fixtures retain successful lookups and internally valid records so the source mismatch itself must refuse without mutation.
+
 ## Validation status
 
-This remains **source-only, uncompiled and unexecuted**. Strict formatting,
-documentation and whitespace checks passed. Complete native composition,
-remaining persistence/preflight adapters and legacy test adaptation remain
-outstanding. The pure seam group currently declares six methods and eleven cases;
-no case has been executed. Focused tests and full `make ci` need an exclusive
-validation lease. G1 owns final integration, GitHub review and publication.
+This remains **source-only, uncompiled and unexecuted**. Strict formatting, documentation and whitespace checks passed. The pure seam group declares eight methods and fifteen cases; no case has been executed. Full composition and focused tests plus `make ci` require the Orchestrator's exclusive validation lease.
+
+G2's validated actual retained Docking alias admission is composed from owner pin `4dee997`, helper only. The Orchestrator ratified conditional calendars, resource envelopes and native station semantics. Calendar tests activate actual passenger or mission state, including retained legacy mission migration. Extended worlds preserve finite nonnegative player resources within the larger of the historical allowance and their corresponding actual native capacity. Ordinary native inventory actions retain dock-only admission; Lua gear commands still require the main orbital station.
+
+Remaining integration dependencies are G1's native save/Game hooks and G2's reviewed typed NPC bridge. MC1 retains authored actor, shot, geometry, persistence and event projection ownership; optional shot attribution must use the exact agreed provider archive type without synthesizing legacy origins. G1 owns final integration, GitHub review and publication.

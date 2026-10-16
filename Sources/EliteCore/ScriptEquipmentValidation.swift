@@ -1,11 +1,22 @@
 import Foundation
 
+extension OwnedEquipmentItem {
+  /// Every actual physical consumption emits these values, including personal devices with no issue delta.
+  public var scriptConsumptionValues: [String: ScriptValue] {
+    let name =
+      retainedLegacyState?.originalEquipmentName
+      ?? (node == EquipmentRuntimeCatalog.standardMissile ? "Missile" : node.key)
+    return ["item": .string(id.uuidString), "name": .string(name)]
+  }
+}
+
 extension LegacyOwnedEquipmentInventory {
   /// Explicit old-save admission only. Historical nonloan absence does not imply consumption.
   public func validateIssues(in engine: ScriptEngineState) throws {
     guard valid else { throw EquipmentMigrationError.unsupportedLegacyState }
     let byID = Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
-    for instance in engine.instances.values {
+    for (id, instance) in engine.instances {
+      guard id == instance.id else { throw EquipmentMigrationError.obligationMismatch }
       for (key, record) in instance.gearIssues {
         guard key == record.resource, (record.savedGearVersion ?? 1) == 1,
           record.valid(for: instance)
@@ -48,10 +59,13 @@ extension Commander {
   /// Includes suspended/missing-content issues. Neither getters nor content presence create rights.
   public func equipmentIssueObligations() throws -> [EquipmentIssueObligationSnapshot] {
     var result: [EquipmentIssueObligationSnapshot] = []
-    for instance in scriptState.instances.values.sorted(by: { $0.id.uuidString < $1.id.uuidString })
-    {
-      for record in instance.gearIssues.values.sorted(by: { $0.resource < $1.resource }) {
-        guard record.valid(for: instance), let obligation = record.obligation else {
+    for (id, instance) in scriptState.instances.sorted(by: { $0.key.uuidString < $1.key.uuidString }
+    ) {
+      guard id == instance.id else { throw EquipmentMigrationError.obligationMismatch }
+      for (key, record) in instance.gearIssues.sorted(by: { $0.key < $1.key }) {
+        guard key == record.resource, record.valid(for: instance),
+          let obligation = record.obligation
+        else {
           throw EquipmentMigrationError.obligationMismatch
         }
         result.append(obligation)
@@ -165,9 +179,12 @@ extension ScriptEngineState {
   {
     guard case .missionIssue(let mission, let resource, let index, let digest) = removed.provenance
     else { return nil }
-    guard let instance = instances[mission], let before = instance.gearIssues[resource],
+    guard let instance = instances[mission], instance.id == mission,
+      let before = instance.gearIssues[resource], before.resource == resource,
       before.savedGearVersion == 2, before.valid(for: instance),
-      before.source?.packDigest == digest, before.node == removed.node,
+      before.source
+        == EquipmentIssueSource(mission: mission, resource: resource, packDigest: digest),
+      before.node == removed.node,
       removed.retainedLegacyState?.originalEquipmentName
         == (before.kind.name == Equipment.legacyDockingComputer ? before.kind.name : nil),
       before.items.indices.contains(index), before.items[index] == removed.id,
@@ -182,7 +199,7 @@ extension ScriptEngineState {
     }
     return .init(
       source: source, item: removed.id, before: before, after: after,
-      values: ["item": .string(removed.id.uuidString), "name": .string(before.kind.name)])
+      values: removed.scriptConsumptionValues)
   }
 
   public func applying(_ delta: ScriptGearConsumptionDelta) throws -> Self {

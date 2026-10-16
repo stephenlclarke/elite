@@ -30,6 +30,75 @@ private func legacyIssueFixture(
 }
 
 struct ScriptEquipmentSeamTests {
+  @Test(arguments: ["instance", "resource"])
+  func exactRemovedMissionItemCannotProduceADeltaFromMismatchedRecordAddresses(field: String) throws
+  {
+    var engine = legacyIssueFixture().1
+    let mission = try #require(engine.instances.keys.first)
+    var instance = try #require(engine.instances[mission])
+    let old = try #require(instance.gearIssues["original"])
+    let source = EquipmentIssueSource(
+      mission: mission, resource: "original", packDigest: instance.digest)
+    let removed = OwnedEquipmentItem(
+      id: old.items[0], node: EquipmentRuntimeCatalog.standardMissile,
+      provenance: .missionIssue(
+        mission: mission, resource: source.resource, index: 0,
+        packDigest: source.packDigest))
+    if field == "instance" {
+      instance = ScriptInstance(
+        id: UUID(uuidString: "30000000-0000-0000-0000-000000000098")!,
+        definition: instance.definition, version: instance.version, digest: instance.digest)
+    }
+    let mismatchedSource = EquipmentIssueSource(
+      mission: instance.id, resource: field == "resource" ? "different" : "original",
+      packDigest: instance.digest)
+    let record = ScriptGearIssue(
+      resource: mismatchedSource.resource, kind: .missile, items: old.items, loan: true,
+      returnRemaining: true, savedGearVersion: 2, source: mismatchedSource,
+      node: EquipmentRuntimeCatalog.standardMissile, displacements: [])
+    // Both lookups still succeed and the record is internally valid. Only its source address
+    // disagrees with the actual removed item, which the producer must refuse.
+    try #require(record.valid(for: instance))
+    instance.gearIssues["original"] = record
+    engine.instances[mission] = instance
+    let before = engine
+    #expect(throws: EquipmentMigrationError.obligationMismatch) {
+      try engine.gearConsumptionDelta(for: removed)
+    }
+    #expect(engine == before)
+  }
+
+  @Test(arguments: ["instance", "resource"])
+  func returnedObligationsStillRequireExactDictionaryAddressesWithoutWholeCommanderValidation(
+    field: String
+  )
+    throws
+  {
+    let fixture = try GearScriptFixture(contact: "{op='gear.return',id='return',gear='kit'}")
+    defer { fixture.clean() }
+    var game = try fixture.game()
+    game.emitScriptEvent("contact.requested")
+    var commander = game.commander
+    let id = try #require(commander.scriptState.instances.keys.first)
+    var instance = try #require(commander.scriptState.instances[id])
+    let record = try #require(instance.gearIssues["kit"])
+    try #require(record.status == .returned)
+    if field == "resource" {
+      instance.gearIssues.removeValue(forKey: "kit")
+      instance.gearIssues["incorrect"] = record
+      commander.scriptState.instances[id] = instance
+    } else {
+      commander.scriptState.instances.removeValue(forKey: id)
+      commander.scriptState.instances[UUID(uuidString: "30000000-0000-0000-0000-000000000099")!] =
+        instance
+    }
+    let before = commander
+    #expect(throws: EquipmentMigrationError.obligationMismatch) {
+      try commander.equipmentIssueObligations()
+    }
+    #expect(commander == before)
+  }
+
   @Test(arguments: ["personal", "issuer", "resource", "loan", "kind"])
   func presentOriginalCannotBeSubstitutedByPersonalOrMismatchedLegacyGear(field: String) throws {
     let fixture = legacyIssueFixture()
@@ -168,6 +237,10 @@ struct ScriptEquipmentSeamTests {
     let personal = OwnedEquipmentItem(
       id: item, node: EquipmentRuntimeCatalog.standardMissile, provenance: .standard)
     #expect(try engine.gearConsumptionDelta(for: personal) == nil)
+    #expect(
+      personal.scriptConsumptionValues == [
+        "item": .string(item.uuidString), "name": .string("Missile"),
+      ])
     let orphan = OwnedEquipmentItem(
       id: item, node: EquipmentRuntimeCatalog.standardMissile,
       provenance: .missionIssue(

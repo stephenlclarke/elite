@@ -42,14 +42,23 @@ struct ScriptWorldSave: Codable, Sendable {
       && market.allSatisfy {
         (0...1_000_000).contains($0.price) && (0...1_000_000).contains($0.quantity)
       }
-      && [speed, time, energy, frontShield, rearShield, laserHeat].allSatisfy {
+      && [speed, time, laserHeat].allSatisfy {
         $0.isFinite && (0...1e12).contains($0)
       }
+      && [energy, frontShield, rearShield].allSatisfy { $0.isFinite && $0 >= 0 }
       && (jumpCountdown.map { $0.isFinite && (0...1e12).contains($0) } ?? true)
       && (0...256).contains(selectedSystem) && (0..<1_000_000_000).contains(nextBodyID)
       && nextBodyID >= (bodies.map(\.id).max() ?? 0)
   }
   func consistent(with commander: Commander) -> Bool {
+    guard
+      [
+        (energy, commander.performance.energy), (frontShield, commander.shieldCapacity),
+        (rearShield, commander.rearShieldCapacity),
+      ].allSatisfy({ level, capacity in
+        capacity.isFinite && capacity > 0 && level <= max(1e12, capacity)
+      })
+    else { return false }
     if screen == .library, let saved = libraryScreen, saved.mode != .books {
       guard let selected = saved.selected, commander.scriptState.books[selected] != nil else {
         return false

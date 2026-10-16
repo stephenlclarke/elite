@@ -37,10 +37,9 @@ extension Game {
       staged = try staged.applying(delta)
       values = delta.values
     } else {
-      guard
-        let definition = EquipmentRuntimeCatalog.graph.nodes.first(where: { $0.id == removed.node })
+      guard EquipmentRuntimeCatalog.graph.nodes.contains(where: { $0.id == removed.node })
       else { throw EquipmentRuntimeError.unavailable }
-      values = ["item": .string(removed.id.uuidString), "name": .string(definition.displayName)]
+      values = removed.scriptConsumptionValues
     }
     let recipients = orderedScriptInstances.compactMap { id in
       staged.instances[id].flatMap { $0.outcome == .active ? $0 : nil }
