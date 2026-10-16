@@ -138,7 +138,7 @@ extension Game {
       let measuredEnergyCapacityValid =
         physical.npc?.resources.map {
           $0.energyCapacity == template.maximumHullEnergy
-        } ?? (template.maximumHullEnergy > 100_000)
+        } ?? (template.canonicalBody.scriptNPC != nil && template.maximumHullEnergy > 100_000)
       guard physical.population == .mission, physical.npc?.role == .mission,
         measuredEnergyCapacityValid, physical.velocity.finite
       else { throw NativeMissionActorAdmissionError.invalidCondition }
