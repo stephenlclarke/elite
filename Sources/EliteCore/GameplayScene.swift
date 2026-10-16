@@ -70,27 +70,34 @@ extension Game {
       }
       guard let identity else { continue }
       let body = bodies[index]
-      let role = legacyNPCRole(body)
-      var npc = role.map {
-        NPCState(role: $0, origin: systemIdentity, destination: systemIdentity)
-      }
-      npc?.routeProvenance = .inferredLocal
-      npc?.resources = NPCResources.legacyEnergyOnly(
-        maximumEnergy: body.scriptNPC?.fit.definition.energy
-          ?? (body.blackjackRole == nil
-            ? (body.hull.navalEnergy ?? 100) : BlackjackTarget.energy))
-      if [.constrictor, .thargoid, .thargon].contains(body.hull) {
-        // Explicit legacy combat profiles, independent of hostility to the player.
-        npc?.legal = .init(value: 64, bountyTenths: body.hull.navalBounty ?? 0)
-        npc?.legalProvenance = .recorded
-      }
-      if body.hostile {
-        if let player = flight.player { npc?.intention = .engage(player) }
-      }
-      bodies[index].physical = .init(
-        identity: identity, population: population(of: body, role: role), npc: npc,
-        blocksNavalEncounter: body.hull == .viper)
+      bodies[index].physical = nativePhysicalActorState(for: body, identity: identity)
     }
+  }
+
+  /// The same native adoption policy serves fresh mission admissions without allocating identities.
+  func nativePhysicalActorState(
+    for body: SpaceBody, identity: ActorIdentity, spawnIdentity: SpawnIdentity? = nil,
+    velocity: Vector3 = .init(0, 0, 0)
+  ) -> PhysicalActorState {
+    let role = legacyNPCRole(body)
+    var npc = role.map {
+      NPCState(role: $0, origin: systemIdentity, destination: systemIdentity)
+    }
+    npc?.routeProvenance = .inferredLocal
+    npc?.resources = NPCResources.legacyEnergyOnly(
+      maximumEnergy: body.scriptNPC?.fit.definition.energy
+        ?? (body.blackjackRole == nil
+          ? (body.hull.navalEnergy ?? 100) : BlackjackTarget.energy))
+    if [.constrictor, .thargoid, .thargon].contains(body.hull) {
+      npc?.legal = .init(value: 64, bountyTenths: body.hull.navalBounty ?? 0)
+      npc?.legalProvenance = .recorded
+    }
+    if body.hostile, let player = commander.flightSimulation.player {
+      npc?.intention = .engage(player)
+    }
+    return .init(
+      identity: identity, population: population(of: body, role: role), npc: npc,
+      velocity: velocity, spawnIdentity: spawnIdentity, blocksNavalEncounter: body.hull == .viper)
   }
 
   private func legacyNPCRole(_ body: SpaceBody) -> NPCRole? {
@@ -146,9 +153,11 @@ extension Game {
         ShipCatalogue.ship($0)?.game
       }
       let maximumEnergy: Double =
-        physical.npc?.resources?.energyCapacity ?? native?.energy ?? body.hull.navalEnergy ?? 100
+        body.scriptNPC?.fit.definition.energy
+        ?? physical.npc?.resources?.energyCapacity ?? native?.energy ?? body.hull.navalEnergy ?? 100
       let maximumSpeed: Double =
-        native?.speed ?? ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20
+        body.scriptNPC?.fit.definition.speed
+        ?? ((native?.speed ?? ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20) * 18)
       let legal: LegalRecord = physical.npc?.legal ?? LegalRecord()
       let cargo: [CommodityAmount] = physical.npc?.ordinaryCargo ?? []
       var orientation = Basis3()
@@ -159,7 +168,7 @@ extension Game {
         identity: physical.identity, hull: body.hull,
         position: flight.pose.systemPoint(body.position), orientation: orientation,
         velocity: physical.velocity, energy: body.energy,
-        maximumEnergy: maximumEnergy, maximumSpeedUnitsPerSecond: maximumSpeed * 18,
+        maximumEnergy: maximumEnergy, maximumSpeedUnitsPerSecond: maximumSpeed,
         legal: legal, npc: physical.npc,
         rock: physical.rock, payload: physical.payload,
         ordinaryCargo: cargo,

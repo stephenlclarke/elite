@@ -134,6 +134,66 @@ extension Game {
     return spawnParametersSafe(request, context: context) ? nil : .unsafePosition
   }
 
+  /// Uses sealed measured hull/component geometry and the ordinary native reserve policy.
+  /// Requests must correspond in order to the selected sealed cohort; no identities are allocated.
+  func gameplayMissionActorAdmissionRefusal(
+    _ requests: [SpawnRequest], templates: [MissionActorAdmissionTemplate],
+    context: EncounterContext
+  ) -> AdmissionRefusal? {
+    guard requests.count == templates.count,
+      Set(requests.map(\.identity)).count == requests.count
+    else { return .staleContext }
+    var budget = context.budget
+    let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
+    for (request, template) in zip(requests, templates) {
+      guard request.priority == .mission, request.identity.producer == .mission,
+        request.hull == template.canonicalBody.hull,
+        request.energy == template.canonicalBody.energy,
+        request.npc?.resources?.energyCapacity == template.maximumHullEnergy,
+        !bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
+      else { return .staleContext }
+      if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
+        return refusal
+      }
+      let radius = template.radius
+      guard spawnParametersSafe(request, context: context, measuredRadius: radius),
+        (request.position - context.player.position).length > radius + playerRadius + 8
+      else { return .unsafePosition }
+      for actor in context.actors where actor.energy > 0 {
+        guard let body = bodies.first(where: { $0.physical?.identity == actor.identity }) else {
+          return .staleContext
+        }
+        let otherRadius: Double
+        if let bounds = actor.salvage?.bounds {
+          otherRadius = bounds.radius + bounds.center.length
+        } else if body.scriptNPC != nil {
+          otherRadius = scriptNPCRadius(body)
+        } else if let rock = miningFields.flatMap(\.rocks).first(where: {
+          $0.identity == actor.rock
+        }) {
+          otherRadius = rock.radius
+        } else {
+          otherRadius = gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
+        }
+        guard otherRadius.isFinite, otherRadius > 0,
+          (request.position - actor.position).length >= radius + otherRadius + 8
+        else { return .unsafePosition }
+      }
+      budget.total += 1
+      budget.active[request.population, default: 0] += 1
+    }
+    for index in requests.indices {
+      for other in requests.indices where other > index {
+        if (requests[index].position - requests[other].position).length
+          < templates[index].radius + templates[other].radius + 8
+        {
+          return .unsafePosition
+        }
+      }
+    }
+    return nil
+  }
+
   private func admissionCapacityRefusal(
     _ request: SpawnRequest, context: EncounterContext, budget: AdmissionBudget
   ) -> AdmissionRefusal? {
@@ -162,12 +222,14 @@ extension Game {
     return nil
   }
 
-  private func spawnParametersSafe(_ request: SpawnRequest, context: EncounterContext) -> Bool {
+  private func spawnParametersSafe(
+    _ request: SpawnRequest, context: EncounterContext, measuredRadius: Double? = nil
+  ) -> Bool {
     guard request.position.finite, request.velocity.finite,
       request.orientation.x.finite, request.orientation.y.finite, request.orientation.z.finite,
       request.angularVelocity.finite
     else { return false }
-    let radius = spawnRadius(request)
+    let radius = measuredRadius ?? spawnRadius(request)
     guard request.npc?.resources?.valid ?? true,
       request.energy.map({
         $0.isFinite && $0 >= 0 && $0 <= (request.npc?.resources?.energyCapacity ?? 100000)
