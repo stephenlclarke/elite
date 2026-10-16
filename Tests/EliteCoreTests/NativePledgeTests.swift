@@ -73,12 +73,13 @@ import Testing
       "left": 123, "up": 126, "down": 125, "tab": 48, "pagedown": 121, "t": 17,
     ]
     let text = key == "return" ? "\r" : key == "escape" ? "\u{1b}" : key.count == 1 ? key : ""
+    let keyCode = try #require(codes[key])
     let event = try #require(
       NSEvent.keyEvent(
         with: .keyDown, location: .zero,
         modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
         characters: text, charactersIgnoringModifiers: text, isARepeat: false,
-        keyCode: try #require(codes[key])))
+        keyCode: keyCode))
     view.keyDown(with: event)
   }
   func drain() async { await delegate.processPendingCommands(in: view) }
@@ -100,7 +101,8 @@ import Testing
     let loop = try #require(delegate.loop)
     loop.cancel()
     await loop.value
-    window = try #require(delegate.window)
+    window = delegate.window
+    _ = try #require(window)
     view = try #require(window?.contentView as? GameView)
     await delegate.runtime.nativeCommand { @Sendable candidate in candidate = before }
   }
