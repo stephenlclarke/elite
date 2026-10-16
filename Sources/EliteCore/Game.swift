@@ -514,6 +514,7 @@ public struct Game: Sendable {
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
     guard value.valid else { return false }
+    legacySimulationSpawnClock = nil
     bodies = []
     scriptReferenceFrame = nil
     scriptStartupTime = nil
