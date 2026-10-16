@@ -1330,7 +1330,8 @@ public struct Game: Sendable {
       if !paused { packOfferElapsed += dt }
       return
     }
-    if paused || screen == .help || screen == .gallery || screen == .navigation
+    if paused || screen == .help || screen == .gallery || screen == .library
+      || screen == .navigation
       || screen == .handoff || screen == .rumour
     {
       return

@@ -4,6 +4,48 @@ import Testing
 @testable import EliteCore
 
 struct MissionRuntimeNativeCompatibilityTests {
+  @Test func theActualRuntimePausesNativeFlightAndCountdownWhileTheLibraryIsOpen() async throws {
+    var game = Game(executive: false)
+    game.screen = .status
+    game.commander.scriptState.calendarLedger = .init(origin: .newCommander)
+    game.launch()
+    game.bodies = []
+    game.celestials = []
+    game.selectedSystem = try #require(
+      game.systems.first {
+        $0.id != game.commander.system && game.currentSystem.distance(to: $0) <= 7
+          && game.currentSystem.distance(to: $0) >= 1
+      }?.id)
+    game.beginHyperspace()
+    try #require(game.jumpCountdown != nil)
+    let runtime = GameRuntime(game: game)
+    var controls = Controls()
+    controls.pitch = 0.4
+    controls.throttle = 0.8
+    await runtime.setControls(controls)
+    await runtime.key("library-open")
+    let opened = await runtime.snapshot()
+    try #require(opened.screen == .library)
+    for _ in 0..<5 { _ = await runtime.advance(delta: 0.1) }
+    let reading = await runtime.snapshot()
+    #expect(reading.commander.flightSimulation == opened.commander.flightSimulation)
+    #expect(reading.bodies == opened.bodies && reading.celestials == opened.celestials)
+    #expect(reading.time == opened.time && reading.jumpCountdown == opened.jumpCountdown)
+    #expect(reading.commander.scriptState == opened.commander.scriptState)
+    await runtime.key("escape")
+    let closed = await runtime.snapshot()
+    try #require(closed.screen == .front)
+    _ = await runtime.advance(delta: 0.1)
+    let resumed = await runtime.snapshot()
+    #expect(resumed.time > closed.time)
+    #expect(
+      resumed.commander.flightSimulation.physicalTime
+        > closed.commander.flightSimulation.physicalTime)
+    let remaining = try #require(resumed.jumpCountdown)
+    let previous = try #require(closed.jumpCountdown)
+    #expect(remaining < previous)
+  }
+
   @Test func activeNativeTrialSaveUsesItsPrivateWriterAndCannotOverwriteTheLiveCommander()
     async throws
   {
