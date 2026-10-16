@@ -138,7 +138,7 @@ public enum PlayerHelp {
           "RETURN - APPLY THE SELECTED ACTION",
           "LEFT / RIGHT - RECOVERED UPGRADE CHOICE",
           "RECOVERED: BEFORE / AFTER AND NEXT GRADE",
-          "RECOVERED DEVICES: FIT NOW, ALSO IN SPACE",
+          "RECOVERED DEVICES: FIT NOW IN SPACE",
           "MINING / SALVAGE MODULES REQUIRE A CORE",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
