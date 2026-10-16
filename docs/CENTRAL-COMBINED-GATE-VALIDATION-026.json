@@ -390,5 +390,23 @@
     "mainSonar publication",
     "merge/release/notarization ofcurrentcandidate",
     "physicaltouchpad/scanout validation"
-  ]
+  ],
+  "finalReviewQualification": {
+    "status": "17 confirmed findings plus1 separately labelled investigation candidate; all remain open",
+    "confirmedFindings": 17,
+    "confirmedSeverityCounts": {
+      "P1": 2,
+      "P2": 13,
+      "P3": 2
+    },
+    "investigationCandidates": 1,
+    "candidateQualification": "Original unlimited-new-deaths claim retracted because NPC ledger caps128terminal/logical entries. Revised living NPC cull/rebind attack-window growth route is source-traced but unconfirmed pending repeated lifecycle regression.",
+    "preliminaryWholeAppReviewField": "Preserved unchanged as historical handoff; not the final confirmed count",
+    "immutableOriginalHandoff": "/tmp/elite-central-combined-026/final-handoff.json",
+    "immutableOriginalHandoffSHA256": "89fe49d613afec801c66bb24280794ca17dc72505bd88567613519dce5784d1e",
+    "authoritativeReview": "/Users/sclarke/.codex/visualizations/2026/10/13/01a134a1-be40-77d0-9e11-64a775729232/code-review-2026-10-16/review.json",
+    "authoritativeReviewSHA256": "7b9429ed6b960713d57be7e10e42c700e5762c82928794aa9d24f7e6d10f685f",
+    "runtimeChanges": false,
+    "additionalValidationRun": false
+  }
 }
