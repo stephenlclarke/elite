@@ -30,6 +30,7 @@ private struct NPCFixture {
     let pack = try ScriptPackLibrary.read(directory)
     var game = Game(executive: false)
     game.screen = .status
+    try game.commander.prepareEquipment(legacy: false)
     game.scriptPacks = [pack]
     let id = try game.acceptScriptMission(pack)
     if launch {
@@ -46,6 +47,33 @@ private func npcIndex(_ game: Game, _ id: UUID, _ alias: String = "lead") throws
       .ownedEncounters["opponents"]?.actors[alias]?.identity)
   return try #require(game.bodies.firstIndex { $0.missionActorID == identity })
 }
+private func fillActualNPCSceneBudget(_ game: inout Game) throws -> Set<SpawnIdentity> {
+  game.ensurePhysicalActors()
+  let allocated = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocated)
+  let context = try #require(game.gameplayContext())
+  let count = context.budget.maximum - context.budget.total
+  let requests = (0..<count).map { index in
+    SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit, sequence: sequence,
+        member: UInt16(index), producer: .mission),
+      population: .mission, hull: .cargo,
+      position: context.player.position + .init(10_000, Double(index) * 200, 10_000),
+      orientation: Basis3(), velocity: .init(0, 0, 0), npc: nil, rock: nil, payload: nil,
+      priority: .mission)
+  }
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit, revision: context.revision,
+      batches: [.init(requests: requests, atomic: true)], intents: []))
+  try #require(
+    receipts.count == count && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil })
+  let full = try #require(game.gameplayContext())
+  try #require(full.budget.total == full.budget.maximum)
+  return Set(requests.map(\.identity))
+}
+
 private func npcIntent(
   _ mode: String, request: String = "test", target: String? = nil,
   offset: Vector3 = .init(0, 0, 0), speed: Double = 1, tolerance: Double = 10
@@ -192,19 +220,65 @@ private func setNPCIntent(_ game: inout Game, id: UUID, command: ScriptValue) th
     game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.target.lost" }.count == 1)
 }
 
+private func measuredNPCContact(_ game: Game, from: Vector3) throws -> MissionCollisionContact? {
+  try game.nearestMissionCollision(
+    from: from, direction: .init(0, 0, 1), range: 3000, radius: 0, includePlayer: false)
+}
+
+private func applyActualNPCLaser(
+  _ game: inout Game, sourceID: Int, targetID: Int, targetPart: String? = nil
+) throws {
+  let source = try #require(game.bodies.first { $0.id == sourceID })
+  let target = try #require(game.bodies.first { $0.id == targetID })
+  let npc = try #require(source.scriptNPC)
+  let weapon = try #require(npc.fit.definition.lasers?.first)
+  let muzzle = source.position + source.orientation.apply(weapon.muzzle * npc.fit.definition.scale)
+  var aim = target.position
+  if let targetPart {
+    let fit = try #require(target.scriptNPC?.fit.definition)
+    let part = try #require(fit.components?.first { $0.id == targetPart })
+    aim = aim + target.orientation.apply(part.position * fit.scale)
+  }
+  let proof = try game.makeMissionNativeLaserProof(
+    sourceBodyID: sourceID, weapon: weapon, component: nil,
+    muzzle: muzzle, direction: (aim - muzzle).unit)
+  try #require(proof.hit?.target == .body(targetID) && proof.victimPart == targetPart)
+  let receipt = try game.applyMissionImpact(proof)
+  game.projectScriptMissionImpact(receipt)
+}
+
 @Test func componentRayHitsUseMeasuredGeometryAndCannotBecomeHullDeathOrPlayerBounty() throws {
   let fixture = try NPCFixture()
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
   let index = try npcIndex(game, id)
+  let targetID = game.bodies[index].id
   game.bodies[index].position = .init(0, 0, 2000)
   game.bodies[index].orientation = Basis3()
+  game.celestials = []
+  game.scriptEventsDeferred = true
+  game.ensurePhysicalActors()
   let kills = game.commander.kills
-  let hit = try #require(
-    game.scriptNPCHit(from: .init(0, 25, 0), direction: .init(0, 0, 1), range: 3000))
-  #expect(hit.body == index && hit.component == "turret" && abs(hit.distance - 1991) < 1e-8)
+  let measured = try measuredNPCContact(game, from: .init(0, 25, 0))
+  let hit = try #require(measured)
+  #expect(hit.hit.target == .body(targetID) && hit.victimPart == "turret")
+  #expect(abs(hit.hit.distance - 1991) < 1e-8)
   let component = try #require(game.bodies[index].scriptNPC?.components["turret"]?.identity)
-  game.damageScriptNPC(hit, amount: 40, player: true, attacker: nil)
+  let player = try #require(game.commander.flightSimulation.player)
+  let laser = try #require(game.commander.laser(on: .front))
+  let damage = game.commander.laserDamage(against: game.bodies[index].hull, mount: .front)
+  try #require(damage > 0)
+  // Use actual fitted player damage and a fresh sealed contact/origin for every impact.
+  for _ in 0..<Int(ceil(40 / damage)) {
+    let queried = try measuredNPCContact(game, from: .init(0, 25, 0))
+    let current = try #require(queried)
+    let allocated = game.makeAttackOrigin(owner: player)
+    let origin = try #require(allocated)
+    let receipt = try game.applyNativeMissionContact(
+      current, origin: origin, damage: damage, laser: laser, mount: .front,
+      emissionPosition: game.commander.flightSimulation.pose.position)
+    game.projectScriptMissionImpact(receipt)
+  }
   #expect(game.bodies[index].energy == 120)
   #expect(game.bodies[index].scriptNPC?.components["turret"]?.energy == 0)
   #expect(game.scriptNPCMesh(game.bodies[index])?.faces.count == 6)
@@ -213,14 +287,22 @@ private func setNPCIntent(_ game: inout Game, id: UUID, command: ScriptValue) th
   #expect(
     game.commander.scriptState.pendingEvents.last?.values["component_id"]
       == .string(component.uuidString))
-  #expect(game.scriptNPCHit(from: .init(0, 25, 0), direction: .init(0, 0, 1), range: 3000) == nil)
+  let destroyedPart = try measuredNPCContact(game, from: .init(0, 25, 0))
+  #expect(destroyedPart == nil)
   // A ray through the bounding sphere but outside the measured hull must miss.
-  #expect(game.scriptNPCHit(from: .init(50, 0, 0), direction: .init(0, 0, 1), range: 3000) == nil)
-  let hull = try #require(
-    game.scriptNPCHit(from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 3000))
-  #expect(hull.component == nil && abs(hull.distance - 1940) < 1e-8)
-  let ally = try #require(game.bodies[try npcIndex(game, id, "wing")].missionActorID)
-  game.damageScriptNPC(hull, amount: 120, player: false, attacker: ally)
+  let missedHull = try measuredNPCContact(game, from: .init(50, 0, 0))
+  #expect(missedHull == nil)
+  let measuredHull = try measuredNPCContact(game, from: .init(0, 0, 0))
+  let hull = try #require(measuredHull)
+  #expect(hull.victimPart == nil && abs(hull.hit.distance - 1940) < 1e-8)
+  let ally = try npcIndex(game, id, "wing")
+  let allyID = game.bodies[ally].id
+  game.bodies[ally].position = .init(0, 0, 1000)
+  game.bodies[ally].orientation = Basis3()
+  let actualWeapon = try #require(game.bodies[ally].scriptNPC?.fit.definition.lasers?.first)
+  for _ in 0..<Int(ceil(120 / actualWeapon.damage)) {
+    try applyActualNPCLaser(&game, sourceID: allyID, targetID: targetID)
+  }
   game.resolveDestroyed()
   #expect(game.commander.kills == kills)
   #expect(
@@ -285,7 +367,8 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   game.bodies[wing].orientation = Basis3()
   let shield = game.frontShield
   game.advanceScriptNPCWeapons(delta: 0.1)
-  game.commander.equipment.insert("E.C.M. System")
+  try game.commander.grantEquipment(
+    "E.C.M. System", at: .utility(.ecm), provenance: .grant("npc-ecm-fixture"))
   game.ecm()
   #expect(game.bodies.contains { $0.scriptShot != nil })
   for _ in 0..<3 { game.advanceScriptNPCShots(delta: 0.1) }
@@ -354,10 +437,8 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   #expect(!game.bodies.contains { $0.scriptNPC != nil })
   let identities = prepared.actors.mapValues(\.identity)
   let components = prepared.actors.mapValues { $0.body.scriptNPC?.components["turret"]?.identity }
-  game.bodies =
-    [station]
-    + (1...1020).map { SpaceBody(id: $0 + 100, hull: .cargo, position: .init(100000, 0, 0)) }
-  game.nextBodyID = 2000
+  game.bodies = [station]
+  _ = try fillActualNPCSceneBudget(&game)
   game.emitScriptEvent("station.undocked")
   game.drainScriptEvents()
   #expect(!game.bodies.contains { $0.scriptNPC != nil })
@@ -446,9 +527,9 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   changed.bodies[wing].scriptNPC?.components["turret"] = component
   changed.persistScriptActors()
   #expect(!changed.commander.valid)
-  var json = try #require(
-    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander.scriptState))
-      as? [String: Any])
+  let encodedState = try JSONEncoder().encode(game.commander.scriptState)
+  let rawState = try JSONSerialization.jsonObject(with: encodedState)
+  var json = try #require(rawState as? [String: Any])
   // UUID dictionaries are encoded as alternating key/value arrays by Foundation.
   var projectiles = try #require(json["savedProjectiles"] as? [Any])
   var record = try #require(projectiles[1] as? [String: Any])
@@ -497,7 +578,8 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
   game.speed = 0
-  game.commander.installLaser(.naval, on: .front)
+  try game.commander.grantEquipment(
+    LaserKind.naval.equipmentName, at: .laser(.front), provenance: .grant("npc-naval-fixture"))
   let ordinary = try #require(game.bodies.firstIndex { $0.id == 1 })
   game.bodies[ordinary].position = .init(80, 0, 1400)
   let oldEnergy = game.bodies[ordinary].energy
@@ -535,14 +617,13 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let index = try aimNPCAtPlayer(&game, id: id)
   game.bodies[index].scriptNPC?.guns["forward"]?.heat = 256
   let originalEnergy = game.bodies[index].energy
-  let extras = 1024 - game.bodies.reduce(0) { $0 + $1.scriptNativeUnits }
-  game.bodies += (0..<extras).map {
-    SpaceBody(id: 1000 + $0, hull: .cargo, position: .init(100000, 0, 0))
-  }
+  let fillers = try fillActualNPCSceneBudget(&game)
   game.advanceScriptNPCWeapons(delta: 0.01)
   #expect(!game.bodies.contains { $0.scriptShot != nil })
   #expect(game.bodies[index].scriptNPC?.shots == 0 && game.bodies[index].energy == originalEnergy)
-  game.bodies.removeAll { $0.id >= 1000 }
+  game.bodies.removeAll { body in
+    body.physical?.spawnIdentity.map { fillers.contains($0) } ?? false
+  }
   game.advanceScriptNPCWeapons(delta: 0.01)
   let projectileIndex = try #require(game.bodies.firstIndex { $0.scriptShot != nil })
   let shotIdentity = try #require(game.bodies[projectileIndex].scriptShot?.identity)
@@ -590,10 +671,12 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   var frame = Frame()
   Display.draw(game.bodies[shooter], game: game, into: &frame)
   #expect(colouredBeams(frame) == 2)
-  let component = ScriptNPCHit(body: shooter, component: "turret", distance: 0)
-  game.damageScriptNPC(
-    component, amount: 40, player: false,
-    attacker: game.bodies[target].missionActorID)
+  let actualWeapon = try #require(game.bodies[target].scriptNPC?.fit.definition.lasers?.first)
+  for _ in 0..<Int(ceil(40 / actualWeapon.damage)) {
+    try applyActualNPCLaser(
+      &game, sourceID: game.bodies[target].id, targetID: game.bodies[shooter].id,
+      targetPart: "turret")
+  }
   frame = Frame()
   Display.draw(game.bodies[shooter], game: game, into: &frame)
   #expect(colouredBeams(frame) == 1)
@@ -605,8 +688,11 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let fixture = try NPCFixture()
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
-  game.commander.installTargetingComputer(.military)
-  game.commander.installLaser(.naval, on: .front)
+  try game.commander.grantEquipment(
+    TargetingTier.military.equipmentName, at: .targetingCore,
+    provenance: .grant("npc-targeting-fixture"))
+  try game.commander.grantEquipment(
+    LaserKind.naval.equipmentName, at: .laser(.front), provenance: .grant("npc-naval-fixture"))
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: fixture.save)
   for alias in ["lead", "wing"] {
@@ -696,7 +782,8 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let before = await runtime.snapshot()
   let bytes = try Data(contentsOf: fixture.save)
   try await runtime.startScriptGalleryTrial(packDigest: pack.digest, seed: 7823)
-  let directory = try #require(await runtime.gallerySaveDirectory())
+  let galleryDirectory = await runtime.gallerySaveDirectory()
+  let directory = try #require(galleryDirectory)
   defer { try? FileManager.default.removeItem(at: directory) }
   #expect(await runtime.snapshot().isMissionTrial)
   #expect(await runtime.snapshot().bodies.filter { $0.scriptNPC != nil }.count == 2)
