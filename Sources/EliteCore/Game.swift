@@ -1234,6 +1234,8 @@ public struct Game: Sendable {
     advanceGameplayEncounters(delta: dt)
     planWorkScene(delta: dt)
     advanceWorkGuidance(delta: dt)
+    let workCameraStart = commander.flightSimulation.pose
+    let usedWorkCamera = workGuidance != nil || workBraking != nil
     moveBodies(dt: dt)
     if docked {
       reconcileEliteReward()
@@ -1252,8 +1254,13 @@ public struct Game: Sendable {
       activeECMActivation = nil
     }
     advanceRetaliation()
-    starfield.advance(
-      delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity)
+    if usedWorkCamera {
+      starfield.advance(from: workCameraStart, to: commander.flightSimulation.pose)
+    } else {
+      starfield.advance(
+        delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity
+      )
+    }
     resolveDestroyed()
     persistBlackjackTargets()
     if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {

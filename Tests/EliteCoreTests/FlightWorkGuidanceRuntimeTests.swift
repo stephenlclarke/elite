@@ -604,6 +604,39 @@ struct FlightWorkGuidanceRuntimeTests {
     }
   }
 
+  @Test(arguments: [false, true])
+  func actualWorkCameraMovesStarsDuringApprovedMotionAndUnpoweredCoast(blocked: Bool) throws {
+    var game = try workRuntimeGame()
+    _ = try addWorkCargo(&game, position: .init(0, -45, 1800))
+    engageWorkCargo(&game)
+    game.workGuidance?.velocity = .init(0, 0, 18)
+    if blocked {
+      game.bodies.append(.init(id: 89, hull: .cargo, position: .init(0, 0, 0)))
+      game.ensurePhysicalActors()
+      game.bodies[1].rotationRate = 0
+    }
+    let start = game.commander.flightSimulation.pose
+    let before = game.starfield.positions
+    game.tick(delta: 0.02)
+    let end = game.commander.flightSimulation.pose
+    #expect((end.position - start.position).length > 0)
+    #expect(game.starfield.positions.count == before.count)
+    if blocked {
+      #expect(
+        game.lastAppliedWorkMotion == nil
+          && game.workGuidance?.status == "SCOOP BLOCKED: PATH NOT CLEAR")
+    } else {
+      #expect(game.lastAppliedWorkMotion != nil)
+    }
+    for index in before.indices {
+      let expected = end.shipPoint(start.systemPoint(before[index]))
+      // This bounded frame deliberately has no recycle crossing.
+      try #require(expected.length >= 300 && expected.length <= 9000)
+      #expect((game.starfield.positions[index] - expected).length < 1e-8)
+    }
+    #expect(game.starfield.positions != before)
+  }
+
   @Test func canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex() throws {
     var game = try workRuntimeGame()
     let actor = try addWorkCargo(&game, position: .init(40, -55, 800))
