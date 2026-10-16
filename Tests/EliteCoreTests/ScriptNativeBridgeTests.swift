@@ -89,8 +89,9 @@ struct ScriptNativeBridgeTests {
       game.commander.scriptState.geometry.removeValue(forKey: digest)
     default:
       let npc = try #require(game.bodies[index].scriptNPC)
-      var object = try #require(
-        JSONSerialization.jsonObject(with: JSONEncoder().encode(npc)) as? [String: Any])
+      let encodedNPC = try JSONEncoder().encode(npc)
+      let rawNPC = try JSONSerialization.jsonObject(with: encodedNPC)
+      var object = try #require(rawNPC as? [String: Any])
       var fit = try #require(object["fit"] as? [String: Any])
       var definition = try #require(fit["definition"] as? [String: Any])
       definition["energy"] = npc.fit.definition.energy + 1
@@ -145,8 +146,9 @@ struct ScriptNativeBridgeTests {
       descriptor.collisionRadius == weapon.collisionRadius
         && descriptor.collisionDelay == weapon.collisionDelay)
     #expect(descriptor.muzzle == muzzle && descriptor.direction == direction)
-    var forged = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(weapon)) as? [String: Any])
+    let encodedWeapon = try JSONEncoder().encode(weapon)
+    let rawWeapon = try JSONSerialization.jsonObject(with: encodedWeapon)
+    var forged = try #require(rawWeapon as? [String: Any])
     forged["damage"] = weapon.damage + 1
     let substitute = try JSONDecoder().decode(
       ScriptNPCWeapon.self, from: JSONSerialization.data(withJSONObject: forged))
