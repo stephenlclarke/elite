@@ -49,6 +49,19 @@ private func cutterRuntimeGame() throws -> (Game, WreckSectionIdentity) {
 }
 
 struct SalvageCutterRuntimeTests {
+  @Test func anActualClaimantRefusesCuttingEvenIfTheOwnershipLabelSaysAbandoned() throws {
+    var (game, _) = try cutterRuntimeGame()
+    let old = try #require(game.bodies[0].physical?.salvage)
+    let claimant = try #require(game.commander.flightSimulation.player)
+    game.bodies[0].physical?.salvage = .init(
+      category: old.category, ownership: .abandoned, claimant: claimant, wreck: old.wreck,
+      section: old.section, lot: old.lot, bounds: old.bounds, workSurfaces: old.workSurfaces)
+    let before = game.commander
+    let energy = game.energy
+    let accepted = game.fireSalvageCutter(delta: 0.1)
+    #expect(!accepted && game.commander == before && game.energy == energy)
+  }
+
   @Test func realSectionWorkUsesTheSelectedCutterAndFiniteResourcesWithoutCombatDamage() throws {
     var (game, section) = try cutterRuntimeGame()
     game.selectFlightTool(.salvageCutter)

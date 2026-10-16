@@ -72,6 +72,7 @@ extension Game {
       case .body(let id) = hit.target,
       let body = bodies.first(where: { $0.id == id && $0.energy > 0 }),
       let physical = body.physical, physical.npc == nil, let metadata = physical.salvage,
+      metadata.claimant == nil,
       [.wreck, .section].contains(metadata.category),
       physical.identity.system == context.system, physical.identity.visit == context.visit,
       let wreck = metadata.wreck, wreck.system == context.system,
