@@ -5,7 +5,7 @@ import Testing
 
 /// A law/codec fixture using an actual retained actor, native binding, emission allocator and
 /// frozen native judgement. It does not claim atomic firing or construct an impact proof.
-private func actualShotArchiveFixture() throws -> (Game, ScriptNPCShot) {
+func actualShotArchiveFixture() throws -> (Game, ScriptNPCShot) {
   var (game, instance, index) = try actualMissionBridgeGame()
   game.ensurePhysicalActors()
   let body = game.bodies[index]
