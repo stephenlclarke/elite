@@ -20,11 +20,7 @@ extension ScriptInstance {
 
 extension Game {
   func scriptAnswersSatisfied(_ pack: ScriptPack, state: ScriptInstance) -> Bool {
-    (pack.manifest.answerRequirements ?? []).allSatisfy { requirement in
-      state.conversationReceipts.values.filter {
-        $0.dialogue == requirement.dialogue && $0.choice == requirement.choice
-      }.count >= requirement.minimumCount
-    }
+    ScriptMissionCompletion.scriptAnswersSatisfied(pack, state: state)
   }
   /// Keep the query compact; original immutable envelopes remain in the saved receipt ledger.
   func scriptAnswersSnapshot(_ state: ScriptInstance) -> ScriptValue {

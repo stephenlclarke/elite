@@ -220,23 +220,7 @@ extension Game {
   func settleContract(
     _ outcome: ScriptOutcome, state: inout ScriptInstance, candidate: inout Commander
   ) throws {
-    guard var job = state.contract else { return }
-    guard !job.settled else { throw MissionPackError("This contract is already settled.") }
-    let reward =
-      outcome == .complete ? job.offer.reward : (outcome == .failed ? job.offer.failureReward : 0)
-    let refund =
-      outcome == .complete || (outcome == .failed && job.offer.refundOnFailure)
-      ? job.offer.deposit : 0
-    let amount = reward + refund
-    guard candidate.credits <= 4_294_967_295 - amount else {
-      throw MissionPackError("Spend credits before collecting this contract payment.")
-    }
-    candidate.credits += amount
-    job.settled = true
-    job.settlementOutcome = outcome
-    job.settlementAmount = amount
-    job.settledAt = candidate.scriptState.clock(job.clock)
-    state.contract = job
+    try ScriptMissionCompletion.settleContract(outcome, state: &state, candidate: &candidate)
   }
   func contractSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     guard let job = instance.contract else { return .object([:]) }

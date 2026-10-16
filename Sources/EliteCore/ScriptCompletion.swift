@@ -94,17 +94,8 @@ extension Game {
   func matchingScriptReceipts(
     _ requirement: ScriptReceiptRequirement, parent: ScriptInstance? = nil
   ) -> [UUID] {
-    let childID = requirement.child.flatMap { parent?.campaignChildren[$0]?.child }
-    return commander.scriptState.instances.values.filter {
-      requirement.child == nil || $0.id == childID
-    }.compactMap { state in
-      state.completionReceipt.flatMap {
-        $0.valid(for: state, engine: commander.scriptState) ? $0 : nil
-      }
-    }
-    .filter { requirement.matches($0) }
-    .sorted { ($0.sequence, $0.instance.uuidString) < ($1.sequence, $1.instance.uuidString) }
-    .map(\.instance)
+    ScriptMissionCompletion.matchingScriptReceipts(
+      requirement, parent: parent, receiptView: commander.scriptState)
   }
   func scriptAcceptanceIssue(_ pack: ScriptPack) -> String? {
     for requirement in pack.manifest.receiptRequirements ?? []
@@ -123,21 +114,8 @@ extension Game {
     _ pack: ScriptPack, stage: ScriptReceiptStage, existing: [String: [UUID]],
     parent: ScriptInstance? = nil
   ) throws -> [String: [UUID]] {
-    var joins = existing
-    for requirement in pack.manifest.receiptRequirements ?? [] where requirement.stage == stage {
-      let matches = matchingScriptReceipts(requirement, parent: parent)
-      if let pinned = joins[requirement.id] {
-        guard pinned.count == requirement.minimumCount, pinned.allSatisfy(matches.contains) else {
-          throw MissionPackError("The pinned child mission receipts are unavailable.")
-        }
-      } else {
-        guard matches.count >= requirement.minimumCount else {
-          throw MissionPackError("Missing verified child mission receipts: " + requirement.id)
-        }
-        joins[requirement.id] = Array(matches.prefix(requirement.minimumCount))
-      }
-    }
-    return joins
+    try ScriptMissionCompletion.scriptReceiptJoins(
+      pack, stage: stage, existing: existing, parent: parent, receiptView: commander.scriptState)
   }
   func scriptReceiptQuery(_ pack: ScriptPack, state: ScriptInstance) -> ScriptValue {
     .object(
