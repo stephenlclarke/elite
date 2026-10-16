@@ -9,8 +9,10 @@ public struct ScriptCourierReach: Codable, Sendable, Equatable {
   public let jumpCap: Double
   public let capacity: Int
   public let firstReach: Double
+  public let jumpFuelMultiplier: Double?
+  public let fullTankReach: Double?
   init(_ commander: Commander) {
-    revision = "elite-880d3a-native-reach-v1"
+    revision = "elite-canonical-native-reach-v2"
     hull = commander.shipID
     navigation = commander.navigationTier
     storage = commander.fuelStorageUnits
@@ -18,15 +20,33 @@ public struct ScriptCourierReach: Codable, Sendable, Equatable {
     jumpCap = commander.jumpCap
     capacity = commander.fuelCapacity
     firstReach = commander.maximumJumpDistance
+    jumpFuelMultiplier = commander.jumpFuelMultiplier
+    fullTankReach = commander.fullTankJumpDistance
+  }
+  var laterReach: Double {
+    fullTankReach ?? min(jumpCap, Double(capacity) / 10)
   }
   var valid: Bool {
-    guard revision == "elite-880d3a-native-reach-v1", let ship = ShipCatalogue.ship(hull),
+    guard let ship = ShipCatalogue.ship(hull),
       let performance = ship.game, (0...FuelStorage.maximumCount).contains(storage),
-      fuel >= 0, fuel <= capacity
+      fuel >= 0, fuel <= capacity,
+      capacity == performance.fuel + storage * FuelStorage.unitCapacity
     else { return false }
-    return capacity == performance.fuel + storage * FuelStorage.unitCapacity
-      && jumpCap == max(performance.jump, navigation?.jumpCap ?? 0)
-      && firstReach == min(jumpCap, Double(fuel) / 10)
+    switch revision {
+    case "elite-880d3a-native-reach-v1":
+      return jumpFuelMultiplier == nil && fullTankReach == nil
+        && jumpCap == max(performance.jump, navigation?.jumpCap ?? 0)
+        && firstReach == min(jumpCap, Double(fuel) / 10)
+    case "elite-canonical-native-reach-v2":
+      guard let multiplier = jumpFuelMultiplier, let fullTankReach,
+        multiplier.isFinite, multiplier > 0, jumpCap.isFinite, jumpCap >= performance.jump,
+        firstReach.isFinite, fullTankReach.isFinite, fullTankReach > 0
+      else { return false }
+      return firstReach == min(jumpCap, Double(fuel) / (10 * multiplier))
+        && fullTankReach == min(jumpCap, Double(capacity) / (10 * multiplier))
+    default:
+      return false
+    }
   }
 }
 
@@ -56,7 +76,7 @@ public struct ScriptCourierGeneration: Codable, Sendable, Equatable {
       let path = queue[cursor]
       cursor += 1
       guard path.count < 4 else { continue }
-      let cap = path.count == 1 ? reach.firstReach : min(reach.jumpCap, Double(reach.capacity) / 10)
+      let cap = path.count == 1 ? reach.firstReach : reach.laterReach
       for id in 0..<256 where !visited.contains(id) {
         if systems[path.last!].distance(to: systems[id]) <= cap {
           visited.insert(id)

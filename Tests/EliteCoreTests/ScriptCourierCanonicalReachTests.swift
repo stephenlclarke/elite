@@ -1,0 +1,182 @@
+import Foundation
+import Testing
+
+@testable import EliteCore
+
+private func canonicalCourierGame(_ fixture: CourierFixture, axis: SalvageUpgradeAxis) throws
+  -> (Game, UUID)
+{
+  var game = try recoveredEquipmentGame("drive-technology")
+  let stock = try #require(game.commander.fittedEquipment(at: .navigation))
+  game.commander.credits = 100_000
+  game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+  let navigation = try #require(
+    Equipment.all.first { $0.name == NavigationTier.advanced.equipmentName })
+  _ = try game.applyEquipmentPurchase(game.quoteEquipmentPurchase(navigation))
+  let lot = try #require(game.commander.salvageLedger.inventory.first)
+  try game.applyRecoveredUpgrade(
+    game.commander.quoteRecoveredUpgrade(lot: lot.identity, axis: axis, slot: .navigation))
+  game.scriptPacks = [fixture.pack]
+  game.scriptDurabilityAvailable = true
+  game.ensureMissionCalendar()
+  #expect(game.commander.valid && game.commander.salvageLedger.inventory.isEmpty)
+  #expect(game.commander.fittedEquipment(at: .navigation)?.component?.receipts.count == 1)
+  return (game, stock.id)
+}
+
+/// Selects a real native route, then finds a seed selecting it through the unchanged six draws.
+/// No generated proof, destination, cost or draw is rewritten.
+private func canonicalCourierTerms(_ game: inout Game, laterLeg: Bool) throws -> ScriptCourierTerms
+{
+  game.commander.fuel = 35
+  let stockFirst = Double(game.commander.fuel) / 10
+  let stockFull = Double(game.commander.fuelCapacity) / 10
+  let declaration = try #require(game.scriptPacks.first?.manifest.courier)
+  let systems = game.systems
+  for origin in 0..<256 {
+    game.commander.system = origin
+    guard
+      let generation = try? ScriptCourierGeneration(
+        origin: game.contractStation, commander: game.commander, seed: 1)
+    else { continue }
+    let witness = generation.paths.firstIndex { path in
+      guard generation.calendarCost(path) < 259_200 else { return false }
+      let first = systems[path[0]].distance(to: systems[path[1]])
+      if !laterLeg { return path.count == 2 && first > stockFirst }
+      return path.count == 3 && first <= stockFirst
+        && systems[path[1]].distance(to: systems[path[2]]) > stockFull
+    }
+    guard let witness else { continue }
+    for seed in UInt64(0)..<65_536 {
+      var state = Game.pledgeProfileSeed(seed)
+      for _ in 0..<4 { _ = ScriptCourierGeneration.next(&state) }
+      let draw = ScriptCourierGeneration.next(&state)
+      let index = Int(floor(Double(draw) / 4294967296.0 * Double(generation.paths.count)))
+      guard index == witness else { continue }
+      let selected = try ScriptCourierGeneration(
+        origin: game.contractStation, commander: game.commander, seed: seed)
+      let terms = selected.terms(declaration, row: 4)
+      #expect(terms.valid && terms.path == generation.paths[witness])
+      return terms
+    }
+  }
+  throw MissionPackError("Actual recovered navigation has no courier regression witness.")
+}
+
+struct ScriptCourierCanonicalReachTests {
+  @Test(arguments: [SalvageUpgradeAxis.jumpReach, .jumpFuelCost])
+  func newProofFreezesActualPaidAndRecoveredNativeFacts(axis: SalvageUpgradeAxis) throws {
+    let fixture = try CourierFixture()
+    defer { fixture.clean() }
+    let (game, _) = try canonicalCourierGame(fixture, axis: axis)
+    let reach = ScriptCourierReach(game.commander)
+    #expect(reach.revision == "elite-canonical-native-reach-v2" && reach.valid)
+    #expect(reach.jumpCap == game.commander.jumpCap)
+    #expect(reach.firstReach == game.commander.maximumJumpDistance)
+    #expect(reach.fullTankReach == game.commander.fullTankJumpDistance)
+    #expect(reach.jumpFuelMultiplier == game.commander.jumpFuelMultiplier)
+    #expect(
+      try JSONDecoder().decode(ScriptCourierReach.self, from: JSONEncoder().encode(reach)) == reach)
+  }
+
+  @Test(arguments: [false, true])
+  func efficientFirstAndLaterLegsUseNativeReachAndRefittingRefusesTheFrozenRoute(laterLeg: Bool)
+    throws
+  {
+    let fixture = try CourierFixture()
+    defer { fixture.clean() }
+    let prepared = try canonicalCourierGame(fixture, axis: .jumpFuelCost)
+    var game = prepared.0
+    let stockID = prepared.1
+    #expect(game.commander.jumpFuelMultiplier < 1)
+    let terms = try canonicalCourierTerms(&game, laterLeg: laterLeg)
+    let frozen = try JSONEncoder().encode(terms)
+    try game.requireCourierResources(terms)
+    let stock = try #require(game.commander.equipmentInventory?.items.first { $0.id == stockID })
+    try game.fitEquipment(
+      stock, at: .navigation, expectedRevision: game.commander.equipmentInventory!.revision)
+    #expect(game.commander.valid && game.commander.jumpFuelMultiplier == 1)
+    #expect(game.commander.fittedEquipment(at: .navigation)?.id == stockID)
+    let restored = try JSONDecoder().decode(ScriptCourierTerms.self, from: frozen)
+    #expect(restored == terms && restored.valid)
+    let before = game.commander
+    #expect(throws: MissionPackError.self) { try game.requireCourierResources(restored) }
+    #expect(game.commander == before)
+  }
+
+  @Test func v1FrozenBoardReloadKeepsOriginalDrawsRoutesRewardsAndDeadlines() throws {
+    let fixture = try CourierFixture()
+    defer { fixture.clean() }
+    let origin = try #require(Universe.galaxy().first { $0.technology >= 10 }?.id)
+    var game = fixture.game(system: origin)
+    let (key, _) = try fixture.offer(&game)
+    let current = try #require(game.commander.contracts.boards[key])
+    func legacy(_ value: Any) -> Any {
+      if let values = value as? [Any] { return values.map(legacy) }
+      guard var object = value as? [String: Any] else { return value }
+      if object["revision"] as? String == "elite-canonical-native-reach-v2" {
+        object["revision"] = "elite-880d3a-native-reach-v1"
+        object.removeValue(forKey: "jumpFuelMultiplier")
+        object.removeValue(forKey: "fullTankReach")
+      }
+      return object.mapValues(legacy)
+    }
+    let old = try JSONDecoder().decode(
+      ScriptContractBoard.self,
+      from: JSONSerialization.data(
+        withJSONObject: legacy(JSONSerialization.jsonObject(with: JSONEncoder().encode(current)))))
+    #expect(old.valid && old.courierGeneration?.reach.jumpFuelMultiplier == nil)
+    #expect(old.courierGeneration?.draws == current.courierGeneration?.draws)
+    #expect(old.courierGeneration?.paths == current.courierGeneration?.paths)
+    #expect(old.offers.map(\.id) == current.offers.map(\.id))
+    #expect(old.offers.map(\.reward) == current.offers.map(\.reward))
+    #expect(old.offers.map(\.duration) == current.offers.map(\.duration))
+    game.commander.contracts.boards[key] = old
+    let navigation = try #require(
+      Equipment.all.first { $0.name == NavigationTier.advanced.equipmentName })
+    _ = try game.applyEquipmentPurchase(game.quoteEquipmentPurchase(navigation))
+    #expect(game.commander.jumpCap > old.courierGeneration!.reach.jumpCap)
+    #expect(game.commander.contracts.boards[key] == old && old.valid)
+    try GameRuntime.writeCommander(&game, to: fixture.save)
+    let (loaded, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
+    #expect(loaded.contracts.boards[key] == old)
+    #expect(loaded.contracts.boards[key]?.courierGeneration?.valid == true)
+    #expect(try game.ensureContractBoard(fixture.pack) == key)
+    #expect(game.commander.contracts.boards[key] == old)
+  }
+
+  @Test func reachVersionsRefuseMissingMixedUnknownAndIncoherentFacts() throws {
+    let fixture = try CourierFixture()
+    defer { fixture.clean() }
+    let reach = ScriptCourierReach(fixture.game().commander)
+    let object = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(reach)) as? [String: Any])
+    func decode(_ changed: [String: Any]) throws -> ScriptCourierReach {
+      try JSONDecoder().decode(
+        ScriptCourierReach.self, from: JSONSerialization.data(withJSONObject: changed))
+    }
+    for key in ["jumpFuelMultiplier", "fullTankReach"] {
+      var missing = object
+      missing.removeValue(forKey: key)
+      #expect(try !decode(missing).valid)
+    }
+    for (key, value) in [
+      ("jumpFuelMultiplier", 0.0), ("jumpFuelMultiplier", -1.0),
+      ("jumpFuelMultiplier", 2.0), ("fullTankReach", 0.0), ("firstReach", -1.0),
+    ] {
+      var changed = object
+      changed[key] = value
+      #expect(try !decode(changed).valid)
+    }
+    var mixed = object
+    mixed["revision"] = "elite-880d3a-native-reach-v1"
+    #expect(try !decode(mixed).valid)
+    mixed.removeValue(forKey: "jumpFuelMultiplier")
+    mixed.removeValue(forKey: "fullTankReach")
+    #expect(try decode(mixed).valid)
+    mixed["firstReach"] = 0.0
+    #expect(try !decode(mixed).valid)
+    mixed["revision"] = "unknown-reach"
+    #expect(try !decode(mixed).valid)
+  }
+}

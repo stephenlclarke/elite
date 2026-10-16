@@ -84,7 +84,7 @@ extension Game {
       let cap =
         index == 0
         ? commander.maximumJumpDistance
-        : min(commander.jumpCap, Double(commander.fuelCapacity) / 10)
+        : commander.fullTankJumpDistance
       guard systems[edge.0].distance(to: systems[edge.1]) <= cap else {
         throw MissionPackError(
           "Refuel or refit for this frozen route; its destination will not reroll.")
