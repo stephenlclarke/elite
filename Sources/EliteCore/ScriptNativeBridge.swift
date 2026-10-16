@@ -112,3 +112,20 @@ extension ScriptNPCShot {
     return descriptor
   }
 }
+
+extension ScriptEngineState {
+  /// Saved archive shape is untrusted until joined to the retained source version and system.
+  func projectileArchiveValid(_ record: ScriptProjectileRecord) -> Bool {
+    guard let shot = record.body.scriptShot, let descriptor = shot.missionDescriptor,
+      let instance = instances[shot.instance], instance.id == shot.instance
+    else { return false }
+    if let archive = shot.nativeAttribution,
+      archive.origin.owner.system != SystemIdentity(galaxy: record.galaxy, system: record.system)
+    {
+      return false
+    }
+    return
+      (try? MissionNativeBridge.validateArchive(
+        shot.nativeAttribution, shot: descriptor, packDigest: instance.digest)) != nil
+  }
+}
