@@ -13,11 +13,12 @@ extension Game {
     ensureScriptCalendar(origin: .newCommander)
     guard var ledger = commander.scriptState.calendarLedger,
       ledger.operation < UInt64(Int64.max) - 1,
-      commander.scriptState.calendarSeconds <= 1e12 - 600
+      commander.scriptState.calendarSeconds <= 1e12 - 600, missionCalendarCanAdd(600)
     else { return false }
     ledger.operation += 1
     let before = commander.scriptState.calendarSeconds
     commander.scriptState.calendarSeconds += 600
+    mirrorMissionCalendar(seconds: 600, operation: ledger.operation)
     ledger.lastAdjustment = .init(
       operation: ledger.operation, kind: .launch,
       seconds: 600, before: before, after: commander.scriptState.calendarSeconds)
@@ -30,7 +31,9 @@ extension Game {
       ledger.pendingJourney == nil, ledger.operation < UInt64(Int64.max) - 1
     else { return false }
     let distance = currentSystem.scriptCalendarDistance(to: destination)
-    guard commander.scriptState.calendarSeconds <= 1e12 - distance * distance * 3600 else {
+    guard commander.scriptState.calendarSeconds <= 1e12 - distance * distance * 3600,
+      missionCalendarCanAdd(distance * distance * 3600)
+    else {
       return false
     }
     ledger.operation += 1
@@ -56,8 +59,11 @@ extension Game {
       return nil
     }
     let before = commander.scriptState.calendarSeconds
-    guard before <= 1e12 - journey.seconds else { return nil }
+    guard before <= 1e12 - journey.seconds, missionCalendarCanAdd(journey.seconds) else {
+      return nil
+    }
     commander.scriptState.calendarSeconds += journey.seconds
+    mirrorMissionCalendar(seconds: journey.seconds, operation: journey.operation)
     ledger.lastAdjustment = .init(
       operation: journey.operation, kind: .jump,
       seconds: journey.seconds, before: before, after: commander.scriptState.calendarSeconds)

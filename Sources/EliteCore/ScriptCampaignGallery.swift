@@ -177,6 +177,7 @@ extension Game {
       campaignTrialUnavailableReason ?? "", String(canRetrySelectedMission),
       state.map { String($0.revision) } ?? "", state?.outcome.rawValue ?? "",
       state?.suspension ?? "", state.map { worldJobGallerySummary(origin: $0.id) } ?? "",
+      courierGallerySummary(state),
       campaignImmediateOwner?.uuidString ?? "", gallery.campaignPreviewIdentity ?? "",
     ]
     if let review = gallery.campaignReview {

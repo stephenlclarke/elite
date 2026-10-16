@@ -54,6 +54,7 @@ script-missions-check:
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-passengers
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-equipment
 	swift run Elite --validate-mission-pack docs/mission-packs/scripted-contracts
+	swift run Elite --validate-mission-pack docs/mission-packs/generated-couriers
 	swift run Elite --validate-mission-pack docs/mission-packs/station-donation
 	swift run Elite --validate-mission-pack docs/mission-packs/calendar-contracts
 	swift run Elite --validate-mission-pack docs/mission-packs/station-maintenance

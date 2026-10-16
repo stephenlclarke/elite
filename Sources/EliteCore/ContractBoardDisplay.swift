@@ -33,7 +33,9 @@ extension Display {
       let destination = Universe.systemsIncludingPlugh(number: offer.destinationGalaxy)[
         offer.destinationSystem
       ].name
-      if let pledge = game.contractBoard.quote?.pledge {
+      if let courier = game.contractBoard.quote?.courier {
+        rows = [row.title, offer.briefing] + courier.review
+      } else if let pledge = game.contractBoard.quote?.pledge {
         rows = [row.title, offer.briefing] + pledge.terms
       } else {
         rows = [
@@ -138,8 +140,11 @@ extension Display {
           short((start + index == game.contractBoard.selection ? "> " : "  ") + row.title),
           layout.left, y, scale: scale, ink: .cyan)
         let pledge = row.offer.flatMap { try? game.pledgePreview(board: row.board, offer: $0.id) }
+        let courier = row.offer?.courier.map { ScriptCourierPreview(terms: $0) }
         let summary =
-          row.reason ?? pledge.map { "Pledge \($0.charge) / local standing +1 / once" } ?? row.offer
+          row.reason ?? courier?.summary ?? pledge.map {
+            "Pledge \($0.charge) / local standing +1 / once"
+          } ?? row.offer
           .map {
             String(
               format: "Pay %.1f CR / deposit %.1f CR / %@", Double($0.reward) / 10,

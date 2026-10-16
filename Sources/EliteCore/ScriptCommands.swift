@@ -204,6 +204,13 @@ extension Game {
     guard state.outcome == .active else {
       throw MissionPackError("Terminal mission cannot issue more actions.")
     }
+    if state.contract?.offer.courier != nil {
+      guard let terminal = state.courier?.terminal, terminal.cause.outcome == outcome,
+        terminal.item == state.courier?.item
+      else {
+        throw MissionPackError("Courier completion requires its native custody receipt.")
+      }
+    }
     if pack.manifest.pledge != nil, outcome == .complete {
       guard let receipt = candidate.scriptState.pledgeLedger?.receipt(instance: state.id),
         state.pledgeReceiptID == receipt.id
@@ -241,7 +248,9 @@ extension Game {
       throw MissionPackError("Complete every required objective before reporting.")
     }
     if outcome == .complete, let job = state.contract, let due = job.deadline,
-      candidate.scriptState.clock(job.clock) >= due
+      job.deadlinePolicy == nil
+        ? candidate.scriptState.clock(job.clock) >= due
+        : candidate.scriptState.clock(job.clock) > due
     {
       throw MissionPackError(
         "This contract's deadline has passed; use its declared failure handoff.")

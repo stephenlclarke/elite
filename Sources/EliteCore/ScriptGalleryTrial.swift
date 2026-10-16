@@ -109,7 +109,7 @@ extension Game {
       guard offers.indices.contains(index) else {
         throw MissionPackError("This trial has no generated offer at the selected position.")
       }
-      if pack.manifest.pledge != nil {
+      if pack.manifest.pledge != nil || pack.manifest.courier != nil {
         openContractBoard()
         guard
           let selection = contractBoard.rows.firstIndex(where: {
@@ -122,7 +122,7 @@ extension Game {
         _ = try acceptContract(board: key, offer: offers[index].id)
       }
     } else {
-      _ = try acceptScriptMission(pack, randomSeed: seed)
+      try prepareStandaloneTrialAcceptance(pack, seed: seed)
     }
     if pack.manifest.trial?.flight == true {
       launch()
@@ -130,6 +130,16 @@ extension Game {
         wasDocked: true, galaxy: commander.galaxy, system: commander.system)
       drainScriptEvents()
     }
+  }
+  private mutating func prepareStandaloneTrialAcceptance(_ pack: ScriptPack, seed: UInt64) throws {
+    var candidate = self
+    let instanceID = try candidate.acceptScriptMission(
+      pack, randomSeed: seed, drainAccepted: false)
+    candidate.drainScriptEvents()
+    if let reason = candidate.commander.scriptState.instances[instanceID]?.suspension {
+      throw MissionPackError(reason)
+    }
+    self = candidate
   }
 }
 extension GameRuntime {

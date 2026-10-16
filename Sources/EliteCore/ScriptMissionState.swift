@@ -1,7 +1,9 @@
 import Foundation
 
 public enum ScriptOutcome: String, Codable, Sendable { case active, complete, failed, abandoned }
-public enum ScriptClockDomain: String, Codable, Sendable { case flight, local, calendar, transit }
+public enum ScriptClockDomain: String, Codable, Sendable {
+  case flight, local, calendar, transit, missionCalendar
+}
 public enum ScriptTimerPolicy: String, Codable, Sendable { case once, skip, delay }
 public struct ScriptTimer: Codable, Sendable, Equatable {
   public var id: String
@@ -21,7 +23,8 @@ public struct ScriptTimer: Codable, Sendable, Equatable {
 }
 extension ScriptTimer {
   var valid: Bool {
-    PackValidation.localID(id) && due.isFinite && (0...1e12).contains(due)
+    domain != .missionCalendar && PackValidation.localID(id) && due.isFinite
+      && (0...1e12).contains(due)
       && interval.isFinite && (0...1e9).contains(interval)
       && (0...1_000_000_000).contains(pulses) && counters.count <= 16
       && counters.allSatisfy {
@@ -68,6 +71,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
   }
   public var completionReceipt: ScriptCompletionReceipt?
+  public var courier: ScriptCourierCustody?
   public var pledgeReceiptID: UUID?
   public var receiptJoins: [String: [UUID]]?
   public var outcome: ScriptOutcome = .active
@@ -95,6 +99,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  public var missionCalendar: ScriptMissionCalendar?
   public var pledgeLedger: ScriptPledgeLedger?
   public var savedBooks: [String: ScriptBookRecord]?
   public var savedWorldJobs: [UUID: ScriptWorldJob]?
@@ -143,11 +148,17 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     case .flight: flightSeconds
     case .local: localSeconds
     case .calendar: calendarSeconds
+    case .missionCalendar: missionCalendar?.seconds ?? 0
     case .transit: transitSeconds
     }
   }
   var valid: Bool {
     guard worldJobsValid, booksValid,
+      missionCalendar.map({
+        $0.valid && $0.seconds <= calendarSeconds
+          && $0.lastNativeOperation <= (calendarLedger?.operation ?? 0)
+          && $0.seconds <= 1e12 - (calendarLedger?.pendingJourney?.seconds ?? 0)
+      }) ?? true,
       pledgeLedger?.valid(engine: self)
         ?? instances.values.allSatisfy({ $0.pledgeReceiptID == nil })
     else {
@@ -222,6 +233,8 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
               && dialogue.revision <= instance.revision && (0..<8).contains(dialogue.galaxy)
               && (0...256).contains(dialogue.system)
           } ?? true)
+          && (instance.courier.map { $0.valid(state: instance, engine: self) }
+            ?? (instance.contract?.offer.courier == nil))
           && instance.collectionsValid(engine: self)
           && instance.conversationReceipts.count <= 1024
           && instance.conversationReceipts.allSatisfy {

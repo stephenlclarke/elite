@@ -9,13 +9,16 @@ extension Game {
     Int64(floor(commander.scriptState.clock(board.clock) / board.period))
   }
   mutating func ensureContractBoard(_ pack: ScriptPack) throws -> String {
+    try ScriptPackLibrary.validateCourier(pack.manifest)
+    if pack.manifest.courier != nil { ensureMissionCalendar() }
+    resolveCourierTerminals()
     guard docked, dockedAtMainStation, !paused, let definition = pack.manifest.board,
       scriptUnavailable(pack) == nil,
-      [.local, .flight, .calendar].contains(definition.clock)
+      [.local, .flight, .calendar, .missionCalendar].contains(definition.clock)
     else {
       throw MissionPackError("This station has no available contract provider for this pack.")
     }
-    if pack.manifest.pledge != nil, commander.system >= 256 {
+    if pack.manifest.pledge != nil || pack.manifest.courier != nil, commander.system >= 256 {
       throw MissionPackError("Station Aid pledges do not support this synthetic host site.")
     }
     let key = pack.digest + "/" + definition.id + "/" + contractStation.key
@@ -32,7 +35,13 @@ extension Game {
       seed = seed &* 6_364_136_223_846_793_005 &+ 1
       draws.append(.integer(Int64(seed >> 32)))
     }
+    let courierGeneration = try pack.manifest.courier.map { _ in
+      try ScriptCourierGeneration(origin: contractStation, commander: commander, seed: initialSeed)
+    }
     var world = scriptSnapshot.object ?? [:]
+    if let declaration = pack.manifest.courier, let courierGeneration {
+      world["courier_plan"] = courierGeneration.plan(declaration)
+    }
     world["station_id"] = .string(contractStation.key)
     world["board_revision"] = .integer(revision)
     world["board_seed_u32"] = .integer(Int64(Self.pledgeProfileSeed(initialSeed)))
@@ -56,12 +65,24 @@ extension Game {
       throw MissionPackError(
         "A board generator must return only a bounded offers list and no commands.")
     }
-    let offers = try raw.map { try makeContractOffer($0, namespace: "\(key):\(revision)") }
+    var offers = try raw.map { try makeContractOffer($0, namespace: "\(key):\(revision)") }
+    if let declaration = pack.manifest.courier, let courierGeneration {
+      guard offers.count == 6 else {
+        throw MissionPackError("Courier provider requires six native rows.")
+      }
+      for index in offers.indices {
+        offers[index].courier = courierGeneration.terms(declaration, row: index)
+        guard offers[index].courier?.matches(offers[index]) == true else {
+          throw MissionPackError("Authored courier row changed native terms or order.")
+        }
+      }
+    }
     let board = ScriptContractBoard(
       id: definition.id, provider: pack.manifest.id, version: pack.manifest.version,
       digest: pack.digest, title: definition.title, station: contractStation, revision: revision,
       seed: initialSeed, clock: definition.clock, period: definition.period,
-      group: pack.manifest.id + "/" + (definition.exclusiveGroup ?? definition.id), offers: offers)
+      group: pack.manifest.id + "/" + (definition.exclusiveGroup ?? definition.id), offers: offers,
+      courierGeneration: courierGeneration)
     guard board.valid else {
       throw MissionPackError("Generated contract offers are invalid or duplicated.")
     }
@@ -128,6 +149,7 @@ extension Game {
       board: key, offer: id, issues: issues, resources: commander.contractQuoteResources,
       epoch: ecmControl.epoch)
     quote.pledge = try? pledgePreview(board: key, offer: id)
+    quote.courier = try? courierPreview(board: key, offer: id)
     return quote
   }
   mutating func confirmContract(_ quote: ContractAcceptanceQuote) throws -> UUID {
@@ -143,9 +165,13 @@ extension Game {
     guard quote.allowed, quote.resources == commander.contractQuoteResources else {
       throw MissionPackError("Your ship, resources or assignment changed. Review the offer again.")
     }
-    return try acceptContract(board: quote.board, offer: quote.offer)
+    return try acceptContract(
+      board: quote.board, offer: quote.offer, confirmationToken: quote.reviewToken)
   }
-  mutating func acceptContract(board key: String, offer id: UUID) throws -> UUID {
+  mutating func acceptContract(board key: String, offer id: UUID, confirmationToken: UUID = UUID())
+    throws -> UUID
+  {
+    resolveCourierTerminals()
     guard docked, dockedAtMainStation, !paused, let board = commander.contracts.boards[key],
       board.station == contractStation, let index = board.offers.firstIndex(where: { $0.id == id }),
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
@@ -168,13 +194,16 @@ extension Game {
     guard commander.credits >= offer.deposit else {
       throw MissionPackError("Insufficient cash for this contract's deposit.")
     }
+    try ScriptPackLibrary.validateCourier(pack.manifest)
+    if let terms = offer.courier { try requireCourierResources(terms) }
     let acceptedAt = commander.scriptState.clock(board.clock)
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
     let job = ScriptContractJob(
       boardKey: key, provider: board.provider, version: board.version,
       digest: board.digest, station: board.station, boardRevision: board.revision,
       group: board.group,
-      offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline)
+      offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
+      deadlinePolicy: offer.courier == nil ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
     var candidate = self
     if let pledge = try pledgePreview(board: key, offer: id) {
@@ -191,15 +220,36 @@ extension Game {
             id: instanceID, definition: pack.manifest.stateID,
             version: pack.manifest.version, digest: pack.digest)))
     }
+    if offer.courier != nil {
+      guard candidate.scriptCourierAdmission == nil,
+        candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+      else {
+        throw MissionPackError("Courier confirmation cannot start in this context.")
+      }
+      candidate.scriptCourierAdmission = .init(
+        kind: .issue, instance: instanceID,
+        item: ScriptCourierCustody.itemIdentity(instanceID),
+        proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: job)
+    }
     candidate.commander.credits -= offer.deposit
     candidate.commander.contracts.boards[key]?.offers[index].status = .accepted(instanceID)
     _ = try candidate.acceptScriptMission(
-      pack, instanceID: instanceID, randomSeed: board.seed, contract: job)
+      pack, instanceID: instanceID, randomSeed: board.seed, contract: job, drainAccepted: false)
+    candidate.drainScriptEvents()
+    if let reason = candidate.commander.scriptState.instances[instanceID]?.suspension {
+      throw MissionPackError(reason)
+    }
     if pack.manifest.pledge != nil {
       candidate.scriptPledgeAdmission = nil
       guard candidate.pledgeAcceptanceComplete(instanceID) else {
         throw MissionPackError(
           "Donation was not completed in its original confirmation; nothing transferred.")
+      }
+    }
+    if let admission = candidate.scriptCourierAdmission {
+      candidate.scriptCourierAdmission = nil
+      guard candidate.courierActionComplete(admission) else {
+        throw MissionPackError("Courier item was not issued in its original confirmation.")
       }
     }
     guard candidate.commander.valid else {
@@ -235,7 +285,7 @@ extension Game {
     job.settled = true
     job.settlementOutcome = outcome
     job.settlementAmount = amount
-    job.settledAt = candidate.scriptState.clock(job.clock)
+    job.settledAt = state.courier?.terminal?.proof.clock ?? candidate.scriptState.clock(job.clock)
     state.contract = job
   }
   func contractSnapshot(_ instance: ScriptInstance) -> ScriptValue {
@@ -253,7 +303,11 @@ extension Game {
               job.offer.destinationSystem])) : .null,
       "deadline": job.deadline.map { .number($0) } ?? .null,
       "deadline_passed": .bool(
-        job.deadline.map { commander.scriptState.clock(job.clock) >= $0 } ?? false),
+        job.deadline.map { due in
+          job.deadlinePolicy == nil
+            ? commander.scriptState.clock(job.clock) >= due
+            : commander.scriptState.clock(job.clock) > due
+        } ?? false),
     ])
   }
 }
