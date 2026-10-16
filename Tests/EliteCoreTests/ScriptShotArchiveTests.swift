@@ -17,8 +17,9 @@ func actualShotArchiveFixture() throws -> (Game, ScriptNPCShot) {
   let context = try #require(game.gameplayContext())
   let source = try MissionNativeBridge.bindActor(
     descriptor: descriptor, body: body, context: context)
-  let origin = try #require(
-    game.makeAttackOrigin(owner: source.nativeActor, sourcePart: component.identity.uuidString))
+  let allocatedOrigin = game.makeAttackOrigin(
+    owner: source.nativeActor, sourcePart: component.identity.uuidString)
+  let origin = try #require(allocatedOrigin)
   let current = try #require(game.gameplayContext())
   let actor = try #require(current.actors.first { $0.identity == source.nativeActor })
   let judgement = try game.commander.crimeLedger.freezeMissionLaunchJudgement(
