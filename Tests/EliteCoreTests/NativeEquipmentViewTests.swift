@@ -63,7 +63,8 @@ private struct NativeEquipmentFixture {
     let saves = CommanderSaveSession(preferences: preferences, defaultURL: save)
     let delegate = AppDelegate(
       restoreOnLaunch: false, saves: saves,
-      windowSize: NSSize(width: Double(width), height: Double(height)))
+      windowSize: NSSize(width: Double(width), height: Double(height)),
+      windowFactory: nativeViewportTestWindow)
     do {
       delegate.applicationDidFinishLaunching(
         Notification(name: NSApplication.didFinishLaunchingNotification))
@@ -84,7 +85,11 @@ private struct NativeEquipmentFixture {
         originalMenu: originalMenu)
       try await fixture.press(20, text: "3", expected: "3")
       #expect(view.game.screen == .equipment && view.isFlipped)
-      #expect(view.bounds.width == Double(width) && view.bounds.height == Double(height))
+      #expect(
+        view.bounds.width == Double(width) && view.bounds.height == Double(height),
+        nativeWindowSizingDetails(
+          window: window, view: view, requested: .init(width: Double(width), height: Double(height))
+        ))
       return fixture
     } catch {
       delegate.windowWillClose(Notification(name: NSWindow.willCloseNotification))

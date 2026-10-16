@@ -354,18 +354,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   let saves: CommanderSaveSession
   let windowSize: NSSize
   let restoreOnLaunch: Bool
+  let windowFactory: @MainActor (NSRect) -> NSWindow
   private var processingPendingCommands = false
   let commanderFileFailure: @MainActor (any Error) -> Void
   var saveURL: URL { saves.activeURL }
   init(
     restoreOnLaunch: Bool = true, saves: CommanderSaveSession? = nil,
     windowSize: NSSize = .init(width: 768, height: 768),
+    windowFactory: @escaping @MainActor (NSRect) -> NSWindow = { rect in
+      NSWindow(
+        contentRect: rect, styleMask: [.titled, .closable, .miniaturizable, .resizable],
+        backing: .buffered, defer: false)
+    },
     commanderFileFailure: @escaping @MainActor (any Error) -> Void = {
       NSAlert(error: $0).runModal()
     }
   ) {
     self.windowSize = windowSize
     self.restoreOnLaunch = restoreOnLaunch
+    self.windowFactory = windowFactory
     self.commanderFileFailure = commanderFileFailure
     self.saves = saves ?? CommanderSaveSession()
     super.init()
@@ -373,9 +380,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func applicationDidFinishLaunching(_ _: Notification) {
     let view = GameView(frame: NSRect(origin: .zero, size: windowSize))
     view.wantsLayer = true
-    let window = NSWindow(
-      contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
-      backing: .buffered, defer: false)
+    let window = windowFactory(view.frame)
     window.title = "XYZZY Elite - Right-On Commander"
     window.contentView = view
     window.minSize = NSSize(width: 512, height: 540)

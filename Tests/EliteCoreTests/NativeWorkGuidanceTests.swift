@@ -124,7 +124,8 @@ private struct NativeWorkFixture {
     let delegate = AppDelegate(
       restoreOnLaunch: false,
       saves: CommanderSaveSession(preferences: preferences, defaultURL: save),
-      windowSize: .init(width: Double(width), height: Double(height)))
+      windowSize: .init(width: Double(width), height: Double(height)),
+      windowFactory: nativeViewportTestWindow)
     do {
       try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
       try bytes.write(to: save)
@@ -138,7 +139,11 @@ private struct NativeWorkFixture {
       try await delegate.runtime.load(from: save, persistMigrations: false)
       try await delegate.runtime.installNativeWorkScene(game)
       window.setContentSize(NSSize(width: Double(width), height: Double(height)))
-      #expect(view.bounds.width == Double(width) && view.bounds.height == Double(height))
+      #expect(
+        view.bounds.width == Double(width) && view.bounds.height == Double(height),
+        nativeWindowSizingDetails(
+          window: window, view: view, requested: .init(width: Double(width), height: Double(height))
+        ))
       await delegate.runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
       view.game = await delegate.runtime.snapshot()
       view.pending.removeAll()
