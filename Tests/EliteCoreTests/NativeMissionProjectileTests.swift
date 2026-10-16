@@ -14,8 +14,9 @@ private func retainedNativeProjectile() throws -> (
   let component = try #require(npc.components[specification.id])
   let weapon = try #require(specification.weapons?.first)
   let binding = try game.currentMissionNativeBinding(bodyID: owner.id)
-  let origin = try #require(
-    game.makeAttackOrigin(owner: binding.nativeActor, sourcePart: component.identity.uuidString))
+  let emission = game.makeAttackOrigin(
+    owner: binding.nativeActor, sourcePart: component.identity.uuidString)
+  let origin = try #require(emission)
   let context = try #require(game.gameplayContext())
   let source = try #require(context.actors.first { $0.identity == binding.nativeActor })
   let judgement = try game.commander.crimeLedger.freezeMissionLaunchJudgement(
