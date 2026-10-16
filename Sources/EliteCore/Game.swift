@@ -506,7 +506,7 @@ public struct Game: Sendable {
       }
     case "left", "right":
       if screen == .equipment {
-        equipmentMount = key == "right" ? equipmentMount.next : equipmentMount.previous
+        cycleEquipmentFitting(key == "right" ? 1 : -1)
       } else if screen == .chart || screen == .shortChart {
         selectChartNeighbour(key == "left" ? -1 : 1)
       } else if screen == .buy || screen == .sell {
