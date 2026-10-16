@@ -13,6 +13,11 @@ extension Game {
         var cargo = commander.cargo
         let freeTonnes = max(0, commander.capacity - commander.cargoTonnes)
         if case .salvage(let identity) = payload {
+          guard let actor = body.physical?.identity,
+            actor.system == context.system, actor.visit == context.visit,
+            identity.section.wreck.system == context.system,
+            commander.salvageLedger.boundActor(for: identity) == actor
+          else { continue }
           let receipt = commander.salvageLedger.collect(
             lot: identity, cargo: &cargo, freeTonnes: freeTonnes,
             apertureHalfExtents: .init(16, 16, 16), hasScoops: true,

@@ -112,3 +112,84 @@ struct SalvageCutterRuntimeTests {
     #expect(saved.equipmentInventory == game.commander.equipmentInventory)
   }
 }
+
+private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageLot, Int) {
+  var (game, _) = try cutterRuntimeGame()
+  if systemOffset != 0 {
+    // A second genuine visit produces foreign-system custody, not a forged pending lot.
+    game.commander.system = (game.commander.system + systemOffset) % 256
+    game.beginGameplayVisit(arriving: false)
+    let original = game.bodies[0]
+    let physical = try #require(original.physical)
+    let actor = try #require(game.commander.flightSimulation.allocateActor())
+    let old = try #require(physical.salvage)
+    let wreck = WreckIdentity(system: game.systemIdentity, site: 88, lineage: 99)
+    let profile = try #require(SalvageCatalogue.profile(catalogueShipID: physical.catalogueShipID!))
+    game.bodies[0].physical = .init(
+      identity: actor, population: .civilian, catalogueShipID: profile.catalogueShipID,
+      salvage: .init(
+        category: .wreck, ownership: old.ownership, claimant: nil, wreck: wreck,
+        section: nil, lot: nil, bounds: profile.bounds, workSurfaces: profile.surfaces(wreck: wreck)
+      ))
+  }
+  try game.commander.grantEquipment(
+    "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("fixture"))
+  for _ in 0..<320 {
+    let accepted = game.fireSalvageCutter(delta: 0.1)
+    #expect(accepted)
+    if let lot = game.commander.salvageLedger.pendingLots.first {
+      let body = try #require(game.bodies.first { $0.physical?.payload == .salvage(lot.identity) })
+      #expect(game.commander.salvageLedger.boundActor(for: lot.identity) == body.physical?.identity)
+      return (game, lot, body.id)
+    }
+  }
+  throw SaveError.invalidCommander
+}
+
+extension SalvageCutterRuntimeTests {
+  @Test func actualReleasedAndAcknowledgedLotCollectsThroughTheScoopOnlyOnce() throws {
+    var (game, lot, bodyID) = try releasedCutterGame()
+    let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+    game.bodies[index].position = .init(0, -12, 40)
+    let before = game.commander.cargo
+    game.scoopCargo()
+    #expect(!game.bodies.contains { $0.id == bodyID })
+    #expect(!game.commander.salvageLedger.pendingLots.contains { $0.identity == lot.identity })
+    #expect(game.commander.salvageLedger.boundActor(for: lot.identity) == nil)
+    if case .commodity(let amount) = lot.content {
+      #expect(
+        game.commander.cargo[amount.commodity.rawValue] == before[amount.commodity.rawValue]
+          + amount.quantity)
+    } else {
+      #expect(game.commander.salvageLedger.inventory.contains { $0.identity == lot.identity })
+    }
+    let collected = game.commander
+    game.scoopCargo()
+    #expect(game.commander == collected)
+  }
+
+  @Test(arguments: ["wrong actor", "stale visit", "foreign lot"])
+  func staleOrForeignBodyCannotCollectAnotherActualActorsAcknowledgedLot(mismatch: String) throws {
+    var (game, lot, bodyID) = try releasedCutterGame()
+    let original = try #require(game.bodies.first { $0.id == bodyID })
+    let allocated = try #require(game.commander.flightSimulation.allocateActor())
+    var actor = allocated
+    var referenced = lot.identity
+    if mismatch == "stale visit" {
+      actor = .init(system: allocated.system, visit: allocated.visit + 1, entity: allocated.entity)
+    } else if mismatch == "foreign lot" {
+      let (foreign, foreignLot, _) = try releasedCutterGame(systemOffset: 1)
+      game.commander.salvageLedger = foreign.commander.salvageLedger
+      referenced = foreignLot.identity
+    }
+    var wrong = SpaceBody(id: 990, hull: .cargo, position: .init(0, -12, 40))
+    wrong.physical = .init(identity: actor, population: .cargo, payload: .salvage(referenced))
+    game.bodies.append(wrong)
+    let before = game.commander
+    let bodies = game.bodies
+    game.scoopCargo()
+    #expect(game.commander == before && game.bodies == bodies)
+    #expect(game.bodies.contains { $0.id == original.id })
+    #expect(game.commander.salvageLedger.pendingLots.contains { $0.identity == referenced })
+  }
+}
