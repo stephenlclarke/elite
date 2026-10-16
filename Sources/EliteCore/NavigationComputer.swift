@@ -96,8 +96,9 @@ struct NavigationGraph {
     }.max() ?? 0
   }
   func cargoSale(_ id: Int) -> Double {
-    zip(game.commander.cargo, MarketItem.minimumPrices(at: game.systems[id])).reduce(0) {
-      $0 + Double($1.0) * Double($1.1)
+    let prices = MarketItem.minimumPrices(at: game.systems[id])
+    return Commodity.all.indices.reduce(0.0) { total, index in
+      total + Double(game.commander.sellableCargo(index)) * Double(prices[index])
     }
   }
   func path(from origin: Int, to destination: Int, fuel: Int, scoring: Int) -> [Int]? {
@@ -152,7 +153,7 @@ struct NavigationGraph {
         candidates.append((label, path))
       }
     }
-    if game.commander.cargo.contains(where: { $0 > 0 }) {
+    if Commodity.all.indices.contains(where: { game.commander.sellableCargo($0) > 0 }) {
       let waypoints = game.knownSystems.filter { $0.id != origin && $0.id != destination }.sorted {
         a, b in cargoSale(a.id) == cargoSale(b.id) ? a.id < b.id : cargoSale(a.id) > cargoSale(b.id)
       }.prefix(8)
