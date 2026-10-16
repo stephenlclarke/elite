@@ -33,16 +33,14 @@ extension Game {
     if selected.id == commander.shipID { issues.append("You already own this hull.") }
     if balance < 0 { issues.append("Insufficient cash for this exchange.") }
     if balance > 4_294_967_295 { issues.append("Credit would exceed the account limit.") }
-    var projected = commander
-    if let inventory = commander.equipmentInventory {
-      do {
-        try projected.transferEquipment(to: selected.id, hullID: inventory.activeHull)
-      } catch {
-        issues.append("Physical fittings or carried resources are incompatible with this hull.")
-        projected.shipID = selected.id
-      }
-    } else {
-      projected.shipID = selected.id
+    let projected: Commander
+    do {
+      projected = try commander.projectedEquipmentTransfer(to: selected.id)
+    } catch {
+      issues.append("Physical fittings or carried resources are incompatible with this hull.")
+      var fallback = commander
+      fallback.shipID = selected.id
+      projected = fallback
     }
     issues += shipTransferIssues(to: projected)
     return .init(

@@ -62,6 +62,9 @@ public struct ChartLayout: Sendable {
       x: width - min(320, width - 32) - 16, y: local ? 44 : 96, width: min(320, width - 32),
       height: min(320, height - (local ? 80 : 132)))
   }
+  public var searchClearRect: CanvasRect {
+    .init(x: searchRect.maxX - 60, y: searchRect.y, width: 60, height: 28)
+  }
   public var searchRows: Int { max(1, Int((searchRect.height - 36) / 22)) }
   public init(
     width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false,
@@ -183,7 +186,7 @@ extension Game {
       return
     }
     if mapSearch.active {
-      if x > layout.searchRect.maxX - 60 && y < layout.searchRect.y + 28 {
+      if layout.searchClearRect.contains(.init(x, y)) {
         searchKey("search-clear")
         return
       }

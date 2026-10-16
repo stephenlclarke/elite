@@ -361,7 +361,7 @@ extension Display {
       game.showroom.sourceProfiles
       ? [metadata[0], metadata[6], metadata[7]]
       : [
-        ship.name + " / carried fit"
+        game.showroomProfile?.title ?? ship.name + " / carried fit"
       ]
     var rows = headings.flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]

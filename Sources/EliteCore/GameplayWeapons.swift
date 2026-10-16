@@ -15,6 +15,7 @@ extension Game {
     laserHeat += 10
     energy -= 1
     laserFlash = 0.08
+    dischargeAudio.record(.combatLaser)
     let direction: Vector3
     switch mount {
     case .front: direction = .init(0, 0, 1)
