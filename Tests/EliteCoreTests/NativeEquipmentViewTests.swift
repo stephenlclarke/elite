@@ -220,7 +220,8 @@ extension NativeViewTests {
     defer { fixture.close() }
     fixture.window.orderOut(nil)
     try await fixture.selectItem(named: "Fuel Scoops")
-    let before = try nativeEquipmentBytes(fixture.view.game.commander)
+    let beforeCommander = fixture.view.game.commander
+    var before = try nativeEquipmentBytes(beforeCommander)
     let paid = try #require(fixture.view.game.commander.equipmentPurchaseHistory?.paid.count)
     func enqueue(_ code: UInt16, _ text: String) throws {
       func event(_ type: NSEvent.EventType) throws -> NSEvent {
@@ -260,6 +261,12 @@ extension NativeViewTests {
     try enqueue(36, "\r")
     #expect(fixture.view.pendingEquipmentPurchases.count == 1)
     try await fixture.delegate.runtime.load(from: fixture.save, persistMigrations: false)
+    let loaded = await fixture.delegate.runtime.snapshot()
+    #expect(loaded.commander == beforeCommander)
+    #expect(loaded.commander.equipmentInventory == beforeCommander.equipmentInventory)
+    #expect(loaded.commander.equipmentPurchaseHistory == beforeCommander.equipmentPurchaseHistory)
+    // Codable Sets can change array order across decoding. Actions must preserve the loaded bytes.
+    before = try nativeEquipmentBytes(loaded.commander)
     await fixture.delegate.processPendingCommands(in: fixture.view)
     #expect(fixture.view.game.commander.equipmentPurchaseHistory?.paid.count == paid)
     try fixture.verifyUnchanged(before)
