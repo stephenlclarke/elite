@@ -149,6 +149,8 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
     }
   }
   var synthetic = fixture.game(system: 256)
+  synthetic.commander.plughDiscoveryMask = 1  // A valid previously discovered native host-site fixture.
+  #expect(synthetic.commander.valid)
   #expect(throws: MissionPackError.self) { try synthetic.ensureContractBoard(fixture.pack) }
   synthetic.openContractBoard()
   #expect(synthetic.contractBoard.rows.count == 1)
