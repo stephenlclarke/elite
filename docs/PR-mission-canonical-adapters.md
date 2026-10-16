@@ -12,8 +12,11 @@ and change inventory context only after successful publication or restoration.
 
 Validation is **source-only, uncompiled and unexecuted**. Formatting and source
 checks pass. Persistence/preflight and the four legacy equipment test adapters are
-implemented. Full native composition, the retained alias admission dependency,
-reviewed NPC bridges and scheduled tests plus `make ci` remain pending. Calendar,
-resource-bound and station-policy decisions remain with the Orchestrator.
+implemented. The validated retained alias admission helper is composed. Calendar
+fixtures now activate real feature state; player resource persistence respects
+actual admitted native capacities while preserving the historical allowance.
+Native inventory actions retain docking semantics and Lua commands retain the
+mainstation guard. Full native composition, reviewed NPC bridges and scheduled
+tests plus `make ci` remain pending.
 The central integrator owns publishing, actual `@codex review`, resolution and
 re-review of findings, final-head checks and merging.
