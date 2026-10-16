@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "early focused checkpoint; expanded source unvalidated",
+  "stage": "pinned expanded source; focused run pending",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -34,6 +34,70 @@
       "logSHA256": "f6f64845e0ac1cb030762a0368405f5da8d904df99898a08b51b221667a21647",
       "inputManifestPath": "/tmp/elite-g02-checkpoint/ef85213-inputs.json",
       "inputManifestSHA256": "5d0faa365ec85bf9cb846a9835131f4a4c2346c94692a612c7733906a23c812e"
+    },
+    {
+      "commit": "523d1c6e4b6ef9abadd5fbb7d0496ecc1dc8fb32",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courier"
+      ],
+      "seconds": 8.899958624970168,
+      "exit": 1,
+      "logPath": "/tmp/elite-g02-checkpoint/523d1c6-focused.log",
+      "logSHA256": "4bf22841583caf78e5c452e10c3880352588b553a82971f5873c5a30a825c330",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/523d1c6-inputs.json",
+      "inputManifestSHA256": "64025b7b0f3e288a9c1f69d69e1189137d6a2bab759838d012126939680b9115"
+    },
+    {
+      "commit": "f55b5db2cfc6346220db2f5b098e949792e4f3b6",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courier"
+      ],
+      "seconds": 22.539991500088945,
+      "exit": 1,
+      "logPath": "/tmp/elite-g02-checkpoint/f55b5db-focused.log",
+      "logSHA256": "af64ad76fdb5e429361af7e058feb017e24890e69e3fe0ebebf58f48413755d5",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/f55b5db-inputs.json",
+      "inputManifestSHA256": "43d840b294aff578a09cb779c53339842bc443f5aafe19d44527388e798c0288"
+    },
+    {
+      "commit": "576baae1f9adb6c88fe0bfdfcbf39057b567c90d",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courierFixtureProvenanceProbe"
+      ],
+      "seconds": 21.00610104086809,
+      "exit": 0,
+      "logPath": "/tmp/elite-g02-checkpoint/576baae-discovery.log",
+      "logSHA256": "bf31cc96a81857dbbc8d6b1dd10bfc5dcc4b540b0dd1703ca01b6fb81a722cc4",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/576baae-inputs.json",
+      "inputManifestSHA256": "581026d24f0d90ba42f14dcd33330ef052468ebf7c79f59e468bb3a5e867343e"
+    },
+    {
+      "commit": "51615ee7c41b6085a4e70d5da5c085f52da2352a",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courierFixtureProvenanceProbe"
+      ],
+      "seconds": 14.466914500109851,
+      "exit": 0,
+      "logPath": "/tmp/elite-g02-checkpoint/51615ee-discovery.log",
+      "logSHA256": "37b4a8b76fa2c1c65d4098397a27006113575323601e17612a454f6724105c7a",
+      "inputManifestPath": "/tmp/elite-g02-checkpoint/51615ee-inputs.json",
+      "inputManifestSHA256": "43c3e1fb58343ae03b283e87f62ae67e71a91b1f981829cf87c6f271abb5b960"
     }
   ],
   "earlyCheckpoint": {
@@ -54,5 +118,201 @@
     "source-owner acceptance",
     "central integration and formal PR review/merge",
     "separate G1 equipment and Inventory epoch composition"
+  ],
+  "expandedFailureTriage": {
+    "commit": "f55b5db2cfc6346220db2f5b098e949792e4f3b6",
+    "inputsUnchanged": 917,
+    "saveSHA256": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+    "methods": 24,
+    "expectedInvocations": 35,
+    "status": "four runtime fixture issues; full log retained",
+    "issues": [
+      "energy fixture invalid next-body identity",
+      "pinned epoch0 rows2/3 genuinely disabled",
+      "edited-source backlog fixture row0 genuinely disabled"
+    ],
+    "queuedSourceFixes": [
+      "remove only terminal courier-owned pending events atomically",
+      "require exact shared completion receipt linkage on load"
+    ]
+  },
+  "fixtureDiscovery": {
+    "acceptedDiagnosticCommit": "51615ee7c41b6085a4e70d5da5c085f52da2352a",
+    "origins": [
+      0,
+      63
+    ],
+    "epoch": 0,
+    "filePath": "/tmp/elite-g02-checkpoint/51615ee-fixture-provenance.json",
+    "sha256": "466fe2cdeaab9d7167d93f5a10828f003be551cddcefd3ab93025ed66cfde28b",
+    "fixtures": {
+      "boundaries": {
+        "48-above": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 172800,
+          "epoch": 0,
+          "initialState": 1207940352,
+          "lowerBound": 176880.00000000003,
+          "offer": "CD068A12-7667-3772-DD1A-591EE1D1E5E6",
+          "origin": 37,
+          "path": [
+            37,
+            43,
+            226
+          ],
+          "row": 3,
+          "seed": 5834218365605885184
+        },
+        "48-below": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 172800,
+          "epoch": 0,
+          "initialState": 3348628212,
+          "lowerBound": 171696.00000000003,
+          "offer": "AEB492B1-E40D-0630-F52E-A7A2DE55D5FA",
+          "origin": 56,
+          "path": [
+            56,
+            36,
+            150
+          ],
+          "row": 1,
+          "seed": 18070191319121658612
+        },
+        "72-above": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 259200,
+          "epoch": 0,
+          "initialState": 2481124534,
+          "lowerBound": 260400,
+          "offer": "FF5F1C70-F4D7-1931-66AD-10C59CE82CED",
+          "origin": 13,
+          "path": [
+            13,
+            222,
+            29
+          ],
+          "row": 4,
+          "seed": 2402018277323895990
+        },
+        "72-below": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 259200,
+          "epoch": 0,
+          "initialState": 1295021068,
+          "lowerBound": 258696.00000000006,
+          "offer": "F0BFD021-444E-D681-20F3-98143485BA6C",
+          "origin": 0,
+          "path": [
+            0,
+            75,
+            95,
+            24
+          ],
+          "row": 4,
+          "seed": 5318087094851105804
+        }
+      },
+      "rows": {
+        "0": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 172800,
+          "epoch": 0,
+          "initialState": 3529737034,
+          "lowerBound": 47256,
+          "offer": "8B296B28-BDE6-98B4-C9DA-E9C3B640F74C",
+          "origin": 3,
+          "path": [
+            3,
+            228
+          ],
+          "row": 0,
+          "seed": 13798607238306431818
+        },
+        "1": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 172800,
+          "epoch": 0,
+          "initialState": 1295021068,
+          "lowerBound": 9816.000000000002,
+          "offer": "70307AE4-B576-E769-C614-CD429B7D7D2F",
+          "origin": 0,
+          "path": [
+            0,
+            71
+          ],
+          "row": 1,
+          "seed": 5318087094851105804
+        },
+        "2": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 172800,
+          "epoch": 0,
+          "initialState": 1295021068,
+          "lowerBound": 9816.000000000002,
+          "offer": "3A038D95-1A17-D856-E13A-2BAEBD2A4DC7",
+          "origin": 0,
+          "path": [
+            0,
+            71
+          ],
+          "row": 2,
+          "seed": 5318087094851105804
+        },
+        "3": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 172800,
+          "epoch": 0,
+          "initialState": 362571995,
+          "lowerBound": 130200,
+          "offer": "65FD4594-5F50-2D23-F44B-3A2EFEBA63E6",
+          "origin": 10,
+          "path": [
+            10,
+            177
+          ],
+          "row": 3,
+          "seed": 9731030265297135835
+        },
+        "4": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 259200,
+          "epoch": 0,
+          "initialState": 1295021068,
+          "lowerBound": 258696.00000000006,
+          "offer": "F0BFD021-444E-D681-20F3-98143485BA6C",
+          "origin": 0,
+          "path": [
+            0,
+            75,
+            95,
+            24
+          ],
+          "row": 4,
+          "seed": 5318087094851105804
+        },
+        "5": {
+          "digest": "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369",
+          "duration": 259200,
+          "epoch": 0,
+          "initialState": 2588172053,
+          "lowerBound": 181488.00000000006,
+          "offer": "3D6AA0E8-DE5D-5B5C-D86F-C9DACF601E1D",
+          "origin": 1,
+          "path": [
+            1,
+            40,
+            181
+          ],
+          "row": 5,
+          "seed": 6630146343182819093
+        }
+      }
+    },
+    "initialDiagnosticCorrection": "576baae selected nearest48h paths from72h rows; retained original file and restricted discovery to each actual fixed difficulty duration, same origin bound."
+  },
+  "sourceOwnerClosures": [
+    "523d1c6 shared native completion interoperability closed by source; execution pending at that review",
+    "576baae job-only obsolete queue cleanup and exact shared terminal receipt linkage closed by source; current focused execution pending"
   ]
 }

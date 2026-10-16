@@ -94,52 +94,57 @@ import Testing
   #expect(game.commander.scriptState.instances[id]?.courier?.terminal == nil)
 }
 
-@Test func courierFixtureProvenanceProbe() throws {
-  // Temporary bounded offline fixture discovery. Each origin starts a separate native Game;
-  // no published board is refreshed, accepted, rewritten or rerolled by this diagnostic.
-  let fixture = try CourierFixture()
-  defer { fixture.clean() }
-  var rows: [String: [String: Any]] = [:]
-  var boundaries: [String: [String: Any]] = [:]
-  for origin in 0..<64 {
-    let epoch = 0
-    var game = fixture.game(system: origin)
-    if ScriptCourierGeneration.routes(origin: game.contractStation, reach: .init(game.commander))
-      .isEmpty
-    {
-      continue
-    }
-    let (key, _) = try fixture.offer(&game)
-    let board = try #require(game.commander.contracts.boards[key])
-    for offer in board.offers {
-      let terms = try #require(offer.courier)
-      let record: [String: Any] = [
-        "origin": origin, "epoch": epoch, "row": terms.row, "path": terms.path,
-        "lowerBound": terms.calendarLowerBoundSeconds, "duration": terms.duration,
-        "seed": board.seed, "initialState": terms.generation.initialState,
-        "offer": offer.id.uuidString, "digest": fixture.pack.digest,
-      ]
-      if terms.calendarLowerBoundSeconds < terms.duration, rows[String(terms.row)] == nil {
-        rows[String(terms.row)] = record
-      }
-      guard terms.path.count >= 3 else { continue }
-      for duration in [terms.duration] {
-        let side = terms.calendarLowerBoundSeconds < duration ? "below" : "above"
-        let label = String(Int(duration / 3600)) + "-" + side
-        let distance = abs(terms.calendarLowerBoundSeconds - duration)
-        let previous =
-          (boundaries[label]?["lowerBound"] as? Double).map { abs($0 - duration) } ?? .infinity
-        if distance < previous { boundaries[label] = record }
-      }
-    }
+/// Immutable native fixture provenance discovered on 51615ee, origins 0...63, epoch zero.
+struct CourierNativeFixture: Sendable {
+  let origin: Int
+  let row: Int
+  let seed: UInt64
+  let initialState: UInt32
+  let path: [Int]
+  let lowerBound: Double
+  let offer: String
+  static let digest = "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369"
+  func verify(_ board: ScriptContractBoard, _ actual: ScriptContractOffer) throws {
+    #expect(board.digest == Self.digest && board.revision == 0 && board.station.system == origin)
+    #expect(board.seed == seed && board.courierGeneration?.initialState == initialState)
+    #expect(actual.id.uuidString == offer && actual.courier?.row == row)
+    #expect(actual.courier?.path == path && actual.courier?.calendarLowerBoundSeconds == lowerBound)
   }
-  let output: [String: Any] = ["rows": rows, "boundaries": boundaries]
-  let path = URL(fileURLWithPath: "/tmp/elite-g02-checkpoint/fixture-provenance.json")
-  try JSONSerialization.data(withJSONObject: output, options: [.prettyPrinted, .sortedKeys]).write(
-    to: path)
-  #expect(rows.count == 6 && boundaries.count == 4)
-  for (label, record) in boundaries {
-    #expect(record["duration"] as? Double == (label.hasPrefix("48") ? 172800 : 259200))
-  }
-  print("Native fixture provenance saved at " + path.path)
+  static let rows: [Self] = [
+    .init(
+      origin: 3, row: 0, seed: 13_798_607_238_306_431_818, initialState: 3_529_737_034,
+      path: [3, 228], lowerBound: 47256, offer: "8B296B28-BDE6-98B4-C9DA-E9C3B640F74C"),
+    .init(
+      origin: 0, row: 1, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
+      path: [0, 71], lowerBound: 9816.000000000002, offer: "70307AE4-B576-E769-C614-CD429B7D7D2F"),
+    .init(
+      origin: 0, row: 2, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
+      path: [0, 71], lowerBound: 9816.000000000002, offer: "3A038D95-1A17-D856-E13A-2BAEBD2A4DC7"),
+    .init(
+      origin: 10, row: 3, seed: 9_731_030_265_297_135_835, initialState: 362_571_995,
+      path: [10, 177], lowerBound: 130200, offer: "65FD4594-5F50-2D23-F44B-3A2EFEBA63E6"),
+    .init(
+      origin: 0, row: 4, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
+      path: [0, 75, 95, 24], lowerBound: 258696.00000000006,
+      offer: "F0BFD021-444E-D681-20F3-98143485BA6C"),
+    .init(
+      origin: 1, row: 5, seed: 6_630_146_343_182_819_093, initialState: 2_588_172_053,
+      path: [1, 40, 181], lowerBound: 181488.00000000006,
+      offer: "3D6AA0E8-DE5D-5B5C-D86F-C9DACF601E1D"),
+  ]
+  static let boundary48Above: Self = .init(
+    origin: 37, row: 3, seed: 5_834_218_365_605_885_184, initialState: 1_207_940_352,
+    path: [37, 43, 226], lowerBound: 176880.00000000003,
+    offer: "CD068A12-7667-3772-DD1A-591EE1D1E5E6")
+  static let boundary48Below: Self = .init(
+    origin: 56, row: 1, seed: 18_070_191_319_121_658_612, initialState: 3_348_628_212,
+    path: [56, 36, 150], lowerBound: 171696.00000000003,
+    offer: "AEB492B1-E40D-0630-F52E-A7A2DE55D5FA")
+  static let boundary72Above: Self = .init(
+    origin: 13, row: 4, seed: 2_402_018_277_323_895_990, initialState: 2_481_124_534,
+    path: [13, 222, 29], lowerBound: 260400, offer: "FF5F1C70-F4D7-1931-66AD-10C59CE82CED")
+  static let boundary72Below: Self = .init(
+    origin: 0, row: 4, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
+    path: [0, 75, 95, 24], lowerBound: 258696.00000000006,
+    offer: "F0BFD021-444E-D681-20F3-98143485BA6C")
 }

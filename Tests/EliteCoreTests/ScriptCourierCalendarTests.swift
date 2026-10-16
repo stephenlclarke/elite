@@ -139,3 +139,79 @@ func courierEscapeUsesActualNativeActionAndCommandPublicationRollsBackControls(
   }
   #expect(escaped.commander.valid)
 }
+
+struct CourierBoundaryCase: Sendable {
+  let fixture: CourierNativeFixture
+  let late: Bool
+  let available: Bool
+  static let cases: [Self] = [
+    .init(fixture: .boundary48Below, late: false, available: true),
+    .init(fixture: .boundary48Below, late: true, available: true),
+    .init(fixture: .boundary72Below, late: false, available: true),
+    .init(fixture: .boundary72Below, late: true, available: true),
+    .init(fixture: .boundary48Above, late: false, available: false),
+    .init(fixture: .boundary72Above, late: false, available: false),
+  ]
+}
+
+@Test(arguments: CourierBoundaryCase.cases)
+func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: CourierBoundaryCase)
+  async throws
+{
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  let pinned = boundary.fixture
+  var game = fixture.game(system: pinned.origin)
+  let (key, offer) = try fixture.offer(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
+  #expect(quote.allowed == boundary.available && pinned.path.count >= 3)
+  if !boundary.available {
+    let before = await runtime.snapshot()
+    await #expect(throws: MissionPackError.self) { try await runtime.confirmContract(quote) }
+    #expect(await runtime.snapshot().commander == before.commander)
+    try await fixture.travel(runtime, path: pinned.path)
+    let travelled = await runtime.snapshot()
+    #expect(travelled.commander.scriptState.clock(.missionCalendar) > pinned.lowerBound)
+    #expect(travelled.commander.scriptState.clock(.missionCalendar) > offer.duration)
+    #expect(travelled.commander.scriptState.instances.isEmpty)
+    return
+  }
+  let id = try await runtime.confirmContract(quote)
+  let job = try #require(await runtime.snapshot().commander.scriptState.instances[id]?.contract)
+  try await fixture.travel(runtime, path: pinned.path, dockFinal: false)
+  let arrived = await runtime.snapshot()
+  #expect(!arrived.docked && arrived.commander.system == pinned.path.last)
+  #expect(
+    arrived.commander.scriptState.clock(.missionCalendar) > job.acceptedAt + pinned.lowerBound)
+  let due = try #require(job.deadline)
+  // Quiet controlled scenery keeps unrelated encounters from dominating this clock boundary fixture.
+  // Every second still comes from real clamped Runtime.advance flight, never an edited mission clock.
+  var steps = 0
+  while steps < 20000 {
+    let now = await runtime.snapshot().commander.scriptState.clock(.missionCalendar)
+    if now >= due { break }
+    if steps % 100 == 0 { await runtime.prepareCourierJumpFixture(destination: pinned.path.last!) }
+    _ = await runtime.advance(delta: min(0.1, due - now))
+    steps += 1
+  }
+  #expect(steps > 0 && steps < 20000)
+  #expect(await runtime.snapshot().commander.scriptState.clock(.missionCalendar) == due)
+  if boundary.late { _ = await runtime.advance(delta: 0.1) }
+  await runtime.dockCourierFixture(refuel: false)
+  if boundary.late {
+    let expired = await runtime.snapshot()
+    #expect(expired.commander.scriptState.instances[id]?.courier?.terminal?.cause == .expired)
+    #expect(expired.commander.scriptState.instances[id]?.contract?.settlementAmount == 0)
+  } else {
+    await runtime.key("contacts-open")
+    #expect(await runtime.snapshot().courierContactActionLabel == "Deliver")
+    await runtime.key("left")
+    await runtime.key("return")
+    let delivered = await runtime.snapshot()
+    #expect(delivered.commander.scriptState.instances[id]?.outcome == .complete)
+    #expect(delivered.commander.scriptState.instances[id]?.courier?.terminal?.proof.clock == due)
+    #expect(delivered.commander.valid)
+  }
+}

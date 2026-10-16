@@ -234,7 +234,10 @@ extension CourierFixture {
   func travel(_ runtime: GameRuntime, id: UUID) async throws {
     let state = await runtime.snapshot()
     let terms = try #require(state.commander.scriptState.instances[id]?.contract?.offer.courier)
-    for destination in terms.path.dropFirst() {
+    try await travel(runtime, path: terms.path)
+  }
+  func travel(_ runtime: GameRuntime, path: [Int], dockFinal: Bool = true) async throws {
+    for destination in path.dropFirst() {
       await runtime.key("0")
       #expect(!(await runtime.snapshot().docked))
       await runtime.prepareCourierJumpFixture(destination: destination)
@@ -249,7 +252,9 @@ extension CourierFixture {
       }
       #expect(steps > 0 && steps < 10000)
       #expect(await runtime.snapshot().commander.system == destination)
-      await runtime.dockCourierFixture(refuel: destination != terms.destination)
+      if dockFinal || destination != path.last {
+        await runtime.dockCourierFixture(refuel: destination != path.last)
+      }
     }
   }
 }
@@ -258,8 +263,10 @@ extension CourierFixture {
 func courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row: Int) async throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[row]
+  var game = fixture.game(system: pinned.origin)
   let (key, offer) = try fixture.usable(&game, row: row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
   let id = try await runtime.confirmContract(quote)
