@@ -52,8 +52,14 @@ import Testing
   game.commander.fuel -= 1
   game.commander.missiles -= 1
   let beforeReentry = game.commander
+  var expectedReentry = beforeReentry
+  expectedReentry.fuel = expectedReentry.fuelCapacity
+  expectedReentry.missiles = expectedReentry.missileCapacity
   for key in "xyzzy" { game.key(String(key)) }
-  #expect(game.commander == beforeReentry)
+  #expect(game.commander == expectedReentry)
+  #expect(game.commander.credits == Commander.xyzzyStartingCredits - 123)
+  #expect(game.commander.equipmentInventory == beforeReentry.equipmentInventory)
+  #expect(game.commander.equipmentPurchaseHistory == beforeReentry.equipmentPurchaseHistory)
 }
 
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {
