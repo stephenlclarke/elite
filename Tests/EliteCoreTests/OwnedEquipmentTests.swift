@@ -167,14 +167,16 @@ import Testing
   game.equipmentMount = .rear
   let held = try #require(game.commander.equipmentInventory?.items.first { $0.id == laser.id })
   let refit = try #require(game.inventoryActionPreview(for: .equipment(held)).command)
-  #expect(game.performInventoryCommand(refit))
+  let refitApplied = game.performInventoryCommand(refit)
+  #expect(refitApplied)
   #expect(game.commander.fittedEquipment(at: .laser(.rear))?.id == laser.id)
   let round = try #require(missionHighestRound(game.commander))
   let before = try #require(game.commander.equipmentInventory)
   try missionStorePhysical(round, in: &game)
   let stored = try #require(game.commander.equipmentInventory?.items.first { $0.id == round.id })
   let reload = try #require(game.inventoryActionPreview(for: .equipment(stored)).command)
-  #expect(game.performInventoryCommand(reload))
+  let reloadApplied = game.performInventoryCommand(reload)
+  #expect(reloadApplied)
   #expect(Set(game.commander.equipmentInventory!.items.map(\.id)) == Set(before.items.map(\.id)))
   #expect(game.commander.missiles == 3 && game.commander.valid && game.commander.credits == cash)
 }
@@ -199,7 +201,8 @@ import Testing
   try missionStorePhysical(tank, in: &game)
   let stored = try #require(game.commander.equipmentInventory?.items.first { $0.id == tank.id })
   let refit = try #require(game.inventoryActionPreview(for: .equipment(stored)).command)
-  #expect(game.performInventoryCommand(refit))
+  let refitApplied = game.performInventoryCommand(refit)
+  #expect(refitApplied)
   #expect(game.commander.fuelStorageUnits == 1 && game.commander.fuel == 70 && game.commander.valid)
 }
 
@@ -214,7 +217,8 @@ import Testing
   #expect(first.applied)
   let before = await runtime.snapshot().commander
   let stale = await runtime.equipmentTransaction(.inventory(command))
-  #expect(!stale.applied && (await runtime.snapshot().commander) == before)
+  let afterStale = await runtime.snapshot()
+  #expect(!stale.applied && afterStale.commander == before)
   // Ordinary native inventory actions require docking, including at a secondary station.
   var outside = game
   outside.dockedAtMainStation = false
@@ -267,7 +271,11 @@ import Testing
   let before = game.commander
   let first = try #require(game.shipTradeQuote)
   let second = try #require(game.shipTradeQuote)
-  #expect(first.projected == second.projected && game.commander == before)
+  let firstProjection = try game.commander.projectedEquipmentTransfer(to: first.selected.id)
+  let secondProjection = try game.commander.projectedEquipmentTransfer(to: second.selected.id)
+  #expect(firstProjection == secondProjection && game.commander == before)
+  #expect(first.selected.id == second.selected.id && first.balance == second.balance)
+  #expect(first.issues == second.issues && first.allowed == second.allowed)
   #expect(game.selectedGameProfile?.fields.first { $0.key == "fitted_missiles" }?.number == 4)
   #expect(game.selectedGameProfile?.fields.first { $0.key == "fitted_lasers" }?.number == 1)
 }
