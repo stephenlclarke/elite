@@ -162,4 +162,84 @@ struct NativeMissionActorAdmissionTests {
       )
     }
   }
+  @Test func actualNewVisitPreservesNavigationAndRebindsOnlyPermittedNativeTargets() throws {
+    for scenario in 0..<4 {
+      var (game, instance, prior) = try unloadedAdmissionGame()
+      let oldPlayer = try #require(game.commander.flightSimulation.player)
+      let aliases = try #require(
+        game.commander.scriptState.instances[instance]?
+          .ownedEncounters["opponents"]?.actors.keys.sorted())
+      let alias = try #require(aliases.first)
+      let saved = try #require(
+        game.commander.scriptState.instances[instance]?
+          .ownedEncounters["opponents"]?.actors[alias])
+      let destination = Vector3(1234, 2345, 3456)
+      let action: NPCAction =
+        scenario == 1
+        ? .flee(oldPlayer)
+        : scenario == 2
+          ? .engage(oldPlayer)
+          : .navigate(position: destination, speedUnitsPerSecond: 5)
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+        .actors[alias]?.body.physical?.npc?.intention = action
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+        .actors[alias]?.body.physical?.npc?.firstAggressor = oldPlayer
+      game.launch()
+      let currentPlayer = try #require(game.commander.flightSimulation.player)
+      #expect(currentPlayer != oldPlayer)
+      if scenario == 3 {
+        game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+          .actors[alias]?.body.physical?.npc?.firstAggressor = currentPlayer
+      }
+      let sources = try game.retainedMissionActorAdmissionSources()
+      let source = try #require(sources.first { $0.instanceID == instance })
+      let template = try #require(source.actors.first { $0.alias == alias })
+      #expect(template.declaredHostile)
+      let prepared = try game.prepareMissionActorAdmission(source)
+      let plan = try readyAdmission(prepared)
+      _ = try publishAdmission(plan, game: &game, instance: instance)
+      let restored = try #require(game.bodies.first { $0.missionActorID == saved.identity })
+      #expect(!prior.contains { $0.physical?.identity == restored.physical?.identity })
+      let condition = try #require(restored.physical?.npc)
+      if scenario == 1 {
+        #expect(condition.intention == nil)
+      } else if scenario == 2 {
+        #expect(condition.intention == .engage(currentPlayer))
+      } else {
+        #expect(condition.intention == .navigate(position: destination, speedUnitsPerSecond: 5))
+      }
+      #expect(condition.firstAggressor == (scenario == 3 ? currentPlayer : nil))
+    }
+  }
+
+  @Test func malformedRetainedNavigationRefusesBeforeAnyTemporaryAdmissionOutcome() throws {
+    for scenario in 0..<3 {
+      var (game, instance, _) = try unloadedAdmissionGame()
+      let aliases = try #require(
+        game.commander.scriptState.instances[instance]?
+          .ownedEncounters["opponents"]?.actors.keys.sorted())
+      let alias = try #require(aliases.last)
+      let actor = try #require(
+        game.commander.scriptState.instances[instance]?
+          .ownedEncounters["opponents"]?.actors[alias])
+      let maximum = try #require(actor.body.scriptNPC?.fit.definition.speed)
+      let position = scenario == 0 ? Vector3(.infinity, 0, 0) : Vector3(1234, 2345, 3456)
+      let speed = scenario == 1 ? -1 : scenario == 2 ? maximum + 1 : 5
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+        .actors[alias]?.body.physical?.npc?.intention = .navigate(
+          position: position, speedUnitsPerSecond: speed)
+      let before = game
+      var refused = false
+      do {
+        let sources = try game.retainedMissionActorAdmissionSources()
+        let source = try #require(sources.first { $0.instanceID == instance })
+        _ = try game.prepareMissionActorAdmission(source)
+      } catch { refused = true }
+      #expect(refused)
+      #expect(
+        game.commander == before.commander && game.bodies == before.bodies
+          && game.nextBodyID == before.nextBodyID)
+    }
+  }
+
 }
