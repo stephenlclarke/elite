@@ -298,6 +298,13 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     } else if case .player = proof.hit.target {
       guard proof.currentVictim == context.player.identity else { return result }
     }
+    if let source = proof.currentSource {
+      guard
+        context.actors.filter({
+          $0.identity == source && $0.energy.isFinite && $0.energy > 0 && $0.npc?.role == .mission
+        }).count == 1
+      else { return result }
+    }
     lastIncidentID = eventID
     result.accepted = true
     guard outcome != .ordnanceInterception,
