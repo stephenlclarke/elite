@@ -16,7 +16,7 @@ enum NativeMissionActorAdmissionPreparation: Sendable {
 }
 
 /// Only actual source and native-policy preparation can construct this transient plan.
-struct NativeMissionActorAdmissionPlan: Sendable {
+final class NativeMissionActorAdmissionPlan: Sendable {
   let retentionPatch: MissionActorRetentionPatch
   let sceneBodyIDs: [UUID: Int]
   fileprivate let source: MissionActorAdmissionSource
@@ -27,6 +27,24 @@ struct NativeMissionActorAdmissionPlan: Sendable {
   fileprivate let previousBodyID: Int
   fileprivate let flight: FlightSimulationState
   fileprivate let admittedBodies: [SpaceBody]
+
+  fileprivate init(
+    retentionPatch: MissionActorRetentionPatch, sceneBodyIDs: [UUID: Int],
+    source: MissionActorAdmissionSource, context: EncounterContext, anchor: SpaceBody,
+    previousFlight: FlightSimulationState, previousBodies: [SpaceBody], previousBodyID: Int,
+    flight: FlightSimulationState, admittedBodies: [SpaceBody]
+  ) {
+    self.retentionPatch = retentionPatch
+    self.sceneBodyIDs = sceneBodyIDs
+    self.source = source
+    self.context = context
+    self.anchor = anchor
+    self.previousFlight = previousFlight
+    self.previousBodies = previousBodies
+    self.previousBodyID = previousBodyID
+    self.flight = flight
+    self.admittedBodies = admittedBodies
+  }
 }
 
 /// A successful physical commit. The adapter publishes its prevalidated selected instance
@@ -44,6 +62,16 @@ struct NativeMissionActorAdmissionReceipt: Sendable {
       })
     retentionPatch = plan.retentionPatch
   }
+}
+
+private struct MissionActorAdmissionCohort {
+  let templates: [MissionActorAdmissionTemplate]
+  let bodies: [SpaceBody]
+}
+
+private enum MissionActorAdmissionSelection {
+  case outsideLocalBubble, unchanged
+  case selected(MissionActorAdmissionCohort)
 }
 
 extension Game {
@@ -64,6 +92,20 @@ extension Game {
     guard anchor.position.finite, anchor.position.length.isFinite, anchor.orientation.validRotation,
       context.system == systemIdentity, context.visit == commander.flightSimulation.visit
     else { throw NativeMissionActorAdmissionError.invalidScene }
+    switch try selectMissionActorAdmissionCohort(source, context: context, anchor: anchor) {
+    case .outsideLocalBubble: return .pending(.outsideLocalBubble)
+    case .unchanged: return .unchanged
+    case .selected(let cohort):
+      return try stageMissionActorAdmission(
+        source, context: context, anchor: anchor, cohort: cohort)
+    }
+  }
+
+  /// Selection finishes before native staging starts, so its descriptor/body/binding temporaries
+  /// do not share a frame with the physical allocator and condition preparation.
+  private func selectMissionActorAdmissionCohort(
+    _ source: MissionActorAdmissionSource, context: EncounterContext, anchor: SpaceBody
+  ) throws -> MissionActorAdmissionSelection {
     let present = Set(bodies.compactMap(\.missionActorID))
     var selected: [MissionActorAdmissionTemplate] = []
     var prepared: [SpaceBody] = []
@@ -92,13 +134,24 @@ extension Game {
         body.scriptNPC?.velocity.finite ?? true
       else { throw NativeMissionActorAdmissionError.invalidTemplate }
       if body.leavesLocalBubble {
-        if source.mode == .prepared { return .pending(.outsideLocalBubble) }
+        if source.mode == .prepared { return .outsideLocalBubble }
         continue
       }
       selected.append(template)
       prepared.append(body)
     }
     guard !selected.isEmpty else { return .unchanged }
+    return .selected(.init(templates: selected, bodies: prepared))
+  }
+
+  /// Stage only the selected cohort. The immutable heap-owned plan keeps its large snapshots
+  /// out of every preparation result value; no Game value is captured or copied into the plan.
+  private func stageMissionActorAdmission(
+    _ source: MissionActorAdmissionSource, context: EncounterContext, anchor: SpaceBody,
+    cohort: MissionActorAdmissionCohort
+  ) throws -> NativeMissionActorAdmissionPreparation {
+    let selected = cohort.templates
+    var prepared = cohort.bodies
     let units =
       bodies.reduce(0) { $0 + $1.scriptNativeUnits }
       + selected.reduce(0) { $0 + $1.nativeUnits }
@@ -119,16 +172,20 @@ extension Game {
         system: context.system, visit: context.visit, sequence: sequence,
         member: UInt16(index), producer: .mission)
       prepared[index].id = nextBodyID + index
-      let viewVelocity = prepared[index].scriptNPC?.velocity
-      let velocity =
-        viewVelocity.map { staged.pose.orientation.apply($0) }
-        ?? template.retainedNativeVelocity ?? .init(0, 0, 0)
+      let velocity: Vector3
+      if let viewVelocity = prepared[index].scriptNPC?.velocity {
+        velocity = staged.pose.orientation.apply(viewVelocity)
+      } else {
+        velocity = template.retainedNativeVelocity ?? .init(0, 0, 0)
+      }
       var physical = nativePhysicalActorState(
         for: prepared[index], identity: actor, spawnIdentity: spawn, velocity: velocity)
       if var condition = template.retainedNativeCondition {
         // Condition is retained; references to former visit addresses are not authority.
-        condition.firstAggressor = condition.firstAggressor.flatMap {
-          currentMissionActorTarget($0, context: context) ? $0 : nil
+        if let aggressor = condition.firstAggressor,
+          !currentMissionActorTarget(aggressor, context: context)
+        {
+          condition.firstAggressor = nil
         }
         condition.intention = restoredMissionActorIntention(
           condition.intention, template: template, context: context)
@@ -136,10 +193,13 @@ extension Game {
         physical.npc = condition
       }
       physical.laserCooldown = template.retainedNativeLaserCooldown ?? 0
-      let measuredEnergyCapacityValid =
-        physical.npc?.resources.map {
-          $0.energyCapacity == template.maximumHullEnergy
-        } ?? (template.canonicalBody.scriptNPC != nil && template.maximumHullEnergy > 100_000)
+      let measuredEnergyCapacityValid: Bool
+      if let resources = physical.npc?.resources {
+        measuredEnergyCapacityValid = resources.energyCapacity == template.maximumHullEnergy
+      } else {
+        measuredEnergyCapacityValid =
+          template.canonicalBody.scriptNPC != nil && template.maximumHullEnergy > 100_000
+      }
       guard physical.population == .mission, physical.npc?.role == .mission,
         measuredEnergyCapacityValid, physical.velocity.finite
       else { throw NativeMissionActorAdmissionError.invalidCondition }
@@ -189,23 +249,25 @@ extension Game {
 
   private func validateMissionActorAdmissionScene(context: EncounterContext?) throws {
     let flight = commander.flightSimulation
+    let actualSystem = systemIdentity
+    let bodyCursor = nextBodyID
     let identities = bodies.compactMap { $0.physical?.identity }
     let spawns = bodies.compactMap { $0.physical?.spawnIdentity }
     let missions = bodies.compactMap(\.missionActorID)
     guard flight.valid, (1..<1_000_000_000).contains(nextBodyID),
       Set(bodies.map(\.id)).count == bodies.count,
       bodies.allSatisfy({
-        (0..<nextBodyID).contains($0.id) && $0.position.finite
+        (0..<bodyCursor).contains($0.id) && $0.position.finite
           && $0.position.length.isFinite && $0.orientation.validRotation && $0.energy.isFinite
       }),
       Set(identities).count == identities.count, Set(spawns).count == spawns.count,
       Set(missions).count == missions.count,
       identities.allSatisfy({
-        $0.system == systemIdentity && $0.visit == flight.visit
+        $0.system == actualSystem && $0.visit == flight.visit
           && $0.entity > 0 && $0.entity < flight.nextActor
       }),
       spawns.allSatisfy({
-        $0.system == systemIdentity && $0.visit == flight.visit
+        $0.system == actualSystem && $0.visit == flight.visit
           && $0.sequence > 0
           && (!([SpawnProducer.mission, .ordnance].contains($0.producer))
             || $0.sequence < flight.nextSpawn)
