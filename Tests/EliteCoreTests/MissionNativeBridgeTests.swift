@@ -589,17 +589,19 @@ struct MissionNativeBridgeTests {
     let source = try #require(
       game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
     let owner = try #require(source.missionActorID)
-    let weapon = try #require(
-      source.scriptNPC?.fit.definition.components?.flatMap { $0.weapons ?? [] }.first {
-        $0.kind == .plasma
+    let componentSpec = try #require(
+      source.scriptNPC?.fit.definition.components?.first {
+        ($0.weapons ?? []).contains { $0.kind == .plasma }
       })
+    let weapon = try #require(componentSpec.weapons?.first { $0.kind == .plasma })
+    let componentID = try #require(source.scriptNPC?.components[componentSpec.id]?.identity)
     let speed = try #require(weapon.projectileSpeed)
     let lifetime = try #require(weapon.lifetime)
     let delay = try #require(weapon.collisionDelay)
     let shotID = UUID(uuidString: "00000000-0000-0000-0000-000000000050")!
     let shot = ScriptNPCShot(
       identity: shotID, owner: owner, instance: instance,
-      weapon: weapon.id, component: nil, velocity: .init(0, 0, speed), age: 0,
+      weapon: weapon.id, component: componentID, velocity: .init(0, 0, speed), age: 0,
       lifetime: lifetime, damage: weapon.damage, radius: try #require(weapon.collisionRadius),
       collisionDelay: delay)
     game.bodies = []
@@ -652,6 +654,21 @@ struct MissionNativeBridgeTests {
     expired.bodies[0].scriptShot?.age = lifetime
     let afterLife = try expired.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
     #expect(afterLife == nil)
+    for corruptOwner in [false, true] {
+      var corrupt = game
+      let wrong = UUID(uuidString: "00000000-0000-0000-0000-000000000098")!
+      let altered = ScriptNPCShot(
+        identity: shotID,
+        owner: corruptOwner ? wrong : owner, instance: instance, weapon: shot.weapon,
+        component: corruptOwner ? componentID : wrong, velocity: shot.velocity, age: shot.age,
+        lifetime: shot.lifetime, damage: shot.damage, radius: shot.radius,
+        collisionDelay: shot.collisionDelay)
+      corrupt.bodies[0].scriptShot = altered
+      corrupt.commander.scriptState.projectiles[shotID]?.body.scriptShot = altered
+      #expect(throws: MissionNativeBridgeError.invalidShot) {
+        try corrupt.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+      }
+    }
     var duplicateBodyID = game
     duplicateBodyID.bodies[1].id = projectileBodyID
     #expect(throws: MissionNativeBridgeError.invalidShot) {
@@ -665,7 +682,8 @@ struct MissionNativeBridgeTests {
     var drift = game
     drift.bodies[0].scriptShot = ScriptNPCShot(
       identity: shotID, owner: owner, instance: instance,
-      weapon: shot.weapon, component: nil, velocity: shot.velocity, age: 0, lifetime: lifetime,
+      weapon: shot.weapon, component: componentID, velocity: shot.velocity, age: 0,
+      lifetime: lifetime,
       damage: shot.damage + 1, radius: shot.radius, collisionDelay: delay)
     #expect(throws: MissionNativeBridgeError.invalidShot) {
       try drift.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
@@ -779,6 +797,109 @@ struct MissionNativeBridgeTests {
     #expect(throws: MissionNativeBridgeError.invalidShot) {
       try malformed.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
     }
+  }
+
+  @Test func realRoundedCapitalAndFighterFacesPreserveNativeZeroRayAndAcceptSweptQueries() throws {
+    for id in ["SH043", "SH171", "SH041"] {
+      let ship = try #require(ShipCatalogue.ship(id))
+      var game = Game(executive: false)
+      game.launch()
+      game.celestials = []
+      game.bodies = [.init(id: 42, hull: ship.nativeHull ?? .cobra, position: .init(0, 0, 5000))]
+      game.ensurePhysicalActors()
+      game.bodies[0].physical?.catalogueShipID = id
+      let body = game.bodies[0]
+      let mesh = game.gameplayMesh(for: body)
+      #expect(
+        mesh.vertices == ship.design.rawMesh.vertices && mesh.faces == ship.design.rawMesh.faces)
+      let faceIndex = try #require(["SH043": 9, "SH171": 13, "SH041": 12][id])
+      let face = mesh.faces[faceIndex]
+      let faceNormal = (mesh.vertices[face[1]] - mesh.vertices[face[0]])
+        .cross(mesh.vertices[face[2]] - mesh.vertices[face[0]]).unit
+      #expect(
+        face.dropFirst(3).contains {
+          abs((mesh.vertices[$0] - mesh.vertices[face[0]]).dot(faceNormal)) > 0
+        })
+      let center =
+        face.reduce(Vector3(0, 0, 0)) { $0 + mesh.vertices[$1] } * (1 / Double(face.count))
+      let normal = (mesh.vertices[face[1]] - mesh.vertices[face[0]])
+        .cross(mesh.vertices[face[2]] - mesh.vertices[face[0]]).unit
+      let origin = body.position + body.modelVector(center + normal * 100)
+      let direction = body.modelVector(normal * -1).unit
+      let expected = GameplayRaycast.nearest(
+        origin: origin, direction: direction, maxDistance: 200,
+        bodies: game.bodies, meshOverrides: game.gameplayMeshOverrides)
+      let zero = try game.nearestMissionCollision(
+        from: origin, direction: direction,
+        range: 200, radius: 0, includePlayer: false)
+      #expect(zero?.hit == expected)
+      let swept = try game.nearestMissionCollision(
+        from: origin, direction: direction,
+        range: 200, radius: 0.1, includePlayer: false)
+      #expect(expected?.target == .body(42))
+      #expect(swept?.hit.target == .body(42))
+    }
+  }
+
+  @Test func allActualCatalogueAndNativeHullAssetsPermitFarMissWithoutInvalidGeometry() throws {
+    var nativeHulls: Set<Hull> = []
+    for ship in ShipCatalogue.all {
+      var game = Game(executive: false)
+      game.launch()
+      game.celestials = []
+      game.bodies = [.init(id: 42, hull: ship.nativeHull ?? .cobra, position: .init(0, 0, 5000))]
+      game.ensurePhysicalActors()
+      game.bodies[0].physical?.catalogueShipID = ship.id
+      for radius in [0.0, 0.1] {
+        let contact = try game.nearestMissionCollision(
+          from: .init(10_000_000, 10_000_000, 0),
+          direction: .init(0, 0, 1), range: 10000, radius: radius, includePlayer: false)
+        #expect(contact == nil, "Catalogue asset \(ship.id) radius \(radius)")
+      }
+      if let hull = ship.nativeHull, nativeHulls.insert(hull).inserted {
+        game.bodies[0].physical?.catalogueShipID = nil
+        for radius in [0.0, 0.1] {
+          let contact = try game.nearestMissionCollision(
+            from: .init(10_000_000, 10_000_000, 0),
+            direction: .init(0, 0, 1), range: 10000, radius: radius, includePlayer: false)
+          #expect(contact == nil, "Actual native hull \(hull) radius \(radius)")
+        }
+      }
+    }
+  }
+
+  @Test func warpedConvexQuadSweptContactConvergesToOriginalNativeFanSurface() throws {
+    var game = try bridgeCollisionGame()
+    let vertices: [[Double]] = [[0, 0, 0], [10, 0, 0], [10, 10, 1], [0, 10, 0]]
+    let face = [0, 1, 2, 3]
+    let data = try JSONSerialization.data(withJSONObject: [
+      "vertices": vertices, "faces": [face, face, face, face],
+      "source": "native fan regression", "license": "CC0",
+    ])
+    let design = try JSONDecoder().decode(ShipDesign.self, from: data)
+    #expect(ScriptPackLibrary.scriptGeometryValid(design))
+    let digest = try #require(game.bodies[0].scriptNPC?.fit.models["asset:polygon"])
+    game.commander.scriptState.geometry[digest] = design
+    let origin = Vector3(4, 4, 110)
+    let direction = Vector3(0, 0, -1)
+    let body = game.bodies[0]
+    let native = try #require(
+      GameplayRaycast.nearest(
+        origin: origin, direction: direction,
+        maxDistance: 20, bodies: [body], meshOverrides: [body.id: design.rawMesh]))
+    let zero = try #require(
+      game.nearestMissionCollision(
+        from: origin, direction: direction,
+        range: 20, radius: 0, includePlayer: false))
+    #expect(zero.hit == native)
+    #expect(abs(zero.hit.distance - 9.6) < 1e-8)
+    let swept = try #require(
+      game.nearestMissionCollision(
+        from: origin, direction: direction,
+        range: 20, radius: 0.001, includePlayer: false))
+    #expect(swept.hit.target == .body(42))
+    #expect(abs(swept.hit.distance - zero.hit.distance) < 0.002)
+    #expect(swept.hit.distance < zero.hit.distance)
   }
 
 }
