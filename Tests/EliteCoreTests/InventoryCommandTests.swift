@@ -15,6 +15,19 @@ private func inventoryCommandGame() throws -> Game {
 }
 
 struct InventoryCommandTests {
+  @Test func backendAlsoRefusesARequiredSystemRemovalFromAMalformedControl() throws {
+    var game = try inventoryCommandGame()
+    let pulse = try #require(game.commander.fittedEquipment(at: .laser(.front)))
+    let allowed = try #require(game.inventoryActionPreview(for: .equipment(pulse)).command)
+    let shield = try #require(game.commander.fittedEquipment(at: .shield))
+    let malformed = InventoryCommand(
+      owner: allowed.owner, hull: allowed.hull, context: allowed.context, shipID: allowed.shipID,
+      ownedRevision: allowed.ownedRevision, sourceRevision: nil, action: .store(shield))
+    let before = game.commander
+    let removed = game.performInventoryCommand(malformed)
+    #expect(!removed && game.commander == before && game.commander.valid)
+  }
+
   @Test func actualTypedRowsRemainPureAndNeverOfferRemovingRequiredShipSystems() throws {
     let game = try inventoryCommandGame()
     let before = game.commander

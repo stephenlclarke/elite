@@ -94,6 +94,8 @@ final class GameView: NSView {
     let mount: LaserMount
     let tool: Bool
     let ship: String
+    let owner: UUID?
+    let hull: UUID?
     let ownedRevision: UInt64?
     let sourceRevision: UInt64
     init(game: Game, bounds: NSRect) {
@@ -106,6 +108,8 @@ final class GameView: NSView {
       mount = game.equipmentMount
       tool = game.equipmentWorkTool
       ship = game.commander.shipID
+      owner = game.commander.equipmentOwnerID
+      hull = game.commander.hullInstanceID
       ownedRevision = game.commander.equipmentInventory?.revision
       sourceRevision = game.commander.salvageLedger.revision
     }

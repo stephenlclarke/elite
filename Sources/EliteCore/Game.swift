@@ -492,7 +492,11 @@ public struct Game: Sendable {
     if screen == .demo { return }
     if screen == .title || screen == .gameOver {
       if key == " " || key == "return" {
-        if screen == .gameOver { self = Game(executive: commander.executive) }
+        if screen == .gameOver {
+          self = Game(executive: commander.executive)
+          try? commander.prepareEquipment(legacy: false)
+          commander.mirrorFittedEquipment()
+        }
         screen = .status
       }
       return
