@@ -75,8 +75,9 @@ extension Game {
       }
       npc?.routeProvenance = .inferredLocal
       npc?.resources = NPCResources.legacyEnergyOnly(
-        maximumEnergy: body.blackjackRole == nil
-          ? (body.hull.navalEnergy ?? 100) : BlackjackTarget.energy)
+        maximumEnergy: body.scriptNPC?.fit.definition.energy
+          ?? (body.blackjackRole == nil
+            ? (body.hull.navalEnergy ?? 100) : BlackjackTarget.energy))
       if [.constrictor, .thargoid, .thargon].contains(body.hull) {
         // Explicit legacy combat profiles, independent of hostility to the player.
         npc?.legal = .init(value: 64, bountyTenths: body.hull.navalBounty ?? 0)
@@ -92,6 +93,7 @@ extension Game {
   }
 
   private func legacyNPCRole(_ body: SpaceBody) -> NPCRole? {
+    if body.missionInstanceID != nil { return .mission }
     guard body.hull.isTargetShip else { return nil }
     if body.hull == .viper { return .police }
     if body.blackjackRole != nil || body.navalTarget
@@ -167,6 +169,7 @@ extension Game {
     protection.protectedActors = Set(
       bodies.filter {
         $0.navalTarget || $0.blackjackRole != nil || $0.physical?.npc?.role == .mission
+          || $0.missionInstanceID != nil
       }
       .compactMap { $0.physical?.identity })
     protection.blocksNavalEncounter = bodies.contains { $0.physical?.blocksNavalEncounter == true }

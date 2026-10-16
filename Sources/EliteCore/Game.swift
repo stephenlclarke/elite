@@ -897,7 +897,7 @@ public struct Game: Sendable {
     let item = market[index]
     if buy {
       guard item.quantity > 0, commander.availableCredits >= item.price,
-        Commodity.all[index].unit != "t" || commander.cargoTonnes < commander.capacity
+        Commodity.all[index].unit != "t" || commander.cargoTonnes < commander.tradeCargoCapacity
       else {
         notify("CANNOT BUY")
         return
@@ -962,7 +962,7 @@ public struct Game: Sendable {
     for item in exports {
       selection = item.index
       let unit = Commodity.all[item.index].unit
-      let room = unit == "t" ? commander.capacity - commander.cargoTonnes : 63
+      let room = unit == "t" ? commander.tradeCargoCapacity - commander.cargoTonnes : 63
       let affordable =
         market[item.index].price > 0 ? commander.availableCredits / market[item.index].price : 63
       let count = max(0, min(room, min(affordable, market[item.index].quantity)))
@@ -983,12 +983,26 @@ public struct Game: Sendable {
   private func routeScore(_ destination: StarSystem) -> Double {
     let exports = profitableExports(to: destination)
     let gross = exports.reduce(0.0) {
-      $0 + Double($1.profit) * Double(min(commander.capacity, market[$1.index].quantity))
+      $0 + Double($1.profit) * Double(min(commander.tradeCargoCapacity, market[$1.index].quantity))
     }
     let risk = Double(7 - destination.government) * 0.15
     return gross / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    var candidate = self
+    if candidate.requiresScriptDurability, !candidate.recordCalendarLaunch(wasDocked: docked) {
+      notify("CALENDAR LIMIT - LAUNCH NOT COMMITTED")
+      return
+    }
+    candidate.persistScriptActors(unloading: true)
+    candidate.performNativeLaunch()
+    guard candidate.commander.valid else {
+      notify("LAUNCH REFUSED")
+      return
+    }
+    self = candidate
+  }
+  private mutating func performNativeLaunch() {
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -1015,9 +1029,17 @@ public struct Game: Sendable {
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
+    applyScriptStationResources()
+    restoreScriptActors()
   }
   public mutating func dock(atMainStation: Bool = true) {
     resolveDestroyed()
+    if atMainStation,
+      commander.scriptState.stationResources[contractStation.key]?.destroyed == true
+    {
+      notify("MAIN STATION DESTROYED - DOCKING UNAVAILABLE")
+      return
+    }
     guard !hasUnsettledWreckDeaths else {
       notify("DOCKING DEFERRED: WRECK SETTLEMENT PENDING")
       return
@@ -1036,6 +1058,7 @@ public struct Game: Sendable {
       notify("DOCKING DEFERRED: SALVAGE STATE UNAVAILABLE")
       return
     }
+    persistScriptActors(unloading: true)
     persistBlackjackTargets()
     dockedAtMainStation = atMainStation
     retaliation.clear()
@@ -1055,6 +1078,7 @@ public struct Game: Sendable {
     rearShield = commander.rearShieldCapacity
     laserHeat = 0
     jumpCountdown = nil
+    if requiresScriptDurability { cancelCalendarJourney() }
     missileArmed = false
     clearCelestialFlight()
     notify("DOCKED")
@@ -1087,8 +1111,19 @@ public struct Game: Sendable {
       notify("MASS LOCKED")
       return
     }
-    jumpCountdown = commander.performance.spool
-    notify("HYPERSPACE")
+    var candidate = self
+    if requiresScriptDurability {
+      let debit = commander.jumpFuelCost(distance: distance)
+      guard candidate.admitCalendarJourney(destination: targetSystem, nativeFuelDebit: debit),
+        candidate.commander.valid
+      else {
+        notify("CALENDAR LIMIT - JUMP NOT ADMITTED")
+        return
+      }
+    }
+    candidate.jumpCountdown = commander.performance.spool
+    candidate.notify("HYPERSPACE")
+    self = candidate
   }
   public var massLocked: Bool {
     bodies.contains { $0.hull != .cargo && $0.position.length < 600 }
@@ -1107,7 +1142,10 @@ public struct Game: Sendable {
       return
     }
     persistOrePoses()
-    if selectedSystem != commander.system { departOrdinarySimulation() }
+    let journey = requiresScriptDurability ? completeCalendarJourney() : nil
+    let destination = journey?.destination ?? selectedSystem
+    persistScriptActors(unloading: true)
+    if destination != commander.system { departOrdinarySimulation() }
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -1117,11 +1155,13 @@ public struct Game: Sendable {
     cancelAutoTarget()
     clearManualResidualFlight()
     speed = arrivalSpeed
-    let cost = commander.jumpFuelCost(distance: currentSystem.distance(to: targetSystem))
+    let cost =
+      journey?.nativeFuelDebit
+      ?? commander.jumpFuelCost(distance: currentSystem.distance(to: targetSystem))
     if !commander.unlimitedFuel {
       commander.fuel = max(0, commander.fuel - cost)
     }
-    commander.system = selectedSystem
+    commander.system = destination
     if let plan = commander.navigationPlan, plan.nextSystem != commander.system {
       commander.navigationPlan = nil
       notify("ROUTE CANCELLED - OFF ROUTE")
@@ -1143,6 +1183,8 @@ public struct Game: Sendable {
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
+    applyScriptStationResources()
+    restoreScriptActors()
   }
   public mutating func galacticJump() {
     guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
@@ -1166,6 +1208,7 @@ public struct Game: Sendable {
       return false
     }
     guard try consumeNativeEquipment("Galactic Hyperdrive") else { return false }
+    persistScriptActors(unloading: true)
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
@@ -1186,10 +1229,12 @@ public struct Game: Sendable {
       notify("MASS LOCKED")
       return
     }
+    let before = commander.flightSimulation.pose
     for index in bodies.indices { bodies[index].position.z -= 3000 }
     for index in celestials.indices { celestials[index].position.z -= 3000 }
     commander.flightSimulation.pose.advanceView(
       pitch: 0, roll: 0, yaw: 0, translation: .init(0, 0, 3000))
+    advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: 0)
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
     guard !docked, missileArmed, missileCooldown == 0,
@@ -1216,11 +1261,15 @@ public struct Game: Sendable {
     detectRetaliationSources()
     ecmControl.activate(destroyed: 0)
     for missile in bodies
-    where missile.hull == .missile && missile.energy > 0 && missile.physical?.ordnance == nil {
+    where missile.hull == .missile && missile.energy > 0 && missile.physical?.ordnance == nil
+      && missile.scriptShot == nil
+    {
       ecmControl.recordDestruction()
       confirmRetaliation(missile)
     }
-    bodies.removeAll { $0.hull == .missile && $0.physical?.ordnance == nil }
+    bodies.removeAll {
+      $0.hull == .missile && $0.physical?.ordnance == nil && $0.scriptShot == nil
+    }
     ecmFrames = 32
     enemyECMSource = nil
     energy -= 10
@@ -1240,11 +1289,19 @@ public struct Game: Sendable {
   }
   public mutating func escapePod() {
     guard !docked, commander.equipment.contains("Escape Pod") else { return }
+    guard !commander.accommodation.fittedBerths.contains(where: { $0.use.used }) else {
+      notify("PASSENGERS CANNOT FIT THIS ESCAPE POD")
+      return
+    }
     var candidate = self
     do {
       guard try candidate.consumeNativeEquipment("Escape Pod") else { return }
     } catch {
       notify("ESCAPE POD REFUSED")
+      return
+    }
+    guard candidate.loseCourierPackagesOnEscape() else {
+      notify("COURIER LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
     candidate.commander.cargo = Array(repeating: 0, count: 17)
@@ -1335,6 +1392,7 @@ public struct Game: Sendable {
       reconcileEliteReward()
       return
     }
+    advanceScriptNPCFlight(delta: dt)
     advanceSolarFlight(delta: dt)
     guard screen != .gameOver else { return }
     scoopCargo()
@@ -1381,6 +1439,7 @@ public struct Game: Sendable {
     }
   }
   private mutating func moveBodies(dt: Double) {
+    let before = commander.flightSimulation.pose
     if !moveWorkFrame(delta: dt) {
       autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
       commander.flightSimulation.pose.advanceView(
@@ -1403,12 +1462,14 @@ public struct Game: Sendable {
             + commander.flightSimulation.pose.shipVector(physical.velocity) * dt
         }
         if bodies[index].hostile && bodies[index].energy > 0,
-          bodies[index].physical?.spawnIdentity == nil, !workScenePlanned
+          bodies[index].physical?.spawnIdentity == nil, !workScenePlanned,
+          bodies[index].missionInstanceID == nil
         {
           enemyAction(index: index, dt: dt)
         }
       }
     }
+    advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: dt)
     if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
         dock(atMainStation: station.id == 0)
@@ -1426,6 +1487,7 @@ public struct Game: Sendable {
       }
       return
     }
+    persistScriptActors()
     let retainedNPCs = persistNPCStates()
     let departing = bodies.filter {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
