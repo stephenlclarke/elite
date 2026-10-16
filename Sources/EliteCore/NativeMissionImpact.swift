@@ -15,8 +15,9 @@ struct NativeMissionImpactReceipt: Sendable {
   let hullDestroyed: Bool
   let componentDestroyed: Bool
   let eventID: UInt64?
-  let sourceInstanceID: UUID
-  let sourceActorID: UUID
+  let sourceInstanceID: UUID?
+  let sourceActorID: UUID?
+  let player: Bool
   let sourceComponentID: UUID?
   let targetMissionInstanceID: UUID?
   let targetMissionActorID: UUID?
@@ -31,7 +32,7 @@ struct NativeMissionImpactReceipt: Sendable {
   fileprivate init(
     kind: AttackKind, target: GameplayHitTarget?, victimPart: String?, victimComponentID: UUID?,
     damage: Double, hullDestroyed: Bool, componentDestroyed: Bool, eventID: UInt64?,
-    sourceInstanceID: UUID, sourceActorID: UUID, sourceComponentID: UUID?,
+    sourceInstanceID: UUID?, sourceActorID: UUID?, player: Bool, sourceComponentID: UUID?,
     targetMissionInstanceID: UUID?, targetMissionActorID: UUID?, originalOrigin: AttackOrigin?,
     adjudication: NativeMissionAdjudication, terminalShotID: UUID?
   ) {
@@ -45,6 +46,7 @@ struct NativeMissionImpactReceipt: Sendable {
     self.eventID = eventID
     self.sourceInstanceID = sourceInstanceID
     self.sourceActorID = sourceActorID
+    self.player = player
     self.sourceComponentID = sourceComponentID
     self.targetMissionInstanceID = targetMissionInstanceID
     self.targetMissionActorID = targetMissionActorID

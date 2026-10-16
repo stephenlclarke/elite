@@ -151,7 +151,13 @@ extension Game {
     }
     guard (0..<999_999_999).contains(nextBodyID),
       commander.flightSimulation.nextSpawn < UInt64.max,
-      commander.flightSimulation.nextActor < UInt64.max
+      commander.flightSimulation.nextActor < UInt64.max,
+      !bodies.contains(where: { $0.id == nextBodyID }),
+      !bodies.contains(where: {
+        $0.physical?.identity.system == systemIdentity
+          && $0.physical?.identity.visit == commander.flightSimulation.visit
+          && $0.physical?.identity.entity == commander.flightSimulation.nextActor
+      })
     else { throw NativeMissionProjectileAdmissionError.allocatorExhausted }
     return .restore(restored, retiringBodyID: legacy?.id)
   }

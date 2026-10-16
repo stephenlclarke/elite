@@ -60,7 +60,8 @@ extension Game {
       commander.flightSimulation.enter(systemIdentity, arriving: false)
     }
     let flight = commander.flightSimulation
-    for index in bodies.indices where bodies[index].physical == nil {
+    for index in bodies.indices
+    where bodies[index].physical == nil && bodies[index].scriptShot == nil {
       let identity: ActorIdentity?
       if bodies[index].id == 0 && bodies[index].hull == .station {
         identity = flight.anchors?.station.identity
