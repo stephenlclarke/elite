@@ -82,7 +82,7 @@ Mission Coder 1 owns new `Sources/EliteCore/ScriptPledge.swift`, `ScriptPledgeLe
 | --- | --- |
 | `ScriptPack.swift` | Optional pledge declaration, strict closed root/declaration keys/validation, proposed capability; no finance schema or unrelated loader changes |
 | `ScriptMissionState.swift` | Optional native pledge ledger/validity call and native ScriptInstance.pledgeReceiptID bidirectional link only; no loan/campaign/actor state changes |
-| `Game.swift` | Internal value-only candidate pledge admission and existing actor contract click forwarding if required; no simulation/renderer refactor |
+| `Game.swift` | Internal value-only candidate pledge admission, existing actor contract click forwarding if required, and approved raw legacy loader guard refusing decoded pledge ledger OR marker before migration; no simulation/renderer refactor |
 | `ScriptContractCore.swift` | Pledge seed input/preview/preflight/admission and complete-receipt assertion/cleanup; retain ordinary quote/acceptance/settlement paths |
 | `ScriptContractState.swift` | Optional typed quote preview/transient presentation token and necessary quote-resource preservation; no new board/job schema |
 | `ScriptDirector.swift` | Exact pledge command dispatch and compact native read-only pledge/standing projection, no other callback changes |
@@ -90,6 +90,7 @@ Mission Coder 1 owns new `Sources/EliteCore/ScriptPledge.swift`, `ScriptPledgeLe
 | `ContractBoard.swift`, `ContractBoardDisplay.swift` | Transient contract-page generation, pledge terms/Donate label/unavailability/banner; preserve existing navigation, source quote and ordinary providers |
 | `ScriptPageInput.swift`, `EliteMac/EliteApp.swift` | Compact contract-page proof, per-type key/click validation, existing post-paint viewport capture and key/pointer/menu wrapping only |
 | `ScriptGalleryTrial.swift` | Pledge-provider trial starts at unaccepted board review; ordinary trials, saved-contract root refusal and isolation unchanged |
+| `MissionGallery.swift` | Approved header band only: one trial/message/docked-or-flight label instead of overlapping y62 labels; no other Gallery changes |
 | `ScriptPersistence.swift` | Existing format20 extension/read guards if needed, no new chunk/store/writer infrastructure |
 | `Makefile` | Add this optional pack to existing validation targets only; preserve serial ASan and other gates |
 | Existing four format tests | Only expected pointer-format updates in PassengerCustodyTests, ScriptEncounterTests, ScriptGalleryTrialTests and ScriptValueStorageTests when format20 is implemented |

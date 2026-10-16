@@ -1,0 +1,28 @@
+# G21 source preflight owner review
+
+Source-only review, 16 October 2026, of exact `ea87bc57083926349a45f5a22694b25250705fac..5870151883289b1bda079ad53b5840e114cc904f`. Runtime/test candidate is `1353a6b07e70ac60aeef87c9ede0c933194890df`. Review and correction requests route through Orchestrator to Mission Coder 1; no Researcher builds, tests, native app execution or implementation-source edits occurred.
+
+## Result
+
+Preflight has two presentation findings and a separately approved pending raw-loader policy correction. It is not a final clean owner approval, canonical validation, main integration or historical mission-readiness claim. The proposed corrections change source and require final affected/native/media and canonical validation on the corrected immutable candidate under a coordinated lease.
+
+1. **P2, introduced presentation issue:** `ScriptPledge.swift` lines218-220 display a500CR donation as5000decicredits and expose its full native receipt UUID in normal Gallery prose. The preview also exposes the internal provider key. The committed compact and wide completed-receipt images confirm this. Display the actual amount in ordinary CR, or tonnes Food, with human issuer/station and standing change. Retain exact internal units/UUID/provider identity in native records/query/developer evidence. Do not expose implementation terminology as necessary player instructions; preserve clearly labelled project estimates.
+2. **P2, inherited visual acceptance defect:** the actual completed-receipt compact, scrolled and wide images contain overlapping Gallery header labels at y62. Existing Display.gallery paints both the docked/read-only status and active orange completion message in that band. This predates G21, but makes its delivered completion flow unreadable. A minimal additional owner-approved `MissionGallery.swift` header-only hook selects one text/ink: persistent trial context first, otherwise active message, otherwise ordinary docked/flight status. No broader Gallery/renderer change is authorized. Add an owned native assertion/capture showing readable completion and preserved trial context.
+
+## Pending raw-loader placement correction
+
+At this candidate, the unversioned raw-Commander branch of `GameRuntime.load(from:persistMigrations:)` decodes a valid new pledge state and then migrates/loads it without a format20 placement guard. Owner approves a guard immediately after actual raw Commander decode, before any migration/candidate load: `pledgeLedger` must be nil and every instance `pledgeReceiptID` must be nil. Otherwise throw `SaveError.invalidCommander`. Genuine legacy files with neither state retain their existing behaviour. The versioned pointer/chunk route remains the legitimate persistence path for new pledges.
+
+Approve only that additional loader hunk and owned downgrade regressions, with no new writer/store/chunk or unrelated migration changes. Test legitimate completed pledge data encoded as raw JSON with persistMigrations true/false, marker-only and ledger-only raw cases, unchanged live state/input bytes on refusal, genuine old raw loads and valid format20 reloads. Direct trusted in-memory Game.load/Commander fixtures are not globally prohibited. This enforces format placement and retained internal consistency; it does not authenticate coordinated deletion/rewrite of every marker and ledger from an unauthenticated save.
+
+## Source and evidence checked
+
+Reviewed the typed ledger/issuer/receipt/marker invariants, original native admission/event linkage, exact all-or-nothing debit and automatic zero-payment completion, quote purity and resource checks, six fixed offers and cadence, protected-custody boundary, closed pack declarations, script command restrictions, backward-format guards, contract-page painted identity/actor dispatch, native menu/pointer/wheel wrapping, unaccepted trial review and existing ordinary-provider behaviour. The exact prior NativeView fixture paint/mouse modernization and four format assertions stay within approved scope. No additional introduced functional source issue was identified in these paths during preflight.
+
+All779 `tested_source_inputs` hashes in the provisional validation document independently match this immutable Git revision. Its final delta from runtime/test candidate1353a6b consists only of documentation/provisional evidence and eight durable original PNGs. Patch size527537bytes and SHA256 `2a3783b228666bc0c9dc008bb58592236570f6827e4b06a4dc0d53aef14a984e` match the delivered patch. All eight committed PNG hashes match the evidence; the images were inspected individually without regeneration or alteration.
+
+Reported passing subsets remain scoped to their actual checkpoints: core118 tests at245c77d, native21 atd5a0c3a and the affected native test rerun at1353a6b. The evidence correctly sets `canonical_make_ci_passed=false` and retains prior failures. No full gate, coverage, sanitizer or leak pass is inferred from these subsets, and the pending corrections invalidate affected source/media evidence until rerun. Formal PR review/fix/re-review and final-head checks remain required later.
+
+## Ownership
+
+Researcher leaves Mission Coder's reserved source regions untouched. Extra approved hooks are the precise raw legacy loader guard above and the single Gallery header band; all other new mission work remains exclusively through Orchestrator. The already approved pledgeReceiptID reverse link and actual-painted native fixture modernization remain in force. Separate finance/loan infrastructure, general equipment integration and remaining historical mission blockers are unchanged.
