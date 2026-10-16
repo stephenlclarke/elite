@@ -52,10 +52,12 @@ extension Commander {
       field(
         "energy_recharge_per_second", "Energy recharge", p.recharge * energyRechargeMultiplier,
         "energy/s"),
+      field("fore_shield_max", "Front shield", shieldCapacity, "energy"),
+      field("aft_shield_max", "Rear shield", rearShieldCapacity, "energy"),
       field(
-        "fore_shield_max", shieldCapacity == rearShieldCapacity ? "Shields (each)" : "Front shield",
-        shieldCapacity, "energy"),
-      field("fore_shield_recharge_per_second", "Shield recharge", frontShieldRecharge, "energy/s"),
+        "fore_shield_recharge_per_second", "Front shield recharge", frontShieldRecharge, "energy/s"),
+      field(
+        "aft_shield_recharge_per_second", "Rear shield recharge", rearShieldRecharge, "energy/s"),
       field("roll_radians_per_second", "Roll", p.roll, "rad/s"),
       field("pitch_radians_per_second", "Pitch", p.pitch, "rad/s"),
       field("yaw_radians_per_second", "Yaw", p.yaw, "rad/s"),
@@ -68,14 +70,6 @@ extension Commander {
         "mounts"),
       field("price", "Hull price", Double(p.price), "CR"),
     ]
-    if shieldCapacity != rearShieldCapacity {
-      fields.append(field("aft_shield_max", "Rear shield", rearShieldCapacity, "energy"))
-    }
-    if frontShieldRecharge != rearShieldRecharge {
-      fields.append(
-        field(
-          "aft_shield_recharge_per_second", "Rear shield recharge", rearShieldRecharge, "energy/s"))
-    }
     if unlimitedCargo {
       fields[0] = .init(
         key: "cargo_tonnes", label: "Cargo", text: "Unlimited (XYZZY)", number: nil, unit: "t",
