@@ -112,6 +112,91 @@ private struct DurableFixture {
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
   #expect(saved.accommodation.ownedBerths.count == 1 && saved.credits == 90000)
 }
+private func actualGameOverRuntime(_ fixture: DurableFixture) async throws -> GameRuntime {
+  var game = try fixture.game(destination: false)
+  game.launch()
+  game.energy = 0
+  game.speed = 0
+  game.bodies = []
+  game.celestials = []
+  let runtime = GameRuntime(game: game, saveURL: fixture.url)
+  let dead = await runtime.advance(delta: 0)
+  try #require(dead.screen == .gameOver && dead.requiresScriptDurability)
+  try await runtime.save(to: fixture.url)
+  return runtime
+}
+
+extension GameRuntime {
+  fileprivate func resetTestControls() -> [Double] {
+    [
+      controls.pitch, controls.roll, controls.yaw, controls.throttle,
+      controls.fire ? 1 : 0, Double(controls.spinContacts), controls.spinRecognition,
+      controls.spinSlower ? 1 : 0, controls.spinFaster ? 1 : 0,
+    ]
+  }
+}
+
+@Test func gameOverReturnReplacesBoundDurableSaveWithClearedNativeCommander() async throws {
+  let fixture = try DurableFixture()
+  defer { fixture.clean() }
+  let runtime = try await actualGameOverRuntime(fixture)
+  let priorBytes = try Data(contentsOf: fixture.url)
+  let prior = try JSONDecoder().decode(ScriptSavePointer.self, from: priorBytes)
+  #expect(prior.format == "elite-script-save")
+  await runtime.key("return")
+  let reset = await runtime.snapshot()
+  #expect(reset.screen == .status && reset.docked && !reset.requiresScriptDurability)
+  #expect(reset.commander.scriptState == ScriptEngineState())
+  #expect(reset.commander.scriptState.calendarLedger == nil)
+  #expect(reset.commander.valid)
+  let bytes = try Data(contentsOf: fixture.url)
+  #expect(bytes != priorBytes)
+  let saved = try JSONDecoder().decode(Commander.self, from: bytes)
+  #expect(saved == reset.commander)
+  #expect(saved.scriptState.instances.isEmpty && saved.scriptState.calendarLedger == nil)
+  let restored = GameRuntime()
+  try await restored.load(from: fixture.url)
+  let loaded = await restored.snapshot()
+  #expect(loaded.commander == saved && !loaded.requiresScriptDurability)
+}
+
+@Test func failedGameOverResetRestoresNativeStateControlsAndOriginalSaveBytes() async throws {
+  let fixture = try DurableFixture()
+  defer { fixture.clean() }
+  let runtime = try await actualGameOverRuntime(fixture)
+  var controls = Controls()
+  controls.pitch = 0.3
+  controls.yaw = -0.2
+  controls.fire = true
+  await runtime.setControls(controls)
+  let before = await runtime.snapshot()
+  let held = await runtime.resetTestControls()
+  let priorBytes = try Data(contentsOf: fixture.url)
+  try fixture.breakWriter()
+  await runtime.key("return")
+  let denied = await runtime.snapshot()
+  let deniedControls = await runtime.resetTestControls()
+  #expect(denied.commander == before.commander && denied.screen == before.screen)
+  #expect(denied.bodies == before.bodies && denied.celestials == before.celestials)
+  #expect(denied.docked == before.docked && denied.paused == before.paused)
+  #expect(denied.energy == before.energy && denied.frontShield == before.frontShield)
+  #expect(denied.rearShield == before.rearShield && denied.spin == before.spin)
+  #expect(denied.scriptReferenceFrame == before.scriptReferenceFrame)
+  #expect(denied.inventoryContextEpoch == before.inventoryContextEpoch)
+  #expect(denied.requiresScriptDurability && deniedControls == held)
+  #expect(denied.message == "MISSION SAVE FAILED - ACTION NOT COMMITTED")
+  try fixture.restoreWriter()
+  let unchangedBytes = try Data(contentsOf: fixture.url)
+  #expect(unchangedBytes == priorBytes)
+  let (saved, _) = try ScriptSaveStore.read(unchangedBytes, from: fixture.url)
+  #expect(saved == before.commander)
+  await runtime.key("return")
+  let reset = await runtime.snapshot()
+  let retriedBytes = try Data(contentsOf: fixture.url)
+  let retried = try JSONDecoder().decode(Commander.self, from: retriedBytes)
+  #expect(retried == reset.commander && !reset.requiresScriptDurability)
+}
+
 private let durableTimers = """
   return {
    accepted=function(e,w,d) return {data=d,commands={
