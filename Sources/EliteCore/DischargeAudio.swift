@@ -21,7 +21,8 @@ public struct DischargeAudioState: Sendable {
   }
 }
 
-/// Repainting or receiving an older snapshot cannot repeat an already consumed discharge.
+/// Repainting or older snapshots within the current epoch cannot replay a discharge.
+/// The native frame loop delivers updates sequentially; an epoch change starts a new session.
 public struct DischargeAudioFeed: Sendable {
   private var epoch: UUID?
   private var eventID: UInt64 = 0
