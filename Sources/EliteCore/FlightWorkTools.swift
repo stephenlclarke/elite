@@ -130,6 +130,7 @@ extension Game {
       candidate.energy -= energyCost
       candidate.laserHeat += heatCost
       candidate.laserFlash = 0.08
+      candidate.dischargeAudio.record(.salvageCutter)
       if case .released = result { candidate.notify("SECTION RELEASED") }
       if case .destroyed = result { candidate.notify("SECTION EXHAUSTED") }
       self = candidate

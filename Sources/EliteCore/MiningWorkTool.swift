@@ -63,6 +63,7 @@ extension Game {
     laserHeat += 10
     energy -= 1
     laserFlash = 0.08
+    dischargeAudio.record(.miningLaser)
     commander.crimeLedger.finishEmission(origin.emissionID)
     return true
   }

@@ -65,9 +65,7 @@ extension Game {
     if !showroom.sourceProfiles {
       if showroom.baselineUsesCurrent { return commander.gameShipProfile }
       guard let ship = showroomBaseline, ship.game != nil else { return nil }
-      var fit = commander
-      fit.shipID = ship.id
-      return fit.gameShipProfile
+      return commander.projectedGameShipProfile(to: ship.id)
     }
     return showroomBaseline?.profiles.first { $0.group == showroomProfile?.group }
   }

@@ -78,16 +78,34 @@ extension Commander {
     return .init(
       id: "game-" + shipID, title: ship.name + " / carried fit", group: "native-game",
       context:
-        "Game units; same carried equipment on both hulls. Fuel supply is separate from tank and jump capacity.",
+        "Game units; portable equipment transfers, hull-bound fittings stay with their hull. Fuel supply is separate from tank and jump capacity.",
       fields: fields)
   }
 }
 extension Game {
   var selectedGameProfile: ShipProfile? {
     guard let ship = showroomShip, ship.game != nil else { return nil }
-    var fit = commander
-    fit.shipID = ship.id
-    return fit.gameShipProfile
+    return commander.projectedGameShipProfile(to: ship.id)
+  }
+}
+extension Commander {
+  func projectedGameShipProfile(to shipID: String) -> ShipProfile? {
+    guard let ship = ShipCatalogue.ship(shipID), ship.game != nil else { return nil }
+    do {
+      return try projectedEquipmentTransfer(to: shipID).gameShipProfile
+    } catch {
+      // Keep the comparison explicit without presenting a fit that cannot transfer.
+      return .init(
+        id: "game-" + shipID, title: ship.name + " / incompatible carried fit",
+        group: "native-game",
+        context:
+          "Carried fittings or resources cannot transfer to this hull. Review trade for details.",
+        fields: gameShipProfile.fields.map { field in
+          .init(
+            key: field.key, label: field.label, text: "Unavailable", number: nil,
+            unit: field.unit, status: "game", basis: "Incompatible carried fit")
+        })
+    }
   }
 }
 extension ShipPerformance {

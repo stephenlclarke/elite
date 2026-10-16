@@ -58,9 +58,11 @@ struct SalvageCutterRuntimeTests {
       category: old.category, ownership: .abandoned, claimant: claimant, wreck: old.wreck,
       section: old.section, lot: old.lot, bounds: old.bounds, workSurfaces: old.workSurfaces)
     let before = game.commander
+    let audioBefore = game.dischargeAudio.events
     let energy = game.energy
     let accepted = game.fireSalvageCutter(delta: 0.1)
     #expect(!accepted && game.commander == before && game.energy == energy)
+    #expect(game.dischargeAudio.events == audioBefore)
   }
 
   @Test func realSectionWorkUsesTheSelectedCutterAndFiniteResourcesWithoutCombatDamage() throws {
@@ -70,7 +72,11 @@ struct SalvageCutterRuntimeTests {
     let energy = game.energy
     let heat = game.laserHeat
     let bodyEnergy = game.bodies[0].energy
+    var audio = DischargeAudioFeed()
+    #expect(audio.update(game.dischargeAudio).isEmpty)
     game.fireSelectedFlightTool(delta: 0.1)
+    #expect(audio.update(game.dischargeAudio) == [.salvageCutter])
+    #expect(audio.update(game.dischargeAudio).isEmpty)
     #expect(game.commander.salvageLedger.progress(section) == 0.1)
     #expect(abs(game.energy - (energy - 0.2)) < 1e-10)
     #expect(abs(game.laserHeat - (heat + 0.6)) < 1e-10)

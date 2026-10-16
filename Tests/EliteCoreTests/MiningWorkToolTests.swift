@@ -42,8 +42,12 @@ struct MiningWorkToolTests {
     #expect(game.commander.equipmentInventory == inventory)
     var controls = Controls()
     controls.fire = true
+    var audio = DischargeAudioFeed()
+    #expect(audio.update(game.dischargeAudio).isEmpty)
     game.tick(delta: 0.02, controls: controls)
     #expect(game.bodies.first { $0.id == id }?.energy == before - LaserKind.mining.damage)
+    #expect(audio.update(game.dischargeAudio) == [.miningLaser])
+    #expect(audio.update(game.dischargeAudio).isEmpty)
     #expect(game.commander.laser(on: .front) == .naval)
     #expect(game.commander.equipmentInventory == inventory)
     game.key("w")
@@ -64,7 +68,9 @@ struct MiningWorkToolTests {
     let before = game.commander
     let bodies = game.bodies
     let resources = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash]
+    let audioBefore = game.dischargeAudio.events
     game.fireSelectedFlightTool(delta: 0.05)
+    #expect(game.dischargeAudio.events == audioBefore)
     #expect(game.commander == before && game.bodies == bodies)
     #expect([game.energy, game.laserHeat, game.fireCooldown, game.laserFlash] == resources)
   }

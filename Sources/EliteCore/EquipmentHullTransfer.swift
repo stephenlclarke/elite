@@ -1,6 +1,19 @@
 import Foundation
 
 extension Commander {
+  /// Read-only exchange projection reuses the real portable-fit rules and existing IDs.
+  func projectedEquipmentTransfer(to shipID: String) throws -> Commander {
+    guard ShipCatalogue.ship(shipID)?.game != nil else { throw EquipmentRuntimeError.unavailable }
+    if shipID == self.shipID { return self }
+    var candidate = self
+    if let inventory = equipmentInventory {
+      try candidate.transferEquipment(to: shipID, hullID: inventory.activeHull)
+    } else {
+      candidate.shipID = shipID
+    }
+    return candidate
+  }
+
   /// A bound fitting leaves with the sold hull. Portable devices keep their identities,
   /// component receipts and acquisition facts; only their current fitting address changes.
   mutating func transferEquipment(to shipID: String, hullID: UUID) throws {

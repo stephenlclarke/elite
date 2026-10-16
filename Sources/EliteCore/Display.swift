@@ -315,12 +315,14 @@ public enum Display {
       game.commander.shipDisplayStyle = .shadedPanels
     }
     let center = game.viewPosition(body.position)
-    guard center.z > 10 else { return }
     let mesh = mesh ?? game.gameplayMesh(for: body)
     let vertices = mesh.vertices.map { vertex -> Vector3 in
       let rotated = game.viewPosition(body.modelVector(vertex))
       return rotated + center
     }
+    guard vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite && $0.z.isFinite }),
+      vertices.contains(where: { $0.z >= 1 })
+    else { return }
     var drawn: Set<String> = []
     var visibleFaces: Set<Int> = []
     let depths = mesh.faces.enumerated().map { index, face -> (index: Int, distance: Double) in
