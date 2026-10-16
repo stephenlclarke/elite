@@ -147,6 +147,20 @@ private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageL
 }
 
 extension SalvageCutterRuntimeTests {
+  @Test func anAcknowledgedOldVisitBodyCannotCollectAfterTheActualFlightContextChanges() throws {
+    var (game, lot, bodyID) = try releasedCutterGame()
+    let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+    let bound = try #require(game.bodies[index].physical?.identity)
+    game.bodies[index].position = .init(0, -12, 40)
+    game.commander.flightSimulation.enter(game.systemIdentity, arriving: false)
+    #expect(game.commander.salvageLedger.boundActor(for: lot.identity) == bound)
+    #expect(bound.visit != game.commander.flightSimulation.visit)
+    let before = game.commander
+    let bodies = game.bodies
+    game.scoopCargo()
+    #expect(game.commander == before && game.bodies == bodies)
+  }
+
   @Test func actualReleasedAndAcknowledgedLotCollectsThroughTheScoopOnlyOnce() throws {
     var (game, lot, bodyID) = try releasedCutterGame()
     let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
