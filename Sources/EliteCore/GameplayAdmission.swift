@@ -146,12 +146,19 @@ extension Game {
     var budget = context.budget
     let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
     for (request, template) in zip(requests, templates) {
+      let resourceCapacityMatches: Bool
+      if let resources = request.npc?.resources {
+        resourceCapacityMatches = resources.energyCapacity == template.maximumHullEnergy
+      } else {
+        resourceCapacityMatches =
+          template.canonicalBody.scriptNPC != nil
+          && template.maximumHullEnergy > 100000
+      }
       guard request.priority == .mission, request.identity.producer == .mission,
         request.population == .mission,
         request.hull == template.canonicalBody.hull,
         request.energy == template.canonicalBody.energy,
-        request.npc?.resources.map { $0.energyCapacity == template.maximumHullEnergy }
-          ?? (template.canonicalBody.scriptNPC != nil && template.maximumHullEnergy > 100000),
+        resourceCapacityMatches,
         !bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
       else { return .staleContext }
       if let refusal = admissionCapacityRefusal(request, context: context, budget: budget) {
