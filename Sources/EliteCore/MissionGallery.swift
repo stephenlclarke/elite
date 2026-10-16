@@ -43,6 +43,26 @@ extension Game {
   public var missionCatalogue: [GalleryMission] {
     missionPacks.entries.map { packGallery($0) } + missingPackGallery
   }
+  private var galleryMissionIDs: [String] {
+    let installed = missionPacks.entries.map { $0.pack.stateID }
+    let installedIDs = Set(installed)
+    return installed + commander.missionProgress.keys.sorted().filter { !installedIDs.contains($0) }
+  }
+  mutating func replaceMissionPacks(_ library: MissionPackLibrary) {
+    let previous = galleryMissionIDs
+    let selected = previous.indices.contains(gallery.selection) ? previous[gallery.selection] : nil
+    missionPacks = library
+    let current = galleryMissionIDs
+    if let selected, let index = current.firstIndex(of: selected) {
+      gallery.selection = index
+    } else {
+      gallery.selection = max(0, min(gallery.selection, current.count - 1))
+      gallery.scroll = 0
+    }
+  }
+  private mutating func clampGallerySelection() {
+    gallery.selection = max(0, min(gallery.selection, missionCatalogue.count - 1))
+  }
   public mutating func openGallery() {
     guard
       ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .handoff, .gallery, .showroom]
@@ -51,6 +71,7 @@ extension Game {
     else { return }
     gallery.previousScreen = screen
     gallery.previouslyPaused = paused
+    clampGallerySelection()
     screen = .gallery
   }
   public mutating func closeGallery() {
@@ -58,6 +79,7 @@ extension Game {
     paused = gallery.previouslyPaused
   }
   mutating func galleryKey(_ key: String) {
+    clampGallerySelection()
     switch key {
     case "l": closeGallery()
     case "escape":
@@ -121,7 +143,9 @@ extension Game {
     }
   }
   func galleryDetailLines(width: Double, font: Double) -> [String] {
-    let mission = missionCatalogue[gallery.selection]
+    let missions = missionCatalogue
+    guard !missions.isEmpty else { return ["No missions available."] }
+    let mission = missions[max(0, min(gallery.selection, missions.count - 1))]
     let ending: String
     if mission.status == .failed {
       ending = mission.objective
