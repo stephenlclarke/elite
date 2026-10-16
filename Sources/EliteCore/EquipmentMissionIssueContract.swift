@@ -18,14 +18,19 @@ public struct EquipmentIssueSource: Equatable, Codable, Sendable {
 public struct LegacyEquipmentState: Equatable, Codable, Sendable {
   public let conditionBasisPoints: Int
   public let modifications: [String: Int]
-  public init(conditionBasisPoints: Int, modifications: [String: Int]) {
+  public let originalEquipmentName: String?
+  public init(
+    conditionBasisPoints: Int, modifications: [String: Int], originalEquipmentName: String? = nil
+  ) {
     self.conditionBasisPoints = conditionBasisPoints
     self.modifications = modifications
+    self.originalEquipmentName = originalEquipmentName
   }
   var valid: Bool {
     (0...10000).contains(conditionBasisPoints) && modifications.count <= 32
       && modifications.keys.allSatisfy(PackValidation.localID)
       && modifications.values.allSatisfy { (-100000...100000).contains($0) }
+      && (originalEquipmentName == nil || originalEquipmentName == Equipment.legacyDockingComputer)
   }
   var pristine: Bool { conditionBasisPoints == 10000 && modifications.isEmpty }
 }
@@ -51,11 +56,16 @@ public struct IssuedDeviceRequest: Equatable, Sendable {
   public let node: EquipmentNodeID
   public let index: Int
   public let preferredSlot: ComponentFittingSlot?
-  public init(id: UUID, node: EquipmentNodeID, index: Int, preferredSlot: ComponentFittingSlot?) {
+  public let originalEquipmentName: String?
+  public init(
+    id: UUID, node: EquipmentNodeID, index: Int, preferredSlot: ComponentFittingSlot?,
+    originalEquipmentName: String? = nil
+  ) {
     self.id = id
     self.node = node
     self.index = index
     self.preferredSlot = preferredSlot
+    self.originalEquipmentName = originalEquipmentName
   }
 }
 

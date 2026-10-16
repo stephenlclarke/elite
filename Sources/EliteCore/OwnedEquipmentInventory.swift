@@ -244,6 +244,11 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
       guard item.preferredSlot?.valid ?? true, item.retainedLegacyState?.valid ?? true,
         item.location == nil || (item.retainedLegacyState?.pristine ?? true)
       else { throw OwnedEquipmentError.invalidStructure }
+      if let original = item.retainedLegacyState?.originalEquipmentName {
+        guard EquipmentRuntimeCatalog.node(for: original) == item.node else {
+          throw OwnedEquipmentError.invalidStructure
+        }
+      }
       if item.node.family == EquipmentRuntimeCatalog.ammunitionFamily {
         guard item.node == EquipmentRuntimeCatalog.standardMissile, item.component == nil,
           item.boundHull == nil
