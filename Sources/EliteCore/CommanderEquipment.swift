@@ -68,8 +68,10 @@ extension Commander {
           boundHull: slot == .utility(.cargoExpansion) ? hull : nil))
       represented.insert(node)
     }
-    let shield = shieldBooster?.equipmentName ?? "Basic Shield"
-    try append(shield, at: .shield, standard: shieldBooster == nil)
+    let shield =
+      equipment.contains("Elite Shield Module")
+      ? "Elite Shield Module" : shieldBooster?.equipmentName ?? "Basic Shield"
+    try append(shield, at: .shield, standard: shield == "Basic Shield")
     let navigation = navigationTier?.equipmentName ?? NavigationTier.basic.equipmentName
     try append(navigation, at: .navigation, standard: navigationTier == nil)
     let energy: String
@@ -85,7 +87,8 @@ extension Commander {
     for mount in LaserMount.allCases {
       if let laser = laser(on: mount) {
         try append(
-          laser.equipmentName, at: .laser(mount), standard: laser == .pulse && mount == .front)
+          laser.equipmentName, at: performance.supports(mount) ? .laser(mount) : nil,
+          standard: laser == .pulse && mount == .front)
       }
     }
     if xyzzyGrant && equipment.contains(LaserKind.mining.equipmentName),
@@ -94,7 +97,11 @@ extension Commander {
       try append(LaserKind.mining.equipmentName, at: .utility(.miningLaser))
     }
     for (name, utility) in EquipmentRuntimeCatalog.utilities where equipment.contains(name) {
-      try append(name, at: .utility(utility))
+      let supported =
+        utility == .salvageCutter
+        ? performance.workTools?.contains(.salvageCutter) == true
+        : utility != .cargoExpansion || performance.cargoExpansion > 0
+      try append(name, at: supported ? .utility(utility) : nil)
     }
     for unit in 0..<fuelStorageUnits {
       try append(FuelStorage.equipmentName, at: .fuelStorage(unit))
@@ -126,6 +133,9 @@ extension Commander {
   {
     guard let definition = EquipmentRuntimeCatalog.definition(for: node.family) else { return nil }
     let mapping = EquipmentModuleTemplates.legacyMapping(family: definition.family, key: name)
+    if mapping == nil, let stock = EquipmentRuntimeCatalog.stockComponent(for: node, id: id) {
+      return stock
+    }
     let origin = mapping?.origin ?? definition.grades[0]
     let component = ComponentInstance(
       id: id, origin: origin, statistics: origin.statistics,

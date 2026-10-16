@@ -5,7 +5,7 @@ extension Commander {
     var candidate = self
     try candidate.prepareEquipment()
     for (name, slot) in [
-      (ShieldBooster.capital.equipmentName, ComponentFittingSlot.shield),
+      ("Elite Shield Module", ComponentFittingSlot.shield),
       (NavigationTier.military.equipmentName, .navigation),
       (Equipment.navalEnergyUnit, .energy),
       (TargetingTier.military.equipmentName, .targetingCore),

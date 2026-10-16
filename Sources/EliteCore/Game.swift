@@ -219,6 +219,7 @@ public struct Equipment: Sendable {
     Set(all.map(\.name)).subtracting([FuelStorage.equipmentName]).union([
       navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
       "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
+      "Elite Shield Module",
     ])
   }
   public static var maximumHardware: Set<String> {
@@ -229,7 +230,7 @@ public struct Equipment: Sendable {
     )
     .union([
       TargetingTier.military.equipmentName, NavigationTier.military.equipmentName,
-      ShieldBooster.capital.equipmentName,
+      "Elite Shield Module",
     ])
   }
   public let name: String

@@ -208,6 +208,9 @@ struct EquipmentRuntimeTransactionTests {
     #expect(game.commander.fittedEquipment(at: .targetingMining)?.provenance == .xyzzy)
     #expect(game.commander.fittedEquipment(at: .targetingSalvage)?.provenance == .xyzzy)
     #expect(game.commander.fittedEquipment(at: .utility(.salvageCutter))?.provenance == .xyzzy)
+    #expect(game.commander.fittedEquipment(at: .shield)?.component?.grade.id == "shield.elite")
+    #expect(game.commander.shieldCapacity == game.commander.nativePerformance.shield * 9.2)
+    #expect(!game.commander.capitalRewardClaimed && game.commander.rank != "ELITE")
     #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
     #expect(
       game.commander.fuelStorageUnits == 4
