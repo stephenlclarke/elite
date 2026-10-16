@@ -182,9 +182,7 @@ extension Game {
     ledger.receipts[receipt.id] = receipt
     candidate.scriptState.pledgeLedger = ledger
     state.pledgeReceiptID = receipt.id
-    try applyScriptCommand(
-      .object(["op": .string("mission.finish"), "outcome": .string("complete")]),
-      event: event, pack: pack, state: &state, candidate: &candidate)
+    try finishScriptMission(.complete, pack: pack, state: &state, candidate: &candidate)
   }
   private func acceptedPledgeBoard(_ admission: ScriptPledgeAdmission) -> ScriptContractBoard {
     var board = admission.board
