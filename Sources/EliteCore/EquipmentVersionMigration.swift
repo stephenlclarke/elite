@@ -20,8 +20,21 @@ extension Commander {
     }
     let context = EquipmentRuntimeCatalog.context(
       owner: inventory.owner, hull: inventory.activeHull, performance: nativePerformance)
+    let retained = inventory.items.map { item in
+      guard item.node == EquipmentRuntimeCatalog.node(for: Equipment.legacyDockingComputer),
+        item.location?.slot == .targetingCore, equipment.contains(Equipment.legacyDockingComputer),
+        !equipment.contains(TargetingTier.docking.equipmentName)
+      else { return item }
+      return OwnedEquipmentItem(
+        id: item.id, node: item.node, provenance: item.provenance,
+        component: item.component, location: item.location, boundHull: item.boundHull,
+        preferredSlot: item.preferredSlot,
+        retainedLegacyState: .init(
+          conditionBasisPoints: 10000, modifications: [:],
+          originalEquipmentName: Equipment.legacyDockingComputer))
+    }
     let next = try inventory.applyingBatch(
-      items: inventory.items + rounds, expectedRevision: inventory.revision, context: context)
+      items: retained + rounds, expectedRevision: inventory.revision, context: context)
     let entitlements = try rounds.map { item in
       try EquipmentPurchaseProgression.legacyEntitlement(
         for: .init(id: item.id, node: item.node, provenance: item.provenance),

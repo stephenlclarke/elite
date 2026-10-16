@@ -67,7 +67,9 @@ extension Commander {
         boundHull: item.kind == .module("Large Cargo Bay") ? hull : nil,
         preferredSlot: preferred,
         retainedLegacyState: .init(
-          conditionBasisPoints: item.condition, modifications: item.modifications))
+          conditionBasisPoints: item.condition, modifications: item.modifications,
+          originalEquipmentName: item.kind.name == Equipment.legacyDockingComputer
+            ? item.kind.name : nil))
     }
     var restorations: [UUID: [String: [EquipmentIssueDisplacement]]] = [:]
     for (name, slot) in [

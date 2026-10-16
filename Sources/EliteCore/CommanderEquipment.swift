@@ -95,11 +95,22 @@ extension Commander {
         provenance = legacy ? .legacyUnknown : .standard
       }
       let component = try migratedComponent(node: node, name: name, id: id)
+      let originalAlias =
+        name == Equipment.legacyDockingComputer
+        || (name == TargetingTier.docking.equipmentName
+          && equipment.contains(Equipment.legacyDockingComputer)
+          && !equipment.contains(TargetingTier.docking.equipmentName))
+      let retained: LegacyEquipmentState? =
+        originalAlias
+        ? .init(
+          conditionBasisPoints: 10000, modifications: [:],
+          originalEquipmentName: Equipment.legacyDockingComputer) : nil
       items.append(
         .init(
           id: id, node: node, provenance: provenance, component: component,
           location: slot.map { .init(hullInstanceID: hull, slot: $0) },
-          boundHull: slot == .utility(.cargoExpansion) ? hull : nil))
+          boundHull: slot == .utility(.cargoExpansion) ? hull : nil,
+          retainedLegacyState: retained))
       represented.insert(node)
     }
     let shield =
