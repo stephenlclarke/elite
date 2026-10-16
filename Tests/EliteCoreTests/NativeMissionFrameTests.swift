@@ -65,7 +65,8 @@ struct NativeMissionFrameTests {
         start: start, end: changed ? end : start, initialVelocity: .init(0, 0, 0),
         acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
         duration: 0.1, playerRadius: 1)
-      try #require(game.moveWorkFrame(delta: 0.1))
+    let moved = game.moveWorkFrame(delta: 0.1)
+    try #require(moved)
       game.advanceScriptNPCFlight(delta: 0.1)
       if changed { rotating = game } else { stationary = game }
     }
