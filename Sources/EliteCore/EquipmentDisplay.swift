@@ -226,6 +226,11 @@ extension Game {
     if let x {
       if let cell = layout.mounts.first(where: { $0.bounds.contains(.init(x, y)) }) {
         equipmentMount = cell.mount
+        equipmentWorkTool = false
+        return
+      }
+      if layout.workToolBounds?.contains(.init(x, y)) == true {
+        equipmentWorkTool = true
         return
       }
       guard x >= layout.left && x < layout.left + layout.contentWidth else { return }

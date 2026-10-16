@@ -762,6 +762,16 @@ public struct Game: Sendable {
   public mutating func purchase() {
     guard docked, Equipment.all.indices.contains(selection) else { return }
     let item = Equipment.all[selection]
+    if Equipment.isReward(item.name) && !atPlugh {
+      notify(Equipment.rewardLabel(item.name).uppercased() + " - NOT FOR SALE")
+      return
+    }
+    if item.name == FuelStorage.equipmentName
+      && commander.fuelStorageUnits >= FuelStorage.maximumCount
+    {
+      notify("FUEL STORAGE FULL")
+      return
+    }
     if item.name == "Fuel" || item.name == "Missile" {
       let cost = shopPrice(item)
       guard equipmentAvailable(item), commander.availableCredits >= cost else {

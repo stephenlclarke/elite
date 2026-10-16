@@ -183,7 +183,7 @@ import Testing
   #expect(game.commander.shieldBooster == nil && game.commander.credits == cash)
   for width in [512.0, 1512] {
     let frame = Display.equipmentScreen(game, width: width, height: 518)
-    #expect(frame.labels.contains { $0.text == ShieldBooster.capital.equipmentName })
+    #expect(frame.labels.contains { $0.text == "Advanced II Shield Module" })
     #expect(frame.labels.contains { $0.text == "ELITE REWARD" })
   }
   game.commander.installShieldBooster(.capital)

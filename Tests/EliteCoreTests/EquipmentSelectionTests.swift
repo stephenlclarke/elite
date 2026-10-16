@@ -3,6 +3,24 @@ import Testing
 @testable import EliteCore
 
 struct EquipmentSelectionTests {
+  @Test(arguments: [512.0, 1280.0])
+  func pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width: Double) throws {
+    var game = Game(executive: false)
+    game.screen = .equipment
+    game.viewportWidth = width
+    game.viewportHeight = width == 512 ? 518 : 900
+    let layout = EquipmentLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
+    let tool = try #require(layout.workToolBounds)
+    let before = game.commander
+    game.equipmentClick(y: tool.y + tool.height / 2, x: tool.x + tool.width / 2)
+    #expect(game.equipmentWorkTool && game.commander == before)
+    let combat = try #require(layout.mounts.first)
+    game.equipmentClick(
+      y: combat.bounds.y + combat.bounds.height / 2, x: combat.bounds.x + combat.bounds.width / 2)
+    #expect(!game.equipmentWorkTool && game.equipmentMount == combat.mount)
+    #expect(game.commander == before)
+  }
+
   @Test func existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool() throws {
     var game = Game(executive: false)
     game.screen = .equipment
