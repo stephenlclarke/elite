@@ -63,35 +63,16 @@ struct NativeMissionRuntimeFrameTests {
     var (game, instance, index) = try actualMissionBridgeGame()
     game.ensurePhysicalActors()
     game.speed = 0
-    var source = game.bodies[index]
-    source.scriptNPC?.intent = nil
-    source.scriptNPC?.velocity = .init(40, 0, 0)
-    let owner = try #require(source.missionActorID)
-    game.bodies.removeAll { $0.id == source.id }
-    let context = try #require(game.gameplayContext())
-    let allocated = game.commander.flightSimulation.allocateSpawn()
-    let sequence = try #require(allocated)
-    let request = SpawnRequest(
-      identity: .init(
-        system: context.system, visit: context.visit, sequence: sequence,
-        member: 0, producer: .mission),
-      population: .mission, hull: source.hull,
-      position: game.commander.flightSimulation.pose.systemPoint(source.position),
-      orientation: game.commander.flightSimulation.pose.orientation.composed(
-        with: source.orientation),
-      velocity: game.commander.flightSimulation.pose.orientation.apply(.init(40, 0, 0)),
-      npc: source.physical?.npc, rock: nil, payload: nil, priority: .mission, energy: source.energy)
-    let receipts = game.admitEncounterPlan(
-      .init(
-        system: context.system, visit: context.visit, revision: context.revision,
-        batches: [.init(requests: [request], atomic: true)], intents: []))
-    let admission = try #require(receipts.first?.actor)
-    let admittedIndex = try #require(game.bodies.firstIndex { $0.physical?.identity == admission })
-    source.id = game.bodies[admittedIndex].id
-    source.physical = game.bodies[admittedIndex].physical
-    game.bodies[admittedIndex] = source
-    game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
-      .actors["lead"]?.body.id = source.id
+    game.bodies[index].scriptNPC?.intent = nil
+    game.bodies[index].scriptNPC?.velocity = .init(40, 0, 0)
+    let owner = try #require(game.bodies[index].missionActorID)
+    game.synchronizeScriptNPCPhysicalVelocities()
+    game.persistScriptActors(unloading: true)
+    game.bodies.removeAll { $0.missionInstanceID == instance }
+    try game.restoreScriptActors()
+    let source = try #require(game.bodies.first { $0.missionActorID == owner })
+    let admission = try #require(source.physical?.identity)
+    let spawn = try #require(source.physical?.spawnIdentity)
     let before = game.commander.flightSimulation.pose.systemPoint(source.position)
     let folder = try frameSaveFolder()
     defer { try? FileManager.default.removeItem(at: folder) }
@@ -103,9 +84,76 @@ struct NativeMissionRuntimeFrameTests {
     let world = frame.commander.flightSimulation.pose.orientation.apply(velocity)
     let after = frame.commander.flightSimulation.pose.systemPoint(actual.position)
     let physical = try #require(actual.physical)
-    #expect(physical.identity == admission && physical.spawnIdentity == request.identity)
+    #expect(physical.identity == admission && physical.spawnIdentity == spawn)
     #expect((after - before - world * 0.1).length < 1e-6)
     #expect((physical.velocity - world).length < 1e-6)
     #expect(abs(velocity.x - 35) < 1e-6)
   }
+
+  @Test(arguments: [false, true])
+  func actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(
+    hostile: Bool
+  ) async throws {
+    let original = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-patrol")
+    let folder = try frameSaveFolder()
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let directory = folder.appendingPathComponent("pack")
+    try FileManager.default.copyItem(at: original, to: directory)
+    if !hostile {
+      let manifest = directory.appendingPathComponent("manifest.toml")
+      let text = try String(contentsOf: manifest, encoding: .utf8)
+      try text.replacingOccurrences(of: "hostile=true", with: "hostile=false")
+        .write(to: manifest, atomically: true, encoding: .utf8)
+    }
+    let pack = try ScriptPackLibrary.read(directory)
+    var game = Game(executive: false)
+    game.screen = .status
+    try game.commander.prepareEquipment(legacy: false)
+    game.scriptPacks = [pack]
+    let instance = try game.acceptScriptMission(pack)
+    game.launch()
+    game.emitScriptEvent("station.undocked")
+    game.drainScriptEvents()
+    let saved = try #require(
+      game.commander.scriptState.instances[instance]?
+        .ownedEncounters["raiders"]?.actors["lead"])
+    for i in game.bodies.indices where game.bodies[i].missionInstanceID == instance {
+      game.bodies[i].physical?.npc?.intention = nil
+    }
+    let i = try #require(game.bodies.firstIndex { $0.missionActorID == saved.identity })
+    try #require(game.bodies[i].scriptNPC == nil && game.bodies[i].physical?.spawnIdentity != nil)
+    game.bodies[i].position = .init(0, 0, 1000)
+    game.bodies[i].orientation = .init(
+      x: .init(hostile ? -1 : 1, 0, 0), y: .init(0, 1, 0), z: .init(0, 0, hostile ? -1 : 1))
+    game.bodies[i].rotation = 0
+    game.bodies[i].rotationRate = 0
+    game.bodies[i].hostile = !hostile
+    let pose = game.commander.flightSimulation.pose
+    let initialVelocity = pose.orientation.apply(.init(0, 0, hostile ? -20 : 20))
+    game.bodies[i].physical?.velocity = initialVelocity
+    let player = try #require(game.commander.flightSimulation.player)
+    game.bodies[i].physical?.npc?.intention =
+      hostile
+      ? .engage(player)
+      : .navigate(position: pose.systemPoint(.init(0, 0, 5000)), speedUnitsPerSecond: 40)
+    game.speed = 0
+    game.celestials = []
+    let before = pose.systemPoint(game.bodies[i].position)
+    let emissions = game.commander.flightSimulation.nextEmission
+    let shield = game.frontShield
+    let runtime = GameRuntime(game: game, saveURL: folder.appendingPathComponent("commander.json"))
+    await runtime.setControls(.init())
+    let frame = await runtime.advance(delta: 0.1)
+    let body = try #require(frame.bodies.first { $0.missionActorID == saved.identity })
+    let velocity = try #require(body.physical?.velocity)
+    let after = frame.commander.flightSimulation.pose.systemPoint(body.position)
+    #expect((after - before - velocity * 0.1).length < 1e-6)
+    #expect(velocity != initialVelocity && body.hostile == hostile)
+    #expect(frame.commander.flightSimulation.nextEmission == emissions + (hostile ? 1 : 0))
+    #expect(hostile ? frame.frontShield < shield : frame.frontShield == shield)
+    #expect(frame.commander.scriptState.instances[instance]?.suspension == nil)
+  }
+
 }

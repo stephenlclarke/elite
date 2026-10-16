@@ -1951,6 +1951,7 @@ extension Game {
 
 extension Game {
   fileprivate func preflightActiveMissionProjectiles() throws {
+    try validateRetainedMissionActorRestoration()
     guard !commander.scriptState.projectiles.isEmpty else { return }
     let identities: [UUID] = commander.scriptState.projectiles.compactMap { id, record in
       record.galaxy == commander.galaxy && record.system == commander.system ? id : nil
