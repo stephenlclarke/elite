@@ -81,7 +81,7 @@ public struct InventoryInteraction: Sendable, Equatable {
     selectedIndex.map { controls[$0].command }
   }
   public func command(at point: SIMD2<Double>) -> InventoryCommand? {
-    controls.first { $0.bounds.contains(point) }?.command
+    controls.first { $0.bounds.contains(ScreenPoint(point.x, point.y)) }?.command
   }
 }
 
