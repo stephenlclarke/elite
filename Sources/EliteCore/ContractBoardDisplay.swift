@@ -33,25 +33,30 @@ extension Display {
       let destination = Universe.systemsIncludingPlugh(number: offer.destinationGalaxy)[
         offer.destinationSystem
       ].name
-      rows = [
-        row.title, offer.briefing,
-        "Destination: Galaxy \(offer.destinationGalaxy + 1), \(destination) orbital station.",
-        String(
-          format: "Reward: %.1f CR; deposit: %.1f CR.", Double(offer.reward) / 10,
-          Double(offer.deposit) / 10),
-        String(
-          format: "On failure: %.1f CR; %@.", Double(offer.failureReward) / 10,
-          offer.refundOnFailure ? "deposit refunded" : "deposit forfeited"),
-        offer.duration == 0
-          ? "No deadline."
-          : String(
-            format: "Time allowed after acceptance: %.1f seconds of %@.", offer.duration,
-            game.commander.contracts.boards[row.board]?.clock == .calendar
-              ? "commander calendar time, including travel"
-              : (game.commander.contracts.boards[row.board]?.clock == .flight
-                ? "flight" : "loaded, unpaused play")),
-        "Abandonment forfeits the deposit.", "Reading or Back does not accept or start the clock.",
-      ]
+      if let pledge = game.contractBoard.quote?.pledge {
+        rows = [row.title, offer.briefing] + pledge.terms
+      } else {
+        rows = [
+          row.title, offer.briefing,
+          "Destination: Galaxy \(offer.destinationGalaxy + 1), \(destination) orbital station.",
+          String(
+            format: "Reward: %.1f CR; deposit: %.1f CR.", Double(offer.reward) / 10,
+            Double(offer.deposit) / 10),
+          String(
+            format: "On failure: %.1f CR; %@.", Double(offer.failureReward) / 10,
+            offer.refundOnFailure ? "deposit refunded" : "deposit forfeited"),
+          offer.duration == 0
+            ? "No deadline."
+            : String(
+              format: "Time allowed after acceptance: %.1f seconds of %@.", offer.duration,
+              game.commander.contracts.boards[row.board]?.clock == .calendar
+                ? "commander calendar time, including travel"
+                : (game.commander.contracts.boards[row.board]?.clock == .flight
+                  ? "flight" : "loaded, unpaused play")),
+          "Abandonment forfeits the deposit.",
+          "Reading or Back does not accept or start the clock.",
+        ]
+      }
       rows += game.contractBoard.quote?.issues ?? (row.reason.map { [$0] } ?? [])
     } else {
       rows = [row.reason ?? "This provider is unavailable."]
@@ -72,13 +77,18 @@ extension Display {
     func short(_ text: String) -> String {
       text.count <= characters ? text : String(text.prefix(max(1, characters - 3))) + "..."
     }
-    frame.label("STATION CONTRACTS", layout.left, 14, scale: scale, ink: .yellow)
+    frame.label(
+      game.isMissionTrial ? "STATION CONTRACTS / TRIAL" : "STATION CONTRACTS",
+      layout.left, 14, scale: scale, ink: .yellow)
     frame.label(
       short(game.currentSystem.name + " / Main orbital station"), layout.left, 38, scale: scale,
       ink: .cyan)
     let active = game.activeContractSummary
     frame.label(
-      short(active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
+      short(
+        game.isMissionTrial
+          ? "Trial - live commander unchanged"
+          : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     if game.contractBoard.detail,
       let reason = game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
@@ -105,7 +115,10 @@ extension Display {
           || (game.contractBoard.quote != nil
             && (action != .accept || game.contractBoard.quote?.allowed == true))
         frame.label(
-          (game.contractBoard.action == action ? "> " : "  ") + action.rawValue, bounds.x + 8,
+          (game.contractBoard.action == action ? "> " : "  ")
+            + (action == .accept && game.contractBoard.quote?.pledge != nil
+              ? "Donate" : action.rawValue),
+          bounds.x + 8,
           bounds.y + 10, scale: scale, ink: available ? .cyan : .orange)
       }
       frame.label(
@@ -124,8 +137,10 @@ extension Display {
         frame.label(
           short((start + index == game.contractBoard.selection ? "> " : "  ") + row.title),
           layout.left, y, scale: scale, ink: .cyan)
+        let pledge = row.offer.flatMap { try? game.pledgePreview(board: row.board, offer: $0.id) }
         let summary =
-          row.reason ?? row.offer.map {
+          row.reason ?? pledge.map { "Pledge \($0.charge) / local standing +1 / once" } ?? row.offer
+          .map {
             String(
               format: "Pay %.1f CR / deposit %.1f CR / %@", Double($0.reward) / 10,
               Double($0.deposit) / 10,

@@ -68,6 +68,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
   }
   public var completionReceipt: ScriptCompletionReceipt?
+  public var pledgeReceiptID: UUID?
   public var receiptJoins: [String: [UUID]]?
   public var outcome: ScriptOutcome = .active
   public var suspension: String?
@@ -94,6 +95,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  public var pledgeLedger: ScriptPledgeLedger?
   public var savedBooks: [String: ScriptBookRecord]?
   public var savedWorldJobs: [UUID: ScriptWorldJob]?
   public var worldJobs: [UUID: ScriptWorldJob] {
@@ -145,7 +147,12 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    guard worldJobsValid, booksValid else { return false }
+    guard worldJobsValid, booksValid,
+      pledgeLedger?.valid(engine: self)
+        ?? instances.values.allSatisfy({ $0.pledgeReceiptID == nil })
+    else {
+      return false
+    }
     guard
       calendarLedger.map({
         $0.valid

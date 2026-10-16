@@ -57,6 +57,11 @@ extension Game {
       && (state.outcome != .active || campaignExecutionIssue(state) == nil)
   }
   func makeScriptTrial(packDigest: String, seed: UInt64) throws -> Game {
+    var trial = try constructScriptTrial(packDigest: packDigest, seed: seed)
+    try trial.prepareScriptTrial(packDigest: packDigest, seed: seed)
+    return trial
+  }
+  func constructScriptTrial(packDigest: String, seed: UInt64) throws -> Game {
     guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {
       throw MissionPackError("Choose an installed mission for a trial.")
     }
@@ -91,24 +96,40 @@ extension Game {
       trial.rearShield = trial.commander.shieldCapacity
       for _ in 0..<scene.cabins { try trial.confirmPassengerBerth(trial.passengerBerthQuote) }
     }
+    return trial
+  }
+  mutating func prepareScriptTrial(packDigest: String, seed: UInt64) throws {
+    guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {
+      throw MissionPackError("Choose an installed mission for a trial.")
+    }
     if pack.manifest.board != nil {
-      let key = try trial.ensureContractBoard(pack)
-      let offers = trial.commander.contracts.boards[key]?.offers ?? []
+      let key = try ensureContractBoard(pack)
+      let offers = commander.contracts.boards[key]?.offers ?? []
       let index = pack.manifest.trial?.offer ?? 0
       guard offers.indices.contains(index) else {
         throw MissionPackError("This trial has no generated offer at the selected position.")
       }
-      _ = try trial.acceptContract(board: key, offer: offers[index].id)
+      if pack.manifest.pledge != nil {
+        openContractBoard()
+        guard
+          let selection = contractBoard.rows.firstIndex(where: {
+            $0.offer?.id == offers[index].id
+          })
+        else { throw MissionPackError("This pledge trial has no available board review.") }
+        contractBoard.selection = selection
+        contractBoardKey("return")
+      } else {
+        _ = try acceptContract(board: key, offer: offers[index].id)
+      }
     } else {
-      _ = try trial.acceptScriptMission(pack, randomSeed: seed)
+      _ = try acceptScriptMission(pack, randomSeed: seed)
     }
     if pack.manifest.trial?.flight == true {
-      trial.launch()
-      trial.observeScriptLocation(
-        wasDocked: true, galaxy: trial.commander.galaxy, system: trial.commander.system)
-      trial.drainScriptEvents()
+      launch()
+      observeScriptLocation(
+        wasDocked: true, galaxy: commander.galaxy, system: commander.system)
+      drainScriptEvents()
     }
-    return trial
   }
 }
 extension GameRuntime {
@@ -120,7 +141,8 @@ extension GameRuntime {
     guard game.screen == .gallery, galleryNamespace == nil, galleryParent == nil else {
       throw MissionPackError("Return to your commander before starting another trial.")
     }
-    var candidate = try game.makeScriptTrial(packDigest: packDigest, seed: seed)
+    var candidate = try game.constructScriptTrial(packDigest: packDigest, seed: seed)
+    try candidate.prepareScriptTrial(packDigest: packDigest, seed: seed)
     let namespace = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
       .appendingPathComponent("elite-mission-gallery-" + UUID().uuidString, isDirectory: true)
     let target = namespace.appendingPathComponent("commander.json")
@@ -138,7 +160,8 @@ extension GameRuntime {
       throw MissionPackError("This runtime has no mission trial to restart.")
     }
     try requireGalleryFileAccess(target)
-    var candidate = try game.makeScriptTrial(packDigest: digest, seed: seed)
+    var candidate = try game.constructScriptTrial(packDigest: digest, seed: seed)
+    try candidate.prepareScriptTrial(packDigest: digest, seed: seed)
     try Self.writeCommander(&candidate, to: target)
     game = candidate
     controls = Controls()

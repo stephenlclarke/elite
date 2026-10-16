@@ -671,9 +671,8 @@ struct NativeViewTests {
     await delegate.runtime.contractClick(
       x: rect.x + 8, y: rect.y + 8, expectedOffer: quote.offer, detail: true, epoch: UUID())
     #expect(await delegate.runtime.snapshot().commander == before)
-    view.pending = [
-      "contract-click:\(view.game.ecmControl.epoch):\(quote.offer):1:\(rect.x + 8):\(rect.y + 8)"
-    ]
+    try paintPledgeView(view)
+    try clickPledgeView(view, x: rect.x + 8, y: rect.y + 8)
     commanderMenu.performActionForItem(at: 0)
     await delegate.processFrame(in: view, delta: { 0 })
     try await loaded.load(from: file)

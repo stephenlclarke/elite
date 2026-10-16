@@ -29,6 +29,8 @@ public struct ContractBoardUI: Sendable {
   public var scroll = 0
   public var rows: [ContractBoardRow] = []
   public var quote: ContractAcceptanceQuote?
+  var presentationGeneration = UUID()
+  var reviewToken = UUID()
   var previous: Screen = .status
   var restoredSelection: String?
   public init() {}
@@ -60,6 +62,7 @@ extension Game {
     candidate.screen = .contracts
     candidate.contractBoard.detail = false
     candidate.contractBoard.quote = nil
+    candidate.contractBoard.presentationGeneration = UUID()
     self = candidate
   }
   mutating func refreshContractRows(
@@ -97,9 +100,11 @@ extension Game {
       contractBoard.scroll = save.scroll
       contractBoard.previous = save.previous
       refreshSelectedContractQuote()
+      if contractBoard.quote?.pledge != nil { contractBoard.action = .back }
     }
   }
   mutating func refreshSelectedContractQuote() {
+    contractBoard.reviewToken = UUID()
     if let row = contractBoard.selected, let offer = row.offer {
       contractBoard.quote = contractAcceptanceQuote(board: row.board, offer: offer.id)
     } else {
@@ -107,6 +112,8 @@ extension Game {
     }
   }
   mutating func contractBoardKey(_ key: String) {
+    let previous = scriptContractPageIdentity
+    defer { finishContractNavigation(from: previous) }
     if key == "escape" {
       if contractBoard.detail {
         contractBoard.detail = false
@@ -159,7 +166,10 @@ extension Game {
           throw MissionPackError("Review this offer before accepting.")
         }
         _ = try confirmContract(quote)
-        notify("CONTRACT ACCEPTED - SEE MISSION GALLERY")
+        notify(
+          quote.pledge == nil
+            ? "CONTRACT ACCEPTED - SEE MISSION GALLERY"
+            : "DONATION COMPLETE - LOCAL STANDING RECORDED")
       } else {
         try declineContract(board: row.board, offer: offer.id)
         notify("OFFER DECLINED")
@@ -183,7 +193,9 @@ extension Game {
       }
   }
   mutating func contractClick(x: Double, y: Double) {
-    guard screen == .contracts, !paused else { return }
+    guard screen == .contracts, !paused, x.isFinite, y.isFinite,
+      x >= 0, y >= 0, x <= viewportWidth, y <= viewportHeight
+    else { return }
     let layout = ContractBoardLayout(width: viewportWidth, height: viewportHeight)
     let point = ScreenPoint(x, y)
     if contractBoard.detail {

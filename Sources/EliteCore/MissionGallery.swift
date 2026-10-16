@@ -302,12 +302,21 @@ extension Display {
     let counts =
       "Active: \(missions.filter { $0.status == .active }.count)  Available: \(missions.filter { $0.status == .available }.count)  Complete: \(missions.filter { $0.status == .complete }.count)  Failed: \(missions.filter { $0.status == .failed }.count)"
     frame.label(counts, 16, 38, scale: layout.font)
+    let header: String
+    let headerInk: Ink
+    if game.isMissionTrial {
+      header = "Trial - live commander unchanged"
+      headerInk = .cyan
+    } else if game.messageTime > 0 {
+      header = game.message
+      headerInk = .orange
+    } else {
+      header = game.docked ? "Docked - read-only catalogue" : "Flight paused - read-only catalogue"
+      headerInk = .cyan
+    }
     frame.label(
-      game.isMissionTrial
-        ? "Trial - live commander unchanged"
-        : game.docked ? "Docked - read-only catalogue" : "Flight paused - read-only catalogue", 16,
-      62,
-      scale: layout.font, ink: .cyan)
+      String(header.prefix(max(1, Int((width - 32) / (6 * layout.font))))), 16, 62,
+      scale: layout.font, ink: headerInk)
     frame.stroke(0, 88, width, 88, .yellow)
     if layout.wide || !game.gallery.detail {
       let listWidth = layout.wide ? layout.divider : width
@@ -374,11 +383,6 @@ extension Display {
       actions += "  R: retry"
     }
     frame.label(actions, 16, height - 20, scale: layout.font, ink: .cyan)
-    if game.messageTime > 0, !game.isMissionTrial {
-      frame.label(
-        String(game.message.prefix(max(1, Int((width - 32) / (6 * layout.font))))), 16, 62,
-        scale: layout.font, ink: .orange)
-    }
     return frame
   }
 }
