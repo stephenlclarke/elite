@@ -425,10 +425,9 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   var (game, id) = try fixture.game(launch: false)
   game.launch()
   let station = try #require(game.bodies.first { $0.id == 0 })
-  game.bodies.append(
-    .init(
-      id: 98, hull: .asteroid,
-      position: station.position + station.orientation.apply(.init(0, 0, 3000))))
+  _ = try admitMissionTestObstruction(
+    &game, hull: .asteroid,
+    position: station.position + station.orientation.apply(.init(0, 0, 3000)))
   game.emitScriptEvent("station.undocked")
   game.drainScriptEvents()
   let prepared = try #require(

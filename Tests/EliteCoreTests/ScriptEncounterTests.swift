@@ -108,9 +108,10 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
     "actor.destroyed", values: ["encounter_id": .string("raiders"), "alias": .string("lead")],
     only: id)
   #expect(game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == false)
-  var foreign = SpaceBody(id: 99, hull: .sidewinder, position: .init(0, 0, 3000), hostile: true)
-  foreign.energy = 0
-  game.bodies.append(foreign)
+  let foreignID = try admitMissionTestObstruction(
+    &game, hull: .sidewinder, position: .init(8000, 0, 8000))
+  let foreignIndex = try #require(game.bodies.firstIndex { $0.id == foreignID })
+  game.bodies[foreignIndex].energy = 0
   game.resolveDestroyed()
   #expect(
     game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.actors.values.filter {
@@ -148,13 +149,14 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   let id = try game.acceptScriptMission(pack)
   game.launch()
   let anchor = try #require(game.bodies.first { $0.id == 0 })
-  game.bodies.append(SpaceBody(id: 99, hull: .cobra, position: anchor.position + .init(0, 0, 3000)))
+  let obstruction = try admitMissionTestObstruction(
+    &game, hull: .cobra, position: anchor.position + anchor.orientation.apply(.init(0, 0, 3000)))
   game.emitScriptEvent("station.undocked")
   game.drainScriptEvents()
   let prepared = try #require(game.commander.scriptState.instances[id]?.ownedEncounters["raiders"])
   #expect(!prepared.admitted && game.bodies.allSatisfy { $0.missionActorID == nil })
   let identities = Set(prepared.actors.values.map(\.identity))
-  game.bodies.removeAll { $0.id == 99 }
+  game.bodies.removeAll { $0.id == obstruction }
   game.emitScriptEvent("station.undocked")
   game.drainScriptEvents()
   let admitted = try #require(game.commander.scriptState.instances[id]?.ownedEncounters["raiders"])
