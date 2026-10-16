@@ -147,7 +147,7 @@ struct NativeMissionImpactTests {
     game.fireLaser()
     #expect(game.commander == commander && game.bodies == bodies)
     #expect(game.laserHeat == heat && game.energy == energy && game.fireCooldown == cooldown)
-    #expect(game.dischargeAudio == audio)
+    #expect(game.dischargeAudio.epoch == audio.epoch && game.dischargeAudio.events == audio.events)
   }
 
   @Test(arguments: [false, true])
