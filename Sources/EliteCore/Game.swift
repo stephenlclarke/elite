@@ -1446,6 +1446,7 @@ public struct Game: Sendable {
       commander.flightSimulation.pose.advanceView(
         pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt,
         translation: autoPilot.velocity * dt + Vector3(0, 0, speed * dt * 18))
+      rotateScriptNPCVelocities(from: before, to: commander.flightSimulation.pose)
       moveCelestials(delta: dt)
       for index in bodies.indices {
         bodies[index].position = bodies[index].position.rotated(

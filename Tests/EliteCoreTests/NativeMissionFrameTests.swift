@@ -4,6 +4,79 @@ import Testing
 @testable import EliteCore
 
 struct NativeMissionFrameTests {
+  private func movingMissionNPC() throws -> Game {
+    var game = Game(executive: false)
+    game.launch()
+    game.bodies = []
+    game.celestials = []
+    game.speed = 0
+    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+    let pack = try ScriptPackLibrary.read(directory)
+    let definition = try #require(pack.manifest.npcs?.first)
+    let identity = UUID()
+    var npc = game.makeScriptNPC(definition, pack: pack, identity: identity)
+    npc.velocity = .init(13, -7, 31)
+    try #require(npc.valid)
+    var body = SpaceBody(id: 90, hull: .cobra, position: .init(500, 100, 4000))
+    body.missionActorID = identity
+    body.missionInstanceID = UUID()
+    body.scriptNPC = npc
+    game.bodies = [body]
+    return game
+  }
+
+  @Test func actualManualCameraRotationPreservesMissionNPCWorldMomentumAndDisplacement() throws {
+    var stationary = try movingMissionNPC()
+    var rotating = stationary
+    var controls = Controls()
+    controls.yaw = 0.6
+    controls.pitch = -0.3
+    controls.roll = 0.2
+    for _ in 0..<4 {
+      stationary.tick(delta: 0.1)
+      rotating.tick(delta: 0.1, controls: controls)
+    }
+    let a = try #require(stationary.bodies.first { $0.id == 90 })
+    let b = try #require(rotating.bodies.first { $0.id == 90 })
+    let worldA = stationary.commander.flightSimulation.pose.systemPoint(a.position)
+    let worldB = rotating.commander.flightSimulation.pose.systemPoint(b.position)
+    let velocityA = stationary.commander.flightSimulation.pose.orientation.apply(
+      try #require(a.scriptNPC?.velocity))
+    let velocityB = rotating.commander.flightSimulation.pose.orientation.apply(
+      try #require(b.scriptNPC?.velocity))
+    #expect((worldA - worldB).length < 1e-8 && (velocityA - velocityB).length < 1e-8)
+    #expect(
+      rotating.commander.flightSimulation.pose.orientation
+        != stationary.commander.flightSimulation.pose.orientation)
+  }
+
+  @Test func actualGuidedFrameRotationPreservesTheSameMissionNPCWorldDisplacement() throws {
+    var stationary = try movingMissionNPC()
+    var rotating = stationary
+    let start = stationary.commander.flightSimulation.pose
+    var end = start
+    end.orientation.rotate(pitch: 0.1, roll: -0.2, yaw: 0.3)
+    for changed in [false, true] {
+      var game = changed ? rotating : stationary
+      game.workBraking = .init(velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0))
+      game.approvedWorkMotion = .init(
+        start: start, end: changed ? end : start, initialVelocity: .init(0, 0, 0),
+        acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+        duration: 0.1, playerRadius: 1)
+      try #require(game.moveWorkFrame(delta: 0.1))
+      game.advanceScriptNPCFlight(delta: 0.1)
+      if changed { rotating = game } else { stationary = game }
+    }
+    let a = try #require(stationary.bodies.first { $0.id == 90 })
+    let b = try #require(rotating.bodies.first { $0.id == 90 })
+    let worldA = stationary.commander.flightSimulation.pose.systemPoint(a.position)
+    let worldB = rotating.commander.flightSimulation.pose.systemPoint(b.position)
+    #expect((worldA - worldB).length < 1e-8)
+    #expect(rotating.commander.flightSimulation.pose == end)
+  }
+
   @Test func anOwnedScriptActorIsProtectedBeforeOrdinaryNPCPersistenceCanAdoptIt() throws {
     var game = Game(executive: false)
     game.launch()

@@ -1,6 +1,15 @@
 import Foundation
 
 extension Game {
+  /// Velocity is view-relative, so change its basis once with the actual camera.
+  /// The mission flight pass remains the sole integration of this velocity.
+  mutating func rotateScriptNPCVelocities(from before: ShipPose, to after: ShipPose) {
+    for index in bodies.indices {
+      guard let velocity = bodies[index].scriptNPC?.velocity else { continue }
+      bodies[index].scriptNPC?.velocity = after.shipVector(before.orientation.apply(velocity))
+    }
+  }
+
   /// Project retained station facts through the one actual native camera pose.
   /// Guided work motion and manual flight use the same transform; no second pose
   /// integration or guessed speed/pitch displacement advances the mission frame.

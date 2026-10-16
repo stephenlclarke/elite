@@ -119,6 +119,7 @@ extension Game {
     }
     approvedWorkMotion = nil
     commander.flightSimulation.pose = end
+    rotateScriptNPCVelocities(from: start, to: end)
     let change = end.orientation.transposed.composed(with: start.orientation)
     for index in bodies.indices {
       bodies[index].position = end.shipPoint(start.systemPoint(bodies[index].position))
