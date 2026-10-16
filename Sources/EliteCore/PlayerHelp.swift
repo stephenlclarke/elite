@@ -130,6 +130,10 @@ public enum PlayerHelp {
           "CARGO, MISSION PROPERTY AND FITTINGS",
           "ACTUAL FITTED AND HELD EQUIPMENT",
           "GRADE AND ACQUISITION SOURCE",
+          "TAB - SELECT VISIBLE FIT / STORE ACTION",
+          "RETURN - APPLY THE SELECTED ACTION",
+          "LEFT / RIGHT - RECOVERED UPGRADE CHOICE",
+          "RECOVERED: BEFORE / AFTER AND NEXT GRADE",
           game.informationWindow.hint == nil
             ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
           "OPTION-UP/DOWN - PAGE LONG LISTS",

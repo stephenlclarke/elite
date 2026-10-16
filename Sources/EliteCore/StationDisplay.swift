@@ -266,6 +266,52 @@ extension Display {
     frame.label(
       game.screen == .inventory ? "INVENTORY" : "COMMANDER " + game.commander.name, layout.left, 12,
       scale: layout.font, ink: .yellow)
+    if game.screen == .inventory {
+      let rows = game.inventoryInformationRows(width: width)
+      let window = ScrollWindow(
+        count: rows.count, visible: layout.count, offset: game.informationScroll)
+      var interaction = InventoryInteraction()
+      interaction.selected = game.inventoryActionSelection
+      var buttons: [(label: String, bounds: CanvasRect)] = []
+      for (index, row) in rows.dropFirst(window.offset).prefix(layout.count).enumerated() {
+        let y = 56 + Double(index) * layout.row
+        frame.label(row.text, layout.left, y, scale: layout.font, ink: row.ink)
+        if let preview = row.preview, let command = preview.command {
+          let bounds = CanvasRect(
+            x: layout.left + layout.width - InventoryInteraction.actionWidth,
+            y: y - 4, width: InventoryInteraction.actionWidth, height: layout.row)
+          interaction.controls.append(.init(bounds: bounds, command: command))
+          buttons.append((preview.label, bounds))
+        }
+      }
+      for (index, button) in buttons.enumerated() {
+        let selected = interaction.selectedIndex == index
+        let ink: Ink = selected ? .cyan : .blue
+        let bounds = button.bounds
+        frame.stroke(bounds.x, bounds.y, bounds.maxX, bounds.y, ink)
+        frame.stroke(bounds.maxX, bounds.y, bounds.maxX, bounds.maxY, ink)
+        frame.stroke(bounds.maxX, bounds.maxY, bounds.x, bounds.maxY, ink)
+        frame.stroke(bounds.x, bounds.maxY, bounds.x, bounds.y, ink)
+        if selected {
+          frame.label(
+            ">", bounds.x + 4, bounds.y + 4, scale: layout.font, ink: .cyan)
+        }
+        frame.label(
+          button.label,
+          bounds.x + (bounds.width - Double(button.label.count) * 6 * layout.font) / 2,
+          bounds.y + 4, scale: layout.font, ink: selected ? .cyan : .white)
+      }
+      frame.inventoryInteraction = interaction
+      let notice = game.messageTime > 0 ? game.message : window.hint ?? ""
+      let footer =
+        MissionNotice.wrap(notice, width: Int(layout.width / (6 * layout.font))).first ?? ""
+      frame.label(footer, layout.left, layout.bottom, scale: layout.font, ink: .cyan)
+      frame.label(
+        interaction.primary == nil
+          ? "Esc: back  K: help" : "Tab: action  Return: apply  Esc: back  K: help",
+        layout.left, layout.bottom + 18, scale: layout.font, ink: .cyan)
+      return frame
+    }
     let rows = game.informationRows
     let window = ScrollWindow(
       count: rows.count, visible: layout.count, offset: game.informationScroll)
