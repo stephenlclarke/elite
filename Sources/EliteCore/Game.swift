@@ -49,7 +49,7 @@ public struct Commander: Sendable, Equatable, Codable {
     set { savedMissionProgress = newValue }
   }
   public var missionPayloadTonnes: Int {
-    missionProgress.values.reduce(0) { $0 + $1.payloads.values.reduce(0, +) }
+    checkedMissionPayloadTonnes ?? Int.max
   }
   private var wantedAmnesty: Bool?
   public var xyzzyWantedAmnesty: Bool {
@@ -178,9 +178,7 @@ public struct Commander: Sendable, Equatable, Codable {
     return unlimitedCargo ? Int.max / 17 : standard
   }
   public var cargoTonnes: Int {
-    zip(cargo, Commodity.all).reduce(missionPayloadTonnes + salvageLedger.reservedTonnes) {
-      $0 + ($1.1.unit == "t" ? $1.0 : 0)
-    }
+    checkedCargoTonnes ?? Int.max
   }
   public var rank: String {
     let thresholds = [8, 16, 32, 64, 128, 512, 2560, Self.eliteThreshold]
@@ -201,13 +199,13 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...FuelStorage.maximumCount).contains(fuelStorageUnits)
       && (0...fuelCapacity).contains(fuel)
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
-      && cargoTonnes <= capacity
+      && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
+      && (checkedCargoTonnes.map { $0 <= capacity } ?? false)
       && (navigationPlan?.valid ?? true) && blackjack.valid
       && (savedFlightSimulation?.valid ?? true)
       && (savedCargoDebrisLedger?.valid ?? true)
       && (savedNPCPersistence?.valid ?? true)
       && equipmentStateValid
-      && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
   }
@@ -1474,8 +1472,7 @@ public actor GameRuntime {
     game.time = 0
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
-    let data = try Data(contentsOf: url)
-    guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
+    let data = try CommanderSaveInput.read(from: url)
     let commander = try JSONDecoder().decode(Commander.self, from: data)
     var candidate = game
     guard candidate.load(commander) else { throw SaveError.invalidCommander }

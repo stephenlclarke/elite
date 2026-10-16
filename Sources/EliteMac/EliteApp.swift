@@ -732,6 +732,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
 @main
 struct EliteApp {
   @MainActor static func main() async throws {
+    if let index = CommandLine.arguments.firstIndex(of: "--validate-commander-save") {
+      do {
+        guard CommandLine.arguments.indices.contains(index + 1) else {
+          throw SaveError.invalidCommander
+        }
+        let runtime = GameRuntime()
+        try await runtime.load(
+          from: URL(fileURLWithPath: CommandLine.arguments[index + 1]), persistMigrations: false)
+      } catch {
+        FileHandle.standardError.write(Data("Invalid commander save\n".utf8))
+        exit(EXIT_FAILURE)
+      }
+      return
+    }
     if let index = CommandLine.arguments.firstIndex(of: "--validate-mission-pack") {
       guard CommandLine.arguments.indices.contains(index + 1) else {
         throw MissionPackErrorCLI.missingPath
