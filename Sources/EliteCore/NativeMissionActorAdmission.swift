@@ -136,7 +136,8 @@ extension Game {
       }
       physical.laserCooldown = template.retainedNativeLaserCooldown ?? 0
       guard physical.population == .mission, physical.npc?.role == .mission,
-        physical.npc?.resources?.energyCapacity == template.maximumHullEnergy,
+        physical.npc?.resources.map { $0.energyCapacity == template.maximumHullEnergy }
+          ?? (template.maximumHullEnergy > 100_000),
         physical.velocity.finite
       else { throw NativeMissionActorAdmissionError.invalidCondition }
       prepared[index].physical = physical
@@ -207,6 +208,9 @@ extension Game {
       })
     else { throw NativeMissionActorAdmissionError.invalidScene }
     for body in bodies {
+      guard body.energy <= 0 || body.physical != nil else {
+        throw NativeMissionActorAdmissionError.invalidScene
+      }
       guard body.physical?.velocity.finite ?? true,
         body.physical?.velocity.length.isFinite ?? true,
         body.physical?.npc?.resources?.valid ?? true
