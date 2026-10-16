@@ -8,7 +8,7 @@ Schema2 gains an optional closed `[pledge]` declaration with `profile`, `provide
 
 Standing is keyed by stable provider plus actual galaxy/system/main-orbital station identity. The existing missions chunk retains a bounded `ScriptPledgeLedger`; no eviction or replay-evidence truncation is allowed. Receipt validation checks exact native offer identity/epoch/seed/content/declaration, original/donating/credited stations, full before/after money/Food/standing arithmetic, accepted-event sequence/context and successful completion linkage. Issuer standing is the complete retained0-based receipt sequence. Every ordinary station in charts0...7 and systems0...255 is in scope; synthetic Plugh256 is explicitly unsupported, without widening generic contract destination bounds.
 
-An optional native `ScriptInstance.pledgeReceiptID` links each completed pledge to its exact same-instance ledger receipt in both directions. Active/failed/abandoned instances cannot carry it. The marker survives quote normalization, hull/content changes and terminal saves. Formats below20 reject either ledger or marker after decoding the actual missions chunk, including empty/deleted/foreign/missing-link contradictions under recomputed hashes. These are bounded internal consistency checks, not authentication against coordinated deletion or rewriting of every related evidence field.
+An optional native `ScriptInstance.pledgeReceiptID` links each completed pledge to its exact same-instance ledger receipt in both directions. Active/failed/abandoned instances cannot carry it. The marker survives quote normalization, hull/content changes and terminal saves. Formats below 20 reject either ledger or marker after decoding the actual missions chunk, including empty/deleted/foreign/missing-link contradictions under recomputed hashes. These are bounded internal consistency checks, not authentication against coordinated deletion or rewriting of every related evidence field.
 
 Food remains an ordinary native commodity. Current `sellableCargo(Food)` equals raw Food because the base has no separate Food reservation API. Protected schema1/schema2 payloads and passenger/hold reservations stay separate and never count as Food, even if a payload is named food. Future real reservations flow through the same native getter. Assist flags never create a real pledge balance or missing goods. Source tests prepare starting resources explicitly and separately exercise an actual market purchase inside an isolated trial.
 
@@ -16,4 +16,16 @@ Contract-page proofs retain generation, review identity, selected/visible target
 
 Pledge trials create an isolated unaccepted board review with Back selected; ordinary board trials retain existing initialization. Save/Load/Restart/Return keep the established namespace/calendar/epoch barriers and live commander isolation. Completed donation rows show native receipt/standing details read-only, including when original content is missing. Saved contract rows remain ineligible for a fresh trial; the separate provider template is the supported trial entry.
 
-Remaining core/native acceptance, renderer/media and full validation await the Orchestrator's CPU/GUI slots. Full exact commands, input hashes, timings, coverage, leaks, original renderer images and remaining limitations will be recorded after acceptance, followed by Researcher owner review and central integration. Formal PR review/check gates remain separate.
+Extended acceptance passed 118 core methods and 21 native methods, followed by one affected native stale-control check at `1353a6b07e70ac60aeef87c9ede0c933194890df`. Exact per-lane commits, input hashes, commands, timings, prior failures and images are in [the provisional validation record](MISSION-CODER-G21-VALIDATION.json). Source-owner review, actual media/refreeze and full coverage/sanitizer/leak validation are pending. The raw unversioned Commander loader's treatment of new pledge evidence is an explicit source-policy question through the Orchestrator; chunked pointers below 20 already refuse either new field. Formal PR review/check gates remain separate.
+
+## Original native renderer evidence
+
+The complete twelve-image set remains in `reports/pledge-ui`. These selected copies are byte-identical originals, without compositing or editing. Compact images are 512x518 at 1x; wide images are 3024x1964 from 1512x982 logical points at 2x. Terms and actions stay in their existing fixed-font regions; the compact terms and receipt pages scroll.
+
+| Actual view | Original |
+| --- | --- |
+| Credit pledge, Back selected | [Compact](pledge-validation/pledge-credit-review-512.png) |
+| Full Food pledge | [Compact](pledge-validation/pledge-food-review-512.png), [Retina](pledge-validation/pledge-food-review-1512.png) |
+| Insufficient actual Food | [Compact](pledge-validation/pledge-unavailable-food-512.png) |
+| Unaccepted isolated trial and real banner | [Compact](pledge-validation/pledge-trial-review-512.png) |
+| Completed native donation receipt | [Compact](pledge-validation/pledge-completed-receipt-512.png), [scrolled](pledge-validation/pledge-completed-receipt-scrolled-512.png), [Retina](pledge-validation/pledge-completed-receipt-1512.png) |
