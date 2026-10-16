@@ -135,10 +135,12 @@ extension Game {
         physical.npc = condition
       }
       physical.laserCooldown = template.retainedNativeLaserCooldown ?? 0
+      let measuredEnergyCapacityValid =
+        physical.npc?.resources.map {
+          $0.energyCapacity == template.maximumHullEnergy
+        } ?? (template.maximumHullEnergy > 100_000)
       guard physical.population == .mission, physical.npc?.role == .mission,
-        physical.npc?.resources.map { $0.energyCapacity == template.maximumHullEnergy }
-          ?? (template.maximumHullEnergy > 100_000),
-        physical.velocity.finite
+        measuredEnergyCapacityValid, physical.velocity.finite
       else { throw NativeMissionActorAdmissionError.invalidCondition }
       prepared[index].physical = physical
       addresses[template.actorID] = prepared[index].id
