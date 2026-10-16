@@ -179,9 +179,12 @@ extension ScriptEngineState {
   {
     guard case .missionIssue(let mission, let resource, let index, let digest) = removed.provenance
     else { return nil }
-    guard let instance = instances[mission], let before = instance.gearIssues[resource],
+    guard let instance = instances[mission], instance.id == mission,
+      let before = instance.gearIssues[resource], before.resource == resource,
       before.savedGearVersion == 2, before.valid(for: instance),
-      before.source?.packDigest == digest, before.node == removed.node,
+      before.source
+        == EquipmentIssueSource(mission: mission, resource: resource, packDigest: digest),
+      before.node == removed.node,
       removed.retainedLegacyState?.originalEquipmentName
         == (before.kind.name == Equipment.legacyDockingComputer ? before.kind.name : nil),
       before.items.indices.contains(index), before.items[index] == removed.id,
