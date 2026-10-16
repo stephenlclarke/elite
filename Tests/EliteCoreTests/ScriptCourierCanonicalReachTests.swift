@@ -26,9 +26,10 @@ private func canonicalCourierGame(_ fixture: CourierFixture, axis: SalvageUpgrad
 
 /// Selects a real native route, then finds a seed selecting it through the unchanged six draws.
 /// No generated proof, destination, cost or draw is rewritten.
-private func canonicalCourierTerms(_ game: inout Game, laterLeg: Bool) throws -> ScriptCourierTerms
+private func canonicalCourierTerms(_ game: inout Game, laterLeg: Bool, fuel: Int = 35) throws
+  -> ScriptCourierTerms
 {
-  game.commander.fuel = 35
+  game.commander.fuel = fuel
   let stockFirst = Double(game.commander.fuel) / 10
   let stockFull = Double(game.commander.fuelCapacity) / 10
   let declaration = try #require(game.scriptPacks.first?.manifest.courier)
@@ -64,6 +65,66 @@ private func canonicalCourierTerms(_ game: inout Game, laterLeg: Bool) throws ->
 }
 
 struct ScriptCourierCanonicalReachTests {
+  @Test func admittedGrandfatheredMilitaryZeroCostUsesNativeCapEvenWithNoFuel() async throws {
+    let fixture = try CourierFixture()
+    defer { fixture.clean() }
+    var game = Game(executive: false)
+    game.screen = .inventory
+    try game.commander.prepareEquipment(legacy: false)
+    game.commander.system = Plugh.systemID
+    game.commander.credits = 1_000_000
+    for tier in [NavigationTier.advanced, .military] {
+      let item = try #require(Equipment.all.first { $0.name == tier.equipmentName })
+      _ = try game.applyEquipmentPurchase(game.quoteEquipmentPurchase(item))
+    }
+    var commander = game.commander
+    let inventory = try #require(commander.equipmentInventory)
+    let original = try #require(commander.fittedEquipment(at: .navigation))
+    let component = try #require(original.component)
+    var statistics = component.statistics
+    statistics[.jumpFuelCost] = 0
+    // This is a supported grandfathered native save, not an earned upgrade or new receipt.
+    let changed = ComponentInstance(
+      id: component.id, origin: component.origin, statistics: statistics,
+      grade: component.grade, features: component.features, receipts: component.receipts)
+    let replacement = OwnedEquipmentItem(
+      id: original.id, node: original.node, provenance: original.provenance,
+      component: changed, location: original.location, boundHull: original.boundHull)
+    commander.savedEquipmentInventory = try .init(
+      owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
+      items: inventory.items.map { $0.id == original.id ? replacement : $0 })
+    commander.fuel = 0
+    let raw = fixture.root.appendingPathComponent("grandfathered-military.json")
+    try JSONEncoder().encode(commander).write(to: raw)
+    let runtime = GameRuntime(game: game)
+    try await runtime.load(from: raw, persistMigrations: false)
+    let admitted = await runtime.snapshot()
+    let loaded = game.load(admitted.commander)
+    try #require(loaded && game.commander.valid)
+    #expect(game.commander.navigationTier == .military && game.commander.jumpFuelMultiplier == 0)
+    #expect(game.commander.maximumJumpDistance == game.commander.jumpCap)
+    #expect(game.commander.fullTankJumpDistance == game.commander.jumpCap)
+    #expect(game.commander.fittedEquipment(at: .navigation)?.id == original.id)
+    #expect(
+      game.commander.fittedEquipment(at: .navigation)?.component?.receipts == component.receipts)
+    game.scriptPacks = [fixture.pack]
+    game.scriptDurabilityAvailable = true
+    game.ensureMissionCalendar()
+    let terms = try canonicalCourierTerms(&game, laterLeg: false, fuel: 0)
+    #expect(terms.generation.reach.valid && terms.generation.reach.fuel == 0)
+    #expect(terms.generation.reach.jumpFuelMultiplier == 0)
+    #expect(terms.generation.reach.firstReach == game.commander.jumpCap)
+    #expect(terms.generation.reach.fullTankReach == game.commander.jumpCap)
+    try game.requireCourierResources(terms)
+    #expect(game.commander.fuel == 0)
+    let key = try game.ensureContractBoard(fixture.pack)
+    let frozen = try #require(game.commander.contracts.boards[key])
+    #expect(frozen.courierGeneration?.reach.jumpFuelMultiplier == 0 && frozen.valid)
+    try GameRuntime.writeCommander(&game, to: fixture.save)
+    let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
+    #expect(saved.valid && saved.contracts.boards[key] == frozen)
+  }
+
   @Test(arguments: [SalvageUpgradeAxis.jumpReach, .jumpFuelCost])
   func newProofFreezesActualPaidAndRecoveredNativeFacts(axis: SalvageUpgradeAxis) throws {
     let fixture = try CourierFixture()
@@ -161,7 +222,7 @@ struct ScriptCourierCanonicalReachTests {
       #expect(try !decode(missing).valid)
     }
     for (key, value) in [
-      ("jumpFuelMultiplier", 0.0), ("jumpFuelMultiplier", -1.0),
+      ("jumpFuelMultiplier", -1.0),
       ("jumpFuelMultiplier", 2.0), ("fullTankReach", 0.0), ("firstReach", -1.0),
     ] {
       var changed = object

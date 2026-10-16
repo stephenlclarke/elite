@@ -8,6 +8,9 @@ validation and replay rules, including all original draws and destinations.
 Regression source covers real purchases and recovered upgrades, first and later
 legs, refusal after an actual stock navigation refit, legacy board persistence
 after a purchase, and malformed version fields.
+Admitted grandfathered Military navigation with zero fuel cost keeps its native
+full-cap reach even with an empty tank; the regression checks actual native load
+admission without inventing a progression receipt.
 
 Validation is **source-only, uncompiled and unexecuted**: strict formatting and
 whitespace checks passed. Integration with the canonical provider, focused tests,

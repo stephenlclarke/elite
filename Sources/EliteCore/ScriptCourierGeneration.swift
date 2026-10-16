@@ -39,11 +39,12 @@ public struct ScriptCourierReach: Codable, Sendable, Equatable {
         && firstReach == min(jumpCap, Double(fuel) / 10)
     case "elite-canonical-native-reach-v2":
       guard let multiplier = jumpFuelMultiplier, let fullTankReach,
-        multiplier.isFinite, multiplier > 0, jumpCap.isFinite, jumpCap >= performance.jump,
+        multiplier.isFinite, multiplier >= 0, jumpCap.isFinite, jumpCap >= performance.jump,
         firstReach.isFinite, fullTankReach.isFinite, fullTankReach > 0
       else { return false }
-      return firstReach == min(jumpCap, Double(fuel) / (10 * multiplier))
-        && fullTankReach == min(jumpCap, Double(capacity) / (10 * multiplier))
+      let first = multiplier > 0 ? Double(fuel) / (10 * multiplier) : jumpCap
+      let full = multiplier > 0 ? Double(capacity) / (10 * multiplier) : jumpCap
+      return firstReach == min(jumpCap, first) && fullTankReach == min(jumpCap, full)
     default:
       return false
     }

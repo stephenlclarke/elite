@@ -10,6 +10,9 @@ existing fields and adding optional `jumpFuelMultiplier` and `fullTankReach`.
 Both additions are required and coherent for v2. The proof freezes actual native
 reach, current fuel, capacity, fuel cost, first-leg reach and full-tank reach.
 Loaded proof validation does not depend on subsequent equipment changes.
+An admitted zero-cost navigation component retains native semantics: first and
+full-tank reach both equal the jump cap, even when current fuel is zero. Negative
+or nonfinite costs remain invalid.
 
 Existing `elite-880d3a-native-reach-v1` records retain their exact original
 validation and replay math. Their new optional fields must be absent. Generation
@@ -23,9 +26,10 @@ Source preparation only: **uncompiled and unexecuted**. This branch starts from
 the accepted Mission source and requires the central canonical equipment source
 before compilation. No shared heavy validation lease was used.
 
-The staged regression group is `ScriptCourierCanonicalReachTests`: four methods
-and six declared cases covering actual purchased navigation and recovered drive
+The staged regression group is `ScriptCourierCanonicalReachTests`: five methods
+and seven declared cases covering actual purchased navigation and recovered drive
 upgrades, efficient first and later legs, retained stock navigation refitting,
-legacy board reload without rerolling, and malformed versioned facts. Source
+legacy board reload without rerolling, an admitted grandfathered Military
+zero-cost save, and malformed versioned facts. Source
 formatting and whitespace checks passed. Composed focused tests and `make ci`
 remain required before publication.
