@@ -59,7 +59,10 @@ private func fillActualNativeProjectileBudget(_ game: inout Game) throws {
 }
 
 struct ScriptProjectileRestoreTests {
-  @Test func laterInvalidLiveBindingCannotPartiallyRestoreEarlierShotOrMissionActors() throws {
+  @Test(arguments: [false, true])
+  func laterInvalidLiveBindingCannotPartiallyRestoreEarlierShotOrMissionActors(firstTemporary: Bool)
+    throws
+  {
     var (game, oldID) = try retainedProjectileGame(archived: false)
     let template = try #require(game.commander.scriptState.projectiles.removeValue(forKey: oldID))
     let shot = try #require(template.body.scriptShot)
@@ -78,6 +81,9 @@ struct ScriptProjectileRestoreTests {
     let index = try #require(game.bodies.firstIndex { $0.scriptShot?.identity == secondID })
     game.bodies[index].id += 10_000
     game.bodies.removeAll { $0.missionActorID != nil }
+    if firstTemporary {
+      game.commander.scriptState.projectiles[firstID]?.body.position = .init(100_000, 0, 0)
+    }
     try #require(game.commander.valid)
     try #require(game.commander.scriptState.projectileArchiveValid(first))
     try #require(
@@ -86,8 +92,8 @@ struct ScriptProjectileRestoreTests {
     let before = game.commander
     let bodies = game.bodies
     let nextID = game.nextBodyID
-    // A sorts first and is admissible. B has a real native identity but its live address is
-    // malformed; failure must precede A's admission and the missing owners' restoration.
+    // A sorts first and is either admissible or temporarily outside. B has a real native
+    // identity but its live address is malformed; neither case may hide B or publish actors.
     #expect(throws: NativeMissionProjectileAdmissionError.invalidRecord) {
       try game.restoreScriptActors()
     }
