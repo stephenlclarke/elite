@@ -1,0 +1,15 @@
+# G02 canonical owner review
+
+## First canonical failure
+
+Final acceptance has not been achieved. Frozen `52686c0298e63ab4e0350d3f036be59350fc803f` passed renderer/ship/showroom and all18 maintained pack checks, then failed during coverage tests after130.150165 command seconds. Thread/address sanitizers, coverage export and leaks were not reached. All934 tracked source inputs and228 frozen evidence inputs were unchanged; production save/preferences were preserved. The accepted `8fc1632` native/focused preflight remains historical evidence, not a full-CI pass.
+
+Researcher independently read the raw crash: SIGBUS, explicit thread stack exceeded/guard, at `orderedScriptInstances` sort comparator through the nested provider/child Gallery trial `campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial`. The comparator reads two full `ScriptInstance` values during sorting. No Swift assertion or recursive-call loop was established as the failure. Raw log SHA-256 is `4ce1348aeff1a47a3bb1fba16d2eb0dd0a97c9e8dca1789494063df9bd424dc6`; crash SHA-256 is `2db909406ca14a8bf23a07ed7717fe6cc77d648471453f1325f3316a1c4b472c`. Preserve `/tmp/elite-g02-final` failure/freeze/artifacts.
+
+## Approved narrow correction
+
+Owner approves exactly `/tmp/elite-g02-order-key-proposal.patch`,1291 bytes, SHA-256 `e72cc1be315edd8b4d9bd54c16a05d6596b3b1cce8d78d53686d3264c370bf1d`, against the failed canonical commit. The allowance extends only to the `ScriptDirector.swift` `orderedScriptInstances` getter. Independent in-memory application verified unchanged surrounding source, priority-map first-wins policy,1001 missing-content fallback and the same total order: priority, definition and UUID string ascending. It computes those lightweight keys before sorting; the comparator no longer looks up full mission instances or captures Game. All keys and native ordering semantics remain intact.
+
+This is source authorization and a measured-repair hypothesis, not a successful correction. Preserve original coverage artifacts before replacement; record old comparator and new mapping/comparator frame/copy evidence under the same flags. Run both nested variants of the actual failing coverage case, plus meaningful dispatch-order/affected campaign, receipt, G21 and courier regressions. Keep full quotes, child acceptance, isolation, transactions and validation. No stack/sanitizer/parallelism/test/timing waiver is authorized.
+
+After focused proof, regenerate required source-dependent renderer fingerprints, commit/refreeze complete inputs and run fresh full `make ci` under Orchestrator's exclusive slot. A new failure requires preserved evidence and exact source review before another repair/retry. Final immutable handoff, owner acceptance, local integration, central composition and formal PR remain separate pending gates.
