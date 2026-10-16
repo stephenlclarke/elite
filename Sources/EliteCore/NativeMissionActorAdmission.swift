@@ -217,10 +217,12 @@ extension Game {
         body.physical?.velocity.length.isFinite ?? true,
         body.physical?.npc?.resources?.valid ?? true
       else { throw NativeMissionActorAdmissionError.invalidCondition }
-      if body.scriptNPC != nil {
-        guard currentMissionActorDescriptor(bodyID: body.id) != nil else {
-          throw NativeMissionActorAdmissionError.invalidScene
-        }
+      if body.energy > 0,
+        body.missionActorID != nil || body.missionInstanceID != nil || body.scriptNPC != nil
+      {
+        guard currentMissionActorDescriptor(bodyID: body.id) != nil,
+          body.physical?.population == .mission, body.physical?.npc?.role == .mission
+        else { throw NativeMissionActorAdmissionError.invalidScene }
       }
     }
   }
