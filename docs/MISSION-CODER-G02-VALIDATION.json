@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "script-state semantics3/4 passed; same-flags exact nested Gallery still stack-crashes in deferred default constructor; default guard proposal unapplied",
+  "stage": "approved exact default-counter guard committed but unverified; historical semantics3/4pass and exact nested coverage failure preserved",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,9 +280,8 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Exact owner review of unapplied 985-byte deferred-default guard plus two encoding assertions",
-    "Later numbered same-flags exact Gallery+semantics diagnostic before broader checks",
-    "Bounded affected compatibility/native/ASan, required media/refreeze and fresh canonical full CI",
+    "Fresh numbered same-flags semantics and exact nested Gallery diagnostic for approved guard",
+    "If passing: bounded affected compatibility/native/ASan, required media/refreeze and fresh canonical full CI",
     "Final source-owner acceptance and central integration/formal PR",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
@@ -1704,5 +1703,31 @@
     },
     "lease009ExplicitlyReleased": true,
     "otherGates": "No broader compatibility/native/ASan/media/fullCI after exact regression failure"
+  },
+  "defaultGuardCorrection": {
+    "sourceCommit": "d4777da8f53815fb24a9271374c22285518fa806",
+    "patchSHA256": "7e5b16054ba12b4fcb12b849fa3efc8edf7a4e6618bc53704e3f44e473bf458b",
+    "patchBytes": 985,
+    "appliedExactApprovedSource": true,
+    "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md",
+    "productionScope": "Only _modify defer necessary nextEvent0 condition before unchanged full default equality/nil canonicalization.",
+    "ownedTestScope": "Two assertions retain nondefault encoding after nested collections clear while nextEvent2; existing reset0/defaultbyte assertion preserved.",
+    "status": "uncompiled/unexecuted; no Mission heavy commands under Root010",
+    "limits": "Zero-counter branch still constructs default; observed positive-counter child path skips it. Hypothesis only; no guaranteed remedy/peak claim.",
+    "selectors": {
+      "semantics": "courierScriptState",
+      "expectedSemanticsMethods": 3,
+      "expectedSemanticsCases": 4,
+      "exactLegacy": "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial",
+      "expectedLegacyCases": 2,
+      "flags": "--enable-code-coverage/default cooperative workers, no serial or stack override"
+    },
+    "structuralFallback": {
+      "path": "/tmp/elite-g02-contract-phase-boundary-proposal.patch",
+      "sha256": "fbc733c1080e9898caa5d44230bdd2bc599c7d06f4f1a3779bcd26cddc86d73e",
+      "bytes": 799,
+      "analysis": "/tmp/elite-g02-contract-phase-boundary-analysis.json",
+      "applied": false
+    }
   }
 }
