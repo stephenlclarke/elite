@@ -33,6 +33,28 @@ private func projectileSaveFolder() throws -> URL {
   return root
 }
 
+private func fillActualNativeProjectileBudget(_ game: inout Game) throws {
+  let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+  let context = try #require(game.gameplayContext())
+  let count = PopulationClass.projectile.maximum - context.budget.active[.projectile, default: 0]
+  let requests = (0..<count).map { index in
+    SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit, sequence: sequence, member: UInt16(index),
+        producer: .ordnance),
+      population: .projectile, hull: .missile,
+      position: context.player.position + .init(10_000, Double(index) * 20, 10_000),
+      orientation: Basis3(), velocity: .init(0, 0, 0), npc: nil, rock: nil, payload: nil,
+      priority: .mission)
+  }
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit, revision: context.revision,
+      batches: [.init(requests: requests, atomic: true)], intents: []))
+  try #require(
+    receipts.count == count && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil })
+}
+
 struct ScriptProjectileRestoreTests {
   @Test(arguments: [false, true])
   func format21RuntimeRestoresThroughNativeAdmissionOnceAndRetainsExactShotHistory(archived: Bool)
@@ -88,7 +110,7 @@ struct ScriptProjectileRestoreTests {
     #expect(loaded.commander.scriptState.projectiles[id]?.presence == .present)
   }
 
-  @Test(arguments: ["pack", "outside", "allocator"])
+  @Test(arguments: ["pack", "outside", "allocator", "capacity"])
   func temporaryRestorationRefusalsKeepRetainedShotAndAllocatorsPending(reason: String) async throws
   {
     var (game, id) = try retainedProjectileGame()
@@ -96,8 +118,10 @@ struct ScriptProjectileRestoreTests {
       game.scriptPacks = []
     } else if reason == "outside" {
       game.commander.scriptState.projectiles[id]?.body.position = .init(100_000, 0, 0)
-    } else {
+    } else if reason == "allocator" {
       game.nextBodyID = 999_999_999
+    } else {
+      try fillActualNativeProjectileBudget(&game)
     }
     let record = try #require(game.commander.scriptState.projectiles[id])
     let runtime = GameRuntime(game: game)
