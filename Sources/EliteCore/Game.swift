@@ -518,7 +518,7 @@ public struct Game: Sendable {
       if screen == .equipment || screen == .inventory {
         cycleEquipmentFitting(key == "right" ? 1 : -1)
         if screen == .inventory {
-          inventoryUpgradeChoice = max(0, inventoryUpgradeChoice + (key == "right" ? 1 : -1))
+          inventoryUpgradeChoice &+= key == "right" ? 1 : -1
         }
       } else if screen == .chart || screen == .shortChart {
         selectChartNeighbour(key == "left" ? -1 : 1)

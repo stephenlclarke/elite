@@ -59,9 +59,12 @@ public struct InventoryInteraction: Sendable, Equatable {
   public var controls: [InventoryControl] = []
   public var selected = 0
   public init() {}
-  public var primary: InventoryCommand? {
+  public var selectedIndex: Int? {
     guard !controls.isEmpty else { return nil }
-    return controls[max(0, selected) % controls.count].command
+    return ((selected % controls.count) + controls.count) % controls.count
+  }
+  public var primary: InventoryCommand? {
+    selectedIndex.map { controls[$0].command }
   }
   public func command(at point: SIMD2<Double>) -> InventoryCommand? {
     controls.first { $0.bounds.contains(point) }?.command
@@ -73,72 +76,86 @@ extension Game {
     guard let inventory = commander.equipmentInventory else {
       return .init(label: "", detail: "Ownership must be initialized first", command: nil)
     }
-    func command(_ action: InventoryCommand.Action, source: UInt64? = nil) -> InventoryCommand {
-      .init(
-        owner: inventory.owner, hull: inventory.activeHull, context: inventoryContextEpoch,
-        shipID: commander.shipID,
-        ownedRevision: inventory.revision,
-        sourceRevision: source, action: action)
-    }
     do {
       switch subject {
-      case .equipment(let item):
-        guard inventory.items.contains(item), docked else {
-          return .init(label: "", detail: "Dock to change physical fittings", command: nil)
-        }
-        var projected = commander
-        if item.location != nil {
-          guard inventoryMayStore(item) else {
-            return .init(
-              label: "", detail: "Required ship system - replace with a compatible device",
-              command: nil)
-          }
-          try projected.storeEquipment(item, expectedRevision: inventory.revision)
-          return .init(
-            label: "Store", detail: "Keep this device aboard", command: command(.store(item)))
-        }
-        let slot = try inventoryFitSlot(item.node)
-        try projected.fitEquipment(item, at: slot, expectedRevision: inventory.revision)
-        return .init(
-          label: "Fit", detail: "Destination: " + inventorySlotLabel(slot),
-          command: command(.fit(item, slot)))
-      case .recovered(let lot):
-        guard commander.salvageLedger.inventory.contains(lot),
-          case .technology(let id, _, _) = lot.content,
-          let definition = SalvageDefinitions.definition(id: id),
-          case .scalar(let axes) = definition.effect
-        else { return .init(label: "", detail: "No ordinary compatible fitting", command: nil) }
-        let choices = axes.compactMap {
-          axis -> (SalvageUpgradeAxis, ComponentFittingSlot, SalvageComponentUpgradeQuote)? in
-          guard let slot = SalvageComponentEffects.fittingSlot(for: axis),
-            let effect = try? commander.previewRecoveredUpgrade(
-              lot: lot.identity, axis: axis, slot: slot)
-          else { return nil }
-          return (axis, slot, effect)
-        }
-        guard !choices.isEmpty else {
-          return .init(label: "", detail: "No ordinary compatible fitting", command: nil)
-        }
-        let (axis, slot, effect) = choices[max(0, inventoryUpgradeChoice) % choices.count]
-        guard let item = commander.fittedEquipment(at: slot) else {
-          throw RecoveredEquipmentError.missingComponent
-        }
-        let details = effect.progression.absoluteEffects.keys.sorted { $0.rawValue < $1.rawValue }
-          .map { key in
-            inventoryStatChange(
-              key, before: effect.progression.before[key]!, after: effect.progression.after[key]!)
-          }.joined(separator: ", ")
-        return .init(
-          label: "Fit now", detail: inventoryAxisLabel(axis) + ": " + details,
-          command: command(
-            .upgrade(
-              item, lot, axis, slot, before: effect.progression.before,
-              after: effect.progression.after, grade: effect.progression.resultingGrade),
-            source: commander.salvageLedger.revision))
+      case .equipment(let item): return try inventoryEquipmentPreview(item, inventory: inventory)
+      case .recovered(let lot): return try inventoryRecoveredPreview(lot, inventory: inventory)
       }
     } catch {
       return .init(label: "", detail: "Fitting unavailable with current resources", command: nil)
     }
+  }
+
+  private func inventoryCommand(
+    _ action: InventoryCommand.Action, inventory: OwnedEquipmentInventory, source: UInt64? = nil
+  ) -> InventoryCommand {
+    .init(
+      owner: inventory.owner, hull: inventory.activeHull, context: inventoryContextEpoch,
+      shipID: commander.shipID, ownedRevision: inventory.revision, sourceRevision: source,
+      action: action)
+  }
+
+  private func inventoryEquipmentPreview(
+    _ item: OwnedEquipmentItem, inventory: OwnedEquipmentInventory
+  ) throws -> InventoryActionPreview {
+    guard inventory.items.contains(item), docked else {
+      return .init(label: "", detail: "Dock to change physical fittings", command: nil)
+    }
+    var projected = commander
+    if item.location != nil {
+      guard inventoryMayStore(item) else {
+        return .init(
+          label: "", detail: "Required ship system - replace with a compatible device",
+          command: nil)
+      }
+      try projected.storeEquipment(item, expectedRevision: inventory.revision)
+      return .init(
+        label: "Store", detail: "Keep this device aboard",
+        command: inventoryCommand(.store(item), inventory: inventory))
+    }
+    let slot = try inventoryFitSlot(item.node)
+    try projected.fitEquipment(item, at: slot, expectedRevision: inventory.revision)
+    return .init(
+      label: "Fit", detail: "Destination: " + inventorySlotLabel(slot),
+      command: inventoryCommand(.fit(item, slot), inventory: inventory))
+  }
+
+  private func inventoryRecoveredPreview(
+    _ lot: SalvageLot, inventory: OwnedEquipmentInventory
+  ) throws -> InventoryActionPreview {
+    guard commander.salvageLedger.inventory.contains(lot),
+      case .technology(let id, _, _) = lot.content,
+      let definition = SalvageDefinitions.definition(id: id),
+      case .scalar(let axes) = definition.effect
+    else { return .init(label: "", detail: "No ordinary compatible fitting", command: nil) }
+    let choices = axes.compactMap {
+      axis -> (SalvageUpgradeAxis, ComponentFittingSlot, SalvageComponentUpgradeQuote)? in
+      guard let slot = SalvageComponentEffects.fittingSlot(for: axis),
+        let effect = try? commander.previewRecoveredUpgrade(
+          lot: lot.identity, axis: axis, slot: slot)
+      else { return nil }
+      return (axis, slot, effect)
+    }
+    guard !choices.isEmpty else {
+      return .init(label: "", detail: "No ordinary compatible fitting", command: nil)
+    }
+    let (axis, slot, effect) = choices[
+      ((inventoryUpgradeChoice % choices.count) + choices.count) % choices.count]
+    guard let item = commander.fittedEquipment(at: slot) else {
+      throw RecoveredEquipmentError.missingComponent
+    }
+    let details = effect.progression.absoluteEffects.keys.sorted { $0.rawValue < $1.rawValue }
+      .map { key in
+        inventoryStatChange(
+          key, before: effect.progression.before[key]!, after: effect.progression.after[key]!)
+      }.joined(separator: ", ")
+    return .init(
+      label: "Fit now", detail: inventoryAxisLabel(axis) + ": " + details,
+      command: inventoryCommand(
+        .upgrade(
+          item, lot, axis, slot, before: effect.progression.before,
+          after: effect.progression.after, grade: effect.progression.resultingGrade),
+        inventory: inventory, source: commander.salvageLedger.revision))
   }
 
   @discardableResult
