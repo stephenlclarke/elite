@@ -150,6 +150,12 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
         == (receipt.cause == .delivered || receipt.cause == .abandoned
           ? "dialogue.confirmed" : "courier.terminated"),
       completion.valid(for: state, engine: engine),
+      let cause = completion.cause,
+      cause.galaxy == receipt.proof.station.galaxy, cause.system == receipt.proof.station.system,
+      receipt.cause == .shipDestroyed
+        ? cause.revision <= receipt.proof.revision
+        : cause.revision == receipt.proof.revision,
+      receipt.proof.clock <= cause.calendarSeconds,
       pendingLoss == nil, receipt.item == item, receipt.id == Self.terminalIdentity(item),
       receipt.proof.valid, receipt.proof.sequence <= engine.nextEvent,
       state.hasAcknowledged(receipt.proof.sequence), receipt.proof.clock >= issue.clock,
@@ -159,12 +165,14 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
     else { return false }
     switch receipt.cause {
     case .delivered:
-      return receipt.amount == terms.reward && receipt.proof.clock <= deadline
+      return cause.docked && cause.mainStation && receipt.amount == terms.reward
+        && receipt.proof.clock <= deadline
         && receipt.proof.station.galaxy == job.offer.destinationGalaxy
         && receipt.proof.station.system == job.offer.destinationSystem
         && receipt.proof.token.hasSuffix(":" + terms.declaration.deliveryContact)
     case .abandoned:
-      return receipt.amount == 0 && receipt.proof.station == job.station
+      return cause.docked && cause.mainStation && receipt.amount == 0
+        && receipt.proof.station == job.station
         && receipt.proof.token.hasSuffix(":" + terms.declaration.abandonContact)
     case .expired: return receipt.amount == 0 && receipt.proof.clock > deadline
     case .escapePod, .shipDestroyed: return receipt.amount == 0 && terms.variant == .package

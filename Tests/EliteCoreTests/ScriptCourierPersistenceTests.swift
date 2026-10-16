@@ -253,13 +253,21 @@ extension CourierFixture {
   deleted.scriptState.instances[id]?.completionReceipt = nil
   #expect(!deleted.valid)
   let bytes = try JSONEncoder().encode(original)
-  for field in ["sequence", "causeKind", "revision", "instance"] {
+  for field in ["sequence", "causeKind", "revision", "instance", "causeSystem", "causeRevision"] {
     var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
     var completion = try #require(object["completionReceipt"] as? [String: Any])
     switch field {
     case "sequence": completion[field] = original.courier!.issue.sequence
     case "causeKind": completion[field] = "dialogue.confirmed"
     case "revision": completion[field] = original.revision + 1
+    case "causeSystem", "causeRevision":
+      var cause = try #require(completion["cause"] as? [String: Any])
+      if field == "causeSystem" {
+        cause["system"] = (game.commander.system + 1) % 256
+      } else {
+        cause["revision"] = 0
+      }
+      completion["cause"] = cause
     default: completion[field] = UUID().uuidString
     }
     object["completionReceipt"] = completion
