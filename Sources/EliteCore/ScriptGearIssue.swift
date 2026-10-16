@@ -50,6 +50,7 @@ public struct ScriptGearIssue: Codable, Sendable, Equatable {
         source.resource == resource, node == kind.canonicalNode,
         displacements.count <= 32,
         Set(displacements.map(\.item)).count == displacements.count,
+        Set(displacements.map(\.location)).count == displacements.count,
         displacements.allSatisfy({ !items.contains($0.item) && $0.location.slot.valid })
       else { return false }
       let missing = legacyMissingItems ?? []
@@ -80,6 +81,13 @@ public struct ScriptGearIssue: Codable, Sendable, Equatable {
       source: source, node: node, items: items, consumed: consumed, status: providerStatus,
       loan: loan, returnRemaining: returnRemaining, displacements: displacements,
       legacyMissingItems: legacyMissingItems ?? [])
+  }
+
+  func replacingDisplacements(_ values: [EquipmentIssueDisplacement]) -> Self {
+    .init(
+      resource: resource, kind: kind, items: items, loan: loan, returnRemaining: returnRemaining,
+      status: status, consumed: consumed, savedGearVersion: savedGearVersion, source: source,
+      node: node, displacements: values, legacyMissingItems: legacyMissingItems)
   }
 }
 

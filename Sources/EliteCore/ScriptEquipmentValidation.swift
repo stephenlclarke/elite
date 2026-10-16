@@ -112,6 +112,7 @@ extension Commander {
 }
 
 public struct ScriptGearConsumptionDelta: Sendable {
+  public var eventKind: String { "gear.consumed" }
   public let source: EquipmentIssueSource
   public let item: UUID
   public let before: ScriptGearIssue
@@ -130,6 +131,32 @@ public struct ScriptGearConsumptionDelta: Sendable {
 }
 
 extension ScriptEngineState {
+  /// Native own-loan fitting must retain any newly pinned personal displacement history too.
+  public func applying(_ receipt: EquipmentIssueReceipt) throws -> Self {
+    guard let instance = instances[receipt.source.mission],
+      let before = instance.gearIssues[receipt.source.resource],
+      before.savedGearVersion == 2, before.valid(for: instance), before.source == receipt.source,
+      before.items == receipt.originalItems, before.consumed == receipt.consumedItems,
+      receipt.displacements.starts(with: before.displacements ?? [])
+    else { throw EquipmentIssueError.staleObligation }
+    var after = before.replacingDisplacements(receipt.displacements)
+    switch receipt.operation {
+    case .stored, .refitted:
+      guard before.status != .returned else { throw EquipmentIssueError.staleObligation }
+    case .returned:
+      guard before.status == .issued else { throw EquipmentIssueError.staleObligation }
+      after.status = .returned
+    case .released:
+      guard before.status == .issued, before.loan else { throw EquipmentIssueError.staleObligation }
+      after.status = .released
+    case .issued: throw EquipmentIssueError.invalidRequest
+    }
+    guard after.valid(for: instance) else { throw EquipmentIssueError.staleObligation }
+    var staged = self
+    staged.instances[receipt.source.mission]?.gearIssues[receipt.source.resource] = after
+    return staged
+  }
+
   /// Receives the complete actual removed item. Virtual launches never call this physical adapter.
   public func gearConsumptionDelta(for removed: OwnedEquipmentItem) throws
     -> ScriptGearConsumptionDelta?
