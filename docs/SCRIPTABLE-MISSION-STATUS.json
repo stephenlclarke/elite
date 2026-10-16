@@ -757,7 +757,7 @@
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
   },
   "generated_courier_checkpoint": {
-    "status": "historical native5/focused33/49 and accessor semantics3/4 passes; exact nested coverage failures preserved; approved default-counter guard committed but unverified",
+    "status": "guard coverage exact1/2, semantics3/4, affected148/238 inclnative25 passed; canonical ASan first native failed; approved root phase-boundary correction committed but unverified",
     "profile": "PROJECT-SPACE-G02-1",
     "capabilities": [
       "courier-contracts-basic-v2",

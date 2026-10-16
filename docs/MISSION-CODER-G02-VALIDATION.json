@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "approved exact default-counter guard committed but unverified; historical semantics3/4pass and exact nested coverage failure preserved",
+  "stage": "guard same-flags coverage exact/semantics/affected148/238 passed; new canonical ASan native failure preserved; approved root phase boundary applied but unverified",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,9 +280,10 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Fresh numbered same-flags semantics and exact nested Gallery diagnostic for approved guard",
-    "If passing: bounded affected compatibility/native/ASan, required media/refreeze and fresh canonical full CI",
-    "Final source-owner acceptance and central integration/formal PR",
+    "Fresh numbered SAME ASan flags exact first native courier test for approved phase boundary",
+    "If passing: exact legacy both+semantics ASan/default coverage and bounded compatibility",
+    "Required media/refreeze and fresh canonical full CI",
+    "Final owner acceptance, central integration/formal PR",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
@@ -1712,7 +1713,7 @@
     "ownerReview": "G02-CANONICAL-OWNER-REVIEW.md",
     "productionScope": "Only _modify defer necessary nextEvent0 condition before unchanged full default equality/nil canonicalization.",
     "ownedTestScope": "Two assertions retain nondefault encoding after nested collections clear while nextEvent2; existing reset0/defaultbyte assertion preserved.",
-    "status": "uncompiled/unexecuted; no Mission heavy commands under Root010",
+    "status": "coveragebuild6.314253s, semantics3/4 andexactlegacy1/2 andaffected148/238 passed; canonicalserialASanfirstnativefailed, notfullCI",
     "limits": "Zero-counter branch still constructs default; observed positive-counter child path skips it. Hypothesis only; no guaranteed remedy/peak claim.",
     "selectors": {
       "semantics": "courierScriptState",
@@ -1729,5 +1730,344 @@
       "analysis": "/tmp/elite-g02-contract-phase-boundary-analysis.json",
       "applied": false
     }
+  },
+  "defaultGuardDiagnostic": {
+    "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+    "build": {
+      "commit": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-011",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "previousLeaseId": "elite-validation-010",
+        "purpose": "Exact985B nextEvent default guard samecanonicalcoverage build/frame diagnostics, courierScriptState3methods4cases then failedlegacy nestedboth/defaultworkers FIRST; boundedaffected/ASan/native onlyifpassing,no structuralfallback/media/fullCI"
+      },
+      "command": [
+        "swift",
+        "build",
+        "--build-tests",
+        "--enable-code-coverage"
+      ],
+      "startUTC": "2026-10-16T07:57:20.868006+00:00",
+      "endUTC": "2026-10-16T07:57:27.182373+00:00",
+      "seconds": 6.314252832904458,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "3642aa65d1f129fc4807f61783110380a5822f995bee4782cd917bdc18bd4b97"
+    },
+    "semantics": {
+      "commit": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-011",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "previousLeaseId": "elite-validation-010",
+        "purpose": "Exact985B nextEvent default guard samecanonicalcoverage build/frame diagnostics, courierScriptState3methods4cases then failedlegacy nestedboth/defaultworkers FIRST; boundedaffected/ASan/native onlyifpassing,no structuralfallback/media/fullCI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--enable-code-coverage",
+        "--filter",
+        "courierScriptState"
+      ],
+      "startUTC": "2026-10-16T07:58:34.190605+00:00",
+      "endUTC": "2026-10-16T07:58:46.066571+00:00",
+      "seconds": 11.875871250173077,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "9ac442ebb600076c4747fd5dbcb12bfd330832808af65480fd9060008ad3312d"
+    },
+    "exactLegacy": {
+      "commit": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-011",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "previousLeaseId": "elite-validation-010",
+        "purpose": "Exact985B nextEvent default guard samecanonicalcoverage build/frame diagnostics, courierScriptState3methods4cases then failedlegacy nestedboth/defaultworkers FIRST; boundedaffected/ASan/native onlyifpassing,no structuralfallback/media/fullCI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--enable-code-coverage",
+        "--filter",
+        "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial"
+      ],
+      "startUTC": "2026-10-16T07:59:15.664366+00:00",
+      "endUTC": "2026-10-16T07:59:27.860431+00:00",
+      "seconds": 12.195961375022307,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "ce242294bfe28179c18738b9aded5718bdf522d8412598850cec0ad54dfe53fd"
+    },
+    "affected": {
+      "commit": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-011",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "previousLeaseId": "elite-validation-010",
+        "purpose": "Exact985B nextEvent default guard samecanonicalcoverage build/frame diagnostics, courierScriptState3methods4cases then failedlegacy nestedboth/defaultworkers FIRST; boundedaffected/ASan/native onlyifpassing,no structuralfallback/media/fullCI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--enable-code-coverage",
+        "--filter",
+        "[Cc]ampaign|[Rr]eceipt|[Cc]ontract|[Pp]ledge|[Cc]ourier"
+      ],
+      "startUTC": "2026-10-16T08:00:31.649524+00:00",
+      "endUTC": "2026-10-16T08:01:00.660776+00:00",
+      "seconds": 29.011184208095074,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "3fe0cfd2bcdd927a87aedbf9c0b3cc785b4e15990d9754fae6ab470e844cdf7b"
+    },
+    "affectedMethods": 148,
+    "affectedCaseInvocations": 238,
+    "affectedNativeMethods": 25,
+    "ownedCourierMethods": 36,
+    "ownedCourierCases": 53,
+    "staticFrames": {
+      "path": "/tmp/elite-g02-default-guard-checkpoint/default-guard-coverage-frame-comparison.json",
+      "sha256": "ada1929fd4417c036dadaaffd7eea122a992ed841ead500eb1875c40d0c75de9",
+      "deferFixedFrameIncludingSavedRegisters": [
+        3440,
+        3520
+      ],
+      "conditionalDefaultCall": "Nonzero counter path bypasses ctor/fullEq; zero branch retains full equality/default construction.",
+      "limits": "Static code only, no runtime peak claim."
+    },
+    "asan": {
+      "commit": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-011",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+        "mayUpdateCandidateWithinApprovedScope": false,
+        "previousLeaseId": "elite-validation-010",
+        "purpose": "Exact985B nextEvent default guard samecanonicalcoverage build/frame diagnostics, courierScriptState3methods4cases then failedlegacy nestedboth/defaultworkers FIRST; boundedaffected/ASan/native onlyifpassing,no structuralfallback/media/fullCI"
+      },
+      "command": [
+        "env",
+        "ASAN_OPTIONS=detect_leaks=0",
+        "swift",
+        "test",
+        "--scratch-path",
+        ".build/asan",
+        "--sanitize=address",
+        "--no-parallel",
+        "--filter",
+        "campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial|courierScriptState|nativeCourier"
+      ],
+      "startUTC": "2026-10-16T08:02:39.612252+00:00",
+      "endUTC": "2026-10-16T08:03:33.330909+00:00",
+      "seconds": 53.71861108322628,
+      "exit": 1,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "8777e978417a53912d8dbc391b09e978b42e8ed1562b55505bba456987621179"
+    },
+    "asanTriage": {
+      "candidate": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+      "coverageResults": {
+        "semanticsMethods": 3,
+        "semanticsCases": 4,
+        "exactLegacyMethods": 1,
+        "exactLegacyCases": 2,
+        "affectedMethods": 148,
+        "affectedCaseInvocations": 238,
+        "nativeMethodsInAffectedLane": 25
+      },
+      "ASan": "compilepassed25.82s; firstnativeCourierAllSix started thenhelper signal4 after53.718611commandseconds; no completion or other selected exact/semantics execution",
+      "signalEvidence": {
+        "helper": "unexpected signal code4",
+        "crashException": {
+          "codes": "0x0000000000000002, 0x000000016b157fd0",
+          "message": "Could not determine thread index for stack guard region",
+          "rawCodes": [
+            2,
+            6091538384
+          ],
+          "type": "EXC_BAD_ACCESS",
+          "signal": "SIGILL",
+          "subtype": "KERN_PROTECTION_FAILURE at 0x000000016b157fd0"
+        },
+        "termination": {
+          "flags": 0,
+          "code": 10,
+          "namespace": "SIGNAL",
+          "indicator": "Bus error: 10"
+        },
+        "vmRegion": "0x16b157fd0 is in 0x16b154000-0x16b158000;  bytes after start: 16336  bytes before end: 47\n      REGION TYPE                    START - END         [ VSIZE] PRT/MAX SHRMOD  REGION DETAIL\n      Stack                       16af28000-16afb0000    [  544K] rw-/rwx SM=COW  thread 2\n      GAP OF 0x1a4000 BYTES\n--->  Stack Guard                 16b154000-16b158000    [   16K] ---/rwx SM=PRV  \n      Stack                       16b158000-16b1e0000    [  544K] rw-/rwx SM=COW  ",
+        "crashSHA256": "6e52d7a79ecf01ca24fd9e6b59d086a8e833570d88a78da35c4d11f97c030cc3"
+      },
+      "callChain": [
+        "wrap_realloc",
+        "allocate",
+        "luaM_malloc_",
+        "setnodevector",
+        "luaH_resize",
+        "luaV_execute",
+        "ccall",
+        "luaD_callnoyield",
+        "lua_callk",
+        "run",
+        "precallC",
+        "luaD_precall",
+        "ccall",
+        "luaD_callnoyield",
+        "f_call",
+        "luaD_rawrunprotected",
+        "luaD_pcall",
+        "lua_pcallk",
+        "ems_evaluate",
+        "closure #1 in closure #1 in closure #1 in static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "partial apply for closure #1 in closure #1 in closure #1 in static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "closure #1 in _StringGuts.withCString<A, B>(_:)",
+        "partial apply for closure #1 in _StringGuts.withCString<A, B>(_:)",
+        "closure #1 in _StringGuts.withFastCChar<A, B>(_:)",
+        "partial apply for closure #1 in _StringGuts.withFastCChar<A, B>(_:)",
+        "closure #1 in _SmallString.withUTF8<A, B>(_:)",
+        "partial apply for closure #1 in _SmallString.withUTF8<A, B>(_:)",
+        "_withUnprotectedUnsafeBytes<A, B, C>(of:_:)",
+        "String.withCString<A, B>(_:)",
+        "closure #1 in closure #1 in static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "partial apply for closure #1 in closure #1 in static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "Data.withUnsafeBytes<A, B>(_:)",
+        "closure #1 in static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "partial apply for closure #1 in static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "Data.withUnsafeBytes<A, B>(_:)",
+        "static ScriptEvaluator.invoke(source:handler:input:limits:)",
+        "static ScriptEvaluator.evaluate(source:handler:event:snapshot:state:limits:)",
+        "Game.drainScriptEvents(publish:)",
+        "Game.emitScriptEvent(_:values:only:drain:)",
+        "Game.acceptScriptMission(_:instanceID:randomSeed:contract:campaignParent:drainAccepted:)",
+        "Game.acceptContract(board:offer:confirmationToken:)",
+        "Game.contractAcceptanceQuote(board:offer:)",
+        "Game.refreshContractRows(failures:restoring:)",
+        "Game.openContractBoard()",
+        "Game.interfaceKey(_:)",
+        "Game.key(_:)",
+        "GameRuntime.applyKey(_:)",
+        "GameRuntime.key(_:)",
+        "CourierInputHarness.review(row:)",
+        "NativeViewTests.nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+        "static NativeViewTests.$s14EliteCoreTests010NativeViewC0V52nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce4TestfMp_17Z53ed3d5457f85111fMu0_@Sendable ()",
+        "implicit closure #1 in static NativeViewTests.$s14EliteCoreTests010NativeViewC0V52nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce4TestfMp_25generator53ed3d5457f85111fMu_@Sendable ()",
+        "partial apply for implicit closure #1 in static NativeViewTests.$s14EliteCoreTests010NativeViewC0V52nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce4TestfMp_25generator53ed3d5457f85111fMu_@Sendable ()",
+        "specialized static Runner._applyScopingTraits(for:testCase:_:)",
+        "specialized closure #1 in closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "<deduplicated_symbol>",
+        "specialized static Issue.withErrorRecording(at:configuration:isolation:_:)",
+        "closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "<deduplicated_symbol>",
+        "specialized closure #1 in TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized static Test.Case.withCurrent<A>(_:perform:)",
+        "static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Runner._runTestCase(_:within:in:)",
+        "closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "<deduplicated_symbol>",
+        "<deduplicated_symbol>",
+        "<deduplicated_symbol>",
+        "specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "<deduplicated_symbol>",
+        "completeTaskWithClosure(swift::AsyncContext*, swift::SwiftError*)"
+      ],
+      "classification": "New ASan-specific guard-region memory fault on full native contract quote Lua path. No Swift assertion, exclusivity or ASan heap diagnostic in captured log. Stack pressure is a hypothesis supported by guard-region address/live frames; not asserted identical to prior default-constructor coverage failures.",
+      "fallback": {
+        "path": "/tmp/elite-g02-contract-phase-boundary-proposal.patch",
+        "sha256": "fbc733c1080e9898caa5d44230bdd2bc599c7d06f4f1a3779bcd26cddc86d73e",
+        "applied": false,
+        "selection": "Requested Orchestrator route actualnewASan stage before implementation; originalhypothesis no guaranteedremedy."
+      },
+      "lease011ExplicitlyReleased": true
+    },
+    "asanCrashArtifacts": {
+      "crashPath": "/tmp/elite-g02-default-guard-checkpoint/df87b06-focused-asan-crash.ips",
+      "crashSHA256": "6e52d7a79ecf01ca24fd9e6b59d086a8e833570d88a78da35c4d11f97c030cc3",
+      "binaryPath": "/tmp/elite-g02-default-guard-checkpoint/df87b06-ASan-test-binary",
+      "binarySHA256": "61b88142660bf2cd09f39940411da0aa213cee3ea8485780bc8fa544c8866cea",
+      "faultingThread": 1,
+      "faultingQueue": "com.apple.root.default-qos.cooperative"
+    },
+    "asanSelectedExactLegacyAndSemantics": "not executed before first native crash",
+    "lease011ExplicitlyReleased": true
+  },
+  "rootContractPhaseCorrection": {
+    "sourceCommit": "59938b5813075b1925df6e2d3ae11354c18ac85a",
+    "patchSHA256": "fbc733c1080e9898caa5d44230bdd2bc599c7d06f4f1a3779bcd26cddc86d73e",
+    "patchBytes": 799,
+    "appliedExactApprovedSource": true,
+    "guardRetained": true,
+    "actualFailedBase": "df87b0618d3dd1bfee0b7092590425c49304b7d6",
+    "analysis": "/tmp/elite-g02-contract-phase-boundary-analysis-after-asan.json",
+    "analysisSHA256": "4f5ac9372c92dcbcb3a502bf9b3286210cdc8911e95ba675b2e018464ee640c7",
+    "scope": "Only root acceptContract prepares with drainAccepted:false, returns the root preparation frame, then same private candidate synchronously drains and rechecks root suspension before unchanged admission/valid/publication gates.",
+    "status": "uncompiled/unexecuted; next native ASan failing test first under fresh numbered lease",
+    "firstSelector": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce",
+    "firstFlags": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel",
+    "limits": "Observed new ASan guard-region fault in full quote Lua path, no heap diagnostic or assumed old failure cause. Phase relief is a hypothesis; no peak/guarantee claim."
   }
 }
