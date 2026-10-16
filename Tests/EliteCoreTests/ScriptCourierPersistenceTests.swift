@@ -206,10 +206,16 @@ extension CourierFixture {
   game.commander.scriptState.missionCalendar?.seconds = due + 0.1
   game.scriptPacks = [consumer]
   game.suspendUnavailableScriptContent()
+  for _ in 0..<4095 { game.emitScriptEvent("contact.requested", only: courier, drain: false) }
+  game.emitScriptEvent("contact.requested", only: dependent, drain: false)
+  let unrelatedSequence = game.commander.scriptState.nextEvent
+  #expect(game.commander.scriptState.pendingEvents.count == 4096)
   let before = game.commander
   game.resolveCourierTerminals(publish: { _ in throw SaveError.invalidCommander })
   #expect(game.commander == before)
   game.resolveCourierTerminals()
+  #expect(!game.commander.scriptState.pendingEvents.contains { $0.instance == courier })
+  #expect(game.commander.scriptState.pendingEvents.contains { $0.sequence == unrelatedSequence })
   let receipt = try #require(game.commander.scriptState.instances[courier]?.completionReceipt)
   #expect(receipt.outcome == .failed && receipt.causeKind == "courier.terminated")
   #expect(
@@ -230,4 +236,41 @@ extension CourierFixture {
   game.drainScriptEvents()
   #expect(game.commander.scriptState.instances[dependent]?.data["count"] == .integer(1))
   #expect(game.commander.valid)
+}
+
+@Test func courierTerminalLoadRequiresExactSharedCompletionSequenceCauseAndRevision() throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let id = try fixture.accept(&game)
+  let due = try #require(game.commander.scriptState.instances[id]?.contract?.deadline)
+  game.commander.scriptState.calendarSeconds = due + 0.1
+  game.commander.scriptState.missionCalendar?.seconds = due + 0.1
+  game.resolveCourierTerminals()
+  let original = try #require(game.commander.scriptState.instances[id])
+  #expect(game.commander.valid && original.completionReceipt != nil)
+  var deleted = game.commander
+  deleted.scriptState.instances[id]?.completionReceipt = nil
+  #expect(!deleted.valid)
+  let bytes = try JSONEncoder().encode(original)
+  for field in ["sequence", "causeKind", "revision", "instance"] {
+    var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
+    var completion = try #require(object["completionReceipt"] as? [String: Any])
+    switch field {
+    case "sequence": completion[field] = original.courier!.issue.sequence
+    case "causeKind": completion[field] = "dialogue.confirmed"
+    case "revision": completion[field] = original.revision + 1
+    default: completion[field] = UUID().uuidString
+    }
+    object["completionReceipt"] = completion
+    let corrupt = try JSONDecoder().decode(
+      ScriptInstance.self, from: JSONSerialization.data(withJSONObject: object))
+    var candidate = game.commander
+    candidate.scriptState.instances[id] = corrupt
+    #expect(!candidate.valid)
+  }
+  var held = fixture.game()
+  let heldID = try fixture.accept(&held)
+  held.commander.scriptState.instances[heldID]?.completionReceipt = original.completionReceipt
+  #expect(!held.commander.valid)
 }

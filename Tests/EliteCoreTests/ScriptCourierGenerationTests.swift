@@ -93,3 +93,50 @@ import Testing
   #expect(!game.contractAcceptanceQuote(board: secondKey, offer: second.id).allowed)
   #expect(game.commander.scriptState.instances[id]?.courier?.terminal == nil)
 }
+
+@Test func courierFixtureProvenanceProbe() throws {
+  // Temporary bounded offline fixture discovery. Each origin starts a separate native Game;
+  // no published board is refreshed, accepted, rewritten or rerolled by this diagnostic.
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var rows: [String: [String: Any]] = [:]
+  var boundaries: [String: [String: Any]] = [:]
+  for origin in 0..<64 {
+    let epoch = 0
+    var game = fixture.game(system: origin)
+    if ScriptCourierGeneration.routes(origin: game.contractStation, reach: .init(game.commander))
+      .isEmpty
+    {
+      continue
+    }
+    let (key, _) = try fixture.offer(&game)
+    let board = try #require(game.commander.contracts.boards[key])
+    for offer in board.offers {
+      let terms = try #require(offer.courier)
+      let record: [String: Any] = [
+        "origin": origin, "epoch": epoch, "row": terms.row, "path": terms.path,
+        "lowerBound": terms.calendarLowerBoundSeconds, "duration": terms.duration,
+        "seed": board.seed, "initialState": terms.generation.initialState,
+        "offer": offer.id.uuidString, "digest": fixture.pack.digest,
+      ]
+      if terms.calendarLowerBoundSeconds < terms.duration, rows[String(terms.row)] == nil {
+        rows[String(terms.row)] = record
+      }
+      guard terms.path.count >= 3 else { continue }
+      for duration in [172800.0, 259200.0] {
+        let side = terms.calendarLowerBoundSeconds < duration ? "below" : "above"
+        let label = String(Int(duration / 3600)) + "-" + side
+        let distance = abs(terms.calendarLowerBoundSeconds - duration)
+        let previous =
+          (boundaries[label]?["lowerBound"] as? Double).map { abs($0 - duration) } ?? .infinity
+        if distance < previous { boundaries[label] = record }
+      }
+    }
+  }
+  let output: [String: Any] = ["rows": rows, "boundaries": boundaries]
+  let path = URL(fileURLWithPath: "/tmp/elite-g02-checkpoint/fixture-provenance.json")
+  try JSONSerialization.data(withJSONObject: output, options: [.prettyPrinted, .sortedKeys]).write(
+    to: path)
+  #expect(rows.count == 6 && boundaries.count == 4)
+  print("Native fixture provenance saved at " + path.path)
+}

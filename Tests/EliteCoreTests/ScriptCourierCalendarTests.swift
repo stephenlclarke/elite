@@ -59,7 +59,7 @@ func courierEveryFatalRuntimePathReservesPendingLossUntilPublication(mode: Strin
   case "energy":
     game.energy = 0.01
     game.frontShield = 0
-    game.bodies = [.init(id: 500, hull: .sidewinder, position: .init(0, 0, 100), hostile: true)]
+    game.bodies = [.init(id: 1, hull: .sidewinder, position: .init(0, 0, 100), hostile: true)]
   case "sun": game.celestials = [.init(kind: .sun, position: .init(0, 0, 900), radius: 1100)]
   case "planet": game.celestials = [.init(kind: .planet, position: .init(0, 0, 900), radius: 1100)]
   default:

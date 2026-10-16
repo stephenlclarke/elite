@@ -38,6 +38,8 @@ struct CourierFixture {
     game.scriptDurabilityAvailable = true
     game.commander.credits = 100000
     game.commander.system = system
+    game.selectedSystem = system
+    game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
     return game
   }
   func offer(_ game: inout Game, row: Int = 0) throws -> (String, ScriptContractOffer) {
@@ -284,11 +286,7 @@ func courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row: Int
 }
 
 @Test func courierOriginalEventCannotBorrowLaterConfirmationOrOutliveDrainBudget() throws {
-  let fixture = try CourierFixture(scriptEdit: { source in
-    source.replacingOccurrences(
-      of: "local commands = {}",
-      with: "local commands = {{op = 'courier.issue', id = 'forged-issue'}}")
-  })
+  let fixture = try CourierFixture()
   defer { fixture.clean() }
   var game = fixture.game()
   let (key, offer) = try fixture.usable(&game)
@@ -326,4 +324,23 @@ func courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row: Int
     game.commander.scriptState.instances[id]?.courier == before.scriptState.instances[id]?.courier)
   #expect(game.commander.credits == before.credits)
   #expect(game.commander.scriptState.instances[id]?.suspension != nil)
+}
+
+@Test func courierOlderDialogueCannotBorrowTheNewNativeAdmission() throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let id = try fixture.accept(&game)
+  try fixture.travel(&game, id: id)
+  try fixture.requestContact(&game, id: id)
+  let dialogue = try #require(game.scriptPresentedDialogue)
+  game.emitScriptEvent(
+    "dialogue.confirmed",
+    values: [
+      "dialogue_id": .string(dialogue.id), "token": .string(dialogue.token),
+    ], only: id, drain: false)
+  let before = game.commander
+  #expect(throws: MissionPackError.self) { try game.confirmCourierDialogue(id, dialogue: dialogue) }
+  #expect(game.commander == before && game.scriptCourierAdmission == nil)
+  #expect(game.commander.scriptState.instances[id]?.courier?.terminal == nil)
 }

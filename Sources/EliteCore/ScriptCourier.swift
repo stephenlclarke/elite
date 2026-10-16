@@ -256,6 +256,7 @@ extension Game {
           state.journal.append("Courier " + cause.rawValue + ". Paid: 0 CR.")
         }
         candidate.commander.scriptState.instances[id] = state
+        candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
         if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
         guard candidate.commander.valid else { throw SaveError.invalidCommander }
         try publish?(&candidate)

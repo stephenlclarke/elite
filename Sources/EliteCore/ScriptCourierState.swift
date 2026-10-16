@@ -130,8 +130,18 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
         pending.context.revision <= state.revision
       else { return false }
     }
-    guard let receipt = terminal else { return state.outcome == .active && !job.settled }
-    guard pendingLoss == nil, receipt.item == item, receipt.id == Self.terminalIdentity(item),
+    guard let receipt = terminal else {
+      return state.outcome == .active && !job.settled && state.completionReceipt == nil
+    }
+    guard let completion = state.completionReceipt,
+      completion.instance == state.id, completion.sequence == receipt.proof.sequence,
+      receipt.proof.revision < UInt64(Int64.max) - 1,
+      completion.revision == receipt.proof.revision + 1,
+      completion.causeKind
+        == (receipt.cause == .delivered || receipt.cause == .abandoned
+          ? "dialogue.confirmed" : "courier.terminated"),
+      completion.valid(for: state, engine: engine),
+      pendingLoss == nil, receipt.item == item, receipt.id == Self.terminalIdentity(item),
       receipt.proof.valid, receipt.proof.sequence <= engine.nextEvent,
       state.hasAcknowledged(receipt.proof.sequence), receipt.proof.clock >= issue.clock,
       receipt.proof.clock <= calendar.seconds, receipt.proof.revision < state.revision,
