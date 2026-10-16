@@ -73,8 +73,8 @@ struct EquipmentOwnershipDisplayTests {
     game.screen = .inventory
     let rows = game.informationRows.map { $0.0 }
     #expect(rows.contains("Basic Shield"))
-    #expect(rows.contains("  Held - Granted"))
-    #expect(rows.contains("  Fitted shield - Standard"))
+    #expect(rows.contains("Held - Granted"))
+    #expect(rows.contains("Fitted shield - Standard"))
     #expect(!rows.contains("  Held - Purchased"))
     #expect(rows.contains("Recorded purchases: 0"))
     #expect(try ownershipDisplayBytes(game.commander) == before)
