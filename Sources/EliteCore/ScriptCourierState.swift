@@ -94,6 +94,7 @@ public struct ScriptCourierPendingLoss: Codable, Sendable, Equatable {
   public let clock: Double
   public let station: ContractStationIdentity
   public let epoch: UUID
+  public let context: ScriptEventContext
 }
 public struct ScriptCourierCustody: Codable, Sendable, Equatable {
   public let item: UUID
@@ -123,7 +124,10 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
         pending.item == item,
         pending.id == ScriptIdentity.uuid("courier-fatal-v1:" + item.uuidString),
         pending.clock.isFinite, pending.clock >= issue.clock, pending.clock <= calendar.seconds,
-        pending.station.valid
+        pending.station.valid, pending.context.valid,
+        pending.context.galaxy == pending.station.galaxy,
+        pending.context.system == pending.station.system,
+        pending.context.revision <= state.revision
       else { return false }
     }
     guard let receipt = terminal else { return state.outcome == .active && !job.settled }
@@ -154,7 +158,8 @@ extension ScriptPackLibrary {
     guard let courier = manifest.courier else {
       guard manifest.board?.clock != .missionCalendar,
         !manifest.capabilities.contains("courier-contracts-basic-v2"),
-        !manifest.capabilities.contains("mission-calendar-v2")
+        !manifest.capabilities.contains("mission-calendar-v2"),
+        !manifest.handlers.contains(where: { $0.event == "courier.terminated" })
       else { throw MissionPackError("Mission calendar requires a closed courier declaration.") }
       return
     }

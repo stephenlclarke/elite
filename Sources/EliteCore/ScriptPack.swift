@@ -121,7 +121,7 @@ public enum ScriptCapabilities {
     "equipment.issued", "equipment.returned", "equipment.released",
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
     "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen", "book.unlocked",
-    "collection.delivered", "campaign.child.started",
+    "collection.delivered", "campaign.child.started", "courier.terminated",
   ]
 }
 

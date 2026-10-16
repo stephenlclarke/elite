@@ -33,3 +33,63 @@ import Testing
   }
   #expect(game.commander.contracts.boards[key]?.courierGeneration == original)
 }
+
+@Test func courierNoRouteLeavesBoardAndRandomStateUnchanged() throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  game.commander.fuel = 0
+  game.ensureMissionCalendar()
+  let before = game.commander
+  let random = game.randomState
+  #expect(throws: MissionPackError.self) { try game.ensureContractBoard(fixture.pack) }
+  #expect(game.commander == before && game.randomState == random)
+}
+
+@Test func courierAllDisabledLongRangeRowsKeepAllSixDrawsAndNeverReroll() throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  game.commander.fuelStorageUnits = 2
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.installNavigationComputer(.military)
+  let (key, _) = try fixture.offer(&game)
+  let frozen = try #require(game.commander.contracts.boards[key])
+  #expect(frozen.offers.count == 6 && frozen.courierGeneration?.draws.count == 6)
+  #expect(frozen.offers.allSatisfy { $0.courier!.calendarLowerBoundSeconds >= $0.duration })
+  for offer in frozen.offers {
+    #expect(!game.contractAcceptanceQuote(board: key, offer: offer.id).allowed)
+  }
+  let reopened = try game.ensureContractBoard(fixture.pack)
+  #expect(reopened == key && game.commander.contracts.boards[key] == frozen)
+  game.commander.fuel = 0
+  let again = try game.ensureContractBoard(fixture.pack)
+  #expect(again == key && game.commander.contracts.boards[key] == frozen)
+}
+
+@Test func courierActiveAndSuspendedProviderJobBlocksOtherStationsAndQuotedProgressIsRechecked()
+  throws
+{
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (key, offer) = try fixture.usable(&game)
+  let quote = game.contractAcceptanceQuote(board: key, offer: offer.id)
+  game.commander.scriptState.calendarSeconds += 0.1
+  game.commander.scriptState.missionCalendar?.seconds += 0.1
+  let id = try game.confirmContract(quote)
+  #expect(game.commander.scriptState.instances[id]?.contract?.acceptedAt == 0.1)
+  let sameBoard = try #require(game.commander.contracts.boards[key])
+  let other = try #require(sameBoard.offers.first { $0.id != offer.id })
+  #expect(!game.contractAcceptanceQuote(board: key, offer: other.id).allowed)
+  // Native travel to the frozen destination establishes another real station, not a rewritten origin.
+  try fixture.travel(&game, id: id)
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Fuel" })
+  game.purchase()
+  let secondKey = try game.ensureContractBoard(fixture.pack)
+  let second = try #require(game.commander.contracts.boards[secondKey]?.offers.first)
+  #expect(!game.contractAcceptanceQuote(board: secondKey, offer: second.id).allowed)
+  game.commander.scriptState.instances[id]?.suspension = "Content temporarily unavailable"
+  #expect(!game.contractAcceptanceQuote(board: secondKey, offer: second.id).allowed)
+  #expect(game.commander.scriptState.instances[id]?.courier?.terminal == nil)
+}

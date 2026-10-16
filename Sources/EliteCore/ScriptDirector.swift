@@ -683,10 +683,13 @@ extension Game {
       $0.id.uuidString < $1.id.uuidString
     }) where scriptPack(for: state) == nil {
       let pledged = commander.scriptState.pledgeLedger?.receipt(instance: state.id) != nil
+      let courierTerminal = state.courier?.terminal
       entries.append(
         GalleryMission(
           name: state.contract?.offer.title ?? state.definition,
-          status: pledged ? .complete : .locked,
+          status: pledged
+            ? .complete
+            : courierTerminal.map { $0.cause == .delivered ? .complete : .failed } ?? .locked,
           objective: pledged
             ? "Donation complete. Restore exact content for new offers."
             : "Restore the exact saved mission pack.",

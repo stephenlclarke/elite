@@ -201,7 +201,7 @@ extension Game {
       custody.pendingLoss = .init(
         id: ScriptIdentity.uuid("courier-fatal-v1:" + custody.item.uuidString),
         item: custody.item, clock: commander.scriptState.clock(.missionCalendar),
-        station: contractStation, epoch: ecmControl.epoch)
+        station: contractStation, epoch: ecmControl.epoch, context: scriptEventContext(state))
       state.courier = custody
       commander.scriptState.instances[id] = state
     }
@@ -248,10 +248,15 @@ extension Game {
         try completeCourier(cause, proof: proof, state: &state, candidate: &candidate.commander)
         state.revision += 1
         state.acknowledge(proof.sequence)
+        state.completionReceipt = candidate.nativeCourierCompletionReceipt(
+          state,
+          sequence: proof.sequence,
+          cause: custody.pendingLoss?.context ?? candidate.scriptEventContext(old))
         if state.journal.count < 512 {
           state.journal.append("Courier " + cause.rawValue + ". Paid: 0 CR.")
         }
         candidate.commander.scriptState.instances[id] = state
+        if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
         guard candidate.commander.valid else { throw SaveError.invalidCommander }
         try publish?(&candidate)
         self = candidate
@@ -372,5 +377,31 @@ extension Game {
   }
   var courierContactDetails: String {
     presentedCourier.map { courierGallerySummary($0) } ?? ""
+  }
+}
+
+extension Game {
+  /// Native terminal safety remains usable without Lua or the original content package.
+  func nativeCourierCompletionReceipt(
+    _ state: ScriptInstance, sequence: UInt64,
+    cause: ScriptEventContext
+  ) -> ScriptCompletionReceipt {
+    let delivered = commander.accommodation.people.values.filter { person in
+      guard person.mission == state.id else { return false }
+      if case .delivered = person.location { return true }
+      return false
+    }
+    return .init(
+      instance: state.id, definition: state.definition, version: state.version,
+      digest: state.digest, outcome: state.outcome, sequence: sequence,
+      causeKind: "courier.terminated",
+      cause: cause, committed: scriptEventContext(state), revision: state.revision,
+      milestones: state.milestones.sorted(),
+      destroyedEncounters: state.ownedEncounters.values.filter(\.destroyed).map(\.id).sorted(),
+      deliveredParties: Set(delivered.map(\.party)).sorted(),
+      returnedEquipment: state.gearIssues.values.filter { $0.status == .returned }.map(\.resource)
+        .sorted(),
+      settlementAmount: state.contract?.settlementAmount,
+      choices: state.choiceReceipts.isEmpty ? nil : state.choiceReceipts)
   }
 }
