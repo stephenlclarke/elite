@@ -12,7 +12,8 @@ private func cutterRuntimeGame() throws -> (Game, WreckSectionIdentity) {
   try game.commander.prepareEquipment(legacy: false)
   try game.commander.grantEquipment(
     "Salvage Cutter", at: .utility(.salvageCutter), provenance: .grant("runtime fixture"))
-  let identity = try #require(game.commander.flightSimulation.allocateActor())
+  let allocatedIdentity = game.commander.flightSimulation.allocateActor()
+  let identity = try #require(allocatedIdentity)
   let wreck = WreckIdentity(system: game.systemIdentity, site: 88, lineage: 99)
   // Find an actually visible section, rather than assuming a hull centre is a cutting point.
   for profile in SalvageCatalogue.all {
@@ -134,7 +135,8 @@ private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageL
     game.beginGameplayVisit(arriving: false)
     let original = game.bodies[0]
     let physical = try #require(original.physical)
-    let actor = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedActor = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocatedActor)
     let old = try #require(physical.salvage)
     let wreck = WreckIdentity(system: game.systemIdentity, site: 88, lineage: 99)
     let profile = try #require(SalvageCatalogue.profile(catalogueShipID: physical.catalogueShipID!))
@@ -199,7 +201,8 @@ extension SalvageCutterRuntimeTests {
   func staleOrForeignBodyCannotCollectAnotherActualActorsAcknowledgedLot(mismatch: String) throws {
     var (game, lot, bodyID) = try releasedCutterGame()
     let original = try #require(game.bodies.first { $0.id == bodyID })
-    let allocated = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedActor = game.commander.flightSimulation.allocateActor()
+    let allocated = try #require(allocatedActor)
     var actor = allocated
     var referenced = lot.identity
     if mismatch == "stale visit" {
