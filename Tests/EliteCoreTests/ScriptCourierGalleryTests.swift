@@ -501,3 +501,36 @@ extension NativeViewTests {
     #expect(await harness.delegate.runtime.snapshot().commander.scriptState.instances.isEmpty)
   }
 }
+
+@Test func courierStandaloneTrialHandlerFailurePreservesOriginalGame() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  let folder = fixture.directory.appendingPathComponent("parent0")
+  let module = folder.appendingPathComponent("scripts/main.lua")
+  let source = try String(contentsOf: module, encoding: .utf8)
+  let entry = "function M.accepted(e,w,d)"
+  try #require(source.contains(entry))
+  try source.replacingOccurrences(
+    of: entry, with: entry + "\n  error('Standalone trial rejected')"
+  ).write(to: module, atomically: true, encoding: .utf8)
+  let rejected = try ScriptPackLibrary.read(folder)
+  var game = fixture.game()
+  game.scriptPacks = [fixture.child, rejected]
+  game.commander.name = "KEEP TRIAL SETUP"
+  game.commander.credits = 12345
+  game.commander.cargo[0] = 3
+  let before = game
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = [.sortedKeys]
+  let world = try encoder.encode(before.scriptWorldSave)
+  do {
+    try game.prepareScriptTrial(packDigest: rejected.digest, seed: 42)
+    Issue.record("The real standalone accepted handler must reject preparation.")
+  } catch let error as MissionPackError {
+    #expect(error.localizedDescription.contains("Standalone trial rejected"))
+  }
+  #expect(game.commander == before.commander)
+  #expect(try encoder.encode(game.scriptWorldSave) == world)
+  #expect(game.screen == before.screen && game.message == before.message)
+  #expect(game.ecmControl.epoch == before.ecmControl.epoch)
+}
