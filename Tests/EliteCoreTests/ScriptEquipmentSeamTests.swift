@@ -39,27 +39,33 @@ struct ScriptEquipmentSeamTests {
     let old = try #require(instance.gearIssues["original"])
     let source = EquipmentIssueSource(
       mission: mission, resource: "original", packDigest: instance.digest)
-    instance.gearIssues["original"] = .init(
-      resource: source.resource, kind: .missile, items: old.items, loan: true,
-      returnRemaining: true, savedGearVersion: 2, source: source,
-      node: EquipmentRuntimeCatalog.standardMissile, displacements: [])
     let removed = OwnedEquipmentItem(
       id: old.items[0], node: EquipmentRuntimeCatalog.standardMissile,
       provenance: .missionIssue(
         mission: mission, resource: source.resource, index: 0,
         packDigest: source.packDigest))
     if field == "instance" {
-      engine.instances.removeValue(forKey: mission)
-      engine.instances[UUID(uuidString: "30000000-0000-0000-0000-000000000098")!] = instance
-      // Lookup under the original source must refuse rather than silently become personal.
-    } else {
-      let record = try #require(instance.gearIssues.removeValue(forKey: "original"))
-      instance.gearIssues["incorrect"] = record
-      engine.instances[mission] = instance
+      instance = ScriptInstance(
+        id: UUID(uuidString: "30000000-0000-0000-0000-000000000098")!,
+        definition: instance.definition, version: instance.version, digest: instance.digest)
     }
+    let mismatchedSource = EquipmentIssueSource(
+      mission: instance.id, resource: field == "resource" ? "different" : "original",
+      packDigest: instance.digest)
+    let record = ScriptGearIssue(
+      resource: mismatchedSource.resource, kind: .missile, items: old.items, loan: true,
+      returnRemaining: true, savedGearVersion: 2, source: mismatchedSource,
+      node: EquipmentRuntimeCatalog.standardMissile, displacements: [])
+    // Both lookups still succeed and the record is internally valid. Only its source address
+    // disagrees with the actual removed item, which the producer must refuse.
+    try #require(record.valid(for: instance))
+    instance.gearIssues["original"] = record
+    engine.instances[mission] = instance
+    let before = engine
     #expect(throws: EquipmentMigrationError.obligationMismatch) {
       try engine.gearConsumptionDelta(for: removed)
     }
+    #expect(engine == before)
   }
 
   @Test(arguments: ["instance", "resource"])
