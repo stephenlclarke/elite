@@ -6,8 +6,10 @@ extension LegacyOwnedEquipmentInventory {
     guard valid else { throw EquipmentMigrationError.unsupportedLegacyState }
     let byID = Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
     for instance in engine.instances.values {
-      for record in instance.gearIssues.values {
-        guard (record.savedGearVersion ?? 1) == 1, record.valid(for: instance) else {
+      for (key, record) in instance.gearIssues {
+        guard key == record.resource, (record.savedGearVersion ?? 1) == 1,
+          record.valid(for: instance)
+        else {
           throw EquipmentMigrationError.obligationMismatch
         }
         for id in record.items {
@@ -16,6 +18,11 @@ extension LegacyOwnedEquipmentInventory {
             guard !present else { throw EquipmentMigrationError.obligationMismatch }
           } else if record.loan && record.status == .issued && !present {
             throw EquipmentMigrationError.obligationMismatch
+          } else if let item = byID[id] {
+            guard item.kind == record.kind, item.issuedBy == instance.id,
+              item.sourceResource == record.resource,
+              item.loanOwner == (record.loan && record.status == .issued ? instance.id : nil)
+            else { throw EquipmentMigrationError.obligationMismatch }
           }
         }
       }
