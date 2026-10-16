@@ -1,12 +1,16 @@
 import Foundation
 
 extension Game {
-  /// Velocity is view-relative, so change its basis once with the actual camera.
-  /// The mission flight pass remains the sole integration of this velocity.
+  /// Mission actor and shot velocities are view-relative. Change their basis once;
+  /// their respective flight/shot passes remain the sole translation integrations.
   mutating func rotateScriptNPCVelocities(from before: ShipPose, to after: ShipPose) {
     for index in bodies.indices {
-      guard let velocity = bodies[index].scriptNPC?.velocity else { continue }
-      bodies[index].scriptNPC?.velocity = after.shipVector(before.orientation.apply(velocity))
+      if let velocity = bodies[index].scriptNPC?.velocity {
+        bodies[index].scriptNPC?.velocity = after.shipVector(before.orientation.apply(velocity))
+      }
+      if let velocity = bodies[index].scriptShot?.velocity {
+        bodies[index].scriptShot?.velocity = after.shipVector(before.orientation.apply(velocity))
+      }
     }
   }
 

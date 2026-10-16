@@ -1458,7 +1458,7 @@ public struct Game: Sendable {
         bodies[index].rotation += dt * bodies[index].rotationRate
         advanceCanonicalModelSpin(at: index, delta: dt)
         if let physical = bodies[index].physical, physical.spawnIdentity != nil,
-          physical.ordnance == nil
+          physical.ordnance == nil, bodies[index].scriptShot == nil
         {
           bodies[index].position =
             bodies[index].position
