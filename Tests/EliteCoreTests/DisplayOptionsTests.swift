@@ -15,7 +15,13 @@ import Testing
   game.energy = 3
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.commander.name == "CLARKE")
-  #expect(game.commander.equipment == Equipment.maximumHardware)
+  let maximumDevices = Equipment.maximumHardware.subtracting(["Fuel", "Missile"])
+  #expect(game.commander.equipment == maximumDevices)
+  let inventory = try #require(game.commander.equipmentInventory)
+  let fittedNames = Set(inventory.items.filter { $0.location != nil }.map(\.node.key))
+  #expect(maximumDevices.isSubset(of: fittedNames))
+  #expect(inventory.items.filter { $0.location != nil }.allSatisfy { $0.provenance == .xyzzy })
+  #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
   #expect(game.commander.credits == Commander.xyzzyStartingCredits && game.commander.cargo[0] == 3)
   #expect(game.commander.missiles == 4 && game.commander.fuel == game.commander.fuelCapacity)
   #expect(
@@ -42,6 +48,12 @@ import Testing
   game.key("escape")
   game.key("0")
   #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)
+  game.commander.credits -= 123
+  game.commander.fuel -= 1
+  game.commander.missiles -= 1
+  let beforeReentry = game.commander
+  for key in "xyzzy" { game.key(String(key)) }
+  #expect(game.commander == beforeReentry)
 }
 
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {
