@@ -562,11 +562,22 @@ struct MissionNativeBridgeTests {
         component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
     }
     #expect(invalid.commander == invalidBefore.commander && invalid.bodies == invalidBefore.bodies)
+    let queryBefore = game
+    let query = try game.queryMissionNativeLaser(
+      sourceBodyID: source.id, weapon: weapon,
+      component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
+    let currentBinding = try game.currentMissionNativeBinding(bodyID: source.id)
+    #expect(query.source == currentBinding)
+    #expect(query.weapon.damage == weapon.damage && query.contact == nil)
+    #expect(query.sourceComponentID == nil && query.context == game.gameplayContext())
+    #expect(game.commander == queryBefore.commander && game.bodies == queryBefore.bodies)
     let emission = game.commander.flightSimulation.nextEmission
     let proof = try game.makeMissionNativeLaserProof(
       sourceBodyID: source.id, weapon: weapon,
       component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
     #expect(proof.kind == .laser && proof.damage == weapon.damage && proof.contact == nil)
+    #expect(proof.source == query.source && proof.weapon == query.weapon)
+    #expect(proof.contact == query.contact && proof.origin.emittedAt == query.context.physicalTime)
     #expect(proof.sourceActorID == source.missionActorID && proof.origin.emissionID == emission)
     #expect(game.commander.flightSimulation.nextEmission == emission + 1)
     #expect(game.bodies == original.bodies)
