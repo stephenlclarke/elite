@@ -236,22 +236,30 @@ extension CourierFixture {
     let terms = try #require(state.commander.scriptState.instances[id]?.contract?.offer.courier)
     try await travel(runtime, path: terms.path)
   }
+  // Controlled launch/journey/dock-operation fixture; separate native cases prove physical approach.
   func travel(_ runtime: GameRuntime, path: [Int], dockFinal: Bool = true) async throws {
+    var exits = 0
+    while await runtime.snapshot().screen == .contracts, exits < 2 {
+      await runtime.key("escape")
+      exits += 1
+    }
     for destination in path.dropFirst() {
       await runtime.key("0")
-      #expect(!(await runtime.snapshot().docked))
+      let launched = await runtime.snapshot()
+      try #require(!launched.docked)
       await runtime.prepareCourierJumpFixture(destination: destination)
       await runtime.key("h")
       let started = await runtime.snapshot()
-      #expect(
+      try #require(
         started.commander.scriptState.calendarLedger?.pendingJourney?.destination == destination)
       var steps = 0
       while await runtime.snapshot().jumpCountdown != nil, steps < 10000 {
         _ = await runtime.advance(delta: 0.1)
         steps += 1
       }
-      #expect(steps > 0 && steps < 10000)
-      #expect(await runtime.snapshot().commander.system == destination)
+      try #require(steps > 0 && steps < 10000)
+      let arrived = await runtime.snapshot()
+      try #require(arrived.commander.system == destination)
       if dockFinal || destination != path.last {
         await runtime.dockCourierFixture(refuel: destination != path.last)
       }

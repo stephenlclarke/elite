@@ -79,7 +79,7 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
   var view: GameView
   var window: NSWindow?
   let originalMenu: NSMenu?
-  init(origin: Int = 7) async throws {
+  init(origin: Int = 7, physicalDocking: Bool = false) async throws {
     fixture = try CourierFixture()
     preferences = try #require(UserDefaults(suiteName: fixture.root.lastPathComponent))
     delegate = AppDelegate(
@@ -89,6 +89,7 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
     view = GameView(frame: NSRect(x: 0, y: 0, width: 512, height: 518))
     originalMenu = NSApp?.mainMenu
     var initial = fixture.game(system: origin)
+    if physicalDocking { initial.commander.installTargetingComputer(.docking) }
     initial.ensureScriptCalendar(origin: .newCommander)
     initial.viewportWidth = 512
     initial.viewportHeight = 518
@@ -174,11 +175,74 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
   }
 }
 
+// These two pinned one-hop cases retain the real launch/arrival traffic, station pose and
+// celestials. Only public flight controls and actor frames can reach the receiving station.
+@MainActor private func physicallyDeliverCourier(
+  _ harness: CourierInputHarness, id: UUID, row: Int
+) async throws {
+  let runtime = harness.delegate.runtime
+  let accepted = await runtime.snapshot()
+  let job = try #require(accepted.commander.scriptState.instances[id]?.contract)
+  let terms = try #require(job.offer.courier)
+  try #require(terms.path.count == 2 && accepted.commander.hasAutomaticDocking)
+  await runtime.key("escape")
+  await runtime.key("0")
+  var state = await runtime.snapshot()
+  try #require(!state.docked && state.screen.isFlight)
+  var launchFrames = 0
+  while state.massLocked, launchFrames < 2000 {
+    _ = await runtime.advance(delta: 0.05)
+    state = await runtime.snapshot()
+    launchFrames += 1
+  }
+  try #require(!state.massLocked && state.screen != .gameOver)
+  let destination = try #require(state.knownSystems.first { $0.id == terms.destination })
+  await runtime.selectSystem(x: destination.x, y: destination.y)
+  try #require(await runtime.snapshot().selectedSystem == terms.destination)
+  await runtime.key("h")
+  state = await runtime.snapshot()
+  try #require(
+    state.commander.scriptState.calendarLedger?.pendingJourney?.destination == terms.destination)
+  var jumpFrames = 0
+  while state.jumpCountdown != nil, jumpFrames < 10000 {
+    _ = await runtime.advance(delta: 0.1)
+    state = await runtime.snapshot()
+    jumpFrames += 1
+  }
+  try #require(jumpFrames > 0 && jumpFrames < 10000 && state.commander.system == terms.destination)
+  try #require(!state.docked && state.bodies.contains { $0.id == 0 && $0.hull == .station })
+  var selections = 0
+  while state.autoTargetBody?.id != 0, selections < 32 {
+    await runtime.key("r")
+    state = await runtime.snapshot()
+    selections += 1
+  }
+  try #require(state.autoTargetBody?.hull == .station && state.dockingComputer)
+  try captureCourierView(state, name: "row-\(row)-physical-approach")
+  var approachFrames = 0
+  var collision = false
+  while !state.docked && state.screen != .gameOver, approachFrames < 20000 {
+    _ = await runtime.advance(delta: 0.05)
+    state = await runtime.snapshot()
+    collision = collision || state.message == "DOCKING COLLISION"
+    approachFrames += 1
+  }
+  try #require(
+    state.docked && state.screen == .status,
+    "Physical arrival: \(state.autoPilot.status), frames \(approachFrames), \(state.message)")
+  #expect(!collision && approachFrames > 100)
+  #expect(state.commander.system == terms.destination)
+  #expect(
+    state.commander.scriptState.clock(.missionCalendar) - job.acceptedAt
+      > terms.calendarLowerBoundSeconds)
+  #expect(state.commander.scriptState.instances[id]?.courier?.terminal == nil)
+}
+
 extension NativeViewTests {
   @MainActor @Test func nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce() async throws {
     for row in 0..<6 {
       let pinned = CourierNativeFixture.rows[row]
-      let harness = try await CourierInputHarness(origin: pinned.origin)
+      let harness = try await CourierInputHarness(origin: pinned.origin, physicalDocking: row < 2)
       defer { harness.clean() }
       try await harness.review(row: row)
       try await harness.paint()
@@ -213,7 +277,11 @@ extension NativeViewTests {
       #expect(accepted.commander.scriptState.instances.count == 1)
       #expect(accepted.commander.scriptState.instances[id]?.courier?.terminal == nil)
       #expect(accepted.commander.cargoTonnes == offer.courier?.variant.tonnes)
-      try await harness.fixture.travel(harness.delegate.runtime, id: id)
+      if row < 2 {
+        try await physicallyDeliverCourier(harness, id: id, row: row)
+      } else {
+        try await harness.fixture.travel(harness.delegate.runtime, id: id)
+      }
       await harness.delegate.runtime.key("contacts-open")
       try await harness.paint()
       #expect(

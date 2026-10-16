@@ -45,7 +45,9 @@ final class ScriptCourierAdmission: Sendable {
   let item: UUID
   let proof: ScriptCourierActionProof
   let job: ScriptContractJob
-  init(kind: Kind, instance: UUID, item: UUID, proof: ScriptCourierActionProof, job: ScriptContractJob) {
+  init(
+    kind: Kind, instance: UUID, item: UUID, proof: ScriptCourierActionProof, job: ScriptContractJob
+  ) {
     self.kind = kind
     self.instance = instance
     self.item = item

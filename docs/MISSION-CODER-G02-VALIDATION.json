@@ -400,5 +400,138 @@
     "failure": "Only energy fatal retry: three assertions in one case; native death/pending fact retained, terminal publication fails",
     "inferredCause": "applyDamage allows negative energy; Game.tick enters gameOver without clamping; ScriptWorldSave.valid requires nonnegative energy"
   },
-  "fatalFailureDisposition": "Owner-approved only finite-negative energy normalization after real Runtime death, before pending loss/publisher/observers; exact failure now passes with retained pending/reserved custody on failed writer and once-only recovery."
+  "fatalFailureDisposition": "Owner-approved only finite-negative energy normalization after real Runtime death, before pending loss/publisher/observers; exact failure now passes with retained pending/reserved custody on failed writer and once-only recovery.",
+  "native_failure_checkpoint": {
+    "initial": {
+      "commit": "9c0a40c074741fc2309254612739182e7c927a50",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "nativeCourier"
+      ],
+      "seconds": 25.491682209074497,
+      "exit": 1,
+      "evidenceDirectory": "/tmp/elite-g02-native-9c0a40c"
+    },
+    "quiet_repeat": {
+      "commit": "9c0a40c074741fc2309254612739182e7c927a50",
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "nativeCourier"
+      ],
+      "startUTC": "2026-10-16T05:23:33.170097+00:00",
+      "endUTC": "2026-10-16T05:23:49.334145+00:00",
+      "seconds": 16.164095249958336,
+      "exit": 1,
+      "evidenceDirectory": "/tmp/elite-g02-native-9c0a40c-quiet",
+      "reason": "same-source quiet repeat after confirmed overlapping G1 compile cleanup"
+    },
+    "triage": {
+      "source": "9c0a40c074741fc2309254612739182e7c927a50",
+      "inputsUnchanged": 917,
+      "nativeCommandSeconds": 25.491682209074497,
+      "nativeMethodsDefined": 5,
+      "nativeMethodsFinished": 2,
+      "nativeMethodsStarted": 3,
+      "images": 36,
+      "result": "assertion cascade from board still open; thenSIGBUS stack-guard crash during real trialStart/fullquotes; core skipped",
+      "next": "normalinput escape board + failfast travel prerequisites; preservefullquote simulation and reduce candidate-local immutable admission footprint if owner accepts"
+    }
+  },
+  "admission_inline_diagnostic": {
+    "baseline": {
+      "commit": "bcc8fa6d26162692815d2fb9ac728d374daffab0",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-002",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "bcc8fa6d26162692815d2fb9ac728d374daffab0",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "purpose": "Approved admission layout/frame before-after diagnostics, then corrected native trial first; native/core bounded checks only if passing, no media/full CI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courierLayoutDiagnostic"
+      ],
+      "startUTC": "2026-10-16T05:34:50.862265+00:00",
+      "endUTC": "2026-10-16T05:34:57.020117+00:00",
+      "seconds": 6.157886834116653,
+      "exit": 0
+    },
+    "after": {
+      "commit": "263e404a4f23eb4824566b409a3457ca70ab71cf",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-002",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "263e404a4f23eb4824566b409a3457ca70ab71cf",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "purpose": "Approved admission layout/frame before-after diagnostics, then corrected native trial first; native/core bounded checks only if passing, no media/full CI"
+      },
+      "command": [
+        "swift",
+        "test",
+        "--no-parallel",
+        "--filter",
+        "courierLayoutDiagnostic"
+      ],
+      "startUTC": "2026-10-16T05:37:42.536269+00:00",
+      "endUTC": "2026-10-16T05:38:02.553711+00:00",
+      "seconds": 20.017513833008707,
+      "exit": 0
+    },
+    "bytes": {
+      "Game": [
+        9136,
+        8456
+      ],
+      "AdmissionSize": [
+        681,
+        8
+      ],
+      "AdmissionStride": [
+        688,
+        8
+      ],
+      "OptionalAdmissionSize": [
+        681,
+        8
+      ],
+      "ContractJobSize": [
+        553,
+        553
+      ],
+      "ContractJobStride": [
+        560,
+        560
+      ],
+      "CourierPreview": [
+        232,
+        232
+      ],
+      "AcceptanceQuote": [
+        2592,
+        2592
+      ]
+    },
+    "approvedPatchSHA256": "c686371ca899d29ba57a3a1ef27b261fb40e9ad1101c6ecef308449ba259cc8c",
+    "limits": "Inline reference footprint only; heap payload and peak stack unmeasured. Swift default debug flags unchanged; full quote simulation/two-phase Gallery preparation retained. Temporary diagnostic removed before native validation.",
+    "frameEvidence": "/tmp/elite-g02-checkpoint/admission-frame-comparison.json",
+    "copySites": [
+      "ScriptGalleryTrial.startScriptGalleryTrial candidate, prepareScriptTrial full board refresh",
+      "ScriptContractCore.contractAcceptanceQuote candidate, acceptContract candidate",
+      "ScriptDirector.acceptScriptMission candidate, drainScriptEvents candidate",
+      "ScriptCourier.resolveCourierTerminals candidate, confirmCourierContact candidate"
+    ]
+  }
 }
