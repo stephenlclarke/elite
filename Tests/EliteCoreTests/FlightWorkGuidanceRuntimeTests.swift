@@ -241,8 +241,26 @@ struct FlightWorkGuidanceRuntimeTests {
     let collectedActor = try addWorkCargo(
       &game, position: .init(0, 0, 500), velocity: .init(0, 0, 10))
     engageWorkCargo(&game)
-    // Engage while facing the actual front face, then start the capture check at its aperture.
+    // The cargo mesh is an octahedron: align with its selected real diagonal face.
+    let state = try #require(game.workGuidance)
+    let targetPose = game.modelPose(of: game.bodies[0])
+    let normal = targetPose.orientation.apply(state.surface.normal).unit
+    var desired = Basis3()
+    desired.z = normal * -1
+    var up = targetPose.orientation.y - desired.z * targetPose.orientation.y.dot(desired.z)
+    if up.length < 1e-6 {
+      up = targetPose.orientation.x - desired.z * targetPose.orientation.x.dot(desired.z)
+    }
+    desired.y = up.unit
+    desired.x = desired.y.cross(desired.z).unit
+    let old = game.commander.flightSimulation.pose
+    game.bodies[0].orientation = desired.transposed.composed(
+      with: old.orientation.composed(with: game.bodies[0].orientation))
+    game.commander.flightSimulation.pose.orientation = desired
     game.bodies[0].position = .init(0, -45, 55)
+    let actualNormal = game.commander.flightSimulation.pose.shipVector(
+      game.modelPose(of: game.bodies[0]).orientation.apply(state.surface.normal))
+    #expect((actualNormal - Vector3(0, 0, -1)).length < 1e-8)
     game.workGuidance?.velocity = game.bodies[0].physical?.velocity ?? .init(0, 0, 0)
     if let payload = game.bodies[0].physical?.payload, case .salvage(let lot) = payload {
       game.commander.salvageLedger.updateLot(
