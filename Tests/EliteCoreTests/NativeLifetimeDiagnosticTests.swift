@@ -118,46 +118,48 @@ private func lifetimeDiagnosticCycle(_ iteration: Int, directory: URL) async thr
   }
   delegate.applicationDidFinishLaunching(
     Notification(name: NSApplication.didFinishLaunchingNotification))
-  let window = try #require(delegate.window)
-  let view = try #require(window.contentView as? GameView)
-  let witness = NativeLifetimeWitness(delegate: delegate, window: window, view: view)
-  let loop = try #require(delegate.loop)
   do {
+    let window = try #require(delegate.window)
+    let view = try #require(window.contentView as? GameView)
+    let witness = NativeLifetimeWitness(delegate: delegate, window: window, view: view)
+    let loop = try #require(delegate.loop)
     try witness.write("opened", iteration: iteration, directory: directory)
-  } catch {
     loop.cancel()
     await loop.value
+    witness.loopJoined = true
+    #expect(loop.isCancelled)
+    try witness.write("joined", iteration: iteration, directory: directory)
+    try await delegate.runtime.load(from: save, persistMigrations: false)
+    try await delegate.runtime.installLifetimeDiagnosticScene(scene)
+    window.setContentSize(.init(width: 768, height: 768))
+    #expect(view.bounds.width == 768 && view.bounds.height == 768)
+    await delegate.runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
+    view.game = await delegate.runtime.snapshot()
+    view.pending.removeAll()
+    await delegate.processFrame(in: view, delta: { 1.0 / 60 })
+    #expect(!view.game.docked && view.pending.isEmpty && !view.controls.fire)
+    try captureLifetimeFrame(
+      view, destination: directory.appendingPathComponent("cycle-\(iteration)-original-native.png"))
+    let savedBytes = try Data(contentsOf: save)
+    #expect(savedBytes == bytes)
+    #expect(delegate.saves.activeURL == save)
+    #expect(preferences.persistentDomain(forName: identifier) == nil)
+    try witness.write("framed-audio-updated-drawn", iteration: iteration, directory: directory)
+    // Explicit teardown permits a receipt while locals still hold their original strong references.
+    delegate.windowWillClose(Notification(name: NSWindow.willCloseNotification))
+    window.orderOut(nil)
+    window.delegate = nil
+    NSApp.mainMenu = oldMenu
+    teardownFinished = true
+    try witness.write("torn-down-before-local-release", iteration: iteration, directory: directory)
+    return witness
+  } catch {
+    if let loop = delegate.loop {
+      loop.cancel()
+      await loop.value
+    }
     throw error
   }
-  loop.cancel()
-  await loop.value
-  witness.loopJoined = true
-  #expect(loop.isCancelled)
-  try witness.write("joined", iteration: iteration, directory: directory)
-  try await delegate.runtime.load(from: save, persistMigrations: false)
-  try await delegate.runtime.installLifetimeDiagnosticScene(scene)
-  window.setContentSize(.init(width: 768, height: 768))
-  #expect(view.bounds.width == 768 && view.bounds.height == 768)
-  await delegate.runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
-  view.game = await delegate.runtime.snapshot()
-  view.pending.removeAll()
-  await delegate.processFrame(in: view, delta: { 1.0 / 60 })
-  #expect(!view.game.docked && view.pending.isEmpty && !view.controls.fire)
-  try captureLifetimeFrame(
-    view, destination: directory.appendingPathComponent("cycle-\(iteration)-original-native.png"))
-  let savedBytes = try Data(contentsOf: save)
-  #expect(savedBytes == bytes)
-  #expect(delegate.saves.activeURL == save)
-  #expect(preferences.persistentDomain(forName: identifier) == nil)
-  try witness.write("framed-audio-updated-drawn", iteration: iteration, directory: directory)
-  // Explicit teardown permits a receipt while locals still hold their original strong references.
-  delegate.windowWillClose(Notification(name: NSWindow.willCloseNotification))
-  window.orderOut(nil)
-  window.delegate = nil
-  NSApp.mainMenu = oldMenu
-  teardownFinished = true
-  try witness.write("torn-down-before-local-release", iteration: iteration, directory: directory)
-  return witness
 }
 
 extension NativeViewTests {
