@@ -4,6 +4,9 @@ import Foundation
 public struct InventoryContextEpoch: Sendable, Equatable {
   private let value: UUID
   init() { value = UUID() }
+  /// Reuses the already captured context for discarded fitting previews only.
+  /// An actual user mutation allocates its own command once in the Game adapter.
+  var planningCommandID: UUID { value }
 }
 
 public enum InventorySubject: Sendable, Equatable {
@@ -119,13 +122,17 @@ extension Game {
           label: "", detail: "Required ship system - replace with a compatible device",
           command: nil)
       }
-      try projected.storeEquipment(item, expectedRevision: inventory.revision)
+      try projected.storeEquipment(
+        item, expectedRevision: inventory.revision,
+        command: inventoryContextEpoch.planningCommandID)
       return .init(
         label: "Store", detail: "Keep this device aboard",
         command: inventoryCommand(.store(item), inventory: inventory))
     }
     let slot = try inventoryFitSlot(item.node)
-    try projected.fitEquipment(item, at: slot, expectedRevision: inventory.revision)
+    try projected.fitEquipment(
+      item, at: slot, expectedRevision: inventory.revision,
+      command: inventoryContextEpoch.planningCommandID)
     return .init(
       label: "Fit", detail: "Destination: " + inventorySlotLabel(slot),
       command: inventoryCommand(.fit(item, slot), inventory: inventory))

@@ -239,6 +239,12 @@ extension Game {
       owner: inventory.owner, hull: inventory.activeHull, performance: commander.performance)
     guard context.supportedSlots.contains(slot) else { throw EquipmentRuntimeError.noSlot }
     if let installed = commander.fittedEquipment(at: slot) {
+      if EquipmentIssueTransactions.activeLoan(
+        for: installed,
+        obligations: try commander.equipmentIssueObligations()) != nil
+      {
+        throw EquipmentIssueError.foreignLoan(installed.id)
+      }
       if let before = installed.component,
         let after = EquipmentRuntimeCatalog.stockComponent(for: node, id: before.id),
         EquipmentRuntimeCatalog.reducesStatistics(after, from: before)

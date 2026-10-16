@@ -72,31 +72,83 @@ extension Commander {
     self = candidate
   }
 
-  mutating func storeEquipment(_ item: OwnedEquipmentItem, expectedRevision: UInt64) throws {
-    guard var inventory = equipmentInventory else { throw CommanderEquipmentError.incompleteState }
-    let context = EquipmentRuntimeCatalog.context(
-      owner: inventory.owner, hull: inventory.activeHull, performance: performance)
-    try inventory.store(expected: item, expectedRevision: expectedRevision, context: context)
-    var candidate = self
-    candidate.savedEquipmentInventory = inventory
-    candidate.mirrorFittedEquipment()
-    guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
-    self = candidate
+  mutating func storeEquipment(
+    _ item: OwnedEquipmentItem, expectedRevision: UInt64, command: UUID? = nil
+  ) throws {
+    try changeEquipmentFitting(
+      item, destination: nil, expectedRevision: expectedRevision, command: command)
   }
 
   mutating func fitEquipment(
-    _ item: OwnedEquipmentItem, at slot: ComponentFittingSlot, expectedRevision: UInt64
+    _ item: OwnedEquipmentItem, at slot: ComponentFittingSlot, expectedRevision: UInt64,
+    command: UUID? = nil
   ) throws {
+    guard let inventory = equipmentInventory else { throw CommanderEquipmentError.incompleteState }
+    try changeEquipmentFitting(
+      item,
+      destination: .init(hullInstanceID: inventory.activeHull, slot: slot),
+      expectedRevision: expectedRevision, command: command)
+  }
+
+  /// Native own-issue fittings use the same sealed physical provider and retained
+  /// restoration receipt as Lua. Personal actions cannot displace an active loan.
+  private mutating func changeEquipmentFitting(
+    _ item: OwnedEquipmentItem, destination: ComponentFittingLocation?, expectedRevision: UInt64,
+    command: UUID?
+  ) throws {
+    try validateEquipmentState()
     guard var inventory = equipmentInventory else { throw CommanderEquipmentError.incompleteState }
+    guard inventory.revision == expectedRevision else { throw OwnedEquipmentError.staleRevision }
     let context = EquipmentRuntimeCatalog.context(
-      owner: inventory.owner, hull: inventory.activeHull, performance: performance)
-    let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
-    let occupied = inventory.items.first { $0.location == location }
-    try inventory.fit(
-      expected: item, at: location, replacing: occupied, expectedRevision: expectedRevision,
-      context: context)
+      owner: inventory.owner, hull: inventory.activeHull,
+      performance: nativePerformance)
+    let obligations = try equipmentIssueObligations()
+    let occupied = destination.flatMap { location in
+      inventory.items.first { $0.location == location }
+    }
     var candidate = self
-    candidate.savedEquipmentInventory = inventory
+    if let issue = obligations.first(where: { $0.status == .issued && $0.items.contains(item.id) })
+    {
+      guard let command else { throw EquipmentIssueError.invalidRequest }
+      let projection = inventory.items.map { current in
+        if current.id == item.id { return current.moved(to: destination) }
+        if current.id == occupied?.id { return current.moved(to: nil) }
+        return current
+      }
+      let budget = try equipmentFitBudget(projectedItems: projection)
+      let quote = try EquipmentIssueTransactions.quoteFitting(
+        command: command, obligation: issue,
+        item: item, destination: destination, replacing: occupied, inventory: inventory,
+        context: context, obligations: obligations, budget: budget)
+      let application = try EquipmentIssueTransactions.applyFitting(
+        quote: quote, inventory: inventory,
+        context: context, obligations: obligations, budget: budget)
+      candidate.savedEquipmentInventory = application.inventory
+      candidate.scriptState = try scriptState.applying(application.receipt)
+    } else if let destination {
+      if let occupied,
+        EquipmentIssueTransactions.activeLoan(for: occupied, obligations: obligations) != nil
+      {
+        throw EquipmentIssueError.foreignLoan(occupied.id)
+      }
+      if item.node == EquipmentRuntimeCatalog.standardMissile {
+        let quote = try StandardAmmunitionTransactions.quoteLoad(
+          item: item, destination: destination,
+          inventory: inventory, context: context, obligations: obligations)
+        let application = try StandardAmmunitionTransactions.applyLoad(
+          quote: quote, inventory: inventory,
+          context: context, obligations: obligations)
+        candidate.savedEquipmentInventory = application.inventory
+      } else {
+        try inventory.fit(
+          expected: item, at: destination, replacing: occupied,
+          expectedRevision: expectedRevision, context: context)
+        candidate.savedEquipmentInventory = inventory
+      }
+    } else {
+      try inventory.store(expected: item, expectedRevision: expectedRevision, context: context)
+      candidate.savedEquipmentInventory = inventory
+    }
     candidate.mirrorFittedEquipment()
     guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
     self = candidate
@@ -113,6 +165,12 @@ extension Commander {
     }
     guard let item = inventory.items.first(where: { $0.node == node && $0.location != nil }) else {
       return false
+    }
+    if let issue = try equipmentIssueObligations().first(where: {
+      $0.status == .issued && $0.items.contains(item.id)
+    }) {
+      if issue.loan { throw EquipmentIssueError.foreignLoan(item.id) }
+      throw EquipmentIssueError.unsupportedReplacement
     }
     try inventory.remove(expected: item, expectedRevision: inventory.revision, context: context)
     var candidate = self
@@ -145,10 +203,19 @@ extension Commander {
       var inventory = candidate.equipmentInventory
     else { throw EquipmentRuntimeError.unavailable }
     if candidate.fittedEquipment(at: slot)?.node == node { return }
+    let obligations = try candidate.equipmentIssueObligations()
+    if let installed = candidate.fittedEquipment(at: slot),
+      EquipmentIssueTransactions.activeLoan(for: installed, obligations: obligations) != nil
+    {
+      throw EquipmentIssueError.foreignLoan(installed.id)
+    }
     let context = EquipmentRuntimeCatalog.context(
       owner: inventory.owner, hull: inventory.activeHull, performance: candidate.performance)
     let item: OwnedEquipmentItem
-    if let held = inventory.items.first(where: { $0.node == node && $0.location == nil }) {
+    if let held = inventory.items.first(where: { item in
+      item.node == node && item.location == nil && (item.retainedLegacyState?.pristine ?? true)
+        && !obligations.contains { $0.status == .issued && $0.items.contains(item.id) }
+    }) {
       item = held
     } else {
       let id = UUID()
@@ -184,7 +251,8 @@ extension Game {
   mutating func storeEquipment(_ item: OwnedEquipmentItem, expectedRevision: UInt64) throws {
     guard docked else { throw EquipmentRuntimeError.unavailable }
     var candidate = self
-    try candidate.commander.storeEquipment(item, expectedRevision: expectedRevision)
+    try candidate.commander.storeEquipment(
+      item, expectedRevision: expectedRevision, command: UUID())
     candidate.preserveEquipmentResourceFractions(from: self)
     self = candidate
   }
@@ -194,7 +262,8 @@ extension Game {
   ) throws {
     guard docked else { throw EquipmentRuntimeError.unavailable }
     var candidate = self
-    try candidate.commander.fitEquipment(item, at: slot, expectedRevision: expectedRevision)
+    try candidate.commander.fitEquipment(
+      item, at: slot, expectedRevision: expectedRevision, command: UUID())
     candidate.preserveEquipmentResourceFractions(from: self)
     self = candidate
   }

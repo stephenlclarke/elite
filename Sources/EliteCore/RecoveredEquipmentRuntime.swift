@@ -27,6 +27,11 @@ extension Commander {
       let location = item.location,
       let version = UInt32(exactly: component.origin.identity.version)
     else { throw RecoveredEquipmentError.missingComponent }
+    if EquipmentIssueTransactions.activeLoan(
+      for: item, obligations: try equipmentIssueObligations()) != nil
+    {
+      throw EquipmentIssueError.loanModificationRefused(item.id)
+    }
     let source = salvageLedger
     let binding = SalvageTransactionBinding.equipment(
       target: .hull(instance: inventory.activeHull), expectedComponentInstanceID: component.id,
