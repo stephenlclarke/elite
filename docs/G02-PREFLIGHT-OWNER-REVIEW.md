@@ -1,0 +1,23 @@
+# G02 source and native preflight review
+
+Researcher closes source/native/representative visual preflight at `8fc1632c33da3e21e6347e4b4e40f5048f692747`. Mission Coder is authorized through Orchestrator to complete required legacy regression, renderer media, immutable refreeze and full CI under its assigned exclusive slot. This is not final mission acceptance, central integration, formal PR approval or whole-engine completion.
+
+## Independently verified evidence
+
+All917 frozen file SHA-256 values match immutable Git blobs. Trial, remaining-native and core lane maps are identical. Raw results/logs show the real trial Start/Save/Reload/menu Restart/Return passed in20.877647 command seconds, four remaining native methods passed in16.867495 seconds, and33 core methods/49 invocations passed in21.089868 seconds. Each lane reports exit0, unchanged inputs and unchanged production save/preferences.
+
+Both data and physical-package cases retain real traffic/celestials/station pose and use actual controls, actor frames and automatic physical docking before the painted receiving handoff. They do not force docking or substitute world location. Other deterministic travel fixtures are explicitly described as controlled launch/journey/dock-operation tests. All six difficulty/variant choices have painted once-only acceptance/handoff and durable reload evidence. Pinned generator provenance, real multi-hop clock boundaries and equality/late/disabled cases have focused coverage.
+
+Fifty-four original PNG files independently passed CRC, dimensions and SHA-256 checks: eight trial and46 remaining-native captures. Representative visual inspection covered compact receiving contact, blocked/scrolled package terms, package physical approach, trial held reload, trial return, paid difficulty3 Gallery, and wide full review/abandonment. No clipping, overlap, incorrect unit/payment or default-Back finding was observed in those eight views. This does not claim individual visual inspection of every original. The local owner image map is `/tmp/elite-g02-owner-original-images.json`.
+
+## Resolved source findings and crash boundary
+
+Native expiry/escape/fatal outcomes now publish real shared completion receipts and ordinary completion observers in the same terminal candidate, including when content is missing. Only the terminal job's obsolete pending events are removed; unrelated events and rollback are preserved. Custody validation requires the shared receipt, exact instance/sequence/revision/action-cause linkage and actual station/docking facts where required. Held/pending items cannot contain a terminal shared receipt. Original fatal context remains captured across writer retry.
+
+Actual finite combat overkill is normalized to zero only after the real live-to-game-over transition and before loss publication. Nonfinite rejection and damage/physics remain intact. Writer failure retains the dead ship and reserved, undeliverable pending package; recovery publishes one zero-payment loss outcome and releases only that custody.
+
+The exact754-byte approved admission patch uses an internal immutable final Sendable class with the same five let fields and initializer labels. Original-action token/sequence/epoch/clock/resource checks and clearing remain unchanged. Measured Game size changed from9136 to8456 bytes; optional admission storage changed from688-byte stride to8. Fixed frame prologues were mostly unchanged, and runtime peak stack/heap was not measured. The corrected actual trial passed; full sanitizer evidence is still required. Both failed native runs, crashes, earlier compile/focused failures and diagnostic source/artifacts must be retained, including the quiet repeat. Resource overlap is recorded separately and is not asserted to be the crash cause.
+
+## Final return required
+
+Preserve full quote simulation and two-phase private trial preparation. Complete necessary old-pack regression and renderer-driven fingerprints/media; commit and freeze all final inputs and original/durable image/failure hashes. Run fresh complete `make ci` coverage, thread/address sanitizers and leak gates without changing frozen source or test/stack/settings policy. Stop on a real failure and return its exact evidence/proposed correction before retry. Return immutable source/media/final commits, patch and raw bundle hashes, coverage, counts, durations and leak results through Orchestrator for owner acceptance and local integration. Historical mission rollout, earned equipment/health composition and Inventory Start/Return epoch integration remain separately pending.
