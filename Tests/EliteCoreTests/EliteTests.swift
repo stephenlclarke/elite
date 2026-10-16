@@ -346,7 +346,8 @@ import Testing
   #expect(game.time == time)
   game.bodies = [SpaceBody(id: 3, hull: .cargo, position: .init(0, 0, 50000))]
   game.tick(delta: 0.02)
-  #expect(game.bodies.isEmpty)
+  #expect(!game.bodies.contains { $0.id == 3 })
+  #expect(game.bodies.allSatisfy { $0.physical?.spawnIdentity != nil })
 }
 
 @Test func viewTransformsAndGeometry() {
@@ -613,15 +614,28 @@ import Testing
   game.key("8")
   #expect(game.commander.unlimitedCargo && game.message == "SELL EXCESS CARGO FIRST")
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+  #expect(
+    ready.commander.credits == game.commander.credits
+      && ready.commander.cargo == game.commander.cargo)
+  #expect(
+    ready.commander.unlimitedCargo == game.commander.unlimitedCargo
+      && ready.commander.unlimitedCash == game.commander.unlimitedCash
+      && ready.commander.fuel == game.commander.fuel
+      && ready.commander.shipID == game.commander.shipID)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   try await runtime.save(to: url)
-  let restored = GameRuntime()
-  try await restored.load(from: url)
-  var expected = game.commander
+  #expect(await runtime.snapshot().commander == ready.commander)
+  var expected = ready.commander
   if expected.npcPersistence.count > 0 {
     expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
   }
+  let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+  #expect(persisted == expected)
+  let restored = GameRuntime()
+  try await restored.load(from: url)
   #expect(await restored.snapshot().commander == expected)
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.key("8")

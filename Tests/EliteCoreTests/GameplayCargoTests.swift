@@ -111,11 +111,20 @@ struct GameplayCargoTests {
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     defer { try? FileManager.default.removeItem(at: directory) }
     let runtime = GameRuntime(game: game)
+    let ready = await runtime.snapshot()
+    #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+    #expect(ready.commander.cargo == game.commander.cargo && ready.bodies == game.bodies)
+    #expect(
+      ready.commander.credits == game.commander.credits
+        && ready.commander.fuel == game.commander.fuel
+        && ready.commander.missiles == game.commander.missiles)
+    #expect(ready.commander.cargoDebrisLedger == game.commander.cargoDebrisLedger)
     var failed = false
     do { try await runtime.save(to: directory) } catch { failed = true }
     #expect(failed)
     let after = await runtime.snapshot()
-    #expect(after.commander == game.commander && after.bodies == game.bodies)
+    #expect(after.commander == ready.commander && after.bodies == ready.bodies)
+    #expect(after.inventoryContextEpoch == ready.inventoryContextEpoch)
     let url = directory.appendingPathComponent("commander.json")
     try await runtime.save(to: url)
     let saved = await runtime.snapshot()
