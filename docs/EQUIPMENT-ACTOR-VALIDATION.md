@@ -31,3 +31,5 @@ Tracked inputs and private native preference maps remained unchanged during ever
 | 024/tsan.log | `e93969b3cca21e6573b01d0a098732b01b7f37e40b647582237307f34cfcc3d5` |
 | 024/asan.log | `f0f9caa499edd5651946b75402122581b28128205ea53cf48ebb561ccbbca00d` |
 | 024/ci.log | `29533c437095f37501e060c9db34a8d77faf290e124ed39c2b3e35365ece3072` |
+
+The subsequent [combined central 026 gate](CENTRAL-COMBINED-GATE-VALIDATION-026.md) passed on exact committed source `4cf39004374c0d253b955a5150b7b2d5589ddebc`, after the independently reviewed foundation corrections and required renderer regeneration. All 840 tests passed in coverage, full TSan and serial ASan runs; line coverage is 95.08%, and leak diagnostics report zero leaks. This later result preserves the failed isolated 023/024 runs above. The independent whole-app review remains open; passing CI is not a clean review or release approval.
