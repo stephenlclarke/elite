@@ -974,4 +974,32 @@ struct MissionNativeBridgeTests {
     #expect(swept.hit.distance < zero.hit.distance)
   }
 
+  @Test func inflatedBoundsSkipOffAxisInvalidFacesButCandidateGeometryStillRefuses() throws {
+    var game = try bridgeCollisionGame()
+    let data = try JSONSerialization.data(withJSONObject: [
+      "vertices": [[0, 0, 0], [3, 3, 0], [0, 3, 0], [3, 0, 0]],
+      "faces": Array(repeating: [0, 1, 2, 3], count: 4),
+      "source": "finite candidate bounds regression", "license": "CC0",
+    ])
+    let design = try JSONDecoder().decode(ShipDesign.self, from: data)
+    #expect(ScriptPackLibrary.scriptGeometryValid(design))
+    let digest = try #require(game.bodies[0].scriptNPC?.fit.models["asset:polygon"])
+    game.commander.scriptState.geometry[digest] = design
+    for position in [Vector3(1000, 0, 100), Vector3(0, 0, 1000)] {
+      game.bodies[0].position = position
+      for radius in [0.0, 0.1] {
+        let result = try game.nearestMissionCollision(
+          from: .init(0, 0, 0),
+          direction: .init(0, 0, 1), range: 200, radius: radius, includePlayer: false)
+        #expect(result == nil)
+      }
+    }
+    game.bodies[0].position = .init(0, 0, 100)
+    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+      try game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1),
+        range: 200, radius: 0.1, includePlayer: false)
+    }
+  }
+
 }

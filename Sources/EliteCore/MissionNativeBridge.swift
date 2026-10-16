@@ -553,13 +553,10 @@ extension Game {
       guard usableFaces > 0 else { throw MissionNativeBridgeError.invalidGeometry }
       return result
     }
-    func swept(
-      _ mesh: Mesh, transform: (Vector3) -> Vector3, target: GameplayHitTarget,
-      body: SpaceBody? = nil, part: String? = nil, component: UUID? = nil
-    ) -> Bool {
-      guard let faces = try? prepare(mesh) else { return false }
-      let vertices = mesh.vertices.map(transform)
-      guard vertices.allSatisfy(finite), let first = vertices.first else { return false }
+    // Finite transformed vertex bounds conservatively reject meshes before any face work.
+    // Nil means invalid bounds; false is a genuine bounded miss, not an invalid-face fallback.
+    func intersectsBounds(_ vertices: [Vector3]) -> Bool? {
+      guard vertices.allSatisfy(finite), let first = vertices.first else { return nil }
       var lower = first
       var upper = first
       for vertex in vertices.dropFirst() {
@@ -568,7 +565,7 @@ extension Game {
       }
       lower = lower - .init(radius, radius, radius)
       upper = upper + .init(radius, radius, radius)
-      guard finite(lower), finite(upper) else { return false }
+      guard finite(lower), finite(upper) else { return nil }
       var entry = 0.0
       var exit = range
       for (start, motion, low, high) in [
@@ -577,15 +574,25 @@ extension Game {
         (origin.z, direction.z, lower.z, upper.z),
       ] {
         if motion == 0 {
-          if start < low || start > high { return true }
+          if start < low || start > high { return false }
         } else {
           let a = (low - start) / motion
           let b = (high - start) / motion
           entry = max(entry, min(a, b))
           exit = min(exit, max(a, b))
-          if entry > exit { return true }
+          if entry > exit { return false }
         }
       }
+      return true
+    }
+    func swept(
+      _ mesh: Mesh, transform: (Vector3) -> Vector3, target: GameplayHitTarget,
+      body: SpaceBody? = nil, part: String? = nil, component: UUID? = nil
+    ) -> Bool {
+      let vertices = mesh.vertices.map(transform)
+      guard let candidate = intersectsBounds(vertices) else { return false }
+      guard candidate else { return true }
+      guard let faces = try? prepare(mesh) else { return false }
       for face in faces {
         if let distance = ScriptSweptCollision.triangle(
           origin: origin, direction: direction, range: range, radius: radius,
@@ -616,13 +623,33 @@ extension Game {
     }
     // Native zero-radius rays retain the existing exact authored-polygon clipping path.
     if radius == 0 {
-      let native = live.filter { $0.scriptNPC == nil }
-      for body in native { _ = try prepare(gameplayMesh(for: body)) }
-      if includePlayer { _ = try prepare(commander.playerMesh) }
+      let overrides = gameplayMeshOverrides
+      var native: [SpaceBody] = []
+      for body in live where body.scriptNPC == nil {
+        let mesh = overrides[body.id] ?? Mesh.hull(body.hull)
+        guard
+          let candidate = intersectsBounds(
+            mesh.vertices.map { body.position + body.modelVector($0) })
+        else { throw MissionNativeBridgeError.invalidGeometry }
+        if candidate {
+          _ = try prepare(mesh)
+          native.append(body)
+        }
+      }
+      var playerMesh: Mesh?
+      if includePlayer {
+        let mesh = commander.playerMesh
+        guard let candidate = intersectsBounds(mesh.vertices) else {
+          throw MissionNativeBridgeError.invalidGeometry
+        }
+        if candidate {
+          _ = try prepare(mesh)
+          playerMesh = mesh
+        }
+      }
       if let hit = GameplayRaycast.nearest(
         origin: origin, direction: direction, maxDistance: range,
-        bodies: native, playerMesh: includePlayer ? commander.playerMesh : nil,
-        meshOverrides: gameplayMeshOverrides)
+        bodies: native, playerMesh: playerMesh, meshOverrides: overrides)
       {
         let body: SpaceBody?
         if case .body(let id) = hit.target {
@@ -652,6 +679,11 @@ extension Game {
               (position + orientation.apply($0 * scale)) * npc.fit.definition.scale
             }, faces: mesh.faces, preserveWinding: true)
           if radius == 0 {
+            guard
+              let candidate = intersectsBounds(
+                local.vertices.map { body.position + body.modelVector($0) })
+            else { return false }
+            guard candidate else { return true }
             guard (try? prepare(local)) != nil else { return false }
             if let hit = GameplayRaycast.nearest(
               origin: origin, direction: direction,
