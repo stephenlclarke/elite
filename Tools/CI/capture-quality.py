@@ -49,6 +49,22 @@ def snapshot():
     return rows
 
 
+def crash_launch_time(value):
+    """Apple reports use a space before the UTC offset; accept explicit zoned formats only."""
+    if not isinstance(value, str):
+        return None
+    for pattern in ('%Y-%m-%d %H:%M:%S.%f %z', '%Y-%m-%d %H:%M:%S %z'):
+        try:
+            return datetime.strptime(value, pattern).timestamp()
+        except ValueError:
+            pass
+    try:
+        parsed = datetime.fromisoformat(value)
+        return parsed.timestamp() if parsed.tzinfo is not None else None
+    except ValueError:
+        return None
+
+
 def remember(pid, row):
     if known.get(pid, {}).get('start') != row['start']:
         process_history.setdefault(pid, []).append(row)
@@ -220,10 +236,7 @@ finally:
                     binary = os.path.realpath(payload['procPath'])
                     launch = payload.get('procLaunch')
                     detail.update({'crashedPID': pid, 'binary': binary, 'launch': launch})
-                    try:
-                        launch_time = datetime.fromisoformat(launch).timestamp()
-                    except (TypeError, ValueError):
-                        launch_time = None
+                    launch_time = crash_launch_time(launch)
                     for record in process_history.get(pid, []):
                         observed = datetime.strptime(record['start'], '%a %b %d %H:%M:%S %Y').timestamp()
                         arguments = shlex.split(record['command'])
