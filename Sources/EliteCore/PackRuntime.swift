@@ -168,7 +168,32 @@ extension Game {
       notify(error.localizedDescription.uppercased())
       return false
     }
+    // Stage scalar resources after all fallible checks without another whole-Game copy.
+    let oldEnergyCapacity = commander.performance.energy
+    let newEnergyCapacity = candidate.performance.energy
+    let nextEnergy =
+      oldEnergyCapacity == newEnergyCapacity
+      ? energy
+      : Self.equipmentResourceLevel(
+        energy, from: oldEnergyCapacity, to: newEnergyCapacity)
+    let oldFrontCapacity = commander.shieldCapacity
+    let newFrontCapacity = candidate.shieldCapacity
+    let nextFront =
+      oldFrontCapacity == newFrontCapacity
+      ? frontShield
+      : Self.equipmentResourceLevel(
+        frontShield, from: oldFrontCapacity, to: newFrontCapacity)
+    let oldRearCapacity = commander.rearShieldCapacity
+    let newRearCapacity = candidate.rearShieldCapacity
+    let nextRear =
+      oldRearCapacity == newRearCapacity
+      ? rearShield
+      : Self.equipmentResourceLevel(
+        rearShield, from: oldRearCapacity, to: newRearCapacity)
     commander = candidate
+    energy = nextEnergy
+    frontShield = nextFront
+    rearShield = nextRear
     if let text = transition.notification { notify(text) }
     return true
   }

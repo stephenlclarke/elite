@@ -236,16 +236,20 @@ extension Game {
     return .init(hullInstanceID: inventory.activeHull, slot: slot)
   }
 
+  static func equipmentResourceLevel(
+    _ value: Double, from capacity: Double, to newCapacity: Double
+  ) -> Double {
+    guard value.isFinite, capacity.isFinite, capacity > 0, newCapacity.isFinite else { return 0 }
+    return max(0, min(1, value / capacity)) * newCapacity
+  }
+
   mutating func preserveEquipmentResourceFractions(from before: Game) {
-    func fraction(_ value: Double, _ capacity: Double, _ newCapacity: Double) -> Double {
-      guard value.isFinite, capacity.isFinite, capacity > 0, newCapacity.isFinite else { return 0 }
-      return max(0, min(1, value / capacity)) * newCapacity
-    }
-    energy = fraction(
-      before.energy, before.commander.performance.energy, commander.performance.energy)
-    frontShield = fraction(
-      before.frontShield, before.commander.shieldCapacity, commander.shieldCapacity)
-    rearShield = fraction(
-      before.rearShield, before.commander.rearShieldCapacity, commander.rearShieldCapacity)
+    energy = Self.equipmentResourceLevel(
+      before.energy, from: before.commander.performance.energy, to: commander.performance.energy)
+    frontShield = Self.equipmentResourceLevel(
+      before.frontShield, from: before.commander.shieldCapacity, to: commander.shieldCapacity)
+    rearShield = Self.equipmentResourceLevel(
+      before.rearShield, from: before.commander.rearShieldCapacity, to: commander.rearShieldCapacity
+    )
   }
 }
