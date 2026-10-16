@@ -351,3 +351,91 @@ extension CourierFixture {
   commander.scriptState.flightSeconds -= 1
   #expect(try encoder.encode(commander) == empty)
 }
+
+@Test func courierScriptStateCopiedCommanderAndGameIsolateThrownNestedMutations() throws {
+  enum Stop: Error { case expected }
+  func change(_ state: inout ScriptEngineState, id: UUID) throws {
+    state.instances[id]?.data = .object(["nested": .array([.integer(1), .integer(2)])])
+    state.instances[id]?.timers["hold"]?.pulses += 1
+    state.pendingEvents.append(
+      .init(
+        sequence: 2, kind: "contact.requested", instance: id,
+        values: ["nested": .object(["value": .integer(2)])]))
+    state.nextEvent = 2
+    throw Stop.expected
+  }
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = [.sortedKeys]
+  var original = Commander()
+  let empty = try encoder.encode(original)
+  let id = UUID()
+  var instance = ScriptInstance(
+    id: id, definition: "test.copy/story", version: "1.0.0",
+    digest: String(repeating: "0", count: 64))
+  instance.data = .object(["nested": .array([.integer(1)])])
+  instance.timers["hold"] = .init(
+    id: "hold", domain: .flight, due: 1, interval: 1, policy: .delay)
+  original.scriptState.instances[id] = instance
+  original.scriptState.pendingEvents.append(
+    .init(
+      sequence: 1, kind: "contact.requested", instance: id,
+      values: ["nested": .object(["value": .integer(1)])]))
+  original.scriptState.nextEvent = 1
+  let retained = original
+  let retainedBytes = try encoder.encode(original)
+  var copy = original
+  #expect(throws: Stop.self) { try change(&copy.scriptState, id: id) }
+  #expect(original == retained && original.scriptState.instances[id] == instance)
+  #expect(try encoder.encode(original) == retainedBytes)
+  #expect(copy.scriptState.instances[id]?.data["nested"]?.array == [.integer(1), .integer(2)])
+  #expect(copy.scriptState.instances[id]?.timers["hold"]?.pulses == 1)
+  #expect(
+    copy.scriptState.pendingEvents.count == 2 && original.scriptState.pendingEvents.count == 1)
+  let changed = try encoder.encode(copy)
+  #expect(try JSONDecoder().decode(Commander.self, from: changed) == copy)
+
+  var game = Game(executive: false)
+  game.commander = original
+  let sibling = game
+  #expect(throws: Stop.self) { try change(&game.commander.scriptState, id: id) }
+  #expect(sibling.commander == retained && game.commander == copy)
+  copy.scriptState.instances.removeAll()
+  copy.scriptState.pendingEvents.removeAll()
+  copy.scriptState.nextEvent = 0
+  #expect(try encoder.encode(copy) == empty)
+  #expect(try encoder.encode(original) == retainedBytes)
+}
+
+@Test(arguments: [false, true])
+func courierScriptStateInoutRealChildAndEventAppendPreserveContextsAndSibling(nested: Bool) throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let campaign = try fixture.startContractCampaign(&game, nested: nested)
+  #expect(game.commander.scriptState.instances[campaign.child]?.campaignParent != nil)
+  let ids = game.orderedScriptInstances.filter {
+    game.commander.scriptState.instances[$0]?.outcome == .active
+  }
+  #expect(ids.count == (nested ? 3 : 2))
+  let contexts = Dictionary(
+    uniqueKeysWithValues: ids.map { id in
+      (id, game.scriptEventContext(game.commander.scriptState.instances[id]!))
+    })
+  let sibling = game
+  let sequence = game.commander.scriptState.nextEvent
+  let values: [String: ScriptValue] = ["marker": .integer(7)]
+  game.emitScriptEvent("contact.requested", values: values, drain: false)
+  let appended = game.commander.scriptState.pendingEvents.filter { $0.sequence > sequence }
+  #expect(appended.map(\.instance) == ids)
+  #expect(game.commander.scriptState.nextEvent == sequence + UInt64(ids.count))
+  for (offset, event) in appended.enumerated() {
+    #expect(event.sequence == sequence + UInt64(offset) + 1)
+    #expect(event.kind == "contact.requested" && event.values == values)
+    #expect(event.context == contexts[event.instance])
+  }
+  #expect(sibling.commander.scriptState.nextEvent == sequence)
+  #expect(sibling.commander.scriptState.pendingEvents.allSatisfy { $0.sequence <= sequence })
+  game.drainScriptEvents()
+  #expect(game.commander.valid)
+  #expect(sibling.commander.scriptState.nextEvent == sequence)
+}
