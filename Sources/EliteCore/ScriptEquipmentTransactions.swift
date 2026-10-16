@@ -26,7 +26,9 @@ extension Game {
     let devices = identities.enumerated().map { index, id in
       IssuedDeviceRequest(
         id: id, node: node, index: index,
-        preferredSlot: definition.slot(index).canonicalSlot)
+        preferredSlot: definition.slot(index).canonicalSlot,
+        originalEquipmentName: definition.name == Equipment.legacyDockingComputer
+          ? definition.name : nil)
     }
     let context = EquipmentRuntimeCatalog.context(
       owner: inventory.owner, hull: inventory.activeHull, performance: candidate.nativePerformance)
@@ -77,7 +79,11 @@ extension Game {
           component: EquipmentRuntimeCatalog.stockComponent(for: node, id: device.id),
           location: location,
           boundHull: device.preferredSlot == .utility(.cargoExpansion) ? inventory.activeHull : nil,
-          preferredSlot: device.preferredSlot))
+          preferredSlot: device.preferredSlot,
+          retainedLegacyState: device.originalEquipmentName.map {
+            LegacyEquipmentState(
+              conditionBasisPoints: 10000, modifications: [:], originalEquipmentName: $0)
+          }))
     }
     let budget = try candidate.equipmentFitBudget(projectedItems: projected)
     let obligations = try candidate.equipmentIssueObligations()
