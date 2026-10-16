@@ -171,3 +171,21 @@ struct CourierNativeFixture: Sendable {
   }
   #expect(checked > 0)
 }
+
+@Test func courierLayoutDiagnostic() throws {
+  func layout<T>(_ type: T.Type) -> [String: Int] {
+    [
+      "size": MemoryLayout<T>.size, "stride": MemoryLayout<T>.stride,
+      "alignment": MemoryLayout<T>.alignment,
+    ]
+  }
+  let values = [
+    "Game": layout(Game.self), "Admission": layout(ScriptCourierAdmission.self),
+    "OptionalAdmission": layout(Optional<ScriptCourierAdmission>.self),
+    "ContractJob": layout(ScriptContractJob.self),
+    "CourierPreview": layout(ScriptCourierPreview.self),
+    "AcceptanceQuote": layout(ContractAcceptanceQuote.self),
+  ]
+  let bytes = try JSONSerialization.data(withJSONObject: values, options: [.sortedKeys])
+  print("G02_LAYOUT " + String(decoding: bytes, as: UTF8.self))
+}
