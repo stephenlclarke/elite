@@ -7,7 +7,9 @@ struct ScriptEquipmentPersistenceTests {
   @Test(arguments: ["savedGearVersion", "source", "node", "displacements", "legacyMissingItems"])
   func pre21AndRawGuardsRejectNewGearFieldsOnlyAtNativeRecordPaths(field: String) throws {
     let id = "51000000-0000-0000-0000-000000000001"
-    let record: [String: Any] = [field: field == "savedGearVersion" ? 2 : NSNull()]
+    let value: Any
+    if field == "savedGearVersion" { value = 2 } else { value = NSNull() }
+    let record: [String: Any] = [field: value]
     let instance: [String: Any] = ["savedGearIssues": ["kit": record]]
     for instances: Any in [[id: instance], [id, instance]] {
       let missions: [String: Any] = ["instances": instances]

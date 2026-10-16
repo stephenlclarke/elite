@@ -103,6 +103,8 @@ extension Commander {
         let record = instance.gearIssues[resource],
         record.savedGearVersion == 2, record.valid(for: instance),
         record.source?.packDigest == digest, record.node == item.node,
+        item.retainedLegacyState?.originalEquipmentName
+          == (record.kind.name == Equipment.legacyDockingComputer ? record.kind.name : nil),
         record.items.indices.contains(index), record.items[index] == item.id,
         record.status != .returned, !record.consumed.contains(item.id),
         record.legacyMissingItems?.contains(item.id) != true
@@ -166,6 +168,8 @@ extension ScriptEngineState {
     guard let instance = instances[mission], let before = instance.gearIssues[resource],
       before.savedGearVersion == 2, before.valid(for: instance),
       before.source?.packDigest == digest, before.node == removed.node,
+      removed.retainedLegacyState?.originalEquipmentName
+        == (before.kind.name == Equipment.legacyDockingComputer ? before.kind.name : nil),
       before.items.indices.contains(index), before.items[index] == removed.id,
       before.status != .returned, !before.consumed.contains(removed.id),
       before.legacyMissingItems?.contains(removed.id) != true, let source = before.source

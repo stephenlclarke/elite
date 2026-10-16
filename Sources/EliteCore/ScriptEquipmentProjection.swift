@@ -15,8 +15,18 @@ extension Commander {
   }
 
   static func commonEquipmentUnitCost(for item: OwnedEquipmentItem) -> Int {
-    EquipmentIssueTransactions.isIntrinsicFoundation(item)
+    EquipmentIssueTransactions.isIntrinsicFoundation(item) || isLegacyDockingItem(item)
       ? 0 : commonEquipmentUnitCost(for: item.node)
+  }
+
+  static func isLegacyDockingItem(_ item: OwnedEquipmentItem) -> Bool {
+    guard let retained = item.retainedLegacyState, retained.valid, retained.pristine,
+      retained.originalEquipmentName == Equipment.legacyDockingComputer,
+      let node = EquipmentRuntimeCatalog.node(for: Equipment.legacyDockingComputer),
+      item.node == node,
+      item.location?.slot == .targetingCore
+    else { return false }
+    return true
   }
 
   func ownedGearCounts(fitted: Bool) -> ScriptValue {
@@ -25,7 +35,8 @@ extension Commander {
       Dictionary(
         grouping: items,
         by: { item in
-          item.node == EquipmentRuntimeCatalog.standardMissile ? "Missile" : item.node.key
+          item.retainedLegacyState?.originalEquipmentName
+            ?? (item.node == EquipmentRuntimeCatalog.standardMissile ? "Missile" : item.node.key)
         }
       ).mapValues { .integer(Int64($0.count)) })
   }
@@ -48,10 +59,13 @@ extension Commander {
     var candidate = self
     candidate.savedEquipmentInventory = projected
     candidate.mirrorFittedEquipment()
-    let costs = Dictionary(
+    var costs = Dictionary(
       uniqueKeysWithValues: EquipmentRuntimeCatalog.graph.nodes.map {
         ($0.id, Self.commonEquipmentUnitCost(for: $0.id))
       })
+    for item in projectedItems where Self.isLegacyDockingItem(item) {
+      costs[item.node] = 0
+    }
     let units = projectedItems.filter { $0.location != nil }.reduce(0) {
       $0 + Self.commonEquipmentUnitCost(for: $1)
     }
