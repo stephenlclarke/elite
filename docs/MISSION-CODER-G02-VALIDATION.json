@@ -3279,6 +3279,12 @@
       }
     },
     "lease019ExplicitlyReleased": true,
-    "limits": "All three full lanes passed657methods751cases; old failures remain preserved. Newcode metric is localGitdiff-based, no featureSonar publication. Historical54 native originals retain8fc captureprovenance; final renderer outputs regenerated under currentsource separately. No runtime peak-stack claim or whole-engine acceptance."
+    "limits": "All three full lanes passed657methods751cases; old failures remain preserved. Newcode metric is localGitdiff-based, no featureSonar publication. Historical54 native originals retain8fc captureprovenance; final renderer outputs regenerated under currentsource separately. No runtime peak-stack claim or whole-engine acceptance.",
+    "packValidation": {
+      "total": 19,
+      "schema2Examples": 18,
+      "legacySchema1": "docs/mission-packs/courier.toml",
+      "note": "Count clarified after the immutable archive freeze; original raw lease/freeze wording is preserved."
+    }
   }
 }
