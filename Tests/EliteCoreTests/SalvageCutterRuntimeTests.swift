@@ -201,6 +201,29 @@ extension SalvageCutterRuntimeTests {
       "parentDistance", (lot.position - pose.position).length,
       "parentRadius", profile.bounds.radius + profile.bounds.center.length,
       "refusal", String(describing: receipt.refusal))
+    if let path = ProcessInfo.processInfo.environment["ELITE_ADMISSION_EVIDENCE_PATH"] {
+      struct Evidence: Encodable {
+        let catalogue: String
+        let section: SalvageSectionProfile
+        let actor: ActorIdentity
+        let pose: ShipPose
+        let bounds: SalvageBounds
+        let lot: SalvageLot
+        let vertices: [Vector3]
+        let faces: [[Int]]
+        let actualSurfaceDistance: Double
+        let refusal: String
+      }
+      let actor = try #require(parent.physical?.identity)
+      let evidence = Evidence(
+        catalogue: profile.catalogueShipID, section: section, actor: actor, pose: pose,
+        bounds: profile.bounds, lot: lot, vertices: profile.mesh.vertices,
+        faces: profile.mesh.faces,
+        actualSurfaceDistance: ray.distance, refusal: String(describing: receipt.refusal))
+      let encoder = JSONEncoder()
+      encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+      try encoder.encode(evidence).write(to: URL(fileURLWithPath: path), options: .atomic)
+    }
   }
 
   @Test func anAcknowledgedOldVisitBodyCannotCollectAfterTheActualFlightContextChanges() throws {
