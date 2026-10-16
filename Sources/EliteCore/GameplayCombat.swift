@@ -181,8 +181,9 @@ extension Game {
       let index = bodies.firstIndex(where: { $0.id == id }), bodies[index].hull.isTargetShip
     {
       bodies[index].physical?.npc?.firstAggressor = resolution.firstAggressor
-      bodies[index].physical?.npc?.intention = .engage(origin.owner)
-      if origin.owner == context.player.identity { bodies[index].hostile = true }
+      let attacker = resolution.offender ?? origin.owner
+      bodies[index].physical?.npc?.intention = .engage(attacker)
+      if attacker == context.player.identity { bodies[index].hostile = true }
     }
     if let report = resolution.report { commander.stationSecurity.receive(report) }
     for notice in resolution.notices where message != notice.text || messageTime <= 0 {
