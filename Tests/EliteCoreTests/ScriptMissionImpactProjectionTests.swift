@@ -3,7 +3,9 @@ import Testing
 
 @testable import EliteCore
 
-private func projectionActors(component: Bool) throws -> (Game, UUID, Int, Int) {
+private func projectionActors(component: Bool, includeAnchor: Bool = false) throws -> (
+  Game, UUID, Int, Int
+) {
   var (game, instance, sourceIndex) = try actualMissionBridgeGame()
   let sourceID = game.bodies[sourceIndex].id
   let wing = try #require(
@@ -20,7 +22,9 @@ private func projectionActors(component: Bool) throws -> (Game, UUID, Int, Int) 
     game.bodies[targetIndex].energy = 5
   }
   game.ensurePhysicalActors()
-  game.bodies = game.bodies.filter { $0.id == sourceID || $0.id == targetID }
+  game.bodies = game.bodies.filter {
+    $0.id == sourceID || $0.id == targetID || (includeAnchor && $0.id == 0)
+  }
   game.celestials = []
   game.scriptEventsDeferred = true
   return (game, instance, sourceID, targetID)
@@ -50,6 +54,53 @@ private func producedLaser(_ game: inout Game, sourceID: Int, targetID: Int, com
 }
 
 struct ScriptMissionImpactProjectionTests {
+  @Test func actualFatalProjectionRetainsFinalPoseGunsComponentsAndSpentConditionBeforePersistence()
+    throws
+  {
+    var (game, instance, sourceID, targetID) = try projectionActors(
+      component: false, includeAnchor: true)
+    let anchor = try #require(game.scriptAnchor)
+    let targetIndex = try #require(game.bodies.firstIndex { $0.id == targetID })
+    game.bodies[targetIndex].orientation.rotate(pitch: 0.2, roll: 0.1, yaw: 0.25)
+    game.bodies[targetIndex].scriptNPC?.velocity = .init(3, 4, 0)
+    game.bodies[targetIndex].scriptNPC?.shots = 11
+    game.bodies[targetIndex].scriptNPC?.guns["forward"]?.heat = 7
+    game.bodies[targetIndex].scriptNPC?.guns["forward"]?.cooldown = 0.13
+    game.bodies[targetIndex].scriptNPC?.components["turret"]?.energy = 17
+    game.bodies[targetIndex].scriptNPC?.components["turret"]?.guns["plasma"]?.cooldown = 0.07
+    let before = try #require(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors["wing"])
+    let proof = try producedLaser(&game, sourceID: sourceID, targetID: targetID, component: false)
+    try #require(proof.hit?.target == .body(targetID) && proof.victimPart == nil)
+    let receipt = try game.applyMissionImpact(proof)
+    try #require(receipt.hullDestroyed)
+    let terminal = try #require(game.bodies.first { $0.id == targetID })
+    var expected = terminal
+    expected.position = anchor.orientation.inverse(terminal.position - anchor.position)
+    expected.orientation = terminal.orientation.relative(to: anchor.orientation)
+    expected.scriptNPC?.velocity = anchor.orientation.inverse(
+      terminal.scriptNPC?.velocity ?? .init(0, 0, 0))
+    try #require(before.body != expected)
+    game.projectScriptMissionImpact(receipt)
+    let retained = try #require(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors["wing"])
+    #expect(retained.presence == .destroyed && retained.body == expected)
+    #expect(retained.body.physical?.deathOrigin == terminal.physical?.deathOrigin)
+    #expect(retained.body.scriptNPC?.components["turret"]?.energy == 17)
+    #expect(retained.body.scriptNPC?.guns["forward"]?.heat == 7)
+    #expect(retained.body.scriptNPC?.shots == 11)
+    game.persistScriptActors()
+    game.resolveDestroyed()
+    #expect(
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?.actors["wing"]
+        == retained)
+    #expect(
+      game.commander.scriptState.pendingEvents.filter {
+        $0.kind == "actor.destroyed"
+          && $0.values["actor_id"] == .string(retained.identity.uuidString)
+      }.count == 1)
+  }
+
   @Test(arguments: [false, true])
   func realNpcLaserProofKernelAndProjectionRetainOriginalAmountAndTerminalExactlyOnce(
     component: Bool

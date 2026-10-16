@@ -779,8 +779,22 @@ extension Game {
       else { continue }
       if destroyed {
         guard body.energy <= 0 else { return }
-        actor.presence = .destroyed
+        let previous = actor.body
+        actor.body = body
         actor.body.energy = 0
+        if let anchor = scriptAnchor {
+          actor.body.position = anchor.orientation.inverse(body.position - anchor.position)
+          actor.body.orientation = body.orientation.relative(to: anchor.orientation)
+          actor.body.scriptNPC?.velocity = anchor.orientation.inverse(
+            body.scriptNPC?.velocity ?? .init(0, 0, 0))
+        } else {
+          // Without a station frame, retain the last canonical pose while preserving actual
+          // terminal condition. Never label the current camera pose as station-relative.
+          actor.body.position = previous.position
+          actor.body.orientation = previous.orientation
+          actor.body.scriptNPC?.velocity = previous.scriptNPC?.velocity ?? .init(0, 0, 0)
+        }
+        actor.presence = .destroyed
         actor.destroyedByPlayer = body.destroyedByPlayer == true
       } else {
         actor.presence = .outside
