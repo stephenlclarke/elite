@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "stage": "standalone trial correction passed exact native ASan, related30/32 ASan and affected149/239 coverage; required fresh media/refreeze/full canonical pending",
+  "stage": "fresh complete canonical makeci passed; final immutable handoff/owner acceptance/central integration and formal PR pending",
   "authoritySHA256": "1b07c1423c8b2f7357358f4f5ebc815d3f605ac8edb0b728aafa04f2074b897c",
   "runs": [
     {
@@ -280,8 +280,7 @@
   },
   "failureDisposition": "Bind mutating showScriptDialogue result to a local before #expect; admit only the validated closed courier board clock and retain existing contract capability dependency.",
   "pending": [
-    "Fresh numbered renderer regeneration/commit/refreeze then ONE fresh complete make ci",
-    "Final source-owner acceptance and central integration/formal PR review/fix/review/merge",
+    "Final owner handoff review/acceptance and central integration/formal PR review-fix-review-merge",
     "Separate G1 equipment statistics and Inventory epoch composition"
   ],
   "expandedFailureTriage": {
@@ -2816,5 +2815,470 @@
     },
     "lease017ExplicitlyReleased": true,
     "remaining": "Required renderer regeneration/committed full input refreeze and fresh complete makeci; actual fullASan/leaks then owner acceptance/integration/formalPR"
+  },
+  "freshCanonical019": {
+    "sourceMediaFreeze": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+    "lastExecutableChange": "93191f009eedd5f206fee8ecf72c0bac909010b9",
+    "freeze": {
+      "base": "880d3a65478ed9304cc926fc21fbf3db9bf6d140",
+      "lastExecutableChange": "93191f009eedd5f206fee8ecf72c0bac909010b9",
+      "boundedValidatedSource": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+      "documentaryPreparation": "5367c0af3018d10757f544f50fbd676ccd1fcfe5",
+      "sourceMediaFreeze": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+      "priorBoundedInputCount": 935,
+      "currentInputCount": 935,
+      "changedFilesSinceBounded": [
+        "docs/G02-CANONICAL-OWNER-REVIEW.md",
+        "docs/MISSION-CODER-G02-VALIDATION.json",
+        "docs/PR-generated-couriers.md",
+        "docs/SCRIPTABLE-MISSION-STATUS.json",
+        "docs/ships/manifest.json"
+      ],
+      "inputManifestSHA256": "247531723c1a3434049e8fa8bb2f4cc38b7c1210cbfb4157bf6d57abd59d50e0",
+      "evidenceInputCount": 462,
+      "evidenceManifestSHA256": "1203d509c3abb738062b218ad36a3f9dbdfbec2ef6293b95823b63ab57bf9746",
+      "images": {
+        "historicalOriginalSource": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+        "passingOriginals": 54,
+        "byteIdenticalDurable": 16,
+        "representativeVisualInspectionOnly": true,
+        "currentRendererRegeneration": "make ships168 byteidenticalGIFs/newfingerprints; READMEbyteidenticaloutputs underfinalexecutable source"
+      },
+      "gate": "ONE fresh make ci all18packs/coverage/TSan/canonicalserialASan/leaks; no input mutation duringgate",
+      "ownerRecord": "a31d163 fullyincorporated beforefreeze; finalacceptance outstanding"
+    },
+    "preparation": {
+      "ships": {
+        "commit": "5367c0af3018d10757f544f50fbd676ccd1fcfe5",
+        "lease": {
+          "version": 1,
+          "leaseId": "elite-validation-019",
+          "state": "active",
+          "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+          "candidate": "5367c0af3018d10757f544f50fbd676ccd1fcfe5",
+          "mayUpdateCandidateWithinApprovedScope": true,
+          "previousLeaseId": "elite-validation-018",
+          "purpose": "Ownerverified017 correctedstandalone source42 unchanged; requiredships/READMErendererregen thenapprovedgenerated/docscommitcandidate-only andcompletefreeze; ONEfreshfullmakeci18packs/coverage/TSan/serialASan/leaks. No runtime/testchange or repairretry; stopnewfailure."
+        },
+        "command": [
+          "make",
+          "ships"
+        ],
+        "startUTC": "2026-10-16T09:23:04.068400+00:00",
+        "endUTC": "2026-10-16T09:23:53.393691+00:00",
+        "seconds": 49.3252318338491,
+        "exit": 0,
+        "productionBefore": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "productionAfter": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "inputCount": 935,
+        "changedInputs": [
+          "docs/ships/manifest.json"
+        ],
+        "logSHA256": "3198262293f9e9b47113fdcd54279a81403264cbe869fcca6670a5634e4fe9da"
+      },
+      "readme": {
+        "commit": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+        "lease": {
+          "version": 1,
+          "leaseId": "elite-validation-019",
+          "state": "active",
+          "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+          "candidate": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+          "mayUpdateCandidateWithinApprovedScope": true,
+          "previousLeaseId": "elite-validation-018",
+          "purpose": "Ownerverified017 correctedstandalone source42 unchanged; requiredships/READMErendererregen thenapprovedgenerated/docscommitcandidate-only andcompletefreeze; ONEfreshfullmakeci18packs/coverage/TSan/serialASan/leaks. No runtime/testchange or repairretry; stopnewfailure."
+        },
+        "command": [
+          "make",
+          "readme-media"
+        ],
+        "startUTC": "2026-10-16T09:25:43.654515+00:00",
+        "endUTC": "2026-10-16T09:25:53.045978+00:00",
+        "seconds": 9.391362417023629,
+        "exit": 0,
+        "productionBefore": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "productionAfter": {
+          "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+          "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+        },
+        "inputCount": 935,
+        "changedInputs": [],
+        "logSHA256": "6339bd488840e9c3fd1199b4ab525d796058bf301e1da0e5bc9214f61fd0c214"
+      }
+    },
+    "result": {
+      "commit": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+      "lease": {
+        "version": 1,
+        "leaseId": "elite-validation-019",
+        "state": "active",
+        "ownerThreadId": "01a14024-0284-7b43-8d7f-e07a9208b253",
+        "candidate": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+        "mayUpdateCandidateWithinApprovedScope": true,
+        "previousLeaseId": "elite-validation-018",
+        "purpose": "Ownerverified017 correctedstandalone source42 unchanged; requiredships/READMErendererregen thenapprovedgenerated/docscommitcandidate-only andcompletefreeze; ONEfreshfullmakeci18packs/coverage/TSan/serialASan/leaks. No runtime/testchange or repairretry; stopnewfailure."
+      },
+      "command": [
+        "make",
+        "ci"
+      ],
+      "startUTC": "2026-10-16T09:28:10.130198+00:00",
+      "endUTC": "2026-10-16T09:42:54.240278+00:00",
+      "seconds": 884.1108154170215,
+      "exit": 0,
+      "productionBefore": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "productionAfter": {
+        "/Users/sclarke/.xyzzy/elite/commander.json": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+        "/Users/sclarke/Library/Preferences/io.xyzzy.elite.plist": "8c8780c214319b17862956cb9098f71244bcbc0bdce6f97bdc5febbd85e8fc0d"
+      },
+      "inputCount": 935,
+      "changedInputs": [],
+      "logSHA256": "5dfab1b81db1b31548d3b26f91fd1b1714e905cab7545e29b8a86ee3521cf633"
+    },
+    "summary": {
+      "coverage": {
+        "methods": 657,
+        "caseInvocations": 751,
+        "testSeconds": 41.532
+      },
+      "TSan": {
+        "methods": 657,
+        "caseInvocations": 751,
+        "testSeconds": 207.148
+      },
+      "ASan": {
+        "methods": 657,
+        "caseInvocations": 751,
+        "testSeconds": 403.45
+      },
+      "integrity": {
+        "GitInputCount": 935,
+        "changedGit": [],
+        "evidenceInputCount": 462,
+        "changedEvidence": []
+      },
+      "leaks": {
+        "leakCount": 0,
+        "leakedBytes": 0,
+        "sha256": "3d81ffbf1e90e1c03fc0eee11c59a491a93cb2752b65293e799d2ab561c21cd1"
+      },
+      "coverageMetrics": {
+        "frozenSource": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+        "base": "880d3a65478ed9304cc926fc21fbf3db9bf6d140",
+        "method": "Canonical genericSwiftcoverage excludesCLua; newcode intersects Git-added/modified Source lines with reported executable lines. Local directional metric, not published Sonar.",
+        "overall": {
+          "covered": 19602,
+          "executable": 20585,
+          "percentage": 95.22467816371145
+        },
+        "addedModifiedExecutableLines": {
+          "covered": 939,
+          "executable": 970,
+          "percentage": 96.80412371134021
+        },
+        "perChangedFile": {
+          "Sources/EliteCore/BlackjackHandoff.swift": {
+            "covered": 3,
+            "executable": 3,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ContractBoardDisplay.swift": {
+            "covered": 7,
+            "executable": 7,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/Game.swift": {
+            "covered": 26,
+            "executable": 29,
+            "uncoveredAddedExecutableLines": [
+              1157,
+              1158,
+              1159
+            ]
+          },
+          "Sources/EliteCore/ScriptCalendar.swift": {
+            "covered": 8,
+            "executable": 9,
+            "uncoveredAddedExecutableLines": [
+              63
+            ]
+          },
+          "Sources/EliteCore/ScriptCampaignGallery.swift": {
+            "covered": 1,
+            "executable": 1,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptCommands.swift": {
+            "covered": 9,
+            "executable": 10,
+            "uncoveredAddedExecutableLines": [
+              211
+            ]
+          },
+          "Sources/EliteCore/ScriptContractCore.swift": {
+            "covered": 60,
+            "executable": 62,
+            "uncoveredAddedExecutableLines": [
+              71,
+              227
+            ]
+          },
+          "Sources/EliteCore/ScriptContractPageInput.swift": {
+            "covered": 3,
+            "executable": 3,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptContractState.swift": {
+            "covered": 32,
+            "executable": 32,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptCourier.swift": {
+            "covered": 358,
+            "executable": 378,
+            "uncoveredAddedExecutableLines": [
+              5,
+              6,
+              7,
+              8,
+              9,
+              73,
+              89,
+              90,
+              96,
+              146,
+              185,
+              197,
+              245,
+              293,
+              351,
+              387,
+              401,
+              402,
+              403,
+              404
+            ]
+          },
+          "Sources/EliteCore/ScriptCourierGeneration.swift": {
+            "covered": 118,
+            "executable": 118,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptCourierState.swift": {
+            "covered": 137,
+            "executable": 137,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptDirector.swift": {
+            "covered": 53,
+            "executable": 55,
+            "uncoveredAddedExecutableLines": [
+              183,
+              281
+            ]
+          },
+          "Sources/EliteCore/ScriptGalleryTrial.swift": {
+            "covered": 12,
+            "executable": 12,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptMissionCalendar.swift": {
+            "covered": 25,
+            "executable": 25,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptMissionState.swift": {
+            "covered": 10,
+            "executable": 10,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptPack.swift": {
+            "covered": 7,
+            "executable": 7,
+            "uncoveredAddedExecutableLines": []
+          },
+          "Sources/EliteCore/ScriptPersistence.swift": {
+            "covered": 20,
+            "executable": 21,
+            "uncoveredAddedExecutableLines": [
+              64
+            ]
+          },
+          "Sources/EliteCore/ScriptSaveJSONPreflight.swift": {
+            "covered": 50,
+            "executable": 51,
+            "uncoveredAddedExecutableLines": [
+              55
+            ]
+          }
+        },
+        "coverageXMLSHA256": "0c13d237c996077b0b025cb4b6a1d4de1e5b5ce1870889a4c9d46b71e9102187",
+        "LCOVSHA256": "14545e1cee62ddd0664dc3850f9150c27ef373ec915af5bea36fd7d3749c3a5a"
+      },
+      "commandSeconds": 884.1108154170215,
+      "exit": 0
+    },
+    "phaseTimeline": [
+      {
+        "secondsFromStart": 0.004389417124912143,
+        "command": "python3 Tools/showroom/ship-reference.py --check"
+      },
+      {
+        "secondsFromStart": 3.1605308330617845,
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'"
+      },
+      {
+        "secondsFromStart": 17.15176466712728,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/courier.toml"
+      },
+      {
+        "secondsFromStart": 19.5009673750028,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-courier"
+      },
+      {
+        "secondsFromStart": 20.52955587510951,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-patrol"
+      },
+      {
+        "secondsFromStart": 21.551960458047688,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/linked-patrol"
+      },
+      {
+        "secondsFromStart": 29.18799633299932,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scoped-patrol"
+      },
+      {
+        "secondsFromStart": 36.974149083020166,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/branch-choice"
+      },
+      {
+        "secondsFromStart": 44.64106595818885,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/branch-patrol"
+      },
+      {
+        "secondsFromStart": 45.65620766719803,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/branch-courier"
+      },
+      {
+        "secondsFromStart": 46.68296020803973,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/station-conversation"
+      },
+      {
+        "secondsFromStart": 54.33845595805906,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/reference-book"
+      },
+      {
+        "secondsFromStart": 61.92584662511945,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/material-collection"
+      },
+      {
+        "secondsFromStart": 69.52474758308381,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-passengers"
+      },
+      {
+        "secondsFromStart": 77.1963107502088,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-equipment"
+      },
+      {
+        "secondsFromStart": 78.21846104203723,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/scripted-contracts"
+      },
+      {
+        "secondsFromStart": 79.2311362081673,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/generated-couriers"
+      },
+      {
+        "secondsFromStart": 86.75988654210232,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/station-donation"
+      },
+      {
+        "secondsFromStart": 94.36677950015292,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/calendar-contracts"
+      },
+      {
+        "secondsFromStart": 95.39036970818415,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/station-maintenance"
+      },
+      {
+        "secondsFromStart": 96.41601479216479,
+        "command": "swift run Elite --validate-mission-pack docs/mission-packs/profiled-skirmish"
+      },
+      {
+        "secondsFromStart": 104.08275404199958,
+        "command": "./script/coverage.sh"
+      },
+      {
+        "secondsFromStart": 153.3604124581907,
+        "command": "swift test --scratch-path .build/tsan --sanitize=thread"
+      },
+      {
+        "secondsFromStart": 377.01971345813945,
+        "command": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel"
+      },
+      {
+        "secondsFromStart": 783.2733023331966,
+        "command": "swift build"
+      },
+      {
+        "secondsFromStart": 788.7210744170006,
+        "command": "mkdir -p reports"
+      },
+      {
+        "secondsFromStart": 788.8647673751693,
+        "command": "/usr/bin/leaks --atExit -- \"$(swift build --show-bin-path)/Elite\" --diagnostics > reports/leaks.txt 2>&1"
+      }
+    ],
+    "rawArtifacts": {
+      "ci.log": {
+        "path": "/tmp/elite-g02-canonical-019/ci.log",
+        "sha256": "5dfab1b81db1b31548d3b26f91fd1b1714e905cab7545e29b8a86ee3521cf633"
+      },
+      "ci.json": {
+        "path": "/tmp/elite-g02-canonical-019/ci.json",
+        "sha256": "ea5a005371edeed991635a3738c8c3d1402d6f9dd5de498bd2cf564571fc7a01"
+      },
+      "frozen-inputs.json": {
+        "path": "/tmp/elite-g02-canonical-019/frozen-inputs.json",
+        "sha256": "247531723c1a3434049e8fa8bb2f4cc38b7c1210cbfb4157bf6d57abd59d50e0"
+      },
+      "frozen-evidence-inputs.json": {
+        "path": "/tmp/elite-g02-canonical-019/frozen-evidence-inputs.json",
+        "sha256": "1203d509c3abb738062b218ad36a3f9dbdfbec2ef6293b95823b63ab57bf9746"
+      },
+      "coverage.xml": {
+        "path": "/tmp/elite-g02-canonical-019/coverage.xml",
+        "sha256": "0c13d237c996077b0b025cb4b6a1d4de1e5b5ce1870889a4c9d46b71e9102187"
+      },
+      "coverage.lcov": {
+        "path": "/tmp/elite-g02-canonical-019/coverage.lcov",
+        "sha256": "14545e1cee62ddd0664dc3850f9150c27ef373ec915af5bea36fd7d3749c3a5a"
+      },
+      "coverage-metrics.json": {
+        "path": "/tmp/elite-g02-canonical-019/coverage-metrics.json",
+        "sha256": "431fe5318b95c21388b6cfb2b70e1dd9cc5a018c42e3d64661c45f965075fcd1"
+      },
+      "leaks.txt": {
+        "path": "/tmp/elite-g02-canonical-019/leaks.txt",
+        "sha256": "3d81ffbf1e90e1c03fc0eee11c59a491a93cb2752b65293e799d2ab561c21cd1"
+      },
+      "canonical-pass-summary.json": {
+        "path": "/tmp/elite-g02-canonical-019/canonical-pass-summary.json",
+        "sha256": "7991f8afe38e0c8660b41d1a75c47011e527886142c4861ccb66ffc3ad396dd3"
+      }
+    },
+    "lease019ExplicitlyReleased": true,
+    "limits": "All three full lanes passed657methods751cases; old failures remain preserved. Newcode metric is localGitdiff-based, no featureSonar publication. Historical54 native originals retain8fc captureprovenance; final renderer outputs regenerated under currentsource separately. No runtime peak-stack claim or whole-engine acceptance."
   }
 }

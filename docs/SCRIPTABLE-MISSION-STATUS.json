@@ -3,7 +3,7 @@
   "branch": "feature/scriptable-mission-engine",
   "full_engine_ready": false,
   "default_bundled_campaigns": 3,
-  "example": "18 optional schema-2 authored examples, including accepted G21 station donations and the G02 PROJECT ESTIMATES courier family under final native/full-gate validation. Three bundled schema-1 campaigns remain unchanged; no recovered-server parity or whole-engine-ready claim.",
+  "example": "18 optional schema-2 authored examples, including accepted G21 station donations and the G02 PROJECT ESTIMATES courier family with complete canonical CI passed. Final owner acceptance/central integration remain separate; three bundled schema-1 campaigns remain unchanged and no whole-engine-ready/server-parity claim is made.",
   "supported_capabilities": [
     "script-lua-v1",
     "story-v2",
@@ -757,7 +757,7 @@
     "limits": "Native instance ownership and scoped receipts only; shared financial services/dossiers/loans and historical acceptance remain required."
   },
   "generated_courier_checkpoint": {
-    "status": "corrected standalone trial passed exact native ASan, related30/32 ASan and affected149/239 coverage; final renderer/refreeze/full canonical and owner acceptance pending",
+    "status": "complete fresh makeci passed at4fcd9c9:657methods751cases eachcoverage/TSan/serialASan,95.2247%overall96.8041%newlocalcoverage,0leaks; finalowneracceptance/centralintegration pending",
     "profile": "PROJECT-SPACE-G02-1",
     "capabilities": [
       "courier-contracts-basic-v2",
@@ -771,7 +771,7 @@
     "example": "mission-packs/generated-couriers",
     "project_estimates": true,
     "limits": "One ordinary same-chart unique data/package item; fixed six-draw shortest-hop profile and inclusive menu-excluding deadline. No recovered server parity, dynamic navigation health, finance or general equipment integration. G1 statistics and Inventory epoch composition remain pending.",
-    "validated_source": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e"
+    "validated_source": "4fcd9c9c757a6404c70eb83a2057c689e8606b61"
   },
   "optional_schema2_examples": 18
 }
