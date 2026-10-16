@@ -55,7 +55,7 @@ enum MissionNativeBridgeError: Error, Equatable, Sendable {
 
 /// Seals only the checked native binding and projected facts, not the external durable join.
 /// It is deliberately non-Codable: a load must resolve actual retained facts again.
-struct MissionActorBinding: Sendable {
+struct MissionActorBinding: Equatable, Sendable {
   let instanceID: UUID
   let actorID: UUID
   let bodyID: Int
@@ -254,7 +254,11 @@ enum MissionImpactAttribution: Equatable, Sendable {
 
 /// Mission-shot-only capability for G1's single damage kernel. Not persisted or constructible
 /// by native consumers. The actual resolver/geometry producer remains in this provider file.
-struct MissionNativeImpactProof: Sendable {
+struct MissionNativeImpactProof: Equatable, Sendable {
+  /// Actual finite step segment, clipped to the shot's remaining lifetime (at most 60 seconds).
+  let delta: Double
+  let physicalTime: Double
+  fileprivate let sourceBinding: MissionActorBinding?
   let shot: MissionShotDescriptor
   let archive: MissionLaunchArchive?
   let hit: GameplayHit
@@ -284,12 +288,16 @@ struct MissionNativeImpactProof: Sendable {
   }
 
   fileprivate init(
+    delta: Double, physicalTime: Double, sourceBinding: MissionActorBinding?,
     shot: MissionShotDescriptor, archive: MissionLaunchArchive?, hit: GameplayHit,
     victimPart: String?, victimComponentID: UUID?, currentSource: ActorIdentity?,
     currentVictim: ActorIdentity?, attribution: MissionImpactAttribution,
     system: SystemIdentity, visit: UInt64, sceneRevision: UInt64, instanceRevision: UInt64,
     projectileBody: SpaceBody, targetBody: SpaceBody?
   ) {
+    self.delta = delta
+    self.physicalTime = physicalTime
+    self.sourceBinding = sourceBinding
     self.shot = shot
     self.archive = archive
     self.hit = hit
@@ -377,7 +385,7 @@ extension Game {
 }
 
 /// Constructed only by the physical query in this file; no damage or custody authority.
-struct MissionCollisionContact: Sendable {
+struct MissionCollisionContact: Equatable, Sendable {
   let hit: GameplayHit
   let victimPart: String?
   let componentUUID: UUID?
@@ -915,6 +923,7 @@ extension Game {
       }
     }
     return .init(
+      delta: duration, physicalTime: context.physicalTime, sourceBinding: source,
       shot: descriptor, archive: shot.nativeAttribution, hit: contact.hit,
       victimPart: contact.victimPart, victimComponentID: contact.componentUUID,
       currentSource: source?.nativeActor, currentVictim: victim, attribution: attribution,
@@ -934,5 +943,67 @@ extension Game {
       let body = bodies.first(where: { $0.id == bodyID })
     else { throw MissionNativeBridgeError.sourceMismatch }
     return try MissionNativeBridge.bindActor(descriptor: descriptor, body: body, context: context)
+  }
+}
+
+extension Game {
+  /// Re-query the sealed bounded step against current retained/native facts. No counters,
+  /// bodies, law, gun resources or event queues are changed by capability validation.
+  func validateMissionNativeImpactProof(_ proof: MissionNativeImpactProof) throws {
+    guard proof.delta.isFinite, proof.delta > 0, proof.delta <= 60,
+      proof.physicalTime.isFinite, proof.physicalTime >= 0
+    else { throw MissionNativeBridgeError.staleBinding }
+    do {
+      guard
+        let current = try missionNativeImpactProof(
+          projectileID: proof.shotID, delta: proof.delta), current == proof
+      else { throw MissionNativeBridgeError.staleBinding }
+    } catch {
+      throw MissionNativeBridgeError.staleBinding
+    }
+  }
+
+  /// An already allocated instant emission is checked without calling its allocating producer.
+  /// The kernel independently consumes its current-visit emission watermark on successful apply.
+  func validateMissionNativeLaserProof(_ proof: MissionNativeLaserProof) throws {
+    do {
+      guard let context = gameplayContext(),
+        proof.system == context.system, proof.visit == context.visit,
+        proof.sceneRevision == context.revision, proof.origin.emittedAt == context.physicalTime,
+        context.physicalTime.isFinite, context.physicalTime >= 0,
+        proof.origin.owner == proof.source.nativeActor,
+        proof.origin.ownerLegalAtEmission == proof.source.actorSnapshot.legal,
+        proof.origin.sourcePart == proof.sourceComponentID?.uuidString,
+        proof.origin.ordnance == nil, proof.origin.playerAmmunition == nil,
+        proof.origin.emissionID > 0, proof.origin.emissionID < UInt64.max,
+        proof.origin.emissionID + 1 == commander.flightSimulation.nextEmission,
+        proof.instanceRevision == proof.source.descriptor.instanceRevision
+      else { throw MissionNativeBridgeError.staleBinding }
+      let source = try resolveMissionNativeBinding(bodyID: proof.source.bodyID, context: context)
+      guard source == proof.source, let npc = source.descriptor.body.scriptNPC else {
+        throw MissionNativeBridgeError.staleBinding
+      }
+      let weapon: ScriptNPCWeapon?
+      if let component = proof.sourceComponentID {
+        guard let alias = npc.components.first(where: { $0.value.identity == component })?.key
+        else { throw MissionNativeBridgeError.staleBinding }
+        weapon = npc.fit.definition.components?.first(where: { $0.id == alias })?
+          .weapons?.first(where: { $0.id == proof.weapon.id })
+      } else {
+        weapon = npc.fit.definition.lasers?.first(where: { $0.id == proof.weapon.id })
+      }
+      guard let weapon,
+        let current = missionWeaponDescriptor(
+          weapon, source: source.descriptor.body, component: proof.sourceComponentID,
+          muzzle: proof.weapon.muzzle, direction: proof.weapon.direction),
+        current.kind == .laser, current == proof.weapon
+      else { throw MissionNativeBridgeError.staleBinding }
+      let contact = try nearestMissionCollision(
+        from: current.muzzle, direction: current.direction, range: current.range, radius: 0,
+        excludingBodyIDs: [source.bodyID], includePlayer: true)
+      guard contact == proof.contact else { throw MissionNativeBridgeError.staleBinding }
+    } catch {
+      throw MissionNativeBridgeError.staleBinding
+    }
   }
 }
