@@ -71,6 +71,12 @@ extension Game {
     else { throw NativeMissionProjectileAdmissionError.invalidRecord }
     try MissionNativeBridge.validateArchive(
       savedShot.nativeAttribution, shot: descriptor, packDigest: instance.digest)
+    if let archive = savedShot.nativeAttribution {
+      guard commander.flightSimulation.physicalTime.isFinite,
+        commander.flightSimulation.physicalTime >= 0,
+        archive.origin.emittedAt <= commander.flightSimulation.physicalTime
+      else { throw NativeMissionProjectileAdmissionError.invalidRecord }
+    }
     let matching = bodies.filter { $0.scriptShot?.identity == shotID }
     guard matching.count <= 1 else { throw NativeMissionProjectileAdmissionError.invalidRecord }
     var legacy: SpaceBody?
