@@ -722,6 +722,8 @@ extension Game {
     guard !commander.scriptState.instances.isEmpty, !docked, let anchor = scriptAnchor else {
       return
     }
+    // All hard source/current-binding checks finished before even the station can reappear.
+    restoreNativeMissionStationIfEligible()
     for source in sources {
       switch try prepareMissionActorAdmission(source) {
       case .pending, .unchanged: continue
