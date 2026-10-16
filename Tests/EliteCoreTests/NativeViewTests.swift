@@ -95,7 +95,8 @@ struct NativeViewTests {
     view.pending = ["x", "y", "z", "z", "y"]
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Commander")?.submenu)
     menu.performActionForItem(at: 0)
-    #expect(view.pending.last == "commander-save:" + url.path)
+    #expect(view.pending.last == "commander-file")
+    #expect(view.pendingCommanderFiles.last == .saveActive)
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty)
     let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))

@@ -31,6 +31,7 @@ final class GameView: NSView {
   var pending: [String] = []
   var pendingInventoryCommands: [InventoryCommand] = []
   var pendingEquipmentPurchases: [EquipmentPurchaseContext] = []
+  var pendingCommanderFiles: [NativeCommanderFileIntent] = []
   private(set) var inventoryInputGeneration: UInt64 = 0
   var processedInventoryInputGeneration: UInt64 = 0
   private var modelInventoryInputGeneration: UInt64 = 0
@@ -353,13 +354,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   let saves: CommanderSaveSession
   let windowSize: NSSize
   let restoreOnLaunch: Bool
+  private var processingPendingCommands = false
+  let commanderFileFailure: @MainActor (any Error) -> Void
   var saveURL: URL { saves.activeURL }
   init(
     restoreOnLaunch: Bool = true, saves: CommanderSaveSession? = nil,
-    windowSize: NSSize = .init(width: 768, height: 768)
+    windowSize: NSSize = .init(width: 768, height: 768),
+    commanderFileFailure: @escaping @MainActor (any Error) -> Void = {
+      NSAlert(error: $0).runModal()
+    }
   ) {
     self.windowSize = windowSize
     self.restoreOnLaunch = restoreOnLaunch
+    self.commanderFileFailure = commanderFileFailure
     self.saves = saves ?? CommanderSaveSession()
     super.init()
   }
@@ -437,15 +444,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   // The frame loop and native integration checks share one ordered command batch.
   // Awaiting this method acknowledges actual processing instead of elapsed time.
   func processPendingCommands(in view: GameView) async {
+    guard !processingPendingCommands else { return }
+    processingPendingCommands = true
+    defer { processingPendingCommands = false }
     let events = view.pending
     view.pending.removeAll()
     let inventoryCommands = view.pendingInventoryCommands
     view.pendingInventoryCommands.removeAll(keepingCapacity: true)
     let purchases = view.pendingEquipmentPurchases
     view.pendingEquipmentPurchases.removeAll(keepingCapacity: true)
+    let files = view.pendingCommanderFiles
+    view.pendingCommanderFiles.removeAll(keepingCapacity: true)
     let inventoryGeneration = view.inventoryInputGeneration
     var inventoryCommandIndex = 0
     var purchaseIndex = 0
+    var fileIndex = 0
     for event in events {
       if event == "equipment-purchase" {
         if purchases.indices.contains(purchaseIndex) {
@@ -457,12 +470,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           _ = await runtime.inventoryCommand(inventoryCommands[inventoryCommandIndex])
           inventoryCommandIndex += 1
         }
-      } else if event.hasPrefix("commander-save:") {
-        let url = URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
+      } else if event == "commander-file" {
+        guard files.indices.contains(fileIndex) else { continue }
+        let operation = files[fileIndex].operation(activeURL: saves.activeURL)
+        fileIndex += 1
         do {
-          try await runtime.save(to: url)
-          self.saves.didSave(to: url)
-        } catch { self.show(error) }
+          try await runtime.commanderFileOperation(operation)
+          switch operation {
+          case .save(let url): saves.didSave(to: url)
+          case .load(let url, _):
+            saves.activeURL = url
+            view.held.removeAll()
+            view.pressedKeys.removeAll()
+            view.trackpad.reset()
+            view.game = await runtime.snapshot()
+          }
+        } catch { commanderFileFailure(error) }
       } else if event.hasPrefix("market-click:") {
         let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.marketClick(x: values[0], y: values[1]) }
@@ -673,11 +696,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     (window?.contentView as? GameView)?.pending.append("b")
   }
   @objc private func saveCommander() {
-    queueCommanderSave(to: saveURL)
+    queueCommanderFile(.saveActive)
   }
-  private func queueCommanderSave(to url: URL) {
-    // Preserve input order: a fast Save must include the preceding confirmation/refit.
-    (window?.contentView as? GameView)?.pending.append("commander-save:" + url.path)
+  func queueCommanderFile(_ intent: NativeCommanderFileIntent) {
+    guard let view = window?.contentView as? GameView else { return }
+    view.pendingCommanderFiles.append(intent)
+    view.pending.append("commander-file")
   }
   @objc private func installMissionPack() {
     let panel = NSOpenPanel()
@@ -691,31 +715,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     }
   }
   @objc private func loadCommander() {
-    Task { [weak self] in
-      guard let self else { return }
-      do { try await runtime.load(from: saveURL) } catch { show(error) }
-    }
+    queueCommanderFile(.reloadActive)
   }
   @objc private func chooseCommander() {
-    Task { [weak self] in await self?.openChosenCommander() }
+    openChosenCommander()
   }
-  private func openChosenCommander() async {
+  private func openChosenCommander() {
     let panel = NSOpenPanel()
     panel.canChooseDirectories = false
     panel.allowsMultipleSelection = false
     panel.allowedContentTypes = [.json]
     guard panel.runModal() == .OK, let url = panel.url else { return }
-    do {
-      try await runtime.load(from: url, persistMigrations: false)
-      saves.activeURL = url
-    } catch { show(error) }
+    queueCommanderFile(.open(url))
   }
   @objc private func saveCommanderAs() {
     let panel = NSSavePanel()
     panel.allowedContentTypes = [.json]
     panel.nameFieldStringValue = "commander.json"
     guard panel.runModal() == .OK, let url = panel.url else { return }
-    queueCommanderSave(to: url)
+    queueCommanderFile(.saveAs(url))
   }
   private func recoverStartup(_ error: Error, url: URL) async {
     let alert = NSAlert()
@@ -724,7 +742,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       "The saved file at \(url.path) is missing, inaccessible or invalid. It has not been changed. Choose another save or start a new Commander Jameson. \(error.localizedDescription)"
     alert.addButton(withTitle: "Choose Save")
     alert.addButton(withTitle: "Start New")
-    if alert.runModal() == .alertFirstButtonReturn { await openChosenCommander() }
+    if alert.runModal() == .alertFirstButtonReturn { openChosenCommander() }
   }
   private func show(_ error: Error) { NSAlert(error: error).runModal() }
 }
