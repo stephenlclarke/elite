@@ -27,9 +27,11 @@ struct MissionUICompositionTests {
     game.screen = .rear
     game.docked = false
     let commander = game.commander
-    #expect(game.interfaceKey("library-open"))
+    let opened = game.interfaceKey("library-open")
+    #expect(opened)
     #expect(game.screen == .library)
-    #expect(game.interfaceKey("escape"))
+    let closed = game.interfaceKey("escape")
+    #expect(closed)
     #expect(game.screen == .rear)
     #expect(game.commander == commander)
     #expect(Game.numberedScreen(1, docked: true) == nil)
