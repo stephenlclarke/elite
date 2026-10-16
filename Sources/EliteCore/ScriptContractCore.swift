@@ -234,7 +234,11 @@ extension Game {
     candidate.commander.credits -= offer.deposit
     candidate.commander.contracts.boards[key]?.offers[index].status = .accepted(instanceID)
     _ = try candidate.acceptScriptMission(
-      pack, instanceID: instanceID, randomSeed: board.seed, contract: job)
+      pack, instanceID: instanceID, randomSeed: board.seed, contract: job, drainAccepted: false)
+    candidate.drainScriptEvents()
+    if let reason = candidate.commander.scriptState.instances[instanceID]?.suspension {
+      throw MissionPackError(reason)
+    }
     if pack.manifest.pledge != nil {
       candidate.scriptPledgeAdmission = nil
       guard candidate.pledgeAcceptanceComplete(instanceID) else {
