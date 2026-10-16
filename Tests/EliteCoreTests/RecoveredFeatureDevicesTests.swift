@@ -55,8 +55,9 @@ private func featureConditionZero(_ value: Any) -> Any {
   if let array = value as? [Any] { return array.map(featureConditionZero) }
   guard var object = value as? [String: Any] else { return value }
   for (key, child) in object { object[key] = featureConditionZero(child) }
-  if var technology = object["technology"] as? [String: Any], technology["_2"] != nil {
-    technology["_2"] = 0
+  if var technology = object["technology"] as? [String: Any], technology["conditionPercent"] != nil
+  {
+    technology["conditionPercent"] = 0
     object["technology"] = technology
   }
   return object
