@@ -918,6 +918,7 @@ struct EliteApp {
     guard CGImageDestinationFinalize(gif) else { throw SaveError.invalidCommander }
   }
   private static func diagnostics() async throws {
+    try await GameRuntime().diagnoseScriptHost()
     for cycle in 0..<10 {
       let runtime = GameRuntime()
       await runtime.key("x")
