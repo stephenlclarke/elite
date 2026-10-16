@@ -163,6 +163,31 @@ private func actualLargeWorkHold() throws -> Game {
   throw SaveError.invalidCommander
 }
 
+private func genuineNativeDebris() throws -> (Game, TypedCargoPayload, ActorIdentity) {
+  var game = try workRuntimeGame()
+  var source = SpaceBody(id: 44, hull: .cobra, position: .init(0, 0, 1500))
+  source.energy = 1
+  game.bodies = [source]
+  game.ensurePhysicalActors()
+  game.bodies[0].physical?.npc?.ordinaryCargo = [.init(commodity: .food, quantity: 1)]
+  let sourceActor = try #require(game.bodies[0].physical?.identity)
+  let player = try #require(game.commander.flightSimulation.player)
+  let allocated = game.makeAttackOrigin(owner: player)
+  let origin = try #require(allocated)
+  _ = game.applyCombatHit(
+    .init(target: .body(44), distance: 1500, point: source.position),
+    origin: origin, kind: .laser, damage: 1000, laser: .pulse)
+  game.commander.crimeLedger.finishEmission(origin.emissionID)
+  game.resolveDestroyed()
+  game.admitPendingCargo()
+  let payload = try #require(game.commander.cargoDebrisLedger.pendingPayloads.first)
+  guard case .wreck(let original, _) = payload.identity else { throw SaveError.invalidCommander }
+  #expect(original == sourceActor)
+  let index = try #require(game.bodies.firstIndex { $0.physical?.payload == payload.identity })
+  let actor = try #require(game.bodies[index].physical?.identity)
+  return (game, payload, actor)
+}
+
 struct FlightWorkGuidanceRuntimeTests {
   @Test func filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault() throws {
     var game = try workRuntimeGame()
@@ -404,27 +429,8 @@ struct FlightWorkGuidanceRuntimeTests {
   }
 
   @Test func genuineDestroyedNPCDebrisUsesNativeCanisterGeometryAndCollectsOnlyOnce() throws {
-    var game = try workRuntimeGame()
-    var source = SpaceBody(id: 44, hull: .cobra, position: .init(0, 0, 1500))
-    source.energy = 1
-    game.bodies = [source]
-    game.ensurePhysicalActors()
-    game.bodies[0].physical?.npc?.ordinaryCargo = [.init(commodity: .food, quantity: 1)]
-    let sourceActor = try #require(game.bodies[0].physical?.identity)
-    let player = try #require(game.commander.flightSimulation.player)
-    let allocated = game.makeAttackOrigin(owner: player)
-    let origin = try #require(allocated)
-    _ = game.applyCombatHit(
-      .init(target: .body(44), distance: 1500, point: source.position),
-      origin: origin, kind: .laser, damage: 1000, laser: .pulse)
-    game.commander.crimeLedger.finishEmission(origin.emissionID)
-    game.resolveDestroyed()
-    game.admitPendingCargo()
-    let payload = try #require(game.commander.cargoDebrisLedger.pendingPayloads.first)
-    guard case .wreck(let original, _) = payload.identity else { throw SaveError.invalidCommander }
-    #expect(original == sourceActor)
-    let index = try #require(game.bodies.firstIndex { $0.physical?.payload == payload.identity })
-    let actor = try #require(game.bodies[index].physical?.identity)
+    var (game, payload, actor) = try genuineNativeDebris()
+    let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
     let native = Mesh.hull(.cargo)
     #expect(game.gameplayMesh(for: game.bodies[index]).vertices == native.vertices)
     game.bodies[index].position = .init(0, -45, 55)
@@ -516,6 +522,24 @@ struct FlightWorkGuidanceRuntimeTests {
     game.scoopCargo()
     #expect(game.commander == before && game.bodies.contains { $0.physical?.identity == actor })
     #expect(game.message == "SALVAGE: OVERSIZED")
+  }
+
+  @Test func currentBoundCustomScaledCargoCannotBorrowTheNativeCanisterException() throws {
+    var (game, payload, actor) = try genuineNativeDebris()
+    let context = try #require(game.gameplayContext())
+    let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+    #expect(game.automaticScoopShapeCompatible(game.bodies[index], context: context))
+    let anchors = try #require(game.commander.flightSimulation.anchors)
+    let fields = MiningFields.generate(anchors: anchors, seed: game.gameplaySeed)
+    let rock = try #require(fields.flatMap(\.rocks).first { $0.radius > 45 })
+    game.miningFields = fields
+    game.bodies[index].physical?.rock = rock.identity
+    let scaled = game.gameplayMesh(for: game.bodies[index])
+    #expect(scaled.vertices != Mesh.hull(.cargo).vertices)
+    #expect(game.commander.cargoDebrisLedger.boundActor(for: payload.identity) == actor)
+    #expect(!game.automaticScoopShapeCompatible(game.bodies[index], context: context))
+    #expect(
+      game.commander.cargoDebrisLedger.pendingPayloads.contains { $0.identity == payload.identity })
   }
 
   @Test func canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex() throws {

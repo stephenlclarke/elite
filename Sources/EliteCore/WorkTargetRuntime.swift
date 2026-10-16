@@ -115,9 +115,12 @@ extension Game {
   /// Original ordinary canisters keep their existing capture contract. The exception is
   /// limited to actual current-bound native ore/debris; salvage retains its 16-unit aperture.
   func automaticScoopShapeCompatible(_ body: SpaceBody, context: EncounterContext) -> Bool {
+    let actual = gameplayMesh(for: body)
+    let native = Mesh.hull(.cargo)
     if body.hull == .cargo, let physical = body.physical,
       physical.identity.system == context.system, physical.identity.visit == context.visit,
       physical.catalogueShipID == nil, physical.npc == nil, physical.ordnance == nil,
+      physical.rock == nil, actual.vertices == native.vertices, actual.faces == native.faces,
       let payload = physical.payload
     {
       switch payload {
