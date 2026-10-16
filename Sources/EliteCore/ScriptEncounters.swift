@@ -60,6 +60,356 @@ public struct ScriptOwnedEncounter: Codable, Sendable, Equatable {
   }
 }
 
+/// Unencoded authority from the actual encounter handler or installed retained record.
+enum MissionActorAdmissionMode: Sendable, Equatable { case prepared, retained }
+
+enum MissionActorAdmissionAuthority: Sendable, Equatable {
+  case missionHandler
+  case worldJob(identity: UUID, pulse: UInt64)
+  case retained
+}
+
+struct MissionActorAdmissionPart: Sendable {
+  let alias: String?
+  let componentID: UUID?
+  let energy: Double
+  let maximumEnergy: Double
+  let solid: Bool
+  /// Measured vertices in actor-local coordinates, with authored transforms already applied.
+  let mesh: Mesh
+
+  fileprivate init(
+    alias: String?, componentID: UUID?, energy: Double, maximumEnergy: Double,
+    solid: Bool, mesh: Mesh
+  ) {
+    self.alias = alias
+    self.componentID = componentID
+    self.energy = energy
+    self.maximumEnergy = maximumEnergy
+    self.solid = solid
+    self.mesh = mesh
+  }
+}
+
+struct MissionActorAdmissionTemplate: Sendable {
+  let actorID: UUID
+  let alias: String
+  let presence: ScriptActorPresence
+  /// Station-relative condition. The old scene ID and physical identity are stripped.
+  let canonicalBody: SpaceBody
+  let maximumHullEnergy: Double
+  let declaredHostile: Bool
+  let parts: [MissionActorAdmissionPart]
+  let minimum: Vector3
+  let maximum: Vector3
+  let radius: Double
+  let nativeUnits: Int
+  /// Condition only: historical NPC targets/attribution must be rebound by native policy.
+  let retainedNativeCondition: NPCState?
+  let retainedNativeVelocity: Vector3?
+  let retainedNativeLaserCooldown: Double?
+
+  fileprivate init(
+    actor: ScriptOwnedActor, canonicalBody: SpaceBody, maximumHullEnergy: Double,
+    declaredHostile: Bool, parts: [MissionActorAdmissionPart], minimum: Vector3,
+    maximum: Vector3, radius: Double, nativeUnits: Int
+  ) {
+    actorID = actor.identity
+    alias = actor.alias
+    presence = actor.presence
+    self.canonicalBody = canonicalBody
+    self.maximumHullEnergy = maximumHullEnergy
+    self.declaredHostile = declaredHostile
+    self.parts = parts
+    self.minimum = minimum
+    self.maximum = maximum
+    self.radius = radius
+    self.nativeUnits = nativeUnits
+    retainedNativeCondition = actor.body.physical?.npc
+    retainedNativeVelocity = actor.body.physical?.velocity
+    retainedNativeLaserCooldown = actor.body.physical?.laserCooldown
+  }
+}
+
+struct MissionActorAdmissionSource: Sendable {
+  let mode: MissionActorAdmissionMode
+  let authority: MissionActorAdmissionAuthority
+  let instanceID: UUID
+  let instanceRevision: UInt64
+  let packDigest: String
+  let definition: String
+  let version: String
+  let encounterID: String
+  let system: SystemIdentity
+  let profile: String
+  /// Exact pre-admission retention snapshot, for a prevalidated native retention patch.
+  let retention: ScriptOwnedEncounter
+  let actors: [MissionActorAdmissionTemplate]
+
+  fileprivate init(
+    mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
+    instance: ScriptInstance, pack: ScriptPack, encounter: ScriptOwnedEncounter,
+    definition: ScriptEncounterDefinition, actors: [MissionActorAdmissionTemplate]
+  ) {
+    self.mode = mode
+    self.authority = authority
+    instanceID = instance.id
+    instanceRevision = instance.revision
+    packDigest = pack.digest
+    self.definition = instance.definition
+    version = instance.version
+    encounterID = encounter.id
+    system = .init(galaxy: encounter.galaxy, system: encounter.system)
+    profile = definition.profile
+    retention = encounter
+    self.actors = actors
+  }
+}
+
+/// Prepared before native publication; the owned adapter applies it without lookup or failure.
+struct MissionActorRetentionPatch: Sendable {
+  let instanceID: UUID
+  let instanceRevision: UInt64
+  let packDigest: String
+  let encounterID: String
+  let expectedEncounter: ScriptOwnedEncounter
+  let updatedEncounter: ScriptOwnedEncounter
+
+  fileprivate init(source: MissionActorAdmissionSource, updated: ScriptOwnedEncounter) {
+    instanceID = source.instanceID
+    instanceRevision = source.instanceRevision
+    packDigest = source.packDigest
+    encounterID = source.encounterID
+    expectedEncounter = source.retention
+    updatedEncounter = updated
+  }
+
+  func matches(_ instance: ScriptInstance) -> Bool {
+    instance.id == instanceID && instance.revision == instanceRevision
+      && instance.digest == packDigest && instance.ownedEncounters[encounterID] == expectedEncounter
+  }
+
+  /// Stage an entire selected instance before native commit, for direct postcommit publication.
+  func preparingInstance(_ instance: ScriptInstance) throws -> ScriptInstance {
+    guard matches(instance) else {
+      throw MissionPackError("Actor retention changed before admission.")
+    }
+    var staged = instance
+    apply(to: &staged)
+    return staged
+  }
+
+  fileprivate func apply(to instance: inout ScriptInstance) {
+    instance.ownedEncounters[encounterID] = updatedEncounter
+  }
+}
+
+extension MissionActorAdmissionSource {
+  /// Only the native preparation supplies new scene addresses; no historical address is reused.
+  func prepareRetentionPatch(sceneBodyIDs: [UUID: Int]) throws -> MissionActorRetentionPatch {
+    let eligible = Set(
+      actors.filter { $0.presence != .destroyed && $0.canonicalBody.energy > 0 }.map(\.actorID))
+    guard Set(sceneBodyIDs.keys).isSubset(of: eligible),
+      Set(sceneBodyIDs.values).count == sceneBodyIDs.count,
+      sceneBodyIDs.values.allSatisfy({ (1..<1_000_000_000).contains($0) }),
+      mode != .prepared || Set(sceneBodyIDs.keys) == eligible
+    else { throw MissionPackError("Native actor addresses must cover the exact eligible cohort.") }
+    var updated = retention
+    for template in actors {
+      guard let bodyID = sceneBodyIDs[template.actorID] else { continue }
+      guard var actor = updated.actors[template.alias], actor.identity == template.actorID else {
+        throw MissionPackError("Actor retention mapping changed before native admission.")
+      }
+      actor.body.id = bodyID
+      actor.presence = .present
+      updated.actors[template.alias] = actor
+    }
+    if mode == .prepared { updated.admitted = true }
+    guard updated.valid else { throw MissionPackError("Native actor retention patch is invalid.") }
+    return .init(source: self, updated: updated)
+  }
+}
+
+extension Game {
+  /// Reads only actual installed retained ownership; there is no caller-supplied state/body path.
+  func retainedMissionActorAdmissionSources() throws -> [MissionActorAdmissionSource] {
+    var sources: [MissionActorAdmissionSource] = []
+    for id in commander.scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+      guard let instance = commander.scriptState.instances[id], let pack = scriptPack(for: instance)
+      else { continue }
+      guard instance.id == id else {
+        throw MissionPackError("Retained actor instance key mismatch.")
+      }
+      for key in instance.ownedEncounters.keys.sorted() {
+        guard let encounter = instance.ownedEncounters[key], encounter.admitted,
+          encounter.galaxy == commander.galaxy, encounter.system == commander.system
+        else { continue }
+        guard encounter.id == key else {
+          throw MissionPackError("Retained encounter key mismatch.")
+        }
+        sources.append(
+          try sealMissionActorAdmissionSource(
+            mode: .retained, authority: .retained, pack: pack, state: instance,
+            encounter: encounter))
+      }
+    }
+    return sources
+  }
+
+  /// Called only by this file's validated prepared-encounter handler when native admission is wired.
+  /// A world job supplies its actual UUID and pending pulse, never a Boolean authorization.
+  private func preparedMissionActorAdmissionSource(
+    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
+    worldJob: UUID? = nil, pulse: UInt64? = nil
+  ) throws -> MissionActorAdmissionSource {
+    guard let stored = commander.scriptState.instances[state.id], stored.id == state.id,
+      stored.definition == state.definition, stored.version == state.version,
+      stored.digest == state.digest, stored.revision == state.revision
+    else { throw MissionPackError("Prepared actors require the actual command candidate owner.") }
+    let authority: MissionActorAdmissionAuthority
+    if let worldJob, let pulse {
+      guard let job = commander.scriptState.worldJobs[worldJob], job.identity == worldJob,
+        job.origin == state.id, job.status == .active, job.suspension == nil,
+        job.pending?.sequence == pulse, job.valid, worldJobOwnerAlive(job),
+        pack.manifest.worldJobs?.contains(job.definition) == true,
+        job.definition.controlledEncounters?.contains(encounter.id) == true,
+        job.definition.galaxy == encounter.galaxy, job.definition.system == encounter.system
+      else { throw MissionPackError("The actual pending world job must control this encounter.") }
+      authority = .worldJob(identity: worldJob, pulse: pulse)
+    } else {
+      guard worldJob == nil, pulse == nil, state.outcome == .active, stored.outcome == .active
+      else {
+        throw MissionPackError("Prepared actors require an active mission command authority.")
+      }
+      authority = .missionHandler
+    }
+    return try sealMissionActorAdmissionSource(
+      mode: .prepared, authority: authority, pack: pack, state: state, encounter: encounter)
+  }
+
+  private func sealMissionActorAdmissionSource(
+    mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
+    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter
+  ) throws -> MissionActorAdmissionSource {
+    guard state.definition == pack.manifest.stateID, state.version == pack.manifest.version,
+      state.digest == pack.digest, scriptPack(for: state)?.digest == pack.digest,
+      encounter.valid,
+      let definition = pack.manifest.encounters?.first(where: { $0.id == encounter.id }),
+      definition.valid, definition.galaxy == encounter.galaxy,
+      definition.system == encounter.system,
+      Set(definition.actors.map(\.id)) == Set(encounter.actors.keys),
+      mode == .retained ? encounter.admitted : !encounter.admitted,
+      pack.manifest.capabilities.contains(
+        definition.profile == "classic-local-freeze-v1"
+          ? "classic-encounters-v2" : "profiled-encounters-v2")
+    else { throw MissionPackError("The actor source must match its exact installed encounter.") }
+    var templates: [MissionActorAdmissionTemplate] = []
+    for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
+      guard let actor = encounter.actors[spec.id], actor.alias == spec.id, actor.valid,
+        actor.identity
+          == ScriptIdentity.uuid(
+            "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
+        actor.body.missionInstanceID == state.id, actor.body.scriptShot == nil
+      else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
+      templates.append(try missionActorAdmissionTemplate(actor, specification: spec, pack: pack))
+    }
+    return .init(
+      mode: mode, authority: authority, instance: state, pack: pack,
+      encounter: encounter, definition: definition, actors: templates)
+  }
+
+  private func missionActorAdmissionTemplate(
+    _ actor: ScriptOwnedActor, specification: ScriptActorDefinition, pack: ScriptPack
+  ) throws -> MissionActorAdmissionTemplate {
+    var parts: [MissionActorAdmissionPart] = []
+    let maximumEnergy: Double
+    if let npcID = specification.npc {
+      guard actor.body.hull == .cobra, let npc = actor.body.scriptNPC, npc.valid,
+        let definition = pack.manifest.npcs?.first(where: { $0.id == npcID }),
+        definition == npc.fit.definition
+      else { throw MissionPackError("Retained NPC fit differs from its actual declaration.") }
+      maximumEnergy = definition.energy
+      func measured(_ reference: String, scale: Double, offset: Vector3, pose: Basis3) throws
+        -> Mesh
+      {
+        guard let digest = npc.fit.models[reference], let installed = pack.models[reference],
+          commander.scriptState.geometry[digest] == installed,
+          ScriptPackLibrary.scriptGeometryValid(installed)
+        else { throw MissionPackError("Exact admitted NPC geometry is unavailable or changed.") }
+        let raw = installed.rawMesh
+        return Mesh(
+          vertices: raw.vertices.map { offset + pose.apply($0 * scale) }, faces: raw.faces,
+          preserveWinding: true)
+      }
+      parts.append(
+        .init(
+          alias: nil, componentID: nil, energy: actor.body.energy, maximumEnergy: maximumEnergy,
+          solid: true,
+          mesh: try measured(
+            definition.model, scale: definition.scale, offset: .init(0, 0, 0), pose: Basis3())))
+      for spec in definition.components ?? [] {
+        guard let state = npc.components[spec.id],
+          state.identity == ScriptIdentity.uuid("script-component-v2:\(actor.identity):\(spec.id)")
+        else { throw MissionPackError("Retained component identity differs from its owner.") }
+        parts.append(
+          .init(
+            alias: spec.id, componentID: state.identity, energy: state.energy,
+            maximumEnergy: spec.energy, solid: spec.solid,
+            mesh: try measured(
+              spec.model, scale: spec.scale * definition.scale,
+              offset: spec.position * definition.scale, pose: spec.orientation)))
+      }
+    } else {
+      guard let hull = specification.hull, actor.body.hull == hull, actor.body.scriptNPC == nil
+      else {
+        throw MissionPackError("Retained classic hull differs from its actual declaration.")
+      }
+      maximumEnergy = hull.navalEnergy ?? 100
+      parts.append(
+        .init(
+          alias: nil, componentID: nil, energy: actor.body.energy, maximumEnergy: maximumEnergy,
+          solid: true, mesh: Mesh.hull(hull)))
+    }
+    guard actor.body.energy <= maximumEnergy,
+      actor.body.physical?.npc?.resources?.valid ?? true,
+      actor.body.physical?.velocity.finite ?? true,
+      actor.body.physical.map({ $0.laserCooldown.isFinite && $0.laserCooldown >= 0 }) ?? true
+    else { throw MissionPackError("Retained actor condition exceeds its actual source bounds.") }
+    let solids = parts.filter { $0.solid && ($0.alias == nil || $0.energy > 0) }
+    let vertices = solids.flatMap(\.mesh.vertices)
+    guard let first = vertices.first,
+      vertices.allSatisfy({ $0.finite && $0.length.isFinite }),
+      parts.allSatisfy({ part in
+        !part.mesh.faces.isEmpty
+          && part.mesh.faces.allSatisfy {
+            $0.count >= 3 && $0.allSatisfy(part.mesh.vertices.indices.contains)
+          }
+      })
+    else { throw MissionPackError("Actor admission requires measured finite collision geometry.") }
+    var minimum = first
+    var maximum = first
+    for vertex in vertices.dropFirst() {
+      minimum = .init(min(minimum.x, vertex.x), min(minimum.y, vertex.y), min(minimum.z, vertex.z))
+      maximum = .init(max(maximum.x, vertex.x), max(maximum.y, vertex.y), max(maximum.z, vertex.z))
+    }
+    var canonical = actor.body
+    canonical.id = -1
+    canonical.physical = nil
+    canonical.destroyedByPlayer = nil
+    canonical.navalTarget = false
+    canonical.playerMissileTarget = nil
+    canonical.enemyMissile = false
+    canonical.missileSourceID = nil
+    canonical.blackjackIdentity = nil
+    canonical.blackjackRole = nil
+    canonical.blackjackLaserCooldown = nil
+    return .init(
+      actor: actor, canonicalBody: canonical, maximumHullEnergy: maximumEnergy,
+      declaredHostile: specification.hostile, parts: parts, minimum: minimum, maximum: maximum,
+      radius: vertices.map(\.length).max() ?? 0, nativeUnits: solids.count)
+  }
+}
+
 extension ScriptEncounterDefinition {
   static let classicHulls: Set<Hull> = [
     .cobra, .viper, .sidewinder, .constrictor, .thargoid, .thargon,
@@ -145,11 +495,11 @@ extension Game {
   /// Returns a later native result. A saved plan is not an admission receipt.
   mutating func ensureScriptEncounter(
     _ id: String, pack: ScriptPack, state: inout ScriptInstance,
-    worldJobAuthorized: Bool = false
+    worldJobID: UUID? = nil, worldJobPulse: UInt64? = nil
   )
     throws -> (String, [String: ScriptValue])
   {
-    guard state.outcome == .active || worldJobAuthorized,
+    guard state.outcome == .active || worldJobID != nil,
       pack.manifest.capabilities.contains("classic-encounters-v2")
         || pack.manifest.capabilities.contains("profiled-encounters-v2"),
       let definition = pack.manifest.encounters?.first(where: { $0.id == id })
@@ -191,6 +541,8 @@ extension Game {
       ("encounter.pending", ["encounter_id": .string(id), "reason": .string(reason)])
     }
     state.ownedEncounters[id] = encounter
+    _ = try preparedMissionActorAdmissionSource(
+      pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
     guard !docked, definition.galaxy == commander.galaxy, definition.system == commander.system,
       let anchor = scriptAnchor
     else { return pending("Enter the declared system in flight with its main station available.") }
@@ -289,6 +641,7 @@ extension Game {
   /// Reprojects the same world actor after genuine native launch/arrival/camera travel.
   mutating func restoreScriptActors() throws {
     try validateRetainedMissionProjectileRestoration()
+    _ = try retainedMissionActorAdmissionSources()
     guard !commander.scriptState.instances.isEmpty, !docked, let anchor = scriptAnchor else {
       return
     }
