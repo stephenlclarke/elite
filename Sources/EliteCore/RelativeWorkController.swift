@@ -77,11 +77,14 @@ public struct RelativeWorkInput: Sendable {
   public var cutterRange: Double
   public var delta: Double
   public var manualCancel: Bool
+  /// Desired ship-centre displacement along target-derived ship-up.
+  public var collectionOffset: Double
 
   public init(
     ship: ShipPose, velocity: Vector3, angularVelocity: Vector3,
     target: RelativeWorkTarget?, playerRadius: Double, limits: RelativeWorkLimits,
-    cutterRange: Double = 300, delta: Double, manualCancel: Bool = false
+    cutterRange: Double = 300, delta: Double, manualCancel: Bool = false,
+    collectionOffset: Double = 0
   ) {
     self.ship = ship
     self.velocity = velocity
@@ -92,6 +95,7 @@ public struct RelativeWorkInput: Sendable {
     self.cutterRange = cutterRange
     self.delta = delta
     self.manualCancel = manualCancel
+    self.collectionOffset = collectionOffset
   }
 }
 
@@ -179,17 +183,23 @@ public struct RelativeWorkController: Sendable {
     let clearance = max(120, 2 * input.playerRadius)
     let normal = target.pose.orientation.apply(target.surfaceNormal.unit)
     let surface = target.pose.systemPoint(target.surfacePoint)
-    let offset =
+    let desired = Self.facing(normal: normal, target: target.pose.orientation)
+    var offset =
       target.pose.orientation.apply(target.surfacePoint) + normal
       * (clearance + input.playerRadius + Self.workMargin)
+    var workDistance = clearance + input.playerRadius + Self.workMargin
+    if input.collectionOffset > 0 {
+      let lateral = desired.y * input.collectionOffset
+      offset = offset + lateral
+      workDistance = (normal * workDistance + lateral).length
+    }
     let work = target.pose.position + offset
     let workVelocity = target.velocity + target.angularVelocity.cross(offset)
     let workAcceleration = target.angularVelocity.cross(target.angularVelocity.cross(offset))
     let error = work - input.ship.position
     let relativeVelocity = input.velocity - workVelocity
-    let desired = Self.facing(normal: normal, target: target.pose.orientation)
     let rotationError = Self.rotationError(from: input.ship.orientation, to: desired)
-    guard clearance.isFinite,
+    guard clearance.isFinite, workDistance.isFinite,
       [
         normal, surface, offset, work, workVelocity, workAcceleration, error, relativeVelocity,
         rotationError,
@@ -199,7 +209,7 @@ public struct RelativeWorkController: Sendable {
     let metrics = Metrics(
       target: target, work: work, surface: surface, error: error.length,
       speed: relativeVelocity.length,
-      angle: rotationError.length, clearance: clearance)
+      angle: rotationError.length, clearance: clearance, workDistance: workDistance)
 
     if let reason = restriction(
       input, target: target, metrics: metrics, workVelocity: workVelocity,
@@ -248,6 +258,7 @@ public struct RelativeWorkController: Sendable {
     let speed: Double
     let angle: Double
     let clearance: Double
+    let workDistance: Double
   }
 
   private func restriction(
@@ -260,7 +271,7 @@ public struct RelativeWorkController: Sendable {
     guard [.rock, .wreck, .section].contains(category) else {
       return .unsupportedTarget
     }
-    guard metrics.clearance + input.playerRadius + Self.workMargin <= input.cutterRange else {
+    guard metrics.workDistance <= input.cutterRange else {
       return .toolRange
     }
     guard workVelocity.length <= input.limits.speed + 1e-9 else {
@@ -464,6 +475,7 @@ public struct RelativeWorkController: Sendable {
       && input.delta.isFinite && input.delta > 0 && input.delta <= 0.1
       && input.playerRadius.isFinite && input.playerRadius >= 0
       && input.cutterRange.isFinite && input.cutterRange > 0
+      && input.collectionOffset.isFinite && input.collectionOffset >= 0
       && limits.acceleration.isFinite && limits.acceleration > 0
       && limits.speed.isFinite && limits.speed > 0
       && [limits.pitchRate, limits.yawRate, limits.rollRate].allSatisfy { $0.isFinite && $0 >= 0 }
