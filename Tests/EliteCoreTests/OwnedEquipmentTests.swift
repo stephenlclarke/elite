@@ -215,6 +215,22 @@ import Testing
   let before = await runtime.snapshot().commander
   let stale = await runtime.equipmentTransaction(.inventory(command))
   #expect(!stale.applied && (await runtime.snapshot().commander) == before)
+  // Ordinary native inventory actions require docking, including at a secondary station.
+  var outside = game
+  outside.dockedAtMainStation = false
+  let original = try #require(outside.commander.equipmentInventory)
+  let outsideLaser = try #require(outside.commander.fittedEquipment(at: .laser(.front)))
+  let outsideCommand = try #require(
+    outside.inventoryActionPreview(for: .equipment(outsideLaser)).command)
+  let stored = outside.performEquipmentMutation(.inventory(outsideCommand))
+  #expect(stored.applied && outside.commander.valid)
+  #expect(
+    outside.commander.equipmentInventory?.items.first { $0.id == outsideLaser.id }?.location == nil)
+  #expect(outside.commander.equipmentInventory?.revision == original.revision + 1)
+  #expect(outside.commander.credits == game.commander.credits)
+  #expect(
+    Set(outside.commander.equipmentInventory?.items.map(\.id) ?? [])
+      == Set(original.items.map(\.id)))
   for paused in [false, true] {
     var blocked = game
     let freshLaser = try #require(blocked.commander.fittedEquipment(at: .laser(.front)))

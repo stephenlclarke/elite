@@ -4,6 +4,35 @@ import Testing
 @testable import EliteCore
 
 struct ScriptEquipmentRefitTests {
+  @Test(arguments: ["issue", "refit", "store", "return", "release"])
+  func luaGearCommandsStillRequireTheMainOrbitalStation(operation: String) throws {
+    let initial =
+      operation == "issue"
+      ? ""
+      : "{op='gear.issue',id='issue',gear='kit',fit=\(operation == "refit" ? "false" : "true")}"
+    let fixture = try GearScriptFixture(
+      requiredReturn: false, accepted: initial,
+      contact: "{op='gear.\(operation)',id='request',gear='kit',index=0}")
+    defer { fixture.clean() }
+    var game = try fixture.game()
+    let id = try #require(game.commander.scriptState.instances.keys.first)
+    var mainStation = game
+    mainStation.emitScriptEvent("contact.requested")
+    try #require(mainStation.commander.scriptState.instances[id]?.suspension == nil)
+    game.dockedAtMainStation = false
+    try #require(game.docked)
+    let before = game.commander
+    game.emitScriptEvent("contact.requested")
+    #expect(game.commander.equipmentInventory == before.equipmentInventory)
+    #expect(game.commander.credits == before.credits)
+    #expect(
+      game.commander.scriptState.instances[id]?.gearIssues
+        == before.scriptState.instances[id]?.gearIssues)
+    #expect(
+      game.commander.scriptState.instances[id]?.suspension?.contains("main orbital station") == true
+    )
+  }
+
   @Test(arguments: ["Missile", FuelStorage.equipmentName])
   func heldRoundAndTankRefitUseActualFreeSlotsWithoutStoringPersonalOriginals(name: String) throws {
     let fixture = try GearScriptFixture(
