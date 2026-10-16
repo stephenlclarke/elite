@@ -127,7 +127,7 @@ struct SalvageCutterRuntimeTests {
   }
 }
 
-private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageLot, Int) {
+private func pendingCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageLot) {
   var (game, _) = try cutterRuntimeGame()
   if systemOffset != 0 {
     // A second genuine visit produces foreign-system custody, not a forged pending lot.
@@ -153,15 +153,56 @@ private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageL
     let accepted = game.fireSalvageCutter(delta: 0.1)
     #expect(accepted)
     if let lot = game.commander.salvageLedger.pendingLots.first {
-      let body = try #require(game.bodies.first { $0.physical?.payload == .salvage(lot.identity) })
-      #expect(game.commander.salvageLedger.boundActor(for: lot.identity) == body.physical?.identity)
-      return (game, lot, body.id)
+      return (game, lot)
     }
   }
   throw SaveError.invalidCommander
 }
 
+private func releasedCutterGame(systemOffset: Int = 0) throws -> (Game, SalvageLot, Int) {
+  let (game, lot) = try pendingCutterGame(systemOffset: systemOffset)
+  let body = try #require(game.bodies.first { $0.physical?.payload == .salvage(lot.identity) })
+  #expect(game.commander.salvageLedger.boundActor(for: lot.identity) == body.physical?.identity)
+  return (game, lot, body.id)
+}
+
 extension SalvageCutterRuntimeTests {
+  @Test func diagnosticReleasedFragmentAdmissionOutsideTheActualSourceFace() throws {
+    var (game, lot) = try pendingCutterGame()
+    let context = try #require(game.gameplayContext())
+    let requests = game.commander.salvageLedger.spawnRequests(context: context)
+    let request = try #require(requests.first { $0.payload == .salvage(lot.identity) })
+    let parent = try #require(
+      game.bodies.first { $0.physical?.salvage?.wreck == lot.identity.section.wreck })
+    let profile = try #require(
+      parent.physical?.catalogueShipID.flatMap(SalvageCatalogue.profile(catalogueShipID:)))
+    let section = try #require(profile.sections.first { $0.index == lot.identity.section.section })
+    let pose = game.modelPose(of: parent)
+    let normal = pose.orientation.apply(section.normal).unit
+    let ray = try #require(
+      GameplayRaycast.nearest(
+        origin: game.commander.flightSimulation.pose.shipPoint(lot.position),
+        direction: game.commander.flightSimulation.pose.shipVector(normal * -1), maxDistance: 300,
+        bodies: [parent], meshOverrides: game.gameplayMeshOverrides))
+    let radius = lot.halfExtents.length
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: [request], atomic: false)], intents: []))
+    let receipt = try #require(receipts.first)
+    #expect(ray.target == .body(parent.id) && ray.distance > radius + 8)
+    #expect(receipt.refusal == .unsafePosition && receipt.actor == nil)
+    #expect(
+      (lot.position - pose.position).length < profile.bounds.radius + profile.bounds.center.length
+        + radius + 8)
+    print(
+      "SALVAGE_ADMISSION_DIAGNOSTIC", profile.catalogueShipID, section.index,
+      "faceGap", ray.distance, "lotRadius", radius,
+      "parentDistance", (lot.position - pose.position).length,
+      "parentRadius", profile.bounds.radius + profile.bounds.center.length,
+      "refusal", String(describing: receipt.refusal))
+  }
+
   @Test func anAcknowledgedOldVisitBodyCannotCollectAfterTheActualFlightContextChanges() throws {
     var (game, lot, bodyID) = try releasedCutterGame()
     let index = try #require(game.bodies.firstIndex { $0.id == bodyID })

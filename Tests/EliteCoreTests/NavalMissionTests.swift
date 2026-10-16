@@ -375,9 +375,22 @@ private func finishMessage(_ game: inout Game) {
   }
   game.dock()
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
+  let item = Equipment.all[game.selection]
+  game.commander.system = try #require(game.systems.first { $0.technology >= item.technology }?.id)
+  try game.commander.prepareEquipment()
+  let naval = try #require(game.commander.fittedEquipment(at: .energy))
+  let cost = game.shopPrice(item)
+  game.commander.credits = cost + 1000
   let cash = game.commander.credits
   game.purchase()
-  #expect(game.commander.credits == cash && game.message == "NAVAL ENERGY UNIT FITTED")
+  // Paid predecessors can be held while the stronger migrated reward stays fitted.
+  #expect(game.commander.credits == cash - cost && game.commander.energyRechargeMultiplier == 3)
+  #expect(game.commander.fittedEquipment(at: .energy)?.id == naval.id)
+  let node = try #require(EquipmentRuntimeCatalog.node(for: item.name))
+  #expect(
+    game.commander.equipmentInventory?.items.contains { $0.node == node && $0.location == nil }
+      == true)
+  #expect(game.commander.equipmentPurchaseHistory?.paid.count == 1)
   game.screen = .equipment
   _ = Display.render(game)
 }

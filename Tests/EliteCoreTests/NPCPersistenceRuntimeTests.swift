@@ -213,11 +213,13 @@ struct NPCPersistenceRuntimeTests {
     try original.write(to: file, options: .atomic)
     try FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: directory.path)
     let runtime = GameRuntime(game: game)
+    let beforeFailedSave = await runtime.snapshot()
     var failed = false
     do { try await runtime.save(to: file) } catch { failed = true }
     #expect(failed)
     let after = await runtime.snapshot()
-    #expect(after.commander == game.commander && after.bodies == game.bodies)
+    #expect(
+      after.commander == beforeFailedSave.commander && after.bodies == beforeFailedSave.bodies)
     #expect(try Data(contentsOf: file) == original)
     try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: directory.path)
     try await runtime.save(to: file)
