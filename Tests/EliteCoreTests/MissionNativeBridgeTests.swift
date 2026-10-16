@@ -10,6 +10,8 @@ private func bridgeFixture() throws -> (SpaceBody, EncounterContext) {
   var game = Game(executive: false)
   game.launch()
   game.bodies = [.init(id: 42, hull: .constrictor, position: .init(0, 0, 2000))]
+  game.bodies[0].missionActorID = bridgeActor
+  game.bodies[0].missionInstanceID = bridgeInstance
   game.ensurePhysicalActors()
   return (try #require(game.bodies.first), try #require(game.gameplayContext()))
 }
@@ -84,6 +86,15 @@ struct MissionNativeBridgeTests {
       #expect(throws: MissionNativeBridgeError.sourceMismatch) {
         try MissionNativeBridge.bindActor(descriptor: bad, body: body, context: context)
       }
+    }
+    let lying = MissionActorDescriptor(
+      instanceID: bridgeActor, instanceRevision: descriptor.instanceRevision,
+      packDigest: descriptor.packDigest, encounterID: descriptor.encounterID,
+      encounterAdmitted: descriptor.encounterAdmitted, system: descriptor.system,
+      alias: descriptor.alias, actorID: bridgeInstance, presence: descriptor.presence,
+      missionActorID: bridgeInstance, missionInstanceID: bridgeActor, body: body)
+    #expect(throws: MissionNativeBridgeError.sourceMismatch) {
+      try MissionNativeBridge.bindActor(descriptor: lying, body: body, context: context)
     }
     for scenario in 0..<4 {
       var malformed = body
