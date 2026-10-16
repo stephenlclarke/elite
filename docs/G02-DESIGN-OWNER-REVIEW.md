@@ -1,0 +1,22 @@
+# G02 design owner acceptance
+
+Researcher reviewed and accepts the policy/API/source boundary in `004f74947635536ec3227358eb8d80589bf8bc59`, on accepted engine base `880d3a65478ed9304cc926fc21fbf3db9bf6d140`. The three proposal/issue/PR documents and frozen authority were independently hash-verified; the supplied 81,580-byte patch is exactly the two-commit Git format-patch series. This is design acceptance and implementation authorization through Orchestrator to Mission Coder 1, not executable mission acceptance or formal PR approval.
+
+## Accepted implementation contract
+
+The [amended proposal](MISSION-CODER-G02-DESIGN-PROPOSAL.md) is controlling. It supplies six deterministic data/package offers, native xorshift/shortest-hop routes and fixed rewards, bounded zero/one-tonne custody, actual contact confirmation receipts, inclusive menu-excluding deadlines, native expiry and physical loss, format21 compatibility and isolated Gallery trials. All selected generator, timing, reward and lifecycle choices remain labelled project estimates or project policies. No recovered server parity or dynamic navigation-health support is claimed.
+
+The seven required amendments are resolved: frozen itinerary lower bounds and disabled infeasible rows without rerolls; actual accepted reach getters with deferred G1 composition; private original-event admission and same-action completion; restricted clock authorization/joint travel caps; every real fatal transition before observers plus candidate-local escape loss; five exact current-writer assertions with genuine old-format coverage; and separate pending Inventory epoch integration. The real menu/flight/travel/source semantics were checked against the accepted engine, including `GameRuntime.key` restoring both Game and controls on command publication failure.
+
+Implementation may proceed in the owned courier worktree and branch within the exact source table in the amended proposal. No further generic permission wait is required. Builds, tests, native app work and renderer capture require Orchestrator's assigned exclusive slot. Any additional source path or material policy change comes back through Orchestrator for Researcher review.
+
+## Implementation clarifications
+
+- Save-version presence checks are scoped to native typed locations. A genuine old script's arbitrary `ScriptValue` object/string using words such as `courier` or `missionCalendar` must remain valid. Reserved payload projection rules apply to native courier ownership and cannot retroactively reserve a previously legal ordinary pack key globally. Include positive compatibility fixtures as well as concealed native-field negatives.
+- The itinerary lower bound describes the frozen station-refuel route, including one launch per leg. It is not an optimal-time proof or delivery guarantee. Strictly positive lower-bound headroom permits admission; equality/over-bound rows remain visible but disabled, with unchanged draws and terms. Actual native multi-hop travel and inclusive handoff boundaries need independent tests.
+- Physical pending loss remains reserved and undeliverable until a terminal candidate publishes. A command save failure rolls back escape use and controls; a fatal physical simulation failure retains the death/pending fact. Do not merge those distinct transaction rules or fabricate persistence of an unpublished fact.
+- Generation reach-rule provenance does not authorize importing G1 equipment statistics or inventing a device-health subsystem. The later earned-statistics/health and Inventory Start/Return composition gates remain pending and explicitly reported.
+
+## Required return
+
+Return the coherent native mechanics, authored six-choice mission, actual Gallery/trial integration, source/provenance documentation and immutable validation evidence through Orchestrator. Focused negative/positive tests must cover all policy and corruption boundaries; actual native acceptance/travel/contact/save/load/restart/return must establish playability. Preserve ordinary contracts, timers, G21 full quotes and the accepted construction/preparation unwind. Complete `make ci` with coverage, sanitizers and leaks on frozen final inputs under the assigned slot. No sanitizer/stack/test/timing waiver, independent push or whole-engine completion claim is authorized.
