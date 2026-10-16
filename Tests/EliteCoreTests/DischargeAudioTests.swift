@@ -35,10 +35,12 @@ import Testing
   let events = game.dischargeAudio.events
   var invalid = game.commander
   invalid.credits = -1
-  #expect(!game.load(invalid))
+  let refused = game.load(invalid)
+  #expect(!refused)
   #expect(game.dischargeAudio.epoch == epoch && game.dischargeAudio.events == events)
   #expect(feed.update(game.dischargeAudio).isEmpty)
-  #expect(game.load(game.commander))
+  let loaded = game.load(game.commander)
+  #expect(loaded)
   #expect(game.dischargeAudio.epoch != epoch && game.dischargeAudio.events.isEmpty)
   #expect(feed.update(game.dischargeAudio).isEmpty)
 }
