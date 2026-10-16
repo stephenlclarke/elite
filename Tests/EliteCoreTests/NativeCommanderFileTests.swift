@@ -99,7 +99,8 @@ extension NativeViewTests {
     #expect(saved == before.commander)
     #expect(try Data(contentsOf: a) == originalA)
     #expect(try Data(contentsOf: b) == originalB)
-    #expect(fixture.delegate.saves.activeURL == b && fixture.delegate.saves.startupURL == c)
+    #expect(fixture.delegate.saves.activeURL == b && fixture.delegate.saves.startupURL == b)
+    #expect(fixture.preferences.string(forKey: "lastCommanderSavePath") == c.path)
     #expect(fixture.view.game.commander.name == "B" && fixture.view.held.isEmpty)
     #expect(fixture.errors.isEmpty)
   }
