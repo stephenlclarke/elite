@@ -242,7 +242,17 @@ extension Game {
     switch slot {
     case .laser(let mount): mount.label + " laser"
     case .utility(.miningLaser): "Mining work tool"
-    case .utility(let utility): utility.rawValue
+    case .utility(let utility):
+      switch utility {
+      case .miningLaser: "Mining work tool"
+      case .salvageCutter: "Salvage Cutter"
+      case .fuelScoops: "Fuel Scoops"
+      case .ecm: "ECM"
+      case .escapePod: "Escape Pod"
+      case .energyBomb: "Energy Bomb"
+      case .cargoExpansion: "Cargo expansion"
+      case .galacticHyperdrive: "Galactic Hyperdrive"
+      }
     case .fuelStorage(let unit): "fuel storage \(unit + 1)"
     case .shield: "shield"
     case .energy: "energy"
@@ -269,8 +279,10 @@ extension Game {
   }
   private func inventoryUpgradeDetails(_ quote: ComponentUpgradeQuote) -> [String] {
     let grade = EquipmentModuleTemplates.displayName(for: quote.resultingGrade) ?? "Unknown"
-    let next = quote.nextGrade.flatMap(EquipmentModuleTemplates.displayName) ?? "terminal envelope"
-    return ["Resulting grade: " + grade, "Next " + next + " (actual / required)"]
+    let next =
+      quote.nextGrade.flatMap(EquipmentModuleTemplates.displayName)
+      .map { "Next " + $0 + " (actual / required)" } ?? "Maximum grade limits (actual / limit)"
+    return ["Resulting grade: " + grade, next]
       + quote.progress.map { progress in
         inventoryComponentAxisLabel(progress.axis) + ": "
           + inventoryStatChange(

@@ -166,11 +166,7 @@ final class GameView: NSView {
       !game.screen.isFlight && ["up", "down", "left", "right", "pageup", "pagedown"].contains(key)
     let repeatText = game.acceptsTextInput && (key.count == 1 || key == "backspace")
     if !event.isARepeat || repeatNavigation || repeatText {
-      if game.screen == .inventory,
-        ["tab", "up", "down", "left", "right", "pageup", "pagedown"].contains(key)
-      {
-        inventoryInputGeneration &+= 1
-      }
+      if game.screen == .inventory { inventoryInputGeneration &+= 1 }
       pending.append(key)
     }
   }
