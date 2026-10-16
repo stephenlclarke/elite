@@ -30,9 +30,20 @@ extension GameRuntime {
     let changed =
       before.commander != game.commander || before.docked != game.docked
       || before.bodies != game.bodies || before.jumpCountdown != game.jumpCountdown
-    guard ownsPersistentState, changed, let publish = scriptPublisher() else { return }
+    guard ownsPersistentState, changed else { return }
     var candidate = game
-    try publish(&candidate)
+    if let publish = scriptPublisher() {
+      try publish(&candidate)
+    } else if before.requiresScriptDurability, !game.requiresScriptDurability,
+      let url = scriptSaveURL
+    {
+      // Clearing the last retained feature still replaces the bound save. Native-only
+      // commanders use the existing writer without inventing a new script calendar.
+      try requireGalleryFileAccess(url)
+      try Self.writeCommander(&candidate, to: url)
+    } else {
+      return
+    }
     game = candidate
   }
   func scriptCommand<T>(_ action: (inout Game) throws -> T) throws -> T {
