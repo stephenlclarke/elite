@@ -26,7 +26,8 @@ final class NativeMissionMenu: NSObject, NSMenuItemValidation {
       }
     }
     for (index, action) in MissionUIAction.allCases.enumerated() {
-      let item = NSMenuItem(title: action.title, action: #selector(perform(_:)), keyEquivalent: "")
+      let item = NSMenuItem(
+        title: action.title, action: #selector(chooseMissionMenuItem(_:)), keyEquivalent: "")
       item.representedObject = action.rawValue
       item.target = self
       if let game = snapshot() { item.title = action.title(in: game) }
@@ -59,7 +60,7 @@ final class NativeMissionMenu: NSObject, NSMenuItemValidation {
     return painted
   }
 
-  @objc private func perform(_ sender: NSMenuItem) {
+  @objc private func chooseMissionMenuItem(_ sender: NSMenuItem) {
     guard let command = sender.representedObject as? String,
       let action = MissionUIAction(rawValue: command)
     else { return }
