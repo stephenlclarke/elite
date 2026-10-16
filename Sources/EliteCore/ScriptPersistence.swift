@@ -274,7 +274,19 @@ enum ScriptSaveStore {
       ScriptWorldSave.self, from: chunks["world.json"]!)
     // Versioned mission provenance cannot be validated against the header alone.
     // Migrate only after all state/contract/physical/world chunks have been joined.
+    let hadMissingCalendar = commander.scriptState.calendarLedger == nil
+    guard pointer.schemaVersion < 10 || !hadMissingCalendar else {
+      throw SaveError.invalidCommander
+    }
     try commander.prepareEquipment()
+    if hadMissingCalendar {
+      if commander.scriptState.calendarLedger == nil {
+        commander.scriptState.calendarLedger = .init(origin: .inactiveLegacyMigration)
+      }
+      if world.jumpCountdown != nil {
+        commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
+      }
+    }
     let semantic = JSONEncoder()
     guard try semantic.encode(commander.scriptState).count <= 33_554_432,
       try semantic.encode(commander.contracts).count <= 33_554_432,
