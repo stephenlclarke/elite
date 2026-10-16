@@ -38,8 +38,9 @@ private func ledgerImpactFixture(
     descriptor: descriptor, body: source, context: launchContext)
   let weapon = try #require(source.scriptNPC?.fit.definition.components?.first?.weapons?.first)
   let component = try #require(source.scriptNPC?.components.values.first?.identity)
-  let origin = try #require(
-    game.makeAttackOrigin(owner: binding.nativeActor, sourcePart: component.uuidString))
+  let allocatedOrigin = game.makeAttackOrigin(
+    owner: binding.nativeActor, sourcePart: component.uuidString)
+  let origin = try #require(allocatedOrigin)
   let launchActor = try #require(launchContext.actors.first { $0.identity == binding.nativeActor })
   let frozen = try game.commander.crimeLedger.freezeMissionLaunchJudgement(
     origin: origin, intendedVictim: launchContext.player,
