@@ -86,6 +86,22 @@ func campaignPatrolOutsideStationZone(_ game: Game) throws -> Bool {
   return station.position.length > 1200
 }
 
+func campaignPatrolHasActualLaserContact(_ game: Game, child: UUID) throws -> Bool {
+  // The actual front laser hull contact can qualify while the UI still says FACING TARGET.
+  guard game.screen == .front,
+    let contact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+      excludingBodyIDs: [], includePlayer: false),
+    case .body(let id) = contact.hit.target,
+    let body = game.bodies.first(where: { $0.id == id }), body.energy > 0,
+    body.missionInstanceID == child, let identity = body.missionActorID,
+    let encounter = game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]
+  else { return false }
+  return encounter.actors.values.contains {
+    $0.identity == identity && $0.presence != .destroyed
+  }
+}
+
 private func selectCampaignPatrolTarget(_ game: inout Game, child: UUID) throws {
   // Keep tracking the live owned actor; cycle actual player targets only when it changes.
   for _ in 0...game.bodies.count {
@@ -238,7 +254,7 @@ private struct CampaignFixture {
       firing = Controls()
       if try campaignPatrolOutsideStationZone(game) {
         try selectCampaignPatrolTarget(&game, child: child)
-        firing.fire = game.autoPilot.status == "TRACKING TARGET"
+        firing.fire = try campaignPatrolHasActualLaserContact(game, child: child)
       }
       game.tick(delta: 0.1, controls: firing)
       observedFlash = observedFlash || game.laserFlash > 0
@@ -757,7 +773,7 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     firing = Controls()
     if try campaignPatrolOutsideStationZone(await runtime.snapshot()) {
       try await selectCampaignPatrolTarget(runtime, child: child)
-      firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+      firing.fire = try campaignPatrolHasActualLaserContact(await runtime.snapshot(), child: child)
     }
     await runtime.setControls(firing)
     selected = await runtime.advance(delta: 0.1)
