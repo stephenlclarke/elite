@@ -96,7 +96,7 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
   let quote = try #require(published.contractBoard.quote)
   let inventory = try #require(published.commander.equipmentInventory)
   #expect(published.isMissionTrial && published.commander.valid)
-  #expect(published.commander.savedEquipmentVersion == 2)
+  #expect(published.commander.savedEquipmentVersion == 3)
   #expect(quote.resources == published.commander.contractQuoteResources)
   #expect(inventory.items.allSatisfy { $0.provenance == .standard })
   let rounds = inventory.items.filter { $0.node == EquipmentRuntimeCatalog.standardMissile }

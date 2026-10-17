@@ -496,7 +496,7 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   let unprepared = game.commander
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
-  try #require(game.commander.savedEquipmentVersion == 2)
+  try #require(game.commander.savedEquipmentVersion == 3)
   #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
   #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
   #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)

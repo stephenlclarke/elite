@@ -9,7 +9,7 @@ private func expectStartupEquipmentMigration(from legacy: Commander, to migrated
 {
   let inventory = try #require(migrated.equipmentInventory)
   let history = try #require(migrated.equipmentPurchaseHistory)
-  #expect(migrated.valid && migrated.savedEquipmentVersion == 2)
+  #expect(migrated.valid && migrated.savedEquipmentVersion == 3)
   #expect(migrated.credits == legacy.credits && migrated.fuel == legacy.fuel)
   #expect(migrated.cargo == legacy.cargo && migrated.legal == legacy.legal)
   let rounds = inventory.items.filter { $0.node == EquipmentRuntimeCatalog.standardMissile }
@@ -24,16 +24,22 @@ private func expectStartupEquipmentMigration(from legacy: Commander, to migrated
         && $0.source.provenance == .legacyUnknown
     })
   #expect(rounds.allSatisfy { $0.provenance == .legacyUnknown })
-  #expect(foundations.count == 4 && foundations.allSatisfy { $0.provenance == .standard })
+  #expect(foundations.count == 5 && foundations.allSatisfy { $0.provenance == .standard })
   #expect(inventory.items.count == foundations.count + rounds.count)
   #expect(
     Set(inventory.items.compactMap { $0.location?.slot })
       == Set(
         [
-          .shield, .energy, .navigation, .laser(.front),
+          .shield, .energy, .navigation, .drive, .laser(.front),
         ] + (0..<legacy.missiles).map { ComponentFittingSlot.missilePylon($0) }))
-  // Only the explicit equipment migration and its two compatibility mirrors may differ.
+  // Only explicit owned equipment, its mirrors and the versioned legacy mining migration differ.
   var expected = legacy
+  expected.equipment.insert(HyperspaceDriveTier.basic.label)
+  var mining = MiningLedger.legacyUnworked()
+  let system = Universe.systemsIncludingPlugh(number: legacy.galaxy)[legacy.system]
+  try mining.migratePresence(current: .init(system: system, galaxy: legacy.galaxy), historical: [])
+  #expect(migrated.miningLedger == mining)
+  expected.miningLedger = mining
   expected.laserMounts = legacy.laserMounts
   expected.fuelStorageUnits = legacy.fuelStorageUnits
   let expectedFields = try #require(

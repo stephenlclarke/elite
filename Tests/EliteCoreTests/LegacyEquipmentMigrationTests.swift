@@ -62,7 +62,15 @@ struct LegacyEquipmentMigrationTests {
     #expect(inventory.items.count == 5 && commander.valid)
     let migrated = commander
     try commander.prepareEquipment()
-    #expect(commander == migrated)
+    #expect(commander.savedEquipmentVersion == 3 && commander.valid)
+    #expect(
+      commander.equipmentInventory?.items.filter { !$0.isReservedStockDrive }
+        == migrated.equipmentInventory?.items)
+    #expect(commander.equipmentPurchaseHistory == migrated.equipmentPurchaseHistory)
+    #expect(commander.fittedEquipment(at: .drive)?.isReservedStockDrive == true)
+    let once = commander
+    try commander.prepareEquipment()
+    #expect(commander == once)
     let data = try JSONEncoder().encode(commander)
     let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
     #expect(object["ownedEquipment"] == nil && object["legacyOwnedEquipment"] == nil)
