@@ -1082,7 +1082,9 @@ public struct Game: Sendable {
     }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
-    commander.npcPersistence.resetPhysicalBindings(system: systemIdentity)
+    if commander.npcPersistence.count > 0 {
+      commander.npcPersistence.resetPhysicalBindings(system: systemIdentity)
+    }
     dockedAtMainStation = atMainStation
     retaliation.clear()
     weaponsTargetID = nil
