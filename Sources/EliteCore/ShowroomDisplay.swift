@@ -103,6 +103,7 @@ extension Display {
     frame.responsive = true
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
+    frame.flightClip = frame.canvas
     let layout = ShowroomLayout(width: width, height: height, detail: game.showroom.detail)
     let font = GameTypography.scale
     frame.label("SHIP SHOWROOM", 16, 12, scale: font, ink: .yellow)
