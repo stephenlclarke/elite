@@ -142,12 +142,15 @@ import Testing
   #expect(restored.commander.credits == 1234)
 }
 
-@Test func rEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() {
+@Test func rEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
   var game = Game(executive: false)
   game.launch()
   game.key("r")
   #expect(game.message == "FIT A TARGETING COMPUTER" && !game.dockingComputer)
-  game.commander.installTargetingComputer(.military)
+  try game.commander.grantEquipment(
+    TargetingTier.military.equipmentName, at: .targetingCore,
+    provenance: .grant("station targeting fixture"))
+  #expect(game.commander.targetingTier == .military)
   game.commander.xyzzyActive = true
   game.commander.autoTarget = false
   game.bodies = []

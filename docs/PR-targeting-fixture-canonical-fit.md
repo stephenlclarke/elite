@@ -1,0 +1,17 @@
+# Fit actual targeting hardware in the existing fixtures
+
+## Change
+
+The common `computerGame` and `lockedGame` fixtures, and the textured-hull visibility fixture, now configure their existing legacy core before launch. The ordinary launch migration creates the actual fitted canonical core. New setup preconditions verify the requested tier; `lockedGame` also verifies its real AUTO and weapons locks before any destruction scenario.
+
+The station-guidance test still launches without hardware and checks the original `FIT A TARGETING COMPUTER` refusal. It then uses the existing explicit fixture grant at `.targetingCore` with fixture provenance, verifies Military is actually fitted, and performs its original sequence. The test is throwing so a real fitting failure cannot be ignored. See [the observed failures and cause](ISSUE-targeting-fixture-canonical-fit.md).
+
+## Preservation
+
+All original status/identity disclosure, kill attribution, target loss, manual cancellation, C/R/P/Q/chart inputs, movement ticks, final docking, viewport clipping and three display-style assertions remain. The initial no-core negative stays before the explicit grant. No production getter, installer, inventory validation, entitlement, purchase or allocation logic changes. The five previously authored texture/export cases remain the same cases; this repair strengthens their actual-core setup.
+
+## Validation
+
+Strict Swift formatting, Markdown lint, diff checks and exact reversal of the deliberate fixture changes pass. No build, test or native execution ran in this worker. Root must execute the three original failed methods, related targeting/destruction/station tests and the existing textured-hull acquisition cases before the final composed `make ci`. No runtime pass, renderer acceptance or release is claimed.
+
+A separate read-only caller audit identified additional post-launch legacy targeting mutations in other fixtures. Those findings were sent to Root for bounded ownership; they are not changed by this commit and must not be presented as corrected or executed failures. Existing pre-migration legacy fixtures remain valid and unchanged.

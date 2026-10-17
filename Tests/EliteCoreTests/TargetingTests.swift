@@ -5,9 +5,10 @@ import Testing
 
 private func computerGame(_ tier: TargetingTier) -> Game {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(tier)
   game.launch()
   game.speed = 0
-  game.commander.installTargetingComputer(tier)
+  #expect(game.commander.targetingTier == tier)
   game.ecmControl = ECMControl()
   return game
 }
