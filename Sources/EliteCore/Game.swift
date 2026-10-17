@@ -1733,6 +1733,9 @@ public actor GameRuntime {
   public func snapshot() -> Game { game }
   public func key(_ key: String) {
     if galleryAction(key) { return }
+    keyAfterGallery(key)
+  }
+  private func keyAfterGallery(_ key: String) {
     game.resolveCourierTerminals(publish: scriptPublisher())
     let before = game
     let held = controls
@@ -1921,16 +1924,26 @@ public actor GameRuntime {
   /// The returned live Game keeps bindings; only the disk Commander clears them.
   static func prepareNativeSaveState(_ value: Game) throws -> (game: Game, commander: Commander) {
     var candidate = value
+    try validateNativeDockEvidenceForSave(&candidate)
+    try candidate.persistNativeStationConditions()
+    try candidate.commander.prepareEquipment()
+    candidate.commander.mirrorFittedEquipment()
+    candidate.resolveDestroyed()
+    return try finishNativeSaveState(&candidate)
+  }
+
+  private static func validateNativeDockEvidenceForSave(_ candidate: inout Game) throws {
     guard
       candidate.commander.nativeStations?.ledger.currentDock == nil
         || candidate.nativeStationDockEvidenceIsCurrent,
       candidate.commander.nativeStations?.currentMainDock == nil
         || candidate.nativeMainStationDockEvidenceIsCurrent
     else { throw SaveError.invalidCommander }
-    try candidate.persistNativeStationConditions()
-    try candidate.commander.prepareEquipment()
-    candidate.commander.mirrorFittedEquipment()
-    candidate.resolveDestroyed()
+  }
+
+  private static func finishNativeSaveState(_ candidate: inout Game) throws -> (
+    game: Game, commander: Commander
+  ) {
     candidate.persistCargoPoses()
     candidate.persistOrePoses()
     guard candidate.persistSalvagePoses() else { throw SaveError.invalidCommander }
