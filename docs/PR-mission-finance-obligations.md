@@ -6,6 +6,8 @@ Declared `finance.offer` commands register a bounded independent offer without g
 
 The existing private board review enum owns its finance variant and the existing immutable CommanderSnapshot. No Game UI slot, screen or letter shortcut is added. Back is the default; restored reviews reset to Back. Compatibility clicks with a nil generic offer cannot confirm finance. Overflow prevents Borrow while allowing an otherwise valid Decline. Normal credit commands retain their behaviour.
 
+Paid and declined history remains readable without a writable save, current dock authority or installed parent content. Historical structural/resource validation still applies; history has no Borrow, Repay or Decline authority. A separate authored two-case regression reads exact terms/receipts, denies attempted transfers and conserves the full Commander and prior files with current dock evidence removed and no writer.
+
 Finance lives only in the missions chunk and selects native schema 23. True pre-finance files have no liability; reserved finance fields are refused in older schemas, headers and raw Commander input. EMP state still selects 22 without finance, and all schema-before-22 EMP guards remain. Existing immutable chunks, hashes, pointer publication, startup first-publication receipts and Gallery namespaces own durability. Failed publication publishes no financial proposal.
 
 ## Authored verification and current limits

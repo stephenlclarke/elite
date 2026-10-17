@@ -93,6 +93,41 @@ struct ScriptFinanceTestFixture {
 }
 
 struct ScriptFinanceTests {
+  @Test(arguments: [false, true])
+  func closedHistoryRemainsReadOnlyWithoutLiveDockOrWriter(paid: Bool) async throws {
+    let fixture = try ScriptFinanceTestFixture()
+    defer { fixture.storage.clean() }
+    let writer = try await fixture.runtime()
+    try await ScriptFinanceTestFixture.confirm(writer, decline: !paid)
+    if paid { try await ScriptFinanceTestFixture.confirm(writer) }
+    var history = await writer.snapshot()
+    history.nativeMainStationDockEvidence = nil
+    history.scriptPacks = []
+    let runtime = GameRuntime(game: history)
+    let before = await runtime.snapshot().commander
+    let files = try ScriptFinanceTestFixture.files(fixture.storage.directory)
+    let page = try await ScriptFinanceTestFixture.review(runtime)
+    let shown = await runtime.snapshot()
+    let quote = try #require(shown.contractBoard.financeQuote)
+    #expect(!shown.scriptDurabilityAvailable && !shown.nativeMainStationDockEvidenceIsCurrent)
+    #expect(quote.issues.isEmpty && quote.context == nil)
+    #expect(quote.row.operation == nil && !quote.allowed && !quote.canDecline)
+    #expect(shown.contractBoard.selected?.reason == nil)
+    #expect(shown.financeDetail.contains(where: { $0.contains("Workshop loan") }))
+    #expect(shown.financeDetail.contains(where: { $0.contains("Last receipt:") }))
+    #expect(
+      shown.financeDetail.contains(where: {
+        $0.contains(paid ? "Closed history: paid" : "Closed history: declined")
+      }))
+    _ = Display.contractBoard(shown, width: 768, height: 768)
+    await runtime.scriptPageKey("right", expected: page)
+    await runtime.scriptPageKey("return", expected: page)
+    #expect(await runtime.snapshot().commander == before)
+    try await ScriptFinanceTestFixture.confirm(runtime, decline: true)
+    #expect(await runtime.snapshot().commander == before)
+    #expect(try ScriptFinanceTestFixture.files(fixture.storage.directory) == files)
+  }
+
   @Test(arguments: ["profile", "principal", "duplicate", "capability", "unknown", "system"])
   func unsupportedOrMalformedLoanDeclarationsAreRefused(field: String) throws {
     let edit: (String, String)

@@ -177,7 +177,9 @@ extension Game {
     var borrowIssues: [String] = []
     var context: NativeMainStationArrivalContext?
     let ledger = commander.scriptState.financeLedger
-    if !scriptDurabilityAvailable { issues.append("Choose a writable commander save first.") }
+    if row.operation != nil, !scriptDurabilityAvailable {
+      issues.append("Choose a writable commander save first.")
+    }
     guard commander.financeStateValid, (0...4_294_967_295).contains(commander.credits) else {
       return .init(
         row: row, commander: commander, context: nil, epoch: nativeStationRuntimeEpoch,
@@ -185,9 +187,11 @@ extension Game {
         canDecline: false)
     }
     if let ledger, let record = ledger.records.first(where: { $0.id == row.id }) {
-      context = nativeMainStationArrivalContext(for: record.terms.station(owner: ledger.owner))
-      if context == nil {
-        issues.append("Return to the proved original main station and resume play.")
+      if row.operation != nil {
+        context = nativeMainStationArrivalContext(for: record.terms.station(owner: ledger.owner))
+        if context == nil {
+          issues.append("Return to the proved original main station and resume play.")
+        }
       }
       switch row {
       case .offer:
