@@ -208,6 +208,13 @@ extension Game {
     -> NativeMissionImpactReceipt
   {
     try validateMissionNativeLaserProof(proof)
+    return try applyValidatedMissionLaserImpact(proof)
+  }
+
+  /// Enter staging only after the full current-visit laser proof validation has returned.
+  private mutating func applyValidatedMissionLaserImpact(_ proof: MissionNativeLaserProof)
+    throws -> NativeMissionImpactReceipt
+  {
     guard let context = gameplayContext(),
       proof.origin.emissionID > consumedMissionLaserEmission,
       proof.origin.emissionID < commander.flightSimulation.nextEmission,
