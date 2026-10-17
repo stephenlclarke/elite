@@ -224,6 +224,7 @@ extension Game {
     }
   }
   mutating func resolveCourierTerminals(escape: Bool = false, publish: ScriptPublisher? = nil) {
+    resolveRRSCourierTerminals(publish: publish)
     for id in orderedScriptInstances {
       guard let old = commander.scriptState.instances[id], old.outcome == .active,
         let custody = old.courier, let terms = old.contract?.offer.courier

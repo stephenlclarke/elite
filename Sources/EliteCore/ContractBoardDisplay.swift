@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if let offer = row.offer {
+    if row.rrs != nil {
+      rows = game.rrsCourierDetail
+    } else if let offer = row.offer {
       let destination = Universe.systemsIncludingPlugh(number: offer.destinationGalaxy)[
         offer.destinationSystem
       ].name
@@ -83,7 +85,8 @@ extension Display {
       game.isMissionTrial ? "STATION CONTRACTS / TRIAL" : "STATION CONTRACTS",
       layout.left, 14, scale: scale, ink: .yellow)
     frame.label(
-      short(game.currentSystem.name + " / Main orbital station"), layout.left, 38, scale: scale,
+      short(game.currentSystem.name + " / " + (game.nativeStationName ?? "Main orbital station")),
+      layout.left, 38, scale: scale,
       ink: .cyan)
     let active = game.activeContractSummary
     frame.label(
@@ -93,7 +96,8 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     if game.contractBoard.detail,
-      let reason = game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
+      let reason = game.contractBoard.rrsQuote?.issues.first
+        ?? game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
     {
       frame.label(short(reason), layout.left, 84, scale: scale, ink: .orange)
     } else if active.count > 1 {
@@ -112,14 +116,19 @@ extension Display {
         frame.label(hint, layout.left, height - 84, scale: scale, ink: .cyan)
       }
       for (action, bounds) in layout.actions {
+        let rrs = game.contractBoard.rrsQuote
         let available =
           action == .back
+          || (rrs != nil
+            && (action == .accept ? rrs?.allowed == true : rrs?.row.canDecline == true))
           || (game.contractBoard.quote != nil
             && (action != .accept || game.contractBoard.quote?.allowed == true))
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
-            + (action == .accept && game.contractBoard.quote?.pledge != nil
-              ? "Donate" : action.rawValue),
+            + (action == .accept && rrs != nil
+              ? "Confirm"
+              : (action == .accept && game.contractBoard.quote?.pledge != nil
+                ? "Donate" : action.rawValue)),
           bounds.x + 8,
           bounds.y + 10, scale: scale, ink: available ? .cyan : .orange)
       }
@@ -142,7 +151,8 @@ extension Display {
         let pledge = row.offer.flatMap { try? game.pledgePreview(board: row.board, offer: $0.id) }
         let courier = row.offer?.courier.map { ScriptCourierPreview(terms: $0) }
         let summary =
-          row.reason ?? courier?.summary ?? pledge.map {
+          row.reason ?? (row.rrs == nil ? nil : "Protected packet / 0 tonnes / Confirm required")
+          ?? courier?.summary ?? pledge.map {
             "Pledge \($0.charge) / local standing +1 / once"
           } ?? row.offer
           .map {

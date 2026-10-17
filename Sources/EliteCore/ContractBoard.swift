@@ -10,7 +10,8 @@ public struct ContractBoardRow: Sendable {
   public let offer: ScriptContractOffer?
   public let title: String
   public let reason: String?
-  public var key: String { board + "/" + (offer?.id.uuidString ?? "unavailable") }
+  var rrs: RRSCourierRow? = nil
+  public var key: String { rrs?.key ?? (board + "/" + (offer?.id.uuidString ?? "unavailable")) }
 }
 public struct ContractScreenSave: Codable, Sendable {
   public let selection: String?
@@ -29,6 +30,7 @@ public struct ContractBoardUI: Sendable {
   public var scroll = 0
   public var rows: [ContractBoardRow] = []
   public var quote: ContractAcceptanceQuote?
+  var rrsQuote: RRSCourierQuote?
   var presentationGeneration = UUID()
   var reviewToken = UUID()
   var previous: Screen = .status
@@ -43,17 +45,26 @@ public struct ContractBoardUI: Sendable {
 }
 extension Game {
   mutating func openContractBoard() {
-    guard docked, dockedAtMainStation, !paused,
+    guard docked, dockedAtMainStation || nativeStationBoardContext != nil, !paused,
       ![Screen.title, .demo, .gameOver, .help, .secret, .mission, .handoff].contains(screen),
       !showroom.trading
     else {
-      notify("CONTRACTS REQUIRE A MAIN ORBITAL STATION")
+      notify("CONTRACTS REQUIRE A MAIN ORBITAL STATION OR PROVED RRS DOCK")
       return
     }
     var candidate = self
     if screen != .contracts { candidate.contractBoard.previous = screen }
     var failures: [String: String] = [:]
-    for pack in scriptPacks where pack.manifest.board != nil && scriptUnavailable(pack) == nil {
+    if candidate.nativeStationBoardContext != nil {
+      do { try candidate.ensureRRSCourierBoard() } catch {
+        notify(String(error.localizedDescription.prefix(512)))
+        return
+      }
+    }
+    for pack in scriptPacks
+    where dockedAtMainStation && pack.manifest.board != nil
+      && scriptUnavailable(pack) == nil
+    {
       do { _ = try candidate.ensureContractBoard(pack) } catch {
         failures[pack.digest] = String(error.localizedDescription.prefix(512))
       }
@@ -62,6 +73,7 @@ extension Game {
     candidate.screen = .contracts
     candidate.contractBoard.detail = false
     candidate.contractBoard.quote = nil
+    candidate.contractBoard.rrsQuote = nil
     candidate.contractBoard.presentationGeneration = UUID()
     self = candidate
   }
@@ -69,13 +81,13 @@ extension Game {
     failures: [String: String] = [:], restoring save: ContractScreenSave? = nil
   ) {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
-    var rows: [ContractBoardRow] = []
+    var rows = rrsCourierRows
     for pack in scriptPacks.sorted(by: {
       ($0.manifest.id, $0.manifest.version, $0.digest) < (
         $1.manifest.id, $1.manifest.version, $1.digest
       )
     }) {
-      guard let definition = pack.manifest.board else { continue }
+      guard dockedAtMainStation, let definition = pack.manifest.board else { continue }
       let key = pack.digest + "/" + definition.id + "/" + contractStation.key
       if let reason = failures[pack.digest] ?? scriptUnavailable(pack) {
         rows.append(.init(board: key, offer: nil, title: definition.title, reason: reason))
@@ -105,6 +117,7 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    contractBoard.rrsQuote = contractBoard.selected?.rrs.map { rrsCourierQuote(for: $0) }
     if let row = contractBoard.selected, let offer = row.offer {
       contractBoard.quote = contractAcceptanceQuote(board: row.board, offer: offer.id)
     } else {
@@ -118,6 +131,7 @@ extension Game {
       if contractBoard.detail {
         contractBoard.detail = false
         contractBoard.quote = nil
+        contractBoard.rrsQuote = nil
       } else {
         screen = contractBoard.previous
       }
@@ -152,9 +166,31 @@ extension Game {
     if contractBoard.action == .back {
       contractBoard.detail = false
       contractBoard.quote = nil
+      contractBoard.rrsQuote = nil
       return
     }
     do {
+      if let row = contractBoard.selected?.rrs {
+        guard let quote = contractBoard.rrsQuote, quote.row == row else {
+          throw MissionPackError("Review the RRS briefing before confirming.")
+        }
+        if contractBoard.action == .accept {
+          try confirmRRSCourier(quote)
+          switch row {
+          case .offer: notify("RRS DOCUMENT PACKET ACCEPTED - ORIGINAL MAIN STATION")
+          case .debrief: notify("RRS DOCUMENTS DELIVERED - 30.0 CR / REPUTATION +2")
+          case .abandon: notify("RRS ASSIGNMENT ABANDONED - 0 CR / REPUTATION -10")
+          }
+        } else {
+          try declineRRSCourier(quote)
+          notify("RRS OFFER DECLINED")
+        }
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.rrsQuote = nil
+        contractBoard.quote = nil
+        return
+      }
       guard let row = contractBoard.selected, let offer = row.offer else {
         throw MissionPackError("This provider is unavailable.")
       }
@@ -186,7 +222,19 @@ extension Game {
     contractBoard.scroll = window.moved(key == "up" || key == "pageup" ? -4 : 4)
   }
   public var activeContractSummary: [String] {
-    commander.scriptState.instances.values.filter { $0.outcome == .active && $0.contract != nil }
+    let rrs =
+      commander.contracts.rrs?.active.map { job in
+        [
+          RRSCourierContent.title + " / "
+            + Universe.systemsIncludingPlugh(number: job.destination.system.galaxy)[
+              job.destination.system.system
+            ].name + " / PROTECTED PACKET"
+        ]
+      } ?? []
+    return rrs
+      + commander.scriptState.instances.values.filter {
+        $0.outcome == .active && $0.contract != nil
+      }
       .sorted { $0.id.uuidString < $1.id.uuidString }.map { instance in
         let job = instance.contract!
         let name = Universe.systemsIncludingPlugh(number: job.station.galaxy)[job.station.system]
