@@ -18,11 +18,14 @@ struct NativeStationIdentity: Hashable, Codable, Sendable {
   var slot: NativeStationSlot { .init(world: world, system: system, definition: definition) }
 
   private static func token(_ value: String) -> Bool {
-    !value.isEmpty && value.utf8.count <= 80
-      && value.utf8.allSatisfy {
-        (48...57).contains($0) || (65...90).contains($0) || (97...122).contains($0)
-          || [45, 46, 95].contains($0)
+    guard !value.isEmpty, value.utf8.count <= 80 else { return false }
+    for byte in value.utf8 {
+      switch byte {
+      case 48...57, 65...90, 97...122, 45, 46, 95: break
+      default: return false
       }
+    }
+    return true
   }
 }
 
