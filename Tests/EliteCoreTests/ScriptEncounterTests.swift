@@ -218,6 +218,12 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
   game.resolveDestroyed()
   #expect(game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true)
   #expect(game.commander.kills == 0)
+  // Native removal records physical facts first; the actual dispatcher applies their handlers.
+  #expect(
+    game.commander.scriptState.pendingEvents.filter {
+      $0.instance == id && $0.kind == "actor.destroyed"
+    }.count == 2)
+  game.drainScriptEvents()
   #expect(game.commander.scriptState.instances[id]?.data["phase"] == .string("report"))
 }
 

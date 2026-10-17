@@ -351,6 +351,8 @@ extension Game {
               throw MissionPackError("Encounter request requires only op and declared id.")
             }
             derivedEvents.append(try candidate.ensureScriptEncounter(id, pack: pack, state: &next))
+            // Later native commands must join bodies to their already staged private owner.
+            candidate.commander.scriptState.instances[next.id] = next
           } else if command["op"]?.string == "actor.intent" {
             if let result = try candidate.applyScriptNPCIntent(command, pack: pack, state: &next) {
               derivedEvents.append(result)
