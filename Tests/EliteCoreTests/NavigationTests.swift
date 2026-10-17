@@ -152,12 +152,13 @@ private func longRoute(_ game: Game) -> [Int] {
   game.manuallySelectSystem(129)
   #expect(game.commander.navigationPlan == nil && game.selectedSystem == 129)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
+  game.commander.equipment.insert("Galactic Hyperdrive")
   game.launch()
+  #expect(game.commander.fittedEquipment(at: .utility(.galacticHyperdrive)) != nil)
   game.selectedSystem = (path[1] + 1) % 256
   game.arrive()
   #expect(game.commander.navigationPlan == nil)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
-  game.commander.equipment.insert("Galactic Hyperdrive")
   game.galacticJump()
   #expect(game.commander.navigationPlan == nil)
 }
