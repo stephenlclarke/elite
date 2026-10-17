@@ -1,0 +1,5 @@
+# fix(scripts): separate commander query section lifetimes
+
+Accommodation, mounted lasers and cargo-hold queries now have private Commander builders. The main Game query keeps the same passenger fit, field names, value types, laser mounts, commodity order, actual sellable quantities, native station data and flight readings. Every expression in the extracted sections is preserved with its Commander receiver made implicit. No state mutation, persistence schema, guard, mission acceptance, stack setting or concurrency policy changes. See [the measured failure](ISSUE-commander-query-lifetimes.md).
+
+The existing commander query regressions exercise actual combat consumption, charter occupancy, mission eligibility and hull exchange. The unchanged four-case trial quote regression exercises publication, save, load, restart and return. Source formatting and focused runtime validation remain required; this source extraction alone does not establish reduced emitted stack size, a passing run or full `make ci` acceptance.

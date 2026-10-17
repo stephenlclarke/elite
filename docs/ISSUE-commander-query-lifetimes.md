@@ -1,0 +1,5 @@
+# Commander query sections overlap during restored quote simulation
+
+No-rebuild diagnostic 274 used the exact compiled 273 binary, `2de093b7abc56b88e07f00d36798a845a1acfc6de00c2f71d222ab488304919d`, with the same fifteen selected methods and default test concurrency. It stopped in the original four-case trial quote regression while loading the pledge-and-scene trial. The path rebuilt contract rows, simulated acceptance, drained the accepted event and constructed the scoped commander snapshot. The actual stack pointer was in a mapped guard page; this establishes that diagnostic's stack exhaustion, without proving that the original 273 signal had the same path.
+
+The physical `scriptCommanderQuery` frame occupied 120,464 bytes between adjacent stack pointers; its caller `scriptSnapshot` occupied 70,592 bytes. Accommodation profile and berth work, mounted-laser construction and the commodity map were all nested in the large Game query. Keep the complete query contract and immutable snapshots while moving those independent read-only sections behind narrower Commander helpers. See [the implementation](PR-commander-query-lifetimes.md).
