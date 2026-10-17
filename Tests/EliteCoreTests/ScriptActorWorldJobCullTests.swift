@@ -137,6 +137,10 @@ struct ScriptActorWorldJobCullTests {
     let index = try #require(game.bodies.firstIndex { $0.missionActorID == actorID })
     game.bodies[index].energy = 0
     game.bodies[index].destroyedByPlayer = false
+    // Settle this terminal-condition fixture through the real removal boundary before
+    // handing it to the actor's retained-scene preflight. This is not a weapon-kill claim.
+    game.resolveDestroyed()
+    try #require(!game.bodies.contains { $0.missionActorID == actorID })
     let runtime = GameRuntime(game: game, saveURL: fixture.save)
     let dead = await runtime.advance(delta: 0.1)
     let job = try #require(dead.commander.scriptState.worldJobs[jobID])
