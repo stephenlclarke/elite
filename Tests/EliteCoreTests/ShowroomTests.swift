@@ -7,7 +7,7 @@ private func showroomGame() -> Game {
   var game = Game(executive: false)
   game.screen = .equipment
   game.selection = Equipment.all.count - 1
-  game.key("w")
+  game.key("6")
   return game
 }
 
@@ -48,14 +48,14 @@ private func showroomGame() -> Game {
   var game = Game(executive: false)
   game.launch()
   let commander = game.commander
-  game.key("w")
+  game.key("showroom-open")
   #expect(game.screen == .front && game.message == "DOCK TO VISIT THE SHIP SHOWROOM")
   #expect(game.commander == commander)
   game.dock()
   game.screen = .equipment
   game.selection = 12
   game.equipmentMount = .rear
-  game.key("w")
+  game.key("6")
   #expect(game.screen == .showroom)
   game.key("return")
   #expect(game.showroom.detail)
@@ -64,7 +64,7 @@ private func showroomGame() -> Game {
   game.key("k")
   #expect(game.screen == .help && game.helpReturn == .showroom)
   game.key("k")
-  game.key("w")
+  game.key("escape")
   #expect(game.screen == .equipment && game.selection == 12 && game.equipmentMount == .rear)
   for screen in [Screen.secret, .mission, .handoff, .gallery, .help, .demo, .title, .gameOver] {
     game.screen = screen
@@ -224,6 +224,12 @@ private func showroomGame() -> Game {
 @Test func showroomActorSavingAndConcurrentBrowsingKeepCommanderUnchanged() async throws {
   let game = showroomGame()
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+  #expect(ready.commander.credits == game.commander.credits)
+  #expect(
+    ready.commander.cargo == game.commander.cargo && ready.commander.shipID == game.commander.shipID
+  )
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   await withTaskGroup(of: Void.self) { tasks in
@@ -231,7 +237,8 @@ private func showroomGame() -> Game {
   }
   try await runtime.save(to: url)
   let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
-  #expect(saved == game.commander)
+  #expect(saved == ready.commander)
+  #expect(await runtime.snapshot().commander == ready.commander)
   #expect(await runtime.snapshot().time == game.time)
   try await runtime.load(from: url)
   #expect(await runtime.snapshot().screen == .status)
@@ -402,8 +409,8 @@ private func showroomGame() -> Game {
   game.showroomClick(x: layout.clearSearch.x + 5, y: layout.clearSearch.y + 5)
   #expect(game.showroomShips.count == 168 && game.showroom.selection == "SH063")
   game.showroom.query = "SH063"
-  game.key("w")
-  game.key("w")
+  game.key("escape")
+  game.key("6")
   #expect(game.showroom.query.isEmpty && game.showroom.selection == "SH023")
   let frame = Display.presentation(game, width: 1512, height: 982)
   #expect(frame.labels.contains { $0.text == "CURRENT SHIP" })

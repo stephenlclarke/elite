@@ -125,7 +125,11 @@ import Testing
   let rows = game.showroomComparison
   #expect(rows.first { $0.label == "Cargo" }?.rating == .better)
   #expect(rows.first { $0.label == "Top speed" }?.rating == .worse)
-  #expect(rows.first { $0.label == "Shields (each)" }?.rating == .same)
+  for key in ["fore_shield_max", "aft_shield_max"] {
+    let field = try #require(game.showroomProfile?.fields.first { $0.key == key })
+    let comparison = try #require(rows.first { $0.label == field.label })
+    #expect(comparison.rating == .same && comparison.baseline == comparison.selected)
+  }
   let before = game.showroom.selection
   game.showroom.query = "boa"
   game.key("showroom-sort")
@@ -159,19 +163,39 @@ import Testing
     for i in game.commander.cargo.indices { game.commander.cargo[i] = 1 }
     game.viewportWidth = 768
     game.viewportHeight = 1400
+    let needed = max(0, game.informationWindow.count - game.informationWindow.visible)
+    let row = StationLayout(game: game, width: 768, height: 1400, footer: 28).row
+    game.viewportHeight += Double(needed + 1) * row
+    game.informationScroll = 0
+    #expect(game.informationWindow.visible >= game.informationWindow.count)
     #expect(game.informationWindow.hint == nil)
     game.key("down")
     #expect(game.informationScroll == 0)
-    let tall = Display.presentation(game, width: 768, height: 1400)
+    let tall = Display.presentation(game, width: 768, height: game.viewportHeight)
     #expect(
       !tall.labels.contains { $0.text.contains("scroll") || $0.text.contains("Arrows: more") })
     game.viewportHeight = 518
-    #expect(game.informationWindow.hint?.hasPrefix("Down:") == true)
-    for _ in 0..<100 { game.key("pagedown") }
-    #expect(game.informationScroll == game.informationWindow.last)
-    #expect(game.informationWindow.hint?.hasPrefix("Up:") == true)
-    game.key("up")
-    #expect(game.informationScroll == game.informationWindow.last - 1)
+    game.informationScroll = 0
+    let window = game.informationWindow
+    #expect(window.count == game.informationRows.count)
+    #expect(window.last == max(0, window.count - window.visible))
+    if window.last == 0 {
+      #expect(game.informationWindow.hint == nil && game.informationWindow.last == 0)
+      game.key("pagedown")
+      game.key("up")
+      #expect(game.informationScroll == 0)
+    } else {
+      #expect(game.informationWindow.hint?.hasPrefix("Down:") == true)
+      for _ in 0..<100 { game.key("pagedown") }
+      #expect(game.informationScroll == game.informationWindow.last)
+      #expect(game.informationWindow.hint?.hasPrefix("Up:") == true)
+      game.key("up")
+      #expect(game.informationScroll == game.informationWindow.last - 1)
+      for _ in 0..<window.count { game.key("pageup") }
+      #expect(game.informationScroll == 0)
+      game.key("up")
+      #expect(game.informationScroll == 0)
+    }
     game.docked = false
     #expect(
       Display.presentation(game, width: 768, height: 518).labels.contains {

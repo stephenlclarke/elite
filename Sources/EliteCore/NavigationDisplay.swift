@@ -13,7 +13,9 @@ extension Display {
           game.systems[$0.element.systemID].name, Double($0.element.profit) / 10)
       }
     let range =
-      route.plan.tier.radius(capacity: route.plan.capacityAtPlanning).map {
+      route.plan.tier.radius(
+        capacity: route.plan.capacityAtPlanning, fuelMultiplier: game.commander.jumpFuelMultiplier
+      ).map {
         String(format: "%.1f ly", $0)
       } ?? "whole galaxy"
     let destination = game.systems[route.plan.destination].name

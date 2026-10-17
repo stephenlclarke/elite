@@ -5,7 +5,7 @@ import Testing
 
 @Test func xyzzyFitsClarkeAndCyclesDisplayWhilePreservingProgress() async throws {
   var game = Game(executive: false)
-  #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .whiteWireframe)
+  #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .shadedPanels)
   game.key("return")
   game.launch()
   game.commander.credits = 1234
@@ -15,7 +15,13 @@ import Testing
   game.energy = 3
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.commander.name == "CLARKE")
-  #expect(game.commander.equipment == Equipment.maximumHardware)
+  let maximumDevices = Equipment.maximumHardware.subtracting(["Fuel", "Missile"])
+  #expect(game.commander.equipment == maximumDevices)
+  let inventory = try #require(game.commander.equipmentInventory)
+  let fittedNames = Set(inventory.items.filter { $0.location != nil }.map(\.node.key))
+  #expect(maximumDevices.isSubset(of: fittedNames))
+  #expect(inventory.items.filter { $0.location != nil }.allSatisfy { $0.provenance == .xyzzy })
+  #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
   #expect(game.commander.credits == Commander.xyzzyStartingCredits && game.commander.cargo[0] == 3)
   #expect(game.commander.missiles == 4 && game.commander.fuel == game.commander.fuelCapacity)
   #expect(
@@ -34,16 +40,32 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  var expected = game.commander
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  }
+  #expect(await restored.snapshot().commander == expected)
   game.key("escape")
   game.key("0")
   #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)
+  game.commander.credits -= 123
+  game.commander.fuel -= 1
+  game.commander.missiles -= 1
+  let beforeReentry = game.commander
+  var expectedReentry = beforeReentry
+  expectedReentry.fuel = expectedReentry.fuelCapacity
+  expectedReentry.missiles = expectedReentry.missileCapacity
+  for key in "xyzzy" { game.key(String(key)) }
+  #expect(game.commander == expectedReentry)
+  #expect(game.commander.credits == Commander.xyzzyStartingCredits - 123)
+  #expect(game.commander.equipmentInventory == beforeReentry.equipmentInventory)
+  #expect(game.commander.equipmentPurchaseHistory == beforeReentry.equipmentPurchaseHistory)
 }
 
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {
   let legacy = try JSONEncoder().encode(Commander())
   let old = try JSONDecoder().decode(Commander.self, from: legacy)
-  #expect(old.shipDisplayStyle == .whiteWireframe && old == Commander())
+  #expect(old.shipDisplayStyle == .shadedPanels && old == Commander())
   var object = try #require(JSONSerialization.jsonObject(with: legacy) as? [String: Any])
   object["displayStyle"] = "unsupported"
   let invalid = try JSONSerialization.data(withJSONObject: object)

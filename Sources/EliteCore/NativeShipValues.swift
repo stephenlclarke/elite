@@ -52,13 +52,17 @@ extension Commander {
       field(
         "energy_recharge_per_second", "Energy recharge", p.recharge * energyRechargeMultiplier,
         "energy/s"),
-      field("fore_shield_max", "Shields (each)", shieldCapacity, "energy"),
-      field("fore_shield_recharge_per_second", "Shield recharge", p.shieldRecharge, "energy/s"),
+      field("fore_shield_max", "Front shield", shieldCapacity, "energy"),
+      field("aft_shield_max", "Rear shield", rearShieldCapacity, "energy"),
+      field(
+        "fore_shield_recharge_per_second", "Front shield recharge", frontShieldRecharge, "energy/s"),
+      field(
+        "aft_shield_recharge_per_second", "Rear shield recharge", rearShieldRecharge, "energy/s"),
       field("roll_radians_per_second", "Roll", p.roll, "rad/s"),
       field("pitch_radians_per_second", "Pitch", p.pitch, "rad/s"),
       field("yaw_radians_per_second", "Yaw", p.yaw, "rad/s"),
       field("fuel_capacity_tenths_ly", "Fuel tank", Double(fuelCapacity) / 10, "LY"),
-      field("hyperspace_range_ly", "Jump capacity", min(jumpCap, Double(fuelCapacity) / 10), "LY"),
+      field("hyperspace_range_ly", "Jump capacity", fullTankJumpDistance, "LY"),
       field("jump_spool_seconds", "Jump charge", p.spool, "s"),
       field("missile_capacity", "Missile pylons", Double(missileCapacity), "pylons"),
       field(
@@ -74,16 +78,34 @@ extension Commander {
     return .init(
       id: "game-" + shipID, title: ship.name + " / carried fit", group: "native-game",
       context:
-        "Game units; same carried equipment on both hulls. Fuel supply is separate from tank and jump capacity.",
+        "Game units; portable equipment transfers, hull-bound fittings stay with their hull. Fuel supply is separate from tank and jump capacity.",
       fields: fields)
   }
 }
 extension Game {
   var selectedGameProfile: ShipProfile? {
     guard let ship = showroomShip, ship.game != nil else { return nil }
-    var fit = commander
-    fit.shipID = ship.id
-    return fit.gameShipProfile
+    return commander.projectedGameShipProfile(to: ship.id)
+  }
+}
+extension Commander {
+  func projectedGameShipProfile(to shipID: String) -> ShipProfile? {
+    guard let ship = ShipCatalogue.ship(shipID), ship.game != nil else { return nil }
+    do {
+      return try projectedEquipmentTransfer(to: shipID).gameShipProfile
+    } catch {
+      // Keep the comparison explicit without presenting a fit that cannot transfer.
+      return .init(
+        id: "game-" + shipID, title: ship.name + " / incompatible carried fit",
+        group: "native-game",
+        context:
+          "Carried fittings or resources cannot transfer to this hull. Review trade for details.",
+        fields: gameShipProfile.fields.map { field in
+          .init(
+            key: field.key, label: field.label, text: "Unavailable", number: nil,
+            unit: field.unit, status: "game", basis: "Incompatible carried fit")
+        })
+    }
   }
 }
 extension ShipPerformance {

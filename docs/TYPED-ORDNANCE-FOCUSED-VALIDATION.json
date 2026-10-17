@@ -1,0 +1,46 @@
+{
+  "source": "98451bf4643838edef8b46e8cd211943e6056a39",
+  "scope": "Focused actual missile runtime and compatibility validation",
+  "full_ci_passed": false,
+  "production_save_sha256": "bd9d68c6acd4c21a6798cc4ec662d9fe01977244c512d7499851ab8cecf792f7",
+  "runs": [
+    {
+      "source": "767846d5f5321a6ee9cb7a0ef82f0192c4a3bbcf",
+      "exit_code": 1,
+      "duration_seconds": 38.40308879199438,
+      "filter": "GameplayOrdnanceRuntimeTests|GameplayOrdnanceTests|militaryRetali|unlimitedRetaliation|automaticECM|ecmIgnores|navalMissile|constrictorResists|navalOrdnance|combatLasersMissilesAndBomb",
+      "log": "/tmp/elite-typed-ordnance-focused.log",
+      "raw_log_sha256": "c17866ca246424a3cec5545e4e3330f4265d156d8a579ebd59feba165f979dd6"
+    },
+    {
+      "source": "2b7fd4557b8bab249f261c826df32e36737eba63",
+      "exit_code": 1,
+      "duration_seconds": 32.200544291874394,
+      "filter": "GameplayOrdnanceRuntimeTests|GameplayOrdnanceTests|militaryRetali|unlimitedRetaliation|automaticECM|ecmIgnores|navalMissile|constrictorResists|navalOrdnance|combatLasersMissilesAndBomb",
+      "log": "/tmp/elite-typed-ordnance-compiled-focused.log",
+      "raw_log_sha256": "fd4a5b039ca7e88658a7eff0a20ed8b882bca126341c833c7a92fdbdd5056a62"
+    },
+    {
+      "exit_code": 1,
+      "duration_seconds": 14.768100457964465,
+      "source_base": "2b7fd4557b8bab249f261c826df32e36737eba63",
+      "diagnostic_worktree_changes": true,
+      "log": "/tmp/elite-typed-ordnance-fixture-diagnostic.log",
+      "raw_log_sha256": "9cfdf3c509c2063499a00d1d787e436149de8dac1b5b9af53f073c89f974f595"
+    },
+    {
+      "exit_code": 1,
+      "duration_seconds": 11.677228041924536,
+      "diagnostic_worktree_changes": true,
+      "raw_log_sha256": "3386f31537ac2b2ec816df4e51e056382299a2b6ec0fd715d9d96fde26027c3d"
+    },
+    {
+      "source": "98451bf4643838edef8b46e8cd211943e6056a39",
+      "exit_code": 0,
+      "duration_seconds": 15.132865832885727,
+      "filter": "GameplayOrdnanceRuntimeTests|GameplayOrdnanceTests|militaryRetali|unlimitedRetaliation|automaticECM|ecmIgnores|navalMissile|constrictorResists|navalOrdnance|combatLasersMissilesAndBomb",
+      "log": "/tmp/elite-typed-ordnance-corrected-focused.log",
+      "raw_log_sha256": "fddddaf13a6d3914014239e4fbf801df4a13399bc4932fd7b55a1442357398a8"
+    }
+  ]
+}

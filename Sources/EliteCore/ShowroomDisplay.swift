@@ -361,7 +361,7 @@ extension Display {
       game.showroom.sourceProfiles
       ? [metadata[0], metadata[6], metadata[7]]
       : [
-        ship.name + " / carried fit"
+        game.showroomProfile?.title ?? ship.name + " / carried fit"
       ]
     var rows = headings.flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
@@ -465,7 +465,9 @@ extension Display {
       String(
         format: "Fuel %.1f/%.1f LY; jump limit %.1f LY", Double(commander.fuel) / 10,
         Double(commander.fuelCapacity) / 10, commander.maximumJumpDistance),
-      String(format: "Front/rear shield capacity %.1f native units", commander.shieldCapacity),
+      String(
+        format: "Front/rear shield capacity %.1f / %.1f native units",
+        commander.shieldCapacity, commander.rearShieldCapacity),
       String(
         format: "Energy %.1f; top speed %.1f", commander.performance.energy,
         commander.performance.speed),

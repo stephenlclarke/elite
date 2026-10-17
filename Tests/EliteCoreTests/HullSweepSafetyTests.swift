@@ -1,0 +1,307 @@
+import Foundation
+import Testing
+
+@testable import EliteCore
+
+private let hsIdentity = ActorIdentity(system: .init(galaxy: 0, system: 7), visit: 3, entity: 41)
+
+private func hsBox(_ half: Vector3 = .init(10, 10, 10), reversed: Bool = false) -> Mesh {
+  let faces = [
+    [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7],
+  ]
+  return Mesh(
+    vertices: [
+      .init(-half.x, -half.y, -half.z), .init(half.x, -half.y, -half.z),
+      .init(half.x, half.y, -half.z), .init(-half.x, half.y, -half.z),
+      .init(-half.x, -half.y, half.z), .init(half.x, -half.y, half.z),
+      .init(half.x, half.y, half.z), .init(-half.x, half.y, half.z),
+    ], faces: reversed ? faces.map { Array($0.reversed()) } : faces, preserveWinding: true)
+}
+
+private func hsConcaveHull() -> Mesh {
+  let outline: [(Double, Double)] = [(0, 0), (100, 0), (100, 20), (20, 20), (20, 100), (0, 100)]
+  let vertices = [-10.0, 10.0].flatMap { y in outline.map { Vector3($0.0, y, $0.1) } }
+  var faces = [Array(0..<6), Array((6..<12).reversed())]
+  for index in 0..<6 {
+    let next = (index + 1) % 6
+    faces.append([index, next, next + 6, index + 6])
+  }
+  return Mesh(vertices: vertices, faces: faces, preserveWinding: true)
+}
+
+private func hsPose(_ initial: ShipPose, velocity: Vector3, omega: Vector3, time: Double)
+  -> ShipPose
+{
+  var pose = initial
+  pose.position = initial.position + velocity * time
+  if omega.length > 0 {
+    let axis = omega * (1 / omega.length)
+    let angle = omega.length * time
+    func rotate(_ point: Vector3) -> Vector3 {
+      point * cos(angle) + axis.cross(point) * sin(angle) + axis
+        * (axis.dot(point) * (1 - cos(angle)))
+    }
+    pose.orientation.x = rotate(initial.orientation.x)
+    pose.orientation.y = rotate(initial.orientation.y)
+    pose.orientation.z = rotate(initial.orientation.z)
+  }
+  return pose
+}
+
+private func hsSweep(
+  position: Vector3 = .init(0, 0, -50), velocity: Vector3 = .init(0, 0, 0),
+  acceleration: Vector3 = .init(0, 0, 0), omega: Vector3 = .init(0, 0, 0),
+  radius: Double = 2, gap: Double = 3, duration: Double = 0.1,
+  targetPosition: Vector3 = .init(0, 0, 0), targetVelocity: Vector3 = .init(0, 0, 0),
+  targetOmega: Vector3 = .init(0, 0, 0), mismatchedEnd: Bool = false
+) -> RelativeWorkSweep {
+  var initial = ShipPose()
+  initial.position = position
+  var end = hsPose(initial, velocity: velocity, omega: omega, time: duration)
+  end.position = end.position + acceleration * (0.5 * duration * duration)
+  if mismatchedEnd { end.position.x += 1 }
+  var targetPose = ShipPose()
+  targetPose.position = targetPosition
+  let target = RelativeWorkTarget(
+    identity: hsIdentity, pose: targetPose, velocity: targetVelocity,
+    angularVelocity: targetOmega, surfacePoint: .init(0, 0, -10), surfaceNormal: .init(0, 0, -1))
+  return .init(
+    purpose: .work, start: initial, end: end, initialVelocity: velocity, acceleration: acceleration,
+    angularVelocity: omega, target: target,
+    targetEnd: hsPose(targetPose, velocity: targetVelocity, omega: targetOmega, time: duration),
+    surfacePosition: .init(0, 0, -10), workPosition: position,
+    playerRadius: radius, requiredClearance: gap, duration: duration)
+}
+
+@Test func hullSweepUsesTwoSidedTrueSurfaceDistanceAndDetectsClosedInterior() throws {
+  for reversed in [false, true] {
+    let hull = try PreparedHull(mesh: hsBox(reversed: reversed))
+    #expect(hull.isClosed && hull.triangleCount == 12)
+    for x in [-30.0, 30.0] {
+      let result = HullSweepSafety.validate(hsSweep(position: .init(x, 0, 0)), target: hull)
+      #expect(result.safe && result.minimumSampledClearance == 18)
+      #expect(result.clearance == .clear && result.distanceQueries == 3)
+    }
+    let inside = HullSweepSafety.validate(hsSweep(position: .init(0, 0, 0)), target: hull)
+    #expect(!inside.safe && inside.failure == .insideHull)
+  }
+}
+
+@Test func hullSweepConcaveClosedNotchIsEmptyButTheArmHasSolidInterior() throws {
+  let hull = try PreparedHull(mesh: hsConcaveHull())
+  #expect(hull.isClosed)
+  let notch = HullSweepSafety.validate(hsSweep(position: .init(60, 0, 60), gap: 10), target: hull)
+  #expect(notch.safe && abs((notch.minimumSampledClearance ?? 0) - 38) < 1e-8)
+  let arm = HullSweepSafety.validate(hsSweep(position: .init(10, 0, 60), gap: 1), target: hull)
+  #expect(arm.failure == .insideHull)
+}
+
+@Test func hullSweepSubdividesSafeLateralMotionAndRejectsCrossingBetweenClearEndpoints() throws {
+  let hull = try PreparedHull(mesh: hsBox())
+  let lateral = hsSweep(position: .init(-10, 0, -20), velocity: .init(200, 0, 0), gap: 5)
+  let safe = HullSweepSafety.validate(lateral, target: hull)
+  #expect(safe.safe && safe.distanceQueries > 3)
+  #expect(abs((safe.minimumSampledClearance ?? 0) - 8) < 1e-8)
+
+  let small = try PreparedHull(mesh: hsBox(.init(1, 1, 1)))
+  let crossing = hsSweep(
+    position: .init(-10, 0, 0), velocity: .init(200, 0, 0), radius: 0.1, gap: 0.5,
+    targetPosition: .init(3, 0, 0))
+  let blocked = HullSweepSafety.validate(crossing, target: small)
+  #expect(!blocked.safe && blocked.distanceQueries > 3)
+  #expect(blocked.failure == .insideHull || blocked.failure == .clearanceViolation)
+  let grazing = hsSweep(
+    position: .init(-10, 2, 0), velocity: .init(200, 0, 0), radius: 1, gap: 0)
+  #expect(HullSweepSafety.validate(grazing, target: small).failure == .clearanceViolation)
+}
+
+@Test func hullSweepTracksTargetTranslationAndRotatingProtrusionsAcrossTheWholeStep() throws {
+  let bar = try PreparedHull(mesh: hsBox(.init(40, 1, 1)))
+  let swing = hsSweep(position: .init(0, 30, 0), gap: 2, targetOmega: .init(0, 0, .pi / 0.1))
+  let result = HullSweepSafety.validate(swing, target: bar)
+  #expect(!result.safe && result.failure == .insideHull)
+
+  let cube = try PreparedHull(mesh: hsBox())
+  let translating = hsSweep(velocity: .init(15, 0, 0), targetVelocity: .init(15, 0, 0))
+  let together = HullSweepSafety.validate(translating, target: cube)
+  #expect(together.safe && together.distanceQueries == 3)
+  #expect(together.minimumSampledClearance == 38)
+
+  var obstaclePose = ShipPose()
+  obstaclePose.position = .init(-10, 0, -50)
+  let movingID = ActorIdentity(system: hsIdentity.system, visit: 3, entity: 99)
+  let moving = HullSweepObstacle(
+    identity: movingID, hull: try PreparedHull(mesh: hsBox(.init(1, 1, 1))), pose: obstaclePose,
+    velocity: .init(200, 0, 0))
+  let obstructed = HullSweepSafety.validate(hsSweep(), target: cube, obstacles: [moving])
+  #expect(!obstructed.safe && obstructed.obstacle == movingID && obstructed.failure == .insideHull)
+}
+
+@Test func hullSweepExactPlayerMeshUsesPrunedTrianglePairsAndTestsContainmentBothWays() throws {
+  let cube = try PreparedHull(mesh: hsBox())
+  let thin = try PreparedHull(mesh: hsBox(.init(20, 1, 1)))
+  let motion = hsSweep(position: .init(0, 0, -15), radius: thin.radius, gap: 3)
+  #expect(!HullSweepSafety.validate(motion, target: cube).safe)
+  let exact = HullSweepSafety.validate(motion, target: cube, player: thin)
+  #expect(exact.safe && abs((exact.minimumSampledClearance ?? 0) - 4) < 1e-8)
+  #expect(exact.triangleTests <= HullSweepBudget.standard.triangleTests)
+  #expect(exact.nodeVisits <= HullSweepBudget.standard.nodeVisits)
+  let inner = try PreparedHull(mesh: hsBox(.init(1, 1, 1)))
+  #expect(
+    HullSweepSafety.validate(
+      hsSweep(position: .init(0, 0, 0), radius: inner.radius), target: cube, player: inner
+    ).failure == .insideHull)
+  #expect(
+    HullSweepSafety.validate(
+      hsSweep(position: .init(0, 0, 0), radius: cube.radius), target: inner, player: cube
+    ).failure == .insideHull)
+  let rotating = hsSweep(
+    position: .init(0, 0, -25), omega: .init(0, .pi / 0.1, 0), radius: thin.radius, gap: 1)
+  #expect(!HullSweepSafety.validate(rotating, target: cube, player: thin).safe)
+}
+
+@Test func hullSweepRefusesUnprovenIntervalsAndExhaustedBudgetsWithoutEndpointApproval() throws {
+  let hull = try PreparedHull(mesh: hsBox())
+  let motion = hsSweep(position: .init(-10, 0, -20), velocity: .init(200, 0, 0), gap: 5)
+  var depth = HullSweepBudget.standard
+  depth.subdivisionDepth = 0
+  let unproven = HullSweepSafety.validate(motion, target: hull, budget: depth)
+  #expect(unproven.failure == .unproven && !unproven.safe)
+  var queries = HullSweepBudget.standard
+  queries.distanceQueries = 2
+  let exhausted = HullSweepSafety.validate(motion, target: hull, budget: queries)
+  #expect(exhausted.failure == .workBudgetExceeded && exhausted.distanceQueries == 2)
+  var triangles = HullSweepBudget.standard
+  triangles.triangleTests = 1
+  #expect(
+    HullSweepSafety.validate(hsSweep(), target: hull, budget: triangles).failure
+      == .workBudgetExceeded)
+  var nodes = HullSweepBudget.standard
+  nodes.nodeVisits = 1
+  #expect(
+    HullSweepSafety.validate(hsSweep(), target: hull, budget: nodes).failure == .workBudgetExceeded)
+}
+
+@Test func hullSweepRejectsInvalidMeshesFramesAndNonEnclosingPlayerRadii() throws {
+  #expect(throws: HullSweepFailure.geometryTooComplex) {
+    try PreparedHull(mesh: hsBox(), maximumTriangles: 1)
+  }
+  let invalid = Mesh(
+    vertices: [.init(0, 0, 0), .init(1, 0, 0), .init(0, 1, 0)], faces: [[0, 1, 9]],
+    preserveWinding: true)
+  #expect(throws: HullSweepFailure.invalidGeometry) { try PreparedHull(mesh: invalid) }
+  let hull = try PreparedHull(mesh: hsBox())
+  #expect(
+    HullSweepSafety.validate(hsSweep(mismatchedEnd: true), target: hull).failure == .invalidMotion)
+  #expect(HullSweepSafety.validate(hsSweep(duration: 0), target: hull).failure == .invalidMotion)
+  #expect(
+    HullSweepSafety.validate(hsSweep(velocity: .init(.nan, 0, 0)), target: hull).failure
+      == .invalidMotion)
+  #expect(
+    HullSweepSafety.validate(hsSweep(radius: 1), target: hull, player: hull).failure
+      == .invalidMotion)
+}
+
+@Test func hullSweepRefusesAmbiguousOpenInteriorInsteadOfTreatingItAsEmptySpace() throws {
+  let box = hsBox()
+  let open = try PreparedHull(
+    mesh: Mesh(vertices: box.vertices, faces: Array(box.faces.dropLast()), preserveWinding: true))
+  #expect(!open.isClosed)
+  #expect(
+    HullSweepSafety.validate(hsSweep(position: .init(0, 0, 0)), target: open).failure == .unproven)
+  #expect(HullSweepSafety.validate(hsSweep(), target: open).safe)
+}
+
+@Test func hullSweepActualGeometryKeepsDriftingSpinningDepletedParentInStableHold() throws {
+  let hull = try PreparedHull(mesh: hsBox())
+  var target = hsSweep().target
+  target.velocity = .init(5, 0, 0)
+  target.angularVelocity = .init(0, 0.05, 0)
+  var ship = ShipPose()
+  ship.position = .init(0, 0, -161)
+  var input = RelativeWorkInput(
+    ship: ship, velocity: .init(-3.05, 0, 0), angularVelocity: target.angularVelocity,
+    target: target, playerRadius: 30,
+    limits: .init(acceleration: 40, speed: 120, pitchRate: 0.6, yawRate: 0.6, rollRate: 0.6),
+    delta: 0.02)
+  var controller = RelativeWorkController(parent: hsIdentity, category: .wreck)
+  var selections = 0
+  var completions = 0
+  for frame in 0..<300 {
+    if frame == 100 { input.target?.depleted = true }
+    let output = controller.step(input) { sweep in
+      let result = HullSweepSafety.validate(sweep, target: hull)
+      #expect(result.safe)
+      #expect((result.minimumSampledClearance ?? 0) > 120)
+      return result.clearance
+    }
+    selections += output.transitions.filter { $0 == .selectTool(.salvageCutter) }.count
+    completions += output.transitions.filter { $0 == .workComplete }.count
+    #expect(output.motionValidated && controller.parent == hsIdentity)
+    let omega = input.ship.orientation.apply(
+      .init(output.pitchRate, -output.yawRate, output.rollRate))
+    input.ship = hsPose(input.ship, velocity: input.velocity, omega: omega, time: input.delta)
+    input.ship.position =
+      input.ship.position + output.acceleration * (0.5 * input.delta * input.delta)
+    input.velocity = output.velocity
+    input.angularVelocity = omega
+    var next = try #require(input.target)
+    next.pose = hsPose(
+      next.pose, velocity: next.velocity, omega: next.angularVelocity, time: input.delta)
+    input.target = next
+  }
+  #expect(controller.status == .holding && selections == 1 && completions == 1)
+}
+
+@Test func hullSweepControllerRetainsItsParentAndAppliesOnlyPhysicallyValidatedBraking() throws {
+  let hull = try PreparedHull(mesh: hsBox())
+  var pose = ShipPose()
+  pose.position = .init(0, 0, 500)
+  let target = RelativeWorkTarget(
+    identity: hsIdentity, pose: pose, velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0),
+    surfacePoint: .init(0, 0, -10), surfaceNormal: .init(0, 0, -1))
+  var obstaclePose = ShipPose()
+  obstaclePose.position = .init(0, 0, 153.1)
+  let obstacle = HullSweepObstacle(
+    hull: try PreparedHull(mesh: hsBox(.init(1, 1, 1))), pose: obstaclePose)
+  let input = RelativeWorkInput(
+    ship: .init(), velocity: .init(0, 0, 20), angularVelocity: .init(0, 0, 0),
+    target: target, playerRadius: 30,
+    limits: .init(acceleration: 40, speed: 120, pitchRate: 0.6, yawRate: 0.6, rollRate: 0.6),
+    delta: 0.1)
+  var controller = RelativeWorkController(parent: hsIdentity, category: .wreck)
+  var checks: [(RelativeWorkSweep.Purpose, HullSweepResult)] = []
+  let output = controller.step(input) { sweep in
+    let result = HullSweepSafety.validate(sweep, target: hull, obstacles: [obstacle])
+    checks.append((sweep.purpose, result))
+    return result.clearance
+  }
+  #expect(checks.count == 2 && checks[0].0 == .work && checks[1].0 == .braking)
+  #expect(!checks[0].1.safe && checks[1].1.safe)
+  #expect(output.motionValidated && output.acceleration == Vector3(0, 0, -40))
+  #expect(output.velocity == Vector3(0, 0, 16) && controller.parent == hsIdentity)
+  #expect(output.status == .blocked(.clearance(HullSweepFailure.clearanceViolation.message)))
+}
+
+@Test func hullSweepPreparedRawCapitalGeometryHasBoundedNativeStepWork() throws {
+  for id in ["SH005", "SH045", "SH129", "SH171"] {
+    let record = try #require(ShipCatalogue.ship(id))
+    let raw = record.design.rawMesh
+    let hull = try PreparedHull(mesh: raw)
+    let top = try #require(raw.vertices.map(\.y).max())
+    let motion = hsSweep(
+      position: .init(0, top + 127, 0), velocity: .init(1, 0, 0), gap: 120,
+      targetOmega: .init(0, 0.02, 0))
+    let start = ContinuousClock.now
+    var final = HullSweepSafety.validate(motion, target: hull)
+    for _ in 0..<20 { final = HullSweepSafety.validate(motion, target: hull) }
+    let elapsed = start.duration(to: .now)
+    #expect(final.safe)
+    #expect(final.distanceQueries <= HullSweepBudget.standard.distanceQueries)
+    #expect(final.triangleTests <= HullSweepBudget.standard.triangleTests)
+    #expect(final.nodeVisits <= HullSweepBudget.standard.nodeVisits)
+    print(
+      "HULL_SWEEP_BENCH \(id) triangles=\(hull.triangleCount) steps=21 elapsed=\(elapsed) queries=\(final.distanceQueries) triangleTests=\(final.triangleTests) nodes=\(final.nodeVisits) safe=\(final.safe)"
+    )
+  }
+}

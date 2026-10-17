@@ -32,9 +32,13 @@ public struct CockpitLayout: Sendable {
     leftColumns = sideWidth >= 400 ? 2 : 1
     let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
-    extraLines = (game.autoHUDLines + game.solarHUDLines + weaponLines + game.spin.hudLines).flatMap {
-      MissionNotice.wrap($0, width: textColumns)
-    }
+    let toolLines = ["TOOL: " + game.selectedFlightTool.label.uppercased() + " / W CHANGE"]
+    extraLines =
+      (game.autoHUDLines + toolLines + game.salvageHUDLines + game.solarHUDLines + weaponLines
+      + game.spin.hudLines)
+      .flatMap {
+        MissionNotice.wrap($0, width: textColumns)
+      }
     let rows = max(4, Int(ceil(6 / Double(leftColumns))))
     let scannerHeight = width < 900 ? 80.0 : 108.0
     let panelHeight =
@@ -174,7 +178,7 @@ extension Display {
   ) {
     let gauges: [(String, Double, Ink)] = [
       ("Front shield", game.frontShield / game.commander.shieldCapacity, .green),
-      ("Rear shield", game.rearShield / game.commander.shieldCapacity, .green),
+      ("Rear shield", game.rearShield / game.commander.rearShieldCapacity, .green),
       ("Fuel", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
       ("Cabin temp", game.cabinTemperature, .red), ("Laser heat", game.laserHeat / 255, .red),
       ("Altitude", game.altitude, .yellow),
@@ -196,7 +200,7 @@ extension Display {
     for (index, gauge) in [
       (
         "Speed",
-        (game.autoTargetBody?.hull == .station ? game.autoPilot.velocity.length / 18 : game.speed)
+        game.cockpitSpeed
           / game.commander.performance.speed
       ), ("Roll", game.roll), ("Pitch", game.pitch),
     ]

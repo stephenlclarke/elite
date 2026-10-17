@@ -24,10 +24,10 @@ public enum PlayerHelp {
           title: game.docked ? "STATION SCREENS" : "SCREENS IN SPACE",
           rows: [
             game.docked ? "0 - LAUNCH" : "0 / 1 / 2 / 3 - FRONT/REAR/LEFT/RIGHT",
-            game.docked ? "1 / 2 / 3 - BUY / SELL / EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
+            game.docked ? "3 - EQUIPMENT" : "4 / 5 - GALACTIC / LOCAL CHART",
             game.docked ? "4 / 5 - CHARTS WITH PLANET DATA" : "6 - SYSTEM DATA / PLANET VIEW",
             game.docked ? "6 - SHIP SHOWROOM" : "7 - MARKET PRICES",
-            game.docked ? "7 - MARKET PRICES" : "8 / 9 - STATUS / INVENTORY",
+            game.docked ? "7 - MARKET: BUY / SELL" : "8 / 9 - STATUS / INVENTORY",
             game.docked ? "8 / 9 - STATUS / INVENTORY" : "ESC - PREVIOUS SCREEN / COCKPIT",
             "ARROWS - MOVE; RETURN - CHOOSE",
             "ESC - BACK ONE LEVEL; K - HELP",
@@ -83,8 +83,12 @@ public enum PlayerHelp {
         rows: [
           "ARROWS - PITCH / ROLL",
           "SPACE - ACCELERATE; DELETE - BRAKE",
-          "RETURN - FIRE LASER (HOLD)",
-          "TAB - NEXT TARGET / STATION AUTO DOCK",
+          "RETURN - USE SELECTED TOOL (HOLD)",
+          "W - COMBAT / MINING / SALVAGE CUTTER",
+          "TAB / R - NEXT TARGET / AUTO GUIDANCE",
+          "F - SHIPS / MINING / SALVAGE / ALL",
+          "WORK HOLD NEEDS ITS FITTED MODULE",
+          "SMALL ITEMS: AUTO SCOOP; LARGE: HOLD",
           "Q - CANCEL AUTOMATIC GUIDANCE",
           "4 / 5 - CHART; H - HYPERSPACE",
           "SUN / PLANET BEARINGS - FLIGHT HUD",
@@ -103,14 +107,54 @@ public enum PlayerHelp {
       .init(
         title: "SYSTEM DATA",
         rows: ["UP / DOWN / SCROLL - LONG PLANET DATA", "ESC - PREVIOUS SCREEN", "K - HELP"])
-    case .buy, .sell:
+    case .market where !game.docked:
       .init(
-        title: screen == .buy ? "BUY CARGO" : "SELL CARGO",
+        title: "MARKET PRICES",
+        rows: [
+          "UP / DOWN / SCROLL - BROWSE PRICES",
+          "DOCK TO BUY OR SELL IN MARKET (7)",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .status:
+      .init(
+        title: "COMMANDER STATUS",
+        rows: [
+          "LOCATION, CASH, CONDITION AND LEGALITY",
+          "FITTED SHIELD, NAVIGATION AND ENERGY",
+          "CORE AND SEPARATE SPECIALTY MODULES",
+          "9 - INVENTORY: CARGO AND FULL FITTINGS",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .inventory:
+      .init(
+        title: "INVENTORY",
+        rows: [
+          "CARGO, MISSION PROPERTY AND FITTINGS",
+          "ACTUAL FITTED AND HELD EQUIPMENT",
+          "GRADE AND ACQUISITION SOURCE",
+          "TAB - SELECT VISIBLE FIT / STORE ACTION",
+          "RETURN - APPLY THE SELECTED ACTION",
+          "LEFT / RIGHT - RECOVERED UPGRADE CHOICE",
+          "RECOVERED: BEFORE / AFTER AND NEXT GRADE",
+          "RECOVERED DEVICES: FIT NOW IN SPACE",
+          "MINING / SALVAGE MODULES REQUIRE A CORE",
+          game.informationWindow.hint == nil
+            ? "ALL ROWS VISIBLE" : "UP / DOWN / SCROLL - MORE ROWS",
+          "OPTION-UP/DOWN - PAGE LONG LISTS",
+          "ESC - PREVIOUS SCREEN",
+        ])
+    case .buy, .sell, .market:
+      .init(
+        title: "MARKET: BUY / SELL",
         rows: [
           "UP / DOWN / SCROLL - SELECT PRODUCT",
-          screen == .buy ? "RETURN - BUY ONE UNIT" : "RETURN - SELL ONE UNIT",
+          screen == .sell ? "RETURN - SELL ONE UNIT" : "RETURN - BUY ONE UNIT",
           "COLOUR: CATEGORY; ACTION: AVAILABILITY",
-          "1 / 2 - SWITCH BUY / SELL",
+          "TAB / CLICK BUY OR SELL - MODE",
+          "CLICK TRADE BUTTON - ONE UNIT",
+          "LEFT - SELL ONE; RIGHT - BUY ONE",
           "ESC - PREVIOUS SCREEN",
         ])
     case .equipment:
@@ -119,10 +163,10 @@ public enum PlayerHelp {
         rows: [
           "UP / DOWN / SCROLL - SELECT ITEM",
           "RETURN - PURCHASE / REFUEL",
-          "LEFT / RIGHT - SELECT LASER MOUNT",
+          "LEFT / RIGHT - SELECT COMBAT MOUNT",
           "CLICK FRONT/LEFT/RIGHT/REAR - MOUNT",
           "CLICK AN ITEM TO SELECT IT",
-          "REWARD ITEMS ARE NOT FOR SALE",
+          "INVENTORY (9) - FITTED / HELD DETAILS",
           "ESC - PREVIOUS SCREEN",
         ])
     case .chart, .shortChart:
@@ -299,6 +343,7 @@ public enum PlayerHelp {
         "R ALSO SELECTS TARGET / STATION AUTO",
         "P / Q - CANCEL AUTOMATIC GUIDANCE",
         "I - TARGET CAMERA DETAILS / HIDE",
+        "OPTION-UP/DOWN - PAGE TARGET DETAILS",
         "COMMAND-SHIFT-E - LAUNCH ESCAPE POD",
         "FLIGHT MENU: DETONATE ENERGY BOMB",
         "SCOOPS: PASS CARGO BELOW YOUR NOSE",

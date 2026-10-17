@@ -6,13 +6,13 @@ extension Game {
   public static func numberedScreen(_ number: Int, docked: Bool) -> Screen? {
     switch number {
     case 0: .front
-    case 1: docked ? .buy : .rear
-    case 2: docked ? .sell : .left
+    case 1: docked ? nil : .rear
+    case 2: docked ? nil : .left
     case 3: docked ? .equipment : .right
     case 4: .chart
     case 5: .shortChart
     case 6: docked ? .showroom : .system
-    case 7: .market
+    case 7: docked ? .buy : .market
     case 8: .status
     case 9: .inventory
     default: nil
@@ -22,13 +22,13 @@ extension Game {
   public static func screenTitle(_ number: Int, docked: Bool) -> String {
     switch number {
     case 0: docked ? "Launch" : "Front View"
-    case 1: docked ? "Buy Cargo" : "Rear View"
-    case 2: docked ? "Sell Cargo" : "Left View"
+    case 1: docked ? "" : "Rear View"
+    case 2: docked ? "" : "Left View"
     case 3: docked ? "Equipment" : "Right View"
     case 4: "Galactic Chart"
     case 5: "Short Range Chart"
     case 6: docked ? "Ship Showroom" : "System Data"
-    case 7: "Market Prices"
+    case 7: docked ? "Market" : "Market Prices"
     case 8: "Commander Status"
     case 9: "Inventory"
     default: ""
@@ -173,12 +173,10 @@ extension Game {
       return true
     default: break
     }
+    if docked && ["1", "2"].contains(key) { return true }
+    if marketKey(key) { return true }
     if key == "escape" {
       backFromPrimary()
-      return true
-    }
-    if key == "w" {
-      openShowroom()
       return true
     }
     if key == "u" && docked {
@@ -227,7 +225,7 @@ extension Game {
   }
 
   mutating func openNumberedScreen(_ number: Int) {
-    guard !paused, !showroom.trading,
+    guard Self.numberedScreen(number, docked: docked) != nil, !paused, !showroom.trading,
       ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(screen)
     else { return }
     if number == 6 && screen == .showroom { return }

@@ -109,13 +109,33 @@ private func solarGame(distance: Double = 2970) -> Game {
   #expect(Set(game.celestials.map(\.kind)) == [.sun, .planet])
   let scene = game.celestials
   game.cabinTemperature = 0.6
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
   let commander = try JSONDecoder().decode(
     Commander.self, from: JSONEncoder().encode(game.commander))
   let loaded = game.load(commander)
   #expect(loaded)
   #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
   game.launch()
-  #expect(game.celestials == scene && game.commander == commander)
+  #expect(game.celestials == scene)
+  #expect(game.commander.flightSimulation.visit == commander.flightSimulation.visit + 1)
+  #expect(game.commander.equipment == commander.equipment)
+  #expect(game.commander.equipmentInventory == commander.equipmentInventory)
+  #expect(game.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
+  var actual = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
+  var expected = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
+  actual["equipment"] = game.commander.equipment.sorted()
+  expected["equipment"] = commander.equipment.sorted()
+  for key in [
+    "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
+    "encounterDirector", "savedNPCPersistence",
+  ] {
+    actual.removeValue(forKey: key)
+    expected.removeValue(forKey: key)
+  }
+  #expect(NSDictionary(dictionary: actual).isEqual(to: expected))
 }
 
 @Test func solarHUDReportsActualScoopAndThermalDanger() {

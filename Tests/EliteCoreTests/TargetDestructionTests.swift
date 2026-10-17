@@ -29,8 +29,9 @@ private func announcements(_ game: Game, _ text: String) -> Int {
   #expect(
     announcements(game, "TARGET LOST") == 0 && announcements(game, "RIGHT ON, COMMANDER") == 1)
 }
-@Test func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution() {
-  for mode in 0..<3 {
+@Test(arguments: 0..<3)
+func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution(_ mode: Int) throws {
+  do {
     var game = lockedGame()
     if mode == 2 {
       game.commander.equipment.insert("Energy Bomb")
@@ -38,8 +39,26 @@ private func announcements(_ game: Game, _ text: String) -> Int {
     } else {
       game.bodies[0].ecmEnabled = mode == 1
       game.bodies[0].position = .init(0, 0, 100)
+      let target = try #require(game.bodies[0].physical?.identity)
+      let player = try #require(game.commander.flightSimulation.player)
       game.key("t")
       game.key("m")
+      let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
+      let flight = try #require(missile.physical?.ordnance)
+      #expect(flight.target == target && flight.origin.owner == player)
+      #expect(game.commander.missiles == 2 && game.commander.kills == 0)
+      #expect(game.bodies[0].energy > 0 && flight.propulsionTravel == 0)
+      // Isolate actual ordnance attribution from the separately tested counterfire lane.
+      game.commander.flightSimulation.advancePhysicalTime(0.1)
+      game.advanceNavalMissiles(delta: 0.1)
+      let impact = try #require(
+        game.bodies.first { $0.id == missile.id }?.physical?.ordnance)
+      #expect(impact.termination == .impact && impact.propulsionTravel > 0)
+      #expect(game.bodies[0].energy == 0 && game.bodies[0].physical?.deathOrigin == flight.origin)
+      #expect(game.ecmFrames == 0)
+      game.resolveDestroyed()
+      #expect(game.commander.kills == 1)
+      #expect(announcements(game, "TARGET DESTROYED - YOUR KILL") == 1)
     }
     game.tick(delta: 0.1)
     for _ in 0..<5 { game.tick(delta: 0.1) }

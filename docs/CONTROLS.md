@@ -7,17 +7,17 @@ The main pattern is the same everywhere: **numbers open areas, arrows move, Retu
 | Key | Docked | In flight |
 | --- | --- | --- |
 | 0 | Launch | Front view |
-| 1 | Buy cargo | Rear view |
-| 2 | Sell cargo | Left view |
+| 1 | — | Rear view |
+| 2 | — | Left view |
 | 3 | Equipment | Right view |
 | 4 | Galactic chart, planet facts and globe | Galactic chart |
 | 5 | Short range chart, planet facts and globe | Short range chart |
 | 6 | Ship showroom | System data and globe |
-| 7 | Market prices | Market prices |
+| 7 | Market: buy and sell | Market prices |
 | 8 | Commander status | Commander status |
 | 9 | Inventory | Inventory |
 
-The Screens menu offers these same destinations and Command-number shortcuts. Number keys work in read-only browsers as well as ordinary screens, but mission dialogs, help, pause and XYZZY consume their own controls. Escape from ordinary information screens returns through the screens you visited, ending at commander status when docked or your cockpit in flight. Switching to a cockpit view starts a fresh return path. Escape in the cockpit leaves you flying.
+The Screens menu offers these same destinations. Plain numbers are the navigation shortcuts; there are no additional Command-number shortcuts. Docked 1/2 have no action; use Market (7) and Tab to choose Buy or Sell. Number keys work in read-only browsers as well as ordinary screens, but mission dialogs, help, pause and XYZZY consume their own controls. Escape from ordinary information screens returns through the screens you visited, ending at commander status when docked or your cockpit in flight. Switching to a cockpit view starts a fresh return path. Escape in the cockpit leaves you flying.
 
 ## Basic flight
 
@@ -52,7 +52,7 @@ Every action in this table is visible in the **Flight** menu. Equipment requirem
 | Detonate energy bomb | Flight > Detonate Energy Bomb |
 | Launch escape pod | Command-Shift-E, or Flight > Launch Escape Pod |
 
-Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Pass scoopable cargo below your nose with Fuel Scoops fitted.
+Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Option-Up/Down pages its wrapped cargo, route and resource readings. Pass scoopable cargo below your nose with Fuel Scoops fitted.
 
 Flight HUD bearings point to the actual moving planet and sun, including astern and off-screen directions. Fuel Scoops collect solar fuel automatically when cruising nose-first in the outer corona; no extra key is needed. Stay near the corona edge, watch Cabin temp, and turn away to cool before it reaches the limit. Sun and planet surfaces are fatal, and overheating destroys the ship even with unlimited XYZZY fuel. Saves retain the existing commander-only behaviour: loading docks at the saved system, and launching creates a fresh local flight scene.
 
@@ -60,7 +60,9 @@ Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets
 
 ## Station tasks and mission dialogs
 
-Buy with 1, sell with 2, equip with 3. Up/Down or scrolling selects an item; Return trades one unit or purchases/refuels. Equipment headings are skipped. Left/Right or the visible Front/Left/Right/Rear controls choose a laser mount. Status and inventory use Up/Down or scrolling for more rows. Option-Up/Down moves a page. Market 7 shows prices; use 1/2 to trade.
+Open Market with 7. Prices, stock and your holdings stay in one table. Up/Down, scrolling or clicking selects a commodity. Tab or the visible Buy/Sell controls changes mode without changing the selected item; Return or Buy one/Sell one trades one unit. Left sells one and Right buys one. Repeat trades for multiple units. Keys 1/2 remain buy/sell mode aliases; the docked Screens menu exposes the single Market entry. In flight, 7 remains read-only prices and 1/2 remain rear/left views.
+
+Equipment remains on 3. Up/Down selects an item and Return purchases/refuels; Left/Right or the visible mount controls chooses its laser mount. Commander Status (8) is a readiness/location/finance/legal summary. Inventory (9) owns the cargo manifest, reserved mission property and complete laser/equipment list. Up/Down or scrolling reads additional rows; Option-Up/Down pages. Escape returns to the previous area, not through each Market mode.
 
 **Game > Mission Contacts** opens an eligible station contact. Mission dialogs use arrows to choose Confirm or Back, Return or a click to select, and Escape to return without a transfer. They return to the station screen that opened them. Initial enrolment and automatic naval orders/rewards retain their campaign rules.
 
@@ -101,7 +103,7 @@ Setting a route does not jump. Successful Set route cancels any pending jump cou
 
 ## Ship showroom
 
-Open with 6 while docked. Use arrows or click to choose a ship; Return or the Specifications button reads it. Tab or the Ships/Specifications button switches the active pane, visibly named in the footer. A double-click opens specifications directly. Arrows act on the active pane; scrolling acts on the pane under the pointer. Option-Up/Down pages that pane.
+Open with 6 while docked. W and Command-Shift-W have no showroom action. Use arrows or click to choose a ship; Return or the Specifications button reads it. Tab or the Ships/Specifications button switches the active pane, visibly named in the footer. A double-click opens specifications directly. Arrows act on the active pane; scrolling acts on the pane under the pointer. Option-Up/Down pages that pane.
 
 Slash or clicking the search field begins a filter. Up/Down works immediately on the results, Return opens the selected specifications, Delete erases a letter, and Command-Delete clears the search. Clear filter is also clickable. No matches means no stale model. Escape leaves search, then specifications, then the showroom, preserving selection while you move between panes and help. Reopening the showroom starts unfiltered on your currently owned ship.
 
@@ -137,9 +139,9 @@ Type XYZZY outside a search to become Commander Clarke in a fully fitted Cobra M
 
 ## Compatibility shortcuts
 
-Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; R for targeting; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. W and Command-Shift-W still open the docked showroom; B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
+Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; R for targeting; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
 
-Existing browser-specific close aliases (W, L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
+Existing browser-specific close aliases (L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
 
 Shipyard: click Switch ship, or Return to read specifications then Return again to review the quote, then Left/Right and Return to choose Back or Confirm trade. Escape cancels. Sort: click A-Z/Power; filters and selection stay in place. Source variants are enabled only when more than one profile exists. Status/inventory and chart/route scrolling stop at the viewport boundaries; hints appear only while content overflows.
 

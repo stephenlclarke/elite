@@ -291,6 +291,7 @@ private func finishMessage(_ game: inout Game) {
 
 @Test func navalMessagesPageSafelyAndPauseWorksWithoutEndKey() {
   var game = navalGame()
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.dock()
   #expect(game.screen == .mission)
   game.key("return")
@@ -335,7 +336,10 @@ private func finishMessage(_ game: inout Game) {
   game.bodies = [SpaceBody(id: 99, hull: .constrictor, position: .init(0, 0, 6000), hostile: true)]
   game.missileArmed = true
   game.fireMissile()
-  for _ in 0..<256 { game.advanceNavalMissiles(delta: 0.001) }
+  for _ in 0..<256 {
+    game.commander.flightSimulation.advancePhysicalTime(0.001)
+    game.advanceNavalMissiles(delta: 0.001)
+  }
   #expect(game.bodies[0].energy == 252 && game.ecmFrames == 32)
   #expect(game.bodies.last?.energy == 0)
   game.ecmFrames = 0
@@ -371,9 +375,22 @@ private func finishMessage(_ game: inout Game) {
   }
   game.dock()
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
+  let item = Equipment.all[game.selection]
+  game.commander.system = try #require(game.systems.first { $0.technology >= item.technology }?.id)
+  try game.commander.prepareEquipment()
+  let naval = try #require(game.commander.fittedEquipment(at: .energy))
+  let cost = game.shopPrice(item)
+  game.commander.credits = cost + 1000
   let cash = game.commander.credits
   game.purchase()
-  #expect(game.commander.credits == cash && game.message == "NAVAL ENERGY UNIT FITTED")
+  // Paid predecessors can be held while the stronger migrated reward stays fitted.
+  #expect(game.commander.credits == cash - cost && game.commander.energyRechargeMultiplier == 3)
+  #expect(game.commander.fittedEquipment(at: .energy)?.id == naval.id)
+  let node = try #require(EquipmentRuntimeCatalog.node(for: item.name))
+  #expect(
+    game.commander.equipmentInventory?.items.contains { $0.node == node && $0.location == nil }
+      == true)
+  #expect(game.commander.equipmentPurchaseHistory?.paid.count == 1)
   game.screen = .equipment
   _ = Display.render(game)
 }

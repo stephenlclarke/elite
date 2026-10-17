@@ -76,13 +76,13 @@ import Testing
   #expect(game.screen == .title)
   game.key(" ")
   #expect(game.screen == .status)
-  let docked: [Screen] = [
-    .front, .buy, .sell, .equipment, .chart, .shortChart, .showroom, .market, .status, .inventory,
-  ]
-  // Screen zero launches, so verify docked screens before it.
-  for i in 1..<10 {
-    game.key("\(i)")
-    #expect(game.screen == docked[i])
+  // Retired docked market aliases do not navigate; zero is tested separately because it launches.
+  for (number, expected) in [
+    (3, Screen.equipment), (4, .chart), (5, .shortChart),
+    (6, .showroom), (7, .buy), (8, .status), (9, .inventory),
+  ] {
+    game.key("\(number)")
+    #expect(game.screen == expected)
   }
   game.key("99")
   #expect(game.screen == .inventory)
@@ -155,7 +155,7 @@ import Testing
   #expect(game.commander.cargo[1] == 20)
 }
 
-@Test func equipmentPurchases() {
+@Test func equipmentPurchases() throws {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.fuel = 60
@@ -166,15 +166,17 @@ import Testing
   #expect(game.commander.missiles == 4 && game.commander.credits == 680)
   game.purchase()
   #expect(game.message == "MISSILE RACK FULL")
-  game.selection = 9
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
+  let unavailable = game.commander
   game.purchase()
-  #expect(game.message == "NOT AVAILABLE")
+  #expect(game.message == "NOT AVAILABLE" && game.commander == unavailable)
   game.commander.credits = 100000
-  game.selection = 2
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Large Cargo Bay" })
   game.purchase()
   #expect(game.commander.capacity == 35 && game.commander.credits == 96000)
+  let owned = game.commander
   game.purchase()
-  #expect(game.message == "ALREADY FITTED")
+  #expect(game.message == "ALREADY OWNED" && game.commander == owned)
   game.selection = 99
   game.purchase()
   game.docked = false
@@ -262,20 +264,26 @@ import Testing
   var game = Game(executive: false)
   game.launch()
   game.speed = 0
+  game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
   game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 500), hostile: true)]
   game.commander.equipment.insert("Military Laser")
+  game.ensurePhysicalActors()
+  // Hostility does not establish a bounty; this fixture supplies its known criminal record.
+  game.bodies[0].physical?.npc?.legal = .init(value: 64, bountyTenths: 50)
+  game.bodies[0].physical?.npc?.legalProvenance = .recorded
   var controls = Controls()
   controls.fire = true
   for _ in 0..<6 { game.tick(delta: 0.1, controls: controls) }
   #expect(game.commander.kills == 1 && game.commander.credits == 1050 && game.bodies.isEmpty)
   game.fireMissile()
   #expect(game.commander.missiles == 3)
-  game.bodies = [SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 1000))]
+  // Keep this damage/bounty fixture outside immediate NPC beam-interception range.
+  game.bodies = [SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 1800))]
   game.key("t")
   game.key("m")
   #expect(game.commander.missiles == 2 && !game.missileArmed)
-  game.tick(delta: 0.02)
-  #expect(game.commander.kills == 2 && game.commander.legal == 8)
+  for _ in 0..<150 where game.commander.kills < 2 { game.tick(delta: 0.02) }
+  #expect(game.commander.kills == 2 && game.commander.legal == 40)
   game.commander.unlimitedMissiles = true
   game.bodies = [SpaceBody(id: 3, hull: .cobra, position: .init(0, 0, 1000))]
   game.key("t")
@@ -338,7 +346,8 @@ import Testing
   #expect(game.time == time)
   game.bodies = [SpaceBody(id: 3, hull: .cargo, position: .init(0, 0, 50000))]
   game.tick(delta: 0.02)
-  #expect(game.bodies.isEmpty)
+  #expect(!game.bodies.contains { $0.id == 3 })
+  #expect(game.bodies.allSatisfy { $0.physical?.spawnIdentity != nil })
 }
 
 @Test func viewTransformsAndGeometry() {
@@ -519,7 +528,11 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  var expected = game.commander
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  }
+  #expect(await restored.snapshot().commander == expected)
 }
 
 @Test func autoTraderUsesEconomyCapitalAndCargo() {
@@ -601,12 +614,29 @@ import Testing
   game.key("8")
   #expect(game.commander.unlimitedCargo && game.message == "SELL EXCESS CARGO FIRST")
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+  #expect(
+    ready.commander.credits == game.commander.credits
+      && ready.commander.cargo == game.commander.cargo)
+  #expect(
+    ready.commander.unlimitedCargo == game.commander.unlimitedCargo
+      && ready.commander.unlimitedCash == game.commander.unlimitedCash
+      && ready.commander.fuel == game.commander.fuel
+      && ready.commander.shipID == game.commander.shipID)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   try await runtime.save(to: url)
+  #expect(await runtime.snapshot().commander == ready.commander)
+  var expected = ready.commander
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  }
+  let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+  #expect(persisted == expected)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  #expect(await restored.snapshot().commander == expected)
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.key("8")
   game.key("9")

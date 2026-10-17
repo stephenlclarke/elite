@@ -20,15 +20,47 @@ import Testing
   game.selection = 0
   game.purchase()
   #expect(game.commander.fuel == 350 && game.commander.credits == 20_000 - 315 * 2)
-  game.commander.fuelStorageUnits = 0
-  #expect(!game.commander.valid)
-  game.commander.fuel = 70
-  game.commander.credits = 19_999
-  game.selection = try #require(Equipment.all.firstIndex { $0.name == FuelStorage.equipmentName })
-  game.purchase()
-  #expect(game.commander.fuelStorageUnits == 0 && game.message == "NOT ENOUGH CASH")
-  game.commander.fuelStorageUnits = 5
-  #expect(!game.commander.valid)
+  // Capacity belongs to fitted physical tanks; a legacy counter assignment cannot remove one.
+  let full = game.commander
+  let tank = try #require(game.commander.fittedEquipment(at: .fuelStorage(3)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  #expect(throws: EquipmentRuntimeError.incompatibleFit) {
+    try game.storeEquipment(tank, expectedRevision: revision)
+  }
+  #expect(game.commander == full && game.commander.fuelStorageUnits == 4)
+
+  var poor = Game(executive: false)
+  poor.commander.fuel = 35
+  poor.commander.credits = 19_999
+  poor.selection = try #require(Equipment.all.firstIndex { $0.name == FuelStorage.equipmentName })
+  let before = poor.commander
+  poor.purchase()
+  #expect(poor.commander.fuelStorageUnits == 0 && poor.message == "NOT ENOUGH CASH")
+  #expect(poor.commander == before)
+}
+
+@Test func invalidLegacyFuelAndStorageCountsStillRefuseDecodingIntoAnActualRuntime() async throws {
+  let runtime = GameRuntime(game: Game(executive: false))
+  let ready = await runtime.snapshot()
+  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: url) }
+  for (units, fuel) in [(0, 350), (5, 70)] {
+    var legacy = Commander()
+    legacy.fuelStorageUnits = units
+    legacy.fuel = fuel
+    #expect(legacy.equipmentInventory == nil && !legacy.valid)
+    let data = try JSONEncoder().encode(legacy)
+    let decoded = try JSONDecoder().decode(Commander.self, from: data)
+    #expect(decoded.equipmentInventory == nil && !decoded.valid)
+    try data.write(to: url)
+    await #expect(throws: SaveError.self) {
+      try await runtime.load(from: url, persistMigrations: false)
+    }
+    let after = await runtime.snapshot()
+    #expect(
+      after.commander == ready.commander
+        && after.inventoryContextEpoch == ready.inventoryContextEpoch)
+  }
 }
 
 @Test func fuelStorageSaveCompatibilityAndFullAutoTradeRefuellingUseInstalledCapacity() async throws

@@ -22,12 +22,24 @@ final class GameView: NSView {
         trackpad.reset()
       }
       if !acceptsTrackpadFlight || game.spin.mode != oldValue.spin.mode { trackpad.reset() }
+      modelInventoryInputGeneration = processedInventoryInputGeneration
     }
   }
   let audio = AudioPresenter()
   var held: Set<String> = []
   var pressedKeys: [UInt16: String] = [:]
   var pending: [String] = []
+  var pendingInventoryCommands: [InventoryCommand] = []
+  var pendingEquipmentPurchases: [EquipmentPurchaseContext] = []
+  var pendingCommanderFiles: [NativeCommanderFileIntent] = []
+  private(set) var inventoryInputGeneration: UInt64 = 0
+  var processedInventoryInputGeneration: UInt64 = 0
+  private var modelInventoryInputGeneration: UInt64 = 0
+  private var paintedInventoryInputGeneration: UInt64 = 0
+  private(set) var paintedInventoryInteraction: InventoryInteraction?
+  private var paintedInventoryState: InventoryPaintState?
+  private var paintedPurchaseContext: EquipmentPurchaseContext?
+  private var paintedPurchaseBounds: NSRect?
   var trackpad = TrackpadInput()
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -62,21 +74,82 @@ final class GameView: NSView {
   }
   override var acceptsFirstResponder: Bool { true }
   override var isFlipped: Bool { true }
-  override var wantsUpdateLayer: Bool { true }
-  override func updateLayer() {
-    let scale = (window?.backingScaleFactor ?? 1) >= 2 ? 2 : 1
-    guard
-      let image = imageForGame(
-        game, width: Int(bounds.width), height: Int(bounds.height), scale: scale)
-    else { return }
-    layer?.contentsScale = CGFloat(scale)
-    layer?.contents = image
-  }
+  override var isOpaque: Bool { true }
   override func draw(_ _: NSRect) {
     NSColor.black.setFill()
     bounds.fill()
     guard let context = NSGraphicsContext.current?.cgContext else { return }
-    drawGame(game, context: context, rect: bounds)
+    let snapshot = game
+    let frame = Display.presentation(snapshot, width: bounds.width, height: bounds.height)
+    drawFrame(frame, context: context, rect: bounds)
+    paintedInventoryInteraction = frame.inventoryInteraction
+    paintedInventoryState = frame.inventoryInteraction.map { _ in
+      InventoryPaintState(game: snapshot, bounds: bounds)
+    }
+    paintedInventoryInputGeneration = modelInventoryInputGeneration
+    paintedPurchaseContext = snapshot.equipmentPurchaseContext
+    paintedPurchaseBounds = paintedPurchaseContext == nil ? nil : bounds
+  }
+  private struct InventoryPaintState: Equatable {
+    let context: InventoryContextEpoch
+    let bounds: NSRect
+    let screen: Screen
+    let scroll: Int
+    let selection: Int
+    let upgrade: Int
+    let mount: LaserMount
+    let tool: Bool
+    let ship: String
+    let owner: UUID?
+    let hull: UUID?
+    let ownedRevision: UInt64?
+    let sourceRevision: UInt64
+    init(game: Game, bounds: NSRect) {
+      context = game.inventoryContextEpoch
+      self.bounds = bounds
+      screen = game.screen
+      scroll = game.informationScroll
+      selection = game.inventoryActionSelection
+      upgrade = game.inventoryUpgradeChoice
+      mount = game.equipmentMount
+      tool = game.equipmentWorkTool
+      ship = game.commander.shipID
+      owner = game.commander.equipmentOwnerID
+      hull = game.commander.hullInstanceID
+      ownedRevision = game.commander.equipmentInventory?.revision
+      sourceRevision = game.commander.salvageLedger.revision
+    }
+  }
+  private func queuePaintedInventoryCommand(at point: SIMD2<Double>? = nil) {
+    guard pendingInventoryCommands.count < 64,
+      inventoryInputGeneration == paintedInventoryInputGeneration,
+      paintedInventoryState == InventoryPaintState(game: game, bounds: bounds),
+      let presentation = paintedInventoryInteraction
+    else {
+      needsDisplay = true
+      return
+    }
+    let command: InventoryCommand?
+    if let point {
+      command = presentation.command(at: point)
+    } else {
+      command = presentation.primary
+    }
+    guard let command else { return }
+    pendingInventoryCommands.append(command)
+    pending.append("inventory-command")
+  }
+  private func queuePaintedEquipmentPurchase() {
+    guard pendingEquipmentPurchases.count < 64,
+      inventoryInputGeneration == paintedInventoryInputGeneration,
+      paintedPurchaseBounds == bounds, let context = paintedPurchaseContext,
+      context == game.equipmentPurchaseContext
+    else {
+      needsDisplay = true
+      return
+    }
+    pendingEquipmentPurchases.append(context)
+    pending.append("equipment-purchase")
   }
   private func clearSteeringInput() {
     held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])
@@ -100,6 +173,14 @@ final class GameView: NSView {
       return
     }
     if !event.modifierFlags.intersection([.command, .control]).isEmpty { return }
+    if game.screen == .inventory, key == "return" {
+      if !event.isARepeat { queuePaintedInventoryCommand() }
+      return
+    }
+    if game.screen == .equipment, key == "return" {
+      if !event.isARepeat { queuePaintedEquipmentPurchase() }
+      return
+    }
     if ["r", "tab"].contains(key) && !event.isARepeat && game.screen.isFlight {
       clearSteeringInput()
     }
@@ -110,12 +191,25 @@ final class GameView: NSView {
     let repeatNavigation =
       !game.screen.isFlight && ["up", "down", "left", "right", "pageup", "pagedown"].contains(key)
     let repeatText = game.acceptsTextInput && (key.count == 1 || key == "backspace")
-    if !event.isARepeat || repeatNavigation || repeatText { pending.append(key) }
+    if !event.isARepeat || repeatNavigation || repeatText {
+      if game.screen == .inventory || game.screen == .equipment { inventoryInputGeneration &+= 1 }
+      pending.append(key)
+    }
   }
   override func keyUp(with event: NSEvent) {
     held.remove(pressedKeys.removeValue(forKey: event.keyCode) ?? Self.key(event))
   }
   override func mouseDown(with event: NSEvent) {
+    if game.screen == .inventory {
+      let point = convert(event.locationInWindow, from: nil)
+      queuePaintedInventoryCommand(at: .init(point.x, point.y))
+      return
+    }
+    if [.market, .buy, .sell].contains(game.screen) {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("market-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .secret {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("secret-click:\(point.x):\(point.y)")
@@ -140,6 +234,7 @@ final class GameView: NSView {
     }
     if game.screen == .equipment {
       let point = convert(event.locationInWindow, from: nil)
+      inventoryInputGeneration &+= 1
       pending.append("equipment-click:\(point.x):\(point.y)")
       return
     }
@@ -158,6 +253,7 @@ final class GameView: NSView {
       return
     }
     if [.secret, .system, .status, .inventory, .market, .buy, .sell].contains(game.screen) {
+      if game.screen == .inventory { inventoryInputGeneration &+= 1 }
       pending.append(event.scrollingDeltaY > 0 ? "up" : "down")
     }
     if game.screen == .showroom && game.showroom.trading {
@@ -173,6 +269,7 @@ final class GameView: NSView {
       pending.append("showroom-\(region):\(event.scrollingDeltaY > 0 ? -1 : 1)")
     }
     if game.screen == .equipment {
+      inventoryInputGeneration &+= 1
       pending.append("equipment-scroll:\(event.scrollingDeltaY > 0 ? -1 : 1)")
     }
     if game.screen == .navigation {
@@ -257,22 +354,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   let saves: CommanderSaveSession
   let windowSize: NSSize
   let restoreOnLaunch: Bool
+  let windowFactory: @MainActor (NSRect) -> NSWindow
+  private var processingPendingCommands = false
+  let commanderFileFailure: @MainActor (any Error) -> Void
   var saveURL: URL { saves.activeURL }
   init(
     restoreOnLaunch: Bool = true, saves: CommanderSaveSession? = nil,
-    windowSize: NSSize = .init(width: 768, height: 768)
+    windowSize: NSSize = .init(width: 768, height: 768),
+    windowFactory: @escaping @MainActor (NSRect) -> NSWindow = { rect in
+      NSWindow(
+        contentRect: rect, styleMask: [.titled, .closable, .miniaturizable, .resizable],
+        backing: .buffered, defer: false)
+    },
+    commanderFileFailure: @escaping @MainActor (any Error) -> Void = {
+      NSAlert(error: $0).runModal()
+    }
   ) {
     self.windowSize = windowSize
     self.restoreOnLaunch = restoreOnLaunch
+    self.windowFactory = windowFactory
+    self.commanderFileFailure = commanderFileFailure
     self.saves = saves ?? CommanderSaveSession()
     super.init()
   }
   func applicationDidFinishLaunching(_ _: Notification) {
     let view = GameView(frame: NSRect(origin: .zero, size: windowSize))
     view.wantsLayer = true
-    let window = NSWindow(
-      contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
-      backing: .buffered, defer: false)
+    let window = windowFactory(view.frame)
     window.title = "XYZZY Elite - Right-On Commander"
     window.contentView = view
     window.minSize = NSSize(width: 512, height: 540)
@@ -308,6 +416,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
+        let frameStart = ContinuousClock.now
+        let framesPerSecond = max(1, min(60, view.window?.screen?.maximumFramesPerSecond ?? 60))
+        let deadline = frameStart.advanced(by: .seconds(1.0 / Double(framesPerSecond)))
         if let self {
           await self.processFrame(in: view) {
             let now = ContinuousClock.now
@@ -318,7 +429,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         } else {
           return
         }
-        do { try await Task.sleep(for: .milliseconds(16)) } catch { return }
+        // Account for work inside the interval; overdue frames yield without a catch-up burst.
+        if ContinuousClock.now < deadline {
+          do { try await Task.sleep(until: deadline, clock: .continuous) } catch { return }
+        } else {
+          await Task.yield()
+        }
       }
     }
   }
@@ -333,15 +449,51 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   // The frame loop and native integration checks share one ordered command batch.
   // Awaiting this method acknowledges actual processing instead of elapsed time.
   func processPendingCommands(in view: GameView) async {
+    guard !processingPendingCommands else { return }
+    processingPendingCommands = true
+    defer { processingPendingCommands = false }
     let events = view.pending
     view.pending.removeAll()
+    let inventoryCommands = view.pendingInventoryCommands
+    view.pendingInventoryCommands.removeAll(keepingCapacity: true)
+    let purchases = view.pendingEquipmentPurchases
+    view.pendingEquipmentPurchases.removeAll(keepingCapacity: true)
+    let files = view.pendingCommanderFiles
+    view.pendingCommanderFiles.removeAll(keepingCapacity: true)
+    let inventoryGeneration = view.inventoryInputGeneration
+    var inventoryCommandIndex = 0
+    var purchaseIndex = 0
+    var fileIndex = 0
     for event in events {
-      if event.hasPrefix("commander-save:") {
-        let url = URL(fileURLWithPath: String(event.dropFirst("commander-save:".count)))
+      if event == "equipment-purchase" {
+        if purchases.indices.contains(purchaseIndex) {
+          _ = await runtime.equipmentTransaction(.purchase(purchases[purchaseIndex]))
+          purchaseIndex += 1
+        }
+      } else if event == "inventory-command" {
+        if inventoryCommands.indices.contains(inventoryCommandIndex) {
+          _ = await runtime.inventoryCommand(inventoryCommands[inventoryCommandIndex])
+          inventoryCommandIndex += 1
+        }
+      } else if event == "commander-file" {
+        guard files.indices.contains(fileIndex) else { continue }
+        let operation = files[fileIndex].operation(activeURL: saves.activeURL)
+        fileIndex += 1
         do {
-          try await runtime.save(to: url)
-          self.saves.didSave(to: url)
-        } catch { self.show(error) }
+          try await runtime.commanderFileOperation(operation)
+          switch operation {
+          case .save(let url): saves.didSave(to: url)
+          case .load(let url, _):
+            saves.activeURL = url
+            view.held.removeAll()
+            view.pressedKeys.removeAll()
+            view.trackpad.reset()
+            view.game = await runtime.snapshot()
+          }
+        } catch { commanderFileFailure(error) }
+      } else if event.hasPrefix("market-click:") {
+        let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
+        if values.count == 2 { await runtime.marketClick(x: values[0], y: values[1]) }
       } else if event.hasPrefix("secret-click:") {
         let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
@@ -373,6 +525,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         await runtime.key(event)
       }
     }
+    view.processedInventoryInputGeneration = inventoryGeneration
     if !events.isEmpty { view.game = await runtime.snapshot() }
   }
   func applicationShouldTerminateAfterLastWindowClosed(_ _: NSApplication) -> Bool { true }
@@ -418,10 +571,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       withTitle: "Install Mission Pack...", action: #selector(installMissionPack), keyEquivalent: ""
     )
     installPack?.target = self
-    let showroom = commander.submenu?.addItem(
-      withTitle: "Ship Showroom", action: #selector(showShipShowroom), keyEquivalent: "w")
-    showroom?.keyEquivalentModifierMask = [.command, .shift]
-    showroom?.target = self
     let screens = NSMenuItem()
     screens.title = "Screens"
     menu.addItem(screens)
@@ -430,7 +579,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     for number in 0...9 {
       let item = screens.submenu?.addItem(
         withTitle: Game.screenTitle(number, docked: true),
-        action: #selector(gameAction(_:)), keyEquivalent: String(number))
+        action: #selector(gameAction(_:)), keyEquivalent: "")
       item?.representedObject = "screen:\(number)"
       item?.tag = number
       item?.target = self
@@ -488,14 +637,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func menuNeedsUpdate(_ menu: NSMenu) {
     guard menu.title == "Screens", let view = window?.contentView as? GameView else { return }
     for item in menu.items {
+      item.isHidden = Game.numberedScreen(item.tag, docked: view.game.docked) == nil
       item.title = "\(item.tag): " + Game.screenTitle(item.tag, docked: view.game.docked)
     }
   }
   func validateMenuItem(_ item: NSMenuItem) -> Bool {
     guard let game = (window?.contentView as? GameView)?.game else { return false }
     if let command = item.representedObject as? String {
-      if command.hasPrefix("screen:") {
-        return !game.paused && !game.showroom.trading
+      if command.hasPrefix("screen:"), let number = Int(command.dropFirst(7)) {
+        return Game.numberedScreen(number, docked: game.docked) != nil && !game.paused
+          && !game.showroom.trading
           && ![Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver].contains(
             game.screen)
       }
@@ -520,13 +671,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     if item.action == #selector(toggleSpin) || item.action == #selector(stopSpin) {
       return !game.docked && game.screen.isFlight && !game.paused
     }
-    if item.action == #selector(showShipShowroom) {
-      return game.docked && !game.paused
-        && ![
-          Screen.help, .secret, .mission, .handoff, .demo, .title, .gameOver, .showroom, .gallery,
-          .rumour,
-        ].contains(game.screen)
-    }
     return true
   }
   private func flightActionAvailable(_ command: String, game: Game) -> Bool {
@@ -544,9 +688,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     guard let command = sender.representedObject as? String else { return }
     (window?.contentView as? GameView)?.pending.append(command)
   }
-  @objc private func showShipShowroom() {
-    (window?.contentView as? GameView)?.pending.append("showroom-open")
-  }
   @objc private func showHelp() {
     (window?.contentView as? GameView)?.pending.append("help-open")
   }
@@ -560,11 +701,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     (window?.contentView as? GameView)?.pending.append("b")
   }
   @objc private func saveCommander() {
-    queueCommanderSave(to: saveURL)
+    queueCommanderFile(.saveActive)
   }
-  private func queueCommanderSave(to url: URL) {
-    // Preserve input order: a fast Save must include the preceding confirmation/refit.
-    (window?.contentView as? GameView)?.pending.append("commander-save:" + url.path)
+  func queueCommanderFile(_ intent: NativeCommanderFileIntent) {
+    guard let view = window?.contentView as? GameView else { return }
+    view.pendingCommanderFiles.append(intent)
+    view.pending.append("commander-file")
   }
   @objc private func installMissionPack() {
     let panel = NSOpenPanel()
@@ -578,31 +720,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     }
   }
   @objc private func loadCommander() {
-    Task { [weak self] in
-      guard let self else { return }
-      do { try await runtime.load(from: saveURL) } catch { show(error) }
-    }
+    queueCommanderFile(.reloadActive)
   }
   @objc private func chooseCommander() {
-    Task { [weak self] in await self?.openChosenCommander() }
+    openChosenCommander()
   }
-  private func openChosenCommander() async {
+  private func openChosenCommander() {
     let panel = NSOpenPanel()
     panel.canChooseDirectories = false
     panel.allowsMultipleSelection = false
     panel.allowedContentTypes = [.json]
     guard panel.runModal() == .OK, let url = panel.url else { return }
-    do {
-      try await runtime.load(from: url, persistMigrations: false)
-      saves.activeURL = url
-    } catch { show(error) }
+    queueCommanderFile(.open(url))
   }
   @objc private func saveCommanderAs() {
     let panel = NSSavePanel()
     panel.allowedContentTypes = [.json]
     panel.nameFieldStringValue = "commander.json"
     guard panel.runModal() == .OK, let url = panel.url else { return }
-    queueCommanderSave(to: url)
+    queueCommanderFile(.saveAs(url))
   }
   private func recoverStartup(_ error: Error, url: URL) async {
     let alert = NSAlert()
@@ -611,7 +747,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       "The saved file at \(url.path) is missing, inaccessible or invalid. It has not been changed. Choose another save or start a new Commander Jameson. \(error.localizedDescription)"
     alert.addButton(withTitle: "Choose Save")
     alert.addButton(withTitle: "Start New")
-    if alert.runModal() == .alertFirstButtonReturn { await openChosenCommander() }
+    if alert.runModal() == .alertFirstButtonReturn { openChosenCommander() }
   }
   private func show(_ error: Error) { NSAlert(error: error).runModal() }
 }
@@ -619,6 +755,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
 @main
 struct EliteApp {
   @MainActor static func main() async throws {
+    if let index = CommandLine.arguments.firstIndex(of: "--validate-commander-save") {
+      do {
+        guard CommandLine.arguments.indices.contains(index + 1) else {
+          throw SaveError.invalidCommander
+        }
+        let runtime = GameRuntime()
+        try await runtime.load(
+          from: URL(fileURLWithPath: CommandLine.arguments[index + 1]), persistMigrations: false)
+      } catch {
+        FileHandle.standardError.write(Data("Invalid commander save\n".utf8))
+        exit(EXIT_FAILURE)
+      }
+      return
+    }
     if let index = CommandLine.arguments.firstIndex(of: "--validate-mission-pack") {
       guard CommandLine.arguments.indices.contains(index + 1) else {
         throw MissionPackErrorCLI.missingPath
@@ -779,7 +929,8 @@ struct EliteApp {
       game.screen = .status
       let runtime = GameRuntime(game: game)
       for key in [
-        "showroom-open", "down", "b", "down", "return", "v", ".", "pagedown", " ", "k", "k", "w",
+        "showroom-open", "down", "b", "down", "return", "v", ".", "pagedown", " ", "k", "k",
+        "escape",
         "4", "]", "/", "l", "a", "return", "6", "4", "o", "8", "u", "return",
       ] {
         await runtime.key(key)

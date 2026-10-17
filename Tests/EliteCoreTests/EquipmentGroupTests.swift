@@ -17,8 +17,13 @@ import Testing
       game.viewportHeight = 518
       let layout = EquipmentLayout(game: game, width: width, height: 518)
       let frame = Display.equipmentScreen(game, width: width, height: 518)
+      let item = Equipment.all[index]
+      let node = EquipmentRuntimeCatalog.node(for: item.name)
+      let displayName =
+        EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node }?.displayName
+        ?? item.name
       #expect(
-        frame.labels.contains { $0.text == Equipment.all[index].name },
+        frame.labels.contains { $0.text == displayName },
         "Item \(index) width \(width), selected \(game.selection), start \(layout.start), count \(layout.count)"
       )
       let selected = try #require(frame.labels.first { $0.text == ">" })
