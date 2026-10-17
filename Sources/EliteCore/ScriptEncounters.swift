@@ -177,6 +177,8 @@ struct MissionActorRetentionPatch: Sendable {
   let encounterID: String
   let expectedEncounter: ScriptOwnedEncounter
   let updatedEncounter: ScriptOwnedEncounter
+  private let definition: String
+  private let version: String
 
   fileprivate init(source: MissionActorAdmissionSource, updated: ScriptOwnedEncounter) {
     instanceID = source.instanceID
@@ -185,10 +187,13 @@ struct MissionActorRetentionPatch: Sendable {
     encounterID = source.encounterID
     expectedEncounter = source.retention
     updatedEncounter = updated
+    definition = source.definition
+    version = source.version
   }
 
   func matches(_ instance: ScriptInstance) -> Bool {
     instance.id == instanceID && instance.revision == instanceRevision
+      && instance.definition == definition && instance.version == version
       && instance.digest == packDigest && instance.ownedEncounters[encounterID] == expectedEncounter
   }
 

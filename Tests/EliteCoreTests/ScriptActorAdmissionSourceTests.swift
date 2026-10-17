@@ -347,6 +347,14 @@ struct ScriptActorAdmissionSourceTests {
     stale.revision += 1
     #expect(!patch.matches(stale))
     #expect(throws: MissionPackError.self) { try patch.preparingInstance(stale) }
+    for field in ["definition", "version"] {
+      var replaced = ScriptInstance(
+        id: owner.id, definition: field == "definition" ? "forged" : owner.definition,
+        version: field == "version" ? "forged" : owner.version, digest: owner.digest)
+      replaced.ownedEncounters = owner.ownedEncounters
+      #expect(!patch.matches(replaced))
+      #expect(throws: MissionPackError.self) { try patch.preparingInstance(replaced) }
+    }
     let second = try #require(source.actors.last)
     #expect(throws: MissionPackError.self) {
       try source.prepareRetentionPatch(sceneBodyIDs: [actor.actorID: 7, second.actorID: 7])
