@@ -51,7 +51,8 @@ import Testing
   #expect(game.shipTradeQuote!.issues.contains { $0.contains("cash") })
   game.commander.credits = 100_000_000
   game.showroom.selection = "SH001"
-  game.commander.cargo[10] = 3
+  let selectedHold = try #require(game.showroomShip?.game?.cargo)
+  game.commander.cargo[CommodityIdentity.food.rawValue] = selectedHold + 1
   game.commander.installLaser(.naval, on: .rear)
   game.commander.equipment.insert("Large Cargo Bay")
   let quote = try #require(game.shipTradeQuote)
