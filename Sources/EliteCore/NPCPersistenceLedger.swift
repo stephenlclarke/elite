@@ -118,6 +118,10 @@ private struct PersistentNPC: Equatable, Codable, Sendable {
   var terminal: NPCTerminalReason?
 }
 
+enum NPCSceneRestorationError: Error, Equatable {
+  case invalidScene, invalidRecord
+}
+
 /// One current system, including terminal identities. Capacity is never recovered
 /// by evicting a craft; explicit system departure ends this ledger's lifetime.
 public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
@@ -172,6 +176,41 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
 
   public func logicalIdentity(for actor: ActorIdentity) -> ActorIdentity? {
     entries.first { $0.value.binding == actor }?.key
+  }
+
+  /// Rejoin only an already-restored saved actor, never allocate or refresh its condition.
+  mutating func restoreSceneBindings(
+    _ observed: [NPCPersistenceSnapshot], system: SystemIdentity, visit: UInt64,
+    physicalTime: Double, nextActor: UInt64, protection: MissionProtection
+  ) throws {
+    guard valid, self.system == system, visit > 0, visit < UInt64.max,
+      nextActor > 1, nextActor < UInt64.max,
+      physicalTime.isFinite, physicalTime >= 0, observed.count <= Self.maximumEntries,
+      Set(observed.map(\.actor)).count == observed.count
+    else { throw NPCSceneRestorationError.invalidScene }
+    var logicalByActor: [ActorIdentity: ActorIdentity] = [:]
+    for (logical, entry) in entries where entry.terminal == nil {
+      guard logicalByActor.updateValue(logical, forKey: entry.snapshot.actor) == nil else {
+        throw NPCSceneRestorationError.invalidRecord
+      }
+    }
+    var staged = self
+    for snapshot in observed {
+      guard snapshot.valid, snapshot.actor.system == system, snapshot.actor.visit == visit,
+        snapshot.actor.entity < nextActor, snapshot.physicalTime == physicalTime,
+        !protection.protectedActors.contains(snapshot.actor),
+        let logical = logicalByActor[snapshot.actor],
+        !protection.protectedActors.contains(logical), var entry = staged.entries[logical],
+        entry.terminal == nil, entry.offer == nil,
+        entry.binding == nil || entry.binding == snapshot.actor,
+        bindingReferences(snapshot, previous: entry.snapshot, protection: protection)
+          == entry.snapshot
+      else { throw NPCSceneRestorationError.invalidRecord }
+      entry.binding = snapshot.actor
+      staged.entries[logical] = entry
+    }
+    guard staged.valid else { throw NPCSceneRestorationError.invalidRecord }
+    self = staged
   }
 
   /// The runtime may advance a retained craft in world space without admitting
