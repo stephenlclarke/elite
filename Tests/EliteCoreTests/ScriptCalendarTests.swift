@@ -157,27 +157,40 @@ func
 {
   let fixture = try CalendarFixture()
   defer { fixture.clean() }
-  for cancel in 0..<3 {
+  for cancel in 0..<4 {
     var (game, _) = try fixture.game()
     game.launch()
     clearTravelArea(&game)
+    if cancel == 3 {
+      try game.commander.grantEquipment(
+        NavigationTier.basic.equipmentName, at: .navigation,
+        provenance: .grant("calendar route fixture"))
+    }
     let destination = try #require(
       game.knownSystems.first {
         $0.id != game.commander.system && game.currentSystem.distance(to: $0) <= 7
       })
     game.selectedSystem = destination.id
     game.beginHyperspace()
-    #expect(game.commander.scriptState.calendarLedger?.pendingJourney != nil)
+    let admission = try #require(game.commander.scriptState.calendarLedger?.pendingJourney)
+    let fuel = game.commander.fuel
     if cancel == 0 {
       game.cancelNavigation()
     } else if cancel == 1 {
       game.manuallySelectSystem(game.commander.system)
-    } else {
+    } else if cancel == 2 {
       game.dock()
+    } else {
+      game.openNavigation()
+      try #require(game.screen == .navigation && !game.navigationOptions.isEmpty)
+      game.key("return")
+      #expect(game.commander.navigationPlan?.destination == destination.id)
     }
     #expect(
       game.jumpCountdown == nil && game.commander.scriptState.calendarLedger?.pendingJourney == nil)
     #expect(game.commander.scriptState.calendarSeconds == 600)
+    #expect(game.commander.scriptState.calendarLedger?.operation == admission.operation)
+    #expect(game.commander.fuel == fuel)
   }
 }
 
@@ -248,6 +261,11 @@ func
   #expect(await restored.snapshot().jumpCountdown == saved.jumpCountdown)
   await restored.key(" ")
   #expect(await restored.snapshot().time == saved.time)
+  #expect(await restored.snapshot().scriptStartupTime == nil)
+  #expect(await restored.snapshot().scriptEventContext.frameSeconds == saved.time)
+  #expect(await restored.snapshot().commander == title.commander)
+  _ = await restored.advance(delta: 0.1)
+  #expect(await restored.snapshot().scriptEventContext.frameSeconds == saved.time + 0.1)
   var arrived = await restored.snapshot()
   for _ in 0..<200 where arrived.jumpCountdown != nil {
     arrived = await restored.advance(delta: 0.1)

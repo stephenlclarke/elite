@@ -645,6 +645,10 @@ public struct Game: Sendable {
     if screen == .demo { return }
     if screen == .title || screen == .gameOver {
       if key == " " || key == "return" {
+        if screen == .title, let restoredTime = scriptStartupTime {
+          time = restoredTime
+          scriptStartupTime = nil
+        }
         if screen == .gameOver {
           self = Game(executive: commander.executive)
           try? commander.prepareEquipment(legacy: false)
@@ -1872,9 +1876,7 @@ public actor GameRuntime {
 
   public func restoreStartup(from url: URL) throws {
     try load(from: url, persistMigrations: false)
-    if !game.commander.scriptState.instances.isEmpty
-      || !game.commander.accommodation.ownedBerths.isEmpty
-    {
+    if game.requiresScriptDurability {
       game.scriptStartupTime = game.time
     }
     game.screen = .title
