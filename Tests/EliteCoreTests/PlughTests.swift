@@ -26,18 +26,22 @@ private func buyPlughPrerequisites(_ node: EquipmentNodeID, game: inout Game) th
     let predecessor = try #require(EquipmentRuntimeCatalog.graph.nodes.first { $0.id == parent })
     if predecessor.policy == .standardFoundation { continue }
     try buyPlughPrerequisites(parent, game: &game)
-    if game.commander.equipmentPurchaseHistory?.paid.contains(where: { $0.node == parent }) == true
-    {
-      continue
-    }
-    game.selection = try #require(Equipment.all.firstIndex { $0.name == parent.key })
-    let cash = game.commander.credits
-    let price = game.shopPrice(Equipment.all[game.selection])
-    game.purchase()
-    #expect(game.commander.credits == cash - price)
-    let receipt = try #require(game.commander.equipmentPurchaseHistory?.paid.last)
-    #expect(receipt.node == parent && receipt.price == price)
+    try buyPlughPredecessor(parent, game: &game)
   }
+}
+
+// Keep purchase and assertion read buffers outside the recursive graph traversal frames.
+private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) throws {
+  if game.commander.equipmentPurchaseHistory?.paid.contains(where: { $0.node == parent }) == true {
+    return
+  }
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == parent.key })
+  let cash = game.commander.credits
+  let price = game.shopPrice(Equipment.all[game.selection])
+  game.purchase()
+  #expect(game.commander.credits == cash - price)
+  let receipt = try #require(game.commander.equipmentPurchaseHistory?.paid.last)
+  #expect(receipt.node == parent && receipt.price == price)
 }
 
 @Test func plughAddsOneDistinctStableSystemPerGalaxyWithoutChangingOriginals() {
