@@ -173,14 +173,7 @@ extension Game {
       commander.scriptState.instances[instanceID] == nil,
       pack.manifest.mission.parentOnly != true || campaignParent != nil,
       campaignParent == nil || contract == nil,
-      campaignParent.map({ binding in
-        binding.child == instanceID && binding.definition.definition == pack.manifest.stateID
-          && binding.definition.version == pack.manifest.version
-          && binding.definition.digest == pack.digest
-          && commander.scriptState.instances[binding.parent]?.campaignChildren[
-            binding.definition.id]
-            == binding
-      }) ?? true,
+      campaignParentMatches(campaignParent, pack: pack, instanceID: instanceID),
       pack.manifest.board != nil || campaignParent != nil
         || !commander.scriptState.instances.values.contains(where: {
           $0.definition == pack.manifest.stateID
@@ -211,6 +204,16 @@ extension Game {
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
     return instance
+  }
+  private mutating func campaignParentMatches(
+    _ binding: ScriptChildBinding?, pack: ScriptPack, instanceID: UUID
+  ) -> Bool {
+    guard let binding else { return true }
+    return binding.child == instanceID && binding.definition.definition == pack.manifest.stateID
+      && binding.definition.version == pack.manifest.version
+      && binding.definition.digest == pack.digest
+      && commander.scriptState.instances[binding.parent]?.campaignChildren[
+        binding.definition.id] == binding
   }
   private mutating func installScriptMissionAcceptance(
     _ pack: ScriptPack, instance: ScriptInstance, drainAccepted: Bool
