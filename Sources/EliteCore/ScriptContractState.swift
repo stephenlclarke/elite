@@ -170,11 +170,27 @@ public struct ContractAcceptanceQuote: Sendable {
   public let offer: UUID
   public let issues: [String]
   public var allowed: Bool { issues.isEmpty }
-  let resources: Commander
+  private let capturedResources: CommanderSnapshot
+  var resources: Commander { capturedResources.value }
   let epoch: UUID
   public var pledge: ScriptPledgePreview? = nil
   public var courier: ScriptCourierPreview? = nil
-  public var reviewToken: UUID = UUID()
+  public var reviewToken: UUID
+
+  init(
+    board: String, offer: UUID, issues: [String], resources: Commander, epoch: UUID,
+    pledge: ScriptPledgePreview? = nil, courier: ScriptCourierPreview? = nil,
+    reviewToken: UUID = UUID()
+  ) {
+    self.board = board
+    self.offer = offer
+    self.issues = issues
+    capturedResources = CommanderSnapshot(resources)
+    self.epoch = epoch
+    self.pledge = pledge
+    self.courier = courier
+    self.reviewToken = reviewToken
+  }
 }
 extension Commander {
   var contractQuoteResources: Commander {

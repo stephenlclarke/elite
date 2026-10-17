@@ -35,7 +35,7 @@ struct RRSCourierTests {
     try await verifyRRSAcceptanceAndRestore(&game, storage: storage)
   }
 
-  @Test(arguments: ["hour", "legal", "epoch", "main-unproved"])
+  @Test(arguments: ["hour", "legal", "epoch", "main-unproved", "cash", "cargo"])
   func staleActualReviewsCannotAccept(reason: String) async throws {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
@@ -303,12 +303,17 @@ private func verifyRRSStaleReview(
   try await enterRRS(&game, storage: storage)
   let row = try #require(game.contractBoard.selected?.rrs)
   let quote = game.rrsCourierQuote(for: row)
+  let captured = quote.resources
+  if ["cash", "cargo"].contains(reason) { try #require(quote.allowed) }
   switch reason {
   case "hour": game.commander.scriptState.calendarSeconds += 3600
   case "legal": game.commander.legal = 51
   case "epoch": game.invalidateNativeStationAuthority()
+  case "cash": game.commander.credits += 1
+  case "cargo": game.commander.cargo[0] += 1
   default: game.commander.nativeStations?.mainObservations = []
   }
+  #expect(quote.resources == captured)
   let before = game.commander
   let bodies = game.bodies
   do {

@@ -36,6 +36,31 @@ private struct ContractFixture {
   func clean() { try? FileManager.default.removeItem(at: root) }
 }
 
+@Test func frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept() async throws {
+  let fixture = try ContractFixture()
+  defer { fixture.clean() }
+  let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+  let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
+  var game = await runtime.snapshot()
+  let offer = try #require(game.commander.contracts.boards[key]?.offers.first)
+  let quote = game.contractAcceptanceQuote(board: key, offer: offer.id)
+  try #require(quote.allowed)
+  let captured = quote.resources
+
+  game.commander.credits += 1
+  game.commander.cargo[0] = 1
+  let changed = game.commander
+  #expect(throws: MissionPackError.self) { try game.confirmContract(quote) }
+  #expect(game.commander == changed && quote.resources == captured)
+  #expect(quote.resources != game.commander.contractQuoteResources)
+
+  let fresh = game.contractAcceptanceQuote(board: key, offer: offer.id)
+  try #require(fresh.allowed)
+  #expect(fresh.resources == game.commander.contractQuoteResources)
+  let accepted = try game.confirmContract(fresh)
+  #expect(game.commander.contracts.boards[key]?.offers.first?.status == .accepted(accepted))
+}
+
 @Test func nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline()
   async throws
 {

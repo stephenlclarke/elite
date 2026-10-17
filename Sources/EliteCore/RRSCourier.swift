@@ -27,7 +27,8 @@ enum RRSCourierRow: Sendable, Equatable {
 /// Transient review binds real private-init service contexts; saved facts never mint authority.
 struct RRSCourierQuote: Sendable {
   let row: RRSCourierRow
-  let resources: Commander
+  private let capturedResources: CommanderSnapshot
+  var resources: Commander { capturedResources.value }
   let epoch: UUID
   let board: NativeStationBoardContext?
   let destination: NativeMainStationDestinationContext?
@@ -35,6 +36,20 @@ struct RRSCourierQuote: Sendable {
   let issues: [String]
   let reviewToken = UUID()
   var allowed: Bool { issues.isEmpty }
+
+  init(
+    row: RRSCourierRow, resources: Commander, epoch: UUID, board: NativeStationBoardContext?,
+    destination: NativeMainStationDestinationContext?, arrival: NativeMainStationArrivalContext?,
+    issues: [String]
+  ) {
+    self.row = row
+    capturedResources = CommanderSnapshot(resources)
+    self.epoch = epoch
+    self.board = board
+    self.destination = destination
+    self.arrival = arrival
+    self.issues = issues
+  }
 }
 
 extension Game {
