@@ -12,10 +12,10 @@ private func showroomGame() -> Game {
 }
 
 @Test func showroomCataloguePreservesEveryCanonicalShipRefitAndSourceUnit() throws {
-  #expect(ShipCatalogue.all.count == 168)
-  #expect(Set(ShipCatalogue.all.map(\.id)).count == 168)
-  #expect(ShipCatalogue.all.filter(\.refit).count == 159)
-  #expect(ShipCatalogue.modelCount == 168)
+  #expect(ShipCatalogue.all.count == 171)
+  #expect(Set(ShipCatalogue.all.map(\.id)).count == 171)
+  #expect(ShipCatalogue.all.filter(\.refit).count == 162)
+  #expect(ShipCatalogue.modelCount == 171)
   #expect(ShipCatalogue.all.contains { $0.name == "Eagle Mk I" && $0.appearances.contains("FE2") })
   #expect(
     ShipCatalogue.all.contains { $0.id == "SH165" && $0.modelSource?.contains("Vector") == true })
@@ -391,23 +391,23 @@ private func showroomGame() -> Game {
     let frame = Display.presentation(game, width: width, height: 768)
     #expect(
       frame.labels.contains {
-        $0.text.contains("FILTER ACTIVE: 1/168 ships") && $0.text.contains("You own: Cobra Mk III")
+        $0.text.contains("FILTER ACTIVE: 1/171 ships") && $0.text.contains("You own: Cobra Mk III")
       })
     #expect(frame.labels.contains { $0.text == "Clear filter" })
   }
   game.key("x")
-  #expect(game.showroomShips.count == 168)
+  #expect(game.showroomShips.count == 171)
   game.key("/")
   for key in "SH063" { game.key(String(key)) }
   game.key("delete")
-  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 168)
+  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 171)
   game.showroom.query = "SH063"
   game.showroom.selection = "SH063"
   game.viewportWidth = 1512
   game.viewportHeight = 982
   let layout = ShowroomLayout(width: 1512, height: 982, detail: false)
   game.showroomClick(x: layout.clearSearch.x + 5, y: layout.clearSearch.y + 5)
-  #expect(game.showroomShips.count == 168 && game.showroom.selection == "SH063")
+  #expect(game.showroomShips.count == 171 && game.showroom.selection == "SH063")
   game.showroom.query = "SH063"
   game.key("escape")
   game.key("6")
