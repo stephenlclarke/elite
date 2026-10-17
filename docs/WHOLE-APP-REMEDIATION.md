@@ -1,6 +1,6 @@
 # Whole-app review remediation ledger - 17 October 2026
 
-G3 source reconciliation checkpoint: `3c510875a6152be289d89edc1b561d17a19ba413`; current release source checkpoint: `fcee2a0e03b8db99d63ae7f620451c3872cb8ed1` (game composition `ddcdb969a9dbf945309582cf7cee0ddf3f4ea087`, baseline `e9ee7ef43a5d93776acb698dc9f63a0dd393d643`). The finding rows retain that bounded source review and its historical evidence limits. This ledger is not final execution acceptance or release approval. Final composed validation remains pending for every row below.
+G3 source reconciliation checkpoint: `3c510875a6152be289d89edc1b561d17a19ba413`; current release source checkpoint: `b30c291f1701519dda9c3fded5343426ffe0a19d` (game composition `ddcdb969a9dbf945309582cf7cee0ddf3f4ea087`, baseline `e9ee7ef43a5d93776acb698dc9f63a0dd393d643`). The finding rows retain that bounded source review and its historical evidence limits. This ledger is not final execution acceptance or release approval. Final composed validation remains pending for every row below.
 
 The original review concerns `a23ffc9fa165a26ee2f00d984517423eed55e2be`: 17 confirmed findings (two P1, thirteen P2, two P3) and the separately qualified CR-10 investigation. Preserve `docs/CENTRAL-COMBINED-GATE-VALIDATION-026.md/.json` and the original review unchanged as historical evidence. The 026 gate passed before these repairs and cannot validate them.
 
@@ -182,12 +182,18 @@ The actual 176 export subsequently failed on SH169 with `ShipFileError.invalid`.
 
 The [player README](../README.md) now distinguishes original-main and mesh-scaled RRS docking guidance, gives the source-composed scenario-2 acceptance/debrief controls and limits, and links the two selected textured hulls. These are development-source instructions, not claims about the published 1.4.0 artifact or all queued missions.
 
+## Combined renderer checkpoint 177
+
+The clipped textured-surface repair is composed as `b30c291f1701519dda9c3fded5343426ffe0a19d`. Actual `make ships`, `make readme-media` and `make ships-check` then passed at 177 for all 171 entries. Five generated paths changed: SH169/SH170 GIFs, the media manifest, overview PNG and README start-sequence GIF. The initial four-path report was corrected before the renderer commit; the retained proof lists all five. Maintained inputs, human save/preferences and owned-process closure were independently verified.
+
+This qualifies current renderer generation and fingerprints, resolving the prior 176 export failure without rewriting it. The new test catalogue has not yet been compiled or executed. Native GUI visuals, orientation/seams, performance, complete quality gates, external review, committed-main Sonar and publication remain separate acceptance work. The control guide and schema 2 authoring guide now distinguish RRS station services and native facts from service authority; the selected texture guide distinguishes archival DAT import notes from the later approved resolved bindings without changing original notices or TOMLs.
+
 ## Final evidence to attach before closure
 
 | Acceptance item | Status in this snapshot |
 | --- | --- |
 | Reviewed fixture corrections and all 47 focused semantic methods | Passed at 091 on its exact source; broader full gates remain pending |
-| Actual renderer-generated 171-ship media/catalogue/provenance and README media | Historical generation/hash currentness passed at 090 and provenance lint at 092; actual currentness now fails all 171 fingerprints after later Core changes. Final renderer regeneration is pending |
+| Actual renderer-generated 171-ship media/catalogue/provenance and README media | Actual composed generation/currentness passed at 177 for all 171 entries; five generated paths changed. Native visual/performance acceptance and later source changes remain separately qualified |
 | Final composed `make ci`: coverage, TSan, ASan, leaks, native originals and process closure | Pending after the retained failed checkpoints, including full 152, 158 and 169. Focused 167 and 171 passed their exact TSan selections; separate baseline 172 failed TSan after coverage passed and is not release-composition acceptance |
 | Final-head completed clean PR review and required hosted checks | Pending; reviewer service errors remain failures to complete review, including fresh tap request 6231754611 and unknown-error result 6231761255; required independent approval is absent |
 | Committed-main Sonar analysis with exact commit SHA and Previous version policy | Pending |

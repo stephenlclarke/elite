@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "asOfDate": "2026-10-17",
   "timezone": "Europe/London",
-  "composedSource": "fcee2a0e03b8db99d63ae7f620451c3872cb8ed1",
+  "composedSource": "b30c291f1701519dda9c3fded5343426ffe0a19d",
   "sourceReconciliationDraft": {
     "path": "/tmp/elite-g3-whole-app-remediation-ledger-20261017.md",
     "sha256": "12657e569b939e40cfbf94204d7b11c02de6cf4ace360c18375fce57ce9171a1",
@@ -730,7 +730,7 @@
     },
     "newerBaselineMergeRequirement": "Preserve the 8bdf42edd6f7d89701eb073c984cb5831b8af40c positive-NPC-count guard around the existing docking binding reset before RRS departure when importing onto the evolving baseline.",
     "currentSourceComposition": "ddcdb969a9dbf945309582cf7cee0ddf3f4ea087",
-    "currentQualification": "Native RRS, P30 scenario2, Gallery and raw legacy save guard are composed. Independent source reviews found no remaining actionable finding in the bounded save guard; compilation/runtime acceptance pending. Other P30 families remain queued."
+    "currentQualification": "NativeRRS/P30scenario2/Gallery/rawsaveguardsourcecomposed; appcompiledandrenderer177PASS. Newfocusedtestcatalogueuncompiled/unexecuted;otherP30familiesqueued."
   },
   "qualifiedNativeFocused097": {
     "path": "/tmp/elite-cabin-native-restoration-097/root-qualified-097.json",
@@ -1025,8 +1025,8 @@
     "actualFullCoverage112Passed": false,
     "focusedFixture113Passed": false,
     "currentCompleteCI": false,
-    "finalRendererMediaCurrent": false,
-    "qualification": "Focused149/150/156/167/171 establish only exact recorded selections. Full152 failed assertions; full158/169/172 passed coverage but failed TSan signal4. Four original opt-in GPU skips remain explicit. Baseline172 excludes the newly composed RRS/P30/textures/save guard. No current fullCI,ASan/leak,currentmedia,Sonar,cleanGitHubreview orreleaseacceptance.",
+    "finalRendererMediaCurrent": true,
+    "qualification": "Actualcomposed renderer177 passed onb30source(all171;fivegeneratedoutputs); focused149/150/156/167/171 remain exacthistoricalselections. Baselinefull152/158/169/172failed. Newcomposedtestcataloguenotcompiled/executed; finalcomposedmakeci,sanitizers/leaks,nativevisual/performance,Sonar,cleanGitHubreview/releasepending.",
     "focusedFixture114Passed": false,
     "focusedRendererAndWeapon115Passed": true,
     "npcRestoreSourceIntegrated": "05d165a694d943589677598e58aaf585fb47d7a3",
@@ -1039,7 +1039,8 @@
     "combinedSelection130Passed": false,
     "releaseSourceComposed": true,
     "firstComposedAppCompiled176": true,
-    "currentReleaseMediaPassed": false
+    "currentReleaseMediaPassed": true,
+    "rendererGeneration177Passed": true
   },
   "qualifiedMissionAndFullCoverageEvidence106115": [
     {
@@ -1567,9 +1568,9 @@
     "source": "ddcdb969a9dbf945309582cf7cee0ddf3f4ea087",
     "packagingRepair": "a1b5b7eb95a180d01ddc94f8a142abf0b8734873",
     "baseline": "e9ee7ef43a5d93776acb698dc9f63a0dd393d643",
-    "nativeRRS": "source composed; not compiled or runtime accepted",
-    "p30Scenario2": "source composed with read-only Gallery; not compiled or runtime accepted",
-    "selectedTextures": "RayDetails, Stingray and Sunray source/assets composed; no all-hull texture claim or new renderer evidence",
+    "nativeRRS": "Source composed; appcompiled177, focused runtime tests notyetcompiled/executed",
+    "p30Scenario2": "Source composed withread-onlyGallery; appcompiled177, focused runtime tests notyetcompiled/executed",
+    "selectedTextures": "RayDetails/Stingray/Sunray approvedsource/assets composed; actualrenderer177 all171generation/currentnessPASS, no all-hulltexture/nativevisual/performanceclaim",
     "packagingTests": {
       "distributionMethodsPassed": 16,
       "newRegressionMethods": 4,
@@ -1685,5 +1686,30 @@
       "matchedReportCopies": [],
       "qualification": "First renderer stage failed; no renderer/test/full CI/release acceptance. No OS crash report matched the owned process PID, start time and executable path; runtime diagnostic comes from the actual captured fatal-error log."
     }
-  ]
+  ],
+  "qualifiedComposedRenderer177": {
+    "path": "/tmp/elite-renderer-media-177/root-media-verification-177.json",
+    "sha256": "24811ffda2abfc53e29cf86b7202a9bab4db5ba0f3202cd0a6943e9c7fea2688",
+    "source": "b30c291f1701519dda9c3fded5343426ffe0a19d",
+    "status": "PASS maintained renderer generation and currentness",
+    "generatedChangedPaths": [
+      "docs/ships/SH169.gif",
+      "docs/ships/SH170.gif",
+      "docs/ships/manifest.json",
+      "docs/ships/overview.png",
+      "docs/start-sequence.gif"
+    ],
+    "manifestEntries": 171,
+    "trackedInputsVerified": 1684,
+    "resultSHA256": "23e8a85f2202748c90b3d9e62d22549d132a19a79fad2a0aceec4c44ce66498c",
+    "supervisionSHA256": "288d0c4e2dd5fac61196df776408fe4359453a09ca134b0b0f8bdfd792f80d21",
+    "rawSHA256": {
+      "stage-0.log": "76a15f56a4e4d082481a093345bcb848d78c585e8c681b9d8fae5278c3143b8a",
+      "stage-1.log": "c88850df21f2a46c7a7954f953bcba4105efe59964fb5ffb9c04943c356138df",
+      "stage-2.log": "385726c9ec60b070cfd75bfa8166e48e01cd9c36ba8f6050e89f4e70d939ef05"
+    },
+    "protectedInputsUnchanged": true,
+    "allOwnedStartSignaturesGone": true,
+    "qualification": "Renderer generation only; no native GUI, performance, full CI or release acceptance."
+  }
 }

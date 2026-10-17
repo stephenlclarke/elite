@@ -1,8 +1,10 @@
 # Selected ship texture pixels
 
 This source slice adds actual diffuse image sampling for SH169 Sunray and SH170
-Military Stingray. It does not texture the entire catalogue. Compilation, focused
-pixel/native execution, visual acceptance and the composed quality gate are pending.
+Military Stingray. It does not texture the entire catalogue. The combined app compiled
+and actual renderer generation/currentness passed for all 171 ships at checkpoint 177.
+Focused pixel/native tests, visual/performance acceptance and the composed quality gate
+remain pending.
 
 The original DAT tokens, per-corner UVs, geometry, source profiles, IDs and custody
 records stay unchanged. Each selected TOML adds an independent `resolvedTextures`
@@ -41,3 +43,11 @@ parity is not claimed. Visual validation must inspect orientation, seams, clippi
 readability and native frame cost before acceptance. Texture bytes, manifests and
 notices participate in ship media fingerprints; renderer media is regenerated only
 after the integrated source has passed its assigned validation.
+
+## Archival texture notes and current selected bindings
+
+The original DAT texture tokens, UV records and import-scope notes remain preserved in SH169/SH170 definitions and appearance/source profiles. Statements such as `reference only, no pixels bundled` describe what the original DAT import established; DAT tokens alone establish neither a bitmap licence nor a resolved image. They do not describe the later selected rendering addition.
+
+For the current selected adaptation, the separate `resolvedTextures` bindings and [texture manifest](../Sources/EliteCore/Resources/ShipTextures/manifest.json) identify the three approved diffuse images, exact member/cache hashes and unchanged source notices. Only SH169 Sunray and SH170 Military Stingray use those bindings. Their current selected pixel custody is CC-BY-NC-SA-3.0, as recorded above and in [project notices](../NOTICE.md). Other archival texture references remain unbundled; the addition does not license unrelated images or claim normal/specular/shader parity. Historical profile text, original notices and geometry are retained rather than globally rewritten.
+
+The first combined app compile passed at checkpoint 176, but export failed at its legacy plain-panel guard. The clipped textured-surface export/front-visibility repair then passed actual renderer generation and currentness for all 171 ships at checkpoint 177. Its authored focused tests still await execution. Successful media generation is not evidence that every flight view has passed native visual or performance inspection.

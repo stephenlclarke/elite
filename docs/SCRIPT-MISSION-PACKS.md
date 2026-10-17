@@ -69,6 +69,12 @@ Declare only the capabilities needed by the corresponding native operations. `sc
 
 Classic actors and profiled actors use native admission, movement, collision, weapon and law rules. `hostile = true` is not an exemption from station weapon restrictions. Destruction objectives require the actual admitted owned actors to be destroyed. Declare supported actor/model/weapon resources; Lua does not directly write world bodies or add arbitrary station services. Generic contract boards currently identify main orbital stations. The examples and capability names do not establish delivery of a researched RRS station world or historical mission parity.
 
+### Native RRS adapter and authority
+
+The current development source separately composes native RRS docking and the built-in P30 scenario-2 documents assignment. This is a typed native consumer, not a Lua pack to install or a new capability granted by an authored manifest. Generic Lua contract boards keep their main-orbital station requirement. The headquarters board is an explicit project extension; other researched RRS profiles remain queued. Compilation of the app does not establish native gameplay or full quality acceptance: consult [current mission status](MISSION-IMPLEMENTATION.md) and the [qualified ledger](WHOLE-APP-REMEDIATION.md).
+
+The `native_station` and `native_main_arrival` fields in native event/query snapshots describe observed facts. Reading, copying or saving those fields does not grant a current board, service, doorway or delivery authority. The native controller must authenticate actual docking or validated versioned restoration and bind current sealed contexts. Boolean dock flags, authored data, old serialized snapshots and raw Commander files cannot substitute for that boundary. RRS boards provide no general market, refuelling or equipment service. See [the native station boundary](PR-native-rrs-station-runtime.md) and [documents consumer](PR-rrs-documents-courier.md) for the exact source contract and adaptations.
+
 ## Repeatable contracts and clocks
 
 For new board work, start with the [sample contract generator and handlers](mission-packs/scripted-contracts/scripts/main.lua). `[board]` declares an ID, title, generator, clock, refresh period and optional exclusive group. The generator returns offer rows in `data.offers` with `commands = {}`; it must not transfer resources. Native input supplies deterministic offer draws and destinations. Each row freezes its `key`, title, briefing, destination, reward, deposit, failure terms, duration and parameter map.
