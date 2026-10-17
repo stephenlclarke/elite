@@ -654,7 +654,7 @@ extension NativeViewTests {
       after.credits == before.credits && after.fuel == before.fuel
         && after.missiles == before.missiles)
     #expect(after.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
-    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+    try await verifyRecoveredSaveAndRefusedReplay(fixture, command: control.command)
   }
 
   @MainActor @Test func nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()
@@ -700,8 +700,48 @@ extension NativeViewTests {
           && after.missiles == before.missiles)
       #expect(after.equipment.contains(definition.node.key))
       _ = try fixture.capture("recovered-feature-after", scale: scale)
-      #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+      try await verifyRecoveredSaveAndRefusedReplay(fixture, command: control.command)
       #expect(fixture.preferences.persistentDomain(forName: fixture.identifier) == nil)
     }
   }
+}
+
+@MainActor
+private func verifyRecoveredSaveAndRefusedReplay(
+  _ fixture: NativeEquipmentFixture, command: InventoryCommand
+) async throws {
+  let committed = await fixture.delegate.runtime.snapshot()
+  let bytes = try Data(contentsOf: fixture.save)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+  let (saved, _) = try ScriptSaveStore.read(bytes, from: fixture.save)
+  #expect(saved.valid)
+  #expect(saved.salvageLedger == committed.commander.salvageLedger)
+  #expect(saved.equipmentInventory == committed.commander.equipmentInventory)
+  #expect(saved.equipmentPurchaseHistory == committed.commander.equipmentPurchaseHistory)
+  #expect(saved.credits == committed.commander.credits)
+  #expect(saved.fuel == committed.commander.fuel && saved.missiles == committed.commander.missiles)
+  #expect(saved.nativeStations == committed.commander.nativeStations)
+  #expect(saved.scriptState == committed.commander.scriptState)
+  let beforeFiles = try recoveredSaveFiles(fixture.directory)
+  let result = await fixture.delegate.runtime.equipmentTransaction(.inventory(command))
+  #expect(result == .refused(.staleContext))
+  let replayed = await fixture.delegate.runtime.snapshot()
+  #expect(replayed.commander == committed.commander)
+  #expect(try Data(contentsOf: fixture.save) == bytes)
+  #expect(try recoveredSaveFiles(fixture.directory) == beforeFiles)
+}
+
+private func recoveredSaveFiles(_ directory: URL) throws -> [String: Data] {
+  let entries = try #require(
+    FileManager.default.enumerator(
+      at: directory, includingPropertiesForKeys: [.isRegularFileKey]))
+  var files: [String: Data] = [:]
+  for case let url as URL in entries {
+    guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
+      continue
+    }
+    files[String(url.path.dropFirst(directory.path.count))] = try Data(contentsOf: url)
+  }
+  return files
 }
