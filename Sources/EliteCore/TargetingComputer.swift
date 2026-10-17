@@ -107,7 +107,7 @@ extension Game {
     let shipStatus = body.hostile ? "Hostile" : "Neutral"
     let status: String
     if let electronic = empTargetStatus(body) {
-      status = (body.hostile ? "HOSTILE - " : "") + electronic
+      status = electronic
     } else if let work = workGuidance, let identity = body.physical?.identity,
       work.parent == identity
     {

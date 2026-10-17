@@ -14,22 +14,44 @@ private func glowLines(_ frame: Frame) -> [WireLine] {
 }
 
 struct TargetColourCueTests {
-  @Test func disabledHostileStaysRedUntilActualEjectionThenSameHullTurnsOrangeInEveryStyle()
+  @Test func disabledHostileTurnsOrangeImmediatelyWhileCrewStillAboardInEveryStyle()
     throws
   {
     var game = try empFixture(hostile: true)
     let empResult = game.fireEMPPirateBlaster()
     try #require(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
+    let occupied = try #require(game.commander.savedEMPState?.records[source])
+    try #require(occupied.crewAboard == occupied.crewTotal && occupied.pods.isEmpty)
+    #expect(game.bodies[0].hostile)
+    #expect(
+      game.empTargetStatus(game.bodies[0])?.contains("WEAPONS DISABLED - CREW ABOARD") == true)
+    #expect(game.flightStatus == "Safe")
     for style in ShipDisplayStyle.allCases {
       game.commander.shipDisplayStyle = style
       for selected in [false, true] {
         game.weaponsTargetID = selected ? game.bodies[0].id : nil
-        #expect(game.targetColourCue(for: game.bodies[0]) == .hostile)
+        #expect(game.targetColourCue(for: game.bodies[0]) == .recoverable)
         let frame = cueFrame(game)
         let lines = glowLines(frame)
-        #expect(!lines.isEmpty && lines.allSatisfy { $0.ink == .red })
+        #expect(!lines.isEmpty && lines.allSatisfy { $0.ink == .orange })
         #expect(lines.count <= 12)
+        let hud = Display.cockpit(game, width: 768, height: 768)
+        #expect(
+          hud.graphics.contains {
+            if case .line(let line) = $0 {
+              line.ink == .orange && line.y0 > hud.flightClip.maxY
+            } else {
+              false
+            }
+          })
+        if selected {
+          #expect(
+            hud.labels.contains {
+              $0.ink == .orange && $0.text.contains("#" + String(game.bodies[0].id))
+            })
+          #expect(game.targetInformation?.status?.contains("WEAPONS DISABLED") == true)
+        }
         if style == .whiteWireframe {
           #expect(!frame.shipLines.isEmpty && frame.shipLines.allSatisfy { $0.ink == .white })
         }
@@ -39,7 +61,7 @@ struct TargetColourCueTests {
     let body = try #require(game.bodies.first { $0.physical?.empSource == source })
     #expect(game.commander.savedEMPState?.records[source]?.crewAboard == 0)
     #expect(game.targetColourCue(for: body) == .recoverable)
-    #expect(game.empTargetStatus(body) == "ENGINES DISABLED - UNOCCUPIED SALVAGE")
+    #expect(game.empTargetStatus(body) == "ENGINES AND WEAPONS DISABLED - UNOCCUPIED SALVAGE")
     for style in ShipDisplayStyle.allCases {
       game.commander.shipDisplayStyle = style
       let lines = glowLines(cueFrame(game))

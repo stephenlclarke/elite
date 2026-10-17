@@ -17,8 +17,8 @@ extension Game {
     -> TargetColourCue
   {
     guard body.energy.isFinite, body.energy > 0 else { return .ordinary }
-    if body.hostile { return .hostile }
     if isEMPDisabled(body) { return .recoverable }
+    if body.hostile { return .hostile }
     guard let context = supplied ?? gameplayContext(),
       let metadata = recoverableMetadata(for: body, context: context),
       metadata.ownership == .abandoned, metadata.claimant == nil,

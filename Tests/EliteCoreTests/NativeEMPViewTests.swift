@@ -45,7 +45,7 @@ private func captureNativeEMPView(_ view: GameView) throws -> (image: CGImage, s
 }
 
 @MainActor
-private func verifyNativeEMPPixels(_ view: GameView, source: ActorIdentity, ink: Ink) throws {
+private func verifyNativeEMPPixels(_ view: GameView, bodyID: Int, ink: Ink, stage: String) throws {
   let original = view.game
   defer { view.game = original }
   for style in ShipDisplayStyle.allCases {
@@ -93,7 +93,7 @@ private func verifyNativeEMPPixels(_ view: GameView, source: ActorIdentity, ink:
       #expect(!frame.shipLines.isEmpty && frame.shipLines.allSatisfy { $0.ink == .white })
       #expect(white > 0)
     }
-    let index = try #require(game.bodies.firstIndex { $0.physical?.empSource == source })
+    let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
     for hidden in [false, true] {
       var occluded = game
       if hidden {
@@ -115,7 +115,7 @@ private func verifyNativeEMPPixels(_ view: GameView, source: ActorIdentity, ink:
     if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
       let directory = URL(fileURLWithPath: path, isDirectory: true)
       try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-      let name = "emp-\(ink == .red ? "hostile" : "salvage")-\(style.rawValue)"
+      let name = "emp-\(stage)-\(style.rawValue)"
       let png = try #require(
         NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
       try png.write(to: directory.appendingPathComponent(name + ".png"))
@@ -193,15 +193,16 @@ extension NativeViewTests {
       await delegate.processPendingCommands(in: view)
     }
     try #require(view.game.selectedFlightTool == .empPirateBlaster)
+    try verifyNativeEMPPixels(view, bodyID: original.id, ink: .red, stage: "armed")
     view.keyDown(with: try event(36, "\r", down: true))
     await delegate.processFrame(in: view, delta: { 0.1 })
     view.keyUp(with: try event(36, "\r", down: false))
     let source = try #require(view.game.commander.savedEMPState?.records.keys.first)
     let disabled = try #require(view.game.bodies.first { $0.physical?.empSource == source })
     #expect(disabled.id == original.id && disabled.energy == original.energy)
-    #expect(view.game.targetColourCue(for: disabled) == .hostile)
+    #expect(view.game.targetColourCue(for: disabled) == .recoverable)
     #expect(view.game.empTargetStatus(disabled)?.contains("CREW ABOARD") == true)
-    try verifyNativeEMPPixels(view, source: source, ink: .red)
+    try verifyNativeEMPPixels(view, bodyID: disabled.id, ink: .orange, stage: "disabled-occupied")
     for _ in 0..<40 { await delegate.processFrame(in: view, delta: { 0.1 }) }
     let record = try #require(view.game.commander.savedEMPState?.records[source])
     try #require(record.crewAboard == 0 && record.pods.count == record.crewTotal)
@@ -212,7 +213,7 @@ extension NativeViewTests {
     #expect(view.game.salvageCuttingIsAllowed(salvage, metadata: metadata, context: context))
     let people = Set(view.game.bodies.compactMap { $0.physical?.empCrewPod })
     #expect(people.count == record.crewTotal)
-    try verifyNativeEMPPixels(view, source: source, ink: .orange)
+    try verifyNativeEMPPixels(view, bodyID: salvage.id, ink: .orange, stage: "disabled-empty")
     // Use the player's real filter/target commands and controller to reach a cutter hold.
     for (code, text) in [(UInt16(3), "f"), (3, "f"), (15, "r")] {
       view.keyDown(with: try event(code, text, down: true))

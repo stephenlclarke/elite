@@ -1,0 +1,15 @@
+# Disable future weapons and show occupied EMP hulls in orange
+
+Shared classification checks verified EMP disablement before the retained hostile disposition. Scanner, selected target details, world halos and cockpit threat status therefore treat the disabled hull as orange immediately; an independent active hostile or previously emitted missile still supplies a red threat. Target status, spoken notification and help explicitly say engines and weapons are disabled.
+
+Ordinary intent processing returns before disabled actors can fire. The ordinary beam emitter and legacy beam entry point also reject them. NPC missile admission checks both its public wrapper and common owner boundary before spawn/emission identities, admission or ammunition consumption. Naval tactics excludes disabled candidates before selection/recharge/random launch logic; the existing legacy enemyAction guard remains. No projectile advancement or ECM defensive policy changes. No EMPState, crew lifecycle, custody, save schema, legal record, original NPC resources or protected-pod policy is rewritten.
+
+The updated immediate-colour regression requires occupied crew, retained original hostility and orange world/scanner/selected identifiers in all three styles, while retaining post-ejection salvage and protected-pod assertions. The native actual-view pixel fixture now captures distinct armed-red, disabled-occupied-orange and disabled-empty-orange stages, preserving byte parity, independent stripped cues, white geometry, clipping and cutter surface requirements.
+
+Two additional source regressions cover a real armed legacy-beam positive control followed by disabled legacy/AI/naval/future-missile refusals with no weapon energy/heat/cooldown/ammunition or attribution cost; and a missile actually fired by the same ship before EMP. The second uses real camera motion and requires a real unobstructed wing hit, then verifies the original missile continues with its original owner, live ordnance state and red HUD/world cues in every style. Mutating operations are staged before Swift Testing macros.
+
+## Validation and remaining work
+
+Worker validation is source formatting, strict Swift lint, scoped Markdown lint and whitespace checks. These corrections and new regressions have not compiled or executed. G1 owns integration and focused/native/complete quality acceptance after the active frozen run's lease/artifact closure. The authored wing-ray, AI, native pixel and performance checks remain pending execution; no release or final delivery is claimed.
+
+The newly ratified 30-second crew-escape deadline, capture of remaining crew as slaves when salvaging after that deadline, and targetable/trackable escape-pod collection are a separate pending lifecycle slice. This commit preserves current occupied-pod protection and salvage only after actual ejection; it does not claim that later amendment is implemented. Existing emitted pods and projectiles are neither captured nor reissued here. See [motivation](ISSUE-emp-weapon-disablement.md).

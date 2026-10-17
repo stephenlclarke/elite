@@ -126,12 +126,7 @@ extension Game {
       bodies[index].physical?.suspendedNPCIntention == nil
         || bodies[index].physical?.npc?.intention != nil
     else { return }
-    if isEMPDisabled(bodies[index]) {
-      if case .engage(let target) = intent.action {
-        emitGameplayNPCBeam(bodyID: bodies[index].id, target: target, context: context)
-      }
-      return
-    }
+    guard !isEMPDisabled(bodies[index]) else { return }
     bodies[index].hostile = intent.action == .engage(context.player.identity)
     // A fleeing trader keeps its original destination for later recovery.
     if bodies[index].physical?.npc?.role != .trader {
@@ -235,6 +230,7 @@ extension Game {
     bodyID: Int, target identity: ActorIdentity, context: EncounterContext, mining: Bool = false
   ) {
     guard let index = bodies.firstIndex(where: { $0.id == bodyID }),
+      !isEMPDisabled(bodies[index]),
       let actor = bodies[index].physical, actor.laserCooldown <= 0, bodies[index].energy > 1,
       actor.npc?.resources?.canFire ?? true,
       let target = gameplayActor(identity, context: context)
