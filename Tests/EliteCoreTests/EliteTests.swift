@@ -251,8 +251,26 @@ import Testing
   #expect(!game.dockingComputer)
   game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
   game.key("r")
+  let anchors = try #require(game.commander.flightSimulation.anchors)
+  for _ in 0..<game.bodies.count {
+    if let selected = game.autoTargetBody, selected.id == 0,
+      selected.nativeStationIdentity == nil, selected.physical?.identity == anchors.station.identity
+    {
+      break
+    }
+    game.key("r")
+  }
+  let station = try #require(game.autoTargetBody)
+  try #require(
+    station.id == 0 && station.nativeStationIdentity == nil
+      && station.physical?.identity == anchors.station.identity && game.dockingComputer)
   for _ in 0..<2000 where !game.docked { game.tick(delta: 0.1) }
-  #expect(game.docked && game.screen == .status && game.speed == 0)
+  #expect(
+    game.docked && game.screen == .status && game.speed == 0,
+    Comment(
+      rawValue:
+        "target=\(String(describing: game.autoPilot.targetID)), actor=\(String(describing: game.autoPilot.targetActor)), status=\(game.autoPilot.status), distance=\(String(describing: game.autoTargetBody?.position.length)), energy=\(game.energy), pendingRRS=\(game.pendingNativeStationDock != nil)"
+    ))
   game.launch()
   game.speed = 0
   game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 89.5))]
