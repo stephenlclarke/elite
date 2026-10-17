@@ -671,6 +671,118 @@ private func bridgeArchivedPlasmaMalformedOrigin(_ fixture: BridgeArchivedPlasma
   }
 }
 
+private final class BridgeLaserFireFixture: Sendable {
+  let game: Game
+  let source: SpaceBody
+  let weapon: ScriptNPCWeapon
+  let gun: ScriptNPCGunState
+  let shots: UInt64
+  let before: Commander
+
+  init(
+    game: Game, source: SpaceBody, weapon: ScriptNPCWeapon, gun: ScriptNPCGunState,
+    shots: UInt64, before: Commander
+  ) {
+    self.game = game
+    self.source = source
+    self.weapon = weapon
+    self.gun = gun
+    self.shots = shots
+    self.before = before
+  }
+}
+
+private func makeBridgeLaserFireFixture() throws -> BridgeLaserFireFixture {
+  let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    .deletingLastPathComponent().deletingLastPathComponent()
+    .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+  let pack = try ScriptPackLibrary.read(directory)
+  var game = Game(executive: false)
+  game.screen = .status
+  game.scriptPacks = [pack]
+  let instance = try game.acceptScriptMission(pack)
+  game.launch()
+  game.emitScriptEvent("station.undocked")
+  game.drainScriptEvents()
+  let originalSource = try #require(
+    game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+  game.bodies = [originalSource]
+  game.celestials = []
+  game.bodies[0].position = .init(0, 0, 1000)
+  var facing = Basis3()
+  facing.rotate(pitch: 0, roll: 0, yaw: .pi)
+  game.bodies[0].orientation = facing
+  game.bodies[0].scriptNPC?.intent = .init(
+    request: "fire-test", mode: .attack,
+    target: nil, player: true, offset: .init(0, 0, 0), speed: 0, tolerance: 10)
+  game.ensurePhysicalActors()
+  let source = game.bodies[0]
+  let weapon = try #require(source.scriptNPC?.fit.definition.lasers?.first { $0.kind == .laser })
+  let gun = try #require(source.scriptNPC?.guns[weapon.id])
+  let shots = try #require(source.scriptNPC?.shots)
+  let before = game.commander
+  return .init(game: game, source: source, weapon: weapon, gun: gun, shots: shots, before: before)
+}
+
+private func assertBridgeLaserFireRefusal(_ fixture: BridgeLaserFireFixture) throws {
+  let game = fixture.game
+  let source = fixture.source
+  let weapon = fixture.weapon
+  var ledgerJSON = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander.crimeLedger))
+      as? [String: Any])
+  ledgerJSON["lastIncidentID"] = NSNumber(value: game.commander.flightSimulation.nextIncident)
+  var refused = game
+  refused.commander.crimeLedger = try JSONDecoder().decode(
+    CrimeLedger.self,
+    from: JSONSerialization.data(withJSONObject: ledgerJSON))
+  let refusedBefore = (
+    commander: refused.commander, bodies: refused.bodies, frontShield: refused.frontShield,
+    rearShield: refused.rearShield, energy: refused.energy
+  )
+  #expect(throws: NativeMissionImpactError.refusedLedger) {
+    try refused.fireMissionNativeLaser(bodyID: source.id, weaponID: weapon.id, componentID: nil)
+  }
+  #expect(refused.commander == refusedBefore.commander && refused.bodies == refusedBefore.bodies)
+  #expect(
+    refused.frontShield == refusedBefore.frontShield
+      && refused.rearShield == refusedBefore.rearShield && refused.energy == refusedBefore.energy)
+}
+
+private func assertBridgeLaserFireAndReplay(_ fixture: BridgeLaserFireFixture) throws {
+  var game = fixture.game
+  let source = fixture.source
+  let weapon = fixture.weapon
+  let gun = fixture.gun
+  let shots = fixture.shots
+  let before = fixture.before
+  let result = try game.fireMissionNativeLaser(
+    bodyID: source.id, weaponID: weapon.id, componentID: nil)
+  let receipt = try #require(result)
+  #expect(receipt.kind == .laser && receipt.target == .player)
+  #expect(game.bodies[0].energy == source.energy - weapon.energy)
+  #expect(game.bodies[0].scriptNPC?.guns[weapon.id]?.heat == gun.heat + weapon.heat)
+  #expect(game.bodies[0].scriptNPC?.guns[weapon.id]?.cooldown == weapon.interval)
+  #expect(game.bodies[0].scriptNPC?.shots == shots + 1)
+  let firedBefore = before.scriptState.pendingEvents.filter {
+    $0.kind == "weapon.fired"
+  }.count
+  #expect(
+    game.commander.scriptState.pendingEvents.filter { $0.kind == "weapon.fired" }.count
+      == firedBefore + 1)
+  #expect(
+    game.bodies[0].physical?.npc?.legal.value == (source.physical?.npc?.legal.value ?? 0) + 8)
+  let committed = (
+    commander: game.commander, bodies: game.bodies, frontShield: game.frontShield,
+    energy: game.energy
+  )
+  let repeatFire = try game.fireMissionNativeLaser(
+    bodyID: source.id, weaponID: weapon.id, componentID: nil)
+  #expect(
+    repeatFire == nil && game.commander == committed.commander && game.bodies == committed.bodies)
+  #expect(game.frontShield == committed.frontShield && game.energy == committed.energy)
+}
+
 private func bridgeFixture() throws -> (SpaceBody, EncounterContext) {
   var game = Game(executive: false)
   game.launch()
@@ -1360,72 +1472,9 @@ struct MissionNativeBridgeTests {
   }
 
   @Test func actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState() throws {
-    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-      .deletingLastPathComponent().deletingLastPathComponent()
-      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
-    let pack = try ScriptPackLibrary.read(directory)
-    var game = Game(executive: false)
-    game.screen = .status
-    game.scriptPacks = [pack]
-    let instance = try game.acceptScriptMission(pack)
-    game.launch()
-    game.emitScriptEvent("station.undocked")
-    game.drainScriptEvents()
-    let originalSource = try #require(
-      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
-    game.bodies = [originalSource]
-    game.celestials = []
-    game.bodies[0].position = .init(0, 0, 1000)
-    var facing = Basis3()
-    facing.rotate(pitch: 0, roll: 0, yaw: .pi)
-    game.bodies[0].orientation = facing
-    game.bodies[0].scriptNPC?.intent = .init(
-      request: "fire-test", mode: .attack,
-      target: nil, player: true, offset: .init(0, 0, 0), speed: 0, tolerance: 10)
-    game.ensurePhysicalActors()
-    let source = game.bodies[0]
-    let weapon = try #require(source.scriptNPC?.fit.definition.lasers?.first { $0.kind == .laser })
-    let gun = try #require(source.scriptNPC?.guns[weapon.id])
-    let shots = try #require(source.scriptNPC?.shots)
-    let before = game
-    var ledgerJSON = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander.crimeLedger))
-        as? [String: Any])
-    ledgerJSON["lastIncidentID"] = NSNumber(value: game.commander.flightSimulation.nextIncident)
-    var refused = game
-    refused.commander.crimeLedger = try JSONDecoder().decode(
-      CrimeLedger.self,
-      from: JSONSerialization.data(withJSONObject: ledgerJSON))
-    let refusedBefore = refused
-    #expect(throws: NativeMissionImpactError.refusedLedger) {
-      try refused.fireMissionNativeLaser(bodyID: source.id, weaponID: weapon.id, componentID: nil)
-    }
-    #expect(refused.commander == refusedBefore.commander && refused.bodies == refusedBefore.bodies)
-    #expect(
-      refused.frontShield == refusedBefore.frontShield
-        && refused.rearShield == refusedBefore.rearShield && refused.energy == refusedBefore.energy)
-    let result = try game.fireMissionNativeLaser(
-      bodyID: source.id, weaponID: weapon.id, componentID: nil)
-    let receipt = try #require(result)
-    #expect(receipt.kind == .laser && receipt.target == .player)
-    #expect(game.bodies[0].energy == source.energy - weapon.energy)
-    #expect(game.bodies[0].scriptNPC?.guns[weapon.id]?.heat == gun.heat + weapon.heat)
-    #expect(game.bodies[0].scriptNPC?.guns[weapon.id]?.cooldown == weapon.interval)
-    #expect(game.bodies[0].scriptNPC?.shots == shots + 1)
-    let firedBefore = before.commander.scriptState.pendingEvents.filter {
-      $0.kind == "weapon.fired"
-    }.count
-    #expect(
-      game.commander.scriptState.pendingEvents.filter { $0.kind == "weapon.fired" }.count
-        == firedBefore + 1)
-    #expect(
-      game.bodies[0].physical?.npc?.legal.value == (source.physical?.npc?.legal.value ?? 0) + 8)
-    let committed = game
-    let repeatFire = try game.fireMissionNativeLaser(
-      bodyID: source.id, weaponID: weapon.id, componentID: nil)
-    #expect(
-      repeatFire == nil && game.commander == committed.commander && game.bodies == committed.bodies)
-    #expect(game.frontShield == committed.frontShield && game.energy == committed.energy)
+    let fixture = try makeBridgeLaserFireFixture()
+    try assertBridgeLaserFireRefusal(fixture)
+    try assertBridgeLaserFireAndReplay(fixture)
   }
 
 }
