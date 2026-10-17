@@ -408,6 +408,8 @@ extension Game {
     guard finite(origin), finite(direction), abs(direction.length - 1) <= 1e-6,
       range.isFinite, range > 0, radius.isFinite, radius >= 0
     else { throw MissionNativeBridgeError.invalidGeometry }
+    // Native zero-radius mesh rays own normalization and their authoritative hit point.
+    let nativeDirection = direction
     let direction = direction.unit
     guard finite(origin + direction * range) else { throw MissionNativeBridgeError.invalidGeometry }
     var nearest: MissionCollisionContact?
@@ -421,10 +423,10 @@ extension Game {
     }
     func consider(
       _ distance: Double, target: GameplayHitTarget, body: SpaceBody? = nil,
-      part: String? = nil, component: UUID? = nil
+      part: String? = nil, component: UUID? = nil, nativePoint: Vector3? = nil
     ) {
       guard distance.isFinite, (0...range).contains(distance) else { return }
-      let point = origin + direction * distance
+      let point = nativePoint ?? (origin + direction * distance)
       guard finite(point) else { return }
       let candidate = MissionCollisionContact(
         hit: .init(target: target, distance: distance, point: point),
@@ -656,7 +658,7 @@ extension Game {
         }
       }
       if let hit = GameplayRaycast.nearest(
-        origin: origin, direction: direction, maxDistance: range,
+        origin: origin, direction: nativeDirection, maxDistance: range,
         bodies: native, playerMesh: playerMesh, meshOverrides: overrides)
       {
         let body: SpaceBody?
@@ -665,7 +667,7 @@ extension Game {
         } else {
           body = nil
         }
-        consider(hit.distance, target: hit.target, body: body)
+        consider(hit.distance, target: hit.target, body: body, nativePoint: hit.point)
       }
     }
     for body in live {
@@ -694,11 +696,12 @@ extension Game {
             guard candidate else { return true }
             guard (try? prepare(local)) != nil else { return false }
             if let hit = GameplayRaycast.nearest(
-              origin: origin, direction: direction,
+              origin: origin, direction: nativeDirection,
               maxDistance: range, bodies: [body], meshOverrides: [body.id: local])
             {
               consider(
-                hit.distance, target: hit.target, body: body, part: part, component: component)
+                hit.distance, target: hit.target, body: body, part: part, component: component,
+                nativePoint: hit.point)
             }
             return true
           }
