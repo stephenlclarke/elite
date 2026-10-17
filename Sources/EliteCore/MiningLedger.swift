@@ -85,6 +85,15 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   private var sequence: UInt64 = 0
 
   public init(seed: UInt64 = 0) { self.seed = seed }
+  /// Missing old commander state has the historical unworked cluster policy at load.
+  static func legacyUnworked() -> Self {
+    var ledger = Self()
+    ledger.generation = nil
+    ledger.ringTerminal = nil
+    ledger.legacyClusters = nil
+    ledger.presenceOverrides = nil
+    return ledger
+  }
   private enum CodingKeys: String, CodingKey {
     case seed, terminal, ringTerminal, generation, legacyClusters, presenceOverrides, partial,
       pending, offers, bindings, lastIncident,
@@ -97,9 +106,11 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     terminal = try Self.decodeBounded(
       SystemIdentity.self, UInt64.self,
       from: values, key: .terminal, maximum: 8 * 257, keyAllowed: Self.validSystem)
-    generation = try values.decodeIfPresent(Int.self, forKey: .generation)
-    legacyClusters = try values.decodeIfPresent(Bool.self, forKey: .legacyClusters)
-    if values.contains(.presenceOverrides), try !values.decodeNil(forKey: .presenceOverrides) {
+    generation =
+      values.contains(.generation) ? try values.decode(Int.self, forKey: .generation) : nil
+    legacyClusters =
+      values.contains(.legacyClusters) ? try values.decode(Bool.self, forKey: .legacyClusters) : nil
+    if values.contains(.presenceOverrides) {
       presenceOverrides = try Self.decodeBounded(
         SystemIdentity.self, Bool.self, from: values, key: .presenceOverrides,
         maximum: 8 * 257, keyAllowed: Self.validSystem)

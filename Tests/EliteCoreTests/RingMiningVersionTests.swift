@@ -5,7 +5,7 @@ import Testing
 
 struct RingMiningVersionTests {
   @Test func legacyHeaderRejectsEveryReservedRingFieldIncludingNullBeforeDecoding() throws {
-    for key in ["generation", "ringTerminal"] {
+    for key in ["generation", "ringTerminal", "legacyClusters", "presenceOverrides"] {
       let bytes = try JSONSerialization.data(withJSONObject: ["savedMiningLedger": [key: NSNull()]])
       #expect(throws: SaveError.self) { try RingMiningVersionedSave.rejectFields(bytes) }
     }
@@ -34,7 +34,7 @@ struct RingMiningVersionTests {
     try await runtime.save(to: file)
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 25)
+    #expect(pointer.schemaVersion == 26)
     let (saved, world) = try ScriptSaveStore.read(bytes, from: file)
     #expect(saved.miningLedger == game.commander.miningLedger)
     #expect(world.bodies == game.bodies)

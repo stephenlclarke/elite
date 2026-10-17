@@ -191,6 +191,8 @@ public struct EncounterContext: Equatable, Codable, Sendable {
   public let perceptionRadius: Double
   /// Current-system terminal rocks, independent of scene admission/culling.
   public var depletedRocks: Set<RockIdentity> = []
+  /// Actual runtime always supplies the ledger-resolved ring and legacy cluster policy together.
+  public var miningPresence: MiningScenePresence? = nil
 }
 
 public enum AdmissionPriority: Int, Comparable, Codable, Sendable {

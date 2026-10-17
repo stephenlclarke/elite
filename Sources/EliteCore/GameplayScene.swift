@@ -21,7 +21,9 @@ extension Game {
       | UInt64(currentSystem.seed.c)
   }
 
-  mutating func beginGameplayVisit(arriving: Bool, freshLaunchTrafficID: Int? = nil) {
+  @discardableResult
+  mutating func beginGameplayVisit(arriving: Bool, freshLaunchTrafficID: Int? = nil) -> Bool {
+    do { try migrateMiningPresence(legacyMissing: false) } catch { return false }
     commander.savedEMPCharge = nil
     if var state = commander.savedEMPState {
       for source in state.records.keys {
@@ -50,9 +52,7 @@ extension Game {
           kind: .sun, position: flight.pose.shipPoint(anchors.sun.position),
           radius: anchors.sun.radius),
       ]
-      miningFields = MiningFields.generate(
-        anchors: anchors, seed: gameplaySeed,
-        includingLegacy: commander.miningLedger.retainsLegacyFields)
+      rebuildMiningFields()
       salvageSites = SalvageSites.generate(anchors: anchors, seed: gameplaySeed)
     }
     commander.miningLedger.resetPhysicalBindings(system: systemIdentity)
@@ -67,6 +67,7 @@ extension Game {
     if let context = gameplayContext() {
       commander.encounterDirector = EncounterDirector(context: context)
     }
+    return true
   }
 
   /// Called only for the actual new launch body before its first ledger capture.
@@ -240,6 +241,7 @@ extension Game {
       maximumSpeedUnitsPerSecond: commander.performance.speed * 18,
       legal: .init(value: min(255, commander.legal)), npc: nil, rock: nil, payload: nil,
       ordinaryCargo: commander.ordinaryCommodityAmounts, catalogueShipID: commander.shipID)
+    let miningPresence = resolvedMiningPresence
     let depleted = Set(
       miningFields.flatMap(\.rocks).filter { commander.miningLedger.isDepleted($0.identity) }
         .map(\.identity))
@@ -247,6 +249,7 @@ extension Game {
       system: systemIdentity, seed: gameplaySeed, government: currentSystem.government,
       visit: flight.visit, revision: gameplayRevision, physicalTime: flight.physicalTime,
       anchors: anchors, player: player, actors: actors, protection: protection,
-      budget: budget, perceptionRadius: 6000, depletedRocks: depleted)
+      budget: budget, perceptionRadius: 6000, depletedRocks: depleted,
+      miningPresence: miningPresence)
   }
 }
