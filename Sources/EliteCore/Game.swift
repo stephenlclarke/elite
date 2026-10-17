@@ -1653,9 +1653,10 @@ public struct Game: Sendable {
       if bodies[index].position.z > 300 { bodies[index].position.z -= dt * 60 }
     }
     if dt > 0 {
-      bodies[index].physical?.velocity =
+      let worldVelocity =
         (commander.flightSimulation.pose.systemPoint(bodies[index].position) - priorPosition)
         * (1 / dt)
+      bodies[index].physical?.velocity = worldVelocity
     }
     if bodies[index].position.length < 1500 {
       let damage = dt * (bodies[index].hull.navalLaserDamage ?? 6) * 2
