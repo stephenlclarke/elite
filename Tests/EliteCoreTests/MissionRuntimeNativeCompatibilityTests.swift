@@ -75,8 +75,7 @@ struct MissionRuntimeNativeCompatibilityTests {
     #expect(try Data(contentsOf: receipt.url) == trialBytes)
   }
 
-  @Test func ordinaryActorInitFlightAndSaveKeepTheExistingDirectCommanderJSONContract() async throws
-  {
+  @Test func ordinaryActorInitUsesDirectJSONAndNativeFlightUsesVersionedStorage() async throws {
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: folder) }
     let url = folder.appendingPathComponent("commander.json")
@@ -85,18 +84,35 @@ struct MissionRuntimeNativeCompatibilityTests {
     let runtime = GameRuntime(game: game)
     let initial = await runtime.snapshot()
     #expect(initial.commander.scriptState == ScriptEngineState())
+    #expect(initial.commander.nativeStations == nil && !initial.requiresScriptDurability)
+    try await runtime.save(to: url)
+    let ordinaryData = try Data(contentsOf: url)
+    let object = try #require(JSONSerialization.jsonObject(with: ordinaryData) as? [String: Any])
+    #expect(object["schemaVersion"] == nil && object["savedScriptState"] == nil)
+    let ordinary = try JSONDecoder().decode(Commander.self, from: ordinaryData)
+    #expect(ordinary.valid && ordinary.savedEquipmentVersion == 2)
+    #expect(ordinary.equipmentOwnerID == initial.commander.equipmentOwnerID)
     await runtime.key("0")
     _ = await runtime.advance(delta: 0.1)
     let flying = await runtime.snapshot()
-    #expect(flying.commander.scriptState == ScriptEngineState())
-    #expect(!flying.requiresScriptDurability)
+    #expect(flying.commander.nativeStations != nil && flying.requiresScriptDurability)
+    let calendar = try #require(flying.commander.scriptState.calendarLedger)
+    #expect(calendar.origin == .newCommander && calendar.operation == 1)
+    #expect(calendar.lastAdjustment?.kind == .launch)
+    #expect(flying.commander.scriptState.calendarSeconds == 600.1)
+    #expect(flying.commander.scriptState.missionCalendar == nil)
+    #expect(flying.commander.scriptState.instances.isEmpty)
     try await runtime.save(to: url)
     let data = try Data(contentsOf: url)
-    let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
-    #expect(object["schemaVersion"] == nil && object["savedScriptState"] == nil)
-    let commander = try JSONDecoder().decode(Commander.self, from: data)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: data)
+    #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+    let (commander, _) = try ScriptSaveStore.read(data, from: url)
     #expect(commander.valid && commander.savedEquipmentVersion == 2)
     #expect(commander.equipmentOwnerID == initial.commander.equipmentOwnerID)
+    let committed = await runtime.snapshot()
+    #expect(commander.scriptState == committed.commander.scriptState)
+    #expect(commander.nativeStations == committed.commander.nativeStations)
+    #expect(commander.equipmentInventory == committed.commander.equipmentInventory)
   }
 
   @Test func anExistingEmptyMissionCalendarStillUsesVersionedStorageAndRoundTrips() async throws {
