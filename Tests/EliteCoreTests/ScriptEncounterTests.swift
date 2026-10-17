@@ -406,8 +406,9 @@ private func modifiedPatrol(
 }
 
 @Test func completeEightyTwoRootCohortHasActualBodiesAndUniqueNativeIdentities() throws {
+  // Keep the full formation behind the station, clear of the actual planet and sun.
   let definitions = (0..<82).map { index in
-    "{id='target\(index)',hull='sidewinder',x=\(index%10*1200-5400),y=\(index/10*1200-4200),z=\(5000+index/40*2000),hostile=false}"
+    "{id='target\(index)',hull='sidewinder',x=\(index%10*1200-5400),y=\(index/10*1200-4200),z=\(-5000-index/40*2000),hostile=false}"
   }.joined(separator: ",\n")
   let (pack, folder) = try modifiedPatrol(manifest: {
     $0.replacingOccurrences(
