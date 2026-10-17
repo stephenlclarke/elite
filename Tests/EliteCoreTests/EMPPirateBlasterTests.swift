@@ -47,8 +47,8 @@ func empFixture(catalogue: String = "SH023", hostile: Bool = false, police: Bool
       $0.id != game.commander.system && $0.id != Plugh.systemID
         && game.currentSystem.distance(to: $0) > 0 && game.currentSystem.distance(to: $0) <= 3
     })
-  game.bodies[0].physical?.npc?.destination = .init(
-    galaxy: game.commander.galaxy, system: destination.id)
+  let destinationSystem = SystemIdentity(galaxy: game.commander.galaxy, system: destination.id)
+  game.bodies[0].physical?.npc?.destination = destinationSystem
   game.bodies[0].physical?.npc?.routeProvenance = .recorded
   game.selectFlightTool(.empPirateBlaster)
   try #require(game.commander.valid)
