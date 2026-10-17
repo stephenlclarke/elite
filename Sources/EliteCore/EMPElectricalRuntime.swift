@@ -253,7 +253,9 @@ extension Game {
         emissionPosition: commander.flightSimulation.pose.position)
     else { return false }
     if reserve.remaining == 0 {
-      guard disableEMPHull(id: id, incident: incident, tool: tool) else { return false }
+      guard let context = gameplayContext(),
+        disableEMPHull(id: id, incident: incident, tool: tool, context: context)
+      else { return false }
       // Validate the same victim before any next contact, after the large helper frame unwinds.
       return commander.valid
     }
@@ -264,9 +266,9 @@ extension Game {
   /// Only applyElectricalPulse calls this inside emitEMPPulse's atomic candidate.
   /// Any refusal discards that entire candidate, including earlier victims and cost.
   @discardableResult
-  private mutating func disableEMPHull(id: Int, incident: CombatIncident, tool: OwnedEquipmentItem)
-    -> Bool
-  {
+  private mutating func disableEMPHull(
+    id: Int, incident: CombatIncident, tool: OwnedEquipmentItem, context: EncounterContext
+  ) -> Bool {
     guard let actual = bodies.first(where: { $0.id == id }),
       let actor = actual.physical?.identity, let facts = commander.empDisableFacts(actor: actor),
       actual.physical?.npc?.resources?.electrical?.remaining == 0,
@@ -280,7 +282,6 @@ extension Game {
       !bodies[index].navalTarget, bodies[index].missionInstanceID == nil,
       bodies[index].blackjackRole == nil, npc.role != .mission, physical.salvage == nil,
       physical.empCrewPod == nil,
-      let context = gameplayContext(),
       !context.protection.protectedActors.contains(physical.identity),
       let catalogue = physical.catalogueShipID ?? ShipCatalogue.nativeShip(bodies[index].hull)?.id,
       let ship = ShipCatalogue.ship(catalogue),
