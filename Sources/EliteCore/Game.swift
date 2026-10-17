@@ -1910,6 +1910,7 @@ public actor GameRuntime {
         migrateScriptCalendar(&candidate, untrackedJump: world.jumpCountdown != nil)
       }
       candidate.restoreScriptWorld(world)
+      try candidate.restoreSavedNPCSceneBindings()
       try candidate.validateInstalledCourierContent()
       candidate.resolveCourierTerminals()
       candidate.suspendUnavailableScriptContent()
