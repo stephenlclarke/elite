@@ -169,7 +169,9 @@ public enum PlayerHelp {
           "CLICK AN ITEM TO SELECT IT",
           "INVENTORY (9) - FITTED / HELD DETAILS",
           "ESC - PREVIOUS SCREEN",
-        ])
+        ]
+          + (game.passengerBerthSelected
+            ? ["S - STORE EMPTY PASSENGER CABIN", "R - REFIT STORED PASSENGER CABIN"] : []))
     case .chart, .shortChart:
       .init(
         title: "CHARTS AND PLANET DATA",

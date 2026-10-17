@@ -451,16 +451,19 @@ extension Display {
   private static func currentCraftRows(_ game: Game) -> [String] {
     let commander = game.commander
     let capacityText = commander.unlimitedCargo ? "Unlimited" : String(commander.capacity)
-    let freeText =
-      commander.unlimitedCargo
-      ? "Unlimited (XYZZY)" : "\(commander.capacity - commander.cargoTonnes)t free"
+    let accommodation = Dictionary(
+      uniqueKeysWithValues: commander.nativeAccommodationFields.map { ($0.key, $0) })
+    func count(_ key: String) -> String {
+      accommodation[key]?.number.map { String(format: "%.0f", $0) } ?? "Unavailable"
+    }
+    let crewStatus = accommodation["required_crew_including_commander"]?.status ?? "unavailable"
     var rows: [String] = [
       "", "CURRENT FITTED CRAFT: " + commander.ship.name.uppercased(),
       "Native performance units stay separate from source/project units.",
-      "Required crew: 1; reserved crew quarters: 1 (assigned)",
-      "Fitted berths: 0; passengers aboard: 0; free places: 0",
-      "Cabin footprint: 0t; no passenger modules are fitted",
-      "Usable cargo after fit: " + freeText,
+      "Required crew: \(count("required_crew_including_commander")); reserved crew quarters: \(count("reserved_crew_accommodation")) (\(crewStatus))",
+      "Fitted berths: \(count("fitted_passenger_berths")); passengers aboard: \(count("passengers_aboard")); free places: \(count("free_passenger_places"))",
+      "Cabin footprint: \(accommodation["hold_used_by_cabins"]?.text ?? "Unavailable"); stored berths: \(count("stored_passenger_berths"))",
+      "Usable cargo after fit: \(accommodation["usable_cargo_after_fit"]?.text ?? "Unavailable") free (physical)",
       "Cargo \(commander.cargoTonnes)/\(capacityText) t; missiles \(commander.missiles)/\(commander.missileCapacity)",
       String(
         format: "Fuel %.1f/%.1f LY; jump limit %.1f LY", Double(commander.fuel) / 10,
