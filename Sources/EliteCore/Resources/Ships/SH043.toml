@@ -33,6 +33,7 @@ primaryType = "military"
 purchasePolicy = "never"
 collectionMilestone = "destruction"
 damagePolicy = "destructible"
+capitalSubtype = "vessel"
 
 [game]
 cargo = 6000

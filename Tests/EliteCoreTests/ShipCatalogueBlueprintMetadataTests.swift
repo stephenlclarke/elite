@@ -79,7 +79,9 @@ struct ShipCatalogueBlueprintMetadataTests {
   @Test func reviewedCapitalsAndStationsKeepCollectionSeparateFromPurchase() throws {
     for id in ["SH043", "SH081", "SH123"] {
       let ship = try #require(ShipCatalogue.ship(id))
-      #expect(ship.catalogue.isCapital && ship.catalogue.purchasePolicy == .never)
+      #expect(
+        ship.catalogue.isCapital && ship.catalogue.capitalSubtype == .vessel
+          && ship.catalogue.purchasePolicy == .never)
       #expect(!ship.catalogue.normalPurchaseEligible && ship.catalogue.discoveryEligible)
       #expect(
         ship.catalogue.collectionMilestone == .destruction
@@ -88,6 +90,7 @@ struct ShipCatalogueBlueprintMetadataTests {
     }
     for id in ["SH028", "SH034", "SH102", "SH141", "SH156", "SH161", "SH164"] {
       let metadata = try #require(ShipCatalogue.ship(id)?.catalogue)
+      #expect(metadata.isCapital && metadata.capitalSubtype == .station)
       #expect(metadata.purchasePolicy == .never && metadata.discoveryEligible)
       #expect(
         metadata.collectionMilestone == .docking

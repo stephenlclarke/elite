@@ -16,7 +16,8 @@
     "acquisition": "FR048: credited exact-hull kill plus genuine qualified system AI docking; target-only does not unlock normal fabrication. No metadata field grants commander knowledge.",
     "displayTypes": "FR050: eight primaryType values; SH112-SH125 and SH171 Alien, independent seven functional AI roles and origin.",
     "habitatOverrides": "FR051 Ionics Military, Corporate7/displayedTL12+, ordinary qualifyinggalaxies0,1,2,4,5,6,7. Internal3 has actualsecretPLUGH256 high-techCorporate exception; omission is declared ordinary-habitat balance, not whole-galaxy impossibility. Other Military157-161/170 broaderall8. No fabrication government licence.",
-    "collectionOverrides": "FR052: neverpurchase043/081/123 complete on credited destruction; live station028/034/102/141/161/164 andactivePLUGH156 complete on genuine docking. Abandonedwrecks remain separate."
+    "collectionOverrides": "FR052: neverpurchase043/081/123 complete on credited destruction; live station028/034/102/141/161/164 andactivePLUGH156 complete on genuine docking. Abandonedwrecks remain separate.",
+    "capitalHierarchy": "FR054: Capital parent includes reviewed vessel capitals043/081/123 and station subtype028/034/102/141/156/161/164. Station subtype keeps docking/indestructible; vessel subtype destruction; no new/double membership or blanket large-hauler ban."
   },
   "ships": [
     {
@@ -1929,10 +1930,11 @@
         "regions": [],
         "basis": "retained source facts + project classification judgement. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -2298,10 +2300,11 @@
         "regions": [],
         "basis": "retained source facts + project classification judgement. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -2895,7 +2898,8 @@
         "primaryType": "military",
         "purchasePolicy": "never",
         "collectionMilestone": "destruction",
-        "damagePolicy": "destructible"
+        "damagePolicy": "destructible",
+        "capitalSubtype": "vessel"
       },
       "game": {
         "cargo": 6000,
@@ -5441,7 +5445,8 @@
         "primaryType": "military",
         "purchasePolicy": "never",
         "collectionMilestone": "destruction",
-        "damagePolicy": "destructible"
+        "damagePolicy": "destructible",
+        "capitalSubtype": "vessel"
       },
       "game": {
         "cargo": 6000,
@@ -6886,10 +6891,11 @@
         "regions": [],
         "basis": "retained source facts + project classification judgement. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -8209,7 +8215,8 @@
         "primaryType": "alien",
         "purchasePolicy": "never",
         "collectionMilestone": "destruction",
-        "damagePolicy": "destructible"
+        "damagePolicy": "destructible",
+        "capitalSubtype": "vessel"
       },
       "game": {
         "cargo": 160,
@@ -9423,10 +9430,11 @@
         "regions": [],
         "basis": "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -10408,10 +10416,11 @@
         "basis": "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "primaryRole": "military",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -10728,10 +10737,11 @@
         "basis": "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "primaryRole": "military",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -10853,10 +10863,11 @@
         "regions": [],
         "basis": "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
         "placementStatus": "pending",
-        "isCapital": false,
+        "isCapital": true,
         "purchasePolicy": "never",
         "collectionMilestone": "docking",
-        "damagePolicy": "activeStationIndestructible"
+        "damagePolicy": "activeStationIndestructible",
+        "capitalSubtype": "station"
       },
       "game": null,
       "cargoBasis": "FR036-FR046 project balance: No game performance currently: this review does not create a flyable refit or rewrite object/mission source mechanics.",
@@ -11367,6 +11378,11 @@
       "capitalInventorySHA256": "332cd9f4ca7da7c29b9253510b61b89aefe7f310254d247e6be4213f7a0da5b8",
       "change": "Metadata v2: eight display types separate functional roles; explicit displayed build TL; Ionics Corporate TL12+ habitat; reviewed043/081/123 neverpurchase/destruction; station/activePLUGH docking; targeting alone no purchase.",
       "habitatQualification": "Ordinary Universe internalgalaxy3 lacksCorporateTL12+; actualsystemsIncludingPlugh hasPLUGH256gov7/TL15ineverygalaxy. SevenordinarygalaxyIonicsplacement is balancechoice, no sourceworldmutation or assertionwholegalaxy3impossible."
+    },
+    {
+      "requirement": "FR054",
+      "humanRequest": "Stations are a sub type of capital ships",
+      "change": "StructuralCapitalparent/typedStation subtype, separate8displaytypes/7AIroles. Exact10hierarchyrows only, existingmilestones/damage/purchase/168membershipunchanged."
     }
   ],
   "metadataSchemaVersion": 2

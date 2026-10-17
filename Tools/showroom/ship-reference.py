@@ -80,6 +80,7 @@ def references(ships, write=True):
                   '| Primary display type | '+escape(role_label)+' |',
                   '| Functional AI role | '+escape(metadata.get('primaryRole') or 'None')+' |',
                   '| Object kind / origin | '+escape(metadata['objectKind']+' / '+metadata['origin'])+' |',
+                  '| Capital parent / subtype | '+('Yes / '+escape(metadata['capitalSubtype']) if metadata['isCapital'] else 'No')+' |',
                   '| Catalogue discovery eligibility | '+('Yes' if metadata['discoveryEligible'] else 'No')+' |',
                   '| Encounter provision | '+escape(metadata['encounterMode']+'; mechanics '+metadata['mechanicsStatus'])+' |',
                   '| Rarity | '+escape(metadata['rarity'])+' |',
