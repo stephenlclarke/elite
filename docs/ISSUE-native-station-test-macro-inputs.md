@@ -11,3 +11,7 @@ A bounded scan of nine native RRS/P30 test files identified two additional direc
 ## Acceptance
 
 Expanding the local results back into their original assertion arguments must reproduce each complete old test file exactly. Strict source lint and whitespace checks must pass, followed by actual fresh catalogue compilation and the maintained gate. Source formatting is not execution evidence. See [the repair handoff](PR-native-station-test-macro-inputs.md).
+
+## Separate fixture borrow follow-up
+
+Checkpoint 181 then diagnosed an overlapping Commander borrow in the unproved-main-dock save fixture: its station-receipt assignment read the same commander's calendar. Read that primitive clock immediately before the assignment, inside the same main case after the same dock call, preserving receipt contents and every refusal/conservation assertion. A bounded scan of the nine current native RRS/P30 files found this one remaining identical pattern; the separate raw-save fixture had already received its equivalent repair.
