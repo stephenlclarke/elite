@@ -3,6 +3,30 @@ import Testing
 
 @testable import EliteCore
 
+private func campaignPatrolLawDiagnostic(_ game: Game) -> String {
+  let ordinary = game.bodies.filter {
+    $0.energy > 0 && $0.hull.isTargetShip && $0.missionInstanceID == nil
+  }
+  let ships = ordinary.sorted { $0.id < $1.id }.prefix(12).map { body in
+    "id=\(body.id),actor=\(String(describing: body.physical?.identity))"
+      + ",role=\(String(describing: body.physical?.npc?.role)),legal=\(body.physical?.npc?.legal.value ?? 0)"
+      + ",intention=\(String(describing: body.physical?.npc?.intention))"
+      + ",hostile=\(body.hostile),HP=\(body.energy),position=\(body.position)"
+  }.joined(separator: "; ")
+  let assignments = game.commander.stationSecurity.assignments.prefix(8).map {
+    "actor=\($0.actor),target=\(String(describing: $0.target)),phase=\($0.phase)"
+  }.joined(separator: "; ")
+  let station = game.bodies.first { $0.id == 0 && $0.hull == .station }
+  return
+    "legal=\(game.commander.legal),player=\(String(describing: game.commander.flightSimulation.player))"
+    + ",stationViewPosition=\(String(describing: station?.position))"
+    + ",stationDistance=\(String(describing: station?.position.length))"
+    + ",stationSystemPosition=\(String(describing: game.commander.flightSimulation.anchors?.station.position))"
+    + ",securityPhase=\(game.commander.stationSecurity.phase),assignments=[\(assignments)]"
+    + ",ordinaryCount=\(ordinary.count),policeCount=\(ordinary.filter { $0.physical?.npc?.role == .police }.count)"
+    + ",ordinaryShips=[\(ships)]"
+}
+
 // Scalar evidence only: keep the actual encounter, flight and refusal state unchanged.
 func campaignPatrolDiagnostic(_ game: Game, child: UUID) -> String {
   let encounter = game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]
@@ -28,6 +52,7 @@ func campaignPatrolDiagnostic(_ game: Game, child: UUID) -> String {
     "target=\(String(describing: game.autoPilot.targetID)),weapons=\(String(describing: game.weaponsTargetID))",
     "autopilot=\(game.autoPilot.status),dockingComputer=\(game.dockingComputer)",
     "message=\(game.message),actors=[\(actors)]",
+    campaignPatrolLawDiagnostic(game),
   ].joined(separator: ",")
 }
 
