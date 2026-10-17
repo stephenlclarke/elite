@@ -17,3 +17,7 @@ Five authored cases across three methods:
 ## Validation and remaining gates
 
 Strict Swift formatting, Markdown lint and diff checks pass. No compilation, native renderer execution or test execution occurred in this worker. Root owns the execution lease and must run these cases, existing texture/visibility/media checks, actual media generation/currentness and final composed `make ci`. This source repair does not establish a runtime pass, visual parity, performance result or release acceptance. Completed external review and final-head checks remain required before merge/publication.
+
+## Compiler follow-up
+
+Actual checkpoint 178 failed before test execution: the visibility fixture passed a mutating actor allocation directly into `#require`, whose expansion uses an immutable value. The fixture now stores the result of that one real allocation, then applies the original nil requirement. No production source, test case, identity, targeting behavior or expected result changes. Strict formatting, Markdown lint and diff checks pass; the corrected source has not been compiled or executed. The previously suspected `SaveError` value-overload issue was not reported by this compiler run and prompted no change.
