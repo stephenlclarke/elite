@@ -14,6 +14,14 @@ extension Commander {
     }
   }
   mutating func apply(_ action: PackAction, state: inout MissionProgress) throws {
+    var permit: PackReservedCargoPermit?
+    try apply(action, state: &state, reservedCargo: &permit)
+  }
+
+  mutating func apply(
+    _ action: PackAction, state: inout MissionProgress,
+    reservedCargo: inout PackReservedCargoPermit?
+  ) throws {
     let amount = action.amount ?? 0
     let key = action.key ?? ""
     switch action.kind {
@@ -45,7 +53,12 @@ extension Commander {
         throw MissionPackError("Invalid commodity.")
       }
       if action.kind == "cargoRemove" {
-        guard sellableCargo(index) >= amount else {
+        let consumesOwnReservedItem =
+          reservedCargo?.consume(
+            index: index, amount: amount, digest: state.digest, version: state.version,
+            stage: state.stage,
+            markedFirearms: markedFirearms, physicalQuantity: cargo[index]) ?? false
+        guard consumesOwnReservedItem || sellableCargo(index) >= amount else {
           throw MissionPackError("Marked mission cargo required.")
         }
         cargo[index] -= amount

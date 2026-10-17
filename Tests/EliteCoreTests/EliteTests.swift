@@ -635,14 +635,23 @@ private func reboundJumpLimitWorldAfterLoad(
       && game.commander.cargoTonnes <= game.commander.tradeCargoCapacity)
   #expect(game.commander.credits >= 0 && game.commander.credits < 20000)
   let cargo = game.commander.cargo
+  let initialFreightCost = 20000 - game.commander.credits
   game.launch()
   game.autoTrade()
   #expect(game.commander.cargo == cargo)
   game.arrive()
   game.commander.autoTrade = true
   let cash = game.commander.credits
+  let arrivalPrices = game.market.map(\.price)
+  let saleRevenue = cargo.indices.reduce(0) { $0 + cargo[$1] * arrivalPrices[$1] }
+  let refuelCost = game.refillCost
   game.dock()
-  #expect(game.commander.credits > cash && game.selectedSystem != game.commander.system)
+  let nextFreightCost = game.commander.cargo.indices.reduce(0) {
+    $0 + game.commander.cargo[$1] * arrivalPrices[$1]
+  }
+  #expect(saleRevenue > initialFreightCost)
+  #expect(game.commander.credits == cash + saleRevenue - refuelCost - nextFreightCost)
+  #expect(game.commander.cargoTonnes > 0 && game.selectedSystem != game.commander.system)
   #expect(game.commander.valid)
   var stranded = Game(executive: false)
   stranded.commander.fuel = 0

@@ -1,0 +1,9 @@
+# Authorize the owning mission's reserved firearm transfer
+
+Adds an ephemeral non-Codable one-use permit, constructed only for the current bundled Blackjack digest/version/state and its exact robbery transition after normal location, stage and replay checks. The permit can authorize precisely one unit of commodity 10 while the player holds the marked firearm. The existing candidate transaction still applies all actions, validates the complete commander, then publishes the transition and receipt together. Back, wrong context, foreign packs and replay cannot create a permit; failed publication drops the staged permit with its candidate.
+
+Generic cargoRemove retains the sellableCargo guard, including native captive protection. An ordinary unprivileged action gets no reserved permission. New tests drive a valid external pack against a real mission firearm and actually captured native people, require the specific early refusal and whole-Commander/market rollback, then exercise the owning Confirm/Back/replay handoff. Existing full campaign and escape/handoff regressions remain part of validation.
+
+The automatic-trader test now captures the actual arrival prices, incoming cargo and refuel cost, checks sale revenue exceeds the initial freight spend, and verifies the exact resulting cash after the next load is bought. It separately requires a new destination and nonempty cargo. Production trading behavior is unchanged.
+
+Diagnostic 296 used unchanged compiled source 2f0f6128648a8c629fa12cf950680adea9cfcee5 and binary cb2f3de3180141ecbb78244aca87a2681ba96ba39aa5ca6e9a0efa8ca97f8989. It proved both states with readonly breakpoints, not a test pass. Formatting, Markdown and source review precede focused execution; no full CI, release, original-mission completeness or native alien pipeline acceptance is claimed here.
