@@ -148,20 +148,29 @@ struct NativeMissionActorAdmissionTests {
 
   @Test func retainedWholeCohortPreservesConditionAndAllocatesFreshAddressesOnce() throws {
     var (game, instance, prior) = try unloadedAdmissionGame()
+    try verifyRetainedWholeCohort(&game, instance: instance, prior: prior)
+  }
+
+  // Construct the actual fixture before reserving the independent verification snapshots.
+  private func verifyRetainedWholeCohort(
+    _ game: inout Game, instance: UUID, prior: [SpaceBody]
+  ) throws {
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
-    let before = game
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeBodyID = game.nextBodyID
     let preparation = try game.prepareMissionActorAdmission(source)
     let plan = try readyAdmission(preparation)
-    #expect(game.commander == before.commander && game.bodies == before.bodies)
+    #expect(game.commander == beforeCommander && game.bodies == beforeBodies)
     let receipt = try publishAdmission(plan, game: &game, instance: instance)
     let restored = game.bodies.filter { $0.missionInstanceID == instance }
     #expect(restored.count == 2 && receipt.nativeActors.count == 2)
     #expect(
-      game.commander.flightSimulation.nextActor == before.commander.flightSimulation.nextActor + 2)
+      game.commander.flightSimulation.nextActor == beforeCommander.flightSimulation.nextActor + 2)
     #expect(
-      game.commander.flightSimulation.nextSpawn == before.commander.flightSimulation.nextSpawn + 1)
-    #expect(game.nextBodyID == before.nextBodyID + 2)
+      game.commander.flightSimulation.nextSpawn == beforeCommander.flightSimulation.nextSpawn + 1)
+    #expect(game.nextBodyID == beforeBodyID + 2)
     #expect(Set(restored.compactMap { $0.physical?.spawnIdentity?.sequence }).count == 1)
     #expect(Set(restored.compactMap { $0.physical?.spawnIdentity?.member }) == Set([UInt16(0), 1]))
     for body in restored {
@@ -174,7 +183,9 @@ struct NativeMissionActorAdmissionTests {
       #expect(receipt.sceneBodyIDs[body.missionActorID!] == body.id)
       #expect(receipt.nativeActors[body.missionActorID!] == body.physical?.identity)
     }
-    let committed = game
+    let committedCommander = game.commander
+    let committedBodies = game.bodies
+    let committedBodyID = game.nextBodyID
     let repeatedSources = try game.retainedMissionActorAdmissionSources()
     let repeatedSource = try #require(repeatedSources.first { $0.instanceID == instance })
     let repeated = try game.prepareMissionActorAdmission(repeatedSource)
@@ -183,12 +194,16 @@ struct NativeMissionActorAdmissionTests {
       return
     }
     #expect(
-      game.commander == committed.commander && game.bodies == committed.bodies
-        && game.nextBodyID == committed.nextBodyID)
+      game.commander == committedCommander && game.bodies == committedBodies
+        && game.nextBodyID == committedBodyID)
   }
 
   @Test func native128CapacityRefusesWholeCohortWithoutAllocatingThenRecovers() throws {
     var (game, instance, _) = try unloadedAdmissionGame()
+    try verifyNative128Capacity(&game, instance: instance)
+  }
+
+  private func verifyNative128Capacity(_ game: inout Game, instance: UUID) throws {
     let additional = 127 - game.bodies.count
     #expect(additional > 0)
     game.ensurePhysicalActors()
@@ -221,15 +236,17 @@ struct NativeMissionActorAdmissionTests {
     #expect(game.bodies.count == 127)
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
-    let before = game
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeBodyID = game.nextBodyID
     let refused = try game.prepareMissionActorAdmission(source)
     guard case .pending(.native(.reservedCapacity)) = refused else {
       Issue.record("127 actual bodies plus two-root cohort must refuse native total128")
       return
     }
     #expect(
-      game.commander == before.commander && game.bodies == before.bodies
-        && game.nextBodyID == before.nextBodyID)
+      game.commander == beforeCommander && game.bodies == beforeBodies
+        && game.nextBodyID == beforeBodyID)
     game.bodies.removeLast()
     #expect(game.bodies.count == 126)
     let recoverySources = try game.retainedMissionActorAdmissionSources()
