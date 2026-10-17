@@ -8,8 +8,11 @@ struct GameCommanderStorageTests {
     var original = Game(executive: false)
     try original.commander.prepareEquipment(legacy: false)
     original.commander.cargo[0] = 2
-    let station = ScriptStationResource(identity: UUID(), galaxy: 0, system: 7)
+    let station = ScriptStationResource(
+      identity: Game.worldResourceIdentity("main-station-v1:main-orbital:0:7"),
+      galaxy: 0, system: 7)
     original.commander.scriptState.stationResources[station.key] = station
+    try #require(original.commander.valid)
     let retained = original
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.sortedKeys]
@@ -18,9 +21,13 @@ struct GameCommanderStorageTests {
     var copy = original
     try copy.commander.storeEquipment(
       laser, expectedRevision: #require(copy.commander.equipmentInventory?.revision))
+    try #require(copy.commander.valid)
     copy.commander.cargo[0] = 9
+    try #require(copy.commander.valid)
     copy.commander.scriptState.stationResources[station.key]?.energy = 50
+    try #require(copy.commander.valid)
     copy.commander.credits += 10
+    try #require(copy.commander.valid)
     let changed = copy.commander
     #expect(changed != retained.commander)
     #expect(copy.commander.fittedEquipment(at: .laser(.front)) == nil)
@@ -28,7 +35,10 @@ struct GameCommanderStorageTests {
     #expect(original.commander == retained.commander)
     #expect(try encoder.encode(original.commander) == bytes)
     original.commander.cargo[0] = 5
+    try #require(original.commander.valid)
+    original.commander.scriptState.stationResources[station.key]?.energy = 0
     original.commander.scriptState.stationResources[station.key]?.destroyed = true
+    try #require(original.commander.valid)
     #expect(copy.commander == changed && retained.commander.cargo[0] == 2)
     #expect(retained.commander.scriptState.stationResources[station.key] == station)
     let replacement = Commander()
@@ -64,12 +74,16 @@ struct GameCommanderStorageTests {
     var initial = Game(executive: false)
     initial.screen = .status
     try initial.commander.prepareEquipment(legacy: false)
+    let supplied = initial.commander
     let runtime = GameRuntime(game: initial)
     let retained = await runtime.snapshot()
+    let authorityBefore = retained.commander
+    #expect(initial.commander == supplied)
     for key in "xyzzy" { await runtime.key(String(key)) }
     let committed = await runtime.snapshot()
     try #require(committed.commander.name == "CLARKE" && committed.commander.xyzzyActive)
-    #expect(committed.commander.valid && retained.commander == initial.commander)
+    try #require(committed.commander.valid)
+    #expect(retained.commander == authorityBefore && initial.commander == supplied)
     #expect(retained.commander.name == "JAMESON" && !retained.commander.xyzzyActive)
     #expect(committed.commander.equipmentInventory != retained.commander.equipmentInventory)
     var caller = committed
@@ -80,7 +94,7 @@ struct GameCommanderStorageTests {
       laser, expectedRevision: #require(caller.commander.equipmentInventory?.revision))
     #expect(caller.commander != committed.commander)
     #expect(await runtime.snapshot().commander == committed.commander)
-    #expect(retained.commander == initial.commander)
+    #expect(retained.commander == authorityBefore && initial.commander == supplied)
   }
 
   @Test func failedActualLaunchPublicationRollsBackNestedStateAndRetryKeepsOldSnapshots()
