@@ -12,6 +12,14 @@ private struct LedgerImpactFixture {
   let rock: MiningRock?
 }
 
+private struct LedgerImpactFacts {
+  let proof: MissionNativeImpactProof
+  let context: EncounterContext
+  let origin: AttackOrigin
+  let eventID: UInt64
+  let rock: MiningRock?
+}
+
 /// Real retained pack, native allocators and geometric producer; no sealed constructor is used.
 private func ledgerImpactFixture(
   reentry: Bool = false, absentSource: Bool = false, incidental: Bool = false,
@@ -22,6 +30,19 @@ private func ledgerImpactFixture(
     .appendingPathComponent("docs/mission-packs/profiled-skirmish")
   let pack = try ScriptPackLibrary.read(directory)
   var game = Game(executive: false)
+  let instance = try prepareLedgerImpactLaunch(&game, pack: pack, emissionTime: emissionTime)
+  let facts = try prepareLedgerImpactContact(
+    &game, instance: instance, reentry: reentry, absentSource: absentSource,
+    incidental: incidental, mining: mining, fragileRock: fragileRock)
+  return .init(
+    game: game, proof: facts.proof, context: facts.context, origin: facts.origin,
+    eventID: facts.eventID, rock: facts.rock)
+}
+
+// Finish native launch before reserving the contact producer's later whole-Game temporaries.
+private func prepareLedgerImpactLaunch(
+  _ game: inout Game, pack: ScriptPack, emissionTime: Double
+) throws -> UUID {
   game.screen = .status
   game.scriptPacks = [pack]
   let instance = try game.acceptScriptMission(pack)
@@ -30,6 +51,13 @@ private func ledgerImpactFixture(
   game.drainScriptEvents()
   game.commander.flightSimulation.advancePhysicalTime(emissionTime)
   game.ensurePhysicalActors()
+  return instance
+}
+
+private func prepareLedgerImpactContact(
+  _ game: inout Game, instance: UUID, reentry: Bool, absentSource: Bool,
+  incidental: Bool, mining: Bool, fragileRock: Bool
+) throws -> LedgerImpactFacts {
   let source = try #require(
     game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
   let descriptor = try #require(game.currentMissionActorDescriptor(bodyID: source.id))
@@ -113,8 +141,7 @@ private func ledgerImpactFixture(
   let current = try #require(game.gameplayContext())
   let evaluatedResult4 = game.commander.flightSimulation.allocateIncident()
   let event = try #require(evaluatedResult4)
-  return .init(
-    game: game, proof: proof, context: current, origin: origin, eventID: event, rock: rock)
+  return .init(proof: proof, context: current, origin: origin, eventID: event, rock: rock)
 }
 
 struct MissionLedgerImpactTests {
@@ -162,30 +189,8 @@ struct MissionLedgerImpactTests {
   }
 
   @Test func scopedCrimeMatchesOrdinaryCurrentVisitPlasmaAndRejectsStaleContext() throws {
-    let fixture = try ledgerImpactFixture()
-    var ordinary = CrimeLedger()
-    var scoped = CrimeLedger()
-    let point =
-      fixture.context.player.position
-      + fixture.context.player.orientation.apply(fixture.proof.hit.point)
-    let incident = CombatIncident(
-      id: fixture.eventID, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
-      victim: fixture.proof.currentVictim, kind: .plasma, outcome: .destruction,
-      position: point, victimLegalBeforeAttack: fixture.context.player.legal,
-      firstAggressor: nil, victimRole: nil, victimIsStation: false)
-    let expected = ordinary.record(incident, context: fixture.context)
-    let actual = scoped.recordMissionReentryImpact(
-      fixture.proof, eventID: fixture.eventID, outcome: .destruction, context: fixture.context)
-    #expect(actual == expected)
-    var changed = fixture.game
-    changed.gameplayRevision += 1
-    let stale = try #require(changed.gameplayContext())
-    let before = scoped
-    let evaluatedResult7 = !scoped.recordMissionReentryImpact(
-      fixture.proof, eventID: fixture.eventID + 1, outcome: .hit, context: stale
-    ).accepted
-    #expect(evaluatedResult7)
-    #expect(scoped == before)
+    var fixture = try ledgerImpactFixture()
+    try verifyScopedCrime(&fixture)
   }
 
   @Test func sealedPlasmaRockHitSharesOrdinaryArithmeticAndNeverExtractsMiningOre() throws {
@@ -236,62 +241,13 @@ struct MissionLedgerImpactTests {
 
   @Test(arguments: ["missing-source", "source-role", "target"])
   func aChangedActualSourceOrTargetRefusesAnOlderSealedContact(change: String) throws {
-    let fixture = try ledgerImpactFixture(incidental: true)
-    var changed = fixture.game
-    if change == "target" {
-      let index = try #require(changed.bodies.firstIndex { $0.id == fixture.proof.targetBody?.id })
-      changed.bodies[index].energy -= 1
-    } else if change == "source-role" {
-      let index = try #require(
-        changed.bodies.firstIndex { $0.physical?.identity == fixture.proof.currentSource })
-      changed.bodies[index].physical?.npc = .init(
-        role: .police, origin: fixture.context.system, destination: fixture.context.system)
-    } else {
-      changed.bodies.removeAll { $0.physical?.identity == fixture.proof.currentSource }
-    }
-    let current = try #require(changed.gameplayContext())
-    var ledger = CrimeLedger()
-    let before = ledger
-    let evaluatedResult11 = !ledger.recordMissionReentryImpact(
-      fixture.proof, eventID: fixture.eventID, outcome: .hit, context: current
-    ).accepted
-    #expect(evaluatedResult11)
-    #expect(ledger == before)
+    var fixture = try ledgerImpactFixture(incidental: true)
+    try verifyChangedActualContact(&fixture, change: change)
   }
 
   @Test func fullPartialCapacityRefusesPlasmaWithoutAdvancingEventOrLosingCustody() throws {
-    let fixture = try ledgerImpactFixture(mining: true)
-    let rock = try #require(fixture.rock)
-    try #require(rock.energy > fixture.proof.damage)
-    var encoded = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(MiningLedger(seed: 17)))
-        as? [String: Any])
-    var pairs: [Any] = []
-    for index in 0..<(MiningLedger.maximumPartial + 1) {
-      let id = RockIdentity(
-        system: .init(galaxy: 1, system: index / 48),
-        field: UInt16((index % 48) / 12), rock: UInt16(index % 12))
-      pairs.append(try JSONSerialization.jsonObject(with: JSONEncoder().encode(id)))
-      pairs.append(100.0)
-      if pairs.count == MiningLedger.maximumPartial * 2 { break }
-    }
-    encoded["partial"] = pairs
-    encoded["lastIncident"] = fixture.eventID - 1 == 0 ? 1 : fixture.eventID - 1
-    var ledger = try JSONDecoder().decode(
-      MiningLedger.self,
-      from: JSONSerialization.data(withJSONObject: encoded))
-    let before = ledger
-    // The next native allocation is newer than the retained ledger's previous physical event.
-    var host = fixture.game
-    let evaluatedResult12 = host.commander.flightSimulation.allocateIncident()
-    let event = try #require(evaluatedResult12)
-    let evaluatedResult13 =
-      ledger.hit(
-        rock: rock, proof: fixture.proof, eventID: event,
-        context: fixture.context) == .capacityRefused
-    #expect(evaluatedResult13)
-    #expect(ledger == before && !ledger.isDepleted(rock.identity))
-    #expect(ledger.remainingEnergy(for: rock) == rock.energy && ledger.pendingPayloads.isEmpty)
+    var fixture = try ledgerImpactFixture(mining: true)
+    try verifyFullPartialCapacity(&fixture)
   }
 
   @Test func plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield() throws {
@@ -355,7 +311,97 @@ struct MissionLedgerImpactTests {
   }
 
   @Test func futurePresentLaunchRefusesBeforeEventOrDeathWhileExactNowAndOlderRemainValid() throws {
-    let fixture = try ledgerImpactFixture(reentry: true, emissionTime: 2)
+    var fixture = try ledgerImpactFixture(reentry: true, emissionTime: 2)
+    try verifyLaunchTimes(&fixture)
+  }
+
+  // Keep verification-only Game copies out of the caller frame during fixture launch.
+  private func verifyScopedCrime(_ fixture: inout LedgerImpactFixture) throws {
+    var ordinary = CrimeLedger()
+    var scoped = CrimeLedger()
+    let point =
+      fixture.context.player.position
+      + fixture.context.player.orientation.apply(fixture.proof.hit.point)
+    let incident = CombatIncident(
+      id: fixture.eventID, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
+      victim: fixture.proof.currentVictim, kind: .plasma, outcome: .destruction,
+      position: point, victimLegalBeforeAttack: fixture.context.player.legal,
+      firstAggressor: nil, victimRole: nil, victimIsStation: false)
+    let expected = ordinary.record(incident, context: fixture.context)
+    let actual = scoped.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .destruction, context: fixture.context)
+    #expect(actual == expected)
+    var changed = fixture.game
+    changed.gameplayRevision += 1
+    let stale = try #require(changed.gameplayContext())
+    let before = scoped
+    let evaluatedResult7 = !scoped.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID + 1, outcome: .hit, context: stale
+    ).accepted
+    #expect(evaluatedResult7)
+    #expect(scoped == before)
+  }
+
+  private func verifyChangedActualContact(_ fixture: inout LedgerImpactFixture, change: String)
+    throws
+  {
+    var changed = fixture.game
+    if change == "target" {
+      let index = try #require(changed.bodies.firstIndex { $0.id == fixture.proof.targetBody?.id })
+      changed.bodies[index].energy -= 1
+    } else if change == "source-role" {
+      let index = try #require(
+        changed.bodies.firstIndex { $0.physical?.identity == fixture.proof.currentSource })
+      changed.bodies[index].physical?.npc = .init(
+        role: .police, origin: fixture.context.system, destination: fixture.context.system)
+    } else {
+      changed.bodies.removeAll { $0.physical?.identity == fixture.proof.currentSource }
+    }
+    let current = try #require(changed.gameplayContext())
+    var ledger = CrimeLedger()
+    let before = ledger
+    let evaluatedResult11 = !ledger.recordMissionReentryImpact(
+      fixture.proof, eventID: fixture.eventID, outcome: .hit, context: current
+    ).accepted
+    #expect(evaluatedResult11)
+    #expect(ledger == before)
+  }
+
+  private func verifyFullPartialCapacity(_ fixture: inout LedgerImpactFixture) throws {
+    let rock = try #require(fixture.rock)
+    try #require(rock.energy > fixture.proof.damage)
+    var encoded = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(MiningLedger(seed: 17)))
+        as? [String: Any])
+    var pairs: [Any] = []
+    for index in 0..<(MiningLedger.maximumPartial + 1) {
+      let id = RockIdentity(
+        system: .init(galaxy: 1, system: index / 48),
+        field: UInt16((index % 48) / 12), rock: UInt16(index % 12))
+      pairs.append(try JSONSerialization.jsonObject(with: JSONEncoder().encode(id)))
+      pairs.append(100.0)
+      if pairs.count == MiningLedger.maximumPartial * 2 { break }
+    }
+    encoded["partial"] = pairs
+    encoded["lastIncident"] = fixture.eventID - 1 == 0 ? 1 : fixture.eventID - 1
+    var ledger = try JSONDecoder().decode(
+      MiningLedger.self,
+      from: JSONSerialization.data(withJSONObject: encoded))
+    let before = ledger
+    // The next native allocation is newer than the retained ledger's previous physical event.
+    var host = fixture.game
+    let evaluatedResult12 = host.commander.flightSimulation.allocateIncident()
+    let event = try #require(evaluatedResult12)
+    let evaluatedResult13 =
+      ledger.hit(
+        rock: rock, proof: fixture.proof, eventID: event,
+        context: fixture.context) == .capacityRefused
+    #expect(evaluatedResult13)
+    #expect(ledger == before && !ledger.isDepleted(rock.identity))
+    #expect(ledger.remainingEnergy(for: rock) == rock.energy && ledger.pendingPayloads.isEmpty)
+  }
+
+  private func verifyLaunchTimes(_ fixture: inout LedgerImpactFixture) throws {
     try #require(fixture.proof.archive?.origin.emittedAt == 2)
     var earlier = fixture.game
     // Model an admitted persisted clock older than the retained launch; the proof itself
