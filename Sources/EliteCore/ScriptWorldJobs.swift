@@ -192,7 +192,10 @@ extension Game {
     notify("WORLD JOB SUSPENDED - SEE MISSION GALLERY")
     guard error is MissionPackError, let publish else { return }
     var candidate = self
-    try? publish(&candidate)
+    do {
+      try publish(&candidate)
+      self = candidate
+    } catch { return }
   }
 }
 

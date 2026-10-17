@@ -232,4 +232,101 @@ struct StartupSaveRegistrationTests {
     }
     #expect(await trialRuntime.takeNewCommanderSaveReceipt() == nil)
   }
+
+  @Test(arguments: [false, true])
+  func actorRestartRetainsUnpublishedDestinationOrUnacknowledgedSuccess(published: Bool)
+    async throws
+  {
+    let directory = registrationDirectory()
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let url = directory.appendingPathComponent("commander.json")
+    var game = Game(executive: false)
+    game.screen = .gameOver
+    let runtime = GameRuntime(game: game)
+    _ = try await runtime.registerNewCommanderDestination(at: url)
+    if published { try await runtime.save(to: url) }
+    await runtime.key("return")
+    let restarted = await runtime.snapshot()
+    #expect(restarted.screen == .status && restarted.scriptDurabilityAvailable)
+    if published {
+      #expect(restarted.pendingNewSaveDestination == nil)
+      let receipt = await runtime.takeNewCommanderSaveReceipt()
+      #expect(receipt?.url == url && receipt?.isTrial == false)
+      #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
+    } else {
+      #expect(restarted.pendingNewSaveDestination == url)
+      #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
+      try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+      let collision = Data("arrived after restart".utf8)
+      try collision.write(to: url)
+      await runtime.key("0")
+      let refused = await runtime.snapshot()
+      #expect(refused.commander == restarted.commander && refused.docked)
+      #expect(refused.pendingNewSaveDestination == url)
+      #expect(try Data(contentsOf: url) == collision)
+      #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
+    }
+  }
+
+  @MainActor @Test(arguments: [false, true])
+  func startupRegistrationFailureStillProcessesExplicitFileRecoveryAndFlight(open: Bool)
+    async throws
+  {
+    _ = NSApplication.shared
+    let identifier = UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: identifier))
+    let directory = registrationDirectory()
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let blocker = directory.appendingPathComponent("blocked")
+    let original = Data("not a writable save directory".utf8)
+    try original.write(to: blocker)
+    let saves = CommanderSaveSession(
+      preferences: preferences, defaultURL: blocker.appendingPathComponent("commander.json"))
+    var errors: [any Error] = []
+    let delegate = AppDelegate(
+      restoreOnLaunch: false, saves: saves, commanderFileFailure: { errors.append($0) })
+    let view = GameView(frame: NSRect(x: 0, y: 0, width: 768, height: 768))
+    let window = NSWindow(contentRect: view.frame, styleMask: [], backing: .buffered, defer: false)
+    window.isReleasedWhenClosed = false
+    window.contentView = view
+    delegate.window = window
+    defer {
+      window.orderOut(nil)
+      window.delegate = nil
+      preferences.removePersistentDomain(forName: identifier)
+      try? FileManager.default.removeItem(at: directory)
+    }
+    await delegate.prepareNewCommanderSaveIfNeeded(afterFailedRestore: false)
+    #expect(errors.count == 1)
+    #expect(!(await delegate.runtime.hasCommanderSaveDestination()))
+    #expect(preferences.persistentDomain(forName: identifier) == nil)
+    #expect(try Data(contentsOf: blocker) == original)
+    let recovery = directory.appendingPathComponent("recovered.json")
+    if open {
+      try JSONEncoder().encode(Commander()).write(to: recovery)
+      delegate.queueCommanderFile(.open(recovery))
+    } else {
+      delegate.queueCommanderFile(.saveAs(recovery))
+    }
+    await delegate.processPendingCommands(in: view)
+    #expect(errors.count == 1 && view.pending.isEmpty)
+    #expect(await delegate.runtime.hasCommanderSaveDestination())
+    #expect(saves.activeURL == recovery)
+    if !open {
+      for _ in 0..<121 { _ = await delegate.runtime.advance(delta: 0.1) }
+      view.pending.append(" ")
+    }
+    view.pending.append("0")
+    view.controls.pitch = 0.35
+    await delegate.processFrame(in: view, delta: { 0.1 })
+    let flying = await delegate.runtime.snapshot()
+    #expect(!flying.docked && flying.scriptDurabilityAvailable && flying.requiresScriptDurability)
+    #expect(flying.commander.flightSimulation.physicalTime > 0 && flying.pitch != 0)
+    #expect(view.game.commander == flying.commander && view.pending.isEmpty)
+    let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: recovery), from: recovery)
+    #expect(saved.valid && saved.nativeStations != nil)
+    #expect(saved.equipmentInventory == flying.commander.equipmentInventory)
+    #expect(try Data(contentsOf: blocker) == original)
+  }
+
 }

@@ -1748,6 +1748,8 @@ public actor GameRuntime {
     if before.screen == .gameOver, [" ", "return"].contains(key) {
       game.scriptPacks = before.scriptPacks
       game.missionPacks = before.missionPacks
+      game.pendingNewSaveDestination = before.pendingNewSaveDestination
+      game.newCommanderSaveReceipt = before.newCommanderSaveReceipt
     }
     do { try commitScriptCommand(from: before) } catch {
       game = before
