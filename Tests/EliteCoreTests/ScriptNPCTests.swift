@@ -651,9 +651,11 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   // Keep future rendering copies and verification temporaries out of the deep emission call.
   game.advanceScriptNPCWeapons(delta: 0.1)
   verifyActualNPCCrossfireFirstEmission(&game, shooter: shooter, target: target)
-  verifyActualNPCCrossfireBeams(&game, shooter: shooter, expected: 2)
+  let intactHull = verifyActualNPCCrossfireBeams(&game, shooter: shooter, expected: 2)
   try destroyActualNPCCrossfireTurret(&game, shooter: shooter, target: target)
-  verifyActualNPCCrossfireBeams(&game, shooter: shooter, expected: 1)
+  let damagedHull = verifyActualNPCCrossfireBeams(&game, shooter: shooter, expected: 1)
+  // The implicit draw path must also remove the actual destroyed component's hull panels.
+  #expect(intactHull != damagedHull)
 }
 
 private func arrangeActualNPCCrossfire(_ game: inout Game, id: UUID) throws -> (Int, Int) {
@@ -676,7 +678,9 @@ private func verifyActualNPCCrossfireFirstEmission(_ game: inout Game, shooter: 
   game.commander.shipDisplayStyle = .shadedPanels
 }
 
-private func verifyActualNPCCrossfireBeams(_ game: inout Game, shooter: Int, expected: Int) {
+private func verifyActualNPCCrossfireBeams(_ game: inout Game, shooter: Int, expected: Int)
+  -> [Graphic]
+{
   func colouredBeams(_ frame: Frame) -> Int {
     frame.graphics.filter {
       if case .panel(let panel) = $0 { return panel.colour == 4_281_597_951 }
@@ -686,6 +690,10 @@ private func verifyActualNPCCrossfireBeams(_ game: inout Game, shooter: Int, exp
   var frame = Frame()
   Display.draw(game.bodies[shooter], game: game, into: &frame)
   #expect(colouredBeams(frame) == expected)
+  return frame.graphics.filter {
+    if case .panel(let panel) = $0 { return panel.colour != 4_281_597_951 }
+    return true
+  }
 }
 
 private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, target: Int) throws {
