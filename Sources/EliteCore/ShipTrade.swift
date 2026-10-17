@@ -50,6 +50,13 @@ extension Game {
   private func shipTransferIssues(to projected: Commander) -> [String] {
     let next = projected.performance
     var issues: [String] = []
+    if !(commander.nativePeople?.held.isEmpty ?? true),
+      commander.cargoTonnes > projected.standardCargoCapacity
+    {
+      issues.append(
+        "Protected people require real hold space. Transfer them explicitly before choosing this hull."
+      )
+    }
     if commander.cargoTonnes > projected.capacity {
       issues.append(
         "Sell cargo first: hold requires \(commander.cargoTonnes)t; new capacity \(projected.capacity)t. Mission cargo cannot be sold."

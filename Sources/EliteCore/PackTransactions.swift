@@ -45,7 +45,7 @@ extension Commander {
         throw MissionPackError("Invalid commodity.")
       }
       if action.kind == "cargoRemove" {
-        guard cargo[index] >= amount else {
+        guard sellableCargo(index) >= amount else {
           throw MissionPackError("Marked mission cargo required.")
         }
         cargo[index] -= amount

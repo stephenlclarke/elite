@@ -848,7 +848,10 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   /// Disabled-source plans retain their original known manifest and legal provenance after every cut.
   func empSourceIsConsistent(_ record: EMPHullRecord) -> Bool {
     let matching = plans.filter { $0.key.wreck == record.wreck }
-    guard matching.isEmpty || (record.pods.count == record.crewTotal && record.lostCrewCount == 0),
+    guard
+      matching.isEmpty
+        || (record.pods.count + record.capturedCrewCount == record.crewTotal
+          && record.lostCrewCount == 0),
       let catalogue = record.hull.body.physical?.catalogueShipID,
       let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue)
     else { return false }

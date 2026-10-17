@@ -12,8 +12,10 @@ public struct ContractBoardRow: Sendable {
   public let reason: String?
   var rrs: RRSCourierRow? = nil
   var finance: ScriptFinanceRow? = nil
+  var people: NativePeopleStationRow? = nil
   public var key: String {
-    finance?.key ?? rrs?.key ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
+    people?.key ?? finance?.key ?? rrs?.key
+      ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
   }
 }
 public struct ContractScreenSave: Codable, Sendable {
@@ -30,6 +32,7 @@ private enum ContractBoardReview: Sendable {
   case contract(ContractAcceptanceQuote)
   case rrs(RRSCourierQuote)
   case finance(ScriptFinanceQuote)
+  case people(NativePeopleStationQuote)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -80,6 +83,19 @@ public struct ContractBoardUI: Sendable {
     }
   }
   var reviewToken = UUID()
+  var peopleQuote: NativePeopleStationQuote? {
+    get {
+      guard case .people(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .people(newValue)
+      } else if case .people(_)? = review {
+        review = nil
+      }
+    }
+  }
   var previous: Screen = .status
   var restoredSelection: String?
   public init() {}
@@ -122,6 +138,7 @@ extension Game {
     candidate.contractBoard.quote = nil
     candidate.contractBoard.rrsQuote = nil
     candidate.contractBoard.financeQuote = nil
+    candidate.contractBoard.peopleQuote = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
   }
@@ -133,7 +150,7 @@ extension Game {
     failures: [String: String] = [:], restoring save: ContractScreenSave? = nil
   ) {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
-    var rows = rrsCourierRows + financeRows
+    var rows = rrsCourierRows + financeRows + nativePeopleRows
     for pack in scriptPacks.sorted(by: {
       ($0.manifest.id, $0.manifest.version, $0.digest) < (
         $1.manifest.id, $1.manifest.version, $1.digest
@@ -164,13 +181,20 @@ extension Game {
       contractBoard.scroll = save.scroll
       contractBoard.previous = save.previous
       refreshSelectedContractQuote()
-      if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil {
+      if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
+        || contractBoard.peopleQuote != nil
+      {
         contractBoard.action = .back
       }
     }
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let row = contractBoard.selected?.people {
+      contractBoard.peopleQuote = nativePeopleQuote(row)
+      return
+    }
+    contractBoard.peopleQuote = nil
     if let row = contractBoard.selected?.finance {
       contractBoard.financeQuote = financeQuote(for: row)
       return
@@ -192,6 +216,7 @@ extension Game {
         contractBoard.quote = nil
         contractBoard.rrsQuote = nil
         contractBoard.financeQuote = nil
+        contractBoard.peopleQuote = nil
       } else {
         screen = contractBoard.previous
       }
@@ -228,9 +253,23 @@ extension Game {
       contractBoard.quote = nil
       contractBoard.rrsQuote = nil
       contractBoard.financeQuote = nil
+      contractBoard.peopleQuote = nil
       return
     }
     do {
+      if let row = contractBoard.selected?.people {
+        guard contractBoard.action == .accept, let quote = contractBoard.peopleQuote,
+          quote.row == row
+        else {
+          throw MissionPackError("Review the person transfer and choose Confirm or Back.")
+        }
+        try confirmNativePeople(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.peopleQuote = nil
+        notify("PERSON TRANSFER RECORDED")
+        return
+      }
       if let row = contractBoard.selected?.finance {
         guard let quote = contractBoard.financeQuote, quote.row == row else {
           throw MissionPackError("Review the financial terms before confirming.")
@@ -344,6 +383,7 @@ extension GameRuntime {
   public func contractClick(x: Double, y: Double, expectedOffer: UUID?, detail: Bool, epoch: UUID) {
     guard game.screen == .contracts, game.ecmControl.epoch == epoch,
       game.contractBoard.selected?.finance == nil,
+      game.contractBoard.selected?.people == nil,
       game.contractBoard.detail == detail, game.contractBoard.quote?.offer == expectedOffer
     else { return }
     nativeCommand { $0.contractClick(x: x, y: y) }

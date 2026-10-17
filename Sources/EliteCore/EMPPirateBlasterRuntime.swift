@@ -14,12 +14,22 @@ extension Game {
   }
 
   func empTargetStatus(_ body: SpaceBody) -> String? {
-    if body.physical?.empCrewPod != nil { return "OCCUPIED ESCAPE POD - PROTECTED" }
+    if body.physical?.empCrewPod != nil {
+      guard let context = gameplayContext(), let pod = nativePodFacts(body, context: context) else {
+        return "OCCUPIED ESCAPE POD - PROTECTED"
+      }
+      if !hasNativeRescueTools { return "OCCUPIED POD - FIT SALVAGE MODULE AND FUEL SCOOPS" }
+      return pod.fits ? "OCCUPIED POD - SINGLE 1T RESCUE UNIT" : "OCCUPIED POD - REAL HOLD FULL"
+    }
     guard let source = body.physical?.empSource,
       let record = commander.savedEMPState?.records[source], isEMPDisabled(body)
     else { return nil }
     if record.crewAboard > 0 {
-      return "ENGINES AND WEAPONS DISABLED - CREW ABOARD \(record.crewAboard)"
+      let inWindow =
+        record.crewDeadline.map { commander.flightSimulation.physicalTime < $0 } ?? false
+      return inWindow
+        ? "DISABLED - \(record.crewAboard) CREW ABOARD / CUTTER CAPTURE"
+        : "CREW RECOVERY DEADLINE - CAPTURE CLOSED"
     }
     if let profile = salvageProfile(for: body),
       profile.sections.allSatisfy({
@@ -93,7 +103,7 @@ extension Game {
     candidate.bodies[current].physical?.salvage = .init(
       category: .wreck, ownership: .occupied, claimant: nil, wreck: wreck, section: nil, lot: nil,
       bounds: profile.bounds, workSurfaces: profile.surfaces(wreck: wreck))
-    let record = EMPHullRecord(
+    var record = EMPHullRecord(
       source: logical, sequence: sequence, wreck: wreck, crewTotal: crew,
       originalSpawn: physical.spawnIdentity, originalBodyID: id, custody: custody,
       disableIncident: incident, weapon: tool, weaponOwner: owner,
@@ -101,7 +111,9 @@ extension Game {
         body: candidate.bodies[current], pose: candidate.commander.flightSimulation.pose,
         time: context.physicalTime), cargo: npc.ordinaryCargo, legal: npc.legal,
       nextEjectionAt: context.physicalTime + 1)
-    guard record.valid else { return false }
+    let ejections = candidate.sampleEMPCrewEjections(ordinals: record.aboardOrdinals)
+    guard record.appendCrewDisableEpisode(incident: incident, ejections: ejections), record.valid
+    else { return false }
     state.records[logical] = record
     state.nextSequence += 1
     candidate.commander.savedEMPState = state

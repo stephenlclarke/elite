@@ -80,6 +80,7 @@ extension Commander {
     return state.records.values.allSatisfy { record in
       let incident = record.disableIncident
       guard record.weaponOwner == equipmentOwnerID,
+        record.crewEpisodeTimelineValid(flight: flightSimulation),
         salvageLedger.empSourceIsConsistent(record),
         record.source.entity < flightSimulation.nextActor,
         record.source.visit <= flightSimulation.visit,

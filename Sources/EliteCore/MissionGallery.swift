@@ -58,7 +58,7 @@ extension Game {
   }
   public var missionCatalogue: [GalleryMission] {
     missionPacks.entries.map { packGallery($0) } + missingPackGallery + scriptGallery
-      + rrsCourierGallery
+      + rrsCourierGallery + [nativePeopleGalleryEntry]
   }
   private var galleryMissionIDs: [String] {
     let installed = missionPacks.entries.map { $0.pack.stateID }
@@ -72,6 +72,7 @@ extension Game {
     }
     return legacy.map { "legacy:" + $0 } + scripted
       + rrsCourierGallery.compactMap { $0.nativeRRSCourierID.map { "rrs-job:" + $0.uuidString } }
+      + ["native-people:" + NativePeopleGallery.digest]
   }
   mutating func replaceMissionPacks(_ library: MissionPackLibrary) {
     let previous = galleryMissionIDs

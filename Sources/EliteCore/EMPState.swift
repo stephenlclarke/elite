@@ -39,7 +39,7 @@ struct EMPStoredObject: Equatable, Codable, Sendable {
 }
 
 enum EMPCrewCustodyOutcome: String, Sendable {
-  case aboard, occupiedPod, deceasedWithHull
+  case aboard, occupiedPod, captured, deceasedWithHull
 }
 
 struct EMPHullRecord: Equatable, Codable, Sendable {
@@ -60,12 +60,43 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
   var nextEjectionAt = 0.0
   var terminal = false
   var lostCrewCount = 0
-  var crewAboard: Int { crewTotal - pods.count - lostCrewCount }
-  var deceasedOrdinals: Range<Int> { (crewTotal - lostCrewCount)..<crewTotal }
+  var savedCrewCaptures: [NativeCrewCaptureReceipt]?
+  var savedDisableEpisodes: [EMPCrewDisableEpisode]?
+  var savedDeceasedOrdinals: [Int]?
+  var crewCaptures: [NativeCrewCaptureReceipt] {
+    get { savedCrewCaptures ?? [] }
+    set { savedCrewCaptures = newValue.isEmpty ? nil : newValue }
+  }
+  var capturedCrewCount: Int {
+    guard crewCaptures.count <= EMPState.maximumPeople,
+      crewCaptures.allSatisfy({ (1...EMPState.maximumPeople).contains($0.count) })
+    else { return EMPState.maximumPeople + 1 }
+    return crewCaptures.reduce(0) { $0 + $1.count }
+  }
+  var crewAboard: Int {
+    guard (1...EMPState.maximumPeople).contains(crewTotal),
+      (0...crewTotal).contains(lostCrewCount), pods.count <= crewTotal,
+      capturedCrewCount <= crewTotal
+    else { return -1 }
+    return crewTotal - pods.count - lostCrewCount - capturedCrewCount
+  }
+  var crewDeadline: Double? {
+    let deadline = currentCrewDisableIncident.physicalTime + 30
+    return deadline.isFinite && deadline >= currentCrewDisableIncident.physicalTime ? deadline : nil
+  }
+  var deceasedOrdinals: [Int] {
+    if let savedDeceasedOrdinals { return savedDeceasedOrdinals }
+    guard (1...EMPState.maximumPeople).contains(crewTotal),
+      (0...crewTotal).contains(lostCrewCount)
+    else { return [] }
+    // Schema 22/23 recorded a contiguous tail before any native captures existed.
+    return Array((crewTotal - lostCrewCount)..<crewTotal)
+  }
 
   func crewOutcome(ordinal: Int) -> EMPCrewCustodyOutcome? {
     guard (0..<crewTotal).contains(ordinal) else { return nil }
-    if ordinal < pods.count { return .occupiedPod }
+    if podIndex(for: ordinal) != nil { return .occupiedPod }
+    if crewCaptures.contains(where: { $0.contains(ordinal) }) { return .captured }
     return deceasedOrdinals.contains(ordinal) ? .deceasedWithHull : .aboard
   }
 
@@ -94,6 +125,15 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
       originalSpawn?.system == source.system || originalSpawn == nil, wreck.system == source.system,
       wreck.site == 0x8000_0000 + UInt32(sequence), wreck.lineage == source.visit,
       (1...EMPState.maximumPeople).contains(crewTotal), pods.count <= crewTotal,
+      capturedCrewCount <= crewTotal - pods.count, crewAboard >= 0, crewDeadline != nil,
+      crewCensusValid,
+      crewCaptures.count <= EMPState.maximumPeople,
+      savedCrewCaptures == nil || !crewCaptures.isEmpty,
+      Set(crewCaptures.map(\.operation)).count == crewCaptures.count,
+      crewCaptures.allSatisfy({ $0.valid(record: self) }),
+      crewCaptures.enumerated().allSatisfy({ index, receipt in
+        index == 0 || receipt.physicalTime >= crewCaptures[index - 1].physicalTime
+      }),
       hull.valid, hull.body.physical?.empSource == source,
       hull.body.physical?.empCrewPod == nil,
       hull.body.physical?.spawnIdentity?.producer == .emp,
@@ -117,7 +157,7 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
       (0...255).contains(legal.value), legal.bountyTenths >= 0,
       nextEjectionAt.isFinite, nextEjectionAt >= 0,
       terminal == (hull.body.energy <= 0),
-      lostCrewCount == (terminal ? crewTotal - pods.count : 0)
+      lostCrewCount == (terminal ? crewTotal - pods.count - capturedCrewCount : 0)
     else { return false }
     if !terminal {
       guard hull.body.physical?.salvage?.ownership == (crewAboard > 0 ? .occupied : .abandoned),
@@ -127,13 +167,16 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
         crewAboard == 0 || hull.body.physical?.npc?.ordinaryCargo == cargo
       else { return false }
     }
-    return pods.enumerated().allSatisfy { index, pod in
-      pod.valid && pod.body.energy > 0 && pod.body.hull == .cargo
-        && pod.body.physical?.empCrewPod == .init(source: source, ordinal: index)
+    return pods.allSatisfy { pod in
+      guard let person = pod.body.physical?.empCrewPod,
+        person.source == source, (0..<crewTotal).contains(person.ordinal)
+      else { return false }
+      return
+        pod.valid && pod.body.energy > 0 && pod.body.hull == .cargo
         && pod.body.physical?.empSource == nil && pod.body.physical?.npc == nil
         && pod.body.physical?.spawnIdentity?.producer == .emp
         && pod.body.physical?.spawnIdentity?.sequence == sequence
-        && pod.body.physical?.spawnIdentity?.member == UInt16(index + 1)
+        && pod.body.physical?.spawnIdentity?.member == UInt16(person.ordinal + 1)
         && pod.body.physical?.spawnIdentity?.system == source.system
         && pod.body.physical?.population == .cargo && !pod.body.hostile
         && pod.body.physical?.catalogueShipID == "SH040"
@@ -144,6 +187,45 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
         && pod.body.physical?.salvage?.section == nil && pod.body.physical?.salvage?.lot == nil
         && pod.body.physical?.salvage?.workSurfaces.isEmpty == true
     }
+  }
+}
+
+extension EMPHullRecord {
+  private enum CodingKeys: String, CodingKey {
+    case source, sequence, wreck, crewTotal, originalSpawn, originalBodyID, custody, disableIncident
+    case weapon, weaponOwner, pods, hull, cargo, legal, nextEjectionAt, terminal, lostCrewCount,
+      savedCrewCaptures, savedDisableEpisodes, savedDeceasedOrdinals
+  }
+  init(from decoder: any Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    let captures = try NativePeopleDecoding.array(
+      values, key: .savedCrewCaptures, type: NativeCrewCaptureReceipt.self)
+    let episodes = try NativePeopleDecoding.array(
+      values, key: .savedDisableEpisodes, type: EMPCrewDisableEpisode.self,
+      maximum: Self.maximumDisableEpisodes)
+    let deceased = try NativePeopleDecoding.array(
+      values, key: .savedDeceasedOrdinals, type: Int.self)
+    guard let pods = try NativePeopleDecoding.array(values, key: .pods, type: EMPStoredObject.self)
+    else { throw SaveError.invalidCommander }
+    self.init(
+      source: try values.decode(ActorIdentity.self, forKey: .source),
+      sequence: try values.decode(UInt64.self, forKey: .sequence),
+      wreck: try values.decode(WreckIdentity.self, forKey: .wreck),
+      crewTotal: try values.decode(Int.self, forKey: .crewTotal),
+      originalSpawn: try values.decodeIfPresent(SpawnIdentity.self, forKey: .originalSpawn),
+      originalBodyID: try values.decode(Int.self, forKey: .originalBodyID),
+      custody: try values.decode(EMPSourceCustody.self, forKey: .custody),
+      disableIncident: try values.decode(CombatIncident.self, forKey: .disableIncident),
+      weapon: try values.decode(OwnedEquipmentItem.self, forKey: .weapon),
+      weaponOwner: try values.decode(UUID.self, forKey: .weaponOwner),
+      pods: pods,
+      hull: try values.decode(EMPStoredObject.self, forKey: .hull),
+      cargo: try values.decode([CommodityAmount].self, forKey: .cargo),
+      legal: try values.decode(LegalRecord.self, forKey: .legal),
+      nextEjectionAt: try values.decode(Double.self, forKey: .nextEjectionAt),
+      terminal: try values.decode(Bool.self, forKey: .terminal),
+      lostCrewCount: try values.decode(Int.self, forKey: .lostCrewCount),
+      savedCrewCaptures: captures, savedDisableEpisodes: episodes, savedDeceasedOrdinals: deceased)
   }
 }
 

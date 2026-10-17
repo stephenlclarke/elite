@@ -39,6 +39,7 @@ extension Game {
     fields += scriptPacks.filter { $0.manifest.board != nil }.map(\.digest).sorted()
     fields += rrsCourierPageFacts
     fields += financePageFacts
+    fields += nativePeoplePageFacts
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []
@@ -65,7 +66,8 @@ extension Game {
     return .init(
       generation: contractBoard.presentationGeneration, detail: contractBoard.detail,
       review: contractBoard.detail
-        ? (contractBoard.financeQuote?.reviewToken ?? contractBoard.rrsQuote?.reviewToken
+        ? (contractBoard.peopleQuote?.reviewToken ?? contractBoard.financeQuote?.reviewToken
+          ?? contractBoard.rrsQuote?.reviewToken
           ?? contractBoard.quote?.reviewToken
           ?? contractBoard.reviewToken) : nil,
       selection: contractProofDigest([selected?.key ?? "unavailable"]),

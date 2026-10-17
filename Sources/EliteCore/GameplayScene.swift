@@ -3,7 +3,8 @@ import Foundation
 extension Commander {
   var ordinaryCommodityAmounts: [CommodityAmount] {
     CommodityIdentity.allCases.compactMap { commodity in
-      let reserved = commodity == .firearms ? markedFirearms : 0
+      let reserved =
+        commodity == .firearms ? markedFirearms : commodity == .slaves ? nativeCaptiveCount : 0
       let quantity = max(0, cargo[commodity.rawValue] - reserved)
       return quantity > 0 ? .init(commodity: commodity, quantity: quantity) : nil
     }

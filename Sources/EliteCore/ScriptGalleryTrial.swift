@@ -47,8 +47,9 @@ extension Game {
     return missions.indices.contains(gallery.selection) ? missions[gallery.selection] : nil
   }
   public var canTrialSelectedMission: Bool {
-    guard !isMissionTrial, let digest = selectedGalleryMission?.trialDigest,
-      let pack = scriptPacks.first(where: { $0.digest == digest })
+    guard !isMissionTrial, let digest = selectedGalleryMission?.trialDigest else { return false }
+    if digest == NativePeopleGallery.digest { return true }
+    guard let pack = scriptPacks.first(where: { $0.digest == digest })
     else { return false }
     return isolatedMissionTrialAvailable(pack)
   }
@@ -76,6 +77,9 @@ extension Game {
     return trial
   }
   func constructScriptTrial(packDigest: String, seed: UInt64) throws -> Game {
+    if packDigest == NativePeopleGallery.digest {
+      return try constructNativePeopleTrial(seed: seed)
+    }
     guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {
       throw MissionPackError("Choose an installed mission for a trial.")
     }
@@ -120,6 +124,7 @@ extension Game {
     return trial
   }
   mutating func prepareScriptTrial(packDigest: String, seed: UInt64) throws {
+    if packDigest == NativePeopleGallery.digest { return }
     guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {
       throw MissionPackError("Choose an installed mission for a trial.")
     }
