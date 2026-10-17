@@ -208,11 +208,20 @@ import Testing
   for ship in ShipCatalogue.all {
     for step in 0..<24 {
       let frame = Display.shipPortrait(ship, angle: Double(step) * 2 * .pi / 24)
-      #expect(!frame.shipPanels.isEmpty, "\(ship.id) angle \(step)")
+      #expect(frame.hasShipSurfaces, "\(ship.id) angle \(step)")
       #expect(
         frame.shipPanels.allSatisfy {
           $0.vertices.allSatisfy { $0.x.isFinite && $0.y.isFinite && frame.flightClip.contains($0) }
         })
+      for graphic in frame.worldGraphics + frame.graphics {
+        guard case .textured(let triangle) = graphic else { continue }
+        #expect(triangle.vertices.count == 3, "\(ship.id) angle \(step)")
+        #expect(triangle.clip == frame.flightClip, "\(ship.id) angle \(step)")
+        #expect(
+          triangle.vertices.allSatisfy {
+            ShipTextureRaster.validVertex($0) && frame.flightClip.contains($0.point)
+          }, "\(ship.id) angle \(step)")
+      }
     }
   }
 }
