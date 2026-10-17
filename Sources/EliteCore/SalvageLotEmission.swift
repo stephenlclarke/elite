@@ -65,7 +65,8 @@ enum SalvageLotEmission {
     }
     guard lot.identity == item.identity, lot.loot == item, lot.content == content,
       lot.massKg == item.massKg, lot.halfExtents == item.halfExtents,
-      lot.position.finite, lot.velocity.finite
+      lot.position.finite, lot.position.length.isFinite,
+      lot.velocity.finite, lot.velocity.length.isFinite
     else { throw AlienStorageError.invalidJoin }
   }
 }

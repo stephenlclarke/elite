@@ -144,6 +144,26 @@ struct AlienStorageCompanionTests {
           state: .pending(lot: forged, physicalTime: 1, offer: nil, binding: nil))
       ).validate()
     }
+    var unrepresentablePosition = lot
+    unrepresentablePosition.position.x = Double.greatestFiniteMagnitude
+    #expect(throws: (any Error).self) {
+      try self.replacing(
+        pending, in: fixture,
+        with: self.replacing(
+          pending,
+          state: .pending(lot: unrepresentablePosition, physicalTime: 1, offer: nil, binding: nil))
+      ).validate()
+    }
+    var unrepresentableVelocity = lot
+    unrepresentableVelocity.velocity.x = Double.greatestFiniteMagnitude
+    #expect(throws: (any Error).self) {
+      try self.replacing(
+        pending, in: fixture,
+        with: self.replacing(
+          pending,
+          state: .pending(lot: unrepresentableVelocity, physicalTime: 1, offer: nil, binding: nil))
+      ).validate()
+    }
     let terminal = replacing(pending, state: .destroyed(at: 2))
     let destroyed = replacing(pending, in: fixture, with: terminal)
     try destroyed.validateTransition(from: fixture.snapshot)
