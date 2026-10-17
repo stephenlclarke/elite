@@ -252,7 +252,11 @@ extension Game {
         worldPosition: commander.flightSimulation.pose.systemPoint(hit.point),
         emissionPosition: commander.flightSimulation.pose.position)
     else { return false }
-    if reserve.remaining == 0 { return disableEMPHull(id: id, incident: incident, tool: tool) }
+    if reserve.remaining == 0 {
+      guard disableEMPHull(id: id, incident: incident, tool: tool) else { return false }
+      // Validate the same victim before any next contact, after the large helper frame unwinds.
+      return commander.valid
+    }
     return true
   }
 
@@ -354,7 +358,6 @@ extension Game {
     if previous == nil { state.nextSequence += 1 }
     commander.savedEMPState = state
     notify("ENGINES AND WEAPONS DISABLED - CREW EJECTION PENDING")
-    guard commander.valid else { return false }
     return true
   }
 }
