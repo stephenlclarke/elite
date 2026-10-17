@@ -4,6 +4,14 @@ import Testing
 @testable import EliteCore
 
 @Test func groupedEquipmentIncludesEveryItemOnceAndSelectionSkipsHeadings() throws {
+  #expect(
+    EquipmentGroups.rows.contains {
+      if case .heading("Shield Modules") = $0 { true } else { false }
+    })
+  #expect(
+    !EquipmentGroups.rows.contains {
+      if case .heading("Shield Boosters") = $0 { true } else { false }
+    })
   let order = EquipmentGroups.itemIndices
   #expect(order.count == Equipment.all.count && Set(order).count == order.count)
   #expect(!Equipment.all.contains { $0.name == Equipment.legacyDockingComputer })

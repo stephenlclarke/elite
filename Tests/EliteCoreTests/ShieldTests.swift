@@ -74,6 +74,7 @@ import Testing
   #expect(game.commander.shieldBooster == .capital && game.commander.capitalRewardClaimed)
   let events = game.ecmControl.events.filter { $0.announcement.text.hasPrefix("ELITE BONUS") }
   #expect(events.count == 1)
+  #expect(events.first?.announcement.text == "ELITE BONUS: ADVANCED II SHIELD MODULE")
   game.tick(delta: 0.01)
   #expect(
     game.ecmControl.events.filter { $0.announcement.text.hasPrefix("ELITE BONUS") }.count == 1)

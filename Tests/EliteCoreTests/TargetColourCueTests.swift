@@ -130,4 +130,102 @@ struct TargetColourCueTests {
     #expect(game.targetColourCue(for: game.bodies[0]) == .ordinary)
   }
 
+  @Test func ordinaryHostileAndActuallyLaunchedMissileAreRedOnScannerTargetAndWorldWithoutModules()
+    throws
+  {
+    var game = try empFixture(hostile: true)
+    let module = try #require(game.commander.fittedEquipment(at: .targetingSalvage))
+    try game.commander.storeEquipment(
+      module, expectedRevision: #require(game.commander.equipmentInventory?.revision))
+    #expect(!game.workTargetCapabilities.salvageModule && !game.workTargetCapabilities.miningModule)
+    game.commander.autoECM = false
+    let shipID = game.bodies[0].id
+    func verify(_ original: Game, id: Int) throws {
+      var scene = original
+      for style in ShipDisplayStyle.allCases {
+        scene.commander.shipDisplayStyle = style
+        for selected in [false, true] {
+          scene.weaponsTargetID = selected ? id : nil
+          let body = try #require(scene.bodies.first { $0.id == id })
+          #expect(scene.targetColourCue(for: body) == .hostile)
+          let frame = Display.cockpit(scene, width: 768, height: 768)
+          let layout = CockpitLayout(game: scene, width: 768, height: 768)
+          var attributable = Frame()
+          attributable.rasterizeGraphics = false
+          attributable.canvas = frame.canvas
+          attributable.flightClip = frame.flightClip
+          Display.targetWorldGlow(
+            body, game: scene, projection: layout.projection,
+            scene: GameplayRaycast.prepareOcclusionScene(scene, projection: layout.projection),
+            context: scene.gameplayContext(), into: &attributable)
+          #expect(!glowLines(attributable).isEmpty)
+          #expect(glowLines(attributable).allSatisfy { $0.ink == .red })
+          let rx = (layout.radarWidth - 12) / 2
+          let ry = 32.0
+          let cy = layout.instrumentsTop + 16 + ry
+          let sx = layout.width / 2 + max(-rx + 2, min(rx - 2, body.position.x / 4400 * rx))
+          let sy = cy + max(-ry + 2, min(ry - 2, -body.position.z / 8500 * ry))
+          let lift = max(-ry / 2, min(ry / 2, body.position.y / 3000 * ry))
+          #expect(
+            frame.graphics.contains {
+              if case .line(let line) = $0 {
+                line.ink == .red && line.x0 == sx - 2 && line.x1 == sx + 2
+                  && line.y0 == sy - lift && line.y1 == sy - lift
+              } else {
+                false
+              }
+            })
+          if selected {
+            #expect(frame.labels.contains { $0.ink == .red && $0.text.contains("#" + String(id)) })
+            #expect(
+              frame.graphics.contains {
+                if case .line(let line) = $0 {
+                  line.ink == .red && line.y0 < frame.flightClip.maxY
+                } else {
+                  false
+                }
+              })
+          }
+          if style == .whiteWireframe {
+            #expect(!frame.shipLines.isEmpty && frame.shipLines.allSatisfy { $0.ink == .white })
+          }
+        }
+      }
+    }
+    try verify(game, id: shipID)
+    game.bodies[0].missiles = 1
+    try #require(game.launchGameplayNPCMissile(bodyID: shipID))
+    game.tick(delta: 0.1)
+    let missile = try #require(
+      game.bodies.first { $0.enemyMissile && $0.physical?.ordnance != nil })
+    #expect(
+      missile.hostile && missile.physical?.attackOrigin?.owner == game.bodies[0].physical?.identity)
+    try verify(game, id: missile.id)
+  }
+
+  @Test func actualHollowImperialCourierGetsAVisibleSurfaceCueEvenWhenItsCentreRayMisses()
+    throws
+  {
+    var game = try empFixture(catalogue: "SH063", hostile: true)
+    game.bodies[0].position = .init(0, 0, 1000)
+    game.bodies[0].orientation = Basis3()
+    game.bodies[0].rotation = 0
+    #expect(
+      GameplayRaycast.nearest(
+        origin: .init(0, 0, 0), direction: .init(0, 0, 1), maxDistance: 2000,
+        bodies: game.bodies, meshOverrides: game.gameplayMeshOverrides) == nil)
+    for style in ShipDisplayStyle.allCases {
+      game.commander.shipDisplayStyle = style
+      for selected in [false, true] {
+        game.weaponsTargetID = selected ? game.bodies[0].id : nil
+        let lines = glowLines(cueFrame(game))
+        #expect(!lines.isEmpty && lines.allSatisfy { $0.ink == .red })
+        #expect(lines.count <= 12)
+      }
+      game.celestials = [.init(kind: .planet, position: .init(0, 0, 350), radius: 300)]
+      #expect(glowLines(cueFrame(game)).isEmpty)
+      game.celestials = []
+    }
+  }
+
 }
