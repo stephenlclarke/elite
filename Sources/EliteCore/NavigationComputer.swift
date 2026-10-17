@@ -90,9 +90,15 @@ struct NavigationGraph {
       a == game.commander.system
       ? game.market : MarketItem.at(game.systems[a], fluctuation: 0)
     let sale = MarketItem.minimumPrices(at: game.systems[b])
+    let sellableTonnes = Commodity.all.indices.reduce(0.0) { total, index in
+      total + (Commodity.all[index].unit == "t" ? Double(game.commander.sellableCargo(index)) : 0)
+    }
+    let reservedTonnes = max(0, Double(game.commander.cargoTonnes) - sellableTonnes)
+    let tradingRoom = max(0, Double(game.commander.tradeCargoCapacity) - reservedTonnes)
     return Commodity.all.indices.map { index in
-      Double(max(0, sale[index] - market[index].price))
-        * min(63, Double(market[index].quantity), Double(game.commander.capacity))
+      let quantity = min(63, Double(market[index].quantity))
+      let load = Commodity.all[index].unit == "t" ? min(quantity, tradingRoom) : quantity
+      return Double(max(0, sale[index] - market[index].price)) * load
     }.max() ?? 0
   }
   func cargoSale(_ id: Int) -> Double {
