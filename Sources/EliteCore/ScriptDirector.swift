@@ -293,13 +293,11 @@ extension Game {
           if ["courier.issue", "courier.deliver", "courier.abandon"].contains(
             command["op"]?.string ?? "")
           {
-            try candidate.applyCourierCommand(
-              command, event: event, pack: pack,
-              state: &next, candidate: &candidate.commander)
+            try Self.dispatchCourierCommand(
+              command, event: event, pack: pack, state: &next, candidate: &candidate)
           } else if command["op"]?.string == "pledge.commit" {
-            try candidate.applyPledgeCommand(
-              command, event: event, pack: pack,
-              state: &next, candidate: &candidate.commander)
+            try Self.dispatchPledgeCommand(
+              command, event: event, pack: pack, state: &next, candidate: &candidate)
           } else if command["op"]?.string == "child.ensure" {
             if let result = try candidate.ensureCampaignChild(
               command, pack: pack, state: &next, event: event)
@@ -309,8 +307,8 @@ extension Game {
           } else if ["collection.ensure", "collection.deliver"].contains(
             command["op"]?.string ?? "")
           {
-            if let result = try candidate.applyCollectionCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
+            if let result = try Self.dispatchCollectionCommand(
+              command, event: event, pack: pack, state: &next, candidate: &candidate)
             {
               derivedEvents.append(result)
             }
@@ -336,18 +334,19 @@ extension Game {
           } else if ["gear.issue", "gear.return", "gear.release", "gear.store", "gear.refit"]
             .contains(command["op"]?.string ?? "")
           {
-            if let result = try candidate.applyScriptGearCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
+            if let result = try Self.dispatchGearCommand(
+              command, event: event, pack: pack, state: &next, candidate: &candidate)
             {
               derivedEvents.append(result)
             }
           } else if ["passengers.board", "passengers.deliver"].contains(command["op"]?.string ?? "")
           {
-            try candidate.applyPassengerCommand(
-              command, pack: pack, state: &next, candidate: &candidate.commander)
+            try Self.dispatchPassengerCommand(
+              command, pack: pack, state: &next, candidate: &candidate)
           } else {
-            try applyScriptCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate.commander)
+            try Self.dispatchStandardCommand(
+              command, event: event, pack: pack, state: &next,
+              original: self, candidate: &candidate)
           }
         }
         for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
@@ -424,6 +423,49 @@ extension Game {
         recordScriptFailure(event.instance, error: error, publish: publish)
       }
     }
+  }
+  // Separate branch frames keep commander-borrow receiver copies out of encounter admission.
+  private static func dispatchCourierCommand(
+    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Game
+  ) throws {
+    try candidate.applyCourierCommand(
+      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+  }
+  private static func dispatchPledgeCommand(
+    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Game
+  ) throws {
+    try candidate.applyPledgeCommand(
+      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+  }
+  private static func dispatchCollectionCommand(
+    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Game
+  ) throws -> (String, [String: ScriptValue])? {
+    try candidate.applyCollectionCommand(
+      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+  }
+  private static func dispatchGearCommand(
+    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Game
+  ) throws -> (String, [String: ScriptValue])? {
+    try candidate.applyScriptGearCommand(
+      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+  }
+  private static func dispatchPassengerCommand(
+    _ command: ScriptValue, pack: ScriptPack, state: inout ScriptInstance, candidate: inout Game
+  ) throws {
+    try candidate.applyPassengerCommand(
+      command, pack: pack, state: &state, candidate: &candidate.commander)
+  }
+  private static func dispatchStandardCommand(
+    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
+    state: inout ScriptInstance, original: Game, candidate: inout Game
+  ) throws {
+    // Standard commands intentionally query the original event transaction snapshot.
+    try original.applyScriptCommand(
+      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
   }
   mutating func advanceScriptClocks(
     delta: Double, flight: Bool, local: Bool, calendar: Bool = false,
