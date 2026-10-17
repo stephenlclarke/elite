@@ -341,7 +341,8 @@ private func verifyOriginalMainImmunity(_ game: inout Game) throws {
   game.key("q")
   game.key("t")
   let flight = game.commander.flightSimulation
-  #expect(!game.fireMissile())
+  let fired = game.fireMissile()
+  #expect(!fired)
   #expect(game.commander.flightSimulation == flight)
 }
 

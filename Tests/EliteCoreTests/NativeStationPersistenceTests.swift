@@ -118,9 +118,11 @@ private func verifyRetainedNativeStationFlight(
   let originalWorld = try #require(before.nativeStations)
   var expected = before
   var flight = before.flightSimulation
-  _ = try #require(flight.allocateSpawn())
+  let allocatedSpawn = flight.allocateSpawn()
+  _ = try #require(allocatedSpawn)
   for (member, body) in stations.enumerated() {
-    let actor = try #require(flight.allocateActor())
+    let allocatedActor = flight.allocateActor()
+    let actor = try #require(allocatedActor)
     let identity = try #require(body.nativeStationIdentity)
     try expected.nativeStations?.ledger.rebind(
       identity, to: .init(actor: actor, bodyID: oldCursor + member))
