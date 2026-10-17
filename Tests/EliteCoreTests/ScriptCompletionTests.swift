@@ -180,10 +180,16 @@ private struct CompletionFixture {
           + campaignPatrolDiagnostic(game, child: id)))
     #expect(game.commander.legal == legalBefore)
     firing = Controls()
-    for _ in 0..<8 {
+    // Sequential sorties retain more targets; cycle the actual scene rather than assuming eight.
+    for _ in 0...game.bodies.count {
       game.key("r")
       if game.autoPilot.targetID == 0 { break }
     }
+    try #require(
+      game.autoTargetBody?.id == 0 && game.autoTargetBody?.hull == .station && game.dockingComputer,
+      Comment(
+        rawValue: "Original main station was not selected: "
+          + campaignPatrolDiagnostic(game, child: id)))
     let beforeDock = campaignPatrolDiagnostic(game, child: id)
     for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02, controls: firing) }
     #expect(
