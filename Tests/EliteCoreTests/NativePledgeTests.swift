@@ -383,9 +383,14 @@ extension NativeViewTests {
         $0.text == "Trial - live commander unchanged"
       })
     try harness.press("right")
+    await harness.drain()
+    try #require(await harness.delegate.runtime.snapshot().contractBoard.action == .accept)
+    try await harness.frame()
+    let confirm = await harness.delegate.runtime.snapshot()
+    try #require(harness.view.paintedMissionMenuPresentation == confirm.scriptPagePresentation)
     try harness.press("return")
     await harness.drain()
-    harness.view.pending = ["commander-save-default"]
+    harness.delegate.queueCommanderFile(.saveActive)
     await harness.drain()
     let donated = await harness.delegate.runtime.snapshot()
     #expect(donated.commander.scriptState.pledgeLedger?.receipts.count == 1)
@@ -405,7 +410,8 @@ extension NativeViewTests {
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
     let restart = try #require(
       menu.items.firstIndex { ($0.representedObject as? String) == "trial-restart" })
-    #expect(harness.delegate.validateMenuItem(menu.items[restart]))
+    let target = try #require(menu.items[restart].target as? NativeMissionMenu)
+    #expect(target.validateMenuItem(menu.items[restart]))
     menu.performActionForItem(at: restart)
     await harness.drain()
     let restarted = await harness.delegate.runtime.snapshot()
