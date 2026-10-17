@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 1,
+  "asOfDate": "2026-10-17",
+  "timezone": "Europe/London",
+  "composedSource": "34713f2577829be42d09d31c0b53bd1d500df3b9",
+  "sourceReconciliationDraft": {
+    "path": "/tmp/elite-g3-whole-app-remediation-ledger-20261017.md",
+    "sha256": "12657e569b939e40cfbf94204d7b11c02de6cf4ace360c18375fce57ce9171a1",
+    "reviewCheckpoint": "3c510875a6152be289d89edc1b561d17a19ba413"
+  },
+  "qualification": "Bounded local Root game-test verification inventory only. Original failed statuses retained. Overlapping and parameterized method counts cannot be summed or treated as full-gate success. Local paths require final portable evidence attachment by coordinator.",
+  "currentFullGatePassed": false,
+  "finalReviewClean": false,
+  "published": false,
+  "nativeRRSP30Implemented": false,
+  "records": [
+    {
+      "path": "/tmp/elite-mission-stack-candidate-050/root-game-test-verification-050.json",
+      "sha256": "b46c39a79ad8075e347e52c936d21eb0869775f6ab55c8b7b29c6dc95a81642e",
+      "checkpoint": "050",
+      "source": "a4a0901b67f289a9b231a1f669273e55c6edefc9",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-native-admission-stack-candidate-051/root-game-test-verification-051.json",
+      "sha256": "47feee26040c20ef63a25c18767306d2329c76b9aa916c2b2375e077745230ff",
+      "checkpoint": "051",
+      "source": "1b1519b7ecdb903330eeacf379bc43a8bab64fd6",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-geometry-capture-candidate-052/root-game-test-verification-052.json",
+      "sha256": "1b6755dae58914e23e6394683f76ff48d602a3c66f51f457d0ebc769676d962f",
+      "checkpoint": "052",
+      "source": "7a606c024b23f338b6a0b5751a619555f73a4d48",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-runtime-layout-diagnostic-053/root-game-test-verification-053.json",
+      "sha256": "d7ff25ec3432f8e1617a5b29ca0d683013b1431d6936f801d49a658e025b22ae",
+      "checkpoint": "053",
+      "source": "acbb99e952157ca3564f2d82adcd4880376eb0bc",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-dispatcher-stack-candidate-054/root-game-test-verification-054.json",
+      "sha256": "b9d37973a5029924e60df74754361772a943e8a12665c2bdb71e60f085a1e0d2",
+      "checkpoint": "054",
+      "source": "106db3d4aea69153fc16d844db44b8af266799de",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-integrated-focused-056/root-game-test-verification-056.json",
+      "sha256": "a52af23f8b609f022966600963e7c8e80db54ffe8fa88550facd87a8d27f16af",
+      "checkpoint": "056",
+      "source": "d2a639bfe2d304c04c651c32c5176361c0cfcc98",
+      "status": "FAILED execution",
+      "selected": 181,
+      "passed": 26,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-laser-proof-isolated-057/root-game-test-verification-057.json",
+      "sha256": "8b4bbf622e5339bc110fb0829ab94845cc24f9b1ce2945acd7ca4f276c0ba1fb",
+      "checkpoint": "057",
+      "source": "d2a639bfe2d304c04c651c32c5176361c0cfcc98",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-laser-fixture-candidate-058/root-game-test-verification-058.json",
+      "sha256": "fe663f1feee44fb2524bf4a3b8d2740711b9d007ae64c8007e5445111696f86f",
+      "checkpoint": "058",
+      "source": "0b6794a0a233234b1c289834c7be2c28d1eab89a",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-reset-save-focused-059/root-game-test-verification-059.json",
+      "sha256": "a3194f807eb3557415910db69290941594825e96bd216cc884b2995b6be3a21e",
+      "checkpoint": "059",
+      "source": "0b6794a0a233234b1c289834c7be2c28d1eab89a",
+      "status": "FAILED execution",
+      "selected": 2,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-laser-fixture-candidate-060/root-game-test-verification-060.json",
+      "sha256": "49fefa3a6daa5d0072e409675e8aedc475454f1c1dfa21d7e4d54a8b7aea13d5",
+      "checkpoint": "060",
+      "source": "79c65cbb656570b9ef626183b95bc3eafe884faf",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-laser-fixture-candidate-061/root-game-test-verification-061.json",
+      "sha256": "c597e499241dccf917a4d26368258dd0a244fc8035acdccd20e552c40d27d953",
+      "checkpoint": "061",
+      "source": "fb2a10002386f18b5f6477e13caaff88559c9677",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-legacy-plasma-baseline-063/root-game-test-verification-063.json",
+      "sha256": "3d4f4b2ca17d8cd168970153f0b05cddfea0e57cb3d89ec93c6813f19050c045",
+      "checkpoint": "063",
+      "source": "6c8a2d219bf275951af6163099462b1bec969e07",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-current-feature-focused-065/root-game-test-verification-065.json",
+      "sha256": "7a88116b1a3cb937c1d3b5d538b5c6205957ef378ec0ec0539ad33874b06d073",
+      "checkpoint": "065",
+      "source": "6c8a2d219bf275951af6163099462b1bec969e07",
+      "status": "FAILED execution",
+      "selected": 11,
+      "passed": 5,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-bundled-contract-isolated-066/root-game-test-verification-066.json",
+      "sha256": "5959f79ac535381810c560780d9512d7f84a65ab83f93a4caec8869c8c3f114b",
+      "checkpoint": "066",
+      "source": "6c8a2d219bf275951af6163099462b1bec969e07",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-reset-window-focused-067/root-game-test-verification-067.json",
+      "sha256": "f1f5dd57628ce6b35f193f700201a8f74f98d53484c87167c0f2604caf3b7f26",
+      "checkpoint": "067",
+      "source": "6c8a2d219bf275951af6163099462b1bec969e07",
+      "status": "PASS isolated execution",
+      "selected": 4,
+      "passed": 4,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-legacy-plasma-candidate-068/root-game-test-verification-068.json",
+      "sha256": "f7501a0b8ee89342d51d1519469b58eb4b505c3507d23e04451c9d65e2500ddc",
+      "checkpoint": "068",
+      "source": "9c7d6b4927cf7060878a5339f248e8c85e993d32",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-integrated-focused-069/root-game-test-verification-069.json",
+      "sha256": "5904673b106b406c807a88417b51675525f227a556452877809748859a1c5f2e",
+      "checkpoint": "069",
+      "source": "9c7d6b4927cf7060878a5339f248e8c85e993d32",
+      "status": "FAILED execution",
+      "selected": 181,
+      "passed": 31,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-archived-plasma-baseline-070/root-game-test-verification-070.json",
+      "sha256": "ab46a2b9741337202500439b9057caca7d6fdf20f4df2ae65c62e2390bae322c",
+      "checkpoint": "070",
+      "source": "9c7d6b4927cf7060878a5339f248e8c85e993d32",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-courier-terminal-candidate-071/root-game-test-verification-071.json",
+      "sha256": "07fd1a235b840764fd42d701afc18181098e92379886fec34a927be9936008e1",
+      "checkpoint": "071",
+      "source": "d3b1c69e9bbda44192b77d0f364fe7ca95199944",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-archived-plasma-candidate-072/root-game-test-verification-072.json",
+      "sha256": "b2089a01c8bafd3543fb2f207a7267a7a12ff6a7231d175ff1e8cc0f1f494318",
+      "checkpoint": "072",
+      "source": "9cee19affe733412a74782503d6da8b6878d6272",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-integrated-focused-073/root-game-test-verification-073.json",
+      "sha256": "df3badc206d030f7f3b8e35bcb8922bede7960f8f3115954ed307dafccee6068",
+      "checkpoint": "073",
+      "source": "9cee19affe733412a74782503d6da8b6878d6272",
+      "status": "FAILED execution",
+      "selected": 181,
+      "passed": 35,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-rounded-zero-ray-baseline-074/root-game-test-verification-074.json",
+      "sha256": "1b88918e64ce646109a54d524e9ba439aedb816b3ca775d29c5f0329b089a33a",
+      "checkpoint": "074",
+      "source": "9cee19affe733412a74782503d6da8b6878d6272",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-laser-fire-baseline-075/root-game-test-verification-075.json",
+      "sha256": "ccd813b367e556d521e5ef7f3e624e1ea61352f77c7174e8d0406fcc08fea1b6",
+      "checkpoint": "075",
+      "source": "9cee19affe733412a74782503d6da8b6878d6272",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-courier-terminal-compatibility-076/root-game-test-verification-076.json",
+      "sha256": "b69b5e346c76c52664b33f55a97d3699a584d9342a13ebceb85b67f665785d0a",
+      "checkpoint": "076",
+      "source": "9cee19affe733412a74782503d6da8b6878d6272",
+      "status": "FAILED execution",
+      "selected": 3,
+      "passed": 2,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-contract-lifetime-candidate-077/root-game-test-verification-077.json",
+      "sha256": "9ddc524ece72ede189dfce313a6b9d2fdf2d3f2b1fcccca41b176ecb357f8c54",
+      "checkpoint": "077",
+      "source": "635d7c28600ec2f06a556e2532cb318e58bebe28",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-fire-parity-candidate-078/root-game-test-verification-078.json",
+      "sha256": "87802202b894a24b01d445bd3f094c64dc3f8d2ad7b75c32dec879b466f8d9fe",
+      "checkpoint": "078",
+      "source": "73efec53dfe60e0e14c388e9af667ad4bc9f296b",
+      "status": "PASS isolated execution",
+      "selected": 2,
+      "passed": 2,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-handoff-routing-candidate-080/root-game-test-verification-080.json",
+      "sha256": "333a617f564f9e8d6b0becddc125af9a20b91e8b8af7941ed67b388b39f56680",
+      "checkpoint": "080",
+      "source": "3ab635fb2bb0e37fb5a5e0c22d4cdae2e8f254f1",
+      "status": "FAILED execution",
+      "selected": 56,
+      "passed": 38,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-courier-routing-focused-081/root-game-test-verification-081.json",
+      "sha256": "8c4cdcca87b7047a67cc1d1bf342c03ffceb43231333239e2d67ae43cf433bb3",
+      "checkpoint": "081",
+      "source": "3ab635fb2bb0e37fb5a5e0c22d4cdae2e8f254f1",
+      "status": "PASS isolated execution",
+      "selected": 5,
+      "passed": 5,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-integrated-focused-082/root-game-test-verification-082.json",
+      "sha256": "7251a0ba8883efb30764c070d7a698aed48133dd1b8a83d2fb9f2bcf182b0592",
+      "checkpoint": "082",
+      "source": "3ab635fb2bb0e37fb5a5e0c22d4cdae2e8f254f1",
+      "status": "FAILED execution",
+      "selected": 181,
+      "passed": 36,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-component-capacity-baseline-083/root-game-test-verification-083.json",
+      "sha256": "e3acfcd76b897c50f72869a534695adbd919d73153106769f0862f4ce01db4f6",
+      "checkpoint": "083",
+      "source": "3ab635fb2bb0e37fb5a5e0c22d4cdae2e8f254f1",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-complete-acceptance-candidate-084/root-game-test-verification-084.json",
+      "sha256": "849d2ffe4e29621c2c4f36dd1d241fc1e5251865027124b71dfb99d69039c772",
+      "checkpoint": "084",
+      "source": "6047ee0df948fe17a23eecff7e649599eb990451",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-component-after-core-085/root-game-test-verification-085.json",
+      "sha256": "abdf17898e3b3bc3d1c348eeef4ec327bfab225d8f9ab53eccb7597b0d3b3732",
+      "checkpoint": "085",
+      "source": "6047ee0df948fe17a23eecff7e649599eb990451",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-component-capacity-candidate-086/root-game-test-verification-086.json",
+      "sha256": "55657f08a77d04b0c914cd7636aad9081b15b3b818d31cacbfa137bf9ef9bf39",
+      "checkpoint": "086",
+      "source": "f6e3d557ce8ac598d3c01d961e25d1dbd6cfdc63",
+      "status": "PASS isolated execution",
+      "selected": 1,
+      "passed": 1,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-acceptance-semantics-087/root-game-test-verification-087.json",
+      "sha256": "1574a16fa7f586392c34ab503fe774f4c4aca9305793c85cf87463692610a153",
+      "checkpoint": "087",
+      "source": "f6e3d557ce8ac598d3c01d961e25d1dbd6cfdc63",
+      "status": "FAILED execution",
+      "selected": 45,
+      "passed": 33,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-pledge-trial-baseline-088/root-game-test-verification-088.json",
+      "sha256": "fee2c3ba6aefe0252c8ca786a50158121a051095f768499f7a946e0955d331ee",
+      "checkpoint": "088",
+      "source": "f6e3d557ce8ac598d3c01d961e25d1dbd6cfdc63",
+      "status": "FAILED execution",
+      "selected": 1,
+      "passed": 0,
+      "signals": [
+        "10"
+      ],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-pledge-ui-fixture-candidate-089/root-game-test-verification-089.json",
+      "sha256": "3d437661827e3aacd93f8ebe100a74cec3301e4cd9192c9c3dc7dd1be0b2d37a",
+      "checkpoint": "089",
+      "source": "cd868189ed6594b692c8018fc63cf1012b4dee62",
+      "status": "FAILED execution",
+      "selected": 5,
+      "passed": 3,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    },
+    {
+      "path": "/tmp/elite-full-contract-semantics-091/root-game-test-verification-091.json",
+      "sha256": "2298936d787cda93bd5694f72387b7500b0540a4ad430df6b7eeb2cb297bc8c9",
+      "checkpoint": "091",
+      "source": "247d4ea4554254f72905eb7fc589c24d932208ab",
+      "status": "PASS isolated execution",
+      "selected": 47,
+      "passed": 47,
+      "signals": [],
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true
+    }
+  ],
+  "rendererEvidence": {
+    "path": "/tmp/elite-renderer-media-090/root-media-verification-090.json",
+    "sha256": "6ec46dd02711643d2859d66ee366515999967dde569e95b2421cf3603bd2cc6f",
+    "source": "2fb73dc51b1903d300e101a2718e36d2ad1d30c7",
+    "status": "PASS renderer generation and all171 currentness",
+    "manifestEntries": 171,
+    "generatedChangedPaths": [
+      "docs/SHIP-CATALOGUE.md",
+      "docs/SHIP-PROVENANCE.md",
+      "docs/ships/manifest.json",
+      "docs/ships/overview.png",
+      "docs/ships/SH168.gif",
+      "docs/ships/SH169.gif",
+      "docs/ships/SH170.gif"
+    ],
+    "qualification": "All171 renderer GIFs regenerated; existing168 GIFs and README media bytes unchanged,3 new GIFs and updated overview/docs/manifest. No tests/fullCI/release claim.",
+    "subsequentGeneratedMarkdownCheck": "Three MD034 findings remained failed historical evidence; maintained generator repair and controlled reference regeneration passed at 092."
+  },
+  "referenceFormattingEvidence": {
+    "path": "/tmp/elite-reference-links-092/root-reference-verification-092.json",
+    "sha256": "b324356372fac959e4dd3b491313cfbe44cacb64aa59166aaf6762e8f93b1a43",
+    "source": "2ef44572b64a315976cf9900af9e3537a3cf565d",
+    "status": "PASS exact3 licence autolinks;171 GIFs unchanged/current;actualMarkdownlint",
+    "changedPaths": [
+      "docs/SHIP-PROVENANCE.md"
+    ],
+    "resultSHA256": "28e8b71c22e4dda51c703265fa34c7dee06dee80189d660ded50050bddc0a3e3",
+    "qualification": "Reference formatting/regeneration/currentness only; no tests/fullCI/release claim."
+  },
+  "historicalGeneratedMarkdownFailure": {
+    "resultPath": "/tmp/elite-g1-renderer-fixtures-integration/generated-markdownlint-failure.json",
+    "resultSHA256": "4434952a05fe82fa488e015089458e4f18f2b6fe3006f67c4179ec327173bc35",
+    "logPath": "/tmp/elite-g1-renderer-fixtures-integration/generated-markdownlint-failure.log",
+    "logSHA256": "fc7048df1bcf277fb9575a4bbc1b9f1e408e257ba597fa5b53a57f8e3f2543b5",
+    "status": "FAILED exit 1; three MD034 bare licence URLs",
+    "resolution": "092 passed after maintained generator repair; original failure is not changed to pass."
+  },
+  "fullGate093": {
+    "path": "/tmp/elite-full-composed-gate-093/root-full-ci-verification-093.json",
+    "sha256": "2b82eb685b97e83608c271833cec8c2dc3129097bdfa4d9a4703ef2bc829df87",
+    "source": "7cccf02edcd2495233129807d72cff0e7df7c63c",
+    "status": "FAILED full make ci at showroom preservation check",
+    "makeExitCode": 2,
+    "runnerExitCode": 1,
+    "durationSeconds": 20.8338257081341,
+    "discoveredUniqueIdentifiers": 1529,
+    "executedSwiftTests": 0,
+    "reachedCoverageSanitizersLeaks": false,
+    "failure": "test_refined_designs SH128 old unchangedRecord digest vs approved cargo12/current3fieldcorrection",
+    "trackedInputsVerified": 1257,
+    "rawLogSHA256": "3684384cc93a82a61e930a778c6e441bbe490037636df75b3976fbc82aa27109",
+    "resultSHA256": "da453eddedeb91a1990bb62283f3acef179a354aa75254fdf84913fb1359aeb2",
+    "supervisionSHA256": "c85160c2699efbb2118fb7563c1bd72692a7e1cb24e95d0c21d54f7bf6d9b5d4",
+    "protectedInputsUnchanged": true,
+    "allOwnedStartSignaturesGone": true,
+    "qualification": "Distribution11tests and171shipcurrentness passed; showroom39tests had1failure; freshcatalogue is discoveryonly. No coverage/sanitizer/leak/native or release acceptance."
+  }
+}
