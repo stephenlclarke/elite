@@ -4,6 +4,19 @@ import Testing
 
 @testable import EliteMac
 
+@MainActor
+func verifyNativePaintedKey(
+  _ view: GameView, key: String, painted: ScriptPagePresentation
+) throws {
+  let packet = try #require(view.pending.last)
+  try #require(packet.hasPrefix("script-page-key:"))
+  let parts = packet.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1)
+  try #require(parts.count == 2)
+  let bytes = try #require(Data(base64Encoded: String(parts[0])))
+  let proof = try JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+  #expect(proof == painted && String(parts[1]) == key)
+}
+
 // AppKit has one application and event loop; keep native integration work sequential.
 @Suite(.serialized)
 struct NativeViewTests {
@@ -223,8 +236,18 @@ struct NativeViewTests {
           with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
           windowNumber: 0, context: nil, characters: text, charactersIgnoringModifiers: text,
           isARepeat: false, keyCode: code))
+      let protectedKey =
+        ScriptPagePresentation.controlKeys.contains(expected)
+        || ScriptPagePresentation.galleryContextKeys.contains(expected)
+      if protectedKey { try paintCampaignGalleryView(view) }
+      let painted = view.paintedMissionMenuPresentation
       view.keyDown(with: event)
-      #expect(view.pending.last == expected && view.held.isEmpty)
+      if protectedKey {
+        try verifyNativePaintedKey(view, key: expected, painted: #require(painted))
+      } else {
+        #expect(view.pending.last == expected)
+      }
+      #expect(view.held.isEmpty)
       view.keyUp(with: event)
       #expect(!view.held.contains(expected))
     }
@@ -491,8 +514,18 @@ extension NativeViewTests {
       NSEvent.mouseEvent(
         with: .leftMouseDown, location: .init(x: 100, y: 48), modifierFlags: [], timestamp: 0,
         windowNumber: 0, context: nil, eventNumber: 0, clickCount: 1, pressure: 1))
+    try paintCampaignGalleryView(view)
+    let painted = try #require(view.paintedMissionMenuPresentation)
+    let point = view.convert(click.locationInWindow, from: nil)
     view.mouseDown(with: click)
-    #expect(view.pending.first?.hasPrefix("handoff-click:") == true)
+    let packet = try #require(view.pending.first)
+    try #require(packet.hasPrefix("script-page-click:"))
+    let parts = packet.dropFirst("script-page-click:".count).split(separator: ":")
+    try #require(parts.count == 3)
+    let bytes = try #require(Data(base64Encoded: String(parts[0])))
+    let proof = try JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+    #expect(proof == painted)
+    #expect(Double(parts[1]) == point.x && Double(parts[2]) == point.y)
     view.game.key("k")
     #expect(PlayerHelp.pages(for: view.game).first?.title == "MISSION DIALOG")
   }
@@ -583,17 +616,28 @@ extension NativeViewTests {
           timestamp: 0, windowNumber: 0, context: nil, characters: text,
           charactersIgnoringModifiers: text, isARepeat: repeated, keyCode: code))
     }
-    for (code, text) in [(UInt16(126), ""), (123, ""), (49, " "), (36, "\r")] {
+    for (code, text, key) in [
+      (UInt16(126), "", "up"), (123, "", "left"), (49, " ", " "), (36, "\r", "return"),
+    ] {
+      if code != 49 { try paintCampaignGalleryView(view) }
+      let painted = view.paintedMissionMenuPresentation
       view.keyDown(with: try event(code, text))
+      if code != 49 {
+        try verifyNativePaintedKey(view, key: key, painted: #require(painted))
+      }
     }
     #expect(view.controls.pitch == 1 && view.controls.roll == 1)
     #expect(view.controls.throttle == 1 && view.controls.fire)
     view.game.key("4")
     #expect(view.held.isEmpty && view.controls.throttle == 0 && !view.controls.fire)
+    try paintCampaignGalleryView(view)
+    let beforeDown = try #require(view.paintedMissionMenuPresentation)
     view.keyDown(with: try event(125, flags: .option))
-    #expect(view.pending.last == "pagedown")
+    try verifyNativePaintedKey(view, key: "pagedown", painted: beforeDown)
+    try paintCampaignGalleryView(view)
+    let beforeUp = try #require(view.paintedMissionMenuPresentation)
     view.keyDown(with: try event(126, flags: .option))
-    #expect(view.pending.last == "pageup")
+    try verifyNativePaintedKey(view, key: "pageup", painted: beforeUp)
     view.game.key("/")
     view.game.key("a")
     #expect(view.performKeyEquivalent(with: try event(51, flags: .command)))

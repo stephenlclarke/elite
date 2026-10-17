@@ -175,7 +175,17 @@ private struct NativeWorkFixture {
         characters: text, charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
   }
   func press(_ code: UInt16, _ text: String) async throws {
+    let protectedKey = code == 48 ? "tab" : text.lowercased()
+    let requiresPaint =
+      ScriptPagePresentation.controlKeys.contains(protectedKey)
+      || ScriptPagePresentation.galleryContextKeys.contains(protectedKey)
+      || ScriptPagePresentation.contractContextKeys.contains(protectedKey)
+    if requiresPaint { try paintCampaignGalleryView(view) }
+    let painted = view.paintedMissionMenuPresentation
     view.keyDown(with: try event(code, text, down: true))
+    if requiresPaint {
+      try verifyNativePaintedKey(view, key: protectedKey, painted: #require(painted))
+    }
     view.keyUp(with: try event(code, text, down: false))
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty && !view.controls.fire)
