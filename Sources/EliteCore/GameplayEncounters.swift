@@ -34,8 +34,11 @@ extension Game {
     admitPendingOre()
     admitPendingCargo()
     admitPendingSalvage()
+    advanceNativeCrimbo(delta: delta)
     guard let live = gameplayContext() else { return }
-    let intents = TrafficIntent.intents(context: live) + security.encounters.intents
+    let intents = (TrafficIntent.intents(context: live) + security.encounters.intents).filter {
+      !isNativeCrimboMember($0.actor)
+    }
     for index in bodies.indices where bodies[index].physical?.spawnIdentity != nil {
       let cooldown = max(0, (bodies[index].physical?.laserCooldown ?? 0) - delta)
       bodies[index].physical?.laserCooldown = cooldown
@@ -227,7 +230,7 @@ extension Game {
     bodies[index].physical?.velocity = physical.velocity + change.unit * impulse
   }
 
-  private mutating func emitGameplayNPCBeam(
+  mutating func emitGameplayNPCBeam(
     bodyID: Int, target identity: ActorIdentity, context: EncounterContext, mining: Bool = false
   ) {
     guard let index = bodies.firstIndex(where: { $0.id == bodyID }),
