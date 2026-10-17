@@ -81,6 +81,45 @@ enum ShipProjection {
 }
 
 extension Frame {
+  /// Ship surfaces visible to the renderer, excluding HUD graphics and offscreen texture faces.
+  public var hasShipSurfaces: Bool {
+    worldGraphics.contains(where: visibleShipSurface)
+      || graphics.contains(where: visibleShipSurface)
+  }
+
+  private func visibleShipSurface(_ graphic: Graphic) -> Bool {
+    switch graphic {
+    case .panel: return true
+    case .textured(let triangle):
+      guard triangle.vertices.count == 3,
+        triangle.vertices.allSatisfy(ShipTextureRaster.validVertex),
+        ShipTextureRaster.validClip(triangle.clip), ShipTextureRaster.validClip(flightClip),
+        triangle.brightness.isFinite, (0...1).contains(triangle.brightness),
+        ShipTextureAssets.pixels(for: triangle.texture) != nil
+      else { return false }
+      let left = max(triangle.clip.x, flightClip.x)
+      let top = max(triangle.clip.y, flightClip.y)
+      let right = min(triangle.clip.maxX, flightClip.maxX)
+      let bottom = min(triangle.clip.maxY, flightClip.maxY)
+      guard left < right, top < bottom else { return false }
+      var clipped = triangle.vertices.map(\.point)
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: left, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: right, above: false)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: top, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: bottom, above: false)
+      guard clipped.count >= 3 else { return false }
+      // A bounding-box intersection alone can accept a face lying outside a viewport corner.
+      let origin = clipped[0]
+      let area = (1..<(clipped.count - 1)).reduce(0.0) { sum, index in
+        let a = clipped[index]
+        let b = clipped[index + 1]
+        return sum + (a.x - origin.x) * (b.y - origin.y) - (a.y - origin.y) * (b.x - origin.x)
+      }
+      return abs(area) > 1e-12
+    default: return false
+    }
+  }
+
   public mutating func textured(_ triangle: ShipTexturedTriangle) {
     graphics.append(.textured(triangle))
     guard rasterizeGraphics, let texture = ShipTextureAssets.pixels(for: triangle.texture),
