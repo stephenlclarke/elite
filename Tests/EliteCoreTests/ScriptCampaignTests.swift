@@ -159,25 +159,20 @@ func campaignCommanderChangedPaths(_ before: Commander, _ after: Commander) thro
   return paths
 }
 
-func campaignPersistenceDiagnostic(_ before: Commander, _ actual: Commander, url: URL) throws
-  -> String
-{
-  let bytes = try Data(contentsOf: url)
-  let (disk, _) = try ScriptSaveStore.read(bytes, from: url)
-  func counts(_ commander: Commander) -> String {
-    "cash=\(commander.credits),cargoTonnes=\(commander.cargoTonnes)"
-      + ",equipment=\(commander.equipmentInventory?.items.count ?? 0)"
-      + ",berths=\(commander.accommodation.ownedBerths.count)"
-      + ",instances=\(commander.scriptState.instances.count),NPCs=\(commander.npcPersistence.count)"
-      + ",projectiles=\(commander.scriptState.projectiles.count)"
+func campaignExpectedDiskCommander(
+  _ before: Commander, _ saved: Commander, system: SystemIdentity, url: URL
+) throws -> Commander {
+  let savePreservedWholeCommander = saved == before
+  #expect(savePreservedWholeCommander)
+  // Native save publication keeps live NPC bindings; the disk copy clears only those bindings/offers.
+  var expectedDisk = saved
+  if expectedDisk.npcPersistence.count > 0 {
+    expectedDisk.npcPersistence.resetPhysicalBindings(system: system)
   }
-  return [
-    "beforeToActual=\(try campaignCommanderChangedPaths(before, actual))",
-    "beforeToDisk=\(try campaignCommanderChangedPaths(before, disk))",
-    "diskToActual=\(try campaignCommanderChangedPaths(disk, actual))",
-    "beforeCounts=[\(counts(before))],actualCounts=[\(counts(actual))],diskCounts=[\(counts(disk))]",
-    "pointerSHA256=\(ScriptPackLibrary.hash(bytes))",
-  ].joined(separator: "; ")
+  let (written, _) = try ScriptSaveStore.read(Data(contentsOf: url), from: url)
+  let diskMatchesWholeExpectedCommander = written == expectedDisk
+  #expect(diskMatchesWholeExpectedCommander)
+  return expectedDisk
 }
 
 private struct CampaignFixture {
@@ -374,16 +369,13 @@ private struct CampaignFixture {
   #expect(game.commander.valid)
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: fixture.save)
-  let saveDifference = try campaignPersistenceDiagnostic(
-    game.commander, await runtime.snapshot().commander, url: fixture.save)
+  let expectedDisk = try campaignExpectedDiskCommander(
+    game.commander, await runtime.snapshot().commander,
+    system: await runtime.snapshot().systemIdentity, url: fixture.save)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
-  let restoredMatchesOriginal = await loaded.snapshot().commander == game.commander
-  let loadDifference = try campaignPersistenceDiagnostic(
-    game.commander, await loaded.snapshot().commander, url: fixture.save)
-  #expect(
-    restoredMatchesOriginal,
-    Comment(rawValue: "afterSave: \(saveDifference); afterLoad: \(loadDifference)"))
+  let restoredMatchesWholeExpectedCommander = await loaded.snapshot().commander == expectedDisk
+  #expect(restoredMatchesWholeExpectedCommander)
 }
 
 @Test func childAcceptanceWaitsForItsParentProposalAndNeverReissuesAfterAChildFault() async throws {
@@ -853,15 +845,12 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     complete.commander.scriptState.instances[owner.id]?.receiptJoins?["owned-report"] == [child])
   let saved = try await runtime.saveForInterface()
   #expect(saved.isTrial && saved.url.path.hasPrefix(namespace.path + "/"))
-  let saveDifference = try campaignPersistenceDiagnostic(
-    complete.commander, await runtime.snapshot().commander, url: saved.url)
+  let expectedDisk = try campaignExpectedDiskCommander(
+    complete.commander, await runtime.snapshot().commander,
+    system: await runtime.snapshot().systemIdentity, url: saved.url)
   _ = try await runtime.loadForInterface()
-  let restoredMatchesOriginal = await runtime.snapshot().commander == complete.commander
-  let loadDifference = try campaignPersistenceDiagnostic(
-    complete.commander, await runtime.snapshot().commander, url: saved.url)
-  #expect(
-    restoredMatchesOriginal,
-    Comment(rawValue: "afterSave: \(saveDifference); afterLoad: \(loadDifference)"))
+  let restoredMatchesWholeExpectedCommander = await runtime.snapshot().commander == expectedDisk
+  #expect(restoredMatchesWholeExpectedCommander)
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
   #expect(await runtime.snapshot().commander == before.commander)
