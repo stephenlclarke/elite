@@ -355,12 +355,15 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
         current.actor.system == system, current.physicalTime >= original.physicalTime,
         let provisional = entries[current.actor], provisional.binding == current.actor,
         provisional.terminal == nil, provisional.offer == nil,
-        Self.providerResourceState(provisional.snapshot) == Self.providerResourceState(current)
+        Self.providerOriginalStateMatches(provisional.snapshot, current)
+          && Self.providerGeometryMatches(provisional.snapshot, current)
       else { throw NativeCrimboError.invalidTransfer }
       var expected = original
       expected.actor = current.actor
       expected.physicalTime = current.physicalTime
-      guard Self.providerResourceState(expected) == Self.providerResourceState(current) else {
+      guard Self.providerOriginalStateMatches(expected, current),
+        Self.providerGeometryMatches(expected, current)
+      else {
         throw NativeCrimboError.invalidTransfer
       }
       candidate.entries.removeValue(forKey: current.actor)
@@ -389,13 +392,32 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
       && snapshot.npc.role == (slot == 6 ? .trader : .escort)
   }
 
-  private static func providerResourceState(_ snapshot: NPCPersistenceSnapshot)
-    -> NPCPersistenceSnapshot
-  {
-    var result = snapshot
-    result.firstAggressorBinding = nil
-    result.intentionTargetBinding = nil
-    return result
+  /// Geometry alone may round during world/camera projection. Consumables, clocks and motion may not.
+  private static func providerOriginalStateMatches(
+    _ lhs: NPCPersistenceSnapshot, _ rhs: NPCPersistenceSnapshot
+  ) -> Bool {
+    lhs.actor == rhs.actor && lhs.population == rhs.population && lhs.hull == rhs.hull
+      && lhs.velocity == rhs.velocity && lhs.angularVelocity == rhs.angularVelocity
+      && lhs.rotation == rhs.rotation && lhs.rotationRate == rhs.rotationRate
+      && lhs.energy == rhs.energy && lhs.missiles == rhs.missiles
+      && lhs.ecmEnabled == rhs.ecmEnabled && lhs.hostile == rhs.hostile
+      && lhs.laserCooldown == rhs.laserCooldown && lhs.catalogueShipID == rhs.catalogueShipID
+      && lhs.npc == rhs.npc && lhs.physicalTime == rhs.physicalTime
+  }
+
+  private static func providerGeometryMatches(
+    _ lhs: NPCPersistenceSnapshot, _ rhs: NPCPersistenceSnapshot
+  ) -> Bool {
+    guard lhs.position.finite, rhs.position.finite,
+      lhs.orientation.validRotation, rhs.orientation.validRotation
+    else { return false }
+    // Never exceeds the native main-station projection tolerance; relative scale handles roundoff.
+    let scale = max(1, lhs.position.length, rhs.position.length)
+    let positionTolerance = min(1e-5, scale * 1e-10)
+    return (lhs.position - rhs.position).length <= positionTolerance
+      && (lhs.orientation.x - rhs.orientation.x).length <= 1e-10
+      && (lhs.orientation.y - rhs.orientation.y).length <= 1e-10
+      && (lhs.orientation.z - rhs.orientation.z).length <= 1e-10
   }
 
   private mutating func normalizeProviderReferences(protection: MissionProtection) {

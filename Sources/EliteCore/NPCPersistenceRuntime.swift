@@ -92,6 +92,12 @@ extension Game {
   mutating func advanceUnboundNPCs() {
     let now = commander.flightSimulation.physicalTime
     for (logical, var snapshot) in commander.npcPersistence.unboundSnapshots {
+      if freezesNativeCrimboOriginal(logical: logical, snapshot: snapshot) {
+        if let frozen = try? Self.freezeNativeCrimboSnapshot(snapshot, at: now) {
+          _ = commander.npcPersistence.updateUnbound(logicalIdentity: logical, snapshot: frozen)
+        }
+        continue
+      }
       let elapsed = now - snapshot.physicalTime
       guard elapsed.isFinite, elapsed > 0 else { continue }
       snapshot.position = snapshot.position + snapshot.velocity * elapsed
@@ -218,5 +224,37 @@ extension Game {
     if actor.entity == 0 { return commander.flightSimulation.player ?? actor }
     if actor.entity == 1 { return commander.flightSimulation.anchors?.station.identity ?? actor }
     return identities[actor] ?? actor
+  }
+}
+
+extension Game {
+  /// The existing visit projection uses these exact canonical anchors, never a camera-local centre.
+  mutating func projectNativeCrimboCanonicalAnchors() throws {
+    guard nativeCrimboLifecycleAvailable, let registry = commander.savedCrimboState,
+      let anchors = commander.flightSimulation.anchors,
+      anchors.system == NativeCrimboRegistry.system,
+      anchors.planet.position == registry.orbit.anchor.center,
+      anchors.planet.radius == registry.orbit.anchor.planetRadius
+    else { throw NativeCrimboError.invalidMotion }
+    let pose = commander.flightSimulation.pose
+    celestials = [
+      .init(
+        kind: .planet, position: pose.shipPoint(anchors.planet.position),
+        radius: anchors.planet.radius),
+      .init(kind: .sun, position: pose.shipPoint(anchors.sun.position), radius: anchors.sun.radius),
+    ]
+  }
+
+  mutating func rebaseUnboundNativeCrimboOriginals() throws {
+    guard nativeCrimboLifecycleAvailable else { return }
+    let time = commander.flightSimulation.physicalTime
+    for (logical, snapshot) in commander.npcPersistence.unboundSnapshots {
+      guard freezesNativeCrimboOriginal(logical: logical, snapshot: snapshot) else { continue }
+      let frozen = try Self.freezeNativeCrimboSnapshot(snapshot, at: time)
+      guard commander.npcPersistence.updateUnbound(logicalIdentity: logical, snapshot: frozen)
+      else {
+        throw NativeCrimboError.invalidTransfer
+      }
+    }
   }
 }

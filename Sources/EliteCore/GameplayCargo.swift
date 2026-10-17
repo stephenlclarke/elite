@@ -89,10 +89,11 @@ extension Game {
     }
   }
 
-  mutating func departOrdinarySimulation() {
+  mutating func departOrdinarySimulation() throws {
     _ = persistNPCStates()
     _ = persistEMPState()
     persistOrePoses()
+    if nativeCrimboLifecycleAvailable { try parkNativeCrimboBeforeDeparture() }
     commander.cargoDebrisLedger.depart(system: systemIdentity)
     commander.miningLedger.depart(system: systemIdentity)
     commander.npcPersistence.depart(system: systemIdentity)

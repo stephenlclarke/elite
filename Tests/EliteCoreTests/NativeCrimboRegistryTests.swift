@@ -58,11 +58,15 @@ enum CrimboFixture {
   }
 
   static func convoyBodies(_ game: Game) -> [SpaceBody] {
-    game.bodies.filter { $0.physical?.spawnIdentity?.producer == .provider }
+    game.bodies.filter { body in
+      body.physical.map { game.isNativeCrimboMember($0.identity) } ?? false
+    }
   }
 
   static func game() throws -> Game {
     var game = Game(executive: false)
+    // Explicit adapter fixture injection; production readiness is exclusively G1-owned.
+    game.nativeCrimboLifecycleAvailable = true
     game.commander.galaxy = system.galaxy
     game.commander.system = system.system
     game.systems = Universe.systemsIncludingPlugh(number: system.galaxy)
@@ -233,6 +237,147 @@ struct NativeCrimboRegistryTests {
       nextActor: 3, protection: .init())
     #expect(ledger.binding(for: original.actor) == original.actor)
     #expect(ledger.snapshot(for: original.actor) == original)
+  }
+
+  @Test func derivedWholeCircleClearsActualSpheresAndWeakestCatalogueLimits() throws {
+    let registry = try CrimboFixture.registry()
+    let santa = try #require(ShipCatalogue.ship("SH150"))
+    let rudolf = try #require(ShipCatalogue.ship("SH151"))
+    let radii = try (0..<7).map { slot in
+      try #require((slot == 6 ? santa : rudolf).design.rawMesh.vertices.map(\.length).max())
+    }
+    let limits = try (0..<7).map { slot -> OrbitFormationLimits in
+      let p = try #require((slot == 6 ? santa : rudolf).game)
+      return .init(
+        speed: p.speed * 18, acceleration: p.acceleration * 18, turnRate: min(p.pitch, p.yaw))
+    }
+    let center = registry.orbit.anchor.center
+    let sun = SphereAnchor(position: center + .init(0, 0, 12000), radius: 1100)
+    let obstacle = SphereAnchor(position: center + .init(1700, 0, 0), radius: 600)
+    let environment = NativeCrimboOrbitEnvironment(
+      planet: .init(position: center, radius: registry.orbit.anchor.planetRadius), sun: sun,
+      playerPosition: center + .init(0, 6000, 0), reference: Basis3(),
+      hullRadii: radii, limits: limits, obstacles: [obstacle])
+    let orbit = try NativeCrimboOrbitPolicy.derive(
+      environment: environment, incarnation: UUID(), anchorIdentity: UUID())
+    #expect(
+      NativeCrimboOrbitPolicy.circleDistance(
+        obstacle, center: center, basis: orbit.anchor.basis, radius: orbit.anchor.orbitRadius)
+        > obstacle.radius + (radii.max() ?? 0))
+    #expect(
+      orbit.configuration.angularSpeed * orbit.anchor.orbitRadius <= 0.75
+        * (limits.map(\.speed).min() ?? 0))
+    #expect(
+      pow(orbit.configuration.angularSpeed, 2) * orbit.anchor.orbitRadius <= 0.5
+        * (limits.map(\.acceleration).min() ?? 0))
+    #expect(orbit.configuration.angularSpeed <= 0.75 * (limits.map(\.turnRate).min() ?? 0))
+    #expect(7 * orbit.configuration.slotSpacing < 2 * .pi)
+    #expect(orbit.anchor.center == environment.planet.position)
+    #expect(orbit.configuration.captureTimeout == 2 * .pi / orbit.configuration.angularSpeed)
+  }
+
+  @Test func geometryDerivationRejectsMissingOriginalHullAndUnresolvedSphere() throws {
+    let planet = SphereAnchor(position: .init(0, 0, 0), radius: 1500)
+    let invalid = NativeCrimboOrbitEnvironment(
+      planet: planet, sun: planet, playerPosition: .init(0, 0, 10000), reference: Basis3(),
+      hullRadii: Array(repeating: 20, count: 6),
+      limits: Array(repeating: .init(speed: 100, acceleration: 10, turnRate: 1), count: 7),
+      obstacles: [])
+    #expect(throws: NativeCrimboError.invalidMotion) {
+      try NativeCrimboOrbitPolicy.derive(
+        environment: invalid, incarnation: UUID(), anchorIdentity: UUID())
+    }
+  }
+
+  @Test func absentOrdinaryClockRebasePreservesEverySpentResource() throws {
+    var snapshot = try CrimboFixture.snapshot(entity: 2, slot: 6)
+    let capacity = try #require(snapshot.npc.resources?.energyCapacity)
+    let recharge = try #require(snapshot.npc.resources?.electricalRecharge)
+    var reserve = try #require(ElectricalReserve(capacity: capacity, recharge: recharge, at: 0))
+    #expect(reserve.drain(50, at: 0))
+    snapshot.npc.resources?.electrical = reserve
+    let frozen = try Game.freezeNativeCrimboSnapshot(snapshot, at: 1000)
+    #expect(frozen.energy == snapshot.energy && frozen.missiles == snapshot.missiles)
+    #expect(frozen.position == snapshot.position && frozen.velocity == snapshot.velocity)
+    #expect(
+      frozen.laserCooldown == snapshot.laserCooldown
+        && frozen.npc.ordinaryCargo == snapshot.npc.ordinaryCargo)
+    #expect(frozen.npc.resources?.frontShield == snapshot.npc.resources?.frontShield)
+    #expect(frozen.npc.resources?.rearShield == snapshot.npc.resources?.rearShield)
+    #expect(frozen.npc.resources?.laserHeat == snapshot.npc.resources?.laserHeat)
+    #expect(frozen.npc.resources?.fuel == snapshot.npc.resources?.fuel)
+    #expect(frozen.npc.resources?.electrical?.remaining == reserve.remaining)
+    #expect(frozen.npc.resources?.electrical?.recharge == recharge)
+    #expect(frozen.npc.resources?.electrical?.physicalTime == 1000)
+  }
+
+  @Test func electricalDisableDeadlineRemainsExclusiveToActualEMPOwner() throws {
+    var snapshot = try CrimboFixture.snapshot(entity: 2, slot: 6)
+    let capacity = try #require(snapshot.npc.resources?.energyCapacity)
+    let recharge = try #require(snapshot.npc.resources?.electricalRecharge)
+    var reserve = try #require(ElectricalReserve(capacity: capacity, recharge: recharge, at: 0))
+    #expect(reserve.drain(capacity, at: 0))
+    snapshot.npc.resources?.electrical = reserve
+    #expect(throws: NativeCrimboError.invalidTransfer) {
+      try Game.freezeNativeCrimboSnapshot(snapshot, at: 1000)
+    }
+    #expect(snapshot.npc.resources?.electrical?.disabledAt == 0)
+    #expect(snapshot.npc.resources?.electrical?.remaining == 0)
+  }
+
+  @Test func parkedImportAcceptsOnlyActualRotatedCameraRoundoff() throws {
+    var ledger = NPCPersistenceLedger()
+    let original = try CrimboFixture.snapshot(entity: 2, slot: 6)
+    let logical = NPCLogicalIdentity(firstActor: original.actor)
+    _ = ledger.capture(original, protection: .init())
+    let parked = try ledger.takeProviderOriginals(
+      expected: [logical: original], protection: .init())
+    ledger.depart(system: CrimboFixture.system)
+    let actor = ActorIdentity(system: CrimboFixture.system, visit: 2, entity: 3)
+    var rebound = original
+    rebound.actor = actor
+    rebound.physicalTime = 20
+    var body = SpaceBody(id: 3, hull: original.hull, position: .init(0, 0, 0))
+    body.physical = .init(identity: actor, population: .civilian, npc: original.npc)
+    var pose = ShipPose()
+    pose.position = .init(12000, 500, -16000)
+    pose.orientation.rotate(pitch: 0.3, roll: 0.2, yaw: -0.4)
+    #expect(
+      NPCRebind(logicalIdentity: original.actor, actor: actor, snapshot: rebound)
+        .restore(body: &body, pose: pose))
+    let captured = try #require(
+      NPCPersistenceSnapshot.capture(
+        body: body, pose: pose, physicalTime: 20, protection: .init()))
+    #expect(captured.position != original.position || captured.orientation != original.orientation)
+    _ = ledger.capture(captured, protection: .init())
+    try ledger.importProviderOriginals(
+      parked: parked, admitted: [logical: captured], protection: .init())
+    #expect(ledger.binding(for: logical) == actor)
+    #expect(ledger.snapshot(for: logical.firstActor)?.energy == original.energy)
+    #expect(ledger.snapshot(for: logical.firstActor)?.npc.resources == original.npc.resources)
+  }
+
+  @Test func importNeverForgivesDifferentElectricalResourceClock() throws {
+    var ledger = NPCPersistenceLedger()
+    var original = try CrimboFixture.snapshot(entity: 2, slot: 6)
+    let capacity = try #require(original.npc.resources?.energyCapacity)
+    let recharge = try #require(original.npc.resources?.electricalRecharge)
+    original.npc.resources?.electrical = ElectricalReserve(
+      capacity: capacity, recharge: recharge, at: 1)
+    let logical = NPCLogicalIdentity(firstActor: original.actor)
+    _ = ledger.capture(original, protection: .init())
+    _ = try ledger.takeProviderOriginals(expected: [logical: original], protection: .init())
+    ledger.depart(system: CrimboFixture.system)
+    let parked = try Game.freezeNativeCrimboSnapshot(original, at: 20)
+    var current = try Game.freezeNativeCrimboSnapshot(parked, at: 21)
+    current.actor = .init(system: CrimboFixture.system, visit: 2, entity: 3)
+    _ = ledger.capture(current, protection: .init())
+    let before = ledger
+    #expect(throws: NativeCrimboError.invalidTransfer) {
+      try ledger.importProviderOriginals(
+        parked: [logical: parked], admitted: [logical: current], protection: .init())
+    }
+    #expect(ledger == before)
   }
 
 }

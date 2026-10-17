@@ -68,7 +68,7 @@ enum NativeCrimboMotion {
 
 extension Game {
   func isNativeCrimboMember(_ actor: ActorIdentity) -> Bool {
-    guard let registry = commander.savedCrimboState,
+    guard nativeCrimboLifecycleAvailable, let registry = commander.savedCrimboState,
       registry.world == commander.equipmentOwnerID,
       registry.spawnSequence < commander.flightSimulation.nextSpawn,
       (try? registry.validate()) != nil
@@ -79,7 +79,7 @@ extension Game {
   /// A rejected candidate leaves all originals, resources and bindings unchanged.
   mutating func advanceNativeCrimbo(delta: Double) {
     nativeCrimboMotionSample = nil
-    guard !paused, !docked, delta.isFinite, delta > 0, delta <= 0.1,
+    guard nativeCrimboLifecycleAvailable, !paused, !docked, delta.isFinite, delta > 0, delta <= 0.1,
       let registry = commander.savedCrimboState,
       registry.world == commander.equipmentOwnerID,
       registry.spawnSequence < commander.flightSimulation.nextSpawn,
@@ -100,6 +100,11 @@ extension Game {
 
   private mutating func admitNativeCrimbo(context: EncounterContext) throws {
     guard var registry = commander.savedCrimboState else { throw NativeCrimboError.unavailable }
+    for member in registry.members {
+      guard case .parked(let logical, let snapshot) = member.ownership else { continue }
+      let frozen = try Self.freezeNativeCrimboSnapshot(snapshot, at: context.physicalTime)
+      registry.members[member.slot].ownership = .parked(logical, frozen)
+    }
     let waiting = registry.members.filter {
       switch $0.ownership {
       case .pending, .parked: true
@@ -207,7 +212,9 @@ extension Game {
   }
 
   private mutating func steerNativeCrimbo(delta: Double) throws {
-    guard var registry = commander.savedCrimboState, let context = gameplayContext() else {
+    guard nativeCrimboLifecycleAvailable, var registry = commander.savedCrimboState,
+      let context = gameplayContext()
+    else {
       throw NativeCrimboError.unavailable
     }
     // The native law owner must end an actual threat; a missing target never substitutes the player.
@@ -345,7 +352,7 @@ extension Game {
   mutating func finishNativeCrimboMotion(admitted: Bool) throws -> NativeCrimboAttainedMotion? {
     let sample = nativeCrimboMotionSample
     nativeCrimboMotionSample = nil
-    guard admitted, !paused, !docked, let sample,
+    guard nativeCrimboLifecycleAvailable, admitted, !paused, !docked, let sample,
       sample.runtimeEpoch == nativeStationRuntimeEpoch, sample.frame == gameplayRevision,
       sample.stationImpactRevision == stationImpactRevision,
       stationImpactRevision != gameplayRevision,
@@ -388,7 +395,7 @@ extension Game {
 
   /// G1 must clear the departed world in this SAME candidate before publishing the parked ownership.
   mutating func parkNativeCrimboBeforeDeparture() throws {
-    guard var registry = commander.savedCrimboState,
+    guard nativeCrimboLifecycleAvailable, var registry = commander.savedCrimboState,
       commander.flightSimulation.player?.system == NativeCrimboRegistry.system
     else { return }
     try registry.validate()
@@ -422,5 +429,147 @@ extension Game {
     candidate.commander.savedCrimboState = registry
     candidate.nativeCrimboMotionSample = nil
     self = candidate
+  }
+}
+
+extension Game {
+  /// Automatic native visit entry. G1 alone can enable the ephemeral readiness gate.
+  mutating func prepareNativeCrimboVisit() throws {
+    nativeCrimboMotionSample = nil
+    guard nativeCrimboLifecycleAvailable, systemIdentity == NativeCrimboRegistry.system else {
+      return
+    }
+    var candidate = self
+    guard let context = candidate.gameplayContext(),
+      let owner = candidate.commander.equipmentOwnerID,
+      candidate.commander.nativeStations?.ledger.world == owner,
+      candidate.bodies.contains(where: {
+        $0.id == 0 && $0.hull == .station && $0.energy > 0
+          && $0.physical?.identity == context.anchors.station.identity
+      })
+    else { throw NativeCrimboError.unavailable }
+    if candidate.commander.savedCrimboState == nil {
+      let environment = try candidate.nativeCrimboBirthEnvironment(context: context)
+      let orbit = try NativeCrimboOrbitPolicy.derive(
+        environment: environment, incarnation: UUID(), anchorIdentity: UUID())
+      let farthest = orbit.anchor.center - orbit.anchor.basis.x * orbit.anchor.orbitRadius
+      let extent = (farthest - context.player.position).length + (environment.hullRadii.max() ?? 0)
+      guard extent.isFinite,
+        !SpaceBody(id: -1, hull: .cobra, position: .init(extent, 0, 0)).leavesLocalBubble,
+        let sequence = candidate.commander.flightSimulation.allocateSpawn()
+      else { throw NativeCrimboError.unavailable }
+      let origin = NativeMainStationIdentity(
+        world: owner, system: context.system,
+        resource: Self.worldResourceIdentity("main-station-v1:main-orbital:7:8"))
+      let rudolf = try candidate.nativeCrimboRudolfBirthLoadout()
+      candidate.commander.savedCrimboState = try .init(
+        world: owner, spawnSequence: sequence, origin: origin, orbit: orbit,
+        santaLoadout: .init(missiles: 0, ecmEnabled: false), rudolfLoadout: rudolf)
+    }
+    guard var registry = candidate.commander.savedCrimboState,
+      registry.world == owner,
+      registry.spawnSequence < candidate.commander.flightSimulation.nextSpawn
+    else { throw NativeCrimboError.invalidRegistry }
+    try registry.validate()
+    for member in registry.members {
+      guard case .parked(let logical, let snapshot) = member.ownership else { continue }
+      let rebased = try Self.freezeNativeCrimboSnapshot(snapshot, at: context.physicalTime)
+      registry.members[member.slot].ownership = .parked(logical, rebased)
+    }
+    candidate.commander.savedCrimboState = registry
+    try candidate.projectNativeCrimboCanonicalAnchors()
+    try candidate.rebaseUnboundNativeCrimboOriginals()
+    // Capacity refusal is an ordinary deferred cohort, not a partial visit or a fresh incarnation.
+    var admission = candidate
+    do {
+      try admission.admitNativeCrimbo(context: context)
+      candidate = admission
+    } catch NativeCrimboError.unavailable {
+      // Keep exactly the already-born pending originals and the allocator's one birth sequence.
+    }
+    self = candidate
+  }
+
+  private func nativeCrimboBirthEnvironment(context: EncounterContext) throws
+    -> NativeCrimboOrbitEnvironment
+  {
+    var radii: [Double] = []
+    var limits: [OrbitFormationLimits] = []
+    for slot in 0..<7 {
+      let catalogue = slot == 6 ? "SH150" : "SH151"
+      guard let ship = ShipCatalogue.ship(catalogue), let performance = ship.game,
+        let radius = ship.design.rawMesh.vertices.map(\.length).max(), radius.isFinite, radius > 0
+      else { throw NativeCrimboError.unavailable }
+      // Ordinary admission still uses its native hull proxy; satisfy that and the actual model.
+      let proxy = Mesh.hull(slot == 6 ? .cobra : .viper).vertices.map(\.length).max() ?? .infinity
+      guard proxy.isFinite, proxy > 0 else { throw NativeCrimboError.unavailable }
+      radii.append(max(radius, proxy))
+      limits.append(
+        .init(
+          speed: performance.speed * 18, acceleration: performance.acceleration * 18,
+          turnRate: min(performance.pitch, performance.yaw)))
+    }
+    var obstacles: [SphereAnchor] = []
+    for body in bodies where body.energy > 0 {
+      let radius = gameplayMesh(for: body).vertices.map(\.length).max() ?? .infinity
+      guard radius.isFinite, radius > 0 else { throw NativeCrimboError.unavailable }
+      obstacles.append(
+        .init(position: commander.flightSimulation.pose.systemPoint(body.position), radius: radius))
+    }
+    let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? .infinity
+    guard playerRadius.isFinite, playerRadius > 0 else { throw NativeCrimboError.unavailable }
+    obstacles.append(.init(position: context.player.position, radius: playerRadius))
+    return .init(
+      planet: context.anchors.planet, sun: context.anchors.sun,
+      playerPosition: context.player.position, reference: context.player.orientation,
+      hullRadii: radii, limits: limits, obstacles: obstacles)
+  }
+
+  private func nativeCrimboRudolfBirthLoadout() throws -> NativeCrimboLoadout {
+    guard let ship = ShipCatalogue.ship("SH151"),
+      let initial = ship.profiles.first(where: { $0.id == "PROJECT-PLAYER-SH151" })?
+        .fields.first(where: { $0.key == "new_refit_initial_missiles" })?.number,
+      initial.isFinite, initial.rounded() == initial, initial >= 0,
+      initial <= Double(ship.game?.missiles ?? -1)
+    else { throw NativeCrimboError.unavailable }
+    // SH151 explicitly retains has_ecm=Yes; the Military category supplies no equipment authority.
+    return .init(missiles: Int(initial), ecmEnabled: true)
+  }
+
+  /// Freeze only an enabled original's absent ordinary state; EMP-owned deadlines are not rebased.
+  static func freezeNativeCrimboSnapshot(_ snapshot: NPCPersistenceSnapshot, at time: Double) throws
+    -> NPCPersistenceSnapshot
+  {
+    guard snapshot.valid, time.isFinite, time >= snapshot.physicalTime else {
+      throw NativeCrimboError.invalidTransfer
+    }
+    var frozen = snapshot
+    if var resources = frozen.npc.resources, var reserve = resources.electrical {
+      guard reserve.disabledAt == nil,
+        reserve.advance(to: time, capacity: reserve.capacity, recharge: 0),
+        reserve.advance(
+          to: time, capacity: resources.energyCapacity, recharge: resources.electricalRecharge)
+      else { throw NativeCrimboError.invalidTransfer }
+      resources.electrical = reserve
+      frozen.npc.resources = resources
+    }
+    frozen.physicalTime = time
+    guard frozen.valid else { throw NativeCrimboError.invalidTransfer }
+    return frozen
+  }
+
+  func freezesNativeCrimboOriginal(logical: ActorIdentity, snapshot: NPCPersistenceSnapshot) -> Bool
+  {
+    guard nativeCrimboLifecycleAvailable, let registry = commander.savedCrimboState,
+      registry.world == commander.equipmentOwnerID,
+      registry.spawnSequence < commander.flightSimulation.nextSpawn,
+      (try? registry.validate()) != nil
+    else { return false }
+    return registry.members.contains { member in
+      guard case .live(let original) = member.ownership, original.firstActor == logical else {
+        return false
+      }
+      return NativeCrimboRegistry.matches(snapshot, member: member)
+    }
   }
 }

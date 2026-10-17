@@ -124,4 +124,33 @@ struct NativeCrimboProviderTests {
     #expect(game.nativeCrimboDefenceIntents().isEmpty)
     #expect(game.bodies.allSatisfy { !$0.hostile })
   }
+  @Test func gateRejectsDecodedThreatFactsAndDefenceAsWellAsBirth() throws {
+    var game = try CrimboFixture.game()
+    game.advanceNativeCrimbo(delta: 0.1)
+    let owner = try #require(game.commander.equipmentOwnerID)
+    game.commander.savedCrimboState?.destination = CrimboFixture.station(
+      owner: owner, system: .init(galaxy: 7, system: 202))
+    let santa = try #require(
+      CrimboFixture.convoyBodies(game).first { $0.physical?.catalogueShipID == "SH150" }?.physical?
+        .identity)
+    let player = try #require(game.commander.flightSimulation.player)
+    let incident = try crimboAttack(&game, attacker: player, victim: santa)
+    var accepted = CrimeResolution()
+    accepted.accepted = true
+    accepted.unlawful = true
+    try game.observeNativeCrimboCombat(incident: incident, resolution: accepted)
+    #expect(game.nativeCrimboDefenceIntents().count == 6)
+    game.commander = try JSONDecoder().decode(
+      Commander.self, from: JSONEncoder().encode(game.commander))
+    game.nativeCrimboLifecycleAvailable = false
+    let before = game.commander.savedCrimboState
+    #expect(game.nativeCrimboDefenceIntents().isEmpty)
+    #expect(try game.nativeProviderMissionFacts(instance: nil) == nil)
+    #expect(!game.isNativeCrimboMember(santa))
+    try game.endNativeCrimboThreat(incident: incident.id)
+    let next = try crimboAttack(&game, attacker: player, victim: santa)
+    try game.observeNativeCrimboCombat(incident: next, resolution: accepted)
+    #expect(game.commander.savedCrimboState == before)
+  }
+
 }
