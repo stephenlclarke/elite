@@ -428,6 +428,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let window = NSWindow(
       contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
       backing: .buffered, defer: false)
+    // ARC retains this window through AppDelegate; AppKit must not release it again on close.
+    window.isReleasedWhenClosed = false
     window.title = "XYZZY Elite - Right-On Commander"
     window.contentView = view
     window.minSize = NSSize(width: 512, height: 540)

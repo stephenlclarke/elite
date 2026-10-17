@@ -25,6 +25,7 @@ private final class NativeCommanderFileFixture {
     delegate = AppDelegate(
       restoreOnLaunch: false, saves: saves, commanderFileFailure: { failureSink?($0) })
     window = NSWindow(contentRect: view.frame, styleMask: [], backing: .buffered, defer: false)
+    window.isReleasedWhenClosed = false
     window.contentView = view
     delegate.window = window
     failureSink = { [weak self] error in self?.errors.append(error) }
@@ -57,6 +58,19 @@ private final class NativeCommanderFileFixture {
 }
 
 extension NativeViewTests {
+  @MainActor @Test func nativeCommanderFixtureRetainsItsARCWindowAfterClose() async throws {
+    let fixture = try NativeCommanderFileFixture()
+    defer { fixture.close() }
+    try #require(!fixture.window.isReleasedWhenClosed)
+    fixture.window.close()
+    await nativeWindowOwnershipRunLoopTurn()
+    #expect(fixture.delegate.window === fixture.window)
+    #expect(fixture.window.contentView === fixture.view && !fixture.window.isVisible)
+    fixture.window.title = "Retained commander fixture"
+    #expect(fixture.window.title == "Retained commander fixture")
+    #expect(fixture.errors.isEmpty)
+  }
+
   @MainActor @Test func nativeMissionIntentsKeepTheirFIFOPositionAndRefuseAfterAnEarlierLoad()
     async throws
   {
