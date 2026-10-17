@@ -53,6 +53,12 @@ extension Display {
     }
     let buyingFor = game.equipmentWorkTool ? "Mining work tool" : game.equipmentMount.label
     func ownership(_ item: Equipment) -> (fitted: Bool, held: Bool) {
+      if item.name == PassengerCabin.equipmentName {
+        return (
+          !game.commander.accommodation.fittedBerths.isEmpty,
+          !game.commander.accommodation.storedBerths.isEmpty
+        )
+      }
       if let inventory = game.commander.equipmentInventory,
         let node = EquipmentRuntimeCatalog.node(for: item.name)
       {
@@ -113,6 +119,10 @@ extension Display {
           status =
             fitted
             ? "FITTED" : owned.held ? "STORED" : Equipment.rewardLabel(item.name).uppercased()
+        } else if item.name == PassengerCabin.equipmentName {
+          status =
+            "\(game.commander.accommodation.fittedBerths.count) FIT / "
+            + "\(game.commander.accommodation.storedBerths.count) STORED"
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "
@@ -152,7 +162,11 @@ extension Display {
         description += "Fitted. "
       }
       if owned.held { description += "Stored item owned. " }
-      if item.name == FuelStorage.equipmentName {
+      if item.name == PassengerCabin.equipmentName {
+        description +=
+          String(format: "Price: project estimate %.1f CR. ", Double(game.shopPrice(item)) / 10)
+          + "5t / 1 equipment unit. S: store empty cabin. R: refit stored cabin. Return: buy."
+      } else if item.name == FuelStorage.equipmentName {
         description += "Fuel storage \(game.commander.fuelStorageUnits)/4. Refuel separately."
       } else if game.equipmentPurchaseRequirement(item) == nil {
         description += "Return: buy. A weaker purchase is stored."

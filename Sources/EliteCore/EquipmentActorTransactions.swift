@@ -20,16 +20,35 @@ public struct EquipmentPurchaseContext: Sendable, Equatable {
       Equipment.all.indices.contains(game.selection)
       ? game.shopPrice(Equipment.all[game.selection]) : -1
   }
+
+  public func passengerBerthFitting(fitted: Bool) -> PassengerBerthFittingIntent? {
+    guard Equipment.all.indices.contains(selection),
+      Equipment.all[selection].name == PassengerCabin.equipmentName,
+      let berth = commander.accommodation.ownedBerths.first(where: {
+        !$0.use.used && commander.accommodation.fitted.contains($0.id) != fitted
+      })
+    else { return nil }
+    return .init(context: self, berth: berth.id, fitted: fitted)
+  }
+}
+
+/// Captures the exact empty owned cabin and painted shop facts; no second ownership ledger.
+public struct PassengerBerthFittingIntent: Sendable, Equatable {
+  fileprivate let context: EquipmentPurchaseContext
+  fileprivate let berth: UUID
+  fileprivate let fitted: Bool
 }
 
 public enum EquipmentMutationIntent: Sendable, Equatable {
   case purchase(EquipmentPurchaseContext)
   case inventory(InventoryCommand)
+  case passengerBerth(PassengerBerthFittingIntent)
 }
 
 public enum EquipmentMutationReceipt: Sendable, Equatable {
   case purchase(item: String, physicalItem: UUID?, fitted: Bool)
   case inventory(ownedRevision: UInt64, sourceRevision: UInt64)
+  case passengerBerth(id: UUID, fitted: Bool)
 }
 
 public enum EquipmentMutationRefusal: Sendable, Equatable {
@@ -78,6 +97,21 @@ extension Game {
     return .init(game: self)
   }
 
+  public var passengerBerthSelected: Bool {
+    screen == .equipment && Equipment.all.indices.contains(selection)
+      && Equipment.all[selection].name == PassengerCabin.equipmentName
+  }
+
+  mutating func passengerCabinKey(_ key: String) -> Bool {
+    guard passengerBerthSelected, ["s", "r"].contains(key) else { return false }
+    guard let intent = equipmentPurchaseContext?.passengerBerthFitting(fitted: key == "r") else {
+      notify("NO EMPTY CABIN TO " + (key == "r" ? "REFIT" : "STORE"))
+      return true
+    }
+    _ = performEquipmentMutation(.passengerBerth(intent))
+    return true
+  }
+
   /// Compatibility for direct value-model callers. Native input uses the actor's captured intent.
   mutating func purchaseImmediately() -> EquipmentMutationResult {
     performShopPurchase(.init(game: self), requireEquipmentScreen: false)
@@ -89,6 +123,27 @@ extension Game {
     switch intent {
     case .purchase(let context): return performShopPurchase(context, requireEquipmentScreen: true)
     case .inventory(let command): return performInventoryMutation(command)
+    case .passengerBerth(let intent): return performPassengerBerthFitting(intent)
+    }
+  }
+
+  private mutating func performPassengerBerthFitting(_ intent: PassengerBerthFittingIntent)
+    -> EquipmentMutationResult
+  {
+    guard passengerBerthSelected, equipmentPurchaseContext == intent.context,
+      intent.context.passengerBerthFitting(fitted: intent.fitted) == intent
+    else {
+      notify(EquipmentMutationRefusal.staleContext.message)
+      return .refused(.staleContext)
+    }
+    do {
+      try setPassengerBerthFitted(intent.berth, fitted: intent.fitted)
+      inventoryContextEpoch = .init()
+      notify(intent.fitted ? "PASSENGER BERTH REFITTED" : "PASSENGER BERTH STORED")
+      return .applied(.passengerBerth(id: intent.berth, fitted: intent.fitted))
+    } catch {
+      notify("CABIN FITTING REFUSED")
+      return .refused(.fittingUnavailable)
     }
   }
 
@@ -120,7 +175,10 @@ extension Game {
       if item.name == "Missile", commander.missiles >= commander.missileCapacity {
         throw ShopRefusal(.missileRackFull)
       }
-      if item.name == "Fuel" {
+      if item.name == PassengerCabin.equipmentName {
+        let berth = try confirmPassengerBerth(passengerBerthQuote)
+        receipt = .purchase(item: item.name, physicalItem: berth, fitted: true)
+      } else if item.name == "Fuel" {
         guard equipmentAvailable(item), commander.availableCredits >= context.price else {
           throw ShopRefusal(.unavailable)
         }

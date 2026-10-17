@@ -349,7 +349,8 @@ public struct Equipment: Sendable {
       .init(name: navalEnergyUnit, price: 0, technology: 0),
     ]
     + ShieldBooster.allCases.compactMap(\.shopItem) + [
-      .init(name: ShieldBooster.capital.equipmentName, price: 0, technology: 0)
+      .init(name: ShieldBooster.capital.equipmentName, price: 0, technology: 0),
+      .init(name: PassengerCabin.equipmentName, price: PassengerCabin.price, technology: 0),
     ]
 }
 
@@ -1711,8 +1712,26 @@ public actor GameRuntime {
     return false
   }
   private func handleEquipmentKey(_ key: String) -> Bool {
+    if game.passengerBerthSelected, ["s", "r"].contains(key.lowercased()) {
+      guard scriptSaveURL != nil else {
+        game.notify("CABIN FITTING REQUIRES A SAVE LOCATION")
+        return true
+      }
+      if let intent = game.equipmentPurchaseContext?.passengerBerthFitting(
+        fitted: key.lowercased() == "r")
+      {
+        _ = game.performEquipmentMutation(.passengerBerth(intent))
+      }
+      return true
+    }
     guard key.lowercased() == "return", let context = game.equipmentPurchaseContext else {
       return false
+    }
+    if game.passengerBerthSelected {
+      guard scriptSaveURL != nil else {
+        game.notify("CABIN PURCHASE REQUIRES A SAVE LOCATION")
+        return true
+      }
     }
     _ = game.performEquipmentMutation(.purchase(context))
     // A refused attempt still consumes Return; the original route never fell through.

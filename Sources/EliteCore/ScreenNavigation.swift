@@ -188,6 +188,7 @@ extension Game {
     default: break
     }
     if docked && ["1", "2"].contains(key) { return true }
+    if passengerCabinKey(key) { return true }
     if marketKey(key) { return true }
     if key == "escape" {
       backFromPrimary()
