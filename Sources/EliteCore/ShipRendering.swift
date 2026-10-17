@@ -81,6 +81,36 @@ enum ShipProjection {
 }
 
 extension Frame {
+  public mutating func textured(_ triangle: ShipTexturedTriangle) {
+    graphics.append(.textured(triangle))
+    guard rasterizeGraphics, let texture = ShipTextureAssets.pixels(for: triangle.texture),
+      ShipTextureRaster.validClip(triangle.clip), ShipTextureRaster.validClip(flightClip)
+    else { return }
+    let leftEdge = max(0, triangle.clip.x, flightClip.x)
+    let topEdge = max(0, triangle.clip.y, flightClip.y)
+    let rightEdge = min(Double(Self.width), triangle.clip.maxX, flightClip.maxX)
+    let bottomEdge = min(Double(Self.height), triangle.clip.maxY, flightClip.maxY)
+    guard rightEdge > leftEdge, bottomEdge > topEdge else { return }
+    let bounded = ShipTexturedTriangle(
+      vertices: triangle.vertices, texture: triangle.texture, brightness: triangle.brightness,
+      clip: .init(
+        x: leftEdge, y: topEdge, width: rightEdge - leftEdge, height: bottomEdge - topEdge))
+    guard let tile = ShipTextureRaster.tile(triangle: bounded, pixels: texture)
+    else { return }
+    let left = Int(tile.origin.x.rounded())
+    let top = Int(tile.origin.y.rounded())
+    for y in 0..<tile.height {
+      for x in 0..<tile.width {
+        let colour = tile.rgba[y * tile.width + x]
+        let column = left + x
+        let row = top + y
+        if colour & 255 != 0, (0..<Self.width).contains(column), (0..<Self.width).contains(row) {
+          pixels[row * Self.width + column] = colour
+        }
+      }
+    }
+  }
+
   public mutating func panel(_ vertices: [ScreenPoint], colour: UInt32) {
     guard vertices.count >= 3, vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite }) else {
       return

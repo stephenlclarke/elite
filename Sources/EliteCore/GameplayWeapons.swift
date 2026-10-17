@@ -200,7 +200,7 @@ extension Game {
             $0.x * lot.halfExtents.x / x, $0.y * lot.halfExtents.y / y,
             $0.z * lot.halfExtents.z / z)
         }, faces: base.faces, details: base.details, materials: base.materials,
-        faceMaterials: base.faceMaterials, preserveWinding: true)
+        faceMaterials: base.faceMaterials, faceTextures: base.faceTextures, preserveWinding: true)
     }
     if let id = body.physical?.catalogueShipID, let ship = ShipCatalogue.ship(id) {
       return ship.design.rawMesh
@@ -213,6 +213,6 @@ extension Game {
     return .init(
       vertices: base.vertices.map { $0 * (rock.radius / radius) }, faces: base.faces,
       details: base.details, materials: base.materials, faceMaterials: base.faceMaterials,
-      preserveWinding: true)
+      faceTextures: base.faceTextures, preserveWinding: true)
   }
 }

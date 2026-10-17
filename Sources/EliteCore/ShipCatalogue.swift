@@ -57,6 +57,7 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   public let sourceFaceColours: [[Double]]?
   public let sourceTextures: [ShipSourceTexture]?
   public let sourceFaceTextures: [ShipSourceFaceTexture]?
+  public let resolvedTextures: [ShipResolvedTexture]?
   var valid: Bool {
     guard vertices.count >= 4, faces.count >= 4,
       vertices.allSatisfy({ $0.count == 3 && $0.allSatisfy(\.isFinite) }),
@@ -86,10 +87,11 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   }
 
   var rawMesh: Mesh {
-    Mesh(
+    if resolvedTextures?.isEmpty == false { ShipTextureAssets.preload() }
+    return Mesh(
       vertices: vertices.map { Vector3($0[0], $0[1], $0[2]) }, faces: faces,
       details: details ?? [], materials: materials ?? [], faceMaterials: faceMaterials ?? [],
-      preserveWinding: true)
+      faceTextures: resolvedFaceTextures, preserveWinding: true)
   }
   var mesh: Mesh { rawMesh.showroomNormalised }
 }
@@ -112,7 +114,7 @@ public enum ShipCatalogue {
     let mesh = ship.design.mesh
     return Mesh(
       vertices: mesh.vertices.map { $0 * 0.69 }, faces: mesh.faces, details: mesh.details,
-      materials: mesh.materials, faceMaterials: mesh.faceMaterials,
+      materials: mesh.materials, faceMaterials: mesh.faceMaterials, faceTextures: mesh.faceTextures,
       preserveWinding: true)
   }
   public static func nativeShip(_ hull: Hull) -> CatalogueShip? { nativeRecords[hull] }

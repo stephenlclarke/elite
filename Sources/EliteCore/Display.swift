@@ -342,6 +342,23 @@ public enum Display {
       if game.commander.shipDisplayStyle == .shadedPanels {
         let material =
           mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
+        if mesh.faceTextures.indices.contains(entry.index),
+          let texture = mesh.faceTextures[entry.index],
+          ShipTextureAssets.pixels(for: texture.asset) != nil
+        {
+          let brightness =
+            Double(
+              ShipProjection.shade(
+                0xffff_ffff, normal: normal,
+                emissive: material?.emissive ?? false) >> 24) / 255
+          let triangles = ShipTextureProjection.triangles(
+            vertices: face.map { vertices[$0] }, uv: texture.uv, projection: projection,
+            texture: texture.asset, brightness: brightness, clip: frame.flightClip)
+          if !triangles.isEmpty {
+            for triangle in triangles { frame.textured(triangle) }
+            continue
+          }
+        }
         frame.panel(
           ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
           colour: material.map {

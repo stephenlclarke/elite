@@ -62,6 +62,7 @@ extension Commander {
     let source = ship.previewMesh!
     return Mesh(
       vertices: source.vertices.map { $0 * 0.69 }, faces: source.faces, details: source.details,
-      materials: source.materials, faceMaterials: source.faceMaterials, preserveWinding: true)
+      materials: source.materials, faceMaterials: source.faceMaterials,
+      faceTextures: source.faceTextures, preserveWinding: true)
   }
 }

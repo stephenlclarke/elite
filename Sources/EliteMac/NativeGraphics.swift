@@ -107,6 +107,7 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
 private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Double = 0.5) {
   context.setLineWidth(lineWidth)
   switch graphic {
+  case .textured(let triangle): drawShipTexture(triangle, context: context)
   case .planet(let preview): PlanetRenderer.draw(preview, context: context)
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
@@ -146,6 +147,29 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Doub
     context.closePath()
     context.drawPath(using: .fillStroke)
   }
+}
+
+@MainActor
+private func drawShipTexture(_ triangle: ShipTexturedTriangle, context: CGContext) {
+  let transform = context.ctm
+  let scale = min(4, max(hypot(transform.a, transform.b), hypot(transform.c, transform.d)))
+  guard let pixels = ShipTextureAssets.pixels(for: triangle.texture),
+    let tile = ShipTextureRaster.tile(triangle: triangle, pixels: pixels, scale: scale)
+  else { return }
+  let bytes = tile.rgba.map(\.bigEndian).withUnsafeBytes { Data($0) }
+  guard let provider = CGDataProvider(data: bytes as CFData),
+    let image = CGImage(
+      width: tile.width, height: tile.height, bitsPerComponent: 8, bitsPerPixel: 32,
+      bytesPerRow: tile.width * 4, space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+      provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+  else { return }
+  context.saveGState()
+  context.interpolationQuality = .none
+  context.translateBy(x: tile.origin.x, y: tile.origin.y + Double(tile.height) / tile.scale)
+  context.scaleBy(x: 1 / tile.scale, y: -1 / tile.scale)
+  context.draw(image, in: CGRect(x: 0, y: 0, width: tile.width, height: tile.height))
+  context.restoreGState()
 }
 
 private func colour(_ rgba: UInt32, opacity: Double = 1) -> CGColor {
