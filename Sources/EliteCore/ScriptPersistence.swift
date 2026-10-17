@@ -204,7 +204,9 @@ enum ScriptSaveStore {
       try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
     }
     let pointer = ScriptSavePointer(
-      format: "elite-script-save", schemaVersion: commander.usesEMPSaveVersion ? 22 : 21,
+      format: "elite-script-save",
+      schemaVersion: commander.scriptState.financeLedger != nil
+        ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
@@ -226,7 +228,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...22).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...23).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -259,6 +261,11 @@ enum ScriptSaveStore {
         throw SaveError.invalidCommander
       }
       try ScriptSaveJSONPreflight.validate(data)
+      if name == "commander.json" {
+        try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
+      } else if name == "missions.json", pointer.schemaVersion < 23 {
+        try ScriptFinanceVersionedSave.rejectFields(data, part: .missions)
+      }
       if pointer.schemaVersion < 22 {
         if name == "commander.json" { try EMPVersionedSave.rejectFields(data, part: .commander) }
         if name == "world.json" { try EMPVersionedSave.rejectFields(data, part: .world) }
@@ -284,6 +291,9 @@ enum ScriptSaveStore {
     missionsDecoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
     commander.scriptState = try missionsDecoder.decode(
       ScriptEngineState.self, from: chunks["missions.json"]!)
+    guard (pointer.schemaVersion == 23) == (commander.scriptState.financeLedger != nil) else {
+      throw SaveError.invalidCommander
+    }
     guard
       pointer.schemaVersion >= 21
         || commander.scriptState.instances.values.allSatisfy({

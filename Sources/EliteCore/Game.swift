@@ -284,7 +284,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...fuelCapacity).contains(fuel)
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
-      && scriptState.valid && accommodationValid && contractsValid
+      && scriptState.valid && financeStateValid && accommodationValid && contractsValid
       && (legacyOwnedEquipment != nil ? legacyIssueStateValid : issuedEquipmentValid)
       && (checkedCargoTonnes.map { $0 <= capacity } ?? false)
       && (navigationPlan?.valid ?? true) && blackjack.valid
@@ -539,7 +539,9 @@ public struct Game: Sendable {
     return true
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
-    guard value.valid, !value.usesEMPSaveVersion else { return false }
+    guard value.valid, !value.usesEMPSaveVersion, value.scriptState.financeLedger == nil else {
+      return false
+    }
     // The loaded commander owns a different native allocation timeline. Invalidate old
     // capabilities and allow that timeline's first genuine emission to be consumed once.
     gameplayRevision &+= 1
@@ -2069,6 +2071,7 @@ public actor GameRuntime {
     }
     try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
     try EMPVersionedSave.rejectFields(data, part: .commander)
+    try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.
     guard commander.scriptState.pledgeLedger == nil,
