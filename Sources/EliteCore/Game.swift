@@ -1327,7 +1327,7 @@ public struct Game: Sendable {
         hostile: currentSystem.government < 4),
     ]
     resetCelestialFlight()
-    beginGameplayVisit(arriving: true)
+    beginGameplayVisit(arriving: true, freshLaunchTrafficID: 1)
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()

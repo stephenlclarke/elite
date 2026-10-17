@@ -28,12 +28,12 @@ enum AmbientEncounterPolicy {
     return resolve(source: source, government: government)
   }
 
-  /// The legacy launch producer owns a real newly allocated actor, not an ambient proposal.
+  /// The native launch/arrival producer owns a real new actor, not an ambient proposal.
   /// It shares the disposition policy without fabricating a SpawnIdentity or resampling a save.
   static func nativeLaunch(
     actor: ActorIdentity, seed: UInt64, government: Int, role: NPCRole
   ) -> AmbientEncounterDisposition? {
-    guard hostilityPercentages.indices.contains(government), role == .trader,
+    guard hostilityPercentages.indices.contains(government), [.trader, .pirate].contains(role),
       actor.entity > 1, actor.visit > 0,
       (0..<8).contains(actor.system.galaxy), (0...256).contains(actor.system.system)
     else { return nil }

@@ -69,11 +69,11 @@ extension Game {
     }
   }
 
-  /// Called only for the actual new launch body before its first ledger capture.
+  /// Called only for the actual new launch or hyperspace-arrival body before first capture.
   private mutating func initializeNativeLaunchDisposition(bodyID: Int) {
     let flight = commander.flightSimulation
     guard let index = bodies.firstIndex(where: { $0.id == bodyID }),
-      bodies[index].hull == .cobra, !bodies[index].navalTarget,
+      [.cobra, .sidewinder].contains(bodies[index].hull), !bodies[index].navalTarget,
       bodies[index].missionInstanceID == nil, bodies[index].blackjackRole == nil,
       let physical = bodies[index].physical, physical.spawnIdentity == nil,
       physical.empSource == nil, physical.salvage == nil,

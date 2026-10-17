@@ -307,3 +307,53 @@ extension AmbientEncounterPolicyTests {
     #expect(game.commander.valid)
   }
 }
+
+extension AmbientEncounterPolicyTests {
+  @Test(arguments: Array(0..<8))
+  func actualFiniteFuelHyperspaceArrivalUsesPolicyForOnlyItsNewNativeShip(government: Int) throws {
+    var game = Game(executive: false)
+    let systems = Universe.galaxy()
+    let destination = try #require(
+      systems.first { target in
+        target.government == government
+          && systems.contains { origin in
+            origin.id != target.id && origin.distance(to: target) > 0
+              && origin.distance(to: target) <= 7
+          }
+      })
+    let origin = try #require(
+      systems.first {
+        $0.id != destination.id && $0.distance(to: destination) > 0
+          && $0.distance(to: destination) <= 7
+      })
+    game.commander.system = origin.id
+    try game.commander.prepareEquipment(legacy: false)
+    try game.commander.grantEquipment(
+      HyperspaceDriveTier.advanced.label, at: .drive,
+      provenance: .grant("Native arrival disposition regression"))
+    game.launch()
+    game.bodies = []
+    game.celestials = []
+    game.speed = 0
+    game.selectedSystem = destination.id
+    let fuel = game.commander.fuel
+    game.beginHyperspace()
+    try #require(game.jumpCountdown == 1)
+    for _ in 0..<12 where game.jumpCountdown != nil { game.tick(delta: 0.1) }
+    try #require(game.commander.system == destination.id && game.jumpCountdown == nil)
+    #expect(game.commander.fuel < fuel && !game.commander.unlimitedFuel)
+    let body = try #require(game.bodies.first { $0.id == 1 && $0.hull == .sidewinder })
+    let physical = try #require(body.physical)
+    let npc = try #require(physical.npc)
+    let disposition = try #require(
+      AmbientEncounterPolicy.nativeLaunch(
+        actor: physical.identity, seed: game.gameplaySeed, government: government, role: npc.role))
+    #expect(physical.spawnIdentity == nil && body.hostile == disposition.hostile)
+    #expect(npc.routeProvenance == .generated && npc.legalProvenance == .generated)
+    let snapshot = try #require(game.commander.npcPersistence.snapshot(for: physical.identity))
+    #expect(snapshot.npc == npc)
+    if government == 7 { #expect(!body.hostile) }
+    if government == 0 { #expect(npc.legal == disposition.legalOverride) }
+    #expect(game.commander.valid)
+  }
+}
