@@ -1019,7 +1019,8 @@ struct EliteApp {
       else { throw CocoaError(.coderInvalidValue) }
       let profile = try PlanetFrameProfiler(
         directory: directory, sourceSHA: CommandLine.arguments[index + 2], system: system,
-        mode: mode)
+        mode: mode, diagnosticCaptures: CommandLine.arguments.contains("--profile-station-geometry")
+      )
       var game = Game(executive: false)
       game.commander.system = system.id
       game.commander.shipDisplayStyle = .shadedPanels
