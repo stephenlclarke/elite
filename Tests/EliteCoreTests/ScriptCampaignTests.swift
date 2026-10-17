@@ -3,6 +3,34 @@ import Testing
 
 @testable import EliteCore
 
+// Scalar evidence only: keep the actual encounter, flight and refusal state unchanged.
+func campaignPatrolDiagnostic(_ game: Game, child: UUID) -> String {
+  let encounter = game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]
+  let actors = (encounter?.actors.keys.sorted() ?? []).prefix(4).map { alias in
+    guard let actor = encounter?.actors[alias] else { return alias + "=missing" }
+    guard let body = game.bodies.first(where: { $0.missionActorID == actor.identity }) else {
+      return "\(alias):presence=\(actor.presence),live=absent,retainedHP=\(actor.body.energy)"
+    }
+    return "\(alias):presence=\(actor.presence),id=\(body.id),HP=\(body.energy)"
+      + ",position=\(body.position),forward=\(body.orientation.z)"
+      + ",native=\(body.physical != nil),profiled=\(body.scriptNPC != nil)"
+  }.joined(separator: "; ")
+  return [
+    "paused=\(game.paused),screen=\(game.screen),valid=\(game.commander.valid)",
+    "energy=\(game.energy),shields=\(game.frontShield)/\(game.rearShield),speed=\(game.speed)",
+    "time=\(game.time),physicalTime=\(game.commander.flightSimulation.physicalTime)",
+    "playerPosition=\(game.commander.flightSimulation.pose.position)",
+    "playerForward=\(game.commander.flightSimulation.pose.orientation.z)",
+    "heat=\(game.laserHeat),flash=\(game.laserFlash)",
+    "discharge=\(game.dischargeAudio.events.last?.id ?? 0),laser=\(game.commander.laser(on: .front))",
+    "docked=\(game.docked)/\(game.dockedAtMainStation),dockingHardware=\(game.commander.hasAutomaticDocking)",
+    "targetingFit=\(game.commander.fittedEquipment(at: .targetingCore)?.node.key ?? "none")",
+    "target=\(String(describing: game.autoPilot.targetID)),weapons=\(String(describing: game.weaponsTargetID))",
+    "autopilot=\(game.autoPilot.status),dockingComputer=\(game.dockingComputer)",
+    "message=\(game.message),actors=[\(actors)]",
+  ].joined(separator: ",")
+}
+
 private struct CampaignFixture {
   let root: URL
   let child: ScriptPack
@@ -119,23 +147,34 @@ private struct CampaignFixture {
     return (parent, child)
   }
   func report(_ game: inout Game, child: UUID) throws {
+    let beforeFire = campaignPatrolDiagnostic(game, child: child)
+    var observedFlash = false
     var firing = Controls()
     firing.fire = true
     for _ in 0..<200 {
       game.tick(delta: 0.1, controls: firing)
+      observedFlash = observedFlash || game.laserFlash > 0
       if game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
       {
         break
       }
     }
     #expect(
-      game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true)
+      game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true,
+      Comment(
+        rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
+          + campaignPatrolDiagnostic(game, child: child)))
     for _ in 0..<8 {
       game.key("r")
       if game.autoPilot.targetID == 0 { break }
     }
+    let beforeDock = campaignPatrolDiagnostic(game, child: child)
     for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02) }
-    #expect(game.docked && game.dockedAtMainStation)
+    #expect(
+      game.docked && game.dockedAtMainStation,
+      Comment(
+        rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
+          + campaignPatrolDiagnostic(game, child: child)))
     game.emitScriptEvent("contact.requested", only: child)
     let shown = game.showScriptDialogue(only: child)
     #expect(shown)
@@ -616,11 +655,14 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     fitted.contracts == beforeHardware.contracts
       && fitted.accommodation == beforeHardware.accommodation)
   await runtime.key("0")
+  let beforeFire = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
+  var observedFlash = false
   var firing = Controls()
   firing.fire = true
   await runtime.setControls(firing)
   for _ in 0..<200 {
     selected = await runtime.advance(delta: 0.1)
+    observedFlash = observedFlash || selected.laserFlash > 0
     if selected.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed
       == true
     {
@@ -628,17 +670,25 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     }
   }
   #expect(
-    selected.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true)
+    selected.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true,
+    Comment(
+      rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
+        + campaignPatrolDiagnostic(selected, child: child)))
   await runtime.setControls(Controls())
   for _ in 0..<8 {
     await runtime.key("r")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
+  let beforeDock = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
   for _ in 0..<5000 {
     selected = await runtime.advance(delta: 0.02)
     if selected.docked { break }
   }
-  #expect(selected.docked && selected.dockedAtMainStation)
+  #expect(
+    selected.docked && selected.dockedAtMainStation,
+    Comment(
+      rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
+        + campaignPatrolDiagnostic(selected, child: child)))
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == child)
   await runtime.key("return")
