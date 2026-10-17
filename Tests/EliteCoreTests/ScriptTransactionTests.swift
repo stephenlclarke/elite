@@ -111,6 +111,62 @@ private struct DurableFixture {
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
   #expect(saved.credits == 1500 && saved.cargoTonnes == 0)
 }
+
+@Test func scriptPublicationPreservesActuallyLoadedLegacyMiningHistory() async throws {
+  let fixture = try DurableFixture()
+  defer { fixture.clean() }
+  var historical = try fixture.game(accepted: false, destination: false)
+  let system = try #require(
+    Universe.galaxy().first {
+      AsteroidBeltDefinition.isPresent(system: $0, galaxy: 0, policy: .legacyUniform)
+    })
+  let identity = SystemIdentity(galaxy: 0, system: system.id)
+  var flight = FlightSimulationState()
+  flight.enter(identity, arriving: false)
+  let anchors = try #require(flight.anchors)
+  let rock = try #require(
+    MiningFields.legacyFields(anchors: anchors, seed: AsteroidBeltDefinition.seed(for: system))
+      .flatMap(\.rocks).first)
+  let incident = CombatIncident(
+    id: 1, physicalTime: 1,
+    origin: .init(
+      emissionID: 1, owner: .init(system: identity, visit: 1, entity: 0), emittedAt: 1,
+      ownerLegalAtEmission: .init()),
+    victim: nil, kind: .laser, outcome: .hit, position: rock.position,
+    victimLegalBeforeAttack: nil, firstAggressor: nil, victimRole: nil,
+    victimIsStation: false, laser: .mining, mount: .front)
+  var legacy = MiningLedger.legacyUnworked()
+  let hit = legacy.hit(rock: rock, incident: incident, damage: 1)
+  try #require(hit != .ignored)
+  historical.commander.miningLedger = legacy
+  try historical.commander.prepareEquipment()
+  historical.ensureScriptCalendar(origin: .inactiveLegacyMigration)
+  try ScriptSaveStore.write(
+    commander: historical.commander, world: historical.scriptWorldSave, to: fixture.url)
+  let oldBytes = try Data(contentsOf: fixture.url)
+  try #require(JSONDecoder().decode(ScriptSavePointer.self, from: oldBytes).schemaVersion == 25)
+  let runtime = GameRuntime(game: try fixture.game(accepted: false, destination: false))
+  try await runtime.load(from: fixture.url, persistMigrations: false)
+  let loaded = await runtime.snapshot()
+  let retained = loaded.commander.miningLedger
+  try #require(retained.retainsLegacyFields && retained.usesEconomyWeightedPresence)
+  #expect(retained.remainingEnergy(for: rock) == legacy.remainingEnergy(for: rock))
+  #expect(try Data(contentsOf: fixture.url) == oldBytes)
+  await runtime.key("contacts-open")
+  await runtime.key("return")
+  let accepted = await runtime.snapshot()
+  #expect(
+    accepted.commander.scriptState.instances.count == 1 && accepted.commander.cargoTonnes == 1)
+  #expect(accepted.commander.miningLedger == retained && accepted.commander.valid)
+  let pointer = try JSONDecoder().decode(
+    ScriptSavePointer.self, from: Data(contentsOf: fixture.url))
+  #expect(pointer.schemaVersion == 26)
+  let reader = GameRuntime(game: try fixture.game(accepted: false, destination: false))
+  try await reader.load(from: fixture.url, persistMigrations: false)
+  let restored = await reader.snapshot()
+  #expect(restored.commander == accepted.commander && restored.commander.miningLedger == retained)
+}
+
 @Test func failedCabinPurchaseDoesNotPublishOwnedModuleOrDebit() async throws {
   let fixture = try DurableFixture()
   defer { fixture.clean() }
