@@ -5,6 +5,13 @@ import Testing
 
 private func actualLaserImpactGame(towardPlayer: Bool) throws -> (Game, MissionNativeLaserProof) {
   var (game, _, index) = try actualMissionBridgeGame()
+  let proof = try initializeActualLaserImpact(&game, index: index, towardPlayer: towardPlayer)
+  return (game, proof)
+}
+
+private func initializeActualLaserImpact(_ game: inout Game, index: Int, towardPlayer: Bool) throws
+  -> MissionNativeLaserProof
+{
   game.ensurePhysicalActors()
   let source = game.bodies[index]
   let npc = try #require(source.scriptNPC)
@@ -15,13 +22,21 @@ private func actualLaserImpactGame(towardPlayer: Bool) throws -> (Game, MissionN
   let proof = try game.makeMissionNativeLaserProof(
     sourceBodyID: source.id, weapon: weapon, component: nil, muzzle: muzzle,
     direction: towardPlayer ? muzzle.unit * -1 : .init(0, 1, 0))
-  return (game, proof)
+  return proof
 }
 
 private func actualRestoredImpactGame(immuneStation: Bool) throws -> (
   Game, MissionNativeImpactProof
 ) {
   var (game, sample) = try actualShotArchiveFixture()
+  let proof = try initializeActualRestoredImpact(
+    &game, sample: sample, immuneStation: immuneStation)
+  return (game, proof)
+}
+
+private func initializeActualRestoredImpact(
+  _ game: inout Game, sample: ScriptNPCShot, immuneStation: Bool
+) throws -> MissionNativeImpactProof {
   var target = try #require(
     game.bodies.first {
       immuneStation ? $0.id == 0 : $0.missionActorID != nil && $0.missionActorID != sample.owner
@@ -55,7 +70,7 @@ private func actualRestoredImpactGame(immuneStation: Bool) throws -> (
   let proposed = try game.missionNativeImpactProof(projectileID: shot.identity, delta: 0.5)
   let proof = try #require(proposed)
   try #require(proof.hit.target == .body(target.id) && proof.currentSource == nil)
-  return (game, proof)
+  return proof
 }
 
 private func fillActualMissionEvents(_ game: inout Game, instance: UUID, count: Int) throws {
