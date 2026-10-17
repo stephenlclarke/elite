@@ -216,6 +216,8 @@ private func verifyRRSAcceptanceAndRestore(
   game = await runtime.snapshot()
   let row = try #require(game.contractBoard.selected?.rrs)
   let quote = game.rrsCourierQuote(for: row)
+  verifyRRSReviewStorage(
+    quote, generic: game.contractAcceptanceQuote(board: "rrs-storage-unavailable", offer: UUID()))
   await runtime.key("return")
   game = await runtime.snapshot()
   #expect(game.contractBoard.detail && game.contractBoard.rrsQuote?.allowed == true)
@@ -259,6 +261,40 @@ private func verifyRRSAcceptanceAndRestore(
   game = await restored.snapshot()
   #expect(game.contractBoard.rows.count == 2)
   #expect(game.contractBoard.rows.allSatisfy { $0.rrs?.canDecline == false })
+}
+
+private func verifyRRSReviewStorage(_ rrs: RRSCourierQuote, generic: ContractAcceptanceQuote) {
+  // The RRS review comes from a genuine dock; the unavailable generic review is never confirmed.
+  #expect(rrs.allowed && !generic.allowed)
+  var ui = ContractBoardUI()
+  #expect(ui.quote == nil && ui.rrsQuote == nil)
+  ui.quote = generic
+  #expect(ui.quote?.board == generic.board && ui.quote?.offer == generic.offer)
+  #expect(ui.quote?.issues == generic.issues && ui.quote?.resources == generic.resources)
+  #expect(ui.quote?.epoch == generic.epoch && ui.quote?.reviewToken == generic.reviewToken)
+  #expect(ui.rrsQuote == nil)
+  ui.rrsQuote = nil
+  #expect(ui.quote?.reviewToken == generic.reviewToken)
+  let changedToken = UUID()
+  ui.quote?.reviewToken = changedToken
+  #expect(ui.quote?.reviewToken == changedToken && ui.quote?.resources == generic.resources)
+  #expect(generic.reviewToken != changedToken)
+  ui.rrsQuote = rrs
+  #expect(ui.quote == nil && ui.rrsQuote?.row == rrs.row)
+  #expect(ui.rrsQuote?.resources == rrs.resources && ui.rrsQuote?.epoch == rrs.epoch)
+  #expect(ui.rrsQuote?.board == rrs.board && ui.rrsQuote?.destination == rrs.destination)
+  #expect(ui.rrsQuote?.arrival == rrs.arrival && ui.rrsQuote?.issues == rrs.issues)
+  #expect(ui.rrsQuote?.reviewToken == rrs.reviewToken)
+  ui.quote = nil
+  #expect(ui.rrsQuote?.reviewToken == rrs.reviewToken && ui.rrsQuote?.resources == rrs.resources)
+  ui.quote = generic
+  #expect(ui.rrsQuote == nil && ui.quote?.reviewToken == generic.reviewToken)
+  ui.quote = nil
+  #expect(ui.quote == nil && ui.rrsQuote == nil)
+  ui.rrsQuote = rrs
+  ui.quote = nil
+  ui.rrsQuote = nil
+  #expect(ui.quote == nil && ui.rrsQuote == nil)
 }
 
 private func verifyRRSStaleReview(
