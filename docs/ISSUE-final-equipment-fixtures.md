@@ -11,3 +11,9 @@ Seed the original four-mount layout before launch migration and verify each actu
 ## Validation and limits
 
 All original icon/text, mount damage/rate/heat and empty-view assertions remain in order. Static source/Markdown lint and diff checks pass. No execution occurred in this worker; the integration owner retains focused execution and full `make ci`. Checkpoint 202 remains failed evidence. See [the implementation](PR-final-equipment-fixtures.md).
+
+## One bounded caller follow-up
+
+The requested source pass found six further methods in Elite, Blackjack, Naval Mission and PLUGH tests that change legacy hardware after native arrival, launch or purchase has prepared canonical inventory. These cover a front military laser, escape pods, an energy upgrade, a rear reload laser, a real immunity-test bomb and a higher navigation core for purchase refusal. They are source-confirmed setup mismatches; they are not six separately executed failures. Diagnostic 203 separately confirms combat assertions and a Blackjack reload crosswalk refusal.
+
+The Blackjack reload fixture also sets its missile mirror to two while three actual rounds remain fitted. Store the actual third round before retaining that original finite setter and its reload assertions. Exclude pre-canonical fixtures, deliberate migration/legacy tests, finite-resource setters and currently supported mirror-only ECM/scoop provider paths from blanket conversion.

@@ -9,3 +9,9 @@ The station laser test moves its original front Pulse, left Mining and right Bea
 ## Compatibility, validation and risk
 
 No gameplay provider, purchase rule, authority check, original expected outcome, case selection or skip changes. A source check confirms every original expectation across all three assigned test files remains in order. Strict Swift/Markdown lint and diff checks pass. This worker has not compiled or executed the batch; focused tests and required composed `make ci` remain with the integration owner.
+
+## Bounded six-method source follow-up
+
+Elite combat seeds its existing military laser before launch. Elite escape/energy simulation, Blackjack mission-cargo escape, Blackjack rear-laser reload, Naval Constrictor bomb immunity and PLUGH lower-tier purchase refusal grant actual owned equipment at the original setup points. Slot preconditions verify that the intended hardware is fitted. The Blackjack reload scenario stores the actual third-pylon round using the current inventory revision and verifies two fitted rounds before its unchanged `missiles = 2` assignment; its original equipment, mounts, ammunition and mission reload assertions remain.
+
+Original immunity, bounty, finite ammunition, cargo, credit, control/tick, no-pod refusal, purchase and reload outcomes remain. No paid prerequisites, getters or provider guards change. Reversing only deliberate setup/precondition changes reconstructs the entire five-file follow-up source exactly, including the two separately approved save-scene methods documented in [their handoff](PR-save-scene-fixtures.md). Strict lint and diff checks pass; execution remains with the integration owner.

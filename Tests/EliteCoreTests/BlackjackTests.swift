@@ -171,7 +171,9 @@ private func afterRobbery() throws -> Game {
   game.commander.credits = 100000
   game.autoTrade()
   #expect(game.commander.cargo[10] >= 1 && game.commander.markedFirearms == 1)
-  game.commander.equipment.insert("Escape Pod")
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("blackjack escape fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.escapePod)) != nil)
   game.launch()
   game.escapePod()
   #expect(game.commander.cargo[10] == 1 && game.commander.valid)
@@ -411,7 +413,13 @@ private func afterRobbery() throws -> Game {
   visit(&game, 233)
   game.key("return")
   game.key("b")
-  game.commander.installLaser(.military, on: .rear)
+  try game.commander.grantEquipment(
+    "Military Laser", at: .laser(.rear), provenance: .grant("blackjack reload fixture"))
+  #expect(game.commander.fittedEquipment(at: .laser(.rear))?.node.key == "Military Laser")
+  let round = try #require(game.commander.fittedEquipment(at: .missilePylon(2)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  try game.commander.storeEquipment(round, expectedRevision: revision)
+  #expect(game.commander.missiles == 2)
   game.commander.missiles = 2
   let equipment = game.commander.equipment
   let mounts = game.commander.laserMounts

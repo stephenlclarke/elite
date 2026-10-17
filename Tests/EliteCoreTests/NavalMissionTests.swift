@@ -241,7 +241,7 @@ private func finishMessage(_ game: inout Game) {
   #expect(game.bodies.count == 1)
 }
 
-@Test func constrictorResistsWeakLasersAndBombButNearMissileCanBeatECM() {
+@Test func constrictorResistsWeakLasersAndBombButNearMissileCanBeatECM() throws {
   var commander = Commander()
   #expect(commander.laserDamage(against: .constrictor) == 0)
   commander.equipment.insert("Beam Laser")
@@ -257,7 +257,9 @@ private func finishMessage(_ game: inout Game) {
   var target = SpaceBody(id: 99, hull: .constrictor, position: .init(0, 0, 100), hostile: true)
   target.navalTarget = true
   game.bodies = [target]
-  game.commander.equipment.insert("Energy Bomb")
+  try game.commander.grantEquipment(
+    "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("constrictor immunity fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.energyBomb)) != nil)
   game.energyBomb()
   #expect(game.bodies[0].energy == 252)
   game.missileArmed = true

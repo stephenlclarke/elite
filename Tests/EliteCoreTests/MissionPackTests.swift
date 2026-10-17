@@ -396,12 +396,15 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.key("b")
   game.key("return")
   game.launch()
-  game.bodies = []
   game.tick(delta: 0.1)
   #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == 0)
   #expect(game.missionCatalogue.last?.status == .failed)
   #expect(game.missionCatalogue.last?.completed == 1)
-  game.commander.system = 129
+  game.selectedSystem = 129
+  game.arrive()
+  #expect(
+    game.commander.system == 129
+      && game.commander.flightSimulation.anchors?.system == game.systemIdentity)
   game.dock()
   game.key("b")
   #expect(game.commander.credits == 1000 && game.screen != .handoff)

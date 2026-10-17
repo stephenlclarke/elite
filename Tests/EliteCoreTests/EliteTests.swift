@@ -267,11 +267,12 @@ import Testing
 
 @Test func combatLasersMissilesAndBomb() throws {
   var game = Game(executive: false)
+  game.commander.equipment.insert("Military Laser")
   game.launch()
+  #expect(game.commander.fittedEquipment(at: .laser(.front))?.node.key == "Military Laser")
   game.speed = 0
   game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
   game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 500), hostile: true)]
-  game.commander.equipment.insert("Military Laser")
   game.ensurePhysicalActors()
   // Hostility does not establish a bounty; this fixture supplies its known criminal record.
   game.bodies[0].physical?.npc?.legal = .init(value: 64, bountyTenths: 50)
@@ -311,7 +312,7 @@ import Testing
   #expect(game.commander.equipmentInventory?.items.contains { $0.id == bomb } == false)
 }
 
-@Test func ecmEscapeEnemiesAndSimulationBounds() {
+@Test func ecmEscapeEnemiesAndSimulationBounds() throws {
   var game = Game(executive: false)
   game.launch()
   game.speed = 0
@@ -330,14 +331,18 @@ import Testing
   game.launch()
   game.key("escape-pod")
   #expect(!game.docked)
-  game.commander.equipment.insert("Escape Pod")
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("escape simulation fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.escapePod)) != nil)
   game.commander.cargo[0] = 10
   game.commander.legal = 30
   game.key("escape-pod")
   #expect(game.docked && game.commander.cargoTonnes == 0 && game.commander.legal == 0)
   game.launch()
   game.bodies = []
-  game.commander.equipment.insert("Extra Energy Unit")
+  try game.commander.grantEquipment(
+    "Extra Energy Unit", at: .energy, provenance: .grant("energy simulation fixture"))
+  #expect(game.commander.fittedEquipment(at: .energy)?.node.key == "Extra Energy Unit")
   var controls = Controls()
   controls.throttle = 1
   controls.pitch = 0.2
@@ -540,7 +545,30 @@ import Testing
   if expected.npcPersistence.count > 0 {
     expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
   }
+  let restoredGame = await restored.snapshot()
+  let savedWorld = try #require(expected.nativeStations)
+  expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: restoredGame)
   #expect(await restored.snapshot().commander == expected)
+}
+
+private func reboundJumpLimitWorldAfterLoad(
+  _ saved: NativeStationWorld, restored: borrowing Game
+) throws -> NativeStationWorld {
+  var expected = saved
+  for record in saved.ledger.records
+  where record.identity.system == restored.systemIdentity && record.tombstone == nil {
+    let originalBinding = try #require(record.binding)
+    let body = try #require(
+      restored.bodies.first { $0.nativeStationIdentity == record.identity })
+    let actor = try #require(body.physical?.identity)
+    #expect(
+      actor.system == restored.systemIdentity
+        && actor.visit == restored.commander.flightSimulation.visit)
+    #expect(actor.visit == originalBinding.actor.visit && originalBinding.actor != actor)
+    try expected.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: body.id))
+  }
+  #expect(expected.valid)
+  return expected
 }
 
 @Test func autoTraderUsesEconomyCapitalAndCargo() {
