@@ -376,6 +376,7 @@ extension NativeViewTests {
     defer { try? FileManager.default.removeItem(at: namespace) }
     #expect(trial.isMissionTrial && trial.commander.scriptState.instances.isEmpty)
     #expect(trial.commander.scriptState.pledgeLedger == nil && trial.contractBoard.action == .back)
+    #expect(trial.contractBoard.quote?.resources == trial.commander.contractQuoteResources)
     try capturePledgeState(trial, name: "trial-review")
     try await harness.frame()
     #expect(
@@ -418,6 +419,7 @@ extension NativeViewTests {
     #expect(restarted.ecmControl.epoch != donated.ecmControl.epoch && restarted.isMissionTrial)
     #expect(await harness.delegate.runtime.gallerySaveDirectory() == namespace)
     #expect(restarted.contractBoard.detail && restarted.contractBoard.action == .back)
+    #expect(restarted.contractBoard.quote?.resources == restarted.commander.contractQuoteResources)
     #expect(restarted.commander.scriptState.instances.isEmpty)
     #expect(await harness.delegate.runtime.snapshot().commander.scriptState.pledgeLedger == nil)
     try await harness.delegate.runtime.returnFromScriptGalleryTrial()
