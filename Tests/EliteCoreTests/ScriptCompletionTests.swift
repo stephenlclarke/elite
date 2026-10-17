@@ -3,6 +3,17 @@ import Testing
 
 @testable import EliteCore
 
+private func boundedActualLedgerFacts<T: Encodable>(_ value: T, collection: String) -> String {
+  guard let bytes = try? JSONEncoder().encode(value),
+    let object = (try? JSONSerialization.jsonObject(with: bytes)) as? [String: Any],
+    let records = object[collection] as? [Any],
+    let selected = try? JSONSerialization.data(
+      withJSONObject: Array(records.suffix(8)), options: .sortedKeys),
+    let text = String(data: selected, encoding: .utf8)
+  else { return "unavailable" }
+  return String(text.prefix(12000))
+}
+
 // Read-only, bounded facts from the actual station and controller; no scene repair or extra input.
 func actualStationGuidanceDiagnostic(_ game: Game) -> String {
   let control = game.autoPilot
@@ -19,9 +30,28 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
     "errors=position:\(control.positionError),facing:\(control.facingError),phase:\(control.phaseError),rate:\(control.rateError)",
     "rates=\(game.pitch)/\(game.yaw)/\(game.roll),time=\(game.time),physicalTime=\(game.commander.flightSimulation.physicalTime)",
     "paused=\(game.paused),screen=\(game.screen),docked=\(game.docked)/\(game.dockedAtMainStation),energy=\(game.energy)",
+    "legal=\(game.commander.legal),shields=\(game.frontShield)/\(game.rearShield),security=\(game.commander.stationSecurity.phase)",
     "docking=\(game.dockingComputer),hardware=\(game.commander.hasAutomaticDocking),targeting=\(game.targetingEnabled)",
     "work=\(game.workGuidance != nil)/\(game.workBraking != nil),manualResidual=\(game.manualResidualFlight)",
     "limits=\(game.workLimits),message=\(game.message)",
+  ]
+  let police = game.bodies.filter { $0.energy > 0 && $0.physical?.npc?.role == .police }
+  facts += [
+    "policeCount=\(police.count),police=["
+      + police.prefix(8).map {
+        "id=\($0.id),actor=\(String(describing: $0.physical?.identity)),HP=\($0.energy),hostile=\($0.hostile),firstAggressor=\(String(describing: $0.physical?.npc?.firstAggressor)),intention=\(String(describing: $0.physical?.npc?.intention))"
+      }.joined(separator: " | ") + "]"
+  ]
+  facts += [
+    "actualAttacks=" + boundedActualLedgerFacts(game.commander.crimeLedger, collection: "attacks"),
+    "actualThreats="
+      + boundedActualLedgerFacts(game.commander.stationSecurity, collection: "threats"),
+    "liveOrdnance=["
+      + game.bodies.filter {
+        $0.energy > 0 && ($0.scriptShot != nil || $0.physical?.ordnance != nil)
+      }.prefix(8).map {
+        "id=\($0.id),shot=\(String(describing: $0.scriptShot?.identity)),shotOwner=\(String(describing: $0.scriptShot?.owner)),nativeOwner=\(String(describing: $0.physical?.attackOrigin?.owner)),position=\($0.position)"
+      }.joined(separator: " | ") + "]",
   ]
   guard let station else { return (facts + ["station=missing"]).joined(separator: "; ") }
   let model = game.modelPose(of: station)
@@ -59,6 +89,47 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
     }
   }
   return facts.joined(separator: "; ")
+}
+
+@Test func loadingAnotherActualCommanderStartsANewStationTargetCycleEvenWithTheSameVisitTuple()
+  throws
+{
+  var first = Commander()
+  try first.prepareEquipment(legacy: false)
+  try first.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore,
+    provenance: .grant("first cycle commander"))
+  var game = Game(executive: false)
+  let loadedFirst = game.load(first)
+  try #require(loadedFirst)
+  game.launch()
+  for _ in 0...game.bodies.count {
+    game.key("r")
+    if game.autoTargetBody?.id == 0 { break }
+  }
+  try #require(game.autoTargetBody?.id == 0 && game.dockingComputer)
+  let firstOrigin = try #require(game.gameplayContext()?.player.identity)
+  var second = Commander()
+  try second.prepareEquipment(legacy: false)
+  try second.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore,
+    provenance: .grant("second cycle commander"))
+  try #require(first.equipmentOwnerID != second.equipmentOwnerID)
+  let loadedSecond = game.load(second)
+  try #require(loadedSecond)
+  #expect(game.autoPilot.targetID == nil && game.autoPilot.status == "OFF")
+  game.launch()
+  try #require(game.gameplayContext()?.player.identity == firstOrigin)
+  var selected: [Int] = []
+  for _ in 0...game.bodies.count {
+    game.key("r")
+    if let target = game.autoPilot.targetID, selected.count < 16 { selected.append(target) }
+    if game.autoTargetBody?.id == 0 { break }
+  }
+  #expect(
+    game.autoTargetBody?.id == 0 && game.dockingComputer,
+    Comment(
+      rawValue: "actual new Commander cycle=\(selected); " + actualStationGuidanceDiagnostic(game)))
 }
 
 private func fitCompletionPatrolTargeting(_ game: inout Game) throws {
