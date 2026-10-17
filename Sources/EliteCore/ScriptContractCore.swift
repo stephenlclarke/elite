@@ -1,6 +1,23 @@
 import CryptoKit
 import Foundation
 
+private enum ContractAcceptancePreflight: Sendable {
+  case alreadyAccepted(UUID)
+  case ready(PreparedContractAcceptance)
+}
+
+private struct PreparedContractAcceptance: Sendable {
+  let key: String
+  let index: Int
+  let pack: ScriptPack
+  let board: ScriptContractBoard
+  let offer: ScriptContractOffer
+  let job: ScriptContractJob
+  let instanceID: UUID
+  let pledgeAdmission: ScriptPledgeAdmission?
+  let courierAdmission: ScriptCourierAdmission?
+}
+
 extension Game {
   var contractStation: ContractStationIdentity {
     .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
@@ -171,6 +188,16 @@ extension Game {
   mutating func acceptContract(board key: String, offer id: UUID, confirmationToken: UUID = UUID())
     throws -> UUID
   {
+    switch try prepareContractAcceptance(
+      board: key, offer: id, confirmationToken: confirmationToken)
+    {
+    case .alreadyAccepted(let existing): return existing
+    case .ready(let preparation): return try performContractAcceptance(preparation)
+    }
+  }
+  private mutating func prepareContractAcceptance(
+    board key: String, offer id: UUID, confirmationToken: UUID
+  ) throws -> ContractAcceptancePreflight {
     resolveCourierTerminals()
     guard docked, dockedAtMainStation, !paused, let board = commander.contracts.boards[key],
       board.station == contractStation, let index = board.offers.firstIndex(where: { $0.id == id }),
@@ -182,7 +209,7 @@ extension Game {
         "The contract board changed or is unavailable. Return to its current offers.")
     }
     let offer = board.offers[index]
-    if case .accepted(let existing) = offer.status { return existing }
+    if case .accepted(let existing) = offer.status { return .alreadyAccepted(existing) }
     guard offer.status == .available else { throw MissionPackError("This offer was declined.") }
     guard
       !commander.scriptState.instances.values.contains(where: {
@@ -205,21 +232,14 @@ extension Game {
       offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
       deadlinePolicy: offer.courier == nil ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
-    return try performContractAcceptance(
-      key: key, id: id, index: index, pack: pack, board: board, offer: offer, job: job,
-      instanceID: instanceID, confirmationToken: confirmationToken)
-  }
-  private mutating func performContractAcceptance(
-    key: String, id: UUID, index: Int, pack: ScriptPack, board: ScriptContractBoard,
-    offer: ScriptContractOffer, job: ScriptContractJob, instanceID: UUID, confirmationToken: UUID
-  ) throws -> UUID {
-    var candidate = self
+    var pledgeAdmission: ScriptPledgeAdmission? = nil
+    var courierAdmission: ScriptCourierAdmission? = nil
     if let pledge = try pledgePreview(board: key, offer: id) {
       try requirePledgeResources(pledge)
-      guard candidate.scriptPledgeAdmission == nil,
-        candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+      guard scriptPledgeAdmission == nil,
+        commander.scriptState.nextEvent < UInt64(Int64.max) - 1
       else { throw MissionPackError("A pledge confirmation cannot start in this context.") }
-      candidate.scriptPledgeAdmission = .init(
+      pledgeAdmission = .init(
         instance: instanceID, board: board, offer: offer,
         preview: pledge, epoch: ecmControl.epoch,
         sequence: commander.scriptState.nextEvent + 1,
@@ -229,16 +249,35 @@ extension Game {
             version: pack.manifest.version, digest: pack.digest)))
     }
     if offer.courier != nil {
-      guard candidate.scriptCourierAdmission == nil,
-        candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+      guard scriptCourierAdmission == nil,
+        commander.scriptState.nextEvent < UInt64(Int64.max) - 1
       else {
         throw MissionPackError("Courier confirmation cannot start in this context.")
       }
-      candidate.scriptCourierAdmission = .init(
+      courierAdmission = .init(
         kind: .issue, instance: instanceID,
         item: ScriptCourierCustody.itemIdentity(instanceID),
         proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: job)
     }
+    return .ready(
+      .init(
+        key: key, index: index, pack: pack, board: board, offer: offer, job: job,
+        instanceID: instanceID, pledgeAdmission: pledgeAdmission, courierAdmission: courierAdmission
+      ))
+  }
+  private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
+    throws -> UUID
+  {
+    let key = preparation.key
+    let index = preparation.index
+    let pack = preparation.pack
+    let board = preparation.board
+    let offer = preparation.offer
+    let job = preparation.job
+    let instanceID = preparation.instanceID
+    var candidate = self
+    if let admission = preparation.pledgeAdmission { candidate.scriptPledgeAdmission = admission }
+    if let admission = preparation.courierAdmission { candidate.scriptCourierAdmission = admission }
     candidate.commander.credits -= offer.deposit
     candidate.commander.contracts.boards[key]?.offers[index].status = .accepted(instanceID)
     _ = try candidate.acceptScriptMission(
@@ -263,6 +302,10 @@ extension Game {
     guard candidate.commander.valid else {
       throw MissionPackError("This contract cannot fit the current commander.")
     }
+    return publishContractAcceptance(&candidate, instanceID: instanceID)
+  }
+  private mutating func publishContractAcceptance(_ candidate: inout Game, instanceID: UUID) -> UUID
+  {
     self = candidate
     return instanceID
   }
