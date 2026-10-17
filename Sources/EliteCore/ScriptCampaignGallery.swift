@@ -382,6 +382,11 @@ extension Game {
     guard pack.manifest.mission.parentOnly != true else {
       return "This content can only start through its owning campaign."
     }
+    return isolatedCampaignTrialUnavailableReason(pack)
+  }
+
+  // Finish the owning-root/catalogue lookup before reserving the isolated trial value.
+  private func isolatedCampaignTrialUnavailableReason(_ pack: ScriptPack) -> String? {
     var isolated = self
     isolated.scriptDurabilityAvailable = true
     isolated.commander.scriptState = ScriptEngineState()

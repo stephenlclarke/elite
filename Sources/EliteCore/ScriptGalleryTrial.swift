@@ -50,6 +50,10 @@ extension Game {
     guard !isMissionTrial, let digest = selectedGalleryMission?.trialDigest,
       let pack = scriptPacks.first(where: { $0.digest == digest })
     else { return false }
+    return isolatedMissionTrialAvailable(pack)
+  }
+  // Keep isolated trial storage out of the selected-entry/catalogue lookup frame.
+  private func isolatedMissionTrialAvailable(_ pack: ScriptPack) -> Bool {
     var isolatedAvailability = self
     isolatedAvailability.scriptDurabilityAvailable = true
     isolatedAvailability.commander.scriptState = ScriptEngineState()
