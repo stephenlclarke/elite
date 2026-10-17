@@ -69,7 +69,15 @@ private struct DurableFixture {
   #expect(try Data(contentsOf: fixture.url) != offered)
   let reloaded = GameRuntime(game: try fixture.game(accepted: false))
   try await reloaded.load(from: fixture.url)
-  #expect(await reloaded.snapshot().commander == completed.commander)
+  let reloadedCommander = await reloaded.snapshot().commander
+  let unchanged = reloadedCommander == completed.commander
+  var changedPaths: [String] = []
+  if !unchanged {
+    changedPaths = try campaignCommanderChangedPaths(completed.commander, reloadedCommander)
+    try campaignReloadEvidence(
+      completed.commander, reloadedCommander, name: "native-transaction-reload")
+  }
+  #expect(unchanged, Comment(rawValue: "Reload changed: " + changedPaths.joined(separator: "; ")))
   await reloaded.key("contacts-open")
   await reloaded.key("return")
   #expect(await reloaded.snapshot().commander.credits == 1500)
