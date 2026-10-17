@@ -50,7 +50,11 @@ struct PackReservedCargoTests {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
     let runtime = try await NativePeopleTestFixture.capturedRuntime(storage: storage)
-    let original = await runtime.snapshot()
+    var original = await runtime.snapshot()
+    // The real capture fixture fills its hold; sell one ordinary tonne for the parcel.
+    original.selection = CommodityIdentity.food.rawValue
+    original.trade(buy: false)
+    try #require(original.commander.cargoTonnes < original.commander.tradeCargoCapacity)
     try #require(original.commander.valid && original.commander.nativeCaptiveCount == 2)
     let refused = try PackReservedCargoTestFixture.refuseExternalRemoval(original, index: 3)
     #expect(refused.commander.nativePeople == original.commander.nativePeople)
