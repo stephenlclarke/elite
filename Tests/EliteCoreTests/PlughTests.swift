@@ -249,7 +249,13 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   let full = game.commander
   game.purchase()
   #expect(game.commander == full)
-  game.commander.installNavigationComputer(.military)
+  try game.commander.grantEquipment(
+    NavigationTier.military.equipmentName, at: .navigation,
+    provenance: .grant("plugh tier refusal fixture"))
+  #expect(game.commander.navigationTier == .military)
+  #expect(
+    game.commander.fittedEquipment(at: .navigation)?.node.key
+      == NavigationTier.military.equipmentName)
   game.selection = try #require(
     Equipment.all.firstIndex { $0.name == NavigationTier.basic.equipmentName })
   let maxed = game.commander
