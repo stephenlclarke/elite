@@ -7,6 +7,12 @@ private func ownershipDisplayGame(shipID: String = "SH023") throws -> Game {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.shipID = shipID
+  // Construct ordinary starting stock for this hull before fitting physical equipment.
+  let performance = game.commander.nativePerformance
+  game.commander.fuel = min(70, performance.fuel)
+  game.commander.missiles = min(3, performance.missiles)
+  try #require((0...game.commander.fuelCapacity).contains(game.commander.fuel))
+  try #require((0...game.commander.missileCapacity).contains(game.commander.missiles))
   game.commander.credits = 1_000_000
   game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
   var serial = 100
