@@ -394,6 +394,8 @@ The dependency graph, Dependabot alerts and security updates are enabled in GitH
 
 `main` requires a pull request, an up-to-date branch and the successful `quality` check from GitHub Actions. The rules apply to administrators, require resolved review conversations and linear history, and block force pushes and branch deletion. Stephen is the only account with write access. Approving reviews are optional while there is only one maintainer; a second maintainer can be added before requiring independent approval.
 
+Every project PR, including Homebrew tap updates, follows the same review cycle: request `@codex review`, fix all actionable findings, and request review again until it completes cleanly. Final-head checks and any required independent approval must pass before a protected merge. A review-service error leaves review outstanding; administrator bypass is not used.
+
 Actions use read-only repository tokens, cannot approve pull requests, and run only the three approved GitHub actions (checkout, upload-artifact and dependency-review-action), pinned to full commit SHAs. Every external contributor's workflow run needs approval. Secret scanning, push protection, dependency alerts and security updates are enabled. [Security reporting](SECURITY.md) explains how to report a vulnerability privately.
 
 The SonarQube project is public so its metrics and badges are readable. Analysis and project administration remain restricted to the Owners group; anonymous visitors have no write permissions.

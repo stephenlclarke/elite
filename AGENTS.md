@@ -6,4 +6,4 @@ Use Swift 6 actor isolation. GameRuntime owns simulation state; AppKit stays on 
 
 ## Pull request review
 
-Before merging any project PR, including distribution tap updates, comment `@codex review` and wait for the result. Fix every actionable finding, request review again, and repeat until the review is clean. Required GitHub checks must also pass for the final PR head before merging.
+Before merging any project PR, including distribution tap updates, comment `@codex review` and wait for the result. Fix every actionable finding, request review again, and repeat until a completed review is clean. A failed review service response is not a clean result. Required GitHub checks and any required independent approval must pass for the final PR head before a protected merge. Do not use administrator bypass or weaken branch protections to merge.
