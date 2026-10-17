@@ -44,6 +44,7 @@ extension Game {
       "checkpoints": .integer(Int64(state.progress.checkpointBits)),
       "core": .bool(state.core != nil), "crew": .bool(state.crew != nil),
       "crew_paid": .bool(state.crew?.disposition == .paid),
+      "crew_eligible_pending": .bool(state.owedCrewReward > 0),
       "betrayed": .bool(state.betrayal != nil),
       "custody": .string(state.custody.rawValue), "base_paid": .integer(Int64(state.basePaid)),
     ])

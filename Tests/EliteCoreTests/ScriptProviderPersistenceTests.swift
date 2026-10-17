@@ -4,6 +4,54 @@ import Testing
 @testable import EliteCore
 
 struct ScriptProviderPersistenceTests {
+  @Test(arguments: ["completed", "cancelled", "betrayed-cancellation", "failedCargo"])
+  func persistedTerminalProviderStageRequiresItsExactOutcome(_ terminal: String) throws {
+    var state = ProviderContractFixture.state()
+    var cash = 0
+    let expected: ScriptOutcome
+    if terminal == "completed" {
+      ProviderContractEffects.authorizeManifest(&state)
+      try ProviderContractEffects.choose(.urgent, state: &state)
+      try ProviderContractEffects.close(
+        &state, delivery: true,
+        dock: ProviderContractFixture.dock(ProviderContractFixture.destination), order: 12,
+        credits: &cash)
+      expected = .complete
+    } else if terminal == "failedCargo" {
+      state.custody = .lost
+      state.cargoLossOrder = 12
+      state.stage = .failedCargo
+      state.terminalOrder = 12
+      state.receipts.insert(.terminal)
+      expected = .failed
+    } else {
+      if terminal == "betrayed-cancellation" {
+        try ProviderContractEffects.betray(
+          .init(
+            provider: state.provider, member: state.subject,
+            incident: nil, personSale: ProviderContractFixture.id(90), order: 11), state: &state)
+      }
+      try ProviderContractEffects.close(
+        &state, delivery: false,
+        dock: ProviderContractFixture.dock(ProviderContractFixture.origin), order: 12,
+        credits: &cash)
+      expected = terminal == "cancelled" ? .abandoned : .failed
+    }
+    #expect(state.valid)
+    for outcome in [ScriptOutcome.active, .complete, .failed, .abandoned] {
+      var instance = ScriptInstance(
+        id: state.instance, definition: "project.crimbo/guiding-light",
+        version: "1.0.0", digest: String(repeating: "a", count: 64))
+      instance.savedProviderContract = state
+      instance.outcome = outcome
+      let loaded = try JSONDecoder().decode(
+        ScriptInstance.self, from: JSONEncoder().encode(instance))
+      #expect(state.valid(instance: loaded) == (outcome == expected))
+      var engine = ScriptEngineState()
+      engine.instances[loaded.id] = loaded
+      #expect(engine.valid == (outcome == expected))
+    }
+  }
   @Test func boundedStateRoundTripsWithStableIDsAndPendingReview() throws {
     var state = ProviderContractFixture.state()
     ProviderContractEffects.authorizeManifest(&state)

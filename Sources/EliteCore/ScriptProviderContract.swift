@@ -206,7 +206,12 @@ struct ScriptProviderContractState: Equatable, Codable, Sendable {
     guard instance == state.id, valid,
       state.payloads[terms.payload, default: 0] == (custody == .aboard ? 1 : 0)
     else { return false }
-    return stage.terminal ? state.outcome != .active : state.outcome == .active
+    switch stage {
+    case .completed: return state.outcome == .complete
+    case .cancelled: return state.outcome == (betrayal == nil ? .abandoned : .failed)
+    case .failedCargo: return state.outcome == .failed
+    default: return state.outcome == .active
+    }
   }
 }
 

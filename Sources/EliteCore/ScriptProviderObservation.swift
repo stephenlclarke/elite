@@ -5,6 +5,17 @@ struct ProviderMissionObservationUpdate: Sendable {
   let requiresPublication: Bool
 }
 
+private enum ProviderOrderedEvidence {
+  case care(ProviderCrewClaim)
+  case betrayal(NativeProviderBetrayal)
+  var order: UInt64 {
+    switch self {
+    case .care(let claim): claim.order
+    case .betrayal(let proof): proof.order
+    }
+  }
+}
+
 extension Game {
   func providerCoreClaimIsAuthentic(
     _ claim: NativeProviderCoreClaim,
@@ -42,51 +53,69 @@ extension Game {
       source.subject == state.subject, source.manifest == state.expectedManifest,
       source.currentOrder >= state.acceptedOrder
     else { throw MissionPackError("Foreign provider evidence.") }
+    var evidence: [ProviderOrderedEvidence] = []
     if let people = commander.nativePeople, people.owner == state.owner {
-      for operation in source.personOperations.sorted(by: { $0.order < $1.order })
-      where operation.order > state.acceptedOrder {
+      for operation in source.personOperations where operation.order > state.acceptedOrder {
         guard let receipt = people.transfers.first(where: { $0.operation == operation.operation }),
-          receipt.owner == state.owner
+          receipt.owner == state.owner,
+          let person = receipt.members.first(where: { person in
+            person.emp.source == operation.source
+              && people.admissions.contains {
+                $0.person == person && $0.valid(commander: commander)
+              }
+          })
         else { continue }
-        let members = receipt.members.filter { person in
-          person.emp.source == operation.source
-            && people.admissions.contains { $0.person == person && $0.valid(commander: commander) }
-        }
-        guard let person = members.first else { continue }
         if receipt.kind == .sale {
-          try ProviderContractEffects.betray(
-            .init(
-              provider: state.provider, member: state.subject,
-              incident: nil, personSale: receipt.operation, order: operation.order), state: &state)
+          evidence.append(
+            .betrayal(
+              .init(
+                provider: state.provider, member: state.subject,
+                incident: nil, personSale: receipt.operation, order: operation.order)))
         } else if receipt.kind == .care, let dock = receipt.dock,
-          dock.station == state.origin, dock.commanderOwner == state.owner, dock.valid,
-          state.crew == nil, state.betrayal == nil
+          dock.station == state.origin, dock.commanderOwner == state.owner, dock.valid
         {
-          state.crew = .init(
-            operation: receipt.operation, person: person, dock: dock,
-            order: operation.order, disposition: .pending)
-          state.receipts.insert(.care)
-          ProviderContractEffects.authorizeManifest(&state)
-          if state.branch == nil, state.custody == .aboard {
-            try ProviderContractEffects.choose(.recovery, state: &state)
-          }
+          evidence.append(
+            .care(
+              .init(
+                operation: receipt.operation, person: person, dock: dock,
+                order: operation.order, disposition: .pending)))
         }
       }
     }
     if let proof = source.betrayal, proof.order > state.acceptedOrder {
-      // A sale must also have its actual native receipt. Combat legality is resolved by G1.
+      guard proof.valid, proof.provider == state.provider else {
+        throw MissionPackError("Foreign convoy incident.")
+      }
+      // A sale projection must join the same authenticated original-person operation.
+      // Combat legality is resolved by G1, rather than inferred from a later care receipt.
       if let sale = proof.personSale {
         guard
-          let operation = source.personOperations.first(where: {
-            $0.operation == sale && $0.order == proof.order
-          }),
-          commander.nativePeople?.transfers.contains(where: {
-            $0.operation == sale && $0.kind == .sale && $0.owner == state.owner
-              && $0.members.contains(where: { $0.emp.source == operation.source })
-          }) == true
+          evidence.contains(where: {
+            if case .betrayal(let joined) = $0 {
+              return joined.personSale == sale && joined.order == proof.order
+            }
+            return false
+          })
         else { throw MissionPackError("Unjoined native person sale.") }
+      } else {
+        evidence.append(.betrayal(proof))
       }
-      try ProviderContractEffects.betray(proof, state: &state)
+    }
+    guard Set(evidence.map(\.order)).count == evidence.count else {
+      throw MissionPackError("Distinct native operations require distinct causal orders.")
+    }
+    for entry in evidence.sorted(by: { $0.order < $1.order }) {
+      switch entry {
+      case .betrayal(let proof): try ProviderContractEffects.betray(proof, state: &state)
+      case .care(let claim):
+        guard state.eligible, state.crew == nil else { continue }
+        state.crew = claim
+        state.receipts.insert(.care)
+        ProviderContractEffects.authorizeManifest(&state)
+        if state.branch == nil, state.custody == .aboard {
+          try ProviderContractEffects.choose(.recovery, state: &state)
+        }
+      }
     }
     if source.operationsReady.isSuperset(of: ScriptProviderContractDefinition.requiredOperations) {
       try ProviderContractEffects.settleCrew(&state, credits: &commander.credits)

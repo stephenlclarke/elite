@@ -95,7 +95,7 @@ text = "Dispatch: We've lost Santa's ship. We cannot replace that crew with a ne
 
 [[dialogs]]
 id = "rescue"
-text = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Thank you, Commander. Dispatch has approved your 500-credit crew commendation."
+text = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Your 500-credit crew commendation was transferred."
 
 [[dialogs]]
 id = "recoveryReady"
@@ -115,7 +115,7 @@ text = "Atisen Dispatch: Relay and recovered manifest received. 2,000 credits tr
 
 [[dialogs]]
 id = "betrayed"
-text = "Crimbo Dispatch: Native incident records identify your unlawful attack on this convoy. This contract will not pay. Return the relay to close its custody record."
+text = "Crimbo Dispatch: Native records identify a breach of this convoy contract. All unpaid rewards are void. Return any held relay to close its custody record."
 
 [[dialogs]]
 id = "unavailable"

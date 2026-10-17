@@ -15,3 +15,7 @@ Carry one identified protected 1t relay from genuine Crimbo main-station accepta
 MC1 owns the reusable typed contract, observation fold, native action consumers, presentation and pack, five regression source files, and the eight explicitly reserved script/UI hunks. G1 owns the actual ordinary provider registry, Crimbo/native movement, native combat/legal/salvage/people/relay provenance, actual actor input bridge, save reader/writer integration and final bundled registration. No additional actor, commander-bearing UI owner, medical simulator, cryptography, global station guard retrofit or historical 89-mission accounting change is required.
 
 The complete source boundary and unresolved integration gates are recorded in [the PR handoff](PR-guiding-light-provider-contract.md). No playable or runtime-validated result is claimed before G1 completes the actual adapter and grouped validation.
+
+## Frozen-source review corrections
+
+The review of source leaf `362d91b` found that a combined snapshot could process later care before an earlier combat betrayal, terminal provider stages accepted contradictory script outcomes, and care/betrayal cues could misstate reward eligibility or cause. The narrow follow-up orders joined care/sale and combat proofs by the native common sequence, validates exact terminal outcome mappings, and derives payment wording from actual paid or eligible-pending disposition. Existing truthful native care is preserved even when it earns no mission authorization.

@@ -4,6 +4,56 @@ import Testing
 @testable import EliteCore
 
 struct GuidingLightIntegrationTests {
+  @Test(arguments: [ProviderCrewClaimDisposition.paid, .pending, .voided])
+  func careTransitionWordingMatchesActualRewardDisposition(
+    _ disposition: ProviderCrewClaimDisposition
+  ) throws {
+    let pack = try ProviderContractFixture.pack()
+    let game = Game(executive: false)
+    var state = ProviderContractFixture.state()
+    state.crew = ProviderContractFixture.crew(state)
+    state.receipts.insert(.care)
+    ProviderContractEffects.authorizeManifest(&state)
+    try ProviderContractEffects.choose(.recovery, state: &state)
+    if disposition == .paid {
+      var cash = 0
+      try ProviderContractEffects.settleCrew(&state, credits: &cash)
+    } else if disposition == .voided {
+      try ProviderContractEffects.betray(
+        .init(
+          provider: state.provider, member: state.subject,
+          incident: nil, personSale: ProviderContractFixture.id(91), order: 12), state: &state)
+    }
+    var instance = ScriptInstance(
+      id: state.instance, definition: pack.manifest.stateID,
+      version: pack.manifest.version, digest: pack.digest)
+    instance.savedProviderContract = state
+    instance.payloads[state.terms.payload] = 1
+    #expect(state.valid(instance: instance))
+    var receipts = ["care"]
+    if disposition == .paid { receipts.append("crewPaid") }
+    if disposition == .voided { receipts += ["betrayed", "manifest", "ready"] }
+    let presentation = try ScriptEvaluator.evaluate(
+      source: pack.source, handler: "transition",
+      event: .object(["receipts": .array(receipts.map(ScriptValue.string))]),
+      snapshot: game.scopedScriptSnapshot(instance), state: .object([:]))
+    let texts = presentation.commands.compactMap { $0["text"]?.string }
+    #expect(texts.count == 1)
+    #expect(presentation.commands.allSatisfy { $0["op"]?.string == "journal.append" })
+    if disposition == .paid {
+      #expect(
+        texts.first?.contains("500-credit") == true && texts.first?.contains("transferred") == true)
+    } else if disposition == .pending {
+      #expect(texts.first?.contains("pending payment") == true)
+      #expect(texts.allSatisfy { !$0.contains("transferred") })
+    } else {
+      #expect(
+        texts.allSatisfy {
+          !$0.contains("500") && !$0.contains("unlawful attack") && !$0.contains("authenticated")
+        })
+      #expect(texts.first?.contains("All unpaid rewards are void") == true)
+    }
+  }
   @Test func unsupportedCapabilityKeepsWholeOfferLockedWithoutRegistryBypass() throws {
     let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
