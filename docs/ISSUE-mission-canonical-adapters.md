@@ -33,6 +33,14 @@ commander. Gallery context changes follow private write and publication, or
 parent restoration. Trial hardware starts from an explicitly configured fresh
 Commander before canonical initialization.
 
+## Instant pledge fitting
+
+The Orchestrator's 17 October 2026 ruling retains the standard-contract physical fitting requirement documented in the "Saved station contracts" section of `docs/SCRIPTABLE-MISSIONS.md` at accepted commit `afb8a2e7767778e77dd70bc3d97c0680301c8c89`. An instant pledge must retain full final `Commander.valid`, including physical cargo, equipment and accommodation fitting. Legacy `unlimitedCargo` creates no goods and does not exempt a newly accepted native contract from this final validation. Native Food availability and exact preview arithmetic remain separate requirements.
+
+The historical greater-than-Int32 Food fixture has sufficient finite ordinary Food for its actual tier-1 donation of one tonne. Its exact full decimal preview remains valid, but the residual load still exceeds the physical hold and accommodation quantity bounds, so whole acceptance and confirmation refuse without changing authoritative state. The original positive quote assertion conflicts with the retained physical fitting rule and is corrected under this ruling; its original source and the actual 087 failure remain preserved. This correction makes no claim that the original positive assertion previously passed.
+
+An initially overfilled legacy commander is not categorically ineligible. A separate regression starts the actual 20-tonne SH023 Cobra with 21 real tonnes Food and donates five through the genuine tier-3 offer. The resulting 16-tonne load must pass normal physical fitting and full Commander validation, debit Food once, leave cash unchanged and retain the native standing/completion receipt. Both regressions are source-authored pending coordinated execution; no production fitting guard changes.
+
 ## Save and compatibility coverage
 
 Persistence now joins all typed chunks before canonical migration and whole-state validation, rejects native version-2 issue fields in legacy containers, and preserves authored payload keys. Extended save publication uses G1's shared native preparation barrier. Raw legacy and genuine format-20 fixtures retain original IDs, condition, modifications, receipts and authorized nonloan absence. All four previously excluded legacy equipment test files now have canonical adapters.

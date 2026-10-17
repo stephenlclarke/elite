@@ -10,6 +10,8 @@ the shared intrinsic-foundation predicate. Capacity transitions preserve live
 resource fractions. Save/Gallery consumers preserve authorized format-21 state
 and change inventory context only after successful publication or restoration.
 
+The Orchestrator's 17 October 2026 pledge ruling resolves the historical oversized-Food positive quote expectation using the accepted standard-contract physical fitting authority at `afb8a2e7767778e77dd70bc3d97c0680301c8c89` (`docs/SCRIPTABLE-MISSIONS.md`, "Saved station contracts"); see [the policy and failure history](ISSUE-mission-canonical-adapters.md#instant-pledge-fitting). The unchanged greater-than-Int32 starting stock still proves full decimal preview and sufficient actual resources, while quote and confirmation refuse the invalid residual load atomically. A separate genuine tier-3 donation on the actual 20-tonne Cobra reduces 21 tonnes to 16 and must complete once with unchanged cash and a valid native receipt. These tests preserve full final Commander validation and change no production guards. Their runtime validation is pending; the old positive expectation is not reported as a prior passing result.
+
 Validation is **source-only, uncompiled and unexecuted**. Formatting and source
 checks pass. Persistence/preflight and the four legacy equipment test adapters are
 implemented. The validated retained alias admission helper is composed. Calendar
