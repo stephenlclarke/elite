@@ -214,3 +214,40 @@ import Testing
   game.screen = .inventory
   #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
 }
+
+@Test func galleryHelpDescribesActualCampaignNavigationAndAvailableActions() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  let commander = game.commander
+  func rows(_ value: Game) -> [String] { PlayerHelp.pages(for: value).flatMap(\.rows) }
+  #expect(MissionUIAction.trial.isEnabled(in: game))
+  #expect(rows(game).contains("T - REVIEW PRIVATE CAMPAIGN TRIAL"))
+  #expect(
+    rows(game).contains("R - RETRY SELECTED MISSION") == MissionUIAction.retry.isEnabled(in: game))
+  #expect(!rows(game).contains("READ ONLY; FLIGHT IS PAUSED"))
+  try fixture.select(parent, game: &game)
+  game.galleryKey("return")
+  try #require(game.gallery.campaignLinks)
+  #expect(rows(game).contains("UP / DOWN - SELECT CAMPAIGN LINK"))
+  #expect(rows(game).contains("TAB - RETURN TO DETAILS"))
+  try fixture.select(child, game: &game)
+  game.openCampaignTrialReview()
+  try #require(game.gallery.campaignReview != nil && !game.gallery.campaignStartSelected)
+  #expect(rows(game).contains("ARROWS - CHOOSE START / BACK"))
+  #expect(rows(game).contains("RETURN / CLICK - SELECT; BACK IS DEFAULT"))
+  #expect(!rows(game).contains("T - REVIEW PRIVATE CAMPAIGN TRIAL"))
+  #expect(game.commander == commander)
+}
+
+@Test func emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry() {
+  var game = Game(executive: false)
+  game.screen = .gallery
+  game.missionPacks = .init(entries: [], errors: [])
+  game.scriptPacks = []
+  let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
+  #expect(!rows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
+  #expect(rows.contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+}

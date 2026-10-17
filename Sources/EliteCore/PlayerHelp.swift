@@ -76,6 +76,47 @@ public enum PlayerHelp {
     }
   }
 
+  private static func galleryRows(_ game: Game) -> [String] {
+    var rows: [String]
+    if game.gallery.campaignReview != nil {
+      rows = [
+        "ARROWS - CHOOSE START / BACK",
+        "RETURN / CLICK - SELECT; BACK IS DEFAULT",
+        "ESC - BACK WITHOUT STARTING A TRIAL",
+        "START CREATES A PRIVATE CAMPAIGN TRIAL",
+      ]
+    } else if game.gallery.detail && game.gallery.campaignLinks {
+      rows = [
+        "UP / DOWN - SELECT CAMPAIGN LINK",
+        "RETURN / CLICK - FOLLOW SELECTED LINK",
+        "PAGE-UP/DOWN - MOVE EIGHT LINKS",
+        "TAB - RETURN TO DETAILS",
+        "ESC - PREVIOUS CAMPAIGN PAGE",
+      ]
+    } else {
+      rows = [
+        "UP / DOWN - SELECT MISSION OR SCROLL",
+        "RETURN / CLICK - DETAILS OR CAMPAIGN LINKS",
+        "TAB - SWITCH LIST / DETAILS",
+        "OPTION-UP/DOWN - PAGE DETAILS",
+        "ESC - PREVIOUS PAGE, LIST, THEN EXIT",
+      ]
+    }
+    if game.gallery.campaignReview == nil {
+      if MissionUIAction.trial.isEnabled(in: game) {
+        rows.append(
+          game.selectedGalleryMissionIsOwnedAssignment
+            ? "T - REVIEW PRIVATE CAMPAIGN TRIAL" : "T - START PRIVATE MISSION TRIAL")
+      }
+      if MissionUIAction.retry.isEnabled(in: game) { rows.append("R - RETRY SELECTED MISSION") }
+    }
+    if game.isMissionTrial {
+      rows += ["GAME MENU - RESTART TRIAL / RETURN TO COMMANDER"]
+    }
+    rows += ["READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"]
+    return rows
+  }
+
   private static func context(for screen: Screen, game: Game) -> HelpPage {
     switch screen {
     case .front, .rear, .left, .right:
@@ -267,17 +308,7 @@ public enum PlayerHelp {
           "READ ONLY; FLIGHT IS PAUSED",
         ])
     case .gallery:
-      .init(
-        title: "MISSION GALLERY",
-        rows: [
-          "UP / DOWN - SELECT MISSION",
-          "RETURN / CLICK - READ DETAILS",
-          "TAB - SWITCH LIST / DETAILS",
-          "ARROWS / SCROLL IN DETAILS - READ MORE",
-          "OPTION-UP/DOWN - PAGE DETAILS",
-          "ESC - LIST, THEN PREVIOUS SCREEN",
-          "READ ONLY; FLIGHT IS PAUSED",
-        ])
+      .init(title: "MISSION GALLERY", rows: galleryRows(game))
     case .handoff:
       .init(
         title: "MISSION DIALOG",
