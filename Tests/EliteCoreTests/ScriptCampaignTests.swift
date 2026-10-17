@@ -369,12 +369,12 @@ private struct CampaignFixture {
   #expect(game.commander.valid)
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: fixture.save)
-  let expectedDisk = try campaignExpectedDiskCommander(
+  _ = try campaignExpectedDiskCommander(
     game.commander, await runtime.snapshot().commander,
     system: await runtime.snapshot().systemIdentity, url: fixture.save)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
-  let restoredMatchesWholeExpectedCommander = await loaded.snapshot().commander == expectedDisk
+  let restoredMatchesWholeExpectedCommander = await loaded.snapshot().commander == game.commander
   #expect(restoredMatchesWholeExpectedCommander)
 }
 
@@ -845,11 +845,12 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     complete.commander.scriptState.instances[owner.id]?.receiptJoins?["owned-report"] == [child])
   let saved = try await runtime.saveForInterface()
   #expect(saved.isTrial && saved.url.path.hasPrefix(namespace.path + "/"))
-  let expectedDisk = try campaignExpectedDiskCommander(
+  _ = try campaignExpectedDiskCommander(
     complete.commander, await runtime.snapshot().commander,
     system: await runtime.snapshot().systemIdentity, url: saved.url)
   _ = try await runtime.loadForInterface()
-  let restoredMatchesWholeExpectedCommander = await runtime.snapshot().commander == expectedDisk
+  let restoredMatchesWholeExpectedCommander =
+    await runtime.snapshot().commander == complete.commander
   #expect(restoredMatchesWholeExpectedCommander)
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
