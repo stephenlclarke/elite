@@ -167,18 +167,19 @@ struct AlienModuleLootProducerTests {
           }
         })
       var ledger = SalvageLedger(seed: seed)
-      let original = try #require(
-        ledger.inspectLoot(wreck: alienProducerSection.wreck, section: profile, source: source))
+      let inspected = ledger.inspectLoot(
+        wreck: alienProducerSection.wreck, section: profile, source: source)
+      let original = try #require(inspected)
       let revision = ledger.revision
-      #expect(
-        ledger.inspectLoot(
-          wreck: alienProducerSection.wreck, section: profile,
-          source: alienProducerSource([.generalShip])) == original)
+      let reinspected = ledger.inspectLoot(
+        wreck: alienProducerSection.wreck, section: profile,
+        source: alienProducerSource([.generalShip]))
+      #expect(reinspected == original)
       #expect(ledger.revision == revision)
       ledger = try JSONDecoder().decode(SalvageLedger.self, from: JSONEncoder().encode(ledger))
-      #expect(
-        ledger.inspectLoot(wreck: alienProducerSection.wreck, section: profile, source: source)
-          == original)
+      let reloaded = ledger.inspectLoot(
+        wreck: alienProducerSection.wreck, section: profile, source: source)
+      #expect(reloaded == original)
     }
   }
 }
