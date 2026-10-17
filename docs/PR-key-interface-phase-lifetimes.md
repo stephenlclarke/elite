@@ -1,0 +1,9 @@
+# Finish interface input before reserving gameplay key storage
+
+The public mutating key entry point still lowercases the raw key and calls the unchanged interfaceKey first. When interfaceKey handles the command, it returns immediately. Otherwise it calls a private mutating keyAfterInterface helper containing the entire original remainder of key handling, byte-identical and in the same order.
+
+All flight controls, numbered screens, equipment/market interactions, game-over construction and preparation, Return/Escape semantics, other key cases and final mutations remain unchanged. The public Game value API, actor ownership, data, guards, tests, scheduling, compiler options and stack limits are untouched. Inlining the three added boundary lines reproduces the exact original source. The existing gallery sanitizer failures and keyboard/game-over compatibility methods provide regression coverage; no test is weakened or replaced.
+
+The exact pre-edit thread-sanitized binary is `994275170e54e3db68e668a379ac7155dfa4494687bce1cddcc730d3130cb445` from `98c84c8f96687f77d2ae597f255d77e31629774a`. Independent binary inspection found six Game-sized SP reservations before interfaceKey; these are emitted storage observations, not a total-stack estimate or attribution of every buffer to game-over reset. The observed stop is retained at `/tmp/elite-debug-crash-162/actual-stopped-thread.json`. No equivalence to prior unobserved signals or new compiled lifetime claim is made.
+
+Source formatting, strict lint, scoped Markdown lint, whitespace checks and exact inlining preservation are worker validation. Compilation, new emitted lifetimes, thread-sanitized gallery/keyboard/game-over compatibility and full CI remain pending with the orchestrator. No worker build, native process or debugger runs. No GitHub issue or PR exists yet. See [motivation](ISSUE-key-interface-phase-lifetimes.md).
