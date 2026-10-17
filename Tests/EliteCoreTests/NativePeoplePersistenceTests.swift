@@ -83,10 +83,15 @@ struct NativePeoplePersistenceTests {
     let later = laterIncident(
       emission: first.origin.emissionID + 1, part: part, position: first.position)
     let schedule = record.aboardOrdinals.map { EMPCrewEjection(ordinal: $0, delay: 45) }
+    let currentCargo = try #require(record.hull.body.physical?.npc?.ordinaryCargo)
+    let currentLegal = try #require(record.hull.body.physical?.npc?.legal)
     let prior = record
     let appended = record.appendCrewDisableEpisode(
       incident: later, weapon: replacement, owner: prior.weaponOwner, ejections: schedule)
     try #require(appended)
+    // The timing hook does not own the later disable's cargo/legal custody facts.
+    record.savedCurrentCargo = currentCargo
+    record.savedCurrentLegal = currentLegal
     #expect(record.disableIncident == first && record.disableEpisodes.count == 2)
     #expect(record.disableEpisodes[0].legacyTiming && record.disableEpisodes[0].ejections.isEmpty)
     #expect(record.currentCrewDisableIncident == later && record.crewDeadline == time + 30)

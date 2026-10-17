@@ -66,8 +66,14 @@ func ejectScheduledEMPCrewBoundary(_ game: inout Game, source: ActorIdentity) th
   let times = episode.ejections.map { episode.incident.physicalTime + $0.delay }.sorted()
   try #require(times.allSatisfy { $0 < episode.deadline })
   for time in times {
-    let now = game.commander.flightSimulation.physicalTime
-    if now < time { game.commander.flightSimulation.advancePhysicalTime(time - now + 1e-6) }
+    // Real elapsed physics lets an admitted pod clear the next person's unchanged aperture.
+    let target = time + 1e-6
+    while game.commander.flightSimulation.physicalTime < target {
+      let now = game.commander.flightSimulation.physicalTime
+      game.tick(delta: min(0.1, target - now))
+      try #require(!game.docked && game.screen != .gameOver)
+      try #require(game.commander.flightSimulation.physicalTime > now)
+    }
     game.advanceEMPActors()
   }
   let after = try #require(game.commander.savedEMPState?.records[source])
