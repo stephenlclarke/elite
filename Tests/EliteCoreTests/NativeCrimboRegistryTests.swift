@@ -300,7 +300,8 @@ struct NativeCrimboRegistryTests {
     let capacity = try #require(snapshot.npc.resources?.energyCapacity)
     let recharge = try #require(snapshot.npc.resources?.electricalRecharge)
     var reserve = try #require(ElectricalReserve(capacity: capacity, recharge: recharge, at: 0))
-    #expect(reserve.drain(50, at: 0))
+    let drained = reserve.drain(50, at: 0)
+    #expect(drained)
     snapshot.npc.resources?.electrical = reserve
     let frozen = try Game.freezeNativeCrimboSnapshot(snapshot, at: 1000)
     #expect(frozen.energy == snapshot.energy && frozen.missiles == snapshot.missiles)
@@ -322,7 +323,8 @@ struct NativeCrimboRegistryTests {
     let capacity = try #require(snapshot.npc.resources?.energyCapacity)
     let recharge = try #require(snapshot.npc.resources?.electricalRecharge)
     var reserve = try #require(ElectricalReserve(capacity: capacity, recharge: recharge, at: 0))
-    #expect(reserve.drain(capacity, at: 0))
+    let drained = reserve.drain(capacity, at: 0)
+    #expect(drained)
     snapshot.npc.resources?.electrical = reserve
     #expect(throws: NativeCrimboError.invalidTransfer) {
       try Game.freezeNativeCrimboSnapshot(snapshot, at: 1000)
