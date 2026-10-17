@@ -106,6 +106,14 @@ struct NativeStationIntegrationTests {
     try await verifyNativeHeadquartersDestruction(&game, storage: storage)
   }
 
+  @Test(arguments: [false, true])
+  func actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement(guided: Bool)
+    throws
+  {
+    var game = try NativeStationTestFixture.headquartersAttack()
+    try verifyNativeStationRecharge(&game, guided: guided)
+  }
+
   @Test(arguments: NativeStationGeometry.Kind.allCases)
   func actualNativeEntryCommitsSelectedStationAndLaunchesFromItsOwnExit(
     kind: NativeStationGeometry.Kind
@@ -331,6 +339,32 @@ private func verifyOriginalMainImmunity(_ game: inout Game) throws {
   let flight = game.commander.flightSimulation
   #expect(!game.fireMissile())
   #expect(game.commander.flightSimulation == flight)
+}
+
+private func verifyNativeStationRecharge(_ game: inout Game, guided: Bool) throws {
+  let hq = try #require(
+    game.bodies.first {
+      $0.nativeStationIdentity?.definition
+        == NativeStationGeometry.Kind.headquarters.sourceDefinition
+    })
+  game.fireLaser()
+  #expect(game.bodies.first { $0.id == hq.id }?.energy == hq.energy - LaserKind.naval.damage)
+  if guided {
+    let rock = try #require(game.miningFields.first?.rocks.first)
+    var pose = ShipPose()
+    pose.position = rock.position - Vector3(0, 0, 500)
+    NativeStationTestFixture.reframe(&game, to: pose)
+    game.activateNearbyMiningFields()
+    game.key("f")
+    #expect(game.workTargetFilter == .mining)
+    for _ in 0..<64 where game.workGuidance == nil { game.key("r") }
+    #expect(game.workGuidance != nil)
+  }
+  let clock = game.commander.flightSimulation.physicalTime
+  game.tick(delta: 0.1)
+  #expect(game.commander.flightSimulation.physicalTime == clock + 0.1)
+  #expect(game.bodies.first { $0.id == hq.id }?.energy == hq.energy - LaserKind.naval.damage + 10)
+  #expect(!game.docked && !game.paused)
 }
 
 private func verifyNativeHeadquartersDestruction(
