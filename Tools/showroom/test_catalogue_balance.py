@@ -94,7 +94,7 @@ class CatalogueBalanceTests(unittest.TestCase):
         files_spec.loader.exec_module(files)
         ships = {s["id"]: s for s in files.read_ships()}
         with tempfile.TemporaryDirectory() as directory:
-            for identity in ["SH100", "SH171"]:
+            for identity in ["SH100", "SH171", "SH153", "SH028"]:
                 ship = ships[identity]
                 output = Path(directory) / (identity + ".toml")
                 files.write_ship(output, ship)
