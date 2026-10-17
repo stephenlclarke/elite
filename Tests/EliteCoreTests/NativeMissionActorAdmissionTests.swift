@@ -392,7 +392,7 @@ struct NativeMissionActorAdmissionTests {
     let restored = try #require(game.bodies.first { $0.missionActorID == saved.identity })
     #expect(!prior.contains { $0.physical?.identity == restored.physical?.identity })
     if scenario == 3 { #expect(restored.physical?.identity != launched.physical?.identity) }
-    #expect(restored.physical?.identity?.visit == currentPlayer.visit)
+    #expect(restored.physical?.identity.visit == currentPlayer.visit)
     let condition = try #require(restored.physical?.npc)
     if scenario == 1 {
       #expect(condition.intention == nil)
