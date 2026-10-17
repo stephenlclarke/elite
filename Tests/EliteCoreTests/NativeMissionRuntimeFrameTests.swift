@@ -167,15 +167,18 @@ struct NativeMissionRuntimeFrameTests {
     let folder = try frameSaveFolder()
     defer { try? FileManager.default.removeItem(at: folder) }
     let runtime = GameRuntime(game: game, saveURL: folder.appendingPathComponent("commander.json"))
+    let before = await runtime.snapshot()
+    try #require(before.commander.scriptState.calendarLedger != nil)
+    #expect(before.time == game.time && before.bodies == game.bodies)
     var controls = Controls()
     controls.fire = true
     await runtime.setControls(controls)
     let frame = await runtime.advance(delta: 0.1)
     #expect(frame.paused && frame.message == "MISSION FLIGHT RESTORE REFUSED - PAUSED")
-    #expect(frame.commander == game.commander && frame.bodies == game.bodies)
-    #expect(frame.time == game.time && frame.nextBodyID == game.nextBodyID)
-    #expect(frame.gameplayRevision == game.gameplayRevision)
-    #expect(frame.energy == game.energy && frame.fireCooldown == game.fireCooldown)
+    #expect(frame.commander == before.commander && frame.bodies == before.bodies)
+    #expect(frame.time == before.time && frame.nextBodyID == before.nextBodyID)
+    #expect(frame.gameplayRevision == before.gameplayRevision)
+    #expect(frame.energy == before.energy && frame.fireCooldown == before.fireCooldown)
   }
 
 }

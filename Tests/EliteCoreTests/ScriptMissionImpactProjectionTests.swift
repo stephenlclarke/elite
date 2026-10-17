@@ -255,6 +255,11 @@ struct ScriptMissionImpactProjectionTests {
     throws
   {
     var (game, shotID) = try retainedProjectileGame(archived: false)
+    try verifyRestoredLegacyPlasma(&game, shotID: shotID, component: component)
+  }
+
+  private func verifyRestoredLegacyPlasma(_ game: inout Game, shotID: UUID, component: Bool) throws
+  {
     let retainedShot = try #require(game.commander.scriptState.projectiles[shotID]?.body.scriptShot)
     let source = try #require(game.bodies.first { $0.missionActorID == retainedShot.owner })
     let anchor = try #require(game.scriptAnchor)

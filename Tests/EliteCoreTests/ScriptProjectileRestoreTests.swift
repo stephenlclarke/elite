@@ -16,6 +16,13 @@ private func withArchive(
 
 func retainedProjectileGame(archived: Bool = true) throws -> (Game, UUID) {
   var (game, sample) = try actualShotArchiveFixture()
+  let shotID = try prepareRetainedProjectile(&game, sample: sample, archived: archived)
+  return (game, shotID)
+}
+
+private func prepareRetainedProjectile(_ game: inout Game, sample: ScriptNPCShot, archived: Bool)
+  throws -> UUID
+{
   let anchor = try #require(game.scriptAnchor)
   var shot = withArchive(sample, archived ? sample.nativeAttribution : nil)
   shot.velocity = anchor.orientation.inverse(sample.velocity)
@@ -26,7 +33,7 @@ func retainedProjectileGame(archived: Bool = true) throws -> (Game, UUID) {
   game.commander.scriptState.projectiles[shot.identity] = .init(
     galaxy: game.commander.galaxy, system: game.commander.system, body: body, presence: .unloaded)
   try #require(game.commander.valid)
-  return (game, shot.identity)
+  return shot.identity
 }
 
 private func projectileSaveFolder() throws -> URL {

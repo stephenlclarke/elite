@@ -249,5 +249,5 @@ import Testing
   game.scriptPacks = []
   let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
   #expect(!rows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
-  #expect(rows.contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+  #expect(rows.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
 }

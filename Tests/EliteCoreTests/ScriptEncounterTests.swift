@@ -313,7 +313,8 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
     game.bodies[index].energy = 0
     game.bodies[index].destroyedByPlayer = true
   }
-  let fresh = Commander()
+  var fresh = Commander()
+  try fresh.prepareEquipment(legacy: false)
   let loaded = game.load(fresh)
   #expect(loaded && game.commander == fresh)
   #expect(game.bodies.isEmpty && game.scriptReferenceFrame == nil)
