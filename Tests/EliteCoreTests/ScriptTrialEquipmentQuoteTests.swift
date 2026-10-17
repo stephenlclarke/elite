@@ -108,9 +108,23 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
           ComponentFittingSlot.missilePylon($0)
         }))
   #expect(published.commander.fuel == 70 && !published.commander.unlimitedMissiles)
-  // The no-scene pledge keeps Jameson's ordinary cash and cannot afford its first donation.
+  let expectedIssues: [String]
+  if scenario.scene {
+    expectedIssues = []
+  } else if scenario.pledge {
+    // Jameson's ordinary cash cannot fund the first full donation.
+    expectedIssues = ["The full pledge requires 500.0 CR; real cash is insufficient."]
+    let pledge = try #require(quote.pledge)
+    #expect(pledge.before.cash == 1000 && pledge.amount == 5000)
+  } else {
+    // Removing the scene changes the digest and this pinned courier's frozen itinerary.
+    expectedIssues = ["Frozen itinerary has no deadline headroom. This listing cannot be accepted."]
+    let courier = try #require(quote.courier)
+    #expect(courier.terms.calendarLowerBoundSeconds >= courier.terms.duration)
+  }
+  #expect(quote.allowed == scenario.scene)
   #expect(
-    quote.allowed == (scenario.scene || !scenario.pledge),
+    quote.issues == expectedIssues,
     Comment(rawValue: "Published trial quote issues: " + quote.issues.joined(separator: "; ")))
   let accepted = try await usePublishedTrialQuote(runtime, quote: quote, pledge: scenario.pledge)
   let saved = try await runtime.saveForInterface()
@@ -129,7 +143,7 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
   #expect(await runtime.gallerySaveDirectory() == namespace)
   #expect(restarted.commander.scriptState.instances.isEmpty)
   #expect(restartQuote.resources == restarted.commander.contractQuoteResources)
-  #expect(restartQuote.allowed == quote.allowed)
+  #expect(restartQuote.allowed == quote.allowed && restartQuote.issues == expectedIssues)
   #expect(
     nextInventory.owner != inventory.owner && nextInventory.activeHull != inventory.activeHull)
   #expect(Set(nextInventory.items.map(\.id)).isDisjoint(with: inventory.items.map(\.id)))
