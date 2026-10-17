@@ -109,6 +109,10 @@ private func publishAdmission(
 struct NativeMissionActorAdmissionTests {
   @Test func independentNativeProducerCountersDoNotInvalidateActualRetainedMissionActors() throws {
     var (game, instance, _) = try actualMissionBridgeGame()
+    try verifyIndependentNativeProducerCounters(&game, instance: instance)
+  }
+
+  private func verifyIndependentNativeProducerCounters(_ game: inout Game, instance: UUID) throws {
     _ = try admitProducerLocalMissionSceneSpawns(&game)
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
@@ -129,6 +133,12 @@ struct NativeMissionActorAdmissionTests {
     forgery: NativeMissionSpawnForgery
   ) throws {
     var (game, instance, _) = try actualMissionBridgeGame()
+    try verifyInvalidSharedOrForeignSpawnAddresses(&game, instance: instance, forgery: forgery)
+  }
+
+  private func verifyInvalidSharedOrForeignSpawnAddresses(
+    _ game: inout Game, instance: UUID, forgery: NativeMissionSpawnForgery
+  ) throws {
     let spawns = try admitProducerLocalMissionSceneSpawns(&game)
     try forgeProducerLocalMissionSceneSpawn(&game, spawns: spawns, forgery: forgery)
     let sources = try game.retainedMissionActorAdmissionSources()
@@ -260,24 +270,34 @@ struct NativeMissionActorAdmissionTests {
 
   @Test func malformedLaterRetainedActorHardFailsBeforeAnyRestoration() throws {
     var (game, instance, _) = try unloadedAdmissionGame()
+    try verifyMalformedLaterRetainedActor(&game, instance: instance)
+  }
+
+  private func verifyMalformedLaterRetainedActor(_ game: inout Game, instance: UUID) throws {
     let aliases = try #require(
       game.commander.scriptState.instances[instance]?
         .ownedEncounters["opponents"]?.actors.keys.sorted())
     let last = try #require(aliases.last)
     game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
       .actors[last]?.body.energy = 1_000_001
-    let before = game
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeBodyID = game.nextBodyID
     var refused = false
     do { _ = try game.retainedMissionActorAdmissionSources() } catch { refused = true }
     #expect(refused)
     #expect(
-      game.commander == before.commander && game.bodies == before.bodies
-        && game.nextBodyID == before.nextBodyID)
+      game.commander == beforeCommander && game.bodies == beforeBodies
+        && game.nextBodyID == beforeBodyID)
     #expect(!game.bodies.contains { $0.missionInstanceID == instance })
   }
 
   @Test func retainedProfileVelocityTransformsExactlyOnceThroughActualRotatedAnchor() throws {
     var (game, instance, _) = try unloadedAdmissionGame()
+    try verifyRetainedProfileVelocity(&game, instance: instance)
+  }
+
+  private func verifyRetainedProfileVelocity(_ game: inout Game, instance: UUID) throws {
     let stationIndex = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
     game.bodies[stationIndex].orientation.rotate(pitch: 0.1, roll: 0.2, yaw: 0.3)
     let anchor = try #require(game.scriptAnchor)
@@ -301,81 +321,95 @@ struct NativeMissionActorAdmissionTests {
   @Test func actualNewVisitPreservesNavigationAndRebindsOnlyPermittedNativeTargets() throws {
     for scenario in 0..<4 {
       var (game, instance, prior) = try unloadedAdmissionGame()
-      let oldPlayer = try #require(game.commander.flightSimulation.player)
-      let aliases = try #require(
-        game.commander.scriptState.instances[instance]?
-          .ownedEncounters["opponents"]?.actors.keys.sorted())
-      let alias = try #require(aliases.first)
-      let saved = try #require(
-        game.commander.scriptState.instances[instance]?
-          .ownedEncounters["opponents"]?.actors[alias])
-      let destination = Vector3(1234, 2345, 3456)
-      let action: NPCAction =
-        scenario == 1
-        ? .flee(oldPlayer)
-        : scenario == 2
-          ? .engage(oldPlayer)
-          : .navigate(position: destination, speedUnitsPerSecond: 5)
-      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
-        .actors[alias]?.body.physical?.npc?.intention = action
-      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
-        .actors[alias]?.body.physical?.npc?.firstAggressor = oldPlayer
-      game.launch()
-      let currentPlayer = try #require(game.commander.flightSimulation.player)
-      #expect(currentPlayer != oldPlayer)
-      if scenario == 3 {
-        game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
-          .actors[alias]?.body.physical?.npc?.firstAggressor = currentPlayer
-      }
-      let sources = try game.retainedMissionActorAdmissionSources()
-      let source = try #require(sources.first { $0.instanceID == instance })
-      let template = try #require(source.actors.first { $0.alias == alias })
-      #expect(template.declaredHostile)
-      let prepared = try game.prepareMissionActorAdmission(source)
-      let plan = try readyAdmission(prepared)
-      _ = try publishAdmission(plan, game: &game, instance: instance)
-      let restored = try #require(game.bodies.first { $0.missionActorID == saved.identity })
-      #expect(!prior.contains { $0.physical?.identity == restored.physical?.identity })
-      let condition = try #require(restored.physical?.npc)
-      if scenario == 1 {
-        #expect(condition.intention == nil)
-      } else if scenario == 2 {
-        #expect(condition.intention == .engage(currentPlayer))
-      } else {
-        #expect(condition.intention == .navigate(position: destination, speedUnitsPerSecond: 5))
-      }
-      #expect(condition.firstAggressor == (scenario == 3 ? currentPlayer : nil))
+      try verifyActualNewVisit(&game, instance: instance, prior: prior, scenario: scenario)
     }
+  }
+
+  private func verifyActualNewVisit(
+    _ game: inout Game, instance: UUID, prior: [SpaceBody], scenario: Int
+  ) throws {
+    let oldPlayer = try #require(game.commander.flightSimulation.player)
+    let aliases = try #require(
+      game.commander.scriptState.instances[instance]?
+        .ownedEncounters["opponents"]?.actors.keys.sorted())
+    let alias = try #require(aliases.first)
+    let saved = try #require(
+      game.commander.scriptState.instances[instance]?
+        .ownedEncounters["opponents"]?.actors[alias])
+    let destination = Vector3(1234, 2345, 3456)
+    let action: NPCAction =
+      scenario == 1
+      ? .flee(oldPlayer)
+      : scenario == 2
+        ? .engage(oldPlayer)
+        : .navigate(position: destination, speedUnitsPerSecond: 5)
+    game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+      .actors[alias]?.body.physical?.npc?.intention = action
+    game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+      .actors[alias]?.body.physical?.npc?.firstAggressor = oldPlayer
+    game.launch()
+    let currentPlayer = try #require(game.commander.flightSimulation.player)
+    #expect(currentPlayer != oldPlayer)
+    if scenario == 3 {
+      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+        .actors[alias]?.body.physical?.npc?.firstAggressor = currentPlayer
+    }
+    let sources = try game.retainedMissionActorAdmissionSources()
+    let source = try #require(sources.first { $0.instanceID == instance })
+    let template = try #require(source.actors.first { $0.alias == alias })
+    #expect(template.declaredHostile)
+    let prepared = try game.prepareMissionActorAdmission(source)
+    let plan = try readyAdmission(prepared)
+    _ = try publishAdmission(plan, game: &game, instance: instance)
+    let restored = try #require(game.bodies.first { $0.missionActorID == saved.identity })
+    #expect(!prior.contains { $0.physical?.identity == restored.physical?.identity })
+    let condition = try #require(restored.physical?.npc)
+    if scenario == 1 {
+      #expect(condition.intention == nil)
+    } else if scenario == 2 {
+      #expect(condition.intention == .engage(currentPlayer))
+    } else {
+      #expect(condition.intention == .navigate(position: destination, speedUnitsPerSecond: 5))
+    }
+    #expect(condition.firstAggressor == (scenario == 3 ? currentPlayer : nil))
   }
 
   @Test func malformedRetainedNavigationRefusesBeforeAnyTemporaryAdmissionOutcome() throws {
     for scenario in 0..<3 {
       var (game, instance, _) = try unloadedAdmissionGame()
-      let aliases = try #require(
-        game.commander.scriptState.instances[instance]?
-          .ownedEncounters["opponents"]?.actors.keys.sorted())
-      let alias = try #require(aliases.last)
-      let actor = try #require(
-        game.commander.scriptState.instances[instance]?
-          .ownedEncounters["opponents"]?.actors[alias])
-      let maximum = try #require(actor.body.scriptNPC?.fit.definition.speed)
-      let position = scenario == 0 ? Vector3(.infinity, 0, 0) : Vector3(1234, 2345, 3456)
-      let speed = scenario == 1 ? -1 : scenario == 2 ? maximum + 1 : 5
-      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
-        .actors[alias]?.body.physical?.npc?.intention = .navigate(
-          position: position, speedUnitsPerSecond: speed)
-      let before = game
-      var refused = false
-      do {
-        let sources = try game.retainedMissionActorAdmissionSources()
-        let source = try #require(sources.first { $0.instanceID == instance })
-        _ = try game.prepareMissionActorAdmission(source)
-      } catch { refused = true }
-      #expect(refused)
-      #expect(
-        game.commander == before.commander && game.bodies == before.bodies
-          && game.nextBodyID == before.nextBodyID)
+      try verifyMalformedRetainedNavigation(&game, instance: instance, scenario: scenario)
     }
+  }
+
+  private func verifyMalformedRetainedNavigation(_ game: inout Game, instance: UUID, scenario: Int)
+    throws
+  {
+    let aliases = try #require(
+      game.commander.scriptState.instances[instance]?
+        .ownedEncounters["opponents"]?.actors.keys.sorted())
+    let alias = try #require(aliases.last)
+    let actor = try #require(
+      game.commander.scriptState.instances[instance]?
+        .ownedEncounters["opponents"]?.actors[alias])
+    let maximum = try #require(actor.body.scriptNPC?.fit.definition.speed)
+    let position = scenario == 0 ? Vector3(.infinity, 0, 0) : Vector3(1234, 2345, 3456)
+    let speed = scenario == 1 ? -1 : scenario == 2 ? maximum + 1 : 5
+    game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+      .actors[alias]?.body.physical?.npc?.intention = .navigate(
+        position: position, speedUnitsPerSecond: speed)
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeBodyID = game.nextBodyID
+    var refused = false
+    do {
+      let sources = try game.retainedMissionActorAdmissionSources()
+      let source = try #require(sources.first { $0.instanceID == instance })
+      _ = try game.prepareMissionActorAdmission(source)
+    } catch { refused = true }
+    #expect(refused)
+    #expect(
+      game.commander == beforeCommander && game.bodies == beforeBodies
+        && game.nextBodyID == beforeBodyID)
   }
 
   @Test func unboundLiveObstacleRefusesBeforeCapacityOrAlreadyPresentNoop() throws {
@@ -386,6 +420,10 @@ struct NativeMissionActorAdmissionTests {
   // Each independent scenario releases its Game snapshots before the next deep fixture.
   private func unboundObstacleRefusesBeforeCapacity() throws {
     var (game, instance, _) = try unloadedAdmissionGame()
+    try verifyUnboundObstacleBeforeCapacity(&game, instance: instance)
+  }
+
+  private func verifyUnboundObstacleBeforeCapacity(_ game: inout Game, instance: UUID) throws {
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
     let template = try #require(source.actors.first)
@@ -415,6 +453,12 @@ struct NativeMissionActorAdmissionTests {
 
   private func unboundObstacleRefusesBeforeAlreadyPresentNoop() throws {
     var (present, presentInstance, _) = try actualMissionBridgeGame()
+    try verifyUnboundObstacleBeforeAlreadyPresentNoop(&present, presentInstance: presentInstance)
+  }
+
+  private func verifyUnboundObstacleBeforeAlreadyPresentNoop(
+    _ present: inout Game, presentInstance: UUID
+  ) throws {
     present.ensurePhysicalActors()
     let presentSources = try present.retainedMissionActorAdmissionSources()
     let presentSource = try #require(presentSources.first { $0.instanceID == presentInstance })
