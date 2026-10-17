@@ -13,3 +13,7 @@ The waystation center is approximately [468.8903, -112.6671, 3727.7742], close t
 ## Link
 
 [PR-native-station-flythrough.md](PR-native-station-flythrough.md).
+
+## Confirmed diagnostic result
+
+Validation 310 identifies body 10, actor entity 4, `rescue_station-g0-s151` version 1.5.4 in the original industrial flyby. Across 1423 observations the rendered/canonical poses remain consistent, no resolved sweep is blocked and player energy/shields remain full. The recorded close view reproduces large partial blue panels, but this trajectory does not penetrate solid geometry. Independent component audit proves inward exterior faces and outward-facing open liners/bays; the separate damage-only response still permits travel after genuine solid contact. Both need correction, without misreporting this particular flyby as a collision.

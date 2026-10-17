@@ -460,6 +460,8 @@ public struct Game: Sendable {
   public var miningFields: [MiningField] = []
   public var salvageSites: [SalvageSite] = []
   var gameplayRevision: UInt64 = 0
+  /// Actual contact disqualifies this physical frame from attained-motion credit.
+  var stationImpactRevision: UInt64?
   // A laser capability is consumed synchronously in the same actor turn that emitted it.
   // Bounded and ephemeral: capabilities are never restored from a commander save.
   var consumedMissionLaserEmission: UInt64 = 0
@@ -1657,9 +1659,11 @@ public struct Game: Sendable {
       }
     }
     advanceNativeStationRecharge(delta: dt)
-    advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: dt)
     detectNativeStationEntry(from: before, delta: dt)
-    if pendingNativeStationDock != nil { return }
+    if pendingNativeStationDock != nil {
+      advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: dt)
+      return
+    }
     collideWithNativeStationStructures(from: before, delta: dt)
     if let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
       station.containsPlayer
@@ -1668,9 +1672,12 @@ public struct Game: Sendable {
         dockAtOriginalNativeMainStation(station, from: before)
         return
       }
+      stopAtStationImpact(at: before)
       applyDamage(dt * 100, front: true)
       if message != "DOCKING COLLISION" || messageTime <= 0 { notify("DOCKING COLLISION") }
     }
+    // Motion observers receive only the endpoint retained by physical collision handling.
+    advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: dt)
     advanceScriptNPCFlight(delta: dt)
     synchronizeScriptNPCPhysicalVelocities()
     advanceScriptNPCWeapons(delta: dt)
