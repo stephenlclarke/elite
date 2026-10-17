@@ -128,6 +128,58 @@ func selectCampaignPatrolTarget(_ runtime: GameRuntime, child: UUID) async throw
         + campaignPatrolDiagnostic(selected, child: child)))
 }
 
+func campaignCommanderChangedPaths(_ before: Commander, _ after: Commander) throws -> [String] {
+  let encoder = JSONEncoder()
+  let left = try JSONSerialization.jsonObject(with: encoder.encode(before))
+  let right = try JSONSerialization.jsonObject(with: encoder.encode(after))
+  let sameEquipment = before.equipment == after.equipment
+  var paths: [String] = []
+  func compare(_ left: Any?, _ right: Any?, path: String, depth: Int) {
+    guard paths.count < 12 else { return }
+    switch (left, right) {
+    case (nil, nil): return
+    case (let left?, let right?):
+      if let left = left as? [String: Any], let right = right as? [String: Any], depth < 20 {
+        for key in Set(left.keys).union(right.keys).sorted() {
+          if depth == 0 && key == "equipment" && sameEquipment { continue }
+          compare(left[key], right[key], path: path + "." + key, depth: depth + 1)
+        }
+      } else if let left = left as? [Any], let right = right as? [Any], depth < 20 {
+        if left.count != right.count { paths.append(path + ".count") }
+        for index in 0..<min(left.count, right.count) {
+          compare(left[index], right[index], path: path + "[\(index)]", depth: depth + 1)
+        }
+      } else if String(describing: left) != String(describing: right) {
+        paths.append(path)
+      }
+    default: paths.append(path)
+    }
+  }
+  compare(left, right, path: "Commander", depth: 0)
+  return paths
+}
+
+func campaignPersistenceDiagnostic(_ before: Commander, _ actual: Commander, url: URL) throws
+  -> String
+{
+  let bytes = try Data(contentsOf: url)
+  let (disk, _) = try ScriptSaveStore.read(bytes, from: url)
+  func counts(_ commander: Commander) -> String {
+    "cash=\(commander.credits),cargoTonnes=\(commander.cargoTonnes)"
+      + ",equipment=\(commander.equipmentInventory?.items.count ?? 0)"
+      + ",berths=\(commander.accommodation.ownedBerths.count)"
+      + ",instances=\(commander.scriptState.instances.count),NPCs=\(commander.npcPersistence.count)"
+      + ",projectiles=\(commander.scriptState.projectiles.count)"
+  }
+  return [
+    "beforeToActual=\(try campaignCommanderChangedPaths(before, actual))",
+    "beforeToDisk=\(try campaignCommanderChangedPaths(before, disk))",
+    "diskToActual=\(try campaignCommanderChangedPaths(disk, actual))",
+    "beforeCounts=[\(counts(before))],actualCounts=[\(counts(actual))],diskCounts=[\(counts(disk))]",
+    "pointerSHA256=\(ScriptPackLibrary.hash(bytes))",
+  ].joined(separator: "; ")
+}
+
 private struct CampaignFixture {
   let root: URL
   let child: ScriptPack
@@ -200,34 +252,7 @@ private struct CampaignFixture {
   }
   func clean() { try? FileManager.default.removeItem(at: root) }
   func commanderChangedPaths(_ before: Commander, _ after: Commander) throws -> [String] {
-    let encoder = JSONEncoder()
-    let left = try JSONSerialization.jsonObject(with: encoder.encode(before))
-    let right = try JSONSerialization.jsonObject(with: encoder.encode(after))
-    let sameEquipment = before.equipment == after.equipment
-    var paths: [String] = []
-    func compare(_ left: Any?, _ right: Any?, path: String, depth: Int) {
-      guard paths.count < 12 else { return }
-      switch (left, right) {
-      case (nil, nil): return
-      case (let left?, let right?):
-        if let left = left as? [String: Any], let right = right as? [String: Any], depth < 20 {
-          for key in Set(left.keys).union(right.keys).sorted() {
-            if depth == 0 && key == "equipment" && sameEquipment { continue }
-            compare(left[key], right[key], path: path + "." + key, depth: depth + 1)
-          }
-        } else if let left = left as? [Any], let right = right as? [Any], depth < 20 {
-          if left.count != right.count { paths.append(path + ".count") }
-          for index in 0..<min(left.count, right.count) {
-            compare(left[index], right[index], path: path + "[\(index)]", depth: depth + 1)
-          }
-        } else if String(describing: left) != String(describing: right) {
-          paths.append(path)
-        }
-      default: paths.append(path)
-      }
-    }
-    compare(left, right, path: "Commander", depth: 0)
-    return paths
+    try campaignCommanderChangedPaths(before, after)
   }
   func game() -> Game {
     var game = Game(executive: false)
@@ -349,9 +374,16 @@ private struct CampaignFixture {
   #expect(game.commander.valid)
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: fixture.save)
+  let saveDifference = try campaignPersistenceDiagnostic(
+    game.commander, await runtime.snapshot().commander, url: fixture.save)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
-  #expect(await loaded.snapshot().commander == game.commander)
+  let restoredMatchesOriginal = await loaded.snapshot().commander == game.commander
+  let loadDifference = try campaignPersistenceDiagnostic(
+    game.commander, await loaded.snapshot().commander, url: fixture.save)
+  #expect(
+    restoredMatchesOriginal,
+    Comment(rawValue: "afterSave: \(saveDifference); afterLoad: \(loadDifference)"))
 }
 
 @Test func childAcceptanceWaitsForItsParentProposalAndNeverReissuesAfterAChildFault() async throws {
@@ -821,8 +853,15 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     complete.commander.scriptState.instances[owner.id]?.receiptJoins?["owned-report"] == [child])
   let saved = try await runtime.saveForInterface()
   #expect(saved.isTrial && saved.url.path.hasPrefix(namespace.path + "/"))
+  let saveDifference = try campaignPersistenceDiagnostic(
+    complete.commander, await runtime.snapshot().commander, url: saved.url)
   _ = try await runtime.loadForInterface()
-  #expect(await runtime.snapshot().commander == complete.commander)
+  let restoredMatchesOriginal = await runtime.snapshot().commander == complete.commander
+  let loadDifference = try campaignPersistenceDiagnostic(
+    complete.commander, await runtime.snapshot().commander, url: saved.url)
+  #expect(
+    restoredMatchesOriginal,
+    Comment(rawValue: "afterSave: \(saveDifference); afterLoad: \(loadDifference)"))
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
   #expect(await runtime.snapshot().commander == before.commander)
