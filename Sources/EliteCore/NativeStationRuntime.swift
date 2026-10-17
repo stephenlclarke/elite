@@ -501,10 +501,19 @@ extension Game {
     _ player: Mesh, from start: ShipPose, to end: ShipPose, saved: NativeStationSavedPose,
     fromOrientation: Basis3, toOrientation: Basis3, margin: Double, mesh: Mesh
   ) -> Bool {
+    nativeStructureHullSweepClear(
+      player, from: start, to: end, position: saved.position,
+      fromOrientation: fromOrientation, toOrientation: toOrientation, margin: margin, mesh: mesh)
+  }
+
+  private func nativeStructureHullSweepClear(
+    _ player: Mesh, from start: ShipPose, to end: ShipPose, position: Vector3,
+    fromOrientation: Basis3, toOrientation: Basis3, margin: Double, mesh: Mesh
+  ) -> Bool {
     let points = player.vertices.flatMap { vertex in
       [
-        fromOrientation.inverse(start.systemPoint(vertex) - saved.position),
-        toOrientation.inverse(end.systemPoint(vertex) - saved.position),
+        fromOrientation.inverse(start.systemPoint(vertex) - position),
+        toOrientation.inverse(end.systemPoint(vertex) - position),
       ]
     }
     guard !points.isEmpty, points.allSatisfy({ $0.finite }), margin.isFinite, margin >= 0 else {
@@ -583,11 +592,121 @@ extension Game {
         player, from: before, to: flight.pose, saved: saved,
         fromOrientation: start, toOrientation: end, margin: margin, mesh: source.geometry.mesh)
       {
+        guard
+          let retained = nativeStationImpactPose(
+            before: before, body: body, saved: saved, from: start, to: end,
+            delta: delta, player: player, source: source)
+        else {
+          stopAtStationImpact(at: before)
+          applyDamage(delta * 100, front: true)
+          paused = true
+          notify("STATION CONTACT UNRESOLVED - FLIGHT PAUSED", voiced: false)
+          return
+        }
+        stopAtStationImpact(at: retained)
         applyDamage(delta * 100, front: true)
         notify("RRS DOCKING COLLISION", voiced: false)
         return
       }
     }
+  }
+
+  /// A moving surface may reach the prior ship pose. Carry that pose by the actual
+  /// station rotation only when necessary; this preserves its prior relative hull
+  /// clearance and bounds displacement by the material surface's real movement.
+  private mutating func nativeStationImpactPose(
+    before: ShipPose, body: SpaceBody, saved: NativeStationSavedPose,
+    from start: Basis3, to end: Basis3, delta: Double, player: Mesh,
+    source: NativeStationSourceBinding
+  ) -> ShipPose? {
+    let mesh = source.geometry.mesh
+    if nativeStationHullSweepClear(
+      player, from: before, to: before, saved: saved,
+      fromOrientation: end, toOrientation: end, margin: 0, mesh: mesh)
+    {
+      return before
+    }
+    guard
+      nativeStationHullSweepClear(
+        player, from: before, to: before, saved: saved,
+        fromOrientation: start, toOrientation: start, margin: 0, mesh: mesh)
+    else { return nil }
+    let rotation = end.composed(with: start.transposed)
+    let retained = ShipPose(
+      position: saved.position + end.apply(start.inverse(before.position - saved.position)),
+      orientation: rotation.composed(with: before.orientation))
+    let angle = source.rotationRate * delta
+    let displacement = (retained.position - before.position).length
+    guard retained.position.finite, retained.orientation.validRotation,
+      displacement <= (before.position - saved.position).length * angle + 1e-7,
+      nativeStationHullSweepClear(
+        player, from: retained, to: retained, saved: saved,
+        fromOrientation: end, toOrientation: end, margin: 0, mesh: mesh),
+      nativeStationPushClearsScene(
+        player, from: before, to: retained, excluding: body.id, angle: angle)
+    else { return nil }
+    return retained
+  }
+
+  private func nativeStationPushClearsScene(
+    _ player: Mesh, from before: ShipPose, to retained: ShipPose, excluding stationID: Int,
+    angle: Double
+  ) -> Bool {
+    let radius = nativeStationRadius(player)
+    let distance = (retained.position - before.position).length
+    let camera = commander.flightSimulation.pose
+    for other in bodies where other.id != stationID && other.energy > 0 {
+      let pose = modelPose(of: other)
+      let mesh = gameplayMesh(for: other)
+      let otherRadius = nativeStationRadius(mesh)
+      if (pose.position - before.position).length > radius + otherRadius + distance { continue }
+      guard
+        nativeStructureHullSweepClear(
+          player, from: before, to: retained, position: pose.position,
+          fromOrientation: pose.orientation, toOrientation: pose.orientation,
+          margin: radius * angle, mesh: mesh)
+      else { return false }
+    }
+    for celestial in celestials {
+      let center = camera.systemPoint(celestial.position)
+      guard (center - before.position).length > celestial.radius + radius + distance else {
+        return false
+      }
+    }
+    return true
+  }
+
+  /// Refuse the player's attempted endpoint without undoing earlier physical
+  /// effects or translating any other actor twice. Reproject their current world
+  /// poses through the retained player frame; station rotation/time still advances.
+  mutating func stopAtStationImpact(at before: ShipPose) {
+    stationImpactRevision = gameplayRevision
+    let attempted = commander.flightSimulation.pose
+    rotateScriptNPCVelocities(from: attempted, to: before)
+    for index in bodies.indices {
+      let worldPoint = attempted.systemPoint(bodies[index].position)
+      let worldOrientation = bodies[index].orientation.transformed(by: attempted.orientation)
+      bodies[index].position = before.shipPoint(worldPoint)
+      bodies[index].orientation = worldOrientation.relative(to: before.orientation)
+    }
+    for index in celestials.indices {
+      celestials[index].position = before.shipPoint(
+        attempted.systemPoint(celestials[index].position))
+    }
+    commander.flightSimulation.pose = before
+    speed = 0
+    pitch = 0
+    roll = 0
+    yaw = 0
+    spin.stop(immediate: true)
+    autoPilot.disengage()
+    dockingComputer = false
+    workGuidance = nil
+    workBraking = nil
+    approvedWorkMotion = nil
+    lastAppliedWorkMotion = nil
+    clearManualResidualFlight()
+    workFireSuspended = true
   }
 
   private func nativeStationHullFits(

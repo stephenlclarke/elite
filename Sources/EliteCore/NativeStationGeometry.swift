@@ -75,7 +75,7 @@ struct NativeStationGeometry: Sendable {
   static let waystation = make(.waystation)
   static let headquarters = make(.headquarters)
 
-  /// Proper Y180 rotation, not a reflection. Source winding remains unchanged.
+  /// Proper Y180 rotation, not a reflection. Surface conventions are adapted at assembly.
   static func nativePoint(_ source: Vector3) -> Vector3 { .init(-source.x, source.y, -source.z) }
 
   /// World distance compression is independent of source model-unit geometry.
@@ -138,11 +138,13 @@ struct NativeStationGeometry: Sendable {
       Vector3(-125, -62.5, 0), .init(125, -62.5, 0),
       .init(125, 62.5, 0), .init(-125, 62.5, 0),
     ]
+    // The liner mouth is wider than the main body's bore. The whole hull must
+    // fit the narrowest real cross-section before a docking approach can begin.
     let octagon = [
-      Vector3(112.80569, -46.72565, 0), .init(112.80569, 46.72565, 0),
-      .init(46.72565, 112.80569, 0), .init(-46.72565, 112.80569, 0),
-      .init(-112.80569, 46.72565, 0), .init(-112.80569, -46.72565, 0),
-      .init(-46.72565, -112.80569, 0), .init(46.72565, -112.80569, 0),
+      Vector3(106.72374, -44.20642, 0), .init(106.72374, 44.20642, 0),
+      .init(44.20642, 106.72374, 0), .init(-44.20642, 106.72374, 0),
+      .init(-106.72374, 44.20642, 0), .init(-106.72374, -44.20642, 0),
+      .init(-44.20642, -106.72374, 0), .init(44.20642, -106.72374, 0),
     ]
     let docking = Port(
       center: nativePoint(
@@ -174,25 +176,38 @@ private enum StationSourceMesh {
   static func assembled(_ kind: NativeStationGeometry.Kind) -> Mesh {
     var vertices: [Vector3] = []
     var faces: [[Int]] = []
-    func append(_ mesh: Mesh, offset: Vector3 = .init(0, 0, 0), reverse: Bool = false) {
+    func append(
+      _ mesh: Mesh, offset: Vector3 = .init(0, 0, 0), reverse: Bool = false,
+      reverseWinding: Bool
+    ) {
       let base = vertices.count
       vertices += mesh.vertices.map { point in
         let local = reverse ? Vector3(point.x, -point.y, -point.z) : point
         return NativeStationGeometry.nativePoint(local + offset)
       }
-      faces += mesh.faces.map { $0.map { $0 + base } }
+      faces += mesh.faces.map { face in
+        let oriented = reverseWinding ? Array(face.reversed()) : face
+        return oriented.map { $0 + base }
+      }
     }
     switch kind {
     case .waystation:
-      append(waystation)
-      append(waystationDock, offset: .init(0, 0, 280))
-      append(waystationDock, offset: .init(0, 0, -280), reverse: true)
+      // The closed genus-one source body has inward signed orientation.
+      // Reverse its complete connected surface, preserving its genuine tunnel.
+      append(waystation, reverseWinding: true)
+      // These open liners face away from their bore in the source convention.
+      // Native interiors must face the entering pilot; their mouths stay open.
+      append(waystationDock, offset: .init(0, 0, 280), reverseWinding: true)
+      append(waystationDock, offset: .init(0, 0, -280), reverse: true, reverseWinding: true)
     case .headquarters:
-      append(headquartersAsteroid)
-      append(headquartersConstruction)
+      // Independent closed-asteroid and open-front-face witnesses establish
+      // each component's native convention; no centroid repair fills openings.
+      append(headquartersAsteroid, reverseWinding: true)
+      append(headquartersConstruction, reverseWinding: true)
       for y in [836.5, 86.5] {
         for x in [750.0, 250.0, -250.0, -750.0] {
-          append(headquartersBay, offset: .init(x, y, 1685.8))
+          // The five-sided source bay's side/back faces point out of its interior.
+          append(headquartersBay, offset: .init(x, y, 1685.8), reverseWinding: true)
         }
       }
     }
