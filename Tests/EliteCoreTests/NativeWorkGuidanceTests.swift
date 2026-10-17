@@ -110,7 +110,9 @@ private struct NativeWorkFixture {
   let identifier: String
   let directory: URL
   let save: URL
-  let bytes: Data
+  let originalBytes: Data
+  var bytes: Data
+  var savedFiles: [String: Data]
   let menu: NSMenu?
 
   static func open(_ game: Game, width: Int = 768, height: Int = 768) async throws -> Self {
@@ -147,7 +149,9 @@ private struct NativeWorkFixture {
       view.pending.removeAll()
       return .init(
         delegate: delegate, view: view, window: window, preferences: preferences,
-        identifier: identifier, directory: directory, save: save, bytes: bytes, menu: menu)
+        identifier: identifier, directory: directory, save: save,
+        originalBytes: bytes, bytes: bytes,
+        savedFiles: try nativeWorkSavedFiles(directory), menu: menu)
     } catch {
       if let loop = delegate.loop {
         loop.cancel()
@@ -177,7 +181,7 @@ private struct NativeWorkFixture {
         modifierFlags: [], timestamp: 0, windowNumber: window.windowNumber, context: nil,
         characters: text, charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
   }
-  func press(_ code: UInt16, _ text: String) async throws {
+  mutating func press(_ code: UInt16, _ text: String) async throws {
     let protectedKey = code == 48 ? "tab" : text.lowercased()
     let requiresPaint =
       ScriptPagePresentation.controlKeys.contains(protectedKey)
@@ -192,16 +196,56 @@ private struct NativeWorkFixture {
     view.keyUp(with: try event(code, text, down: false))
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty && !view.controls.fire)
+    try verifyPublicationCheckpoint()
   }
-  func frame(_ delta: Double = 1.0 / 60) async {
+  mutating func frame(_ delta: Double = 1.0 / 60) async throws {
     await delegate.processFrame(in: view, delta: { delta })
+    try verifyPublicationCheckpoint()
+  }
+  private mutating func verifyPublicationCheckpoint() throws {
+    let current = try Data(contentsOf: save)
+    if current != bytes {
+      let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: current)
+      try #require(pointer.schemaVersion == 21 && pointer.scope == "commander")
+      let (saved, world) = try ScriptSaveStore.read(current, from: save)
+      let commanderMatches = saved == view.game.commander
+      try #require(commanderMatches)
+      let encoder = JSONEncoder()
+      encoder.outputFormatting = [.sortedKeys]
+      let worldMatches = try encoder.encode(world) == encoder.encode(view.game.scriptWorldSave)
+      try #require(worldMatches)
+      let currentFiles = try nativeWorkSavedFiles(directory)
+      let pointerPath = String(save.path.dropFirst(directory.path.count))
+      for (path, previous) in savedFiles where path != pointerPath {
+        let oldFilePreserved = currentFiles[path] == previous
+        try #require(oldFilePreserved)
+      }
+      bytes = current
+      savedFiles = currentFiles
+    }
+    let (original, _) = try ScriptSaveStore.read(originalBytes, from: save)
+    let currentCommander = view.game.commander
+    #expect(currentCommander.credits == original.credits)
+    #expect(currentCommander.kills == original.kills && currentCommander.legal == original.legal)
+    #expect(currentCommander.missionProgress == original.missionProgress)
+    #expect(currentCommander.missionStage == original.missionStage)
+    #expect(currentCommander.blackjack == original.blackjack)
+    #expect(currentCommander.contracts == original.contracts)
+    #expect(currentCommander.scriptState.instances == original.scriptState.instances)
+    #expect(currentCommander.scriptState.missionCalendar == original.scriptState.missionCalendar)
+    #expect(currentCommander.scriptState.pledgeLedger == original.scriptState.pledgeLedger)
+    #expect(currentCommander.scriptState.worldJobs == original.scriptState.worldJobs)
+    #expect(currentCommander.equipmentPurchaseHistory == original.equipmentPurchaseHistory)
+    try verifyPrivatePersistenceUnchanged()
   }
   func verifyPrivatePersistenceUnchanged() throws {
     #expect(try Data(contentsOf: save) == bytes)
+    #expect(try nativeWorkSavedFiles(directory) == savedFiles)
     #expect(delegate.saves.activeURL == save)
     #expect(preferences.persistentDomain(forName: identifier) == nil)
   }
   func capture(name: String, scale: Int) throws {
+    try verifyPrivatePersistenceUnchanged()
     let actualStarted = ProcessInfo.processInfo.systemUptime
     let width = Int(view.bounds.width)
     let height = Int(view.bounds.height)
@@ -252,7 +296,7 @@ extension NativeViewTests {
   @MainActor @Test func nativeMiningKeysSelectRealRockThroughTabAndR() async throws {
     for (code, text) in [(UInt16(48), "\t"), (UInt16(15), "r")] {
       let (game, actor) = try nativeMiningScene()
-      let fixture = try await NativeWorkFixture.open(game)
+      var fixture = try await NativeWorkFixture.open(game)
       defer { fixture.close() }
       try await fixture.press(3, "f")
       try await fixture.press(code, text)
@@ -272,7 +316,7 @@ extension NativeViewTests {
     for (width, height, scale) in [(512, 518, 1), (1512, 982, 2)] {
       for (code, text) in [(UInt16(48), "\t"), (UInt16(15), "r")] {
         let (game, actor, lot) = try nativeSalvageScene()
-        let fixture = try await NativeWorkFixture.open(game, width: width, height: height)
+        var fixture = try await NativeWorkFixture.open(game, width: width, height: height)
         defer { fixture.close() }
         let cargo = game.commander.cargo
         let inventory = game.commander.salvageLedger.inventory
@@ -283,7 +327,7 @@ extension NativeViewTests {
         try await fixture.press(3, "f")
         try await fixture.press(3, "f")
         try await fixture.press(code, text)
-        await fixture.frame()
+        try await fixture.frame()
         let snapshot = await fixture.delegate.runtime.snapshot()
         #expect(snapshot.workTargetFilter == .salvage)
         #expect(
@@ -320,8 +364,9 @@ extension NativeViewTests {
   @MainActor @Test func nativeMilitaryCoreCannotSubstituteForMiningModule() async throws {
     for (code, text) in [(UInt16(48), "\t"), (UInt16(15), "r")] {
       let (game, _) = try nativeMiningScene(mining: false)
-      let fixture = try await NativeWorkFixture.open(game)
+      var fixture = try await NativeWorkFixture.open(game)
       defer { fixture.close() }
+      let initialFiles = try nativeWorkSavedFiles(fixture.directory)
       try await fixture.press(3, "f")
       try await fixture.press(code, text)
       let snapshot = await fixture.delegate.runtime.snapshot()
@@ -330,6 +375,8 @@ extension NativeViewTests {
       #expect(snapshot.commander.cargo == game.commander.cargo)
       #expect(snapshot.commander.salvageLedger == game.commander.salvageLedger)
       #expect(snapshot.commander.equipmentInventory == game.commander.equipmentInventory)
+      #expect(try Data(contentsOf: fixture.save) == fixture.originalBytes)
+      #expect(try nativeWorkSavedFiles(fixture.directory) == initialFiles)
       try fixture.verifyPrivatePersistenceUnchanged()
     }
   }
@@ -338,7 +385,7 @@ extension NativeViewTests {
   {
     var (game, _) = try nativeMiningScene()
     game.speed = 1
-    let fixture = try await NativeWorkFixture.open(game)
+    var fixture = try await NativeWorkFixture.open(game)
     defer { fixture.close() }
     try await fixture.press(3, "f")
     try await fixture.press(15, "r")
@@ -347,7 +394,7 @@ extension NativeViewTests {
     #expect(before.flightWorldVelocity.length > 0)
     fixture.view.keyDown(with: try fixture.event(123, "", down: true))
     #expect(fixture.view.held.contains("left") && fixture.view.controls.roll != 0)
-    await fixture.frame(0.001)
+    try await fixture.frame(0.001)
     let interrupted = await fixture.delegate.runtime.snapshot()
     #expect(interrupted.workGuidance == nil && interrupted.autoPilot.targetID == nil)
     #expect((interrupted.flightWorldVelocity - before.flightWorldVelocity).length < 1e-8)
@@ -364,12 +411,12 @@ extension NativeViewTests {
 extension NativeViewTests {
   @MainActor @Test func nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise() async throws {
     let (game, actor, lot) = try nativeSalvageScene()
-    let fixture = try await NativeWorkFixture.open(game)
+    var fixture = try await NativeWorkFixture.open(game)
     defer { fixture.close() }
     try await fixture.press(3, "f")
     try await fixture.press(3, "f")
     try await fixture.press(15, "r")
-    await fixture.frame()
+    try await fixture.frame()
     let active = await fixture.delegate.runtime.snapshot()
     try #require(active.workGuidance?.parent == actor)
     try await fixture.press(12, "q")
@@ -381,14 +428,14 @@ extension NativeViewTests {
     #expect(before.message == "MANUAL CONTROL")
     fixture.view.keyDown(with: try fixture.event(51, "", down: true))
     #expect(fixture.view.held.contains("backspace") && fixture.view.controls.throttle == -1)
-    await fixture.frame(delta)
+    try await fixture.frame(delta)
     let braked = await fixture.delegate.runtime.snapshot()
     #expect(abs(braked.flightWorldVelocity.length - (initial.length - budget)) < 1e-8)
     #expect((braked.flightWorldVelocity.unit - initial.unit).length < 1e-8)
     #expect(braked.speed == 0 && braked.manualResidualFlight && braked.lastAppliedWorkMotion == nil)
     fixture.view.keyUp(with: try fixture.event(51, "", down: false))
     #expect(fixture.view.controls.throttle == 0 && !fixture.view.held.contains("backspace"))
-    await fixture.frame(delta)
+    try await fixture.frame(delta)
     let cruise = await fixture.delegate.runtime.snapshot()
     #expect((cruise.flightWorldVelocity - braked.flightWorldVelocity).length < 1e-8)
     #expect(cruise.message == "MANUAL CONTROL")
@@ -398,4 +445,18 @@ extension NativeViewTests {
     try fixture.capture(name: "brake-release", scale: 1)
     try fixture.verifyPrivatePersistenceUnchanged()
   }
+}
+
+private func nativeWorkSavedFiles(_ directory: URL) throws -> [String: Data] {
+  let entries = try #require(
+    FileManager.default.enumerator(
+      at: directory, includingPropertiesForKeys: [.isRegularFileKey]))
+  var files: [String: Data] = [:]
+  for case let url as URL in entries {
+    guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
+      continue
+    }
+    files[String(url.path.dropFirst(directory.path.count))] = try Data(contentsOf: url)
+  }
+  return files
 }
