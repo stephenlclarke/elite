@@ -28,7 +28,8 @@ private func recoveredAlienBoundaryGame(
       }
     })
   var ledger = SalvageLedger(seed: seed)
-  let inspected = try #require(ledger.inspectLoot(wreck: wreck, section: section, source: source))
+  let inspection = ledger.inspectLoot(wreck: wreck, section: section, source: source)
+  let inspected = try #require(inspection)
   let planned = try #require(
     inspected.items.first { item in
       if case .technology(let id, _, _, _) = item.content { return id == definitionID }
@@ -151,7 +152,8 @@ struct AlienAttachmentOrdinaryFitTests {
           action: .upgrade(
             item, lot, axis, slot, before: projection.before, after: projection.after,
             grade: projection.resultingGrade))
-        #expect(!game.performInventoryCommand(command))
+        let performed = game.performInventoryCommand(command)
+        #expect(!performed)
         #expect(game.commander == before)
         #expect([game.energy, game.frontShield, game.rearShield, game.laserHeat] == resources)
         #expect(game.commander.salvageLedger.inventory.contains(lot) && game.commander.valid)
