@@ -67,6 +67,44 @@ class RefinedDesignTests(unittest.TestCase):
                     ["miningLaser", "salvageCutter"],
                     ident,
                 )
+            if ident == "SH128":
+                # Approved 8ebb582 changes only the player hold and two current
+                # refit fields. Reverse that exact delta to retain the old pin.
+                self.assertEqual(preserved["game"]["cargo"], 12, ident)
+                preserved["game"]["cargo"] = 0
+                profile = next(
+                    p for p in preserved["profiles"] if p["id"] == "PROJECT-PLAYER-SH128"
+                )
+                fields = {f["key"]: f for f in profile["fields"]}
+                borrowed = (
+                    "Pinned O08 oolite_template_transporter max_cargo12; replaces prior "
+                    "volume-based zero estimate, not a claim that Transporter was "
+                    "originally a flyable Oolite ship."
+                )
+                for key, old_status, old_basis in [
+                    ("cargo_tonnes", "estimated", "O08 model envelope"),
+                    (
+                        "usable_cargo_after_fit",
+                        "standard unladen refit",
+                        "Zero fitted charter berths; operating quarters are outside usable "
+                        "cargo. Berths require 5t plus one equipment unit each.",
+                    ),
+                ]:
+                    field = fields[key]
+                    basis = borrowed
+                    if key == "usable_cargo_after_fit":
+                        basis += " Unladen common fit has no fitted cabin deduction."
+                    self.assertEqual(
+                        {k: field[k] for k in ["text", "number", "status", "basis"]},
+                        {
+                            "text": "12 t",
+                            "number": 12,
+                            "status": "borrowed native NPC capacity for player adaptation",
+                            "basis": basis,
+                        },
+                        ident,
+                    )
+                    field.update(text="0 t", number=0, status=old_status, basis=old_basis)
             self.assertEqual(
                 digest(preserved),
                 record["unchangedRecord"],
