@@ -133,7 +133,43 @@ struct GameCommanderStorageTests {
     let savedBytes = try Data(contentsOf: save)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: savedBytes)
     let (saved, _) = try ScriptSaveStore.read(savedBytes, from: save)
-    #expect(pointer.schemaVersion == 21 && saved == committed.commander)
+    #expect(pointer.schemaVersion == 21)
+    let liveCommander = committed.commander
+    try #require(liveCommander.npcPersistence.count > 0)
+    let liveNPCs = committed.bodies.compactMap { body -> ActorIdentity? in
+      guard let physical = body.physical, physical.npc != nil else { return nil }
+      return liveCommander.npcPersistence.logicalIdentity(for: physical.identity)
+    }
+    try #require(!liveNPCs.isEmpty)
+    // Disk custody retains each craft but clears scene-local bindings and offers.
+    // Derive the documented normalization from an independent value copy.
+    var expectedDisk = liveCommander
+    expectedDisk.npcPersistence.resetPhysicalBindings(system: committed.systemIdentity)
+    #expect(saved == expectedDisk)
+    for logical in liveNPCs {
+      try #require(liveCommander.npcPersistence.binding(for: logical) != nil)
+      #expect(saved.npcPersistence.binding(for: logical) == nil)
+      #expect(
+        saved.npcPersistence.snapshot(for: logical)
+          == liveCommander.npcPersistence.snapshot(for: logical))
+    }
+    #expect(committed.commander == liveCommander)
+    #expect(retained.commander == commander && refused.commander == commander)
+    let encoder = JSONEncoder()
+    let savedFields = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(saved)) as? [String: NSObject])
+    let liveFields = try #require(
+      JSONSerialization.jsonObject(with: encoder.encode(liveCommander)) as? [String: NSObject])
+    let changedFields = Set(savedFields.keys).union(liveFields.keys).filter {
+      savedFields[$0] != liveFields[$0]
+    }.sorted()
+    #expect(changedFields == ["savedNPCPersistence"])
+    if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
+      let evidence = URL(fileURLWithPath: path, isDirectory: true)
+      try FileManager.default.createDirectory(at: evidence, withIntermediateDirectories: true)
+      try JSONEncoder().encode(changedFields).write(
+        to: evidence.appendingPathComponent("launch-saved-commander-diff.json"))
+    }
     #expect(await runtime.takeNewCommanderSaveReceipt()?.url == save)
   }
 }
