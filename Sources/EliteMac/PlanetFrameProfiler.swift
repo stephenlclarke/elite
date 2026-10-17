@@ -104,6 +104,7 @@ final class PlanetFrameProfiler {
     let error: String?
     let timingInterpretation: String
     let comparison: String
+    let missionPackIsolation: String
     let system: String
     let fullscreenEntered: Bool
     let warmWindowFrames: Int
@@ -457,6 +458,8 @@ final class PlanetFrameProfiler {
           "Monotonic elapsed spans include actor queue and GPU wait, not CPU-only time, physical scanout or input latency. Distinct-submission first draws determine intervals; repeated draws and undrawn/coalesced submissions are explicit. Missed 60-Hz intervals are rounded estimates.",
         comparison:
           "Candidate measurement only. Each window case starts a fresh normal launch. A before/after claim requires a named baseline with identical instrumentation, scene and input protocol, verified against the raw trajectory.",
+        missionPackIsolation:
+          "Bundled mission library with a fresh absent legacy TOML directory; default external Lua loading disabled.",
         system: systemDescription, fullscreenEntered: fullscreenEntered,
         warmWindowFrames: values.filter { $0.phase == Phase.warmWindow.rawValue }.count,
         warmFlightSubmissions: values.filter { $0.phase == Phase.warmFlight.rawValue }.count,
