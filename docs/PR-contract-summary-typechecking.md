@@ -1,5 +1,7 @@
 # fix(display): type contract summary subexpressions
 
+Subsequent actual result: the combined app compiled at checkpoint 176 in 7.82 seconds. Renderer export then failed separately on SH169, so this resolves the compilation observation without claiming media, tests or release acceptance. The original source-handoff limits below are retained historically.
+
 The combined contract-board summary exceeded Swift's expression type-checking budget. Its RRS, pledge and ordinary offer formatting now use explicit `String?` locals, with an explicit `String` final fallback. The original priority, text, numeric formatting, preview queries and row/action rendering remain unchanged. See [the compile issue](ISSUE-contract-summary-typechecking.md).
 
 ## Validation and limits

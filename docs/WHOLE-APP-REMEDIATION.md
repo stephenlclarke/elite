@@ -174,6 +174,14 @@ The evidence JSON appends exact proof-file hashes without altering its original 
 
 The 158 and 169 original failures have no matching original OS crash report. Later debugger reproductions identify actual stack paths on their own runs; they do not establish original-crash equivalence. Exact reviewed source phases retired key dispatch, Gallery availability, post-drain contract validation and numbered-screen frames before deeper calls; required atomic copies and original test behavior remain. The previously withdrawn Director-loop proposal and invalid copied-object stack artifact are not acceptance evidence. Historical renderer checks through 168 remain tied to their sources; current release-composition media regeneration is pending.
 
+## First combined app compile and renderer attempts
+
+Checkpoint 175 attempted the combined release source `bca67bbc92995f15d2e90ce7791e736153d85f94` and failed Swift type-checking in the contract-board summary expression, before producing media. The minimal typed-subexpression repair `a813e2056f83160da96cc7cd1c9bfe6d0378fd35` then compiled the app successfully in 7.82 seconds at 176. These app builds did not compile or execute the new test catalogue.
+
+The actual 176 export subsequently failed on SH169 with `ShipFileError.invalid`. Its legacy guard required plain ship panels while a fully textured portrait uses textured triangles. The zero-byte owned temporary GIF was preserved as evidence and removed after process closure; original media outputs were unchanged. The runner also refused that unexpected incomplete temporary file. A clipped-surface export/front-visibility repair and focused regressions are being prepared separately. No matching original OS crash report was found for this attempt. First app compilation is established; current renderer media, texture visuals, gameplay, sanitizers/leaks and final release acceptance remain open.
+
+The [player README](../README.md) now distinguishes original-main and mesh-scaled RRS docking guidance, gives the source-composed scenario-2 acceptance/debrief controls and limits, and links the two selected textured hulls. These are development-source instructions, not claims about the published 1.4.0 artifact or all queued missions.
+
 ## Final evidence to attach before closure
 
 | Acceptance item | Status in this snapshot |

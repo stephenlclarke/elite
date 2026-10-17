@@ -1037,7 +1037,9 @@
     "matchingGrantOwnership130Passed": true,
     "calendarSelection130Passed": true,
     "combinedSelection130Passed": false,
-    "releaseSourceComposed": true
+    "releaseSourceComposed": true,
+    "firstComposedAppCompiled176": true,
+    "currentReleaseMediaPassed": false
   },
   "qualifiedMissionAndFullCoverageEvidence106115": [
     {
@@ -1584,7 +1586,8 @@
       "resourceSource": "e9ee7ef43a5d93776acb698dc9f63a0dd393d643",
       "qualification": "Actual existing built ScriptPacks layout; new texture layout and final release bundle still pending"
     },
-    "packagingIndependentSourceReview": "Root: clean, no actionable finding; matches Package.swift copy declarations; final artifact remains pending"
+    "packagingIndependentSourceReview": "Root: clean, no actionable finding; matches Package.swift copy declarations; final artifact remains pending",
+    "firstAppCompilation": "Sourcea813e2056f83160da96cc7cd1c9bfe6d0378fd35 appcompiledat176 in7.82seconds after175summarytypecheckfailure. Testsnotcompiled/executed; mediaexportfailedSH169. Fullytexturedsurface export/frontvisibilityrepairpending."
   },
   "fullGate172": {
     "path": "/tmp/elite-full-review-ci-172/root-qualified-172.json",
@@ -1629,5 +1632,58 @@
     "qualification": "Complete fresh catalogue and maintained make ci attempt; full CI acceptance only on complete successful coverage, thread sanitizer, serial address sanitizer and leak stages. Failed or interrupted evidence is not all-tests acceptance; no Sonar, release or hosted-crash equivalence claim.",
     "coverageQualification": "Coverage summary 1578 methods/117 suites includes four original opt-in GPU skips; coverage95.79%,260.431seconds. TSan failed signal4; ASan/leaks not reached. Counts across lanes overlap.",
     "releaseCompositionValidated": false
-  }
+  },
+  "qualifiedFirstComposedMedia175176": [
+    {
+      "path": "/tmp/elite-renderer-media-175/root-media-failure-175.json",
+      "sha256": "03288b8e0c174f11a309572acad76a01c30c600b2153b57a76b834a940599dc9",
+      "source": "bca67bbc92995f15d2e90ce7791e736153d85f94",
+      "status": "FAILED first renderer generation compile",
+      "diagnostic": "ContractBoardDisplay.swift:156 compiler unable to type-check expression in reasonable time",
+      "rawLogSHA256": "4af3f64b73071ac0fea0fb4135f193b7033892ed58c454f3c14cada537da6ef5",
+      "resultSHA256": "3c8bcc951f3bff9858e2e8d01407499e2f11d18cf7f7df6822ed1d65858f8a20",
+      "supervisionSHA256": "bd443d6903d379abfd6b184529e67c7eb929092761105ec4d316d94f9ab45d7e",
+      "trackedInputsVerified": 1678,
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "No output generated; subsequent renderer stages and currentness not reached; no test, full CI or release acceptance"
+    },
+    {
+      "path": "/tmp/elite-renderer-media-176/root-media-failure-176.json",
+      "sha256": "8d4c0e518d02cb6fce07d684515ac44bd882fd39c8a232be5c776adecb40d154",
+      "source": "a813e2056f83160da96cc7cd1c9bfe6d0378fd35",
+      "status": "FAILED renderer runtime after successful compile",
+      "actualRendererExit": 2,
+      "supervisorExit": 1,
+      "supervisorAssertion": "Rejected incomplete temporary GIF; independently preserved and removed after process closure",
+      "diagnostic": "Top-level ShipFileError.invalid(SH169); exporter rejects texture-only frame",
+      "rawLogSHA256": "b4f8d2cf165f8f5eaf1c4212339446aad20400507e33dcaae3b368efeee7828e",
+      "resultSHA256": "76e80400b136e3842d539b7f2167e0d6dec72efa38ae360c5588b92a530f1d67",
+      "supervisionSHA256": "915ca8177bdac0dc243734085bc9d892b46f3abd186cdc06aeece65db24131e4",
+      "trackedInputsVerified": 1680,
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "ownedIncompleteTemporaryFilePreservedAndRemoved": "docs/ships/.SH169.gif-YzJoHn",
+      "binarySHA256": "47048b9a7d37cde08682d929b8ab838153948d299602743a4fcf8c26bba71266",
+      "objects": [
+        {
+          "original": "/Users/sclarke/.codex/worktrees/canonical-mission-composition/elite/.build/out/Intermediates.noindex/Elite.build/Debug/Elite-p.build/Objects-normal/arm64/ShipMedia.o",
+          "path": "/tmp/elite-renderer-media-176/snapshot/ShipMedia.o",
+          "sha256": "3b4c757632121ebae7525471ca475ec76ee39b14cc2ea66dbe37472e461e9879"
+        },
+        {
+          "original": "/Users/sclarke/.codex/worktrees/canonical-mission-composition/elite/.build/out/Intermediates.noindex/Elite.build/Debug/EliteCore-t.build/Objects-normal/arm64/ShipRendering.o",
+          "path": "/tmp/elite-renderer-media-176/snapshot/ShipRendering.o",
+          "sha256": "8556d58f9caf75cba12ca47c4317f618cddcd8378bdc89eb6b7887e1f5f6361d"
+        },
+        {
+          "original": "/Users/sclarke/.codex/worktrees/canonical-mission-composition/elite/.build/out/Intermediates.noindex/Elite.build/Debug/EliteCore-t.build/Objects-normal/arm64/Display.o",
+          "path": "/tmp/elite-renderer-media-176/snapshot/Display.o",
+          "sha256": "391ccc4d9644051537809cc7c53d4daf2a497715e1226f1c8908a3c6cd8a2326"
+        }
+      ],
+      "matchedReportCopies": [],
+      "qualification": "First renderer stage failed; no renderer/test/full CI/release acceptance. No OS crash report matched the owned process PID, start time and executable path; runtime diagnostic comes from the actual captured fatal-error log."
+    }
+  ]
 }
