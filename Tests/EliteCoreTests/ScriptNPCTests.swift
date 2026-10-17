@@ -765,9 +765,17 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
   #expect(won.commander.kills == 2)
   #expect(won.commander.scriptState.instances[id]?.data["phase"] == .string("report"))
   #expect(won.commander.scriptState.instances[id]?.suspension == nil)
-  for _ in 0...won.bodies.count {
+  let beforeStationSelection = actualStationGuidanceDiagnostic(won)
+  var stationCycle: [String] = []
+  for attempt in 0...won.bodies.count {
     await runtime.key("r")
-    if await runtime.snapshot().autoTargetBody?.id == 0 { break }
+    let selected = await runtime.snapshot()
+    if stationCycle.count < 16 {
+      stationCycle.append(
+        "\(attempt):target=\(String(describing: selected.autoPilot.targetID)),actor=\(String(describing: selected.autoPilot.targetActor)),docking=\(selected.dockingComputer)"
+      )
+    }
+    if selected.autoTargetBody?.id == 0 { break }
   }
   var returned = await runtime.snapshot()
   try #require(
@@ -778,9 +786,17 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
         "Original station selection: target=\(String(describing: returned.autoPilot.targetID))"
         + ",dockingComputer=\(returned.dockingComputer),screen=\(returned.screen)"
         + ",legal=\(returned.commander.legal),energy=\(returned.energy),bodies=\(returned.bodies.count)"
+        + "; beforeSelection=" + beforeStationSelection
+        + "; cycle=[" + stationCycle.joined(separator: " | ") + "]"
+        + "; afterSelection=" + actualStationGuidanceDiagnostic(returned)
     ))
+  let beforeDock = actualStationGuidanceDiagnostic(returned)
   for _ in 0..<5000 where !returned.docked { returned = await runtime.advance(delta: 0.02) }
-  #expect(returned.docked && returned.dockedAtMainStation)
+  #expect(
+    returned.docked && returned.dockedAtMainStation,
+    Comment(
+      rawValue: "beforeDockFlight=" + beforeDock + "; afterDockFlight="
+        + actualStationGuidanceDiagnostic(returned)))
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == id)
   await runtime.key("return")

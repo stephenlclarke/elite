@@ -3,6 +3,64 @@ import Testing
 
 @testable import EliteCore
 
+// Read-only, bounded facts from the actual station and controller; no scene repair or extra input.
+func actualStationGuidanceDiagnostic(_ game: Game) -> String {
+  let control = game.autoPilot
+  let context = game.gameplayContext()
+  let station = game.bodies.first { $0.id == 0 && $0.hull == .station }
+  let capabilities = game.workTargetCapabilities
+  var facts = [
+    "context=\(String(describing: context?.system))/\(String(describing: context?.visit))",
+    "anchor=\(String(describing: context?.anchors.station.identity))",
+    "filter=\(game.workTargetFilter.label),core=\(String(describing: capabilities.core))",
+    "target=\(String(describing: control.targetID)),targetActor=\(String(describing: control.targetActor))",
+    "status=\(control.status),ready=\(control.ready),final=\(control.finalApproach),manual=\(control.manualEngagement)",
+    "velocity=\(control.velocity),rollRate=\(control.rollRate),speed=\(game.speed)",
+    "errors=position:\(control.positionError),facing:\(control.facingError),phase:\(control.phaseError),rate:\(control.rateError)",
+    "rates=\(game.pitch)/\(game.yaw)/\(game.roll),time=\(game.time),physicalTime=\(game.commander.flightSimulation.physicalTime)",
+    "paused=\(game.paused),screen=\(game.screen),docked=\(game.docked)/\(game.dockedAtMainStation),energy=\(game.energy)",
+    "docking=\(game.dockingComputer),hardware=\(game.commander.hasAutomaticDocking),targeting=\(game.targetingEnabled)",
+    "work=\(game.workGuidance != nil)/\(game.workBraking != nil),manualResidual=\(game.manualResidualFlight)",
+    "limits=\(game.workLimits),message=\(game.message)",
+  ]
+  guard let station else { return (facts + ["station=missing"]).joined(separator: "; ") }
+  let model = game.modelPose(of: station)
+  let speed = max(game.speed * 18, control.velocity.length)
+  let door = station.entrancePosition
+  let toPlayer = door * -1
+  let normal = station.entranceNormal
+  let up = station.entranceUp
+  let side = station.modelVector(.init(1, 0, 0))
+  facts += [
+    "stationActor=\(String(describing: station.physical?.identity)),HP=\(station.energy)",
+    "position=\(station.position),distance=\(station.position.length),rotation=\(station.rotation),spin=\(station.rotationRate)",
+    "bodyBasisValid=\(station.orientation.validRotation),modelBasisValid=\(model.orientation.validRotation),modelPosition=\(model.position)",
+    "door=\(door),normal=\(normal),up=\(up),stagingGoal=\(door + normal * 1000)",
+    "doorErrors=x:\(toPlayer.dot(side)),y:\(toPlayer.dot(up)),depth:\(toPlayer.dot(normal)),entrySpeed=\(speed)",
+    "containsPlayer=\(station.containsPlayer),canEnter=\(station.canEnter(roll: game.roll, speed: speed))",
+    "samePhysicalIDs=\(game.bodies.filter { $0.physical?.identity == station.physical?.identity }.prefix(16).map(\.id))",
+  ]
+  if let context {
+    let layout = CockpitLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
+    let visible = Display.visibleInFront(station, game: game, layout: layout)
+    if let candidate = game.workTargetCandidate(
+      for: station, context: context, frontVisible: visible)
+    {
+      let decision = WorkTargetSelection.evaluate(
+        candidate, system: context.system, visit: context.visit, capabilities: capabilities)
+      let filtered = WorkTargetSelection.ordered(
+        [candidate], filter: game.workTargetFilter, system: context.system, visit: context.visit,
+        capabilities: capabilities)
+      facts += [
+        "stationVisible=\(visible),candidate=\(candidate),decision=\(decision),filterIncludes=\(!filtered.isEmpty)"
+      ]
+    } else {
+      facts += ["stationVisible=\(visible),candidate=missing"]
+    }
+  }
+  return facts.joined(separator: "; ")
+}
+
 private func fitCompletionPatrolTargeting(_ game: inout Game) throws {
   let before = game.commander
   try game.commander.grantEquipment(
@@ -180,23 +238,35 @@ private struct CompletionFixture {
           + campaignPatrolDiagnostic(game, child: id)))
     #expect(game.commander.legal == legalBefore)
     firing = Controls()
+    let beforeStationSelection = actualStationGuidanceDiagnostic(game)
+    var stationCycle: [String] = []
     // Sequential sorties retain more targets; cycle the actual scene rather than assuming eight.
-    for _ in 0...game.bodies.count {
+    for attempt in 0...game.bodies.count {
       game.key("r")
+      if stationCycle.count < 16 {
+        stationCycle.append(
+          "\(attempt):target=\(String(describing: game.autoPilot.targetID)),actor=\(String(describing: game.autoPilot.targetActor)),docking=\(game.dockingComputer)"
+        )
+      }
       if game.autoPilot.targetID == 0 { break }
     }
     try #require(
       game.autoTargetBody?.id == 0 && game.autoTargetBody?.hull == .station && game.dockingComputer,
       Comment(
         rawValue: "Original main station was not selected: "
-          + campaignPatrolDiagnostic(game, child: id)))
-    let beforeDock = campaignPatrolDiagnostic(game, child: id)
+          + campaignPatrolDiagnostic(game, child: id)
+          + "; beforeSelection=" + beforeStationSelection
+          + "; cycle=[" + stationCycle.joined(separator: " | ") + "]"
+          + "; afterSelection=" + actualStationGuidanceDiagnostic(game)))
+    let beforeDock =
+      campaignPatrolDiagnostic(game, child: id) + "; " + actualStationGuidanceDiagnostic(game)
     for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02, controls: firing) }
     #expect(
       game.docked && game.dockedAtMainStation,
       Comment(
         rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
-          + campaignPatrolDiagnostic(game, child: id)))
+          + campaignPatrolDiagnostic(game, child: id)
+          + "; guidance=" + actualStationGuidanceDiagnostic(game)))
     #expect(game.commander.legal == legalBefore)
     if !report { return id }
     game.emitScriptEvent("contact.requested", only: id)
