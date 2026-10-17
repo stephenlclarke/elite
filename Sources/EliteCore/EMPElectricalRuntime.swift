@@ -208,10 +208,13 @@ extension Game {
       guard reserve.drain(hit.power - absorbed, at: now) else { return false }
       commander.savedPlayerElectrical = reserve
       if reserve.disabledAt != nil {
+        let momentum = flightWorldVelocity
         releaseWorkGuidance()
         autoPilot.disengage()
         dockingComputer = false
-        spin.stop(immediate: true)
+        speed = 0
+        manualResidualFlight = true
+        autoPilot.setApproachVelocity(commander.flightSimulation.pose.shipVector(momentum))
         jumpCountdown = nil
         notify("ELECTRICAL POWER LOST - EMERGENCY BOMB OR ESCAPE POD AVAILABLE")
       }

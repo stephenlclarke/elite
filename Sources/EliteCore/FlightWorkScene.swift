@@ -19,7 +19,7 @@ extension Game {
   /// Legacy AI runs before the proof. Its whole ensuing linear displacement is an obstacle,
   /// and it is not run again after the approved player motion.
   mutating func planWorkScene(delta: Double) {
-    guard workGuidance != nil || workBraking != nil else { return }
+    guard !playerEMPDisabled, workGuidance != nil || workBraking != nil else { return }
     workScenePlanned = true
     if missionLoopCounter & 7 == 0 { navalTactics() }
     let actors = bodies.filter {

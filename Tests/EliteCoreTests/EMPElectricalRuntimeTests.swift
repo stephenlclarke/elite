@@ -236,3 +236,83 @@ extension EMPElectricalRuntimeTests {
       ]))
   }
 }
+
+extension EMPElectricalRuntimeTests {
+  @Test func actualSelfDisableAndTabCannotRestartPoweredWorkUntilEarnedRecovery() throws {
+    var game = try electricalGame()
+    game.bodies[0].position = .init(0, 0, 200)
+    game.frontShield = 0
+    game.speed = 1
+    try game.commander.grantEquipment(
+      "Energy Bomb", at: .utility(.energyBomb),
+      provenance: .grant("EMP propulsion boundary"))
+    try game.commander.grantEquipment(
+      "Targeting: Mining Module", at: .targetingMining,
+      provenance: .grant("EMP propulsion boundary"))
+    try game.commander.grantEquipment(
+      LaserKind.mining.equipmentName, at: .utility(.miningLaser),
+      provenance: .grant("EMP propulsion boundary"))
+    var electrical = try #require(
+      ElectricalReserve(
+        capacity: game.commander.performance.energy,
+        recharge: game.commander.performance.recharge * game.commander.energyRechargeMultiplier,
+        at: game.commander.flightSimulation.physicalTime))
+    let lowered = electrical.drain(electrical.capacity - 9, at: electrical.physicalTime)
+    try #require(lowered)
+    game.commander.savedPlayerElectrical = electrical
+    try releaseElectricalPulse(&game)
+    try #require(game.playerEMPDisabled)
+    let momentum = game.flightWorldVelocity
+    // Exercise the owned emergency route rather than making the hostile emitter
+    // invulnerable, suppressing its weapons or teleporting it out of the scene.
+    game.energyBomb()
+    let anchors = try #require(game.commander.flightSimulation.anchors)
+    game.miningFields = MiningFields.generate(anchors: anchors, seed: game.gameplaySeed)
+    let rock = try #require(game.miningFields.first?.rocks.first)
+    let allocated = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocated)
+    var body = SpaceBody(id: 80, hull: .asteroid, position: .init(0, 0, 1500))
+    body.energy = rock.energy
+    body.physical = .init(identity: actor, population: .asteroid, rock: rock.identity)
+    game.bodies.append(body)
+    game.nextBodyID = max(80, game.nextBodyID)
+    game.key("f")
+    try #require(game.workTargetFilter == .mining)
+    var control = game
+    game.key("\t")
+    for _ in 0..<10 {
+      game.tick(delta: 0.1)
+      control.tick(delta: 0.1)
+      #expect(game.playerEMPDisabled && game.workGuidance == nil && game.workBraking == nil)
+      #expect(game.lastAppliedWorkMotion == nil)
+      #expect(game.commander.flightSimulation.pose == control.commander.flightSimulation.pose)
+      #expect((game.flightWorldVelocity - momentum).length < 1e-8)
+      #expect(game.energy == control.energy && game.commander == control.commander)
+    }
+    for _ in 0..<301 where game.playerEMPDisabled { game.tick(delta: 0.1) }
+    try #require(!game.playerEMPDisabled && game.screen != .gameOver)
+    game.key("\t")
+    try #require(game.workGuidance?.parent == actor)
+    game.tick(delta: 0.1)
+    #expect(game.lastAppliedWorkMotion != nil)
+  }
+
+  @Test func cockpitReportsElectricalPowerHullAndActualWarmupSeparately() throws {
+    var game = try electricalGame()
+    let began = game.fireEMPPirateBlaster()
+    try #require(began)
+    game.tick(delta: 0.1)
+    let charging = Display.cockpit(game, width: 768, height: 768)
+    #expect(charging.labels.contains { $0.text.contains("EMP CHARGE: 9.9 S") })
+    game.commander.flightSimulation.advancePhysicalTime(10)
+    game.advanceEMPCharge(triggerHeld: true)
+    let frame = Display.cockpit(game, width: 768, height: 768)
+    #expect(frame.labels.contains { $0.text == "Hull" })
+    #expect(frame.labels.contains { $0.text.contains("POWER:") })
+    let body = try #require(game.bodies.first { $0.id == 42 })
+    let fields = TargetTelemetry.fields(
+      facts: game.telemetryFacts(for: body), tier: .military,
+      targetIsShip: true, observerGalaxy: game.commander.galaxy)
+    #expect(fields.contains { $0.label == "Electrical power" })
+  }
+}

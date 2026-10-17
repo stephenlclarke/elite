@@ -4,7 +4,7 @@ extension Game {
   /// Released work momentum stays entirely in the camera-relative residual so steering
   /// cannot rotate a forward-speed component without applying thrust.
   mutating func applyManualResidualThrottle(delta: Double, throttle: Double) {
-    guard manualResidualFlight, workGuidance == nil, workBraking == nil,
+    guard !playerEMPDisabled, manualResidualFlight, workGuidance == nil, workBraking == nil,
       autoPilot.targetID == nil, !dockingComputer, !docked,
       delta.isFinite, delta > 0, delta <= 0.1, throttle.isFinite
     else { return }
