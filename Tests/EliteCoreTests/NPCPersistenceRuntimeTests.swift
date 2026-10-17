@@ -40,6 +40,13 @@ private func persistedNPCGame() throws -> Game {
 }
 
 struct NPCPersistenceRuntimeTests {
+  @Test func dockingUnbindsSpentNPCsWithoutChangingTheirRetainedStateAndReloadsTheWholeCommander()
+    async throws
+  {
+    var game = try persistedNPCGame()
+    try await verifyDockedNPCPersistence(&game)
+  }
+
   @Test func deadNPCOutsideBubbleSettlesBeforeCullAndNeverResurrects() throws {
     var game = try persistedNPCGame()
     let source = try #require(game.bodies[0].physical?.identity)
@@ -225,4 +232,40 @@ struct NPCPersistenceRuntimeTests {
     try await runtime.save(to: file)
     #expect(await runtime.snapshot().commander.npcPersistence.count == 1)
   }
+}
+
+private func verifyDockedNPCPersistence(_ game: inout Game) async throws {
+  try game.commander.prepareEquipment()
+  try #require(game.persistNPCStates().isEmpty)
+  let before = game.commander
+  let actor = try #require(game.bodies[0].physical?.identity)
+  try #require(before.npcPersistence.binding(for: actor) == actor)
+  var expected = before
+  expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  game.dock()
+  #expect(game.docked && game.bodies.isEmpty)
+  #expect(game.commander.npcPersistence == expected.npcPersistence)
+  #expect(game.commander.npcPersistence.livingCount == 1)
+  let completeDockedCommanderPreserved = game.commander == expected
+  #expect(completeDockedCommanderPreserved)
+  let root = FileManager.default.temporaryDirectory.appendingPathComponent(
+    "docked-npc-" + UUID().uuidString, isDirectory: true)
+  try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+  defer { try? FileManager.default.removeItem(at: root) }
+  let file = root.appendingPathComponent("commander.json")
+  let runtime = GameRuntime(game: game)
+  try await runtime.save(to: file)
+  game = await runtime.snapshot()
+  let completeLiveCommanderPreserved = game.commander == expected
+  #expect(completeLiveCommanderPreserved)
+  let bytes = try Data(contentsOf: file)
+  let onDisk = try JSONDecoder().decode(Commander.self, from: bytes)
+  let completeDiskCommanderPreserved = onDisk == expected
+  #expect(completeDiskCommanderPreserved)
+  try await runtime.load(from: file, persistMigrations: false)
+  game = await runtime.snapshot()
+  let completeRestoredCommanderPreserved = game.commander == expected
+  #expect(completeRestoredCommanderPreserved)
+  #expect(game.docked && game.bodies.isEmpty)
+  #expect(try Data(contentsOf: file) == bytes)
 }

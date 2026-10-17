@@ -543,8 +543,10 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     completed.commander, await runtime.snapshot().commander,
     system: await runtime.snapshot().systemIdentity, url: saved.url)
   _ = try await runtime.loadForInterface(expectedEpoch: completed.ecmControl.epoch)
-  let restoredMatchesWholeExpectedCommander =
-    await runtime.snapshot().commander == completed.commander
+  let restoredCommander = await runtime.snapshot().commander
+  try campaignReloadEvidence(
+    completed.commander, restoredCommander, name: "root-gallery-docked-reload")
+  let restoredMatchesWholeExpectedCommander = restoredCommander == completed.commander
   #expect(restoredMatchesWholeExpectedCommander)
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")

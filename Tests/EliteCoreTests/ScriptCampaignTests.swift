@@ -175,6 +175,37 @@ func campaignExpectedDiskCommander(
   return expectedDisk
 }
 
+/// Complete snapshots plus typed subsystem equality avoid mistaking JSON set/map order for state.
+func campaignReloadEvidence(_ before: Commander, _ after: Commander, name: String) throws {
+  guard let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] else {
+    return
+  }
+  let directory = URL(fileURLWithPath: path, isDirectory: true)
+  try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = [.sortedKeys]
+  try encoder.encode(before).write(to: directory.appendingPathComponent(name + "-before.json"))
+  try encoder.encode(after).write(to: directory.appendingPathComponent(name + "-after.json"))
+  let equality = [
+    "whole_commander": before == after,
+    "npc_persistence": before.npcPersistence == after.npcPersistence,
+    "flight_simulation": before.flightSimulation == after.flightSimulation,
+    "crime_ledger": before.crimeLedger == after.crimeLedger,
+    "station_security": before.stationSecurity == after.stationSecurity,
+    "encounter_director": before.encounterDirector == after.encounterDirector,
+    "script_state": before.scriptState == after.scriptState,
+    "contracts": before.contracts == after.contracts,
+    "equipment_inventory": before.equipmentInventory == after.equipmentInventory,
+    "equipment_purchase_history": before.savedEquipmentPurchaseHistory
+      == after.savedEquipmentPurchaseHistory,
+    "accommodation": before.accommodation == after.accommodation,
+    "cargo": before.cargo == after.cargo, "cash": before.credits == after.credits,
+    "fuel": before.fuel == after.fuel, "legal": before.legal == after.legal,
+  ]
+  try encoder.encode(equality).write(
+    to: directory.appendingPathComponent(name + "-typed-equality.json"))
+}
+
 private struct CampaignFixture {
   let root: URL
   let child: ScriptPack
@@ -374,7 +405,9 @@ private struct CampaignFixture {
     system: await runtime.snapshot().systemIdentity, url: fixture.save)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
-  let restoredMatchesWholeExpectedCommander = await loaded.snapshot().commander == game.commander
+  let restoredCommander = await loaded.snapshot().commander
+  try campaignReloadEvidence(game.commander, restoredCommander, name: "two-campaign-docked-reload")
+  let restoredMatchesWholeExpectedCommander = restoredCommander == game.commander
   #expect(restoredMatchesWholeExpectedCommander)
 }
 
@@ -849,8 +882,10 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     complete.commander, await runtime.snapshot().commander,
     system: await runtime.snapshot().systemIdentity, url: saved.url)
   _ = try await runtime.loadForInterface()
-  let restoredMatchesWholeExpectedCommander =
-    await runtime.snapshot().commander == complete.commander
+  let restoredCommander = await runtime.snapshot().commander
+  try campaignReloadEvidence(
+    complete.commander, restoredCommander, name: "native-gallery-docked-reload")
+  let restoredMatchesWholeExpectedCommander = restoredCommander == complete.commander
   #expect(restoredMatchesWholeExpectedCommander)
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
