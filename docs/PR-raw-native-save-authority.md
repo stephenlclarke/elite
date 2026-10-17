@@ -24,3 +24,7 @@ Strict Swift formatting, Markdown lint and diff checks pass. Compilation and run
 The raw preflight checks only native schema paths, preserving authored payload keys and the versioned save path. Existing legitimate native station/RRS saves already require the simulation calendar and versioned writer. Review the actual legacy-input rejection and versioned positive cases together. No merge, publication or release is claimed; completed external review and final-head checks remain required.
 
 Motivation: [legacy save authority issue](ISSUE-raw-native-save-authority.md).
+
+## Compiler follow-up
+
+Checkpoint 180 failed during test discovery compilation: the negative main-dock fixture modified `game.commander.nativeStations` while reading `game.commander.scriptState.calendarSeconds` in the same assignment. The fixture now snapshots that actual primitive clock value immediately before the assignment, after the same Boolean dock call. Receipt data, allocation order, refusal and conservation assertions are unchanged; no production code or calendar policy changes. The failure proof is `/tmp/elite-full-review-ci-180/root-discovery-failure-180.json`, with raw log SHA256 `db678339df2b863889f95749bdca7ad80cae3cec15e49eeb9816a9671cfa1d93`. No tests or full CI stages executed. Strict formatting, Markdown lint and diff checks pass; the corrected fixture still requires compilation and execution.
