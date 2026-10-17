@@ -3,25 +3,40 @@ import Foundation
 extension Game {
   /// Resolves real retained ownership. A caller-built descriptor alone has no mission authority.
   func currentMissionActorDescriptor(bodyID: Int) -> MissionActorDescriptor? {
+    Self.retainedMissionActorDescriptor(
+      bodyID: bodyID, bodies: bodies, instances: commander.scriptState.instances,
+      packs: scriptPacks, galaxy: commander.galaxy, system: commander.system,
+      geometry: commander.scriptState.geometry)
+  }
+
+  /// Resolve the same immutable authority facts without retaining another complete Game frame.
+  private static func retainedMissionActorDescriptor(
+    bodyID: Int, bodies: [SpaceBody], instances: [UUID: ScriptInstance], packs: [ScriptPack],
+    galaxy: Int, system: Int, geometry: [String: ShipDesign]
+  ) -> MissionActorDescriptor? {
     guard let body = bodies.first(where: { $0.id == bodyID }),
       bodies.lazy.filter({ $0.id == bodyID }).count == 1,
       body.energy.isFinite, body.energy > 0,
       let instanceID = body.missionInstanceID, let actorID = body.missionActorID,
-      let instance = commander.scriptState.instances[instanceID], instance.id == instanceID,
-      let pack = scriptPack(for: instance)
+      let instance = instances[instanceID], instance.id == instanceID,
+      let pack = packs.first(where: {
+        $0.manifest.stateID == instance.definition && $0.manifest.version == instance.version
+          && $0.digest == instance.digest
+      })
     else { return nil }
     var match: (encounter: ScriptOwnedEncounter, actor: ScriptOwnedActor)?
     for (encounterID, encounter) in instance.ownedEncounters {
       for (alias, actor) in encounter.actors where actor.identity == actorID {
         guard match == nil, encounterID == encounter.id, alias == actor.alias,
           encounter.admitted, actor.presence == .present,
-          encounter.galaxy == commander.galaxy, encounter.system == commander.system,
+          encounter.galaxy == galaxy, encounter.system == system,
           actor.body.id == bodyID, actor.body.missionActorID == actorID,
           actor.body.missionInstanceID == instanceID, actor.body.hull == body.hull,
           let definition = pack.manifest.encounters?.first(where: { $0.id == encounterID }),
           definition.galaxy == encounter.galaxy, definition.system == encounter.system,
           let declared = definition.actors.first(where: { $0.id == alias }),
-          missionActorFitMatches(body, retained: actor, declared: declared, pack: pack)
+          missionActorFitMatches(
+            body, retained: actor, declared: declared, pack: pack, geometry: geometry)
         else { return nil }
         match = (encounter, actor)
       }
@@ -37,8 +52,10 @@ extension Game {
       missionActorID: body.missionActorID, missionInstanceID: body.missionInstanceID, body: body)
   }
 
-  private func missionActorFitMatches(
-    _ body: SpaceBody, retained: ScriptOwnedActor, declared: ScriptActorDefinition, pack: ScriptPack
+  private static func missionActorFitMatches(
+    _ body: SpaceBody, retained: ScriptOwnedActor, declared: ScriptActorDefinition,
+    pack: ScriptPack,
+    geometry: [String: ShipDesign]
   ) -> Bool {
     guard let npcID = declared.npc else {
       return declared.hull == body.hull && body.scriptNPC == nil && retained.body.scriptNPC == nil
@@ -55,7 +72,7 @@ extension Game {
     // cache mutation belongs on this live source-resolution path.
     return npc.fit.models.allSatisfy { reference, digest in
       guard let installed = pack.models[reference],
-        let retained = commander.scriptState.geometry[digest]
+        let retained = geometry[digest]
       else { return false }
       return installed == retained
     }
