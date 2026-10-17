@@ -234,10 +234,18 @@ func
   #expect(!timer.counters["lander"]!.resetOnNextPulse)
 }
 
+private func actualCalendarFrameSeconds(_ runtime: GameRuntime, instanceID: UUID) async throws
+  -> Double
+{
+  let game = await runtime.snapshot()
+  let instance = try #require(game.commander.scriptState.instances[instanceID])
+  return game.scriptEventContext(instance).frameSeconds
+}
+
 @Test func savedAdmittedCountdownSurvivesTitleWaitAndCompletesWithOneCalendarCharge() async throws {
   let fixture = try CalendarFixture()
   defer { fixture.clean() }
-  var (game, _) = try fixture.game()
+  var (game, id) = try fixture.game()
   game.launch()
   clearTravelArea(&game)
   let destination = try #require(
@@ -262,10 +270,10 @@ func
   await restored.key(" ")
   #expect(await restored.snapshot().time == saved.time)
   #expect(await restored.snapshot().scriptStartupTime == nil)
-  #expect(await restored.snapshot().scriptEventContext.frameSeconds == saved.time)
+  #expect(try await actualCalendarFrameSeconds(restored, instanceID: id) == saved.time)
   #expect(await restored.snapshot().commander == title.commander)
   _ = await restored.advance(delta: 0.1)
-  #expect(await restored.snapshot().scriptEventContext.frameSeconds == saved.time + 0.1)
+  #expect(try await actualCalendarFrameSeconds(restored, instanceID: id) == saved.time + 0.1)
   var arrived = await restored.snapshot()
   for _ in 0..<200 where arrived.jumpCountdown != nil {
     arrived = await restored.advance(delta: 0.1)
