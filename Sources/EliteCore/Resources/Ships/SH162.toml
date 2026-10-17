@@ -10,6 +10,25 @@ modelSource = "P41 / Thargoid Spy Satellite (Oolite rendition)"
 dimensions = [43.3012696, 37.5000019, 53.8804217]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "thargoid-wars-spy-satellite"
+objectKind = "other"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }]
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types."
+primaryRole = "military"
+placementStatus = "pending"
+
 [design]
 vertices = [
   [-1.1e-06, 1.1e-06, 12.5],

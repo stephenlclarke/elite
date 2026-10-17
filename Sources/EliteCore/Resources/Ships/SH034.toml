@@ -10,6 +10,24 @@ modelSource = "Oolite 574ca848"
 dimensions = [1336.798, 1406.01, 1148.755]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "dodo-station"
+objectKind = "station"
+origin = "human"
+roleWeights = []
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "retained source facts + project classification judgement. Structural object outside the seven functional ship types."
+placementStatus = "pending"
+
 [design]
 vertices = [
   [668.399, -210.675, 152.082],

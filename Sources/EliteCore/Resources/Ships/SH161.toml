@@ -10,6 +10,25 @@ modelSource = "P26 / Leviathan (Oolite rendition)"
 dimensions = [408.0, 240.0, 1606.67644]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "military-fiasco-leviathan"
+objectKind = "station"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }]
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types."
+primaryRole = "military"
+placementStatus = "pending"
+
 [design]
 vertices = [
   [112.0, 60.0, 800.0],

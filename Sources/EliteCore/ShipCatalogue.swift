@@ -30,12 +30,14 @@ public struct CatalogueShip: Codable, Sendable, Equatable, Identifiable {
   public let geometryContext: String
   public let profiles: [ShipProfile]
   public let game: ShipPerformance?
+  public let catalogue: ShipCatalogueMetadata
   public let design: ShipDesign
   public let nativeHull: Hull?
   public let nativeDesign: ShipDesign?
   public let nativeCombat: NativeCombat?
   public var searchText: String {
-    [id, name, shipClass, appearances, evidence].joined(separator: " ")
+    ([id, name, shipClass, appearances, evidence] + (catalogue.aliases ?? [])).joined(
+      separator: " ")
   }
   public var previewMesh: Mesh? { ShipCatalogue.meshes[id] }
   public var availability: String {
@@ -140,7 +142,9 @@ public enum ShipCatalogue {
       guard ship.id == url.deletingPathExtension().lastPathComponent,
         ship.id.range(of: "^SH[0-9]{3}$", options: .regularExpression) != nil,
         !ship.name.isEmpty, ship.design.valid, ship.game?.valid ?? true,
-        ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true
+        ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true,
+        ship.catalogue.valid(
+          shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat)
       else { throw ShipFileError.invalid(url.lastPathComponent) }
       if let hull = ship.nativeHull, !nativeKinds.insert(hull).inserted {
         throw ShipFileError.invalid("Duplicate native hull: " + hull.rawValue)

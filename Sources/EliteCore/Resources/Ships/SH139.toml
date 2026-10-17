@@ -10,6 +10,25 @@ modelSource = "Right-On Commander"
 dimensions = [130.0, 36.0, 83.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
+[catalogue]
+schemaVersion = 1
+family = "viper"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }, { "role" = "bountyHunter", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [3, 4, 5]
+regions = ["deepSpace", "tradeLane"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+primaryRole = "military"
+placementStatus = "declared"
+
 [game]
 cargo = 18
 speed = 30.857

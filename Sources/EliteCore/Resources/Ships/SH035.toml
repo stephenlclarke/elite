@@ -10,6 +10,25 @@ modelSource = "Right-On Commander"
 dimensions = [120.0, 32.0, 75.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
+[catalogue]
+schemaVersion = 1
+family = "dolphin"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "leisure", "weight" = 4 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [0, 1, 2]
+regions = ["tradeLane", "deepSpace"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project civilian passenger/private exploration/racing specialization within the seven requested categories; no extra explorer/utility category."
+primaryRole = "leisure"
+placementStatus = "declared"
+
 [game]
 cargo = 14
 speed = 28.571

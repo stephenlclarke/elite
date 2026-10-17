@@ -10,6 +10,25 @@ modelSource = "Oolite 574ca848"
 dimensions = [35.4994, 24.995, 39.137]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "worm"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "miner", "weight" = 4 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "common"
+galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
+regions = ["miningBand"]
+basis = "retained source facts + project classification judgement. Project extraction/prospecting/utility specialization; actual supported mining tools need declaration and validation rather than grants from a label."
+primaryRole = "miner"
+placementStatus = "declared"
+
 [game]
 cargo = 1
 speed = 10.057

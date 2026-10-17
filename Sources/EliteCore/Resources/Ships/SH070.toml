@@ -10,6 +10,25 @@ modelSource = "Right-On Commander"
 dimensions = [130.0, 36.0, 83.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
+[catalogue]
+schemaVersion = 1
+family = "kestrel"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "bountyHunter", "weight" = 4 }, { "role" = "military", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [1, 2, 3]
+regions = ["deepSpace", "tradeLane"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project wanted-target interception specialization; Fer-de-Lance/Mamba are explicit human preferences, remaining entries are project balance judgements."
+primaryRole = "bountyHunter"
+placementStatus = "declared"
+
 [game]
 cargo = 4
 speed = 30.971
