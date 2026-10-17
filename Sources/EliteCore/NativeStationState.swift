@@ -160,7 +160,7 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
             && binding.bodyID == receipt.dockingBinding.bodyID)
       })
     else { return false }
-    return receipt.sequence > 0 && receipt.sequence < nextDockSequence
+    return receipt.sequence > 0 && receipt.sequence == nextDockSequence - 1
       && receipt.dockingBinding.valid(for: receipt.station)
       && records.contains {
         $0.identity == receipt.station && $0.tombstone == nil

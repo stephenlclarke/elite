@@ -271,3 +271,20 @@ private struct StationStateFixture {
     #expect(context.debugDescription == "Native station record limit exceeded.")
   }
 }
+
+@Test func nativeStationCurrentDockRequiresLatestSequenceButDepartureKeepsHistoryCounter() throws {
+  let fixture = StationStateFixture()
+  var ledger = try fixture.docked()
+  var object = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger)) as? [String: Any])
+  object["nextDockSequence"] = ledger.nextDockSequence + 1
+  let invalid = try JSONSerialization.data(withJSONObject: object)
+  #expect(throws: (any Error).self) {
+    _ = try JSONDecoder().decode(NativeStationLedger.self, from: invalid)
+  }
+  ledger.depart()
+  #expect(ledger.valid && ledger.currentDock == nil && ledger.nextDockSequence == 2)
+  #expect(
+    try JSONDecoder().decode(NativeStationLedger.self, from: JSONEncoder().encode(ledger)) == ledger
+  )
+}
