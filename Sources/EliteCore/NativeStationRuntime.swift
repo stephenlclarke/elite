@@ -64,6 +64,19 @@ extension Commander {
 }
 
 extension Game {
+  /// Physical recharge is independent of whether manual or guided movement owns the camera.
+  mutating func advanceNativeStationRecharge(delta: Double) {
+    guard delta.isFinite, delta > 0, delta <= 0.1 else { return }
+    for index in bodies.indices {
+      guard let identity = bodies[index].nativeStationIdentity,
+        let source = NativeStationSource.binding(for: identity),
+        bodies[index].energy > 0, nativeStationBodyIsCurrent(bodies[index])
+      else { continue }
+      bodies[index].energy = min(
+        source.maximumEnergy, bodies[index].energy + source.recharge * delta)
+    }
+  }
+
   mutating func activateNativeStationWorld() throws {
     try commander.prepareEquipment()
     guard commander.nativeStations == nil else {

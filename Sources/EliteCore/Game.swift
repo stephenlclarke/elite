@@ -1535,12 +1535,6 @@ public struct Game: Sendable {
         bodies[index].position = bodies[index].position - autoPilot.velocity * dt
         bodies[index].position.z -= speed * dt * 18
         bodies[index].rotation += dt * bodies[index].rotationRate
-        if let identity = bodies[index].nativeStationIdentity,
-          let source = NativeStationSource.binding(for: identity), bodies[index].energy > 0
-        {
-          bodies[index].energy = min(
-            source.maximumEnergy, bodies[index].energy + source.recharge * dt)
-        }
         advanceCanonicalModelSpin(at: index, delta: dt)
         if let physical = bodies[index].physical, physical.spawnIdentity != nil,
           physical.ordnance == nil, bodies[index].scriptShot == nil,
@@ -1558,6 +1552,7 @@ public struct Game: Sendable {
         }
       }
     }
+    advanceNativeStationRecharge(delta: dt)
     advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: dt)
     detectNativeStationEntry(from: before, delta: dt)
     if pendingNativeStationDock != nil { return }
