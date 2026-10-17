@@ -530,7 +530,13 @@ extension NativeViewTests {
     fixture.window.orderOut(nil)
     try await fixture.revealInventoryActions()
     let before = fixture.view.game.commander
-    #expect(fixture.view.paintedInventoryInteraction == nil)
+    let current = try #require(
+      Display.information(
+        fixture.view.game, width: fixture.view.bounds.width, height: fixture.view.bounds.height
+      ).inventoryInteraction)
+    try #require(current.primary != nil)
+    // Navigation may retain an older paint; the current scrolled frame has not been drawn.
+    #expect(fixture.view.paintedInventoryInteraction != current)
     try fixture.queueInventoryKey(36, text: "\r")
     #expect(fixture.view.pendingInventoryCommands.isEmpty)
     await fixture.delegate.processPendingCommands(in: fixture.view)

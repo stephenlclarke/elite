@@ -605,7 +605,7 @@ extension NativeViewTests {
     #expect(view.pending.first?.hasPrefix("showroom-click:") == true)
   }
   @MainActor @Test func macBookControlsUseArrowsDeleteReturnAndSafeModifierCommands() throws {
-    let view = GameView()
+    let view = GameView(frame: .init(x: 0, y: 0, width: 512, height: 518))
     view.game.launch()
     func event(
       _ code: UInt16, _ text: String = "", flags: NSEvent.ModifierFlags = [], repeated: Bool = false
