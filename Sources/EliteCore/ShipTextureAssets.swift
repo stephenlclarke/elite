@@ -60,7 +60,7 @@ public enum ShipTextureAssets {
 
   public static func pixels(for asset: String) -> ShipTexturePixels? { catalogue.pixels[asset] }
 
-  static func preload() { _ = catalogue }
+  public static func preload() { _ = catalogue }
 
   static func accepts(_ binding: ShipResolvedTexture) -> Bool {
     expectedBindings.contains(binding)
