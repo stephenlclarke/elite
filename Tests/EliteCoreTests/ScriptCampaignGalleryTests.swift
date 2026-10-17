@@ -539,15 +539,12 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     completed.commander.scriptState.instances[root.id]?.receiptJoins?["owned-report"] == [child])
   let saved = try await runtime.saveForInterface(expectedEpoch: completed.ecmControl.epoch)
   #expect(saved.isTrial && saved.url.path.hasPrefix(namespace.path + "/"))
-  let saveDifference = try campaignPersistenceDiagnostic(
-    completed.commander, await runtime.snapshot().commander, url: saved.url)
+  let expectedDisk = try campaignExpectedDiskCommander(
+    completed.commander, await runtime.snapshot().commander,
+    system: await runtime.snapshot().systemIdentity, url: saved.url)
   _ = try await runtime.loadForInterface(expectedEpoch: completed.ecmControl.epoch)
-  let restoredMatchesOriginal = await runtime.snapshot().commander == completed.commander
-  let loadDifference = try campaignPersistenceDiagnostic(
-    completed.commander, await runtime.snapshot().commander, url: saved.url)
-  #expect(
-    restoredMatchesOriginal,
-    Comment(rawValue: "afterSave: \(saveDifference); afterLoad: \(loadDifference)"))
+  let restoredMatchesWholeExpectedCommander = await runtime.snapshot().commander == expectedDisk
+  #expect(restoredMatchesWholeExpectedCommander)
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
   let restored = await runtime.snapshot()
