@@ -69,7 +69,8 @@ struct BundledScriptPackTests {
     let runtime = GameRuntime(game: fixture.game())
     let before = await runtime.snapshot()
     await runtime.loadScriptPacks(directory: fixture.library)
-    #expect(await runtime.snapshot().scriptPacks.isEmpty)
+    let initiallyLoadedPacks = await runtime.snapshot().scriptPacks
+    #expect(initiallyLoadedPacks.isEmpty)
     let errors = await runtime.loadDefaultScriptPacks(directory: fixture.library)
     let discovered = await runtime.snapshot()
     #expect(errors.isEmpty && discovered.scriptPacks.map(\.digest) == [bundledCourierDigest])
@@ -80,7 +81,8 @@ struct BundledScriptPackTests {
     #expect(!FileManager.default.fileExists(atPath: fixture.library.path))
     #expect(!FileManager.default.fileExists(atPath: fixture.save.path))
     await runtime.loadScriptPacks(directory: fixture.library)
-    #expect(await runtime.snapshot().scriptPacks.isEmpty)
+    let explicitlyReloadedPacks = await runtime.snapshot().scriptPacks
+    #expect(explicitlyReloadedPacks.isEmpty)
   }
 
   @Test func identicalInstalledCopyDeduplicatesWithoutRewritingUserContent() throws {
@@ -113,7 +115,8 @@ struct BundledScriptPackTests {
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
     let explicit = GameRuntime(game: fixture.game())
     await explicit.loadScriptPacks(directory: fixture.library)
-    #expect(await explicit.snapshot().scriptPacks.map(\.digest) == [pack.digest])
+    let explicitlyLoadedDigests = await explicit.snapshot().scriptPacks.map(\.digest)
+    #expect(explicitlyLoadedDigests == [pack.digest])
   }
 
   @Test func malformedInstalledContentReportsItsErrorAlongsideBundledCourier() async throws {
@@ -153,7 +156,8 @@ struct BundledScriptPackTests {
     let live = await runtime.snapshot()
     let savedBytes = try Data(contentsOf: fixture.save)
     try await runtime.startScriptGalleryTrial(packDigest: bundledCourierDigest, seed: 42)
-    let namespace = try #require(await runtime.gallerySaveDirectory())
+    let trialDirectory = await runtime.gallerySaveDirectory()
+    let namespace = try #require(trialDirectory)
     defer { try? FileManager.default.removeItem(at: namespace) }
     let trial = await runtime.snapshot()
     #expect(trial.isMissionTrial && trial.screen == .contracts)
@@ -164,7 +168,8 @@ struct BundledScriptPackTests {
         atPath: namespace.appendingPathComponent("commander.json").path))
     #expect(try Data(contentsOf: fixture.save) == savedBytes)
     try await runtime.returnFromScriptGalleryTrial()
-    #expect(await runtime.snapshot().commander == live.commander)
+    let returnedCommander = await runtime.snapshot().commander
+    #expect(returnedCommander == live.commander)
     #expect(try Data(contentsOf: fixture.save) == savedBytes)
   }
 
