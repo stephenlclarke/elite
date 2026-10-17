@@ -37,9 +37,23 @@ public enum AsteroidBeltDefinition {
   public static func seed(for system: StarSystem) -> UInt64 {
     UInt64(system.seed.a) << 32 | UInt64(system.seed.b) << 16 | UInt64(system.seed.c)
   }
-  public static func isPresent(system: StarSystem, galaxy: Int) -> Bool {
-    isPresent(identity: .init(galaxy: galaxy, system: system.id), seed: seed(for: system))
+  public static func isPresent(
+    system: StarSystem, galaxy: Int, policy: AsteroidBeltPresencePolicy = .economyWeighted
+  ) -> Bool {
+    let identity = SystemIdentity(galaxy: galaxy, system: system.id)
+    guard (0..<8).contains(identity.galaxy), (0...256).contains(identity.system) else {
+      return false
+    }
+    switch policy {
+    case .legacyUniform: return isPresent(identity: identity, seed: seed(for: system))
+    case .economyWeighted:
+      // Lave remains an authored starting mining destination in each galaxy.
+      return identity.system == 7
+        || mixed(identity: identity, salt: seed(for: system)) % 100
+          < UInt64(policy.probabilityPercent(economy: system.economy))
+    }
   }
+  /// Compatibility authority for the original uniform-presence generation.
   public static func isPresent(identity: SystemIdentity, seed: UInt64) -> Bool {
     guard (0..<8).contains(identity.galaxy), (0...256).contains(identity.system) else {
       return false

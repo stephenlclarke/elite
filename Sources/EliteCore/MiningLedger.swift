@@ -14,8 +14,65 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   private let seed: UInt64
   private var terminal: [SystemIdentity: UInt64] = [:]
   private var ringTerminal: [SystemIdentity: UInt64]? = [:]
-  private var generation: Int? = 1
-  public var retainsLegacyFields: Bool { generation == nil }
+  private var generation: Int? = 2
+  private var legacyClusters: Bool? = false
+  private var presenceOverrides: [SystemIdentity: Bool]? = [:]
+  public var retainsLegacyFields: Bool { legacyClusters ?? (generation == nil) }
+  public var usesEconomyWeightedPresence: Bool { generation == 2 }
+
+  /// Includes legacy terminal history conservatively, not just currently live rocks.
+  public var requiredPresencePinSystems: Set<SystemIdentity> {
+    var systems = Set(terminal.keys).union(ringTerminal?.keys.map { $0 } ?? [])
+    systems.formUnion(partial.keys.map(\.system))
+    for payload in Array(pending.keys) + Array(offers.values) + Array(bindings.keys) {
+      if case .ore(let rock, _) = payload { systems.insert(rock.system) }
+    }
+    return systems
+  }
+
+  private var ringHistorySystems: Set<SystemIdentity> {
+    var systems = Set(ringTerminal?.keys.map { $0 } ?? [])
+    systems.formUnion(partial.keys.filter { $0.field >= 4 }.map(\.system))
+    for payload in Array(pending.keys) + Array(offers.values) + Array(bindings.keys) {
+      if case .ore(let rock, _) = payload, rock.field >= 4 { systems.insert(rock.system) }
+    }
+    return systems
+  }
+
+  public func ringPresence(system: StarSystem, galaxy: Int) -> Bool {
+    let identity = SystemIdentity(galaxy: galaxy, system: system.id)
+    if let pinned = presenceOverrides?[identity] { return pinned }
+    return AsteroidBeltDefinition.isPresent(
+      system: system, galaxy: galaxy,
+      policy: usesEconomyWeightedPresence ? .economyWeighted : .legacyUniform)
+  }
+
+  /// The load boundary supplies actual current/history systems before rebuilding fields.
+  /// Once migrated, original pins remain immutable across subsequent visits and loads.
+  public mutating func migratePresence(
+    current: AsteroidPresencePin, historical: [AsteroidPresencePin]
+  ) throws {
+    guard valid else { throw SaveError.invalidCommander }
+    if usesEconomyWeightedPresence { return }
+    guard Self.validSystem(current.system), historical.count <= 8 * 257 - 1 else {
+      throw SaveError.invalidCommander
+    }
+    var pins: [SystemIdentity: Bool] = [current.system: current.present]
+    for pin in historical {
+      guard Self.validSystem(pin.system), pins[pin.system] == nil else {
+        throw SaveError.invalidCommander
+      }
+      pins[pin.system] = pin.present
+    }
+    guard Set(pins.keys) == requiredPresencePinSystems.union([current.system]),
+      ringHistorySystems.allSatisfy({ pins[$0] == true })
+    else { throw SaveError.invalidCommander }
+    let retainClusters = retainsLegacyFields
+    // All fallible work precedes this transaction's first mutation.
+    presenceOverrides = pins
+    legacyClusters = retainClusters
+    generation = 2
+  }
   public var usesRingSaveVersion: Bool {
     generation != nil || ringTerminal != nil || partial.keys.contains { $0.field >= 4 }
       || pending.keys.contains { if case .ore(let rock, _) = $0 { rock.field >= 4 } else { false } }
@@ -29,7 +86,8 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   public init(seed: UInt64 = 0) { self.seed = seed }
   private enum CodingKeys: String, CodingKey {
-    case seed, terminal, ringTerminal, generation, partial, pending, offers, bindings, lastIncident,
+    case seed, terminal, ringTerminal, generation, legacyClusters, presenceOverrides, partial,
+      pending, offers, bindings, lastIncident,
       sequence
   }
 
@@ -40,6 +98,14 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       SystemIdentity.self, UInt64.self,
       from: values, key: .terminal, maximum: 8 * 257, keyAllowed: Self.validSystem)
     generation = try values.decodeIfPresent(Int.self, forKey: .generation)
+    legacyClusters = try values.decodeIfPresent(Bool.self, forKey: .legacyClusters)
+    if values.contains(.presenceOverrides), try !values.decodeNil(forKey: .presenceOverrides) {
+      presenceOverrides = try Self.decodeBounded(
+        SystemIdentity.self, Bool.self, from: values, key: .presenceOverrides,
+        maximum: 8 * 257, keyAllowed: Self.validSystem)
+    } else {
+      presenceOverrides = nil
+    }
     if values.contains(.ringTerminal), try !values.decodeNil(forKey: .ringTerminal) {
       ringTerminal = try Self.decodeBounded(
         SystemIdentity.self, UInt64.self, from: values, key: .ringTerminal, maximum: 8 * 257,
@@ -48,7 +114,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       ringTerminal = nil
     }
     let mask = (UInt64(1) << 48) - 1
-    guard generation == nil || generation == 1,
+    guard presenceStateValid,
       terminal.values.allSatisfy({ $0 > 0 && $0 & ~mask == 0 }),
       ringTerminal?.values.allSatisfy({ $0 > 0 && $0 & ~mask == 0 }) ?? true
     else { throw SaveError.invalidCommander }
@@ -105,7 +171,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   public var valid: Bool {
     let mask = (UInt64(1) << 48) - 1
-    guard generation == nil || generation == 1,
+    guard presenceStateValid,
       (ringTerminal?.count ?? 0) <= 8 * 257,
       ringTerminal?.allSatisfy({ Self.validSystem($0.key) && $0.value > 0 && $0.value & ~mask == 0 }
       ) ?? true,
@@ -154,6 +220,18 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     return
       (terminal.isEmpty && (ringTerminal?.isEmpty ?? true) && partial.isEmpty && pending.isEmpty)
       || lastIncident != nil
+  }
+
+  private var presenceStateValid: Bool {
+    if generation == 2 {
+      guard legacyClusters != nil, let presenceOverrides,
+        presenceOverrides.count <= 8 * 257,
+        presenceOverrides.keys.allSatisfy(Self.validSystem)
+      else { return false }
+      return ringHistorySystems.allSatisfy { presenceOverrides[$0] != false }
+    }
+    return (generation == nil || generation == 1)
+      && legacyClusters == nil && presenceOverrides == nil
   }
 
   private static func validRock(_ rock: RockIdentity) -> Bool {

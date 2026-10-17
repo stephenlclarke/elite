@@ -263,7 +263,7 @@ extension Display {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
-      if AsteroidBeltDefinition.isPresent(system: system, galaxy: game.viewedGalaxy) {
+      if game.commander.miningLedger.ringPresence(system: system, galaxy: game.viewedGalaxy) {
         frame.ellipse(point.x, point.y, radius + 2, radius + 1, .cyan)
       }
       if ranks[system.id] != nil {
@@ -373,7 +373,7 @@ extension Display {
       "Selected: G\(game.viewedGalaxy + 1) / " + system.name, "Economy: " + system.economyName,
       "Government: " + system.governmentName,
       "Tech \(system.technology + 1)  Radius \(system.radius) km  Belt: "
-        + (AsteroidBeltDefinition.isPresent(system: system, galaxy: game.viewedGalaxy)
+        + (game.commander.miningLedger.ringPresence(system: system, galaxy: game.viewedGalaxy)
           ? "Yes" : "No"),
       game.mapIsCurrentGalaxy
         ? String(format: "Distance %.1f light-years", game.currentSystem.distance(to: system))
