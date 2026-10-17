@@ -62,6 +62,9 @@ struct PlanetGPUShaderTests {
       let identity = PlanetIdentity(galaxy: 0, system: system)
       let terrain = PlanetTerrain(identity: identity)
       let palette = PlanetPalette(identity: identity, economy: system.economy)
+      let night = PlanetNightProfile(system: system)
+      let settlements = PlanetSettlementMask(
+        key: .init(identity: identity, palette: palette, night: night), terrain: terrain)
       for diameter in [128, 512, 768] {
         for phase in [0, 37, 1046] {
           let preview = PlanetPreview(
@@ -73,7 +76,8 @@ struct PlanetGPUShaderTests {
           let candidate = try #require(
             shader.image(
               identity: identity, terrain: terrain, palette: palette,
-              angle: Double(phase) * 0.006, diameter: diameter))
+              angle: Double(phase) * 0.006, diameter: diameter,
+              lighting: preview.lighting, night: night, settlements: settlements))
           let lhs = try planetShaderBytes(reference)
           let rhs = try planetShaderBytes(candidate)
           #expect(lhs.count == rhs.count)
@@ -146,6 +150,53 @@ struct PlanetGPUShaderTests {
     let rhs = try planetShaderBytes(image)
     #expect(zip(lhs, rhs).allSatisfy { abs(Int($0) - Int($1)) <= 3 })
     #expect(PlanetRenderer.image(for: preview, diameter: 769) == nil)
+  }
+
+  @MainActor @Test func nightEmissionAndMovingSunMatchCPUForEconomyGovernmentAndTechnology()
+    async throws
+  {
+    let shader = try await Self.makeShader()
+    let bounds = CanvasRect(x: 0, y: 0, width: 128, height: 128)
+    let lights: [PlanetLighting] = [
+      .sun(direction: .init(0, 0, -1)),
+      .sun(direction: .init(1, 0, 0)), .sun(direction: .init(-1, 0, 0)), .unlit,
+    ]
+    for economy in [0, 5] {
+      for government in [0, 7] {
+        for technology in [0, 15] {
+          let system = nightPlanetSystem(
+            economy: economy, government: government, technology: technology)
+          let identity = PlanetIdentity(galaxy: 0, system: system)
+          let terrain = PlanetTerrain(identity: identity)
+          let palette = PlanetPalette(identity: identity, economy: economy)
+          let night = PlanetNightProfile(system: system)
+          let settlements = PlanetSettlementMask(
+            key: .init(identity: identity, palette: palette, night: night), terrain: terrain)
+          for lighting in lights {
+            let preview = PlanetPreview(
+              galaxy: 0, system: system, bounds: bounds, time: 8.88, lighting: lighting)
+            let reference = try #require(PlanetRenderer.referenceImage(for: preview, diameter: 128))
+            let phase = Int(preview.angle / 0.006)
+            let candidate = try #require(
+              shader.image(
+                identity: identity, terrain: terrain, palette: palette,
+                angle: Double(phase) * 0.006, diameter: 128, lighting: lighting, night: night,
+                settlements: settlements))
+            let lhs = try planetShaderBytes(reference)
+            let rhs = try planetShaderBytes(candidate)
+            #expect(zip(lhs, rhs).allSatisfy { abs(Int($0) - Int($1)) <= 3 })
+            let total = zip(lhs, rhs).reduce(0) { $0 + abs(Int($1.0) - Int($1.1)) }
+            #expect(Double(total) / Double(lhs.count) < 0.1)
+            let original = rhs
+            _ = shader.image(
+              identity: identity, terrain: terrain, palette: palette,
+              angle: 0.444, diameter: 128, lighting: .presentation, night: night,
+              settlements: settlements)
+            #expect(try planetShaderBytes(candidate) == original)
+          }
+        }
+      }
+    }
   }
 
 }
