@@ -47,6 +47,10 @@ public enum PlayerHelp {
             "COMMAND-P - PAUSE / RESUME",
             "COMMAND-S / COMMAND-O - SAVE / RELOAD",
             "COMMAND-SHIFT-S / O - SAVE AS / OPEN",
+            "FIRST SAVE REMEMBERS ITS LOCATION",
+            "FITTING AFTER LAUNCH AUTOSAVES",
+            "RRS / CONTRACT ACTIONS AUTOSAVE",
+            "FAILED SAVING REFUSES THE CHANGE",
             "X Y Z Z Y - CLARKE / SECRET OPTIONS",
             "COMMAND-Q - QUIT",
           ]))
