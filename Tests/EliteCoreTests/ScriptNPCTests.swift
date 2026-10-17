@@ -719,6 +719,32 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
   }
 }
 
+private func profiledPatrolHasLawfulHullContact(_ game: Game, mission: UUID, actor: UUID) throws
+  -> Bool
+{
+  guard game.screen == .front, try campaignPatrolOutsideStationZone(game),
+    let context = game.gameplayContext(),
+    let contact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+      excludingBodyIDs: [], includePlayer: false),
+    contact.victimPart == nil, contact.componentUUID == nil,
+    case .body(let bodyID) = contact.hit.target,
+    let body = game.bodies.first(where: { $0.id == bodyID }),
+    body.missionInstanceID == mission, body.missionActorID == actor, body.scriptNPC != nil,
+    game.commander.scriptState.instances[mission]?.ownedEncounters["opponents"]?.actors.values
+      .contains(where: {
+        $0.identity == actor && $0.body.id == bodyID && $0.presence == .present
+      }) == true
+  else { return false }
+  let actualEntitlement = game.combatMissionEntitlement(
+    contact.hit.target, owner: context.player.identity, context: context)
+  let entitlement = try #require(actualEntitlement)
+  try #require(
+    entitlement.owner == context.player.identity && entitlement.victim == body.physical?.identity)
+  try #require(entitlement.authorizesAttack && entitlement.amountTenths == 50)
+  return true
+}
+
 @Test func nativeProfiledPatrolUsesActualPlayerLasersAutomaticDockingAndStationConfirmation()
   async throws
 {
@@ -732,6 +758,8 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
     LaserKind.naval.equipmentName, at: .laser(.front), provenance: .grant("npc-naval-fixture"))
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: fixture.save)
+  let legalBefore = game.commander.legal
+  try #require(legalBefore == 0)
   for alias in ["lead", "wing"] {
     let identity = try #require(
       game.commander.scriptState.instances[id]?.ownedEncounters["opponents"]?.actors[alias]?
@@ -746,9 +774,11 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
       if frame.autoPilot.status == "TRACKING TARGET" { break }
     }
     var controls = Controls()
-    controls.fire = true
-    await runtime.setControls(controls)
     for _ in 0..<300 {
+      // Fly the real outbound path before requesting an actual assigned-hull shot.
+      let aiming = await runtime.snapshot()
+      controls.fire = try profiledPatrolHasLawfulHullContact(aiming, mission: id, actor: identity)
+      await runtime.setControls(controls)
       let frame = await runtime.advance(delta: 0.05)
       if frame.commander.scriptState.instances[id]?.ownedEncounters["opponents"]?.actors[alias]?
         .presence == .destroyed
@@ -762,6 +792,7 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
         .actors[alias]?.presence == .destroyed)
   }
   let won = await runtime.snapshot()
+  #expect(won.commander.legal == legalBefore)
   #expect(won.commander.kills == 2)
   #expect(won.commander.scriptState.instances[id]?.data["phase"] == .string("report"))
   #expect(won.commander.scriptState.instances[id]?.suspension == nil)
@@ -813,6 +844,7 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
       rawValue: "beforeDockFlight=" + beforeDock + "; afterDockFlight="
         + actualStationGuidanceDiagnostic(returned)
         + "; actualHealthLoss=[" + healthLoss.joined(separator: " | ") + "]"))
+  #expect(returned.commander.legal == legalBefore)
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == id)
   await runtime.key("return")
