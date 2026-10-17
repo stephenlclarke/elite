@@ -277,6 +277,7 @@ private func timerFixture() throws -> DurableFixture {
   let fixture = try DurableFixture(example: "scripted-patrol", source: source)
   defer { fixture.clean() }
   var game = try fixture.game(destination: false)
+  try fitPhysicalDeathTargeting(&game)
   game.launch()
   game.emitScriptEvent("station.undocked")
   game.drainScriptEvents()
@@ -286,14 +287,24 @@ private func timerFixture() throws -> DurableFixture {
   try await runtime.save(to: fixture.url)
   try fixture.breakWriter()
   var controls = Controls()
-  controls.fire = true
-  await runtime.setControls(controls)
-  var current = game
+  var current = await runtime.snapshot()
+  let legalBefore = current.commander.legal
+  try #require(legalBefore == 0)
   for _ in 0..<200 {
+    controls = Controls()
+    if try campaignPatrolOutsideStationZone(current) {
+      try await selectCampaignPatrolTarget(runtime, child: id)
+      current = await runtime.snapshot()
+      controls.fire = try campaignPatrolHasActualLaserContact(current, child: id)
+    }
+    await runtime.setControls(controls)
     current = await runtime.advance(delta: 0.1)
     if current.commander.kills > 0 { break }
   }
-  #expect(current.commander.kills > 0)
+  #expect(
+    current.commander.kills > 0,
+    Comment(rawValue: campaignPatrolDiagnostic(current, child: id)))
+  #expect(current.commander.legal == legalBefore)
   #expect(current.commander.credits == 1000 + current.commander.kills * bounty)
   let state = try #require(current.commander.scriptState.instances[id])
   #expect(state.suspension != nil && !state.receipts.contains("kill-pay"))
@@ -311,6 +322,26 @@ private func timerFixture() throws -> DurableFixture {
   let restored = GameRuntime(game: game)
   try await restored.load(from: fixture.url)
   #expect(await restored.snapshot().commander.credits == recovered.commander.credits)
+}
+
+private func fitPhysicalDeathTargeting(_ game: inout Game) throws {
+  let before = game.commander
+  try game.commander.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .grant("death-pilot"))
+  try #require(game.commander.hasAutomaticDocking)
+  #expect(
+    game.commander.fittedEquipment(at: .targetingCore)?.node.key
+      == TargetingTier.docking.equipmentName)
+  #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
+  #expect(game.commander.fuel == before.fuel && game.commander.missiles == before.missiles)
+  #expect(
+    game.commander.scriptState == before.scriptState && game.commander.contracts == before.contracts
+  )
+  #expect(game.commander.accommodation == before.accommodation)
+  #expect(game.commander.laser(on: .front) == before.laser(on: .front))
+  #expect(
+    game.commander.laserDamage(against: .sidewinder, mount: .front)
+      == before.laserDamage(against: .sidewinder, mount: .front))
 }
 
 @Test func initialAcceptanceDiskFailureCreatesNoInstancePayloadOrLostOffer() async throws {
