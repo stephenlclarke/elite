@@ -177,6 +177,8 @@ extension GameRuntime {
   let before = await runtime.snapshot()
   let held = await runtime.resetTestControls()
   let priorBytes = try Data(contentsOf: fixture.url)
+  // Persisted commanders omit transient NPC bindings retained by the live rollback snapshot.
+  let (priorSaved, _) = try ScriptSaveStore.read(priorBytes, from: fixture.url)
   try fixture.breakWriter()
   await runtime.key("return")
   let denied = await runtime.snapshot()
@@ -194,7 +196,7 @@ extension GameRuntime {
   let unchangedBytes = try Data(contentsOf: fixture.url)
   #expect(unchangedBytes == priorBytes)
   let (saved, _) = try ScriptSaveStore.read(unchangedBytes, from: fixture.url)
-  #expect(saved == before.commander)
+  #expect(saved == priorSaved)
   await runtime.key("return")
   let reset = await runtime.snapshot()
   let retriedBytes = try Data(contentsOf: fixture.url)
