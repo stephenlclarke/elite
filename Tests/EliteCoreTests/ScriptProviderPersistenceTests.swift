@@ -4,6 +4,22 @@ import Testing
 @testable import EliteCore
 
 struct ScriptProviderPersistenceTests {
+  @Test func presentationMaskIsBoundedAndAbsentOldSourceFieldDefaultsEmpty() throws {
+    let state = ProviderContractFixture.state()
+    var raw = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as? [String: Any])
+    raw.removeValue(forKey: "presentationBits")
+    let legacy = try JSONDecoder().decode(
+      ScriptProviderContractState.self,
+      from: JSONSerialization.data(withJSONObject: raw))
+    #expect(legacy.presentationBits == 0 && legacy.valid)
+    raw["presentationBits"] = 64
+    #expect(throws: (any Error).self) {
+      try JSONDecoder().decode(
+        ScriptProviderContractState.self, from: JSONSerialization.data(withJSONObject: raw))
+    }
+    #expect(ProviderMissionCue.allCases.count == 6 && ProviderMissionCue.mask == 63)
+  }
   @Test(arguments: ["completed", "cancelled", "betrayed-cancellation", "failedCargo"])
   func persistedTerminalProviderStageRequiresItsExactOutcome(_ terminal: String) throws {
     var state = ProviderContractFixture.state()

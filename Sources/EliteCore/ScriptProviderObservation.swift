@@ -16,6 +16,82 @@ private enum ProviderOrderedEvidence {
   }
 }
 
+/// Called only by fresh native consumers. These bits authorize presentation, never rewards.
+enum ProviderMissionGuidance {
+  /// The native caller has already proved the exact current destination dock.
+  static func deliveryContactIsAvailable(
+    _ available: Bool?, state: inout ScriptProviderContractState
+  ) throws -> Bool {
+    guard state.eligible, state.branch != nil, state.manifest != nil, state.custody == .aboard
+    else {
+      throw MissionPackError("Dispatch is not authorized.")
+    }
+    guard let available else {
+      throw MissionPackError("Resolve the actual destination service before delivery.")
+    }
+    if !available { state.presentOnce(.unavailable) }
+    return available
+  }
+
+  static func reviewUrgent(_ state: inout ScriptProviderContractState, runtimeEpoch: UUID) throws {
+    guard state.eligible, state.manifest != nil, state.branch == nil, state.custody == .aboard
+    else {
+      throw MissionPackError("Authenticated uncommitted dispatch is required.")
+    }
+    state.pending = .init(action: .confirmUrgent, token: UUID(), runtimeEpoch: runtimeEpoch)
+    state.presentOnce(.urgentChoice)
+  }
+
+  static func observe(
+    _ availability: NativeProviderAvailability,
+    interval: ProviderMissionInterval?, destinationContactAvailable: Bool?, destinationDocked: Bool,
+    state: inout ScriptProviderContractState
+  ) {
+    guard state.eligible, state.custody == .aboard else { return }
+    if state.branch == nil {
+      switch availability {
+      case .disabled:
+        state.stage = .crisis
+        state.presentOnce(.disabled)
+      case .destroyed:
+        state.stage = .crisis
+        state.presentOnce(.lostSanta)
+      case .uncrewed, .ended:
+        state.stage = .crisis
+        state.presentOnce(.sourceUnavailable)
+      case .tracking:
+        state.stage = state.manifest == nil ? .rendezvous : .calibration
+        if state.progress.requested, state.manifest == nil, let interval,
+          interval.provider == state.provider, interval.subject == state.subject,
+          ProviderMissionObservation.hasActualContact(interval, terms: state.terms.observation)
+        {
+          state.presentOnce(.hello)
+        }
+      case .defending, .unloaded: break
+      }
+    }
+    if state.branch != nil, destinationDocked, destinationContactAvailable == false {
+      state.presentOnce(.unavailable)
+    }
+  }
+}
+
+extension ScriptProviderContractState {
+  func hasFiniteTransition(since previous: Self) -> Bool {
+    receipts != previous.receipts || presentationBits != previous.presentationBits
+      || progress.checkpointBits != previous.progress.checkpointBits
+      || (custody == .lost && previous.custody != .lost)
+  }
+  func transitionValues(since previous: Self) -> [String: ScriptValue] {
+    [
+      "receipts": .array(
+        receipts.subtracting(previous.receipts).map(\.rawValue).sorted().map(ScriptValue.string)),
+      "checkpoints": .integer(Int64(progress.checkpointBits & ~previous.progress.checkpointBits)),
+      "cues": .array(newCues(since: previous).map(\.rawValue).map(ScriptValue.string)),
+    ]
+  }
+}
+
 extension Game {
   func providerCoreClaimIsAuthentic(
     _ claim: NativeProviderCoreClaim,
@@ -150,7 +226,7 @@ extension Game {
   }
 
   /// G1 calls after admitting physical movement. Ordinary frame progress never emits a command.
-  /// It publishes only finite receipt/checkpoint transitions; normal saves capture bounded progress.
+  /// It publishes finite receipt/checkpoint/guidance transitions; normal saves capture bounded progress.
   mutating func observeProviderMission(_ facts: NativeProviderMissionFacts, instance id: UUID)
     throws
     -> ProviderMissionObservationUpdate
@@ -176,13 +252,6 @@ extension Game {
     }
     let before = state
     try reconcileProviderEvidence(facts, instance: &instance, state: &state)
-    if state.eligible, state.branch == nil, state.custody == .aboard {
-      if [.disabled, .uncrewed, .destroyed, .ended].contains(facts.source.available) {
-        state.stage = .crisis
-      } else if facts.source.available == .tracking {
-        state.stage = state.manifest == nil ? .rendezvous : .calibration
-      }
-    }
     let supported = facts.source.operationsReady.isSuperset(
       of: ScriptProviderContractDefinition.requiredOperations)
     if supported, state.eligible, state.custody == .aboard, facts.source.available == .tracking,
@@ -196,6 +265,9 @@ extension Game {
         runtimeEpoch: facts.runtimeEpoch, terms: state.terms.observation,
         manifestReceived: state.manifest != nil,
         calibrationOpen: state.branch == nil && facts.source.available == .tracking)
+      ProviderMissionGuidance.observe(
+        facts.source.available, interval: interval,
+        destinationContactAvailable: nil, destinationDocked: false, state: &state)
       state.progress = result.progress
       if result.contactCompleted { ProviderContractEffects.authorizeManifest(&state) }
       if result.fullReady, state.branch == nil {
@@ -205,6 +277,13 @@ extension Game {
       state.progress.baseline = nil
       if state.manifest == nil { state.progress.handshakeSeconds = 0 }
     }
+    let destinationDocked =
+      nativeMainStationArrivalContext(for: state.destination)
+      .map { acceptsNativeMainStationArrivalContext($0) } ?? false
+    ProviderMissionGuidance.observe(
+      facts.source.available, interval: nil,
+      destinationContactAvailable: facts.source.destinationContactAvailable,
+      destinationDocked: destinationDocked, state: &state)
     if supported, state.custody == .lost, state.crew?.disposition != .pending,
       let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil,
       instance.suspension == nil
@@ -214,23 +293,14 @@ extension Game {
       state.receipts.insert(.terminal)
     }
     instance.savedProviderContract = state
-    let transition =
-      state.receipts != before.receipts
-      || state.progress.checkpointBits != before.progress.checkpointBits
-      || (state.custody == .lost && before.custody != .lost)
+    let transition = state.hasFiniteTransition(since: before)
     if state.stage.terminal { try finishProviderContract(&instance) }
     commander.scriptState.instances[id] = instance
     if let receipt = instance.completionReceipt { try enqueueScriptCompletion(receipt) }
     if transition, !state.stage.terminal {
       emitScriptEvent(
         "provider.transition",
-        values: [
-          "receipts": .array(
-            state.receipts.subtracting(before.receipts).map(\.rawValue).sorted().map(
-              ScriptValue.string)),
-          "checkpoints": .integer(
-            Int64(state.progress.checkpointBits & ~before.progress.checkpointBits)),
-        ], only: id)
+        values: state.transitionValues(since: before), only: id)
     }
     guard commander.valid else { throw SaveError.invalidCommander }
     return .init(

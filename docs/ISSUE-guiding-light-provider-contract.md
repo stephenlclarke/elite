@@ -19,3 +19,7 @@ The complete source boundary and unresolved integration gates are recorded in [t
 ## Frozen-source review corrections
 
 The review of source leaf `362d91b` found that a combined snapshot could process later care before an earlier combat betrayal, terminal provider stages accepted contradictory script outcomes, and care/betrayal cues could misstate reward eligibility or cause. The narrow follow-up orders joined care/sale and combat proofs by the native common sequence, validates exact terminal outcome mappings, and derives payment wording from actual paid or eligible-pending disposition. Existing truthful native care is preserved even when it earns no mission authorization.
+
+## Finite guidance gap
+
+The source review also found unused greeting, urgent-choice, disabled, destroyed and unavailable-contact definitions. A crisis stage change alone did not request a durable event, so promised radio/subtitle guidance had no consumer. The follow-up records a fixed six-bit presentation history and drives the existing finite native transition, Lua journal and notification path. Presentation bits confer no mission/reward authority and do not turn repeated requests or reviews into lifetime receipts.

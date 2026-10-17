@@ -66,6 +66,22 @@ enum ProviderContractReceipt: String, Codable, Sendable {
   case accepted, manifest, ready, core, care, crewPaid, crewVoided, betrayed, terminal
 }
 
+/// Finite presentation history, separate from mission/reward authorization receipts.
+enum ProviderMissionCue: String, CaseIterable, Sendable {
+  case hello, urgentChoice, disabled, lostSanta, sourceUnavailable, unavailable
+  var bit: UInt8 {
+    switch self {
+    case .hello: 1
+    case .urgentChoice: 2
+    case .disabled: 4
+    case .lostSanta: 8
+    case .sourceUnavailable: 16
+    case .unavailable: 32
+    }
+  }
+  static var mask: UInt8 { allCases.reduce(0) { $0 | $1.bit } }
+}
+
 struct ProviderCrewClaim: Equatable, Codable, Sendable {
   let operation: UUID
   let person: NativePersonReference
@@ -111,6 +127,20 @@ struct ScriptProviderContractState: Equatable, Codable, Sendable {
   var lastRelayOrder: UInt64?
   var terminalDock: NativeMainStationDockReceipt?
   var receipts: Set<ProviderContractReceipt> = [.accepted]
+  var presentationBits: UInt8 = 0
+
+  @discardableResult
+  mutating func presentOnce(_ cue: ProviderMissionCue) -> Bool {
+    let first = presentationBits & cue.bit == 0
+    presentationBits |= cue.bit
+    return first
+  }
+
+  func newCues(since previous: Self) -> [ProviderMissionCue] {
+    ProviderMissionCue.allCases.filter {
+      presentationBits & ~previous.presentationBits & $0.bit != 0
+    }
+  }
 
   static func itemID(instance: UUID, payload: String) -> UUID {
     ScriptIdentity.uuid("provider-item-v1:" + instance.uuidString + ":" + payload)
@@ -133,7 +163,8 @@ struct ScriptProviderContractState: Equatable, Codable, Sendable {
       (core != nil) == receipts.contains(.core), (crew != nil) == receipts.contains(.care),
       (betrayal != nil) == receipts.contains(.betrayed),
       [0, terms.fullReward, terms.urgentReward, terms.recoveryReward].contains(basePaid),
-      crewPaid == 0 || crewPaid == terms.crewReward, custody != .unavailable
+      crewPaid == 0 || crewPaid == terms.crewReward, custody != .unavailable,
+      presentationBits & ~ProviderMissionCue.mask == 0
     else { return false }
     if let pending {
       guard pending.action == .confirmUrgent, eligible, branch == nil, manifest != nil else {
@@ -221,7 +252,7 @@ extension ScriptProviderContractState {
       acceptedOrder
     case stage, branch, custody, manifest, progress, pending, core, crew, betrayal, basePaid,
       crewPaid
-    case terminalOrder, cargoLossOrder, lastRelayOrder, terminalDock, receipts
+    case terminalOrder, cargoLossOrder, lastRelayOrder, terminalDock, receipts, presentationBits
   }
   init(from decoder: any Decoder) throws {
     let v = try decoder.container(keyedBy: CodingKeys.self)
@@ -254,7 +285,8 @@ extension ScriptProviderContractState {
       cargoLossOrder: try v.decodeIfPresent(UInt64.self, forKey: .cargoLossOrder),
       lastRelayOrder: try v.decodeIfPresent(UInt64.self, forKey: .lastRelayOrder),
       terminalDock: try v.decodeIfPresent(NativeMainStationDockReceipt.self, forKey: .terminalDock),
-      receipts: Set(entries))
+      receipts: Set(entries),
+      presentationBits: try v.decodeIfPresent(UInt8.self, forKey: .presentationBits) ?? 0)
     guard valid else { throw SaveError.invalidCommander }
   }
 }

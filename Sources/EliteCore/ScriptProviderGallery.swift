@@ -41,6 +41,9 @@ extension Game {
       "stage": .string(state.stage.rawValue),
       "branch": state.branch.map { .string($0.rawValue) } ?? .null,
       "manifest": .bool(state.manifest != nil),
+      "urgent_review": .bool(
+        state.pending?.action == .confirmUrgent
+          && state.pending?.runtimeEpoch == nativeStationRuntimeEpoch),
       "checkpoints": .integer(Int64(state.progress.checkpointBits)),
       "core": .bool(state.core != nil), "crew": .bool(state.crew != nil),
       "crew_paid": .bool(state.crew?.disposition == .paid),
@@ -137,8 +140,10 @@ extension Game {
     } else if state.manifest == nil {
       rows.append(
         String(
-          format: "Request manifest, then maintain actual contact for %.1f seconds.",
-          state.terms.observation.contactSeconds))
+          format: state.progress.requested
+            ? "Manifest request armed. Actual continuous contact: %.1f / %.1f seconds."
+            : "Request manifest. Actual continuous contact: %.1f / %.1f seconds.",
+          state.progress.handshakeSeconds, state.terms.observation.contactSeconds))
     } else if state.branch == nil {
       rows.append(
         String(

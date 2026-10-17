@@ -8,8 +8,8 @@ local cues = {
   ["checkpoint3"] = "Relay: Third calibration light confirmed.",
   ["fullReady"] = "Santa: All lights green and the timing checks out. Take that relay to Atisen's orbital dispatch desk. Safe passage, Commander.",
   ["urgentChoice"] = "Dispatch: Send the signed relay without full calibration? Delivery pays 1,500 credits. You can keep calibrating instead.",
-  ["disabled"] = "Dispatch: Santa's drive is offline. Your relay is safe. Wait for recovery, use your signed manifest for urgent delivery, or recover a certified manifest through the crew or the original computer core.",
-  ["lostSanta"] = "Dispatch: We've lost Santa's ship. We cannot replace that crew with a new signal. Recover the original computer core or bring a surviving crew member safely to Crimbo. If neither is possible, return the relay.",
+  ["disabled"] = "Dispatch: Santa's drive is offline. Your held relay is safe. Wait for this ship to recover, use an already authenticated manifest for urgent delivery, or recover the original crew or computer core.",
+  ["lostSanta"] = "Dispatch: We've lost Santa's ship. An already authenticated manifest still permits urgent dispatch. Otherwise recover the original computer core or bring a surviving crew member safely to Crimbo. If neither is possible, return the relay.",
   ["rescue"] = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Your 500-credit crew commendation was transferred.",
   ["recoveryReady"] = "Dispatch: Recovered manifest authenticated. Atisen will accept the relay. Recovery delivery pays 2,000 credits.",
   ["completeFull"] = "Atisen Dispatch: Relay received, all three checks verified. 3,000 credits transferred. Crimbo's next delivery has a guiding light.",
@@ -33,7 +33,7 @@ return {
       if receipt == "crewPaid" then hasCrewPaid = true end
     end
     for _, receipt in ipairs(e.receipts or {}) do
-      if receipt == "manifest" and not w.provider.betrayed then record(commands, "calibrate")
+      if receipt == "manifest" and not w.provider.betrayed and w.provider.branch ~= "recovery" then record(commands, "calibrate")
       elseif receipt == "ready" and not w.provider.betrayed then
         if w.provider.branch == "full" then record(commands, "fullReady")
         elseif w.provider.branch == "recovery" then record(commands, "recoveryReady") end
@@ -44,6 +44,17 @@ return {
         end
       elseif receipt == "crewPaid" and w.provider.crew_paid then record(commands, "rescue")
       elseif receipt == "betrayed" then record(commands, "betrayed") end
+    end
+    for _, cue in ipairs(e.cues or {}) do
+      if not w.provider.betrayed then
+        if cue == "hello" and not w.provider.manifest then record(commands, "hello")
+        elseif cue == "urgentChoice" and w.provider.urgent_review then record(commands, "urgentChoice")
+        elseif cue == "disabled" and w.provider.branch == nil then record(commands, "disabled")
+        elseif cue == "lostSanta" and w.provider.branch == nil then record(commands, "lostSanta")
+        elseif cue == "sourceUnavailable" and w.provider.branch == nil then
+          commands[#commands + 1] = {op = "journal.append", text = "Dispatch: The original convoy cannot authorize radio contact. Use an already authenticated manifest for urgent dispatch, recover original evidence, or return the held relay."}
+        elseif cue == "unavailable" and w.provider.custody == "aboard" then record(commands, "unavailable") end
+      end
     end
     for i = 1, 3 do
       if not w.provider.betrayed and math.floor((e.checkpoints or 0) / (2 ^ (i - 1))) % 2 == 1 then
