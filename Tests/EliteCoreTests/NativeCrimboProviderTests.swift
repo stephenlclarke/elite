@@ -30,7 +30,8 @@ struct NativeCrimboProviderTests {
     let owner = try #require(game.commander.equipmentOwnerID)
     game.commander.savedCrimboState?.destination = CrimboFixture.station(
       owner: owner, system: .init(galaxy: 7, system: 202))
-    let facts = try #require(game.nativeProviderMissionFacts(instance: nil))
+    let resolvedFacts = try game.nativeProviderMissionFacts(instance: nil)
+    let facts = try #require(resolvedFacts)
     #expect(facts.source.provider.definition == "crimbo-convoy")
     #expect(facts.source.operationsReady.isEmpty && !facts.source.routeAvailable)
     #expect(facts.source.interval == nil && facts.source.core == nil && facts.source.relay == nil)
