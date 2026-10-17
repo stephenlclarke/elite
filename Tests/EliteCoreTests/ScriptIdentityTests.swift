@@ -70,6 +70,12 @@ private func physicalIDs(_ state: ScriptInstance) -> Set<UUID> {
   let save = folder.appendingPathComponent("commander.json")
   let origin = UUID()
   var game = try identityGame(pack, origin: origin)
+  // Schema 11 predates the native station namespace. This historical scene has no RRS custody.
+  let stations = try #require(game.commander.nativeStations)
+  try #require(stations.ledger.currentDock == nil && stations.currentMainDock == nil)
+  try #require(game.commander.contracts.rrs == nil)
+  try #require(game.commander.scriptState.missionCalendar == nil)
+  game.commander.nativeStations = nil
   game.bodies = [try #require(game.bodies.first { $0.id == 0 })]
   for id in 1..<128 {
     game.bodies.append(
@@ -105,6 +111,8 @@ private func physicalIDs(_ state: ScriptInstance) -> Set<UUID> {
   let identities = physicalIDs(state)
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: save)
+  #expect(await runtime.snapshot().commander.nativeStations == nil)
+  #expect(await runtime.snapshot().bodies.allSatisfy { $0.nativeStationIdentity == nil })
   var pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: save))
   let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: save)
   let legacyBytes = try JSONEncoder().encode(game.commander.scriptState)
