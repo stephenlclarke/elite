@@ -9,7 +9,7 @@ public enum EquipmentRow: Sendable, Equatable {
 public enum EquipmentGroups {
   public static let sections: [EquipmentSection] = {
     let groups: [(String, [String])] = [
-      ("Fuel & Storage", ["Fuel", FuelStorage.equipmentName]),
+      ("Fuel Storage", ["Fuel", FuelStorage.equipmentName]),
       (
         "Lasers",
         ["Pulse Laser", "Mining Laser", "Beam Laser", "Military Laser", Equipment.navalLaser]

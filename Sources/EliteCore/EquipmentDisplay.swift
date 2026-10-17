@@ -92,7 +92,7 @@ extension Display {
       "Buying for: " + buyingFor, layout.left, layout.buyingTop,
       scale: layout.font, ink: .cyan)
     frame.label(
-      "Equipment", layout.left + 32, layout.listTop - 22,
+      "Equipment", layout.left, layout.listTop - 22,
       scale: layout.font, ink: .yellow)
     frame.labels.append(rightLabel("PRICE / STATUS", y: layout.listTop - 22, ink: .yellow))
     for visual in layout.start..<min(EquipmentGroups.rows.count, layout.start + layout.count) {
