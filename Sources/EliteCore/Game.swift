@@ -594,6 +594,9 @@ public struct Game: Sendable {
   public mutating func key(_ raw: String) {
     let key = raw.lowercased()
     if interfaceKey(key) { return }
+    keyAfterInterface(key)
+  }
+  private mutating func keyAfterInterface(_ key: String) {
     if !docked && screen.isFlight {
       switch key {
       case "r", "tab":
