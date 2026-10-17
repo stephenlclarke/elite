@@ -3,6 +3,53 @@ import Testing
 
 @testable import EliteCore
 
+/// An authentic historical container fixture, not a modern writer with a forged old header.
+/// This fresh unit scene has no mining history or authored bodies to discard.
+private func writeHistoricalNativePeople22(_ game: Game, to url: URL) throws {
+  try #require(game.commander.miningLedger.requiredPresencePinSystems.isEmpty)
+  try #require(game.bodies.allSatisfy { $0.scriptNPC == nil && $0.missionInstanceID == nil })
+  var legacy = game.commander
+  let inventory = try #require(legacy.equipmentInventory)
+  legacy.savedEquipmentInventory = try .init(
+    owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
+    items: inventory.items.filter { $0.node.family != HyperspaceDriveDefinition.purchaseFamily })
+  legacy.savedEquipmentVersion = 2
+  legacy.savedPlayerElectrical = nil
+  legacy.savedEMPCharge = nil
+  legacy.mirrorFittedEquipment()
+  var object = try #require(
+    JSONSerialization.jsonObject(
+      with: JSONEncoder().encode(legacy)) as? [String: Any])
+  object.removeValue(forKey: "savedMiningLedger")
+  // Only actual native EMP/NPC resource archives are projected to their historical shape.
+  func oldElectricalShape(_ value: Any) -> Any {
+    if var dictionary = value as? [String: Any] {
+      dictionary.removeValue(forKey: "electrical")
+      dictionary.removeValue(forKey: "legacyElectricalRecharge")
+      return dictionary.mapValues(oldElectricalShape)
+    }
+    return (value as? [Any]).map { $0.map(oldElectricalShape) } ?? value
+  }
+  for key in ["savedEMPState", "savedNPCPersistence"] {
+    if let value = object[key] { object[key] = oldElectricalShape(value) }
+  }
+  let header = try JSONSerialization.data(withJSONObject: object)
+  try ElectricalVersionedSave.rejectFields(header)
+  try NativePeopleVersionedSave.rejectFields(header)
+  try RingMiningVersionedSave.rejectFields(header)
+  try HyperspaceDriveVersionedSave.rejectFields(header)
+  legacy = try JSONDecoder().decode(Commander.self, from: header)
+  var worldObject = try #require(
+    JSONSerialization.jsonObject(
+      with: JSONEncoder().encode(game.scriptWorldSave)) as? [String: Any])
+  worldObject["bodies"] = oldElectricalShape(worldObject["bodies"] ?? [])
+  let worldBytes = try JSONSerialization.data(withJSONObject: worldObject)
+  try ElectricalVersionedSave.rejectFields(worldBytes)
+  let world = try JSONDecoder().decode(ScriptWorldSave.self, from: worldBytes)
+  try #require(legacy.valid && world.valid && world.consistent(with: legacy))
+  try ScriptSaveStore.write(commander: legacy, world: world, to: url)
+}
+
 struct NativePeoplePersistenceTests {
   @Test func legacyDataHookAcceptsLaterGenuineEpisodeWithoutInventingAnOldSchedule() throws {
     var game = try NativePeopleTestFixture.withinWindow()
@@ -97,12 +144,14 @@ struct NativePeoplePersistenceTests {
     let nextLegacyEjection = game.commander.flightSimulation.physicalTime + 1
     game.commander.savedEMPState?.records[source]?.nextEjectionAt = nextLegacyEjection
     try #require(game.commander.valid)
-    let writer = GameRuntime(game: game, saveURL: storage.url)
-    try await writer.save(to: storage.url)
+    game.ensureScriptCalendar(origin: .inactiveLegacyMigration)
+    try writeHistoricalNativePeople22(game, to: storage.url)
     let bytes = try Data(contentsOf: storage.url)
     #expect(try JSONDecoder().decode(ScriptSavePointer.self, from: bytes).schemaVersion == 22)
     let reader = GameRuntime()
     try await reader.load(from: storage.url, persistMigrations: false)
+    #expect(try Data(contentsOf: storage.url) == bytes)
+    #expect(await reader.snapshot().commander.savedEquipmentVersion == 3)
     #expect(
       await reader.snapshot().commander.savedEMPState?.records[source]?.savedDisableEpisodes == nil)
     for _ in 0..<15 { _ = await reader.advance(delta: 0.1) }
@@ -125,7 +174,7 @@ struct NativePeoplePersistenceTests {
     try await reader.save(to: storage.url)
     #expect(
       try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: storage.url))
-        .schemaVersion == 24)
+        .schemaVersion == 26)
     var forged = record
     forged.savedDisableEpisodes?[0].legacyEmissions = []
     #expect(!forged.crewCensusValid)
@@ -158,7 +207,8 @@ struct NativePeoplePersistenceTests {
     #expect(captured.commander.valid)
   }
 
-  @Test func scheduleOnlyAndCapturedPeopleUseSchema24AndSurviveMissingContent() async throws {
+  @Test func scheduleOnlyAndCapturedPeopleUseVersionedStorageAndSurviveMissingContent() async throws
+  {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
     var game = try NativePeopleTestFixture.withinWindow()
@@ -167,7 +217,7 @@ struct NativePeoplePersistenceTests {
     let runtime = GameRuntime(game: game, saveURL: storage.url)
     try await runtime.save(to: storage.url)
     let initial = try Data(contentsOf: storage.url)
-    #expect(try JSONDecoder().decode(ScriptSavePointer.self, from: initial).schemaVersion == 24)
+    #expect(try JSONDecoder().decode(ScriptSavePointer.self, from: initial).schemaVersion == 26)
     game.commander.cargo[0] = game.commander.standardCargoCapacity - 1
     try NativePeopleTestFixture.aimCutter(&game)
     let collector = GameRuntime(game: game, saveURL: storage.url)
