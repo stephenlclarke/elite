@@ -17,8 +17,19 @@ public enum MiningFields {
   public static func generate(
     anchors: SystemAnchors, seed: UInt64, includingLegacy: Bool = false
   ) -> [MiningField] {
+    // Compatibility entry point for callers not yet carrying commander context.
+    generate(
+      anchors: anchors, seed: seed,
+      ringPresent: AsteroidBeltDefinition.isPresent(identity: anchors.system, seed: seed),
+      includingLegacy: includingLegacy)
+  }
+
+  /// Gameplay and charts resolve presence through the same commander ledger.
+  public static func generate(
+    anchors: SystemAnchors, seed: UInt64, ringPresent: Bool, includingLegacy: Bool = false
+  ) -> [MiningField] {
     let retained = includingLegacy ? legacyFields(anchors: anchors, seed: seed) : []
-    guard AsteroidBeltDefinition.isPresent(identity: anchors.system, seed: seed),
+    guard ringPresent,
       let radius = AsteroidBeltDefinition.radius(anchors: anchors),
       anchors.planet.radius.isFinite, anchors.planet.radius > 0,
       anchors.sun.radius.isFinite, anchors.sun.radius > 0

@@ -67,10 +67,11 @@ struct AsteroidRingTests {
       for star in Universe.systemsIncludingPlugh(number: galaxy) {
         let system = SystemIdentity(galaxy: galaxy, system: star.id)
         let seed = AsteroidBeltDefinition.seed(for: star)
-        let flag = AsteroidBeltDefinition.isPresent(system: star, galaxy: galaxy)
-        let fields = MiningFields.generate(anchors: ringAnchors(system: system), seed: seed)
+        let flag = MiningLedger().ringPresence(system: star, galaxy: galaxy)
+        let fields = MiningFields.generate(
+          anchors: ringAnchors(system: system), seed: seed, ringPresent: flag)
         #expect(flag == !fields.isEmpty)
-        #expect(flag == AsteroidBeltDefinition.isPresent(identity: system, seed: seed))
+        #expect(flag == AsteroidBeltDefinition.isPresent(system: star, galaxy: galaxy))
         if flag { present += 1 } else { absent += 1 }
       }
     }
@@ -176,6 +177,8 @@ struct AsteroidRingTests {
     let encoded = try JSONEncoder().encode(old)
     var object = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
     object.removeValue(forKey: "generation")
+    object.removeValue(forKey: "legacyClusters")
+    object.removeValue(forKey: "presenceOverrides")
     object.removeValue(forKey: "ringTerminal")
     var restored = try JSONDecoder().decode(
       MiningLedger.self, from: JSONSerialization.data(withJSONObject: object))
@@ -218,7 +221,7 @@ struct AsteroidRingTests {
       #expect(context.debugDescription.contains("mining key"))
     }
     var unknown = original
-    unknown["generation"] = 2
+    unknown["generation"] = 3
     #expect(throws: SaveError.invalidCommander) {
       _ = try JSONDecoder().decode(
         MiningLedger.self, from: JSONSerialization.data(withJSONObject: unknown))
