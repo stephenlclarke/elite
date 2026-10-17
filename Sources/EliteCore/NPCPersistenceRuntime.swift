@@ -1,6 +1,48 @@
 import Foundation
 
 extension Game {
+  /// Called on the private validated load candidate, before any ordinary admission.
+  mutating func restoreSavedNPCSceneBindings() throws {
+    guard commander.npcPersistence.count > 0 else { return }
+    let flight = commander.flightSimulation
+    guard commander.valid, commander.equipmentOwnerID != nil, flight.valid,
+      flight.system == systemIdentity, flight.pose.position.finite,
+      flight.pose.orientation.validRotation, let context = gameplayContext(),
+      Set(bodies.map(\.id)).count == bodies.count
+    else { throw NPCSceneRestorationError.invalidScene }
+    let actors = bodies.compactMap { $0.physical?.identity }
+    guard Set(actors).count == actors.count,
+      actors.allSatisfy({
+        $0.system == systemIdentity && $0.visit == flight.visit && $0.entity < flight.nextActor
+      })
+    else { throw NPCSceneRestorationError.invalidScene }
+    var observed: [NPCPersistenceSnapshot] = []
+    for body in bodies where body.hull.isTargetShip {
+      if body.missionInstanceID != nil || body.missionActorID != nil || body.navalTarget
+        || body.blackjackRole != nil || body.blackjackIdentity != nil
+        || body.physical?.npc?.role == .mission || body.physical?.population == .wreck
+        || body.physical?.blocksNavalEncounter == true
+      {
+        continue
+      }
+      guard body.energy > 0, body.scriptNPC == nil, body.scriptShot == nil,
+        let physical = body.physical, let npc = physical.npc, npc.role != .mission,
+        [.civilian, .pirate, .police].contains(physical.population),
+        physical.spawnIdentity.map({ $0.system == systemIdentity && $0.visit == flight.visit })
+          ?? true,
+        let snapshot = NPCPersistenceSnapshot.capture(
+          body: body, pose: flight.pose, physicalTime: flight.physicalTime,
+          protection: context.protection)
+      else { throw NPCSceneRestorationError.invalidScene }
+      observed.append(snapshot)
+    }
+    var ledger = commander.npcPersistence
+    try ledger.restoreSceneBindings(
+      observed, system: systemIdentity, visit: flight.visit, physicalTime: flight.physicalTime,
+      nextActor: flight.nextActor, protection: context.protection)
+    commander.npcPersistence = ledger
+  }
+
   /// Capture in allocation order so retired physical identities cannot be registered anew.
   @discardableResult
   mutating func persistNPCStates() -> Set<Int> {
