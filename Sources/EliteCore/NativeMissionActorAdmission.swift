@@ -234,6 +234,13 @@ extension Game {
     -> NativeMissionActorAdmissionReceipt
   {
     try validateMissionActorAdmissionSource(plan.source)
+    return try commitValidatedMissionActorAdmission(plan)
+  }
+
+  /// Keep scene validation and commit storage out of the full source-validation call chain.
+  private mutating func commitValidatedMissionActorAdmission(
+    _ plan: NativeMissionActorAdmissionPlan
+  ) throws -> NativeMissionActorAdmissionReceipt {
     let context = gameplayContext()
     try validateMissionActorAdmissionScene(context: context)
     guard !docked, context == plan.context, scriptAnchor == plan.anchor,
