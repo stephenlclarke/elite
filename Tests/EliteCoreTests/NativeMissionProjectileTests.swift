@@ -7,6 +7,14 @@ private func retainedNativeProjectile() throws -> (
   Game, UUID, Vector3, Vector3, MissionLaunchArchive
 ) {
   var (game, instance, index) = try actualMissionBridgeGame()
+  let (identity, position, velocity, archive) = try initializeRetainedNativeProjectile(
+    &game, instance: instance, index: index)
+  return (game, identity, position, velocity, archive)
+}
+
+private func initializeRetainedNativeProjectile(_ game: inout Game, instance: UUID, index: Int)
+  throws -> (UUID, Vector3, Vector3, MissionLaunchArchive)
+{
   game.ensurePhysicalActors()
   let owner = game.bodies[index]
   let npc = try #require(owner.scriptNPC)
@@ -52,7 +60,22 @@ private func retainedNativeProjectile() throws -> (
   game.commander.scriptState.projectiles[identity] = .init(
     galaxy: game.commander.galaxy, system: game.commander.system, body: body, presence: .unloaded)
   try #require(game.commander.valid)
-  return (game, identity, position, velocity, archive)
+  return (identity, position, velocity, archive)
+}
+
+private func assertUnavailableExactPackPreservesPendingShot(
+  _ game: inout Game, identity: UUID, archive: MissionLaunchArchive
+) throws {
+  game.scriptPacks = []
+  let before = game
+  #expect(throws: NativeMissionProjectileAdmissionError.unavailablePack) {
+    try game.admitRetainedMissionProjectile(identity)
+  }
+  #expect(game.commander == before.commander && game.bodies == before.bodies)
+  #expect(game.nextBodyID == before.nextBodyID)
+  #expect(
+    game.commander.scriptState.projectiles[identity]?.body.scriptShot?.nativeAttribution
+      == archive)
 }
 
 struct NativeMissionProjectileTests {
@@ -115,16 +138,7 @@ struct NativeMissionProjectileTests {
 
   @Test func anUnavailableExactPackPreservesThePendingShotAndHistoricalArchive() throws {
     var (game, identity, _, _, archive) = try retainedNativeProjectile()
-    game.scriptPacks = []
-    let before = game
-    #expect(throws: NativeMissionProjectileAdmissionError.unavailablePack) {
-      try game.admitRetainedMissionProjectile(identity)
-    }
-    #expect(game.commander == before.commander && game.bodies == before.bodies)
-    #expect(game.nextBodyID == before.nextBodyID)
-    #expect(
-      game.commander.scriptState.projectiles[identity]?.body.scriptShot?.nativeAttribution
-        == archive)
+    try assertUnavailableExactPackPreservesPendingShot(&game, identity: identity, archive: archive)
   }
 
   @Test(arguments: [false, true])
