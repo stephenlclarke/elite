@@ -211,11 +211,59 @@ func pledgeFullNativeThresholdsNeverTransferPartialAmounts(scenario: PledgeScena
   stocked.commander.unlimitedCargo = true  // Finite native starting stock, not created by a pledge.
   #expect(stocked.commander.valid)
   let (largeBoard, largeOffer) = try fixture.offer(&stocked, variant: .food)
+  let largeBefore = stocked.commander
   let largeQuote = stocked.contractAcceptanceQuote(board: largeBoard, offer: largeOffer.id)
-  #expect(largeQuote.allowed)
+  let largePreview = try #require(largeQuote.pledge)
+  #expect(largePreview.difficulty == 1 && largePreview.variant == .food && largePreview.amount == 1)
+  #expect(largePreview.before.food == largeFood && largePreview.before.unreservedFood == largeFood)
+  #expect(largePreview.before.cash == largeBefore.credits)
+  try stocked.requirePledgeResources(largePreview)
+  #expect(!largeQuote.allowed)
+  #expect(largeQuote.issues == ["Invalid accommodation quantities."])
   #expect(
     largeQuote.pledge?.terms.contains { $0.contains("\(largeFood - 1) tonnes Food.") } == true)
   #expect(stocked.commander.cargo[Game.pledgeFood] == largeFood)
+  #expect(stocked.commander == largeBefore)
+  #expect(throws: MissionPackError.self) { try stocked.confirmContract(largeQuote) }
+  #expect(stocked.commander == largeBefore)
+  #expect(stocked.scriptPledgeAdmission == nil)
+}
+
+@Test func pledgeCanReduceLegacyExcessFoodIntoTheActualPhysicalHold() throws {
+  let fixture = try PledgeFixture()
+  defer { fixture.clean() }
+  var game = fixture.game(food: 21)
+  game.commander.shipID = "SH023"
+  game.commander.unlimitedCargo = true
+  try #require(game.commander.standardCargoCapacity == 20)
+  #expect(game.commander.cargoTonnes == 21 && game.commander.valid)
+  #expect(game.commander.passengerFit?.allowed == false)
+  let (board, offer) = try fixture.offer(&game, tier: 3, variant: .food)
+  let before = game.commander
+  let quote = game.contractAcceptanceQuote(board: board, offer: offer.id)
+  let preview = try #require(quote.pledge)
+  #expect(preview.amount == 5 && preview.before.food == 21 && preview.before.unreservedFood == 21)
+  try game.requirePledgeResources(preview)
+  try #require(quote.allowed, Comment(rawValue: quote.issues.joined(separator: "; ")))
+  #expect(game.commander == before)
+  let id = try game.confirmContract(quote)
+  let receipt = try #require(game.commander.scriptState.pledgeLedger?.receipt(instance: id))
+  #expect(game.commander.cargo[Game.pledgeFood] == 16 && game.commander.cargoTonnes == 16)
+  #expect(
+    game.commander.standardCargoCapacity == 20 && game.commander.passengerFit?.allowed == true)
+  #expect(game.commander.credits == before.credits && game.commander.valid)
+  #expect(receipt.amount == 5 && receipt.variant == .food)
+  #expect(receipt.before.food == 21 && receipt.after.food == 16)
+  #expect(receipt.before.unreservedFood == 21 && receipt.after.unreservedFood == 16)
+  #expect(receipt.before.cash == before.credits && receipt.after.cash == before.credits)
+  #expect(receipt.before.standing == 0 && receipt.after.standing == 1)
+  #expect(receipt.valid(engine: game.commander.scriptState))
+  #expect(game.commander.scriptState.instances[id]?.outcome == .complete)
+  #expect(game.commander.scriptState.instances[id]?.contract?.settlementAmount == 0)
+  #expect(game.scriptPledgeAdmission == nil)
+  let completed = game.commander
+  #expect(try game.confirmContract(quote) == id)
+  #expect(game.commander == completed && completed.scriptState.pledgeLedger?.receipts.count == 1)
 }
 
 @Test(arguments: [
