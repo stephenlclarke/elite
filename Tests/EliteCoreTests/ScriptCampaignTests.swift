@@ -74,6 +74,36 @@ private struct CampaignFixture {
     retained = true
   }
   func clean() { try? FileManager.default.removeItem(at: root) }
+  func commanderChangedPaths(_ before: Commander, _ after: Commander) throws -> [String] {
+    let encoder = JSONEncoder()
+    let left = try JSONSerialization.jsonObject(with: encoder.encode(before))
+    let right = try JSONSerialization.jsonObject(with: encoder.encode(after))
+    let sameEquipment = before.equipment == after.equipment
+    var paths: [String] = []
+    func compare(_ left: Any?, _ right: Any?, path: String, depth: Int) {
+      guard paths.count < 12 else { return }
+      switch (left, right) {
+      case (nil, nil): return
+      case (let left?, let right?):
+        if let left = left as? [String: Any], let right = right as? [String: Any], depth < 20 {
+          for key in Set(left.keys).union(right.keys).sorted() {
+            if depth == 0 && key == "equipment" && sameEquipment { continue }
+            compare(left[key], right[key], path: path + "." + key, depth: depth + 1)
+          }
+        } else if let left = left as? [Any], let right = right as? [Any], depth < 20 {
+          if left.count != right.count { paths.append(path + ".count") }
+          for index in 0..<min(left.count, right.count) {
+            compare(left[index], right[index], path: path + "[\(index)]", depth: depth + 1)
+          }
+        } else if String(describing: left) != String(describing: right) {
+          paths.append(path)
+        }
+      default: paths.append(path)
+      }
+    }
+    compare(left, right, path: "Commander", depth: 0)
+    return paths
+  }
   func game() -> Game {
     var game = Game(executive: false)
     game.screen = .status
@@ -271,10 +301,20 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   let runtime = GameRuntime(game: game)
   #expect(await runtime.snapshot().commander == game.commander)
   try await runtime.save(to: fixture.save)
-  #expect(await runtime.snapshot().commander == game.commander)
+  let saved = await runtime.snapshot().commander
+  let savePreservedCommander = saved == game.commander
+  let saveChanges = try fixture.commanderChangedPaths(game.commander, saved)
+  #expect(
+    savePreservedCommander,
+    Comment(rawValue: "Save changed: " + saveChanges.joined(separator: "; ")))
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
-  #expect(await loaded.snapshot().commander == game.commander)
+  let reloaded = await loaded.snapshot().commander
+  let loadPreservedCommander = reloaded == game.commander
+  let loadChanges = try fixture.commanderChangedPaths(game.commander, reloaded)
+  #expect(
+    loadPreservedCommander,
+    Comment(rawValue: "Reload changed: " + loadChanges.joined(separator: "; ")))
   if policy == "suspend" {
     await #expect(throws: MissionPackError.self) { try await loaded.resumeScriptMission(child) }
     #expect(
