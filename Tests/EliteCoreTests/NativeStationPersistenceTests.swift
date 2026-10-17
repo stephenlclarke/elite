@@ -63,12 +63,12 @@ private func emptyStationRuntime() -> GameRuntime {
 }
 
 private func stationSaveFiles(_ root: URL) throws -> [String: Data] {
-  let entries = try #require(
-    FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey]))
+  let entries = try #require(FileManager.default.enumerator(atPath: root.path))
   var result: [String: Data] = [:]
-  for case let url as URL in entries {
+  for case let relative as String in entries {
+    let url = root.appendingPathComponent(relative)
     if try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
-      let relative = String(url.path.dropFirst(root.path.count + 1))
+      try #require(!relative.isEmpty && result[relative] == nil)
       result[relative] = try Data(contentsOf: url)
     }
   }
