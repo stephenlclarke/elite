@@ -283,6 +283,13 @@ extension Game {
     _ = try candidate.acceptScriptMission(
       pack, instanceID: instanceID, randomSeed: board.seed, contract: job, drainAccepted: false)
     candidate.drainScriptEvents()
+    try Self.validateCompletedContractAcceptance(&candidate, pack: pack, instanceID: instanceID)
+    return publishContractAcceptance(&candidate, instanceID: instanceID)
+  }
+  // Reserve post-acceptance read buffers only after the real event drain has returned.
+  private static func validateCompletedContractAcceptance(
+    _ candidate: inout Game, pack: ScriptPack, instanceID: UUID
+  ) throws {
     if let reason = candidate.commander.scriptState.instances[instanceID]?.suspension {
       throw MissionPackError(reason)
     }
@@ -302,7 +309,6 @@ extension Game {
     guard candidate.commander.valid else {
       throw MissionPackError("This contract cannot fit the current commander.")
     }
-    return publishContractAcceptance(&candidate, instanceID: instanceID)
   }
   private mutating func publishContractAcceptance(_ candidate: inout Game, instanceID: UUID) -> UUID
   {

@@ -1,0 +1,9 @@
+# Validate completed contracts after event-drain storage is released
+
+After the unchanged candidate setup, deposit/status changes, actual mission acceptance and event drain, performContractAcceptance calls a private synchronous static helper with that candidate inout. The helper contains the original suspension check, pledge admission clear/completion guard, courier admission clear/completion guard and Commander validity guard in their exact order, with the same errors. The caller publishes the candidate only after the helper returns successfully.
+
+All required atomic candidate and quote dry-run copies, actor rollback snapshots, writer barriers, resource/epoch equality, receipts, proofs, stock and ownership remain intact. No check or preview evaluation is removed. The public value API, actor ownership, data, tests, scheduling, compiler options and stack limits are unchanged. Inlining the validation helper restores the original function body byte-for-byte; every original test remains unchanged.
+
+The observed stop is retained at `/tmp/elite-debug-crash-164/actual-stopped-thread.json`, for binary `bf34d5a7ee888a51588d93fbb1b0ad6e25d3e4bc17ce4f8f0a66e7232614aaa9` from `f47fa535671075a30d7ac31ec627e55bf1bfeb9e`. Independent emitted-code inspection found a 5856-byte fixed allocation plus separate callee-save storage, with two Game-sized buffers reserved before event drain. This describes the old measured seam, not total stack, new compiled storage or equivalence to an unobserved earlier signal.
+
+Source formatting, strict lint, scoped Markdown lint, whitespace checks and exact validation-body preservation are worker checks. Compilation, emitted lifetime measurements, original thread-sanitized pledge/contract/trial and rollback regressions, and full CI remain pending with the orchestrator. No worker build, native process or debugger runs. No GitHub issue or PR exists yet. See [motivation](ISSUE-contract-validation-lifetimes.md).
