@@ -37,6 +37,7 @@ extension Game {
   mutating func launchGameplayNPCMissile(bodyID: Int) -> Bool {
     var candidate = self
     guard let ownerIndex = candidate.bodies.firstIndex(where: { $0.id == bodyID }),
+      !candidate.isEMPDisabled(candidate.bodies[ownerIndex]),
       candidate.bodies[ownerIndex].missiles > 0,
       candidate.admitGameplayMissile(ownerBodyID: bodyID, targetBodyID: nil)
     else {
@@ -50,6 +51,10 @@ extension Game {
   private mutating func admitGameplayMissile(
     ownerBodyID: Int?, targetBodyID: Int?, playerAmmunition: PlayerAmmunitionSource? = nil
   ) -> Bool {
+    if let ownerBodyID {
+      guard let body = bodies.first(where: { $0.id == ownerBodyID }), !isEMPDisabled(body)
+      else { return false }
+    }
     ensurePhysicalActors()
     guard let context = gameplayContext(), energy > 0,
       let owner = missileActor(bodyID: ownerBodyID, context: context), owner.energy > 0,

@@ -2,7 +2,7 @@ extension Game {
   /// TACTICS recharges one unit, then considers ordnance below half energy.
   mutating func navalTactics() {
     let candidates = bodies.filter {
-      $0.hostile && $0.energy > 0 && $0.missionInstanceID == nil
+      $0.hostile && $0.energy > 0 && !isEMPDisabled($0) && $0.missionInstanceID == nil
         && ($0.hull.navalEnergy != nil || $0.blackjackRole != nil)
     }
     .map(\.id)

@@ -19,16 +19,16 @@ extension Game {
       let record = commander.savedEMPState?.records[source], isEMPDisabled(body)
     else { return nil }
     if record.crewAboard > 0 {
-      return "ENGINES DISABLED - CREW ABOARD \(record.crewAboard)"
+      return "ENGINES AND WEAPONS DISABLED - CREW ABOARD \(record.crewAboard)"
     }
     if let profile = salvageProfile(for: body),
       profile.sections.allSatisfy({
         commander.salvageLedger.isDepleted(.init(wreck: record.wreck, section: $0.index))
       })
     {
-      return "ENGINES DISABLED - SALVAGE EXHAUSTED"
+      return "ENGINES AND WEAPONS DISABLED - SALVAGE EXHAUSTED"
     }
-    return "ENGINES DISABLED - UNOCCUPIED SALVAGE"
+    return "ENGINES AND WEAPONS DISABLED - UNOCCUPIED SALVAGE"
   }
 
   /// Electronic effects use a real occluded mesh hit and the ordinary aggression ledger, never damage.
@@ -111,7 +111,7 @@ extension Game {
     candidate.laserFlash = 0.08
     candidate.dischargeAudio.record(.empPirateBlaster)
     candidate.commander.crimeLedger.finishEmission(origin.emissionID)
-    candidate.notify("ENGINES DISABLED - CREW EJECTION PENDING")
+    candidate.notify("ENGINES AND WEAPONS DISABLED - CREW EJECTION PENDING")
     guard candidate.commander.valid else { return false }
     self = candidate
     return true

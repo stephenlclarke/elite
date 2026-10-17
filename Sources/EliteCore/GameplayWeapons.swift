@@ -81,6 +81,7 @@ extension Game {
   mutating func emitLegacyNPCBeam(bodyID: Int, damage: Double, energyMultiplier: Double = 1) {
     ensurePhysicalActors()
     guard let body = bodies.first(where: { $0.id == bodyID && $0.energy > 0 }),
+      !isEMPDisabled(body),
       let owner = body.physical?.identity,
       body.position.length > 0
     else { return }
