@@ -62,8 +62,14 @@ enum NativePeopleTestFixture {
         maxDistance: 300, bodies: game.bodies, meshOverrides: game.gameplayMeshOverrides))
     try #require(hit.target == .body(game.bodies[index].id))
   }
-  static func podApproach() throws -> Game {
+  static func podApproach(legacy: Bool = false) throws -> Game {
     var game = try disabled()
+    if legacy {
+      let source = try source(game)
+      game.commander.savedEMPState?.records[source]?.savedDisableEpisodes = nil
+      game.commander.savedEMPState?.records[source]?.nextEjectionAt =
+        game.commander.flightSimulation.physicalTime + 1
+    }
     for _ in 0..<15 { game.tick(delta: 0.1) }
     let index = try #require(game.bodies.firstIndex { $0.physical?.empCrewPod != nil })
     game.bodies[index].position = .init(0, -45, 500)

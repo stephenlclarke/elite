@@ -17,7 +17,9 @@ extension Game {
     -> TargetColourCue
   {
     guard body.energy.isFinite, body.energy > 0 else { return .ordinary }
-    if let context = supplied ?? gameplayContext(), nativePodFacts(body, context: context) != nil {
+    if body.physical?.empCrewPod != nil,
+      let context = supplied ?? gameplayContext(), nativePodFacts(body, context: context) != nil
+    {
       return .recoverable
     }
     if isEMPDisabled(body) { return .recoverable }

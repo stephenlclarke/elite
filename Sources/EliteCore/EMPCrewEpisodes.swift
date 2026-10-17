@@ -14,6 +14,8 @@ struct EMPLegacyCrewEjection: Equatable, Codable, Sendable {
 /// Timing evidence. Electrical recovery and traffic ownership stay with the runtime.
 struct EMPCrewDisableEpisode: Equatable, Codable, Sendable {
   let incident: CombatIncident
+  let weapon: OwnedEquipmentItem
+  let weaponOwner: UUID
   var ejections: [EMPCrewEjection]
   let legacyTiming: Bool
   var actorBindings: [ActorIdentity]
@@ -23,6 +25,11 @@ struct EMPCrewDisableEpisode: Equatable, Codable, Sendable {
   var deadline: Double { incident.physicalTime + 30 }
   func valid(source: ActorIdentity, crewTotal: Int) -> Bool {
     incident.id > 0 && incident.kind == .emp && incident.outcome == .hit
+      && incident.origin.emissionID > 0 && incident.position.finite && !incident.victimIsStation
+      && weapon.node == EquipmentRuntimeCatalog.node(for: Equipment.empPirateBlaster)
+      && weapon.location?.slot == .utility(.empPirateBlaster) && weapon.component == nil
+      && incident.origin.sourcePart == "emp:" + weapon.id.uuidString
+      && incident.origin.ordnance == nil && incident.origin.playerAmmunition == nil
       && incident.victim?.system == source.system && (incident.victim?.entity ?? 0) > 1
       && incident.origin.owner.entity == 0 && incident.origin.owner.system == source.system
       && incident.origin.owner.visit == incident.victim?.visit
@@ -61,7 +68,8 @@ struct EMPCrewDisableEpisode: Equatable, Codable, Sendable {
 
 extension EMPCrewDisableEpisode {
   private enum CodingKeys: String, CodingKey {
-    case incident, ejections, legacyTiming, actorBindings, legacyPods, legacyNextEjectionAt,
+    case incident, weapon, weaponOwner, ejections, legacyTiming, actorBindings, legacyPods,
+      legacyNextEjectionAt,
       legacyEmissions
   }
   init(from decoder: any Decoder) throws {
@@ -79,7 +87,10 @@ extension EMPCrewDisableEpisode {
         values, key: .legacyEmissions, type: EMPLegacyCrewEjection.self)
     else { throw SaveError.invalidCommander }
     self.init(
-      incident: try values.decode(CombatIncident.self, forKey: .incident), ejections: schedule,
+      incident: try values.decode(CombatIncident.self, forKey: .incident),
+      weapon: try values.decode(OwnedEquipmentItem.self, forKey: .weapon),
+      weaponOwner: try values.decode(UUID.self, forKey: .weaponOwner),
+      ejections: schedule,
       legacyTiming: try values.decode(Bool.self, forKey: .legacyTiming), actorBindings: bindings,
       legacyPods: legacyPods,
       legacyNextEjectionAt: try values.decodeIfPresent(Double.self, forKey: .legacyNextEjectionAt),
@@ -100,6 +111,20 @@ extension EMPHullRecord {
   func podIndex(for ordinal: Int) -> Int? {
     pods.firstIndex { $0.body.physical?.empCrewPod == .init(source: source, ordinal: ordinal) }
   }
+  func podEjectionLowerBound(for ordinal: Int) -> Double? {
+    guard podIndex(for: ordinal) != nil else { return nil }
+    for episode in disableEpisodes {
+      if let emitted = episode.ejections.first(where: { $0.ordinal == ordinal })?.emittedAt {
+        return emitted
+      }
+      if let emitted = episode.legacyEmissions.first(where: { $0.ordinal == ordinal }) {
+        return emitted.time
+      }
+      if episode.legacyPods.contains(ordinal) { return episode.incident.physicalTime }
+    }
+    // A genuine pre-24 pod has no historical ejection timestamp.
+    return disableEpisodes.isEmpty ? disableIncident.physicalTime : nil
+  }
   func nextDueCrew(at time: Double) -> Int? {
     guard time.isFinite, let episode = disableEpisodes.last, time < episode.deadline else {
       return nil
@@ -113,23 +138,29 @@ extension EMPHullRecord {
     }?.ordinal
   }
   /// Called only by the actual-zero producer, once for the original surviving complement.
-  mutating func appendCrewDisableEpisode(incident: CombatIncident, ejections: [EMPCrewEjection])
+  mutating func appendCrewDisableEpisode(
+    incident: CombatIncident, weapon: OwnedEquipmentItem, owner: UUID,
+    ejections: [EMPCrewEjection]
+  )
     -> Bool
   {
     if disableEpisodes.isEmpty, incident != disableIncident {
       var candidate = self
       guard candidate.installLegacyCrewEpisode(),
-        candidate.appendCrewDisableEpisode(incident: incident, ejections: ejections)
+        candidate.appendCrewDisableEpisode(
+          incident: incident, weapon: weapon, owner: owner, ejections: ejections)
       else { return false }
       self = candidate
       return true
     }
     guard let victim = incident.victim else { return false }
     let episode = EMPCrewDisableEpisode(
-      incident: incident, ejections: ejections, legacyTiming: false, actorBindings: [victim],
+      incident: incident, weapon: weapon, weaponOwner: owner,
+      ejections: ejections, legacyTiming: false, actorBindings: [victim],
       legacyPods: [], legacyNextEjectionAt: nil, legacyEmissions: [])
     guard !terminal, crewAboard > 0, disableEpisodes.count < Self.maximumDisableEpisodes,
       episode.valid(source: source, crewTotal: crewTotal),
+      owner == weaponOwner,
       Set(ejections.map(\.ordinal)) == Set(aboardOrdinals),
       disableEpisodes.isEmpty || incident.victim == hull.body.physical?.identity,
       disableEpisodes.last.map({
@@ -154,8 +185,11 @@ extension EMPHullRecord {
     let discharged = ejected + captured + deceasedOrdinals
     guard discharged.count <= crewTotal, Set(discharged).count == discharged.count,
       discharged.allSatisfy({ (0..<crewTotal).contains($0) }), ejected.count == pods.count,
-      disableEpisodes.allSatisfy({ $0.valid(source: source, crewTotal: crewTotal) }),
+      disableEpisodes.allSatisfy({
+        $0.weaponOwner == weaponOwner && $0.valid(source: source, crewTotal: crewTotal)
+      }),
       disableEpisodes.first.map({ $0.incident == disableIncident }) ?? true,
+      disableEpisodes.first.map({ $0.weapon == weapon && $0.weaponOwner == weaponOwner }) ?? true,
       disableEpisodes.enumerated().allSatisfy({ index, episode in
         index == 0
           || (episode.incident.id > disableEpisodes[index - 1].incident.id
@@ -250,7 +284,8 @@ extension EMPHullRecord {
       let current = hull.body.physical?.identity
     else { return false }
     let episode = EMPCrewDisableEpisode(
-      incident: disableIncident, ejections: [], legacyTiming: true,
+      incident: disableIncident, weapon: weapon, weaponOwner: weaponOwner,
+      ejections: [], legacyTiming: true,
       actorBindings: original == current ? [original] : [original, current],
       legacyPods: pods.compactMap { $0.body.physical?.empCrewPod?.ordinal },
       legacyNextEjectionAt: nextEjectionAt, legacyEmissions: [])
