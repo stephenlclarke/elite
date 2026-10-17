@@ -72,6 +72,9 @@ extension Game {
       bodies[index].energy = 0
     } else if bodies[target].ecmEnabled && randomByte() < 16 {
       // Missile TACTICS tests proximity first, then a 16/256 ECM chance.
+      guard let emitter = bodies[target].physical?.identity,
+        activateOrdnanceECM(emitter: emitter)
+      else { return }
       ecmFrames = 32
       enemyECMSource = bodies[target].id
       bodies[index].energy = 0

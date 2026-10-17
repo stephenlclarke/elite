@@ -30,6 +30,12 @@ public struct NPCPersistenceSnapshot: Equatable, Codable, Sendable {
       && npc.role != .mission && (0...255).contains(npc.legal.value)
       && npc.legal.bountyTenths >= 0 && npc.ordinaryCargo.allSatisfy(\.valid)
       && (npc.resources?.valid ?? true)
+      && (npc.resources?.legacyElectricalRecharge.map {
+        $0
+          == (catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.recharge }
+            ?? ShipCatalogue.nativeShip(hull)?.game?.recharge)
+      } ?? true)
+      && (npc.resources?.electrical.map { $0.physicalTime <= physicalTime } ?? true)
       && energy.isFinite && energy > 0 && energy <= (npc.resources?.energyCapacity ?? 100000)
       && missiles >= 0 && position.finite && orientation.validRotation
       && velocity.finite && angularVelocity.finite && rotation.isFinite && rotationRate.isFinite
@@ -164,6 +170,10 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
       }
   }
 
+  var hasElectricalState: Bool {
+    entries.values.contains { $0.snapshot.npc.resources?.electrical != nil }
+  }
+
   var empTransfers: [ActorIdentity: NPCPersistenceSnapshot] {
     entries.compactMapValues { $0.terminal == .empTransferred ? $0.snapshot : nil }
   }
@@ -184,6 +194,46 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
 
   public func logicalIdentity(for actor: ActorIdentity) -> ActorIdentity? {
     entries.first { $0.value.binding == actor }?.key
+  }
+
+  /// A private EMP transition returns this current snapshot under the original logical key.
+  /// A departed ledger can import the retained archive unbound, without bypassing actor allocation.
+  mutating func returnEMPTransfer(
+    logical: ActorIdentity, expectedTransfer: NPCPersistenceSnapshot,
+    current: NPCPersistenceSnapshot, bind: Bool, protection: MissionProtection
+  ) -> SpawnIdentity? {
+    guard valid, current.valid, expectedTransfer.valid,
+      logical.system == current.actor.system, expectedTransfer.actor.system == logical.system,
+      logical.visit <= current.actor.visit, current.physicalTime >= expectedTransfer.physicalTime,
+      current.hull == expectedTransfer.hull, current.npc.role == expectedTransfer.npc.role,
+      system == nil || system == logical.system,
+      !protection.protectedActors.contains(logical),
+      !protection.protectedActors.contains(current.actor),
+      entries.allSatisfy({ $0.key == logical || $0.value.binding != current.actor }),
+      nextOffer < UInt64.max - 1
+    else { return nil }
+    if let prior = entries[logical] {
+      guard prior.terminal == .empTransferred, prior.snapshot == expectedTransfer,
+        prior.binding == nil, prior.offer == nil
+      else { return nil }
+    } else {
+      guard entries.count < Self.maximumEntries else { return nil }
+    }
+    var candidate = self
+    candidate.system = logical.system
+    candidate.highestActor = max(highestActor, max(logical.entity, current.actor.entity))
+    let spawn = SpawnIdentity(
+      system: current.actor.system, visit: current.actor.visit,
+      sequence: nextOffer, member: 0, producer: .persistence)
+    candidate.nextOffer += 1
+    candidate.entries[logical] = .init(
+      snapshot: candidate.bindingReferences(
+        current,
+        previous: entries[logical]?.snapshot, protection: protection),
+      binding: bind ? current.actor : nil)
+    guard candidate.valid else { return nil }
+    self = candidate
+    return spawn
   }
 
   /// Rejoin only an already-restored saved actor, never allocate or refresh its condition.

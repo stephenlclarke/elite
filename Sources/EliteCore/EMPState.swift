@@ -19,6 +19,9 @@ struct EMPStoredObject: Equatable, Codable, Sendable {
       && body.energy.isFinite && (0...1e12).contains(body.energy) && body.missiles >= 0
       && physicalTime.isFinite && physicalTime >= 0
       && (physical.npc?.resources?.valid ?? true)
+      && (physical.npc?.resources?.legacyElectricalRecharge.map {
+        $0 == physical.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.recharge }
+      } ?? true)
       && body.missionActorID == nil && body.missionInstanceID == nil
       && body.scriptNPC == nil && body.scriptShot == nil && !body.navalTarget
       && !body.enemyMissile && body.playerMissileTarget == nil && body.missileSourceID == nil
@@ -63,6 +66,17 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
   var savedCrewCaptures: [NativeCrewCaptureReceipt]?
   var savedDisableEpisodes: [EMPCrewDisableEpisode]?
   var savedDeceasedOrdinals: [Int]?
+  var savedRecoveredAt: Double?
+  var savedOrdinaryTerminal: NPCTerminalReason?
+  var savedCurrentTrafficTransfer: NPCPersistenceSnapshot?
+  var savedCurrentCargo: [CommodityAmount]?
+  var savedCurrentLegal: LegalRecord?
+  var salvageCargo: [CommodityAmount] { savedCurrentCargo ?? cargo }
+  var salvageLegal: LegalRecord { savedCurrentLegal ?? legal }
+  var isRecovered: Bool { savedRecoveredAt != nil }
+  var activeTrafficTransfer: NPCPersistenceSnapshot? {
+    savedCurrentTrafficTransfer ?? custody.traffic
+  }
   var crewCaptures: [NativeCrewCaptureReceipt] {
     get { savedCrewCaptures ?? [] }
     set { savedCrewCaptures = newValue.isEmpty ? nil : newValue }
@@ -134,12 +148,7 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
       crewCaptures.enumerated().allSatisfy({ index, receipt in
         index == 0 || receipt.physicalTime >= crewCaptures[index - 1].physicalTime
       }),
-      hull.valid, hull.body.physical?.empSource == source,
-      hull.body.physical?.empCrewPod == nil,
-      hull.body.physical?.spawnIdentity?.producer == .emp,
-      hull.body.physical?.spawnIdentity?.sequence == sequence,
-      hull.body.physical?.spawnIdentity?.member == 0,
-      hull.body.physical?.spawnIdentity?.system == source.system,
+      hull.valid, hull.body.physical?.empCrewPod == nil,
       [.cobra, .viper, .sidewinder].contains(hull.body.hull),
       let catalogue = hull.body.physical?.catalogueShipID,
       let ship = ShipCatalogue.ship(catalogue), EMPState.hasSupportedCrew(ship),
@@ -148,23 +157,57 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
           ?? ShipCatalogue.nativeShip(custody.original.body.hull)?.id),
       let complement = try? ShipAccommodationProfile(ship: ship),
       complement.operatingCrew == crewTotal,
-      let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue),
-      let metadata = hull.body.physical?.salvage, metadata.wreck == wreck,
-      metadata.category == .wreck, metadata.claimant == nil, metadata.section == nil,
-      metadata.lot == nil,
-      metadata.bounds == profile.bounds, metadata.workSurfaces == profile.surfaces(wreck: wreck),
+      SalvageCatalogue.empProfile(catalogueShipID: catalogue) != nil,
       cargo.allSatisfy(\.valid), Set(cargo.map(\.commodity)).count == cargo.count,
       (0...255).contains(legal.value), legal.bountyTenths >= 0,
       nextEjectionAt.isFinite, nextEjectionAt >= 0,
       terminal == (hull.body.energy <= 0),
       lostCrewCount == (terminal ? crewTotal - pods.count - capturedCrewCount : 0)
     else { return false }
-    if !terminal {
+    if isRecovered {
+      guard let recoveredAt = savedRecoveredAt, let deadline = crewDeadline,
+        recoveredAt.isFinite, recoveredAt >= deadline, recoveredAt <= hull.physicalTime,
+        hull.body.physical?.empSource == nil, hull.body.physical?.salvage == nil,
+        hull.body.physical?.spawnIdentity?.producer != .emp,
+        hull.body.physical?.npc != nil,
+        hull.body.physical?.npc?.resources?.electrical?.disabledAt == nil,
+        savedOrdinaryTerminal != .empTransferred,
+        (savedOrdinaryTerminal == .destroyed) == terminal,
+        savedOrdinaryTerminal == nil || hull.binding == nil
+      else { return false }
+    } else {
+      guard savedOrdinaryTerminal == nil, hull.body.physical?.empSource == source,
+        hull.body.physical?.spawnIdentity?.producer == .emp,
+        hull.body.physical?.spawnIdentity?.sequence == sequence,
+        hull.body.physical?.spawnIdentity?.member == 0,
+        hull.body.physical?.spawnIdentity?.system == source.system,
+        let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue),
+        let metadata = hull.body.physical?.salvage, metadata.wreck == wreck,
+        metadata.category == .wreck, metadata.claimant == nil, metadata.section == nil,
+        metadata.lot == nil, metadata.bounds == profile.bounds,
+        metadata.workSurfaces == profile.surfaces(wreck: wreck)
+      else { return false }
+    }
+    guard (savedCurrentCargo != nil) == (disableEpisodes.count > 1),
+      (savedCurrentLegal != nil) == (disableEpisodes.count > 1),
+      salvageCargo.count <= 17, salvageCargo.allSatisfy(\.valid),
+      Set(salvageCargo.map(\.commodity)).count == salvageCargo.count,
+      (0...255).contains(salvageLegal.value), salvageLegal.bountyTenths >= 0,
+      currentCrewDisableIncident.victimLegalBeforeAttack == salvageLegal
+    else { return false }
+    if let transfer = savedCurrentTrafficTransfer {
+      guard transfer.valid, transfer.actor.system == source.system,
+        transfer.actor.visit >= source.visit,
+        transfer.physicalTime <= currentCrewDisableIncident.physicalTime,
+        transfer.npc.role == custody.original.body.physical?.npc?.role
+      else { return false }
+    }
+    if !terminal && !isRecovered {
       guard hull.body.physical?.salvage?.ownership == (crewAboard > 0 ? .occupied : .abandoned),
         (hull.body.physical?.npc != nil) == (crewAboard > 0),
         hull.body.physical?.population
           == (crewAboard > 0 ? custody.original.body.physical?.population : .wreck),
-        crewAboard == 0 || hull.body.physical?.npc?.ordinaryCargo == cargo
+        crewAboard == 0 || hull.body.physical?.npc?.ordinaryCargo == salvageCargo
       else { return false }
     }
     return pods.allSatisfy { pod in
@@ -194,7 +237,9 @@ extension EMPHullRecord {
   private enum CodingKeys: String, CodingKey {
     case source, sequence, wreck, crewTotal, originalSpawn, originalBodyID, custody, disableIncident
     case weapon, weaponOwner, pods, hull, cargo, legal, nextEjectionAt, terminal, lostCrewCount,
-      savedCrewCaptures, savedDisableEpisodes, savedDeceasedOrdinals
+      savedCrewCaptures, savedDisableEpisodes, savedDeceasedOrdinals,
+      savedRecoveredAt, savedOrdinaryTerminal, savedCurrentTrafficTransfer,
+      savedCurrentCargo, savedCurrentLegal
   }
   init(from decoder: any Decoder) throws {
     let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -225,7 +270,15 @@ extension EMPHullRecord {
       nextEjectionAt: try values.decode(Double.self, forKey: .nextEjectionAt),
       terminal: try values.decode(Bool.self, forKey: .terminal),
       lostCrewCount: try values.decode(Int.self, forKey: .lostCrewCount),
-      savedCrewCaptures: captures, savedDisableEpisodes: episodes, savedDeceasedOrdinals: deceased)
+      savedCrewCaptures: captures, savedDisableEpisodes: episodes, savedDeceasedOrdinals: deceased,
+      savedRecoveredAt: try values.decodeIfPresent(Double.self, forKey: .savedRecoveredAt),
+      savedOrdinaryTerminal: try values.decodeIfPresent(
+        NPCTerminalReason.self, forKey: .savedOrdinaryTerminal),
+      savedCurrentTrafficTransfer: try values.decodeIfPresent(
+        NPCPersistenceSnapshot.self, forKey: .savedCurrentTrafficTransfer),
+      savedCurrentCargo: try values.decodeIfPresent(
+        [CommodityAmount].self, forKey: .savedCurrentCargo),
+      savedCurrentLegal: try values.decodeIfPresent(LegalRecord.self, forKey: .savedCurrentLegal))
   }
 }
 

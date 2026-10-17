@@ -22,6 +22,7 @@ extension Game {
   }
 
   mutating func beginGameplayVisit(arriving: Bool) {
+    commander.savedEMPCharge = nil
     if var state = commander.savedEMPState {
       for source in state.records.keys {
         state.records[source]?.hull.binding = nil

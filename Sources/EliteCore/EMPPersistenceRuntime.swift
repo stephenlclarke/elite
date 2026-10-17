@@ -3,15 +3,21 @@ import Foundation
 extension Game {
   /// Every admitted person remains in custody if an actor slot or safe placement is unavailable.
   mutating func advanceEMPActors() {
-    guard !docked, persistEMPState(), var state = commander.savedEMPState else { return }
+    guard !docked, persistEMPState() else { return }
+    recoverEMPHulls()
+    guard var state = commander.savedEMPState else { return }
     let now = commander.flightSimulation.physicalTime
     for source in state.sources {
       guard var record = state.records[source] else { continue }
-      if record.disableEpisodes.isEmpty, !record.terminal, record.crewAboard > 0 {
+      if record.disableEpisodes.isEmpty, !record.terminal, !record.isRecovered,
+        record.crewAboard > 0
+      {
         guard record.installLegacyCrewEpisode()
         else { continue }
       }
-      if !record.terminal, record.hull.binding == nil { coastEMPObject(&record.hull, to: now) }
+      if !record.terminal, !record.isRecovered, record.hull.binding == nil {
+        coastEMPObject(&record.hull, to: now)
+      }
       for i in record.pods.indices
       where record.pods[i].binding == nil
         && record.pods[i].body.physical?.empCrewPod.map({ commander.worldOwnedPod($0) }) == true
@@ -24,7 +30,7 @@ extension Game {
     for source in state.sources {
       guard let record = commander.savedEMPState?.records[source], source.system == systemIdentity
       else { continue }
-      if !record.terminal, record.hull.binding == nil {
+      if !record.terminal, !record.isRecovered, record.hull.binding == nil {
         _ = admitEMPObject(record.hull, source: source, sequence: record.sequence, member: 0)
       }
       for i in record.pods.indices
@@ -36,7 +42,7 @@ extension Game {
           record.pods[i], source: source, sequence: record.sequence,
           member: UInt16(person.ordinal + 1))
       }
-      ejectOneEMPCrewMember(source: source)
+      if !record.isRecovered { ejectOneEMPCrewMember(source: source) }
     }
   }
 
@@ -242,7 +248,9 @@ extension Game {
     let now = commander.flightSimulation.physicalTime
     for source in state.records.keys {
       guard var record = state.records[source] else { return false }
-      if let binding = record.hull.binding {
+      if record.isRecovered {
+        guard updateRecoveredEMPArchive(&record, pose: pose, now: now) else { return false }
+      } else if let binding = record.hull.binding {
         if let body = bodies.first(where: { $0.physical?.identity == binding }) {
           record.hull = .init(body: body, pose: pose, time: now)
           if body.energy <= 0, !record.terminal, !record.disableEpisodes.isEmpty {

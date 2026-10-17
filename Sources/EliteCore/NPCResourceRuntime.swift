@@ -7,6 +7,14 @@ extension Game {
       guard var resources = bodies[index].physical?.npc?.resources, resources.valid else {
         continue
       }
+      if var reserve = resources.electrical {
+        guard
+          reserve.advance(
+            to: commander.flightSimulation.physicalTime,
+            capacity: resources.energyCapacity, recharge: resources.electricalRecharge)
+        else { continue }
+        resources.electrical = reserve
+      }
       resources.advance(delta: delta)
       if resources.profile == .nativeHull {
         bodies[index].energy = min(

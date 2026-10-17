@@ -18,6 +18,10 @@ public struct NPCResources: Equatable, Codable, Sendable {
   public var fuel: Int?
   public let fuelCapacity: Int?
   public var scoopRemainder: Double = 0
+  public var electrical: ElectricalReserve? = nil
+  /// Explicit catalogue-backed migration for legacy electrical recovery; hull recharge stays legacy.
+  var legacyElectricalRecharge: Double? = nil
+  var electricalRecharge: Double { legacyElectricalRecharge ?? energyRecharge }
 
   public var valid: Bool {
     let fuelValid: Bool
@@ -36,7 +40,13 @@ public struct NPCResources: Equatable, Codable, Sendable {
       && energyCapacity > 0 && energyCapacity <= 100000
       && frontShield <= frontCapacity && rearShield <= rearCapacity
       && laserHeat <= heatCapacity && scoopRemainder < 1
+      && (legacyElectricalRecharge.map {
+        profile == .legacyEnergyOnly && $0.isFinite && $0 > 0 && $0 <= 100000
+      } ?? true)
       && fuelValid
+      && (electrical.map {
+        $0.valid && $0.capacity == energyCapacity && $0.recharge == electricalRecharge
+      } ?? true)
   }
 
   public static func stock(_ performance: ShipPerformance) -> NPCResources? {

@@ -90,6 +90,8 @@ extension Game {
   }
 
   mutating func departOrdinarySimulation() {
+    _ = persistNPCStates()
+    _ = persistEMPState()
     persistOrePoses()
     commander.cargoDebrisLedger.depart(system: systemIdentity)
     commander.miningLedger.depart(system: systemIdentity)

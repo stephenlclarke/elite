@@ -24,6 +24,7 @@ extension Game {
     var candidate = self
     candidate.bodies[index].physical?.npc?.resources = resources
     guard !candidate.persistNPCStates().contains(bodyID),
+      candidate.retireRecoveredEMPActor(physical.identity, reason: .jumped),
       candidate.commander.npcPersistence.terminal(actor: physical.identity, reason: .jumped)
     else { return false }
     candidate.clearRemovedTarget(candidate.bodies[index])

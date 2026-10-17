@@ -182,6 +182,7 @@ extension Game {
       if permission.allowed && (actor.position - destination).length < 80 {
         // Departure is a traffic transition, never a death or bounty settlement.
         let departing = bodies[index]
+        guard retireRecoveredEMPActor(actor.identity, reason: .docked) else { return }
         _ = commander.npcPersistence.terminal(actor: actor.identity, reason: .docked)
         clearRemovedTarget(departing)
         bodies.removeAll { $0.id == departing.id }
