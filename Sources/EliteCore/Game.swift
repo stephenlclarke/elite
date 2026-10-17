@@ -1676,10 +1676,27 @@ public actor GameRuntime {
     }
   }
   private func applyKey(_ key: String) {
+    let prior = keyTransitionState()
+    if handleScriptContactKey(key) {
+      controls = Controls()
+      return
+    }
+    if !handleEquipmentKey(key) { applyPlainGameKey(key) }
+    finishKeyTransition(
+      key, old: prior.screen, wasPaused: prior.paused, wasDocked: prior.docked,
+      oldLocation: (prior.galaxy, prior.system))
+  }
+  // Read buffers finish before command phases can enter deeper native transactions.
+  private func keyTransitionState() -> (
+    screen: Screen, paused: Bool, docked: Bool, galaxy: Int, system: Int
+  ) {
     let old = game.screen
     let wasPaused = game.paused
     let wasDocked = game.docked
     let oldLocation = (game.commander.galaxy, game.commander.system)
+    return (old, wasPaused, wasDocked, oldLocation.0, oldLocation.1)
+  }
+  private func handleScriptContactKey(_ key: String) -> Bool {
     if key == "contacts-open" || (key == "b" && !game.acceptsTextInput), game.docked, !game.paused,
       ![
         Screen.help, .gallery, .library, .handoff, .mission, .showroom, .title, .demo, .gameOver,
@@ -1688,15 +1705,25 @@ public actor GameRuntime {
     {
       game.emitScriptEvent("contact.requested")
       if game.showScriptDialogue() || game.offerAvailableScriptMission() {
-        controls = Controls()
-        return
+        return true
       }
     }
-    if key.lowercased() == "return", let context = game.equipmentPurchaseContext {
-      _ = game.performEquipmentMutation(.purchase(context))
-    } else {
-      game.key(key)
+    return false
+  }
+  private func handleEquipmentKey(_ key: String) -> Bool {
+    guard key.lowercased() == "return", let context = game.equipmentPurchaseContext else {
+      return false
     }
+    _ = game.performEquipmentMutation(.purchase(context))
+    // A refused attempt still consumes Return; the original route never fell through.
+    return true
+  }
+  private func applyPlainGameKey(_ key: String) {
+    game.key(key)
+  }
+  private func finishKeyTransition(
+    _ key: String, old: Screen, wasPaused: Bool, wasDocked: Bool, oldLocation: (Int, Int)
+  ) {
     if old != game.screen || wasPaused != game.paused { invalidateInventoryContext() }
     if old == .handoff, game.screen == .contracts { game.refreshContractRows() }
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: oldLocation.0, system: oldLocation.1)
