@@ -111,6 +111,7 @@ extension Commander {
       switch name {
       case "Extra Energy Unit": return total + 2
       case Equipment.navalEnergyUnit: return total + 3
+      case Equipment.eliteEnergyUnit: return total + 4
       default: return total + (ShieldBooster.from(name) == nil ? 1 : 2)
       }
     }

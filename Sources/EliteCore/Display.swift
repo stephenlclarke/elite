@@ -514,7 +514,10 @@ public enum Display {
       let fitted =
         game.commander.equipment.contains(item.name)
         || (item.name == "Extra Energy Unit"
-          && game.commander.equipment.contains(Equipment.navalEnergyUnit))
+          && (game.commander.equipment.contains(Equipment.navalEnergyUnit)
+            || game.commander.equipment.contains(Equipment.eliteEnergyUnit)))
+        || (item.name == Equipment.navalEnergyUnit
+          && game.commander.equipment.contains(Equipment.eliteEnergyUnit))
       let price =
         Equipment.isReward(item.name) ? "REWARD" : String(format: "%.1f", Double(item.price) / 10)
       frame.text(fitted ? "FITTED" : price, 194, y)

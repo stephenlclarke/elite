@@ -7,12 +7,21 @@ extension Commander {
     for (name, slot) in [
       ("Elite Shield Module", ComponentFittingSlot.shield),
       (NavigationTier.military.equipmentName, .navigation),
-      (Equipment.navalEnergyUnit, .energy),
+      (Equipment.eliteEnergyUnit, .energy),
       (TargetingTier.military.equipmentName, .targetingCore),
       ("Targeting: Mining Module", .targetingMining),
       ("Targeting: Salvage Module", .targetingSalvage),
     ] {
       try candidate.grantEquipment(name, at: slot, provenance: .xyzzy)
+    }
+    // The secret reset selects the top stock grade; customized lower-grade hardware stays owned.
+    if candidate.fittedComponent(at: .energy)?.grade
+      != EquipmentModuleTemplates.energy.grades[3].identity
+    {
+      guard let inventory = candidate.equipmentInventory,
+        let elite = inventory.items.first(where: { $0.node.key == Equipment.eliteEnergyUnit })
+      else { throw EquipmentRuntimeError.unavailable }
+      try candidate.fitEquipment(elite, at: .energy, expectedRevision: inventory.revision)
     }
     for mount in LaserMount.allCases where candidate.performance.supports(mount) {
       try candidate.grantEquipment(Equipment.navalLaser, at: .laser(mount), provenance: .xyzzy)

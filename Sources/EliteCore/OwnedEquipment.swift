@@ -29,6 +29,7 @@ public enum OwnedGearKind: Codable, Sendable, Equatable {
       if name == Equipment.legacyDockingComputer { return 0 }
       if name == "Extra Energy Unit" { return 2 }
       if name == Equipment.navalEnergyUnit { return 3 }
+      if name == Equipment.eliteEnergyUnit { return 4 }
       return ShieldBooster.from(name) == nil ? 1 : 2
     }
   }

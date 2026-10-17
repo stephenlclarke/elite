@@ -50,14 +50,14 @@ public enum EquipmentModuleTemplates {
     terminalLimits: [.jumpReach: 27.3, .jumpSpool: 0.7, .jumpFuelCost: 0.7])
 
   public static let energy: ComponentFamilyDefinition = .init(
-    family: energyFamily, revision: 1,
-    grades: ["basic", "intermediate", "advanced"].enumerated().map { index, id in
+    family: energyFamily, revision: 2,
+    grades: ["basic", "intermediate", "advanced", "elite"].enumerated().map { index, id in
       template(
         energyFamily, id, order: index,
         statistics: [.energyCapacity: 1, .energyRecharge: Double(index + 1)],
         required: [.energyRecharge])
     },
-    terminalLimits: [.energyCapacity: 1.3, .energyRecharge: 3.9])
+    terminalLimits: [.energyCapacity: 1.3, .energyRecharge: 5.2])
 
   public static let definitions = [shield, navigation, energy]
 
@@ -78,6 +78,7 @@ public enum EquipmentModuleTemplates {
       switch key {
       case "Extra Energy Unit": return mapping(energy.grades[1])
       case "Naval Energy Unit": return mapping(energy.grades[2])
+      case "Elite Energy Unit": return mapping(energy.grades[3])
       default: return nil
       }
     }
@@ -105,7 +106,7 @@ public enum EquipmentModuleTemplates {
       let index = definition.grades.firstIndex(where: { $0.identity == identity })
     else { return nil }
     return identity.family == shieldFamily
-      ? shieldNames[index] : ["Basic", "Intermediate", "Advanced"][index]
+      ? shieldNames[index] : ["Basic", "Intermediate", "Advanced", "Elite"][index]
   }
 
   /// Legacy spelling aliases affect presentation only; they never parse saved navigation keys.

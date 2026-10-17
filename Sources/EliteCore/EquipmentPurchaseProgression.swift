@@ -523,6 +523,7 @@ public enum EquipmentPurchaseCatalog {
         ("Basic Energy System", "Basic Energy System"),
         ("Extra Energy Unit", "Intermediate Energy Module"),
         ("Naval Energy Unit", "Advanced Energy Module"),
+        ("Elite Energy Unit", "Elite Energy Unit"),
       ], standard: true)
     chain(
       shields,
@@ -566,6 +567,6 @@ public enum EquipmentPurchaseCatalog {
           id: id(family, "Targeting: " + name + " Module"), displayName: name + " Targeting Module",
           prerequisites: [basic], fittedPrerequisites: [basic]))
     }
-    return .init(revision: 1, nodes: nodes, aliases: aliases)
+    return .init(revision: 2, nodes: nodes, aliases: aliases)
   }
 }

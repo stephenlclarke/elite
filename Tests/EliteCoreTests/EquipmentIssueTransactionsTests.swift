@@ -31,6 +31,8 @@ private func issueBudget(capacity: Int = 100, occupied: Int = 0) -> EquipmentFit
           cost = 2
         } else if node.key == "Naval Energy Unit" {
           cost = 3
+        } else if node.key == Equipment.eliteEnergyUnit {
+          cost = 4
         } else {
           cost = ShieldBooster.from(node.key) == nil ? 1 : 2
         }

@@ -120,7 +120,9 @@ extension Commander {
     let navigation = navigationTier?.equipmentName ?? NavigationTier.basic.equipmentName
     try append(navigation, at: .navigation, standard: navigationTier == nil)
     let energy: String
-    if equipment.contains(Equipment.navalEnergyUnit) {
+    if equipment.contains(Equipment.eliteEnergyUnit) {
+      energy = Equipment.eliteEnergyUnit
+    } else if equipment.contains(Equipment.navalEnergyUnit) {
       energy = Equipment.navalEnergyUnit
     } else if equipment.contains("Extra Energy Unit") {
       energy = "Extra Energy Unit"

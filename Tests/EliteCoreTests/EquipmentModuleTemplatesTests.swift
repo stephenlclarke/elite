@@ -23,7 +23,7 @@ private func moduleQuote(
 @Test func equipmentModuleTemplatesHaveStableMonotonicValidatedDefinitions() throws {
   #expect(EMT.definitions.map(\.family.id) == ["shield", "navigation", "energy"])
   for definition in EMT.definitions {
-    #expect(definition.revision == 1)
+    #expect(definition.revision == (definition.family == EMT.energyFamily ? 2 : 1))
     #expect(Set(definition.grades.map(\.identity)).count == definition.grades.count)
     for template in definition.grades {
       #expect(template.identity.version == 1)
@@ -69,7 +69,7 @@ private func moduleQuote(
 }
 
 @Test func equipmentModuleTemplatesEnergyCapacityIsIndependentOfRechargeGrade() throws {
-  #expect(EMT.energy.grades.map { $0.statistics[.energyRecharge]! } == [1, 2, 3])
+  #expect(EMT.energy.grades.map { $0.statistics[.energyRecharge]! } == [1, 2, 3, 4])
   #expect(EMT.energy.grades.allSatisfy { $0.statistics[.energyCapacity] == 1 })
   #expect(
     EMT.legacyMapping(family: EMT.energyFamily, key: "Extra Energy Unit")?.grade.id
@@ -81,8 +81,8 @@ private func moduleQuote(
     EMT.energy, origin: EMT.energy.grades[0], effects: [.energyCapacity: 1500])
   #expect(quote.after[.energyCapacity] == 1.15 && quote.promotions.isEmpty)
   let capped = try moduleQuote(
-    EMT.energy, origin: EMT.energy.grades[2],
-    statistics: [.energyCapacity: 1.29, .energyRecharge: 3.89],
+    EMT.energy, origin: EMT.energy.grades[3],
+    statistics: [.energyCapacity: 1.29, .energyRecharge: 5.19],
     effects: [.energyCapacity: 1500, .energyRecharge: 1500])
   #expect(capped.after == EMT.energy.terminalLimits)
 }

@@ -35,7 +35,7 @@ struct EMPPulseProfile: Equatable, Sendable {
     let definition = EquipmentModuleTemplates.energy
     try ComponentProgression.validateLoaded(component, definition: definition)
     guard let grade = definition.grades.first(where: { $0.identity == component.grade }),
-      (0...2).contains(grade.order)
+      (0...3).contains(grade.order)
     else { throw EMPPulseProfileError.invalidEnergyGrade }
     return Self(energyStage: grade.order)
   }

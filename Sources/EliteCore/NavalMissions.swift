@@ -104,6 +104,7 @@ extension Commander {
     if let multiplier = fittedComponent(at: .energy)?.statistics[.energyRecharge] {
       return multiplier
     }
+    if equipment.contains(Equipment.eliteEnergyUnit) { return 4 }
     if equipment.contains(Equipment.navalEnergyUnit) { return 3 }
     return equipment.contains("Extra Energy Unit") ? 2 : 1
   }
