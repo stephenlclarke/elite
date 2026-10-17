@@ -316,3 +316,40 @@ extension EMPElectricalRuntimeTests {
     #expect(fields.contains { $0.label == "Electrical power" })
   }
 }
+
+extension EMPElectricalRuntimeTests {
+  @Test func selfDisabledSpinKeepsItsActualInertiaUntilPositiveEarnedPowerReturns() throws {
+    var game = try electricalGame()
+    game.bodies[0].position = .init(0, 0, 200)
+    game.frontShield = 0
+    try game.commander.grantEquipment(
+      "Energy Bomb", at: .utility(.energyBomb),
+      provenance: .grant("EMP spin boundary"))
+    var reserve = try #require(
+      ElectricalReserve(
+        capacity: game.commander.performance.energy,
+        recharge: game.commander.performance.recharge * game.commander.energyRechargeMultiplier,
+        at: game.commander.flightSimulation.physicalTime))
+    let lowered = reserve.drain(reserve.capacity - 9, at: reserve.physicalTime)
+    try #require(lowered)
+    game.commander.savedPlayerElectrical = reserve
+    game.spin.toggleMode()
+    game.spin.begin(.clockwise)
+    game.spin.advance(delta: 0.1, controls: Controls())
+    let inertia = game.spin.actualRate
+    let command = game.spin.commandedRate
+    try #require(inertia > 0 && inertia < command)
+    try releaseElectricalPulse(&game)
+    try #require(game.playerEMPDisabled)
+    game.energyBomb()
+    for _ in 0..<301 where game.playerEMPDisabled {
+      let disabledBefore = game.playerEMPDisabled
+      game.tick(delta: 0.1)
+      if disabledBefore && game.playerEMPDisabled {
+        #expect(game.spin.actualRate == inertia && game.spin.commandedRate == command)
+      }
+    }
+    try #require(!game.playerEMPDisabled && game.screen != .gameOver)
+    #expect(game.spin.actualRate > inertia && game.spin.actualRate <= command)
+  }
+}

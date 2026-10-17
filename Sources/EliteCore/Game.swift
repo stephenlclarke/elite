@@ -1513,7 +1513,7 @@ public struct Game: Sendable {
     pitch = controls.pitch * craft.pitch
     yaw = controls.yaw * craft.yaw
     let previousSpinRate = spin.actualRate
-    spin.advance(delta: dt, controls: controls)
+    if !playerEMPDisabled { spin.advance(delta: dt, controls: controls) }
     roll =
       spin.mode || spin.actualRate != 0 || previousSpinRate != 0
       ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll * craft.roll
