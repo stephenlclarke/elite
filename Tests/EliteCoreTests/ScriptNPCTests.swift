@@ -228,6 +228,15 @@ private func measuredNPCContact(_ game: Game, from: Vector3) throws -> MissionCo
 private func applyActualNPCLaser(
   _ game: inout Game, sourceID: Int, targetID: Int, targetPart: String? = nil
 ) throws {
+  let proof = try makeActualNPCLaserProof(
+    &game, sourceID: sourceID, targetID: targetID, targetPart: targetPart)
+  let receipt = try game.applyMissionImpact(proof)
+  game.projectScriptMissionImpact(receipt)
+}
+
+private func makeActualNPCLaserProof(
+  _ game: inout Game, sourceID: Int, targetID: Int, targetPart: String?
+) throws -> MissionNativeLaserProof {
   let source = try #require(game.bodies.first { $0.id == sourceID })
   let target = try #require(game.bodies.first { $0.id == targetID })
   let npc = try #require(source.scriptNPC)
@@ -243,8 +252,7 @@ private func applyActualNPCLaser(
     sourceBodyID: sourceID, weapon: weapon, component: nil,
     muzzle: muzzle, direction: (aim - muzzle).unit)
   try #require(proof.hit?.target == .body(targetID) && proof.victimPart == targetPart)
-  let receipt = try game.applyMissionImpact(proof)
-  game.projectScriptMissionImpact(receipt)
+  return proof
 }
 
 @Test func componentRayHitsUseMeasuredGeometryAndCannotBecomeHullDeathOrPlayerBounty() throws {
@@ -255,6 +263,14 @@ private func applyActualNPCLaser(
 }
 
 private func verifyComponentRayContactsAndBounty(_ game: inout Game, id: UUID) throws {
+  let (targetID, kills) = try verifyMeasuredComponentRayContacts(&game, id: id)
+  try applyAllyHullLaserImpacts(&game, id: id, targetID: targetID)
+  verifyAllyHullDestructionWithoutPlayerBounty(&game, id: id, kills: kills)
+}
+
+private func verifyMeasuredComponentRayContacts(_ game: inout Game, id: UUID) throws
+  -> (Int, Int)
+{
   let index = try npcIndex(game, id)
   let targetID = game.bodies[index].id
   game.bodies[index].position = .init(0, 0, 2000)
@@ -299,6 +315,10 @@ private func verifyComponentRayContactsAndBounty(_ game: inout Game, id: UUID) t
   let measuredHull = try measuredNPCContact(game, from: .init(0, 0, 0))
   let hull = try #require(measuredHull)
   #expect(hull.victimPart == nil && abs(hull.hit.distance - 1940) < 1e-8)
+  return (targetID, kills)
+}
+
+private func applyAllyHullLaserImpacts(_ game: inout Game, id: UUID, targetID: Int) throws {
   let ally = try npcIndex(game, id, "wing")
   let allyID = game.bodies[ally].id
   game.bodies[ally].position = .init(0, 0, 1000)
@@ -307,6 +327,10 @@ private func verifyComponentRayContactsAndBounty(_ game: inout Game, id: UUID) t
   for _ in 0..<Int(ceil(120 / actualWeapon.damage)) {
     try applyActualNPCLaser(&game, sourceID: allyID, targetID: targetID)
   }
+}
+
+private func verifyAllyHullDestructionWithoutPlayerBounty(_ game: inout Game, id: UUID, kills: Int)
+{
   game.resolveDestroyed()
   #expect(game.commander.kills == kills)
   #expect(
