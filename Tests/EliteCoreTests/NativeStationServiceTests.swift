@@ -73,6 +73,8 @@ struct NativeStationServiceTests {
   @Test func originalMainArrivalNeedsItsActualDoorwayAndCurrentTypedDestination() async throws {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
+    try FileManager.default.createDirectory(
+      at: storage.directory, withIntermediateDirectories: true)
     var game = try NativeStationTestFixture.launched()
     try await verifyMainServiceArrival(&game, storage: storage)
   }
@@ -166,7 +168,7 @@ private func verifyChangedStationBoard(
     game = await runtime.snapshot()
     try #require(game.paused)
   case .launch, .manualCancel:
-    await runtime.key(" ")
+    await runtime.key("0")
     if change == .manualCancel { await runtime.key("q") }
     game = await runtime.snapshot()
     try #require(!game.docked)
