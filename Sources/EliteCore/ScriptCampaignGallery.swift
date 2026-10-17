@@ -97,7 +97,9 @@ struct CampaignGalleryLocation: Sendable {
 struct CampaignGallerySelection: Sendable {
   let instance: UUID?
   let digest: String?
+  var nativeRRS: UUID? = nil
   func matches(_ mission: GalleryMission) -> Bool {
+    if let nativeRRS { return mission.nativeRRSCourierID == nativeRRS }
     if let instance { return mission.savedInstance == instance }
     return mission.savedInstance == nil && mission.trialDigest == digest
   }
@@ -129,6 +131,14 @@ extension Game {
   }
 
   func galleryEntryIdentity(_ mission: GalleryMission, index: Int) -> String {
+    if let id = mission.nativeRRSCourierID {
+      return galleryIdentityDigest(
+        [
+          "native-rrs-courier", id.uuidString, mission.status.rawValue, mission.objective,
+          mission.briefing,
+        ]
+          + mission.milestones.flatMap { [$0.title, $0.state] })
+    }
     if let id = mission.savedInstance, let state = commander.scriptState.instances[id] {
       return galleryIdentityDigest([
         "saved", id.uuidString, state.definition, state.version, state.digest,
@@ -228,9 +238,12 @@ extension Game {
     let missions = missionCatalogue
     guard missions.indices.contains(gallery.selection) else { return }
     let mission = missions[gallery.selection]
-    if mission.savedInstance != nil || mission.trialDigest != nil {
+    if mission.savedInstance != nil || mission.trialDigest != nil
+      || mission.nativeRRSCourierID != nil
+    {
       gallery.campaignSelection = .init(
-        instance: mission.savedInstance, digest: mission.trialDigest)
+        instance: mission.savedInstance, digest: mission.trialDigest,
+        nativeRRS: mission.nativeRRSCourierID)
     }
   }
 

@@ -23,6 +23,7 @@ public struct GalleryMission: Sendable {
   public let milestones: [MissionMilestone]
   public var trialDigest: String? = nil
   public var savedInstance: UUID? = nil
+  var nativeRRSCourierID: UUID? = nil
   public var progress: String { "\(completed) of \(milestones.count) milestones" }
 }
 public struct MissionGalleryState: Sendable {
@@ -57,6 +58,7 @@ extension Game {
   }
   public var missionCatalogue: [GalleryMission] {
     missionPacks.entries.map { packGallery($0) } + missingPackGallery + scriptGallery
+      + rrsCourierGallery
   }
   private var galleryMissionIDs: [String] {
     let installed = missionPacks.entries.map { $0.pack.stateID }
@@ -69,6 +71,7 @@ extension Game {
       return "script-entry:" + entry.name
     }
     return legacy.map { "legacy:" + $0 } + scripted
+      + rrsCourierGallery.compactMap { $0.nativeRRSCourierID.map { "rrs-job:" + $0.uuidString } }
   }
   mutating func replaceMissionPacks(_ library: MissionPackLibrary) {
     let previous = galleryMissionIDs
