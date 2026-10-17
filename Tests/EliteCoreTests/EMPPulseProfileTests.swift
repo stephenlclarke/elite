@@ -39,7 +39,7 @@ struct EMPPulseProfileTests {
   @Test func actualEnergyFitsResolveAdditivePowerAndReachWithoutMutatingCommander() throws {
     let cases: [(String?, Int, Double, Double)] = [
       (nil, 0, 32, 3000), ("Extra Energy Unit", 1, 48, 4500),
-      (Equipment.navalEnergyUnit, 2, 64, 6000),
+      (Equipment.navalEnergyUnit, 2, 64, 6000), (Equipment.eliteEnergyUnit, 3, 80, 7500),
     ]
     for (name, stage, power, range) in cases {
       let commander = try pulseCommander(name)

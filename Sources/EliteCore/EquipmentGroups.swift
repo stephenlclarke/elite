@@ -21,7 +21,10 @@ public enum EquipmentGroups {
           + ["Targeting: Mining Module", "Targeting: Salvage Module"]
       ),
       ("Navigation Computers", NavigationTier.allCases.map(\.equipmentName)),
-      ("Energy Systems", ["Extra Energy Unit", Equipment.navalEnergyUnit]),
+      (
+        "Energy Systems",
+        ["Extra Energy Unit", Equipment.navalEnergyUnit, Equipment.eliteEnergyUnit]
+      ),
       ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
       ("Electronic Weapons", [Equipment.empPirateBlaster]),
       ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),

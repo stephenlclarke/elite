@@ -303,6 +303,7 @@ public struct Commander: Sendable, Equatable, Codable {
 public struct Equipment: Sendable {
   public static let legacyDockingComputer = "Docking Computers"
   public static let navalEnergyUnit = "Naval Energy Unit"
+  public static let eliteEnergyUnit = "Elite Energy Unit"
   public static let navalLaser = "Naval Laser"
   public static let empPirateBlaster = "EMP Pirate Blaster"
   public static var validNames: Set<String> {
@@ -315,7 +316,10 @@ public struct Equipment: Sendable {
   }
   public static var maximumHardware: Set<String> {
     validNames.subtracting(
-      [legacyDockingComputer, "Extra Energy Unit", "Pulse Laser", "Beam Laser", "Military Laser"]
+      [
+        legacyDockingComputer, "Extra Energy Unit", navalEnergyUnit, "Pulse Laser", "Beam Laser",
+        "Military Laser",
+      ]
         + TargetingTier.allCases.map(\.equipmentName) + NavigationTier.allCases.map(\.equipmentName)
         + ShieldBooster.allCases.map(\.equipmentName)
     )
@@ -358,7 +362,8 @@ public struct Equipment: Sendable {
       .init(name: "Salvage Cutter", price: 25000, technology: 6),
       .init(name: FuelStorage.equipmentName, price: FuelStorage.price, technology: 0),
       .init(name: navalLaser, price: 0, technology: 0),
-      .init(name: navalEnergyUnit, price: 0, technology: 0),
+      .init(name: navalEnergyUnit, price: 45000, technology: 11),
+      .init(name: eliteEnergyUnit, price: 135000, technology: 13),
     ]
     + ShieldBooster.allCases.compactMap(\.shopItem) + [
       .init(name: ShieldBooster.capital.equipmentName, price: 0, technology: 0),

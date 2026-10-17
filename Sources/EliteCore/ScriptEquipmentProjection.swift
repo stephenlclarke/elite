@@ -11,6 +11,7 @@ extension Commander {
     if node.key == Equipment.legacyDockingComputer { return 0 }
     if node.key == "Extra Energy Unit" { return 2 }
     if node.key == Equipment.navalEnergyUnit { return 3 }
+    if node.key == Equipment.eliteEnergyUnit { return 4 }
     return ShieldBooster.from(node.key) == nil ? 1 : 2
   }
 

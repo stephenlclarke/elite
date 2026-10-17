@@ -100,9 +100,11 @@ extension Game {
           + fittedSummary(
             .energy,
             fallback:
-              commander.equipment.contains(Equipment.navalEnergyUnit)
-              ? Equipment.navalEnergyUnit
-              : commander.equipment.contains("Extra Energy Unit") ? "Extra Energy Unit" : "Basic"),
+              commander.equipment.contains(Equipment.eliteEnergyUnit)
+              ? Equipment.eliteEnergyUnit
+              : commander.equipment.contains(Equipment.navalEnergyUnit)
+                ? Equipment.navalEnergyUnit
+                : commander.equipment.contains("Extra Energy Unit") ? "Extra Energy Unit" : "Basic"),
         .white
       ),
       (

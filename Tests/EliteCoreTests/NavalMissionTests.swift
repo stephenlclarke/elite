@@ -150,7 +150,7 @@ private func finishMessage(_ game: inout Game) {
   #expect(commander.energyRechargeMultiplier == 2)
   commander.equipment.insert(Equipment.navalEnergyUnit)
   #expect(commander.energyRechargeMultiplier == 3)
-  #expect(Equipment.isReward(Equipment.navalEnergyUnit))
+  #expect(!Equipment.isReward(Equipment.navalEnergyUnit))
 }
 
 @Test func missionFlagsSurviveOldAndNewCommanderSavesAndCannotPayTwice() async throws {

@@ -67,7 +67,7 @@ import Testing
   game.key("return")
   #expect(game.commander.equipment.contains("Mining Laser") && game.commander.credits == 992_000)
   for name in [
-    Equipment.navalLaser, Equipment.navalEnergyUnit, ShieldBooster.capital.equipmentName,
+    Equipment.navalLaser, ShieldBooster.capital.equipmentName,
   ] {
     game.selection = try #require(Equipment.all.firstIndex { $0.name == name })
     game.key("return")
