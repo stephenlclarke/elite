@@ -3,6 +3,45 @@ import Testing
 
 @testable import EliteCore
 
+private func fitCompletionPatrolTargeting(_ game: inout Game) throws {
+  let before = game.commander
+  try game.commander.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .legacyUnknown)
+  try #require(game.commander.hasAutomaticDocking)
+  #expect(
+    game.commander.fittedEquipment(at: .targetingCore)?.node.key
+      == TargetingTier.docking.equipmentName)
+  #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
+  #expect(game.commander.scriptState == before.scriptState)
+  #expect(
+    game.commander.contracts == before.contracts
+      && game.commander.accommodation == before.accommodation)
+  #expect(game.commander.laser(on: .front) == before.laser(on: .front))
+  #expect(
+    game.commander.laserDamage(against: .sidewinder, mount: .front)
+      == before.laserDamage(against: .sidewinder, mount: .front))
+}
+
+private func completionPatrolTargetIsOwned(_ game: Game, child: UUID) -> Bool {
+  guard let body = game.autoTargetBody, body.energy > 0, body.missionInstanceID == child,
+    let identity = body.missionActorID,
+    let encounter = game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]
+  else { return false }
+  return encounter.actors.values.contains {
+    $0.identity == identity && $0.presence != .destroyed
+  }
+}
+
+private func selectCompletionPatrolTarget(_ game: inout Game, child: UUID) throws {
+  for _ in 0...game.bodies.count {
+    if completionPatrolTargetIsOwned(game, child: child) { return }
+    game.key("r")
+  }
+  try #require(
+    completionPatrolTargetIsOwned(game, child: child),
+    Comment(rawValue: campaignPatrolDiagnostic(game, child: child)))
+}
+
 private struct CompletionFixture {
   let root: URL
   let child: ScriptPack
@@ -107,32 +146,52 @@ private struct CompletionFixture {
   func game() -> Game {
     var game = Game(executive: false)
     game.screen = .status
-    game.commander.installTargetingComputer(.docking)
+    do { try fitCompletionPatrolTargeting(&game) } catch { Issue.record(error) }
     game.scriptPacks = [child, parent]
     return game
   }
   func completePatrol(_ game: inout Game, report: Bool = true, expected: ScriptOutcome = .complete)
     throws -> UUID
   {
-    game.commander.installTargetingComputer(.docking)
+    try fitCompletionPatrolTargeting(&game)
     let id = try game.acceptScriptMission(child)
     game.launch()
     game.emitScriptEvent("station.undocked")
+    let legalBefore = game.commander.legal
+    try #require(legalBefore == 0)
+    let beforeFire = campaignPatrolDiagnostic(game, child: id)
     var firing = Controls()
-    firing.fire = true
     for _ in 0..<200 {
+      // Fly the original launch path and fire only at an actual owned hull outside the station zone.
+      firing = Controls()
+      if try campaignPatrolOutsideStationZone(game) {
+        try selectCompletionPatrolTarget(&game, child: id)
+        firing.fire = try campaignPatrolHasActualLaserContact(game, child: id)
+      }
       game.tick(delta: 0.1, controls: firing)
       if game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true {
         break
       }
     }
-    #expect(game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true)
+    #expect(
+      game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true,
+      Comment(
+        rawValue: "beforeFire: \(beforeFire); afterFire: "
+          + campaignPatrolDiagnostic(game, child: id)))
+    #expect(game.commander.legal == legalBefore)
+    firing = Controls()
     for _ in 0..<8 {
       game.key("r")
       if game.autoPilot.targetID == 0 { break }
     }
-    for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02) }
-    #expect(game.docked && game.dockedAtMainStation)
+    let beforeDock = campaignPatrolDiagnostic(game, child: id)
+    for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02, controls: firing) }
+    #expect(
+      game.docked && game.dockedAtMainStation,
+      Comment(
+        rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
+          + campaignPatrolDiagnostic(game, child: id)))
+    #expect(game.commander.legal == legalBefore)
     if !report { return id }
     game.emitScriptEvent("contact.requested", only: id)
     let offered = game.showScriptDialogue()
@@ -341,7 +400,9 @@ private struct CompletionFixture {
   let parentID = try #require(initial.commander.scriptState.instances.keys.first)
   #expect(initial.commander.scriptState.instances[parentID]?.completionReceipt == nil)
   // Test hardware setup; every objective still goes through actual player controls and physics.
-  await trial.nativeCommand { $0.commander.installTargetingComputer(.docking) }
+  await trial.nativeCommand { game in
+    do { try fitCompletionPatrolTargeting(&game) } catch { Issue.record(error) }
+  }
   await trial.key("contacts-open")
   await trial.key("return")
   let child = try #require(
@@ -349,10 +410,16 @@ private struct CompletionFixture {
       $0.definition == fixture.child.manifest.stateID
     }?.id)
   await trial.key("0")
+  let legalBefore = await trial.snapshot().commander.legal
+  try #require(legalBefore == 0)
   var firing = Controls()
-  firing.fire = true
-  await trial.setControls(firing)
   for _ in 0..<200 {
+    firing = Controls()
+    if try campaignPatrolOutsideStationZone(await trial.snapshot()) {
+      try await selectCampaignPatrolTarget(trial, child: child)
+      firing.fire = try campaignPatrolHasActualLaserContact(await trial.snapshot(), child: child)
+    }
+    await trial.setControls(firing)
     let battle = await trial.advance(delta: 0.1)
     if battle.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
     {
@@ -362,6 +429,7 @@ private struct CompletionFixture {
   #expect(
     await trial.snapshot().commander.scriptState.instances[child]?.ownedEncounters["raiders"]?
       .destroyed == true)
+  #expect(await trial.snapshot().commander.legal == legalBefore)
   await trial.setControls(Controls())
   for _ in 0..<8 {
     await trial.key("r")
@@ -370,6 +438,7 @@ private struct CompletionFixture {
   var actual = await trial.snapshot()
   for _ in 0..<5000 where !actual.docked { actual = await trial.advance(delta: 0.02) }
   #expect(actual.docked && actual.dockedAtMainStation)
+  #expect(actual.commander.legal == legalBefore)
   await trial.key("contacts-open")
   #expect(await trial.snapshot().scriptOffer == child)
   await trial.key("return")
@@ -454,7 +523,7 @@ private struct CompletionFixture {
       allowedOutcomes: ["complete", "failed"], childID: "test.strand-\(index)",
       failedChild: index == 3)
   }
-  defer { fixtures.forEach { $0.clean() } }
+  defer { for fixture in fixtures { fixture.clean() } }
   let manifest = fixtures[0].root.appendingPathComponent("parent/manifest.toml")
   var text = try String(contentsOf: manifest, encoding: .utf8)
   text = text.replacingOccurrences(
