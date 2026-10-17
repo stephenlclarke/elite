@@ -205,6 +205,14 @@ extension Game {
       offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
       deadlinePolicy: offer.courier == nil ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
+    return try performContractAcceptance(
+      key: key, id: id, index: index, pack: pack, board: board, offer: offer, job: job,
+      instanceID: instanceID, confirmationToken: confirmationToken)
+  }
+  private mutating func performContractAcceptance(
+    key: String, id: UUID, index: Int, pack: ScriptPack, board: ScriptContractBoard,
+    offer: ScriptContractOffer, job: ScriptContractJob, instanceID: UUID, confirmationToken: UUID
+  ) throws -> UUID {
     var candidate = self
     if let pledge = try pledgePreview(board: key, offer: id) {
       try requirePledgeResources(pledge)
