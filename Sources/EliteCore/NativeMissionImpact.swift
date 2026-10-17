@@ -73,6 +73,16 @@ private struct MissionDamagePlan {
   var damageAdmitted = false
 }
 
+private struct MissionLaserImpactStage {
+  let context: EncounterContext
+  let flight: FlightSimulationState
+  let mining: MiningLedger
+  let law: CrimeLedger
+  let damage: MissionDamagePlan
+  let resolution: CrimeResolution
+  let eventID: UInt64
+}
+
 extension Game {
   /// Plan the exact target and firing events before the gun's real emission allocator runs.
   /// The same private damage policy stages the preview and the later physical commit.
@@ -193,7 +203,7 @@ extension Game {
     bodies[shotIndex].energy = 0
     applyNativeCrimeResolution(
       resolution, target: proof.hit.target, attacker: proof.currentSource, context: context)
-    return missionImpactReceipt(
+    return Self.missionImpactReceipt(
       kind: proof.kind, hit: proof.hit, part: proof.victimPart,
       component: proof.victimComponentID, damage: proof.damage, plan: plan, eventID: eventID,
       sourceInstance: proof.sourceInstanceID, sourceActor: proof.sourceActorID,
@@ -211,9 +221,31 @@ extension Game {
     return try applyValidatedMissionLaserImpact(proof)
   }
 
-  /// Enter staging only after the full current-visit laser proof validation has returned.
+  /// Publish only after the complete read-only preparation and all refusal checks finish.
   private mutating func applyValidatedMissionLaserImpact(_ proof: MissionNativeLaserProof)
     throws -> NativeMissionImpactReceipt
+  {
+    let stage = try stageMissionLaserImpact(proof)
+    commander.flightSimulation = stage.flight
+    commander.miningLedger = stage.mining
+    commander.crimeLedger = stage.law
+    consumedMissionLaserEmission = proof.origin.emissionID
+    commitMissionDamage(
+      stage.damage, damage: proof.damage, origin: proof.origin, eventID: stage.eventID)
+    applyNativeCrimeResolution(
+      stage.resolution, target: proof.hit?.target, attacker: proof.origin.owner,
+      context: stage.context)
+    return Self.missionImpactReceipt(
+      kind: .laser, hit: proof.hit, part: proof.victimPart, component: proof.victimComponentID,
+      damage: proof.hit == nil ? 0 : proof.damage, plan: stage.damage, eventID: stage.eventID,
+      sourceInstance: proof.sourceInstanceID, sourceActor: proof.sourceActorID,
+      sourceComponent: proof.sourceComponentID, origin: proof.origin,
+      adjudication: .currentVisit, terminalShot: nil, player: false)
+  }
+
+  /// Read the actual immutable game while staging; no whole-game mutation receiver copies.
+  private func stageMissionLaserImpact(_ proof: MissionNativeLaserProof) throws
+    -> MissionLaserImpactStage
   {
     guard let context = gameplayContext(),
       proof.origin.emissionID > consumedMissionLaserEmission,
@@ -253,19 +285,9 @@ extension Game {
     if let intercepted = interceptedNativeEmission(plan, context: context) {
       law.finishEmission(intercepted)
     }
-    commander.flightSimulation = flight
-    commander.miningLedger = mining
-    commander.crimeLedger = law
-    consumedMissionLaserEmission = proof.origin.emissionID
-    commitMissionDamage(plan, damage: proof.damage, origin: proof.origin, eventID: eventID)
-    applyNativeCrimeResolution(
-      resolution, target: proof.hit?.target, attacker: proof.origin.owner, context: context)
-    return missionImpactReceipt(
-      kind: .laser, hit: proof.hit, part: proof.victimPart, component: proof.victimComponentID,
-      damage: proof.hit == nil ? 0 : proof.damage, plan: plan, eventID: eventID,
-      sourceInstance: proof.sourceInstanceID, sourceActor: proof.sourceActorID,
-      sourceComponent: proof.sourceComponentID, origin: proof.origin,
-      adjudication: .currentVisit, terminalShot: nil, player: false)
+    return .init(
+      context: context, flight: flight, mining: mining, law: law,
+      damage: plan, resolution: resolution, eventID: eventID)
   }
 
   /// Actual native weapon callers retain their ordinary origin and weapon statistics. A sealed
@@ -315,7 +337,7 @@ extension Game {
     applyNativeCrimeResolution(
       resolution, target: contact.hit.target, attacker: origin.owner, context: context)
     let source = bodies.first(where: { $0.physical?.identity == origin.owner })
-    return missionImpactReceipt(
+    return Self.missionImpactReceipt(
       kind: .laser, hit: contact.hit, part: contact.victimPart,
       component: contact.componentUUID, damage: damage, plan: plan, eventID: eventID,
       sourceInstance: source?.missionInstanceID, sourceActor: source?.missionActorID,
@@ -365,7 +387,7 @@ extension Game {
       resolution, target: contact.hit.target, attacker: origin.owner, context: context)
     let source = bodies.first(where: { $0.physical?.identity == origin.owner })
     return (
-      missionImpactReceipt(
+      Self.missionImpactReceipt(
         kind: kind, hit: contact.hit, part: contact.victimPart,
         component: contact.componentUUID, damage: proof.damage, plan: plan, eventID: eventID,
         sourceInstance: source?.missionInstanceID, sourceActor: source?.missionActorID,
@@ -545,7 +567,7 @@ extension Game {
       laser: laser, mount: mount, victimPart: part)
   }
 
-  private func missionImpactReceipt(
+  private static func missionImpactReceipt(
     kind: AttackKind, hit: GameplayHit?, part: String?, component: UUID?, damage: Double,
     plan: MissionDamagePlan, eventID: UInt64, sourceInstance: UUID?, sourceActor: UUID?,
     sourceComponent: UUID?, origin: AttackOrigin?, adjudication: NativeMissionAdjudication,
