@@ -9,3 +9,7 @@ Use the actual launch input, retaining manual cancellation and every stale-autho
 ## Validation and limits
 
 Strict Swift/Markdown lint and diff checks pass. Source reversal verifies the bounded changes preserve the rest of the original test files. No compilation or execution occurred in this worker; checkpoint 216 remains failed evidence. Focused execution and required composed `make ci` remain with the integration owner. See [the implementation](PR-native-station-service-fixtures.md).
+
+## Exact integration exit caller
+
+The shared `verifyNativeEntryAndExit` integration helper uses the same Space input while asserting actual undocking, receipt departure, ten-minute calendar advance and the typed exit pose. Correct that one input to key 0 as well. Its physical entry, persisted receipt and every original exit assertion remain; no geometry or authority guard changes.
