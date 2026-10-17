@@ -534,8 +534,11 @@ extension NativeViewTests {
 extension NativeViewTests {
   @MainActor @Test func rClearsHeldSteeringAndStationGuidanceOwnsTheTrackpad() throws {
     let view = GameView()
-    view.game.launch()
     view.game.commander.installTargetingComputer(.military)
+    view.game.launch()
+    #expect(
+      view.game.commander.equipmentInventory != nil
+        && view.game.commander.targetingTier == .military)
     view.game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
     view.held = ["x", "left", ",", " "]
     view.updateTrackpad(positions: [.zero, .zero, .zero])
@@ -654,10 +657,19 @@ extension NativeViewTests {
     #expect(view.controls.throttle == -1)
     view.keyUp(with: try event(51))
     #expect(view.controls.throttle == 0)
-    view.game.commander.equipment.insert("Energy Bomb")
-    view.game.commander.installTargetingComputer(.basic)
+    try view.game.commander.grantEquipment(
+      TargetingTier.basic.equipmentName, at: .targetingCore,
+      provenance: .grant("MacBook targeting fixture"))
+    #expect(
+      view.game.commander.equipmentInventory != nil && view.game.commander.targetingTier == .basic)
+    try view.game.commander.grantEquipment(
+      "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("MacBook bomb fixture"))
+    let bomb = try #require(view.game.commander.fittedEquipment(at: .utility(.energyBomb)))
+    let credits = view.game.commander.credits
     view.game.key("tab")
     #expect(view.game.commander.equipment.contains("Energy Bomb"))
+    #expect(view.game.commander.fittedEquipment(at: .utility(.energyBomb)) == bomb)
+    #expect(view.game.commander.credits == credits)
     view.game.paused = true
     #expect(view.held.isEmpty && !view.controls.fire)
   }

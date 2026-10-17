@@ -15,3 +15,7 @@ Configure legacy fixture hardware before launch so the existing canonical migrat
 ## Validation and limits
 
 Strict formatting, Markdown lint and diff checks pass. Source reversal verifies that only the intended fixture setup and explicit preconditions change. No production code, authority, paid progression rule, case selection or expected result changes. The corrected tests have not been compiled or executed by this worker; Root must execute the focused original cases and final composed quality gate. The 190 failure remains failed evidence. See [the implementation handoff](PR-targeting-fixture-canonical-fit.md).
+
+## Bounded caller follow-up
+
+The read-only caller audit found nine additional post-launch targeting installs in seven files: CR05 ECM timing, Cockpit, Gameplay Ordnance Runtime, Native View, Retaliation, Station Approach and Station Navigation tests. These are source-confirmed setup defects, not nine separately observed runtime failures. Pre-canonical NPC resource, legacy migration and pre-launch script fixtures are excluded. The follow-up fits actual cores and corrects the related equipment-loss negative to store its actual core. The MacBook Tab safety fixture now owns a real Energy Bomb and verifies that the identical fitted item and cash survive Tab. All original scenarios and expected results remain. Production code is unchanged; runtime validation is still pending.

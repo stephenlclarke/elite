@@ -120,10 +120,11 @@ import Testing
 
 @Test func assistanceHUDKeepsTargetAndFlightWarningsVisibleWithinTheViewport() {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(.military)
   game.launch()
   game.commander.xyzzyActive = true
   game.commander.autoTarget = true
-  game.commander.installTargetingComputer(.military)
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 1000), hostile: true)]
   game.key("r")
   game.key("v")

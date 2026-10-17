@@ -8,8 +8,9 @@ private func approachGame(
   spin: Double = 0.3, speed: Double = 0
 ) -> Game {
   var game = Game(executive: false)
-  game.launch()
   game.commander.installTargetingComputer(.docking)
+  game.launch()
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .docking)
   game.commander.autoTarget = true
   game.speed = speed
   var station = SpaceBody(id: 0, hull: .station, position: position)

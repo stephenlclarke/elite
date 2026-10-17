@@ -4,9 +4,10 @@ import Testing
 
 private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(.military)
   game.launch()
   game.speed = 0
-  game.commander.installTargetingComputer(.military)
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
   game.commander.equipment.insert("E.C.M. System")
   game.bodies = sources.map {
     .init(id: $0, hull: .constrictor, position: .init(Double($0) * 20, 0, 1400))
@@ -70,14 +71,19 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
   for _ in 0..<40 { game.tick(delta: 0.02) }
   #expect(game.commander.missiles == 3)
 }
-@Test func militaryRetaliationReportsNoAmmoAndInvalidForwardLockAndClearsEquipmentLoss() {
+@Test func militaryRetaliationReportsNoAmmoAndInvalidForwardLockAndClearsEquipmentLoss() throws {
   for scenario in 0...3 {
     var game = threatenedGame()
     game.ecm()
     if scenario == 0 { game.commander.missiles = 0 }
     if scenario == 1 { game.bodies[0].position.z = -1400 }
     if scenario == 2 { game.bodies[0].energy = 0 }
-    if scenario == 3 { game.commander.equipment.remove(TargetingTier.military.equipmentName) }
+    if scenario == 3 {
+      let inventory = try #require(game.commander.equipmentInventory)
+      let core = try #require(game.commander.fittedEquipment(at: .targetingCore))
+      try game.commander.storeEquipment(core, expectedRevision: inventory.revision)
+      #expect(game.commander.targetingTier == nil)
+    }
     for _ in 0..<40 { game.tick(delta: 0.02) }
     let events = game.ecmControl.events.map(\.announcement)
     #expect(
