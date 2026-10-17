@@ -231,9 +231,10 @@ private func verifyRawStationBoardRefusal(_ game: inout Game) throws {
   let identity = try #require(station.nativeStationIdentity)
   let actor = try #require(station.physical?.identity)
   game.dock(atMainStation: false)
+  let commanderOwner = game.commander.equipmentOwnerID
   try game.commander.nativeStations?.ledger.recordDock(
     at: identity, binding: .init(actor: actor, bodyID: station.id),
-    commanderOwner: game.commander.equipmentOwnerID)
+    commanderOwner: commanderOwner)
   game.scriptDurabilityAvailable = true
   try #require(game.commander.nativeStationStateValid)
   let before = game.commander

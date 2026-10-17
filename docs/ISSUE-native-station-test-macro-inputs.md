@@ -15,3 +15,5 @@ Expanding the local results back into their original assertion arguments must re
 ## Separate fixture borrow follow-up
 
 Checkpoint 181 then diagnosed an overlapping Commander borrow in the unproved-main-dock save fixture: its station-receipt assignment read the same commander's calendar. Read that primitive clock immediately before the assignment, inside the same main case after the same dock call, preserving receipt contents and every refusal/conservation assertion. A bounded scan of the nine current native RRS/P30 files found this one remaining identical pattern; the separate raw-save fixture had already received its equivalent repair.
+
+Checkpoint 182 diagnosed the corresponding optional equipment-owner read inside a nested station-ledger mutation in `NativeStationServiceTests`. Snapshot that same optional value immediately after docking and pass it unchanged; adding a required-owner guard would alter the negative fixture and is outside the repair.
