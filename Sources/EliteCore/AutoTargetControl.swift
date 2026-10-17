@@ -22,9 +22,23 @@ extension SpaceBody {
   public func modelVector(_ v: Vector3) -> Vector3 {
     orientation.apply(v.rotated(pitch: hull == .station ? 0 : rotation * 0.4, roll: rotation))
   }
-  public var entrancePosition: Vector3 { position + modelVector(.init(0, 0, -90)) }
-  public var entranceNormal: Vector3 { modelVector(.init(0, 0, -1)) }
-  public var entranceUp: Vector3 { modelVector(.init(0, 1, 0)) }
+  private var nativePort: NativeStationGeometry.Port? {
+    nativeStationIdentity.flatMap { NativeStationSource.binding(for: $0)?.geometry.docking }
+  }
+  public var entrancePosition: Vector3 {
+    position + modelVector(nativePort?.center ?? .init(0, 0, -90))
+  }
+  public var entranceNormal: Vector3 { modelVector(nativePort?.outward ?? .init(0, 0, -1)) }
+  public var entranceUp: Vector3 { modelVector(nativePort?.up ?? .init(0, 1, 0)) }
+  var stationClearanceRadius: Double {
+    guard let identity = nativeStationIdentity,
+      let source = NativeStationSource.binding(for: identity)
+    else { return 400 }
+    return (source.geometry.mesh.vertices.map(\.length).max() ?? .infinity) + 400
+  }
+  var stationApproachDistance: Double {
+    nativeStationIdentity == nil ? 1000 : stationClearanceRadius + 1000
+  }
 }
 
 public struct AutoTargetControl: Sendable {
@@ -132,7 +146,7 @@ public struct AutoTargetControl: Sendable {
     let station = target.hull == .station
     let aim: Vector3
     if station {
-      let goal = target.entrancePosition + target.entranceNormal * 1000
+      let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
       positionError = goal.length
       // Finish the forward journey before turning to the entrance axis. The
       // smaller staging radius also keeps final lateral correction inside the door.
@@ -197,7 +211,7 @@ public struct AutoTargetControl: Sendable {
       ? max(-maximumRoll, min(maximumRoll, matchRate + phaseError * 1.8)) : 0
     rollRate += max(-0.8 * delta, min(0.8 * delta, command - rollRate))
     rateError = abs(rollRate - matchRate)
-    let goal = target.entrancePosition + target.entranceNormal * 1000
+    let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
     positionError = goal.length
     ready =
       spinFeasible && stationStaged && positionError < 40 && facingError < 0.02
@@ -250,13 +264,13 @@ public struct AutoTargetControl: Sendable {
   private func approachWaypoint(_ target: SpaceBody, goal: Vector3) -> Vector3 {
     let closest =
       target.position - goal * max(0, min(1, target.position.dot(goal) / max(1, goal.dot(goal))))
-    guard closest.length < 400 && positionError > 40 else { return goal }
+    guard closest.length < target.stationClearanceRadius && positionError > 40 else { return goal }
     let radial = target.position.unit * -1
     // Avoidance belongs to the station's fixed entrance axis, not its spinning
     // doorway phase. A rotating detour can outrun the player's transit speed.
     var tangent = target.orientation.x
     if abs(tangent.dot(radial)) > 0.8 { tangent = target.orientation.y }
-    return target.position + (radial + tangent * 0.8).unit * 600
+    return target.position + (radial + tangent * 0.8).unit * (target.stationClearanceRadius * 1.5)
   }
   private mutating func stationClearanceVelocity(
     _ target: SpaceBody, desired: Vector3, acceleration: Double, delta: Double
@@ -265,13 +279,13 @@ public struct AutoTargetControl: Sendable {
     let outward = target.position.unit * -1
     let inwardSpeed = max(0, -velocity.dot(outward))
     let stoppingDistance = inwardSpeed * inwardSpeed / (2 * acceleration) + inwardSpeed * delta
-    if distance < 400 + stoppingDistance {
+    if distance < target.stationClearanceRadius + stoppingDistance {
       // If engagement starts too close to stop, apply the strongest legal outward
       // thrust. Avoidance cannot erase momentum or promise physically impossible clearance.
       status = "BRAKING FOR CLEARANCE"
       return outward * 80
     }
-    if (target.position - desired * delta).length < 400 {
+    if (target.position - desired * delta).length < target.stationClearanceRadius {
       return desired - outward * min(0, desired.dot(outward))
     }
     return desired

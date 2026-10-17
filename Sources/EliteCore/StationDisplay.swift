@@ -42,6 +42,7 @@ public struct StationLayout: Sendable {
 extension Game {
   public func marketAvailability(_ index: Int) -> String {
     if !docked { return "DOCK TO TRADE" }
+    if !stationAllowsMarketServices { return "SERVICE UNAVAILABLE" }
     if screen == .sell {
       if commander.sellableCargo(index) > 0 { return "SELL" }
       return index == 10 && commander.markedFirearms > 0 ? "RESERVED" : "NONE HELD"
@@ -65,6 +66,7 @@ extension Game {
     var rows: [(String, Ink)] = [
       ("Ship: " + commander.ship.name, .cyan),
       ("Present system: " + currentSystem.name, .white),
+      ("Station: " + (nativeStationName ?? "Main orbital station"), .white),
       ("Hyperspace: " + targetSystem.name, .white),
       ("Condition: " + flightStatus, .white),
       (

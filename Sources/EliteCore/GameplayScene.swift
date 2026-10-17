@@ -21,6 +21,7 @@ extension Game {
   }
 
   mutating func beginGameplayVisit(arriving: Bool) {
+    invalidateNativeStationAuthority()
     activeECMActivation = nil
     let oldPlayer = commander.flightSimulation.player
     commander.flightSimulation.enter(systemIdentity, arriving: arriving)
@@ -61,7 +62,9 @@ extension Game {
     }
     let flight = commander.flightSimulation
     for index in bodies.indices
-    where bodies[index].physical == nil && bodies[index].scriptShot == nil {
+    where bodies[index].physical == nil && bodies[index].scriptShot == nil
+      && bodies[index].nativeStationIdentity == nil
+    {
       let identity: ActorIdentity?
       if bodies[index].id == 0 && bodies[index].hull == .station {
         identity = flight.anchors?.station.identity
@@ -71,6 +74,9 @@ extension Game {
       guard let identity else { continue }
       let body = bodies[index]
       bodies[index].physical = nativePhysicalActorState(for: body, identity: identity)
+    }
+    do { try populateNativeStations() } catch {
+      notify("RRS STATION ADMISSION UNAVAILABLE", voiced: false)
     }
   }
 
@@ -153,7 +159,8 @@ extension Game {
         ShipCatalogue.ship($0)?.game
       }
       let maximumEnergy: Double =
-        body.scriptNPC?.fit.definition.energy
+        body.nativeStationIdentity.flatMap { NativeStationSource.binding(for: $0)?.maximumEnergy }
+        ?? body.scriptNPC?.fit.definition.energy
         ?? physical.npc?.resources?.energyCapacity ?? native?.energy ?? body.hull.navalEnergy ?? 100
       let maximumSpeed: Double =
         body.scriptNPC?.fit.definition.speed

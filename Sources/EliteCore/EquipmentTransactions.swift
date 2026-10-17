@@ -114,7 +114,7 @@ extension Commander {
 
 extension Game {
   func quoteEquipmentPurchase(_ item: Equipment) throws -> EquipmentRuntimePurchaseQuote {
-    guard docked, equipmentAvailable(item),
+    guard stationAllowsEquipmentServices, equipmentAvailable(item),
       let authoritative = Equipment.all.first(where: { $0.name == item.name }),
       item.price == authoritative.price, item.technology == authoritative.technology,
       let node = EquipmentRuntimeCatalog.node(for: item.name)
@@ -174,7 +174,7 @@ extension Game {
   }
 
   mutating func applyEquipmentPurchase(_ quote: EquipmentRuntimePurchaseQuote) throws -> Bool {
-    guard docked, commander == quote.source, equipmentMount == quote.mount,
+    guard stationAllowsEquipmentServices, commander == quote.source, equipmentMount == quote.mount,
       equipmentWorkTool == quote.workTool,
       equipmentAvailable(quote.item), shopPrice(quote.item) == quote.purchase.requiredDebit,
       quote.shop == "galaxy:\(commander.galaxy)/system:\(commander.system)"
