@@ -46,6 +46,7 @@ public struct AutoTargetControl: Sendable {
   private var visited: Set<Int> = []
   private var membership: Set<Int> = []
   private var cycleSignature = ""
+  private var cycleOrigin: ActorIdentity?
   private var remaining: [Int] = []
   public init() {}
   public mutating func disengage() {
@@ -61,8 +62,18 @@ public struct AutoTargetControl: Sendable {
     status = "OFF"
   }
   mutating func cycle(
-    _ eligible: [SpaceBody], frontIDs: Set<Int>, signature: String, manualEngagement: Bool = false
+    _ eligible: [SpaceBody], frontIDs: Set<Int>, signature: String, manualEngagement: Bool = false,
+    origin: ActorIdentity? = nil
   ) {
+    // Scene numbers, including station zero, identify different actors on a new visit.
+    // Keep same-visit cycling history, but never carry visited numbers into another origin.
+    if cycleOrigin != origin {
+      cycleOrigin = origin
+      visited.removeAll(keepingCapacity: true)
+      membership.removeAll(keepingCapacity: true)
+      remaining.removeAll(keepingCapacity: true)
+      cycleSignature = ""
+    }
     let ids = Set(eligible.map(\.id))
     let ordered = eligible.sorted { a, b in
       func group(_ body: SpaceBody) -> Int {
@@ -334,7 +345,8 @@ extension Game {
     let signature =
       "\(tier.rawValue):\(workTargetFilter.label):\(Int(viewportWidth)):\(Int(viewportHeight))"
     autoPilot.cycle(
-      eligible, frontIDs: frontIDs, signature: signature, manualEngagement: !targetingEnabled)
+      eligible, frontIDs: frontIDs, signature: signature, manualEngagement: !targetingEnabled,
+      origin: context.player.identity)
     if manualResidualFlight {
       speed = 0
       autoPilot.setApproachVelocity(commander.flightSimulation.pose.shipVector(initialVelocity))

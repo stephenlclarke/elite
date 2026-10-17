@@ -791,12 +791,28 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
         + "; afterSelection=" + actualStationGuidanceDiagnostic(returned)
     ))
   let beforeDock = actualStationGuidanceDiagnostic(returned)
-  for _ in 0..<5000 where !returned.docked { returned = await runtime.advance(delta: 0.02) }
+  var healthLoss: [String] = []
+  for _ in 0..<5000 where !returned.docked {
+    let previousEnergy = returned.energy
+    let previousFront = returned.frontShield
+    let previousRear = returned.rearShield
+    returned = await runtime.advance(delta: 0.02)
+    if healthLoss.count < 8,
+      returned.energy < previousEnergy || returned.frontShield < previousFront
+        || returned.rearShield < previousRear
+    {
+      let station = returned.bodies.first { $0.id == 0 && $0.hull == .station }
+      healthLoss.append(
+        "physicalTime=\(returned.commander.flightSimulation.physicalTime),energy=\(returned.energy),shields=\(returned.frontShield)/\(returned.rearShield),legal=\(returned.commander.legal),message=\(returned.message),stationDistance=\(String(describing: station?.position.length)),inside=\(String(describing: station?.containsPlayer)),incidentCursor=\(returned.commander.flightSimulation.nextIncident)"
+      )
+    }
+  }
   #expect(
     returned.docked && returned.dockedAtMainStation,
     Comment(
       rawValue: "beforeDockFlight=" + beforeDock + "; afterDockFlight="
-        + actualStationGuidanceDiagnostic(returned)))
+        + actualStationGuidanceDiagnostic(returned)
+        + "; actualHealthLoss=[" + healthLoss.joined(separator: " | ") + "]"))
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == id)
   await runtime.key("return")

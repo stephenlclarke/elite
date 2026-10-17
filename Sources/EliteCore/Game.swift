@@ -577,6 +577,7 @@ public struct Game: Sendable {
     paused = false
     spin.stop(immediate: true)
     cancelAutoTarget()
+    autoPilot = AutoTargetControl()
     clearManualResidualFlight()
     screen = .status
     screenHistory.removeAll()
