@@ -9,6 +9,8 @@ extension GameRuntime {
     let namespace = galleryNamespace
     return { candidate in
       try Self.requireGalleryFileAccess(url, namespace: namespace)
+      // Both publication paths pin current policy before choosing the save schema.
+      try candidate.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
       if candidate.commander.scriptState.calendarLedger == nil {
         let legacy =
           candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
