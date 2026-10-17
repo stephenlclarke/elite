@@ -275,11 +275,11 @@ extension EMPElectricalRuntimeTests {
     body.energy = rock.energy
     body.physical = .init(identity: actor, population: .asteroid, rock: rock.identity)
     game.bodies.append(body)
-    game.nextBodyID = max(80, game.nextBodyID)
+    game.nextBodyID = max(81, game.nextBodyID)
     game.key("f")
     try #require(game.workTargetFilter == .mining)
     var control = game
-    game.key("\t")
+    game.key("tab")
     for _ in 0..<10 {
       game.tick(delta: 0.1)
       control.tick(delta: 0.1)
@@ -291,7 +291,7 @@ extension EMPElectricalRuntimeTests {
     }
     for _ in 0..<301 where game.playerEMPDisabled { game.tick(delta: 0.1) }
     try #require(!game.playerEMPDisabled && game.screen != .gameOver)
-    game.key("\t")
+    game.key("tab")
     try #require(game.workGuidance?.parent == actor)
     game.tick(delta: 0.1)
     #expect(game.lastAppliedWorkMotion != nil)
