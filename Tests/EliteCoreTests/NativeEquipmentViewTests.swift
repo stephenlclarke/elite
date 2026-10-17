@@ -116,15 +116,36 @@ private struct NativeEquipmentFixture {
           charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
     }
     let equipmentReturn = code == 36 && view.game.screen == .equipment
-    if equipmentReturn { _ = try capture("before-return", scale: 1) }
+    let protectedKey =
+      ScriptPagePresentation.controlKeys.contains(expected)
+      || ScriptPagePresentation.galleryContextKeys.contains(expected)
+      || ScriptPagePresentation.contractContextKeys.contains(expected)
+    if equipmentReturn || protectedKey { _ = try capture("before-" + expected, scale: 1) }
+    let painted = view.paintedMissionMenuPresentation
     view.keyDown(with: try event(.keyDown))
-    #expect(view.pending.last == (equipmentReturn ? "equipment-purchase" : expected))
-    if equipmentReturn { #expect(view.pendingEquipmentPurchases.count == 1) }
+    if equipmentReturn {
+      #expect(view.pending.last == "equipment-purchase")
+      #expect(view.pendingEquipmentPurchases.count == 1)
+    } else if protectedKey {
+      try verifyPageKey(expected, painted: #require(painted))
+    } else {
+      #expect(view.pending.last == expected)
+    }
     view.keyUp(with: try event(.keyUp))
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty && view.held.isEmpty)
     #expect(!view.controls.fire && view.controls.pitch == 0 && view.controls.roll == 0)
     #expect(view.controls.yaw == 0 && view.controls.throttle == 0)
+  }
+
+  func verifyPageKey(_ key: String, painted: ScriptPagePresentation) throws {
+    let packet = try #require(view.pending.last)
+    try #require(packet.hasPrefix("script-page-key:"))
+    let parts = packet.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1)
+    try #require(parts.count == 2)
+    let bytes = try #require(Data(base64Encoded: String(parts[0])))
+    let proof = try JSONDecoder().decode(ScriptPagePresentation.self, from: bytes)
+    #expect(proof == painted && String(parts[1]) == key)
   }
 
   func click(_ bounds: CanvasRect) async throws {
@@ -518,9 +539,11 @@ extension NativeViewTests {
     let painted = try #require(fixture.view.paintedInventoryInteraction)
     #expect(painted.controls.count > 1)
     let oldPrimary = try #require(painted.primary)
+    let page = try #require(fixture.view.paintedMissionMenuPresentation)
     try fixture.queueInventoryKey(48, text: "\t")
     try fixture.queueInventoryKey(36, text: "\r")
-    #expect(fixture.view.pending == ["tab"] && fixture.view.pendingInventoryCommands.isEmpty)
+    #expect(fixture.view.pending.count == 1 && fixture.view.pendingInventoryCommands.isEmpty)
+    try fixture.verifyPageKey("tab", painted: page)
     await fixture.delegate.processPendingCommands(in: fixture.view)
     #expect(fixture.view.game.commander == before)
     _ = try fixture.capture("inventory-after-focus", scale: 1)
