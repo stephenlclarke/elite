@@ -1315,7 +1315,8 @@ public struct Game: Sendable {
     guard !docked, missileArmed, missileCooldown == 0,
       commander.missiles > 0 || commander.unlimitedMissiles,
       let target = bodies.firstIndex(where: { body in
-        body.hull != .station && body.energy > 0 && body.position.z > 0
+        (body.hull != .station || nativeStationBodyIsCurrent(body))
+          && body.energy > 0 && body.position.z > 0
           && (weaponsTargetID == nil || body.id == weaponsTargetID)
       })
     else { return false }
