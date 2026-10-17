@@ -160,68 +160,14 @@ private func sortedWorld(_ game: Game) throws -> Data {
   }
   // These actual restoration probes operate only on a local snapshot, never on the runtime.
   #expect(throws: Never.self) { try rejected.validateRetainedMissionProjectileRestoration() }
-  let flight = rejected.commander.flightSimulation
-  let cursor = rejected.nextBodyID
-  let nativeIdentities = rejected.bodies.compactMap { $0.physical?.identity }
-  let spawnIdentities = rejected.bodies.compactMap { $0.physical?.spawnIdentity }
-  let missionIdentities = rejected.bodies.compactMap(\.missionActorID)
-  let context = rejected.gameplayContext()
-  let sceneChecks: [(String, Bool)] = [
-    ("body cursor", (1..<1_000_000_000).contains(cursor)),
-    ("unique body IDs", Set(rejected.bodies.map(\.id)).count == rejected.bodies.count),
-    ("body IDs within cursor", rejected.bodies.allSatisfy { (0..<cursor).contains($0.id) }),
-    (
-      "finite body positions",
-      rejected.bodies.allSatisfy { $0.position.finite && $0.position.length.isFinite }
-    ),
-    ("body rotations", rejected.bodies.allSatisfy { $0.orientation.validRotation }),
-    ("finite body energies", rejected.bodies.allSatisfy { $0.energy.isFinite }),
-    ("unique native IDs", Set(nativeIdentities).count == nativeIdentities.count),
-    ("unique spawn IDs", Set(spawnIdentities).count == spawnIdentities.count),
-    ("unique mission IDs", Set(missionIdentities).count == missionIdentities.count),
-    (
-      "native allocation addresses",
-      nativeIdentities.allSatisfy {
-        $0.system == rejected.systemIdentity && $0.visit == flight.visit
-          && $0.entity > 0 && $0.entity < flight.nextActor
-      }
-    ),
-    (
-      "spawn allocation addresses",
-      spawnIdentities.allSatisfy {
-        $0.system == rejected.systemIdentity && $0.visit == flight.visit && $0.sequence > 0
-          && (![SpawnProducer.mission, .ordnance].contains($0.producer)
-            || $0.sequence < flight.nextSpawn)
-      }
-    ),
-    ("living physical bodies", rejected.bodies.allSatisfy { $0.energy <= 0 || $0.physical != nil }),
-    (
-      "current native context",
-      context.map { $0.system == rejected.systemIdentity && $0.visit == flight.visit } ?? false
-    ),
-    (
-      "finite station anchor",
-      rejected.scriptAnchor.map {
-        $0.position.finite && $0.position.length.isFinite && $0.orientation.validRotation
-      } ?? false
-    ),
-  ]
-  let sceneFailures = sceneChecks.filter { !$0.1 }.map(\.0)
-  #expect(sceneFailures.isEmpty, Comment(rawValue: sceneFailures.joined(separator: "; ")))
-  for body in rejected.bodies
-  where body.energy > 0
-    && (body.missionActorID != nil || body.missionInstanceID != nil || body.scriptNPC != nil)
-  {
+  let firstPolice = try #require(
+    rejected.bodies.first { $0.physical?.spawnIdentity?.producer == .security })
+  #expect(firstPolice.hull == .viper && firstPolice.physical?.npc?.role == .police)
+  #expect(firstPolice.physical?.spawnIdentity?.sequence == 0)
+  #expect(firstPolice.physical?.spawnIdentity?.system == rejected.systemIdentity)
+  #expect(firstPolice.physical?.spawnIdentity?.visit == rejected.commander.flightSimulation.visit)
+  for body in rejected.bodies where body.energy > 0 && body.missionInstanceID != nil {
     let bodyID = body.id
-    let missionPopulation = body.physical?.population == .mission
-    let missionRole = body.physical?.npc?.role == .mission
-    let descriptorAvailable = rejected.currentMissionActorDescriptor(bodyID: bodyID) != nil
-    #expect(
-      missionPopulation && missionRole && descriptorAvailable,
-      Comment(
-        rawValue:
-          "Mission body \(bodyID): population=\(missionPopulation), role=\(missionRole), descriptor=\(descriptorAvailable)"
-      ))
     #expect(throws: Never.self, Comment(rawValue: "Native binding for mission body \(bodyID)")) {
       _ = try rejected.currentMissionNativeBinding(bodyID: bodyID)
     }

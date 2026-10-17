@@ -3,6 +3,69 @@ import Testing
 
 @testable import EliteCore
 
+func admitProducerLocalMissionSceneSpawns(_ game: inout Game) throws -> [SpawnIdentity] {
+  game.ensurePhysicalActors()
+  let context = try #require(game.gameplayContext())
+  let cursor = game.commander.flightSimulation.nextSpawn
+  try #require(cursor < UInt64.max - 101)
+  let sequences = [UInt64(0), cursor + 100, cursor + 101]
+  let spawns = sequences.enumerated().map { index, sequence in
+    SpawnIdentity(
+      system: context.system, visit: context.visit, sequence: sequence, member: 0,
+      producer: index == 0 ? .security : (index == 1 ? .ambient : .persistence))
+  }
+  let requests = spawns.enumerated().map { index, spawn in
+    SpawnRequest(
+      identity: spawn, population: index == 0 ? .police : .civilian,
+      hull: index == 0 ? .viper : .cobra,
+      position: game.commander.flightSimulation.pose.systemPoint(
+        .init(1200 + Double(index) * 600, -1400, 4500)),
+      orientation: .init(), velocity: .init(0, 0, 0),
+      npc: .init(
+        role: index == 0 ? .police : .trader, origin: context.system, destination: context.system),
+      rock: nil, payload: nil, priority: index == 0 ? .police : .ordinary)
+  }
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit, revision: context.revision,
+      batches: [.init(requests: requests, atomic: true)], intents: []))
+  try #require(receipts.count == 3 && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil })
+  #expect(game.commander.flightSimulation.nextSpawn == cursor)
+  for spawn in spawns {
+    try #require(game.bodies.contains { $0.physical?.spawnIdentity == spawn })
+  }
+  return spawns
+}
+
+enum NativeMissionSpawnForgery: CaseIterable, Sendable, Equatable {
+  case missionZero, missionCursor, ordnanceZero, ordnanceCursor, foreignSystem, foreignVisit,
+    duplicate
+}
+
+func forgeProducerLocalMissionSceneSpawn(
+  _ game: inout Game, spawns: [SpawnIdentity], forgery: NativeMissionSpawnForgery
+) throws {
+  let index = try #require(game.bodies.firstIndex { $0.physical?.spawnIdentity == spawns[0] })
+  let original = spawns[0]
+  let replacement: SpawnIdentity
+  switch forgery {
+  case .duplicate: replacement = spawns[1]
+  default:
+    replacement = .init(
+      system: forgery == .foreignSystem
+        ? .init(galaxy: original.system.galaxy, system: (original.system.system + 1) % 256)
+        : original.system,
+      visit: forgery == .foreignVisit ? original.visit + 1 : original.visit,
+      sequence: [.missionCursor, .ordnanceCursor].contains(forgery)
+        ? game.commander.flightSimulation.nextSpawn : original.sequence,
+      member: original.member,
+      producer: [.missionZero, .missionCursor].contains(forgery)
+        ? .mission
+        : ([.ordnanceZero, .ordnanceCursor].contains(forgery) ? .ordnance : original.producer))
+  }
+  game.bodies[index].physical?.spawnIdentity = replacement
+}
+
 private func unloadedAdmissionGame() throws -> (Game, UUID, [SpaceBody]) {
   var (game, instance, _) = try actualMissionBridgeGame()
   game.ensurePhysicalActors()
@@ -44,6 +107,45 @@ private func publishAdmission(
 }
 
 struct NativeMissionActorAdmissionTests {
+  @Test func independentNativeProducerCountersDoNotInvalidateActualRetainedMissionActors() throws {
+    var (game, instance, _) = try actualMissionBridgeGame()
+    _ = try admitProducerLocalMissionSceneSpawns(&game)
+    let sources = try game.retainedMissionActorAdmissionSources()
+    let source = try #require(sources.first { $0.instanceID == instance })
+    let before = game.commander
+    let bodies = game.bodies
+    let cursor = game.nextBodyID
+    guard case .unchanged = try game.prepareMissionActorAdmission(source) else {
+      Issue.record(
+        "Actual retained mission actors must remain bound beside independent native producers")
+      return
+    }
+    try game.restoreScriptActors()
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == cursor)
+  }
+
+  @Test(arguments: NativeMissionSpawnForgery.allCases)
+  func invalidSharedOrForeignSpawnAddressesStillRefuseWholeSceneAtomically(
+    forgery: NativeMissionSpawnForgery
+  ) throws {
+    var (game, instance, _) = try actualMissionBridgeGame()
+    let spawns = try admitProducerLocalMissionSceneSpawns(&game)
+    try forgeProducerLocalMissionSceneSpawn(&game, spawns: spawns, forgery: forgery)
+    let sources = try game.retainedMissionActorAdmissionSources()
+    let source = try #require(sources.first { $0.instanceID == instance })
+    let before = game.commander
+    let bodies = game.bodies
+    let cursor = game.nextBodyID
+    var refused = false
+    do { _ = try game.prepareMissionActorAdmission(source) } catch let error
+      as NativeMissionActorAdmissionError
+    {
+      refused = error == .invalidScene
+    } catch { Issue.record(error) }
+    #expect(refused)
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == cursor)
+  }
+
   @Test func retainedWholeCohortPreservesConditionAndAllocatesFreshAddressesOnce() throws {
     var (game, instance, prior) = try unloadedAdmissionGame()
     let sources = try game.retainedMissionActorAdmissionSources()
