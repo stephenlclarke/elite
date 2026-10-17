@@ -143,7 +143,7 @@ struct HyperspaceDriveRuntimeTests {
     try await runtime.save(to: file)
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 25)
+    #expect(pointer.schemaVersion == 26)
     let (saved, _) = try ScriptSaveStore.read(bytes, from: file)
     #expect(saved.equipmentInventory == before.commander.equipmentInventory)
     #expect(saved.performance.spool == 10)
@@ -229,5 +229,42 @@ extension HyperspaceDriveRuntimeTests {
       _ = try OwnedEquipmentInventory(
         owner: UUID(), activeHull: UUID(), items: [restored, duplicate])
     }
+  }
+}
+
+extension HyperspaceDriveRuntimeTests {
+  @Test func actualVersionTwoContainerLoadPreparesDriveWithoutOverwritingWhenMigrationSaveIsOff()
+    async throws
+  {
+    var game = Game(executive: false)
+    game.screen = .status
+    game.commander.missiles = 0
+    try game.commander.prepareEquipment(legacy: false)
+    let modern = try #require(game.commander.equipmentInventory)
+    let oldItems = modern.items.filter {
+      $0.node.family != HyperspaceDriveDefinition.purchaseFamily
+    }
+    game.commander.savedEquipmentInventory = try .init(
+      owner: modern.owner, activeHull: modern.activeHull,
+      revision: modern.revision, items: oldItems)
+    game.commander.savedEquipmentVersion = 2
+    game.commander.mirrorFittedEquipment()
+    game.ensureScriptCalendar(origin: .inactiveLegacyMigration)
+    try #require(game.commander.valid)
+    let original = game.commander
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let file = directory.appendingPathComponent("commander.json")
+    try ScriptSaveStore.write(commander: original, world: game.scriptWorldSave, to: file)
+    let bytes = try Data(contentsOf: file)
+    let runtime = GameRuntime()
+    try await runtime.load(from: file, persistMigrations: false)
+    let loaded = await runtime.snapshot().commander
+    #expect(loaded.savedEquipmentVersion == 3 && loaded.missiles == 0 && loaded.valid)
+    #expect(loaded.fittedEquipment(at: .drive)?.isReservedStockDrive == true)
+    #expect(loaded.equipmentInventory?.items.filter { !$0.isReservedStockDrive } == oldItems)
+    #expect(loaded.equipmentPurchaseHistory == original.equipmentPurchaseHistory)
+    #expect(loaded.credits == original.credits && loaded.fuel == original.fuel)
+    #expect(try Data(contentsOf: file) == bytes)
   }
 }

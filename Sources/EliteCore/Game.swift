@@ -2125,6 +2125,7 @@ public actor GameRuntime {
       // v2 is already migrated/validated; ordinary docking/load callbacks must not replay here.
       var candidate = Game(executive: false)
       candidate.commander = commander
+      try candidate.commander.prepareEquipment()
       candidate.isMissionTrial = galleryNamespace != nil
       candidate.trialTitle = game.trialTitle
       candidate.trialDigest = game.trialDigest
