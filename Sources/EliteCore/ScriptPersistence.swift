@@ -28,6 +28,11 @@ struct ScriptWorldSave: Codable, Sendable {
         == bodies.filter { $0.missionActorID != nil }.count
       && bodies.allSatisfy { body in
         body.id >= 0 && (body.scriptNPC?.valid ?? true)
+          && (body.physical?.npc?.resources?.legacyElectricalRecharge.map {
+            $0
+              == (body.physical?.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.recharge }
+                ?? ShipCatalogue.nativeShip(body.hull)?.game?.recharge)
+          } ?? true)
           && (body.scriptNPC == nil || body.missionActorID != nil)
           && (body.scriptShot?.valid ?? true)
           && (body.scriptShot == nil
@@ -208,7 +213,7 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: commander.usesRingMiningSaveVersion
+      schemaVersion: commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
         ? 25
         : commander.usesNativePeopleSaveVersion
           ? 24
@@ -271,6 +276,9 @@ enum ScriptSaveStore {
       if name == "commander.json", pointer.schemaVersion < 25 {
         try RingMiningVersionedSave.rejectFields(data)
       }
+      if pointer.schemaVersion < 25, ["commander.json", "world.json"].contains(name) {
+        try ElectricalVersionedSave.rejectFields(data)
+      }
       if name == "commander.json", pointer.schemaVersion < 24 {
         try NativePeopleVersionedSave.rejectFields(data)
       }
@@ -308,7 +316,8 @@ enum ScriptSaveStore {
       pointer.schemaVersion < 23
         ? commander.scriptState.financeLedger == nil
         : pointer.schemaVersion == 23 ? commander.scriptState.financeLedger != nil : true,
-      (pointer.schemaVersion == 25) == commander.usesRingMiningSaveVersion,
+      (pointer.schemaVersion == 25)
+        == (commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion),
       pointer.schemaVersion >= 25
         || (pointer.schemaVersion == 24) == commander.usesNativePeopleSaveVersion
     else {

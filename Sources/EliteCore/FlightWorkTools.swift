@@ -41,7 +41,7 @@ extension Game {
 
   /// An unavailable selected utility never falls through to a combat weapon.
   mutating func fireSelectedFlightTool(delta: Double) {
-    guard !workFireSuspended else { return }
+    guard !workFireSuspended, !playerEMPDisabled else { return }
     if let work = workGuidance, !work.holding,
       !((selectedFlightTool == .combatLaser || selectedFlightTool == .empPirateBlaster)
         && work.manualToolOverride)
@@ -121,11 +121,12 @@ extension Game {
       economy: currentSystem.economy, technology: currentSystem.technology,
       ownership: metadata.ownership, manifest: physical.npc?.ordinaryCargo)
     if let original = physical.empSource.flatMap({ commander.savedEMPState?.records[$0] }) {
-      source.manifest = original.cargo
+      source.manifest = original.salvageCargo
       source = .init(
-        roles: profile.sourceRoles, legalValue: original.legal.value,
+        roles: profile.sourceRoles, legalValue: original.salvageLegal.value,
         economy: currentSystem.economy, technology: currentSystem.technology,
-        ownership: .abandoned, stolenProvenance: original.legal.value == 0, manifest: original.cargo
+        ownership: .abandoned, stolenProvenance: original.salvageLegal.value == 0,
+        manifest: original.salvageCargo
       )
     }
     let result = candidate.commander.salvageLedger.advance(

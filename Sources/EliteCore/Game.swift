@@ -36,6 +36,8 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
   var savedEMPState: EMPState?
+  var savedPlayerElectrical: ElectricalReserve?
+  var savedEMPCharge: EMPChargeState?
   var savedNativePeopleCustody: NativePeopleCustodyState?
   var savedSalvageLedger: SalvageLedger?
   var savedEquipmentVersion: Int?
@@ -208,6 +210,8 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedEquipmentInventory
     case savedEquipmentPurchaseHistory
     case savedEMPState
+    case savedPlayerElectrical
+    case savedEMPCharge
     case savedNativePeopleCustody
     case savedSalvageLedger
     case savedEquipmentVersion
@@ -274,7 +278,7 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   public var valid: Bool {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
-      && empCustodyStateValid
+      && empCustodyStateValid && electricalStateValid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -1175,6 +1179,8 @@ public struct Game: Sendable {
     cancelAutoTarget()
     clearManualResidualFlight()
     docked = true
+    commander.savedEMPCharge = nil
+    commander.savedPlayerElectrical = nil
     screen = .status
     screenHistory.removeAll()
     speed = 0
@@ -1201,7 +1207,7 @@ public struct Game: Sendable {
       _ = prepareChartTravel()
       return
     }
-    guard !docked, jumpCountdown == nil else { return }
+    guard !docked, !playerEMPDisabled, jumpCountdown == nil else { return }
     guard prepareChartTravel(), selectedSystem != commander.system,
       knownSystems.contains(where: { $0.id == selectedSystem })
     else {
@@ -1310,7 +1316,9 @@ public struct Game: Sendable {
     try restoreScriptActors()
   }
   public mutating func galacticJump() {
-    guard !docked, commander.equipment.contains("Galactic Hyperdrive") else { return }
+    guard !docked, !playerEMPDisabled, commander.equipment.contains("Galactic Hyperdrive") else {
+      return
+    }
     var candidate = self
     do {
       guard try candidate.performGalacticJump(), candidate.commander.valid else {
@@ -1348,7 +1356,7 @@ public struct Game: Sendable {
     return true
   }
   public mutating func inSystemJump() {
-    guard !docked, !massLocked else {
+    guard !docked, !playerEMPDisabled, !massLocked else {
       notify("MASS LOCKED")
       return
     }
@@ -1360,7 +1368,7 @@ public struct Game: Sendable {
     advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: 0)
   }
   @discardableResult public mutating func fireMissile(retaliating: Bool = false) -> Bool {
-    guard !docked, missileArmed, missileCooldown == 0,
+    guard !docked, !playerEMPDisabled, missileArmed, missileCooldown == 0,
       commander.missiles > 0 || commander.unlimitedMissiles,
       let target = bodies.firstIndex(where: { body in
         (body.hull != .station || nativeStationBodyIsCurrent(body))
@@ -1375,7 +1383,9 @@ public struct Game: Sendable {
     return true
   }
   public mutating func ecm() {
-    guard !docked, commander.equipment.contains("E.C.M. System"), energy > 10, ecmFrames == 0 else {
+    guard !docked, !playerEMPDisabled, commander.equipment.contains("E.C.M. System"), energy > 10,
+      ecmFrames == 0
+    else {
       return
     }
     ensurePhysicalActors()
@@ -1435,6 +1445,10 @@ public struct Game: Sendable {
       notify("PEOPLE ABANDONMENT COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    // The existing successful escape transaction replaces the abandoned craft;
+    // a pending charge and its disabled electrical reserve cannot follow it.
+    candidate.commander.savedEMPCharge = nil
+    candidate.commander.savedPlayerElectrical = nil
     candidate.commander.cargo = Array(repeating: 0, count: 17)
     candidate.commander.cargo[10] = candidate.commander.markedFirearms
     candidate.commander.legal = 0
@@ -1489,6 +1503,8 @@ public struct Game: Sendable {
     workScenePlanned = false
     if !controls.fire { workFireSuspended = false }
     commander.flightSimulation.advancePhysicalTime(dt)
+    advancePlayerElectrical()
+    let controls = playerEMPDisabled ? Controls() : controls
     gameplayRevision &+= 1
     ensurePhysicalActors()
     let craft = commander.performance
@@ -1502,7 +1518,7 @@ public struct Game: Sendable {
     roll =
       spin.mode || spin.actualRate != 0 || previousSpinRate != 0
       ? (previousSpinRate + spin.actualRate) * .pi / 360 : controls.roll * craft.roll
-    applyAutoTarget(delta: dt, controls: controls)
+    if !playerEMPDisabled { applyAutoTarget(delta: dt, controls: controls) }
     applyManualResidualThrottle(delta: dt, throttle: controls.throttle)
     laserHeat = max(0, laserHeat - dt * 12)
     fireCooldown = max(0, fireCooldown - dt)
@@ -1544,6 +1560,7 @@ public struct Game: Sendable {
         delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity
       )
     }
+    advanceEMPCharge(triggerHeld: controls.fire)
     resolveDestroyed()
     persistBlackjackTargets()
     if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {
@@ -1633,6 +1650,7 @@ public struct Game: Sendable {
     }
     persistScriptActors()
     let retainedNPCs = persistNPCStates()
+    guard persistEMPState() else { return }
     let departing = bodies.filter {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
     }
@@ -1709,6 +1727,7 @@ public struct Game: Sendable {
         }
       }
       if let actor = body.physical?.identity {
+        guard retireRecoveredEMPActor(actor, reason: .destroyed) else { continue }
         _ = commander.npcPersistence.terminal(actor: actor, reason: .destroyed)
       }
       missionTargetRemoved(body)
@@ -2110,6 +2129,7 @@ public actor GameRuntime {
     try EMPVersionedSave.rejectFields(data, part: .commander)
     try NativePeopleVersionedSave.rejectFields(data)
     try RingMiningVersionedSave.rejectFields(data)
+    try ElectricalVersionedSave.rejectFields(data)
     try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.

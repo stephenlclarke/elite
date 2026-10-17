@@ -4,7 +4,7 @@ extension Game {
   /// Mount direction, hull intersections and legal attribution share the same
   /// physical frame; a targeting lock never makes a shot pass through a ship.
   mutating func fireLaser() {
-    guard fireCooldown <= 0, laserHeat < 240, energy > 1,
+    guard !playerEMPDisabled, fireCooldown <= 0, laserHeat < 240, energy > 1,
       let mount = LaserMount.from(screen), let laser = commander.laser(on: mount)
     else { return }
     ensurePhysicalActors()

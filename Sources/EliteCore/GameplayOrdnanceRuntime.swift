@@ -4,6 +4,7 @@ extension Game {
   /// Admission, ownership and launch evidence are one transaction. A refused launch leaves
   /// ammunition, identities, cash and target state unchanged.
   mutating func launchGameplayMissile(targetBodyID: Int) -> Bool {
+    guard !playerEMPDisabled else { return false }
     var candidate = self
     do {
       try candidate.commander.prepareEquipment()
@@ -121,7 +122,9 @@ extension Game {
         || context.actors.contains(where: { $0.identity == emitter && $0.energy > 0 }),
       let sequence = commander.flightSimulation.allocateSpawn()
     else { return false }
-    activeECMActivation = .init(emitter: emitter, sequence: sequence)
+    let activation = ECMActivationIdentity(emitter: emitter, sequence: sequence)
+    activeECMActivation = activation
+    cancelEMPCharge(for: activation)
     return true
   }
 

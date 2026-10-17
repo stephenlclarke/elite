@@ -92,6 +92,14 @@ extension Game {
       let spin = snapshot.angularVelocity * elapsed
       snapshot.orientation.rotate(pitch: spin.x, roll: spin.z, yaw: spin.y)
       if var resources = snapshot.npc.resources {
+        if var reserve = resources.electrical {
+          guard
+            reserve.advance(
+              to: now, capacity: resources.energyCapacity,
+              recharge: resources.electricalRecharge)
+          else { continue }
+          resources.electrical = reserve
+        }
         resources.advance(delta: elapsed)
         if resources.profile == .nativeHull {
           snapshot.energy = min(

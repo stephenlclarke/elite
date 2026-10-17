@@ -63,7 +63,7 @@ extension EMPState {
   ) -> Bool {
     guard valid else { return false }
     let objects = records.values.flatMap { record in
-      [record.hull]
+      (record.savedOrdinaryTerminal == nil ? [record.hull] : [])
         + record.pods.compactMap { pod in
           guard let identity = pod.body.physical?.empCrewPod else { return nil }
           let person = NativePersonReference.emp(identity)

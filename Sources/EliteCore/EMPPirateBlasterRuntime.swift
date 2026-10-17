@@ -10,7 +10,7 @@ extension Game {
     guard let source = body.physical?.empSource,
       let record = commander.savedEMPState?.records[source]
     else { return false }
-    return !record.terminal && record.hull.binding == body.physical?.identity
+    return !record.terminal && !record.isRecovered && record.hull.binding == body.physical?.identity
   }
 
   func empTargetStatus(_ body: SpaceBody) -> String? {
@@ -41,19 +41,17 @@ extension Game {
     return "ENGINES AND WEAPONS DISABLED - UNOCCUPIED SALVAGE"
   }
 
-  /// Electronic effects use a real occluded mesh hit and the ordinary aggression ledger, never damage.
+  /// Only an actual zero electrical reserve can transfer the live hull and people.
+  /// The caller owns the whole-pulse candidate, including cost and legal incidents.
   @discardableResult
-  mutating func fireEMPPirateBlaster() -> Bool {
-    guard !docked, screen == .front, commander.valid,
-      let tool = commander.fittedEquipment(at: .utility(.empPirateBlaster)),
-      energy.isFinite, energy > Self.empEnergyCost, laserHeat.isFinite,
-      laserHeat + Self.empHeatCost < 240, fireCooldown.isFinite, fireCooldown <= 0
+  mutating func disableEMPHull(id: Int, incident: CombatIncident, tool: OwnedEquipmentItem) -> Bool
+  {
+    guard let actual = bodies.first(where: { $0.id == id }),
+      actual.physical?.npc?.resources?.electrical?.remaining == 0,
+      actual.physical?.npc?.resources?.electrical?.disabledAt
+        == commander.flightSimulation.physicalTime
     else { return false }
-    ensurePhysicalActors()
     guard
-      let contact = try? nearestMissionCollision(
-        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: Self.empRange,
-        radius: 0, includePlayer: false), case .body(let id) = contact.hit.target,
       let index = bodies.firstIndex(where: { $0.id == id }),
       let physical = bodies[index].physical, let npc = physical.npc,
       bodies[index].energy > 0, [.cobra, .viper, .sidewinder].contains(bodies[index].hull),
@@ -67,7 +65,6 @@ extension Game {
       EMPState.hasSupportedCrew(ship),
       let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue),
       let crew = try? ShipAccommodationProfile(ship: ship).operatingCrew, crew > 0,
-      let player = commander.flightSimulation.player,
       let owner = commander.equipmentOwnerID
     else { return false }
     // A repeated hit has no new disable/ejection/loot transition or additional cost.
@@ -75,26 +72,34 @@ extension Game {
     var candidate = self
     var state = candidate.commander.savedEMPState ?? EMPState()
     guard state.valid else { return false }
-    guard state.records.count < EMPState.maximumHulls,
-      crew <= EMPState.maximumPeople - state.records.values.reduce(0, { $0 + $1.crewTotal }),
-      state.nextSequence < 1_000_000_000 - 1
-    else {
-      notify("EMP CUSTODY CAPACITY FULL - NO DISABLEMENT")
-      return false
+    let priorSource =
+      candidate.commander.npcPersistence.logicalIdentity(for: physical.identity)
+      ?? state.records.first(where: {
+        $0.value.isRecovered && $0.value.hull.binding == physical.identity
+      })?.key
+    let previous = priorSource.flatMap { state.records[$0] }
+    if let previous {
+      guard previous.isRecovered, !previous.terminal, previous.savedOrdinaryTerminal == nil,
+        previous.crewAboard > 0,
+        previous.disableEpisodes.count < EMPHullRecord.maximumDisableEpisodes
+      else { return false }
+    } else {
+      guard state.records.count < EMPState.maximumHulls,
+        crew <= EMPState.maximumPeople - state.records.values.reduce(0, { $0 + $1.crewTotal }),
+        state.nextSequence < 1_000_000_000 - 1
+      else { return false }
     }
     guard let custody = candidate.claimEMPSource(bodyID: id),
-      let origin = candidate.makeAttackOrigin(
-        owner: player, sourcePart: "emp:" + tool.id.uuidString),
-      let incident = candidate.recordCombat(
-        origin: origin, kind: .emp, outcome: .hit, target: .body(id),
-        worldPosition: candidate.commander.flightSimulation.pose.systemPoint(contact.hit.point),
-        emissionPosition: candidate.commander.flightSimulation.pose.position),
       let current = candidate.bodies.firstIndex(where: { $0.id == id })
     else { return false }
-    let logical = custody.logical
-    let sequence = state.nextSequence
-    let wreck = WreckIdentity(
-      system: context.system, site: 0x8000_0000 + UInt32(sequence), lineage: logical.visit)
+    let logical = previous?.source ?? custody.logical
+    guard previous == nil || custody.logical == logical else { return false }
+    let sequence = previous?.sequence ?? state.nextSequence
+    let wreck =
+      previous?.wreck
+      ?? WreckIdentity(
+        system: context.system,
+        site: 0x8000_0000 + UInt32(sequence), lineage: logical.visit)
     candidate.bodies[current].physical?.canonicalSpin = true
     candidate.bodies[current].physical?.catalogueShipID = catalogue
     candidate.bodies[current].physical?.spawnIdentity = .init(
@@ -103,28 +108,35 @@ extension Game {
     candidate.bodies[current].physical?.salvage = .init(
       category: .wreck, ownership: .occupied, claimant: nil, wreck: wreck, section: nil, lot: nil,
       bounds: profile.bounds, workSurfaces: profile.surfaces(wreck: wreck))
-    var record = EMPHullRecord(
-      source: logical, sequence: sequence, wreck: wreck, crewTotal: crew,
-      originalSpawn: physical.spawnIdentity, originalBodyID: id, custody: custody,
-      disableIncident: incident, weapon: tool, weaponOwner: owner,
-      hull: .init(
+    var record: EMPHullRecord
+    if var retained = previous {
+      retained.hull = .init(
         body: candidate.bodies[current], pose: candidate.commander.flightSimulation.pose,
-        time: context.physicalTime), cargo: npc.ordinaryCargo, legal: npc.legal,
-      nextEjectionAt: context.physicalTime + 1)
+        time: context.physicalTime)
+      retained.savedCurrentTrafficTransfer = custody.traffic
+      retained.savedCurrentCargo = npc.ordinaryCargo
+      retained.savedCurrentLegal = npc.legal
+      retained.savedRecoveredAt = nil
+      retained.savedOrdinaryTerminal = nil
+      record = retained
+    } else {
+      record = EMPHullRecord(
+        source: logical, sequence: sequence, wreck: wreck, crewTotal: crew,
+        originalSpawn: physical.spawnIdentity, originalBodyID: id, custody: custody,
+        disableIncident: incident, weapon: tool, weaponOwner: owner,
+        hull: .init(
+          body: candidate.bodies[current], pose: candidate.commander.flightSimulation.pose,
+          time: context.physicalTime), cargo: npc.ordinaryCargo, legal: npc.legal,
+        nextEjectionAt: context.physicalTime + 1)
+    }
     let ejections = candidate.sampleEMPCrewEjections(ordinals: record.aboardOrdinals)
     guard
       record.appendCrewDisableEpisode(
         incident: incident, weapon: tool, owner: owner, ejections: ejections), record.valid
     else { return false }
     state.records[logical] = record
-    state.nextSequence += 1
+    if previous == nil { state.nextSequence += 1 }
     candidate.commander.savedEMPState = state
-    candidate.energy -= Self.empEnergyCost
-    candidate.laserHeat += Self.empHeatCost
-    candidate.fireCooldown = Self.empCooldown
-    candidate.laserFlash = 0.08
-    candidate.dischargeAudio.record(.empPirateBlaster)
-    candidate.commander.crimeLedger.finishEmission(origin.emissionID)
     candidate.notify("ENGINES AND WEAPONS DISABLED - CREW EJECTION PENDING")
     guard candidate.commander.valid else { return false }
     self = candidate

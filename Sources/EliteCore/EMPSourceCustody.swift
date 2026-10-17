@@ -47,7 +47,11 @@ extension Game {
       return nil
     }
     let logical =
-      commander.npcPersistence.logicalIdentity(for: physical.identity) ?? physical.identity
+      commander.npcPersistence.logicalIdentity(for: physical.identity)
+      ?? commander.savedEMPState?.records.first(where: {
+        $0.value.isRecovered && $0.value.savedOrdinaryTerminal == nil
+          && $0.value.hull.binding == physical.identity
+      })?.key ?? physical.identity
     let traffic = commander.npcPersistence.snapshot(for: logical)
     let evidence = EMPSourceCustody(
       kind: npc.role == .police ? .police : .ordinary,
@@ -74,7 +78,8 @@ extension Commander {
     guard let state = savedEMPState else { return npcPersistence.empTransfers.isEmpty }
     guard state.valid,
       npcPersistence.empTransfers.allSatisfy({ source, snapshot in
-        state.records[source]?.custody.traffic == snapshot
+        state.records[source]?.isRecovered == false
+          && state.records[source]?.activeTrafficTransfer == snapshot
       })
     else { return false }
     return state.records.values.allSatisfy { record in
@@ -95,7 +100,11 @@ extension Commander {
             && object.physicalTime <= flightSimulation.physicalTime
         })
       else { return false }
-      if let traffic = record.custody.traffic,
+      if record.isRecovered {
+        guard record.savedRecoveredAt.map({ $0 <= flightSimulation.physicalTime }) == true,
+          npcPersistence.terminalReason(for: record.source) != .empTransferred
+        else { return false }
+      } else if let traffic = record.activeTrafficTransfer,
         let retained = npcPersistence.snapshot(for: record.source)
       {
         return retained == traffic

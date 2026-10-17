@@ -858,9 +858,9 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     return matching.allSatisfy { section, progress in
       let source = progress.plan.source
       return profile.sections.contains { $0.index == section.section }
-        && source.roles == profile.sourceRoles && source.manifest == record.cargo
-        && source.legalValue == record.legal.value && source.ownership == .abandoned
-        && source.stolenProvenance == (record.legal.value == 0)
+        && source.roles == profile.sourceRoles && source.manifest == record.salvageCargo
+        && source.legalValue == record.salvageLegal.value && source.ownership == .abandoned
+        && source.stolenProvenance == (record.salvageLegal.value == 0)
         && source.manifestSection == 1 && !source.manifestAlreadySettled
     }
   }
