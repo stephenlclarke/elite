@@ -4,7 +4,7 @@ Copyright (c) 2026 Stephen Clarke. The original Swift implementation, tools, tes
 
 ## Ship models
 
-The numerical meshes in [individual ship TOMLs](Sources/EliteCore/Resources/Ships) are adapted third-party artwork. Each entry has its own `license`, source identity and source file hashes. The current collection contains 56 models under CC-BY-NC-SA-3.0, 14 under CC-BY-NC-SA-4.0, one under CC-BY-SA-3.0 and three ADCK Eagle models under the author's public-domain declaration. Model adaptations remain under the corresponding source terms. This is a mixed-licence distribution: the MIT code licence does not permit commercial use of the included NonCommercial artwork.
+The numerical meshes in [individual ship TOMLs](Sources/EliteCore/Resources/Ships) are adapted third-party artwork. Each entry has its own `license`, source identity and source file hashes. The current collection contains 59 models under CC-BY-NC-SA-3.0, 14 under CC-BY-NC-SA-4.0, one under CC-BY-SA-3.0 and three ADCK Eagle models under the author's public-domain declaration. Model adaptations remain under the corresponding source terms. This is a mixed-licence distribution: the MIT code licence does not permit commercial use of the included NonCommercial artwork.
 
 Full Creative Commons legal codes are included here and in the app resource bundle:
 
@@ -13,6 +13,8 @@ Full Creative Commons legal codes are included here and in the app resource bund
 - [CC-BY-SA-3.0](Sources/EliteCore/Resources/Legal/CC-BY-SA-3.0.txt): attribution and share alike.
 
 [Asset attribution](Sources/EliteCore/Resources/ASSET-NOTICE.txt) identifies source versions and modifications. Full original credits, copyright statements, disclaimers and additional author terms are retained without alteration in [ModelLicenses](Sources/EliteCore/Resources/ModelLicenses), [Oolite-LICENSE.txt](Sources/EliteCore/Resources/Oolite-LICENSE.txt), [Vector-MANIFEST.txt](Sources/EliteCore/Resources/Vector-MANIFEST.txt) and [RescueStations-LICENSE.txt](Sources/EliteCore/Resources/RescueStations-LICENSE.txt). The two ModelLicenses indexes record each notice's original archive path and SHA256. The catalogue and retained model research identify the exact source archives and model/definition hashes.
+
+The three selected Commies 2.20 adaptations, SH168/SH169/SH170, retain CC-BY-NC-SA-3.0. Their full original README and manifest are preserved in each TOML's `design.custody.originalReadme` and `originalManifest`, alongside archive/model hashes and attribution. These TOMLs are copied intact into the app resource bundle; their inclusion does not extend the project MIT grant.
 
 Oolite core artwork is used under its CC-BY-NC-SA-3.0 option; its engine and other code are not included. The ADCK geometry declaration excludes Simon Bridge shaders, which are not included. See the [retained declaration](Sources/EliteCore/Resources/Legal/ADCK-declaration.txt) and original ADCK readme. Conflicting or unresolved asset permissions do not qualify a model for inclusion.
 
@@ -36,7 +38,7 @@ Keep the applicable copyright, attribution and licence notices with redistribute
 
 ## Individual ship definitions
 
-The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 74 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-four original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
+The runtime ship catalogue and numerical geometry now live in `Sources/EliteCore/Resources/Ships/*.toml`. The 77 imported models retain the original terms and custody metadata in each definition and the preserved asset notices. Ninety-four original project designs are MIT licensed. Generated GIFs depict each definition and follow that design's listed terms; the central source/design appendix records the distinction. TOMLDecoder 0.4.5 is MIT licensed, with its full notice packaged in `Legal/TOMLDecoder-LICENSE.md`.
 
 ## Liberator DSV2 adaptation
 
