@@ -76,7 +76,8 @@ enum CrimboFixture {
     game.docked = false
     game.bodies = []
     game.ensurePhysicalActors()
-    let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+    let sequenceAllocation = game.commander.flightSimulation.allocateSpawn()
+    let sequence = try #require(sequenceAllocation)
     let owner = try #require(game.commander.equipmentOwnerID)
     game.commander.savedCrimboState = try registry(owner: owner, sequence: sequence)
     game.commander.flightSimulation.advancePhysicalTime(0.1)
@@ -125,11 +126,13 @@ struct NativeCrimboRegistryTests {
     var ledger = NPCPersistenceLedger()
     let original = try CrimboFixture.snapshot(entity: 2, slot: 6)
     let logical = NPCLogicalIdentity(firstActor: original.actor)
-    #expect(ledger.capture(original, protection: .init()) == .registered(original.actor))
+    let initialCapture = ledger.capture(original, protection: .init())
+    #expect(initialCapture == .registered(original.actor))
     let expected = [logical: original]
     let parked = try ledger.takeProviderOriginals(expected: expected, protection: .init())
     #expect(parked == expected && ledger.count == 0 && ledger.valid)
-    #expect(ledger.capture(original, protection: .init()) == .refused(.staleActor))
+    let staleCapture = ledger.capture(original, protection: .init())
+    #expect(staleCapture == .refused(.staleActor))
     #expect(throws: NativeCrimboError.invalidTransfer) {
       try ledger.takeProviderOriginals(expected: expected, protection: .init())
     }
@@ -137,7 +140,8 @@ struct NativeCrimboRegistryTests {
     var restored = original
     restored.actor = .init(system: CrimboFixture.system, visit: 2, entity: 3)
     restored.physicalTime = 20
-    #expect(ledger.capture(restored, protection: .init()) == .registered(restored.actor))
+    let restoredCapture = ledger.capture(restored, protection: .init())
+    #expect(restoredCapture == .registered(restored.actor))
     try ledger.importProviderOriginals(
       parked: parked, admitted: [logical: restored], protection: .init())
     #expect(ledger.binding(for: logical) == restored.actor)
@@ -204,13 +208,15 @@ struct NativeCrimboRegistryTests {
     var game = try CrimboFixture.game()
     game.commander.flightSimulation.advancePhysicalTime(1)
     let context = try #require(game.gameplayContext())
-    let request = try #require(ledger.pendingSpawnRequests(context: context).first)
+    let requests = ledger.pendingSpawnRequests(context: context)
+    let request = try #require(requests.first)
     let expected = try #require(ledger.snapshot(for: logical.firstActor))
     _ = try ledger.takeProviderOriginals(expected: [logical: expected], protection: .init())
     let late = SpawnReceipt(
       request: request.identity,
       actor: .init(system: CrimboFixture.system, visit: context.visit, entity: 3), refusal: nil)
-    #expect(ledger.acknowledge(receipts: [late]).isEmpty)
+    let acknowledged = ledger.acknowledge(receipts: [late])
+    #expect(acknowledged.isEmpty)
     #expect(ledger.count == 0 && ledger.valid)
   }
 
