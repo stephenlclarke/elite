@@ -101,7 +101,7 @@ class CatalogueBalanceTests(unittest.TestCase):
                 regenerated = tomllib.loads(output.read_text())
                 self.assertEqual(regenerated, ship)
                 staged = copy.deepcopy(ship)
-                staged.pop("game")
+                staged.pop("game", None)
                 projected = balance.apply_record_balance(staged, balance.load_balances())
                 self.assertEqual(projected["profiles"], regenerated["profiles"])
                 self.assertEqual(projected["catalogue"], regenerated["catalogue"])
