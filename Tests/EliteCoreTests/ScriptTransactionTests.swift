@@ -58,6 +58,10 @@ private struct DurableFixture {
   let accepted = await runtime.snapshot()
   #expect(
     accepted.commander.scriptState.instances.count == 1 && accepted.commander.cargoTonnes == 1)
+  let acceptedPointer = try JSONDecoder().decode(
+    ScriptSavePointer.self, from: Data(contentsOf: fixture.url))
+  #expect(acceptedPointer.schemaVersion == 26 && accepted.commander.usesEconomyMiningSaveVersion)
+  #expect(!accepted.commander.miningLedger.retainsLegacyFields)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
   #expect(saved == accepted.commander)
   let delivery = GameRuntime(game: try fixture.game(), saveURL: fixture.url)
@@ -67,6 +71,10 @@ private struct DurableFixture {
   let completed = await delivery.snapshot()
   #expect(completed.commander.credits == 1500 && completed.commander.cargoTonnes == 0)
   #expect(try Data(contentsOf: fixture.url) != offered)
+  let completedPointer = try JSONDecoder().decode(
+    ScriptSavePointer.self, from: Data(contentsOf: fixture.url))
+  #expect(completedPointer.schemaVersion == 26 && completed.commander.usesEconomyMiningSaveVersion)
+  #expect(!completed.commander.miningLedger.retainsLegacyFields)
   let reloaded = GameRuntime(game: try fixture.game(accepted: false))
   try await reloaded.load(from: fixture.url)
   let reloadedCommander = await reloaded.snapshot().commander
