@@ -372,7 +372,13 @@ public struct Controls: Sendable {
 }
 
 public struct Game: Sendable {
-  public var commander = Commander()
+  // Exactly one value lives in checked copy-on-write storage. Game copies retain independent
+  // nested commander mutations without reserving the whole commander in every Game temporary.
+  private var commanderStorage = [Commander()]
+  public var commander: Commander {
+    _read { yield commanderStorage[0] }
+    _modify { yield &commanderStorage[0] }
+  }
   public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false
