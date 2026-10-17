@@ -158,6 +158,17 @@ extension Game {
     contract: ScriptContractJob? = nil, campaignParent: ScriptChildBinding? = nil,
     drainAccepted: Bool = true
   ) throws -> UUID {
+    let instance = try prepareScriptMissionAcceptance(
+      pack, instanceID: instanceID, randomSeed: randomSeed,
+      contract: contract, campaignParent: campaignParent)
+    return try installScriptMissionAcceptance(
+      pack, instance: instance, drainAccepted: drainAccepted)
+  }
+  // Preparation borrows self through a mutating receiver but does not change the game.
+  private mutating func prepareScriptMissionAcceptance(
+    _ pack: ScriptPack, instanceID: UUID, randomSeed: UInt64,
+    contract: ScriptContractJob?, campaignParent: ScriptChildBinding?
+  ) throws -> ScriptInstance {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
       pack.manifest.mission.parentOnly != true || campaignParent != nil,
@@ -199,6 +210,11 @@ extension Game {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
+    return instance
+  }
+  private mutating func installScriptMissionAcceptance(
+    _ pack: ScriptPack, instance: ScriptInstance, drainAccepted: Bool
+  ) throws -> UUID {
     var candidate = self
     candidate.ensureScriptCalendar(origin: .newCommander)
     if pack.manifest.capabilities.contains("owned-equipment-v2") {
@@ -209,11 +225,20 @@ extension Game {
     if let reason = candidate.commander.scriptState.instances[instance.id]?.suspension {
       throw MissionPackError(reason)
     }
-    self = candidate
+    publishScriptMissionAcceptance(&candidate)
     return instance.id
+  }
+  private mutating func publishScriptMissionAcceptance(_ candidate: inout Game) {
+    self = candidate
   }
   mutating func emitScriptEvent(
     _ kind: String, values: [String: ScriptValue] = [:], only: UUID? = nil, drain: Bool = true
+  ) {
+    enqueueScriptEvent(kind, values: values, only: only)
+    if drain { drainScriptEvents() }
+  }
+  private mutating func enqueueScriptEvent(
+    _ kind: String, values: [String: ScriptValue], only: UUID?
   ) {
     for id in orderedScriptInstances
     where only == nil || only == id {
@@ -233,7 +258,6 @@ extension Game {
           sequence: commander.scriptState.nextEvent, kind: kind, instance: id, values: values,
           context: scriptEventContext(instance)))
     }
-    if drain { drainScriptEvents() }
   }
   mutating func drainScriptEvents(publish: ScriptPublisher? = nil) {
     guard !scriptDispatching, !scriptEventsDeferred else { return }
