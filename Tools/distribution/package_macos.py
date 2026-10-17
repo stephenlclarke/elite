@@ -94,7 +94,7 @@ def create_bundle(directory, binary_directory, version, revision):
 
 
 def verify_resources(app):
-    """Verify every maintained ship, mission and legal resource survived packaging."""
+    """Verify maintained resources using SwiftPM's copied/processed layouts."""
     bundle = app / "Contents/Resources/Elite_EliteCore.bundle"
     if (bundle / "Contents/Resources").is_dir():
         bundle = bundle / "Contents/Resources"
@@ -104,7 +104,8 @@ def verify_resources(app):
         relative = source.relative_to(ROOT / "Sources/EliteCore/Resources")
         target = (
             bundle / relative
-            if relative.parts[0] in ["Ships", "MissionPacks"]
+            if relative.parts[0]
+            in ["Ships", "MissionPacks", "ScriptPacks", "ShipTextures"]
             else bundle / source.name
         )
         if not target.is_file() or source.read_bytes() != target.read_bytes():
