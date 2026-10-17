@@ -51,6 +51,16 @@ struct ScriptWorldSave: Codable, Sendable {
       && nextBodyID >= (bodies.map(\.id).max() ?? 0)
   }
   func consistent(with commander: Commander) -> Bool {
+    if let stations = commander.nativeStations {
+      guard
+        stations.sceneIsConsistent(
+          bodies: bodies, docked: docked, mainStation: mainStation,
+          system: .init(galaxy: commander.galaxy, system: commander.system),
+          flight: commander.flightSimulation)
+      else { return false }
+    } else if bodies.contains(where: { $0.nativeStationIdentity != nil }) {
+      return false
+    }
     guard
       [
         (energy, commander.performance.energy), (frontShield, commander.shieldCapacity),

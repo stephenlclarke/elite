@@ -49,7 +49,7 @@ extension Game {
           } ?? .null
         )
       })
-    return .object([
+    var fields: [String: ScriptValue] = [
       "profile": .string("elite-native-player-v1"), "name": .string(commander.name),
       "ship_id": .string(commander.shipID), "ship_name": .string(commander.ship.name),
       "credits_decicredits": .integer(Int64(commander.credits)),
@@ -105,6 +105,17 @@ extension Game {
         "technology": .integer(Int64(currentSystem.technology)), "docked": .bool(docked),
         "main_station": .bool(docked && dockedAtMainStation),
       ]),
-    ])
+    ]
+    if nativeStationEventFacts != nil { fields["native_station"] = nativeStationFacts }
+    if let receipt = commander.nativeStations?.currentMainDock, docked && dockedAtMainStation {
+      fields["native_main_arrival"] = .object([
+        "world": .string(receipt.station.world.uuidString),
+        "resource": .string(receipt.station.resource.uuidString),
+        "station_key": .string(receipt.station.key),
+        "docking_sequence": .integer(Int64(receipt.sequence)),
+        "calendar_seconds": .number(receipt.calendarSeconds),
+      ])
+    }
+    return .object(fields)
   }
 }

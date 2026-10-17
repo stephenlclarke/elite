@@ -21,6 +21,8 @@ struct NativeStationSourceBinding: Equatable, Sendable {
   }
   var rotationRate: Double { kind == .waystation ? 0.02 : 0 }
   var technology: Int { kind == .waystation ? 7 : 0 }
+  var maximumEnergy: Double { kind == .waystation ? 9000 : 25000 }
+  var recharge: Double { kind == .waystation ? 15 : 100 }
 
   func identity(world: UUID) -> NativeStationIdentity {
     .init(
@@ -128,10 +130,12 @@ struct NativeStationSavedPose: Equatable, Codable, Sendable {
   let station: NativeStationIdentity
   let position: Vector3
   let orientation: Basis3
+  var energy: Double
 
   var valid: Bool {
     guard let source = NativeStationSource.binding(for: station),
       position.finite, position.length.isFinite, orientation.validRotation,
+      energy.isFinite, (0...source.maximumEnergy).contains(energy),
       position == NativeStationSource.position(for: source)
     else { return false }
     return orientation == NativeStationSource.initialOrientation(station)
@@ -153,13 +157,54 @@ struct NativeStationSavedPose: Equatable, Codable, Sendable {
   }
 }
 
+/// Original main stations have a distinct namespace; none is one of the 372 RRS records.
+struct NativeMainStationIdentity: Equatable, Hashable, Codable, Sendable {
+  let world: UUID
+  let system: SystemIdentity
+  let resource: UUID
+  var key: String { "main-orbital:\(system.galaxy):\(system.system)" }
+  var valid: Bool {
+    (0..<8).contains(system.galaxy) && (0...256).contains(system.system)
+      && resource == Game.worldResourceIdentity("main-station-v1:\(key)")
+  }
+}
+
+struct NativeMainStationDockReceipt: Equatable, Codable, Sendable {
+  let station: NativeMainStationIdentity
+  let actor: ActorIdentity
+  let commanderOwner: UUID
+  let sequence: UInt64
+  let calendarSeconds: Double
+  var valid: Bool {
+    station.valid && station.world == commanderOwner && actor.system == station.system
+      && actor.entity == 1 && actor.visit > 0 && actor.visit < UInt64(Int64.max)
+      && sequence > 0 && sequence < UInt64(Int64.max)
+      && calendarSeconds.isFinite && (0...1e12).contains(calendarSeconds)
+  }
+}
+
+struct NativeMainStationObservation: Equatable, Codable, Sendable {
+  let station: NativeMainStationIdentity
+  let actor: ActorIdentity
+  let calendarSeconds: Double
+  var valid: Bool {
+    station.valid && actor.system == station.system && actor.entity == 1
+      && actor.visit > 0 && actor.visit < UInt64(Int64.max)
+      && calendarSeconds.isFinite && (0...1e12).contains(calendarSeconds)
+  }
+}
+
 /// Persistent source/pose wrapper; G3 owns the unchanged logical lifecycle and receipt ledger.
 struct NativeStationWorld: Equatable, Codable, Sendable {
   let adapterRevision: String
   let geometryRevision: String
   let clockOrigin: Double
   var ledger: NativeStationLedger
-  let poses: [NativeStationSavedPose]
+  var poses: [NativeStationSavedPose]
+  var mainStations: [NativeMainStationIdentity]
+  var mainObservations: [NativeMainStationObservation]
+  var nextMainDockSequence: UInt64
+  var currentMainDock: NativeMainStationDockReceipt?
 
   init(owner: UUID) throws {
     guard NativeStationSource.bindings.count == NativeStationLedger.recordLimit else {
@@ -169,6 +214,10 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
     geometryRevision = NativeStationGeometry.adapterRevision
     // Native simulation-calendar origin, not the original engine's absolute ship-clock epoch.
     clockOrigin = 0
+    mainStations = []
+    mainObservations = []
+    nextMainDockSequence = 1
+    currentMainDock = nil
     let records = NativeStationSource.bindings.map { binding in
       NativeStationRecord(
         identity: binding.identity(world: owner), descriptor: binding.descriptor,
@@ -181,20 +230,42 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
       let station = binding.identity(world: owner)
       return .init(
         station: station, position: position,
-        orientation: NativeStationSource.initialOrientation(station))
+        orientation: NativeStationSource.initialOrientation(station), energy: binding.maximumEnergy)
     }
     guard valid else { throw NativeStationRuntimeError.invalidState }
   }
 
   var valid: Bool {
+    let originals = Set(mainStations)
     guard adapterRevision == NativeStationSource.adapterRevision,
       geometryRevision == NativeStationGeometry.adapterRevision, clockOrigin == 0,
+      mainStations.count <= 256, originals.count == mainStations.count,
+      Set(mainStations.map(\.key)).count == mainStations.count,
+      mainStations.allSatisfy({ $0.valid && $0.world == ledger.world }),
+      mainObservations.count <= 256,
+      Set(mainObservations.map(\.station)).count == mainObservations.count,
+      mainObservations.allSatisfy({ $0.valid && originals.contains($0.station) }),
+      nextMainDockSequence > 0, nextMainDockSequence < UInt64(Int64.max),
       ledger.valid, ledger.records.count == NativeStationLedger.recordLimit,
       poses.count == ledger.records.count, Set(poses.map(\.station)).count == poses.count,
       ledger.records.allSatisfy({ NativeStationSource.authentic($0, owner: ledger.world) }),
       poses.allSatisfy(\.valid), Set(poses.map(\.station)) == Set(ledger.records.map(\.identity))
     else { return false }
-    return ledger.currentDock.map { $0.commanderOwner == ledger.world } ?? true
+    let conditions = Dictionary(uniqueKeysWithValues: poses.map { ($0.station, $0.energy) })
+    guard
+      ledger.records.allSatisfy({ record in
+        record.tombstone == nil
+          ? (conditions[record.identity] ?? 0) > 0 : conditions[record.identity] == 0
+      })
+    else { return false }
+    guard ledger.currentDock.map({ $0.commanderOwner == ledger.world }) ?? true else {
+      return false
+    }
+    if let receipt = currentMainDock {
+      return ledger.currentDock == nil && receipt.valid && mainStations.contains(receipt.station)
+        && receipt.sequence == nextMainDockSequence - 1 && receipt.commanderOwner == ledger.world
+    }
+    return true
   }
 
   func pose(for station: NativeStationIdentity) -> NativeStationSavedPose? {
@@ -202,7 +273,8 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   }
 
   private enum CodingKeys: String, CodingKey {
-    case adapterRevision, geometryRevision, clockOrigin, ledger, poses
+    case adapterRevision, geometryRevision, clockOrigin, ledger, poses, mainStations,
+      mainObservations, nextMainDockSequence, currentMainDock
   }
 
   init(from decoder: Decoder) throws {
@@ -211,6 +283,38 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
     geometryRevision = try values.decode(String.self, forKey: .geometryRevision)
     clockOrigin = try values.decode(Double.self, forKey: .clockOrigin)
     ledger = try values.decode(NativeStationLedger.self, forKey: .ledger)
+    nextMainDockSequence =
+      try values.decodeIfPresent(UInt64.self, forKey: .nextMainDockSequence) ?? 1
+    currentMainDock = try values.decodeIfPresent(
+      NativeMainStationDockReceipt.self, forKey: .currentMainDock)
+    if values.contains(.mainStations) {
+      var mainEntries = try values.nestedUnkeyedContainer(forKey: .mainStations)
+      guard mainEntries.count.map({ $0 <= 256 }) ?? true else {
+        throw NativeStationRuntimeError.invalidState
+      }
+      var originals: [NativeMainStationIdentity] = []
+      while !mainEntries.isAtEnd {
+        guard originals.count < 256 else { throw NativeStationRuntimeError.invalidState }
+        originals.append(try mainEntries.decode(NativeMainStationIdentity.self))
+      }
+      mainStations = originals
+    } else {
+      mainStations = []
+    }
+    if values.contains(.mainObservations) {
+      var observations = try values.nestedUnkeyedContainer(forKey: .mainObservations)
+      guard observations.count.map({ $0 <= 256 }) ?? true else {
+        throw NativeStationRuntimeError.invalidState
+      }
+      var originals: [NativeMainStationObservation] = []
+      while !observations.isAtEnd {
+        guard originals.count < 256 else { throw NativeStationRuntimeError.invalidState }
+        originals.append(try observations.decode(NativeMainStationObservation.self))
+      }
+      mainObservations = originals
+    } else {
+      mainObservations = []
+    }
     var entries = try values.nestedUnkeyedContainer(forKey: .poses)
     guard entries.count.map({ $0 <= NativeStationLedger.recordLimit }) ?? true else {
       throw NativeStationRuntimeError.invalidState

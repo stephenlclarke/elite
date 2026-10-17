@@ -180,6 +180,12 @@ extension Game {
   }
 
   func gameplayMesh(for body: SpaceBody) -> Mesh {
+    if let identity = body.nativeStationIdentity {
+      guard nativeStationBodyIsCurrent(body),
+        let source = NativeStationSource.binding(for: identity)
+      else { return .init(vertices: [], faces: []) }
+      return source.geometry.mesh
+    }
     if let payload = body.physical?.payload, case .salvage(let identity) = payload,
       let lot = commander.salvageLedger.pendingLots.first(where: { $0.identity == identity })
     {
