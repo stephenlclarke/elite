@@ -135,13 +135,18 @@ struct MissionCatalogueReplacementTests {
     #expect(game.gallery.selection == 0 && game.gallery.scroll == 0)
     #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
     game.gallery.selection = 99
-    #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
+    #expect(game.selectedGalleryMission == nil)
+    #expect(game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
     game.galleryKey("pagedown")
     #expect(game.gallery.selection == 0)
+    #expect(game.selectedGalleryMission?.name == first.pack.mission.title)
+    #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
     game.replaceMissionPacks(try .checked([]))
     #expect(game.gallery.selection == 0)
-    #expect(
-      game.galleryDetailLines(width: 480, font: GameTypography.scale) == ["No missions available."])
+    #expect(game.missionCatalogue.isEmpty && game.selectedGalleryMission == nil)
+    #expect(game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
+    game.galleryKey("return")
+    #expect(game.gallery.selection == 0 && game.selectedGalleryMission == nil)
   }
 
   @Test func nativeInstallationAfterDiskShrinkReconcilesAnOpenGallery() async throws {

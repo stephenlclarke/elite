@@ -82,7 +82,12 @@ import Testing
   #expect(frame.shipPanels.isEmpty && frame.labels.contains { $0.text.contains("No matches") })
   game.key("escape")
   game.key("x")
-  #expect(game.showroomShips.count == 168)
+  #expect(ShipCatalogue.all.count == 171 && game.showroomShips.count == 171)
+  #expect(Set(game.showroomShips.map(\.id)) == Set(ShipCatalogue.all.map(\.id)))
+  #expect(
+    ["SH168", "SH169", "SH170"].allSatisfy { id in
+      game.showroomShips.contains { $0.id == id }
+    })
   game.key("return")
   for _ in 0..<200 { game.key("pagedown") }
   let bottom = game.showroom.scroll

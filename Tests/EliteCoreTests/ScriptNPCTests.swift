@@ -600,12 +600,18 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   defer { fixture.clean() }
   let (game, id) = try fixture.game()
   let body = game.bodies[try npcIndex(game, id)]
+  let before = game.commander
+  let playerMesh = game.commander.playerMesh
   let mesh = try #require(game.scriptNPCMesh(body))
   let raw = try #require(ShipCatalogue.ship("SH128")?.design.rawMesh)
-  #expect(mesh.vertices[0] == raw.vertices[0] * 1.6)
+  #expect(mesh.vertices == raw.vertices.map { $0 * 1.6 })
   #expect(body.scriptNPC?.fit.models["catalogue:SH128"] != nil)
   #expect(game.commander.shipID == "SH023")
-  #expect(ShipCatalogue.ship("SH128")?.game?.cargo == 0)
+  #expect(ShipCatalogue.ship("SH128")?.game?.cargo == 12)
+  #expect(game.commander == before)
+  #expect(game.commander.playerMesh.vertices == playerMesh.vertices)
+  #expect(game.commander.playerMesh.faces == playerMesh.faces)
+  #expect(game.commander.playerMesh.faceTextures == playerMesh.faceTextures)
   #expect(game.commander.valid)
 }
 
