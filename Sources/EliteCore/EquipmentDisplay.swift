@@ -5,6 +5,9 @@ extension Display {
     var frame = cockpit(game, width: width, height: height)
     let cockpit = CockpitLayout(game: game, width: width, height: height)
     let layout = EquipmentLayout(game: game, width: width, height: height)
+    let accommodation = game.commander.accommodation
+    let fittedCabins = accommodation.fitted.count
+    let storedCabins = max(0, accommodation.ownedBerths.count - fittedCabins)
     let right = layout.left + layout.contentWidth
     frame.label("EQUIP SHIP", layout.left, 12, scale: layout.font, ink: .yellow)
     func rightLabel(_ text: String, y: Double, ink: Ink) -> BitmapLabel {
@@ -54,10 +57,7 @@ extension Display {
     let buyingFor = game.equipmentWorkTool ? "Mining work tool" : game.equipmentMount.label
     func ownership(_ item: Equipment) -> (fitted: Bool, held: Bool) {
       if item.name == PassengerCabin.equipmentName {
-        return (
-          !game.commander.accommodation.fittedBerths.isEmpty,
-          !game.commander.accommodation.storedBerths.isEmpty
-        )
+        return (fittedCabins > 0, storedCabins > 0)
       }
       if let inventory = game.commander.equipmentInventory,
         let node = EquipmentRuntimeCatalog.node(for: item.name)
@@ -120,9 +120,7 @@ extension Display {
             fitted
             ? "FITTED" : owned.held ? "STORED" : Equipment.rewardLabel(item.name).uppercased()
         } else if item.name == PassengerCabin.equipmentName {
-          status =
-            "\(game.commander.accommodation.fittedBerths.count) FIT / "
-            + "\(game.commander.accommodation.storedBerths.count) STORED"
+          status = "\(fittedCabins) FIT / \(storedCabins) STORED"
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "

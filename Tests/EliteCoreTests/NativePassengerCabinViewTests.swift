@@ -164,106 +164,142 @@ private struct NativeCabinFixture {
   }
 }
 
-@MainActor @Test func paintedNativeCabinPurchaseStoreRefitAndFailedWritePreserveCustody()
-  async throws
-{
-  let fixture = try await NativeCabinFixture.open()
-  defer { fixture.clean() }
-  try fixture.paint()
-  let cash = fixture.view.game.commander.credits
-  try fixture.queue(36, text: "\r")
-  #expect(fixture.view.pending == ["equipment-purchase"])
-  await fixture.delegate.processPendingCommands(in: fixture.view)
-  let berth = try #require(fixture.view.game.commander.accommodation.fittedBerths.first?.id)
-  #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
-  #expect(fixture.view.game.commander.cargoTonnes == 5)
-  let afterBuy = try fixture.generations()
-  #expect(afterBuy == 1)
-  try fixture.paint()
-  try fixture.queue(1, text: "s", repeatKey: true)
-  #expect(fixture.view.pending.isEmpty)
-  try fixture.queue(1, text: "s")
-  #expect(fixture.view.pending == ["passenger-berth-fitting"])
-  #expect(fixture.view.pendingPassengerBerthFittings.count == 1)
-  await fixture.delegate.processPendingCommands(in: fixture.view)
-  #expect(fixture.view.game.commander.accommodation.storedBerths.map(\.id) == [berth])
-  #expect(fixture.view.game.commander.cargoTonnes == 0)
-  #expect(try fixture.generations() == afterBuy + 1)
-  try fixture.paint()
-  try fixture.queue(15, text: "r")
-  await fixture.delegate.processPendingCommands(in: fixture.view)
-  #expect(fixture.view.game.commander.accommodation.fittedBerths.map(\.id) == [berth])
-  #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
-  #expect(try fixture.generations() == afterBuy + 2)
+extension NativeViewTests {
+  @MainActor @Test func paintedNativeCabinPurchaseStoreRefitAndFailedWritePreserveCustody()
+    async throws
+  {
+    let fixture = try await NativeCabinFixture.open()
+    defer { fixture.clean() }
+    try fixture.paint()
+    let cash = fixture.view.game.commander.credits
+    try fixture.queue(36, text: "\r")
+    #expect(fixture.view.pending == ["equipment-purchase"])
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    let berth = try #require(fixture.view.game.commander.accommodation.fittedBerths.first?.id)
+    #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
+    #expect(fixture.view.game.commander.cargoTonnes == 5)
+    let afterBuy = try fixture.generations()
+    #expect(afterBuy == 1)
+    try fixture.paint()
+    try fixture.queue(1, text: "s", repeatKey: true)
+    #expect(fixture.view.pending.isEmpty)
+    try fixture.queue(1, text: "s")
+    #expect(fixture.view.pending == ["passenger-berth-fitting"])
+    #expect(fixture.view.pendingPassengerBerthFittings.count == 1)
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander.accommodation.storedBerths.map(\.id) == [berth])
+    #expect(fixture.view.game.commander.cargoTonnes == 0)
+    #expect(try fixture.generations() == afterBuy + 1)
+    try fixture.paint()
+    try fixture.queue(15, text: "r")
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander.accommodation.fittedBerths.map(\.id) == [berth])
+    #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
+    #expect(try fixture.generations() == afterBuy + 2)
 
-  try fixture.paint()
-  try fixture.queue(1, text: "s")
-  let stale = try #require(fixture.view.pendingPassengerBerthFittings.first)
-  // Returning to identical cabin custody still invalidates the previously painted epoch.
-  try await fixture.delegate.runtime.setPassengerBerthFitted(berth, fitted: false)
-  try await fixture.delegate.runtime.setPassengerBerthFitted(berth, fitted: true)
-  let beforeStale = await fixture.delegate.runtime.snapshot().commander
-  await fixture.delegate.processPendingCommands(in: fixture.view)
-  #expect(fixture.view.game.commander == beforeStale)
-  #expect(
-    await fixture.delegate.runtime.equipmentTransaction(.passengerBerth(stale))
-      == .refused(.staleContext))
+    try fixture.paint()
+    try fixture.queue(1, text: "s")
+    let stale = try #require(fixture.view.pendingPassengerBerthFittings.first)
+    // Returning to identical cabin custody still invalidates the previously painted epoch.
+    try await fixture.delegate.runtime.setPassengerBerthFitted(berth, fitted: false)
+    try await fixture.delegate.runtime.setPassengerBerthFitted(berth, fitted: true)
+    let beforeStale = await fixture.delegate.runtime.snapshot().commander
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander == beforeStale)
+    #expect(
+      await fixture.delegate.runtime.equipmentTransaction(.passengerBerth(stale))
+        == .refused(.staleContext))
 
-  try fixture.paint()
-  let before = fixture.view.game.commander
-  let oldBytes = try Data(contentsOf: fixture.save)
-  let root = fixture.save.appendingPathExtension("missions")
-  let backup = fixture.directory.appendingPathComponent("held-generations")
-  try FileManager.default.moveItem(at: root, to: backup)
-  var blocked = true
-  defer {
-    if blocked {
-      try? FileManager.default.removeItem(at: root)
-      try? FileManager.default.moveItem(at: backup, to: root)
+    try fixture.paint()
+    let before = fixture.view.game.commander
+    let oldBytes = try Data(contentsOf: fixture.save)
+    let root = fixture.save.appendingPathExtension("missions")
+    let backup = fixture.directory.appendingPathComponent("held-generations")
+    try FileManager.default.moveItem(at: root, to: backup)
+    var blocked = true
+    defer {
+      if blocked {
+        try? FileManager.default.removeItem(at: root)
+        try? FileManager.default.moveItem(at: backup, to: root)
+      }
     }
+    try Data("blocked".utf8).write(to: root)
+    try fixture.queue(1, text: "s")
+    await fixture.delegate.processPendingCommands(in: fixture.view)
+    #expect(fixture.view.game.commander == before)
+    #expect(try Data(contentsOf: fixture.save) == oldBytes)
+    #expect(fixture.view.game.commander.accommodation.fitted == [berth])
+    #expect(fixture.view.game.message == "MISSION SAVE FAILED - ACTION NOT COMMITTED")
+    try FileManager.default.removeItem(at: root)
+    try FileManager.default.moveItem(at: backup, to: root)
+    blocked = false
+    let restored = GameRuntime()
+    try await restored.load(from: fixture.save, persistMigrations: false)
+    #expect(await restored.snapshot().commander == before)
   }
-  try Data("blocked".utf8).write(to: root)
-  try fixture.queue(1, text: "s")
-  await fixture.delegate.processPendingCommands(in: fixture.view)
-  #expect(fixture.view.game.commander == before)
-  #expect(try Data(contentsOf: fixture.save) == oldBytes)
-  #expect(fixture.view.game.commander.accommodation.fitted == [berth])
-  #expect(fixture.view.game.message == "MISSION SAVE FAILED - ACTION NOT COMMITTED")
-  try FileManager.default.removeItem(at: root)
-  try FileManager.default.moveItem(at: backup, to: root)
-  blocked = false
-  let restored = GameRuntime()
-  try await restored.load(from: fixture.save, persistMigrations: false)
-  #expect(await restored.snapshot().commander == before)
+
+  @MainActor @Test func paintedCabinStorageCannotRemoveAnActualPassengerOrActWhilePaused()
+    async throws
+  {
+    var game = try cabinShopGame()
+    let berth = try game.confirmPassengerBerth(game.passengerBerthQuote)
+    let packURL = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-passengers")
+    let pack = try ScriptPackLibrary.read(packURL)
+    game.scriptPacks = [pack]
+    _ = try game.acceptScriptMission(pack)
+    #expect(game.commander.accommodation.fittedBerths.first?.use.used == true)
+    let fixture = try await NativeCabinFixture.open(source: game)
+    defer { fixture.clean() }
+    let before = fixture.view.game.commander
+    #expect(before.accommodation.fitted == [berth] && before.accommodation.people.count == 1)
+    let bytes = try Data(contentsOf: fixture.save)
+    try fixture.paint()
+    try fixture.queue(1, text: "s")
+    #expect(fixture.view.pending.isEmpty && fixture.view.pendingPassengerBerthFittings.isEmpty)
+    #expect(fixture.view.game.commander == before)
+    await fixture.delegate.runtime.key("pause")
+    fixture.view.game = await fixture.delegate.runtime.snapshot()
+    #expect(fixture.view.game.paused)
+    try fixture.paint()
+    try fixture.queue(15, text: "r")
+    #expect(fixture.view.pending.isEmpty)
+    #expect(fixture.view.game.commander == before)
+    #expect(try Data(contentsOf: fixture.save) == bytes)
+  }
+
 }
 
-@MainActor @Test func paintedCabinStorageCannotRemoveAnActualPassengerOrActWhilePaused()
-  async throws
-{
-  var game = try cabinShopGame()
-  let berth = try game.confirmPassengerBerth(game.passengerBerthQuote)
-  let packURL = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-    .deletingLastPathComponent().deletingLastPathComponent()
-    .appendingPathComponent("docs/mission-packs/scripted-passengers")
-  let pack = try ScriptPackLibrary.read(packURL)
-  game.scriptPacks = [pack]
-  _ = try game.acceptScriptMission(pack)
-  #expect(game.commander.accommodation.fittedBerths.first?.use.used == true)
-  let fixture = try await NativeCabinFixture.open(source: game)
-  defer { fixture.clean() }
-  let before = fixture.view.game.commander
-  #expect(before.accommodation.fitted == [berth] && before.accommodation.people.count == 1)
-  let bytes = try Data(contentsOf: fixture.save)
-  try fixture.paint()
-  try fixture.queue(1, text: "s")
-  #expect(fixture.view.pending.isEmpty && fixture.view.pendingPassengerBerthFittings.isEmpty)
-  #expect(fixture.view.game.commander == before)
-  await fixture.delegate.runtime.key("pause")
-  fixture.view.game = await fixture.delegate.runtime.snapshot()
-  #expect(fixture.view.game.paused)
-  try fixture.paint()
-  try fixture.queue(15, text: "r")
-  #expect(fixture.view.pending.isEmpty)
-  #expect(fixture.view.game.commander == before)
-  #expect(try Data(contentsOf: fixture.save) == bytes)
+@Test func cabinStorefrontDoesNotBecomeLegacyHardwareOrBreakMaximumRefits() throws {
+  #expect(Equipment.all.last?.name == PassengerCabin.equipmentName)
+  #expect(!Equipment.validNames.contains(PassengerCabin.equipmentName))
+  #expect(!Equipment.maximumHardware.contains(PassengerCabin.equipmentName))
+  #expect(EquipmentRuntimeCatalog.node(for: PassengerCabin.equipmentName) == nil)
+  var forged = Commander()
+  forged.equipment.insert(PassengerCabin.equipmentName)
+  #expect(!forged.valid)
+  #expect(throws: CommanderEquipmentError.self) { try forged.prepareEquipment() }
+  var maximum = Commander()
+  maximum.xyzzyActive = true
+  maximum.equipment = Equipment.maximumHardware
+  maximum.fuelStorageUnits = FuelStorage.maximumCount
+  try maximum.initializeEquipment(owner: UUID(), hull: UUID(), legacy: false, xyzzyGrant: true) {
+    UUID()
+  }
+  maximum.mirrorFittedEquipment()
+  #expect(maximum.valid && maximum.fuelStorageUnits == 4)
+  #expect(maximum.equipmentInventory?.items.isEmpty == false)
+  #expect(
+    maximum.equipmentInventory?.items.allSatisfy {
+      $0.node.key != PassengerCabin.equipmentName
+        && ($0.provenance == .standard || $0.provenance == .xyzzy)
+    } == true)
+  #expect(maximum.accommodation.ownedBerths.isEmpty)
+  var game = Game(executive: false)
+  game.enableXYZzy()
+  game.restoreXYZzyCobra()
+  #expect(game.commander.xyzzyActive && game.commander.valid)
+  #expect(game.commander.equipment.contains("Energy Bomb"))
+  #expect(game.commander.accommodation.ownedBerths.isEmpty)
 }
