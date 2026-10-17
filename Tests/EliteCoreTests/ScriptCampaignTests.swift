@@ -31,6 +31,57 @@ func campaignPatrolDiagnostic(_ game: Game, child: UUID) -> String {
   ].joined(separator: ",")
 }
 
+private func fitCampaignPatrolTargeting(_ game: inout Game) throws {
+  let before = game.commander
+  try game.commander.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .legacyUnknown)
+  try #require(game.commander.hasAutomaticDocking)
+  #expect(
+    game.commander.fittedEquipment(at: .targetingCore)?.node.key
+      == TargetingTier.docking.equipmentName)
+  #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
+  #expect(game.commander.scriptState == before.scriptState)
+  #expect(
+    game.commander.contracts == before.contracts
+      && game.commander.accommodation == before.accommodation)
+}
+
+private func campaignPatrolTargetIsOwned(_ game: Game, child: UUID) -> Bool {
+  guard let body = game.autoTargetBody, body.energy > 0, body.missionInstanceID == child,
+    let identity = body.missionActorID,
+    let encounter = game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]
+  else { return false }
+  return encounter.actors.values.contains {
+    $0.identity == identity && $0.presence != .destroyed
+  }
+}
+
+private func selectCampaignPatrolTarget(_ game: inout Game, child: UUID) throws {
+  // Keep tracking the live owned actor; cycle actual player targets only when it changes.
+  for _ in 0...game.bodies.count {
+    if campaignPatrolTargetIsOwned(game, child: child) { return }
+    game.key("r")
+  }
+  try #require(
+    campaignPatrolTargetIsOwned(game, child: child),
+    Comment(
+      rawValue: "Owned patrol target unavailable: " + campaignPatrolDiagnostic(game, child: child)))
+}
+
+func selectCampaignPatrolTarget(_ runtime: GameRuntime, child: UUID) async throws {
+  var selected = await runtime.snapshot()
+  for _ in 0...selected.bodies.count {
+    if campaignPatrolTargetIsOwned(selected, child: child) { return }
+    await runtime.key("r")
+    selected = await runtime.snapshot()
+  }
+  try #require(
+    campaignPatrolTargetIsOwned(selected, child: child),
+    Comment(
+      rawValue: "Owned patrol target unavailable: "
+        + campaignPatrolDiagnostic(selected, child: child)))
+}
+
 private struct CampaignFixture {
   let root: URL
   let child: ScriptPack
@@ -135,7 +186,7 @@ private struct CampaignFixture {
   func game() -> Game {
     var game = Game(executive: false)
     game.screen = .status
-    game.commander.installTargetingComputer(.docking)
+    do { try fitCampaignPatrolTargeting(&game) } catch { Issue.record(error) }
     game.scriptPacks = [child] + parents
     return game
   }
@@ -150,8 +201,9 @@ private struct CampaignFixture {
     let beforeFire = campaignPatrolDiagnostic(game, child: child)
     var observedFlash = false
     var firing = Controls()
-    firing.fire = true
     for _ in 0..<200 {
+      try selectCampaignPatrolTarget(&game, child: child)
+      firing.fire = game.autoPilot.status == "TRACKING TARGET"
       game.tick(delta: 0.1, controls: firing)
       observedFlash = observedFlash || game.laserFlash > 0
       if game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
@@ -164,12 +216,13 @@ private struct CampaignFixture {
       Comment(
         rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
           + campaignPatrolDiagnostic(game, child: child)))
+    firing = Controls()
     for _ in 0..<8 {
       game.key("r")
       if game.autoPilot.targetID == 0 { break }
     }
     let beforeDock = campaignPatrolDiagnostic(game, child: child)
-    for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02) }
+    for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02, controls: firing) }
     #expect(
       game.docked && game.dockedAtMainStation,
       Comment(
@@ -658,9 +711,10 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
   let beforeFire = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
   var observedFlash = false
   var firing = Controls()
-  firing.fire = true
-  await runtime.setControls(firing)
   for _ in 0..<200 {
+    try await selectCampaignPatrolTarget(runtime, child: child)
+    firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    await runtime.setControls(firing)
     selected = await runtime.advance(delta: 0.1)
     observedFlash = observedFlash || selected.laserFlash > 0
     if selected.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed

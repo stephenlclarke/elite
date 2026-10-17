@@ -484,9 +484,10 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   let beforeFire = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
   var observedFlash = false
   var firing = Controls()
-  firing.fire = true
-  await runtime.setControls(firing)
   for _ in 0..<200 {
+    try await selectCampaignPatrolTarget(runtime, child: child)
+    firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    await runtime.setControls(firing)
     actual = await runtime.advance(delta: 0.1)
     observedFlash = observedFlash || actual.laserFlash > 0
     if actual.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
