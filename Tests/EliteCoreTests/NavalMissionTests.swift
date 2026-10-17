@@ -58,9 +58,11 @@ private func finishMessage(_ game: inout Game) {
   var game = navalGame(galaxy: 1)
   game.dock()
   finishMessage(&game)
+  game.commander.equipment.insert("Military Laser")
   game.launch()
   game.speed = 0
-  game.commander.equipment.insert("Military Laser")
+  #expect(game.commander.laser(on: .front) == .military)
+  #expect(game.commander.fittedEquipment(at: .laser(.front)) != nil)
   var target = SpaceBody(id: 99, hull: .constrictor, position: .init(0, 0, 500), hostile: true)
   target.navalTarget = true
   target.energy = 5
@@ -366,10 +368,12 @@ private func finishMessage(_ game: inout Game) {
   ]
   for (equipment, recharge) in upgrades {
     game = navalGame(score: 0)
+    game.commander.equipment = equipment
     game.launch()
     game.bodies = []
     game.energy = 100
-    game.commander.equipment = equipment
+    let expectedEnergy = equipment.first ?? "Basic Energy System"
+    #expect(game.commander.fittedEquipment(at: .energy)?.node.key == expectedEnergy)
     game.tick(delta: 0.1)
     #expect(abs(game.energy - 100 - recharge) < 1e-9)
   }

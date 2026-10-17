@@ -145,7 +145,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     commander.targetingTier == .military
       && !commander.equipment.contains(TargetingTier.basic.equipmentName))
 }
-@Test func targetInformationDoesNotLeakHigherTierReadingsAndNeverUsesPlayerValues() {
+@Test func targetInformationDoesNotLeakHigherTierReadingsAndNeverUsesPlayerValues() throws {
   for tier in TargetingTier.allCases {
     var game = computerGame(tier)
     var target = SpaceBody(id: 17, hull: .constrictor, position: .init(0, 0, 1000), hostile: true)
@@ -170,7 +170,13 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
       game.enemyECMSource = 17
       #expect(game.targetInformation?.fields.first { $0.label == "ECM active" }?.value == "Yes")
     }
-    game.commander.equipment = [TargetingTier.basic.equipmentName]
+    let inventory = try #require(game.commander.equipmentInventory)
+    let core = try #require(game.commander.fittedEquipment(at: .targetingCore))
+    try game.commander.storeEquipment(core, expectedRevision: inventory.revision)
+    try game.commander.grantEquipment(
+      TargetingTier.basic.equipmentName, at: .targetingCore,
+      provenance: .grant("disclosure downgrade fixture"))
+    #expect(game.commander.targetingTier == .basic)
     #expect(game.targetInformation?.fields.isEmpty == true && game.targetInformation?.model == nil)
     game.bodies = []
     game.tick(delta: 0.01)

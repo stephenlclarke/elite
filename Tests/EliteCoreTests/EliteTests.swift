@@ -233,7 +233,10 @@ import Testing
   #expect(game.bodies[0].position.z == 7000)
   game.key("g")
   #expect(game.commander.galaxy == 0)
-  game.commander.equipment.insert("Galactic Hyperdrive")
+  try game.commander.grantEquipment(
+    "Galactic Hyperdrive", at: .utility(.galacticHyperdrive),
+    provenance: .grant("galactic travel fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.galacticHyperdrive)) != nil)
   game.key("g")
   #expect(
     game.commander.galaxy == 1 && game.commander.fuel == 70

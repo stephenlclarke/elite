@@ -36,7 +36,9 @@ func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution(_ mode: Int
   do {
     var game = lockedGame()
     if mode == 2 {
-      game.commander.equipment.insert("Energy Bomb")
+      try game.commander.grantEquipment(
+        "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("kill attribution fixture"))
+      #expect(game.commander.fittedEquipment(at: .utility(.energyBomb)) != nil)
       game.energyBomb()
     } else {
       game.bodies[0].ecmEnabled = mode == 1
