@@ -11,3 +11,5 @@ Implement explicit source/ordinal custody, bounded actual-disable episodes and d
 Actual electrical phases, same-ship recovery and traffic return remain G1's central integration responsibility. Full medical treatment, hiring, generic rescue providers and historical campaign adaptation remain open. See the [source candidate and validation limits](PR-native-people-custody.md) and [custody contract](NATIVE-PEOPLE-CUSTODY.md).
 
 Composed compile check 249 exposed seven mutating Game calls inside Testing macros before test execution. Each actual call is now evaluated once into a local, retaining its original required/negative assertion. This is a fixture compilation correction, not runtime acceptance or a change to custody rules.
+
+Check 250 then exposed one exclusive-access overlap while a legacy fixture assigned an EMP field and read the same Commander in its right-hand expression. Staging the unchanged physical-time calculation in a local preserves the original scenario and assertion. No tests executed in 250.

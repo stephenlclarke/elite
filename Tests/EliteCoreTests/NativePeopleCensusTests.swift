@@ -69,8 +69,8 @@ enum NativePeopleTestFixture {
     if legacy {
       let source = try source(game)
       game.commander.savedEMPState?.records[source]?.savedDisableEpisodes = nil
-      game.commander.savedEMPState?.records[source]?.nextEjectionAt =
-        game.commander.flightSimulation.physicalTime + 1
+      let nextEjection = game.commander.flightSimulation.physicalTime + 1
+      game.commander.savedEMPState?.records[source]?.nextEjectionAt = nextEjection
     }
     for _ in 0..<15 { game.tick(delta: 0.1) }
     let index = try #require(game.bodies.firstIndex { $0.physical?.empCrewPod != nil })
