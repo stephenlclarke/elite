@@ -202,7 +202,11 @@ extension Commander {
     guard let node = EquipmentRuntimeCatalog.node(for: name),
       var inventory = candidate.equipmentInventory
     else { throw EquipmentRuntimeError.unavailable }
-    if candidate.fittedEquipment(at: slot)?.node == node { return }
+    if candidate.fittedEquipment(at: slot)?.node == node {
+      guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
+      self = candidate
+      return
+    }
     let obligations = try candidate.equipmentIssueObligations()
     if let installed = candidate.fittedEquipment(at: slot),
       EquipmentIssueTransactions.activeLoan(for: installed, obligations: obligations) != nil
