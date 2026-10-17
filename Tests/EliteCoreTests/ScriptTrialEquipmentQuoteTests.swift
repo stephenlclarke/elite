@@ -109,7 +109,9 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
         }))
   #expect(published.commander.fuel == 70 && !published.commander.unlimitedMissiles)
   // The no-scene pledge keeps Jameson's ordinary cash and cannot afford its first donation.
-  #expect(quote.allowed == (scenario.scene || !scenario.pledge))
+  #expect(
+    quote.allowed == (scenario.scene || !scenario.pledge),
+    Comment(rawValue: "Published trial quote issues: " + quote.issues.joined(separator: "; ")))
   let accepted = try await usePublishedTrialQuote(runtime, quote: quote, pledge: scenario.pledge)
   let saved = try await runtime.saveForInterface()
   #expect(saved.isTrial && saved.url == namespace.appendingPathComponent("commander.json"))
