@@ -353,3 +353,55 @@ extension EMPElectricalRuntimeTests {
     #expect(game.spin.actualRate > inertia && game.spin.actualRate <= command)
   }
 }
+
+extension EMPElectricalRuntimeTests {
+  @Test func lateUnrelatedNPCPersistenceRefusalRollsBackTheWholeZeroPowerPulse() throws {
+    var game = try electricalGame()
+    game.bodies.append(.init(id: 99, hull: .cobra, position: .init(4000, 1000, 9000)))
+    game.nextBodyID = 100
+    game.ensurePhysicalActors()
+    let bad = try #require(game.bodies.firstIndex { $0.id == 99 })
+    let ship = try #require(ShipCatalogue.nativeShip(.cobra))
+    let native = try #require(ship.game)
+    game.bodies[bad].physical?.catalogueShipID = ship.id
+    game.bodies[bad].physical?.npc?.resources = .stock(native)
+    // Fault injection at an unrelated physical capture boundary; the durable commander
+    // remains valid. The primary target must still reach its real zero-power transition.
+    game.bodies[bad].energy = native.energy * 2
+    let began = game.fireEMPPirateBlaster()
+    try #require(began && game.commander.valid)
+    game.commander.flightSimulation.advancePhysicalTime(10)
+    let now = game.commander.flightSimulation.physicalTime
+    var resources = try #require(game.bodies[0].physical?.npc?.resources)
+    resources.frontShield = 0
+    resources.rearShield = 0
+    var reserve = try #require(
+      ElectricalReserve(
+        capacity: resources.energyCapacity, recharge: resources.electricalRecharge, at: now))
+    let drained = reserve.drain(resources.energyCapacity - 5, at: now)
+    try #require(drained && reserve.remaining == 5 && reserve.disabledAt == nil)
+    resources.electrical = reserve
+    game.bodies[0].physical?.npc?.resources = resources
+    let context = try #require(game.gameplayContext())
+    let refused = NPCPersistenceSnapshot.capture(
+      body: game.bodies[bad], pose: game.commander.flightSimulation.pose,
+      physicalTime: now, protection: context.protection)
+    try #require(refused == nil)
+    let before = game.commander
+    let bodies = game.bodies
+    let simulation = game.scriptSimulationSave
+    let discharge = game.dischargeAudio
+    let energy = game.energy
+    let heat = game.laserHeat
+    game.advanceEMPCharge(triggerHeld: true)
+    var expected = before
+    expected.savedEMPCharge?.phase = .released
+    expected.savedEMPCharge?.endedAt = now
+    #expect(game.commander == expected)
+    #expect(
+      game.bodies == bodies && game.scriptSimulationSave.randomState == simulation.randomState)
+    #expect(game.dischargeAudio == discharge && game.energy == energy && game.laserHeat == heat)
+    #expect(game.commander.savedEMPState == nil && game.commander.savedPlayerElectrical == nil)
+    #expect(game.message == "EMP RELEASE REFUSED - TARGET OR EQUIPMENT CHANGED")
+  }
+}
