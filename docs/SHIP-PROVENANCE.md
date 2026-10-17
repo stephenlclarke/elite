@@ -14049,7 +14049,7 @@ Original package notices are embedded verbatim in design.custody. Geometry terms
 | Field | Source value | Status / basis |
 | --- | --- | --- |
 | Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
-| Original model licence | CC BY-NC-SA 3.0 Unported; https://creativecommons.org/licenses/by-nc-sa/3.0/. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
 | Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
 
 <a id="sh169"></a>
@@ -14444,7 +14444,7 @@ Original package notices are embedded verbatim in design.custody. Geometry terms
 | Field | Source value | Status / basis |
 | --- | --- | --- |
 | Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
-| Original model licence | CC BY-NC-SA 3.0 Unported; https://creativecommons.org/licenses/by-nc-sa/3.0/. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
 | Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
 
 <a id="sh170"></a>
@@ -14650,7 +14650,7 @@ Original package notices are embedded verbatim in design.custody. Geometry terms
 | Field | Source value | Status / basis |
 | --- | --- | --- |
 | Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
-| Original model licence | CC BY-NC-SA 3.0 Unported; https://creativecommons.org/licenses/by-nc-sa/3.0/. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
 | Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
 
 <a id="sh171"></a>
