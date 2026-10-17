@@ -11,7 +11,7 @@ dimensions = [88.2, 54.31352, 199.15336]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "gc-inspection-team-craft"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "rare"
 galaxies = []
 regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "pending"
+isCapital = false
+primaryType = "military"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 10
 
 [game]
 cargo = 20

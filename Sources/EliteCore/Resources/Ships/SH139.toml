@@ -11,7 +11,7 @@ dimensions = [130.0, 36.0, 83.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "viper"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "uncommon"
 galaxies = [3, 4, 5]
 regions = ["deepSpace", "tradeLane"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "declared"
+isCapital = false
+primaryType = "military"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 9
 
 [game]
 cargo = 18

@@ -12,7 +12,7 @@ geometryContext = "Source model units; envelope, not internal volume or SI dimen
 nativeHull = "cobra"
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "cobra"
 objectKind = "ship"
 origin = "human"
@@ -26,9 +26,15 @@ mechanicsStatus = "ready"
 rarity = "common"
 galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
 regions = ["tradeLane", "deepSpace"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "trader"
 placementStatus = "declared"
+isCapital = false
+primaryType = "trader"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 6
 
 [game]
 cargo = 30

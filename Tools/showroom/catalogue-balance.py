@@ -18,7 +18,7 @@ CARGO_FIELDS = {
 def load_balances(path=BALANCE_FILE):
     """Require a single stable-ID record rather than silent duplicate overrides."""
     document = json.loads(path.read_text())
-    if document.get("schemaVersion") != 1:
+    if document.get("schemaVersion") != 1 or document.get("metadataSchemaVersion") != 2:
         raise ValueError("Unsupported catalogue balance schema")
     records = {}
     for row in document["ships"]:
@@ -95,6 +95,8 @@ def _update_project_fields(result, row):
             if field.get("number") != value:
                 field.update(number=value, text=str(value) + " t", unit="t",
                              status="project gameplay balance", basis=row["cargoBasis"])
+            elif row.get("refreshProjectCargoBasis", False):
+                field["basis"] = row["cargoBasis"]
 
 
 def require_consistent(ship, balances):

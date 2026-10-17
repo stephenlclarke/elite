@@ -11,7 +11,7 @@ dimensions = [183.13726, 163.20903, 300.0]
 geometryContext = "Project renderer envelope units, not a canonical length or SI docking measurement. Visual reference and chosen native mechanics: docs/LIBERATOR.md."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "liberator-dsv2"
 objectKind = "ship"
 origin = "unknown"
@@ -25,9 +25,14 @@ mechanicsStatus = "ready"
 rarity = "uncommon"
 galaxies = []
 regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "declared"
+isCapital = false
+primaryType = "alien"
+purchasePolicy = "xyzzyOnly"
+collectionMilestone = "none"
+damagePolicy = "destructible"
 
 [game]
 cargo = 120

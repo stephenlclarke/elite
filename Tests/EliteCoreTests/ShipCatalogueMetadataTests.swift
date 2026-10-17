@@ -58,9 +58,12 @@ struct ShipCatalogueMetadataTests {
         .valid(shipID: "SH023", performance: performance, nativeCombat: nil))
     #expect(!valid.valid(shipID: "SH171", performance: performance, nativeCombat: nil))
     let liberator = ShipCatalogueMetadata(
-      schemaVersion: 1, family: "Liberator", aliases: nil, objectKind: .ship,
-      origin: .human, primaryRole: .military, roleWeights: [.init(role: .military, weight: 1)],
+      schemaVersion: 2, family: "Liberator", aliases: nil, objectKind: .ship,
+      origin: .human, primaryType: .alien, primaryRole: .military,
+      roleWeights: [.init(role: .military, weight: 1)],
       access: .xyzzyOnly, playerFlyable: true, normalPurchaseEligible: false,
+      purchasePolicy: .xyzzyOnly, minimumBuildTechLevel: nil, isCapital: false,
+      collectionMilestone: .none, damagePolicy: .destructible, habitat: nil,
       discoveryEligible: false,
       encounterMode: .none, mechanicsStatus: .ready, placementStatus: .declared, rarity: .rare,
       galaxies: [], regions: [], authoredSystems: nil,
@@ -80,9 +83,16 @@ struct ShipCatalogueMetadataTests {
     let missing = String(original[..<start.lowerBound]) + String(original[end.lowerBound...])
     let invalid =
       String(original[..<start.lowerBound])
-      + catalogue.replacingOccurrences(of: "schemaVersion = 1", with: "schemaVersion = 2")
+      + catalogue.replacingOccurrences(of: "schemaVersion = 2", with: "schemaVersion = 3")
       + String(original[end.lowerBound...])
     #expect(invalid != original)
+    let tech = try #require(ShipCatalogue.ship("SH023")?.catalogue.minimumBuildTechLevel)
+    let invalidTech =
+      String(original[..<start.lowerBound])
+      + catalogue.replacingOccurrences(
+        of: "minimumBuildTechLevel = " + String(tech), with: "minimumBuildTechLevel = 0")
+      + String(original[end.lowerBound...])
+    #expect(invalidTech != original)
     let gameStart = try #require(original.range(of: "[game]"))
     let gameEnd = try #require(
       original.range(of: "[design]", range: gameStart.upperBound..<original.endIndex))
@@ -102,8 +112,8 @@ struct ShipCatalogueMetadataTests {
     let file = directory.appendingPathComponent("SH023.toml")
     try original.write(to: file, atomically: true, encoding: .utf8)
     let loaded = try ShipCatalogue.load(from: directory)
-    #expect(loaded.count == 1 && loaded[0].catalogue.schemaVersion == 1)
-    for text in [missing, invalid, drift] {
+    #expect(loaded.count == 1 && loaded[0].catalogue.schemaVersion == 2)
+    for text in [missing, invalid, invalidTech, drift] {
       try text.write(to: file, atomically: true, encoding: .utf8)
       #expect(throws: (any Error).self) { try ShipCatalogue.load(from: directory) }
     }
@@ -117,9 +127,9 @@ struct ShipCatalogueMetadataTests {
     let counts = Dictionary(
       grouping: vessels, by: { $0.catalogue.primaryRole?.rawValue ?? "missing" }
     ).mapValues(\.count)
-    #expect(counts["transporter"] == 27 && counts["trader"] == 27 && counts["pirate"] == 14)
+    #expect(counts["transporter"] == 27 && counts["trader"] == 26 && counts["pirate"] == 14)
     #expect(
-      counts["military"] == 64 && counts["bountyHunter"] == 10 && counts["miner"] == 8
+      counts["military"] == 65 && counts["bountyHunter"] == 10 && counts["miner"] == 8
         && counts["leisure"] == 12)
     for ship in ships {
       #expect(
@@ -201,9 +211,14 @@ struct ShipCatalogueMetadataTests {
     -> ShipCatalogueMetadata
   {
     .init(
-      schemaVersion: 1, family: "Fixture", aliases: nil, objectKind: .ship, origin: origin,
-      primaryRole: .military, roleWeights: weights, access: .normal, playerFlyable: false,
-      normalPurchaseEligible: false, discoveryEligible: true, encounterMode: encounterMode,
+      schemaVersion: 2, family: "Fixture", aliases: nil, objectKind: .ship, origin: origin,
+      primaryType: origin == .alien ? .alien : .military,
+      primaryRole: .military, roleWeights: weights, access: .normal,
+      playerFlyable: mechanicsStatus == .ready, normalPurchaseEligible: mechanicsStatus == .ready,
+      purchasePolicy: mechanicsStatus == .ready ? .blueprintFabrication : .pendingFabrication,
+      minimumBuildTechLevel: 10, isCapital: false, collectionMilestone: .blueprintAndFabrication,
+      damagePolicy: .destructible, habitat: nil, discoveryEligible: true,
+      encounterMode: encounterMode,
       mechanicsStatus: mechanicsStatus,
       placementStatus: placementStatus ?? (encounterMode == .authored ? .pending : .declared),
       rarity: .rare,

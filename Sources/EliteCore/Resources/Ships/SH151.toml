@@ -11,7 +11,7 @@ dimensions = [33.9218, 40.527699999999996, 35.2261]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "armed-reindeer-escort"
 objectKind = "ship"
 origin = "human"
@@ -25,11 +25,17 @@ mechanicsStatus = "ready"
 rarity = "rare"
 galaxies = [7]
 regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR047 ratified Crimbo design supersedes seasonal trader-only classification; authored provider pending at galaxy7/system8."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR047 ratified Crimbo design supersedes seasonal trader-only classification; authored provider pending at galaxy7/system8. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "pending"
 authoredSystems = [{ "galaxy" = 7, "system" = 8 }]
 aliases = ["Armed reindeer escort"]
+isCapital = false
+primaryType = "military"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 10
 
 [game]
 cargo = 20

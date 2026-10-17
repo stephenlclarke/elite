@@ -11,7 +11,7 @@ dimensions = [130.0, 35.0, 81.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "anaconda"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "uncommon"
 galaxies = [0, 6, 7]
 regions = ["tradeLane", "deepSpace"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project commercial/logistical specialization from reviewed hull identity, family, performance and retained source context; apply requested150t minimum and family correction."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project commercial/logistical specialization from reviewed hull identity, family, performance and retained source context; apply requested150t minimum and family correction. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "transporter"
 placementStatus = "declared"
+isCapital = false
+primaryType = "transporter"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 11
 
 [game]
 cargo = 800

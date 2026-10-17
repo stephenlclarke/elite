@@ -1,5 +1,7 @@
 # Add typed ship catalogue roles and consistent project cargo
 
+This records the original catalogue leaf. [Metadata v2 and blueprint/collection supersessions](PR-ship-blueprint-metadata.md) replace its schema-one display taxonomy and acquisition interpretation; functional AI roles, preserved cargo balances and historical source evidence remain.
+
 Adds a required `catalogue` table to each ship definition and a typed loader contract. The selected UX mapping is retained in one stable-ID project input, separately from archival source specifications. Its cargo overlay updates only actual game cargo/expansion and the corresponding effective project profile fields; the ratified Rudolf display-name change preserves its original source-name alias.
 
 ## Metadata contract

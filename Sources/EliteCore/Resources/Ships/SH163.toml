@@ -11,7 +11,7 @@ dimensions = [44.056, 23.804, 95.04400000000001]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "black-widow"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "pending"
 rarity = "rare"
 galaxies = []
 regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project raiding/interception usage; explicit human-named preferences take priority, other assignments use retained source roles or stated project judgement."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project raiding/interception usage; explicit human-named preferences take priority, other assignments use retained source roles or stated project judgement. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "pirate"
 placementStatus = "pending"
+isCapital = false
+primaryType = "pirate"
+purchasePolicy = "pendingFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 14
 
 [design]
 vertices = [

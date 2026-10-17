@@ -144,7 +144,8 @@ public enum ShipCatalogue {
         !ship.name.isEmpty, ship.design.valid, ship.game?.valid ?? true,
         ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true,
         ship.catalogue.valid(
-          shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat)
+          shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat),
+        ship.catalogue.validEffectiveCargo(performance: ship.game, profiles: ship.profiles)
       else { throw ShipFileError.invalid(url.lastPathComponent) }
       if let hull = ship.nativeHull, !nativeKinds.insert(hull).inserted {
         throw ShipFileError.invalid("Duplicate native hull: " + hull.rawValue)

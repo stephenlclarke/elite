@@ -11,7 +11,7 @@ dimensions = [89.9532, 77.99783953789824, 156.2475]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "holy-avenger-mark-ii-black-monk-gunship"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "rare"
 galaxies = []
 regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project wanted-target interception specialization; Fer-de-Lance/Mamba are explicit human preferences, remaining entries are project balance judgements."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project wanted-target interception specialization; Fer-de-Lance/Mamba are explicit human preferences, remaining entries are project balance judgements. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "bountyHunter"
 placementStatus = "pending"
+isCapital = false
+primaryType = "bountyHunter"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 14
 
 [game]
 cargo = 20

@@ -11,7 +11,7 @@ dimensions = [408.0, 240.0, 1606.67644]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "military-fiasco-leviathan"
 objectKind = "station"
 origin = "human"
@@ -19,15 +19,19 @@ roleWeights = [{ "role" = "military", "weight" = 4 }]
 access = "normal"
 playerFlyable = false
 normalPurchaseEligible = false
-discoveryEligible = false
+discoveryEligible = true
 encounterMode = "authored"
 mechanicsStatus = "pending"
 rarity = "rare"
-galaxies = []
-regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types."
+galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
+regions = ["stationSecurity"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "pending"
+isCapital = false
+purchasePolicy = "never"
+collectionMilestone = "docking"
+damagePolicy = "activeStationIndestructible"
 
 [design]
 vertices = [

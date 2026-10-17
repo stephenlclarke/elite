@@ -17,6 +17,37 @@ public enum ShipCatalogueRole: String, Codable, Sendable, CaseIterable {
     }
   }
 }
+/// Player-facing taxonomy; Alien does not replace the functional AI role.
+public enum ShipCatalogueType: String, Codable, Sendable, CaseIterable {
+  case transporter, trader, pirate, military, bountyHunter, miner, leisure, alien
+  public var label: String {
+    switch self {
+    case .bountyHunter: "Bounty hunter"
+    default: rawValue.capitalized
+    }
+  }
+}
+public enum ShipCataloguePurchasePolicy: String, Codable, Sendable {
+  case blueprintFabrication, pendingFabrication, xyzzyOnly, never
+}
+public enum ShipCatalogueCollectionMilestone: String, Codable, Sendable {
+  case none, blueprintAndFabrication, destruction, docking
+}
+public enum ShipCatalogueDamagePolicy: String, Codable, Sendable {
+  case destructible, activeStationIndestructible
+}
+public struct ShipCatalogueHabitat: Codable, Sendable, Equatable {
+  public let governments: [Int]
+  public let minimumDisplayedTechLevel: Int
+  var valid: Bool {
+    !governments.isEmpty && Set(governments).count == governments.count
+      && governments.allSatisfy { (0..<8).contains($0) }
+      && (1...15).contains(minimumDisplayedTechLevel)
+  }
+  public func permits(government: Int, displayedTechLevel: Int) -> Bool {
+    valid && governments.contains(government) && displayedTechLevel >= minimumDisplayedTechLevel
+  }
+}
 public enum ShipCatalogueObjectKind: String, Codable, Sendable {
   case ship, station, platform, capsule, other
 }
@@ -58,12 +89,21 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
   public let aliases: [String]?
   public let objectKind: ShipCatalogueObjectKind
   public let origin: ShipCatalogueOrigin
+  public let primaryType: ShipCatalogueType?
+  /// Functional AI eligibility, separate from the eight displayed types.
   public let primaryRole: ShipCatalogueRole?
   public let roleWeights: [ShipCatalogueRoleWeight]
   public let access: ShipCatalogueAccess
   public let playerFlyable: Bool
   /// Catalogue capability only; never a commander discovery unlock or trade authority.
   public let normalPurchaseEligible: Bool
+  public let purchasePolicy: ShipCataloguePurchasePolicy
+  public let minimumBuildTechLevel: Int?
+  public let isCapital: Bool
+  public let collectionMilestone: ShipCatalogueCollectionMilestone
+  public let damagePolicy: ShipCatalogueDamagePolicy
+  /// Natural ecology only; never a fabrication licence, faction entitlement or legal status.
+  public let habitat: ShipCatalogueHabitat?
   /// Intended collection membership, including explicitly pending mechanics/providers.
   public let discoveryEligible: Bool
   public let encounterMode: ShipCatalogueEncounterMode
@@ -124,8 +164,37 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
       && usable >= Double(minimumStandardCargoTonnes)
   }
 
+  private var validPurchasePolicy: Bool {
+    let validLevel = minimumBuildTechLevel.map { (1...15).contains($0) } ?? false
+    switch purchasePolicy {
+    case .blueprintFabrication:
+      return normalPurchaseEligible && collectionMilestone == .blueprintAndFabrication && validLevel
+    case .pendingFabrication:
+      return !normalPurchaseEligible && objectKind == .ship && mechanicsStatus == .pending
+        && access == .normal && collectionMilestone == .blueprintAndFabrication && validLevel
+    case .xyzzyOnly:
+      return access == .xyzzyOnly && !normalPurchaseEligible && !discoveryEligible
+        && collectionMilestone == .none && minimumBuildTechLevel == nil
+    case .never: return !normalPurchaseEligible && minimumBuildTechLevel == nil
+    }
+  }
+  private var validCollectionPolicy: Bool {
+    switch collectionMilestone {
+    case .none: return !discoveryEligible
+    case .blueprintAndFabrication:
+      return discoveryEligible && objectKind == .ship
+        && (purchasePolicy == .blueprintFabrication || purchasePolicy == .pendingFabrication)
+    case .destruction:
+      return discoveryEligible && isCapital && purchasePolicy == .never
+        && damagePolicy == .destructible
+    case .docking:
+      return discoveryEligible && (objectKind == .station || objectKind == .platform)
+        && purchasePolicy == .never && damagePolicy == .activeStationIndestructible
+    }
+  }
+
   func valid(shipID: String, performance: ShipPerformance?, nativeCombat: NativeCombat?) -> Bool {
-    guard schemaVersion == 1, !family.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+    guard schemaVersion == 2, !family.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
       !basis.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
       Set(aliases ?? []).count == (aliases ?? []).count,
       (aliases ?? []).allSatisfy({ !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }),
@@ -145,7 +214,16 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
         || (access == .normal && objectKind == .ship && playerFlyable && discoveryEligible
           && mechanicsStatus == .ready),
       !discoveryEligible || (access == .normal && encounterMode != .none),
-      objectKind != .ship || encounterMode == .none || primaryRole != nil
+      objectKind != .ship || primaryType != nil,
+      objectKind == .ship || primaryType == nil,
+      objectKind != .ship || encounterMode == .none || primaryRole != nil,
+      habitat?.valid ?? true,
+      !isCapital || objectKind == .ship
+    else { return false }
+    guard validPurchasePolicy, validCollectionPolicy,
+      objectKind != .station || collectionMilestone == .docking,
+      damagePolicy != .activeStationIndestructible || objectKind == .station
+        || objectKind == .platform
     else { return false }
     if let performance, performance.cargo < minimumStandardCargoTonnes { return false }
     if objectKind == .ship && mechanicsStatus == .ready && performance == nil && nativeCombat == nil
@@ -153,7 +231,8 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
       return false
     }
     if shipID == "SH171" {
-      guard access == .xyzzyOnly, !normalPurchaseEligible, !discoveryEligible,
+      guard access == .xyzzyOnly, primaryType == .alien, purchasePolicy == .xyzzyOnly,
+        !normalPurchaseEligible, !discoveryEligible,
         encounterMode == .none
       else {
         return false

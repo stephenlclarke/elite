@@ -11,7 +11,7 @@ dimensions = [59.3566, 28.7094, 69.7014]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "moray-star-boat"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "uncommon"
 galaxies = [4, 5, 6]
 regions = ["tradeLane", "deepSpace"]
-basis = "retained source facts + project classification judgement. Project civilian passenger/private exploration/racing specialization within the seven requested categories; no extra explorer/utility category."
+basis = "retained source facts + project classification judgement. Project civilian passenger/private exploration/racing specialization within the seven requested categories; no extra explorer/utility category. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "leisure"
 placementStatus = "declared"
+isCapital = false
+primaryType = "leisure"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 5
 
 [game]
 cargo = 25

@@ -11,23 +11,28 @@ dimensions = [160.0, 130.0, 330.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "farragut-class-battle-cruiser"
 objectKind = "ship"
 origin = "human"
 roleWeights = [{ "role" = "military", "weight" = 4 }]
 access = "normal"
 playerFlyable = true
-normalPurchaseEligible = true
+normalPurchaseEligible = false
 discoveryEligible = true
 encounterMode = "natural"
 mechanicsStatus = "ready"
 rarity = "rare"
 galaxies = [0]
 regions = ["deepSpace", "tradeLane"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "declared"
+isCapital = true
+primaryType = "military"
+purchasePolicy = "never"
+collectionMilestone = "destruction"
+damagePolicy = "destructible"
 
 [game]
 cargo = 6000
