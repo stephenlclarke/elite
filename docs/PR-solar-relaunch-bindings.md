@@ -2,4 +2,6 @@
 
 The existing dock/load/relaunch test now constructs its expected native station state from the saved world. Every current living station must have an actual body whose actor belongs to the new system visit and differs from its old binding. Only those bindings and the current main-station observation change in the expected world; the full Commander comparison remains. No production code, authority checks, receipt history or original solar assertions change. See [the failure](ISSUE-solar-relaunch-bindings.md).
 
-Strict Swift source lint, Markdown lint and whitespace checks pass. Execution is pending in the next combined maintained gate; this source correction is not runtime acceptance.
+Full attempt 209 retained a further full-Commander mismatch in this method before output capture was interrupted by strict UTF-8 decoding; the actual make exit is unobserved. Source inspection confirmed that the genuine docked relaunch also adds the specified ten minutes, increments the calendar operation and records its launch adjustment. The expected script state now derives exactly those changes from the original saved state, with explicit actual calendar/ledger assertions. Every other script-state field remains in the original full comparison. No production launch/calendar helper generates the expected result, and no field is dropped.
+
+Strict Swift source lint, Markdown lint and whitespace checks pass. Focused execution and the next complete maintained gate remain pending; source correction is not runtime acceptance.

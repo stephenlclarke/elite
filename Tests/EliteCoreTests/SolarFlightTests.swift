@@ -158,6 +158,23 @@ private func solarWorldAfterRelaunch(
   let reboundWorld = try solarWorldAfterRelaunch(&game, saved: savedWorld)
   expected["nativeStations"] = try JSONSerialization.jsonObject(
     with: JSONEncoder().encode(reboundWorld))
+  // A genuine docked relaunch adds ten minutes while preserving all other script state.
+  var expectedState = commander.scriptState
+  var ledger = try #require(expectedState.calendarLedger)
+  try #require(expectedState.missionCalendar == nil && ledger.pendingJourney == nil)
+  try #require(
+    ledger.operation < UInt64(Int64.max) - 1 && expectedState.calendarSeconds <= 1e12 - 600)
+  let calendarBefore = expectedState.calendarSeconds
+  expectedState.calendarSeconds += 600
+  ledger.operation += 1
+  ledger.lastAdjustment = .init(
+    operation: ledger.operation, kind: .launch, seconds: 600,
+    before: calendarBefore, after: expectedState.calendarSeconds)
+  expectedState.calendarLedger = ledger
+  #expect(game.commander.scriptState.calendarSeconds == calendarBefore + 600)
+  #expect(game.commander.scriptState.calendarLedger == ledger)
+  expected["savedScriptState"] = try JSONSerialization.jsonObject(
+    with: JSONEncoder().encode(expectedState))
   for key in [
     "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
     "encounterDirector", "savedNPCPersistence",
