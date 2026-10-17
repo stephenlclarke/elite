@@ -106,7 +106,7 @@ private func selectCampaignPatrolTarget(_ game: inout Game, child: UUID) throws 
   // Keep tracking the live owned actor; cycle actual player targets only when it changes.
   for _ in 0...game.bodies.count {
     if campaignPatrolTargetIsOwned(game, child: child) { return }
-    game.key("r")
+    game.key("tab")
   }
   try #require(
     campaignPatrolTargetIsOwned(game, child: child),
@@ -118,7 +118,7 @@ func selectCampaignPatrolTarget(_ runtime: GameRuntime, child: UUID) async throw
   var selected = await runtime.snapshot()
   for _ in 0...selected.bodies.count {
     if campaignPatrolTargetIsOwned(selected, child: child) { return }
-    await runtime.key("r")
+    await runtime.key("tab")
     selected = await runtime.snapshot()
   }
   try #require(
@@ -324,7 +324,7 @@ private struct CampaignFixture {
       Comment(rawValue: campaignPatrolDiagnostic(game, child: child)))
     firing = Controls()
     for _ in 0..<8 {
-      game.key("r")
+      game.key("tab")
       if game.autoPilot.targetID == 0 { break }
     }
     let beforeDock = campaignPatrolDiagnostic(game, child: child)
@@ -851,7 +851,7 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     Comment(rawValue: campaignPatrolDiagnostic(selected, child: child)))
   await runtime.setControls(Controls())
   for _ in 0..<8 {
-    await runtime.key("r")
+    await runtime.key("tab")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
   let beforeDock = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)

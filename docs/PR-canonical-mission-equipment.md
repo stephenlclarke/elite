@@ -1,5 +1,7 @@
 # Canonical mission equipment composition
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 ## Motivation
 
 Mission-issued devices and finite player missiles need one physical owner, preserved original identities and enforceable loan obligations throughout native and Script actions.

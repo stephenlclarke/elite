@@ -4,7 +4,7 @@
 
 Apply the UI slice onto the accepted mission engine composition. G1 owns `Game.swift`, its screen enum/state, `GameRuntime`, and `EliteMac/EliteApp.swift`. This document is an integration recipe, not a claim that those hooks are implemented. The UI slice has no shadow engine state or stub APIs.
 
-Add `.contracts` and `.library` to `Screen`; compose the accepted mission fields including `library = ScriptLibraryState()` and `contractBoard = ContractBoardUI()` and the accepted campaign/trial/script fields required by their existing extensions. Preserve current actor isolation and physical equipment APIs. Preserve the current C, R/Tab and W bindings; do not copy obsolete shortcuts from older source revisions.
+Add `.contracts` and `.library` to `Screen`; compose the accepted mission fields including `library = ScriptLibraryState()` and `contractBoard = ContractBoardUI()` and the accepted campaign/trial/script fields required by their existing extensions. Preserve current actor isolation and physical equipment APIs. Preserve the current context-specific C and W bindings and TAB-only flight targeting; do not copy obsolete shortcuts from older source revisions.
 
 ## Actor entry point
 
@@ -76,7 +76,7 @@ Declare `let missionIntents = view.pendingMissionUI` and clear it with keepingCa
 
 ## Painted-page keyboard and pointer integration
 
-Use the accepted `ScriptPagePresentation` input bridge when composing EliteApp. Capture the actual painted page after presentation, including absence; never substitute an actor snapshot fetched later. Route its controlKeys, galleryContextKeys and contractContextKeys with the captured proof and epoch through `scriptPageKey`. Retain flight R/Tab behavior when the captured page is absent. Gallery, contract and handoff clicks must carry the painted page identity through the existing accepted guarded actor click methods. Add contract and library click/scroll destinations to native hit routing; library is read-only, contract actions require exact proof. Preserve inventory hit proof and ordered file-intent dispatch.
+Use the accepted `ScriptPagePresentation` input bridge when composing EliteApp. Capture the actual painted page after presentation, including absence; never substitute an actor snapshot fetched later. Route its controlKeys, galleryContextKeys and contractContextKeys with the captured proof and epoch through `scriptPageKey`. Retain flight Tab behavior when the captured page is absent. Gallery, contract and handoff clicks must carry the painted page identity through the existing accepted guarded actor click methods. Add contract and library click/scroll destinations to native hit routing; library is read-only, contract actions require exact proof. Preserve inventory hit proof and ordered file-intent dispatch.
 
 ## Validation ownership
 

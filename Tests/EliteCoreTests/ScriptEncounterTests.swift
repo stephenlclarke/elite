@@ -82,7 +82,7 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
   let combatBalance = battle.commander.credits
   await runtime.setControls(Controls())
   for _ in 0..<8 {
-    await runtime.key("r")
+    await runtime.key("tab")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
   var returned = await runtime.snapshot()

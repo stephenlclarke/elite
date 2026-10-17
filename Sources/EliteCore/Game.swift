@@ -623,7 +623,7 @@ public struct Game: Sendable {
   private mutating func keyAfterInterface(_ key: String) {
     if !docked && screen.isFlight {
       switch key {
-      case "r", "tab":
+      case "tab":
         cycleAutoTarget()
         return
       case "pageup", "pagedown":
@@ -1856,8 +1856,7 @@ public actor GameRuntime {
     if old != game.screen || wasPaused != game.paused { invalidateInventoryContext() }
     if old == .handoff, game.screen == .contracts { game.refreshContractRows() }
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: oldLocation.0, system: oldLocation.1)
-    if ["r", "tab"].contains(key.lowercased()), game.screen.isFlight, game.autoPilot.targetID != nil
-    {
+    if key.lowercased() == "tab", game.screen.isFlight, game.autoPilot.targetID != nil {
       controls.pitch = 0
       controls.yaw = 0
       controls.roll = 0

@@ -87,7 +87,7 @@ import Testing
     #expect(!game.commander.equipment.contains(Equipment.legacyDockingComputer))
     game.launch()
     game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
-    game.key("r")
+    game.key("tab")
     #expect(game.dockingComputer)
   }
   for tier in [TargetingTier.basic, .advanced] {
@@ -95,7 +95,7 @@ import Testing
     game.commander.installTargetingComputer(tier)
     game.launch()
     game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
-    game.key("r")
+    game.key("tab")
     #expect(!game.dockingComputer)
   }
 }
@@ -150,10 +150,10 @@ import Testing
   #expect(restored.commander.credits == 1234)
 }
 
-@Test func rEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
+@Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
   var game = Game(executive: false)
   game.launch()
-  game.key("r")
+  game.key("tab")
   #expect(game.message == "FIT A TARGETING COMPUTER" && !game.dockingComputer)
   try game.commander.grantEquipment(
     TargetingTier.military.equipmentName, at: .targetingCore,
@@ -162,13 +162,13 @@ import Testing
   game.commander.xyzzyActive = true
   game.commander.autoTarget = false
   game.bodies = []
-  game.key("r")
+  game.key("tab")
   #expect(game.message == "NO ELIGIBLE TARGETS")
   game.bodies = [.init(id: 0, hull: .station, position: .init(300, 0, 1500))]
   game.screen = .rear
   game.key("c")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("r")
+  game.key("tab")
   #expect(game.screen == .front && game.dockingComputer && game.autoPilot.targetID == 0)
   #expect(game.message == "AUTO DOCKING ENGAGED")
   game.tick(delta: 0.1)
@@ -176,14 +176,14 @@ import Testing
   #expect(game.autoHUDLines.contains { $0.contains("AUTO:") })
   game.key("p")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("r")
+  game.key("tab")
   game.key("q")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("r")
+  game.key("tab")
   game.key("5")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
   game.key("0")
-  game.key("r")
+  game.key("tab")
   for _ in 0..<2500 where !game.docked { game.tick(delta: 0.1) }
   #expect(game.docked && !game.dockingComputer && game.screen == .status)
 }

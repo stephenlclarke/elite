@@ -243,7 +243,7 @@ final class GameView: NSView {
       if !event.isARepeat { queuePaintedPassengerBerthFitting(fitted: key == "r") }
       return
     }
-    if ["r", "tab"].contains(key) && !event.isARepeat && game.screen.isFlight {
+    if key == "tab" && !event.isARepeat && game.screen.isFlight {
       clearSteeringInput()
     }
     if game.screen.isFlight && !game.paused {

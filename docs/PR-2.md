@@ -1,5 +1,7 @@
 # feat: add navigation computers and responsive flight assistance
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 Historical delivery handoff: its navigation/shield names and prices describe that checkpoint. Current component grades, stock values, upgrade progression and retained save-key mappings are documented in [Equipment modules](EQUIPMENT-MODULES.md).
 
 Modern Mac windows now use full-width smooth flight graphics, compact original-font instruments and a larger scanner. Stable targeting, full station docking and contextual mission browsing accompany fuel-limited route planning and a grouped equipment shop.

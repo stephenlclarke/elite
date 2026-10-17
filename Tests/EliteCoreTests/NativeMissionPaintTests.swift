@@ -34,7 +34,8 @@ extension NativeViewTests {
     #expect(painted == actualBounds.scriptPagePresentation)
   }
 
-  @MainActor @Test func nativePageKeyboardUsesPaintedAbsenceAndPreservesFlightTargetKeys() throws {
+  @MainActor @Test func nativePageKeyboardUsesPaintedAbsenceAndOnlyTabClearsFlightSteering() throws
+  {
     _ = NSApplication.shared
     let view = GameView(frame: .init(x: 0, y: 0, width: 512, height: 518))
     view.game = Game(executive: false)
@@ -50,7 +51,7 @@ extension NativeViewTests {
           windowNumber: 0, context: nil, characters: character,
           charactersIgnoringModifiers: character, isARepeat: false, keyCode: code))
       view.keyDown(with: event)
-      #expect(!view.held.contains("up"))
+      #expect(view.held.contains("up") == (code != 48))
       let packet = try #require(view.pending.last)
       try #require(packet.hasPrefix("script-page-key:"))
       let parts = packet.dropFirst("script-page-key:".count).split(separator: ":", maxSplits: 1)

@@ -9,7 +9,7 @@ private func lockedGame() -> Game {
   game.speed = 0
   #expect(game.commander.targetingTier == .military)
   game.bodies = [.init(id: 42, hull: .cobra, position: .init(0, 0, 1000), hostile: true)]
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 42 && game.weaponsTargetID == 42)
   return game
 }
@@ -94,7 +94,7 @@ private func verifyThirdPartyRemoval(mode: Int) {
 private func verifyManualTargetCancellation() {
   var game = lockedGame()
   game.bodies.append(.init(id: 43, hull: .cobra, position: .init(10, 0, 1200)))
-  game.key("r")
+  game.key("tab")
   game.key("q")
   #expect(
     announcements(game, "TARGET LOST") == 0

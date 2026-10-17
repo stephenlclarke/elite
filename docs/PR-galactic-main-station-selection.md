@@ -1,5 +1,7 @@
 # Select and verify the original main station before the existing docking loop
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 ## Change and preservation
 
 After the existing second R input, the exact travel test cycles using additional real R inputs bounded by current body count. It requires station zero, no native-station namespace, a physical identity matching the current main-station anchor and engaged docking. The original 2000 ticks at 0.1 seconds and final docked/status/zero-speed predicate remain. The initial R/P cancellation checks, galactic drive consumption and later actual manual doorway/collision assertions remain unchanged.

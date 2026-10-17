@@ -100,7 +100,7 @@ private func addWorkCargo(
 
 private func engageWorkCargo(_ game: inout Game) {
   game.workTargetFilter = .salvage
-  game.key("r")
+  game.key("tab")
 }
 
 private func actualLargeWorkHold() throws -> Game {
@@ -135,7 +135,7 @@ private func actualLargeWorkHold() throws -> Game {
           workSurfaces: profile.surfaces(wreck: wreck)))
       game.bodies = [body]
       game.workTargetFilter = .salvage
-      game.key("r")
+      game.key("tab")
       guard let state = game.workGuidance else { continue }
       let model = game.modelPose(of: game.bodies[0])
       let outward = model.orientation.apply(state.surface.normal).unit
@@ -192,7 +192,7 @@ struct FlightWorkGuidanceRuntimeTests {
   @Test func legacyDirectScoopDoesNotCreateWorkBrakingOrClearAnotherTrackingTarget() throws {
     var game = try workRuntimeGame()
     game.bodies = [.init(id: 81, hull: .cobra, position: .init(0, 0, 1500))]
-    game.key("r")
+    game.key("tab")
     let tracked = try #require(game.autoPilot.targetID)
     let weapons = game.weaponsTargetID
     game.speed = 8
@@ -234,15 +234,15 @@ struct FlightWorkGuidanceRuntimeTests {
     var game = try workRuntimeGame()
     _ = try addWorkCargo(&game, position: .init(0, -45, 500))
     #expect(game.workTargetFilter == .ships)
-    game.key("r")
+    game.key("tab")
     #expect(game.autoPilot.targetID == nil)
     game.key("f")
     #expect(game.workTargetFilter == .mining)
-    game.key("r")
+    game.key("tab")
     #expect(game.autoPilot.targetID == nil)
     game.key("f")
     #expect(game.workTargetFilter == .salvage)
-    game.key("r")
+    game.key("tab")
     #expect(game.workGuidance?.mode == .autoScoop(.salvage))
     game.key("f")
     #expect(game.workTargetFilter == .all && game.workGuidance == nil)
@@ -423,7 +423,7 @@ struct FlightWorkGuidanceRuntimeTests {
     var game = try workRuntimeGame(module: .mining)
     _ = try addWorkCargo(&game, position: .init(0, -45, 500))
     game.workTargetFilter = .all
-    game.key("r")
+    game.key("tab")
     #expect(game.workGuidance == nil && game.autoPilot.targetID == nil)
     let context = try #require(game.gameplayContext())
     let candidate = try #require(
@@ -547,7 +547,7 @@ struct FlightWorkGuidanceRuntimeTests {
     game.activateNearbyMiningFields()
     let original = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
     game.workTargetFilter = .mining
-    game.key("r")
+    game.key("tab")
     #expect(game.workGuidance?.parent == original.physical?.identity)
     var controls = Controls()
     controls.fire = true
@@ -833,7 +833,7 @@ struct ManualResidualFlightTests {
     var game = try releasedResidualGame(velocity)
     game.workTargetFilter = .ships
     game.bodies.append(.init(id: 90, hull: .cobra, position: .init(0, 0, 3000)))
-    game.key("r")
+    game.key("tab")
     #expect(game.autoTargetBody?.id == 90 && game.manualResidualFlight)
     #expect((game.flightWorldVelocity - velocity).length < 1e-8)
     var controls = Controls()
@@ -842,7 +842,7 @@ struct ManualResidualFlightTests {
     #expect(game.autoPilot.targetID == nil && game.flightWorldVelocity.length < velocity.length)
     game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 10000))]
     let before = game.flightWorldVelocity
-    game.key("r")
+    game.key("tab")
     #expect(game.dockingComputer && !game.manualResidualFlight)
     #expect((game.flightWorldVelocity - before).length < 1e-8)
   }

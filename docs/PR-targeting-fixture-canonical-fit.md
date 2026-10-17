@@ -1,5 +1,7 @@
 # Fit actual targeting hardware in the existing fixtures
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 ## Change
 
 The common `computerGame` and `lockedGame` fixtures, and the textured-hull visibility fixture, now configure their existing legacy core before launch. The ordinary launch migration creates the actual fitted canonical core. New setup preconditions verify the requested tier; `lockedGame` also verifies its real AUTO and weapons locks before any destruction scenario.
