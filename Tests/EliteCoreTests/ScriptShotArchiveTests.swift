@@ -45,6 +45,49 @@ func actualShotArchiveFixture() throws -> (Game, ScriptNPCShot) {
 }
 
 struct ScriptShotArchiveTests {
+  @Test func purePersistenceTransformsOnceAndRetainsArchiveWithoutAllocatingOrRequiringALiveOwner()
+    throws
+  {
+    var (game, shot) = try actualShotArchiveFixture()
+    // Isolated physical-value fixture for the pure persistence boundary, not native admission.
+    var anchor = SpaceBody(id: 0, hull: .station, position: .init(101, -70, 9000))
+    anchor.orientation.rotate(pitch: 0.3, roll: 0.2, yaw: -0.4)
+    let localPosition = Vector3(11, 23, 37)
+    var moving = shot
+    moving.age = 0.37
+    moving.velocity = anchor.orientation.apply(shot.velocity)
+    var body = SpaceBody(
+      id: 42, hull: .missile,
+      position: anchor.position + anchor.orientation.apply(localPosition))
+    body.orientation = anchor.orientation
+    body.scriptShot = moving
+    game.bodies = [anchor, body]
+    let nextID = game.nextBodyID
+    let flight = game.commander.flightSimulation
+    game.persistScriptShots(anchor: anchor, unloading: false)
+    let present = try #require(game.commander.scriptState.projectiles[shot.identity])
+    let stored = try #require(present.body.scriptShot)
+    #expect(present.presence == .present)
+    #expect((present.body.position - localPosition).length < 1e-8)
+    #expect((stored.velocity - shot.velocity).length < 1e-8)
+    #expect(stored.age == moving.age && stored.lifetime == shot.lifetime)
+    #expect(stored.damage == shot.damage && stored.radius == shot.radius)
+    #expect(
+      stored.collisionDelay == shot.collisionDelay
+        && stored.nativeAttribution == shot.nativeAttribution)
+    game.persistScriptShots(anchor: anchor, unloading: true)
+    #expect(game.commander.scriptState.projectiles[shot.identity]?.presence == .unloaded)
+    game.commander.scriptState.projectiles.removeValue(forKey: shot.identity)
+    game.recordScriptShotRemoval(body)
+    let outside = try #require(game.commander.scriptState.projectiles[shot.identity])
+    #expect(outside.presence == .outside && outside.body.scriptShot == stored)
+    #expect((outside.body.position - localPosition).length < 1e-8)
+    body.energy = 0
+    game.recordScriptShotRemoval(body)
+    #expect(game.commander.scriptState.projectiles[shot.identity] == nil)
+    #expect(game.nextBodyID == nextID && game.commander.flightSimulation == flight)
+  }
+
   @Test func optionalShotArchiveRetainsRealFrozenNativeDataAndOldAbsenceStaysUnknown() throws {
     let (_, shot) = try actualShotArchiveFixture()
     let archive = try #require(shot.nativeAttribution)
