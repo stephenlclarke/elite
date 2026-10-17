@@ -97,6 +97,10 @@ extension Display {
     }
     switch body.kind {
     case .planet:
+      let lighting =
+        game.celestials.first(where: { $0.kind == .sun }).map {
+          PlanetLighting.flight(viewPlanet: position, viewSun: game.viewPosition($0.position))
+        } ?? .unlit
       frame.graphics.append(
         .planet(
           .init(
@@ -104,7 +108,7 @@ extension Display {
             bounds: .init(
               x: center.x - radius, y: center.y - radius,
               width: radius * 2, height: radius * 2),
-            time: game.time.isFinite ? game.time : 0)))
+            time: game.time.isFinite ? game.time : 0, lighting: lighting)))
     case .sun:
       // Filled points intentionally bypass Frame.point's center-only culling:
       // a large sun remains visible when its limb crosses the viewport edge.

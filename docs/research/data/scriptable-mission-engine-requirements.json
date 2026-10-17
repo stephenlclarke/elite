@@ -780,9 +780,9 @@
   "current_implementation_assessment": {
     "assessment_id": "ELITE-MISSION-ENGINE-IMPLEMENTATION-2026-10-17",
     "as_of": "2026-10-17",
-    "source_commit": "7666e892b42ecf42b34c3b590db8f48bd0f9d302",
+    "source_commit": "4bf934cee1b42aadf08f7bf8312fa1db2bce3ca9",
     "report": "../../MISSION-ENGINE-COMPLETION.md",
-    "basis": "One source and existing-test inventory on the composed canonical head; no new builds/tests/native execution. Original design checkpoint, provenance and proposed implementation_status fields are preserved.",
+    "basis": "Source inventory reconciled after financial, native-people, EMP, drive and ring composition. Qualified focused results are separate from matching-head full CI/native/release acceptance. Original design checkpoint and provenance remain unchanged.",
     "status_meanings": {
       "implemented": "Reusable capability present in source with existing regressions; not final acceptance of every referenced mission or this composed head.",
       "partial": "Named foundations exist, but explicit required reusable seams remain missing.",
@@ -858,7 +858,7 @@
       "R05": {
         "status": "partial",
         "present": "Native actor admission, impacts, causal event envelopes, deduplication and completion receipts are implemented.",
-        "remaining": "No mission NPC wormhole or rescued-person transfer receipts.",
+        "remaining": "General authored mission rescue-transfer receipts and NPC wormhole result/event bridges remain unfinished; native custody has its separate retained identities and receipts.",
         "source": [
           "Sources/EliteCore/ScriptEventContext.swift",
           "Sources/EliteCore/NativeMissionActorAdmission.swift",
@@ -871,16 +871,20 @@
       },
       "R06": {
         "status": "partial",
-        "present": "Credits, native resource quotes, partial collection receipts and all-or-nothing publication exist.",
-        "remaining": "Shared monetary debt, lender obligations, interest and finance escrow are absent; equipment loans are a different implemented service.",
+        "present": "Shared fixed-principal finance, creditor/borrower identities, exact offer/Confirm and partial repayment receipts are integrated alongside existing credit/resource/equipment-loan services.",
+        "remaining": "Interest, instalments, escrow, financial collection NPCs and complete retained P04/P19 adaptations remain unfinished.",
         "source": [
           "Sources/EliteCore/ScriptCommands.swift",
           "Sources/EliteCore/ScriptCollections.swift",
-          "Sources/EliteCore/ScriptTransactions.swift"
+          "Sources/EliteCore/ScriptTransactions.swift",
+          "Sources/EliteCore/ScriptFinanceState.swift",
+          "Sources/EliteCore/ScriptFinance.swift"
         ],
         "tests": [
           "Tests/EliteCoreTests/ScriptTransactionTests.swift",
-          "Tests/EliteCoreTests/ScriptCollectionTests.swift"
+          "Tests/EliteCoreTests/ScriptCollectionTests.swift",
+          "Tests/EliteCoreTests/ScriptFinanceTests.swift",
+          "Tests/EliteCoreTests/ScriptFinancePersistenceTests.swift"
         ]
       },
       "R07": {
@@ -939,8 +943,8 @@
       },
       "R11": {
         "status": "partial",
-        "present": "Charter person identities, fitted 5-tonne/1-unit berths, life-support checks and common fitting exist.",
-        "remaining": "Intrinsic crew rosters, occupied rescue pods, rescued-person transfer and medical custody are absent.",
+        "present": "Charter identities, fitted berth/life-support and common fitting coexist with integrated native original crew censuses, protected occupied pods, cutter capture, captives and timed electrical recovery.",
+        "remaining": "General medical/living care and authored rescue-transfer services remain unfinished; complete native people acceptance is pending.",
         "source": [
           "Sources/EliteCore/PassengerCustody.swift",
           "Sources/EliteCore/ShipAccommodation.swift",
@@ -1043,7 +1047,7 @@
       "R18": {
         "status": "partial",
         "present": "Seeded isolated pack/provider trials, restart/return, separate writers and read-only RRS Gallery entries exist.",
-        "remaining": "Arbitrary declared checkpoints and missing finance/crew/transit scenarios are not implemented; RRS projection is not a playable trial.",
+        "remaining": "Arbitrary declared checkpoints, complete financial campaigns and general care/transit scenarios remain unfinished; read-only RRS projection is not a playable trial.",
         "source": [
           "Sources/EliteCore/ScriptGalleryTrial.swift",
           "Sources/EliteCore/ScriptCampaignGallery.swift",
@@ -1143,7 +1147,7 @@
     "missing_capabilities": [
       {
         "status": "absent",
-        "capability": "shared monetary debt/finance obligations and escrow"
+        "capability": "finance interest, instalments, escrow, collection NPCs and complete retained financial campaigns"
       },
       {
         "status": "absent",
@@ -1151,7 +1155,7 @@
       },
       {
         "status": "absent",
-        "capability": "occupied rescue-pod/person transfer and medical custody"
+        "capability": "general authored rescue-transfer, medical and living-care custody beyond the integrated native people/pod service"
       },
       {
         "status": "absent",
@@ -1162,7 +1166,8 @@
         "capability": "schema 2 CLI/migration dry-run/isolated hot reload"
       }
     ],
-    "proposed_next_slice": {
+    "historical_source_commit": "7666e892b42ecf42b34c3b590db8f48bd0f9d302",
+    "historical_proposed_finance_slice": {
       "status": "proposal_only; await Orchestrator file ownership and authorization before core edits",
       "requirement": "R06",
       "capability": "finance-obligations-basic-v2 (not registered)",
@@ -1172,6 +1177,12 @@
       ],
       "scope": "Fixed principal loan and partial repayment with stable creditor/borrower identities, Confirm-bound native quotes, once-only receipts, and obligations surviving mission terminal state. Reuse current transaction/dialogue/save/Gallery services. Interest, collection AI, rich finance content and full source-profile acceptance remain later slices.",
       "proposal_document": "../../MISSION-ENGINE-COMPLETION.md"
+    },
+    "integrated_finance_slice": {
+      "status": "integrated source with prior focused finance passes; matching-head full acceptance pending",
+      "requirement": "R06",
+      "scope": "Fixed-principal liabilities and exact partial repayment receipts at the original main-station contact. Interest, escrow, collection AI and complete retained financial campaigns remain unfinished.",
+      "report": "../../MISSION-ENGINE-COMPLETION.md"
     }
   }
 }

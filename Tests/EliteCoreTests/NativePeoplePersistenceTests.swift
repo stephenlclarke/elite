@@ -28,7 +28,8 @@ private func writeHistoricalNativePeople22(_ game: Game, to url: URL) throws {
       dictionary.removeValue(forKey: "legacyElectricalRecharge")
       return dictionary.mapValues(oldElectricalShape)
     }
-    return (value as? [Any]).map { $0.map(oldElectricalShape) } ?? value
+    if let array = value as? [Any] { return array.map(oldElectricalShape) }
+    return value
   }
   for key in ["savedEMPState", "savedNPCPersistence"] {
     if let value = object[key] { object[key] = oldElectricalShape(value) }
