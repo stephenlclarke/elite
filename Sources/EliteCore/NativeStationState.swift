@@ -67,6 +67,18 @@ struct NativeStationBinding: Equatable, Codable, Sendable {
   }
 }
 
+private struct NativeStationBodyBinding: Hashable {
+  let system: SystemIdentity
+  let visit: UInt64
+  let bodyID: Int
+
+  init(_ binding: NativeStationBinding) {
+    system = binding.actor.system
+    visit = binding.actor.visit
+    bodyID = binding.bodyID
+  }
+}
+
 struct NativeStationTombstone: Equatable, Codable, Sendable {
   let revision: UInt64
   let destroyedBinding: NativeStationBinding
@@ -140,13 +152,8 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
     let bindings = records.compactMap { $0.binding ?? $0.tombstone?.destroyedBinding }
     guard Set(bindings.map(\.actor)).count == bindings.count else { return false }
     // Body numbers are unique only within their system visit.
-    for (index, binding) in bindings.enumerated() {
-      guard
-        !bindings.dropFirst(index + 1).contains(where: {
-          $0.actor.system == binding.actor.system && $0.actor.visit == binding.actor.visit
-            && $0.bodyID == binding.bodyID
-        })
-      else { return false }
+    guard Set(bindings.map(NativeStationBodyBinding.init)).count == bindings.count else {
+      return false
     }
     guard let receipt = currentDock else { return true }
     guard

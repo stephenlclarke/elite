@@ -288,3 +288,25 @@ private struct StationStateFixture {
     try JSONDecoder().decode(NativeStationLedger.self, from: JSONEncoder().encode(ledger)) == ledger
   )
 }
+
+@Test func nativeStationBodyBindingUniquenessIncludesSystemAndVisit() throws {
+  let fixture = StationStateFixture()
+  let way = fixture.record()
+  let hq = fixture.record(key: "hq", definition: "rrs_headquarters")
+  let foreignSystem = SystemIdentity(galaxy: 1, system: fixture.system.system)
+  let foreign = fixture.record(key: "foreign", system: foreignSystem)
+  var ledger = try NativeStationLedger(world: fixture.world, records: [way, hq, foreign])
+  try ledger.rebind(way.identity, to: fixture.binding(entity: 9, body: 9))
+  let before = ledger
+  #expect(throws: NativeStationStateError.self) {
+    try ledger.rebind(hq.identity, to: fixture.binding(entity: 10, body: 9))
+  }
+  #expect(ledger == before)
+  try ledger.rebind(hq.identity, to: fixture.binding(visit: 2, entity: 10, body: 9))
+  #expect(ledger.valid && ledger.records[0].binding?.bodyID == ledger.records[1].binding?.bodyID)
+  let other = NativeStationBinding(
+    actor: .init(system: foreignSystem, visit: 1, entity: 9), bodyID: 9)
+  try ledger.rebind(foreign.identity, to: other)
+  #expect(ledger.valid && ledger.records[2].binding == other)
+  #expect(ledger.records.allSatisfy { $0.binding?.bodyID == 9 })
+}
