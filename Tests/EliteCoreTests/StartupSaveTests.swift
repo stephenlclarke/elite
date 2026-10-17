@@ -9,15 +9,29 @@ private func expectStartupEquipmentMigration(from legacy: Commander, to migrated
 {
   let inventory = try #require(migrated.equipmentInventory)
   let history = try #require(migrated.equipmentPurchaseHistory)
-  #expect(migrated.valid && migrated.savedEquipmentVersion == 1)
+  #expect(migrated.valid && migrated.savedEquipmentVersion == 2)
   #expect(migrated.credits == legacy.credits && migrated.fuel == legacy.fuel)
   #expect(migrated.cargo == legacy.cargo && migrated.legal == legacy.legal)
-  #expect(history.owner == inventory.owner && history.paid.isEmpty && history.legacy.isEmpty)
-  #expect(inventory.items.count == 4 && inventory.items.allSatisfy { $0.provenance == .standard })
+  let rounds = inventory.items.filter { $0.node == EquipmentRuntimeCatalog.standardMissile }
+  let foundations = inventory.items.filter { $0.node != EquipmentRuntimeCatalog.standardMissile }
+  #expect(migrated.missiles == legacy.missiles && rounds.count == legacy.missiles)
+  #expect(history.owner == inventory.owner && history.paid.isEmpty)
+  #expect(history.legacy.count == rounds.count)
+  #expect(Set(history.legacy.map { $0.source.id }) == Set(rounds.map(\.id)))
   #expect(
-    Set(inventory.items.compactMap { $0.location?.slot }) == [
-      .shield, .energy, .navigation, .laser(.front),
-    ])
+    history.legacy.allSatisfy {
+      $0.owner == inventory.owner && $0.source.node == EquipmentRuntimeCatalog.standardMissile
+        && $0.source.provenance == .legacyUnknown
+    })
+  #expect(rounds.allSatisfy { $0.provenance == .legacyUnknown })
+  #expect(foundations.count == 4 && foundations.allSatisfy { $0.provenance == .standard })
+  #expect(inventory.items.count == foundations.count + rounds.count)
+  #expect(
+    Set(inventory.items.compactMap { $0.location?.slot })
+      == Set(
+        [
+          .shield, .energy, .navigation, .laser(.front),
+        ] + (0..<legacy.missiles).map { ComponentFittingSlot.missilePylon($0) }))
   // Only the explicit equipment migration and its two compatibility mirrors may differ.
   var expected = legacy
   expected.laserMounts = legacy.laserMounts
