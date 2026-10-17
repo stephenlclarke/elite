@@ -11,3 +11,7 @@ See [the observed cause](ISSUE-native-station-service-fixtures.md).
 ## Validation and risks
 
 Strict Swift/Markdown lint and diff checks pass; inverse setup transformation reconstructs each affected original test file exactly at `861ab718c06adb841847dca395f1ee5b4e9edf03`. This worker has not compiled or executed the batch. Runtime behavior and full CI acceptance remain unestablished until the integration owner completes validation.
+
+## Shared typed exit proof
+
+The one approved `NativeStationIntegrationTests.verifyNativeEntryAndExit` call now also sends actual launch key 0. All original per-kind entry, disk receipt, sequence, calendar, exit geometry and pose assertions remain. Reversing this single input replacement reconstructs the entire original integration test file. No extra execution or broad input replacement occurred in this worker.

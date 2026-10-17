@@ -455,7 +455,7 @@ private func verifyNativeEntryAndExit(
   let (disk, _) = try ScriptSaveStore.read(Data(contentsOf: storage.url), from: storage.url)
   #expect(disk.nativeStations?.ledger.currentDock == receipt)
   let calendar = game.commander.scriptState.calendarSeconds
-  await runtime.key(" ")
+  await runtime.key("0")
   game = await runtime.snapshot()
   #expect(!game.docked && !game.paused)
   #expect(game.commander.nativeStations?.ledger.currentDock == nil)
