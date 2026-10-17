@@ -266,8 +266,9 @@ extension Game {
     admitted.canonicalSpin = physical.canonicalSpin
     body.physical = admitted
     bodies[index] = body
-    commander.savedEMPState?.records[source]?.hull = .init(
-      body: body,
-      pose: commander.flightSimulation.pose, time: context.physicalTime)
+    let captured = EMPStoredObject(
+      body: body, pose: commander.flightSimulation.pose,
+      time: context.physicalTime)
+    commander.savedEMPState?.records[source]?.hull = captured
   }
 }
