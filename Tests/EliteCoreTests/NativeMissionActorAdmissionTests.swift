@@ -349,20 +349,50 @@ struct NativeMissionActorAdmissionTests {
       .actors[alias]?.body.physical?.npc?.firstAggressor = oldPlayer
     game.launch()
     let currentPlayer = try #require(game.commander.flightSimulation.player)
+    try #require(!game.paused && !game.docked)
     #expect(currentPlayer != oldPlayer)
+    let launched = try #require(game.bodies.first { $0.missionActorID == saved.identity })
+    #expect(game.bodies.filter { $0.missionInstanceID == instance }.count == 2)
+    #expect(!prior.contains { $0.physical?.identity == launched.physical?.identity })
     if scenario == 3 {
-      game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
-        .actors[alias]?.body.physical?.npc?.firstAggressor = currentPlayer
+      let index = try #require(game.bodies.firstIndex { $0.missionActorID == saved.identity })
+      game.bodies[index].physical?.npc?.firstAggressor = currentPlayer
+      game.persistScriptActors(unloading: true)
+      #expect(
+        game.commander.scriptState.instances[instance]?.ownedEncounters["opponents"]?
+          .actors[alias]?.body.physical?.npc?.firstAggressor == currentPlayer)
+      game.bodies.removeAll { $0.missionInstanceID == instance }
+      #expect(!game.bodies.contains { $0.missionInstanceID == instance })
     }
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
     let template = try #require(source.actors.first { $0.alias == alias })
     #expect(template.declaredHostile)
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeBodyID = game.nextBodyID
     let prepared = try game.prepareMissionActorAdmission(source)
-    let plan = try readyAdmission(prepared)
-    _ = try publishAdmission(plan, game: &game, instance: instance)
+    if scenario == 3 {
+      let plan = try readyAdmission(prepared)
+      _ = try publishAdmission(plan, game: &game, instance: instance)
+      #expect(
+        game.commander.flightSimulation.nextActor == beforeCommander.flightSimulation.nextActor + 2)
+      #expect(
+        game.commander.flightSimulation.nextSpawn == beforeCommander.flightSimulation.nextSpawn + 1)
+      #expect(game.nextBodyID == beforeBodyID + 2)
+    } else {
+      guard case .unchanged = prepared else {
+        Issue.record("Launch must already restore the actual new-visit cohort")
+        throw NativeMissionActorAdmissionError.invalidScene
+      }
+      #expect(
+        game.commander == beforeCommander && game.bodies == beforeBodies
+          && game.nextBodyID == beforeBodyID)
+    }
     let restored = try #require(game.bodies.first { $0.missionActorID == saved.identity })
     #expect(!prior.contains { $0.physical?.identity == restored.physical?.identity })
+    if scenario == 3 { #expect(restored.physical?.identity != launched.physical?.identity) }
+    #expect(restored.physical?.identity?.visit == currentPlayer.visit)
     let condition = try #require(restored.physical?.npc)
     if scenario == 1 {
       #expect(condition.intention == nil)
