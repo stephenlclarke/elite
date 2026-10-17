@@ -7,7 +7,10 @@ private struct ActorAdmissionFixture {
   let directory: URL
   let pack: ScriptPack
 
-  init(worldJob: Bool = false, failingPulse: Bool = false, laterOutside: Bool = false) throws {
+  init(
+    worldJob: Bool = false, failingPulse: Bool = false, laterOutside: Bool = false,
+    invalidSecondEncounter: Bool = false
+  ) throws {
     directory = FileManager.default.temporaryDirectory.appendingPathComponent(
       "actor-admission-source-" + UUID().uuidString)
     let original = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
@@ -47,7 +50,8 @@ private struct ActorAdmissionFixture {
     try text.write(to: manifest, atomically: true, encoding: .utf8)
     let second =
       worldJob
-      ? "{op='world.job.ensure',id='deploy'}" : "{op='encounter.ensure',id='z-later'}"
+      ? "{op='world.job.ensure',id='deploy'}"
+      : "{op='encounter.ensure',id='\(invalidSecondEncounter ? "undeclared" : "z-later")'}"
     let deploy =
       failingPulse
       ? "error('retain actual pending deployment pulse')"
@@ -68,15 +72,22 @@ private struct ActorAdmissionFixture {
     pack = try ScriptPackLibrary.read(directory)
   }
 
-  func game() throws -> (Game, UUID) {
+  func game(dispatchUndocked: Bool = true) throws -> (Game, UUID) {
     var game = Game(executive: false)
     game.screen = .status
     try game.commander.prepareEquipment(legacy: false)
     game.scriptPacks = [pack]
     let instance = try game.acceptScriptMission(pack)
     game.launch()
-    game.emitScriptEvent("station.undocked")
-    game.drainScriptEvents()
+    if dispatchUndocked {
+      game.emitScriptEvent("station.undocked")
+      game.drainScriptEvents()
+      try #require(
+        game.commander.scriptState.instances[instance]?.suspension == nil,
+        Comment(
+          rawValue: "Actual deployment suspended: "
+            + (game.commander.scriptState.instances[instance]?.suspension ?? "none")))
+    }
     return (game, instance)
   }
 
@@ -84,6 +95,13 @@ private struct ActorAdmissionFixture {
 }
 
 struct ScriptActorAdmissionSourceTests {
+  @Test func aLaterInvalidCommandCannotPublishTheFirstActualNativeCohort() throws {
+    let fixture = try ActorAdmissionFixture(invalidSecondEncounter: true)
+    defer { fixture.clean() }
+    var (game, instance) = try fixture.game(dispatchUndocked: false)
+    try verifyLaterInvalidActorCommandRollback(&game, instance: instance)
+  }
+
   @Test
   func actualInitialHandlersAndRetainedFactoryExposeMeasuredSpentConditionWithoutNativeIdentity()
     throws
@@ -404,4 +422,22 @@ struct ScriptActorAdmissionSourceTests {
     #expect(owner == beforeOwner && game.commander == before)
     #expect(game.bodies == bodies && game.nextBodyID == nextID)
   }
+}
+
+private func verifyLaterInvalidActorCommandRollback(_ game: inout Game, instance: UUID) throws {
+  game.emitScriptEvent("station.undocked", only: instance, drain: false)
+  let before = game.commander
+  let bodies = game.bodies
+  let nextID = game.nextBodyID
+  let random = game.scriptSimulationSave.randomState
+  game.drainScriptEvents()
+  let owner = try #require(game.commander.scriptState.instances[instance])
+  let reason = try #require(owner.suspension)
+  #expect(reason.contains("exact encounter definition"))
+  var expected = before
+  expected.scriptState.instances[instance]?.suspension = reason
+  #expect(game.commander == expected)
+  #expect(game.bodies == bodies && game.nextBodyID == nextID)
+  #expect(game.scriptSimulationSave.randomState == random)
+  #expect(owner.ownedEncounters.isEmpty && !game.bodies.contains { $0.missionActorID != nil })
 }
