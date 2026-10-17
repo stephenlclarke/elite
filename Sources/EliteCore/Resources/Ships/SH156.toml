@@ -10,6 +10,25 @@ modelSource = "P18 / Ionics CR150 Weapons Platform (Oolite rendition)"
 dimensions = [191.991592, 35.6, 60.0]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "cr150-weapons-platform"
+objectKind = "platform"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }]
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types."
+primaryRole = "military"
+placementStatus = "pending"
+
 [design]
 vertices = [
   [-95.995796, -12.824693, 24.0],

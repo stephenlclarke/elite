@@ -10,6 +10,25 @@ modelSource = "Right-On Commander"
 dimensions = [85.0, 23.0, 53.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
+[catalogue]
+schemaVersion = 1
+family = "eagle"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "pirate", "weight" = 8 }, { "role" = "military", "weight" = 1 }, { "role" = "bountyHunter", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "common"
+galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
+regions = ["deepSpace", "tradeLane"]
+basis = "explicit human preference + project category. Project raiding/interception usage; explicit human-named preferences take priority, other assignments use retained source roles or stated project judgement."
+primaryRole = "pirate"
+placementStatus = "declared"
+
 [game]
 cargo = 2
 speed = 34.286

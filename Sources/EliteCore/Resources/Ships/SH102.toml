@@ -10,6 +10,24 @@ modelSource = "Oolite 574ca848"
 dimensions = [438.444, 390.798, 621.28]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "rock-hermit"
+objectKind = "station"
+origin = "human"
+roleWeights = []
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "retained source facts + project classification judgement. Structural object outside the seven functional ship types."
+placementStatus = "pending"
+
 [design]
 vertices = [
   [219.222, 11.0928, -464.256],

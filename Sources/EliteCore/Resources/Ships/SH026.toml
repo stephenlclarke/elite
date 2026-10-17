@@ -11,6 +11,25 @@ dimensions = [46.9594, 11.41797, 57.8304]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 nativeHull = "constrictor"
 
+[catalogue]
+schemaVersion = 1
+family = "constrictor"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }, { "role" = "bountyHunter", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "authored"
+mechanicsStatus = "ready"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "retained source facts + project classification judgement. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+primaryRole = "military"
+placementStatus = "pending"
+
 [game]
 cargo = 1
 speed = 54.857

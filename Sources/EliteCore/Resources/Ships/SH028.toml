@@ -11,6 +11,24 @@ dimensions = [1000.0, 1000.0, 995.918]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 nativeHull = "station"
 
+[catalogue]
+schemaVersion = 1
+family = "coriolis-station"
+objectKind = "station"
+origin = "human"
+roleWeights = []
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = false
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "retained source facts + project classification judgement. Structural object outside the seven functional ship types."
+placementStatus = "pending"
+
 [design]
 vertices = [
   [500.0, -492.929, -0.0],

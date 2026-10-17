@@ -10,6 +10,25 @@ modelSource = "Oolite 574ca848"
 dimensions = [64.7206, 23.513, 83.68270000000001]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
+[catalogue]
+schemaVersion = 1
+family = "asp"
+objectKind = "ship"
+origin = "human"
+roleWeights = [{ "role" = "military", "weight" = 4 }, { "role" = "bountyHunter", "weight" = 1 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "uncommon"
+galaxies = [0, 6, 7]
+regions = ["deepSpace", "tradeLane"]
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+primaryRole = "military"
+placementStatus = "declared"
+
 [game]
 cargo = 0
 speed = 36.571

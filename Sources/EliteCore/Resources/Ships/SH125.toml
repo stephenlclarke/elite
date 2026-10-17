@@ -11,6 +11,25 @@ dimensions = [36.273, 10.8904, 37.6126]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 nativeHull = "thargon"
 
+[catalogue]
+schemaVersion = 1
+family = "thargon"
+objectKind = "ship"
+origin = "alien"
+roleWeights = [{ "role" = "military", "weight" = 4 }]
+access = "normal"
+playerFlyable = true
+normalPurchaseEligible = true
+discoveryEligible = true
+encounterMode = "natural"
+mechanicsStatus = "ready"
+rarity = "rare"
+galaxies = [4]
+regions = ["deepSpace", "tradeLane"]
+basis = "retained source facts + project classification judgement. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+primaryRole = "military"
+placementStatus = "declared"
+
 [game]
 cargo = 1
 speed = 30.0
