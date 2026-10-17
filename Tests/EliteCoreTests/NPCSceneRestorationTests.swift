@@ -253,7 +253,8 @@ struct NPCSceneRestorationTests {
   private func verifyPartialJoin(_ game: inout Game) throws {
     let original = game.commander.npcPersistence
     var observed = observedSavedNPCs(game)
-    let absent = try #require(observed.popLast())
+    let last = observed.popLast()
+    let absent = try #require(last)
     var expected = original
     expected.cull(actor: absent.actor)
     game.bodies.removeAll { $0.physical?.identity == absent.actor }
