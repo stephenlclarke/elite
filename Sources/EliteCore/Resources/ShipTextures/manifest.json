@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "archiveSHA256": "09d478852cf2485e3a1e8be2ebca9d8771ea13af08ac977010a7c07fb8a42e4a",
+  "assets": [
+    {
+      "id": "sunray-diffuse",
+      "member": "Textures/comray_sun.png",
+      "pngSHA256": "4715eb73f1c2d1dec673f0c8f7763c17bd5fc6cf1de87a5a6503e2d55bae163a",
+      "rgbaSHA256": "c1b711f9018e5d9ff8f3b219ee2fc700ff420b7abb61432b4119bbbda568d694",
+      "width": 1024,
+      "height": 1024,
+      "license": "CC-BY-NC-SA-3.0"
+    },
+    {
+      "id": "stingray-diffuse",
+      "member": "Textures/comrayii.png",
+      "pngSHA256": "62e48e92685f18ef7682768bab9a34fdcf0f92fd119425fcc92bd73dccd7a843",
+      "rgbaSHA256": "d7051d85e72eb515e05aba87e14c1f805b3a5d5632c9f06c318a1a8d9f849849",
+      "width": 1024,
+      "height": 1024,
+      "license": "CC-BY-NC-SA-3.0"
+    },
+    {
+      "id": "ray-details",
+      "member": "Textures/commies_details.png",
+      "pngSHA256": "5c72460f1dd6315ac6e7970cd31e70dc2977e552675518cdd7f9f660fa4b6a2a",
+      "rgbaSHA256": "83865bce7a471a165be8d424101701f00e684f74c0bfb2c274506ac29bddc045",
+      "width": 1024,
+      "height": 1024,
+      "license": "CC-BY-NC-SA-3.0"
+    }
+  ],
+  "bindings": [
+    {
+      "definition": "sunray-player",
+      "modelSHA256": "ac6723c2e1b49e12a031f6c5deed687f52e86cbd63cfa72df2abad2028152936",
+      "materials": [
+        "comray.png",
+        "commies_details.png"
+      ],
+      "assets": [
+        "sunray-diffuse",
+        "ray-details"
+      ]
+    },
+    {
+      "definition": "commilray-player",
+      "modelSHA256": "a29d506bf62198fdacb220b6086f2bd2983134137802a4e1cac0f88442b0bd1c",
+      "materials": [
+        "comrayii.png",
+        "commies_details.png"
+      ],
+      "assets": [
+        "stingray-diffuse",
+        "ray-details"
+      ]
+    }
+  ],
+  "sourceMembers": {
+    "Config/shipdata.plist": "9d08e9a3ba9eb7b96e2f0aac53223e776ca3d8ddf29dbc7d14e6dc2af62b4023",
+    "Models/commies_ray.dat": "ac6723c2e1b49e12a031f6c5deed687f52e86cbd63cfa72df2abad2028152936",
+    "Models/commies_rayii.dat": "a29d506bf62198fdacb220b6086f2bd2983134137802a4e1cac0f88442b0bd1c",
+    "README.txt": "a6eb099a79e46b0306743779ae9c9e7932d8adbd498f9746e0183764ffdcad53",
+    "manifest.plist": "4db6b98fddd9d5bc7bfdea5e8368462e61dc07cd95de563fe0132594baf8b26b"
+  }
+}

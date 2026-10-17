@@ -26,6 +26,9 @@ def shared_hash(root=Path('.')):
     paths=sorted((root/'Sources/EliteCore').glob('*.swift'))
     paths += [root/'Sources/EliteMac'/p for p in ['NativeGraphics.swift','ShipMedia.swift']]
     paths += [root/'Package.resolved']
+    textures=root/'Sources/EliteCore/Resources/ShipTextures'
+    if textures.is_dir():
+        paths += sorted(path for path in textures.rglob('*') if path.is_file())
     h=hashlib.sha256(SETTINGS)
     for path in paths:
         h.update(str(path.relative_to(root)).encode());h.update(path.read_bytes())

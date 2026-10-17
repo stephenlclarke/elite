@@ -6,6 +6,7 @@ public enum Graphic: Sendable, Equatable {
   case ring(center: ScreenPoint, radiusX: Double, radiusY: Double, ink: Ink, style: StrokePattern)
   case point(center: ScreenPoint, radius: Double, opacity: Double, ink: Ink)
   case panel(ShipPanel)
+  case textured(ShipTexturedTriangle)
   case planet(PlanetPreview)
 }
 

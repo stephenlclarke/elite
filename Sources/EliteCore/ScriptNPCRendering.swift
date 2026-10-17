@@ -25,10 +25,17 @@ extension Game {
     var details: [MeshDetail] = []
     var materials: [ShipMaterial] = []
     var assignments: [Int] = []
+    var textures: [ShipMeshTexture?] = []
     func append(_ mesh: Mesh, position: Vector3, orientation: Basis3, scale: Double) {
       let vertexBase = vertices.count
       let faceBase = faces.count
       let materialBase = materials.count
+      if !mesh.faceTextures.isEmpty {
+        if textures.isEmpty { textures = Array(repeating: nil, count: faceBase) }
+        textures += mesh.faceTextures
+      } else if !textures.isEmpty {
+        textures += Array(repeating: nil, count: mesh.faces.count)
+      }
       vertices += mesh.vertices.map {
         (position + orientation.apply($0 * scale)) * npc.fit.definition.scale
       }
@@ -54,7 +61,7 @@ extension Game {
     }
     return Mesh(
       vertices: vertices, faces: faces, details: details, materials: materials,
-      faceMaterials: assignments, preserveWinding: true)
+      faceMaterials: assignments, faceTextures: textures, preserveWinding: true)
   }
 }
 

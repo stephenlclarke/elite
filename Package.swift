@@ -19,7 +19,7 @@ let package = Package(
       dependencies: ["MissionScript", .product(name: "TOMLDecoder", package: "TOMLDecoder")],
       resources: [
         .copy("Resources/Ships"), .copy("Resources/MissionPacks"), .process("Resources/Legal"),
-        .copy("Resources/ScriptPacks"),
+        .copy("Resources/ScriptPacks"), .copy("Resources/ShipTextures"),
         .process("Resources/ModelLicenses"),
         .process("Resources/ASSET-NOTICE.txt"), .process("Resources/Oolite-LICENSE.txt"),
         .process("Resources/RescueStations-LICENSE.txt"), .process("Resources/Vector-MANIFEST.txt"),
