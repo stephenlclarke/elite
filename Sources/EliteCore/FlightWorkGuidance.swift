@@ -271,6 +271,17 @@ extension Game {
   func workSurfaceStillAuthorized(
     _ state: FlightWorkGuidance, body: SpaceBody, context: EncounterContext
   ) -> Bool {
+    if body.physical?.empCrewPod != nil {
+      return state.mode == .autoScoop(.salvage) && hasNativeRescueTools
+        && nativePodFacts(body, context: context)?.fits == true
+        && automaticScoopShapeCompatible(body, context: context)
+    }
+    if let source = body.physical?.empSource,
+      let record = commander.savedEMPState?.records[source], record.crewAboard > 0
+    {
+      return nativeCrewCaptureAvailable(body, context: context) && hasNativeRescueTools
+        && freeNativePeopleTonnes > 0
+    }
     guard let section = state.surface.section else { return true }
     guard let metadata = recoverableMetadata(for: body, context: context),
       metadata.wreck == section.wreck,

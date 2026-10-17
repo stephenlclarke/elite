@@ -36,6 +36,7 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
   var savedEMPState: EMPState?
+  var savedNativePeopleCustody: NativePeopleCustodyState?
   var savedSalvageLedger: SalvageLedger?
   var savedEquipmentVersion: Int?
   var nativeStations: NativeStationWorld?
@@ -206,6 +207,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedEquipmentInventory
     case savedEquipmentPurchaseHistory
     case savedEMPState
+    case savedNativePeopleCustody
     case savedSalvageLedger
     case savedEquipmentVersion
     case nativeStations
@@ -284,7 +286,8 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...fuelCapacity).contains(fuel)
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
-      && scriptState.valid && financeStateValid && accommodationValid && contractsValid
+      && scriptState.valid && financeStateValid && nativePeopleStateValid && accommodationValid
+      && contractsValid
       && (legacyOwnedEquipment != nil ? legacyIssueStateValid : issuedEquipmentValid)
       && (checkedCargoTonnes.map { $0 <= capacity } ?? false)
       && (navigationPlan?.valid ?? true) && blackjack.valid
@@ -956,6 +959,10 @@ public struct Game: Sendable {
       commander.cargo[index] += 1
       market[index].quantity -= 1
     } else {
+      if index == 3, commander.sellableCargo(3) == 0, commander.nativeCaptiveCount > 0 {
+        _ = reviewNativeCaptiveSale()
+        return
+      }
       guard commander.sellableCargo(index) > 0 else {
         notify(
           index == 10 && commander.markedFirearms > 0 ? "MISSION FIREARM RESERVED" : "NO CARGO")
@@ -1415,6 +1422,13 @@ public struct Game: Sendable {
       notify("COURIER LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    let leftPeople = !(candidate.commander.nativePeople?.held.isEmpty ?? true)
+    do {
+      try candidate.abandonNativePeopleOnEscape()
+    } catch {
+      notify("PEOPLE ABANDONMENT COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
     candidate.commander.cargo = Array(repeating: 0, count: 17)
     candidate.commander.cargo[10] = candidate.commander.markedFirearms
     candidate.commander.legal = 0
@@ -1425,6 +1439,7 @@ public struct Game: Sendable {
       return
     }
     self = candidate
+    if leftPeople { notify("ESCAPED - PEOPLE LEFT WITH ABANDONED SHIP") }
   }
   mutating func randomByte() -> Int {
     randomState = randomState &* 6_364_136_223_846_793_005 &+ 1
@@ -1715,6 +1730,7 @@ public actor GameRuntime {
   var galleryNamespace: URL?
   var galleryParent: GalleryParentState?
   var scriptSaveURL: URL?
+  var nativePeopleFailureGate: NativePeopleFailureGate?
   public init(game: Game = Game(), saveURL: URL? = nil) {
     var prepared = game
     prepared.invalidateNativeStationAuthority()
@@ -1890,18 +1906,22 @@ public actor GameRuntime {
   public func advance(delta: Double) -> Game {
     guard let context = prepareAdvance(delta: delta) else { return game }
     game.tick(delta: delta, controls: controls)
+    let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
-    finishAdvance(delta: delta, context: context)
+    finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
     return game
   }
   private typealias AdvanceContext = (
     wasDocked: Bool, wasLive: Bool, location: (Int, Int), localActive: Bool, flightActive: Bool,
-    calendarActive: Bool, clockAdvanced: Bool
+    calendarActive: Bool, clockAdvanced: Bool, startPhysicalTime: Double,
+    startPlayer: ActorIdentity?
   )
   // Release preflight/read buffers before entering the deeper physical simulation.
   private func prepareAdvance(delta: Double) -> AdvanceContext? {
     let wasDocked = game.docked
     let wasLive = game.screen != .gameOver
+    let startPhysicalTime = game.commander.flightSimulation.physicalTime
+    let startPlayer = game.commander.flightSimulation.player
     let location = (game.commander.galaxy, game.commander.system)
     let localActive =
       !game.paused
@@ -1927,16 +1947,25 @@ public actor GameRuntime {
         delta: delta, flight: flightActive, local: localActive, calendar: calendarActive,
         missionCalendar: game.missionCalendarActive)
     return (
-      wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced
+      wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced,
+      startPhysicalTime, startPlayer
     )
   }
   // Reserve later event/restoration buffers only after the physical tick and native entry.
-  private func finishAdvance(delta: Double, context: AdvanceContext) {
-    let (wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced) =
+  private func finishAdvance(delta: Double, context: AdvanceContext, stationEntryAttempted: Bool) {
+    let (
+      wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced,
+      startPhysicalTime, startPlayer
+    ) =
       context
     if wasLive && game.screen == .gameOver {
       if game.energy.isFinite && game.energy < 0 { game.energy = 0 }
       game.markCourierFatalLoss()
+      commitNativePeopleLoss()
+    }
+    if wasLive && localActive && flightActive && !stationEntryAttempted {
+      commitNativePeopleCapture(
+        startTime: startPhysicalTime, startPlayer: startPlayer, delta: delta)
     }
     game.resolveCourierTerminals(publish: scriptPublisher())
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
@@ -1967,6 +1996,7 @@ public actor GameRuntime {
     try Self.writeCommander(&candidate, to: url)
     game = candidate
     scriptSaveURL = url
+    nativePeopleFailureGate = nil
     game.scriptDurabilityAvailable = true
   }
 
@@ -1974,6 +2004,7 @@ public actor GameRuntime {
   /// The returned live Game keeps bindings; only the disk Commander clears them.
   static func prepareNativeSaveState(_ value: Game) throws -> (game: Game, commander: Commander) {
     var candidate = value
+    try candidate.recordNativePeopleLossIfNeeded()
     try validateNativeDockEvidenceForSave(&candidate)
     try candidate.persistNativeStationConditions()
     try candidate.commander.prepareEquipment()
@@ -2071,6 +2102,7 @@ public actor GameRuntime {
     }
     try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
     try EMPVersionedSave.rejectFields(data, part: .commander)
+    try NativePeopleVersionedSave.rejectFields(data)
     try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.

@@ -41,6 +41,9 @@ extension Commander {
     let occupied = total.addingReportingOverflow(cabins.partialValue)
     guard !occupied.overflow else { return nil }
     total = occupied.partialValue
+    let rescue = total.addingReportingOverflow(rescuedPodTonnes)
+    guard !rescue.overflow else { return nil }
+    total = rescue.partialValue
     let mass = salvageLedger.inventoryMassKg
     let tonnes = ceil(mass / 1000)
     guard mass.isFinite, mass >= 0, tonnes.isFinite, tonnes < Double(Int.max) else { return nil }

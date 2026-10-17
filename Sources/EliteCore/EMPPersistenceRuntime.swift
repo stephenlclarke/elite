@@ -7,8 +7,15 @@ extension Game {
     let now = commander.flightSimulation.physicalTime
     for source in state.sources {
       guard var record = state.records[source] else { continue }
+      if record.disableEpisodes.isEmpty, !record.terminal, record.crewAboard > 0 {
+        guard record.installLegacyCrewEpisode()
+        else { continue }
+      }
       if !record.terminal, record.hull.binding == nil { coastEMPObject(&record.hull, to: now) }
-      for i in record.pods.indices where record.pods[i].binding == nil {
+      for i in record.pods.indices
+      where record.pods[i].binding == nil
+        && record.pods[i].body.physical?.empCrewPod.map({ commander.worldOwnedPod($0) }) == true
+      {
         coastEMPObject(&record.pods[i], to: now)
       }
       state.records[source] = record
@@ -20,9 +27,14 @@ extension Game {
       if !record.terminal, record.hull.binding == nil {
         _ = admitEMPObject(record.hull, source: source, sequence: record.sequence, member: 0)
       }
-      for i in record.pods.indices where record.pods[i].binding == nil {
+      for i in record.pods.indices
+      where record.pods[i].binding == nil
+        && record.pods[i].body.physical?.empCrewPod.map({ commander.worldOwnedPod($0) }) == true
+      {
+        guard let person = record.pods[i].body.physical?.empCrewPod else { continue }
         _ = admitEMPObject(
-          record.pods[i], source: source, sequence: record.sequence, member: UInt16(i + 1))
+          record.pods[i], source: source, sequence: record.sequence,
+          member: UInt16(person.ordinal + 1))
       }
       ejectOneEMPCrewMember(source: source)
     }
@@ -42,6 +54,13 @@ extension Game {
   private mutating func admitEMPObject(
     _ object: EMPStoredObject, source: ActorIdentity, sequence: UInt64, member: UInt16
   ) -> Bool {
+    if member == 0, let episode = commander.savedEMPState?.records[source]?.disableEpisodes.last,
+      episode.actorBindings.count >= EMPState.maximumPeople
+    {
+      return false
+    }
+    guard member == 0 || commander.worldOwnedPod(.init(source: source, ordinal: Int(member) - 1))
+    else { return false }
     guard let context = gameplayContext(), object.body.energy > 0,
       (object.body.position - context.player.position).length <= context.perceptionRadius,
       let saved = object.body.physical
@@ -87,9 +106,15 @@ extension Game {
       body: restored, pose: commander.flightSimulation.pose,
       time: commander.flightSimulation.physicalTime)
     if member == 0 {
+      if commander.savedEMPState?.records[source]?.savedDisableEpisodes != nil {
+        guard commander.savedEMPState?.records[source]?.recordCrewActorBinding(actor) == true
+        else { return false }
+      }
       commander.savedEMPState?.records[source]?.hull = captured
     } else {
-      commander.savedEMPState?.records[source]?.pods[Int(member) - 1] = captured
+      guard let index = commander.savedEMPState?.records[source]?.podIndex(for: Int(member) - 1)
+      else { return false }
+      commander.savedEMPState?.records[source]?.pods[index] = captured
     }
     // Legal aggression is retained by stable source; the surviving record follows its current actor.
     commander.crimeLedger.rebindActors([saved.identity: actor])
@@ -101,7 +126,8 @@ extension Game {
       record.crewAboard > 0, let binding = record.hull.binding,
       let index = bodies.firstIndex(where: { $0.physical?.identity == binding }),
       let hull = bodies[index].physical, let context = gameplayContext(),
-      context.physicalTime >= record.nextEjectionAt,
+      let ordinal = record.nextDueCrew(at: context.physicalTime),
+      record.crewDeadline.map({ context.physicalTime < $0 }) == true,
       let podShip = ShipCatalogue.ship("SH040"),
       let profile = record.hull.body.physical?.catalogueShipID
         .flatMap({ SalvageCatalogue.empProfile(catalogueShipID: $0) })
@@ -112,7 +138,7 @@ extension Game {
     let position =
       pose.position + direction
       * (profile.bounds.radius + profile.bounds.center.length + radius + 24)
-    let person = EMPCrewIdentity(source: source, ordinal: record.pods.count)
+    let person = EMPCrewIdentity(source: source, ordinal: ordinal)
     let metadata = SalvageTargetMetadata(
       category: .occupiedPod, ownership: .occupied,
       claimant: source, wreck: nil, section: nil, lot: nil,
@@ -136,11 +162,18 @@ extension Game {
     else { return }
     candidate.bodies[podIndex].physical?.empCrewPod = person
     candidate.bodies[podIndex].rotationRate = 0
+    guard record.recordCrewEjection(ordinal: ordinal, at: context.physicalTime) else { return }
     record.pods.append(
       .init(
         body: candidate.bodies[podIndex], pose: candidate.commander.flightSimulation.pose,
         time: context.physicalTime))
-    record.nextEjectionAt = context.physicalTime + 1
+    record.nextEjectionAt =
+      record.disableEpisodes.last?.legacyTiming == true
+      ? context.physicalTime + 1
+      : record.disableEpisodes.last?.ejections.filter {
+        record.crewOutcome(ordinal: $0.ordinal) == .aboard
+      }.map { record.currentCrewDisableIncident.physicalTime + $0.delay }.min()
+        ?? record.crewDeadline ?? context.physicalTime
     if record.crewAboard == 0 {
       let bodyIndex = candidate.bodies.firstIndex(where: { $0.physical?.identity == binding })!
       candidate.bodies[bodyIndex].physical?.npc = nil
@@ -183,8 +216,11 @@ extension Game {
         body: body, pose: commander.flightSimulation.pose,
         time: commander.flightSimulation.physicalTime)
       record.hull.binding = nil
+      if !record.terminal, !record.disableEpisodes.isEmpty {
+        record.savedDeceasedOrdinals = record.aboardOrdinals.isEmpty ? nil : record.aboardOrdinals
+      }
       record.terminal = true
-      record.lostCrewCount = record.crewTotal - record.pods.count
+      record.lostCrewCount = record.crewTotal - record.pods.count - record.capturedCrewCount
       state.records[source] = record
     }
     guard state.valid else { return false }
@@ -209,16 +245,25 @@ extension Game {
       if let binding = record.hull.binding {
         if let body = bodies.first(where: { $0.physical?.identity == binding }) {
           record.hull = .init(body: body, pose: pose, time: now)
+          if body.energy <= 0, !record.terminal, !record.disableEpisodes.isEmpty {
+            record.savedDeceasedOrdinals =
+              record.aboardOrdinals.isEmpty ? nil : record.aboardOrdinals
+          }
           record.terminal = body.energy <= 0
           if record.terminal {
             record.hull.binding = nil
-            record.lostCrewCount = record.crewTotal - record.pods.count
+            record.lostCrewCount = record.crewTotal - record.pods.count - record.capturedCrewCount
           }
         } else {
           record.hull.binding = nil
         }
       }
       for i in record.pods.indices {
+        guard let person = record.pods[i].body.physical?.empCrewPod else { return false }
+        guard commander.worldOwnedPod(person) else {
+          guard record.pods[i].binding == nil else { return false }
+          continue
+        }
         if let binding = record.pods[i].binding {
           if let body = bodies.first(where: { $0.physical?.identity == binding }) {
             guard body.energy > 0 else { return false }
@@ -232,6 +277,7 @@ extension Game {
     }
     guard state.valid else { return false }
     commander.savedEMPState = state
-    return state.sceneIsConsistent(bodies, flight: commander.flightSimulation)
+    return state.sceneIsConsistent(
+      bodies, flight: commander.flightSimulation, people: commander.nativePeople)
   }
 }

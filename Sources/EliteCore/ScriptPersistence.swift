@@ -52,7 +52,10 @@ struct ScriptWorldSave: Codable, Sendable {
   }
   func consistent(with commander: Commander) -> Bool {
     if let emp = commander.savedEMPState {
-      guard emp.sceneIsConsistent(bodies, flight: commander.flightSimulation) else { return false }
+      guard
+        emp.sceneIsConsistent(
+          bodies, flight: commander.flightSimulation, people: commander.nativePeople)
+      else { return false }
     } else if bodies.contains(where: {
       $0.physical?.empSource != nil || $0.physical?.empCrewPod != nil
         || $0.physical?.spawnIdentity?.producer == .emp
@@ -205,8 +208,10 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: commander.scriptState.financeLedger != nil
-        ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
+      schemaVersion: commander.usesNativePeopleSaveVersion
+        ? 24
+        : commander.scriptState.financeLedger != nil
+          ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
@@ -228,7 +233,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...23).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...24).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -261,6 +266,9 @@ enum ScriptSaveStore {
         throw SaveError.invalidCommander
       }
       try ScriptSaveJSONPreflight.validate(data)
+      if name == "commander.json", pointer.schemaVersion < 24 {
+        try NativePeopleVersionedSave.rejectFields(data)
+      }
       if name == "commander.json" {
         try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
       } else if name == "missions.json", pointer.schemaVersion < 23 {
@@ -291,7 +299,12 @@ enum ScriptSaveStore {
     missionsDecoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
     commander.scriptState = try missionsDecoder.decode(
       ScriptEngineState.self, from: chunks["missions.json"]!)
-    guard (pointer.schemaVersion == 23) == (commander.scriptState.financeLedger != nil) else {
+    guard
+      pointer.schemaVersion < 23
+        ? commander.scriptState.financeLedger == nil
+        : pointer.schemaVersion == 23 ? commander.scriptState.financeLedger != nil : true,
+      (pointer.schemaVersion == 24) == commander.usesNativePeopleSaveVersion
+    else {
       throw SaveError.invalidCommander
     }
     guard

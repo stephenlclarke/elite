@@ -1,0 +1,278 @@
+import Foundation
+import Testing
+
+@testable import EliteCore
+
+struct NativePeoplePersistenceTests {
+  @Test func legacyDataHookAcceptsLaterGenuineEpisodeWithoutInventingAnOldSchedule() throws {
+    let game = try NativePeopleTestFixture.withinWindow()
+    let source = try NativePeopleTestFixture.source(game)
+    var record = try #require(game.commander.savedEMPState?.records[source])
+    record.savedDisableEpisodes = nil
+    let first = record.disableIncident
+    let time = first.physicalTime + 31
+    // This is a data-hook boundary fixture, not evidence of actual electrical recovery.
+    let origin = AttackOrigin(
+      emissionID: first.origin.emissionID + 1, owner: first.origin.owner,
+      emittedAt: time, ownerLegalAtEmission: first.origin.ownerLegalAtEmission,
+      sourcePart: first.origin.sourcePart)
+    let later = CombatIncident(
+      id: first.id + 1, physicalTime: time, origin: origin,
+      victim: record.hull.body.physical?.identity, kind: .emp, outcome: .hit,
+      position: first.position, victimLegalBeforeAttack: first.victimLegalBeforeAttack,
+      firstAggressor: first.firstAggressor, victimRole: first.victimRole, victimIsStation: false)
+    let schedule = record.aboardOrdinals.map { EMPCrewEjection(ordinal: $0, delay: 45) }
+    try #require(record.appendCrewDisableEpisode(incident: later, ejections: schedule))
+    #expect(record.disableIncident == first && record.disableEpisodes.count == 2)
+    #expect(record.disableEpisodes[0].legacyTiming && record.disableEpisodes[0].ejections.isEmpty)
+    #expect(record.currentCrewDisableIncident == later && record.crewDeadline == time + 30)
+    #expect(record.crewCensusValid && record.valid)
+    let original = record
+    #expect(!record.appendCrewDisableEpisode(incident: later, ejections: schedule))
+    #expect(record == original)
+  }
+
+  @Test func legacy22AbsentFieldsRemainAbsentUntilRealRuntimeUpgradeAndKeepUnknownOldTimes()
+    async throws
+  {
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    var game = try NativePeopleTestFixture.disabled()
+    let source = try NativePeopleTestFixture.source(game)
+    // Restore the exact pre-24 record shape: original producer, no sampled schedule or captures.
+    game.commander.savedEMPState?.records[source]?.savedDisableEpisodes = nil
+    game.commander.savedEMPState?.records[source]?.nextEjectionAt =
+      game.commander.flightSimulation.physicalTime + 1
+    try #require(game.commander.valid)
+    let writer = GameRuntime(game: game, saveURL: storage.url)
+    try await writer.save(to: storage.url)
+    let bytes = try Data(contentsOf: storage.url)
+    #expect(try JSONDecoder().decode(ScriptSavePointer.self, from: bytes).schemaVersion == 22)
+    let reader = GameRuntime()
+    try await reader.load(from: storage.url, persistMigrations: false)
+    #expect(
+      await reader.snapshot().commander.savedEMPState?.records[source]?.savedDisableEpisodes == nil)
+    for _ in 0..<15 { _ = await reader.advance(delta: 0.1) }
+    let upgraded = await reader.snapshot()
+    let record = try #require(upgraded.commander.savedEMPState?.records[source])
+    let episode = try #require(record.disableEpisodes.first)
+    #expect(episode.legacyTiming && episode.ejections.isEmpty && episode.legacyPods.isEmpty)
+    #expect(episode.legacyEmissions.count == 1 && episode.legacyEmissions[0].ordinal == 0)
+    #expect(episode.legacyEmissions[0].time >= episode.legacyNextEjectionAt!)
+    #expect(record.valid && upgraded.commander.valid)
+    try await reader.save(to: storage.url)
+    #expect(
+      try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: storage.url))
+        .schemaVersion == 24)
+    var forged = record
+    forged.savedDisableEpisodes?[0].legacyEmissions = []
+    #expect(!forged.crewCensusValid)
+  }
+
+  @Test func realCullAndReadmissionBeforeDeadlineAllowsOriginalCrewCaptureOnNewActor() async throws
+  {
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    var game = try NativePeopleTestFixture.withinWindow()
+    let source = try NativePeopleTestFixture.source(game)
+    let original = try #require(game.commander.savedEMPState?.records[source]?.hull.binding)
+    game.bodies.removeAll { $0.physical?.identity == original }
+    try #require(game.persistEMPState())
+    game.advanceEMPActors()
+    let rejoined = try #require(
+      game.bodies.first { $0.physical?.empSource == source }?.physical?.identity)
+    try #require(rejoined != original)
+    #expect(
+      game.commander.savedEMPState?.records[source]?.disableEpisodes.last?.actorBindings.contains(
+        rejoined) == true)
+    game.commander.cargo[0] = game.commander.standardCargoCapacity - 1
+    try NativePeopleTestFixture.aimCutter(&game)
+    let runtime = GameRuntime(game: game, saveURL: storage.url)
+    let captured = await NativePeopleTestFixture.capture(runtime)
+    #expect(captured.commander.nativeCaptiveCount == 1)
+    #expect(captured.commander.nativePeople?.heldCaptives.first?.actor == rejoined)
+    #expect(captured.commander.nativePeople?.heldCaptives.first?.person.emp.source == source)
+    #expect(captured.commander.valid)
+  }
+
+  @Test func scheduleOnlyAndCapturedPeopleUseSchema24AndSurviveMissingContent() async throws {
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    var game = try NativePeopleTestFixture.withinWindow()
+    let source = try NativePeopleTestFixture.source(game)
+    let schedule = game.commander.savedEMPState?.records[source]?.disableEpisodes
+    let runtime = GameRuntime(game: game, saveURL: storage.url)
+    try await runtime.save(to: storage.url)
+    let initial = try Data(contentsOf: storage.url)
+    #expect(try JSONDecoder().decode(ScriptSavePointer.self, from: initial).schemaVersion == 24)
+    game.commander.cargo[0] = game.commander.standardCargoCapacity - 1
+    try NativePeopleTestFixture.aimCutter(&game)
+    let collector = GameRuntime(game: game, saveURL: storage.url)
+    _ = await NativePeopleTestFixture.capture(collector)
+    let saved = await collector.snapshot()
+    try #require(saved.commander.nativeCaptiveCount == 1)
+    let reader = GameRuntime()
+    try await reader.load(from: storage.url, persistMigrations: false)
+    let loaded = await reader.snapshot()
+    #expect(loaded.commander.savedEMPState?.records[source]?.disableEpisodes == schedule)
+    #expect(loaded.commander.nativePeople == saved.commander.nativePeople)
+    #expect(loaded.scriptPacks.isEmpty && loaded.commander.valid)
+    #expect(loaded.commander.nativeCaptiveCount == 1 && loaded.commander.cargo[3] == 1)
+    let pointer = try JSONDecoder().decode(
+      ScriptSavePointer.self, from: Data(contentsOf: storage.url))
+    for version in [21, 22, 23] {
+      let downgraded = ScriptSavePointer(
+        format: pointer.format, schemaVersion: version,
+        generation: pointer.generation, hashes: pointer.hashes, scope: pointer.scope,
+        valueCodec: pointer.valueCodec)
+      #expect(throws: SaveError.invalidCommander) {
+        _ = try ScriptSaveStore.read(
+          ScriptValueStorage.encoder().encode(downgraded), from: storage.url)
+      }
+    }
+  }
+
+  @Test(arguments: ["savedCrewCaptures", "savedDisableEpisodes", "savedDeceasedOrdinals"])
+  func oldHeaderRejectsEveryReservedFieldIncludingNullButIgnoresAuthoredText(field: String) throws {
+    for records: Any in [
+      ["source": [field: NSNull()]],
+      [[:], [field: NSNull()]],
+    ] {
+      let bytes = try JSONSerialization.data(withJSONObject: ["savedEMPState": ["records": records]]
+      )
+      #expect(throws: SaveError.invalidCommander) {
+        try NativePeopleVersionedSave.rejectFields(bytes)
+      }
+    }
+    let innocent = try JSONSerialization.data(withJSONObject: [
+      "scriptState": ["instances": ["data": [field: NSNull()]]], "name": field,
+    ])
+    try NativePeopleVersionedSave.rejectFields(innocent)
+  }
+
+  @Test(arguments: [
+    "captures", "ordinals", "episodes", "ejections", "bindings", "deceased", "legacyPods",
+    "legacyEmissions",
+  ])
+  func nestedCollectionsRejectOversizeBeforeDecodingPoisonedChildren(collection: String) throws {
+    let field: String
+    let maximum: Int
+    switch collection {
+    case "captures":
+      field = "savedCrewCaptures"
+      maximum = EMPState.maximumPeople
+    case "episodes":
+      field = "savedDisableEpisodes"
+      maximum = EMPHullRecord.maximumDisableEpisodes
+    case "deceased":
+      field = "savedDeceasedOrdinals"
+      maximum = EMPState.maximumPeople
+    default:
+      field = collection == "bindings" ? "actorBindings" : collection
+      maximum = EMPState.maximumPeople
+    }
+    let poison = Array(repeating: NSNull(), count: maximum + 1)
+    let bytes = try JSONSerialization.data(withJSONObject: [field: poison])
+    do {
+      if ["captures", "episodes", "deceased"].contains(collection) {
+        _ = try JSONDecoder().decode(EMPHullRecord.self, from: bytes)
+      } else if collection == "ordinals" {
+        _ = try JSONDecoder().decode(NativeCrewCaptureReceipt.self, from: bytes)
+      } else {
+        // Supply earlier bounded siblings so the poisoned target is reached first.
+        var object: [String: Any] = [
+          "ejections": [], "actorBindings": [], "legacyPods": [], "legacyEmissions": [],
+        ]
+        object[field] = poison
+        _ = try JSONDecoder().decode(
+          EMPCrewDisableEpisode.self, from: JSONSerialization.data(withJSONObject: object))
+      }
+      Issue.record("Oversized collection accepted")
+    } catch DecodingError.dataCorrupted(let context) {
+      #expect(context.debugDescription.contains("collection limit exceeded"))
+    }
+  }
+
+  @Test func missingInitialScheduleMemberAndUnscheduledNewPodFailTheSavedCensus() throws {
+    var game = try NativePeopleTestFixture.disabled()
+    for _ in 0..<15 { game.tick(delta: 0.1) }
+    let source = try NativePeopleTestFixture.source(game)
+    var record = try #require(game.commander.savedEMPState?.records[source])
+    try #require(record.podIndex(for: 0) != nil)
+    record.savedDisableEpisodes?[0].ejections.removeAll { $0.ordinal == 0 }
+    #expect(!record.crewCensusValid && !record.valid)
+    record = try #require(game.commander.savedEMPState?.records[source])
+    let index = try #require(
+      record.savedDisableEpisodes?[0].ejections.firstIndex { $0.ordinal == 0 })
+    record.savedDisableEpisodes?[0].ejections[index].emittedAt = nil
+    #expect(!record.crewCensusValid && !record.valid)
+  }
+
+  @Test func actualEscapeFailureRollsBackEquipmentPeopleCargoAndControls() async throws {
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    var game = try NativePeopleTestFixture.withinWindow()
+    try game.commander.grantEquipment(
+      "Escape Pod", at: .utility(.escapePod), provenance: .grant("Native escape regression"))
+    game.commander.mirrorFittedEquipment()
+    game.commander.cargo[0] = game.commander.standardCargoCapacity - 1
+    try NativePeopleTestFixture.aimCutter(&game)
+    let runtime = GameRuntime(game: game, saveURL: storage.url)
+    _ = await NativePeopleTestFixture.capture(runtime)
+    var held = Controls()
+    held.pitch = 0.2
+    await runtime.setControls(held)
+    let before = await runtime.snapshot()
+    let files = try ScriptFinanceTestFixture.files(storage.directory)
+    try storage.blockWriter()
+    await runtime.key("escape-pod")
+    let failed = await runtime.snapshot()
+    #expect(failed.commander == before.commander && failed.docked == before.docked)
+    #expect(await runtime.nativePeopleTestControls().pitch == held.pitch)
+    #expect(try ScriptFinanceTestFixture.files(storage.backup) == files)
+    try storage.restoreWriter()
+    await runtime.key("escape-pod")
+    let escaped = await runtime.snapshot()
+    #expect(escaped.docked && escaped.commander.nativeCaptiveCount == 0)
+    #expect(escaped.commander.nativePeople?.transfers.last?.kind == .escape)
+    #expect(escaped.commander.nativePeople?.admissions == before.commander.nativePeople?.admissions)
+    #expect(
+      escaped.commander.savedEMPState?.records.values.first?.crewCaptures
+        == before.commander.savedEMPState?.records.values.first?.crewCaptures)
+    #expect(!escaped.commander.equipment.contains("Escape Pod"))
+    #expect(escaped.message.contains("PEOPLE LEFT WITH ABANDONED SHIP"))
+  }
+
+  @Test func fatalFrameFailedWriterKeepsProtectedCustodyUntilOneSuccessfulLossSave() async throws {
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    var game = try NativePeopleTestFixture.withinWindow()
+    game.commander.cargo[0] = game.commander.standardCargoCapacity - 1
+    try NativePeopleTestFixture.aimCutter(&game)
+    let collector = GameRuntime(game: game, saveURL: storage.url)
+    game = await NativePeopleTestFixture.capture(collector)
+    let people = try #require(game.commander.nativePeople)
+    game.energy = -100
+    let runtime = GameRuntime(game: game, saveURL: storage.url)
+    let files = try ScriptFinanceTestFixture.files(storage.directory)
+    try storage.blockWriter()
+    let failed = await runtime.advance(delta: 0.05)
+    #expect(failed.screen == .gameOver && failed.energy == 0)
+    #expect(failed.commander.nativePeople == people && failed.commander.nativeCaptiveCount == 1)
+    #expect(!failed.commander.ordinaryCommodityAmounts.contains { $0.commodity == .slaves })
+    #expect(try ScriptFinanceTestFixture.files(storage.backup) == files)
+    try storage.restoreWriter()
+    try await runtime.save(to: storage.url)
+    let saved = await runtime.snapshot()
+    #expect(saved.commander.nativePeople?.held.isEmpty == true)
+    #expect(saved.commander.nativePeople?.transfers.last?.kind == .loss)
+    #expect(saved.commander.nativePeople?.admissions == people.admissions)
+    #expect(saved.commander.cargo[3] == 0 && saved.commander.valid)
+    try await runtime.save(to: storage.url)
+    #expect(await runtime.snapshot().commander.nativePeople?.transfers.count == 1)
+  }
+}
+
+extension GameRuntime {
+  func nativePeopleTestControls() -> Controls { controls }
+}

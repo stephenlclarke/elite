@@ -22,7 +22,7 @@ extension Game {
     else { return false }
     if let source = physical.empSource {
       guard let record = commander.savedEMPState?.records[source], isEMPDisabled(body),
-        record.crewAboard == 0, record.pods.count == record.crewTotal,
+        record.crewAboard == 0, record.pods.count + record.capturedCrewCount == record.crewTotal,
         record.wreck == metadata.wreck
       else { return false }
       return salvageProfile(for: body) != nil

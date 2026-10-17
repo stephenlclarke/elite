@@ -44,6 +44,9 @@ extension Game {
     if !docked { return "DOCK TO TRADE" }
     if !stationAllowsMarketServices { return "SERVICE UNAVAILABLE" }
     if screen == .sell {
+      if index == 3, commander.nativeCaptiveCount > 0, commander.sellableCargo(index) == 0 {
+        return "REVIEW CAPTIVE SALE"
+      }
       if commander.sellableCargo(index) > 0 { return "SELL" }
       return index == 10 && commander.markedFirearms > 0 ? "RESERVED" : "NONE HELD"
     }

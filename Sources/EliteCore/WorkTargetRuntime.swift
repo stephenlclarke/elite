@@ -54,7 +54,10 @@ extension Game {
     return .init(
       identity: physical.identity, kind: kind, isLive: true,
       frontVisible: frontVisible, distance: body.position.length,
-      singleScoopCompatible: compatible)
+      singleScoopCompatible: compatible,
+      nativePod: nativePodFacts(body, context: context),
+      nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
+        && freeNativePeopleTonnes > 0)
   }
 
   func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?
@@ -175,6 +178,7 @@ extension Game {
 
   func workRefusalMessage(_ refusal: WorkTargetRefusal) -> String {
     switch refusal {
+    case .fullPeopleHold: "NO REAL HOLD SPACE FOR PEOPLE"
     case .missingCore: "FIT A TARGETING COMPUTER"
     case .missingModule(.mining): "FIT A MINING TARGETING MODULE"
     case .missingModule(.salvage): "FIT A SALVAGE TARGETING MODULE"

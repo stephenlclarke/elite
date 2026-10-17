@@ -20,10 +20,13 @@ public struct WorkTargetCandidate: Sendable, Equatable {
   public let frontVisible: Bool
   public let distance: Double
   public let singleScoopCompatible: Bool
+  public let nativePod: NativePodSelectionFacts?
+  public let nativeCrewCapture: Bool
 
   public init(
     identity: ActorIdentity, kind: WorkTargetKind, isLive: Bool,
-    frontVisible: Bool, distance: Double, singleScoopCompatible: Bool
+    frontVisible: Bool, distance: Double, singleScoopCompatible: Bool,
+    nativePod: NativePodSelectionFacts? = nil, nativeCrewCapture: Bool = false
   ) {
     self.identity = identity
     self.kind = kind
@@ -31,6 +34,8 @@ public struct WorkTargetCandidate: Sendable, Equatable {
     self.frontVisible = frontVisible
     self.distance = distance
     self.singleScoopCompatible = singleScoopCompatible
+    self.nativePod = nativePod
+    self.nativeCrewCapture = nativeCrewCapture
   }
 }
 
@@ -60,6 +65,7 @@ public enum WorkTargetRefusal: Sendable, Equatable {
   case frontVisibilityRequired, dockingCoreRequired
   case missingModule(WorkTargetSpecialty)
   case protectedTarget, occupiedPod, notScoopCompatible, missingFuelScoops
+  case fullPeopleHold
 }
 
 public enum WorkTargetDecision: Sendable, Equatable {
@@ -103,7 +109,19 @@ public enum WorkTargetSelection {
     case .activeStation:
       return core >= .docking ? .eligible(.docking) : .refused(.dockingCoreRequired)
     case .recoverable(let metadata, let payload):
-      guard metadata.category != .occupiedPod else { return .refused(.occupiedPod) }
+      if metadata.category == .occupiedPod {
+        guard let pod = candidate.nativePod else { return .refused(.occupiedPod) }
+        guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
+        guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+        guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
+        guard pod.fits else { return .refused(.fullPeopleHold) }
+        return .eligible(.autoScoop(.salvage))
+      }
+      if candidate.nativeCrewCapture {
+        guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
+        guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+        return .eligible(.hold(.salvage))
+      }
       // Mission custody never becomes ordinary salvage, even if classification metadata disagrees.
       if case .mission = payload { return .refused(.protectedTarget) }
       guard metadata.ownership == .abandoned, metadata.claimant == nil else {

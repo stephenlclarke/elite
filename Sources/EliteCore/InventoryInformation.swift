@@ -33,6 +33,13 @@ extension Game {
           + (index == 10 && commander.markedFirearms > 0 ? " (1 mission item)" : ""),
         CommodityCategory.at(index).ink)
     }
+    if commander.nativeCaptiveCount > 0 {
+      append(
+        "Captured crew: \(commander.nativeCaptiveCount) (included once in Slaves tonnes)", .orange)
+    }
+    if commander.rescuedPodTonnes > 0 {
+      append("Rescued occupied capsules: \(commander.rescuedPodTonnes)t protected hold", .orange)
+    }
     for id in commander.missionProgress.keys.sorted() {
       let title =
         missionPacks.entries.first { $0.pack.stateID == id }?.pack.mission.title ?? "Missing pack"

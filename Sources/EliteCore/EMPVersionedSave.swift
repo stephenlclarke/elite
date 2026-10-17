@@ -57,9 +57,22 @@ enum EMPVersionedSave {
 }
 
 extension EMPState {
-  func sceneIsConsistent(_ bodies: [SpaceBody], flight: FlightSimulationState) -> Bool {
+  func sceneIsConsistent(
+    _ bodies: [SpaceBody], flight: FlightSimulationState,
+    people: NativePeopleCustodyState? = nil
+  ) -> Bool {
     guard valid else { return false }
-    let objects = records.values.flatMap { [$0.hull] + $0.pods }
+    let objects = records.values.flatMap { record in
+      [record.hull]
+        + record.pods.compactMap { pod in
+          guard let identity = pod.body.physical?.empCrewPod else { return nil }
+          let person = NativePersonReference.emp(identity)
+          if people?.admissions.contains(where: { $0.person == person }) == true {
+            return nil
+          }
+          return pod
+        }
+    }
     let bindings = objects.compactMap(\.binding)
     guard Set(bindings).count == bindings.count else { return false }
     for object in objects {
@@ -83,8 +96,11 @@ extension EMPState {
         guard records[source]?.hull.binding == body.physical?.identity else { return false }
       }
       if let person = body.physical?.empCrewPod {
-        guard let record = records[person.source], record.pods.indices.contains(person.ordinal),
-          record.pods[person.ordinal].binding == body.physical?.identity
+        guard people?.admissions.contains(where: { $0.person == .emp(person) }) != true else {
+          return false
+        }
+        guard let record = records[person.source], let index = record.podIndex(for: person.ordinal),
+          record.pods[index].binding == body.physical?.identity
         else { return false }
       }
     }
