@@ -1014,42 +1014,15 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   private func chunk(_ item: SalvageLootItem, identity: SalvageLotIdentity, quantity: Int)
     -> SalvageLootItem
   {
-    guard case .commodity(let amount) = item.content else {
-      return .init(
-        identity: identity, content: item.content, effect: item.effect,
-        bonusBasisPoints: item.bonusBasisPoints, massKg: item.massKg, halfExtents: item.halfExtents,
-        provenance: item.provenance, saleValueTenths: item.saleValueTenths,
-        legality: item.legality, requiresChunking: false)
-    }
-    let chunkAmount = CommodityAmount(commodity: amount.commodity, quantity: quantity)
-    let mass = nativeMass(chunkAmount)
-    let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
-    return .init(
-      identity: identity, content: .commodity(chunkAmount), effect: nil, bonusBasisPoints: 0,
-      massKg: mass, halfExtents: .init(half, half, half), provenance: item.provenance,
-      saleValueTenths: item.saleValueTenths / nativeQuantity(item) * quantity,
-      legality: item.legality, requiresChunking: false)
+    SalvageLotEmission.chunk(item, identity: identity, quantity: quantity)
   }
 
   private func structuralItem(_ record: SalvagePlanProgress, lot: SalvageLotIdentity)
     -> SalvageLootItem
   {
-    let amount = CommodityAmount(
-      commodity: record.materialKind ?? .minerals, quantity: record.structuralUnits)
-    let mass = nativeMass(amount)
-    let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
-    let source = record.plan.source
-    let price = MarketItem.generate(economy: source.economy, fluctuation: 0)[
-      amount.commodity.rawValue
-    ].price
-    return .init(
-      identity: lot, content: .commodity(amount), effect: nil, bonusBasisPoints: 0,
-      massKg: mass, halfExtents: .init(half, half, half), provenance: .human,
-      saleValueTenths: price * amount.quantity,
-      legality: .init(
-        commodityIllegal: false, sourceLegalValue: source.legalValue,
-        ownership: source.ownership, stolenProvenance: source.stolenProvenance),
-      requiresChunking: false)
+    SalvageLotEmission.structural(
+      plan: record.plan, quantity: record.structuralUnits,
+      material: record.materialKind ?? .minerals, identity: lot)
   }
 
   private func issuedItem(_ record: SalvagePlanProgress, lot: SalvageLotIdentity)

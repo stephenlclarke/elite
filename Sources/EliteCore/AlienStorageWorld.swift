@@ -34,16 +34,19 @@ struct AlienStorageWorldLot: Codable, Sendable, Equatable {
 enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
   case plan(AlienStorageWorldPlan)
   case lot(AlienStorageWorldLot)
+  case companion(AlienStorageCompanion)
   var id: UUID {
     switch self {
     case .plan(let value): value.id
     case .lot(let value): value.id
+    case .companion(let value): value.id
     }
   }
   var owner: UUID {
     switch self {
     case .plan(let value): value.owner
     case .lot(let value): value.owner
+    case .companion(let value): value.owner
     }
   }
 }
@@ -55,6 +58,7 @@ enum AlienStorageWorldValidation {
   ) throws {
     var plans: [UUID: AlienStorageWorldPlan] = [:]
     var lots: [UUID: AlienStorageWorldLot] = [:]
+    var companions: [AlienStorageCompanion] = []
     var ids: Set<UUID> = []
     var sections: Set<WreckSectionIdentity> = []
     for record in records {
@@ -81,6 +85,7 @@ enum AlienStorageWorldValidation {
         try value.progress.validate(plan: value)
         plans[value.id] = value
       case .lot(let value): lots[value.id] = value
+      case .companion(let value): companions.append(value)
       }
     }
     var sourceMap: [UUID: AlienStorageSource] = [:]
@@ -89,6 +94,14 @@ enum AlienStorageWorldValidation {
         throw AlienStorageError.duplicateKey
       }
     }
+    var emissions: [UUID: [AlienStorageEmissionOrigin: SalvageLootItem]] = [:]
+    var expectedEmissions: Set<SalvageLotIdentity> = []
+    for plan in plans.values {
+      let issued = try plan.progress.emissions(plan: plan)
+      emissions[plan.id] = issued
+      expectedEmissions.formUnion(issued.values.map(\.identity))
+    }
+    var emissionClaims: Set<SalvageLotIdentity> = []
     var claimed: Set<UUID> = []
     var offers: Set<SpawnIdentity> = []
     var actors: Set<ActorIdentity> = []
@@ -112,7 +125,13 @@ enum AlienStorageWorldValidation {
       let issuedCount = plan.progress.issued[Int(lot.itemIndex)]
       let discarded = plan.progress.discarded[Int(lot.itemIndex)]
       if lot.issuedAt != nil {
-        guard issuedCount == 1, !discarded else { throw AlienStorageError.invalidJoin }
+        let identity = try plan.progress.issuedIdentity(
+          itemIndex: Int(lot.itemIndex), plan: plan.plan)
+        guard issuedCount == 1, !discarded,
+          emissions[plan.id]?[identity]?.origin
+            == .planned(itemIndex: lot.itemIndex, chunkOrdinal: 0),
+          emissionClaims.insert(identity).inserted
+        else { throw AlienStorageError.invalidJoin }
       }
       switch lot.state {
       case .unissued:
@@ -161,6 +180,18 @@ enum AlienStorageWorldValidation {
         }
       }
     }
+    var collectionOperations = Set(sourceMap.keys)
+    var technologyStorage: Set<UUID> = []
+    for companion in companions {
+      guard let plan = plans[companion.plan], let issued = emissions[plan.id] else {
+        throw AlienStorageError.invalidJoin
+      }
+      try AlienStorageCompanionValidation.validate(
+        companion, plan: plan, emissions: issued, claims: &emissionClaims,
+        offers: &offers, actors: &actors, operations: &collectionOperations,
+        technologyStorage: &technologyStorage)
+    }
+    guard emissionClaims == expectedEmissions else { throw AlienStorageError.invalidJoin }
     // Every reserved result has explicit monotone custody, even before it is issued.
     let expected = Set(
       plans.values.flatMap { value in
@@ -187,9 +218,7 @@ enum AlienStorageWorldValidation {
       halfExtents: planned.halfExtents,
       provenance: planned.provenance, saleValueTenths: planned.saleValueTenths,
       legality: planned.legality, requiresChunking: false)
-    guard lot.identity == identity, lot.loot == issued else {
-      throw AlienStorageError.invalidJoin
-    }
+    try SalvageLotEmission.validate(lot, item: issued)
     if case .technology(let id, _, _, _) = planned.content,
       let kind = AlienModuleKind.allCases.first(where: { $0.definitionID == id })
     {
@@ -243,6 +272,8 @@ enum AlienStorageWorldValidation {
           guard a == b else { throw AlienStorageError.historyChanged }
         default: throw AlienStorageError.historyChanged
         }
+      case (.companion(let a), .companion(let b)):
+        try AlienStorageCompanionValidation.preserve(a, in: b)
       default: throw AlienStorageError.historyChanged
       }
     }
