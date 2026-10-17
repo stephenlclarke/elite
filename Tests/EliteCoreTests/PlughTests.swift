@@ -245,6 +245,12 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   game.purchase()
   #expect(game.commander == fitted)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Missile" })
+  try game.commander.grantEquipment(
+    "Missile", at: .missilePylon(3), provenance: .grant("plugh full rack fixture"))
+  #expect(
+    game.commander.fittedEquipment(at: .missilePylon(3))?.node
+      == EquipmentRuntimeCatalog.standardMissile)
+  #expect(game.commander.missiles == 4)
   game.commander.missiles = 4
   let full = game.commander
   game.purchase()
