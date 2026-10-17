@@ -128,8 +128,8 @@ enum AlienStorageWorldValidation {
         let identity = try plan.progress.issuedIdentity(
           itemIndex: Int(lot.itemIndex), plan: plan.plan)
         guard issuedCount == 1, !discarded,
-          emissions[plan.id]?[identity]?.origin
-            == .planned(itemIndex: lot.itemIndex, chunkOrdinal: 0),
+          emissions[plan.id]?[.planned(itemIndex: lot.itemIndex, chunkOrdinal: 0)]?.identity
+            == identity,
           emissionClaims.insert(identity).inserted
         else { throw AlienStorageError.invalidJoin }
       }
