@@ -213,13 +213,15 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
-        || commander.usesModularDriveSaveVersion
-        ? 25
-        : commander.usesNativePeopleSaveVersion
-          ? 24
-          : commander.scriptState.financeLedger != nil
-            ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
+      schemaVersion: commander.usesEconomyMiningSaveVersion
+        ? 26
+        : commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
+          || commander.usesModularDriveSaveVersion
+          ? 25
+          : commander.usesNativePeopleSaveVersion
+            ? 24
+            : commander.scriptState.financeLedger != nil
+              ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
@@ -241,7 +243,7 @@ enum ScriptSaveStore {
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...25).contains(pointer.schemaVersion),
+    guard pointer.format == "elite-script-save", (2...26).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -274,6 +276,9 @@ enum ScriptSaveStore {
         throw SaveError.invalidCommander
       }
       try ScriptSaveJSONPreflight.validate(data)
+      if name == "commander.json", pointer.schemaVersion < 26 {
+        try EconomyMiningVersionedSave.rejectFields(data)
+      }
       if name == "commander.json", pointer.schemaVersion < 25 {
         try RingMiningVersionedSave.rejectFields(data)
         try HyperspaceDriveVersionedSave.rejectFields(data)
@@ -318,9 +323,11 @@ enum ScriptSaveStore {
       pointer.schemaVersion < 23
         ? commander.scriptState.financeLedger == nil
         : pointer.schemaVersion == 23 ? commander.scriptState.financeLedger != nil : true,
-      (pointer.schemaVersion == 25)
-        == (commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
-          || commander.usesModularDriveSaveVersion),
+      (pointer.schemaVersion == 26) == commander.usesEconomyMiningSaveVersion,
+      pointer.schemaVersion >= 26
+        || (pointer.schemaVersion == 25)
+          == (commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
+            || commander.usesModularDriveSaveVersion),
       pointer.schemaVersion >= 25
         || (pointer.schemaVersion == 24) == commander.usesNativePeopleSaveVersion
     else {

@@ -69,7 +69,9 @@ extension GameRuntime {
   }
   static func writeCommander(_ candidate: inout Game, to url: URL) throws {
     try candidate.commander.prepareEquipment()
-    if (candidate.requiresScriptDurability || candidate.commander.usesModularDriveSaveVersion)
+    try candidate.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+    if (candidate.requiresScriptDurability || candidate.commander.usesEconomyMiningSaveVersion
+      || candidate.commander.usesModularDriveSaveVersion)
       && candidate.commander.scriptState.calendarLedger == nil
     {
       let legacy = candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil

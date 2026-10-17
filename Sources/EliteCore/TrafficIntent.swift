@@ -9,7 +9,12 @@ public enum TrafficIntent {
     let ordinary = actors.filter { !context.protection.protectedActors.contains($0.identity) }
     let miningFields =
       ordinary.contains { $0.npc?.role == .miner }
-      ? MiningFields.generate(anchors: context.anchors, seed: context.seed).filter { field in
+      ? MiningFields.generate(
+        anchors: context.anchors, seed: context.seed,
+        ringPresent: context.miningPresence?.ringPresent
+          ?? AsteroidBeltDefinition.isPresent(identity: context.system, seed: context.seed),
+        includingLegacy: context.miningPresence?.includingLegacy ?? false
+      ).filter { field in
         field.rocks.contains { !context.depletedRocks.contains($0.identity) }
       } : []
     return ordinary.compactMap { actor in

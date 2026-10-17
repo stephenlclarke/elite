@@ -70,6 +70,12 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   private var savedMiningLedger: MiningLedger?
   var usesRingMiningSaveVersion: Bool { savedMiningLedger?.usesRingSaveVersion == true }
+  var usesEconomyMiningSaveVersion: Bool {
+    savedMiningLedger?.usesEconomyWeightedPresence == true
+  }
+  func miningLedgerForMigration(legacyMissing: Bool) -> MiningLedger {
+    savedMiningLedger ?? (legacyMissing ? .legacyUnworked() : MiningLedger())
+  }
   public var miningLedger: MiningLedger {
     get { savedMiningLedger ?? MiningLedger() }
     set { savedMiningLedger = newValue }
@@ -557,6 +563,7 @@ public struct Game: Sendable {
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
     guard value.valid, !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
+      !value.usesEconomyMiningSaveVersion,
       value.scriptState.financeLedger == nil
     else {
       return false
@@ -601,6 +608,7 @@ public struct Game: Sendable {
     targetPanelExpanded = nil
     targetPanelScroll = 0
     systems = Universe.systemsIncludingPlugh(number: value.galaxy)
+    do { try migrateMiningPresence(legacyMissing: true) } catch { return false }
     selectedSystem = value.system
     market = MarketItem.at(currentSystem, fluctuation: 0)
     docked = true
@@ -1132,7 +1140,9 @@ public struct Game: Sendable {
     }
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     resetCelestialFlight()
-    beginGameplayVisit(arriving: false, freshLaunchTrafficID: freshLaunchTrafficID)
+    guard beginGameplayVisit(arriving: false, freshLaunchTrafficID: freshLaunchTrafficID) else {
+      throw SaveError.invalidCommander
+    }
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()
@@ -1327,7 +1337,9 @@ public struct Game: Sendable {
         hostile: currentSystem.government < 4),
     ]
     resetCelestialFlight()
-    beginGameplayVisit(arriving: true, freshLaunchTrafficID: 1)
+    guard beginGameplayVisit(arriving: true, freshLaunchTrafficID: 1) else {
+      throw SaveError.invalidCommander
+    }
     altitude = 1
     notify(currentSystem.name)
     restoreBlackjackEncounter()
@@ -2127,6 +2139,8 @@ public actor GameRuntime {
         migrateScriptCalendar(&candidate, untrackedJump: world.jumpCountdown != nil)
       }
       candidate.restoreScriptWorld(world)
+      try candidate.migrateMiningPresence(legacyMissing: pointer.schemaVersion < 26)
+      candidate.rebuildMiningFields()
       try candidate.restoreSavedNPCSceneBindings()
       try candidate.rebindNativeStationsAfterLoad()
       try candidate.validateInstalledCourierContent()
