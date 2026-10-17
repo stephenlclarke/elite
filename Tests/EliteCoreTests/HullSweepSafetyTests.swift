@@ -87,6 +87,28 @@ private func hsSweep(
   }
 }
 
+@Test func hullSweepRetainsAnalyticFaceEdgeAndCornerDistancesForBothWindingDirections() throws {
+  for reversed in [false, true] {
+    let obstacle = try PreparedHull(mesh: hsBox(reversed: reversed))
+    let player = try PreparedHull(mesh: hsBox(.init(1, 1, 1), reversed: reversed))
+    let cases: [(Vector3, Double, Double)] = [
+      (.init(30, 0, 0), 20, 19),
+      (.init(30, 30, 0), sqrt(800), sqrt(722)),
+      (.init(30, 30, 30), sqrt(1200), sqrt(1083)),
+      (.init(-30, -30, -30), sqrt(1200), sqrt(1083)),
+    ]
+    for (position, pointDistance, meshDistance) in cases {
+      let sphere = HullSweepSafety.validate(hsSweep(position: position), target: obstacle)
+      #expect(sphere.safe && sphere.distanceQueries == 3)
+      #expect(abs((sphere.minimumSampledClearance ?? 0) - (pointDistance - 2)) < 1e-10)
+      let exact = HullSweepSafety.validate(
+        hsSweep(position: position, radius: player.radius), target: obstacle, player: player)
+      #expect(exact.safe && exact.distanceQueries == 3)
+      #expect(abs((exact.minimumSampledClearance ?? 0) - meshDistance) < 1e-10)
+    }
+  }
+}
+
 @Test func hullSweepConcaveClosedNotchIsEmptyButTheArmHasSolidInterior() throws {
   let hull = try PreparedHull(mesh: hsConcaveHull())
   #expect(hull.isClosed)
