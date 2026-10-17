@@ -19,11 +19,12 @@ extension GameRuntime {
       }
       candidate.persistScriptActors()
       let prepared = try Self.prepareNativeSaveState(candidate)
-      try ScriptSaveStore.write(
+      let alienPublication = try ScriptSaveStore.write(
         commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
         scope: namespace == nil ? "commander" : "gallery",
         exclusive: candidate.pendingNewSaveDestination == url)
       candidate = prepared.game
+      candidate.commander.publishAlienStorage(alienPublication)
       candidate.recordNewCommanderSavePublication(to: url)
     }
   }
@@ -82,8 +83,9 @@ extension GameRuntime {
     }
     candidate.persistScriptActors()
     let prepared = try Self.prepareNativeSaveState(candidate)
+    var alienPublication: AlienStoragePublication?
     if prepared.game.requiresScriptDurability {
-      try ScriptSaveStore.write(
+      alienPublication = try ScriptSaveStore.write(
         commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
         scope: prepared.game.isMissionTrial ? "gallery" : "commander",
         exclusive: candidate.pendingNewSaveDestination == url)
@@ -96,6 +98,7 @@ extension GameRuntime {
         data, to: url, exclusive: candidate.pendingNewSaveDestination == url)
     }
     candidate = prepared.game
+    candidate.commander.publishAlienStorage(alienPublication)
     candidate.recordNewCommanderSavePublication(to: url)
   }
 }

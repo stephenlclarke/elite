@@ -40,6 +40,8 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedEMPCharge: EMPChargeState?
   var savedNativePeopleCustody: NativePeopleCustodyState?
   var savedSalvageLedger: SalvageLedger?
+  var savedAlienStorageReference: AlienStorageReference?
+  var alienStorageState: AlienCommanderStorage? = nil
   var savedEquipmentVersion: Int?
   var nativeStations: NativeStationWorld?
   private var savedFlightSimulation: FlightSimulationState?
@@ -220,6 +222,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedEMPCharge
     case savedNativePeopleCustody
     case savedSalvageLedger
+    case savedAlienStorageReference
     case savedEquipmentVersion
     case nativeStations
     case savedFlightSimulation
@@ -284,7 +287,7 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   public var valid: Bool {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
-      && empCustodyStateValid && electricalStateValid
+      && empCustodyStateValid && electricalStateValid && alienStorageStateValid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -562,7 +565,8 @@ public struct Game: Sendable {
     return true
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
-    guard value.valid, !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
+    guard value.valid, !value.usesAlienStorageSaveVersion,
+      !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
       !value.usesEconomyMiningSaveVersion,
       value.scriptState.financeLedger == nil
     else {
@@ -2161,6 +2165,7 @@ public actor GameRuntime {
       throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
     try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
+    try AlienStorageVersionedSave.rejectFields(data)
     try EMPVersionedSave.rejectFields(data, part: .commander)
     try NativePeopleVersionedSave.rejectFields(data)
     try RingMiningVersionedSave.rejectFields(data)

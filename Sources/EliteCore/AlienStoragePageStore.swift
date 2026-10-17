@@ -41,6 +41,24 @@ struct AlienStoragePageStore: AlienStoragePageReader, AlienStoragePageWriter, Se
     try Self.sync(pages)
     try Self.sync(root)
   }
+
+  /// Fixed native generation chunks share the pages' immutable no-follow/fsync path.
+  func writeGenerationChunk(_ data: Data, name: String, maximumBytes: Int) throws {
+    guard ["commander.json", "missions.json", "world.json", "contracts.json"].contains(name),
+      maximumBytes > 0
+    else { throw AlienStorageError.invalidReference }
+    let root = try Self.openDirectory(directory)
+    defer { Darwin.close(root) }
+    try Self.writeImmutable(data, name: name, parent: root, maximumBytes: maximumBytes)
+    try Self.sync(root)
+  }
+
+  func readGenerationRoot() throws -> Data {
+    let root = try Self.openDirectory(directory)
+    defer { Darwin.close(root) }
+    return try Self.read(
+      "alien-root.json", parent: root, maximumBytes: AlienStoragePageCodec.maximumRootBytes)
+  }
   static func write(
     snapshot: AlienStorageSnapshot, previous: AlienStorageSnapshot?, to directory: URL
   )
