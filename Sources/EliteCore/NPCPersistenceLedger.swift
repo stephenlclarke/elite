@@ -180,16 +180,25 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
 
   /// Rejoin only an already-restored saved actor, never allocate or refresh its condition.
   mutating func restoreSceneBindings(
-    _ observed: [NPCPersistenceSnapshot], system: SystemIdentity, visit: UInt64,
+    _ observed: [NPCPersistenceSnapshot], sceneActors: Set<ActorIdentity>,
+    spawnIdentities: [ActorIdentity: SpawnIdentity],
+    system: SystemIdentity, visit: UInt64,
     physicalTime: Double, nextActor: UInt64, protection: MissionProtection
   ) throws {
     guard valid, self.system == system, visit > 0, visit < UInt64.max,
       nextActor > 1, nextActor < UInt64.max,
       physicalTime.isFinite, physicalTime >= 0, observed.count <= Self.maximumEntries,
-      Set(observed.map(\.actor)).count == observed.count
+      Set(observed.map(\.actor)).count == observed.count,
+      Set(observed.map(\.actor)).isSubset(of: sceneActors),
+      Set(spawnIdentities.keys).isSubset(of: Set(observed.map(\.actor))),
+      Set(spawnIdentities.values).count == spawnIdentities.count
     else { throw NPCSceneRestorationError.invalidScene }
     var logicalByActor: [ActorIdentity: ActorIdentity] = [:]
+    let observedActors = Set(observed.map(\.actor))
     for (logical, entry) in entries where entry.terminal == nil {
+      guard
+        !sceneActors.contains(entry.snapshot.actor) || observedActors.contains(entry.snapshot.actor)
+      else { throw NPCSceneRestorationError.invalidScene }
       guard logicalByActor.updateValue(logical, forKey: entry.snapshot.actor) == nil else {
         throw NPCSceneRestorationError.invalidRecord
       }
@@ -198,6 +207,7 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     for snapshot in observed {
       guard snapshot.valid, snapshot.actor.system == system, snapshot.actor.visit == visit,
         snapshot.actor.entity < nextActor, snapshot.physicalTime == physicalTime,
+        validRestoredSpawn(spawnIdentities[snapshot.actor], for: snapshot),
         !protection.protectedActors.contains(snapshot.actor),
         let logical = logicalByActor[snapshot.actor],
         !protection.protectedActors.contains(logical), var entry = staged.entries[logical],
@@ -211,6 +221,32 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     }
     guard staged.valid else { throw NPCSceneRestorationError.invalidRecord }
     self = staged
+  }
+
+  private func validRestoredSpawn(_ spawn: SpawnIdentity?, for snapshot: NPCPersistenceSnapshot)
+    -> Bool
+  {
+    guard let spawn else { return true }  // Historical native bodies can lack a spawn address.
+    guard spawn.system == snapshot.actor.system, spawn.visit == snapshot.actor.visit,
+      spawn.sequence < UInt64.max
+    else { return false }
+    let civilian =
+      snapshot.population == .civilian && [.trader, .miner, .escort].contains(snapshot.npc.role)
+    let pirate = snapshot.population == .pirate && snapshot.npc.role == .pirate
+    let police = snapshot.population == .police && snapshot.npc.role == .police
+    // Native ambient wings have at most five members; security waves have at most eight.
+    // Persistence alone uses this ledger's positive offer counter, never the flight spawn cursor.
+    switch spawn.producer {
+    case .ambient:
+      return (civilian && snapshot.npc.role != .escort && spawn.member == 0)
+        || (pirate && spawn.member < 5)
+    case .security:
+      return police && snapshot.hull == .viper && spawn.member < 8
+    case .persistence:
+      return (civilian || pirate || police) && spawn.sequence > 0
+        && spawn.sequence < nextOffer && spawn.member == 0
+    default: return false
+    }
   }
 
   /// The runtime may advance a retained craft in world space without admitting
