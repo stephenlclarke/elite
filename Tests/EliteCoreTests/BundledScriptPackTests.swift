@@ -1,0 +1,205 @@
+import CryptoKit
+import Foundation
+import Testing
+
+@testable import EliteCore
+
+private let bundledCourierDigest =
+  "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369"
+
+private struct BundledScriptFixture {
+  let root: URL
+  var library: URL { root.appendingPathComponent("installed") }
+  var save: URL { root.appendingPathComponent("commander.json") }
+
+  init() throws {
+    root = FileManager.default.temporaryDirectory.appendingPathComponent(
+      "bundled-script-" + UUID().uuidString)
+    try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+  }
+
+  func clean() { try? FileManager.default.removeItem(at: root) }
+
+  func variant(_ name: String, version: String = "1.0.0", comment: String = "") throws -> ScriptPack
+  {
+    let folder = root.appendingPathComponent(name)
+    try FileManager.default.copyItem(at: ScriptPackLibrary.bundledCourierDirectory, to: folder)
+    let manifest = folder.appendingPathComponent("manifest.toml")
+    let text = try String(contentsOf: manifest, encoding: .utf8)
+    try text.replacingOccurrences(of: "version = \"1.0.0\"\n", with: "version = \"\(version)\"\n")
+      .write(to: manifest, atomically: true, encoding: .utf8)
+    if !comment.isEmpty {
+      let module = folder.appendingPathComponent("scripts/main.lua")
+      let lua = try String(contentsOf: module, encoding: .utf8)
+      try (lua + "\n-- " + comment + "\n").write(to: module, atomically: true, encoding: .utf8)
+    }
+    return try ScriptPackLibrary.read(folder)
+  }
+
+  func game() -> Game {
+    var game = Game(executive: false)
+    game.screen = .status
+    game.commander.credits = 100_000
+    return game
+  }
+}
+
+struct BundledScriptPackTests {
+  @Test func bundledCourierRetainsApprovedResourceBytesAndContentIdentity() throws {
+    let folder = ScriptPackLibrary.bundledCourierDirectory
+    let docs = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/generated-couriers")
+    for (name, expected) in [
+      ("manifest.toml", "f4c2a1bb538f257a229cce4911c81c4471a0aa92b2d30fe1605959c0740407f6"),
+      ("scripts/main.lua", "7134b0c5633be2c742d9bcc3dc9768d1966dade002685060a6db3794b18de046"),
+    ] {
+      let bytes = try Data(contentsOf: folder.appendingPathComponent(name))
+      #expect(bytes == (try Data(contentsOf: docs.appendingPathComponent(name))))
+      #expect(SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined() == expected)
+    }
+    let pack = try ScriptPackLibrary.read(folder)
+    #expect(pack.digest == bundledCourierDigest && pack.manifest.version == "1.0.0")
+    #expect(pack.manifest.id == "project.generated-couriers" && pack.missingCapabilities.isEmpty)
+  }
+
+  @Test func defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly() async throws {
+    let fixture = try BundledScriptFixture()
+    defer { fixture.clean() }
+    let runtime = GameRuntime(game: fixture.game())
+    let before = await runtime.snapshot()
+    await runtime.loadScriptPacks(directory: fixture.library)
+    #expect(await runtime.snapshot().scriptPacks.isEmpty)
+    let errors = await runtime.loadDefaultScriptPacks(directory: fixture.library)
+    let discovered = await runtime.snapshot()
+    #expect(errors.isEmpty && discovered.scriptPacks.map(\.digest) == [bundledCourierDigest])
+    #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
+    #expect(discovered.commander.scriptState.instances.isEmpty)
+    #expect(discovered.commander.contracts.boards.isEmpty && !discovered.requiresScriptDurability)
+    #expect(discovered.scriptGallery.first?.status == .locked)
+    #expect(!FileManager.default.fileExists(atPath: fixture.library.path))
+    #expect(!FileManager.default.fileExists(atPath: fixture.save.path))
+    await runtime.loadScriptPacks(directory: fixture.library)
+    #expect(await runtime.snapshot().scriptPacks.isEmpty)
+  }
+
+  @Test func identicalInstalledCopyDeduplicatesWithoutRewritingUserContent() throws {
+    let fixture = try BundledScriptFixture()
+    defer { fixture.clean() }
+    let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledCourierDirectory)
+    let installed = try ScriptPackLibrary.install(pack, directory: fixture.library)
+    let manifest = installed.appendingPathComponent("manifest.toml")
+    let module = installed.appendingPathComponent("scripts/main.lua")
+    let beforeManifest = try Data(contentsOf: manifest)
+    let beforeModule = try Data(contentsOf: module)
+    let library = ScriptPackLibrary.defaultLibrary(directory: fixture.library)
+    #expect(library.errors.isEmpty && library.packs.map(\.digest) == [bundledCourierDigest])
+    #expect(try Data(contentsOf: manifest) == beforeManifest)
+    #expect(try Data(contentsOf: module) == beforeModule)
+    #expect(try FileManager.default.contentsOfDirectory(atPath: fixture.library.path).count == 1)
+  }
+
+  @Test(arguments: ["same-version", "different-version"])
+  func installedDistinctContentKeepsItsIdentityAndExternalOrdering(_ kind: String) async throws {
+    let fixture = try BundledScriptFixture()
+    defer { fixture.clean() }
+    let pack = try fixture.variant(
+      kind, version: kind == "different-version" ? "1.0.1" : "1.0.0", comment: kind)
+    let installed = try ScriptPackLibrary.install(pack, directory: fixture.library)
+    let library = ScriptPackLibrary.defaultLibrary(directory: fixture.library)
+    #expect(library.errors.isEmpty)
+    #expect(library.packs.map(\.digest) == [pack.digest, bundledCourierDigest])
+    #expect(library.packs[0].manifest.version == pack.manifest.version)
+    #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
+    let explicit = GameRuntime(game: fixture.game())
+    await explicit.loadScriptPacks(directory: fixture.library)
+    #expect(await explicit.snapshot().scriptPacks.map(\.digest) == [pack.digest])
+  }
+
+  @Test func malformedInstalledContentReportsItsErrorAlongsideBundledCourier() async throws {
+    let fixture = try BundledScriptFixture()
+    defer { fixture.clean() }
+    try FileManager.default.createDirectory(at: fixture.library, withIntermediateDirectories: true)
+    try Data("broken".utf8).write(to: fixture.library.appendingPathComponent("broken"))
+    let runtime = GameRuntime(game: fixture.game())
+    let before = await runtime.snapshot()
+    let errors = await runtime.loadDefaultScriptPacks(directory: fixture.library)
+    let after = await runtime.snapshot()
+    #expect(errors.count == 1 && errors[0].contains("broken"))
+    #expect(after.message.contains("broken") && after.commander == before.commander)
+    #expect(after.scriptPacks.map(\.digest) == [bundledCourierDigest])
+  }
+
+  @Test func defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial() async throws {
+    let fixture = try BundledScriptFixture()
+    defer { fixture.clean() }
+    let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+    let errors = await runtime.loadDefaultScriptPacks(directory: fixture.library)
+    #expect(errors.isEmpty)
+    let discovered = await runtime.snapshot()
+    #expect(discovered.scriptGallery.first?.status == .available)
+    #expect(discovered.commander.contracts.boards.isEmpty)
+    await runtime.key("contracts-open")
+    let contracts = await runtime.snapshot()
+    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 6)
+    #expect(
+      contracts.commander.scriptState.instances.isEmpty && contracts.commander.cargoTonnes == 0)
+    let board = try #require(contracts.commander.contracts.boards.values.first)
+    #expect(board.digest == bundledCourierDigest)
+    #expect(
+      board.offers.map(\.key)
+        == ["data-1", "package-1", "data-2", "package-2", "data-3", "package-3"])
+    await runtime.key("gallery-open")
+    let live = await runtime.snapshot()
+    let savedBytes = try Data(contentsOf: fixture.save)
+    try await runtime.startScriptGalleryTrial(packDigest: bundledCourierDigest, seed: 42)
+    let namespace = try #require(await runtime.gallerySaveDirectory())
+    defer { try? FileManager.default.removeItem(at: namespace) }
+    let trial = await runtime.snapshot()
+    #expect(trial.isMissionTrial && trial.screen == .contracts)
+    #expect(trial.contractBoard.rows.count == 6 && trial.contractBoard.action == .back)
+    #expect(trial.commander.scriptState.instances.isEmpty)
+    #expect(
+      FileManager.default.fileExists(
+        atPath: namespace.appendingPathComponent("commander.json").path))
+    #expect(try Data(contentsOf: fixture.save) == savedBytes)
+    try await runtime.returnFromScriptGalleryTrial()
+    #expect(await runtime.snapshot().commander == live.commander)
+    #expect(try Data(contentsOf: fixture.save) == savedBytes)
+  }
+
+  @Test func defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()
+    async throws
+  {
+    let fixture = try BundledScriptFixture()
+    defer { fixture.clean() }
+    let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
+    _ = await runtime.loadDefaultScriptPacks(directory: fixture.library)
+    let key = try await runtime.generateContractBoard(packDigest: bundledCourierDigest)
+    let generated = await runtime.snapshot()
+    let board = try #require(generated.commander.contracts.boards[key])
+    let offer = try #require(board.offers.first { $0.key == "package-1" })
+    let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
+    try #require(quote.allowed, quote.issues.joined(separator: "; "))
+    let id = try await runtime.confirmContract(quote)
+    let accepted = await runtime.snapshot()
+    let state = try #require(accepted.commander.scriptState.instances[id])
+    let custody = try #require(state.courier)
+    #expect(state.digest == bundledCourierDigest && accepted.commander.cargoTonnes == 1)
+    let savedBytes = try Data(contentsOf: fixture.save)
+    let changed = try fixture.variant("changed", comment: "Distinct installed same-version content")
+    _ = try ScriptPackLibrary.install(changed, directory: fixture.library)
+    let restored = GameRuntime(game: fixture.game())
+    _ = await restored.loadDefaultScriptPacks(directory: fixture.library)
+    try await restored.load(from: fixture.save)
+    let loaded = await restored.snapshot()
+    let retained = try #require(loaded.commander.scriptState.instances[id])
+    #expect(loaded.scriptPacks.map(\.digest) == [changed.digest, bundledCourierDigest])
+    #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
+    #expect(retained.digest == state.digest && retained.version == state.version)
+    #expect(retained.courier == custody && retained.contract == state.contract)
+    #expect(loaded.commander.contracts == accepted.commander.contracts)
+    #expect(loaded.commander.cargoTonnes == 1)
+    #expect(try Data(contentsOf: fixture.save) == savedBytes)
+  }
+}
