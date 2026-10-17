@@ -760,11 +760,20 @@ private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, t
   #expect(won.commander.kills == 2)
   #expect(won.commander.scriptState.instances[id]?.data["phase"] == .string("report"))
   #expect(won.commander.scriptState.instances[id]?.suspension == nil)
-  for _ in 0..<12 {
+  for _ in 0...won.bodies.count {
     await runtime.key("r")
     if await runtime.snapshot().autoTargetBody?.id == 0 { break }
   }
   var returned = await runtime.snapshot()
+  try #require(
+    returned.autoTargetBody?.id == 0 && returned.autoTargetBody?.hull == .station
+      && returned.dockingComputer,
+    Comment(
+      rawValue:
+        "Original station selection: target=\(String(describing: returned.autoPilot.targetID))"
+        + ",dockingComputer=\(returned.dockingComputer),screen=\(returned.screen)"
+        + ",legal=\(returned.commander.legal),energy=\(returned.energy),bodies=\(returned.bodies.count)"
+    ))
   for _ in 0..<5000 where !returned.docked { returned = await runtime.advance(delta: 0.02) }
   #expect(returned.docked && returned.dockedAtMainStation)
   await runtime.key("contacts-open")
