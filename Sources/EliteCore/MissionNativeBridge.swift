@@ -1122,8 +1122,8 @@ extension Game {
     -> NativeMissionImpactReceipt?
   {
     guard
-      let ready = try readyMissionGun(
-        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+      let ready = try Self.readyMissionGun(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID, bodies: bodies)
     else { return nil }
     switch ready.weapon.kind {
     case .laser:
@@ -1137,11 +1137,7 @@ extension Game {
 
   /// Keep projectile preparation temporaries off the synchronous laser call stack.
   private mutating func fireMissionNativePlasma(_ ready: MissionReadyGun) throws {
-    let source = try currentMissionNativeBinding(bodyID: ready.bodyID)
-    _ = try planScriptMissionImpactEvents(
-      target: nil, damage: 0, damageAdmitted: false, victimPart: nil,
-      victimComponentID: nil, componentDestroyed: false, hullDestroyed: false,
-      sourceWeaponInstanceID: ready.instance)
+    let source = try Self.preflightMissionNativePlasma(&self, ready: ready)
     let plan = try prepareMissionProjectileAdmission(
       source: source, weapon: ready.weapon, component: ready.component,
       muzzle: ready.muzzle, direction: ready.direction, intendedTarget: ready.intendedTarget)
@@ -1151,6 +1147,18 @@ extension Game {
     commitMissionGun(ready, gun: ready.gun)
   }
 
+  /// End binding and event-preflight copies before the deeper projectile admission phase.
+  private static func preflightMissionNativePlasma(_ game: inout Game, ready: MissionReadyGun)
+    throws -> MissionActorBinding
+  {
+    let source = try game.currentMissionNativeBinding(bodyID: ready.bodyID)
+    _ = try game.planScriptMissionImpactEvents(
+      target: nil, damage: 0, damageAdmitted: false, victimPart: nil,
+      victimComponentID: nil, componentDestroyed: false, hullDestroyed: false,
+      sourceWeaponInstanceID: ready.instance)
+    return source
+  }
+
   /// The frame loop owns cooling and aim. This synchronous boundary owns final resource
   /// preflight, actual native effect, selected gun debit and the one firing event.
   @discardableResult
@@ -1158,8 +1166,8 @@ extension Game {
     -> NativeMissionImpactReceipt?
   {
     guard
-      let ready = try readyMissionGun(
-        bodyID: bodyID, weaponID: weaponID, componentID: componentID)
+      let ready = try Self.readyMissionGun(
+        bodyID: bodyID, weaponID: weaponID, componentID: componentID, bodies: bodies)
     else { return nil }
     guard ready.weapon.kind == .laser else { throw MissionNativeBridgeError.unsupportedWeapon }
     let query = try queryMissionNativeLaser(
@@ -1189,9 +1197,9 @@ extension Game {
 
   /// Cheap eligibility comes before actual retained factories and the physical collision query.
   /// Identifiers select current authored facts; callers cannot supply damage or gun state.
-  private func readyMissionGun(bodyID: Int, weaponID: String, componentID: UUID?) throws
-    -> MissionReadyGun?
-  {
+  private static func readyMissionGun(
+    bodyID: Int, weaponID: String, componentID: UUID?, bodies: [SpaceBody]
+  ) throws -> MissionReadyGun? {
     guard let bodyIndex = bodies.firstIndex(where: { $0.id == bodyID }) else { return nil }
     let body = bodies[bodyIndex]
     guard body.energy > 0, let npc = body.scriptNPC, let owner = body.missionActorID,

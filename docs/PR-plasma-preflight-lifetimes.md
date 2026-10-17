@@ -1,0 +1,7 @@
+# refactor(combat): narrow plasma preflight lifetimes
+
+Both weapon entry points now give the unchanged readiness body only the actual body array it reads. Plasma binding and event-capacity preflight execute in a private helper over the same inout Game and return the same binding before the original projectile preparation, commit and selected-gun debit. No operation or guard is removed or reordered; there is no await, boxing, stack-size flag, test skip or serialization change. See [the observed path](ISSUE-plasma-preflight-lifetimes.md).
+
+Reversing the two readiness call/declaration changes and inlining the preflight helper reconstructs the entire original `MissionNativeBridge.swift` byte-for-byte. Proof is retained at `/tmp/elite-debug-crash-199/plasma-phase-inline-proof.json`. The independent old-binary measurement is `/tmp/elite-g2-stack-199-offline-audit/measurement.json`, SHA256 `9a92b2e3f01e28cca538fdad26757b888a915817eca51600dee1b804616b94c0`. Observed fixed/saved allocations are 272/32 bytes for the weapon entry and 928/48 for plasma, in addition to their one/three named Game-sized reservations. Exact runtime Game/Commander byte sizes were not captured; these counts do not establish total stack size or new frame behavior.
+
+Strict Swift source lint, Markdown lint and whitespace checks pass. The original profiled-patrol method will be retried without assertion changes; runtime crash resolution, final combined gate, regenerated renderer fingerprints and release acceptance remain pending.
