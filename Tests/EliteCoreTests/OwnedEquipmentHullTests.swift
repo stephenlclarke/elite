@@ -123,14 +123,15 @@ private func verifyOwnedHullPortableProperty(before: Commander, after: Commander
 }
 
 private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
-  let files = try #require(
-    FileManager.default.enumerator(at: directory, includingPropertiesForKeys: [.isRegularFileKey]))
+  let files = try #require(FileManager.default.enumerator(atPath: directory.path))
   var result: [String: Data] = [:]
-  for case let file as URL in files {
+  for case let relative as String in files {
+    let file = directory.appendingPathComponent(relative)
     guard try file.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
       continue
     }
-    result[String(file.path.dropFirst(directory.path.count + 1))] = try Data(contentsOf: file)
+    try #require(!relative.isEmpty && result[relative] == nil)
+    result[relative] = try Data(contentsOf: file)
   }
   return result
 }
