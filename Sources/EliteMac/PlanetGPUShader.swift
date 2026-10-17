@@ -3,6 +3,13 @@ import EliteCore
 import Foundation
 import Metal
 
+enum PlanetGPUUniform: Int, CaseIterable, Sendable {
+  case diameter, angle, oceanR, oceanG, oceanB, landR, landG, landB, ice, seaLevel, highlandR,
+    highlandG, highlandB, vegetationR, vegetationG, vegetationB, cloudR, cloudG, cloudB, cloudLow,
+    cloudHigh, cloudOpacity, vegetationStrength, highlandStrength, atmosphereR, atmosphereG,
+    atmosphereB, atmosphereStrength, surfaceHaze, rimWidth, rimOpacity
+}
+
 /// Metal devices and compiled pipeline states support concurrent use. These two
 /// immutable references cross actors; command queues and mutable buffers do not.
 struct CompiledPlanetPipeline: @unchecked Sendable {
@@ -63,12 +70,7 @@ final class PlanetGPUShader {
     guard let output, let elevation, let clouds,
       let command = queue.makeCommandBuffer(), let encoder = command.makeComputeCommandEncoder()
     else { return nil }
-    let uniforms: [Float] = [
-      Float(diameter), Float(angle),
-      Float(palette.ocean.x), Float(palette.ocean.y), Float(palette.ocean.z),
-      Float(palette.land.x), Float(palette.land.y), Float(palette.land.z),
-      Float(palette.ice), Float(palette.seaLevel),
-    ]
+    let uniforms = Self.uniformValues(palette: palette, angle: angle, diameter: diameter)
     encoder.setComputePipelineState(compiled.pipeline)
     encoder.setBuffer(elevation, offset: 0, index: 0)
     encoder.setBuffer(clouds, offset: 0, index: 1)
@@ -91,6 +93,43 @@ final class PlanetGPUShader {
       bytesPerRow: diameter * 4, space: colourSpace,
       bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
       provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+  }
+
+  /// Named slots are shared with the compiled shader source below.
+  static func uniformValues(palette: PlanetPalette, angle: Double, diameter: Int) -> [Float] {
+    var values = [Float](repeating: 0, count: PlanetGPUUniform.allCases.count)
+    values[PlanetGPUUniform.diameter.rawValue] = Float(diameter)
+    values[PlanetGPUUniform.angle.rawValue] = Float(angle)
+    values[PlanetGPUUniform.oceanR.rawValue] = Float(palette.ocean.x)
+    values[PlanetGPUUniform.oceanG.rawValue] = Float(palette.ocean.y)
+    values[PlanetGPUUniform.oceanB.rawValue] = Float(palette.ocean.z)
+    values[PlanetGPUUniform.landR.rawValue] = Float(palette.land.x)
+    values[PlanetGPUUniform.landG.rawValue] = Float(palette.land.y)
+    values[PlanetGPUUniform.landB.rawValue] = Float(palette.land.z)
+    values[PlanetGPUUniform.ice.rawValue] = Float(palette.ice)
+    values[PlanetGPUUniform.seaLevel.rawValue] = Float(palette.seaLevel)
+    values[PlanetGPUUniform.highlandR.rawValue] = Float(palette.profile.highland.x)
+    values[PlanetGPUUniform.highlandG.rawValue] = Float(palette.profile.highland.y)
+    values[PlanetGPUUniform.highlandB.rawValue] = Float(palette.profile.highland.z)
+    values[PlanetGPUUniform.vegetationR.rawValue] = Float(palette.profile.vegetation.x)
+    values[PlanetGPUUniform.vegetationG.rawValue] = Float(palette.profile.vegetation.y)
+    values[PlanetGPUUniform.vegetationB.rawValue] = Float(palette.profile.vegetation.z)
+    values[PlanetGPUUniform.cloudR.rawValue] = Float(palette.profile.cloudColour.x)
+    values[PlanetGPUUniform.cloudG.rawValue] = Float(palette.profile.cloudColour.y)
+    values[PlanetGPUUniform.cloudB.rawValue] = Float(palette.profile.cloudColour.z)
+    values[PlanetGPUUniform.cloudLow.rawValue] = Float(palette.profile.cloudLow)
+    values[PlanetGPUUniform.cloudHigh.rawValue] = Float(palette.profile.cloudHigh)
+    values[PlanetGPUUniform.cloudOpacity.rawValue] = Float(palette.profile.cloudOpacity)
+    values[PlanetGPUUniform.vegetationStrength.rawValue] = Float(palette.profile.vegetationStrength)
+    values[PlanetGPUUniform.highlandStrength.rawValue] = Float(palette.profile.highlandStrength)
+    values[PlanetGPUUniform.atmosphereR.rawValue] = Float(palette.profile.atmosphereColour.x)
+    values[PlanetGPUUniform.atmosphereG.rawValue] = Float(palette.profile.atmosphereColour.y)
+    values[PlanetGPUUniform.atmosphereB.rawValue] = Float(palette.profile.atmosphereColour.z)
+    values[PlanetGPUUniform.atmosphereStrength.rawValue] = Float(palette.profile.atmosphereStrength)
+    values[PlanetGPUUniform.surfaceHaze.rawValue] = Float(palette.profile.surfaceHaze)
+    values[PlanetGPUUniform.rimWidth.rawValue] = Float(palette.profile.rimWidth)
+    values[PlanetGPUUniform.rimOpacity.rawValue] = Float(palette.profile.rimOpacity)
+    return values
   }
 
   private func prepareTerrain(identity: PlanetIdentity, terrain: PlanetTerrain) -> Bool {
@@ -146,37 +185,41 @@ final class PlanetGPUShader {
                             device uchar4* output [[buffer(2)]],
                             constant float* u [[buffer(3)]],
                             uint2 gid [[thread_position_in_grid]]) {
-      uint diameter = uint(u[0]);
+      uint diameter = uint(u[\(PlanetGPUUniform.diameter.rawValue)]);
       if (gid.x >= diameter || gid.y >= diameter) return;
       float nx = (float(gid.x) + 0.5f - float(diameter) / 2.0f) / (float(diameter) * 0.47f);
       float ny = (float(diameter) / 2.0f - float(gid.y) - 0.5f) / (float(diameter) * 0.47f);
       float radius = nx * nx + ny * ny;
-      float haze = max(0.0f, 1.0f - (sqrt(radius) - 1.0f) / 0.035f);
-      float alpha = radius < 1.0f ? 1.0f : haze * haze * 0.25f;
+      float haze = max(0.0f, 1.0f - (sqrt(radius) - 1.0f) / u[\(PlanetGPUUniform.rimWidth.rawValue)]);
+      float alpha = radius < 1.0f ? 1.0f : haze * haze * u[\(PlanetGPUUniform.rimOpacity.rawValue)];
       float3 colour;
       if (radius >= 1.0f) {
-        colour = float3(0.12f, 0.35f, 0.66f) * alpha;
+        colour = float3(u[\(PlanetGPUUniform.atmosphereR.rawValue)], u[\(PlanetGPUUniform.atmosphereG.rawValue)], u[\(PlanetGPUUniform.atmosphereB.rawValue)]) * alpha;
       } else {
-        float angle = u[1];
-        float3 ocean = float3(u[2], u[3], u[4]);
-        float3 landColour = float3(u[5], u[6], u[7]);
+        float angle = u[\(PlanetGPUUniform.angle.rawValue)];
+        float3 ocean = float3(u[\(PlanetGPUUniform.oceanR.rawValue)], u[\(PlanetGPUUniform.oceanG.rawValue)], u[\(PlanetGPUUniform.oceanB.rawValue)]);
+        float3 landColour = float3(u[\(PlanetGPUUniform.landR.rawValue)], u[\(PlanetGPUUniform.landG.rawValue)], u[\(PlanetGPUUniform.landB.rawValue)]);
         float nz = sqrt(1.0f - radius);
         float latitude = asin(ny);
         float longitude = atan2(nx, nz) + angle;
         float height = terrainSample(elevation, longitude, latitude);
         float cloud = terrainSample(clouds, longitude + angle * 0.08f, latitude);
-        float coast = smoothValue(u[9] - 0.018f, u[9] + 0.018f, height);
-        float highland = smoothValue(u[9] + 0.04f, 0.8f, height);
-        float3 land = blendValue(landColour, float3(0.56f, 0.46f, 0.30f), highland * 0.65f);
+        float coast = smoothValue(u[\(PlanetGPUUniform.seaLevel.rawValue)] - 0.018f, u[\(PlanetGPUUniform.seaLevel.rawValue)] + 0.018f, height);
+        float highland = smoothValue(u[\(PlanetGPUUniform.seaLevel.rawValue)] + 0.04f, 0.8f, height);
+        float3 land = blendValue(landColour, float3(u[\(PlanetGPUUniform.highlandR.rawValue)], u[\(PlanetGPUUniform.highlandG.rawValue)], u[\(PlanetGPUUniform.highlandB.rawValue)]), highland * u[\(PlanetGPUUniform.highlandStrength.rawValue)]);
+        float vegetation = smoothValue(u[\(PlanetGPUUniform.seaLevel.rawValue)] + 0.015f, u[\(PlanetGPUUniform.seaLevel.rawValue)] + 0.13f, height)
+          * (1.0f - highland) * u[\(PlanetGPUUniform.vegetationStrength.rawValue)];
+        land = blendValue(land, float3(u[\(PlanetGPUUniform.vegetationR.rawValue)], u[\(PlanetGPUUniform.vegetationG.rawValue)], u[\(PlanetGPUUniform.vegetationB.rawValue)]), vegetation);
         float3 surface = blendValue(ocean, land, coast);
-        float ice = smoothValue(u[8] - 0.06f, u[8] + 0.02f, abs(ny));
+        float ice = smoothValue(u[\(PlanetGPUUniform.ice.rawValue)] - 0.06f, u[\(PlanetGPUUniform.ice.rawValue)] + 0.02f, abs(ny));
         surface = blendValue(surface, float3(0.81f, 0.89f, 0.93f), ice);
-        float cloudOpacity = smoothValue(0.50f, 0.67f, cloud) * 0.80f;
-        surface = blendValue(surface, float3(0.92f, 0.95f, 1.0f), cloudOpacity);
+        float cloudOpacity = smoothValue(u[\(PlanetGPUUniform.cloudLow.rawValue)], u[\(PlanetGPUUniform.cloudHigh.rawValue)], cloud) * u[\(PlanetGPUUniform.cloudOpacity.rawValue)];
+        surface = blendValue(surface, float3(u[\(PlanetGPUUniform.cloudR.rawValue)], u[\(PlanetGPUUniform.cloudG.rawValue)], u[\(PlanetGPUUniform.cloudB.rawValue)]), cloudOpacity);
+        surface = blendValue(surface, float3(u[\(PlanetGPUUniform.atmosphereR.rawValue)], u[\(PlanetGPUUniform.atmosphereG.rawValue)], u[\(PlanetGPUUniform.atmosphereB.rawValue)]), u[\(PlanetGPUUniform.surfaceHaze.rawValue)]);
         float sunlight = -nx * 0.52f + ny * 0.35f + nz * 0.78f;
         float illumination = 0.035f + 0.965f * smoothValue(-0.10f, 0.80f, sunlight);
-        float atmosphere = pow(1.0f - nz, 3.0f) * smoothValue(-0.12f, 0.50f, sunlight) * 0.40f;
-        colour = surface * illumination + float3(0.20f, 0.49f, 0.85f) * atmosphere;
+        float atmosphere = pow(1.0f - nz, 3.0f) * smoothValue(-0.12f, 0.50f, sunlight) * u[\(PlanetGPUUniform.atmosphereStrength.rawValue)];
+        colour = surface * illumination + float3(u[\(PlanetGPUUniform.atmosphereR.rawValue)], u[\(PlanetGPUUniform.atmosphereG.rawValue)], u[\(PlanetGPUUniform.atmosphereB.rawValue)]) * atmosphere;
       }
       output[gid.y * diameter + gid.x] = uchar4(clamp(float4(colour, alpha) * 255.0f, 0.0f, 255.0f));
     }

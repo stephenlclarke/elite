@@ -27,7 +27,7 @@ struct PlanetGPUShaderTests {
     let game = Game(executive: false)
     let identity = PlanetIdentity(galaxy: 0, system: game.currentSystem)
     let terrain = PlanetTerrain(identity: identity)
-    let palette = PlanetPalette(identity: identity)
+    let palette = PlanetPalette(identity: identity, economy: game.currentSystem.economy)
     for diameter in [0, 31, 769, Int.max] {
       #expect(
         shader.image(
@@ -52,18 +52,16 @@ struct PlanetGPUShaderTests {
   {
     let shader = try await Self.makeShader()
     let systems = Universe.galaxy(number: 0)
-    var representatives: [Int: StarSystem] = [0: systems[7]]
-    for system in systems {
-      let identity = PlanetIdentity(galaxy: 0, system: system)
-      let variant = system.id == 7 ? 0 : Int(identity.key % 4)
-      if representatives[variant] == nil { representatives[variant] = system }
+    var representatives: [Int: StarSystem] = [:]
+    for system in systems where representatives[system.economy] == nil {
+      representatives[system.economy] = system
     }
-    #expect(representatives.count == 4)
-    for variant in representatives.keys.sorted() {
-      let system = try #require(representatives[variant])
+    #expect(representatives.count == 8)
+    for economy in representatives.keys.sorted() {
+      let system = try #require(representatives[economy])
       let identity = PlanetIdentity(galaxy: 0, system: system)
       let terrain = PlanetTerrain(identity: identity)
-      let palette = PlanetPalette(identity: identity)
+      let palette = PlanetPalette(identity: identity, economy: system.economy)
       for diameter in [128, 512, 768] {
         for phase in [0, 37, 1046] {
           let preview = PlanetPreview(
@@ -90,7 +88,8 @@ struct PlanetGPUShaderTests {
           }
           #expect(maximumError <= 3)
           #expect(Double(totalError) / Double(lhs.count) < 0.1)
-          #expect(maximumAlphaError == 0)
+          // Economy-specific rim factors use non-binary fractions; allow one quantization byte.
+          #expect(maximumAlphaError <= 1)
           for pixel in [0, diameter - 1, diameter * (diameter - 1), diameter * diameter - 1] {
             #expect((0..<4).allSatisfy { rhs[pixel * 4 + $0] == 0 })
           }
@@ -107,7 +106,7 @@ struct PlanetGPUShaderTests {
     let systems = Universe.galaxy(number: 0)
     let firstIdentity = PlanetIdentity(galaxy: 0, system: systems[7])
     let firstTerrain = PlanetTerrain(identity: firstIdentity)
-    let firstPalette = PlanetPalette(identity: firstIdentity)
+    let firstPalette = PlanetPalette(identity: firstIdentity, economy: systems[7].economy)
     let first = try #require(
       shader.image(
         identity: firstIdentity, terrain: firstTerrain, palette: firstPalette, angle: 0,
@@ -117,7 +116,8 @@ struct PlanetGPUShaderTests {
     let second = try #require(
       shader.image(
         identity: secondIdentity, terrain: PlanetTerrain(identity: secondIdentity),
-        palette: PlanetPalette(identity: secondIdentity), angle: 0.222, diameter: 512))
+        palette: PlanetPalette(identity: secondIdentity, economy: systems[0].economy), angle: 0.222,
+        diameter: 512))
     #expect(second.width == 512 && second.height == 512)
     #expect(try planetShaderBytes(first) == original)
     let repeated = try #require(

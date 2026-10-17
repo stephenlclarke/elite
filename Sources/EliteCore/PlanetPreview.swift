@@ -20,41 +20,34 @@ public struct PlanetIdentity: Sendable, Equatable, Hashable {
 
 public struct PlanetPreview: Sendable, Equatable {
   public let identity: PlanetIdentity
+  public let appearance: PlanetPalette
   public let bounds: CanvasRect
   public let angle: Double
   public init(galaxy: Int, system: StarSystem, bounds: CanvasRect, time: Double) {
     identity = .init(galaxy: galaxy, system: system)
+    appearance = PlanetPalette(identity: identity, economy: system.economy)
     self.bounds = bounds
     angle = time * 0.025
   }
 }
 
-public struct PlanetPalette: Sendable {
+/// Economy selects art direction; identity supplies small, stable local variation.
+public struct PlanetPalette: Sendable, Equatable {
+  public let economy: Int
+  public let profile: PlanetAppearanceProfile
   public let ocean: Vector3
   public let land: Vector3
   public let ice: Double
   public let seaLevel: Double
-  public init(identity: PlanetIdentity) {
-    let variant = identity.galaxy == 0 && identity.system == 7 ? 0 : Int(identity.key % 4)
-    switch variant {
-    case 1:
-      ocean = .init(0.12, 0.23, 0.29)
-      land = .init(0.65, 0.39, 0.19)
-      ice = 0.94
-    case 2:
-      ocean = .init(0.10, 0.25, 0.47)
-      land = .init(0.44, 0.53, 0.51)
-      ice = 0.72
-    case 3:
-      ocean = .init(0.15, 0.16, 0.36)
-      land = .init(0.48, 0.40, 0.30)
-      ice = 0.88
-    default:
-      ocean = .init(0.025, 0.23, 0.51)
-      land = .init(0.23, 0.48, 0.20)
-      ice = 0.86
-    }
-    seaLevel = 0.43 + Double((identity.key >> 8) & 255) / 255 * 0.12
+
+  public init(identity: PlanetIdentity, economy: Int = 5) {
+    self.economy = max(0, min(7, economy))
+    profile = PlanetAppearanceProfile.forEconomy(self.economy)
+    let brightness = 0.95 + Double((identity.key >> 16) & 255) / 255 * 0.10
+    ocean = profile.ocean * brightness
+    land = profile.land * brightness
+    ice = profile.ice + (Double((identity.key >> 24) & 255) / 255 - 0.5) * 0.03
+    seaLevel = profile.seaLevel + (Double((identity.key >> 8) & 255) / 255 - 0.5) * 0.035
   }
 }
 
