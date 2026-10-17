@@ -353,14 +353,17 @@ extension Game {
       }
       if resource.destroyed { return }
     } else {
-      guard commander.scriptState.stationResources.count < 256 else { return }
+      guard commander.scriptState.stationResources.count < NativeMainStationIdentity.maximumCount
+      else { return }
       var resource = ScriptStationResource(
         identity: identity.resource, galaxy: commander.galaxy, system: commander.system)
       resource.energy = station.energy
       commander.scriptState.stationResources[key] = resource
     }
     if !world.mainStations.contains(identity) {
-      guard world.mainStations.count < 256 else { throw NativeStationRuntimeError.capacity }
+      guard world.mainStations.count < NativeMainStationIdentity.maximumCount else {
+        throw NativeStationRuntimeError.capacity
+      }
       world.mainStations.append(identity)
     }
     let observation = NativeMainStationObservation(
@@ -369,7 +372,9 @@ extension Game {
     if let index = world.mainObservations.firstIndex(where: { $0.station == identity }) {
       world.mainObservations[index] = observation
     } else {
-      guard world.mainObservations.count < 256 else { throw NativeStationRuntimeError.capacity }
+      guard world.mainObservations.count < NativeMainStationIdentity.maximumCount else {
+        throw NativeStationRuntimeError.capacity
+      }
       world.mainObservations.append(observation)
     }
     guard world.valid else { throw NativeStationRuntimeError.invalidState }

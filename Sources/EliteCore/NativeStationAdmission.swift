@@ -159,6 +159,8 @@ struct NativeStationSavedPose: Equatable, Codable, Sendable {
 
 /// Original main stations have a distinct namespace; none is one of the 372 RRS records.
 struct NativeMainStationIdentity: Equatable, Hashable, Codable, Sendable {
+  /// Original main-station histories span all galaxies, including each galaxy's PLUGH system.
+  static let maximumCount = 8 * (Plugh.systemID + 1)
   let world: UUID
   let system: SystemIdentity
   let resource: UUID
@@ -239,10 +241,11 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
     let originals = Set(mainStations)
     guard adapterRevision == NativeStationSource.adapterRevision,
       geometryRevision == NativeStationGeometry.adapterRevision, clockOrigin == 0,
-      mainStations.count <= 256, originals.count == mainStations.count,
+      mainStations.count <= NativeMainStationIdentity.maximumCount,
+      originals.count == mainStations.count,
       Set(mainStations.map(\.key)).count == mainStations.count,
       mainStations.allSatisfy({ $0.valid && $0.world == ledger.world }),
-      mainObservations.count <= 256,
+      mainObservations.count <= NativeMainStationIdentity.maximumCount,
       Set(mainObservations.map(\.station)).count == mainObservations.count,
       mainObservations.allSatisfy({ $0.valid && originals.contains($0.station) }),
       nextMainDockSequence > 0, nextMainDockSequence < UInt64(Int64.max),
@@ -289,12 +292,14 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
       NativeMainStationDockReceipt.self, forKey: .currentMainDock)
     if values.contains(.mainStations) {
       var mainEntries = try values.nestedUnkeyedContainer(forKey: .mainStations)
-      guard mainEntries.count.map({ $0 <= 256 }) ?? true else {
+      guard mainEntries.count.map({ $0 <= NativeMainStationIdentity.maximumCount }) ?? true else {
         throw NativeStationRuntimeError.invalidState
       }
       var originals: [NativeMainStationIdentity] = []
       while !mainEntries.isAtEnd {
-        guard originals.count < 256 else { throw NativeStationRuntimeError.invalidState }
+        guard originals.count < NativeMainStationIdentity.maximumCount else {
+          throw NativeStationRuntimeError.invalidState
+        }
         originals.append(try mainEntries.decode(NativeMainStationIdentity.self))
       }
       mainStations = originals
@@ -303,12 +308,14 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
     }
     if values.contains(.mainObservations) {
       var observations = try values.nestedUnkeyedContainer(forKey: .mainObservations)
-      guard observations.count.map({ $0 <= 256 }) ?? true else {
+      guard observations.count.map({ $0 <= NativeMainStationIdentity.maximumCount }) ?? true else {
         throw NativeStationRuntimeError.invalidState
       }
       var originals: [NativeMainStationObservation] = []
       while !observations.isAtEnd {
-        guard originals.count < 256 else { throw NativeStationRuntimeError.invalidState }
+        guard originals.count < NativeMainStationIdentity.maximumCount else {
+          throw NativeStationRuntimeError.invalidState
+        }
         originals.append(try observations.decode(NativeMainStationObservation.self))
       }
       mainObservations = originals
