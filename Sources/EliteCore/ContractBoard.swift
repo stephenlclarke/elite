@@ -105,6 +105,10 @@ extension Game {
     candidate.contractBoard.quote = nil
     candidate.contractBoard.rrsQuote = nil
     candidate.contractBoard.presentationGeneration = UUID()
+    publishContractBoard(&candidate)
+  }
+  // Reserve the publication copy only after row quotes finish their acceptance simulations.
+  private mutating func publishContractBoard(_ candidate: inout Game) {
     self = candidate
   }
   mutating func refreshContractRows(

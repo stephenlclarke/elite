@@ -162,6 +162,12 @@ extension Game {
     do { _ = try candidate.acceptContract(board: key, offer: id) } catch {
       issues.append(error.localizedDescription)
     }
+    return completedContractAcceptanceQuote(board: key, offer: id, issues: issues)
+  }
+  // Quote resource snapshots belong after the isolated acceptance simulation has returned.
+  private func completedContractAcceptanceQuote(
+    board key: String, offer id: UUID, issues: [String]
+  ) -> ContractAcceptanceQuote {
     var quote = ContractAcceptanceQuote(
       board: key, offer: id, issues: issues, resources: commander.contractQuoteResources,
       epoch: ecmControl.epoch)
