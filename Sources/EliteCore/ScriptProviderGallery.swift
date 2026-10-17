@@ -8,23 +8,25 @@ extension ScriptPackLibrary {
       }
       return
     }
+    let restrictedCounts: [Int?] = [
+      manifest.encounters?.count, manifest.npcs?.count, manifest.equipment?.count,
+      manifest.children?.count, manifest.worldJobs?.count, manifest.loans?.count,
+      manifest.collections?.count, manifest.books?.count,
+      manifest.mission.requiredDestructionEncounters?.count,
+      manifest.mission.requiredPassengerParties?.count,
+      manifest.mission.requiredEquipmentReturns?.count,
+      manifest.mission.requiredChoiceGroups?.count, manifest.mission.requiredBooks?.count,
+      manifest.mission.requiredCollections?.count, manifest.answerRequirements?.count,
+      manifest.receiptRequirements?.count, manifest.passengerParties?.count,
+    ]
+    let excludesOtherMissionFeatures: Bool = restrictedCounts.allSatisfy { ($0 ?? 0) == 0 }
     guard definition.valid, manifest.capabilities.contains("ordinary-provider-dispatch-v1"),
       manifest.capabilities.contains("story-v2"),
       manifest.capabilities.contains("durable-commands-v2"),
       manifest.capabilities.contains("cargo-v2"), manifest.mission.milestones.count == 1,
       manifest.board == nil, manifest.courier == nil, manifest.pledge == nil,
       manifest.trial == nil, manifest.mission.parentOnly != true,
-      [
-        manifest.encounters?.count, manifest.npcs?.count, manifest.equipment?.count,
-        manifest.children?.count, manifest.worldJobs?.count, manifest.loans?.count,
-        manifest.collections?.count, manifest.books?.count,
-        manifest.mission.requiredDestructionEncounters?.count,
-        manifest.mission.requiredPassengerParties?.count,
-        manifest.mission.requiredEquipmentReturns?.count,
-        manifest.mission.requiredChoiceGroups?.count, manifest.mission.requiredBooks?.count,
-        manifest.mission.requiredCollections?.count, manifest.answerRequirements?.count,
-        manifest.receiptRequirements?.count, manifest.passengerParties?.count,
-      ].allSatisfy({ ($0 ?? 0) == 0 }),
+      excludesOtherMissionFeatures,
       manifest.handlers.allSatisfy({
         ["mission.accepted", "provider.transition", "provider.closed"].contains($0.event)
       })
