@@ -65,7 +65,7 @@ extension Display {
     frame.canvas = .init(x: 0, y: 0, width: layout.width, height: layout.height)
     frame.flightClip = layout.flightClip
     draw(body, game: front, into: &frame, projection: layout.projection)
-    return !frame.shipLines.isEmpty || !frame.shipPanels.isEmpty
+    return !frame.shipLines.isEmpty || frame.hasShipSurfaces
   }
 }
 
