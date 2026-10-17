@@ -185,7 +185,10 @@ struct GameplayOrdnanceRuntimeTests {
     var game = missileRuntimeGame(distance: 4000)
     game.weaponsTargetID = nil
     game.bodies[0].missiles = 1
-    game.commander.installTargetingComputer(.military)
+    try game.commander.grantEquipment(
+      TargetingTier.military.equipmentName, at: .targetingCore,
+      provenance: .grant("ordnance targeting fixture"))
+    #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
     game.commander.equipment.insert("E.C.M. System")
     let owner = try #require(game.bodies[0].physical?.identity)
     let launched = game.launchGameplayNPCMissile(bodyID: 70)
@@ -220,7 +223,10 @@ struct GameplayOrdnanceRuntimeTests {
     var game = missileRuntimeGame(distance: 4000)
     game.weaponsTargetID = nil
     game.bodies[0].missiles = 1
-    game.commander.installTargetingComputer(.military)
+    try game.commander.grantEquipment(
+      TargetingTier.military.equipmentName, at: .targetingCore,
+      provenance: .grant("ordnance targeting fixture"))
+    #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
     game.commander.equipment.insert("E.C.M. System")
     let launched = game.launchGameplayNPCMissile(bodyID: 70)
     #expect(launched)

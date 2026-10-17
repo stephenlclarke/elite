@@ -62,10 +62,11 @@ struct CR05ECMElapsedTimeTests {
   @Test func actualMilitaryRetaliationFiresOnceAcrossPhysicalTickPartitions() {
     for step in [1.0 / 60, 1.0 / 30, 0.1] {
       var game = Game(executive: false)
+      game.commander.installTargetingComputer(.military)
       game.launch()
       game.speed = 0
       game.celestials = []
-      game.commander.installTargetingComputer(.military)
+      #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
       game.commander.equipment.insert("E.C.M. System")
       var source = SpaceBody(id: 1, hull: .constrictor, position: .init(20, 0, 1400))
       source.ecmEnabled = false
