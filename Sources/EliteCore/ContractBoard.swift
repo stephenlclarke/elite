@@ -11,7 +11,10 @@ public struct ContractBoardRow: Sendable {
   public let title: String
   public let reason: String?
   var rrs: RRSCourierRow? = nil
-  public var key: String { rrs?.key ?? (board + "/" + (offer?.id.uuidString ?? "unavailable")) }
+  var finance: ScriptFinanceRow? = nil
+  public var key: String {
+    finance?.key ?? rrs?.key ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
+  }
 }
 public struct ContractScreenSave: Codable, Sendable {
   public let selection: String?
@@ -26,6 +29,7 @@ public struct ContractScreenSave: Codable, Sendable {
 private enum ContractBoardReview: Sendable {
   case contract(ContractAcceptanceQuote)
   case rrs(RRSCourierQuote)
+  case finance(ScriptFinanceQuote)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -62,6 +66,19 @@ public struct ContractBoardUI: Sendable {
     }
   }
   var presentationGeneration = UUID()
+  var financeQuote: ScriptFinanceQuote? {
+    get {
+      guard case .finance(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .finance(newValue)
+      } else if case .finance(_)? = review {
+        review = nil
+      }
+    }
+  }
   var reviewToken = UUID()
   var previous: Screen = .status
   var restoredSelection: String?
@@ -104,6 +121,7 @@ extension Game {
     candidate.contractBoard.detail = false
     candidate.contractBoard.quote = nil
     candidate.contractBoard.rrsQuote = nil
+    candidate.contractBoard.financeQuote = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
   }
@@ -115,7 +133,7 @@ extension Game {
     failures: [String: String] = [:], restoring save: ContractScreenSave? = nil
   ) {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
-    var rows = rrsCourierRows
+    var rows = rrsCourierRows + financeRows
     for pack in scriptPacks.sorted(by: {
       ($0.manifest.id, $0.manifest.version, $0.digest) < (
         $1.manifest.id, $1.manifest.version, $1.digest
@@ -146,11 +164,18 @@ extension Game {
       contractBoard.scroll = save.scroll
       contractBoard.previous = save.previous
       refreshSelectedContractQuote()
-      if contractBoard.quote?.pledge != nil { contractBoard.action = .back }
+      if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil {
+        contractBoard.action = .back
+      }
     }
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let row = contractBoard.selected?.finance {
+      contractBoard.financeQuote = financeQuote(for: row)
+      return
+    }
+    contractBoard.financeQuote = nil
     contractBoard.rrsQuote = contractBoard.selected?.rrs.map { rrsCourierQuote(for: $0) }
     if let row = contractBoard.selected, let offer = row.offer {
       contractBoard.quote = contractAcceptanceQuote(board: row.board, offer: offer.id)
@@ -166,6 +191,7 @@ extension Game {
         contractBoard.detail = false
         contractBoard.quote = nil
         contractBoard.rrsQuote = nil
+        contractBoard.financeQuote = nil
       } else {
         screen = contractBoard.previous
       }
@@ -201,9 +227,21 @@ extension Game {
       contractBoard.detail = false
       contractBoard.quote = nil
       contractBoard.rrsQuote = nil
+      contractBoard.financeQuote = nil
       return
     }
     do {
+      if let row = contractBoard.selected?.finance {
+        guard let quote = contractBoard.financeQuote, quote.row == row else {
+          throw MissionPackError("Review the financial terms before confirming.")
+        }
+        try confirmFinance(quote, declining: contractBoard.action == .decline)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.financeQuote = nil
+        notify("FINANCIAL DECISION RECORDED")
+        return
+      }
       if let row = contractBoard.selected?.rrs {
         guard let quote = contractBoard.rrsQuote, quote.row == row else {
           throw MissionPackError("Review the RRS briefing before confirming.")
@@ -305,6 +343,7 @@ extension Game {
 extension GameRuntime {
   public func contractClick(x: Double, y: Double, expectedOffer: UUID?, detail: Bool, epoch: UUID) {
     guard game.screen == .contracts, game.ecmControl.epoch == epoch,
+      game.contractBoard.selected?.finance == nil,
       game.contractBoard.detail == detail, game.contractBoard.quote?.offer == expectedOffer
     else { return }
     nativeCommand { $0.contractClick(x: x, y: y) }

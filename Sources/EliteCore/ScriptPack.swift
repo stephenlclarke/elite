@@ -58,6 +58,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let answerRequirements: [ScriptAnswerRequirement]?
   public let books: [ScriptBookDefinition]?
   public let collections: [ScriptCollectionDefinition]?
+  public let loans: [ScriptFinanceDefinition]?
   public let children: [ScriptChildDefinition]?
   public var stateID: String { id + "/" + mission.id }
 }
@@ -98,6 +99,7 @@ public enum ScriptCapabilities {
     "completion-receipts-v2", "exclusive-choices-v2", "dialogue-choices-v2", "compound-receipts-v2",
     "library-books-basic-v2", "partial-collections-v2", "scoped-campaigns-basic-v2",
     "station-pledges-basic-v2", "courier-contracts-basic-v2", "mission-calendar-v2",
+    "finance-obligations-basic-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -135,7 +137,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier npcs models modules worldJobs receiptRequirements answerRequirements books collections children"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -155,6 +157,7 @@ public enum ScriptPackLibrary {
     for (name, allowed) in [
       "answerRequirements": "dialogue choice minimumCount",
       "children": "id definition version digest terminalPolicy",
+      "loans": "id profile creditor title principal galaxy system",
       "handlers": "event function", "dialogs": "id text choices collection",
       "receiptRequirements":
         "id stage definition version digest outcome outcomes minimumCount choiceGroup choice child",
@@ -344,6 +347,7 @@ public enum ScriptPackLibrary {
     try validateAnswers(manifest)
     try validateBooks(manifest)
     try validateCollections(manifest)
+    try validateFinance(manifest)
     try validatePledge(manifest)
     try validateCourier(manifest)
     try validateCampaignChildren(manifest)

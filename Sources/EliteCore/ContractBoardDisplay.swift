@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if row.rrs != nil {
+    if row.finance != nil {
+      rows = game.financeDetail
+    } else if row.rrs != nil {
       rows = game.rrsCourierDetail
     } else if let offer = row.offer {
       let destination = Universe.systemsIncludingPlugh(number: offer.destinationGalaxy)[
@@ -97,6 +99,7 @@ extension Display {
       ink: active.isEmpty ? .white : .green)
     if game.contractBoard.detail,
       let reason = game.contractBoard.rrsQuote?.issues.first
+        ?? game.contractBoard.financeQuote?.issues.first
         ?? game.contractBoard.quote?.issues.first ?? game.contractBoard.selected?.reason
     {
       frame.label(short(reason), layout.left, 84, scale: scale, ink: .orange)
@@ -117,18 +120,25 @@ extension Display {
       }
       for (action, bounds) in layout.actions {
         let rrs = game.contractBoard.rrsQuote
+        let finance = game.contractBoard.financeQuote
         let available =
           action == .back
+          || (finance != nil
+            && (action == .accept
+              ? finance?.allowed == true
+              : finance?.canDecline == true))
           || (rrs != nil
             && (action == .accept ? rrs?.allowed == true : rrs?.row.canDecline == true))
           || (game.contractBoard.quote != nil
             && (action != .accept || game.contractBoard.quote?.allowed == true))
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
-            + (action == .accept && rrs != nil
-              ? "Confirm"
-              : (action == .accept && game.contractBoard.quote?.pledge != nil
-                ? "Donate" : action.rawValue)),
+            + (action == .accept && finance != nil
+              ? (finance?.actionLabel ?? "Closed")
+              : action == .accept && rrs != nil
+                ? "Confirm"
+                : (action == .accept && game.contractBoard.quote?.pledge != nil
+                  ? "Donate" : action.rawValue)),
           bounds.x + 8,
           bounds.y + 10, scale: scale, ink: available ? .cyan : .orange)
       }
@@ -162,7 +172,8 @@ extension Display {
             $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
         }
         let summary: String =
-          row.reason ?? rrsSummary ?? courier?.summary ?? pledgeSummary ?? offerSummary
+          row.reason ?? (row.finance == nil ? nil : "Review loan terms")
+          ?? rrsSummary ?? courier?.summary ?? pledgeSummary ?? offerSummary
           ?? "Unavailable"
         frame.label(
           short(summary), layout.left, y + 18, scale: scale,

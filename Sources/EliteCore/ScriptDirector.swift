@@ -103,6 +103,7 @@ extension Game {
     var fields = scriptSnapshot.object ?? [:]
     fields["children"] = campaignChildrenQuery(instance)
     fields["collections"] = collectionQuery(instance)
+    fields["finance"] = financeQuery(instance)
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
@@ -328,6 +329,8 @@ extension Game {
             {
               derivedEvents.append(result)
             }
+          } else if command["op"]?.string == "finance.offer" {
+            try candidate.registerFinanceOffer(command, event: event, pack: pack, state: next)
           } else if ["collection.ensure", "collection.deliver"].contains(
             command["op"]?.string ?? "")
           {
