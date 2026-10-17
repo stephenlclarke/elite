@@ -191,6 +191,12 @@ extension Game {
       }
       return
     }
+    try persistKnownNativeStationConditions(world: &world, system: system)
+  }
+
+  private mutating func persistKnownNativeStationConditions(
+    world: inout NativeStationWorld, system: SystemIdentity
+  ) throws {
     guard world.valid else { throw NativeStationRuntimeError.invalidState }
     if let main = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
       let original = world.mainStations.first(where: { $0.system == system }),
