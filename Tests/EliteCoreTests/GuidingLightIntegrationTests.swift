@@ -4,6 +4,217 @@ import Testing
 @testable import EliteCore
 
 struct GuidingLightIntegrationTests {
+  /// Pure native-consumer/presentation boundary; it does not authenticate an ordinary provider.
+  private func guidanceTexts(
+    _ state: ScriptProviderContractState, since before: ScriptProviderContractState,
+    pack: ScriptPack, game: Game
+  ) throws -> [String] {
+    var instance = ScriptInstance(
+      id: state.instance, definition: pack.manifest.stateID,
+      version: pack.manifest.version, digest: pack.digest)
+    instance.savedProviderContract = state
+    instance.payloads[state.terms.payload] = state.custody == .aboard ? 1 : nil
+    let result = try ScriptEvaluator.evaluate(
+      source: pack.source, handler: "transition",
+      event: .object(state.transitionValues(since: before)),
+      snapshot: game.scopedScriptSnapshot(instance), state: .object([:]))
+    #expect(result.commands.allSatisfy { $0["op"]?.string == "journal.append" })
+    return result.commands.compactMap { $0["text"]?.string }
+  }
+
+  @Test(arguments: [NativeProviderAvailability.disabled, .destroyed, .uncrewed, .ended])
+  func firstNativeCrisisPublishesGuidanceButRepeatedObservationReopenAndReloadDoNot(
+    _ availability: NativeProviderAvailability
+  ) throws {
+    let pack = try ProviderContractFixture.pack()
+    var game = Game(executive: false)
+    var state = ProviderContractFixture.state()
+    let before = state
+    ProviderMissionGuidance.observe(
+      availability, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(state.stage == .crisis && state.valid && state.hasFiniteTransition(since: before))
+    let texts = try guidanceTexts(state, since: before, pack: pack, game: game)
+    #expect(texts.count == 1)
+    let text = try #require(texts.first)
+    if availability == .disabled {
+      #expect(text.contains("drive is offline") && !text.contains("lost Santa's ship"))
+    } else if availability == .destroyed {
+      #expect(text.contains("lost Santa's ship") && !text.contains("drive is offline"))
+      #expect(text.contains("authenticated manifest still permits urgent"))
+    } else {
+      #expect(text.contains("cannot authorize radio contact"))
+      #expect(!text.contains("drive is offline") && !text.contains("lost Santa's ship"))
+    }
+    let first = state
+    ProviderMissionGuidance.observe(
+      availability, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(!state.hasFiniteTransition(since: first))
+    #expect(try guidanceTexts(state, since: first, pack: pack, game: game).isEmpty)
+    var instance = ScriptInstance(
+      id: state.instance, definition: pack.manifest.stateID,
+      version: pack.manifest.version, digest: pack.digest)
+    instance.savedProviderContract = state
+    instance.payloads[state.terms.payload] = 1
+    game.scriptPacks = [pack]
+    game.commander.scriptState.instances[instance.id] = instance
+    game.screen = .status
+    game.gallery.selection = try #require(
+      game.missionCatalogue.firstIndex { $0.savedInstance == instance.id })
+    game.gallery.detail = true
+    let commander = game.commander
+    let speech = game.ecmControl.events
+    for _ in 0..<3 {
+      game.openGallery()
+      game.closeGallery()
+    }
+    #expect(game.commander == commander && game.ecmControl.events == speech)
+    state = try JSONDecoder().decode(
+      ScriptProviderContractState.self, from: JSONEncoder().encode(first))
+    ProviderMissionGuidance.observe(
+      availability, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(
+      state.presentationBits == first.presentationBits && !state.hasFiniteTransition(since: first))
+    #expect(try guidanceTexts(state, since: first, pack: pack, game: game).isEmpty)
+  }
+
+  @Test func manifestGreetingRequiresRequestAndActualContactAndDoesNotRepeatAfterReload() throws {
+    let pack = try ProviderContractFixture.pack()
+    let game = Game(executive: false)
+    var state = ProviderContractFixture.state()
+    let interval = ProviderMissionInterval(
+      provider: state.provider, subject: state.subject,
+      sceneGeneration: ProviderContractFixture.scene, startFrame: 1, endFrame: 2,
+      startTime: 0.1, endTime: 0.2, forwardMeters: 0, rangeMeters: 4000,
+      relativeMetersPerSecond: 50, actualSensorContact: true, communications: true,
+      unpausedFreeFlight: true, trackingThroughout: true, continuous: true)
+    let unrequested = state
+    ProviderMissionGuidance.observe(
+      .tracking, interval: interval, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(!state.hasFiniteTransition(since: unrequested))
+    state.progress.requested = true
+    let requested = state
+    ProviderMissionGuidance.observe(
+      .tracking, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(!state.hasFiniteTransition(since: requested))
+    ProviderMissionGuidance.observe(
+      .tracking, interval: interval, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(state.newCues(since: requested) == [.hello])
+    #expect(state.manifest == nil && state.progress.handshakeSeconds == 0)
+    let texts = try guidanceTexts(state, since: requested, pack: pack, game: game)
+    #expect(texts.count == 1 && texts[0].contains("Hold within five kilometres"))
+    let first = state
+    state = try JSONDecoder().decode(
+      ScriptProviderContractState.self, from: JSONEncoder().encode(first))
+    ProviderMissionGuidance.observe(
+      .tracking, interval: interval, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(!state.hasFiniteTransition(since: first))
+    #expect(try guidanceTexts(state, since: first, pack: pack, game: game).isEmpty)
+  }
+
+  @Test func recoveredTemporarySourceDoesNotRepeatGuidanceAndReadyDispatchSurvivesLoss() throws {
+    var state = ProviderContractFixture.state()
+    ProviderMissionGuidance.observe(
+      .disabled, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    let first = state
+    for _ in 0..<20 {
+      ProviderMissionGuidance.observe(
+        .tracking, interval: nil, destinationContactAvailable: nil,
+        destinationDocked: false, state: &state)
+      ProviderMissionGuidance.observe(
+        .disabled, interval: nil, destinationContactAvailable: nil,
+        destinationDocked: false, state: &state)
+    }
+    #expect(!state.hasFiniteTransition(since: first))
+    ProviderContractEffects.authorizeManifest(&state)
+    state.progress.distanceMeters = 18000
+    state.progress.checkpointBits = 7
+    state.progress.escortSeconds = 60
+    try ProviderContractEffects.choose(.full, state: &state)
+    let ready = state
+    ProviderMissionGuidance.observe(
+      .destroyed, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: false, state: &state)
+    #expect(state == ready && state.branch == .full && state.valid)
+  }
+
+  @Test func urgentReviewGuidanceIsFiniteAcrossBackRearmAndReload() throws {
+    let pack = try ProviderContractFixture.pack()
+    let game = Game(executive: false)
+    var state = ProviderContractFixture.state()
+    ProviderContractEffects.authorizeManifest(&state)
+    let before = state
+    try ProviderMissionGuidance.reviewUrgent(&state, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    #expect(state.newCues(since: before) == [.urgentChoice] && state.branch == nil)
+    let texts = try guidanceTexts(state, since: before, pack: pack, game: game)
+    #expect(texts.count == 1 && texts[0].contains("1,500 credits"))
+    let first = state
+    for _ in 0..<20 {
+      state.pending = nil
+      try ProviderMissionGuidance.reviewUrgent(&state, runtimeEpoch: game.nativeStationRuntimeEpoch)
+    }
+    #expect(state.receipts == first.receipts && !state.hasFiniteTransition(since: first))
+    #expect(try guidanceTexts(state, since: first, pack: pack, game: game).isEmpty)
+    state = try JSONDecoder().decode(
+      ScriptProviderContractState.self, from: JSONEncoder().encode(state))
+    try ProviderMissionGuidance.reviewUrgent(&state, runtimeEpoch: UUID())
+    #expect(!state.hasFiniteTransition(since: first) && state.branch == nil)
+  }
+
+  @Test func unavailableDestinationCueRequiresResolvedFailureAndGenuineDockProjectionAndIsFinite()
+    throws
+  {
+    let pack = try ProviderContractFixture.pack()
+    let game = Game(executive: false)
+    var state = ProviderContractFixture.state()
+    ProviderContractEffects.authorizeManifest(&state)
+    try ProviderContractEffects.choose(.urgent, state: &state)
+    let before = state
+    #expect(throws: (any Error).self) {
+      try ProviderMissionGuidance.deliveryContactIsAvailable(nil, state: &state)
+    }
+    #expect(state == before)
+    #expect(try ProviderMissionGuidance.deliveryContactIsAvailable(true, state: &state))
+    #expect(state == before)
+    ProviderMissionGuidance.observe(
+      .unloaded, interval: nil, destinationContactAvailable: false,
+      destinationDocked: false, state: &state)
+    ProviderMissionGuidance.observe(
+      .unloaded, interval: nil, destinationContactAvailable: nil,
+      destinationDocked: true, state: &state)
+    #expect(!state.hasFiniteTransition(since: before))
+    ProviderMissionGuidance.observe(
+      .unloaded, interval: nil, destinationContactAvailable: false,
+      destinationDocked: true, state: &state)
+    #expect(state.newCues(since: before) == [.unavailable])
+    #expect(state.custody == .aboard && state.basePaid == 0 && state.branch == .urgent)
+    var explicitFailure = before
+    #expect(
+      try ProviderMissionGuidance.deliveryContactIsAvailable(false, state: &explicitFailure)
+        == false)
+    #expect(explicitFailure == state && explicitFailure.hasFiniteTransition(since: before))
+    let texts = try guidanceTexts(state, since: before, pack: pack, game: game)
+    #expect(texts.count == 1 && texts[0].contains("dispatch contact is unavailable"))
+    let first = state
+    #expect(try ProviderMissionGuidance.deliveryContactIsAvailable(false, state: &state) == false)
+    #expect(state == first)
+    state = try JSONDecoder().decode(
+      ScriptProviderContractState.self, from: JSONEncoder().encode(first))
+    for _ in 0..<20 {
+      ProviderMissionGuidance.observe(
+        .unloaded, interval: nil, destinationContactAvailable: false,
+        destinationDocked: true, state: &state)
+    }
+    #expect(!state.hasFiniteTransition(since: first))
+    #expect(try guidanceTexts(state, since: first, pack: pack, game: game).isEmpty)
+  }
   @Test(arguments: [ProviderCrewClaimDisposition.paid, .pending, .voided])
   func careTransitionWordingMatchesActualRewardDisposition(
     _ disposition: ProviderCrewClaimDisposition

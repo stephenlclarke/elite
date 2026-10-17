@@ -90,6 +90,14 @@ struct ProviderMissionProgress: Equatable, Codable, Sendable {
 }
 
 enum ProviderMissionObservation {
+  static func hasActualContact(
+    _ interval: ProviderMissionInterval,
+    terms: ProviderMissionObservationTerms
+  ) -> Bool {
+    interval.valid && terms.valid && interval.actualSensorContact && interval.communications
+      && interval.unpausedFreeFlight && interval.rangeMeters <= terms.contactRange
+      && interval.relativeMetersPerSecond <= terms.contactSpeed
+  }
   struct Result: Equatable, Sendable {
     let progress: ProviderMissionProgress
     let contactCompleted: Bool
@@ -124,10 +132,7 @@ enum ProviderMissionObservation {
     next.baseline = .init(
       runtimeEpoch: runtimeEpoch, sceneGeneration: interval.sceneGeneration,
       frame: interval.endFrame, time: interval.endTime)
-    let contact =
-      continuous && interval.actualSensorContact && interval.communications
-      && interval.unpausedFreeFlight && interval.rangeMeters <= terms.contactRange
-      && interval.relativeMetersPerSecond <= terms.contactSpeed
+    let contact = continuous && hasActualContact(interval, terms: terms)
     let dt = interval.endTime - interval.startTime
     if !manifestReceived {
       next.handshakeSeconds =

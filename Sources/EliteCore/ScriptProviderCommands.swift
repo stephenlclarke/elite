@@ -174,11 +174,7 @@ extension Game {
       state.progress.requested = true
       state.pending = nil
     case .reviewUrgent:
-      guard state.eligible, state.manifest != nil, state.branch == nil else {
-        throw MissionPackError("Authenticated uncommitted dispatch is required.")
-      }
-      state.pending = .init(
-        action: .confirmUrgent, token: UUID(), runtimeEpoch: nativeStationRuntimeEpoch)
+      try ProviderMissionGuidance.reviewUrgent(&state, runtimeEpoch: nativeStationRuntimeEpoch)
     case .confirmUrgent:
       guard state.pending?.action == .confirmUrgent, state.pending?.token == reviewToken,
         state.pending?.runtimeEpoch == nativeStationRuntimeEpoch
@@ -206,6 +202,11 @@ extension Game {
       else {
         throw MissionPackError("Genuinely dock at the exact assigned station to confirm.")
       }
+      if action == .deliver {
+        let available = try ProviderMissionGuidance.deliveryContactIsAvailable(
+          facts.source.destinationContactAvailable, state: &state)
+        if !available { break }
+      }
       try ProviderContractEffects.close(
         &state, delivery: action == .deliver,
         dock: context.receipt, order: facts.source.currentOrder, credits: &commander.credits)
@@ -215,15 +216,10 @@ extension Game {
     if state.stage.terminal { try finishProviderContract(&instance) }
     commander.scriptState.instances[id] = instance
     if let receipt = instance.completionReceipt { try enqueueScriptCompletion(receipt) }
-    if !state.stage.terminal, state.receipts != before.receipts {
+    if !state.stage.terminal, state.hasFiniteTransition(since: before) {
       emitScriptEvent(
         "provider.transition",
-        values: [
-          "receipts": .array(
-            state.receipts.subtracting(before.receipts).map(\.rawValue).sorted().map(
-              ScriptValue.string)),
-          "checkpoints": .integer(0),
-        ], only: id)
+        values: state.transitionValues(since: before), only: id)
     }
     guard commander.valid else { throw SaveError.invalidCommander }
   }

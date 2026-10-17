@@ -86,6 +86,8 @@ struct NativeProviderMissionSource: Sendable {
   let personOperations: [NativeProviderPersonOperation]
   let betrayal: NativeProviderBetrayal?
   let relay: NativeProviderRelayObservation?
+  /// Fresh G1 destination-service resolution. Nil is unresolved, never a delivery authorization.
+  var destinationContactAvailable: Bool? = nil
 }
 
 /// Live actor-scoped proof. Neither decoded mission data nor Lua can construct this authority.
