@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-private func actualNPCSceneRestorationGame() throws -> Game {
+private func actualNPCSceneRestorationGame(nearby: Bool = false) throws -> Game {
   var game = Game(executive: false)
   game.screen = .status
   try game.commander.prepareEquipment()
@@ -32,7 +32,8 @@ private func actualNPCSceneRestorationGame() throws -> Game {
         system: context.system, visit: context.visit, sequence: member == 0 ? 0 : 901,
         member: 0, producer: .ambient),
       population: .civilian, hull: .cobra,
-      position: context.player.position + .init(3000 + Double(member) * 1000, 1200, 7000),
+      position: context.player.position
+        + .init(3000 + Double(member) * 1000, 1200, nearby ? 4000 : 7000),
       orientation: .init(), velocity: .init(4, 5, 6), npc: npc,
       rock: nil, payload: nil, priority: .ordinary)
     request.energy = 73
@@ -335,13 +336,16 @@ struct NPCSceneRestorationTests {
   }
 
   @Test func actualPersistenceReentryAndLegacyNilSourcesRejoinWithoutSpawning() throws {
-    var game = try actualNPCSceneRestorationGame()
+    var game = try actualNPCSceneRestorationGame(nearby: true)
     try verifyPersistenceAndLegacySources(&game)
   }
 
   private func verifyPersistenceAndLegacySources(_ game: inout Game) throws {
     let index = try #require(game.bodies.firstIndex { $0.physical?.spawnIdentity?.sequence == 901 })
     let actor = try #require(game.bodies[index].physical?.identity)
+    let snapshot = try #require(game.commander.npcPersistence.snapshot(for: actor))
+    let context = try #require(game.gameplayContext())
+    try #require((snapshot.position - context.player.position).length <= context.perceptionRadius)
     game.commander.npcPersistence.cull(actor: actor)
     game.bodies.remove(at: index)
     game.admitPersistentNPCs()
