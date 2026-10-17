@@ -81,6 +81,11 @@ private func campaignPatrolTargetIsOwned(_ game: Game, child: UUID) -> Bool {
   }
 }
 
+func campaignPatrolOutsideStationZone(_ game: Game) throws -> Bool {
+  let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+  return station.position.length > 1200
+}
+
 private func selectCampaignPatrolTarget(_ game: inout Game, child: UUID) throws {
   // Keep tracking the live owned actor; cycle actual player targets only when it changes.
   for _ in 0...game.bodies.count {
@@ -223,12 +228,18 @@ private struct CampaignFixture {
     return (parent, child)
   }
   func report(_ game: inout Game, child: UUID) throws {
+    let legalBefore = game.commander.legal
+    try #require(legalBefore == 0)
     let beforeFire = campaignPatrolDiagnostic(game, child: child)
     var observedFlash = false
     var firing = Controls()
     for _ in 0..<200 {
-      try selectCampaignPatrolTarget(&game, child: child)
-      firing.fire = game.autoPilot.status == "TRACKING TARGET"
+      // Actual launch motion clears the station zone within the original combat budget.
+      firing = Controls()
+      if try campaignPatrolOutsideStationZone(game) {
+        try selectCampaignPatrolTarget(&game, child: child)
+        firing.fire = game.autoPilot.status == "TRACKING TARGET"
+      }
       game.tick(delta: 0.1, controls: firing)
       observedFlash = observedFlash || game.laserFlash > 0
       if game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
@@ -241,6 +252,9 @@ private struct CampaignFixture {
       Comment(
         rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
           + campaignPatrolDiagnostic(game, child: child)))
+    #expect(
+      game.commander.legal == legalBefore,
+      Comment(rawValue: campaignPatrolDiagnostic(game, child: child)))
     firing = Controls()
     for _ in 0..<8 {
       game.key("r")
@@ -253,6 +267,7 @@ private struct CampaignFixture {
       Comment(
         rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
           + campaignPatrolDiagnostic(game, child: child)))
+    #expect(game.commander.legal == legalBefore)
     game.emitScriptEvent("contact.requested", only: child)
     let shown = game.showScriptDialogue(only: child)
     #expect(shown)
@@ -733,12 +748,17 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     fitted.contracts == beforeHardware.contracts
       && fitted.accommodation == beforeHardware.accommodation)
   await runtime.key("0")
+  let legalBefore = await runtime.snapshot().commander.legal
+  try #require(legalBefore == 0)
   let beforeFire = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
   var observedFlash = false
   var firing = Controls()
   for _ in 0..<200 {
-    try await selectCampaignPatrolTarget(runtime, child: child)
-    firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    firing = Controls()
+    if try campaignPatrolOutsideStationZone(await runtime.snapshot()) {
+      try await selectCampaignPatrolTarget(runtime, child: child)
+      firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    }
     await runtime.setControls(firing)
     selected = await runtime.advance(delta: 0.1)
     observedFlash = observedFlash || selected.laserFlash > 0
@@ -753,6 +773,9 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     Comment(
       rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
         + campaignPatrolDiagnostic(selected, child: child)))
+  #expect(
+    selected.commander.legal == legalBefore,
+    Comment(rawValue: campaignPatrolDiagnostic(selected, child: child)))
   await runtime.setControls(Controls())
   for _ in 0..<8 {
     await runtime.key("r")
@@ -768,6 +791,7 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     Comment(
       rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
         + campaignPatrolDiagnostic(selected, child: child)))
+  #expect(selected.commander.legal == legalBefore)
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == child)
   await runtime.key("return")
