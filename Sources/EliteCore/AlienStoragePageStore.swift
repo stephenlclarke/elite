@@ -7,7 +7,8 @@ struct AlienStoragePageStore: AlienStoragePageReader, AlienStoragePageWriter, Se
   let directory: URL
   init(directory: URL, create: Bool = false) throws {
     guard directory.isFileURL else { throw AlienStorageError.invalidReference }
-    self.directory = directory.standardizedFileURL
+    // Foundation may reintroduce /var's alias after creation; preserve the physical input.
+    self.directory = directory
     let fd = try Self.openDirectory(self.directory, create: create)
     Darwin.close(fd)
   }
