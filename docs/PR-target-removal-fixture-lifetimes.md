@@ -1,5 +1,7 @@
 # test(targeting): separate target-removal scenario lifetimes
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 The original target-removal test kept later fixture storage in its caller while constructing the first locked game. It failed alone under the unchanged baseline TSan binary at checkpoint 174. The test now calls `verifyThirdPartyRemoval(mode:)` for modes 0 through 2, followed by `verifyManualTargetCancellation()`. See [the issue and evidence qualification](ISSUE-target-removal-fixture-lifetimes.md).
 
 ## Preservation and validation

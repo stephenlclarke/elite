@@ -75,7 +75,7 @@ private func verifyTexturedHullVisibility(_ game: inout Game, id: String) throws
       game.weaponsTargetID = nil
       game.screen = .front
       #expect(Display.visibleInFront(body, game: game, layout: layout) == visible)
-      game.key("r")
+      game.key("tab")
       #expect(game.autoPilot.targetID == (visible ? body.id : nil))
     }
   }

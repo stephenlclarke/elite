@@ -25,17 +25,17 @@ private func assistedGame() -> Game {
   ]
   #expect(game.autoPilot.targetID == nil)
   for id in [3, 4, 8, 2, 1] {
-    game.key("r")
+    game.key("tab")
     #expect(game.autoPilot.targetID == id)
     game.bodies.reverse()
   }
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 3)
   game.bodies.removeAll { $0.id == 3 }
   game.tick(delta: 0.01)
   #expect(game.autoPilot.targetID == nil)
   game.bodies = []
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.status == "NO TARGETS")
 }
 @Test func autoFacesTargetsWithoutChangingSpeedOrFiringAndManualSteeringWins() {
@@ -43,7 +43,7 @@ private func assistedGame() -> Game {
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(900, 500, -800))]
   game.bodies[0].rotationRate = 0
   game.speed = 7
-  game.key("r")
+  game.key("tab")
   game.key("v")
   game.key("]")
   let initialEnergy = game.bodies[0].energy
@@ -55,7 +55,7 @@ private func assistedGame() -> Game {
   controls.pitch = 0.5
   game.tick(delta: 0.02, controls: controls)
   #expect(game.autoPilot.targetID == nil && game.pitch == 0.5)
-  game.key("r")
+  game.key("tab")
   game.key("q")
   #expect(game.autoPilot.targetID == nil)
 }
@@ -67,7 +67,7 @@ private func assistedGame() -> Game {
       station.rotation = 1.4
       station.rotationRate = rate
       game.bodies = [station]
-      game.key("r")
+      game.key("tab")
       for _ in 0..<7000 where !game.docked { game.tick(delta: 0.02) }
       #expect(game.docked && game.screen == .status && game.bodies.isEmpty)
       #expect(
@@ -137,7 +137,7 @@ private func assistedGame() -> Game {
   station.orientation.rotate(pitch: 0.6, roll: 0.4, yaw: 0.8)
   station.rotationRate = -0.3
   game.bodies = [station]
-  game.key("r")
+  game.key("tab")
   let selected = try #require(game.autoTargetBody)
   let anchors = try #require(game.commander.flightSimulation.anchors)
   let actor = try #require(selected.physical?.identity)
@@ -149,13 +149,13 @@ private func assistedGame() -> Game {
   game.launch()
   game.speed = 0
   game.bodies = [station, .init(id: 2, hull: .cobra, position: .init(0, 0, 500))]
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 2 && game.autoPilot.velocity.length == 0)
   game.bodies.removeAll { $0.hull != .station }
-  game.key("r")
+  game.key("tab")
   game.key("b")
   #expect(game.autoPilot.targetID == nil)
-  game.key("r")
+  game.key("tab")
   game.commander.autoTarget = false
   game.tick(delta: 0.02)
   #expect(game.autoPilot.targetID == nil)
@@ -199,7 +199,7 @@ private func assistedGame() -> Game {
       game.screen = view
       game.speed = 3
       game.bodies = [.init(id: 22, hull: .cobra, position: position)]
-      game.key("r")
+      game.key("tab")
       #expect(game.screen == .front && game.weaponsTargetID == 22)
       for _ in 0..<800 {
         // Independent target movement exercises tracking rather than only a fixed bearing.

@@ -195,7 +195,7 @@ private struct ContractFixture {
   }
   #expect(scene.commander.system == offer.destinationSystem)
   for _ in 0..<8 {
-    await runtime.key("r")
+    await runtime.key("tab")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
   for _ in 0..<10000 where !scene.docked && scene.screen != .gameOver {

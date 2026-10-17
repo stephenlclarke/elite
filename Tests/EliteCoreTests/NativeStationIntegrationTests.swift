@@ -336,7 +336,7 @@ private func verifyOriginalMainImmunity(_ game: inout Game) throws {
   #expect(contact.hit.target == .body(main.id))
   game.fireLaser()
   #expect(game.laserFlash > 0 && game.bodies.first { $0.id == 0 }?.energy == main.energy)
-  for _ in 0..<16 where game.weaponsTargetID != main.id { game.key("r") }
+  for _ in 0..<16 where game.weaponsTargetID != main.id { game.key("tab") }
   #expect(game.weaponsTargetID == main.id)
   game.key("q")
   game.key("t")
@@ -362,7 +362,7 @@ private func verifyNativeStationRecharge(_ game: inout Game, guided: Bool) throw
     game.activateNearbyMiningFields()
     game.key("f")
     #expect(game.workTargetFilter == .mining)
-    for _ in 0..<64 where game.workGuidance == nil { game.key("r") }
+    for _ in 0..<64 where game.workGuidance == nil { game.key("tab") }
     #expect(game.workGuidance != nil)
   }
   let clock = game.commander.flightSimulation.physicalTime
@@ -391,7 +391,7 @@ private func verifyNativeHeadquartersDestruction(
   #expect(contact.hit.target == .body(hq.id))
   let runtime = GameRuntime(game: game, saveURL: storage.url)
   for _ in 0..<16 where game.weaponsTargetID != hq.id {
-    await runtime.key("r")
+    await runtime.key("tab")
     game = await runtime.snapshot()
   }
   #expect(game.weaponsTargetID == hq.id)

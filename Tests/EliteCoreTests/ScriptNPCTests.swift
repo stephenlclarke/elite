@@ -793,7 +793,7 @@ private func profiledPatrolHasLawfulHullContact(_ game: Game, mission: UUID, act
       game.commander.scriptState.instances[id]?.ownedEncounters["opponents"]?.actors[alias]?
         .identity)
     for _ in 0..<12 {
-      await runtime.key("r")
+      await runtime.key("tab")
       if await runtime.snapshot().autoTargetBody?.missionActorID == identity { break }
     }
     #expect(await runtime.snapshot().autoTargetBody?.missionActorID == identity)
@@ -827,7 +827,7 @@ private func profiledPatrolHasLawfulHullContact(_ game: Game, mission: UUID, act
   let beforeStationSelection = actualStationGuidanceDiagnostic(won)
   var stationCycle: [String] = []
   for attempt in 0...won.bodies.count {
-    await runtime.key("r")
+    await runtime.key("tab")
     let selected = await runtime.snapshot()
     if stationCycle.count < 16 {
       stationCycle.append(

@@ -86,10 +86,10 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     ]
     let expected = [2, 1] + (tier >= .advanced ? [3] : []) + (tier >= .docking ? [0] : [])
     for id in expected {
-      game.key("r")
+      game.key("tab")
       #expect(game.autoPilot.targetID == id)
     }
-    game.key("r")
+    game.key("tab")
     #expect(game.autoPilot.targetID == 2)
   }
 }
@@ -103,18 +103,18 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
   let outside = SpaceBody(id: 2, hull: .cobra, position: .init(edgeX + 100, 0, 1000))
   #expect(!Display.visibleInFront(outside, game: game, layout: layout))
   game.bodies = [visibleEdge, outside, .init(id: 3, hull: .viper, position: .init(0, 0, -500))]
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 1)
   game.bodies[1].position = .init(0, 0, 100)
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 3)
   game.bodies.append(.init(id: 4, hull: .cobra, position: .init(0, 0, 200)))
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 2)
   game.bodies.removeAll { $0.id == 2 }
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 4)
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 4)
 }
 @Test func targetingUpgradesUseLaserRelatedPricesAndPersistOneEffectiveTier() async throws {
@@ -155,7 +155,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     game.ensurePhysicalActors()
     // This disclosure fixture intentionally has no observed resource readings.
     game.bodies[0].physical?.npc?.resources = nil
-    game.key("r")
+    game.key("tab")
     let info = game.targetInformation
     #expect(info?.id == 17)
     #expect((info?.model != nil) == (tier >= .identification))
@@ -190,7 +190,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
   game.ensurePhysicalActors()
   // An explicitly unknown route must remain unknown in the independent camera.
   game.bodies[0].physical?.npc?.routeProvenance = nil
-  game.key("r")
+  game.key("tab")
   game.screen = .rear
   game.targetPanelExpanded = true
   let original = game.bodies
@@ -222,7 +222,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     station.orientation.rotate(pitch: angle * 0.3, roll: 0, yaw: angle)
     game.bodies = [station]
     game.speed = speed
-    game.key("r")
+    game.key("tab")
     var collision = false
     for _ in 0..<9000 where !game.docked {
       game.tick(delta: 0.02)

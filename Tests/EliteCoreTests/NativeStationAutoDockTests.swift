@@ -87,9 +87,9 @@ private func verifyActualNativeAutoDock(
   let runtime = GameRuntime(game: game, saveURL: storage.url)
   try await runtime.save(to: storage.url)
   let initialFile = try Data(contentsOf: storage.url)
-  // R chooses the real live target through the ordinary selection cycle.
+  // Tab chooses the real live target through the ordinary selection cycle.
   for _ in 0...game.bodies.count {
-    await runtime.key("r")
+    await runtime.key("tab")
     game = await runtime.snapshot()
     if game.autoPilot.targetActor == actor { break }
   }
