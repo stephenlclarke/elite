@@ -7,14 +7,14 @@ public enum OrdnanceProfile: String, Codable, Sendable, CaseIterable {
     switch self {
     case .standardMissile: 792
     case .plasma: 600
-    case .alienSeeker: 990
+    case .alienSeeker: Self.standardMissile.speed * 1.25
     }
   }
   public var damage: Double {
     switch self {
     case .standardMissile: 250
     case .plasma: 40
-    case .alienSeeker: 160
+    case .alienSeeker: Self.standardMissile.damage * 1.25
     }
   }
   public var energyCost: Double { self == .plasma ? 12 : 0 }

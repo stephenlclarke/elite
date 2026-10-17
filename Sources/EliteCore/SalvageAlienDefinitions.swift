@@ -43,9 +43,9 @@ public struct SalvageAlienPlasmaSpec: Equatable, Sendable {
 
 public struct SalvageAlienMissileSpec: Equatable, Sendable {
   public let attackKind: AttackKind = .missile
-  public let damage = 160.0
+  public var damage: Double { OrdnanceProfile.alienSeeker.damage }
   /// Native units/second; existing standard missile movement is 44 * 18 = 792.
-  public let speedNativePerSecond = 990.0
+  public var speedNativePerSecond: Double { OrdnanceProfile.alienSeeker.speed }
   public let turnRadiansPerSecond = 3.0
   /// Range exhaustion or lifetime expiry ends the projectile, whichever occurs first.
   public let rangeNative = 6000.0
