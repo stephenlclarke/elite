@@ -259,7 +259,8 @@ private func verifyStationShopRefusals(
     game.selection = try #require(Equipment.all.firstIndex { $0.name == name })
     try #require(before.availableCredits > game.shopPrice(Equipment.all[game.selection]))
     let context = try #require(game.equipmentPurchaseContext)
-    #expect(game.performEquipmentMutation(.purchase(context)) == .refused(.staleContext))
+    let transaction = game.performEquipmentMutation(.purchase(context))
+    #expect(transaction == .refused(.staleContext))
     game.purchase()
     #expect(game.commander == before)
   }
@@ -344,7 +345,8 @@ private func verifyOriginalStationServices(_ game: inout Game, plugh: Bool) thro
   let fuelPrice = game.refillCost
   let cash = game.commander.credits
   let fuel = try #require(game.equipmentPurchaseContext)
-  #expect(game.performEquipmentMutation(.purchase(fuel)).applied)
+  let fuelResult = game.performEquipmentMutation(.purchase(fuel))
+  #expect(fuelResult.applied)
   #expect(game.commander.fuel == game.commander.fuelCapacity)
   #expect(game.commander.credits == cash - fuelPrice)
   let device = try #require(Equipment.all.first { $0.name == FuelStorage.equipmentName })
@@ -416,7 +418,8 @@ private func verifyChangedMainDestination(
   switch change {
   case .replacementActor:
     let index = try #require(game.bodies.firstIndex { $0.id == 0 })
-    let actor = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedActor = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocatedActor)
     let originalBody = try #require(game.bodies[index].physical)
     game.bodies[index].physical = .init(
       identity: actor, population: originalBody.population, npc: originalBody.npc)
