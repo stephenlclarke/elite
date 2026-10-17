@@ -44,7 +44,7 @@ enum AlienModuleDefinition {
   private static func validate(_ lot: SalvageLot, kind: AlienModuleKind, upgrade: Bool) throws {
     guard case .technology(let id, let quality, let condition) = lot.content,
       id == (upgrade ? kind.upgradeDefinitionID : kind.definitionID),
-      (0...100).contains(condition),
+      (0...100).contains(condition), lot.identity.section.section < 64,
       (0..<8).contains(lot.identity.section.wreck.system.galaxy),
       (0...256).contains(lot.identity.section.wreck.system.system),
       lot.position.finite, lot.position.length.isFinite,

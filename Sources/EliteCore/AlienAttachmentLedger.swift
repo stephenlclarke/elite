@@ -220,14 +220,10 @@ struct AlienAttachmentLedger: Equatable, Codable, Sendable {
         guard operation == id, records[id]?.source.identity == source else {
           throw AlienAttachmentError.invalidState
         }
-      case .upgrade(let id, let source):
-        guard
-          records[id]?.upgrades.contains(where: {
-            $0.operation == operation && $0.source.identity == source
-          }) == true
-        else {
-          throw AlienAttachmentError.invalidState
-        }
+      case .upgrade:
+        // The receipt loop already matched this exact command's item and source.
+        // Reuse its unique operation index instead of rescanning a growing upgrade array.
+        guard receiptOperations.contains(operation) else { throw AlienAttachmentError.invalidState }
       case .move(let id):
         guard records[id] != nil else { throw AlienAttachmentError.invalidState }
       case .retire(let id):
