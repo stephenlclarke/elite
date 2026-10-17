@@ -4,7 +4,8 @@ extension Game {
     guard !docked, commander.equipment.contains("Fuel Scoops") else { return }
     let candidates = bodies.filter { body in
       let scoopable = body.hull == .cargo || (body.hull == .thargon && !body.hostile)
-      return scoopable && body.energy > 0 && body.position.z > 0 && body.position.y < 0
+      return body.physical?.empCrewPod == nil && scoopable && body.energy > 0 && body.position.z > 0
+        && body.position.y < 0
         && body.position.length < 85
     }
     for body in candidates {

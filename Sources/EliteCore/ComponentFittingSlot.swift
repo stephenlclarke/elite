@@ -22,7 +22,7 @@ public enum ComponentFittingSlot: Hashable, Codable, Sendable {
 
 public enum ComponentUtility: String, Hashable, Codable, Sendable {
   case miningLaser, salvageCutter, fuelScoops, ecm, escapePod, energyBomb, cargoExpansion,
-    galacticHyperdrive
+    galacticHyperdrive, empPirateBlaster
 }
 
 public struct ComponentFittingLocation: Hashable, Codable, Sendable {

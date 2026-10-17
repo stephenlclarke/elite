@@ -154,7 +154,7 @@ extension Game {
   private mutating func damageBody(
     index: Int, incident: CombatIncident, damage: Double, point: Vector3
   ) {
-    guard damage > 0,
+    guard damage > 0, bodies[index].physical?.empCrewPod == nil,
       bodies[index].hull != .station || nativeStationBodyIsCurrent(bodies[index]),
       incident.kind != .bomb || !bodies[index].hull.bombImmune
     else { return }

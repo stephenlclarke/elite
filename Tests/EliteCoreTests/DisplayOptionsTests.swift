@@ -51,7 +51,7 @@ import Testing
   let restored = GameRuntime()
   try await restored.load(from: url)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 21)
+  #expect(pointer.schemaVersion == 22)
   var expected = game.commander
   var restoredGame = await restored.snapshot()
   let savedWorld = try #require(expected.nativeStations)

@@ -102,11 +102,15 @@ extension Game {
     guard let tier = commander.targetingTier else { return nil }
     guard body.hull != .station || tier >= .docking else { return nil }
     guard tier >= .identification else {
-      return .init(id: body.id, model: nil, status: nil, fields: [])
+      return .init(id: body.id, model: nil, status: empTargetStatus(body), fields: [])
     }
     let shipStatus = body.hostile ? "Hostile" : "Neutral"
     let status: String
-    if let work = workGuidance, let identity = body.physical?.identity, work.parent == identity {
+    if let electronic = empTargetStatus(body) {
+      status = (body.hostile ? "HOSTILE - " : "") + electronic
+    } else if let work = workGuidance, let identity = body.physical?.identity,
+      work.parent == identity
+    {
       status = work.status
     } else {
       status = body.hull == .station ? autoPilot.status : shipStatus

@@ -27,7 +27,7 @@ public enum PayloadIdentity: Hashable, Codable, Sendable {
 
 public enum SpawnProducer: String, Codable, Sendable {
   case ambient, asteroids, cargo, mining, salvage, security, mission, persistence, ordnance,
-    derelicts
+    derelicts, emp
 }
 
 public struct SpawnIdentity: Hashable, Codable, Sendable {
@@ -269,7 +269,7 @@ public struct AttackOrigin: Equatable, Codable, Sendable {
 }
 
 public enum AttackKind: String, Codable, Sendable {
-  case laser, missile, bomb, plasma, collision
+  case laser, missile, bomb, plasma, collision, emp
 }
 
 public enum AttackOutcome: String, Codable, Sendable {

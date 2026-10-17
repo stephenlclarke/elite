@@ -11,6 +11,7 @@ enum EquipmentRuntimeCatalog {
     ("Fuel Scoops", .fuelScoops), ("E.C.M. System", .ecm), ("Escape Pod", .escapePod),
     ("Energy Bomb", .energyBomb), ("Large Cargo Bay", .cargoExpansion),
     ("Galactic Hyperdrive", .galacticHyperdrive), ("Salvage Cutter", .salvageCutter),
+    (Equipment.empPirateBlaster, .empPirateBlaster),
   ]
 
   static func utilityFamily(_ utility: ComponentUtility) -> EquipmentFamilyID {

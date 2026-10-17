@@ -46,13 +46,21 @@ extension Game {
 extension Display {
   static func targetPanel(_ game: Game, layout: CockpitLayout, into frame: inout Frame) {
     guard let info = game.targetInformation else { return }
+    let cueInk = game.informationTargetBody.flatMap { game.targetColourCue(for: $0).ink } ?? .cyan
     let font = GameTypography.scale
     let panel = TargetPanelLayout(game: game, info: info, cockpit: layout)
     let width = panel.width
     let x = panel.x
     let y = panel.y
     guard let tier = game.commander.targetingTier, tier >= .identification else {
-      frame.label("LOCK: " + info.identifier, x, y, scale: font, ink: .cyan)
+      frame.label("LOCK: " + info.identifier, x, y, scale: font, ink: cueInk)
+      if let status = info.status {
+        for (index, line) in ShowroomText.wrap(status, width: Int((width - 8) / (6 * font))).prefix(
+          3
+        ).enumerated() {
+          frame.label(line, x, y + panel.row * Double(index + 1), scale: font, ink: cueInk)
+        }
+      }
       return
     }
     let expanded = game.targetPanelExpanded ?? (layout.width >= 1100)
@@ -69,12 +77,12 @@ extension Display {
             .init(x - 8, y - 8), .init(x + width, y - 8), .init(x + width, bottom),
             .init(x - 8, bottom),
           ], colour: Ink.black.rawValue)))
-    frame.stroke(x - 8, y - 8, x + width, y - 8, .cyan)
+    frame.stroke(x - 8, y - 8, x + width, y - 8, cueInk)
     for (index, line) in panel.headings.enumerated() {
-      frame.label(line, x, y + Double(index) * row, scale: font, ink: .cyan)
+      frame.label(line, x, y + Double(index) * row, scale: font, ink: cueInk)
     }
     for (index, line) in panel.statuses.enumerated() {
-      frame.label(line, x, y + row * (headingRows + Double(index)), scale: font)
+      frame.label(line, x, y + row * (headingRows + Double(index)), scale: font, ink: cueInk)
     }
     guard expanded, var body = game.informationTargetBody else { return }
     // The target camera copies its pose. It never changes the flight camera or simulation.

@@ -101,10 +101,15 @@ extension Game {
         workSurfaces: [])
     }
     guard let metadata = result else { return nil }
+    let occupiedEMP =
+      isEMPDisabled(body)
+      && physical.empSource.flatMap { commander.savedEMPState?.records[$0]?.crewAboard }.map {
+        $0 > 0
+      } == true
     let protected =
       context.protection.protectedActors.contains(physical.identity)
       || physical.payload.map(context.protection.protectedPayloads.contains) == true
-      || (physical.npc != nil && [.wreck, .section].contains(metadata.category))
+      || (physical.npc != nil && [.wreck, .section].contains(metadata.category) && !occupiedEMP)
     guard protected else { return metadata }
     return .init(
       category: metadata.category, ownership: .missionProtected, claimant: metadata.claimant,

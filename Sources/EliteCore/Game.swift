@@ -35,6 +35,7 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   var savedEquipmentInventory: OwnedEquipmentInventory?
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
+  var savedEMPState: EMPState?
   var savedSalvageLedger: SalvageLedger?
   var savedEquipmentVersion: Int?
   var nativeStations: NativeStationWorld?
@@ -204,6 +205,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedScriptState
     case savedEquipmentInventory
     case savedEquipmentPurchaseHistory
+    case savedEMPState
     case savedSalvageLedger
     case savedEquipmentVersion
     case nativeStations
@@ -269,6 +271,7 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   public var valid: Bool {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
+      && empCustodyStateValid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -298,6 +301,7 @@ public struct Equipment: Sendable {
   public static let legacyDockingComputer = "Docking Computers"
   public static let navalEnergyUnit = "Naval Energy Unit"
   public static let navalLaser = "Naval Laser"
+  public static let empPirateBlaster = "EMP Pirate Blaster"
   public static var validNames: Set<String> {
     Set(all.map(\.name)).subtracting([FuelStorage.equipmentName, PassengerCabin.equipmentName])
       .union([
@@ -347,6 +351,7 @@ public struct Equipment: Sendable {
       // Initial project balancing in tenths of a credit; these are new independent devices.
       .init(name: "Targeting: Mining Module", price: 20000, technology: 5),
       .init(name: "Targeting: Salvage Module", price: 40000, technology: 7),
+      .init(name: empPirateBlaster, price: 30000, technology: 8),
       .init(name: "Salvage Cutter", price: 25000, technology: 6),
       .init(name: FuelStorage.equipmentName, price: FuelStorage.price, technology: 0),
       .init(name: navalLaser, price: 0, technology: 0),
@@ -528,7 +533,7 @@ public struct Game: Sendable {
     return true
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
-    guard value.valid else { return false }
+    guard value.valid, !value.usesEMPSaveVersion else { return false }
     // The loaded commander owns a different native allocation timeline. Invalidate old
     // capabilities and allow that timeline's first genuine emission to be consumed once.
     gameplayRevision &+= 1
@@ -1085,7 +1090,11 @@ public struct Game: Sendable {
       SpaceBody(id: 0, hull: .station, position: .init(0, 0, -500)),
       SpaceBody(id: 2, hull: .asteroid, position: .init(-280, 100, 2200)),
     ]
-    if commander.npcPersistence.count == 0 {
+    if commander.npcPersistence.count == 0,
+      commander.savedEMPState?.records.values.contains(where: {
+        $0.source.system == systemIdentity && $0.originalSpawn == nil && $0.originalBodyID == 1
+      }) != true
+    {
       bodies.insert(.init(id: 1, hull: .cobra, position: .init(90, 20, 1400)), at: 1)
     }
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
@@ -1618,6 +1627,8 @@ public struct Game: Sendable {
     }
   }
   mutating func enemyAction(index: Int, dt: Double) {
+    guard !isEMPDisabled(bodies[index]), bodies[index].physical?.empCrewPod == nil else { return }
+    let priorPosition = commander.flightSimulation.pose.systemPoint(bodies[index].position)
     if bodies[index].blackjackRole != nil {
       advanceBlackjackNPC(index: index, delta: dt)
       return
@@ -1632,6 +1643,11 @@ public struct Game: Sendable {
       bodies[index].position.x *= 1 - dt * 0.25
       bodies[index].position.y *= 1 - dt * 0.25
       if bodies[index].position.z > 300 { bodies[index].position.z -= dt * 60 }
+    }
+    if dt > 0 {
+      bodies[index].physical?.velocity =
+        (commander.flightSimulation.pose.systemPoint(bodies[index].position) - priorPosition)
+        * (1 / dt)
     }
     if bodies[index].position.length < 1500 {
       let damage = dt * (bodies[index].hull.navalLaserDamage ?? 6) * 2
@@ -1648,6 +1664,10 @@ public struct Game: Sendable {
     for body in initial { settleLegacyCombatDeath(body) }
     var deferred = registerDestroyedCargo()
     deferred.formUnion(registerDestroyedWrecks())
+    guard registerEMPHullDeaths() else {
+      notify("EMP CUSTODY SETTLEMENT DEFERRED")
+      return
+    }
     let destroyed = bodies.filter { $0.energy <= 0 && !deferred.contains($0.id) }
     for body in destroyed {
       if let payload = body.physical?.payload {
@@ -2042,6 +2062,7 @@ public actor GameRuntime {
       throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
     try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
+    try EMPVersionedSave.rejectFields(data, part: .commander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.
     guard commander.scriptState.pledgeLedger == nil,

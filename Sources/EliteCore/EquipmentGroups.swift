@@ -23,6 +23,7 @@ public enum EquipmentGroups {
       ("Navigation Computers", NavigationTier.allCases.map(\.equipmentName)),
       ("Energy Systems", ["Extra Energy Unit", Equipment.navalEnergyUnit]),
       ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
+      ("Electronic Weapons", [Equipment.empPirateBlaster]),
       ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),
       ("Travel", ["Galactic Hyperdrive"]),
       ("Emergency Equipment", ["Escape Pod"]),

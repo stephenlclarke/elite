@@ -23,6 +23,7 @@ extension Game {
     for body in bodies where body.hull.isTargetShip {
       if body.missionInstanceID != nil || body.missionActorID != nil || body.navalTarget
         || body.blackjackRole != nil || body.blackjackIdentity != nil
+        || body.physical?.empSource != nil || body.physical?.empCrewPod != nil
         || body.physical?.npc?.role == .mission || body.physical?.population == .wreck
         || body.physical?.blocksNavalEncounter == true
       {
@@ -57,6 +58,7 @@ extension Game {
     for body in bodies.sorted(by: {
       ($0.physical?.identity.entity ?? 0) < ($1.physical?.identity.entity ?? 0)
     }) where body.energy > 0 && body.physical?.npc != nil {
+      if body.physical?.empSource != nil { continue }
       guard body.physical?.npc?.role != .mission, !body.navalTarget,
         body.blackjackRole == nil, body.physical?.blocksNavalEncounter != true,
         (body.physical?.identity).map({ !context.protection.protectedActors.contains($0) }) == true

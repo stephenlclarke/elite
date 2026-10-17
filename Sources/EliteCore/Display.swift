@@ -640,8 +640,9 @@ public enum Display {
       let sx = 128 + Int(max(-44, min(44, body.position.x / 100)))
       let sy = 220 + Int(max(-17, min(17, -body.position.z / 500)))
       let height = Int(max(-15, min(15, body.position.y / 100)))
-      frame.line(sx, sy, sx, sy - height, body.hostile ? .red : .green)
-      frame.line(sx - 1, sy - height, sx + 1, sy - height, body.hostile ? .red : .green)
+      frame.line(sx, sy, sx, sy - height, game.targetColourCue(for: body).ink ?? .green)
+      frame.line(
+        sx - 1, sy - height, sx + 1, sy - height, game.targetColourCue(for: body).ink ?? .green)
     }
     let flightCondition = game.bodies.contains(where: \.hostile) ? "RED" : "GREEN"
     frame.text(game.docked ? "S" : flightCondition, 82, 246, .yellow)

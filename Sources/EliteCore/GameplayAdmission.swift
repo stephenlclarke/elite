@@ -67,7 +67,7 @@ extension Game {
           spawnIdentity: request.identity, catalogueShipID: request.catalogueShipID,
           angularVelocity: request.angularVelocity, salvage: request.salvage)
         if request.identity.producer == .derelicts { body.physical?.canonicalSpin = true }
-        if request.identity.producer != .persistence,
+        if request.identity.producer != .persistence && request.identity.producer != .emp,
           let snapshot = NPCPersistenceSnapshot.capture(
             body: body, pose: pose, physicalTime: context.physicalTime,
             protection: context.protection),
@@ -94,6 +94,7 @@ extension Game {
     else { return .reservedCapacity }
     let newNPCs = fresh.filter {
       $0.npc != nil && $0.npc?.role != .mission && $0.identity.producer != .persistence
+        && $0.identity.producer != .emp
     }.count
     guard newNPCs <= NPCPersistenceLedger.maximumEntries - commander.npcPersistence.count else {
       return .reservedCapacity
@@ -211,6 +212,18 @@ extension Game {
   ) -> AdmissionRefusal? {
     guard request.identity.system == context.system, request.identity.visit == context.visit
     else {
+      return .staleContext
+    }
+    if let emp = commander.savedEMPState, request.identity.producer != .emp,
+      emp.records.values.contains(where: { record in
+        guard let original = record.originalSpawn else { return false }
+        return original.system == request.identity.system
+          && original.visit == request.identity.visit
+          && original.producer == request.identity.producer
+          && original.sequence == request.identity.sequence
+          && original.member == request.identity.member
+      })
+    {
       return .staleContext
     }
     if context.protection.suppressAmbientShips,

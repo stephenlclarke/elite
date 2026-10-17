@@ -62,6 +62,9 @@ struct MiningWorkToolTests {
     game.key("w")
     #expect(game.selectedFlightTool == .salvageCutter)
     game.key("w")
+    #expect(game.selectedFlightTool == .empPirateBlaster)
+    #expect(game.commander.laser(on: .front) == .naval)
+    game.key("w")
     #expect(game.selectedFlightTool == .combatLaser)
   }
 

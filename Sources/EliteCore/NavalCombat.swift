@@ -65,8 +65,10 @@ extension Game {
     let vector = bodies[target].position - bodies[index].position
     let step = 44 * 18 * delta
     if vector.length <= step + 64 {
-      bodies[target].energy = 0
-      bodies[target].destroyedByPlayer = true
+      if bodies[target].physical?.empCrewPod == nil {
+        bodies[target].energy = 0
+        bodies[target].destroyedByPlayer = true
+      }
       bodies[index].energy = 0
     } else if bodies[target].ecmEnabled && randomByte() < 16 {
       // Missile TACTICS tests proximity first, then a 16/256 ECM chance.

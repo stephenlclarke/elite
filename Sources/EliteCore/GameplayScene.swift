@@ -21,6 +21,15 @@ extension Game {
   }
 
   mutating func beginGameplayVisit(arriving: Bool) {
+    if var state = commander.savedEMPState {
+      for source in state.records.keys {
+        state.records[source]?.hull.binding = nil
+        for i in state.records[source]!.pods.indices {
+          state.records[source]?.pods[i].binding = nil
+        }
+      }
+      commander.savedEMPState = state
+    }
     invalidateNativeStationAuthority()
     activeECMActivation = nil
     let oldPlayer = commander.flightSimulation.player
@@ -185,7 +194,8 @@ extension Game {
     var protection = MissionProtection()
     protection.protectedActors = Set(
       bodies.filter {
-        $0.navalTarget || $0.blackjackRole != nil || $0.physical?.npc?.role == .mission
+        $0.physical?.empCrewPod != nil || $0.navalTarget || $0.blackjackRole != nil
+          || $0.physical?.npc?.role == .mission
           || $0.missionInstanceID != nil
       }
       .compactMap { $0.physical?.identity })

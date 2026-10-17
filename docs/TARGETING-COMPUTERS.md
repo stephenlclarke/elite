@@ -45,7 +45,7 @@ The yellow station compass works without any computer. It shows the station's be
 
 With Military and return fire enabled, an incoming enemy missile identifies its actual living launching ship and establishes a weapons lock. This does not take over steering or enable Spin Hold. If your own ECM confirms destruction of that missile, the computer can launch one retaliatory missile per attacker per ECM activation. It waits for the ECM field to end and the normal one-second missile cooldown, uses ammunition unless unlimited, and requires the source still to be alive and in the forward hemisphere. An order expires after three game seconds; a missing source, ammunition or lock reports failure rather than a launch.
 
-**T** arms a missile, **M** fires it and **U** disarms, clears the weapons lock and cancels queued return fire. **Return** uses the selected flight tool while held; with Combat laser selected, it fires the laser fitted to the current view. Return fire defaults to enabled with Military; XYZZY's **B** preference can disable it and clears queued orders. **W** cycles Combat laser, Mining laser and Salvage cutter; choosing a missing tool reports the required fitting instead of substituting a combat weapon.
+**T** arms a missile, **M** fires it and **U** disarms, clears the weapons lock and cancels queued return fire. **Return** uses the selected flight tool while held; with Combat laser selected, it fires the laser fitted to the current view. Return fire defaults to enabled with Military; XYZZY's **B** preference can disable it and clears queued orders. **W** cycles Combat laser, Mining laser, Salvage cutter and EMP Pirate Blaster; choosing a missing tool reports the required fitting instead of substituting a combat weapon.
 
 ## Independent work modules and tools
 
@@ -57,6 +57,7 @@ The development shop and runtime use the following separate fittings. Prices are
 | Salvage Module | 4,000 | 8 | Basic entitlement and a fitted Basic-or-higher core; eligible wreck and debris guidance |
 | Mining Laser | 800 | 11 | Supported mining utility fitting or a usable forward Mining Laser; extracts rock material |
 | Salvage Cutter | 2,500 | 7 | Supported cutter utility fitting; works on accessible wreck sections |
+| EMP Pirate Blaster | 3,000 | 9 | Separate forward electronic fitting; disables ordinary piloted ships without EMP damage |
 | Fuel Scoops | 525 | 6 | Compatible scoop fitting and available cargo capacity; collects physically reachable material |
 
 **F** cycles Ships, Mining, Salvage and All filters. **Tab** or **R** selects the next eligible target in the current filter. Eligibility checks report missing cores, modules or compatible targets; single-scoop collection also requires Fuel Scoops. **W** cycles the selected tool; **Return** uses it while held. Manual tool use is separate from automatic guidance. The cutter and mining utility do not replace the four combat laser mounts.
@@ -72,6 +73,12 @@ Use the Salvage filter and module for eligible wrecks and generic debris. A host
 Guidance keeps the work parent selected during section work and collection. Manual steering, Q, a new target or Spin Hold cancels guidance; incoming damage interrupts work. W records a manual tool override so stable guidance does not repeatedly replace your selection. Space remains live during work, including combat, collisions and resource use.
 
 These source paths still need the composed build's end-to-end native acceptance: purchase and fit the prerequisites, approach and hold, use each tool, collect finite material, cancel safely, then save and reload. A source implementation or an authored test is not evidence that those checks have executed successfully.
+
+### EMP disablement and colours
+
+EMP uses a real occluded 3,000-unit forward mesh ray, 8 energy, 18 heat and a 1.5-second cooldown. It retains drift and spin and does not grant kills or loot; unlawful use remains aggression. Actual crew profiles provide separately protected occupied escape pods, admitted one at a time when safe actor slots exist. Until the last person ejects, the hull remains occupied. Afterwards the same hull permits cutting with the Salvage Module, cutter and scoops. A later lethal attack records unejected occupants as deceased with the hull and never fabricates rescue pods. Lifetime custody allows 32 hulls and 256 people; full custody refuses another disablement.
+
+Hostile red takes precedence over orange disabled or eligible mining/salvage cues. Scanner, target status and separate world halos share this classification in every display mode, including unselected objects. Orange alone does not authorize cutting an occupied or protected target. White-wireframe hull geometry remains white. EMP equipment/custody requires version 22 world saves; other saves remain version 21. These additions still await integrated native and complete quality acceptance.
 
 ## Saves, ship changes and presentation
 
