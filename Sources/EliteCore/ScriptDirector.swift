@@ -101,6 +101,7 @@ extension Game {
   }
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
+    fields["provider"] = providerMissionQuery(instance)
     fields["children"] = campaignChildrenQuery(instance)
     fields["collections"] = collectionQuery(instance)
     fields["finance"] = financeQuery(instance)
@@ -165,10 +166,21 @@ extension Game {
     return try installScriptMissionAcceptance(
       pack, instance: instance, drainAccepted: drainAccepted)
   }
+  mutating func acceptProviderMission(
+    _ pack: ScriptPack, facts: NativeProviderMissionFacts,
+    instanceID: UUID = UUID()
+  ) throws -> UUID {
+    let state = try providerContractAcceptanceState(pack, facts: facts, instance: instanceID)
+    let instance = try prepareScriptMissionAcceptance(
+      pack, instanceID: instanceID,
+      randomSeed: 0x45_4c49_5445, contract: nil, campaignParent: nil, providerState: state)
+    return try installScriptMissionAcceptance(pack, instance: instance, drainAccepted: true)
+  }
   // Preparation borrows self through a mutating receiver but does not change the game.
   private mutating func prepareScriptMissionAcceptance(
     _ pack: ScriptPack, instanceID: UUID, randomSeed: UInt64,
-    contract: ScriptContractJob?, campaignParent: ScriptChildBinding?
+    contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
+    providerState: ScriptProviderContractState? = nil
   ) throws -> ScriptInstance {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
@@ -190,6 +202,9 @@ extension Game {
       throw MissionPackError(
         "Mission unavailable, already accepted or saved under another version.")
     }
+    guard (pack.manifest.providerContract == nil) == (providerState == nil) else {
+      throw MissionPackError("Ordinary provider acceptance requires fresh native authority.")
+    }
     try ScriptPackLibrary.validateCourier(pack.manifest)
     if pack.manifest.courier != nil, scriptCourierAdmission == nil {
       throw MissionPackError("Courier requires its native board confirmation.")
@@ -199,6 +214,8 @@ extension Game {
       id: instanceID, definition: pack.manifest.stateID,
       version: pack.manifest.version, digest: pack.digest)
     instance.receiptJoins = try scriptReceiptJoins(pack, stage: .acceptance, existing: [:])
+    instance.savedProviderContract = providerState
+    if let providerState { instance.payloads[providerState.terms.payload] = 1 }
     instance.randomState = randomSeed
     instance.contract = contract
     instance.campaignParent = campaignParent
@@ -297,6 +314,11 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
+          if pack.manifest.providerContract != nil,
+            !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
+          {
+            throw MissionPackError("Provider scripts may present finite native transitions only.")
+          }
           if pack.manifest.courier != nil,
             ![
               "milestone.ensure", "journal.append", "dialogue.offer", "courier.issue",
@@ -376,6 +398,11 @@ extension Game {
             try Self.dispatchStandardCommand(
               command, event: event, pack: pack, state: &next,
               original: self, candidate: &candidate)
+          }
+          if pack.manifest.providerContract != nil, command["op"]?.string == "journal.append",
+            let text = command["text"]?.string
+          {
+            candidate.notify(text)
           }
         }
         for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
@@ -707,6 +734,7 @@ extension Game {
     return text.map { $0 + (offeredCollectionText.map { "\n\n" + $0 } ?? "") }
   }
   private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
+    if pack.manifest.providerContract != nil { return providerGalleryEntry(pack, state: state) }
     let reason =
       scriptUnavailable(pack)
       ?? (state == nil && pack.manifest.mission.parentOnly == true

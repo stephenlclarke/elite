@@ -40,6 +40,7 @@ extension Game {
     fields += rrsCourierPageFacts
     fields += financePageFacts
     fields += nativePeoplePageFacts
+    fields += providerContractPageFacts
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []
@@ -66,7 +67,8 @@ extension Game {
     return .init(
       generation: contractBoard.presentationGeneration, detail: contractBoard.detail,
       review: contractBoard.detail
-        ? (contractBoard.peopleQuote?.reviewToken ?? contractBoard.financeQuote?.reviewToken
+        ? (contractBoard.providerQuote?.reviewToken ?? contractBoard.peopleQuote?.reviewToken
+          ?? contractBoard.financeQuote?.reviewToken
           ?? contractBoard.rrsQuote?.reviewToken
           ?? contractBoard.quote?.reviewToken
           ?? contractBoard.reviewToken) : nil,
