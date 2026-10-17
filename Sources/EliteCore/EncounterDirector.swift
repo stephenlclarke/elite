@@ -163,6 +163,16 @@ public struct EncounterDirector: Equatable, Codable, Sendable {
     let hull: Hull = pirate ? .sidewinder : .cobra
     let catalogueShipID = ShipCatalogue.nativeShip(hull)?.id
     return positions.enumerated().map { member, position in
+      let identity = SpawnIdentity(
+        system: system, visit: visit, sequence: decisionCount, member: UInt16(member),
+        producer: .ambient)
+      var memberNPC = npc
+      if let disposition = AmbientEncounterPolicy.sample(
+        identity: identity, seed: context.seed, government: context.government, role: role)
+      {
+        memberNPC.legal = disposition.legalOverride ?? memberNPC.legal
+        if disposition.hostile { memberNPC.intention = .engage(context.player.identity) }
+      }
       let heading =
         (!pirate && outbound
         ? context.anchors.station.exitDirection : context.anchors.station.position - position).unit
@@ -173,11 +183,9 @@ public struct EncounterDirector: Equatable, Codable, Sendable {
       orientation.y = orientation.z.cross(orientation.x).unit
       return
         .init(
-          identity: .init(
-            system: system, visit: visit, sequence: decisionCount, member: UInt16(member),
-            producer: .ambient),
+          identity: identity,
           population: pirate ? .pirate : .civilian, hull: hull,
-          position: position, orientation: orientation, velocity: heading * 60, npc: npc,
+          position: position, orientation: orientation, velocity: heading * 60, npc: memberNPC,
           rock: nil, payload: nil, priority: .ordinary, catalogueShipID: catalogueShipID)
     }
   }
