@@ -178,3 +178,26 @@ import Testing
   paused.key("escape")
   #expect(paused.paused)
 }
+
+@Test func equipmentHelpShowsCabinKeysOnlyForTheSelectedPassengerBerthRow() throws {
+  var game = Game(executive: false)
+  game.screen = .equipment
+  let store = "S - STORE EMPTY PASSENGER CABIN"
+  let refit = "R - REFIT STORED PASSENGER CABIN"
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
+  let commander = game.commander
+  game.key("k")
+  let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
+  #expect(rows.contains(store) && rows.contains(refit))
+  #expect(rows.contains("RETURN - PURCHASE / REFUEL"))
+  #expect(rows.contains("UP / DOWN / SCROLL - SELECT ITEM"))
+  #expect(game.commander == commander)
+  game.key("escape")
+  game.selection = 0
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(refit))
+  game.selection = Equipment.all.count - 1
+  game.screen = .inventory
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
+}

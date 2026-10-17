@@ -50,6 +50,25 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let fields = game.commander.gameShipProfile.fields
   #expect(fields.first { $0.key == "fitted_passenger_berths" }?.number == 2)
   #expect(fields.first { $0.key == "required_crew_including_commander" }?.number == 1)
+  game.openShowroom()
+  let crew = try #require(game.showroomComparison.first { $0.label == "Required crew" })
+  let cabins = try #require(game.showroomComparison.first { $0.label == "Fitted passenger berths" })
+  #expect(crew.baseline.contains("1 people") && crew.selected.contains("1 people"))
+  #expect(cabins.baseline.contains("2 berths") && cabins.selected.contains("2 berths"))
+  game.viewportWidth = 1512
+  game.viewportHeight = 982
+  game.showroom.scroll = Display.showroomMaximumScroll(game)
+  let comparison = Display.presentation(game, width: 1512, height: 982).labels.map(\.text).joined(
+    separator: " ")
+  #expect(comparison.contains("Fitted passenger berths") && comparison.contains("2 berths"))
+  game.showroom.sourceProfiles = true
+  game.showroom.scroll = Display.showroomMaximumScroll(game)
+  let current = Display.presentation(game, width: 1512, height: 982).labels.map(\.text).joined(
+    separator: " ")
+  #expect(current.contains("Required crew: 1; reserved crew quarters: 1"))
+  #expect(current.contains("Fitted berths: 2; passengers aboard: 0; free places: 2"))
+  #expect(current.contains("Cabin footprint: 10 t") && current.contains("10 t free (physical)"))
+  game.screen = .equipment
   game.commander.fuelStorageUnits = 4
   game.commander.equipment.formUnion([
     "Fuel Scoops", "E.C.M. System", "Extra Energy Unit", Equipment.navalEnergyUnit,
