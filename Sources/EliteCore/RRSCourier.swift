@@ -105,7 +105,9 @@ extension Game {
         issues.append("This offer is no longer available.")
       }
       if ledger?.active != nil { issues.append("Only one RRS assignment may be active.") }
-      if (ledger?.jobs.count ?? 1024) >= 1024 { issues.append("RRS receipt capacity reached.") }
+      if (ledger?.jobs.count ?? RRSCourierLedger.maximumJobs) >= RRSCourierLedger.maximumJobs {
+        issues.append("RRS receipt capacity reached.")
+      }
       if case .living(let context) = nativeOriginalMainStationDestination,
         context.identity.system == board.station.system,
         context.identity.world == board.station.world, acceptsNativeMainStationDestination(context)
