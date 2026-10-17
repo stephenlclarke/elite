@@ -45,6 +45,21 @@ struct AlienAttachmentEffects: Equatable, Sendable {
       guard !count.overflow, !bonus.overflow else { throw AlienAttachmentError.arithmeticOverflow }
       values[item.kind] = .init(count: count.partialValue, bonusBasisPoints: bonus.partialValue)
     }
+    return try resolve(summaries: values, normalBase: normalBase)
+  }
+
+  static func resolve(
+    validated: AlienStorageValidatedState, owner: UUID, activeHull: UUID,
+    normalBase: AlienAttachmentBase
+  ) throws -> Self {
+    guard validated.owner == owner else { throw AlienAttachmentError.wrongOwner }
+    guard normalBase.valid else { throw AlienAttachmentError.invalidState }
+    return try resolve(summaries: validated.summaries(for: activeHull), normalBase: normalBase)
+  }
+
+  private static func resolve(
+    summaries values: [AlienModuleKind: AlienAttachmentSummary], normalBase: AlienAttachmentBase
+  ) throws -> Self {
     func fold(_ base: Double, kind: AlienModuleKind) throws -> Double {
       let value = base * values[kind]!.multiplier
       guard value.isFinite else { throw AlienAttachmentError.arithmeticOverflow }
