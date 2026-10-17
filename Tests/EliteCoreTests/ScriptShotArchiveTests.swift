@@ -7,6 +7,13 @@ import Testing
 /// frozen native judgement. It does not claim atomic firing or construct an impact proof.
 func actualShotArchiveFixture() throws -> (Game, ScriptNPCShot) {
   var (game, instance, index) = try actualMissionBridgeGame()
+  let archived = try initializeActualShotArchive(&game, instance: instance, index: index)
+  return (game, archived)
+}
+
+private func initializeActualShotArchive(_ game: inout Game, instance: UUID, index: Int) throws
+  -> ScriptNPCShot
+{
   game.ensurePhysicalActors()
   let body = game.bodies[index]
   let npc = try #require(body.scriptNPC)
@@ -41,7 +48,7 @@ func actualShotArchiveFixture() throws -> (Game, ScriptNPCShot) {
     component: shot.component, velocity: shot.velocity, age: shot.age, lifetime: shot.lifetime,
     damage: shot.damage, radius: shot.radius, collisionDelay: shot.collisionDelay,
     nativeAttribution: archive)
-  return (game, archived)
+  return archived
 }
 
 struct ScriptShotArchiveTests {
