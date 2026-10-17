@@ -98,6 +98,6 @@ extension Game {
     candidate.commander.capitalRewardClaimed = true
     candidate.preserveEquipmentResourceFractions(from: self)
     self = candidate
-    notify("ELITE BONUS: CAPITAL SHIP SHIELD BOOSTER")
+    notify("ELITE BONUS: ADVANCED II SHIELD MODULE")
   }
 }

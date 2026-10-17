@@ -208,7 +208,7 @@ The Market uses consistent category colours: green Agricultural, cyan Consumer, 
 
 ## Navigation, fuel storage and charts
 
-Equip Ship groups every supported item under Fuel Storage, Lasers, Shield Boosters, Targeting Computers, Navigation Computers, Energy Systems, Defence & Ordnance, Cargo & Collection, Travel, Emergency Equipment and Passenger Facilities. Yellow headings cannot be selected or bought. Item names are indented, prices/statuses are right aligned, arrows skip headings, and clicking or trackpad scrolling browses the list. Unavailable items show their required tech level; Naval/Elite grants remain visible without a fictitious purchase price. Selection follows item identity when sections reorder the display.
+Equip Ship groups every supported item under Fuel Storage, Lasers, Shield Modules, Targeting Computers, Navigation Computers, Energy Systems, Defence & Ordnance, Electronic Weapons, Cargo & Collection, Travel, Emergency Equipment and Passenger Facilities. Yellow headings cannot be selected or bought. Item names are indented, prices/statuses are right aligned, arrows skip headings, and clicking or trackpad scrolling browses the list. Unavailable items show their required tech level; Naval/Elite grants remain visible without a fictitious purchase price. Selection follows item identity when sections reorder the display.
 
 ### Passenger cabins
 

@@ -5,6 +5,134 @@ import Testing
 @testable import EliteCore
 @testable import EliteMac
 
+@MainActor
+private func nativeEMPFrameImage(_ frame: Frame) throws -> CGImage {
+  let context = try #require(
+    CGContext(
+      data: nil, width: 768, height: 768, bitsPerComponent: 8, bytesPerRow: 768 * 4,
+      space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+  )
+  context.setFillColor(CGColor(gray: 0, alpha: 1))
+  context.fill(CGRect(x: 0, y: 0, width: 768, height: 768))
+  context.translateBy(x: 0, y: 768)
+  context.scaleBy(x: 1, y: -1)
+  drawFrame(frame, context: context, rect: CGRect(x: 0, y: 0, width: 768, height: 768))
+  return try #require(context.makeImage())
+}
+
+private func nativeEMPBytes(_ image: CGImage) throws -> Data {
+  let data = try #require(image.dataProvider?.data)
+  return data as Data
+}
+
+@MainActor
+private func captureNativeEMPView(_ view: GameView) throws -> (image: CGImage, seconds: Double) {
+  try #require(view.bounds.width == 768 && view.bounds.height == 768)
+  let context = try #require(
+    CGContext(
+      data: nil, width: 768, height: 768, bitsPerComponent: 8, bytesPerRow: 768 * 4,
+      space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+  )
+  context.translateBy(x: 0, y: 768)
+  context.scaleBy(x: 1, y: -1)
+  NSGraphicsContext.saveGraphicsState()
+  defer { NSGraphicsContext.restoreGraphicsState() }
+  NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+  let started = ProcessInfo.processInfo.systemUptime
+  view.draw(view.bounds)
+  let seconds = ProcessInfo.processInfo.systemUptime - started
+  return (try #require(context.makeImage()), seconds)
+}
+
+@MainActor
+private func verifyNativeEMPPixels(_ view: GameView, source: ActorIdentity, ink: Ink) throws {
+  let original = view.game
+  defer { view.game = original }
+  for style in ShipDisplayStyle.allCases {
+    var game = original
+    game.commander.shipDisplayStyle = style
+    let started = ProcessInfo.processInfo.systemUptime
+    let frame = Display.presentation(game, width: 768, height: 768)
+    view.game = game
+    let captured = try captureNativeEMPView(view)
+    let image = captured.image
+    let oracleStarted = ProcessInfo.processInfo.systemUptime
+    let oracle = try #require(imageForGame(game, width: 768, height: 768))
+    let oracleSeconds = ProcessInfo.processInfo.systemUptime - oracleStarted
+    #expect(try nativeEMPBytes(image) == nativeEMPBytes(oracle))
+    try #require(captured.seconds > 0 && oracleSeconds > 0)
+    let pixels = try nativeEMPBytes(image)
+    #expect(try pixels == nativeEMPBytes(nativeEMPFrameImage(frame)))
+    var withoutCue = frame
+    func stripped(_ graphics: [Graphic]) -> [Graphic] {
+      graphics.filter { if case .glow = $0 { false } else { true } }
+    }
+    withoutCue.worldGraphics = stripped(frame.worldGraphics)
+    withoutCue.graphics = stripped(frame.graphics)
+    let baseline = try nativeEMPBytes(nativeEMPFrameImage(withoutCue))
+    var colouredDifference = 0
+    var white = 0
+    for y in 0..<768 {
+      for x in 0..<768 {
+        // The established native bitmap convention addresses logical y directly after the y-flip.
+        let offset = y * image.bytesPerRow + x * 4
+        let r = Int(pixels[offset])
+        let g = Int(pixels[offset + 1])
+        let b = Int(pixels[offset + 2])
+        let inside = frame.flightClip.contains(.init(Double(x), Double(y)))
+        if inside, r > 230, g > 230, b > 230 { white += 1 }
+        if pixels[offset..<offset + 4] != baseline[offset..<offset + 4] {
+          #expect(inside)
+          if ink == .red, r > g + 20, r > b + 20 { colouredDifference += 1 }
+          if ink == .orange, r > g, g > b + 10 { colouredDifference += 1 }
+        }
+      }
+    }
+    #expect(colouredDifference > 0)
+    if style == .whiteWireframe {
+      #expect(!frame.shipLines.isEmpty && frame.shipLines.allSatisfy { $0.ink == .white })
+      #expect(white > 0)
+    }
+    let index = try #require(game.bodies.firstIndex { $0.physical?.empSource == source })
+    for hidden in [false, true] {
+      var occluded = game
+      if hidden {
+        occluded.bodies[index].position = .init(10000, 0, 1000)
+      } else {
+        occluded.bodies.append(.init(id: 999, hull: .station, position: .init(0, 0, 350)))
+      }
+      let clipped = Display.presentation(occluded, width: 768, height: 768)
+      #expect(!clipped.worldGraphics.contains { if case .glow = $0 { true } else { false } })
+      var strippedFrame = clipped
+      strippedFrame.worldGraphics = stripped(clipped.worldGraphics)
+      strippedFrame.graphics = stripped(clipped.graphics)
+      view.game = occluded
+      let actual = try captureNativeEMPView(view).image
+      let clippedOracle = try #require(imageForGame(occluded, width: 768, height: 768))
+      #expect(try nativeEMPBytes(actual) == nativeEMPBytes(clippedOracle))
+      #expect(try nativeEMPBytes(actual) == nativeEMPBytes(nativeEMPFrameImage(strippedFrame)))
+    }
+    if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
+      let directory = URL(fileURLWithPath: path, isDirectory: true)
+      try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+      let name = "emp-\(ink == .red ? "hostile" : "salvage")-\(style.rawValue)"
+      let png = try #require(
+        NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+      try png.write(to: directory.appendingPathComponent(name + ".png"))
+      let evidence: [String: Any] = [
+        "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"] ?? "local",
+        "colouredCuePixels": colouredDifference, "whiteWorldPixels": white,
+        "actualDrawSeconds": captured.seconds, "oracleDrawSeconds": oracleSeconds,
+        "actualToOracleRatio": captured.seconds / oracleSeconds,
+        "verificationSeconds": ProcessInfo.processInfo.systemUptime - started,
+        "foregroundAndOffscreenCuePixels": 0,
+      ]
+      try JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys])
+        .write(to: directory.appendingPathComponent(name + ".json"))
+    }
+  }
+}
+
 extension NativeViewTests {
   @MainActor @Test func nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople() async throws {
     _ = NSApplication.shared
@@ -73,6 +201,7 @@ extension NativeViewTests {
     #expect(disabled.id == original.id && disabled.energy == original.energy)
     #expect(view.game.targetColourCue(for: disabled) == .hostile)
     #expect(view.game.empTargetStatus(disabled)?.contains("CREW ABOARD") == true)
+    try verifyNativeEMPPixels(view, source: source, ink: .red)
     for _ in 0..<40 { await delegate.processFrame(in: view, delta: { 0.1 }) }
     let record = try #require(view.game.commander.savedEMPState?.records[source])
     try #require(record.crewAboard == 0 && record.pods.count == record.crewTotal)
@@ -83,6 +212,7 @@ extension NativeViewTests {
     #expect(view.game.salvageCuttingIsAllowed(salvage, metadata: metadata, context: context))
     let people = Set(view.game.bodies.compactMap { $0.physical?.empCrewPod })
     #expect(people.count == record.crewTotal)
+    try verifyNativeEMPPixels(view, source: source, ink: .orange)
     // Use the player's real filter/target commands and controller to reach a cutter hold.
     for (code, text) in [(UInt16(3), "f"), (3, "f"), (15, "r")] {
       view.keyDown(with: try event(code, text, down: true))
@@ -94,8 +224,9 @@ extension NativeViewTests {
     }
     try #require(view.game.workGuidance?.holding == true)
     try #require(view.game.selectedFlightTool == .salvageCutter)
-    view.keyDown(with: try event(36, "\r", down: true))
     let section = WreckSectionIdentity(wreck: record.wreck, section: cargoSection.index)
+    try #require(view.game.workGuidance?.surface.section == section)
+    view.keyDown(with: try event(36, "\r", down: true))
     for _ in 0..<1200 where !view.game.commander.salvageLedger.isDepleted(section) {
       await delegate.processFrame(in: view, delta: { 0.1 })
     }

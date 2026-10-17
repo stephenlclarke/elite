@@ -24,15 +24,38 @@ extension Display {
       let ink = game.targetColourCue(for: body, context: context).ink
     else { return }
     let center = game.viewPosition(body.position)
-    guard center.z > 1, frame.flightClip.contains(projection.point(center)),
-      let hit = GameplayRaycast.nearest(
-        origin: .init(0, 0, 0), direction: body.position,
-        maxDistance: body.position.length + 1e6, scene: scene), hit.target == .body(body.id)
-    else { return }
-    let vertices = game.gameplayMesh(for: body).vertices.map {
+    guard center.z > 1, frame.flightClip.contains(projection.point(center)) else { return }
+    let mesh = game.gameplayMesh(for: body)
+    let vertices = mesh.vertices.map {
       game.viewPosition(body.modelVector($0) + body.position)
     }
     guard !vertices.isEmpty, vertices.allSatisfy({ $0.finite && $0.z > 1 }) else { return }
+    func visibleHit(toward point: Vector3) -> GameplayHit? {
+      guard point.finite,
+        let hit = GameplayRaycast.nearest(
+          origin: .init(0, 0, 0), direction: point,
+          maxDistance: point.length + 1, scene: scene), hit.target == .body(body.id)
+      else { return nil }
+      return hit
+    }
+    var visible = visibleHit(toward: body.position)
+    if visible == nil {
+      // Hollow/asymmetric meshes need not contain their body origin. Sample actual face surfaces,
+      // keeping the same nearest real mesh/celestial hit proof and a fixed per-object ray budget.
+      let samples = min(32, mesh.faces.count)
+      for sample in 0..<samples {
+        let face = mesh.faces[sample * mesh.faces.count / samples]
+        guard face.count >= 3, face.allSatisfy(mesh.vertices.indices.contains) else { continue }
+        let local =
+          face.reduce(Vector3(0, 0, 0)) { $0 + mesh.vertices[$1] }
+          * (1 / Double(face.count))
+        if let hit = visibleHit(toward: body.modelVector(local) + body.position) {
+          visible = hit
+          break
+        }
+      }
+    }
+    guard let hit = visible else { return }
     let points = vertices.map(projection.point)
     let minX = points.map(\.x).min()!
     let maxX = points.map(\.x).max()!

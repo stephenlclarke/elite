@@ -14,7 +14,7 @@ public enum EquipmentGroups {
         "Lasers",
         ["Pulse Laser", "Mining Laser", "Beam Laser", "Military Laser", Equipment.navalLaser]
       ),
-      ("Shield Boosters", ShieldBooster.allCases.map(\.equipmentName)),
+      ("Shield Modules", ShieldBooster.allCases.map(\.equipmentName)),
       (
         "Targeting Computers",
         TargetingTier.allCases.map(\.equipmentName)
