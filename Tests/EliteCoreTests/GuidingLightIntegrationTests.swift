@@ -296,10 +296,11 @@ struct GuidingLightIntegrationTests {
     #expect(pack.manifest.stateID == "project.crimbo/guiding-light" && terms.valid)
     #expect(terms.observation.checkpoints == [6000, 12000, 18000])
     #expect(terms.observation.escortSeconds == 60 && terms.observation.contactSeconds == 5)
-    #expect(
-      [terms.fullReward, terms.urgentReward, terms.recoveryReward, terms.crewReward] == [
-        30000, 15000, 20000, 5000,
-      ])
+    let actualRewards: [Int] = [
+      terms.fullReward, terms.urgentReward, terms.recoveryReward, terms.crewReward,
+    ]
+    let expectedRewards: [Int] = [30000, 15000, 20000, 5000]
+    #expect(actualRewards == expectedRewards)
     #expect(pack.manifest.mission.milestones.count == 1)
     #expect(
       pack.manifest.encounters == nil && pack.manifest.npcs == nil && pack.manifest.trial == nil)
