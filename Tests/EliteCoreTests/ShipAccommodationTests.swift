@@ -10,7 +10,7 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
   let ships = ShipCatalogue.all.filter {
     $0.game != nil && $0.profiles.contains(where: { $0.group == "project-refit-v1" })
   }
-  #expect(ships.count == 158)
+  #expect(ships.count == 161)
   for ship in ships {
     let profile = try ShipAccommodationProfile(ship: ship)
     #expect(profile.operatingCrew >= 1 && profile.intrinsicCrewQuarters >= profile.operatingCrew)
@@ -18,7 +18,9 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
       profile: profile, holdTonnes: ship.game!.cargo,
       freightTonnes: 0, otherFittedCargoTonnes: 0, otherFittedEquipmentUnits: 0, berths: [])
     #expect(report.allowed && report.usableCargo == ship.game!.cargo)
-    #expect(report.freeCompatiblePlaces == 0 && profile.initialCharterBerths == 0)
+    #expect(report.freeCompatiblePlaces == 0)
+    // The selected Sunray refit is the sole authored first-acquisition berth exception.
+    #expect(profile.initialCharterBerths == (ship.id == "SH169" ? 1 : 0))
   }
 }
 @Test func aPassengerPartyNeedsActuallyFittedSparePlacesAndBothFitBudgets() throws {
