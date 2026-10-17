@@ -13,6 +13,9 @@ extension GameRuntime {
         let legacy =
           candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
         candidate.ensureScriptCalendar(origin: legacy ? .inactiveLegacyMigration : .newCommander)
+        if candidate.jumpCountdown != nil {
+          candidate.commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
+        }
       }
       candidate.persistScriptActors()
       let prepared = try Self.prepareNativeSaveState(candidate)
@@ -65,9 +68,15 @@ extension GameRuntime {
     }
   }
   static func writeCommander(_ candidate: inout Game, to url: URL) throws {
-    if candidate.requiresScriptDurability && candidate.commander.scriptState.calendarLedger == nil {
+    try candidate.commander.prepareEquipment()
+    if (candidate.requiresScriptDurability || candidate.commander.usesModularDriveSaveVersion)
+      && candidate.commander.scriptState.calendarLedger == nil
+    {
       let legacy = candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
       candidate.ensureScriptCalendar(origin: legacy ? .inactiveLegacyMigration : .newCommander)
+      if candidate.jumpCountdown != nil {
+        candidate.commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
+      }
     }
     candidate.persistScriptActors()
     let prepared = try Self.prepareNativeSaveState(candidate)

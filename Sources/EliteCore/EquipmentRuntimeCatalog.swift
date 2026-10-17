@@ -35,8 +35,9 @@ enum EquipmentRuntimeCatalog {
     let ammunition = EquipmentPurchaseNode(
       id: standardMissile, displayName: "Missile", policy: .repeatable(maximumCount: 256))
     return .init(
-      revision: modular.revision,
-      nodes: modular.nodes + lasers + utilityNodes + [storage, ammunition],
+      revision: modular.revision + 1,
+      nodes: modular.nodes + HyperspaceDriveDefinition.purchaseGraph.nodes + lasers + utilityNodes
+        + [storage, ammunition],
       aliases: modular.aliases + [
         .init(alias: .init(family: ammunitionFamily, key: "Missile"), canonical: standardMissile)
       ])
@@ -53,6 +54,7 @@ enum EquipmentRuntimeCatalog {
     case EquipmentPurchaseCatalog.shields: EquipmentModuleTemplates.shield
     case EquipmentPurchaseCatalog.navigation: EquipmentModuleTemplates.navigation
     case EquipmentPurchaseCatalog.energy: EquipmentModuleTemplates.energy
+    case HyperspaceDriveDefinition.purchaseFamily: HyperspaceDriveDefinition.componentDefinition
     default: nil
     }
   }
@@ -87,6 +89,7 @@ enum EquipmentRuntimeCatalog {
     case .shield: slot = "shield"
     case .energy: slot = "energy"
     case .navigation: slot = "navigation"
+    case .drive: slot = "drive"
     case .targetingCore: slot = "targeting.core"
     case .targetingMining: slot = "targeting.mining"
     case .targetingSalvage: slot = "targeting.salvage"
@@ -100,6 +103,7 @@ enum EquipmentRuntimeCatalog {
     case EquipmentPurchaseCatalog.shields: return .shield
     case EquipmentPurchaseCatalog.navigation: return .navigation
     case EquipmentPurchaseCatalog.energy: return .energy
+    case HyperspaceDriveDefinition.purchaseFamily: return .drive
     case EquipmentPurchaseCatalog.targeting: return .targetingCore
     case EquipmentPurchaseCatalog.mining: return .targetingMining
     case EquipmentPurchaseCatalog.salvage: return .targetingSalvage
@@ -114,7 +118,7 @@ enum EquipmentRuntimeCatalog {
     let pylonCount = (1...32).contains(performance.missiles) ? performance.missiles : 0
     let pylonSlots = Set((0..<pylonCount).map(ComponentFittingSlot.missilePylon))
     var slots: Set<ComponentFittingSlot> = [
-      .shield, .energy, .navigation, .targetingCore, .targetingMining, .targetingSalvage,
+      .shield, .energy, .navigation, .drive, .targetingCore, .targetingMining, .targetingSalvage,
     ]
     slots.formUnion(
       LaserMount.allCases.filter { performance.supports($0) }.map(ComponentFittingSlot.laser))

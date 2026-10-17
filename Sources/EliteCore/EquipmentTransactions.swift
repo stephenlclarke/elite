@@ -30,11 +30,13 @@ extension Commander {
   mutating func prepareEquipment(legacy: Bool = true) throws {
     if legacyOwnedEquipment != nil {
       try migrateLegacyOwnedEquipment(owner: UUID(), hull: UUID()) { UUID() }
+      try migrateStockHyperspaceDrive { UUID() }
       return
     }
     guard equipmentInventory == nil else {
       try validateEquipmentState()
       if savedEquipmentVersion == 1 { try migrateFiniteAmmunition { UUID() } }
+      try migrateStockHyperspaceDrive { UUID() }
       return
     }
     try initializeEquipment(owner: UUID(), hull: UUID(), legacy: legacy) { UUID() }
@@ -72,7 +74,7 @@ extension Commander {
         if case .fuelStorage = $0.location?.slot { return true }
         return false
       }.count
-    if savedEquipmentVersion == 2 {
+    if (savedEquipmentVersion ?? 0) >= 2 {
       missiles =
         inventory.items.filter {
           $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil

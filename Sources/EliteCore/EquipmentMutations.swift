@@ -8,6 +8,7 @@ extension Commander {
       ("Elite Shield Module", ComponentFittingSlot.shield),
       (NavigationTier.military.equipmentName, .navigation),
       (Equipment.eliteEnergyUnit, .energy),
+      (HyperspaceDriveTier.advanced.label, .drive),
       (TargetingTier.military.equipmentName, .targetingCore),
       ("Targeting: Mining Module", .targetingMining),
       ("Targeting: Salvage Module", .targetingSalvage),

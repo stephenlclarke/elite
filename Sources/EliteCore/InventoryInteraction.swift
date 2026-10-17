@@ -170,7 +170,8 @@ extension Game {
     let details = effect.progression.absoluteEffects.keys.sorted { $0.rawValue < $1.rawValue }
       .map { key in
         inventoryStatChange(
-          key, before: effect.progression.before[key]!, after: effect.progression.after[key]!)
+          key, before: effect.progression.before[key]!, after: effect.progression.after[key]!,
+          family: effect.progression.resultingGrade.family)
       }.joined(separator: ", ")
     return .init(
       label: "Fit now", detail: inventoryAxisLabel(axis) + ": " + details,
@@ -291,7 +292,9 @@ extension Game {
     return slot
   }
   private func inventoryMayStore(_ item: OwnedEquipmentItem) -> Bool {
-    ![ComponentFittingSlot.shield, .energy, .navigation].contains { $0 == item.location?.slot }
+    ![ComponentFittingSlot.shield, .energy, .navigation, .drive].contains {
+      $0 == item.location?.slot
+    }
   }
   private func inventorySlotLabel(_ slot: ComponentFittingSlot) -> String {
     switch slot {
@@ -314,6 +317,7 @@ extension Game {
     case .shield: "shield"
     case .energy: "energy"
     case .navigation: "navigation"
+    case .drive: "hyperspace drive"
     case .targetingCore: "targeting core"
     case .targetingMining: "Mining module"
     case .targetingSalvage: "Salvage module"
@@ -343,7 +347,8 @@ extension Game {
       + quote.progress.map { progress in
         inventoryComponentAxisLabel(progress.axis) + ": "
           + inventoryStatChange(
-            progress.axis, before: progress.actual, after: progress.threshold, separator: " / ")
+            progress.axis, before: progress.actual, after: progress.threshold,
+            family: quote.resultingGrade.family, separator: " / ")
       }
   }
   private func inventoryComponentAxisLabel(_ axis: ComponentAxis) -> String {
@@ -361,7 +366,8 @@ extension Game {
     }
   }
   private func inventoryStatChange(
-    _ axis: ComponentAxis, before: Double, after: Double, separator: String = " -> "
+    _ axis: ComponentAxis, before: Double, after: Double,
+    family: ComponentFamily, separator: String = " -> "
   ) -> String {
     let factor: Double
     let unit: String
@@ -379,7 +385,11 @@ extension Game {
       factor = commander.nativePerformance.recharge
       unit = " units/s"
     case .jumpSpool:
-      factor = commander.nativePerformance.spool
+      factor =
+        family == HyperspaceDriveDefinition.family
+        ? commander.fittedComponent(at: .navigation)?.statistics[.jumpSpool] ?? 1
+        : commander.fittedComponent(at: .drive)?.statistics[.jumpSpool]
+          ?? HyperspaceDriveTier.basic.activationSeconds
       unit = "s"
     case .jumpFuelCost:
       factor = 100

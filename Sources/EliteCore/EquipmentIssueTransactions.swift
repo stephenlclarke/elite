@@ -252,7 +252,7 @@ public enum EquipmentIssueTransactions {
           index: index, packDigest: obligation.source.packDigest)
   }
 
-  /// Only the three native basic foundations are intrinsic equipment-capacity exemptions.
+  /// Only the native basic foundations are intrinsic equipment-capacity exemptions.
   /// Acquisition provenance and actual fitted slot matter even when node identities match.
   public static func isIntrinsicFoundation(_ item: OwnedEquipmentItem) -> Bool {
     guard item.provenance == .standard,
@@ -263,7 +263,8 @@ public enum EquipmentIssueTransactions {
     switch (item.node.family, slot) {
     case (EquipmentPurchaseCatalog.shields, .shield),
       (EquipmentPurchaseCatalog.energy, .energy),
-      (EquipmentPurchaseCatalog.navigation, .navigation):
+      (EquipmentPurchaseCatalog.navigation, .navigation),
+      (HyperspaceDriveDefinition.purchaseFamily, .drive):
       return true
     default:
       return false
@@ -315,7 +316,8 @@ public enum EquipmentIssueTransactions {
     guard request.devices.allSatisfy({ !retainedIdentities.contains($0.id) }) else {
       throw EquipmentIssueError.identityMismatch
     }
-    guard request.devices.count <= OwnedEquipmentInventory.maximumCount - inventory.items.count
+    guard
+      request.devices.count <= OwnedEquipmentInventory.maximumCount - inventory.ordinaryItemCount
     else { throw OwnedEquipmentError.capacity }
     guard EquipmentRuntimeCatalog.graph.nodes.contains(where: { $0.id == node })
     else { throw OwnedEquipmentError.unknownNode }

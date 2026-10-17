@@ -33,7 +33,7 @@ extension Commander {
       }
       return
     }
-    guard savedEquipmentVersion == 1 || savedEquipmentVersion == 2 else {
+    guard [1, 2, 3].contains(savedEquipmentVersion ?? 0) else {
       throw CommanderEquipmentError.invalidVersion
     }
     guard let history = savedEquipmentPurchaseHistory, history.owner == inventory.owner else {
@@ -59,6 +59,15 @@ extension Commander {
             $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
           }).count
       else { throw EquipmentMigrationError.invalidCrosswalk }
+    }
+    if savedEquipmentVersion == 3 {
+      guard inventory.items.filter({ $0.location?.slot == .drive }).count == 1,
+        fittedComponent(at: .drive)?.origin.identity.family == HyperspaceDriveDefinition.family
+      else { throw CommanderEquipmentError.incompleteState }
+    } else if inventory.items.contains(where: {
+      $0.node.family == HyperspaceDriveDefinition.purchaseFamily
+    }) {
+      throw CommanderEquipmentError.invalidVersion
     }
     try EquipmentPurchaseProgression.validateHistory(history, graph: EquipmentRuntimeCatalog.graph)
     try inventory.validate(
@@ -130,6 +139,10 @@ extension Commander {
       energy = "Basic Energy System"
     }
     try append(energy, at: .energy, standard: energy == "Basic Energy System")
+    let drive =
+      HyperspaceDriveTier.allCases.reversed().first { equipment.contains($0.label) }
+      ?? (xyzzyGrant ? .advanced : .basic)
+    try append(drive.label, at: .drive, standard: drive == .basic)
     if let core = targetingTier { try append(core.equipmentName, at: .targetingCore) }
     for mount in LaserMount.allCases {
       if let laser = laser(on: mount) {
@@ -176,7 +189,7 @@ extension Commander {
     }
     savedEquipmentInventory = inventory
     savedEquipmentPurchaseHistory = .init(owner: owner, legacy: legacyEntitlements)
-    savedEquipmentVersion = 2
+    savedEquipmentVersion = 3
   }
 
   func migratedComponent(node: EquipmentNodeID, name: String, id: UUID) throws

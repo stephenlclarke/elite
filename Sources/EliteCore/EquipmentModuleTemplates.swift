@@ -59,7 +59,9 @@ public enum EquipmentModuleTemplates {
     },
     terminalLimits: [.energyCapacity: 1.3, .energyRecharge: 5.2])
 
-  public static let definitions = [shield, navigation, energy]
+  public static let definitions = [
+    shield, navigation, energy, HyperspaceDriveDefinition.componentDefinition,
+  ]
 
   /// Saved keys are interpreted in their original namespace, never as new display labels.
   /// Shield mappings retain the immutable old origin separately from its reconciled grade.

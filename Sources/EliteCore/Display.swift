@@ -546,6 +546,7 @@ public enum Display {
         "RATING: " + game.commander.rank,
         "TARGETING: " + (game.commander.targetingTier?.label ?? "NONE"),
         "NAVIGATION: " + (game.commander.navigationTier?.label ?? "NONE"),
+        "DRIVE: " + (game.commander.fittedEquipment(at: .drive)?.node.key ?? "NONE"),
         "FRONT LASER: " + (game.commander.laser(on: .front)?.equipmentName ?? "EMPTY"),
         "SHIELDS: " + (game.commander.shieldBooster?.label ?? "STANDARD"), "EQUIPMENT:",
       ]

@@ -28,7 +28,13 @@ public enum EquipmentGroups {
       ("Defence & Ordnance", ["Missile", "E.C.M. System", "Energy Bomb"]),
       ("Electronic Weapons", [Equipment.empPirateBlaster]),
       ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),
-      ("Travel", ["Galactic Hyperdrive"]),
+      (
+        "Travel",
+        [
+          HyperspaceDriveTier.intermediate.label, HyperspaceDriveTier.advanced.label,
+          "Galactic Hyperdrive",
+        ]
+      ),
       ("Emergency Equipment", ["Escape Pod"]),
       ("Passenger Facilities", [PassengerCabin.equipmentName]),
     ]
