@@ -132,6 +132,315 @@ private func bridgeLaserLaterClockRefusesProof(
   }
 }
 
+private final class BridgeLegacyPlasmaFixture: Sendable {
+  let game: Game
+  let instance: UUID
+  let owner: UUID
+  let componentID: UUID
+  let speed: Double
+  let lifetime: Double
+  let delay: Double
+  let shotID: UUID
+  let shot: ScriptNPCShot
+  let live: SpaceBody
+  let projectileBodyID: Int
+
+  init(
+    game: Game, instance: UUID, owner: UUID, componentID: UUID, speed: Double, lifetime: Double,
+    delay: Double, shotID: UUID, shot: ScriptNPCShot, live: SpaceBody, projectileBodyID: Int
+  ) {
+    self.game = game
+    self.instance = instance
+    self.owner = owner
+    self.componentID = componentID
+    self.speed = speed
+    self.lifetime = lifetime
+    self.delay = delay
+    self.shotID = shotID
+    self.shot = shot
+    self.live = live
+    self.projectileBodyID = projectileBodyID
+  }
+}
+
+private func makeBridgeLegacyPlasmaFixture() throws -> BridgeLegacyPlasmaFixture {
+  let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    .deletingLastPathComponent().deletingLastPathComponent()
+    .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+  let pack = try ScriptPackLibrary.read(directory)
+  var game = Game(executive: false)
+  game.screen = .status
+  game.scriptPacks = [pack]
+  let instance = try game.acceptScriptMission(pack)
+  game.launch()
+  game.emitScriptEvent("station.undocked")
+  game.drainScriptEvents()
+  let source = try #require(
+    game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+  let owner = try #require(source.missionActorID)
+  let componentSpec = try #require(
+    source.scriptNPC?.fit.definition.components?.first {
+      ($0.weapons ?? []).contains { $0.kind == .plasma }
+    })
+  let weapon = try #require(componentSpec.weapons?.first { $0.kind == .plasma })
+  let componentID = try #require(source.scriptNPC?.components[componentSpec.id]?.identity)
+  let speed = try #require(weapon.projectileSpeed)
+  let lifetime = try #require(weapon.lifetime)
+  let delay = try #require(weapon.collisionDelay)
+  let shotID = UUID(uuidString: "00000000-0000-0000-0000-000000000050")!
+  let shot = ScriptNPCShot(
+    identity: shotID, owner: owner, instance: instance,
+    weapon: weapon.id, component: componentID, velocity: .init(0, 0, speed), age: 0,
+    lifetime: lifetime, damage: weapon.damage, radius: try #require(weapon.collisionRadius),
+    collisionDelay: delay)
+  game.bodies = []
+  game.celestials = []
+  let context = try #require(game.gameplayContext())
+  let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocatedSpawn)
+  let request = SpawnRequest(
+    identity: .init(
+      system: context.system, visit: context.visit,
+      sequence: sequence, member: 0, producer: .ordnance), population: .projectile,
+    hull: .missile, position: game.commander.flightSimulation.pose.systemPoint(.init(0, 0, 1000)),
+    orientation: .init(), velocity: shot.velocity, npc: nil, rock: nil, payload: nil,
+    priority: .ordinary)
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit,
+      revision: context.revision, batches: [.init(requests: [request], atomic: true)], intents: []
+    ))
+  let admittedActor = try #require(receipts.first?.actor)
+  let projectileIndex = try #require(
+    game.bodies.firstIndex { $0.physical?.identity == admittedActor })
+  game.bodies[projectileIndex].scriptShot = shot
+  let live = game.bodies[projectileIndex]
+  let projectileBodyID = live.id
+  game.bodies = [live, .init(id: 101, hull: .cargo, position: .init(0, 0, 1400))]
+  game.ensurePhysicalActors()
+  game.commander.scriptState.projectiles[shotID] = .init(
+    galaxy: game.commander.galaxy,
+    system: game.commander.system, body: live, presence: .present)
+  return .init(
+    game: game, instance: instance, owner: owner, componentID: componentID, speed: speed,
+    lifetime: lifetime, delay: delay, shotID: shotID, shot: shot, live: live,
+    projectileBodyID: projectileBodyID
+  )
+}
+
+private func assertBridgeLegacyPlasma(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let proof = try bridgeLegacyPlasmaProof(fixture)
+  try bridgeLegacyPlasmaStaleProof(fixture, proof: proof)
+  try bridgeLegacyPlasmaHitReplay(fixture)
+  try bridgeLegacyPlasmaNoHitExpiry(fixture)
+  try bridgeLegacyPlasmaWaitingExpired(fixture)
+  try bridgeLegacyPlasmaCorruptJoins(fixture)
+  try bridgeLegacyPlasmaDuplicateID(fixture)
+  try bridgeLegacyPlasmaFasterShot(fixture)
+  try bridgeLegacyPlasmaDamageDrift(fixture)
+  try bridgeLegacyPlasmaDuplicateShot(fixture)
+  try bridgeLegacyPlasmaRotatedShot(fixture)
+}
+
+private func bridgeLegacyPlasmaProof(_ fixture: BridgeLegacyPlasmaFixture) throws
+  -> MissionNativeImpactProof
+{
+  let game = fixture.game
+  let instance = fixture.instance
+  let owner = fixture.owner
+  let speed = fixture.speed
+  let lifetime = fixture.lifetime
+  let delay = fixture.delay
+  let shotID = fixture.shotID
+  let shot = fixture.shot
+  let live = fixture.live
+  let projectileBodyID = fixture.projectileBodyID
+  let before = (commander: game.commander, bodies: game.bodies)
+  let proofValue = try game.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  let proof = try #require(proofValue)
+  let collisionValue = try game.nearestMissionCollision(
+    from: live.position + shot.velocity * delay, direction: shot.velocity.unit,
+    range: speed * (0.5 - delay), radius: shot.radius, excludingBodyIDs: [projectileBodyID],
+    includePlayer: true)
+  let collision = try #require(collisionValue)
+  #expect(proof.hit == collision.hit && proof.hit.target == .body(101))
+  #expect(proof.sourceActorID == owner && proof.sourceInstanceID == instance)
+  #expect(
+    proof.originalOrigin == nil && proof.frozenJudgement == nil && proof.currentSource == nil)
+  #expect(proof.shot.damage == shot.damage && proof.shot.velocity == shot.velocity)
+  #expect(
+    proof.shot.radius == shot.radius && proof.shot.lifetime == lifetime
+      && proof.shot.collisionDelay == delay)
+  #expect(game.commander == before.commander && game.bodies == before.bodies)
+  let freshBefore = (commander: game.commander, bodies: game.bodies)
+  try game.validateMissionNativeImpactProof(proof)
+  #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
+  return proof
+}
+
+private func bridgeLegacyPlasmaStaleProof(
+  _ fixture: BridgeLegacyPlasmaFixture, proof: MissionNativeImpactProof
+) throws {
+  let game = fixture.game
+  for scenario in 0..<4 {
+    var changed = game
+    switch scenario {
+    case 0: changed.bodies[0].position.x += 1
+    case 1: changed.bodies[0].scriptShot?.age += 0.01
+    case 2: changed.bodies[1].position.x += 1000
+    default: changed.commander.flightSimulation.advancePhysicalTime(0.01)
+    }
+    #expect(throws: MissionNativeBridgeError.staleBinding) {
+      try changed.validateMissionNativeImpactProof(proof)
+    }
+  }
+}
+
+private func bridgeLegacyPlasmaHitReplay(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let owner = fixture.owner
+  let shotID = fixture.shotID
+  let shot = fixture.shot
+  var stepped = game
+  let targetEnergy = try #require(stepped.bodies.first { $0.id == 101 }?.energy)
+  let applied = try stepped.stepMissionNativeProjectile(projectileID: shotID, delta: 0.5)
+  let receipt = try #require(applied)
+  #expect(receipt.adjudication == .unknown && receipt.sourceActorID == owner)
+  #expect(receipt.damage == shot.damage && receipt.terminalShotID == shotID)
+  #expect(stepped.bodies.first { $0.id == 101 }?.energy == max(0, targetEnergy - shot.damage))
+  #expect(stepped.commander.scriptState.projectiles[shotID] == nil)
+  let committed = (commander: stepped.commander, bodies: stepped.bodies)
+  let replay = try stepped.stepMissionNativeProjectile(projectileID: shotID, delta: 0.5)
+  #expect(
+    replay == nil && stepped.commander == committed.commander
+      && stepped.bodies == committed.bodies)
+}
+
+private func bridgeLegacyPlasmaNoHitExpiry(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let lifetime = fixture.lifetime
+  let delay = fixture.delay
+  let shotID = fixture.shotID
+  let shot = fixture.shot
+  let live = fixture.live
+  var noHit = game
+  noHit.bodies[1].position = .init(0, 0, 10000)
+  let incidentBefore = noHit.commander.flightSimulation.nextIncident
+  let early = try noHit.stepMissionNativeProjectile(projectileID: shotID, delta: delay / 2)
+  #expect(early == nil)
+  #expect(noHit.bodies[0].position == live.position + shot.velocity * (delay / 2))
+  #expect(noHit.bodies[0].scriptShot?.age == delay / 2)
+  let expiredReceipt = try noHit.stepMissionNativeProjectile(
+    projectileID: shotID, delta: lifetime + 1)
+  #expect(
+    expiredReceipt == nil && noHit.commander.flightSimulation.nextIncident == incidentBefore)
+  #expect(noHit.bodies[0].energy == 0 && noHit.bodies[0].scriptShot?.age == lifetime)
+  #expect(noHit.commander.scriptState.projectiles[shotID] == nil)
+}
+
+private func bridgeLegacyPlasmaWaitingExpired(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let lifetime = fixture.lifetime
+  let delay = fixture.delay
+  let shotID = fixture.shotID
+  let waiting = try game.missionNativeImpactProof(projectileID: shotID, delta: delay / 2)
+  #expect(waiting == nil)
+  var expired = game
+  expired.bodies[0].scriptShot?.age = lifetime
+  let afterLife = try expired.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  #expect(afterLife == nil)
+}
+
+private func bridgeLegacyPlasmaCorruptJoins(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let instance = fixture.instance
+  let owner = fixture.owner
+  let componentID = fixture.componentID
+  let shotID = fixture.shotID
+  let shot = fixture.shot
+  for corruptOwner in [false, true] {
+    var corrupt = game
+    let wrong = UUID(uuidString: "00000000-0000-0000-0000-000000000098")!
+    let altered = ScriptNPCShot(
+      identity: shotID,
+      owner: corruptOwner ? wrong : owner, instance: instance, weapon: shot.weapon,
+      component: corruptOwner ? componentID : wrong, velocity: shot.velocity, age: shot.age,
+      lifetime: shot.lifetime, damage: shot.damage, radius: shot.radius,
+      collisionDelay: shot.collisionDelay)
+    corrupt.bodies[0].scriptShot = altered
+    corrupt.commander.scriptState.projectiles[shotID]?.body.scriptShot = altered
+    #expect(throws: MissionNativeBridgeError.invalidShot) {
+      try corrupt.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+    }
+  }
+}
+
+private func bridgeLegacyPlasmaDuplicateID(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let shotID = fixture.shotID
+  let projectileBodyID = fixture.projectileBodyID
+  var duplicateBodyID = game
+  duplicateBodyID.bodies[1].id = projectileBodyID
+  #expect(throws: MissionNativeBridgeError.invalidShot) {
+    try duplicateBodyID.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  }
+}
+
+private func bridgeLegacyPlasmaFasterShot(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let shotID = fixture.shotID
+  var faster = game
+  faster.bodies[0].scriptShot?.velocity.z += 1
+  #expect(throws: MissionNativeBridgeError.invalidShot) {
+    try faster.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  }
+}
+
+private func bridgeLegacyPlasmaDamageDrift(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let instance = fixture.instance
+  let owner = fixture.owner
+  let componentID = fixture.componentID
+  let lifetime = fixture.lifetime
+  let delay = fixture.delay
+  let shotID = fixture.shotID
+  let shot = fixture.shot
+  var drift = game
+  drift.bodies[0].scriptShot = ScriptNPCShot(
+    identity: shotID, owner: owner, instance: instance,
+    weapon: shot.weapon, component: componentID, velocity: shot.velocity, age: 0,
+    lifetime: lifetime,
+    damage: shot.damage + 1, radius: shot.radius, collisionDelay: delay)
+  #expect(throws: MissionNativeBridgeError.invalidShot) {
+    try drift.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  }
+}
+
+private func bridgeLegacyPlasmaDuplicateShot(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let shotID = fixture.shotID
+  let live = fixture.live
+  var duplicate = game
+  var extra = live
+  extra.id = 102
+  duplicate.bodies.append(extra)
+  #expect(throws: MissionNativeBridgeError.invalidShot) {
+    try duplicate.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  }
+}
+
+private func bridgeLegacyPlasmaRotatedShot(_ fixture: BridgeLegacyPlasmaFixture) throws {
+  let game = fixture.game
+  let speed = fixture.speed
+  let shotID = fixture.shotID
+  var rotated = game
+  rotated.bodies[0].scriptShot?.velocity = .init(speed, 0, 0)
+  rotated.bodies[1].position = .init(400, 0, 1000)
+  let rotatedProofValue = try rotated.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  let rotatedProof = try #require(rotatedProofValue)
+  #expect(rotatedProof.hit.target == .body(101) && rotatedProof.originalOrigin == nil)
+}
+
 private func bridgeFixture() throws -> (SpaceBody, EncounterContext) {
   var game = Game(executive: false)
   game.launch()
@@ -658,174 +967,8 @@ struct MissionNativeBridgeTests {
 
   @Test func actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift() throws
   {
-    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-      .deletingLastPathComponent().deletingLastPathComponent()
-      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
-    let pack = try ScriptPackLibrary.read(directory)
-    var game = Game(executive: false)
-    game.screen = .status
-    game.scriptPacks = [pack]
-    let instance = try game.acceptScriptMission(pack)
-    game.launch()
-    game.emitScriptEvent("station.undocked")
-    game.drainScriptEvents()
-    let source = try #require(
-      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
-    let owner = try #require(source.missionActorID)
-    let componentSpec = try #require(
-      source.scriptNPC?.fit.definition.components?.first {
-        ($0.weapons ?? []).contains { $0.kind == .plasma }
-      })
-    let weapon = try #require(componentSpec.weapons?.first { $0.kind == .plasma })
-    let componentID = try #require(source.scriptNPC?.components[componentSpec.id]?.identity)
-    let speed = try #require(weapon.projectileSpeed)
-    let lifetime = try #require(weapon.lifetime)
-    let delay = try #require(weapon.collisionDelay)
-    let shotID = UUID(uuidString: "00000000-0000-0000-0000-000000000050")!
-    let shot = ScriptNPCShot(
-      identity: shotID, owner: owner, instance: instance,
-      weapon: weapon.id, component: componentID, velocity: .init(0, 0, speed), age: 0,
-      lifetime: lifetime, damage: weapon.damage, radius: try #require(weapon.collisionRadius),
-      collisionDelay: delay)
-    game.bodies = []
-    game.celestials = []
-    let context = try #require(game.gameplayContext())
-    let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
-    let sequence = try #require(allocatedSpawn)
-    let request = SpawnRequest(
-      identity: .init(
-        system: context.system, visit: context.visit,
-        sequence: sequence, member: 0, producer: .ordnance), population: .projectile,
-      hull: .missile, position: game.commander.flightSimulation.pose.systemPoint(.init(0, 0, 1000)),
-      orientation: .init(), velocity: shot.velocity, npc: nil, rock: nil, payload: nil,
-      priority: .ordinary)
-    let receipts = game.admitEncounterPlan(
-      .init(
-        system: context.system, visit: context.visit,
-        revision: context.revision, batches: [.init(requests: [request], atomic: true)], intents: []
-      ))
-    let admittedActor = try #require(receipts.first?.actor)
-    let projectileIndex = try #require(
-      game.bodies.firstIndex { $0.physical?.identity == admittedActor })
-    game.bodies[projectileIndex].scriptShot = shot
-    let live = game.bodies[projectileIndex]
-    let projectileBodyID = live.id
-    game.bodies = [live, .init(id: 101, hull: .cargo, position: .init(0, 0, 1400))]
-    game.ensurePhysicalActors()
-    game.commander.scriptState.projectiles[shotID] = .init(
-      galaxy: game.commander.galaxy,
-      system: game.commander.system, body: live, presence: .present)
-    let before = game
-    let proofValue = try game.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    let proof = try #require(proofValue)
-    let collisionValue = try game.nearestMissionCollision(
-      from: live.position + shot.velocity * delay, direction: shot.velocity.unit,
-      range: speed * (0.5 - delay), radius: shot.radius, excludingBodyIDs: [projectileBodyID],
-      includePlayer: true)
-    let collision = try #require(collisionValue)
-    #expect(proof.hit == collision.hit && proof.hit.target == .body(101))
-    #expect(proof.sourceActorID == owner && proof.sourceInstanceID == instance)
-    #expect(
-      proof.originalOrigin == nil && proof.frozenJudgement == nil && proof.currentSource == nil)
-    #expect(proof.shot.damage == shot.damage && proof.shot.velocity == shot.velocity)
-    #expect(
-      proof.shot.radius == shot.radius && proof.shot.lifetime == lifetime
-        && proof.shot.collisionDelay == delay)
-    #expect(game.commander == before.commander && game.bodies == before.bodies)
-    let freshBefore = game
-    try game.validateMissionNativeImpactProof(proof)
-    #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
-    for scenario in 0..<4 {
-      var changed = game
-      switch scenario {
-      case 0: changed.bodies[0].position.x += 1
-      case 1: changed.bodies[0].scriptShot?.age += 0.01
-      case 2: changed.bodies[1].position.x += 1000
-      default: changed.commander.flightSimulation.advancePhysicalTime(0.01)
-      }
-      #expect(throws: MissionNativeBridgeError.staleBinding) {
-        try changed.validateMissionNativeImpactProof(proof)
-      }
-    }
-    var stepped = game
-    let targetEnergy = try #require(stepped.bodies.first { $0.id == 101 }?.energy)
-    let applied = try stepped.stepMissionNativeProjectile(projectileID: shotID, delta: 0.5)
-    let receipt = try #require(applied)
-    #expect(receipt.adjudication == .unknown && receipt.sourceActorID == owner)
-    #expect(receipt.damage == shot.damage && receipt.terminalShotID == shotID)
-    #expect(stepped.bodies.first { $0.id == 101 }?.energy == max(0, targetEnergy - shot.damage))
-    #expect(stepped.commander.scriptState.projectiles[shotID] == nil)
-    let committed = stepped
-    let replay = try stepped.stepMissionNativeProjectile(projectileID: shotID, delta: 0.5)
-    #expect(
-      replay == nil && stepped.commander == committed.commander
-        && stepped.bodies == committed.bodies)
-    var noHit = game
-    noHit.bodies[1].position = .init(0, 0, 10000)
-    let incidentBefore = noHit.commander.flightSimulation.nextIncident
-    let early = try noHit.stepMissionNativeProjectile(projectileID: shotID, delta: delay / 2)
-    #expect(early == nil)
-    #expect(noHit.bodies[0].position == live.position + shot.velocity * (delay / 2))
-    #expect(noHit.bodies[0].scriptShot?.age == delay / 2)
-    let expiredReceipt = try noHit.stepMissionNativeProjectile(
-      projectileID: shotID, delta: lifetime + 1)
-    #expect(
-      expiredReceipt == nil && noHit.commander.flightSimulation.nextIncident == incidentBefore)
-    #expect(noHit.bodies[0].energy == 0 && noHit.bodies[0].scriptShot?.age == lifetime)
-    #expect(noHit.commander.scriptState.projectiles[shotID] == nil)
-    let waiting = try game.missionNativeImpactProof(projectileID: shotID, delta: delay / 2)
-    #expect(waiting == nil)
-    var expired = game
-    expired.bodies[0].scriptShot?.age = lifetime
-    let afterLife = try expired.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    #expect(afterLife == nil)
-    for corruptOwner in [false, true] {
-      var corrupt = game
-      let wrong = UUID(uuidString: "00000000-0000-0000-0000-000000000098")!
-      let altered = ScriptNPCShot(
-        identity: shotID,
-        owner: corruptOwner ? wrong : owner, instance: instance, weapon: shot.weapon,
-        component: corruptOwner ? componentID : wrong, velocity: shot.velocity, age: shot.age,
-        lifetime: shot.lifetime, damage: shot.damage, radius: shot.radius,
-        collisionDelay: shot.collisionDelay)
-      corrupt.bodies[0].scriptShot = altered
-      corrupt.commander.scriptState.projectiles[shotID]?.body.scriptShot = altered
-      #expect(throws: MissionNativeBridgeError.invalidShot) {
-        try corrupt.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-      }
-    }
-    var duplicateBodyID = game
-    duplicateBodyID.bodies[1].id = projectileBodyID
-    #expect(throws: MissionNativeBridgeError.invalidShot) {
-      try duplicateBodyID.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    }
-    var faster = game
-    faster.bodies[0].scriptShot?.velocity.z += 1
-    #expect(throws: MissionNativeBridgeError.invalidShot) {
-      try faster.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    }
-    var drift = game
-    drift.bodies[0].scriptShot = ScriptNPCShot(
-      identity: shotID, owner: owner, instance: instance,
-      weapon: shot.weapon, component: componentID, velocity: shot.velocity, age: 0,
-      lifetime: lifetime,
-      damage: shot.damage + 1, radius: shot.radius, collisionDelay: delay)
-    #expect(throws: MissionNativeBridgeError.invalidShot) {
-      try drift.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    }
-    var duplicate = game
-    var extra = live
-    extra.id = 102
-    duplicate.bodies.append(extra)
-    #expect(throws: MissionNativeBridgeError.invalidShot) {
-      try duplicate.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    }
-    var rotated = game
-    rotated.bodies[0].scriptShot?.velocity = .init(speed, 0, 0)
-    rotated.bodies[1].position = .init(400, 0, 1000)
-    let rotatedProofValue = try rotated.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    let rotatedProof = try #require(rotatedProofValue)
-    #expect(rotatedProof.hit.target == .body(101) && rotatedProof.originalOrigin == nil)
+    let fixture = try makeBridgeLegacyPlasmaFixture()
+    try assertBridgeLegacyPlasma(fixture)
   }
 
   @Test func actualArchivedPlasmaProofUsesFrozenLawOnlyForCurrentSourceAndIntendedVictim() throws {
