@@ -81,6 +81,27 @@ struct GameplayOrdnanceTests {
     #expect(!repeated.endedNow && repeated.hit == nil && game.commander.kills == 1)
   }
 
+  @Test(arguments: [OrdnanceProfile.standardMissile, .alienSeeker])
+  func actualMissileImpactUsesProfileDamageOnceWithoutDestroyingSurvivingHull(
+    profile: OrdnanceProfile
+  ) throws {
+    var game = ordnanceGame()
+    let target = try ordnanceActor(&game, position: .init(0, 0, 1000))
+    game.bodies[0].energy = 1000
+    var state = try ordnanceShot(&game, profile: profile, target: target)
+    let flight = try ordnanceAdvance(&game, state: &state, time: 0.1)
+    #expect(flight.hit == nil && flight.termination == nil)
+    #expect(abs(state.propulsionTravel - profile.speed * 0.1) < 1e-8)
+    let impact = try ordnanceAdvance(&game, state: &state, time: 2)
+    #expect(impact.hit?.target == .body(10) && impact.termination == .impact && impact.endedNow)
+    #expect(impact.incident?.origin == state.origin && impact.incident?.kind == .missile)
+    let expectedEnergy = profile == .alienSeeker ? 687.5 : 750.0
+    #expect(game.bodies[0].energy == expectedEnergy && game.commander.kills == 0)
+    let repeated = try ordnanceAdvance(&game, state: &state, time: 3)
+    #expect(!repeated.endedNow && repeated.hit == nil)
+    #expect(game.bodies[0].energy == expectedEnergy && game.commander.kills == 0)
+  }
+
   @Test func actualStationOccludesTargetAndRecordsAttackDespiteItsInvulnerability() throws {
     var game = ordnanceGame()
     let target = try ordnanceActor(&game, position: .init(0, 0, 5000))
