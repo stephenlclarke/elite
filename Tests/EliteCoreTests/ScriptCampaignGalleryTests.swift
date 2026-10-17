@@ -490,7 +490,7 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     firing = Controls()
     if try campaignPatrolOutsideStationZone(await runtime.snapshot()) {
       try await selectCampaignPatrolTarget(runtime, child: child)
-      firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+      firing.fire = try campaignPatrolHasActualLaserContact(await runtime.snapshot(), child: child)
     }
     await runtime.setControls(firing)
     actual = await runtime.advance(delta: 0.1)
