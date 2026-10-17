@@ -18,7 +18,8 @@ struct TargetColourCueTests {
     throws
   {
     var game = try empFixture(hostile: true)
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
     for style in ShipDisplayStyle.allCases {
       game.commander.shipDisplayStyle = style
@@ -126,7 +127,8 @@ struct TargetColourCueTests {
       )
       #expect(game.targetColourCue(for: game.bodies[0]) == .recoverable)
     }
-    try #require(game.commander.salvageLedger.markWreckDestroyed(wreck))
+    let wreckDestructionResult = game.commander.salvageLedger.markWreckDestroyed(wreck)
+    try #require(wreckDestructionResult)
     #expect(game.targetColourCue(for: game.bodies[0]) == .ordinary)
   }
 
@@ -194,7 +196,8 @@ struct TargetColourCueTests {
     }
     try verify(game, id: shipID)
     game.bodies[0].missiles = 1
-    try #require(game.launchGameplayNPCMissile(bodyID: shipID))
+    let missileLaunchResult = game.launchGameplayNPCMissile(bodyID: shipID)
+    try #require(missileLaunchResult)
     game.tick(delta: 0.1)
     let missile = try #require(
       game.bodies.first { $0.enemyMissile && $0.physical?.ordnance != nil })

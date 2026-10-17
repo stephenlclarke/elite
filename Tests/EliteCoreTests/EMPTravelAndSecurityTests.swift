@@ -114,10 +114,12 @@ struct EMPTravelAndSecurityTests {
     let original = try #require(game.bodies.first { $0.id == 1 && $0.hull == .cobra })
     let actor = try #require(original.physical?.identity)
     try aimEMPAtActor(actor, game: &game)
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(game.commander.savedEMPState?.records.keys.first)
     for _ in 0..<30 { game.tick(delta: 0.1) }
-    try #require(game.persistEMPState())
+    let empPersistenceResult = game.persistEMPState()
+    try #require(empPersistenceResult)
     let before = try #require(game.commander.savedEMPState?.records[source])
     try #require(before.originalBodyID == 1 && before.originalSpawn == nil)
     try #require(before.crewAboard == 0 && before.pods.count == before.crewTotal)
@@ -179,7 +181,8 @@ struct EMPTravelAndSecurityTests {
         $0.actor == actor
       })
     let legal = game.commander.legal
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(
       game.bodies.first { $0.physical?.identity == actor }?.physical?.empSource)
     let proof = try #require(game.commander.savedEMPState?.records[source])
@@ -191,7 +194,8 @@ struct EMPTravelAndSecurityTests {
     if lethal {
       let body = try #require(game.bodies.first { $0.physical?.empSource == source })
       let player = try #require(game.commander.flightSimulation.player)
-      let origin = try #require(game.makeAttackOrigin(owner: player))
+      let originResult = game.makeAttackOrigin(owner: player)
+      let origin = try #require(originResult)
       _ = game.applyCombatHit(
         .init(target: .body(body.id), distance: body.position.length, point: body.position),
         origin: origin, kind: .laser, damage: 10000)

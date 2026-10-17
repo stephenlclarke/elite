@@ -9,7 +9,8 @@ struct EMPPersistenceAndEquipmentTests {
     var game = try empFixture(catalogue: "SH001")
     game.bodies[0].physical?.velocity = .init(0, 0, 0)
     game.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
     for _ in 0..<50 { game.tick(delta: 0.1) }
     let record = try #require(game.commander.savedEMPState?.records[source])
@@ -100,7 +101,8 @@ struct EMPPersistenceAndEquipmentTests {
 
   @Test func actualEMPContainerCannotBeDowngradedOrEraseItsTrafficTransfer() async throws {
     var game = try empFixture()
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(game.commander.savedEMPState?.records.keys.first)
     #expect(game.commander.npcPersistence.terminalReason(for: source) == .empTransferred)
     var erased = game.commander

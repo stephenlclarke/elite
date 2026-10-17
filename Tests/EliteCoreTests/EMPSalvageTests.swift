@@ -22,9 +22,11 @@ struct EMPSalvageTests {
     game.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
     let actor = try #require(game.bodies[0].physical?.identity)
     let catalogue = try #require(game.bodies[0].physical?.catalogueShipID)
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
-    #expect(!game.fireSalvageCutter(delta: 0.1))
+    let cutterResult = game.fireSalvageCutter(delta: 0.1)
+    #expect(!cutterResult)
     for _ in 0..<30 { game.tick(delta: 0.1) }
     let record = try #require(game.commander.savedEMPState?.records[source])
     try #require(record.crewAboard == 0 && record.pods.count == record.crewTotal)
@@ -46,7 +48,8 @@ struct EMPSalvageTests {
     game.bodies[index].position = Vector3(0, 0, 200) - orientation.apply(section.localPosition)
     game.bodies[index].rotation = 0
     game.bodies[index].rotationRate = 0
-    try #require(game.persistSalvagePoses())
+    let salvagePersistenceResult = game.persistSalvagePoses()
+    try #require(salvagePersistenceResult)
     let hit = try #require(
       GameplayRaycast.nearest(
         origin: .init(0, 0, 0), direction: .init(0, 0, 1),
@@ -72,7 +75,8 @@ struct EMPSalvageTests {
     let kills = game.commander.kills
     index = try #require(game.bodies.firstIndex { $0.physical?.empSource == source })
     let player = try #require(game.commander.flightSimulation.player)
-    let origin = try #require(game.makeAttackOrigin(owner: player))
+    let originResult = game.makeAttackOrigin(owner: player)
+    let origin = try #require(originResult)
     let target = game.bodies[index]
     _ = game.applyCombatHit(
       .init(target: .body(target.id), distance: target.position.length, point: target.position),
@@ -100,7 +104,8 @@ struct EMPSalvageTests {
 
   @Test func occupiedPodsRemainPeopleAndCannotBeCutDamagedOrScoopedAsCargo() throws {
     var game = try empFixture()
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     for _ in 0..<30 { game.tick(delta: 0.1) }
     let podIndex = try #require(game.bodies.firstIndex { $0.physical?.empCrewPod != nil })
     let person = try #require(game.bodies[podIndex].physical?.empCrewPod)
@@ -114,12 +119,14 @@ struct EMPSalvageTests {
     #expect(game.commander.cargo == cargo && game.commander.salvageLedger == salvage)
     game.bodies[podIndex].position = .init(0, 0, 200)
     let player = try #require(game.commander.flightSimulation.player)
-    let origin = try #require(game.makeAttackOrigin(owner: player))
+    let originResult = game.makeAttackOrigin(owner: player)
+    let origin = try #require(originResult)
     _ = game.applyCombatHit(
       .init(target: .body(game.bodies[podIndex].id), distance: 200, point: .init(0, 0, 200)),
       origin: origin, kind: .laser, damage: 10000)
     #expect(game.bodies[podIndex].energy == energy)
-    #expect(!game.fireSalvageCutter(delta: 0.1))
+    let cutterResult = game.fireSalvageCutter(delta: 0.1)
+    #expect(!cutterResult)
     #expect(game.commander.savedEMPState?.records[person.source]?.pods.count == 1)
     #expect(game.commander.cargo == cargo && game.commander.salvageLedger == salvage)
   }
@@ -129,7 +136,8 @@ struct EMPSalvageTests {
     async throws
   {
     var game = try empFixture(catalogue: "SH001")
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     let source = try #require(game.commander.savedEMPState?.records.keys.first)
     if partial {
       for _ in 0..<12 { game.tick(delta: 0.1) }
@@ -138,7 +146,8 @@ struct EMPSalvageTests {
     try #require(before.pods.count == (partial ? 1 : 0))
     let body = try #require(game.bodies.first { $0.physical?.empSource == source })
     let player = try #require(game.commander.flightSimulation.player)
-    let origin = try #require(game.makeAttackOrigin(owner: player))
+    let originResult = game.makeAttackOrigin(owner: player)
+    let origin = try #require(originResult)
     _ = game.applyCombatHit(
       .init(target: .body(body.id), distance: body.position.length, point: body.position),
       origin: origin, kind: .laser, damage: 10000)
@@ -183,9 +192,11 @@ struct EMPSalvageTests {
 
   @Test func leavingAndReenteringTheSceneRebindsOneDisabledSourceAndItsOriginalPeople() throws {
     var game = try empFixture()
-    try #require(game.fireEMPPirateBlaster())
+    let empResult = game.fireEMPPirateBlaster()
+    try #require(empResult)
     for _ in 0..<30 { game.tick(delta: 0.1) }
-    try #require(game.persistSalvagePoses())
+    let salvagePersistenceResult = game.persistSalvagePoses()
+    try #require(salvagePersistenceResult)
     let source = try #require(game.commander.savedEMPState?.records.keys.first)
     let original = try #require(game.commander.savedEMPState?.records[source])
     let cargo = original.cargo
