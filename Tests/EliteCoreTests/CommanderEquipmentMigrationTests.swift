@@ -155,6 +155,7 @@ struct CommanderEquipmentMigrationTests {
     for shipID in ["SH087", "SH001"] {
       var commander = Commander()
       commander.shipID = shipID
+      commander.missiles = min(commander.missiles, commander.missileCapacity)
       let nativeReach = commander.jumpCap
       try cemInitialize(&commander)
       let navigation = try #require(

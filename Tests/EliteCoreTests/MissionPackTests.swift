@@ -15,6 +15,7 @@ private func courierGame() throws -> (Game, LoadedMissionPack) {
   let entry = try MissionPackLibrary.read(courierURL)
   var game = Game(executive: false)
   game.screen = .status
+  try game.commander.prepareEquipment(legacy: false)
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   return (game, entry)
 }

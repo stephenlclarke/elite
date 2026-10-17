@@ -46,7 +46,7 @@ func campaignPatrolDiagnostic(_ game: Game, child: UUID) -> String {
     "playerPosition=\(game.commander.flightSimulation.pose.position)",
     "playerForward=\(game.commander.flightSimulation.pose.orientation.z)",
     "heat=\(game.laserHeat),flash=\(game.laserFlash)",
-    "discharge=\(game.dischargeAudio.events.last?.id ?? 0),laser=\(game.commander.laser(on: .front))",
+    "discharge=\(game.dischargeAudio.events.last?.id ?? 0),laser=\(String(describing: game.commander.laser(on: .front)))",
     "docked=\(game.docked)/\(game.dockedAtMainStation),dockingHardware=\(game.commander.hasAutomaticDocking)",
     "targetingFit=\(game.commander.fittedEquipment(at: .targetingCore)?.node.key ?? "none")",
     "target=\(String(describing: game.autoPilot.targetID)),weapons=\(String(describing: game.weaponsTargetID))",
@@ -564,8 +564,8 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
   let reloaded = await loaded.snapshot().commander
-  let loadPreservedCommander = reloaded == expected.commander
-  let loadChanges = try fixture.commanderChangedPaths(expected.commander, reloaded)
+  let loadPreservedCommander = reloaded == saved
+  let loadChanges = try fixture.commanderChangedPaths(saved, reloaded)
   #expect(
     loadPreservedCommander,
     Comment(rawValue: "Reload changed: " + loadChanges.joined(separator: "; ")))

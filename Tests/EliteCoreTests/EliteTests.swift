@@ -221,7 +221,7 @@ import Testing
   #expect(game.market == MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 218))
 }
 
-@Test func jumpTravelDockingAndGalacticDrive() {
+@Test func jumpTravelDockingAndGalacticDrive() throws {
   var game = Game(executive: false)
   game.inSystemJump()
   #expect(game.message == "MASS LOCKED")
@@ -238,7 +238,9 @@ import Testing
   #expect(
     game.commander.galaxy == 1 && game.commander.fuel == 70
       && !game.commander.equipment.contains("Galactic Hyperdrive"))
-  game.commander.installTargetingComputer(.docking)
+  try game.commander.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore,
+    provenance: .grant("jump-docking-fixture"))
   game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
   game.key("r")
   #expect(game.dockingComputer)
