@@ -3,13 +3,30 @@ import Testing
 
 @testable import EliteCore
 
-private func mainCapacityGame() throws -> Game {
+private func mainCapacityGame(discoverAllGalaxies: Bool = false) throws -> Game {
   var game = Game(executive: false)
   try game.commander.prepareEquipment(legacy: false)
   game.launch()
   try #require(!game.docked)
   game.dock()
   try #require(game.docked && game.commander.valid)
+  try #require(game.commander.system == Plugh.rumourStation)
+  let originalGalaxy = game.commander.galaxy
+  let galaxies = discoverAllGalaxies ? Array(0..<8) : [originalGalaxy]
+  for galaxy in galaxies {
+    // Select the private docked fixture's location, then use the real discovery action.
+    // No discovery bits or arrival/service receipts are manufactured.
+    game.commander.galaxy = galaxy
+    game.systems = Universe.systemsIncludingPlugh(number: galaxy)
+    try #require(game.docked && game.commander.valid && game.screen == .status)
+    game.openStationRumour()
+    try #require(game.screen == .rumour && game.commander.hasDiscoveredPlugh(in: galaxy))
+    game.key("return")
+    try #require(game.screen == .status && game.commander.valid)
+  }
+  game.commander.galaxy = originalGalaxy
+  game.systems = Universe.systemsIncludingPlugh(number: originalGalaxy)
+  try #require(game.commander.valid)
   return game
 }
 
@@ -73,6 +90,9 @@ struct NativeMainStationCapacityTests {
     // calls registerOriginalNativeMainStation. This is not a claim of hyperspace travel coverage.
     game.commander.galaxy = target.galaxy
     game.commander.system = target.system
+    try #require(
+      target.system != Plugh.systemID || game.commander.hasDiscoveredPlugh(in: target.galaxy))
+    try #require(game.commander.valid)
     game.systems = Universe.systemsIncludingPlugh(number: target.galaxy)
     game.launch()
     try #require(!game.docked && game.commander.valid)
@@ -104,7 +124,8 @@ struct NativeMainStationCapacityTests {
   @Test func all2056CanonicalMainHistoriesAndResourcesRoundTripWithoutDroppingOwnerOrHistory()
     async throws
   {
-    var game = try mainCapacityGame()
+    var game = try mainCapacityGame(discoverAllGalaxies: true)
+    #expect((0..<8).allSatisfy { game.commander.hasDiscoveredPlugh(in: $0) })
     let previous = try #require(game.commander.nativeStations)
     let systems = mainCapacitySystems()
     #expect(NativeMainStationIdentity.maximumCount == 2056 && systems.count == 2056)
@@ -166,7 +187,7 @@ struct NativeMainStationCapacityTests {
   }
 
   @Test func duplicatesForeignOwnersAndOutOfUniverseIdentitiesStillRefuse() throws {
-    var game = try mainCapacityGame()
+    var game = try mainCapacityGame(discoverAllGalaxies: true)
     try installMainHistory(mainCapacitySystems(), in: &game)
     let original = try #require(game.commander.nativeStations)
     for mutation in 0..<4 {
