@@ -400,7 +400,10 @@ extension EMPElectricalRuntimeTests {
     #expect(game.commander == expected)
     #expect(
       game.bodies == bodies && game.scriptSimulationSave.randomState == simulation.randomState)
-    #expect(game.dischargeAudio == discharge && game.energy == energy && game.laserHeat == heat)
+    #expect(
+      game.dischargeAudio.epoch == discharge.epoch
+        && game.dischargeAudio.events == discharge.events)
+    #expect(game.energy == energy && game.laserHeat == heat)
     #expect(game.commander.savedEMPState == nil && game.commander.savedPlayerElectrical == nil)
     #expect(game.message == "EMP RELEASE REFUSED - TARGET OR EQUIPMENT CHANGED")
   }
