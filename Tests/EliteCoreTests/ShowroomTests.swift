@@ -278,7 +278,10 @@ private func showroomGame() -> Game {
       #expect(cells.allSatisfy { $0.scale == GameTypography.scale && $0.bounds.maxX <= width - 16 })
       if width >= 1800, let label = cells.first(where: { $0.text == "Required crew" }) {
         let field = try #require(game.showroomComparison.first { $0.label == "Required crew" })
-        let expected = field.selected + (field.difference.isEmpty ? "" : " / " + field.difference)
+        let suffix =
+          game.showroom.sourceProfiles
+          ? (field.difference.isEmpty ? "" : " / " + field.difference) : " " + field.rating.rawValue
+        let expected = field.selected + suffix
         #expect(
           cells.contains { $0.x == outer.selectedModelX && $0.y == label.y && $0.text == expected })
       }
