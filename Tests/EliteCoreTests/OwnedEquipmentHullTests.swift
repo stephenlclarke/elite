@@ -13,10 +13,19 @@ import Testing
   game.screen = .showroom
   game.showroom.selection = "SH001"
   game.commander.credits = 10_000_000
+  // Exercise the real retained-feature writer; canonical native gear alone does not autosave.
+  let cabinQuote = game.passengerBerthQuote
+  try #require(cabinQuote.allowed)
+  let cabin = try game.confirmPassengerBerth(cabinQuote)
+  try game.setPassengerBerthFitted(cabin, fitted: false)
+  try #require(game.requiresScriptDurability && game.commander.valid)
+  let quote = try #require(game.shipTradeQuote)
+  try #require(quote.allowed)
   let runtime = GameRuntime(game: game, saveURL: file)
-  let before = await runtime.snapshot().commander
   try await runtime.save(to: file)
+  let before = await runtime.snapshot().commander
   let bytes = try Data(contentsOf: file)
+  let property = try ownedHullSaveFiles(at: directory)
   let backup = folder.appendingPathComponent("backup")
   try FileManager.default.moveItem(at: directory, to: backup)
   try Data("blocked".utf8).write(to: directory)
@@ -26,15 +35,36 @@ import Testing
   #expect(await runtime.snapshot().commander == before)
   #expect(await runtime.snapshot().showroom.trading)
   #expect(try Data(contentsOf: backup.appendingPathComponent("commander.json")) == bytes)
+  #expect(try ownedHullSaveFiles(at: backup) == property)
   try FileManager.default.removeItem(at: directory)
   try FileManager.default.moveItem(at: backup, to: directory)
   await runtime.key("return")
   let after = await runtime.snapshot().commander
   #expect(after.shipID == "SH001" && after.missiles == 1 && after.valid)
+  #expect(after.credits == quote.balance)
+  #expect(after.accommodation == before.accommodation)
+  #expect(after.accommodation.storedBerths.map(\.id) == [cabin])
   for id in stored {
     #expect(after.equipmentInventory?.items.first { $0.id == id }?.location == nil)
   }
-  #expect(try JSONDecoder().decode(Commander.self, from: Data(contentsOf: file)) == after)
+  let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: file), from: file)
+  #expect(saved == after)
+  let reloaded = GameRuntime()
+  try await reloaded.load(from: file, persistMigrations: false)
+  #expect(await reloaded.snapshot().commander == after)
+}
+
+private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
+  let files = try #require(
+    FileManager.default.enumerator(at: directory, includingPropertiesForKeys: [.isRegularFileKey]))
+  var result: [String: Data] = [:]
+  for case let file as URL in files {
+    guard try file.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
+      continue
+    }
+    result[String(file.path.dropFirst(directory.path.count + 1))] = try Data(contentsOf: file)
+  }
+  return result
 }
 
 @Test func hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()
