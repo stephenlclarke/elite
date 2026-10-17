@@ -879,6 +879,9 @@ public struct Game: Sendable {
       launch()
       return
     }
+    selectNumberedDestination(number)
+  }
+  private mutating func selectNumberedDestination(_ number: Int) {
     guard let destination = Self.numberedScreen(number, docked: docked) else { return }
     if destination == .system {
       systemInspection =

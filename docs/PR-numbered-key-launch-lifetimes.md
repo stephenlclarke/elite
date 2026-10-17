@@ -1,0 +1,9 @@
+# Finish numbered-key launch before reserving screen-inspection storage
+
+functionKey retains the exact number-six docked showroom case, followed by the exact number-zero docked launch case and their early returns. The remaining numbered-screen destination guard, system inspection, clue calculation, market switching and navigation body now run in a private synchronous mutating helper after those cases.
+
+Inlining the three added boundary lines restores the entire original Game.swift byte-for-byte. All key order, screen eligibility, random clue variation, actual launch, physical/NPC admission, actor ownership, source data and original tests are unchanged. No broader key dispatch refactor, new guard, compiler option, stack limit, scheduling or fixture change is introduced.
+
+The matched report is retained at `/tmp/elite-contract-acceptance-tsan-review-165/swiftpm-testing-helper-2026-10-17-113720.ips`, SHA-256 `95971fa83c1bb822e15070273d8f4c4ba07338ecc9a0e12abd7d75ea131cd4a7`. It matches the controlled process and exact binary `5ac71b42618fa9eef51a72a1a75e3c2174af990d10639456413b1118aa58a34a` from `78351fb6d3805e471bb81ce471cd4087a500bc82`. The independent audit at `/tmp/elite-g2-stack-165-offline-audit/measurement.json` records two Game-sized reservations before launch, with a 704-byte fixed allocation and separate callee-save storage. These are old emitted storage observations, not total-stack, performance or new compiled acceptance claims.
+
+Source formatting, strict lint, scoped Markdown lint, whitespace checks and exact inlining preservation are worker checks. Compilation, new emitted lifetime verification, original campaign launch and numbered-screen compatibility under thread sanitizer, and full CI remain pending with the orchestrator. No worker build, native process or debugger runs. No GitHub issue or PR exists yet. See [motivation](ISSUE-numbered-key-launch-lifetimes.md).
