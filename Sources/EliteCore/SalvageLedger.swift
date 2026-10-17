@@ -1002,13 +1002,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       * (amount.commodity.unit == "t" ? 1000 : amount.commodity.unit == "kg" ? 1 : 0.001)
   }
   private func structuralUnits(_ section: WreckSectionIdentity) -> Int {
-    var value =
-      seed ^ 0x4855_4C4C_504C_4154 ^ section.wreck.lineage
-      ^ UInt64(section.wreck.site) << 32 ^ UInt64(section.section)
-      ^ UInt64(section.wreck.system.system) &* 0xBF58_476D_1CE4_E5B9
-      ^ UInt64(section.wreck.system.galaxy) &* 0x9E37_79B9_7F4A_7C15
-    value = (value ^ (value >> 30)) &* 0xBF58_476D_1CE4_E5B9
-    return 1 + Int((value ^ (value >> 27)) % 5)
+    SalvageLotEmission.structuralUnits(seed: seed, section: section)
   }
 
   private func chunk(_ item: SalvageLootItem, identity: SalvageLotIdentity, quantity: Int)

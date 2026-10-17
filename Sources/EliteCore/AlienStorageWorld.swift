@@ -78,9 +78,7 @@ enum AlienStorageWorldValidation {
           value.requiredWorkSeconds.isFinite, value.requiredWorkSeconds > 0,
           value.workSeconds.isFinite, value.workSeconds >= 0,
           value.workSeconds <= value.requiredWorkSeconds,
-          value.lastOperation.map({ $0 > 0 }) ?? (value.workSeconds == 0),
-          SalvageLootProfiles.plan(section: identity, seed: value.seed, source: source)
-            == value.plan
+          value.lastOperation.map({ $0 > 0 }) ?? (value.workSeconds == 0)
         else { throw AlienStorageError.invalidJoin }
         try value.progress.validate(plan: value)
         plans[value.id] = value

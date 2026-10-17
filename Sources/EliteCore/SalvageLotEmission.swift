@@ -2,6 +2,16 @@ import Foundation
 
 /// Shared pure reconstruction of the existing native producer's exact emitted item.
 enum SalvageLotEmission {
+  static func structuralUnits(seed: UInt64, section: WreckSectionIdentity) -> Int {
+    var value =
+      seed ^ 0x4855_4C4C_504C_4154 ^ section.wreck.lineage
+      ^ UInt64(section.wreck.site) << 32 ^ UInt64(section.section)
+      ^ UInt64(section.wreck.system.system) &* 0xBF58_476D_1CE4_E5B9
+      ^ UInt64(section.wreck.system.galaxy) &* 0x9E37_79B9_7F4A_7C15
+    value = (value ^ (value >> 30)) &* 0xBF58_476D_1CE4_E5B9
+    return 1 + Int((value ^ (value >> 27)) % 5)
+  }
+
   static func quantity(_ item: SalvageLootItem) -> Int {
     if case .commodity(let amount) = item.content { return amount.quantity }
     return 1
