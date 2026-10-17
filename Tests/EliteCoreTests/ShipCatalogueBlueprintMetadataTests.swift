@@ -102,8 +102,10 @@ struct ShipCatalogueBlueprintMetadataTests {
       let metadata = try #require(ShipCatalogue.ship(id)?.catalogue)
       #expect(!metadata.isCapital && metadata.purchasePolicy == .blueprintFabrication)
     }
-    #expect(ShipCatalogue.ship("SH040")?.catalogue.collectionMilestone == .none)
-    #expect(ShipCatalogue.ship("SH162")?.catalogue.collectionMilestone == .none)
+    for id in ["SH040", "SH162"] {
+      let metadata = try #require(ShipCatalogue.ship(id)?.catalogue)
+      #expect(metadata.collectionMilestone == ShipCatalogueCollectionMilestone.none)
+    }
   }
   @Test func contradictoryCapabilitiesAreRejectedWithoutGrantingKnowledge() throws {
     func changed(_ id: String, key: String, value: Any) throws -> (

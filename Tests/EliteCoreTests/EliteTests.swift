@@ -713,19 +713,49 @@ private func reboundJumpLimitWorldAfterLoad(
       && ready.commander.unlimitedCash == game.commander.unlimitedCash
       && ready.commander.fuel == game.commander.fuel
       && ready.commander.shipID == game.commander.shipID)
-  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-  defer { try? FileManager.default.removeItem(at: url) }
-  try await runtime.save(to: url)
-  #expect(await runtime.snapshot().commander == ready.commander)
-  var expected = ready.commander
-  if expected.npcPersistence.count > 0 {
-    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  // This docked, non-legacy fixture has no journey or live body poses to publish.
+  try #require(ready.docked && ready.bodies.isEmpty)
+  try #require(ready.commander.legacyOwnedEquipment == nil && ready.jumpCountdown == nil)
+  try #require(ready.commander.miningLedger.usesEconomyWeightedPresence)
+  var migrated = ready
+  try migrated.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+  migrated.ensureScriptCalendar(origin: .newCommander)
+  // Independently whitelist only persisted current-policy metadata and a missing calendar.
+  var canonical = ready.commander
+  canonical.miningLedger = ready.commander.miningLedger
+  if canonical.scriptState.calendarLedger == nil {
+    canonical.scriptState.calendarLedger = .init(origin: .newCommander)
   }
-  let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
-  #expect(persisted == expected)
+  #expect(migrated.commander == canonical)
+  #expect(migrated.commander.usesEconomyMiningSaveVersion)
+  #expect(migrated.commander.miningLedger == ready.commander.miningLedger)
+  #expect(
+    migrated.commander.scriptState.calendarSeconds == ready.commander.scriptState.calendarSeconds)
+  #expect(
+    migrated.commander.scriptState.calendarLedger
+      == (ready.commander.scriptState.calendarLedger ?? ScriptCalendarLedger(origin: .newCommander))
+  )
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  let url = directory.appendingPathComponent("commander.json")
+  defer { try? FileManager.default.removeItem(at: directory) }
+  try await runtime.save(to: url)
+  let published = await runtime.snapshot()
+  // The expected value comes only from the two authorized migrations above: every
+  // other Commander property must survive publication exactly, including all custody.
+  #expect(published.commander == canonical && published.market == ready.market)
+  var expected = canonical
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: published.systemIdentity)
+  }
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (persisted, world) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(persisted == expected && world.market == ready.market)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == expected)
+  let loaded = await restored.snapshot()
+  #expect(loaded.commander == expected && loaded.market == ready.market)
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.key("8")
   game.key("9")
