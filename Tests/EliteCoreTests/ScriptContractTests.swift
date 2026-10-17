@@ -294,6 +294,12 @@ private struct ContractFixture {
       $0.node.key == TargetingTier.basic.equipmentName
     })
   let cash = game.commander.credits
+  try #require(!game.commander.xyzzyCashGranted)
+  // Settle the existing XYZZY policy before testing refit and exact save/load identity.
+  game.commander.migrateXYZzyPolicy()
+  try #require(game.commander.xyzzyActive && game.commander.xyzzyCashGranted)
+  #expect(game.commander.credits == cash && !game.commander.unlimitedCash)
+  #expect(!game.commander.unlimitedJumps)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   await runtime.key("c")
   let refitted = await runtime.snapshot().commander
@@ -304,9 +310,14 @@ private struct ContractFixture {
   try await runtime.save(to: fixture.save)
   let explicitlySaved = await runtime.snapshot().commander
   #expect(explicitlySaved == refitted)
+  let persisted = try JSONDecoder().decode(
+    Commander.self, from: CommanderSaveInput.read(from: fixture.save))
+  #expect(persisted == refitted && persisted.xyzzyCashGranted)
   let decoded = GameRuntime(game: fixture.game())
   try await decoded.load(from: fixture.save)
-  #expect(await decoded.snapshot().commander == refitted)
+  let reloaded = await decoded.snapshot().commander
+  #expect(reloaded.xyzzyCashGranted == refitted.xyzzyCashGranted && reloaded.credits == cash)
+  #expect(reloaded == refitted)
   await runtime.key("escape")
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let offer = try #require(await runtime.snapshot().commander.contracts.boards[key]?.offers.first)
