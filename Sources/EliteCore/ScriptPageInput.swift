@@ -104,7 +104,7 @@ extension GameRuntime {
       allowed = ScriptPagePresentation.controlKeys.contains(key)
     }
     guard allowed, expected.valid,
-      game.scriptPagePresentation == expected
+      currentScriptPageMatches(expected)
     else {
       game.notify("CONTACT CHANGED - REVIEW THE CURRENT PAGE")
       return
@@ -113,7 +113,7 @@ extension GameRuntime {
   }
   public func scriptPageClick(x: Double, y: Double, expected: ScriptPagePresentation) {
     guard x.isFinite, y.isFinite, expected.valid,
-      game.scriptPagePresentation == expected
+      currentScriptPageMatches(expected)
     else {
       game.notify("CONTACT CHANGED - REVIEW THE CURRENT PAGE")
       return
@@ -125,5 +125,8 @@ extension GameRuntime {
     } else {
       blackjackHandoffClick(x: x, y: y)
     }
+  }
+  private func currentScriptPageMatches(_ expected: ScriptPagePresentation) -> Bool {
+    game.scriptPagePresentation == expected
   }
 }

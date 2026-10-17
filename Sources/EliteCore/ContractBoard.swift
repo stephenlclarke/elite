@@ -146,10 +146,7 @@ extension Game {
       contractBoard.action = actions[(index + (key == "left" ? 2 : 1)) % 3]
     }
     if ["up", "down", "pageup", "pagedown"].contains(key) {
-      let count = Display.contractDetailRows(self, width: viewportWidth).count
-      let visible = ContractBoardLayout(width: viewportWidth, height: viewportHeight).detailCount
-      let window = ScrollWindow(count: count, visible: visible, offset: contractBoard.scroll)
-      contractBoard.scroll = window.moved(key == "up" || key == "pageup" ? -4 : 4)
+      scrollContractDetail(key)
     }
     guard key == "return" else { return }
     if contractBoard.action == .back {
@@ -181,6 +178,12 @@ extension Game {
       openContractBoard()
       notify(String(error.localizedDescription.prefix(512)))
     }
+  }
+  private mutating func scrollContractDetail(_ key: String) {
+    let count = Display.contractDetailRows(self, width: viewportWidth).count
+    let visible = ContractBoardLayout(width: viewportWidth, height: viewportHeight).detailCount
+    let window = ScrollWindow(count: count, visible: visible, offset: contractBoard.scroll)
+    contractBoard.scroll = window.moved(key == "up" || key == "pageup" ? -4 : 4)
   }
   public var activeContractSummary: [String] {
     commander.scriptState.instances.values.filter { $0.outcome == .active && $0.contract != nil }
