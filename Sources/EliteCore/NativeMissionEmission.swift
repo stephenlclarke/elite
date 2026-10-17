@@ -75,12 +75,15 @@ extension Game {
     else { throw NativeMissionProjectileAdmissionError.allocatorExhausted }
     var flight = commander.flightSimulation
     let identities = bodies.compactMap { $0.physical?.identity }
+    let spawns = bodies.compactMap { $0.physical?.spawnIdentity }
     guard flight.valid, Set(identities).count == identities.count,
       identities.filter({ $0.system == context.system && $0.visit == context.visit })
         .allSatisfy({ $0.entity < flight.nextActor }),
-      bodies.compactMap({ $0.physical?.spawnIdentity })
-        .filter({ $0.system == context.system && $0.visit == context.visit })
-        .allSatisfy({ $0.sequence < flight.nextSpawn }),
+      Set(spawns).count == spawns.count,
+      spawns.allSatisfy({
+        NativeMissionSpawnAddress.isCurrent(
+          $0, system: context.system, visit: context.visit, nextFlightSpawn: flight.nextSpawn)
+      }),
       let sequence = flight.allocateSpawn(), let actor = flight.allocateActor(),
       let emission = flight.allocateEmission(), flight.valid,
       let emitter = context.actors.first(where: { $0.identity == source.nativeActor })
