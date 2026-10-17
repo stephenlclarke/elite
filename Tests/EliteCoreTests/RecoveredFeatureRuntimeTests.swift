@@ -182,6 +182,11 @@ struct RecoveredFeatureRuntimeTests {
       })
     var unsupported = Game(executive: false)
     unsupported.commander.shipID = hull.id
+    unsupported.commander.fuel = min(70, unsupported.commander.nativePerformance.fuel)
+    unsupported.commander.missiles = min(3, unsupported.commander.nativePerformance.missiles)
+    try #require((0...unsupported.commander.fuelCapacity).contains(unsupported.commander.fuel))
+    try #require(
+      (0...unsupported.commander.missileCapacity).contains(unsupported.commander.missiles))
     try unsupported.commander.prepareEquipment(legacy: false)
     unsupported.commander.salvageLedger = try recoveredEquipmentGame("feature-salvage-cutter")
       .commander.salvageLedger
