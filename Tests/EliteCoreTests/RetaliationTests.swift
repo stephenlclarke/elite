@@ -2,13 +2,18 @@ import Testing
 
 @testable import EliteCore
 
-private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
+private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) throws -> Game {
   var game = Game(executive: false)
-  game.commander.installTargetingComputer(.military)
+  try game.commander.prepareEquipment(legacy: false)
+  try game.commander.grantEquipment(
+    TargetingTier.military.equipmentName, at: .targetingCore,
+    provenance: .grant("retaliation fixture"))
+  try game.commander.grantEquipment(
+    "E.C.M. System", at: .utility(.ecm), provenance: .grant("retaliation fixture"))
   game.launch()
   game.speed = 0
   #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
-  game.commander.equipment.insert("E.C.M. System")
+  try #require(game.commander.fittedEquipment(at: .utility(.ecm)) != nil)
   game.bodies = sources.map {
     .init(id: $0, hull: .constrictor, position: .init(Double($0) * 20, 0, 1400))
   }
@@ -23,8 +28,26 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
   game.ecmControl = ECMControl()
   return game
 }
-@Test func militaryRetaliatesOncePerSourceAfterConfirmedECMWithOrderedVoiceEvents() {
-  var game = threatenedGame(sources: [1, 2], salvo: 3)
+private func stowThreatMissiles(_ game: inout Game) throws {
+  let initialInventory = try #require(game.commander.equipmentInventory)
+  let rounds = initialInventory.items.filter {
+    $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+  }
+  try #require(rounds.count == 3)
+  for round in rounds {
+    let inventory = try #require(game.commander.equipmentInventory)
+    try game.commander.storeEquipment(round, expectedRevision: inventory.revision)
+  }
+  let emptyInventory = try #require(game.commander.equipmentInventory)
+  try #require(
+    emptyInventory.items.filter {
+      $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+    }.isEmpty && game.commander.missiles == 0 && game.commander.valid)
+  try game.commander.validateEquipmentState()
+}
+
+@Test func militaryRetaliatesOncePerSourceAfterConfirmedECMWithOrderedVoiceEvents() throws {
+  var game = try threatenedGame(sources: [1, 2], salvo: 3)
   game.key("v")
   game.key("]")
   game.ecm()
@@ -48,15 +71,18 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
   for _ in 0..<60 { game.tick(delta: 0.02) }
   #expect(game.commander.missiles == 1)
 }
-@Test func militaryRetaliationDoesNotFireOnDetectionFailureOrUnknownSource() {
-  var game = threatenedGame()
+@Test func militaryRetaliationDoesNotFireOnDetectionFailureOrUnknownSource() throws {
+  var game = try threatenedGame()
   game.tick(delta: 0.02)
   #expect(game.commander.missiles == 3 && game.weaponsTargetID == 1)
-  game.commander.equipment.remove("E.C.M. System")
+  let inventory = try #require(game.commander.equipmentInventory)
+  let ecm = try #require(game.commander.fittedEquipment(at: .utility(.ecm)))
+  try game.commander.storeEquipment(ecm, expectedRevision: inventory.revision)
+  try #require(game.commander.fittedEquipment(at: .utility(.ecm)) == nil && game.commander.valid)
   game.ecm()
   for _ in 0..<10 { game.tick(delta: 0.02) }
   #expect(game.commander.missiles == 3)
-  game = threatenedGame()
+  game = try threatenedGame()
   game.bodies[1].missileSourceID = nil
   game.ecm()
   for _ in 0..<40 { game.tick(delta: 0.02) }
@@ -66,16 +92,16 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
       if case .missileLaunched = $0.announcement { return true }
       return false
     })
-  game = threatenedGame()
+  game = try threatenedGame()
   game.ecmFrames = 32
   for _ in 0..<40 { game.tick(delta: 0.02) }
   #expect(game.commander.missiles == 3)
 }
 @Test func militaryRetaliationReportsNoAmmoAndInvalidForwardLockAndClearsEquipmentLoss() throws {
   for scenario in 0...3 {
-    var game = threatenedGame()
+    var game = try threatenedGame()
     game.ecm()
-    if scenario == 0 { game.commander.missiles = 0 }
+    if scenario == 0 { try stowThreatMissiles(&game) }
     if scenario == 1 { game.bodies[0].position.z = -1400 }
     if scenario == 2 { game.bodies[0].energy = 0 }
     if scenario == 3 {
@@ -101,22 +127,8 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
   }
 }
 @Test func unlimitedRetaliationAndNewAttacksRespectAmmoAndManualDisarm() throws {
-  var game = threatenedGame()
-  let initialInventory = try #require(game.commander.equipmentInventory)
-  let rounds = initialInventory.items.filter {
-    $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
-  }
-  try #require(rounds.count == 3)
-  for round in rounds {
-    let inventory = try #require(game.commander.equipmentInventory)
-    try game.commander.storeEquipment(round, expectedRevision: inventory.revision)
-  }
-  let emptyInventory = try #require(game.commander.equipmentInventory)
-  try #require(
-    emptyInventory.items.filter {
-      $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
-    }.isEmpty && game.commander.missiles == 0 && game.commander.valid)
-  try game.commander.validateEquipmentState()
+  var game = try threatenedGame()
+  try stowThreatMissiles(&game)
   game.commander.unlimitedMissiles = true
   game.ecm()
   for _ in 0..<60 { game.tick(delta: 0.02) }
@@ -138,7 +150,7 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
       if case .missileLaunched = $0.announcement { return true }
       return false
     }.count == 2)
-  game = threatenedGame()
+  game = try threatenedGame()
   game.ecm()
   game.key("u")
   for _ in 0..<40 { game.tick(delta: 0.02) }
