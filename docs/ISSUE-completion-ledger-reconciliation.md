@@ -15,3 +15,5 @@ The cabin storefront introduces context-specific Return/S/R controls that must b
 The control guide must distinguish ordinary docked commander loads from versioned mission flight/world restoration and retained NPC/mission custody, distinguish legacy dialogs from script choices and repeatable answers, and include delivered Gallery trial/campaign-review/retry/restart/return controls. Retain explicit development-versus-published-release qualifications.
 
 New requests and superseding decisions also need a persistent append-only record so that parallel handoffs cannot silently lose them.
+
+Later EMP, energy, alien stack, missile and drive requests must retain their stable FR IDs and explicit supersessions through FR-028. Integrating reviewed source or correcting test fixtures does not establish runtime acceptance; retain the actual 247 timeout and all unfinished outcomes.

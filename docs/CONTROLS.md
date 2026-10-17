@@ -60,7 +60,7 @@ Optional Spin Hold is in the Game menu. V toggles it, B stops smoothly, brackets
 
 ## Station tasks and mission dialogs
 
-At a main orbital station, open Market with 7. Prices, stock and your holdings stay in one table. Up/Down, scrolling or clicking selects a commodity. Tab or the visible Buy/Sell controls changes mode without changing the selected item; Return or Buy one/Sell one trades one unit. Left sells one and Right buys one. Repeat trades for multiple units. Keys 1/2 remain buy/sell mode aliases; the docked Screens menu exposes the single Market entry. In flight, 7 remains read-only prices and 1/2 remain rear/left views.
+At a main orbital station, open Market with 7. Prices, stock and your holdings stay in one table. Up/Down, scrolling or clicking selects a commodity. Tab or the visible Buy/Sell controls changes mode without changing the selected item; Return or Buy one/Sell one trades one unit. Left sells one and Right buys one. Repeat trades for multiple units. Keys 1/2 have no docked action; the docked Screens menu exposes the single Market entry. In flight, 7 remains read-only prices and 1/2 remain rear/left views.
 
 At a main orbital station, Equipment remains on 3. Up/Down selects an item and Return purchases/refuels; Left/Right or the visible mount controls chooses its laser mount. Commander Status (8) is a readiness/location/finance/legal summary. Inventory (9) owns the cargo manifest, reserved mission property and complete laser/equipment list. Up/Down or scrolling reads additional rows; Option-Up/Down pages. Escape returns to the previous area, not through each Market mode.
 

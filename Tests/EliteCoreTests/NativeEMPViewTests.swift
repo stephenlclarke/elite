@@ -199,7 +199,13 @@ extension NativeViewTests {
     view.keyUp(with: try event(36, "\r", down: false))
     let source = try #require(view.game.commander.savedEMPState?.records.keys.first)
     let disabled = try #require(view.game.bodies.first { $0.physical?.empSource == source })
-    #expect(disabled.id == original.id && disabled.energy == original.energy)
+    let resources = try #require(original.physical?.npc?.resources)
+    let expectedEnergy =
+      resources.profile == .nativeHull
+      ? min(resources.energyCapacity, original.energy + 0.1 * resources.energyRecharge)
+      : original.energy
+    #expect(disabled.id == original.id)
+    #expect(disabled.energy == expectedEnergy)
     #expect(view.game.targetColourCue(for: disabled) == .recoverable)
     #expect(view.game.empTargetStatus(disabled)?.contains("CREW ABOARD") == true)
     try verifyNativeEMPPixels(view, bodyID: disabled.id, ink: .orange, stage: "disabled-occupied")

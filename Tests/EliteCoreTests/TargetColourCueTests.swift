@@ -217,6 +217,9 @@ struct TargetColourCueTests {
       }
     }
     try verify(game, id: shipID)
+    // Keep the real emitter outside the legacy close-range laser path, which
+    // would otherwise intercept its own newly launched missile on this tick.
+    game.bodies[0].position = .init(0, 0, 2000)
     game.bodies[0].missiles = 1
     let missileLaunchResult = game.launchGameplayNPCMissile(bodyID: shipID)
     try #require(missileLaunchResult)

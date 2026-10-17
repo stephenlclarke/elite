@@ -53,13 +53,30 @@ private func empTravel(to destination: Int, game: inout Game) throws {
   let origin = game.commander.system
   try #require(destination != origin)
   game.selectedSystem = destination
+  let station = try #require(game.commander.flightSimulation.anchors?.station)
+  let outward = (game.commander.flightSimulation.pose.position - station.position).unit
+  try #require(outward.finite && outward.length > 0)
   for _ in 0..<200 where game.massLocked {
+    let direction = game.commander.flightSimulation.pose.shipVector(outward)
     var controls = Controls()
     controls.throttle = 1
-    controls.yaw = 1
+    controls.yaw = max(
+      -1,
+      min(
+        1,
+        atan2(direction.x, direction.z)
+          / max(0.001, game.commander.performance.yaw * 0.1)))
+    controls.pitch = max(
+      -1,
+      min(
+        1,
+        atan2(direction.y, hypot(direction.x, direction.z))
+          / max(0.001, game.commander.performance.pitch * 0.1)))
     game.tick(delta: 0.1, controls: controls)
+    try #require(game.screen != .gameOver && !game.docked)
   }
-  try #require(!game.massLocked)
+  let freeToJump = !game.massLocked
+  try #require(freeToJump)
   let fuel = game.commander.fuel
   let debit = game.commander.jumpFuelCost(
     distance: game.currentSystem.distance(to: game.targetSystem))

@@ -163,7 +163,11 @@ struct GameCommanderStorageTests {
     let changedFields = Set(savedFields.keys).union(liveFields.keys).filter {
       savedFields[$0] != liveFields[$0]
     }.sorted()
-    #expect(changedFields == ["savedNPCPersistence"])
+    #expect(saved.equipmentInventory == liveCommander.equipmentInventory)
+    // Codable dictionaries/sets may reorder their array representation on reload.
+    // The complete Commander comparison above still proves semantic conservation.
+    #expect(changedFields.contains("savedNPCPersistence"))
+    #expect(Set(changedFields).isSubset(of: ["savedNPCPersistence", "savedEquipmentInventory"]))
     if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
       let evidence = URL(fileURLWithPath: path, isDirectory: true)
       try FileManager.default.createDirectory(at: evidence, withIntermediateDirectories: true)
