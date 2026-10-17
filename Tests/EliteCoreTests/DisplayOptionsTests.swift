@@ -50,10 +50,12 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
+  #expect(pointer.schemaVersion == 21)
   var expected = game.commander
-  if expected.npcPersistence.count > 0 {
-    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
-  }
+  var restoredGame = await restored.snapshot()
+  let savedWorld = try #require(expected.nativeStations)
+  expected.nativeStations = try displayWorldAfterLoad(savedWorld, restored: &restoredGame)
   #expect(await restored.snapshot().commander == expected)
   game.key("escape")
   game.key("0")
@@ -73,6 +75,26 @@ import Testing
   #expect(game.commander.credits == Commander.xyzzyStartingCredits - 123)
   #expect(game.commander.equipmentInventory == beforeReentry.equipmentInventory)
   #expect(game.commander.equipmentPurchaseHistory == beforeReentry.equipmentPurchaseHistory)
+}
+
+private func displayWorldAfterLoad(
+  _ saved: NativeStationWorld, restored: inout Game
+) throws -> NativeStationWorld {
+  var expected = saved
+  for record in saved.ledger.records
+  where record.identity.system == restored.systemIdentity && record.tombstone == nil {
+    let original = try #require(record.binding)
+    let body = try #require(
+      restored.bodies.first { $0.nativeStationIdentity == record.identity })
+    let actor = try #require(body.physical?.identity)
+    #expect(
+      actor.system == restored.systemIdentity
+        && actor.visit == restored.commander.flightSimulation.visit)
+    #expect(actor.visit == original.actor.visit && actor != original.actor)
+    try expected.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: body.id))
+  }
+  #expect(expected.valid)
+  return expected
 }
 
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {

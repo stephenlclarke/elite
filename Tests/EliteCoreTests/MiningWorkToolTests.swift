@@ -5,10 +5,6 @@ import Testing
 
 private func workToolGame() throws -> Game {
   var game = Game(executive: false)
-  game.launch()
-  game.speed = 0
-  game.bodies = []
-  game.celestials = []
   game.commander.equipment = Equipment.maximumHardware
   game.commander.laserMounts = .init(front: .naval, left: .naval, right: .naval, rear: .naval)
   game.commander.xyzzyActive = true
@@ -16,7 +12,20 @@ private func workToolGame() throws -> Game {
     owner: UUID(), hull: UUID(), legacy: false,
     xyzzyGrant: true
   ) { UUID() }
+  game.launch()
+  game.speed = 0
+  game.bodies = []
+  game.celestials = []
+  try verifyWorkToolFixtureHardware(&game)
   return game
+}
+
+private func verifyWorkToolFixtureHardware(_ game: inout Game) throws {
+  let inventory = try #require(game.commander.equipmentInventory)
+  try #require(game.commander.fittedMiningWorkTool != nil)
+  try #require(game.commander.fittedEquipment(at: .utility(.salvageCutter)) != nil)
+  try #require(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
+  try #require(game.commander.nativeStations?.ledger.world == inventory.owner)
 }
 
 @discardableResult private func workToolRock(_ game: inout Game) throws -> Int {
