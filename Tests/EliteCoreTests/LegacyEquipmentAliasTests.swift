@@ -15,12 +15,15 @@ struct LegacyEquipmentAliasTests {
       try commander.prepareEquipment()
       let inventory = try #require(commander.equipmentInventory)
       let history = try #require(commander.equipmentPurchaseHistory)
-      let oldItems = inventory.items.filter { $0.node != EquipmentRuntimeCatalog.standardMissile }
-        .map { item in
-          OwnedEquipmentItem(
-            id: item.id, node: item.node, provenance: item.provenance,
-            component: item.component, location: item.location, boundHull: item.boundHull)
-        }
+      let oldItems = inventory.items.filter {
+        $0.node != EquipmentRuntimeCatalog.standardMissile
+          && $0.node.family != HyperspaceDriveDefinition.purchaseFamily
+      }
+      .map { item in
+        OwnedEquipmentItem(
+          id: item.id, node: item.node, provenance: item.provenance,
+          component: item.component, location: item.location, boundHull: item.boundHull)
+      }
       commander.savedEquipmentInventory = try .init(
         owner: inventory.owner, activeHull: inventory.activeHull,
         revision: 9, items: oldItems)
@@ -57,7 +60,15 @@ struct LegacyEquipmentAliasTests {
         Array(nextHistory.legacy.prefix(originalHistory.legacy.count)) == originalHistory.legacy)
       let migrated = commander
       try commander.prepareEquipment()
-      #expect(commander == migrated && commander.valid)
+      #expect(commander.savedEquipmentVersion == 3 && commander.valid)
+      #expect(commander.fittedEquipment(at: .targetingCore) == core)
+      #expect(
+        commander.equipmentInventory?.items.filter { !$0.isReservedStockDrive }
+          == migrated.equipmentInventory?.items)
+      #expect(commander.equipmentPurchaseHistory == migrated.equipmentPurchaseHistory)
+      let once = commander
+      try commander.prepareEquipment()
+      #expect(commander == once)
     }
   }
 

@@ -113,7 +113,7 @@ struct CampaignGalleryFixture {
     let before = game.commander
     try game.commander.prepareEquipment()
     game.commander.mirrorFittedEquipment()
-    try #require(game.commander.savedEquipmentVersion == 2)
+    try #require(game.commander.savedEquipmentVersion == 3)
     #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
     #expect(game.commander.shipID == before.shipID && game.commander.name == before.name)
     #expect(game.commander.fuel == before.fuel && game.commander.missiles == before.missiles)
@@ -216,7 +216,7 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   let unprepared = game.commander
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
-  try #require(game.commander.savedEquipmentVersion == 2)
+  try #require(game.commander.savedEquipmentVersion == 3)
   #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
   #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
   #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
@@ -578,7 +578,7 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   let unprepared = game.commander
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
-  try #require(game.commander.savedEquipmentVersion == 2)
+  try #require(game.commander.savedEquipmentVersion == 3)
   #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
   #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
   #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)

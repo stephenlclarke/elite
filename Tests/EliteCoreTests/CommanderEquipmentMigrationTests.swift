@@ -52,11 +52,11 @@ struct CommanderEquipmentMigrationTests {
     try cemInitialize(&commander, legacy: false)
     let inventory = try #require(commander.equipmentInventory)
     #expect(
-      inventory.owner == cemOwner && inventory.activeHull == cemHull && inventory.items.count == 7)
+      inventory.owner == cemOwner && inventory.activeHull == cemHull && inventory.items.count == 8)
     #expect(inventory.items.allSatisfy { $0.provenance == .standard && $0.location != nil })
     #expect(
       Set(inventory.items.compactMap { $0.location?.slot }) == [
-        .shield, .energy, .navigation, .laser(.front), .missilePylon(0), .missilePylon(1),
+        .shield, .energy, .navigation, .drive, .laser(.front), .missilePylon(0), .missilePylon(1),
         .missilePylon(2),
       ])
     #expect(commander.equipmentPurchaseHistory?.paid.isEmpty == true)
@@ -200,9 +200,10 @@ struct CommanderEquipmentMigrationTests {
   @Test func loadValidationRejectsUnknownVersionAndForeignLegacyEntitlementOwner() throws {
     var commander = Commander()
     try cemInitialize(&commander)
+    let version = commander.savedEquipmentVersion
     commander.savedEquipmentVersion = 99
     #expect(!commander.equipmentStateValid && !commander.valid)
-    commander.savedEquipmentVersion = 2
+    commander.savedEquipmentVersion = version
     let history = try #require(commander.equipmentPurchaseHistory)
     commander.savedEquipmentPurchaseHistory = .init(owner: UUID(), legacy: history.legacy)
     #expect(!commander.equipmentStateValid && !commander.valid)

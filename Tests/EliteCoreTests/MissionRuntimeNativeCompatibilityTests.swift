@@ -75,7 +75,7 @@ struct MissionRuntimeNativeCompatibilityTests {
     #expect(try Data(contentsOf: receipt.url) == trialBytes)
   }
 
-  @Test func ordinaryActorInitUsesDirectJSONAndNativeFlightUsesVersionedStorage() async throws {
+  @Test func ordinaryActorInitDefersDurabilityUntilFirstVersionedSave() async throws {
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: folder) }
     let url = folder.appendingPathComponent("commander.json")
@@ -87,10 +87,12 @@ struct MissionRuntimeNativeCompatibilityTests {
     #expect(initial.commander.nativeStations == nil && !initial.requiresScriptDurability)
     try await runtime.save(to: url)
     let ordinaryData = try Data(contentsOf: url)
-    let object = try #require(JSONSerialization.jsonObject(with: ordinaryData) as? [String: Any])
-    #expect(object["schemaVersion"] == nil && object["savedScriptState"] == nil)
-    let ordinary = try JSONDecoder().decode(Commander.self, from: ordinaryData)
-    #expect(ordinary.valid && ordinary.savedEquipmentVersion == 2)
+    let firstPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: ordinaryData)
+    #expect(firstPointer.schemaVersion == 26 && firstPointer.scope == "commander")
+    let (ordinary, _) = try ScriptSaveStore.read(ordinaryData, from: url)
+    #expect(ordinary.valid && ordinary.savedEquipmentVersion == 3)
+    #expect(ordinary.usesModularDriveSaveVersion && ordinary.usesEconomyMiningSaveVersion)
+    #expect(ordinary.scriptState.instances.isEmpty && ordinary.nativeStations == nil)
     #expect(ordinary.equipmentOwnerID == initial.commander.equipmentOwnerID)
     await runtime.key("0")
     _ = await runtime.advance(delta: 0.1)
@@ -105,9 +107,9 @@ struct MissionRuntimeNativeCompatibilityTests {
     try await runtime.save(to: url)
     let data = try Data(contentsOf: url)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: data)
-    #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+    #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
     let (commander, _) = try ScriptSaveStore.read(data, from: url)
-    #expect(commander.valid && commander.savedEquipmentVersion == 2)
+    #expect(commander.valid && commander.savedEquipmentVersion == 3)
     #expect(commander.equipmentOwnerID == initial.commander.equipmentOwnerID)
     let committed = await runtime.snapshot()
     #expect(commander.scriptState == committed.commander.scriptState)
