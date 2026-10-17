@@ -112,7 +112,9 @@ extension Game {
         time: context.physicalTime), cargo: npc.ordinaryCargo, legal: npc.legal,
       nextEjectionAt: context.physicalTime + 1)
     let ejections = candidate.sampleEMPCrewEjections(ordinals: record.aboardOrdinals)
-    guard record.appendCrewDisableEpisode(incident: incident, ejections: ejections), record.valid
+    guard
+      record.appendCrewDisableEpisode(
+        incident: incident, weapon: tool, owner: owner, ejections: ejections), record.valid
     else { return false }
     state.records[logical] = record
     state.nextSequence += 1

@@ -4,10 +4,12 @@ import Testing
 @testable import EliteCore
 
 struct NativeRescueTargetingTests {
-  @Test func tabActuallySelectsAndAutomaticallyCollectsOneOriginalProtectedPod() async throws {
+  @Test(arguments: [false, true])
+  func tabActuallySelectsAndAutomaticallyCollectsOneOriginalProtectedPod(legacy: Bool) async throws
+  {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
-    let game = try NativePeopleTestFixture.podApproach()
+    let game = try NativePeopleTestFixture.podApproach(legacy: legacy)
     let pod = try #require(game.bodies.first { $0.physical?.empCrewPod != nil })
     let person = try #require(pod.physical?.empCrewPod)
     let actor = try #require(pod.physical?.identity)
@@ -33,6 +35,20 @@ struct NativeRescueTargetingTests {
     let podIndex = try #require(record.podIndex(for: person.ordinal))
     #expect(record.pods[podIndex].binding == nil)
     #expect(collected.commander.valid)
+    let emitted = try #require(record.podEjectionLowerBound(for: person.ordinal))
+    try #require(emitted > record.disableIncident.physicalTime)
+    let encoded = try JSONEncoder().encode(admission)
+    var fields = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+    fields["physicalTime"] = emitted - 0.0001
+    let early = try JSONDecoder().decode(
+      NativePeopleAdmission.self,
+      from: JSONSerialization.data(withJSONObject: fields))
+    #expect(!early.valid(commander: collected.commander))
+    var forged = collected.commander
+    let admissionIndex = try #require(
+      forged.savedNativePeopleCustody?.admissions.firstIndex { $0.person == .emp(person) })
+    forged.savedNativePeopleCustody?.admissions[admissionIndex] = early
+    #expect(!forged.nativePeopleStateValid && !forged.valid)
     for _ in 0..<40 { _ = await runtime.advance(delta: 0.05) }
     #expect(
       await runtime.snapshot().commander.nativePeople?.admissions.filter {

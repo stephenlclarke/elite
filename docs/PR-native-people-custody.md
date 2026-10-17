@@ -8,6 +8,8 @@ The existing Station Contracts review slot provides explicit receiving care, nam
 
 ## Verification and remaining risks
 
+The first review follow-up hardens later disable incidents with per-episode fitted weapon and owner evidence, permits actual refits, and rejects zero emission IDs, mismatched source parts, non-finite positions and station victims. Rescue admissions join their own known ejection time while preserving the honest unknown-time legacy bound. Pod colour handling checks the person tag before constructing an encounter context, preserving the existing early hostile/disabled path. Regression cases extend the actual rescue and later-episode data-hook fixtures; runtime execution remains pending.
+
 This source worker has not built, typechecked or run any test or application. Parser/format, Markdown and diff checks are not runtime validation. Authored tests cover actual physical producer/contact paths, interleaved original IDs, hold limits, save rollback, station care/sale, legacy/version/array guards, re-admission and Gallery isolation. G1 owns focused execution, coverage, sanitizers, leak checks and full `make ci`, followed by completed clean `@codex review` cycles, final-head checks and protected merge.
 
 G1 must compose actual electrical recovery and validated traffic return for current resources, law, pose, cargo and surviving crew. This source does not implement EMP warmup, cumulative power/range, ECM or area effects. Existing fixed-one-second EMP fixtures require reconciliation with the new random schedule and conditional schema 24. Generic R11, full medical treatment/hiring/rescue providers and historical missions remain open. FR-005/006 remain source candidates until those checks pass; no release readiness is claimed.

@@ -5,30 +5,83 @@ import Testing
 
 struct NativePeoplePersistenceTests {
   @Test func legacyDataHookAcceptsLaterGenuineEpisodeWithoutInventingAnOldSchedule() throws {
-    let game = try NativePeopleTestFixture.withinWindow()
+    var game = try NativePeopleTestFixture.withinWindow()
     let source = try NativePeopleTestFixture.source(game)
     var record = try #require(game.commander.savedEMPState?.records[source])
     record.savedDisableEpisodes = nil
     let first = record.disableIncident
     let time = first.physicalTime + 31
+    try game.commander.removeFittedEquipment(Equipment.empPirateBlaster)
+    try game.commander.grantEquipment(
+      Equipment.empPirateBlaster, at: .utility(.empPirateBlaster),
+      provenance: .grant("Later actual fitted EMP replacement"))
+    let replacement = try #require(game.commander.fittedEquipment(at: .utility(.empPirateBlaster)))
+    try #require(replacement.id != record.weapon.id)
     // This is a data-hook boundary fixture, not evidence of actual electrical recovery.
-    let origin = AttackOrigin(
-      emissionID: first.origin.emissionID + 1, owner: first.origin.owner,
-      emittedAt: time, ownerLegalAtEmission: first.origin.ownerLegalAtEmission,
-      sourcePart: first.origin.sourcePart)
-    let later = CombatIncident(
-      id: first.id + 1, physicalTime: time, origin: origin,
-      victim: record.hull.body.physical?.identity, kind: .emp, outcome: .hit,
-      position: first.position, victimLegalBeforeAttack: first.victimLegalBeforeAttack,
-      firstAggressor: first.firstAggressor, victimRole: first.victimRole, victimIsStation: false)
+    func laterIncident(emission: UInt64, part: String?, position: Vector3, station: Bool = false)
+      -> CombatIncident
+    {
+      let origin = AttackOrigin(
+        emissionID: emission, owner: first.origin.owner,
+        emittedAt: time, ownerLegalAtEmission: first.origin.ownerLegalAtEmission, sourcePart: part)
+      return CombatIncident(
+        id: first.id + 1, physicalTime: time, origin: origin,
+        victim: record.hull.body.physical?.identity, kind: .emp, outcome: .hit,
+        position: position, victimLegalBeforeAttack: first.victimLegalBeforeAttack,
+        firstAggressor: first.firstAggressor, victimRole: first.victimRole, victimIsStation: station
+      )
+    }
+    let part = "emp:" + replacement.id.uuidString
+    let later = laterIncident(
+      emission: first.origin.emissionID + 1, part: part, position: first.position)
     let schedule = record.aboardOrdinals.map { EMPCrewEjection(ordinal: $0, delay: 45) }
-    try #require(record.appendCrewDisableEpisode(incident: later, ejections: schedule))
+    let prior = record
+    let appended = record.appendCrewDisableEpisode(
+      incident: later, weapon: replacement, owner: prior.weaponOwner, ejections: schedule)
+    try #require(appended)
     #expect(record.disableIncident == first && record.disableEpisodes.count == 2)
     #expect(record.disableEpisodes[0].legacyTiming && record.disableEpisodes[0].ejections.isEmpty)
     #expect(record.currentCrewDisableIncident == later && record.crewDeadline == time + 30)
     #expect(record.crewCensusValid && record.valid)
+    #expect(
+      record.disableEpisodes[0].weapon == prior.weapon
+        && record.disableEpisodes[1].weapon == replacement)
+    var foreignOwner = prior
+    let foreignAccepted = foreignOwner.appendCrewDisableEpisode(
+      incident: later, weapon: replacement, owner: UUID(), ejections: schedule)
+    #expect(!foreignAccepted)
+    #expect(foreignOwner == prior)
+    for bad in [
+      laterIncident(emission: 0, part: part, position: first.position),
+      laterIncident(
+        emission: first.origin.emissionID + 1, part: "laser:not-emp", position: first.position),
+      laterIncident(
+        emission: first.origin.emissionID + 1, part: first.origin.sourcePart,
+        position: first.position),
+      laterIncident(
+        emission: first.origin.emissionID + 1, part: part, position: .init(.infinity, 0, 0)),
+      laterIncident(
+        emission: first.origin.emissionID + 1, part: part, position: first.position, station: true),
+    ] {
+      var refused = prior
+      let accepted = refused.appendCrewDisableEpisode(
+        incident: bad, weapon: replacement, owner: prior.weaponOwner, ejections: schedule)
+      #expect(!accepted)
+      #expect(refused == prior)
+      var forged = record
+      let valid = record.disableEpisodes[1]
+      forged.savedDisableEpisodes?[1] = .init(
+        incident: bad, weapon: valid.weapon,
+        weaponOwner: valid.weaponOwner, ejections: valid.ejections,
+        legacyTiming: valid.legacyTiming,
+        actorBindings: valid.actorBindings, legacyPods: valid.legacyPods,
+        legacyNextEjectionAt: valid.legacyNextEjectionAt, legacyEmissions: valid.legacyEmissions)
+      #expect(!forged.crewCensusValid && !forged.valid)
+    }
     let original = record
-    #expect(!record.appendCrewDisableEpisode(incident: later, ejections: schedule))
+    let repeated = record.appendCrewDisableEpisode(
+      incident: later, weapon: replacement, owner: original.weaponOwner, ejections: schedule)
+    #expect(!repeated)
     #expect(record == original)
   }
 
@@ -60,6 +113,15 @@ struct NativePeoplePersistenceTests {
     #expect(episode.legacyEmissions.count == 1 && episode.legacyEmissions[0].ordinal == 0)
     #expect(episode.legacyEmissions[0].time >= episode.legacyNextEjectionAt!)
     #expect(record.valid && upgraded.commander.valid)
+    var frozenLegacy = record
+    frozenLegacy.savedDisableEpisodes = nil
+    try #require(frozenLegacy.valid)
+    let installed = frozenLegacy.installLegacyCrewEpisode()
+    try #require(installed)
+    #expect(frozenLegacy.disableEpisodes[0].legacyPods == [0])
+    #expect(frozenLegacy.disableEpisodes[0].legacyEmissions.isEmpty)
+    #expect(frozenLegacy.podEjectionLowerBound(for: 0) == record.disableIncident.physicalTime)
+    #expect(frozenLegacy.valid)
     try await reader.save(to: storage.url)
     #expect(
       try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: storage.url))

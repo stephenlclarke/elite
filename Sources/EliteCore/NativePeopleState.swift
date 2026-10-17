@@ -120,7 +120,9 @@ struct NativePeopleAdmission: Equatable, Codable, Sendable {
     else { return false }
     switch origin {
     case .rescuedPod:
-      guard let index = record.podIndex(for: identity.ordinal) else { return false }
+      guard let index = record.podIndex(for: identity.ordinal),
+        let emitted = record.podEjectionLowerBound(for: identity.ordinal), physicalTime >= emitted
+      else { return false }
       return record.pods[index].body.physical?.identity == actor
         && record.pods[index].binding == nil
     case .capturedCrew:

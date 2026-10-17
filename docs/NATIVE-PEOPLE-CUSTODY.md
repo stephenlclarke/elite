@@ -12,6 +12,8 @@ FR-017/018 supersede the earlier interpretation of FR-005 that capture happened 
 
 The permanent first incident is separate from the current disable episode. Up to 32 episodes retain bounded schedules, actual ejection times and physical binding history. Later episodes schedule survivors only. G1 implements actual electrical phases and validated traffic return for the same current actor, resources, pose, law, cargo and police assignment. The episode helper does not authorize recovery or restore an original NPC snapshot.
 
+Each episode retains its actual fitted EMP item and commander owner. Later refits may use a different item UUID; the incident must match that episode's EMP source part, carry a positive emission ID and a finite position, and identify a non-station victim. Rescue admissions cannot predate that person's known random-schedule emission or new legacy-service emission. Existing frozen legacy pods retain only the original disable-time lower bound because their historical ejection times are unknown.
+
 ## Collection and hold accounting
 
 The existing Salvage filter and Tab selection admit a proven native occupied pod to single-unit automatic scoop approach with a targeting core, fitted Salvage Module and Fuel Scoops. Collection requires the actual whole pod inside the existing scoop aperture with acceptable relative speed. Occupied pods remain orange independently of a full hold or missing tools; selection and collection still enforce those requirements. Foreign or protected occupants do not gain collection authority.
