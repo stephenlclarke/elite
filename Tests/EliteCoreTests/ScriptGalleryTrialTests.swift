@@ -146,7 +146,9 @@ private func sortedWorld(_ game: Game) throws -> Data {
   let rejected = await runtime.advance(delta: 0.1)
   #expect(rejected.laserFlash == 0)
   #expect(rejected.dischargeAudio.events == trial.dischargeAudio.events)
-  #expect(!rejected.paused, Comment(rawValue: rejected.message))
+  let pausedAfterRejectedControl = rejected.paused
+  let rejectedMessage = rejected.message
+  #expect(!pausedAfterRejectedControl, Comment(rawValue: rejectedMessage))
   #expect(rejected.screen == .front && !rejected.docked)
   #expect(rejected.commander.laser(on: .front) == .pulse)
   #expect(rejected.commander.flightSimulation.valid)
@@ -156,10 +158,18 @@ private func sortedWorld(_ game: Game) throws -> Data {
       from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000,
       radius: 0, includePlayer: false)
   }
+  // These actual restoration probes operate only on a local snapshot, never on the runtime.
+  #expect(throws: Never.self) { try rejected.validateRetainedMissionProjectileRestoration() }
+  var restoreProbe = rejected
+  #expect(throws: Never.self) { try restoreProbe.restoreScriptActors() }
   await runtime.setControls(firing, expectedEpoch: trial.ecmControl.epoch)
   let fired = await runtime.advance(delta: 0.1)
-  #expect(fired.laserFlash > 0, Comment(rawValue: fired.message))
-  #expect(fired.dischargeAudio.events.count > rejected.dischargeAudio.events.count)
+  let flashAfterCurrentControl = fired.laserFlash
+  let firedMessage = fired.message
+  let dischargeCountBefore = rejected.dischargeAudio.events.count
+  let dischargeCountAfter = fired.dischargeAudio.events.count
+  #expect(flashAfterCurrentControl > 0, Comment(rawValue: firedMessage))
+  #expect(dischargeCountAfter > dischargeCountBefore)
 }
 @Test func returningToAnEarlierSpeechNamespaceCannotReplayItsOldMessages() {
   var live = Game(executive: false)
