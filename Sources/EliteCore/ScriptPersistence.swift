@@ -255,8 +255,16 @@ enum ScriptSaveStore {
     var commander = try ScriptValueStorage.decoder(typed: typed).decode(
       Commander.self, from: chunks["commander.json"]!)
     if pointer.schemaVersion <= 4 { commander.migrateLegacyPassengerMarker() }
-    commander.scriptState = try ScriptValueStorage.decoder(typed: typed).decode(
+    let missionsDecoder = ScriptValueStorage.decoder(typed: typed)
+    missionsDecoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
+    commander.scriptState = try missionsDecoder.decode(
       ScriptEngineState.self, from: chunks["missions.json"]!)
+    guard
+      pointer.schemaVersion >= 21
+        || commander.scriptState.instances.values.allSatisfy({
+          $0.ownedEncounters.values.allSatisfy { $0.legacyProvenance == nil }
+        })
+    else { throw SaveError.invalidCommander }
     guard
       pointer.schemaVersion >= 20
         || (commander.scriptState.pledgeLedger == nil
@@ -303,6 +311,26 @@ enum ScriptSaveStore {
       commander.valid, world.valid, world.consistent(with: commander)
     else {
       throw SaveError.invalidCommander
+    }
+    if pointer.schemaVersion <= 11 {
+      for id in commander.scriptState.instances.keys {
+        guard var owner = commander.scriptState.instances[id] else {
+          throw SaveError.invalidCommander
+        }
+        for encounterID in owner.ownedEncounters.keys {
+          guard var encounter = owner.ownedEncounters[encounterID] else {
+            throw SaveError.invalidCommander
+          }
+          encounter.legacyProvenance = try .importValidated(
+            schema: pointer.schemaVersion, owner: owner, encounter: encounter)
+          owner.ownedEncounters[encounterID] = encounter
+        }
+        commander.scriptState.instances[id] = owner
+      }
+      // Frozen pending condition counts against the existing semantic cap before any publication.
+      guard commander.valid, world.consistent(with: commander),
+        try semantic.encode(commander.scriptState).count <= 33_554_432
+      else { throw SaveError.invalidCommander }
     }
     return (commander, world)
   }

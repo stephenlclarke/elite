@@ -256,6 +256,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           && instance.ownedEncounters.count <= 64
           && instance.ownedEncounters.allSatisfy {
             $0.key == $0.value.id && $0.value.valid
+              && ($0.value.legacyProvenance?.matches(owner: instance, encounter: $0.value) ?? true)
               && $0.value.actors.values.allSatisfy { $0.body.missionInstanceID == instance.id }
               && $0.value.actors.values.allSatisfy { actor in
                 actor.body.scriptNPC?.fit.models.values.allSatisfy { geometry[$0] != nil } ?? true
