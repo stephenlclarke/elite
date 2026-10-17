@@ -284,15 +284,24 @@ public enum SalvageLootProfiles {
       "feature-salvage-cutter",
     ]
     let pool: [String]
+    let selection = random.next()
     switch bucket {
-    case .alienArtefact: pool = ["alien-artefact"]
+    case .alienArtefact:
+      guard source.roles.contains(.thargoid) else { return nil }
+      // Project balance: preserve artefacts alongside four uniformly selected module types.
+      // Reuse the pre-existing selection draw; human pools and their RNG cadence are unchanged.
+      let kind = AlienModuleKind.allCases[Int((selection / 100) % 4)]
+      let roll = selection % 100
+      pool = [
+        roll < 50 ? "alien-artefact" : roll < 75 ? kind.definitionID : kind.upgradeDefinitionID
+      ]
     case .shieldItem: pool = ["shield-technology"]
     case .weaponItem: pool = weapons
     case .otherShipUpgrade: pool = other
     case .otherShipItem: pool = weapons + other.filter { $0 != "shield-technology" }
     default: pool = weapons + other
     }
-    let id = pool[Int(random.next() % UInt64(pool.count))]
+    let id = pool[Int(selection % UInt64(pool.count))]
     guard let definition = SalvageDefinitions.definition(id: id) else { return nil }
     let qualityRoll = random.next() % 100
     let tier = max(0, min(14, source.technology))
@@ -301,7 +310,13 @@ public enum SalvageLootProfiles {
     let condition = 50 + Int(random.next() % 51)
     var axis: SalvageUpgradeAxis?
     var effect = definition.effect
-    if case .scalar(let axes) = definition.effect, !axes.isEmpty {
+    let physical = AlienModuleKind.allCases.first { $0.definitionID == id }
+    let upgrade = AlienModuleKind.allCases.first { $0.upgradeDefinitionID == id }
+    if let upgrade {
+      axis = upgrade.axes[Int(random.next() % UInt64(upgrade.axes.count))]
+      // A shield controller upgrades the matching module type, which affects both banks.
+      effect = .scalar(axes: upgrade.axes)
+    } else if physical == nil, case .scalar(let axes) = definition.effect, !axes.isEmpty {
       axis = axes[Int(random.next() % UInt64(axes.count))]
       effect = .scalar(axes: [axis!])
     }
@@ -309,7 +324,9 @@ public enum SalvageLootProfiles {
       identity: .init(section: section, lot: lot),
       content: .technology(
         definitionID: id, quality: quality, conditionPercent: condition, axis: axis),
-      effect: effect, bonusBasisPoints: axis == nil ? 0 : quality.bonusBasisPoints,
+      effect: effect,
+      bonusBasisPoints: physical != nil
+        ? AlienModuleDefinition.baseBonusBasisPoints : axis == nil ? 0 : quality.bonusBasisPoints,
       massKg: definition.massKg, halfExtents: definition.halfExtents,
       provenance: definition.provenance,
       saleValueTenths: SalvageDefinitions.saleValue(

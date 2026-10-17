@@ -175,7 +175,7 @@ public enum SalvageDefinitions {
   public static let maximumExtraPylons = 2
   public static let maximumSparePods = 2
 
-  public static let all: [SalvageTechnologyDefinition] = [
+  private static let ordinaryDefinitions: [SalvageTechnologyDefinition] = [
     item(
       "computer-core", .computerCore, "Computer core", 50, Vector3(6, 4, 3), 20000,
       .scalar(axes: [.scanningRange, .acquisitionError, .automationError])),
@@ -235,6 +235,29 @@ public enum SalvageDefinitions {
       "alien-artefact", .alienArtefact, "Alien technology artefact", 25,
       Vector3(4, 4, 4), 50000, .researchAndSale, provenance: .alien),
   ]
+
+  public static let all: [SalvageTechnologyDefinition] =
+    ordinaryDefinitions + alienModuleDefinitions
+  private static let alienModuleDefinitions: [SalvageTechnologyDefinition] = AlienModuleKind
+    .allCases.flatMap { kind in
+      let label: String
+      switch kind {
+      case .energyCapacity: label = "Alien Energy Capacity Module"
+      case .energyRecharge: label = "Alien Energy Recharge Module"
+      case .shieldCapacity: label = "Alien Shield Capacity Module"
+      case .shieldRecharge: label = "Alien Shield Recharge Module"
+      }
+      let category: SalvageTechnologyCategory =
+        kind.isEnergyModule ? .energyTechnology : .shieldTechnology
+      return [
+        item(
+          kind.definitionID, category, label, AlienModuleDefinition.massKg,
+          AlienModuleDefinition.halfExtents, 50000, .scalar(axes: kind.axes), provenance: .alien),
+        item(
+          kind.upgradeDefinitionID, category, label + " Upgrade", AlienModuleDefinition.massKg,
+          AlienModuleDefinition.halfExtents, 25000, .scalar(axes: kind.axes), provenance: .alien),
+      ]
+    }
 
   public static let researchRecipes: [SalvageResearchRecipe] = {
     let navigation = NavigationTier.allCases.dropFirst().map { tier in
@@ -316,6 +339,12 @@ public enum SalvageDefinitions {
         ? .permitted : .refused(.researchUnavailable)
     }
     guard case .fit(let axis, let mount) = action else { return .refused(.unsupportedAxis) }
+    if AlienModuleKind.allCases.contains(where: {
+      $0.definitionID == definition.id || $0.upgradeDefinitionID == definition.id
+    }) {
+      // Separate physical attachments must never become ordinary capped scalar effects.
+      return .refused(.incompatibleHardware)
+    }
     switch definition.effect {
     case .scalar(let axes):
       guard let axis, axes.contains(axis) else { return .refused(.unsupportedAxis) }

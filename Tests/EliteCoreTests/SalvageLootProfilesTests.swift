@@ -208,10 +208,15 @@ import Testing
         section: section(), seed: UInt64(seed), source: source([.thargoid, .militaryCapital]))
       #expect(alien.items.count == 1 && alien.bucket == .alienArtefact)
       if case .technology(let id, _, _, let axis) = alien.items.first?.content {
-        #expect(id == "alien-artefact" && axis == nil && alien.items.first?.provenance == .alien)
+        let physical = AlienModuleKind.allCases.first { $0.definitionID == id }
+        let upgrade = AlienModuleKind.allCases.first { $0.upgradeDefinitionID == id }
+        #expect(id == "alien-artefact" || physical != nil || upgrade != nil)
+        #expect(alien.items.first?.provenance == .alien)
+        if id == "alien-artefact" || physical != nil { #expect(axis == nil) }
+        if let upgrade { #expect(axis.map { upgrade.axes.contains($0) } == true) }
       } else {
         Issue.record(
-          "Thargoid recovery retains artefact identity; PLUGH fittings use a separate station transaction"
+          "Thargoid recovery must retain a typed alien outcome; PLUGH fitting remains a separate transaction"
         )
       }
     }
