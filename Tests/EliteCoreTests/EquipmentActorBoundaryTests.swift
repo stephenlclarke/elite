@@ -232,14 +232,44 @@ struct EquipmentActorBoundaryTests {
     flying.screen = .inventory
     flying.bodies = []
     flying.celestials = []
-    let flightRuntime = GameRuntime(game: flying)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let file = directory.appendingPathComponent("commander.json")
+    let flightRuntime = GameRuntime(game: flying, saveURL: file)
     let flightPreview = await flightRuntime.snapshot()
     let flightLot = try #require(flightPreview.commander.salvageLedger.inventory.first)
     let flightCommand = try #require(
       flightPreview.inventoryActionPreview(for: .recovered(flightLot)).command)
     _ = await flightRuntime.advance(delta: 0.02)
+    let beforeFlightMutation = await flightRuntime.snapshot()
     let flightResult = await flightRuntime.equipmentTransaction(.inventory(flightCommand))
     #expect(flightResult.applied)
+    let committed = await flightRuntime.snapshot()
+    #expect(!committed.docked && committed.requiresScriptDurability)
+    #expect(committed.commander.salvageLedger.inventory.isEmpty)
+    #expect(committed.commander.fittedComponent(at: .energy)?.receipts.count == 1)
+    #expect(
+      committed.commander.fittedComponent(at: .energy)?.receipts.first?.item
+        == .salvage(flightLot.identity))
+    #expect(committed.commander.credits == beforeFlightMutation.commander.credits)
+    #expect(
+      committed.commander.equipmentPurchaseHistory
+        == beforeFlightMutation.commander.equipmentPurchaseHistory)
+    let oldInventory = try #require(beforeFlightMutation.commander.equipmentInventory)
+    let nextInventory = try #require(committed.commander.equipmentInventory)
+    #expect(
+      nextInventory.owner == oldInventory.owner
+        && nextInventory.activeHull == oldInventory.activeHull)
+    #expect(nextInventory.revision == oldInventory.revision + 1)
+    #expect(nextInventory.items.count == oldInventory.items.count)
+    let bytes = try Data(contentsOf: file)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+    let (saved, _) = try ScriptSaveStore.read(bytes, from: file)
+    #expect(saved.valid && saved.salvageLedger == committed.commander.salvageLedger)
+    #expect(saved.equipmentInventory == committed.commander.equipmentInventory)
+    #expect(saved.equipmentPurchaseHistory == committed.commander.equipmentPurchaseHistory)
+    #expect(saved.credits == committed.commander.credits)
   }
 
   @Test func loadRefreshesContextEvenWhenCommanderPurchaseFactsAreUnchanged() async throws {
