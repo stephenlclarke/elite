@@ -66,6 +66,15 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let berth = try #require(game.commander.accommodation.fittedBerths.first)
   #expect(person.name == "Ari" && person.mission == mission && person.location == .cabin(berth.id))
   #expect(game.commander.passengerFit?.freeCompatiblePlaces == 0)
+  let screen = game.screen
+  game.screen = .equipment
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
+  #expect(game.equipmentPurchaseContext?.passengerBerthFitting(fitted: false) == nil)
+  let occupied = game.commander
+  game.key("s")
+  #expect(game.commander == occupied)
+  game.screen = screen
   #expect(throws: MissionPackError.self) {
     try game.setPassengerBerthFitted(berth.id, fitted: false)
   }
@@ -296,7 +305,10 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.credits = 100000
-  let runtime = GameRuntime(game: game)
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(
+    "actor-cabin-save-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let runtime = GameRuntime(game: game, saveURL: directory.appendingPathComponent("commander.json"))
   let quote = await runtime.passengerBerthQuote()
   try await runtime.confirmPassengerBerth(quote)
   await #expect(throws: MissionPackError.self) { try await runtime.confirmPassengerBerth(quote) }

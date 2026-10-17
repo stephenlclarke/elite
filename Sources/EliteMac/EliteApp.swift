@@ -38,6 +38,7 @@ final class GameView: NSView {
   var pending: [String] = []
   var pendingInventoryCommands: [InventoryCommand] = []
   var pendingEquipmentPurchases: [EquipmentPurchaseContext] = []
+  var pendingPassengerBerthFittings: [PassengerBerthFittingIntent] = []
   var pendingCommanderFiles: [NativeCommanderFileIntent] = []
   var pendingMissionUI: [MissionUIIntent] = []
   private(set) var inventoryInputGeneration: UInt64 = 0
@@ -166,6 +167,19 @@ final class GameView: NSView {
     pendingEquipmentPurchases.append(context)
     pending.append("equipment-purchase")
   }
+  private func queuePaintedPassengerBerthFitting(fitted: Bool) {
+    guard pendingPassengerBerthFittings.count < 64,
+      inventoryInputGeneration == paintedInventoryInputGeneration,
+      paintedPurchaseBounds == bounds, let context = paintedPurchaseContext,
+      context == game.equipmentPurchaseContext,
+      let intent = context.passengerBerthFitting(fitted: fitted)
+    else {
+      needsDisplay = true
+      return
+    }
+    pendingPassengerBerthFittings.append(intent)
+    pending.append("passenger-berth-fitting")
+  }
   private func clearSteeringInput() {
     held.subtract(["x", "s", ",", "<", ".", ">", "left", "right", "up", "down"])
     trackpad.reset()
@@ -223,6 +237,10 @@ final class GameView: NSView {
     }
     if game.screen == .equipment, key == "return" {
       if !event.isARepeat { queuePaintedEquipmentPurchase() }
+      return
+    }
+    if game.passengerBerthSelected, ["s", "r"].contains(key) {
+      if !event.isARepeat { queuePaintedPassengerBerthFitting(fitted: key == "r") }
       return
     }
     if ["r", "tab"].contains(key) && !event.isARepeat && game.screen.isFlight {
@@ -520,6 +538,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     view.pendingInventoryCommands.removeAll(keepingCapacity: true)
     let purchases = view.pendingEquipmentPurchases
     view.pendingEquipmentPurchases.removeAll(keepingCapacity: true)
+    let cabinFittings = view.pendingPassengerBerthFittings
+    view.pendingPassengerBerthFittings.removeAll(keepingCapacity: true)
     let files = view.pendingCommanderFiles
     view.pendingCommanderFiles.removeAll(keepingCapacity: true)
     let missionIntents = view.pendingMissionUI
@@ -527,6 +547,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let inventoryGeneration = view.inventoryInputGeneration
     var inventoryCommandIndex = 0
     var purchaseIndex = 0
+    var cabinFittingIndex = 0
     var fileIndex = 0
     var missionUIIndex = 0
     for event in events {
@@ -539,6 +560,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         if purchases.indices.contains(purchaseIndex) {
           _ = await runtime.equipmentTransaction(.purchase(purchases[purchaseIndex]))
           purchaseIndex += 1
+        }
+      } else if event == "passenger-berth-fitting" {
+        if cabinFittings.indices.contains(cabinFittingIndex) {
+          _ = await runtime.equipmentTransaction(.passengerBerth(cabinFittings[cabinFittingIndex]))
+          cabinFittingIndex += 1
         }
       } else if event == "inventory-command" {
         if inventoryCommands.indices.contains(inventoryCommandIndex) {
