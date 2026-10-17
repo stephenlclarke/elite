@@ -131,13 +131,19 @@ private func assistedGame() -> Game {
     })
 }
 
-@Test func stationAutoUsesTiltedEntrancePoseAndSwitchesAwayWithoutResidualTranslation() {
+@Test func stationAutoUsesTiltedEntrancePoseAndSwitchesAwayWithoutResidualTranslation() throws {
   var game = assistedGame()
-  var station = SpaceBody(id: 1, hull: .station, position: .init(1200, 700, 1600))
+  var station = SpaceBody(id: 0, hull: .station, position: .init(1200, 700, 1600))
   station.orientation.rotate(pitch: 0.6, roll: 0.4, yaw: 0.8)
   station.rotationRate = -0.3
   game.bodies = [station]
   game.key("r")
+  let selected = try #require(game.autoTargetBody)
+  let anchors = try #require(game.commander.flightSimulation.anchors)
+  let actor = try #require(selected.physical?.identity)
+  try #require(
+    selected.id == 0 && selected.nativeStationIdentity == nil
+      && actor == anchors.station.identity && game.dockingComputer)
   for _ in 0..<7000 where !game.docked { game.tick(delta: 0.02) }
   #expect(game.docked)
   game.launch()
