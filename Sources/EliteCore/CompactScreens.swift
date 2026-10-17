@@ -112,7 +112,7 @@ extension Display {
       ("Gross productivity: \(star.productivity) MCR", .white),
       ("Average radius: \(star.radius) km", .white),
     ]
-    let belt = AsteroidBeltDefinition.isPresent(system: star, galaxy: game.inspectedGalaxy)
+    let belt = game.commander.miningLedger.ringPresence(system: star, galaxy: game.inspectedGalaxy)
     rows.append(("Asteroid belt: " + (belt ? "sparse star-centred ring" : "none"), .cyan))
     if belt {
       rows += [
