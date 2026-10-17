@@ -215,10 +215,19 @@ private struct NativeWorkFixture {
       let worldMatches = try encoder.encode(world) == encoder.encode(view.game.scriptWorldSave)
       try #require(worldMatches)
       let currentFiles = try nativeWorkSavedFiles(directory)
-      let pointerPath = String(save.path.dropFirst(directory.path.count))
+      let pointerPath = try nativeWorkRelativePath(save, in: directory)
       for (path, previous) in savedFiles where path != pointerPath {
         let oldFilePreserved = currentFiles[path] == previous
-        try #require(oldFilePreserved)
+        if !oldFilePreserved {
+          let expectedHash = ScriptPackLibrary.hash(previous)
+          let currentHash = currentFiles[path].map(ScriptPackLibrary.hash) ?? "MISSING"
+          try #require(
+            oldFilePreserved,
+            Comment(
+              rawValue:
+                "Preserved file: \(path); pointer: \(pointerPath); expected: \(expectedHash); current: \(currentHash)"
+            ))
+        }
       }
       bytes = current
       savedFiles = currentFiles
@@ -456,7 +465,14 @@ private func nativeWorkSavedFiles(_ directory: URL) throws -> [String: Data] {
     guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
       continue
     }
-    files[String(url.path.dropFirst(directory.path.count))] = try Data(contentsOf: url)
+    files[try nativeWorkRelativePath(url, in: directory)] = try Data(contentsOf: url)
   }
   return files
+}
+
+private func nativeWorkRelativePath(_ url: URL, in directory: URL) throws -> String {
+  let root = directory.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+  let path = url.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+  try #require(path.count > root.count && path.prefix(root.count).elementsEqual(root))
+  return path.dropFirst(root.count).joined(separator: "/")
 }
