@@ -405,7 +405,8 @@ extension Game {
     else { return }
     let flight = commander.flightSimulation
     for body in bodies where body.nativeStationIdentity != nil && nativeStationBodyIsCurrent(body) {
-      guard let identity = body.nativeStationIdentity, let physical = body.physical,
+      guard world.bodyRigidPoseIsConsistent(body, flight: flight),
+        let identity = body.nativeStationIdentity, let physical = body.physical,
         let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
         let orientation = saved.orientation(at: flight.physicalTime),
@@ -590,7 +591,8 @@ extension Game {
       gameplayRevision == proof.revision, scriptDurabilityAvailable,
       let body = bodies.first(where: { $0.id == proof.binding.bodyID }),
       body.nativeStationIdentity == proof.station, nativeStationBodyIsCurrent(body),
-      body.physical?.identity == proof.binding.actor, var world = commander.nativeStations
+      body.physical?.identity == proof.binding.actor, var world = commander.nativeStations,
+      world.bodyRigidPoseIsConsistent(body, flight: commander.flightSimulation)
     else { throw NativeStationRuntimeError.unsafeEntry }
     try persistNativeStationConditions()
     dock(atMainStation: false)
@@ -679,6 +681,24 @@ extension Game {
 }
 
 extension NativeStationWorld {
+  /// End-of-movement admission joins the actual rendered actor to its saved rigid station pose.
+  /// Planning earlier in a tick still uses the preceding body frame, so this is not a global
+  /// eligibility predicate for weapon queries made before movement.
+  func bodyRigidPoseIsConsistent(_ body: SpaceBody, flight: FlightSimulationState) -> Bool {
+    guard let identity = body.nativeStationIdentity, let saved = pose(for: identity),
+      let source = NativeStationSource.binding(for: identity), body.hull == .station,
+      let physical = body.physical, physical.population == .mission, physical.npc == nil,
+      physical.velocity == Vector3(0, 0, 0), physical.canonicalSpin != true,
+      physical.angularVelocity == Vector3(0, 0, 0),
+      body.rotationRate == source.rotationRate,
+      (flight.pose.systemPoint(body.position) - saved.position).length < 1e-5,
+      let orientation = saved.orientation(at: flight.physicalTime)
+    else { return false }
+    return [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy {
+      (flight.pose.orientation.apply(body.modelVector($0)) - orientation.apply($0)).length < 1e-5
+    }
+  }
+
   func sceneIsConsistent(
     bodies: [SpaceBody], docked: Bool, mainStation: Bool,
     system: SystemIdentity, flight: FlightSimulationState
@@ -706,15 +726,7 @@ extension NativeStationWorld {
         record.binding == .init(actor: physical.identity, bodyID: body.id),
         body.hull == .station, body.energy == saved.energy, body.energy > 0,
         body.rotationRate == source.rotationRate,
-        (flight.pose.systemPoint(body.position) - saved.position).length < 1e-5,
-        let orientation = saved.orientation(at: flight.physicalTime)
-      else { return false }
-      let axes = [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)]
-      guard
-        axes.allSatisfy({
-          (flight.pose.orientation.apply(body.modelVector($0)) - orientation.apply($0)).length
-            < 1e-5
-        })
+        bodyRigidPoseIsConsistent(body, flight: flight)
       else { return false }
     }
     return true
