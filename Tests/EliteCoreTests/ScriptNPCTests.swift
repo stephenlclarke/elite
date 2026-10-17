@@ -516,6 +516,10 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let fixture = try NPCFixture()
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
+  try verifyProfileSceneSaveRejections(&game, id: id)
+}
+
+private func verifyProfileSceneSaveRejections(_ game: inout Game, id: UUID) throws {
   let index = try aimNPCAtPlayer(&game, id: id)
   game.advanceScriptNPCWeapons(delta: 0.1)
   game.persistScriptActors()
