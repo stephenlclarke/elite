@@ -6,8 +6,10 @@ import Testing
 private func crimboAttack(_ game: inout Game, attacker: ActorIdentity, victim: ActorIdentity)
   throws -> CombatIncident
 {
-  let emission = try #require(game.commander.flightSimulation.allocateEmission())
-  let incident = try #require(game.commander.flightSimulation.allocateIncident())
+  let emissionAllocation = game.commander.flightSimulation.allocateEmission()
+  let emission = try #require(emissionAllocation)
+  let incidentAllocation = game.commander.flightSimulation.allocateIncident()
+  let incident = try #require(incidentAllocation)
   return .init(
     id: incident, physicalTime: game.commander.flightSimulation.physicalTime,
     origin: .init(
@@ -70,14 +72,16 @@ struct NativeCrimboProviderTests {
   @Test func npcAggressorNeverFallsBackToPlayerWhenItsLogicalBindingIsLost() throws {
     var game = try CrimboFixture.game()
     game.advanceNativeCrimbo(delta: 0.1)
-    let attacker = try #require(game.commander.flightSimulation.allocateActor())
+    let attackerAllocation = game.commander.flightSimulation.allocateActor()
+    let attacker = try #require(attackerAllocation)
     var npc = NPCState(
       role: .pirate, origin: CrimboFixture.system, destination: CrimboFixture.system)
     npc.resources = NPCResources.stock(game.commander.performance)
     var body = SpaceBody(id: 999, hull: .cobra, position: .init(0, 0, -5000))
     body.physical = .init(identity: attacker, population: .pirate, npc: npc)
     game.bodies.append(body)
-    #expect(game.persistNPCStates().isEmpty)
+    let persistenceRefusals = game.persistNPCStates()
+    #expect(persistenceRefusals.isEmpty)
     let santa = try #require(
       game.bodies.first { $0.physical?.catalogueShipID == "SH150" }?.physical?.identity)
     let incident = try crimboAttack(&game, attacker: attacker, victim: santa)

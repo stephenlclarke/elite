@@ -34,7 +34,8 @@ struct NativeCrimboRuntimeTests {
   @Test func realCivilianCapacityRefusesWholeCohortAndRetainsPendingOriginals() throws {
     var game = try CrimboFixture.game()
     for i in 0..<2 {
-      let actor = try #require(game.commander.flightSimulation.allocateActor())
+      let actorAllocation = game.commander.flightSimulation.allocateActor()
+      let actor = try #require(actorAllocation)
       var body = SpaceBody(
         id: 100 + i, hull: .cobra, position: .init(Double(i) * 1000, 1000, -5000))
       body.physical = .init(
@@ -112,9 +113,11 @@ struct NativeCrimboRuntimeTests {
       try game.finishNativeCrimboMotion(admitted: true)
     }
     #expect(game.nativeCrimboMotionSample == nil)
-    #expect(try game.finishNativeCrimboMotion(admitted: true) == nil)
+    let replayedMotion = try game.finishNativeCrimboMotion(admitted: true)
+    #expect(replayedMotion == nil)
     game.nativeCrimboMotionSample = sample
-    #expect(try game.finishNativeCrimboMotion(admitted: false) == nil)
+    let rejectedMotion = try game.finishNativeCrimboMotion(admitted: false)
+    #expect(rejectedMotion == nil)
   }
 
   @Test func staleEpochAndActualTeleportInvalidateMotion() throws {
@@ -122,7 +125,8 @@ struct NativeCrimboRuntimeTests {
     game.advanceNativeCrimbo(delta: 0.1)
     let sample = try #require(game.nativeCrimboMotionSample)
     game.nativeStationRuntimeEpoch = UUID()
-    #expect(try game.finishNativeCrimboMotion(admitted: true) == nil)
+    let staleEpochMotion = try game.finishNativeCrimboMotion(admitted: true)
+    #expect(staleEpochMotion == nil)
     game.nativeStationRuntimeEpoch = sample.runtimeEpoch
     game.nativeCrimboMotionSample = sample
     let index = try #require(game.bodies.firstIndex { $0.physical?.identity == sample.actor })
@@ -136,7 +140,8 @@ struct NativeCrimboRuntimeTests {
     game.advanceNativeCrimbo(delta: 0.1)
     _ = try #require(game.nativeCrimboMotionSample)
     game.stationImpactRevision = game.gameplayRevision
-    #expect(try game.finishNativeCrimboMotion(admitted: true) == nil)
+    let contactMotion = try game.finishNativeCrimboMotion(admitted: true)
+    #expect(contactMotion == nil)
     #expect(game.nativeCrimboMotionSample == nil)
   }
 
@@ -158,13 +163,15 @@ struct NativeCrimboRuntimeTests {
     game.advanceNativeCrimbo(delta: 0.1)
     game.tick(delta: 0.01)
     let sample = try #require(game.nativeCrimboMotionSample)
-    let result = try #require(game.finishNativeCrimboMotion(admitted: true))
+    let attainedMotion = try game.finishNativeCrimboMotion(admitted: true)
+    let result = try #require(attainedMotion)
     #expect(result.actor == sample.actor && result.provider == sample.provider)
     #expect(result.endTime > result.startTime)
     let actual = result.subjectEnd.position - result.subjectStart.position
     #expect(abs(result.tangentialDisplacementWorldUnits - actual.dot(sample.tangent)) < 1e-8)
     #expect(result.tangentialDisplacementWorldUnits > 0)
-    #expect(try game.finishNativeCrimboMotion(admitted: true) == nil)
+    let replayedMotion = try game.finishNativeCrimboMotion(admitted: true)
+    #expect(replayedMotion == nil)
   }
 
   @Test func actualLaunchBirthAndDockRelaunchRetainSevenOriginalLogicalKeys() throws {
@@ -250,7 +257,8 @@ struct NativeCrimboRuntimeTests {
   @Test func absentOriginalFreezesWhileUnownedSameCatalogueNPCKeepsCoasting() throws {
     var game = try CrimboFixture.game()
     game.advanceNativeCrimbo(delta: 0.1)
-    #expect(game.persistNPCStates().isEmpty)
+    let persistenceRefusals = game.persistNPCStates()
+    #expect(persistenceRefusals.isEmpty)
     let santa = try #require(
       CrimboFixture.convoyBodies(game).first { $0.physical?.catalogueShipID == "SH150" }?.physical?
         .identity)
@@ -258,13 +266,13 @@ struct NativeCrimboRuntimeTests {
     game.commander.npcPersistence.cull(actor: santa)
     game.bodies.removeAll { $0.physical?.identity == santa }
     let before = try #require(game.commander.npcPersistence.snapshot(for: logical))
-    let unownedActor = try #require(game.commander.flightSimulation.allocateActor())
+    let unownedActorAllocation = game.commander.flightSimulation.allocateActor()
+    let unownedActor = try #require(unownedActorAllocation)
     let unowned = try CrimboFixture.snapshot(
       entity: unownedActor.entity, slot: 0,
       visit: unownedActor.visit, time: game.commander.flightSimulation.physicalTime)
-    #expect(
-      game.commander.npcPersistence.capture(unowned, protection: .init())
-        == .registered(unowned.actor))
+    let unownedCapture = game.commander.npcPersistence.capture(unowned, protection: .init())
+    #expect(unownedCapture == .registered(unowned.actor))
     game.commander.npcPersistence.cull(actor: unowned.actor)
     game.commander.flightSimulation.advancePhysicalTime(50)
     game.advanceUnboundNPCs()
@@ -299,7 +307,8 @@ struct NativeCrimboRuntimeTests {
     var invalidArrival = registry
     invalidArrival.orbit = mismatched
     // Deliberate actual-arrival boundary failure; this value is not a valid G1-loaded native world.
-    let allocated = try #require(game.commander.flightSimulation.allocateSpawn())
+    let spawnAllocation = game.commander.flightSimulation.allocateSpawn()
+    let allocated = try #require(spawnAllocation)
     #expect(allocated >= invalidArrival.spawnSequence)
     game.commander.savedCrimboState = invalidArrival
     try game.commander.grantEquipment(
@@ -412,7 +421,8 @@ extension NativeCrimboRuntimeTests {
     } else {
       // This is the existing real native persistence refusal for an invalid live angular state.
       game.bodies[index].physical?.angularVelocity = .init(.infinity, 0, 0)
-      #expect(!game.persistSalvagePoses())
+      let salvagePersisted = game.persistSalvagePoses()
+      #expect(!salvagePersisted)
     }
     game.jumpCountdown = 3
     let before = game.commander
