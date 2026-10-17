@@ -45,6 +45,16 @@ private func selectRRSForReading(_ game: inout Game) throws -> GalleryMission {
   let row = try selectRRSForReading(&game)
   #expect(row.status == .active && row.savedInstance == nil && row.trialDigest == nil)
   #expect(row.nativeRRSCourierID == commander.contracts.rrs?.active?.id)
+  let job = try #require(commander.contracts.rrs?.active)
+  let origin = Universe.systemsIncludingPlugh(number: job.origin.station.system.galaxy)[
+    job.origin.station.system.system
+  ].name
+  #expect(
+    row.briefing.contains(origin + " / Galaxy " + String(job.origin.station.system.galaxy + 1)))
+  #expect(
+    row.briefing.contains("RRS Headquarters") && row.briefing.contains("Protected document packet"))
+  #expect(
+    !row.briefing.contains(job.packet.uuidString) && !row.briefing.contains(job.origin.station.key))
   #expect(row.milestones[0].state == "Complete" && row.milestones[2].state == "Upcoming")
   #expect(!game.canTrialSelectedMission && !game.canRetrySelectedGalleryEntry)
   #expect(game.campaignImmediateOwner == nil && game.selectedCampaignAssignments.isEmpty)

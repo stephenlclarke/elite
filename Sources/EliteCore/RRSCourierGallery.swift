@@ -34,6 +34,9 @@ extension Game {
       let destination = Universe.systemsIncludingPlugh(number: job.destination.system.galaxy)[
         job.destination.system.system
       ].name
+      let originSystem = Universe.systemsIncludingPlugh(number: job.origin.station.system.galaxy)[
+        job.origin.station.system.system
+      ].name
       let origin =
         job.origin.station.definition == "rrs_headquarters" ? "RRS Headquarters" : "RRS Waystation"
       let objective =
@@ -44,15 +47,15 @@ extension Game {
       return GalleryMission(
         name: RRSCourierContent.title, status: delivered ? .complete : (failed ? .failed : .active),
         objective: objective,
-        briefing: RRSCourierContent.briefing + "\nOrigin: " + origin + " / "
-          + job.origin.station.key
-          + "\nPacket: " + job.packet.uuidString
+        briefing: RRSCourierContent.briefing + "\nOrigin: " + originSystem + " / Galaxy "
+          + String(job.origin.station.system.galaxy + 1) + " / " + origin
+          + "\nProtected document packet"
           + (job.carriesPacket ? " / protected custody retained." : " / custody ended.")
           + "\n" + RRSCourierContent.terms.joined(separator: "\n")
           + (failed ? "\nRecorded failure: 0 CR / reputation -10, once." : ""),
         destination: destination + " / original main orbital station",
         reward: "30.0 CR / reputation +2 on confirmed delivery",
-        prerequisites: ["Accepted native RRS assignment; no trial or retry action in Gallery."],
+        prerequisites: ["Accepted RRS document assignment. Confirm delivery in Station Contracts."],
         completed: milestones.filter { $0.state == "Complete" }.count, milestones: milestones,
         nativeRRSCourierID: job.id)
     }
