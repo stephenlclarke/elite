@@ -1943,6 +1943,7 @@ public actor GameRuntime {
     var candidate = game
     guard candidate.load(commander) else { throw SaveError.invalidCommander }
     if candidate.requiresScriptDurability { migrateScriptCalendar(&candidate) }
+    candidate.suspendUnavailableScriptContent()
     guard candidate.commander.valid else { throw SaveError.invalidCommander }
     if persistMigrations && candidate.commander != original {
       try Self.writeCommander(&candidate, to: url)
