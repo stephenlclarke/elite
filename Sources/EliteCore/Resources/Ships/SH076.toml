@@ -11,7 +11,7 @@ dimensions = [95.2224, 43.35907, 174.5744]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "lifter"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "common"
 galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
 regions = ["tradeLane", "deepSpace"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project commercial/logistical specialization from reviewed hull identity, family, performance and retained source context; apply requested150t minimum and family correction."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project commercial/logistical specialization from reviewed hull identity, family, performance and retained source context; apply requested150t minimum and family correction. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "transporter"
 placementStatus = "declared"
+isCapital = false
+primaryType = "transporter"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 3
 
 [game]
 cargo = 150

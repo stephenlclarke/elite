@@ -11,7 +11,7 @@ dimensions = [36.13694, 11.050920000000001, 41.784760000000006]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "asp"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "uncommon"
 galaxies = [0, 6, 7]
 regions = ["tradeLane", "deepSpace"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project civilian passenger/private exploration/racing specialization within the seven requested categories; no extra explorer/utility category."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project civilian passenger/private exploration/racing specialization within the seven requested categories; no extra explorer/utility category. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "leisure"
 placementStatus = "declared"
+isCapital = false
+primaryType = "leisure"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 9
 
 [game]
 cargo = 38

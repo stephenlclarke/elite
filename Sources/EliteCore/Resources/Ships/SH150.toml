@@ -11,7 +11,7 @@ dimensions = [52.455, 42.7304, 61.1178]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "santa-sled"
 objectKind = "ship"
 origin = "human"
@@ -25,10 +25,16 @@ mechanicsStatus = "ready"
 rarity = "rare"
 galaxies = [7]
 regions = []
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum. FR047 ratified Crimbo design supersedes seasonal trader-only classification; authored provider pending at galaxy7/system8."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum. FR047 ratified Crimbo design supersedes seasonal trader-only classification; authored provider pending at galaxy7/system8. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "transporter"
 placementStatus = "pending"
 authoredSystems = [{ "galaxy" = 7, "system" = 8 }]
+isCapital = false
+primaryType = "transporter"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 8
 
 [game]
 cargo = 150

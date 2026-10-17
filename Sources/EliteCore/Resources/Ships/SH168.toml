@@ -11,7 +11,7 @@ dimensions = [7.8576, 5.6, 23.41789]
 geometryContext = "Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "convict-miner-minnow"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "rare"
 galaxies = []
 regions = []
-basis = "retained source facts + project classification judgement. Project extraction/prospecting/utility specialization; actual supported mining tools need declaration and validation rather than grants from a label."
+basis = "retained source facts + project classification judgement. Project extraction/prospecting/utility specialization; actual supported mining tools need declaration and validation rather than grants from a label. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "miner"
 placementStatus = "pending"
+isCapital = false
+primaryType = "miner"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 2
 
 [game]
 cargo = 0

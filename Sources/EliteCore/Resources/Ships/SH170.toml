@@ -11,7 +11,7 @@ dimensions = [51.23331, 9.21302, 70.05797999999999]
 geometryContext = "Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "ray"
 objectKind = "ship"
 origin = "human"
@@ -23,11 +23,17 @@ discoveryEligible = true
 encounterMode = "authored"
 mechanicsStatus = "ready"
 rarity = "rare"
-galaxies = []
-regions = []
-basis = "retained source facts + project classification judgement. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility."
+galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
+regions = ["tradeLane", "deepSpace"]
+basis = "retained source facts + project classification judgement. Project combat/security/reconnaissance/support specialization from reviewed class, identity and source/spec context. Does not assign pilot allegiance, guilt or hostility. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "pending"
+isCapital = false
+primaryType = "military"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 9
 
 [game]
 cargo = 15

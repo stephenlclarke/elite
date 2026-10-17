@@ -11,7 +11,7 @@ dimensions = [130.0, 35.0, 81.0]
 geometryContext = "Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "nomad"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "common"
 galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
 regions = ["miningBand"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project extraction/prospecting/utility specialization; actual supported mining tools need declaration and validation rather than grants from a label."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project extraction/prospecting/utility specialization; actual supported mining tools need declaration and validation rather than grants from a label. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "miner"
 placementStatus = "declared"
+isCapital = false
+primaryType = "miner"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 6
 
 [game]
 cargo = 25

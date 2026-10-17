@@ -11,7 +11,7 @@ dimensions = [136.24137000000002, 40.560159999999996, 122.57163]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 
 [catalogue]
-schemaVersion = 1
+schemaVersion = 2
 family = "tiger-trader"
 objectKind = "ship"
 origin = "human"
@@ -25,9 +25,15 @@ mechanicsStatus = "ready"
 rarity = "common"
 galaxies = [0, 1, 2, 3, 4, 5, 6, 7]
 regions = ["tradeLane", "deepSpace"]
-basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum."
+basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "trader"
 placementStatus = "declared"
+isCapital = false
+primaryType = "trader"
+purchasePolicy = "blueprintFabrication"
+collectionMilestone = "blueprintAndFabrication"
+damagePolicy = "destructible"
+minimumBuildTechLevel = 8
 
 [game]
 cargo = 150
