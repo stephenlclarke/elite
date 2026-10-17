@@ -6,7 +6,8 @@ extension Game {
   mutating func synchronizeScriptNPCPhysicalVelocities() {
     for index in bodies.indices {
       guard let velocity = bodies[index].scriptNPC?.velocity else { continue }
-      bodies[index].physical?.velocity = commander.flightSimulation.pose.orientation.apply(velocity)
+      let worldVelocity = commander.flightSimulation.pose.orientation.apply(velocity)
+      bodies[index].physical?.velocity = worldVelocity
     }
   }
 
