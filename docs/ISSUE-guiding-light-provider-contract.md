@@ -27,3 +27,5 @@ The source review also found unused greeting, urgent-choice, disabled, destroyed
 ## Combined304 compile blocker
 
 G1 reported that Combined304 stopped during compilation, before any tests ran: the compiler could not type-check the large optional-count array inside `validateProviderContract` in reasonable time. Extract that exact array into an explicitly typed `[Int?]` local and its predicate into a Boolean local. Preserve all field restrictions and the original nil-or-zero semantics.
+
+Actual validation 306 reached the mission fixtures and exposed seven authored dialog identifiers containing uppercase letters. The generic loader correctly accepts only lowercase identifier tokens, so the pack could not load before its unsupported-capability presentation checks. Correct the resource names and their internal Lua text lookups while preserving all dialogue text and native event names; keep the shared loader rule intact.

@@ -78,11 +78,11 @@ id = "checkpoint3"
 text = "Relay: Third calibration light confirmed."
 
 [[dialogs]]
-id = "fullReady"
+id = "full-ready"
 text = "Santa: All lights green and the timing checks out. Take that relay to Atisen's orbital dispatch desk. Safe passage, Commander."
 
 [[dialogs]]
-id = "urgentChoice"
+id = "urgent-choice"
 text = "Dispatch: Send the signed relay without full calibration? Delivery pays 1,500 credits. You can keep calibrating instead."
 
 [[dialogs]]
@@ -90,7 +90,7 @@ id = "disabled"
 text = "Dispatch: Santa's drive is offline. Your held relay is safe. Wait for this ship to recover, use an already authenticated manifest for urgent delivery, or recover the original crew or computer core."
 
 [[dialogs]]
-id = "lostSanta"
+id = "lost-santa"
 text = "Dispatch: We've lost Santa's ship. An already authenticated manifest still permits urgent dispatch. Otherwise recover the original computer core or bring a surviving crew member safely to Crimbo. If neither is possible, return the relay."
 
 [[dialogs]]
@@ -98,19 +98,19 @@ id = "rescue"
 text = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Your 500-credit crew commendation was transferred."
 
 [[dialogs]]
-id = "recoveryReady"
+id = "recovery-ready"
 text = "Dispatch: Recovered manifest authenticated. Atisen will accept the relay. Recovery delivery pays 2,000 credits."
 
 [[dialogs]]
-id = "completeFull"
+id = "complete-full"
 text = "Atisen Dispatch: Relay received, all three checks verified. 3,000 credits transferred. Crimbo's next delivery has a guiding light."
 
 [[dialogs]]
-id = "completeUrgent"
+id = "complete-urgent"
 text = "Atisen Dispatch: Urgent relay received with its signed manifest. 1,500 credits transferred. We'll finish the calibration here."
 
 [[dialogs]]
-id = "completeRecovery"
+id = "complete-recovery"
 text = "Atisen Dispatch: Relay and recovered manifest received. 2,000 credits transferred. We've recorded what happened to the convoy."
 
 [[dialogs]]
