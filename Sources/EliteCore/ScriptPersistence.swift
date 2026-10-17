@@ -159,7 +159,8 @@ struct ScriptSavePointer: Codable {
 /// Publication is synchronous inside GameRuntime: no actor reentrancy can overwrite newer simulation state.
 enum ScriptSaveStore {
   static func write(
-    commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander"
+    commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander",
+    exclusive: Bool = false
   ) throws {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid,
@@ -199,7 +200,7 @@ enum ScriptSaveStore {
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
     let bytes = try encoder.encode(pointer)
-    try bytes.write(to: url, options: .atomic)
+    try CommanderSavePublication.write(bytes, to: url, exclusive: exclusive)
   }
   static func generationDirectory(_ generation: String, from url: URL) throws -> URL {
     guard UUID(uuidString: generation)?.uuidString == generation else {

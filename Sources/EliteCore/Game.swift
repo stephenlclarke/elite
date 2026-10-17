@@ -389,6 +389,9 @@ public struct Game: Sendable {
   var scriptDispatching = false
   var scriptEventsDeferred = false
   var scriptDurabilityAvailable = false
+  // Runtime-only destination ownership and acknowledgment; never encoded in Commander saves.
+  var pendingNewSaveDestination: URL?
+  var newCommanderSaveReceipt: CommanderFileReceipt?
   var nativeStationRuntimeEpoch = UUID()
   var pendingNativeStationDock: NativeStationEntryProof?
   var nativeStationDockEvidence: NativeStationDockEvidence?
@@ -2046,6 +2049,8 @@ public actor GameRuntime {
     commander.migrateLegacyPassengerMarker()
     var candidate = game
     guard candidate.load(commander) else { throw SaveError.invalidCommander }
+    candidate.pendingNewSaveDestination = nil
+    candidate.newCommanderSaveReceipt = nil
     try candidate.rebindNativeStationsAfterLoad()
     if candidate.requiresScriptDurability { migrateScriptCalendar(&candidate) }
     candidate.suspendUnavailableScriptContent()

@@ -18,8 +18,10 @@ extension GameRuntime {
       let prepared = try Self.prepareNativeSaveState(candidate)
       try ScriptSaveStore.write(
         commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
-        scope: namespace == nil ? "commander" : "gallery")
+        scope: namespace == nil ? "commander" : "gallery",
+        exclusive: candidate.pendingNewSaveDestination == url)
       candidate = prepared.game
+      candidate.recordNewCommanderSavePublication(to: url)
     }
   }
   /// User commands are staged before a frame is published. Disk failure publishes no
@@ -72,15 +74,18 @@ extension GameRuntime {
     if prepared.game.requiresScriptDurability {
       try ScriptSaveStore.write(
         commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
-        scope: prepared.game.isMissionTrial ? "gallery" : "commander")
+        scope: prepared.game.isMissionTrial ? "gallery" : "commander",
+        exclusive: candidate.pendingNewSaveDestination == url)
     } else {
       let data = try JSONEncoder().encode(prepared.commander)
       guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }
       try FileManager.default.createDirectory(
         at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-      try data.write(to: url, options: .atomic)
+      try CommanderSavePublication.write(
+        data, to: url, exclusive: candidate.pendingNewSaveDestination == url)
     }
     candidate = prepared.game
+    candidate.recordNewCommanderSavePublication(to: url)
   }
 }
 

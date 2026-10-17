@@ -479,6 +479,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         alert.informativeText = packErrors.joined(separator: "\n")
         alert.runModal()
       }
+      var failedRestore = false
       if let self, self.restoreOnLaunch, let url = self.saves.startupURL {
         do {
           try await runtime.restoreStartup(from: url)
@@ -486,7 +487,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           view?.game = await runtime.snapshot()
         } catch {
           guard !Task.isCancelled else { return }
+          failedRestore = true
           await self.recoverStartup(error, url: url)
+        }
+      }
+      if let self, self.restoreOnLaunch {
+        do {
+          try await self.bindNewCommanderSaveIfNeeded(afterFailedRestore: failedRestore)
+        } catch {
+          self.commanderFileFailure(error)
+          return
         }
       }
       var previousTick = ContinuousClock.now
@@ -514,11 +524,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       }
     }
   }
+  func bindNewCommanderSaveIfNeeded(afterFailedRestore: Bool) async throws {
+    guard !(await runtime.hasCommanderSaveDestination()) else { return }
+    let proposed = saves.newCommanderDestination(afterFailedRestore: afterFailedRestore)
+    let accepted: URL
+    do {
+      accepted = try await runtime.registerNewCommanderDestination(at: proposed)
+    } catch {
+      // A racing first-run file is never adopted or overwritten by this fresh commander.
+      let fresh = saves.newCommanderDestination(afterFailedRestore: true)
+      accepted = try await runtime.registerNewCommanderDestination(at: fresh)
+    }
+    saves.activeURL = accepted
+  }
+  func acknowledgeNewCommanderSave() async {
+    if let receipt = await runtime.takeNewCommanderSaveReceipt() {
+      saves.didSave(to: receipt.url)
+    }
+  }
   func processFrame(in view: GameView, delta: () -> Double) async {
     await processPendingCommands(in: view)
     await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
     await runtime.setControls(view.controls)
     view.game = await runtime.advance(delta: delta())
+    await acknowledgeNewCommanderSave()
     view.audio.update(view.game)
     view.needsDisplay = true
   }
@@ -649,6 +678,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         await runtime.key(event)
       }
     }
+    await acknowledgeNewCommanderSave()
     view.processedInventoryInputGeneration = inventoryGeneration
     if !events.isEmpty { view.game = await runtime.snapshot() }
   }
