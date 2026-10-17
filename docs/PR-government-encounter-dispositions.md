@@ -13,3 +13,7 @@ Regression source covers independent anarchy samples, all eight exact rates, oth
 The narrow legacy-source audit found the ordinary launch Cobra is nonhostile by default. Remaining hostile constructors are the authored Blackjack/naval encounter paths and actual combat provocation; their central ownership and behavior are untouched. Coder 1 owns final confirmation against current integration, crime/EMP/save interactions and native acceptance.
 
 Only strict Swift formatting lint, scoped Markdown lint and whitespace checks ran. No compiler, typecheck, tests, native process, media, CI or publishing ran. Source remains uncompiled and unexecuted. No Game, gameplay contracts, admission, crime, security, EMP or save container was edited. See [motivation](ISSUE-government-encounter-dispositions.md).
+
+## Independent review follow-up
+
+Eligibility now uses the director's stable generated route provenance rather than mutable legal provenance. A real illegal shot correctly changes the offender's legal provenance to recorded; that update alone must not make an aggressive trader or miner switch to an idle destination. A parameterized regression selects an actually admitted hostile trader/miner, fires through the production occluded NPC beam and crime path, observes player damage and the real legal-record update, then checks the next TrafficIntent and applied encounter phase retain engagement. Existing retreat, collection, retargeting, self-defence and protection exceptions remain unchanged. This regression source is uncompiled and unexecuted.

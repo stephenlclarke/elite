@@ -161,12 +161,77 @@ struct AmbientEncounterPolicyTests {
     }
   }
 
+  @Test(arguments: [NPCRole.trader, .miner])
+  func actualFirstIllegalBeamKeepsGeneratedEngagementAfterLegalHistoryBecomesRecorded(role: NPCRole)
+    throws
+  {
+    var base = Game(executive: false)
+    base.commander.system = try #require(base.systems.first { $0.government == 0 }?.id)
+    base.docked = false
+    base.screen = .front
+    base.bodies = []
+    var flight = FlightSimulationState()
+    var selected: (Game, ActorIdentity)?
+    for _ in 0..<500 {
+      flight.enter(base.systemIdentity, arriving: false)
+      flight.pose.position = .init(0, 0, -6000)
+      var game = base
+      game.commander.flightSimulation = flight
+      game.ensurePhysicalActors()
+      let initial = try #require(game.gameplayContext())
+      var director = EncounterDirector(context: initial)
+      game.commander.flightSimulation.advancePhysicalTime(12)
+      let context = try #require(game.gameplayContext())
+      let plan = director.advance(context: context)
+      let receipts = game.admitEncounterPlan(plan)
+      let accepted = Set(receipts.compactMap(\.actor))
+      if let body = game.bodies.first(where: {
+        $0.hostile && $0.physical?.npc?.role == role
+          && $0.physical.map { accepted.contains($0.identity) } == true
+      }), let actor = body.physical?.identity {
+        selected = (game, actor)
+        break
+      }
+    }
+    let choice = try #require(selected)
+    var game = choice.0
+    let actor = choice.1
+    let player = try #require(game.commander.flightSimulation.player)
+    let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+    let original = try #require(game.bodies[index].physical?.npc)
+    try #require(original.legalProvenance == .generated && original.routeProvenance == .generated)
+    try #require(original.intention == .engage(player))
+    // Reposition the actually admitted source for its real occluded beam path, not a fake crime flag.
+    game.commander.flightSimulation.pose.position = .init(0, 0, -30000)
+    game.bodies[index].position = .init(0, 0, 500)
+    let source = game.bodies[index].id
+    game.bodies.removeAll { $0.physical?.identity != actor }
+    let energy = game.energy
+    let front = game.frontShield
+    let rear = game.rearShield
+    game.emitLegacyNPCBeam(bodyID: source, damage: 1)
+    let afterShot = try #require(game.bodies.first { $0.physical?.identity == actor })
+    #expect(game.energy < energy || game.frontShield < front || game.rearShield < rear)
+    #expect((afterShot.physical?.npc?.legal.value ?? 0) > original.legal.value)
+    #expect(afterShot.physical?.npc?.legalProvenance == .recorded)
+    #expect(afterShot.physical?.npc?.routeProvenance == .generated)
+    let current = try #require(game.gameplayContext())
+    #expect(
+      TrafficIntent.intents(context: current).first { $0.actor == actor }?.action == .engage(player)
+    )
+    game.advanceGameplayEncounters(delta: 0.01)
+    let continued = try #require(game.bodies.first { $0.physical?.identity == actor })
+    #expect(continued.hostile && continued.physical?.npc?.intention == .engage(player))
+    #expect(continued.physical?.npc?.legalProvenance == .recorded)
+  }
+
   @Test func realRetreatSelfDefenceRetargetAndProtectionOverrideIdleDispositionRetention() throws {
     let base = ecologyContext()
     let id = ActorIdentity(system: base.system, visit: 1, entity: 30)
     func actor(intent: NPCAction, aggressor: ActorIdentity? = nil) -> ActorSnapshot {
       var npc = NPCState(role: .pirate, origin: base.system, destination: base.system)
       npc.legalProvenance = .generated
+      npc.routeProvenance = .generated
       npc.intention = intent
       npc.firstAggressor = aggressor
       return .init(
