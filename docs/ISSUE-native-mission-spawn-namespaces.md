@@ -13,3 +13,9 @@ Run 098 at `61103be6eb50b7e14e71aa85780a31153e14ee07` isolates the failure to sp
 Every spawn must retain its actual system and visit, with unique identities. Only mission and ordnance spawns use the shared flight allocator: their sequences must be positive and below `nextSpawn`. Other producer-local counters can legitimately be zero or exceed that cursor; their native producer/admission contracts remain authoritative. Foreign, duplicate and invalid shared addresses must still refuse atomically.
 
 See [the matching implementation handoff](PR-native-mission-spawn-namespaces.md). Run 100 compiled, then failed with SIGBUS from stack exhaustion during native actor construction. Its incomplete execution does not establish a passing namespace regression set or full CI.
+
+## Later regression evidence
+
+Run 104 at `104384c956e760df2375d3df8b47064b7ea963c2` completed without signals: all 168 methods started, 164 passed, and four campaign methods failed with 32 issues. Both native actor-admission and emission suites passed, including the four new methods/sixteen cases, capacity/refusal cases and actual first-police-zero control regression. The namespace regression evidence is now positive, while the overall project gate remains failed. Raw-log SHA256: `eee82fb8bbfd7386aef39ef6c1b283614924d37757e4bacd1f41ce3802af5ce8`.
+
+Run 105 at `bef0269e1bb61dc7013ccf443cdae743a47cb9a9` selected only those four campaign methods; all four failed with 32 issues and no signals. Actual flight diagnostics show unpaused, valid starting scenes and real laser discharges, followed by player death with living raiders behind the unchanged forward firing direction. This is separate from the earlier spawn-address pause; it does not reverse the completed native-suite passes or establish a full CI pass. Raw-log SHA256: `4281f7e8bd0b116ff6f1d84a10da43b42885514f6d2a89894d79a2ed158169ec`.
