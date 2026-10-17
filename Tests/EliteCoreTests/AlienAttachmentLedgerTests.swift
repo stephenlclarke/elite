@@ -5,11 +5,11 @@ import Testing
 
 private func attachmentLot(
   _ index: UInt16, kind: AlienModuleKind = .energyCapacity, upgrade: Bool = false,
-  quality: SalvageQuality = .i, provenance: SalvageProvenance = .alien
+  quality: SalvageQuality = .i, provenance: SalvageProvenance = .alien, section: UInt16 = 1
 ) -> SalvageLot {
   let identity = SalvageLotIdentity(
     section: .init(
-      wreck: .init(system: .init(galaxy: 0, system: 7), site: 1, lineage: 42), section: 1),
+      wreck: .init(system: .init(galaxy: 0, system: 7), site: 1, lineage: 42), section: section),
     lot: index)
   let id = upgrade ? kind.upgradeDefinitionID : kind.definitionID
   let content = SalvageLotContent.technology(
@@ -276,6 +276,81 @@ struct AlienAttachmentLedgerTests {
     #expect(throws: AlienAttachmentError.invalidState) {
       _ = try JSONDecoder().decode(
         AlienAttachmentLedger.self, from: JSONSerialization.data(withJSONObject: duplicateCommand))
+    }
+  }
+
+  @Test(arguments: [UInt16(64), UInt16.max])
+  func invalidSalvageSectionNeverBecomesAnAttachmentOrUpgrade(section: UInt16) throws {
+    let owner = UUID()
+    var ledger = AlienAttachmentLedger(owner: owner)
+    let item = try ledger.admitRecovered(
+      lot: attachmentLot(0), command: UUID(), owner: owner, expectedRevision: 0)
+    let original = ledger
+    let invalid = attachmentLot(1, section: section)
+    #expect(throws: AlienAttachmentError.invalidSource) {
+      _ = try ledger.admitRecovered(
+        lot: invalid, command: UUID(), owner: owner, expectedRevision: ledger.revision)
+    }
+    #expect(throws: AlienAttachmentError.invalidSource) {
+      try ledger.upgrade(
+        item: item, lot: attachmentLot(2, upgrade: true, section: section), command: UUID(),
+        owner: owner, expectedRevision: ledger.revision)
+    }
+    #expect(ledger == original)
+    // Change all redundant identity evidence consistently; only the source-section guard can reject it.
+    var object = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger)) as? [String: Any])
+    var records = try #require(object["records"] as? [Any])
+    var physical = try #require(records[1] as? [String: Any])
+    physical["source"] = try JSONSerialization.jsonObject(with: JSONEncoder().encode(invalid))
+    records[1] = physical
+    object["records"] = records
+    var commands = try #require(object["commands"] as? [Any])
+    var action = try #require(commands[1] as? [String: Any])
+    var acquire = try #require(action["acquire"] as? [String: Any])
+    acquire["source"] = try JSONSerialization.jsonObject(
+      with: JSONEncoder().encode(invalid.identity))
+    action["acquire"] = acquire
+    commands[1] = action
+    object["commands"] = commands
+    #expect(throws: AlienAttachmentError.invalidSource) {
+      _ = try JSONDecoder().decode(
+        AlienAttachmentLedger.self, from: JSONSerialization.data(withJSONObject: object))
+    }
+  }
+
+  @Test func manyUpgradesOnOneItemRoundTripAndOrphanUpgradeCommandsStillRefuse() throws {
+    let owner = UUID()
+    var ledger = AlienAttachmentLedger(owner: owner)
+    let item = try ledger.admitRecovered(
+      lot: attachmentLot(0), command: UUID(), owner: owner, expectedRevision: 0)
+    for index in 1...1025 {
+      try ledger.upgrade(
+        item: item, lot: attachmentLot(UInt16(index), upgrade: true), command: UUID(), owner: owner,
+        expectedRevision: ledger.revision)
+    }
+    #expect(ledger.item(item)?.upgrades.count == 1025)
+    #expect(
+      try JSONDecoder().decode(AlienAttachmentLedger.self, from: JSONEncoder().encode(ledger))
+        == ledger)
+    var object = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger)) as? [String: Any])
+    var commands = try #require(object["commands"] as? [Any])
+    let source = attachmentLot(2000, upgrade: true).identity
+    commands += [
+      UUID().uuidString,
+      [
+        "upgrade": [
+          "item": item.uuidString,
+          "source": try JSONSerialization.jsonObject(with: JSONEncoder().encode(source)),
+        ]
+      ],
+    ]
+    object["commands"] = commands
+    object["revision"] = ledger.revision + 1
+    #expect(throws: AlienAttachmentError.invalidState) {
+      _ = try JSONDecoder().decode(
+        AlienAttachmentLedger.self, from: JSONSerialization.data(withJSONObject: object))
     }
   }
 
