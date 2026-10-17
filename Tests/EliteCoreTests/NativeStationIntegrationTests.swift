@@ -110,11 +110,12 @@ struct NativeStationIntegrationTests {
     try verifyUnprovedDocking(&game)
   }
 
-  @Test func originalMainArrivalRequiresItsActualNativeDoorwayCrossing() async throws {
+  @Test(arguments: [0.1, 0.01, 0.001])
+  func originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta: Double) async throws {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
     var game = try NativeStationTestFixture.launched()
-    try await verifyOriginalMainArrival(&game, storage: storage)
+    try await verifyOriginalMainArrival(&game, storage: storage, delta: delta)
   }
 }
 
@@ -318,7 +319,7 @@ private func verifyUnprovedDocking(_ game: inout Game) throws {
 }
 
 private func verifyOriginalMainArrival(
-  _ game: inout Game, storage: NativeStationTestStorage
+  _ game: inout Game, storage: NativeStationTestStorage, delta: Double
 ) async throws {
   let station = try #require(game.bodies.first { $0.id == 0 })
   let old = game.commander.flightSimulation.pose
@@ -330,7 +331,7 @@ private func verifyOriginalMainArrival(
   NativeStationTestFixture.reframe(&game, to: pose)
   game.speed = 3
   let runtime = GameRuntime(game: game, saveURL: storage.url)
-  game = await runtime.advance(delta: 0.1)
+  for _ in 0..<100 where !game.docked { game = await runtime.advance(delta: delta) }
   #expect(game.docked && game.dockedAtMainStation)
   let receipt = try #require(game.commander.nativeStations?.currentMainDock)
   #expect(receipt.station.system == game.systemIdentity && receipt.actor.entity == 1)
