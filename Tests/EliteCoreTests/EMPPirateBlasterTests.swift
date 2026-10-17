@@ -42,11 +42,18 @@ func empFixture(catalogue: String = "SH023", hostile: Bool = false, police: Bool
   game.bodies[0].physical?.npc?.ordinaryCargo = [.init(commodity: .food, quantity: 2)]
   game.bodies[0].physical?.npc?.cargoProvenance = .recorded
   game.bodies[0].physical?.npc?.legalProvenance = .recorded
-  let destination = try #require(
-    game.systems.first {
-      $0.id != game.commander.system && $0.id != Plugh.systemID
-        && game.currentSystem.distance(to: $0) > 0 && game.currentSystem.distance(to: $0) <= 3
-    })
+  let npcFuel = try #require(game.bodies[0].physical?.npc?.resources?.fuel)
+  let reachable = game.knownSystems.filter {
+    let distance = game.currentSystem.distance(to: $0)
+    return $0.id != game.commander.system && $0.id != Plugh.systemID
+      && distance > 0 && distance <= performance.jump
+      && Int(ceil(distance * 10)) <= npcFuel
+  }.sorted {
+    let left = game.currentSystem.distance(to: $0)
+    let right = game.currentSystem.distance(to: $1)
+    return left == right ? $0.id < $1.id : left < right
+  }
+  let destination = try #require(reachable.first)
   let destinationSystem = SystemIdentity(galaxy: game.commander.galaxy, system: destination.id)
   game.bodies[0].physical?.npc?.destination = destinationSystem
   game.bodies[0].physical?.npc?.routeProvenance = .recorded

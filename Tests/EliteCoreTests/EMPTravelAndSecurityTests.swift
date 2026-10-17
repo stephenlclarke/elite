@@ -61,6 +61,9 @@ private func empTravel(to destination: Int, game: inout Game) throws {
   }
   try #require(!game.massLocked)
   let fuel = game.commander.fuel
+  let debit = game.commander.jumpFuelCost(
+    distance: game.currentSystem.distance(to: game.targetSystem))
+  try #require(!game.commander.unlimitedFuel && debit > 0 && debit <= fuel)
   game.beginHyperspace()
   let countdown = try #require(game.jumpCountdown)
   try #require(countdown.isFinite && countdown > 0)
@@ -69,16 +72,22 @@ private func empTravel(to destination: Int, game: inout Game) throws {
   }
   try #require(game.commander.system == destination && game.jumpCountdown == nil)
   #expect(game.commander.fuel < fuel)
+  #expect(game.commander.fuel == fuel - debit)
   #expect(game.commander.flightSimulation.system == game.systemIdentity)
 }
 
 private func empOtherSystem(_ game: Game) throws -> Int {
-  try #require(
-    game.systems.first {
-      $0.id != game.commander.system && $0.id != Plugh.systemID
-        && game.currentSystem.distance(to: $0) > 0
-        && game.currentSystem.distance(to: $0) <= 2
-    }?.id)
+  let reachable = game.knownSystems.filter {
+    let distance = game.currentSystem.distance(to: $0)
+    return $0.id != game.commander.system && $0.id != Plugh.systemID
+      && distance > 0 && distance <= game.commander.maximumJumpDistance
+      && game.commander.jumpFuelCost(distance: distance) <= game.commander.fuel
+  }.sorted {
+    let left = game.currentSystem.distance(to: $0)
+    let right = game.currentSystem.distance(to: $1)
+    return left == right ? $0.id < $1.id : left < right
+  }
+  return try #require(reachable.first?.id)
 }
 
 private func empRoundTrip(
@@ -90,12 +99,41 @@ private func empRoundTrip(
   game.dock()
   try #require(game.docked && game.commander.system == destination)
   let file = directory.appendingPathComponent("between-systems.json")
+  let returnSystem = try #require(game.systems.first { $0.id == origin })
+  let returnDistance = game.currentSystem.distance(to: returnSystem)
+  let returnDebit = game.commander.jumpFuelCost(distance: returnDistance)
+  try #require(returnDistance <= game.commander.jumpCap && returnDebit > 0)
+  let needsFuel = game.commander.fuel < returnDebit
+  if needsFuel {
+    game.screen = .equipment
+    game.selection = try #require(Equipment.all.firstIndex { $0.name == "Fuel" })
+  }
   let writer = GameRuntime(game: game)
   try await writer.save(to: file)
+  if needsFuel {
+    let beforePurchase = await writer.snapshot()
+    let fuelItem = Equipment.all[beforePurchase.selection]
+    let price = beforePurchase.shopPrice(fuelItem)
+    try #require(fuelItem.name == "Fuel" && price > 0)
+    try #require(
+      !beforePurchase.commander.unlimitedCash
+        && beforePurchase.commander.availableCredits >= price)
+    let context = try #require(beforePurchase.equipmentPurchaseContext)
+    let result = await writer.equipmentTransaction(.purchase(context))
+    try #require(result.applied)
+    let refuelled = await writer.snapshot()
+    #expect(refuelled.commander.fuel == refuelled.commander.fuelCapacity)
+    #expect(refuelled.commander.credits == beforePurchase.commander.credits - price)
+    try #require(refuelled.commander.fuel >= returnDebit)
+  }
+  let published = await writer.snapshot()
   let reader = GameRuntime()
   try await reader.load(from: file, persistMigrations: false)
   game = await reader.snapshot()
+  #expect(game.commander.fuel == published.commander.fuel)
+  #expect(game.commander.credits == published.commander.credits)
   try #require(game.docked && game.commander.system == destination)
+  try #require(game.commander.fuel >= returnDebit)
   game.launch()
   try #require(!game.docked)
   try empTravel(to: origin, game: &game)
