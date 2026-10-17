@@ -143,9 +143,45 @@ private func sortedWorld(_ game: Game) throws -> Data {
   var firing = Controls()
   firing.fire = true
   await runtime.setControls(firing, expectedEpoch: parentEpoch)
-  #expect(await runtime.advance(delta: 0.1).laserFlash == 0)
+  let rejected = await runtime.advance(delta: 0.1)
+  #expect(rejected.laserFlash == 0)
+  #expect(rejected.dischargeAudio.events == trial.dischargeAudio.events)
+  let pausedAfterRejectedControl = rejected.paused
+  let rejectedMessage = rejected.message
+  #expect(!pausedAfterRejectedControl, Comment(rawValue: rejectedMessage))
+  #expect(rejected.screen == .front && !rejected.docked)
+  #expect(rejected.commander.laser(on: .front) == .pulse)
+  #expect(rejected.commander.flightSimulation.valid)
+  #expect(rejected.ecmControl.epoch == trial.ecmControl.epoch)
+  #expect(throws: Never.self) {
+    _ = try rejected.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000,
+      radius: 0, includePlayer: false)
+  }
+  // These actual restoration probes operate only on a local snapshot, never on the runtime.
+  #expect(throws: Never.self) { try rejected.validateRetainedMissionProjectileRestoration() }
+  let firstPolice = try #require(
+    rejected.bodies.first { $0.physical?.spawnIdentity?.producer == .security })
+  #expect(firstPolice.hull == .viper && firstPolice.physical?.npc?.role == .police)
+  #expect(firstPolice.physical?.spawnIdentity?.sequence == 0)
+  #expect(firstPolice.physical?.spawnIdentity?.system == rejected.systemIdentity)
+  #expect(firstPolice.physical?.spawnIdentity?.visit == rejected.commander.flightSimulation.visit)
+  for body in rejected.bodies where body.energy > 0 && body.missionInstanceID != nil {
+    let bodyID = body.id
+    #expect(throws: Never.self, Comment(rawValue: "Native binding for mission body \(bodyID)")) {
+      _ = try rejected.currentMissionNativeBinding(bodyID: bodyID)
+    }
+  }
+  var restoreProbe = rejected
+  #expect(throws: Never.self) { try restoreProbe.restoreScriptActors() }
   await runtime.setControls(firing, expectedEpoch: trial.ecmControl.epoch)
-  #expect(await runtime.advance(delta: 0.1).laserFlash > 0)
+  let fired = await runtime.advance(delta: 0.1)
+  let flashAfterCurrentControl = fired.laserFlash
+  let firedMessage = fired.message
+  let dischargeCountBefore = rejected.dischargeAudio.events.count
+  let dischargeCountAfter = fired.dischargeAudio.events.count
+  #expect(flashAfterCurrentControl > 0, Comment(rawValue: firedMessage))
+  #expect(dischargeCountAfter > dischargeCountBefore)
 }
 @Test func returningToAnEarlierSpeechNamespaceCannotReplayItsOldMessages() {
   var live = Game(executive: false)
@@ -233,8 +269,20 @@ private func sortedWorld(_ game: Game) throws -> Data {
   #expect(
     await loaded.snapshot().commander.scriptState.pendingEvents
       == fault.commander.scriptState.pendingEvents)
-  await loaded.key("2")
-  await loaded.key("return")
+  await loaded.key("screen:7")
+  let market = await loaded.snapshot()
+  try #require(market.screen == .buy && market.selection == 0)
+  let layout = MarketLayout(
+    game: market, width: market.viewportWidth, height: market.viewportHeight)
+  await loaded.marketClick(x: layout.sell.x + 1, y: layout.sell.y + 1)
+  try #require(await loaded.snapshot().screen == .sell)
+  await loaded.marketClick(x: layout.trade.x + 1, y: layout.trade.y + 1)
+  let sold = await loaded.snapshot()
+  #expect(sold.commander.cargo[0] == 18)
+  #expect(sold.commander.credits == market.commander.credits + market.market[0].price)
+  #expect(sold.market[0].quantity == market.market[0].quantity + 1)
+  #expect(sold.commander.scriptState.payloadTonnes == market.commander.scriptState.payloadTonnes)
+  #expect(sold.commander.scriptState.instances[id] == market.commander.scriptState.instances[id])
   #expect(await loaded.snapshot().commander.cargoTonnes == 19)
   await loaded.key("gallery-open")
   for _ in 0..<3 { await loaded.key("down") }

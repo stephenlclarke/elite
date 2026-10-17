@@ -75,11 +75,63 @@ extension Commander {
         key: "cargo_tonnes", label: "Cargo", text: "Unlimited (XYZZY)", number: nil, unit: "t",
         status: "game", basis: "Cargo policy; not an integer physical capacity")
     }
+    fields += nativeAccommodationFields
     return .init(
       id: "game-" + shipID, title: ship.name + " / carried fit", group: "native-game",
       context:
         "Game units; portable equipment transfers, hull-bound fittings stay with their hull. Fuel supply is separate from tank and jump capacity.",
       fields: fields)
+  }
+
+  /// Current custody and the existing common accommodation adapter share one presentation.
+  var nativeAccommodationFields: [ShipSpec] {
+    let current = accommodation
+    let identities = [
+      ("required_crew_including_commander", "Required crew", "people"),
+      ("reserved_crew_accommodation", "Reserved crew quarters", "people"),
+      ("fitted_passenger_berths", "Fitted passenger berths", "berths"),
+      ("stored_passenger_berths", "Stored passenger berths", "berths"),
+      ("passengers_aboard", "Passengers aboard", "people"),
+      ("free_passenger_places", "Free passenger places", "people"),
+      ("hold_used_by_cabins", "Cabin footprint", "t"),
+      ("equipment_capacity_units", "Equipment capacity", "units"),
+      ("free_equipment_units", "Free equipment units", "units"),
+      ("usable_cargo_after_fit", "Usable cargo after fit", "t"),
+    ]
+    guard current.valid, let profile = try? ShipAccommodationProfile(ship: ship),
+      let fit = passengerFit
+    else {
+      return identities.map { key, label, unit in
+        .init(
+          key: key, label: label, text: "Unavailable", number: nil, unit: unit,
+          status: "unavailable", basis: "No valid common accommodation adapter or custody.")
+      }
+    }
+    let fitted = current.fitted.count
+    let aboard = current.people.values.reduce(0) { count, person in
+      if case .cabin = person.location { return count + 1 }
+      return count
+    }
+    let values = [
+      profile.operatingCrew, profile.intrinsicCrewQuarters, fitted,
+      current.ownedBerths.count - fitted, aboard, fit.freeCompatiblePlaces, fit.cabinCargo,
+      profile.equipmentUnits, fit.freeEquipmentUnits, fit.usableCargo,
+    ]
+    let source = ship.profiles.first { $0.group == "project-refit-v1" }?.fields ?? []
+    return zip(identities, values).map { identity, value in
+      let (key, label, unit) = identity
+      let hasSourceMetadata = [
+        "required_crew_including_commander", "reserved_crew_accommodation",
+        "equipment_capacity_units",
+      ].contains(key)
+      let retained = source.first { $0.key == key }
+      return .init(
+        key: key, label: label, text: "\(value) \(unit)", number: Double(value), unit: unit,
+        status: hasSourceMetadata ? retained?.status ?? profile.crewStatus : "game",
+        basis: hasSourceMetadata
+          ? retained?.basis ?? profile.crewBasis
+          : "Actual owned cabin/person custody and the common accommodation fit.")
+    }
   }
 }
 extension Game {

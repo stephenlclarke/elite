@@ -13,6 +13,8 @@ import Testing
   game.frontShield = 1
   game.rearShield = 2
   game.energy = 3
+  try game.commander.prepareEquipment()
+  let beforeGrant = try #require(game.commander.equipmentInventory)
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.commander.name == "CLARKE")
   let maximumDevices = Equipment.maximumHardware.subtracting(["Fuel", "Missile"])
@@ -20,7 +22,15 @@ import Testing
   let inventory = try #require(game.commander.equipmentInventory)
   let fittedNames = Set(inventory.items.filter { $0.location != nil }.map(\.node.key))
   #expect(maximumDevices.isSubset(of: fittedNames))
-  #expect(inventory.items.filter { $0.location != nil }.allSatisfy { $0.provenance == .xyzzy })
+  #expect(inventory.owner == beforeGrant.owner && inventory.activeHull == beforeGrant.activeHull)
+  for original in beforeGrant.items {
+    let retained = try #require(inventory.items.first { $0.id == original.id })
+    #expect(retained == original.moved(to: retained.location))
+  }
+  let originalIDs = Set(beforeGrant.items.map(\.id))
+  let grants = inventory.items.filter { !originalIDs.contains($0.id) }
+  #expect(!grants.isEmpty && grants.allSatisfy { $0.provenance == .xyzzy })
+  #expect(Set(inventory.items.map(\.id)).count == inventory.items.count)
   #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
   #expect(game.commander.credits == Commander.xyzzyStartingCredits && game.commander.cargo[0] == 3)
   #expect(game.commander.missiles == 4 && game.commander.fuel == game.commander.fuelCapacity)
@@ -50,7 +60,10 @@ import Testing
   #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)
   game.commander.credits -= 123
   game.commander.fuel -= 1
-  game.commander.missiles -= 1
+  // Unlimited shots preserve physical rounds; a mirror-only decrement invalidates custody.
+  #expect(
+    game.commander.unlimitedMissiles && game.commander.missiles == game.commander.missileCapacity)
+  try game.commander.validateEquipmentState()
   let beforeReentry = game.commander
   var expectedReentry = beforeReentry
   expectedReentry.fuel = expectedReentry.fuelCapacity
@@ -177,4 +190,27 @@ import Testing
   _ = Display.render(paused)
   paused.key("escape")
   #expect(paused.paused)
+}
+
+@Test func equipmentHelpShowsCabinKeysOnlyForTheSelectedPassengerBerthRow() throws {
+  var game = Game(executive: false)
+  game.screen = .equipment
+  let store = "S - STORE EMPTY PASSENGER CABIN"
+  let refit = "R - REFIT STORED PASSENGER CABIN"
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
+  let commander = game.commander
+  game.key("k")
+  let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
+  #expect(rows.contains(store) && rows.contains(refit))
+  #expect(rows.contains("RETURN - PURCHASE / REFUEL"))
+  #expect(rows.contains("UP / DOWN / SCROLL - SELECT ITEM"))
+  #expect(game.commander == commander)
+  game.key("escape")
+  game.selection = 0
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(refit))
+  game.selection = Equipment.all.count - 1
+  game.screen = .inventory
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
 }

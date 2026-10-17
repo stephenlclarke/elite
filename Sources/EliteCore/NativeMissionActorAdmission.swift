@@ -267,10 +267,8 @@ extension Game {
           && $0.entity > 0 && $0.entity < flight.nextActor
       }),
       spawns.allSatisfy({
-        $0.system == actualSystem && $0.visit == flight.visit
-          && $0.sequence > 0
-          && (!([SpawnProducer.mission, .ordnance].contains($0.producer))
-            || $0.sequence < flight.nextSpawn)
+        NativeMissionSpawnAddress.isCurrent(
+          $0, system: actualSystem, visit: flight.visit, nextFlightSpawn: flight.nextSpawn)
       })
     else { throw NativeMissionActorAdmissionError.invalidScene }
     for body in bodies {

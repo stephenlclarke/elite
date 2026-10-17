@@ -260,7 +260,7 @@ import Testing
   #expect(!game.docked && game.message == "DOCKING COLLISION")
 }
 
-@Test func combatLasersMissilesAndBomb() {
+@Test func combatLasersMissilesAndBomb() throws {
   var game = Game(executive: false)
   game.launch()
   game.speed = 0
@@ -292,7 +292,9 @@ import Testing
   game.key("t")
   game.key("u")
   #expect(!game.missileArmed)
-  game.commander.equipment.insert("Energy Bomb")
+  try game.commander.grantEquipment(
+    "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("fixture"))
+  let bomb = try #require(game.commander.fittedEquipment(at: .utility(.energyBomb))?.id)
   game.bodies = [
     SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1000)),
     SpaceBody(id: 4, hull: .thargoid, position: .init(0, 0, 2000)),
@@ -301,6 +303,7 @@ import Testing
   game.tick(delta: 0.02)
   #expect(game.bodies.count == 1 && game.bodies[0].hull == .station)
   #expect(!game.commander.equipment.contains("Energy Bomb"))
+  #expect(game.commander.equipmentInventory?.items.contains { $0.id == bomb } == false)
 }
 
 @Test func ecmEscapeEnemiesAndSimulationBounds() {

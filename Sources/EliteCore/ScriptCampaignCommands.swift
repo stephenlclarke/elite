@@ -1,9 +1,34 @@
 import Foundation
 
+private struct ScriptCampaignChildPlan {
+  let id: String
+  let pack: ScriptPack
+  let binding: ScriptChildBinding
+  let seed: UInt64
+}
+
 extension Game {
   mutating func ensureCampaignChild(
     _ command: ScriptValue, pack: ScriptPack, state: inout ScriptInstance, event: ScriptEvent
   ) throws -> (String, [String: ScriptValue])? {
+    guard let plan = try prepareCampaignChild(command, pack: pack, state: state, event: event)
+    else {
+      return nil
+    }
+    state.campaignChildren[plan.id] = plan.binding
+    // The entire parent proposal remains private. Its native child event cannot execute before publication.
+    commander.scriptState.instances[state.id] = state
+    _ = try acceptScriptMission(
+      plan.pack, instanceID: plan.binding.child, randomSeed: plan.seed,
+      campaignParent: plan.binding, drainAccepted: false)
+    return (
+      "campaign.child.started",
+      ["child": .string(plan.id), "instance": .string(plan.binding.child.uuidString)]
+    )
+  }
+  private mutating func prepareCampaignChild(
+    _ command: ScriptValue, pack: ScriptPack, state: ScriptInstance, event: ScriptEvent
+  ) throws -> ScriptCampaignChildPlan? {
     guard command.object.map({ Set($0.keys) == ["op", "id"] }) == true,
       let id = command["id"]?.string, state.outcome == .active,
       pack.manifest.capabilities.contains("scoped-campaigns-basic-v2"),
@@ -45,15 +70,7 @@ extension Game {
       sequence: event.sequence, revision: projected.revision, causeKind: event.kind,
       cause: cause, committed: scriptEventContext(projected))
     let seed = UInt64(ScriptPackLibrary.hash(Data((key + "\u{0}seed").utf8)).prefix(16), radix: 16)!
-    state.campaignChildren[id] = binding
-    // The entire parent proposal remains private. Its native child event cannot execute before publication.
-    commander.scriptState.instances[state.id] = state
-    _ = try acceptScriptMission(
-      childPack, instanceID: childID, randomSeed: seed,
-      campaignParent: binding, drainAccepted: false)
-    return (
-      "campaign.child.started", ["child": .string(id), "instance": .string(childID.uuidString)]
-    )
+    return .init(id: id, pack: childPack, binding: binding, seed: seed)
   }
   mutating func suspendTerminalCampaignChildren(_ parent: ScriptInstance) {
     guard parent.outcome != .active else { return }

@@ -216,11 +216,21 @@ import Testing
 @Test func capitalBoosterAppearsInTheFullOrderedEquipmentListWithoutBecomingPurchasable() throws {
   var game = Game(executive: false)
   game.screen = .equipment
-  #expect(Equipment.all.suffix(5).map(\.name) == ShieldBooster.allCases.map(\.equipmentName))
-  game.selection = Equipment.all.count - 1
+  let shieldNames = ShieldBooster.allCases.map(\.equipmentName)
+  let shieldIndices = shieldNames.compactMap { name in
+    Equipment.all.firstIndex { $0.name == name }
+  }
+  try #require(shieldIndices.count == shieldNames.count)
+  let firstShield = try #require(shieldIndices.first)
+  #expect(shieldIndices == Array(firstShield..<(firstShield + shieldNames.count)))
+  #expect(shieldIndices.map { Equipment.all[$0].name } == shieldNames)
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == ShieldBooster.capital.equipmentName })
+  let original = game.commander
   let cash = game.commander.credits
   game.purchase()
   #expect(game.commander.shieldBooster == nil && game.commander.credits == cash)
+  #expect(game.commander == original)
   for width in [512.0, 1512] {
     let frame = Display.equipmentScreen(game, width: width, height: 518)
     #expect(frame.labels.contains { $0.text == "Advanced II Shield Module" })

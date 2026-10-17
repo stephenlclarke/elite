@@ -21,6 +21,46 @@ private func actualEmissionPlan(_ game: Game, sourceID: Int) throws
 }
 
 struct NativeMissionEmissionTests {
+  @Test func independentNativeProducerCountersPermitActualMissionPlasmaAdmission() throws {
+    var (game, _, index) = try actualMissionBridgeGame()
+    let sourceID = game.bodies[index].id
+    _ = try admitProducerLocalMissionSceneSpawns(&game)
+    let before = game.commander
+    let bodies = game.bodies
+    let cursor = game.nextBodyID
+    let plan = try actualEmissionPlan(game, sourceID: sourceID)
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == cursor)
+    let receipt = try game.commitMissionProjectileAdmission(plan)
+    let emitted = try #require(game.bodies.first { $0.id == receipt.bodyID })
+    #expect(emitted.physical?.spawnIdentity?.producer == .ordnance)
+    #expect(emitted.physical?.spawnIdentity?.sequence == before.flightSimulation.nextSpawn)
+    #expect(game.commander.flightSimulation.nextSpawn == before.flightSimulation.nextSpawn + 1)
+    #expect(
+      game.commander.scriptState.projectiles[plan.shotID]?.body.scriptShot?.nativeAttribution
+        == plan.archive)
+  }
+
+  @Test(arguments: NativeMissionSpawnForgery.allCases)
+  func invalidSharedOrForeignSpawnAddressesRefuseMissionEmissionWithoutAllocation(
+    forgery: NativeMissionSpawnForgery
+  ) throws {
+    var (game, _, index) = try actualMissionBridgeGame()
+    let sourceID = game.bodies[index].id
+    let spawns = try admitProducerLocalMissionSceneSpawns(&game)
+    try forgeProducerLocalMissionSceneSpawn(&game, spawns: spawns, forgery: forgery)
+    let before = game.commander
+    let bodies = game.bodies
+    let cursor = game.nextBodyID
+    var refused = false
+    do { _ = try actualEmissionPlan(game, sourceID: sourceID) } catch let error
+      as NativeMissionProjectileAdmissionError
+    {
+      refused = error == .allocatorExhausted
+    } catch { Issue.record(error) }
+    #expect(refused)
+    #expect(game.commander == before && game.bodies == bodies && game.nextBodyID == cursor)
+  }
+
   @Test func actualPreparationHasNoEffectsAndCommitPublishesOneNativeBodyAndCanonicalRecord() throws
   {
     var (game, _, index) = try actualMissionBridgeGame()
@@ -70,26 +110,61 @@ struct NativeMissionEmissionTests {
 
   @Test func actualNativeProjectilePopulationLimitRefusesBeforeEmissionOrRecordCreation() throws {
     var (game, _, index) = try actualMissionBridgeGame()
+    try verifyProjectilePopulationLimit(&game, sourceIndex: index)
+  }
+
+  // Construct the actual fixture before reserving the independent verification snapshots.
+  private func verifyProjectilePopulationLimit(_ game: inout Game, sourceIndex: Int) throws {
     game.ensurePhysicalActors()
-    let sourceID = game.bodies[index].id
+    let sourceID = game.bodies[sourceIndex].id
     let allocated = game.commander.flightSimulation.allocateSpawn()
     let sequence = try #require(allocated)
     let context = try #require(game.gameplayContext())
-    let requests = (0..<PopulationClass.projectile.maximum).map { member in
-      SpawnRequest(
-        identity: .init(
-          system: context.system, visit: context.visit, sequence: sequence,
-          member: UInt16(member), producer: .ordnance),
-        population: .projectile, hull: .missile,
-        position: context.player.position + .init(10_000, Double(member) * 20, 10_000),
-        orientation: .init(), velocity: .init(0, 0, 0),
-        npc: nil, rock: nil, payload: nil, priority: .mission)
+    func projectileRequests(spacing: Double) -> [SpawnRequest] {
+      (0..<PopulationClass.projectile.maximum).map { member in
+        SpawnRequest(
+          identity: .init(
+            system: context.system, visit: context.visit, sequence: sequence,
+            member: UInt16(member), producer: .ordnance),
+          population: .projectile, hull: .missile,
+          position: context.player.position + .init(10_000, Double(member) * spacing, 10_000),
+          orientation: .init(), velocity: .init(0, 0, 0),
+          npc: nil, rock: nil, payload: nil, priority: .mission)
+      }
     }
+    let overlap = projectileRequests(spacing: 20)
+    let beforeOverlap = game.commander
+    let bodiesBeforeOverlap = game.bodies
+    let cursorBeforeOverlap = game.nextBodyID
+    let overlapReceipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: overlap, atomic: true)], intents: []))
+    let overlapRefusals = overlapReceipts.map { String(describing: $0.refusal) }.joined(
+      separator: "; ")
+    try #require(
+      overlapReceipts.count == overlap.count
+        && overlapReceipts.allSatisfy { $0.actor == nil && $0.refusal == .unsafePosition },
+      Comment(rawValue: overlapRefusals))
+    #expect(
+      game.commander == beforeOverlap && game.bodies == bodiesBeforeOverlap
+        && game.nextBodyID == cursorBeforeOverlap)
+    let radius = try #require(Mesh.hull(.missile).vertices.map(\.length).max())
+    try #require(radius.isFinite && radius > 0)
+    // Leave clearance between actual mesh bounds before testing the population limit.
+    let requests = projectileRequests(spacing: 2 * radius + 16)
     let receipts = game.admitEncounterPlan(
       .init(
         system: context.system, visit: context.visit, revision: context.revision,
         batches: [.init(requests: requests, atomic: true)], intents: []))
-    try #require(receipts.count == requests.count && receipts.allSatisfy { $0.actor != nil })
+    let refusals = receipts.map { String(describing: $0.refusal) }.joined(separator: "; ")
+    try #require(
+      receipts.count == requests.count
+        && receipts.allSatisfy { $0.actor != nil && $0.refusal == nil },
+      Comment(rawValue: refusals))
+    #expect(
+      game.bodies.filter { $0.physical?.population == .projectile }.count
+        == PopulationClass.projectile.maximum)
     let before = game.commander
     let bodies = game.bodies
     let next = game.nextBodyID

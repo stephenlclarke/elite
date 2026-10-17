@@ -147,6 +147,10 @@ private struct ChoiceFixture {
   await runtime.key("k")
   let help = await runtime.snapshot()
   #expect(PlayerHelp.pages(for: help).flatMap(\.rows).contains("UP / DOWN - BROWSE CHOICES"))
+  #expect(
+    PlayerHelp.pages(for: help).flatMap(\.rows).contains("LEFT / RIGHT - CHOOSE CONFIRM / BACK"))
+  #expect(
+    PlayerHelp.pages(for: help).flatMap(\.rows).contains("READING / BACK DOES NOT CHOOSE A BRANCH"))
   await runtime.key("escape")
   #expect(await runtime.snapshot().selectedScriptChoice?.id == "courier")
   await runtime.key("left")
@@ -182,6 +186,12 @@ func aScriptCannotReplaceThePlayersConfirmedBranchOrKeepAnEarlierProposedReward(
   defer { fixture.clean() }
   let runtime = GameRuntime(game: fixture.game(), saveURL: fixture.save)
   let id = try await fixture.open(runtime)
+  let dialogue = await runtime.snapshot()
+  let helpRows = PlayerHelp.pages(for: dialogue).flatMap(\.rows)
+  #expect(
+    helpRows.contains(
+      plain ? "ARROWS - CHOOSE CONFIRM / BACK" : "UP / DOWN - BROWSE CHOICES"))
+  #expect(helpRows.contains("UP / DOWN - BROWSE CHOICES") == !plain)
   if !plain { await runtime.key("down") }
   let balance = await runtime.snapshot().commander.credits
   await runtime.key("return")

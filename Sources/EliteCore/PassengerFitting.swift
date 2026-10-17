@@ -36,7 +36,8 @@ extension Game {
       price: price, issues: issues, commander: commander,
       galaxy: commander.galaxy, system: commander.system)
   }
-  mutating func confirmPassengerBerth(_ quote: PassengerBerthQuote) throws {
+  @discardableResult
+  mutating func confirmPassengerBerth(_ quote: PassengerBerthQuote) throws -> UUID {
     guard !paused, quote.allowed, commander == quote.commander,
       commander.galaxy == quote.galaxy, commander.system == quote.system,
       passengerBerthQuote.allowed
@@ -51,6 +52,7 @@ extension Game {
     guard candidate.valid else { throw MissionPackError("The cabin cannot fit the current ship.") }
     commander = candidate
     notify("PASSENGER BERTH FITTED - 5T / 1 EQUIPMENT UNIT")
+    return berth.id
   }
   mutating func setPassengerBerthFitted(_ id: UUID, fitted: Bool) throws {
     guard docked, dockedAtMainStation, !paused,
@@ -71,9 +73,22 @@ extension Game {
 extension GameRuntime {
   public func passengerBerthQuote() -> PassengerBerthQuote { game.passengerBerthQuote }
   public func confirmPassengerBerth(_ quote: PassengerBerthQuote) throws {
-    try scriptCommand { try $0.confirmPassengerBerth(quote) }
+    _ = try passengerBerthCommand { try $0.confirmPassengerBerth(quote) }
   }
   public func setPassengerBerthFitted(_ id: UUID, fitted: Bool) throws {
-    try scriptCommand { try $0.setPassengerBerthFitted(id, fitted: fitted) }
+    try passengerBerthCommand { try $0.setPassengerBerthFitted(id, fitted: fitted) }
+  }
+  private func passengerBerthCommand<T>(_ action: (inout Game) throws -> T) throws -> T {
+    let writerAvailable = scriptSaveURL != nil
+    let result = try scriptCommand { candidate in
+      let requiredBefore = candidate.requiresScriptDurability
+      let result = try action(&candidate)
+      guard writerAvailable || !(requiredBefore || candidate.requiresScriptDurability) else {
+        throw SaveError.invalidCommander
+      }
+      return result
+    }
+    game.inventoryContextEpoch = .init()
+    return result
   }
 }

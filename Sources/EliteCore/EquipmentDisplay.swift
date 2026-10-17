@@ -5,6 +5,9 @@ extension Display {
     var frame = cockpit(game, width: width, height: height)
     let cockpit = CockpitLayout(game: game, width: width, height: height)
     let layout = EquipmentLayout(game: game, width: width, height: height)
+    let accommodation = game.commander.accommodation
+    let fittedCabins = accommodation.fitted.count
+    let storedCabins = max(0, accommodation.ownedBerths.count - fittedCabins)
     let right = layout.left + layout.contentWidth
     frame.label("EQUIP SHIP", layout.left, 12, scale: layout.font, ink: .yellow)
     func rightLabel(_ text: String, y: Double, ink: Ink) -> BitmapLabel {
@@ -53,6 +56,9 @@ extension Display {
     }
     let buyingFor = game.equipmentWorkTool ? "Mining work tool" : game.equipmentMount.label
     func ownership(_ item: Equipment) -> (fitted: Bool, held: Bool) {
+      if item.name == PassengerCabin.equipmentName {
+        return (fittedCabins > 0, storedCabins > 0)
+      }
       if let inventory = game.commander.equipmentInventory,
         let node = EquipmentRuntimeCatalog.node(for: item.name)
       {
@@ -113,6 +119,8 @@ extension Display {
           status =
             fitted
             ? "FITTED" : owned.held ? "STORED" : Equipment.rewardLabel(item.name).uppercased()
+        } else if item.name == PassengerCabin.equipmentName {
+          status = "\(fittedCabins) FIT / \(storedCabins) STORED"
         } else if item.name == FuelStorage.equipmentName {
           status =
             "\(game.commander.fuelStorageUnits)/4 "
@@ -152,7 +160,11 @@ extension Display {
         description += "Fitted. "
       }
       if owned.held { description += "Stored item owned. " }
-      if item.name == FuelStorage.equipmentName {
+      if item.name == PassengerCabin.equipmentName {
+        description +=
+          String(format: "Price: project estimate %.1f CR. ", Double(game.shopPrice(item)) / 10)
+          + "5t / 1 equipment unit. S: store empty cabin. R: refit stored cabin. Return: buy."
+      } else if item.name == FuelStorage.equipmentName {
         description += "Fuel storage \(game.commander.fuelStorageUnits)/4. Refuel separately."
       } else if game.equipmentPurchaseRequirement(item) == nil {
         description += "Return: buy. A weaker purchase is stored."

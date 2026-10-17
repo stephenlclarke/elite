@@ -50,6 +50,25 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let fields = game.commander.gameShipProfile.fields
   #expect(fields.first { $0.key == "fitted_passenger_berths" }?.number == 2)
   #expect(fields.first { $0.key == "required_crew_including_commander" }?.number == 1)
+  game.openShowroom()
+  let crew = try #require(game.showroomComparison.first { $0.label == "Required crew" })
+  let cabins = try #require(game.showroomComparison.first { $0.label == "Fitted passenger berths" })
+  #expect(crew.baseline.contains("1 people") && crew.selected.contains("1 people"))
+  #expect(cabins.baseline.contains("2 berths") && cabins.selected.contains("2 berths"))
+  game.viewportWidth = 1512
+  game.viewportHeight = 982
+  game.showroom.scroll = Display.showroomMaximumScroll(game)
+  let comparison = Display.presentation(game, width: 1512, height: 982).labels.map(\.text).joined(
+    separator: " ")
+  #expect(comparison.contains("Fitted passenger berths") && comparison.contains("2 berths"))
+  game.showroom.sourceProfiles = true
+  game.showroom.scroll = Display.showroomMaximumScroll(game)
+  let current = Display.presentation(game, width: 1512, height: 982).labels.map(\.text).joined(
+    separator: " ")
+  #expect(current.contains("Required crew: 1; reserved crew quarters: 1"))
+  #expect(current.contains("Fitted berths: 2; passengers aboard: 0; free places: 2"))
+  #expect(current.contains("Cabin footprint: 10 t") && current.contains("10 t free (physical)"))
+  game.screen = .equipment
   game.commander.fuelStorageUnits = 4
   game.commander.equipment.formUnion([
     "Fuel Scoops", "E.C.M. System", "Extra Energy Unit", Equipment.navalEnergyUnit,
@@ -66,6 +85,15 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let berth = try #require(game.commander.accommodation.fittedBerths.first)
   #expect(person.name == "Ari" && person.mission == mission && person.location == .cabin(berth.id))
   #expect(game.commander.passengerFit?.freeCompatiblePlaces == 0)
+  let screen = game.screen
+  game.screen = .equipment
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
+  #expect(game.equipmentPurchaseContext?.passengerBerthFitting(fitted: false) == nil)
+  let occupied = game.commander
+  game.key("s")
+  #expect(game.commander == occupied)
+  game.screen = screen
   #expect(throws: MissionPackError.self) {
     try game.setPassengerBerthFitted(berth.id, fitted: false)
   }
@@ -225,25 +253,44 @@ private func passengerGame() throws -> (Game, ScriptPack) {
 }
 @Test func nativeEquipmentPurchaseCannotOverspendCabinEquipmentCapacity() throws {
   var (game, _) = try passengerGame()
-  game.commander.fuelStorageUnits = 4
-  game.commander.equipment.formUnion([
-    "Fuel Scoops", "E.C.M. System", Equipment.navalEnergyUnit, "Energy Bomb",
-  ])
+  for unit in 0..<4 {
+    try game.commander.grantEquipment(
+      FuelStorage.equipmentName, at: .fuelStorage(unit), provenance: .grant("fixture"))
+  }
+  let hardware: [(String, ComponentFittingSlot)] = [
+    ("Fuel Scoops", .utility(.fuelScoops)), ("E.C.M. System", .utility(.ecm)),
+    (Equipment.navalEnergyUnit, .energy), ("Energy Bomb", .utility(.energyBomb)),
+  ]
+  for (name, slot) in hardware {
+    try game.commander.grantEquipment(name, at: slot, provenance: .grant("fixture"))
+  }
   #expect(game.commander.commonEquipmentUnits == 10 && game.commander.valid)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Galactic Hyperdrive" })
+  let lowTechnology = game.commander
   game.purchase()
-  #expect(game.commander.commonEquipmentUnits == 10)
+  #expect(game.commander.commonEquipmentUnits == 10 && game.commander == lowTechnology)
   // Lave's low technology denies this item. Fit the last unit through a native fuel-storage purchase instead.
-  game.commander.fuelStorageUnits = 3
-  game.commander.equipment.insert("Galactic Hyperdrive")
+  let removedFuel = try game.commander.removeFittedEquipment(FuelStorage.equipmentName)
+  try #require(removedFuel)
+  try game.commander.grantEquipment(
+    "Galactic Hyperdrive", at: .utility(.galacticHyperdrive), provenance: .grant("fixture"))
+  #expect(game.commander.fuelStorageUnits == 3 && game.commander.commonEquipmentUnits == 10)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == FuelStorage.equipmentName })
+  let cash = game.commander.credits
   game.purchase()
   #expect(game.commander.commonEquipmentUnits == 11 && game.commander.valid)
-  game.commander.equipment.insert("Escape Pod")
-  game.commander.fuelStorageUnits = 3
+  #expect(
+    game.commander.fuelStorageUnits == 4 && game.commander.credits == cash - FuelStorage.price)
+  let removedSecondFuel = try game.commander.removeFittedEquipment(FuelStorage.equipmentName)
+  try #require(removedSecondFuel)
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("fixture"))
+  #expect(game.commander.fuelStorageUnits == 3 && game.commander.commonEquipmentUnits == 11)
+  #expect(game.commander.accommodation.fittedBerths.count == 1 && game.commander.valid)
   let original = game.commander
-  game.purchase()
-  #expect(game.commander == original && game.message.contains("CANNOT FIT"))
+  let refused = game.purchaseImmediately()
+  #expect(refused == .refused(.invalidState))
+  #expect(game.commander == original)
 }
 
 @Test func wrongStationRepeatedBoardingAndEscapePodCannotManufacturePassengerTravel() throws {
@@ -277,7 +324,10 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.credits = 100000
-  let runtime = GameRuntime(game: game)
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(
+    "actor-cabin-save-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let runtime = GameRuntime(game: game, saveURL: directory.appendingPathComponent("commander.json"))
   let quote = await runtime.passengerBerthQuote()
   try await runtime.confirmPassengerBerth(quote)
   await #expect(throws: MissionPackError.self) { try await runtime.confirmPassengerBerth(quote) }

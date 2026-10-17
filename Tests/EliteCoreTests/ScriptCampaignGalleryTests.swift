@@ -109,6 +109,19 @@ struct CampaignGalleryFixture {
     return game
   }
 
+  func prepareNativeCommanderForComparison(_ game: inout Game) throws {
+    let before = game.commander
+    try game.commander.prepareEquipment()
+    game.commander.mirrorFittedEquipment()
+    try #require(game.commander.savedEquipmentVersion == 2)
+    #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
+    #expect(game.commander.shipID == before.shipID && game.commander.name == before.name)
+    #expect(game.commander.fuel == before.fuel && game.commander.missiles == before.missiles)
+    #expect(game.commander.scriptState == before.scriptState)
+    #expect(game.commander.contracts == before.contracts)
+    #expect(game.commander.accommodation == before.accommodation)
+  }
+
   func start(_ game: inout Game, parent: ScriptPack? = nil) throws -> (UUID, UUID) {
     let id = try game.acceptScriptMission(parent ?? parents[0])
     for _ in 0..<8 { game.drainScriptEvents() }
@@ -199,10 +212,23 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   )
   #expect(game.campaignTrialReview == nil && !game.canReviewSelectedCampaignTrial)
   #expect(!game.canTrialSelectedMission)
+  // Match the actor's canonical equipment preparation before checking rejected UI actions.
+  let unprepared = game.commander
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.savedEquipmentVersion == 2)
+  #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
+  #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
+  #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
+  #expect(game.commander.scriptState == unprepared.scriptState)
+  #expect(game.commander.contracts == unprepared.contracts)
+  #expect(game.commander.accommodation == unprepared.accommodation)
   let before = game.commander
   let epoch = game.ecmControl.epoch
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   try await runtime.save(to: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   let bytes = try Data(contentsOf: fixture.save)
   await runtime.key("t")
   await runtime.key("return")
@@ -386,8 +412,10 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   var game = fixture.game()
   let (parent, child) = try fixture.start(&game)
   try fixture.select(parent, game: &game)
+  try fixture.prepareNativeCommanderForComparison(&game)
   let before = game.commander
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   let layout = GalleryLayout(width: game.viewportWidth, height: game.viewportHeight)
   await runtime.campaignGalleryClick(x: 20, y: layout.actionTop + 1)
   await runtime.campaignGalleryClick(x: 20, y: layout.listTop + 1)
@@ -436,30 +464,57 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   #expect(actual.commander.scriptState.calendarSeconds == 0.1)
   #expect(actual.ecmControl.epoch != liveSelection.ecmControl.epoch)
   // Test hardware setup only; targets, destruction, docking and receipts use native gameplay.
-  await runtime.nativeCommand { $0.commander.installTargetingComputer(.docking) }
+  let beforeHardware = await runtime.snapshot().commander
+  await runtime.nativeCommand { game in
+    do {
+      try game.commander.grantEquipment(
+        TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .legacyUnknown)
+    } catch { Issue.record(error) }
+  }
+  let fitted = await runtime.snapshot().commander
+  try #require(fitted.hasAutomaticDocking)
+  #expect(
+    fitted.fittedEquipment(at: .targetingCore)?.node.key == TargetingTier.docking.equipmentName)
+  #expect(fitted.credits == beforeHardware.credits && fitted.cargo == beforeHardware.cargo)
+  #expect(fitted.scriptState == beforeHardware.scriptState)
+  #expect(
+    fitted.contracts == beforeHardware.contracts
+      && fitted.accommodation == beforeHardware.accommodation)
   await runtime.key("0")
+  let beforeFire = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
+  var observedFlash = false
   var firing = Controls()
-  firing.fire = true
-  await runtime.setControls(firing)
   for _ in 0..<200 {
+    try await selectCampaignPatrolTarget(runtime, child: child)
+    firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    await runtime.setControls(firing)
     actual = await runtime.advance(delta: 0.1)
+    observedFlash = observedFlash || actual.laserFlash > 0
     if actual.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true
     {
       break
     }
   }
   #expect(
-    actual.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true)
+    actual.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.destroyed == true,
+    Comment(
+      rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
+        + campaignPatrolDiagnostic(actual, child: child)))
   await runtime.setControls(Controls())
   for _ in 0..<8 {
     await runtime.key("r")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
+  let beforeDock = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
   for _ in 0..<5000 {
     actual = await runtime.advance(delta: 0.02)
     if actual.docked { break }
   }
-  #expect(actual.docked && actual.dockedAtMainStation)
+  #expect(
+    actual.docked && actual.dockedAtMainStation,
+    Comment(
+      rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
+        + campaignPatrolDiagnostic(actual, child: child)))
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == child)
   let report = await runtime.snapshot().scriptPagePresentation
@@ -503,9 +558,21 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   let (_, child) = try fixture.start(&game)
   try fixture.select(child, game: &game)
   game.scriptPacks.removeAll { $0.digest == fixture.parents[1].digest }
+  // Establish the same native state as GameRuntime.init without changing campaign property.
+  let unprepared = game.commander
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.savedEquipmentVersion == 2)
+  #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
+  #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
+  #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
+  #expect(game.commander.scriptState == unprepared.scriptState)
+  #expect(game.commander.contracts == unprepared.contracts)
+  #expect(game.commander.accommodation == unprepared.accommodation)
   let before = game.commander
   #expect(game.campaignTrialUnavailableReason == "Requires: test.gallery-1@1.0.0")
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   await runtime.key("t")
   #expect(await runtime.snapshot().gallery.campaignReview == nil)
   #expect(await runtime.gallerySaveDirectory() == nil)
@@ -584,11 +651,13 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   var game = fixture.game()
   let (_, child) = try fixture.start(&game)
   try fixture.select(child, game: &game)
+  try fixture.prepareNativeCommanderForComparison(&game)
   let before = game.commander
   game.scriptPacks.removeAll { $0.digest == fixture.child.digest }
   #expect(game.selectedGalleryMission?.savedInstance == child)
   #expect(game.campaignTrialUnavailableReason == "Restore the exact campaign assignment content.")
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   await runtime.key("t")
   #expect(await runtime.gallerySaveDirectory() == nil)
   #expect(await runtime.snapshot().commander == before)
@@ -620,7 +689,9 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   var game = fixture.game()
   let (_, child) = try fixture.start(&game)
   try fixture.select(child, game: &game)
+  try fixture.prepareNativeCommanderForComparison(&game)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == game.commander)
   let childPage = await runtime.snapshot().scriptPagePresentation
   await runtime.scriptPageKey("t", expected: childPage)
   await runtime.scriptPageKey("return", expected: childPage)

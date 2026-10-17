@@ -26,6 +26,7 @@ public enum EquipmentGroups {
       ("Cargo & Collection", ["Large Cargo Bay", "Fuel Scoops", "Salvage Cutter"]),
       ("Travel", ["Galactic Hyperdrive"]),
       ("Emergency Equipment", ["Escape Pod"]),
+      ("Passenger Facilities", [PassengerCabin.equipmentName]),
     ]
     let catalogue = Dictionary(
       uniqueKeysWithValues: Equipment.all.enumerated().map { ($0.element.name, $0.offset) })

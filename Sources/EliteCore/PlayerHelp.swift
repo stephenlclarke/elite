@@ -169,7 +169,9 @@ public enum PlayerHelp {
           "CLICK AN ITEM TO SELECT IT",
           "INVENTORY (9) - FITTED / HELD DETAILS",
           "ESC - PREVIOUS SCREEN",
-        ])
+        ]
+          + (game.passengerBerthSelected
+            ? ["S - STORE EMPTY PASSENGER CABIN", "R - REFIT STORED PASSENGER CABIN"] : []))
     case .chart, .shortChart:
       .init(
         title: "CHARTS AND PLANET DATA",
@@ -279,13 +281,19 @@ public enum PlayerHelp {
     case .handoff:
       .init(
         title: "MISSION DIALOG",
-        rows: [
-          "ARROWS - CHOOSE CONFIRM / BACK",
-          "RETURN / CLICK - SELECT",
-          "ESC - BACK WITHOUT TRANSFER",
-          "GAME MENU: MISSION CONTACTS TO REOPEN",
-          "B (DOCKED) ALSO REOPENS A CONTACT",
-        ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
+        rows: (game.offeredScriptChoices.isEmpty
+          ? ["ARROWS - CHOOSE CONFIRM / BACK"]
+          : [
+            "UP / DOWN - BROWSE CHOICES",
+            "LEFT / RIGHT - CHOOSE CONFIRM / BACK",
+            game.offeredScriptChoices.allSatisfy { $0.group == nil }
+              ? "READING / BACK DOES NOT ANSWER" : "READING / BACK DOES NOT CHOOSE A BRANCH",
+          ]) + [
+            "RETURN / CLICK - SELECT",
+            "ESC - BACK WITHOUT TRANSFER",
+            "GAME MENU: MISSION CONTACTS TO REOPEN",
+            "B (DOCKED) ALSO REOPENS A CONTACT",
+          ] + (game.packDialogWindow.last > 0 ? ["OPTION-UP/DOWN - READ MESSAGE"] : []))
     case .mission:
       .init(
         title: "MISSION MESSAGE",
