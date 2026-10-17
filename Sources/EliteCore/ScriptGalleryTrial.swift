@@ -29,6 +29,16 @@ public struct CommanderFileReceipt: Sendable {
   public let url: URL
   public let isTrial: Bool
 }
+private enum ScriptGalleryAction: Sendable {
+  case restart, returnToCommander, commitCampaign, consumed, unhandled
+  case start(String)
+  case resume(UUID)
+}
+private struct ScriptGalleryRestart: Sendable {
+  let digest: String
+  let seed: UInt64
+  let target: URL
+}
 extension Game {
   var selectedGalleryMission: GalleryMission? {
     if let preview = gallery.campaignPreview { return preview }
@@ -152,15 +162,27 @@ extension GameRuntime {
       .appendingPathComponent("elite-mission-gallery-" + UUID().uuidString, isDirectory: true)
   }
   public func startScriptGalleryTrial(packDigest: String, seed: UInt64 = 0x45_4c49_5445) throws {
+    var candidate = try constructNewScriptGalleryTrial(packDigest: packDigest, seed: seed)
+    try candidate.prepareScriptTrial(packDigest: packDigest, seed: seed)
+    let namespace = Self.newGalleryNamespace()
+    let target = namespace.appendingPathComponent("commander.json")
+    try Self.writeCommander(&candidate, to: target)
+    publishNewScriptGalleryTrial(&candidate, namespace: namespace, target: target)
+  }
+  // Construction reads the live game only before the candidate enters nested acceptance.
+  private func constructNewScriptGalleryTrial(packDigest: String, seed: UInt64) throws -> Game {
     guard game.screen == .gallery, galleryNamespace == nil, galleryParent == nil else {
       throw MissionPackError("Return to your commander before starting another trial.")
     }
-    var candidate = try game.constructScriptTrial(packDigest: packDigest, seed: seed)
-    try candidate.prepareScriptTrial(packDigest: packDigest, seed: seed)
-    let namespace = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
-      .appendingPathComponent("elite-mission-gallery-" + UUID().uuidString, isDirectory: true)
-    let target = namespace.appendingPathComponent("commander.json")
-    try Self.writeCommander(&candidate, to: target)
+    return try constructScriptGalleryCandidate(packDigest: packDigest, seed: seed)
+  }
+  private func constructScriptGalleryCandidate(packDigest: String, seed: UInt64) throws -> Game {
+    try game.constructScriptTrial(packDigest: packDigest, seed: seed)
+  }
+  // Capture the parent and publish only after the complete private trial save succeeds.
+  private func publishNewScriptGalleryTrial(
+    _ candidate: inout Game, namespace: URL, target: URL
+  ) {
     galleryParent = GalleryParentState(game: game, controls: controls, saveURL: scriptSaveURL)
     galleryNamespace = namespace
     scriptSaveURL = target
@@ -169,15 +191,23 @@ extension GameRuntime {
     invalidateInventoryContext()
   }
   public func restartScriptGalleryTrial() throws {
+    let restart = try scriptGalleryRestart()
+    var candidate = try constructScriptGalleryCandidate(
+      packDigest: restart.digest, seed: restart.seed)
+    try candidate.prepareScriptTrial(packDigest: restart.digest, seed: restart.seed)
+    try Self.writeCommander(&candidate, to: restart.target)
+    publishRestartedScriptGalleryTrial(&candidate)
+  }
+  private func scriptGalleryRestart() throws -> ScriptGalleryRestart {
     guard galleryNamespace != nil, let digest = game.trialDigest, let seed = game.trialSeed,
       let target = scriptSaveURL
     else {
       throw MissionPackError("This runtime has no mission trial to restart.")
     }
     try requireGalleryFileAccess(target)
-    var candidate = try game.constructScriptTrial(packDigest: digest, seed: seed)
-    try candidate.prepareScriptTrial(packDigest: digest, seed: seed)
-    try Self.writeCommander(&candidate, to: target)
+    return .init(digest: digest, seed: seed, target: target)
+  }
+  private func publishRestartedScriptGalleryTrial(_ candidate: inout Game) {
     game = candidate
     controls = Controls()
     invalidateInventoryContext()
@@ -224,29 +254,46 @@ extension GameRuntime {
     }
   }
   func galleryAction(_ key: String) -> Bool {
+    switch prepareGalleryAction(key) {
+    case .restart:
+      restartGalleryAction()
+    case .returnToCommander:
+      returnGalleryAction()
+    case .commitCampaign:
+      commitCampaignGalleryTrial()
+    case .start(let digest):
+      startGalleryAction(packDigest: digest)
+    case .resume(let id):
+      resumeGalleryAction(id)
+    case .consumed:
+      break
+    case .unhandled:
+      return false
+    }
+    return true
+  }
+  // Finish selection and availability reads before an action enters a native transaction.
+  private func prepareGalleryAction(_ key: String) -> ScriptGalleryAction {
     if key == "trial-restart"
       || (galleryNamespace != nil && game.screen == .gameOver && [" ", "return"].contains(key))
     {
-      do { try restartScriptGalleryTrial() } catch { game.notify(error.localizedDescription) }
-      return true
+      return .restart
     }
     if key == "trial-return" {
-      do { try returnFromScriptGalleryTrial() } catch { game.notify(error.localizedDescription) }
-      return true
+      return .returnToCommander
     }
-    guard game.screen == .gallery else { return false }
+    guard game.screen == .gallery else { return .unhandled }
     if game.gallery.campaignReview != nil {
       if key == "return", game.gallery.campaignStartSelected {
-        commitCampaignGalleryTrial()
-        return true
+        return .commitCampaign
       }
-      if ["t", "gallery-trial", "r", "mission-resume"].contains(key) { return true }
-      return false
+      if ["t", "gallery-trial", "r", "mission-resume"].contains(key) { return .consumed }
+      return .unhandled
     }
     if ["t", "gallery-trial"].contains(key) {
       if game.campaignImmediateOwner != nil {
         game.openCampaignTrialReview()
-        return true
+        return .consumed
       }
       game.gallery.presentationGeneration = UUID()
       do {
@@ -254,9 +301,11 @@ extension GameRuntime {
         else {
           throw MissionPackError("This entry has no supported mission trial.")
         }
-        try startScriptGalleryTrial(packDigest: digest)
-      } catch { game.notify(error.localizedDescription) }
-      return true
+        return .start(digest)
+      } catch {
+        game.notify(error.localizedDescription)
+        return .consumed
+      }
     }
     if ["r", "mission-resume"].contains(key) {
       game.gallery.presentationGeneration = UUID()
@@ -265,12 +314,35 @@ extension GameRuntime {
         else {
           throw MissionPackError("Restore the exact saved content before retrying this mission.")
         }
-        try resumeScriptMission(id)
-        game.notify("MISSION RESUMED")
-      } catch { game.notify(error.localizedDescription) }
-      return true
+        return .resume(id)
+      } catch {
+        game.notify(error.localizedDescription)
+        return .consumed
+      }
     }
-    return false
+    return .unhandled
+  }
+  private func restartGalleryAction() {
+    do { try restartScriptGalleryTrial() } catch { notifyGalleryAction(error.localizedDescription) }
+  }
+  private func returnGalleryAction() {
+    do { try returnFromScriptGalleryTrial() } catch {
+      notifyGalleryAction(error.localizedDescription)
+    }
+  }
+  private func startGalleryAction(packDigest: String) {
+    do { try startScriptGalleryTrial(packDigest: packDigest) } catch {
+      notifyGalleryAction(error.localizedDescription)
+    }
+  }
+  private func resumeGalleryAction(_ id: UUID) {
+    do {
+      try resumeScriptMission(id)
+      notifyGalleryAction("MISSION RESUMED")
+    } catch { notifyGalleryAction(error.localizedDescription) }
+  }
+  private func notifyGalleryAction(_ text: String) {
+    game.notify(text)
   }
 
   func commitCampaignGalleryTrial() {
