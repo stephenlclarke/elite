@@ -156,10 +156,11 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
 }
 public struct ScriptContractState: Codable, Sendable, Equatable {
   public var boards: [String: ScriptContractBoard] = [:]
+  var rrs: RRSCourierLedger?
   public init() {}
   var valid: Bool {
     let identities = boards.values.flatMap { $0.offers.map(\.id) }
-    return boards.count <= 128 && Set(identities).count == identities.count
+    return (rrs?.valid ?? true) && boards.count <= 128 && Set(identities).count == identities.count
       && boards.allSatisfy { $0.key == $0.value.cacheKey && $0.value.valid }
   }
 }
@@ -196,7 +197,7 @@ extension Commander {
     return copy
   }
   var contractsValid: Bool {
-    guard contracts.valid else { return false }
+    guard contracts.valid, contracts.rrs?.valid(for: self) ?? true else { return false }
     for board in contracts.boards.values {
       for offer in board.offers {
         if case .accepted(let id) = offer.status {

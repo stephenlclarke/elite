@@ -37,6 +37,7 @@ extension Game {
       contractBoard.quote?.issues.joined(separator: "\n") ?? "",
     ]
     fields += scriptPacks.filter { $0.manifest.board != nil }.map(\.digest).sorted()
+    fields += rrsCourierPageFacts
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []
@@ -63,7 +64,8 @@ extension Game {
     return .init(
       generation: contractBoard.presentationGeneration, detail: contractBoard.detail,
       review: contractBoard.detail
-        ? (contractBoard.quote?.reviewToken ?? contractBoard.reviewToken) : nil,
+        ? (contractBoard.rrsQuote?.reviewToken ?? contractBoard.quote?.reviewToken
+          ?? contractBoard.reviewToken) : nil,
       selection: contractProofDigest([selected?.key ?? "unavailable"]),
       targets: contractProofDigest(fields),
       layout: contractProofDigest([

@@ -34,7 +34,8 @@ public enum MissionUIAction: String, CaseIterable, Sendable {
   public func isEnabled(in game: Game) -> Bool {
     switch self {
     case .contracts:
-      return game.docked && game.dockedAtMainStation && !game.paused && !game.showroom.trading
+      return game.docked && (game.dockedAtMainStation || game.nativeStationBoardContext != nil)
+        && !game.paused && !game.showroom.trading
         && ![Screen.demo, .title, .gameOver, .help, .secret, .mission, .handoff].contains(
           game.screen)
     case .trial:

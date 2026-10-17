@@ -6,6 +6,7 @@ extension Game {
     if isMissionTrial || commander.legacyOwnedEquipment != nil
       || commander.scriptState.calendarLedger != nil
       || !commander.scriptState.instances.isEmpty || !commander.contracts.boards.isEmpty
+      || commander.contracts.rrs != nil
     {
       return true
     }
