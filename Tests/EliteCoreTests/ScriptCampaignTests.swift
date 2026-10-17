@@ -298,6 +298,53 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   #expect(game.commander.scriptState == unprepared.scriptState)
   #expect(game.commander.contracts == unprepared.contracts)
   #expect(game.commander.accommodation == unprepared.accommodation)
+  let beforePhysicalSync = game.commander
+  let liveBodies = game.bodies
+  game.persistScriptActors()
+  var conserved = game.commander
+  for alias in ["lead", "wing"] {
+    let originalActor = try #require(
+      beforePhysicalSync.scriptState.instances[child]?.ownedEncounters["raiders"]?.actors[alias])
+    let synchronizedActor = try #require(
+      game.commander.scriptState.instances[child]?.ownedEncounters["raiders"]?.actors[alias])
+    let actualBody = try #require(liveBodies.first { $0.missionActorID == originalActor.identity })
+    #expect(
+      synchronizedActor.identity == originalActor.identity
+        && synchronizedActor.presence == originalActor.presence)
+    #expect(synchronizedActor.body.physical == actualBody.physical)
+    conserved.scriptState.instances[child]?.ownedEncounters["raiders"]?.actors[alias]?.body
+      .physical = originalActor.body.physical
+  }
+  #expect(conserved == beforePhysicalSync && game.bodies == liveBodies)
+  #expect(game.commander.scriptState.instances[child]?.outcome == state.outcome)
+  #expect(game.commander.scriptState.instances[child]?.suspension == state.suspension)
+  let expected = try GameRuntime.prepareNativeSaveState(game)
+  #expect(expected.game.commander == game.commander && expected.game.bodies == liveBodies)
+  #expect(expected.commander.npcPersistence.count == expected.game.commander.npcPersistence.count)
+  #expect(
+    expected.commander.npcPersistence.livingCount
+      == expected.game.commander.npcPersistence.livingCount)
+  #expect(
+    expected.commander.npcPersistence.unboundSnapshots.count
+      == expected.commander.npcPersistence.livingCount)
+  #expect(expected.commander.scriptState == expected.game.commander.scriptState)
+  for (logical, snapshot) in expected.commander.npcPersistence.unboundSnapshots {
+    #expect(snapshot == expected.game.commander.npcPersistence.snapshot(for: logical))
+  }
+  var checkedNPCBindings = 0
+  for body in liveBodies {
+    if let physical = body.physical,
+      let logical = expected.game.commander.npcPersistence.logicalIdentity(for: physical.identity)
+    {
+      checkedNPCBindings += 1
+      #expect(
+        expected.commander.npcPersistence.snapshot(for: logical)
+          == expected.game.commander.npcPersistence.snapshot(for: logical))
+      #expect(expected.commander.npcPersistence.binding(for: logical) == nil)
+      #expect(expected.game.commander.npcPersistence.binding(for: logical) == physical.identity)
+    }
+  }
+  try #require(checkedNPCBindings > 0)
   let runtime = GameRuntime(game: game)
   #expect(await runtime.snapshot().commander == game.commander)
   try await runtime.save(to: fixture.save)
@@ -307,11 +354,13 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   #expect(
     savePreservedCommander,
     Comment(rawValue: "Save changed: " + saveChanges.joined(separator: "; ")))
+  let (written, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
+  #expect(written == expected.commander)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
   let reloaded = await loaded.snapshot().commander
-  let loadPreservedCommander = reloaded == game.commander
-  let loadChanges = try fixture.commanderChangedPaths(game.commander, reloaded)
+  let loadPreservedCommander = reloaded == expected.commander
+  let loadChanges = try fixture.commanderChangedPaths(expected.commander, reloaded)
   #expect(
     loadPreservedCommander,
     Comment(rawValue: "Reload changed: " + loadChanges.joined(separator: "; ")))
