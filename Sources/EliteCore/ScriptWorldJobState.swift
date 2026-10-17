@@ -101,7 +101,7 @@ public struct ScriptWorldJob: Codable, Sendable, Equatable {
 
 extension ScriptEngineState {
   var worldJobsValid: Bool {
-    guard stationResources.count <= 256, worldJobs.count <= 64,
+    guard stationResources.count <= NativeMainStationIdentity.maximumCount, worldJobs.count <= 64,
       Set(stationResources.values.map(\.identity)).count == stationResources.count,
       stationResources.allSatisfy({
         $0.key == $0.value.key && $0.value.valid
