@@ -441,6 +441,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     super.init()
   }
   func applicationDidFinishLaunching(_ _: Notification) {
+    // Warm immutable texture pixels before any normal frame can encounter a textured craft.
+    ShipTextureAssets.preload()
     let view = GameView(frame: NSRect(origin: .zero, size: windowSize))
     view.wantsLayer = true
     let window = NSWindow(

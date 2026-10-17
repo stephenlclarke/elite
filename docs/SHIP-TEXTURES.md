@@ -19,9 +19,13 @@ accompany this limited selection. Unrelated package images are not thereby clear
 `Tools/showroom/prepare-ship-textures.py` verifies the archive and selected images,
 then produces opaque RGBA caches without losing RGB to alpha premultiplication.
 Source diffuse alpha carries specular data. The three 1024-square caches occupy
-12 MiB; original PNGs add about 3 MiB. The runtime loads bounded, hash-verified
-immutable pixels once during mesh preparation. Failed pixel loading retains the
-existing flat material fallback. No AppKit object enters simulation state.
+12 MiB; original PNGs add about 3 MiB. Native application startup explicitly warms
+the bounded, hash-verified immutable pixels before creating the view and starting
+the normal frame pump. Mesh preparation also warms them for non-application media
+and test consumers. Failed pixel loading retains the existing flat material
+fallback. No AppKit object enters simulation state. The 12 MiB figure describes
+resident texels; startup temporary buffers, peak memory and elapsed time have not
+been measured.
 
 The shared pure sampler clips camera-space position and UV at the near plane,
 projects reciprocal depth and performs perspective-correct bilinear repeat
