@@ -6,6 +6,86 @@ import Testing
 private let bridgeInstance = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
 private let bridgeActor = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
 
+private final class BridgeLaserProofFixture: Sendable {
+  let game: Game
+  let source: SpaceBody
+  let weapon: ScriptNPCWeapon
+  let muzzle: Vector3
+
+  init(game: Game, source: SpaceBody, weapon: ScriptNPCWeapon, muzzle: Vector3) {
+    self.game = game
+    self.source = source
+    self.weapon = weapon
+    self.muzzle = muzzle
+  }
+}
+
+private func makeBridgeLaserProofFixture() throws -> BridgeLaserProofFixture {
+  let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    .deletingLastPathComponent().deletingLastPathComponent()
+    .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+  let pack = try ScriptPackLibrary.read(directory)
+  var game = Game(executive: false)
+  game.screen = .status
+  game.scriptPacks = [pack]
+  let instance = try game.acceptScriptMission(pack)
+  game.launch()
+  game.emitScriptEvent("station.undocked")
+  game.drainScriptEvents()
+  game.ensurePhysicalActors()
+  let source = try #require(
+    game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+  let weapon = try #require(source.scriptNPC?.fit.definition.lasers?.first { $0.kind == .laser })
+  game.bodies = [source]
+  game.celestials = []
+  let muzzle =
+    source.position
+    + source.orientation.apply(weapon.muzzle * source.scriptNPC!.fit.definition.scale)
+  return .init(game: game, source: source, weapon: weapon, muzzle: muzzle)
+}
+
+private func assertBridgeLaserProof(_ fixture: BridgeLaserProofFixture) throws {
+  var game = fixture.game
+  let source = fixture.source
+  let weapon = fixture.weapon
+  let muzzle = fixture.muzzle
+  let original = (commander: game.commander, bodies: game.bodies)
+  #expect(throws: (any Error).self) {
+    try game.makeMissionNativeLaserProof(
+      sourceBodyID: source.id, weapon: weapon,
+      component: nil, muzzle: muzzle, direction: .init(0, 0, 0))
+  }
+  #expect(game.commander == original.commander && game.bodies == original.bodies)
+  try bridgeLaserInvalidGeometryPreservesState(
+    game, source: source, weapon: weapon, muzzle: muzzle)
+  let queryBefore = (commander: game.commander, bodies: game.bodies)
+  let query = try game.queryMissionNativeLaser(
+    sourceBodyID: source.id, weapon: weapon,
+    component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
+  let currentBinding = try game.currentMissionNativeBinding(bodyID: source.id)
+  #expect(query.source == currentBinding)
+  #expect(query.weapon.damage == weapon.damage && query.contact == nil)
+  #expect(query.sourceComponentID == nil && query.context == game.gameplayContext())
+  #expect(game.commander == queryBefore.commander && game.bodies == queryBefore.bodies)
+  let emission = game.commander.flightSimulation.nextEmission
+  let proof = try game.makeMissionNativeLaserProof(
+    sourceBodyID: source.id, weapon: weapon,
+    component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
+  #expect(proof.kind == .laser && proof.damage == weapon.damage && proof.contact == nil)
+  #expect(proof.source == query.source && proof.weapon == query.weapon)
+  #expect(proof.contact == query.contact && proof.origin.emittedAt == query.context.physicalTime)
+  #expect(proof.sourceActorID == source.missionActorID && proof.origin.emissionID == emission)
+  #expect(game.commander.flightSimulation.nextEmission == emission + 1)
+  #expect(game.bodies == original.bodies)
+  #expect(game.commander.scriptState == original.commander.scriptState)
+  let freshBefore = (commander: game.commander, bodies: game.bodies)
+  try game.validateMissionNativeLaserProof(proof)
+  #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
+  try bridgeLaserChangedSourceRefusesProof(game, source: source, proof: proof)
+  bridgeLaserLaterEmissionRefusesProof(game, proof: proof)
+  bridgeLaserLaterClockRefusesProof(game, proof: proof)
+}
+
 private func bridgeLaserInvalidGeometryPreservesState(
   _ game: Game, source: SpaceBody, weapon: ScriptNPCWeapon, muzzle: Vector3
 ) throws {
@@ -572,61 +652,8 @@ struct MissionNativeBridgeTests {
   }
 
   @Test func actualProfiledLaserProofAllocatesOnlyAfterPhysicalPreflightAndMissHasNoShot() throws {
-    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-      .deletingLastPathComponent().deletingLastPathComponent()
-      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
-    let pack = try ScriptPackLibrary.read(directory)
-    var game = Game(executive: false)
-    game.screen = .status
-    game.scriptPacks = [pack]
-    let instance = try game.acceptScriptMission(pack)
-    game.launch()
-    game.emitScriptEvent("station.undocked")
-    game.drainScriptEvents()
-    game.ensurePhysicalActors()
-    let source = try #require(
-      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
-    let weapon = try #require(source.scriptNPC?.fit.definition.lasers?.first { $0.kind == .laser })
-    game.bodies = [source]
-    game.celestials = []
-    let muzzle =
-      source.position
-      + source.orientation.apply(weapon.muzzle * source.scriptNPC!.fit.definition.scale)
-    let original = (commander: game.commander, bodies: game.bodies)
-    #expect(throws: (any Error).self) {
-      try game.makeMissionNativeLaserProof(
-        sourceBodyID: source.id, weapon: weapon,
-        component: nil, muzzle: muzzle, direction: .init(0, 0, 0))
-    }
-    #expect(game.commander == original.commander && game.bodies == original.bodies)
-    try bridgeLaserInvalidGeometryPreservesState(
-      game, source: source, weapon: weapon, muzzle: muzzle)
-    let queryBefore = (commander: game.commander, bodies: game.bodies)
-    let query = try game.queryMissionNativeLaser(
-      sourceBodyID: source.id, weapon: weapon,
-      component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
-    let currentBinding = try game.currentMissionNativeBinding(bodyID: source.id)
-    #expect(query.source == currentBinding)
-    #expect(query.weapon.damage == weapon.damage && query.contact == nil)
-    #expect(query.sourceComponentID == nil && query.context == game.gameplayContext())
-    #expect(game.commander == queryBefore.commander && game.bodies == queryBefore.bodies)
-    let emission = game.commander.flightSimulation.nextEmission
-    let proof = try game.makeMissionNativeLaserProof(
-      sourceBodyID: source.id, weapon: weapon,
-      component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
-    #expect(proof.kind == .laser && proof.damage == weapon.damage && proof.contact == nil)
-    #expect(proof.source == query.source && proof.weapon == query.weapon)
-    #expect(proof.contact == query.contact && proof.origin.emittedAt == query.context.physicalTime)
-    #expect(proof.sourceActorID == source.missionActorID && proof.origin.emissionID == emission)
-    #expect(game.commander.flightSimulation.nextEmission == emission + 1)
-    #expect(game.bodies == original.bodies)
-    #expect(game.commander.scriptState == original.commander.scriptState)
-    let freshBefore = (commander: game.commander, bodies: game.bodies)
-    try game.validateMissionNativeLaserProof(proof)
-    #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
-    try bridgeLaserChangedSourceRefusesProof(game, source: source, proof: proof)
-    bridgeLaserLaterEmissionRefusesProof(game, proof: proof)
-    bridgeLaserLaterClockRefusesProof(game, proof: proof)
+    let fixture = try makeBridgeLaserProofFixture()
+    try assertBridgeLaserProof(fixture)
   }
 
   @Test func actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift() throws
