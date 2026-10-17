@@ -185,7 +185,7 @@ struct BundledScriptPackTests {
     let board = try #require(generated.commander.contracts.boards[key])
     let offer = try #require(board.offers.first { $0.key == "package-1" })
     let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-    try #require(quote.allowed, quote.issues.joined(separator: "; "))
+    try #require(quote.allowed, Comment(rawValue: quote.issues.joined(separator: "; ")))
     let id = try await runtime.confirmContract(quote)
     let accepted = await runtime.snapshot()
     let state = try #require(accepted.commander.scriptState.instances[id])
