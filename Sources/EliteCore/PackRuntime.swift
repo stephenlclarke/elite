@@ -151,9 +151,12 @@ extension Game {
     else { return false }
     var candidate = commander
     candidate.missionProgress[pack.stateID] = state
+    // Location, current stage and replay checks above authorize this exact bundled handoff.
+    var reservedCargo = PackReservedCargoPermit.blackjackHandoff(
+      commander: candidate, entry: entry, transition: transition, state: state)
     do {
       for action in transition.actions ?? [] {
-        try candidate.apply(action, state: &state)
+        try candidate.apply(action, state: &state, reservedCargo: &reservedCargo)
         candidate.missionProgress[pack.stateID] = state
       }
       state.stage = transition.to

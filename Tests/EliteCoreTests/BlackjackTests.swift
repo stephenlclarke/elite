@@ -183,6 +183,35 @@ private func afterRobbery() throws -> Game {
   game.key("return")
   #expect(game.commander.cargo[10] == 0)
 }
+@Test func onlyConfirmedOwningBlackjackHandoffConsumesItsReservedFirearmOnce() throws {
+  var game = blackjackGame()
+  _ = try defeat(&game, .bolts)
+  visit(&game, 233)
+  game.key("return")
+  game.key("b")
+  game.key("return")
+  try #require(game.commander.blackjack.stage == .deliverFirearm)
+  try #require(game.commander.cargo[10] == 1 && game.commander.markedFirearms == 1)
+  game = try PackReservedCargoTestFixture.refuseExternalRemoval(game, index: 10)
+  if game.screen == .handoff { game.key("escape") }
+  game.missionPacks = MissionPackLibrary.bundled
+  game.commander.galaxy = 1
+  game.systems = Universe.galaxy(number: 1)
+  visit(&game, 127)
+  let before = game.commander
+  game.key("escape")
+  #expect(game.commander == before)
+  game.key("b")
+  game.key("return")
+  #expect(game.commander.cargo[10] == 0 && game.commander.markedFirearms == 0)
+  #expect(game.commander.blackjack.stage == .huntWitness)
+  #expect(game.commander.blackjack.transfers.contains(.robberyHandoff))
+  #expect(game.commander.legal >= 64 && game.commander.valid)
+  let committed = game.commander
+  game.confirmBlackjackHandoff()
+  #expect(game.commander == committed)
+}
+
 @Test func blackjackGoldFitsATonneFullHoldAndNumericCapacityDefersRatherThanLosesReward() throws {
   var game = blackjackGame()
   let hold = game.commander.tradeCargoCapacity
