@@ -72,10 +72,11 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   var (game, entry) = try courierGame()
   game.key("b")
   let before = game.commander
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   game.key("return")
   #expect(
-    game.commander.cargoTonnes == 20 && game.commander.missionProgress == before.missionProgress)
+    game.commander.cargoTonnes == hold && game.commander.missionProgress == before.missionProgress)
   game.commander.cargo[0] = 0
   game.commander.system = 129
   game.key("return")

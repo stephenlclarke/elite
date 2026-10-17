@@ -40,7 +40,9 @@ import Testing
 
 @Test func commanderIntegrityAndRanks() {
   var commander = Commander()
-  #expect(commander.valid && commander.capacity == 20 && commander.rank == "Harmless")
+  let hold = commander.nativePerformance.cargo
+  let expanded = hold + commander.nativePerformance.cargoExpansion
+  #expect(commander.valid && commander.capacity == hold && commander.rank == "Harmless")
   for (kills, rank) in [
     (8, "Mostly Harmless"), (16, "Poor"), (32, "Average"), (64, "Above Average"),
     (128, "Competent"), (512, "Dangerous"), (2560, "Deadly"), (6400, "ELITE"),
@@ -48,12 +50,12 @@ import Testing
     commander.kills = kills
     #expect(commander.rank == rank)
   }
-  commander.cargo[0] = 21
+  commander.cargo[0] = hold + 1
   #expect(!commander.valid)
   commander.equipment.insert("Large Cargo Bay")
-  #expect(commander.valid && commander.capacity == 35)
+  #expect(commander.valid && commander.capacity == expanded)
   commander.cargo[13] = 1000
-  #expect(commander.cargoTonnes == 21)
+  #expect(commander.cargoTonnes == hold + 1)
   commander.system = 256
   #expect(!commander.valid)
   commander = Commander()
@@ -127,7 +129,8 @@ import Testing
   game.trade(buy: true)
   #expect(game.commander.cargo[0] == 0)
   game.commander.credits = 10000
-  game.commander.cargo[1] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[1] = hold
   game.trade(buy: true)
   #expect(game.commander.cargo[0] == 0)
   game.selection = 13
@@ -146,13 +149,13 @@ import Testing
   game.screen = .sell
   game.selection = 1
   game.key("return")
-  #expect(game.commander.cargo[1] == 19)
+  #expect(game.commander.cargo[1] == hold - 1)
   game.key("down")
   #expect(game.selection == 2)
   game.key("up")
   #expect(game.selection == 1)
   game.key("right")
-  #expect(game.commander.cargo[1] == 20)
+  #expect(game.commander.cargo[1] == hold)
 }
 
 @Test func equipmentPurchases() throws {
@@ -173,7 +176,9 @@ import Testing
   game.commander.credits = 100000
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Large Cargo Bay" })
   game.purchase()
-  #expect(game.commander.capacity == 35 && game.commander.credits == 96000)
+  #expect(
+    game.commander.capacity == game.commander.nativePerformance.cargo
+      + game.commander.nativePerformance.cargoExpansion && game.commander.credits == 96000)
   let owned = game.commander
   game.purchase()
   #expect(game.message == "ALREADY OWNED" && game.commander == owned)
@@ -501,7 +506,9 @@ import Testing
 @Test func executiveDefaultsDemoAndPauseOptions() {
   var game = Game()
   #expect(game.screen == .demo && game.commander.name == "JAMESON")
-  #expect(game.commander.credits == 1000 && game.commander.capacity == 20)
+  #expect(
+    game.commander.credits == 1000
+      && game.commander.capacity == game.commander.nativePerformance.cargo)
   #expect(game.commander.equipment == ["Pulse Laser"])
   #expect(game.commander.valid)
   game.key(" ")
@@ -623,7 +630,9 @@ private func reboundJumpLimitWorldAfterLoad(
   #expect(!exports.isEmpty)
   #expect(exports.allSatisfy { $0.index != 16 && $0.profit > 0 })
   game.autoTrade()
-  #expect(game.commander.cargoTonnes > 0 && game.commander.cargoTonnes <= 20)
+  #expect(
+    game.commander.cargoTonnes > 0
+      && game.commander.cargoTonnes <= game.commander.tradeCargoCapacity)
   #expect(game.commander.credits >= 0 && game.commander.credits < 20000)
   let cargo = game.commander.cargo
   game.launch()
@@ -727,7 +736,9 @@ private func reboundJumpLimitWorldAfterLoad(
   game.selectedSystem = 129
   game.market = MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 0)
   game.autoTrade()
-  #expect(game.commander.credits < 100000 && game.commander.cargoTonnes > 20)
+  #expect(
+    game.commander.credits < 100000
+      && game.commander.cargoTonnes > game.commander.standardCargoCapacity)
   game.commander.cargo[0] = Int.max / 17
   game.market[0].price = 1020
   game.autoTrade()

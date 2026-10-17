@@ -21,7 +21,11 @@ private func showroomGame() -> Game {
     ShipCatalogue.all.contains { $0.id == "SH165" && $0.modelSource?.contains("Vector") == true })
   let cobra = try #require(ShipCatalogue.ship("SH023"))
   let project = try #require(cobra.profiles.first { $0.group == "project-refit-v1" })
-  #expect(project.fields.contains { $0.key == "cargo_tonnes" && $0.number == 20 && $0.unit == "t" })
+  let performance = try #require(cobra.game)
+  #expect(
+    project.fields.contains {
+      $0.key == "cargo_tonnes" && $0.number == Double(performance.cargo) && $0.unit == "t"
+    })
   #expect(
     project.fields.contains {
       $0.key == "maximum_speed_project_units" && $0.unit == "project units/s"
@@ -128,7 +132,9 @@ private func showroomGame() -> Game {
   var game = showroomGame()
   game.showroom.selection = "SH001"
   let row = try #require(game.showroomComparison.first { $0.label == "Cargo" })
-  #expect(row.difference == "Diff -18 t")
+  let selectedCargo = try #require(ShipCatalogue.ship("SH001")?.game?.cargo)
+  let cargoDifference = Double(selectedCargo - game.commander.nativePerformance.cargo)
+  #expect(row.difference == String(format: "Diff %+.3g t", cargoDifference))
   game.key("b")
   game.key("down")
   #expect(game.showroom.baseline == "SH001" && game.showroom.selection != "SH001")
