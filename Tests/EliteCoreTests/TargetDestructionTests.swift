@@ -68,22 +68,26 @@ func playerImmediateAndTravellingMissilesAndBombCarryKillAttribution(_ mode: Int
   }
 }
 @Test func thirdPartyDestructionRangeLossAndDespawnCannotClaimPlayerKill() {
-  for mode in 0..<3 {
-    var game = lockedGame()
-    if mode == 0 {
-      game.bodies[0].energy = 0
-    } else if mode == 1 {
-      game.bodies[0].position.z = 100_000
-    } else {
-      game.bodies = []
-    }
-    game.tick(delta: 0.01)
-    game.tick(delta: 0.01)
-    #expect(
-      game.commander.kills == 0 && game.weaponsTargetID == nil && game.autoPilot.targetID == nil)
-    #expect(announcements(game, "TARGET LOST") == 1)
-    #expect(announcements(game, "TARGET DESTROYED - YOUR KILL") == 0)
+  for mode in 0..<3 { verifyThirdPartyRemoval(mode: mode) }
+  verifyManualTargetCancellation()
+}
+private func verifyThirdPartyRemoval(mode: Int) {
+  var game = lockedGame()
+  if mode == 0 {
+    game.bodies[0].energy = 0
+  } else if mode == 1 {
+    game.bodies[0].position.z = 100_000
+  } else {
+    game.bodies = []
   }
+  game.tick(delta: 0.01)
+  game.tick(delta: 0.01)
+  #expect(
+    game.commander.kills == 0 && game.weaponsTargetID == nil && game.autoPilot.targetID == nil)
+  #expect(announcements(game, "TARGET LOST") == 1)
+  #expect(announcements(game, "TARGET DESTROYED - YOUR KILL") == 0)
+}
+private func verifyManualTargetCancellation() {
   var game = lockedGame()
   game.bodies.append(.init(id: 43, hull: .cobra, position: .init(10, 0, 1200)))
   game.key("r")
