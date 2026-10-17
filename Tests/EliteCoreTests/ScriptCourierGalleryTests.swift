@@ -140,7 +140,8 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
   func menu(_ command: String) throws {
     let menu = try #require(NSApp.mainMenu?.item(withTitle: "Game")?.submenu)
     let index = try #require(menu.items.firstIndex { ($0.representedObject as? String) == command })
-    #expect(delegate.validateMenuItem(menu.items[index]))
+    let target = try #require(menu.items[index].target as? NativeMissionMenu)
+    #expect(target.validateMenuItem(menu.items[index]))
     menu.performActionForItem(at: index)
   }
   func clean() {
@@ -378,12 +379,17 @@ extension NativeViewTests {
     try captureCourierView(trial, name: "trial-review")
     try await harness.paint()
     try harness.press("right")
+    await harness.drain()
+    try #require(await harness.delegate.runtime.snapshot().contractBoard.action == .accept)
+    try await harness.paint()
+    let confirm = await harness.delegate.runtime.snapshot()
+    try #require(harness.view.paintedMissionMenuPresentation == confirm.scriptPagePresentation)
     try harness.press("return")
     await harness.drain()
     let held = await harness.delegate.runtime.snapshot()
     #expect(held.commander.scriptState.instances.values.first?.courier?.terminal == nil)
     #expect(held.commander.scriptState.instances.count == 1)
-    harness.view.pending = ["commander-save-default"]
+    harness.delegate.queueCommanderFile(.saveActive)
     await harness.drain()
     _ = try await harness.delegate.runtime.loadForInterface()
     #expect(await harness.delegate.runtime.snapshot().commander == held.commander)
