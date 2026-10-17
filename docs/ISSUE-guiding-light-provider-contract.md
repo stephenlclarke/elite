@@ -23,3 +23,7 @@ The review of source leaf `362d91b` found that a combined snapshot could process
 ## Finite guidance gap
 
 The source review also found unused greeting, urgent-choice, disabled, destroyed and unavailable-contact definitions. A crisis stage change alone did not request a durable event, so promised radio/subtitle guidance had no consumer. The follow-up records a fixed six-bit presentation history and drives the existing finite native transition, Lua journal and notification path. Presentation bits confer no mission/reward authority and do not turn repeated requests or reviews into lifetime receipts.
+
+## Combined304 compile blocker
+
+G1 reported that Combined304 stopped during compilation, before any tests ran: the compiler could not type-check the large optional-count array inside `validateProviderContract` in reasonable time. Extract that exact array into an explicitly typed `[Int?]` local and its predicate into a Boolean local. Preserve all field restrictions and the original nil-or-zero semantics.
