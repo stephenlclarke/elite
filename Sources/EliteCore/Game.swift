@@ -1855,6 +1855,18 @@ public actor GameRuntime {
   }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
+    guard let context = prepareAdvance(delta: delta) else { return game }
+    game.tick(delta: delta, controls: controls)
+    commitPendingNativeStationEntry()
+    finishAdvance(delta: delta, context: context)
+    return game
+  }
+  private typealias AdvanceContext = (
+    wasDocked: Bool, wasLive: Bool, location: (Int, Int), localActive: Bool, flightActive: Bool,
+    calendarActive: Bool, clockAdvanced: Bool
+  )
+  // Release preflight/read buffers before entering the deeper physical simulation.
+  private func prepareAdvance(delta: Double) -> AdvanceContext? {
     let wasDocked = game.docked
     let wasLive = game.screen != .gameOver
     let location = (game.commander.galaxy, game.commander.system)
@@ -1870,7 +1882,7 @@ public actor GameRuntime {
         controls = Controls()
         game.paused = true
         game.notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
-        return game
+        return nil
       }
     }
     // Physical facts commit first. A failed script save must never undo a real hit/death.
@@ -1881,8 +1893,14 @@ public actor GameRuntime {
       && game.advanceScriptClockValues(
         delta: delta, flight: flightActive, local: localActive, calendar: calendarActive,
         missionCalendar: game.missionCalendarActive)
-    game.tick(delta: delta, controls: controls)
-    commitPendingNativeStationEntry()
+    return (
+      wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced
+    )
+  }
+  // Reserve later event/restoration buffers only after the physical tick and native entry.
+  private func finishAdvance(delta: Double, context: AdvanceContext) {
+    let (wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced) =
+      context
     if wasLive && game.screen == .gameOver {
       if game.energy.isFinite && game.energy < 0 { game.energy = 0 }
       game.markCourierFatalLoss()
@@ -1898,7 +1916,7 @@ public actor GameRuntime {
         controls = Controls()
         game.paused = true
         game.notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
-        return game
+        return
       }
     }
     if localActive { game.drainScriptEvents(publish: scriptPublisher()) }
@@ -1908,7 +1926,6 @@ public actor GameRuntime {
         publish: scriptPublisher())
     }
     game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())
-    return game
   }
   public func save(to url: URL) throws {
     try requireGalleryFileAccess(url)
