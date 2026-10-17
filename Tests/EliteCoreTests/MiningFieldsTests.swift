@@ -5,9 +5,9 @@ import Testing
 @Test func miningFieldsAreStableSafeAndIndependentOfVisits() {
   let anchors = ecologyContext().anchors
   for seed in UInt64(0)..<100 {
-    let fields = MiningFields.generate(anchors: anchors, seed: seed)
+    let fields = MiningFields.legacyFields(anchors: anchors, seed: seed)
     #expect((2...4).contains(fields.count))
-    #expect(fields == MiningFields.generate(anchors: anchors, seed: seed))
+    #expect(fields == MiningFields.legacyFields(anchors: anchors, seed: seed))
     for field in fields {
       #expect((5...12).contains(field.rocks.count))
       for rock in field.rocks {
@@ -33,7 +33,7 @@ import Testing
     system: base.system, station: base.station, arrival: base.arrival,
     planet: .init(position: .init(0, 0, 0), radius: 10000),
     sun: .init(position: .init(10, 0, 0), radius: 10000))
-  let fields = MiningFields.generate(anchors: anchors, seed: 1)
+  let fields = MiningFields.legacyFields(anchors: anchors, seed: 1)
   #expect((2...4).contains(fields.count))
   for rock in fields.flatMap(\.rocks) {
     #expect(

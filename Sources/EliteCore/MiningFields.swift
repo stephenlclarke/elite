@@ -14,7 +14,52 @@ public struct MiningField: Equatable, Codable, Sendable {
 
 /// Geometry is canonical system space. Visits and camera transforms never seed ore.
 public enum MiningFields {
-  public static func generate(anchors: SystemAnchors, seed: UInt64) -> [MiningField] {
+  public static func generate(
+    anchors: SystemAnchors, seed: UInt64, includingLegacy: Bool = false
+  ) -> [MiningField] {
+    let retained = includingLegacy ? legacyFields(anchors: anchors, seed: seed) : []
+    guard AsteroidBeltDefinition.isPresent(identity: anchors.system, seed: seed),
+      let radius = AsteroidBeltDefinition.radius(anchors: anchors),
+      anchors.planet.radius.isFinite, anchors.planet.radius > 0,
+      anchors.sun.radius.isFinite, anchors.sun.radius > 0
+    else { return retained }
+    let radial = (anchors.planet.position - anchors.sun.position).unit
+    let cardinals = [Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)]
+    let reference = cardinals.min { abs(radial.dot($0)) < abs(radial.dot($1)) }!
+    let tangent = radial.cross(reference).unit
+    guard tangent.length > 0 else { return retained }
+    var random = FieldRandom(
+      state: AsteroidBeltDefinition.mixed(identity: anchors.system, salt: seed))
+    let phase = random.unit() * 2 * .pi
+    var fields = retained
+    // Three separated sectors, four rocks each: a sparse ring, never a filled torus.
+    for sector in 0..<3 {
+      let angle = phase + Double(sector) * 2 * .pi / 3
+      let center =
+        anchors.sun.position
+        + radial * (cos(angle) * radius) + tangent * (sin(angle) * radius)
+      var rocks: [MiningRock] = []
+      for index in 0..<4 {
+        let identity = RockIdentity(
+          system: anchors.system, field: UInt16(sector + 4), rock: UInt16(index))
+        guard let chunk = AsteroidBeltDefinition.chunk(for: identity) else { continue }
+        let offset = (Double(index) - 1.5) * 170 / radius
+        let distance = radius + (random.unit() * 2 - 1) * AsteroidBeltDefinition.radialHalfWidth
+        let position =
+          anchors.sun.position
+          + radial * (cos(angle + offset) * distance)
+          + tangent * (sin(angle + offset) * distance)
+        guard safe(position, radius: chunk.radius, anchors: anchors) else { continue }
+        rocks.append(
+          .init(identity: identity, position: position, radius: chunk.radius, energy: chunk.energy))
+      }
+      if !rocks.isEmpty { fields.append(.init(position: center, rocks: rocks)) }
+    }
+    // Unsafe anchors yield no ring sectors, never a substitute planet-centred shell.
+    return fields
+  }
+
+  public static func legacyFields(anchors: SystemAnchors, seed: UInt64) -> [MiningField] {
     let axis = anchors.sun.position - anchors.planet.position
     guard axis.length.isFinite,
       anchors.planet.radius.isFinite, anchors.planet.radius > 0,
