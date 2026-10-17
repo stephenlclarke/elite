@@ -25,6 +25,77 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   return try #require(game.bodies.first { $0.missionActorID == identity })
 }
 
+private func nativeCombatContinuityDiagnostic(_ first: GameRuntime, _ second: GameRuntime) async
+  -> String
+{
+  let a = await first.snapshot()
+  let b = await second.snapshot()
+  let commander: [(String, Bool)] = [
+    ("whole", a.commander == b.commander),
+    ("equipment", a.commander.equipmentInventory == b.commander.equipmentInventory),
+    ("accommodation", a.commander.accommodation == b.commander.accommodation),
+    ("missions", a.commander.scriptState == b.commander.scriptState),
+    ("contracts", a.commander.contracts == b.commander.contracts),
+    ("flight", a.commander.flightSimulation == b.commander.flightSimulation),
+    ("crime", a.commander.crimeLedger == b.commander.crimeLedger),
+    ("security", a.commander.stationSecurity == b.commander.stationSecurity),
+    ("director", a.commander.encounterDirector == b.commander.encounterDirector),
+    ("NPCs", a.commander.npcPersistence == b.commander.npcPersistence),
+  ]
+  let ids = Set(a.bodies.map(\.id)).union(b.bodies.map(\.id)).sorted().filter { id in
+    a.bodies.first(where: { $0.id == id }) != b.bodies.first(where: { $0.id == id })
+  }
+  let bodies = ids.prefix(8).map { id -> String in
+    guard let left = a.bodies.first(where: { $0.id == id }),
+      let right = b.bodies.first(where: { $0.id == id })
+    else {
+      return
+        "id=\(id),presentA=\(a.bodies.contains { $0.id == id }),presentB=\(b.bodies.contains { $0.id == id })"
+    }
+    let fields: [(String, Bool)] = [
+      ("position", left.position == right.position),
+      ("orientation", left.orientation == right.orientation),
+      ("rotation", left.rotation == right.rotation), ("HP", left.energy == right.energy),
+      ("hostile", left.hostile == right.hostile), ("missiles", left.missiles == right.missiles),
+      ("missionActor", left.missionActorID == right.missionActorID),
+      ("scriptNPC", left.scriptNPC == right.scriptNPC),
+      ("scriptShot", left.scriptShot == right.scriptShot),
+      ("physical", left.physical == right.physical),
+      ("nativeActor", left.physical?.identity == right.physical?.identity),
+      ("spawn", left.physical?.spawnIdentity == right.physical?.spawnIdentity),
+      ("velocity", left.physical?.velocity == right.physical?.velocity),
+      ("laserCooldown", left.physical?.laserCooldown == right.physical?.laserCooldown),
+      ("NPC", left.physical?.npc == right.physical?.npc),
+      ("intention", left.physical?.npc?.intention == right.physical?.npc?.intention),
+      ("aggressor", left.physical?.npc?.firstAggressor == right.physical?.npc?.firstAggressor),
+      ("resources", left.physical?.npc?.resources == right.physical?.npc?.resources),
+    ]
+    return "id=\(id),fields=\(fields.filter { !$0.1 }.map(\.0)),HP=\(left.energy)/\(right.energy)"
+      + ",positionA=\(left.position),positionB=\(right.position)"
+  }.joined(separator: "; ")
+  func npcBindings(_ game: Game) -> String {
+    game.bodies.filter { $0.energy > 0 && $0.physical?.npc != nil && $0.missionInstanceID == nil }
+      .sorted { $0.id < $1.id }.prefix(8).map { body in
+        let actor = body.physical?.identity
+        let logical = actor.flatMap { game.commander.npcPersistence.logicalIdentity(for: $0) }
+        return
+          "body=\(body.id),actor=\(String(describing: actor?.entity)),logical=\(String(describing: logical?.entity))"
+      }.joined(separator: "; ")
+  }
+  return [
+    "commanderDifferences=\(commander.filter { !$0.1 }.map(\.0))",
+    "bodyCounts=\(a.bodies.count)/\(b.bodies.count),differingBodies=\(ids.count),details=[\(bodies)]",
+    "NPCcounts=\(a.commander.npcPersistence.count)/\(b.commander.npcPersistence.count)",
+    "unboundNPCs=\(a.commander.npcPersistence.unboundSnapshots.count)/\(b.commander.npcPersistence.unboundSnapshots.count)",
+    "NPCbindingsA=[\(npcBindings(a))],NPCbindingsB=[\(npcBindings(b))]",
+    "nextActor=\(a.commander.flightSimulation.nextActor)/\(b.commander.flightSimulation.nextActor)",
+    "nextBodyID=\(a.nextBodyID)/\(b.nextBodyID)",
+    "paused=\(a.paused)/\(b.paused),screen=\(a.screen)/\(b.screen)",
+    "physicalTime=\(a.commander.flightSimulation.physicalTime)/\(b.commander.flightSimulation.physicalTime)",
+    "calendar=\(a.commander.scriptState.calendarSeconds)/\(b.commander.scriptState.calendarSeconds)",
+  ].joined(separator: ",")
+}
+
 @Test func scriptedPatrolFightsActualTargetsAndReportsThroughNativeStationControls() async throws {
   var game = Game(executive: false)
   game.screen = .status
@@ -251,7 +322,8 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   let canonical = try #require(
     game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.actors["lead"]?.body
       .position)
-  #expect(abs(canonical.z - oldCanonical.z) <= 6.01)  // Existing classic NPC actually advances at 60 units/s.
+  // Existing classic NPC actually advances at 60 units/s.
+  #expect(abs(canonical.z - oldCanonical.z) <= 6.01)
   try game.restoreScriptActors()
   #expect(game.bodies.filter { $0.id == 0 }.count == 1)
   #expect(game.bodies.filter { $0.missionActorID == lead.missionActorID }.count == 1)
@@ -414,14 +486,19 @@ private func modifiedPatrol(
   try await uninterrupted.save(to: save)
   let resumed = GameRuntime(game: game)
   try await resumed.load(from: save)
+  let afterLoad = await nativeCombatContinuityDiagnostic(uninterrupted, resumed)
   for _ in 0..<100 {
     _ = await uninterrupted.advance(delta: 0.1)
     _ = await resumed.advance(delta: 0.1)
   }
   let a = await uninterrupted.snapshot()
   let b = await resumed.snapshot()
-  #expect(a.bodies == b.bodies)
-  #expect(a.commander == b.commander)
+  let afterAdvance = await nativeCombatContinuityDiagnostic(uninterrupted, resumed)
+  let bodiesMatch = a.bodies == b.bodies
+  let commandersMatch = a.commander == b.commander
+  let evidence = Comment(rawValue: "afterLoad: \(afterLoad); after100: \(afterAdvance)")
+  #expect(bodiesMatch, evidence)
+  #expect(commandersMatch, evidence)
   #expect(a.scriptSimulationSave.randomState == b.scriptSimulationSave.randomState)
   #expect(a.scriptSimulationSave.missionLoopCounter == b.scriptSimulationSave.missionLoopCounter)
 }
