@@ -3,6 +3,15 @@ import Foundation
 extension GameRuntime {
   public func loadScriptPacks(directory: URL) {
     let library = ScriptPackLibrary.installed(directory: directory)
+    applyLoadedScriptPacks(library)
+  }
+  @discardableResult
+  public func loadDefaultScriptPacks(directory: URL = ScriptPackLibrary.userDirectory) -> [String] {
+    let library = ScriptPackLibrary.defaultLibrary(directory: directory)
+    applyLoadedScriptPacks(library)
+    return library.errors
+  }
+  private func applyLoadedScriptPacks(_ library: (packs: [ScriptPack], errors: [String])) {
     game.scriptPacks = library.packs
     game.suspendUnavailableScriptContent()
     for error in library.errors { game.notify(error) }
