@@ -42,13 +42,19 @@ private func expectStartupEquipmentMigration(from legacy: Commander, to migrated
   expected.miningLedger = mining
   expected.laserMounts = legacy.laserMounts
   expected.fuelStorageUnits = legacy.fuelStorageUnits
-  let expectedFields = try #require(
+  var expectedFields = try #require(
     JSONSerialization.jsonObject(with: JSONEncoder().encode(expected)) as? [String: Any])
   var actualFields = try #require(
     JSONSerialization.jsonObject(with: JSONEncoder().encode(migrated)) as? [String: Any])
   for key in ["savedEquipmentInventory", "savedEquipmentPurchaseHistory", "savedEquipmentVersion"] {
     actualFields.removeValue(forKey: key)
   }
+  // Codable encodes Set<String> as an array whose iteration order is not a contract.
+  #expect(migrated.equipment == expected.equipment)
+  let expectedEquipment = try #require(expectedFields["equipment"] as? [String])
+  let actualEquipment = try #require(actualFields["equipment"] as? [String])
+  expectedFields["equipment"] = expectedEquipment.sorted()
+  actualFields["equipment"] = actualEquipment.sorted()
   #expect((actualFields as NSDictionary).isEqual(to: expectedFields))
 }
 
