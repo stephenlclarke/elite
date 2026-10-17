@@ -548,7 +548,33 @@ import Testing
   var restoredGame = await restored.snapshot()
   let savedWorld = try #require(expected.nativeStations)
   expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: &restoredGame)
-  #expect(await restored.snapshot().commander == expected)
+  let differences = try jumpLimitSaveDifferences(expected, actual: restoredGame.commander)
+  #expect(await restored.snapshot().commander == expected, Comment(rawValue: differences))
+}
+
+private func jumpLimitSaveDifferences(_ expected: Commander, actual: Commander) throws -> String {
+  var left = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(expected)) as? [String: Any])
+  var right = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(actual)) as? [String: Any])
+  left["equipment"] = expected.equipment.sorted()
+  right["equipment"] = actual.equipment.sorted()
+  func differences(_ left: Any, _ right: Any, path: String) -> [String] {
+    if let value = left as? NSObject, value.isEqual(right) { return [] }
+    if let left = left as? [String: Any], let right = right as? [String: Any] {
+      return Set(left.keys).union(right.keys).sorted().flatMap { key in
+        differences(left[key] ?? NSNull(), right[key] ?? NSNull(), path: path + "." + key)
+      }
+    }
+    if let left = left as? [Any], let right = right as? [Any] {
+      guard left.count == right.count else { return [path + ".count"] }
+      return left.indices.flatMap { differences(left[$0], right[$0], path: path + "[\($0)]") }
+    }
+    return ["\(path): expected \(left), actual \(right)"]
+  }
+  return Set(left.keys).union(right.keys).sorted().flatMap { key in
+    differences(left[key] ?? NSNull(), right[key] ?? NSNull(), path: key).prefix(2)
+  }.joined(separator: "; ")
 }
 
 private func reboundJumpLimitWorldAfterLoad(
