@@ -294,6 +294,7 @@ extension Game {
       }
       let cancelledJump = jumpCountdown != nil
       jumpCountdown = nil
+      if requiresScriptDurability { cancelCalendarJourney() }
       commander.navigationPlan = plan
       if let next = plan.nextSystem { selectedSystem = next }
       if navigationReturn == .chart {
@@ -314,6 +315,7 @@ extension Game {
   public mutating func cancelNavigation() {
     commander.navigationPlan = nil
     jumpCountdown = nil
+    if requiresScriptDurability { cancelCalendarJourney() }
     selectedSystem = commander.system
     notify("NAVIGATION ROUTE CLEARED")
   }
@@ -323,6 +325,7 @@ extension Game {
       notify("ROUTE CLEARED - MANUAL DESTINATION")
     }
     jumpCountdown = nil
+    if requiresScriptDurability { cancelCalendarJourney() }
     selectedSystem = id
   }
   mutating func navigationDocked() {
