@@ -36,6 +36,17 @@ public enum ComparisonRating: String, Sendable {
 extension Commander {
   public var gameShipProfile: ShipProfile {
     let p = performance
+    let fittedMissiles =
+      equipmentInventory.map { inventory in
+        inventory.items.filter { item in
+          guard item.node == EquipmentRuntimeCatalog.standardMissile,
+            item.location?.hullInstanceID == inventory.activeHull,
+            case .missilePylon = item.location?.slot
+          else { return false }
+          return true
+        }.count
+      } ?? missiles
+    let fittedLasers = LaserMount.allCases.filter { laser(on: $0) != nil }.count
     func field(_ key: String, _ label: String, _ number: Double, _ unit: String) -> ShipSpec {
       .init(
         key: key, label: label,
@@ -65,9 +76,11 @@ extension Commander {
       field("hyperspace_range_ly", "Jump capacity", fullTankJumpDistance, "LY"),
       field("jump_spool_seconds", "Jump charge", p.spool, "s"),
       field("missile_capacity", "Missile pylons", Double(missileCapacity), "pylons"),
+      field("fitted_missiles", "Loaded missiles", Double(fittedMissiles), "missiles"),
       field(
         "laser_facings", "Laser mounts", Double(LaserMount.allCases.filter(p.supports).count),
         "mounts"),
+      field("fitted_lasers", "Fitted lasers", Double(fittedLasers), "lasers"),
       field("price", "Hull price", Double(p.price), "CR"),
     ]
     if unlimitedCargo {

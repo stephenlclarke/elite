@@ -52,10 +52,12 @@ import Testing
       try portable.storeEquipment(item, expectedRevision: portable.equipmentInventory!.revision)
     }
   }
-  try #require(ShipCatalogue.ship("SH128")?.game?.cargo == 0)
+  let retained = portable
+  try #require(ShipCatalogue.ship("SH033")?.game?.cargo == 0)
   #expect(throws: EquipmentRuntimeError.incompatibleFit) {
-    try portable.projectedEquipmentTransfer(to: "SH128")
+    try portable.projectedEquipmentTransfer(to: "SH033")
   }
+  #expect(portable == retained)
   #expect(portable.accommodation == before.accommodation && trial.commander == before)
 }
 
@@ -89,38 +91,50 @@ import Testing
   }
 }
 
+private struct OwnedEquipmentObserverFixture {
+  let folder: URL
+  let manifest: URL
+  let original: String
+  let pack: ScriptPack
+  init() throws {
+    folder = try missionGearFolder()
+    let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+      .appendingPathComponent("docs/mission-packs/scripted-courier")
+    let directory = folder.appendingPathComponent("pack")
+    try FileManager.default.copyItem(at: example, to: directory)
+    manifest = directory.appendingPathComponent("manifest.toml")
+    original = try String(contentsOf: manifest, encoding: .utf8)
+    let text =
+      original.replacingOccurrences(
+        of: "\"cargo-v2\"]", with: "\"cargo-v2\", \"owned-equipment-v2\"]")
+      + "\n[[handlers]]\nevent=\"ship.changed\"\nfunction=\"changed\"\n[[handlers]]\nevent=\"equipment.changed\"\nfunction=\"refitted\"\n[[handlers]]\nevent=\"gear.consumed\"\nfunction=\"spent\"\n"
+    try text.write(to: manifest, atomically: true, encoding: .utf8)
+    let source = """
+      local function no(e,w,d) return {data=d,commands={}} end
+      return {
+        accepted=function(e,w,d) return {data={changes=0,fits=0,shots=0},commands={}} end,
+        contact=no, confirm=no,
+        changed=function(e,w,d)
+          d.changes=d.changes+1; d.previous=e.previous; d.ship=e.ship
+          d.loaded=w.fitted_equipment.Missile; d.stored=w.stored_equipment.Missile
+          return {data=d,commands={}}
+        end,
+        refitted=function(e,w,d) d.fits=d.fits+1; d.fit_item=e.item; d.fitted=e.fitted; return {data=d,commands={}} end,
+        spent=function(e,w,d) d.shots=d.shots+1; d.spent=e.item; return {data=d,commands={}} end
+      }
+      """
+    try source.write(
+      to: directory.appendingPathComponent("scripts/main.lua"), atomically: true, encoding: .utf8)
+    pack = try ScriptPackLibrary.read(directory)
+  }
+  func clean() { try? FileManager.default.removeItem(at: folder) }
+}
+
 @Test func scriptsObserveOnlyCommittedHullRefitAndActualAmmunitionEvents() throws {
-  let folder = try missionGearFolder()
-  defer { try? FileManager.default.removeItem(at: folder) }
-  let example = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-    .deletingLastPathComponent().deletingLastPathComponent()
-    .appendingPathComponent("docs/mission-packs/scripted-courier")
-  let directory = folder.appendingPathComponent("pack")
-  try FileManager.default.copyItem(at: example, to: directory)
-  let manifest = directory.appendingPathComponent("manifest.toml")
-  let original = try String(contentsOf: manifest, encoding: .utf8)
-  let text =
-    original.replacingOccurrences(
-      of: "\"cargo-v2\"]", with: "\"cargo-v2\", \"owned-equipment-v2\"]")
-    + "\n[[handlers]]\nevent=\"ship.changed\"\nfunction=\"changed\"\n[[handlers]]\nevent=\"equipment.changed\"\nfunction=\"refitted\"\n[[handlers]]\nevent=\"gear.consumed\"\nfunction=\"spent\"\n"
-  try text.write(to: manifest, atomically: true, encoding: .utf8)
-  let source = """
-    local function no(e,w,d) return {data=d,commands={}} end
-    return {
-      accepted=function(e,w,d) return {data={changes=0,fits=0,shots=0},commands={}} end,
-      contact=no, confirm=no,
-      changed=function(e,w,d)
-        d.changes=d.changes+1; d.previous=e.previous; d.ship=e.ship
-        d.loaded=w.fitted_equipment.Missile; d.stored=w.stored_equipment.Missile
-        return {data=d,commands={}}
-      end,
-      refitted=function(e,w,d) d.fits=d.fits+1; return {data=d,commands={}} end,
-      spent=function(e,w,d) d.shots=d.shots+1; d.spent=e.item; return {data=d,commands={}} end
-    }
-    """
-  try source.write(
-    to: directory.appendingPathComponent("scripts/main.lua"), atomically: true, encoding: .utf8)
-  let pack = try ScriptPackLibrary.read(directory)
+  let fixture = try OwnedEquipmentObserverFixture()
+  defer { fixture.clean() }
+  let pack = fixture.pack
   var game = try missionGearGame(missiles: 4)
   game.scriptPacks = [pack]
   game.commander.credits = 10_000_000
@@ -139,12 +153,18 @@ import Testing
   #expect(state.data["loaded"] == .integer(4))
   let round = try #require(missionHighestRound(game.commander))
   try missionStorePhysical(round, in: &game)
+  #expect(game.commander.scriptState.instances[id]?.data["fits"] == .integer(1))
+  #expect(
+    game.commander.scriptState.instances[id]?.data["fit_item"] == .string(round.id.uuidString))
+  #expect(game.commander.scriptState.instances[id]?.data["fitted"] == .bool(false))
   let held = try #require(game.commander.equipmentInventory?.items.first { $0.id == round.id })
   let fit = try #require(game.inventoryActionPreview(for: .equipment(held)).command)
   let applied = game.performInventoryCommand(fit)
   try #require(applied)
   game.drainScriptEvents()
   #expect(game.commander.scriptState.instances[id]?.data["fits"] == .integer(2))
+  #expect(game.commander.scriptState.instances[id]?.data["fit_item"] == .string(held.id.uuidString))
+  #expect(game.commander.scriptState.instances[id]?.data["fitted"] == .bool(true))
   let spent = try #require(missionHighestRound(game.commander))
   game.launch()
   game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 800))]
@@ -154,9 +174,11 @@ import Testing
   game.drainScriptEvents()
   #expect(game.commander.scriptState.instances[id]?.data["shots"] == .integer(1))
   #expect(game.commander.scriptState.instances[id]?.data["spent"] == .string(spent.id.uuidString))
-  try (original + "\n[[handlers]]\nevent=\"ship.changed\"\nfunction=\"changed\"\n").write(
-    to: manifest, atomically: true, encoding: .utf8)
-  #expect(throws: MissionPackError.self) { try ScriptPackLibrary.read(directory) }
+  try (fixture.original + "\n[[handlers]]\nevent=\"ship.changed\"\nfunction=\"changed\"\n").write(
+    to: fixture.manifest, atomically: true, encoding: .utf8)
+  #expect(throws: MissionPackError.self) {
+    try ScriptPackLibrary.read(fixture.manifest.deletingLastPathComponent())
+  }
 }
 
 @Test func actualInventoryCommandsStoreAndReuseLasersAndMissilesWithoutCharging() throws {
@@ -278,4 +300,183 @@ import Testing
   #expect(first.issues == second.issues && first.allowed == second.allowed)
   #expect(game.selectedGameProfile?.fields.first { $0.key == "fitted_missiles" }?.number == 4)
   #expect(game.selectedGameProfile?.fields.first { $0.key == "fitted_lasers" }?.number == 1)
+}
+
+@Test func nativeProfilesCountLoadedWeaponsWithoutIncludingStoredCustodyOrCreatingEquipment() throws
+{
+  var game = try missionGearGame(missiles: 4)
+  try game.commander.grantEquipment(
+    LaserKind.beam.equipmentName, at: .laser(.rear), provenance: .grant("profile count fixture"))
+  let full = game.commander.gameShipProfile
+  #expect(full.fields.first { $0.key == "fitted_missiles" }?.number == 4)
+  #expect(full.fields.first { $0.key == "fitted_lasers" }?.number == 2)
+  #expect(full.fields.first { $0.key == "missile_capacity" }?.number == 4)
+  #expect(full.fields.first { $0.key == "laser_facings" }?.number == 4)
+  let round = try #require(missionHighestRound(game.commander))
+  let front = try #require(game.commander.fittedEquipment(at: .laser(.front)))
+  try missionStorePhysical(round, in: &game)
+  try missionStorePhysical(front, in: &game)
+  let before = game.commander
+  let stored = game.commander.gameShipProfile
+  #expect(stored.fields.first { $0.key == "fitted_missiles" }?.number == 3)
+  #expect(stored.fields.first { $0.key == "fitted_lasers" }?.number == 1)
+  #expect(game.commander == before)
+  #expect(game.commander.equipmentInventory?.items.first { $0.id == round.id }?.location == nil)
+  #expect(game.commander.equipmentInventory?.items.first { $0.id == front.id }?.location == nil)
+  let legacy = Commander()
+  #expect(legacy.gameShipProfile.fields.first { $0.key == "fitted_missiles" }?.number == 3)
+  #expect(legacy.gameShipProfile.fields.first { $0.key == "fitted_lasers" }?.number == 1)
+  #expect(legacy.equipmentInventory == nil)
+}
+
+@Test(arguments: 0..<6)
+func hullExchangeRefusalsAndCancellationPublishNeitherPhysicalChangesNorScriptEvents(reason: Int)
+  throws
+{
+  let fixture = try OwnedEquipmentObserverFixture()
+  defer { fixture.clean() }
+  var game = try missionGearGame(missiles: 4)
+  game.scriptPacks = [fixture.pack]
+  game.commander.credits = 10_000_000
+  let id = try game.acceptScriptMission(fixture.pack)
+  game.screen = .showroom
+  game.showroom.selection = "SH013"
+  game.key("showroom-trade")
+  try #require(game.showroom.trading)
+  switch reason {
+  case 1: game.paused = true
+  case 2: game.commander.credits = 0
+  case 3: game.docked = false
+  case 4:
+    let first = game.commander.scriptState.nextEvent + 1
+    game.commander.scriptState.pendingEvents = (0..<4096).map {
+      ScriptEvent(
+        sequence: first + UInt64($0), kind: "contact.requested", instance: id, values: [:])
+    }
+    game.commander.scriptState.nextEvent = first + 4095
+  case 5: game.commander.scriptState.nextEvent = UInt64(Int64.max) - 1
+  default: break
+  }
+  try #require(game.commander.valid)
+  let before = game.commander
+  let bodies = game.bodies
+  if reason == 0 { game.shipTradeKey("return") } else { game.confirmShipTrade() }
+  #expect(game.commander == before && game.bodies == bodies)
+  #expect(game.commander.scriptState.instances[id]?.data["changes"] == .integer(0))
+  #expect(game.commander.scriptState.instances[id]?.suspension == nil)
+  if reason == 0 { #expect(!game.showroom.trading) }
+  if reason == 4 || reason == 5 {
+    game.screen = .inventory
+    let round = try #require(missionHighestRound(game.commander))
+    #expect(throws: EquipmentRuntimeError.unavailable) {
+      try game.storeEquipment(round, expectedRevision: game.commander.equipmentInventory!.revision)
+    }
+    #expect(game.commander == before && game.bodies == bodies)
+  }
+}
+
+private func ownedObserverSavedFiles(_ root: URL) throws -> [String: Data] {
+  var result: [String: Data] = [:]
+  for name in try FileManager.default.subpathsOfDirectory(atPath: root.path) {
+    let file = root.appendingPathComponent(name)
+    if try file.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
+      result[name] = try Data(contentsOf: file)
+    }
+  }
+  return result
+}
+
+@Test(arguments: [false, true])
+func hullChangeEventAndOwnedFitShareTheirActualActorWriterCommitOrRollback(failing: Bool)
+  async throws
+{
+  let fixture = try OwnedEquipmentObserverFixture()
+  defer { fixture.clean() }
+  var game = try missionGearGame(missiles: 4)
+  game.scriptPacks = [fixture.pack]
+  game.commander.credits = 10_000_000
+  let id = try game.acceptScriptMission(fixture.pack)
+  game.screen = .showroom
+  game.showroom.selection = "SH013"
+  game.key("showroom-trade")
+  game.key("right")
+  try #require(
+    game.showroom.trading && game.showroom.confirmTrade && game.shipTradeQuote?.allowed == true)
+  let parent = fixture.folder.appendingPathComponent("save")
+  let save = parent.appendingPathComponent("commander.json")
+  if failing { try Data("blocked save parent".utf8).write(to: parent) }
+  let runtime = GameRuntime(game: game, saveURL: save)
+  if !failing { try await runtime.save(to: save) }
+  let before = await runtime.snapshot()
+  let files = try ownedObserverSavedFiles(fixture.folder)
+  await runtime.key("return")
+  let after = await runtime.snapshot()
+  if failing {
+    #expect(after.commander == before.commander && after.bodies == before.bodies)
+    #expect(after.showroom.trading == before.showroom.trading && after.screen == before.screen)
+    #expect(try ownedObserverSavedFiles(fixture.folder) == files)
+    #expect(after.message == "MISSION SAVE FAILED - ACTION NOT COMMITTED")
+  } else {
+    #expect(after.commander.shipID == "SH013" && !after.showroom.trading)
+    #expect(after.commander.scriptState.instances[id]?.data["changes"] == .integer(1))
+    #expect(after.commander.scriptState.instances[id]?.data["previous"] == .string("SH023"))
+    #expect(after.commander.scriptState.instances[id]?.data["ship"] == .string("SH013"))
+    #expect(after.commander.scriptState.instances[id]?.data["loaded"] == .integer(4))
+    #expect(after.commander.scriptState.instances[id]?.data["fits"] == .integer(0))
+    let nextEvent = after.commander.scriptState.nextEvent
+    await runtime.key("return")
+    #expect(await runtime.snapshot().commander.scriptState.nextEvent == nextEvent)
+    let restored = GameRuntime(game: game)
+    try await restored.load(from: save)
+    let reloaded = await restored.snapshot()
+    #expect(reloaded.commander.shipID == "SH013")
+    #expect(reloaded.commander.scriptState.instances[id]?.data["changes"] == .integer(1))
+    #expect(reloaded.commander.scriptState.pendingEvents.allSatisfy { $0.kind != "ship.changed" })
+    #expect(reloaded.commander.valid)
+  }
+}
+
+@Test(arguments: [false, true])
+func nativeFittingEventsCommitWithTheirActualActorWriterAndRollbackOnFailure(failing: Bool)
+  async throws
+{
+  let fixture = try OwnedEquipmentObserverFixture()
+  defer { fixture.clean() }
+  var game = try missionGearGame(missiles: 4)
+  game.scriptPacks = [fixture.pack]
+  let id = try game.acceptScriptMission(fixture.pack)
+  let parent = fixture.folder.appendingPathComponent("save")
+  let save = parent.appendingPathComponent("commander.json")
+  if failing { try Data("blocked save parent".utf8).write(to: parent) }
+  let runtime = GameRuntime(game: game, saveURL: save)
+  if !failing { try await runtime.save(to: save) }
+  let before = await runtime.snapshot()
+  let round = try #require(missionHighestRound(before.commander))
+  let store = try #require(before.inventoryActionPreview(for: .equipment(round)).command)
+  let files = try ownedObserverSavedFiles(fixture.folder)
+  let stored = await runtime.inventoryCommand(store)
+  let after = await runtime.snapshot()
+  if failing {
+    #expect(!stored && after.commander == before.commander && after.bodies == before.bodies)
+    #expect(try ownedObserverSavedFiles(fixture.folder) == files)
+  } else {
+    try #require(stored)
+    #expect(after.commander.scriptState.instances[id]?.data["fits"] == .integer(1))
+    #expect(
+      after.commander.scriptState.instances[id]?.data["fit_item"] == .string(round.id.uuidString))
+    #expect(after.commander.scriptState.instances[id]?.data["fitted"] == .bool(false))
+    #expect(after.commander.missiles == 3)
+    let held = try #require(after.commander.equipmentInventory?.items.first { $0.id == round.id })
+    let fit = try #require(after.inventoryActionPreview(for: .equipment(held)).command)
+    let refitted = await runtime.inventoryCommand(fit)
+    try #require(refitted)
+    let final = await runtime.snapshot()
+    #expect(final.commander.missiles == 4)
+    #expect(final.commander.scriptState.instances[id]?.data["fits"] == .integer(2))
+    #expect(final.commander.scriptState.instances[id]?.data["fitted"] == .bool(true))
+    #expect(final.commander.scriptState.instances[id]?.data["changes"] == .integer(0))
+    let restored = GameRuntime(game: game)
+    try await restored.load(from: save)
+    #expect(await restored.snapshot().commander == final.commander)
+  }
 }

@@ -83,23 +83,41 @@ extension Game {
   }
   mutating func confirmShipTrade() {
     guard !paused, showroom.trading, let quote = shipTradeQuote, quote.allowed else { return }
+    guard ownedEquipmentEventCapacityAvailable else {
+      notify("HULL EXCHANGE REFUSED - MISSION EVENT CAPACITY")
+      return
+    }
+    let previous = commander.shipID
     // Re-evaluate the quote at confirmation; no state changes happen on opening or Back.
-    var candidate = self
     do {
-      try candidate.commander.prepareEquipment()
-      try candidate.commander.transferEquipment(to: quote.selected.id, hullID: UUID())
+      try commitShipTradeCandidate(quote)
     } catch {
       notify("HULL EXCHANGE REFUSED - FITTINGS OR RESOURCES INCOMPATIBLE")
       return
     }
-    candidate.commander.credits = quote.balance
-    candidate.preserveEquipmentResourceFractions(from: self)
-    self = candidate
     showroom.baseline = commander.shipID
     showroom.baselineUsesCurrent = true
     showroom.trading = false
     showroom.scroll = 0
     notify("NOW FLYING " + commander.ship.name.uppercased())
+    emitScriptEvent(
+      "ship.changed", values: ["previous": .string(previous), "ship": .string(commander.shipID)])
+  }
+  /// Finish the copied fitting transaction before entering mission event dispatch.
+  private mutating func commitShipTradeCandidate(_ quote: ShipTradeQuote) throws {
+    var candidate = self
+    try candidate.commander.prepareEquipment()
+    try candidate.commander.transferEquipment(to: quote.selected.id, hullID: UUID())
+    candidate.commander.credits = quote.balance
+    candidate.preserveEquipmentResourceFractions(from: self)
+    self = candidate
+  }
+  /// Hull and fitting changes reserve their observation before publishing physical custody.
+  var ownedEquipmentEventCapacityAvailable: Bool {
+    let recipients = commander.scriptState.instances.values.filter { $0.outcome == .active }.count
+    return recipients <= 4096
+      && commander.scriptState.pendingEvents.count <= 4096 - recipients
+      && commander.scriptState.nextEvent <= UInt64(Int64.max) - 1 - UInt64(recipients)
   }
   mutating func shipTradeKey(_ key: String) {
     switch key {
