@@ -363,6 +363,8 @@ func pledgeRejectedAcceptedHandlersNeverPublishAnUnpaidAssignment(mode: String) 
   let fixture = try PledgeFixture()
   defer { fixture.clean() }
   var game = fixture.game(cash: 10_000_000, food: 220)
+  game.commander.shipID = "SH005"
+  try #require(game.commander.standardCargoCapacity >= game.commander.cargoTonnes)
   game.commander.unlimitedCargo = true  // Finite actual stock is still consumed.
   for index in 0..<128 {
     if index > 0, index % 6 == 0 {
@@ -375,7 +377,11 @@ func pledgeRejectedAcceptedHandlersNeverPublishAnUnpaidAssignment(mode: String) 
     let key = try game.ensureContractBoard(fixture.pack)
     let offer = try #require(
       game.commander.contracts.boards[key]?.offers.first { $0.status == .available })
-    _ = try game.confirmContract(game.contractAcceptanceQuote(board: key, offer: offer.id))
+    let quote = game.contractAcceptanceQuote(board: key, offer: offer.id)
+    try #require(
+      quote.allowed,
+      Comment(rawValue: "Donation \(index + 1): " + quote.issues.joined(separator: "; ")))
+    _ = try game.confirmContract(quote)
   }
   let before = game.commander
   #expect(
@@ -497,11 +503,16 @@ func pledgeMalformedReceiptsRefuseBeforeArithmeticOrStandingUse(field: String) t
     trial.commander.scriptState.instances.isEmpty && trial.commander.scriptState.pledgeLedger == nil
   )
   #expect(trial.isMissionTrial)
-  await runtime.key("screen:1")
+  await runtime.key("screen:7")
   let market = await runtime.snapshot()
+  try #require(market.screen == .buy && market.selection == Game.pledgeFood)
   let price = market.market[Game.pledgeFood].price
   #expect(market.market[Game.pledgeFood].quantity >= 5)
-  for _ in 0..<5 { await runtime.key("return") }
+  let marketLayout = MarketLayout(
+    game: market, width: market.viewportWidth, height: market.viewportHeight)
+  for _ in 0..<5 {
+    await runtime.marketClick(x: marketLayout.trade.x + 1, y: marketLayout.trade.y + 1)
+  }
   let bought = await runtime.snapshot()
   #expect(bought.commander.cargo[Game.pledgeFood] == 5)
   #expect(bought.commander.credits == market.commander.credits - 5 * price)

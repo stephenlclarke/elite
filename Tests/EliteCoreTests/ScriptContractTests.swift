@@ -300,6 +300,10 @@ private struct ContractFixture {
   #expect(refitted.shipID == "SH023" && refitted.cargo[0] == 80 && refitted.credits == cash)
   #expect(refitted.unlimitedCargo && refitted.valid)
   #expect(refitted.equipmentInventory?.items.first { $0.id == original.id }?.location == nil)
+  #expect(!FileManager.default.fileExists(atPath: fixture.save.path))
+  try await runtime.save(to: fixture.save)
+  let explicitlySaved = await runtime.snapshot().commander
+  #expect(explicitlySaved == refitted)
   let decoded = GameRuntime(game: fixture.game())
   try await decoded.load(from: fixture.save)
   #expect(await decoded.snapshot().commander == refitted)
@@ -308,8 +312,9 @@ private struct ContractFixture {
   let offer = try #require(await runtime.snapshot().commander.contracts.boards[key]?.offers.first)
   #expect(!(await runtime.contractAcceptanceQuote(board: key, offer: offer.id)).allowed)
   #expect(await runtime.snapshot().commander.scriptState.instances.isEmpty)
-  await runtime.key("3")
+  await runtime.key("screen:9")
   let snapshot = await runtime.snapshot()
+  try #require(snapshot.screen == .inventory)
   let item = try #require(
     snapshot.commander.equipmentInventory?.items.first {
       $0.node.key == "E.C.M. System" && $0.location != nil
@@ -414,8 +419,9 @@ private struct ContractFixture {
   let fixture = try ContractFixture()
   defer { fixture.clean() }
   var game = fixture.game()
-  game.commander.shipID = "SH128"
+  game.commander.shipID = "SH168"
   game.commander.missiles = 1
+  try #require(game.commander.nativePerformance.cargo == 0)
   game.commander.unlimitedCargo = true
   game.scriptDurabilityAvailable = true
   let key = try game.ensureContractBoard(fixture.pack)
