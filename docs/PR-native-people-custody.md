@@ -17,3 +17,5 @@ G1 must compose actual electrical recovery and validated traffic return for curr
 ## Integration boundary
 
 The new branch is `feature/native-people-custody`. Its unowned dependency base is `6ab3e18c6b787e924d65661dfea6f98ac2a8b84d`, the already accepted FR-008 dependency. Import only this worker's subsequent owned commit range. Preserve the [problem statement](ISSUE-native-people-custody.md), [source contract](NATIVE-PEOPLE-CUSTODY.md), Root-owned release/request documents and G1-owned validation lease.
+
+Composed compile check 249 exposed seven mutating Game calls inside Testing macros before test execution. Each actual call is now evaluated once into a local, retaining its original required/negative assertion. This is a fixture compilation correction, not runtime acceptance or a change to custody rules.

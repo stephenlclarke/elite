@@ -51,7 +51,8 @@ extension GameRuntime {
     NativeStationTestFixture.reframe(&game, to: pose)
     game.speed = 0
     game.screen = .front
-    try #require(game.fireEMPPirateBlaster())
+    let fireEMPPirateBlasterResult1 = game.fireEMPPirateBlaster()
+    try #require(fireEMPPirateBlasterResult1)
     try NativePeopleTestFixture.aimCutter(&game)
   }
 }

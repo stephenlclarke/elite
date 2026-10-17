@@ -20,7 +20,8 @@ enum NativePeopleTestFixture {
     game.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
     game.bodies[0].rotationRate = 0
     game.seedScriptTrial(seed)
-    try #require(game.fireEMPPirateBlaster())
+    let fireEMPPirateBlasterResult1 = game.fireEMPPirateBlaster()
+    try #require(fireEMPPirateBlasterResult1)
     return game
   }
   static func source(_ game: Game) throws -> ActorIdentity {
@@ -55,7 +56,8 @@ enum NativePeopleTestFixture {
     game.selectedFlightTool = .salvageCutter
     game.speed = 0
     game.screen = .front
-    try #require(game.persistEMPState())
+    let persistEMPStateResult1 = game.persistEMPState()
+    try #require(persistEMPStateResult1)
     let hit = try #require(
       GameplayRaycast.nearest(
         origin: .init(0, 0, 0), direction: .init(0, 0, 1),
@@ -79,7 +81,8 @@ enum NativePeopleTestFixture {
     game.bodies[index].rotationRate = 0
     game.speed = 0
     game.workTargetFilter = .salvage
-    try #require(game.persistEMPState())
+    let persistEMPStateResult2 = game.persistEMPState()
+    try #require(persistEMPStateResult2)
     return game
   }
   static func capture(_ runtime: GameRuntime) async -> Game {
@@ -193,7 +196,8 @@ struct NativePeopleCensusTests {
     let aboard = original.aboardOrdinals
     let index = try #require(game.bodies.firstIndex { $0.physical?.empSource == source })
     game.bodies[index].energy = 0
-    try #require(game.registerEMPHullDeaths())
+    let registerEMPHullDeathsResult1 = game.registerEMPHullDeaths()
+    try #require(registerEMPHullDeathsResult1)
     let terminal = try #require(game.commander.savedEMPState?.records[source])
     #expect(terminal.deceasedOrdinals == aboard && terminal.lostCrewCount == aboard.count)
     #expect(!terminal.deceasedOrdinals.contains(0) && !terminal.deceasedOrdinals.contains(7))
@@ -209,7 +213,8 @@ struct NativePeopleCensusTests {
     let original = try #require(game.commander.savedEMPState?.records[source])
     #expect(original.crewDeadline == original.disableIncident.physicalTime + 30)
     let counts = original.crewTotal
-    #expect(!game.fireEMPPirateBlaster())
+    let fireEMPPirateBlasterResult2 = game.fireEMPPirateBlaster()
+    #expect(!fireEMPPirateBlasterResult2)
     #expect(game.commander.savedEMPState?.records[source]?.crewDeadline == original.crewDeadline)
     for _ in 0..<301 { game.tick(delta: 0.1) }
     let after = try #require(game.commander.savedEMPState?.records[source])

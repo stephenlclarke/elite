@@ -139,7 +139,8 @@ struct NativePeoplePersistenceTests {
     let source = try NativePeopleTestFixture.source(game)
     let original = try #require(game.commander.savedEMPState?.records[source]?.hull.binding)
     game.bodies.removeAll { $0.physical?.identity == original }
-    try #require(game.persistEMPState())
+    let persistEMPStateResult1 = game.persistEMPState()
+    try #require(persistEMPStateResult1)
     game.advanceEMPActors()
     let rejoined = try #require(
       game.bodies.first { $0.physical?.empSource == source }?.physical?.identity)
