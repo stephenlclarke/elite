@@ -38,15 +38,21 @@ head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().
 write(evidence / 'source-before.json', {'head': head, 'tracked': before})
 
 
-def snapshot():
+def parse_process_snapshot(raw):
     rows = {}
-    raw = subprocess.check_output(['ps', '-axo', 'pid=,ppid=,pgid=,lstart=,command=']).decode()
     for row in raw.splitlines():
-        fields = row.split(None, 8)
-        if len(fields) == 9:
+        fields = row.split(None, 9)
+        if len(fields) == 10:
             rows[int(fields[0])] = {'parent': int(fields[1]), 'group': int(fields[2]),
-                                   'start': ' '.join(fields[3:8]), 'command': fields[8]}
+                                   'state': fields[3], 'start': ' '.join(fields[4:9]),
+                                   'command': fields[9]}
     return rows
+
+
+def snapshot():
+    raw = subprocess.check_output(
+        ['ps', '-axo', 'pid=,ppid=,pgid=,stat=,lstart=,command=']).decode()
+    return parse_process_snapshot(raw)
 
 
 def crash_launch_time(value):
@@ -112,6 +118,23 @@ def terminate(pid):
             time.sleep(0.1)
 
 
+def observe_natural_exit(pid, budget=2.0, interval=0.1):
+    """Observe owned identities only. Every persistent state, including Z, remains a failure."""
+    started = time.monotonic()
+    timeline = []
+    while True:
+        remaining = follow(pid)
+        elapsed = time.monotonic() - started
+        timeline.append({'elapsedSeconds': elapsed, 'ownedProcesses': remaining})
+        if not remaining or elapsed >= budget:
+            return {'budgetSeconds': budget, 'intervalSeconds': interval,
+                    'durationSeconds': elapsed, 'timeline': timeline,
+                    'endReason': 'empty' if not remaining else 'deadline',
+                    'remainingAfterNaturalExit': remaining,
+                    'signalCleanupRequired': bool(remaining)}
+        time.sleep(min(interval, budget - elapsed))
+
+
 def run(name, command):
     stop.clear()
     started = time.monotonic()
@@ -153,7 +176,12 @@ def run(name, command):
         finally:
             stop.set()
             watcher.join(timeout=5)
-        remaining = follow(process.pid)
+        if interrupted:
+            natural_exit = {'skipped': 'interrupted', 'timeline': []}
+            remaining = follow(process.pid)
+        else:
+            natural_exit = observe_natural_exit(process.pid)
+            remaining = natural_exit['remainingAfterNaturalExit']
         if remaining:
             terminate(process.pid)
             code = code or 125
@@ -162,6 +190,7 @@ def run(name, command):
     record = {'command': command, 'parentPID': process.pid, 'makeExitCode': process.returncode,
               'exitCode': code, 'interrupted': interrupted,
               'durationSeconds': time.monotonic() - started, 'rawSHA256': sha(log),
+              'naturalExitObservation': natural_exit,
               'remainingBeforeCleanup': remaining, 'remainingAfterCleanup': remaining_after_cleanup,
               'monitorErrors': list(monitor_errors),
               'observerAlive': watcher.is_alive(), 'readerAlive': reader.is_alive()}
