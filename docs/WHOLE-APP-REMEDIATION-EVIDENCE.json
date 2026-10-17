@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "asOfDate": "2026-10-17",
   "timezone": "Europe/London",
-  "composedSource": "a1b5b7eb95a180d01ddc94f8a142abf0b8734873",
+  "composedSource": "fcee2a0e03b8db99d63ae7f620451c3872cb8ed1",
   "sourceReconciliationDraft": {
     "path": "/tmp/elite-g3-whole-app-remediation-ledger-20261017.md",
     "sha256": "12657e569b939e40cfbf94204d7b11c02de6cf4ace360c18375fce57ce9171a1",
@@ -730,7 +730,7 @@
     },
     "newerBaselineMergeRequirement": "Preserve the 8bdf42edd6f7d89701eb073c984cb5831b8af40c positive-NPC-count guard around the existing docking binding reset before RRS departure when importing onto the evolving baseline.",
     "currentSourceComposition": "ddcdb969a9dbf945309582cf7cee0ddf3f4ea087",
-    "currentQualification": "Native RRS, P30 scenario 2 and Gallery are now composed in the isolated release source. No compilation/runtime proof yet. Raw legacy authority finding must be repaired. Other P30 families remain queued."
+    "currentQualification": "Native RRS, P30 scenario2, Gallery and raw legacy save guard are composed. Independent source reviews found no remaining actionable finding in the bounded save guard; compilation/runtime acceptance pending. Other P30 families remain queued."
   },
   "qualifiedNativeFocused097": {
     "path": "/tmp/elite-cabin-native-restoration-097/root-qualified-097.json",
@@ -1026,7 +1026,7 @@
     "focusedFixture113Passed": false,
     "currentCompleteCI": false,
     "finalRendererMediaCurrent": false,
-    "qualification": "Focused149/150/156/167/171 establish only their exact recorded selections and sources. Full152 failed assertions; full158 and169 passed coverage but failed TSan with signal4. Four original opt-in GPU skips remain qualified. Baseline172 is ongoing and excludes the new RRS/P30/textures composition; no current full CI, ASan/leak, current media, Sonar, clean GitHub review or release acceptance.",
+    "qualification": "Focused149/150/156/167/171 establish only exact recorded selections. Full152 failed assertions; full158/169/172 passed coverage but failed TSan signal4. Four original opt-in GPU skips remain explicit. Baseline172 excludes the newly composed RRS/P30/textures/save guard. No current fullCI,ASan/leak,currentmedia,Sonar,cleanGitHubreview orreleaseacceptance.",
     "focusedFixture114Passed": false,
     "focusedRendererAndWeapon115Passed": true,
     "npcRestoreSourceIntegrated": "05d165a694d943589677598e58aaf585fb47d7a3",
@@ -1573,9 +1573,9 @@
       "newRegressionMethods": 4,
       "nativeArtifactVerified": false
     },
-    "rawLegacyAuthorityFinding": "Independent source review found raw Commander input could rebind unproven native station authority. Bounded fail-closed repair pending; no release acceptance.",
+    "rawLegacyAuthorityFinding": "Fail-closed raw-only guard composed at fcee2a0e03b8db99d63ae7f620451c3872cb8ed1 from reviewed a86015a62d437864cfad305729075e9e509c6804. Four new methods/seven cases authored; uncompiled/unexecuted. Ordinary absent/null legacy compatibility and versioned loader preserved.",
     "criticalBaselineBlobs": "ScriptDirector, ScriptContractCore, LegacyMissionEncounterProvenance, ScriptNativeBridge, AudioPresenter and PlughTests unchanged from baseline during source composition.",
-    "currentNativeValidation": "Checkpoint 172 on separate e9 baseline is ongoing, not acceptance of this composition.",
+    "currentNativeValidation": "Baseline172 on e9 failed TSan signal4 after coverage passed; no current release-composition compile or runtime acceptance.",
     "packagingExistingBundleProof": {
       "path": "/tmp/elite-resource-layout-release-repair-20261017.json",
       "sha256": "632dd75e305c783ebacef8a70e8bbd2a77ebf6d1bb9d66b8b7047dbadfa92600",
@@ -1585,5 +1585,49 @@
       "qualification": "Actual existing built ScriptPacks layout; new texture layout and final release bundle still pending"
     },
     "packagingIndependentSourceReview": "Root: clean, no actionable finding; matches Package.swift copy declarations; final artifact remains pending"
+  },
+  "fullGate172": {
+    "path": "/tmp/elite-full-review-ci-172/root-qualified-172.json",
+    "sha256": "f90b32ba2d3b9edf9a57ee620be1078f2a4b34ed4633b5088f5587ed252dc94b",
+    "source": "e9ee7ef43a5d93776acb698dc9f63a0dd393d643",
+    "status": "FAILED maintained full CI attempt",
+    "actualCommand": [
+      "make",
+      "ci"
+    ],
+    "actualMakeExit": 2,
+    "supervisorExit": 1,
+    "discoveredUniqueMethods": 1578,
+    "strictUnambiguousStartedHeaders": 1838,
+    "strictCompletedPassHeaders": 1574,
+    "assertionHeaders": [],
+    "signalCodes": [
+      "4"
+    ],
+    "summaries": [
+      [
+        "1578",
+        "117",
+        "passed"
+      ]
+    ],
+    "originalGPUSkipHeaders": [
+      "invalidBoundsAndAnglesReturnCPUFallback()",
+      "allPalettesMatchStableCPUReferenceIncludingWrappedLongitudeAndAlpha()",
+      "productionRendererUsesPreparedGPUWithIndependentReferenceAndCache()",
+      "identityChangesAndOutputReuseCannotMutatePreviouslyPublishedImages()"
+    ],
+    "rawLogSHA256": "d4c2fb1ff41898edbe3e54ccaeac6311f0fd2694157cb9d4ff519e548b307fdd",
+    "resultSHA256": "ceb1ad5fdfddad6e1606c9b107ff3cfda1fbee6b4bcf95ec9f1031b3f0b7789c",
+    "supervisionSHA256": "a5ec1e041535cd617f159285abf66c9814142cf335c5a9217c35f98adfe306c2",
+    "catalogueSHA256": "13bcd9548e09eb44e7035d0878dcbd0c70bfcf6d99018d0e09ea24a1c6282aaf",
+    "matchedCrashes": [],
+    "trackedInputsVerified": 1322,
+    "protectedInputsUnchanged": true,
+    "allOwnedStartSignaturesGone": true,
+    "nativeArchiveFiles": 204,
+    "qualification": "Complete fresh catalogue and maintained make ci attempt; full CI acceptance only on complete successful coverage, thread sanitizer, serial address sanitizer and leak stages. Failed or interrupted evidence is not all-tests acceptance; no Sonar, release or hosted-crash equivalence claim.",
+    "coverageQualification": "Coverage summary 1578 methods/117 suites includes four original opt-in GPU skips; coverage95.79%,260.431seconds. TSan failed signal4; ASan/leaks not reached. Counts across lanes overlap.",
+    "releaseCompositionValidated": false
   }
 }

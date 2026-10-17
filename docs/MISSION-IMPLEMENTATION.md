@@ -8,7 +8,7 @@ As of 17 October 2026, the new engine foundations are implemented: Lua packs, sa
 
 Three campaigns are bundled: Constrictor Hunt, Thargoid Plans and Blackjack's Bullion. The development app also discovers generated courier jobs at startup. The other Lua examples under `docs/mission-packs/` are optional content, not automatically installed campaigns. Research readiness or a completed source branch does not make a mission available in the game.
 
-Native RRS station/board integration, its read-only Gallery projection and P30 courier scenario 2 are now composed in the isolated release source `ddcdb969a9dbf945309582cf7cee0ddf3f4ea087`. Compilation and runtime validation remain pending. Independent source review identified a raw legacy save authority path that must fail closed before release. Scenario 2a and the wider Rescue Stations families remain queued. No RRS mission is claimed playable by this status update. Other queued packets below are still outstanding. Historical test counts in delivery rows describe their original delivery, not current whole-app acceptance.
+Native RRS station/board integration, its read-only Gallery projection and P30 courier scenario 2 are now composed in the isolated release source `ddcdb969a9dbf945309582cf7cee0ddf3f4ea087`. Compilation and runtime validation remain pending. The independently reviewed raw legacy save guard is source-composed at `fcee2a0e03b8db99d63ae7f620451c3872cb8ed1`; its seven authored cases still require execution before release. Scenario 2a and the wider Rescue Stations families remain queued. No RRS mission is claimed playable by this status update. Other queued packets below are still outstanding. Historical test counts in delivery rows describe their original delivery, not current whole-app acceptance.
 
 | Packet | Receipt | Implementation |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ Native RRS station/board integration, its read-only Gallery projection and P30 c
 | P28 Oo-Haul 2.0 | Received 13 October 2026; generated escort contracts and explicit edition repairs | Queued; not yet playable |
 | P44 Trident Down | Received 13 October 2026; four-way bounded profile | Queued; not yet playable |
 | P46 Vector services | Received 13 October 2026; Benus/PAD, Arn, Richmans World, flight inspection, Areidis terminals and specialist crystal trade | Queued; not yet playable |
-| RRS Contract Board | Received 13 October 2026; explicit waystation/HQ capability adapter; fifteen research-ready profiles, only implemented/enabled safe profiles may be offered | Station/board adapter and Gallery source composed in isolated release source; raw save authority repair, compilation and runtime validation pending; no board or mission claimed playable |
+| RRS Contract Board | Received 13 October 2026; explicit waystation/HQ capability adapter; fifteen research-ready profiles, only implemented/enabled safe profiles may be offered | Station/board adapter and Gallery source composed in isolated release source; raw save authority guard composed; compilation and runtime validation pending; no board or mission claimed playable |
 | P30 Rescue Stations blackbox 3/3a | Received 13 October 2026; two isolated recovery profiles | Queued; not yet playable |
 | P30 Rescue Stations personnel 4 | Received 13 October 2026; pilot pickup/return, fitted berth and saved deadline profile | Queued; not yet playable |
 | P30 Rescue Stations captured pilot 4a | Received 13 October 2026; slaver-base rescue, unique captives, medical receipts and reserved fitted berth profile | Queued; not yet playable |
@@ -31,7 +31,7 @@ Native RRS station/board integration, its read-only Gallery projection and P30 c
 | P30 Rescue Stations materials transfer 6 | Received 13 October 2026; sealed 1t cargo, actual waystation receipt and accepted deadline profile | Queued; not yet playable |
 | P30 Rescue Stations medical supplies 6a | Received 14 October 2026; orbital pickup/hospital delivery, fixed physical consignment and saved fleet/timer receipts | Queued; not yet playable |
 | P30 Solar Lab 2b | Received 13 October 2026; bounded lease, thermal/recovery and refund profile | Queued; not yet playable |
-| P30 Rescue Stations couriers 2/2a | Received 13 October 2026; two isolated document delivery profiles | Scenario 2 source composed with native RRS and Gallery; raw save authority repair, compilation and runtime validation pending. Scenario 2a queued. Neither claimed playable |
+| P30 Rescue Stations couriers 2/2a | Received 13 October 2026; two isolated document delivery profiles | Scenario 2 source composed with native RRS and Gallery; raw save authority guard composed; compilation and runtime validation pending. Scenario 2a queued. Neither claimed playable |
 | P30 Rescue Stations escort 1/1a/1b | Received 13 October 2026; three isolated bounded repair/escort profiles | Queued; not yet playable; remaining P30 families are research-open |
 
 The complete research collection and remaining mission backlog are not declared finished. A source fixture count is not a native runtime test count or proof of original-engine parity.
