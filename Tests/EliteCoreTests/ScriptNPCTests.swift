@@ -604,7 +604,8 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let playerMesh = game.commander.playerMesh
   let mesh = try #require(game.scriptNPCMesh(body))
   let raw = try #require(ShipCatalogue.ship("SH128")?.design.rawMesh)
-  #expect(mesh.vertices == raw.vertices.map { $0 * 1.6 })
+  #expect(mesh.vertices.count > raw.vertices.count)
+  #expect(Array(mesh.vertices.prefix(raw.vertices.count)) == raw.vertices.map { $0 * 1.6 })
   #expect(body.scriptNPC?.fit.models["catalogue:SH128"] != nil)
   #expect(game.commander.shipID == "SH023")
   #expect(ShipCatalogue.ship("SH128")?.game?.cargo == 12)
