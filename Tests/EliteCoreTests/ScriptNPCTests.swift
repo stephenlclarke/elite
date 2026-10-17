@@ -641,7 +641,11 @@ private func verifyProfileSceneSaveRejections(_ game: inout Game, id: UUID) thro
   #expect(Array(mesh.vertices.prefix(raw.vertices.count)) == raw.vertices.map { $0 * 1.6 })
   #expect(body.scriptNPC?.fit.models["catalogue:SH128"] != nil)
   #expect(game.commander.shipID == "SH023")
-  #expect(ShipCatalogue.ship("SH128")?.game?.cargo == 12)
+  let transporter = try #require(ShipCatalogue.ship("SH128"))
+  #expect(transporter.game?.cargo == 150)
+  let historicalNPC = try #require(
+    transporter.profiles.first { $0.id == "O08-oolite_template_transporter" })
+  #expect(historicalNPC.fields.first { $0.key == "max_cargo" }?.number == 12)
   #expect(game.commander == before)
   #expect(game.commander.playerMesh.vertices == playerMesh.vertices)
   #expect(game.commander.playerMesh.faces == playerMesh.faces)

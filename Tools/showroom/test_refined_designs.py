@@ -54,11 +54,31 @@ class RefinedDesignTests(unittest.TestCase):
             Path("Tests/Fixtures/ship-visual-revision-baseline.json").read_text()
         )["ships"]
         ships = {s["id"]: s for s in files.read_ships()}
+        deltas = json.loads(Path("Tests/Fixtures/ship-catalogue-balance-baseline-deltas.json").read_text())["ships"]
+        balance = {row["id"]: row for row in json.loads(Path("docs/research/data/ship-catalogue-balance.json").read_text())["ships"]}
         self.assertTrue(set(baseline).issubset(ships))
         source_count = 0
         for ident, record in baseline.items():
             ship = ships[ident]
             preserved = copy.deepcopy({k: v for k, v in ship.items() if k != "design"})
+            self.assertEqual(preserved.pop("catalogue"), balance[ident]["catalogue"], ident)
+            # Reverse only the reviewed project balance delta, keeping the original
+            # whole-record and imported geometry pins below fully authoritative.
+            delta = deltas.get(ident, {})
+            if "name" in delta:
+                self.assertEqual(preserved["name"], delta["name"]["after"], ident)
+                preserved["name"] = delta["name"]["before"]
+            if "cargo" in delta:
+                self.assertEqual(preserved["game"]["cargo"], delta["cargo"]["after"], ident)
+                preserved["game"]["cargo"] = delta["cargo"]["before"]
+            for change in delta.get("fields", []):
+                profile = next(p for p in preserved["profiles"] if p["id"] == change["profile"])
+                index = next(i for i, f in enumerate(profile["fields"]) if f["key"] == change["key"])
+                self.assertEqual(digest(profile["fields"][index]), change["afterSHA256"], ident)
+                if change["before"] is None:
+                    profile["fields"].pop(index)
+                else:
+                    profile["fields"][index] = copy.deepcopy(change["before"])
             if ident == "SH023":
                 # Independent utility fittings were added after this visual baseline.
                 # Check that addition exactly while keeping every original field pinned.
