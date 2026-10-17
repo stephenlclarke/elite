@@ -37,6 +37,7 @@ private func cutterRuntimeGame() throws -> (Game, WreckSectionIdentity) {
           section: nil, lot: nil, bounds: profile.bounds,
           workSurfaces: profile.surfaces(wreck: wreck)))
       game.bodies = [body]
+      game.nextBodyID = max(game.nextBodyID, body.id + 1)
       guard
         let hit = GameplayRaycast.nearest(
           origin: .init(0, 0, 0), direction: .init(0, 0, 1), maxDistance: 300,
@@ -123,10 +124,14 @@ struct SalvageCutterRuntimeTests {
     game.bodies[0].position.x += 37
     let expected = game.modelPose(of: game.bodies[0])
     let runtime = GameRuntime(game: game)
-    let save = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-    defer { try? FileManager.default.removeItem(at: save) }
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let save = directory.appendingPathComponent("commander.json")
+    defer { try? FileManager.default.removeItem(at: directory) }
     try await runtime.save(to: save)
-    let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: save))
+    let bytes = try Data(contentsOf: save)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == 21)
+    let (saved, _) = try ScriptSaveStore.read(bytes, from: save)
     #expect(saved.salvageLedger.progress(section) == 0.1)
     #expect(saved.salvageLedger.wreckMotion(for: section.wreck)?.pose == expected)
     #expect(saved.equipmentInventory == game.commander.equipmentInventory)
