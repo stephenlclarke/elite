@@ -154,6 +154,13 @@ extension Game {
     -> NativeMissionImpactReceipt
   {
     try validateMissionNativeImpactProof(proof)
+    return try applyValidatedMissionProjectileImpact(proof)
+  }
+
+  /// Enter staging only after the full current-scene proof validation has returned.
+  private mutating func applyValidatedMissionProjectileImpact(_ proof: MissionNativeImpactProof)
+    throws -> NativeMissionImpactReceipt
+  {
     guard let context = gameplayContext(),
       let shotIndex = bodies.firstIndex(where: { $0 == proof.projectileBody }),
       let instance = commander.scriptState.instances[proof.sourceInstanceID],
