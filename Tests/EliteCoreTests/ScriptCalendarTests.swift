@@ -162,9 +162,9 @@ func
     game.launch()
     clearTravelArea(&game)
     if cancel == 3 {
-      try game.commander.grantEquipment(
-        NavigationTier.basic.equipmentName, at: .navigation,
-        provenance: .grant("calendar route fixture"))
+      try game.commander.prepareEquipment(legacy: false)
+      try #require(game.commander.navigationTier == .basic)
+      try #require(game.commander.fittedComponent(at: .navigation) != nil)
     }
     let destination = try #require(
       game.knownSystems.first {
