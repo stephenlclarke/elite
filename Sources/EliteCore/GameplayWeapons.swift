@@ -173,6 +173,7 @@ extension Game {
     for body in bodies {
       if body.physical?.catalogueShipID != nil || body.physical?.rock != nil
         || body.physical?.salvage?.lot != nil || body.nativeStationIdentity != nil
+        || body.physical?.ordnance?.profile == .alienSeeker
       {
         result[body.id] = gameplayMesh(for: body)
       }
@@ -181,6 +182,7 @@ extension Game {
   }
 
   func gameplayMesh(for body: SpaceBody) -> Mesh {
+    if body.physical?.ordnance?.profile == .alienSeeker { return AlienMissileMesh.mesh }
     if let identity = body.nativeStationIdentity {
       guard nativeStationBodyIsCurrent(body),
         let source = NativeStationSource.binding(for: identity)
