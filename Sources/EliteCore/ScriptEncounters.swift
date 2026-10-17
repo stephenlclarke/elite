@@ -46,6 +46,7 @@ public struct ScriptOwnedEncounter: Codable, Sendable, Equatable {
   public let system: Int
   public var admitted = false
   public var actors: [String: ScriptOwnedActor]
+  var legacyProvenance: LegacyMissionEncounterProvenance? = nil
   public var destroyed: Bool {
     admitted && !actors.isEmpty && actors.values.allSatisfy { $0.presence == .destroyed }
   }
@@ -232,7 +233,10 @@ extension MissionActorAdmissionSource {
       actor.presence = .present
       updated.actors[template.alias] = actor
     }
-    if mode == .prepared { updated.admitted = true }
+    if mode == .prepared {
+      updated.admitted = true
+      updated.legacyProvenance = updated.legacyProvenance?.afterAdmission()
+    }
     guard updated.valid else { throw MissionPackError("Native actor retention patch is invalid.") }
     return .init(source: self, updated: updated)
   }
@@ -390,44 +394,67 @@ extension Game {
     definition: ScriptEncounterDefinition
   ) throws -> MissionActorAdmissionSource {
     let currentScriptState = commander.scriptState
+    let legacy = encounter.legacyProvenance
+    if let legacy {
+      guard legacy.matches(owner: state, encounter: encounter),
+        currentScriptState.instances[state.id]?.ownedEncounters[encounter.id] == encounter
+      else {
+        throw MissionPackError("Historical actor provenance differs from its installed owner.")
+      }
+    }
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       guard let actor = encounter.actors[spec.id], actor.alias == spec.id,
-        actor.identity
-          == ScriptIdentity.uuid(
-            "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
+        legacy?.actors[spec.id]?.identity == actor.identity
+          || actor.identity
+            == ScriptIdentity.uuid(
+              "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
         actor.body.missionInstanceID == state.id, actor.body.scriptShot == nil
       else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
-        installedModels: pack.models, geometry: currentScriptState.geometry)
+        installedModels: pack.models, geometry: currentScriptState.geometry,
+        legacy: legacy?.actors[spec.id])
       if mode == .prepared {
         guard actor.body.id == -1, actor.body.physical == nil,
           actor.body.position == .init(spec.x, spec.y, spec.z),
-          actor.body.orientation == Basis3(), actor.body.energy == template.maximumHullEnergy,
-          actor.body.hostile == spec.hostile,
-          template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
+          actor.body.orientation == Basis3(), actor.body.hostile == spec.hostile
         else {
           throw MissionPackError(
             "A prepared actor must retain its actual authored initial condition.")
         }
-        if let npc = actor.body.scriptNPC {
-          guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
-            npc.velocity == .init(0, 0, 0),
-            actor.body.missiles == npc.fit.definition.missiles,
-            actor.body.ecmEnabled == npc.fit.definition.ecm,
-            npc.guns.values.allSatisfy({ $0 == ScriptNPCGunState() }),
-            npc.components.values.allSatisfy({
-              $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
-            })
-          else {
-            throw MissionPackError("Prepared NPC resources cannot substitute spent retained state.")
+        if legacy != nil {
+          guard legacy?.actors[spec.id]?.prepared == actor else {
+            throw MissionPackError(
+              "Prepared historical condition differs from its imported snapshot.")
           }
         } else {
-          guard actor.body.missiles == actor.body.hull.navalMissiles,
-            actor.body.ecmEnabled == actor.body.hull.hasECM
+          guard actor.body.energy == template.maximumHullEnergy,
+            template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
           else {
-            throw MissionPackError("Prepared classic stock differs from its actual hull defaults.")
+            throw MissionPackError(
+              "A prepared actor must retain its actual authored initial condition.")
+          }
+          if let npc = actor.body.scriptNPC {
+            guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
+              npc.velocity == .init(0, 0, 0),
+              actor.body.missiles == npc.fit.definition.missiles,
+              actor.body.ecmEnabled == npc.fit.definition.ecm,
+              npc.guns.values.allSatisfy({ $0 == ScriptNPCGunState() }),
+              npc.components.values.allSatisfy({
+                $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
+              })
+            else {
+              throw MissionPackError(
+                "Prepared NPC resources cannot substitute spent retained state.")
+            }
+          } else {
+            guard actor.body.missiles == actor.body.hull.navalMissiles,
+              actor.body.ecmEnabled == actor.body.hull.hasECM
+            else {
+              throw MissionPackError(
+                "Prepared classic stock differs from its actual hull defaults.")
+            }
           }
         }
       }
@@ -456,7 +483,7 @@ extension Game {
   private static func missionActorAdmissionTemplate(
     _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
     npcDefinitions: [ScriptNPCDefinition], installedModels: [String: ShipDesign],
-    geometry: [String: ShipDesign]
+    geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?
   ) throws -> MissionActorAdmissionTemplate {
     var parts: [MissionActorAdmissionPart] = []
     let maximumEnergy: Double
@@ -475,7 +502,9 @@ extension Game {
             geometry: geometry, scale: definition.scale, offset: .init(0, 0, 0), pose: Basis3())))
       for spec in definition.components ?? [] {
         guard let state = npc.components[spec.id],
-          state.identity == ScriptIdentity.uuid("script-component-v2:\(actor.identity):\(spec.id)")
+          legacy?.components[spec.id] == state.identity
+            || state.identity
+              == ScriptIdentity.uuid("script-component-v2:\(actor.identity):\(spec.id)")
         else { throw MissionPackError("Retained component identity differs from its owner.") }
         parts.append(
           .init(
