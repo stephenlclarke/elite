@@ -166,8 +166,8 @@ struct AlienStorageLegacyValidationTests {
     let lot = try #require(original.pending.first { $0.identity == claim.identity })
     // A pure custody projection exercises joins; it does not authenticate a native offer.
     let offer = SpawnIdentity(
-      system: fixture.plan.section.wreck.system, visit: 4, producer: .salvage, sequence: 1,
-      member: 0)
+      system: fixture.plan.section.wreck.system, visit: 4, sequence: 1, member: 0,
+      producer: .salvage)
     let evidence = AlienStorageLegacyCustodyEvidence(
       pending: original.pending, stored: [], offers: [offer: lot.identity], bindings: [:],
       settlements: [])
