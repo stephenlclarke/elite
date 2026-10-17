@@ -1925,6 +1925,12 @@ public actor GameRuntime {
   /// The returned live Game keeps bindings; only the disk Commander clears them.
   static func prepareNativeSaveState(_ value: Game) throws -> (game: Game, commander: Commander) {
     var candidate = value
+    guard
+      candidate.commander.nativeStations?.ledger.currentDock == nil
+        || candidate.nativeStationDockEvidenceIsCurrent,
+      candidate.commander.nativeStations?.currentMainDock == nil
+        || candidate.nativeMainStationDockEvidenceIsCurrent
+    else { throw SaveError.invalidCommander }
     try candidate.persistNativeStationConditions()
     try candidate.commander.prepareEquipment()
     candidate.commander.mirrorFittedEquipment()
