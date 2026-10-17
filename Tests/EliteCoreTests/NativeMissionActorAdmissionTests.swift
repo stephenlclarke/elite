@@ -362,6 +362,12 @@ struct NativeMissionActorAdmissionTests {
   }
 
   @Test func unboundLiveObstacleRefusesBeforeCapacityOrAlreadyPresentNoop() throws {
+    try unboundObstacleRefusesBeforeCapacity()
+    try unboundObstacleRefusesBeforeAlreadyPresentNoop()
+  }
+
+  // Each independent scenario releases its Game snapshots before the next deep fixture.
+  private func unboundObstacleRefusesBeforeCapacity() throws {
     var (game, instance, _) = try unloadedAdmissionGame()
     let sources = try game.retainedMissionActorAdmissionSources()
     let source = try #require(sources.first { $0.instanceID == instance })
@@ -373,7 +379,9 @@ struct NativeMissionActorAdmissionTests {
       .init(
         id: bodyID, hull: .cargo,
         position: anchor.position + anchor.orientation.apply(template.canonicalBody.position)))
-    let before = game
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeBodyID = game.nextBodyID
     var exactRefusal = false
     do {
       _ = try game.prepareMissionActorAdmission(source)
@@ -384,8 +392,11 @@ struct NativeMissionActorAdmissionTests {
     } catch { Issue.record("Expected invalidScene, received \(error)") }
     #expect(exactRefusal)
     #expect(
-      game.commander == before.commander && game.bodies == before.bodies
-        && game.nextBodyID == before.nextBodyID)
+      game.commander == beforeCommander && game.bodies == beforeBodies
+        && game.nextBodyID == beforeBodyID)
+  }
+
+  private func unboundObstacleRefusesBeforeAlreadyPresentNoop() throws {
     var (present, presentInstance, _) = try actualMissionBridgeGame()
     present.ensurePhysicalActors()
     let presentSources = try present.retainedMissionActorAdmissionSources()
@@ -393,7 +404,9 @@ struct NativeMissionActorAdmissionTests {
     let ordinaryIndex = try #require(
       present.bodies.firstIndex { $0.missionActorID == nil && $0.id != 0 })
     present.bodies[ordinaryIndex].physical = nil
-    let presentBefore = present
+    let presentCommander = present.commander
+    let presentBodies = present.bodies
+    let presentBodyID = present.nextBodyID
     var noopRefused = false
     do {
       _ = try present.prepareMissionActorAdmission(presentSource)
@@ -403,8 +416,8 @@ struct NativeMissionActorAdmissionTests {
     } catch { Issue.record("Expected invalidScene, received \(error)") }
     #expect(noopRefused)
     #expect(
-      present.commander == presentBefore.commander && present.bodies == presentBefore.bodies
-        && present.nextBodyID == presentBefore.nextBodyID)
+      present.commander == presentCommander && present.bodies == presentBodies
+        && present.nextBodyID == presentBodyID)
   }
 
 }
