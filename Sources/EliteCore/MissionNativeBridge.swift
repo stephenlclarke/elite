@@ -1130,20 +1130,25 @@ extension Game {
       return try fireMissionNativeLaser(
         bodyID: bodyID, weaponID: weaponID, componentID: componentID)
     case .plasma:
-      let source = try currentMissionNativeBinding(bodyID: bodyID)
-      _ = try planScriptMissionImpactEvents(
-        target: nil, damage: 0, damageAdmitted: false, victimPart: nil,
-        victimComponentID: nil, componentDestroyed: false, hullDestroyed: false,
-        sourceWeaponInstanceID: ready.instance)
-      let plan = try prepareMissionProjectileAdmission(
-        source: source, weapon: ready.weapon, component: ready.component,
-        muzzle: ready.muzzle, direction: ready.direction, intendedTarget: ready.intendedTarget)
-      _ = try commitMissionProjectileAdmission(plan)
-      // Admission appends a projectile and preserves the source's index. No fallible work
-      // remains between the native commit and the selected gun debit/firing event.
-      commitMissionGun(ready, gun: ready.gun)
+      try fireMissionNativePlasma(ready)
       return nil
     }
+  }
+
+  /// Keep projectile preparation temporaries off the synchronous laser call stack.
+  private mutating func fireMissionNativePlasma(_ ready: MissionReadyGun) throws {
+    let source = try currentMissionNativeBinding(bodyID: ready.bodyID)
+    _ = try planScriptMissionImpactEvents(
+      target: nil, damage: 0, damageAdmitted: false, victimPart: nil,
+      victimComponentID: nil, componentDestroyed: false, hullDestroyed: false,
+      sourceWeaponInstanceID: ready.instance)
+    let plan = try prepareMissionProjectileAdmission(
+      source: source, weapon: ready.weapon, component: ready.component,
+      muzzle: ready.muzzle, direction: ready.direction, intendedTarget: ready.intendedTarget)
+    _ = try commitMissionProjectileAdmission(plan)
+    // Admission appends a projectile and preserves the source's index. No fallible work
+    // remains between the native commit and the selected gun debit/firing event.
+    commitMissionGun(ready, gun: ready.gun)
   }
 
   /// The frame loop owns cooling and aim. This synchronous boundary owns final resource
