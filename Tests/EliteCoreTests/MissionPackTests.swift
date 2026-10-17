@@ -236,7 +236,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.key("b")
   game.key("return")
   game.launch()
-  game.bodies = []
+  #expect(game.bodies.contains { $0.id == 0 && $0.hull == .station })
   game.tick(delta: 0.1)
   #expect(game.commander.missionProgress[entry.pack.stateID]?.seconds == 0.1)
   for screen in [Screen.help, .gallery, .navigation, .showroom, .handoff, .rumour, .secret] {
@@ -254,8 +254,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   try await runtime.load(from: save)
   game = await runtime.snapshot()
   #expect(game.commander.missionProgress[entry.pack.stateID]?.seconds == 0.1)
-  game.launch()
-  game.bodies = []
+  #expect(!game.docked && !game.paused)
   game.tick(delta: 0.1)
   #expect(game.commander.missionProgress[entry.pack.stateID]?.stage == "complete")
   #expect(game.commander.credits == 1500)
