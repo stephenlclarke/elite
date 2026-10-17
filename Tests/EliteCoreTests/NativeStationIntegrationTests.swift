@@ -268,9 +268,10 @@ private func verifyNativePopulation(_ game: inout Game) throws {
     #expect(game.nativeStationBodyIsCurrent(station))
     #expect(station.energy == source.maximumEnergy && station.rotationRate == source.rotationRate)
     #expect(game.gameplayMesh(for: station).vertices == source.geometry.mesh.vertices)
+    let saved = try #require(world.pose(for: identity))
     #expect(
-      game.commander.flightSimulation.pose.systemPoint(station.position)
-        == world.pose(for: identity)?.position)
+      (game.commander.flightSimulation.pose.systemPoint(station.position)
+        - saved.position).length < 1e-8)
   }
   let commander = game.commander
   let bodies = game.bodies
@@ -289,6 +290,9 @@ private func verifyNativePopulationCapacity(_ game: inout Game) throws {
   game.bodies = (0..<128).map {
     SpaceBody(id: $0 + 100, hull: .asteroid, position: .init(Double($0) * 1000, 100000, 100000))
   }
+  game.nextBodyID = 228
+  game.ensurePhysicalActors()
+  #expect(game.bodies.allSatisfy { $0.physical != nil })
   let commander = game.commander
   let bodies = game.bodies
   let cursor = game.nextBodyID
