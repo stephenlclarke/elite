@@ -114,5 +114,7 @@ public struct PhysicalActorState: Equatable, Codable, Sendable {
   public var canonicalSpin: Bool?
   public var salvage: SalvageTargetMetadata?
   /// A missing ordinary target suspends live AI, while its original intent remains in custody.
+  public var empSource: ActorIdentity?
+  public var empCrewPod: EMPCrewIdentity?
   public var suspendedNPCIntention: NPCAction?
 }

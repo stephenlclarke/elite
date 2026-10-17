@@ -43,6 +43,7 @@ public struct NPCPersistenceSnapshot: Equatable, Codable, Sendable {
     body: SpaceBody, pose: ShipPose, physicalTime: Double, protection: MissionProtection
   ) -> Self? {
     guard let physical = body.physical, var npc = physical.npc,
+      physical.empSource == nil, physical.empCrewPod == nil,
       !body.navalTarget, body.blackjackRole == nil, body.blackjackIdentity == nil,
       !physical.blocksNavalEncounter, physical.rock == nil, physical.payload == nil,
       physical.ordnance == nil, physical.salvage == nil,
@@ -76,7 +77,7 @@ public enum NPCPersistenceCapture: Equatable, Codable, Sendable {
 }
 
 public enum NPCTerminalReason: String, Codable, Sendable {
-  case destroyed, docked, jumped, expired
+  case destroyed, docked, jumped, expired, empTransferred
 }
 
 /// Applying an accepted rebind once restores recorded consumables, never stock.
@@ -161,6 +162,13 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
               entries[$0.logicalNPC.firstActor] != nil && $0.sceneActor.entity <= highestActor
             }
       }
+  }
+
+  var empTransfers: [ActorIdentity: NPCPersistenceSnapshot] {
+    entries.compactMapValues { $0.terminal == .empTransferred ? $0.snapshot : nil }
+  }
+  func terminalReason(for logical: ActorIdentity) -> NPCTerminalReason? {
+    entries[logical]?.terminal
   }
 
   public func snapshot(for logical: ActorIdentity) -> NPCPersistenceSnapshot? {

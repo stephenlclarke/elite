@@ -1,13 +1,14 @@
 import Foundation
 
 public enum FlightWorkTool: CaseIterable, Sendable, Equatable {
-  case combatLaser, miningLaser, salvageCutter
+  case combatLaser, miningLaser, salvageCutter, empPirateBlaster
 
   public var label: String {
     switch self {
     case .combatLaser: "Combat laser"
     case .miningLaser: "Mining laser"
     case .salvageCutter: "Salvage cutter"
+    case .empPirateBlaster: "EMP Pirate Blaster"
     }
   }
 }
@@ -22,6 +23,8 @@ extension Game {
     case .combatLaser: installed = LaserMount.from(screen).flatMap(commander.laser(on:)) != nil
     case .miningLaser:
       installed = commander.hasMiningWorkTool || commander.laser(on: .front) == .mining
+    case .empPirateBlaster:
+      installed = commander.fittedEquipment(at: .utility(.empPirateBlaster)) != nil
     case .salvageCutter:
       installed =
         commander.performance.workTools?.contains(.salvageCutter) == true
@@ -40,7 +43,8 @@ extension Game {
   mutating func fireSelectedFlightTool(delta: Double) {
     guard !workFireSuspended else { return }
     if let work = workGuidance, !work.holding,
-      !(selectedFlightTool == .combatLaser && work.manualToolOverride)
+      !((selectedFlightTool == .combatLaser || selectedFlightTool == .empPirateBlaster)
+        && work.manualToolOverride)
     {
       return
     }
@@ -48,6 +52,7 @@ extension Game {
     case .combatLaser: fireLaser()
     case .miningLaser: _ = fireMiningWorkTool()
     case .salvageCutter: _ = fireSalvageCutter(delta: delta)
+    case .empPirateBlaster: _ = fireEMPPirateBlaster()
     }
   }
 
@@ -82,13 +87,11 @@ extension Game {
       [.wreck, .section].contains(metadata.category),
       physical.identity.system == context.system, physical.identity.visit == context.visit,
       let wreck = metadata.wreck, wreck.system == context.system,
-      let catalogue = physical.catalogueShipID,
-      let profile = SalvageCatalogue.profile(catalogueShipID: catalogue),
-      SalvageCatalogue.eligibility(
-        catalogueShipID: catalogue, ownership: metadata.ownership,
-        activeStation: body.id == 0 && body.hull == .station,
-        missionProtected: context.protection.protectedActors.contains(physical.identity))
-        == .allowed
+      let profile = salvageProfile(for: body),
+      salvageCuttingIsAllowed(body, metadata: metadata, context: context),
+      physical.empSource == nil
+        || (commander.fittedEquipment(at: .targetingSalvage) != nil
+          && commander.fittedEquipment(at: .utility(.fuelScoops)) != nil)
     else { return false }
     let pose = modelPose(of: body)
     let impact = commander.flightSimulation.pose.systemPoint(contact.hit.point)
@@ -113,10 +116,18 @@ extension Game {
     guard let operation = candidate.commander.flightSimulation.allocateIncident() else {
       return false
     }
-    let source = SalvageLootSource(
+    var source = SalvageLootSource(
       roles: profile.sourceRoles, legalValue: physical.npc?.legal.value ?? 0,
       economy: currentSystem.economy, technology: currentSystem.technology,
       ownership: metadata.ownership, manifest: physical.npc?.ordinaryCargo)
+    if let original = physical.empSource.flatMap({ commander.savedEMPState?.records[$0] }) {
+      source.manifest = original.cargo
+      source = .init(
+        roles: profile.sourceRoles, legalValue: original.legal.value,
+        economy: currentSystem.economy, technology: currentSystem.technology,
+        ownership: .abandoned, stolenProvenance: original.legal.value == 0, manifest: original.cargo
+      )
+    }
     let result = candidate.commander.salvageLedger.advance(
       wreck: wreck, section: section, pose: pose,
       velocity: physical.velocity, angularVelocity: physical.angularVelocity,
@@ -151,6 +162,7 @@ extension Game {
 
   @discardableResult
   mutating func persistSalvagePoses() -> Bool {
+    guard persistEMPState() else { return false }
     var ledger = commander.salvageLedger
     for body in bodies {
       guard let physical = body.physical else { continue }

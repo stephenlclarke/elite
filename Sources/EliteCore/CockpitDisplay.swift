@@ -116,15 +116,16 @@ extension Display {
     let visible = position.z > 1 && layout.flightClip.contains(point)
     let x = max(16, min(layout.width - 16, point.x))
     let y = max(layout.flightClip.y + 12, min(layout.flightClip.maxY - 12, point.y))
+    let cueInk = game.targetColourCue(for: target).ink ?? .cyan
     for sign in [-1.0, 1.0] {
-      frame.stroke(x + sign * 10, y - 8, x + sign * 10, y + 8, .cyan)
-      frame.stroke(x + sign * 10, y - 8, x + sign * 5, y - 8, .cyan)
-      frame.stroke(x + sign * 10, y + 8, x + sign * 5, y + 8, .cyan)
+      frame.stroke(x + sign * 10, y - 8, x + sign * 10, y + 8, cueInk)
+      frame.stroke(x + sign * 10, y - 8, x + sign * 5, y - 8, cueInk)
+      frame.stroke(x + sign * 10, y + 8, x + sign * 5, y + 8, cueInk)
     }
     if !visible {
       frame.label(
         "AUTO TARGET OFFSCREEN", 12, layout.flightClip.maxY - layout.row, scale: layout.font,
-        ink: .cyan)
+        ink: cueInk)
     }
   }
 
@@ -267,11 +268,12 @@ extension Display {
     frame.ellipse(cx, cy, rx, ry, .green)
     frame.stroke(cx - rx, cy, cx + rx, cy, .green)
     frame.stroke(cx, cy - ry, cx, cy + ry, .green)
+    let cueContext = game.gameplayContext()
     for body in game.bodies {
       let sx = cx + max(-rx + 2, min(rx - 2, body.position.x / 4400 * rx))
       let sy = cy + max(-ry + 2, min(ry - 2, -body.position.z / 8500 * ry))
       let lift = max(-ry / 2, min(ry / 2, body.position.y / 3000 * ry))
-      let ink: Ink = body.hostile ? .red : .green
+      let ink: Ink = game.targetColourCue(for: body, context: cueContext).ink ?? .green
       frame.stroke(sx, sy, sx, sy - lift, ink)
       frame.stroke(sx - 2, sy - lift, sx + 2, sy - lift, ink)
     }

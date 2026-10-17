@@ -109,6 +109,17 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Doub
   switch graphic {
   case .textured(let triangle): drawShipTexture(triangle, context: context)
   case .planet(let preview): PlanetRenderer.draw(preview, context: context)
+  case .glow(let line):
+    context.saveGState()
+    context.setStrokeColor(colour(line.ink.rawValue))
+    context.setAlpha(0.55)
+    context.setShadow(offset: .zero, blur: 3, color: colour(line.ink.rawValue))
+    context.setLineWidth(1.4)
+    context.beginPath()
+    context.move(to: .init(x: line.x0, y: line.y0))
+    context.addLine(to: .init(x: line.x1, y: line.y1))
+    context.strokePath()
+    context.restoreGState()
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
     context.beginPath()

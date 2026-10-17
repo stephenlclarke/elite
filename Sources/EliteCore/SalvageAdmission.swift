@@ -30,11 +30,9 @@ extension Game {
       commander.flightSimulation.pose.systemPoint(body.position) == parent.position,
       physical.velocity == parent.velocity,
       let catalogue = physical.catalogueShipID,
-      let profile = SalvageCatalogue.profile(catalogueShipID: catalogue),
+      let profile = salvageProfile(for: body),
       profile.sections.contains(where: { $0.index == lot.identity.section.section }),
-      SalvageCatalogue.eligibility(
-        catalogueShipID: catalogue, ownership: metadata.ownership,
-        activeStation: body.id == 0 && body.hull == .station) == .allowed
+      salvageCuttingIsAllowed(body, metadata: metadata, context: context)
     else { return false }
     let fragmentMetadata = SalvageTargetMetadata(
       category: lot.category, ownership: lot.loot?.legality.ownership ?? .abandoned,

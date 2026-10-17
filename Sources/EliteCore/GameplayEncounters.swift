@@ -3,6 +3,7 @@ import Foundation
 extension Game {
   mutating func advanceGameplayEncounters(delta: Double) {
     ensurePhysicalActors()
+    advanceEMPActors()
     advanceNPCResources(delta: delta)
     _ = persistNPCStates()
     advanceUnboundNPCs()
@@ -125,6 +126,12 @@ extension Game {
       bodies[index].physical?.suspendedNPCIntention == nil
         || bodies[index].physical?.npc?.intention != nil
     else { return }
+    if isEMPDisabled(bodies[index]) {
+      if case .engage(let target) = intent.action {
+        emitGameplayNPCBeam(bodyID: bodies[index].id, target: target, context: context)
+      }
+      return
+    }
     bodies[index].hostile = intent.action == .engage(context.player.identity)
     // A fleeing trader keeps its original destination for later recovery.
     if bodies[index].physical?.npc?.role != .trader {

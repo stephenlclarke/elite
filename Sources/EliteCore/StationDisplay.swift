@@ -169,6 +169,7 @@ extension Game {
     switch utility {
     case .miningLaser: "Mining work tool"
     case .salvageCutter: "Salvage cutter"
+    case .empPirateBlaster: Equipment.empPirateBlaster
     case .fuelScoops: "Fuel scoops"
     case .ecm: "ECM system"
     case .escapePod: "Escape pod"

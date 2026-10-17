@@ -3,7 +3,7 @@ import Foundation
 public enum SalvageHullRole: String, Codable, Sendable {
   case capitalWarship, carrier, alienCapital, deepSpaceCruiser, bulkFreighter
   case largeLiner, largeExplorer, largeCombatShip, largeTransport, largeEncounterShip,
-    abandonedInfrastructure
+    abandonedInfrastructure, disabledOrdinaryShip
 }
 
 public enum SalvageSectionKind: String, Codable, Sendable, CaseIterable {
@@ -187,8 +187,23 @@ public enum SalvageCatalogue {
 
   public static let all: [SalvageProfile] = entries.compactMap(makeProfile)
 
+  private static let disabledProfiles: [String: SalvageProfile] = Dictionary(
+    uniqueKeysWithValues: ShipCatalogue.all.compactMap { ship in
+      guard ship.game != nil, !all.contains(where: { $0.catalogueShipID == ship.id }),
+        let profile = makeProfile(
+          .init(
+            id: ship.id, role: .disabledOrdinaryShip,
+            basis:
+              "Project EMP unoccupied hull: actual catalogue mesh; no occupied cutting permission.")
+        )
+      else { return nil }
+      return (ship.id, profile)
+    })
   public static func profile(catalogueShipID: String) -> SalvageProfile? {
     all.first { $0.catalogueShipID == catalogueShipID }
+  }
+  static func empProfile(catalogueShipID: String) -> SalvageProfile? {
+    profile(catalogueShipID: catalogueShipID) ?? disabledProfiles[catalogueShipID]
   }
 
   public static func eligibility(
@@ -286,7 +301,8 @@ public enum SalvageCatalogue {
     case .carrier: return [.commercialCarrier]
     case .bulkFreighter, .largeLiner, .largeTransport: return [.commercialTrader]
     case .abandonedInfrastructure: return [.station]
-    case .deepSpaceCruiser, .largeExplorer, .largeCombatShip, .largeEncounterShip:
+    case .deepSpaceCruiser, .largeExplorer, .largeCombatShip, .largeEncounterShip,
+      .disabledOrdinaryShip:
       // Initial project tuning: generic cargo/5% ship item, not a historical trader claim.
       return [.generalShip]
     }

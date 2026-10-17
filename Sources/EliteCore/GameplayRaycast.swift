@@ -40,12 +40,12 @@ public enum GameplayRaycast {
     }
   }
 
-  private struct Face: Sendable {
+  fileprivate struct Face: Sendable {
     let indices: [Int]
     let projectionAxis: Int
   }
 
-  private struct PreparedMesh: Sendable {
+  fileprivate struct PreparedMesh: Sendable {
     let vertices: [Vector3]
     let faces: [Face]
     let lower: Vector3
@@ -129,6 +129,126 @@ public enum GameplayRaycast {
       candidates.append(.init(target: .player, ray: ray, entry: entry, geometry: .mesh(geometry)))
     }
     for celestial in celestials {
+      guard let entry = sphereEntry(ray, center: celestial.position, radius: celestial.radius)
+      else { continue }
+      candidates.append(
+        .init(
+          target: .celestial(celestial.kind), ray: ray, entry: entry,
+          geometry: .sphere(center: celestial.position, radius: celestial.radius)))
+    }
+    candidates.sort {
+      $0.entry == $1.entry ? precedes($0.target, $1.target) : $0.entry < $1.entry
+    }
+    var nearest: GameplayHit?
+    for candidate in candidates {
+      let limit = nearest?.distance ?? ray.limit
+      if candidate.entry > limit { break }
+      let distance: Double?
+      switch candidate.geometry {
+      case .mesh(let geometry): distance = meshHit(candidate.ray, mesh: geometry, limit: limit)
+      case .sphere: distance = candidate.entry
+      }
+      guard let distance else { continue }
+      if let previous = nearest, distance == previous.distance,
+        !precedes(candidate.target, previous.target)
+      {
+        continue
+      }
+      let point = ray.origin + ray.direction * distance
+      guard finite(point) else { continue }
+      nearest = .init(target: candidate.target, distance: distance, point: point)
+    }
+    return nearest
+  }
+  struct GlowOccluder {
+    let bodyID: Int?
+    let nearDepth: Double
+    // nil conservatively covers the view when an occluder crosses the near plane.
+    let bounds: CanvasRect?
+  }
+  struct OcclusionScene {
+    fileprivate let bodies: [SpaceBody]
+    fileprivate let celestials: [CelestialBody]
+    fileprivate let meshes: [Int: PreparedMesh]
+    let glowOccluders: [GlowOccluder]
+  }
+  // Immutable catalogue/native geometry is prepared once and reused across frames and halo rays.
+  private static let catalogueOccluders: [String: PreparedMesh] = Dictionary(
+    uniqueKeysWithValues: ShipCatalogue.all.compactMap { ship in
+      PreparedMesh(ship.design.rawMesh).map { (ship.id, $0) }
+    })
+  static func prepareOcclusionScene(_ game: Game, projection: FlightProjection = .legacy)
+    -> OcclusionScene
+  {
+    var meshes: [Int: PreparedMesh] = [:]
+    for body in game.bodies {
+      if let id = body.physical?.catalogueShipID, body.nativeStationIdentity == nil,
+        body.scriptNPC == nil,
+        body.physical?.rock == nil, body.physical?.payload == nil,
+        let cached = catalogueOccluders[id]
+      {
+        meshes[body.id] = cached
+      } else {
+        meshes[body.id] = PreparedMesh(game.scriptNPCMesh(body) ?? game.gameplayMesh(for: body))
+      }
+    }
+    var envelopes: [GlowOccluder] = []
+    func append(_ points: [Vector3], bodyID: Int?) {
+      guard !points.isEmpty, points.allSatisfy(\.finite),
+        let near = points.map(\.z).min(), let far = points.map(\.z).max(), far > 1
+      else { return }
+      guard near > 1 else {
+        envelopes.append(.init(bodyID: bodyID, nearDepth: near, bounds: nil))
+        return
+      }
+      let projected = points.map(projection.point)
+      guard projected.allSatisfy({ $0.x.isFinite && $0.y.isFinite }) else { return }
+      let x = projected.map(\.x).min()!
+      let y = projected.map(\.y).min()!
+      envelopes.append(
+        .init(
+          bodyID: bodyID, nearDepth: near,
+          bounds: .init(
+            x: x, y: y, width: projected.map(\.x).max()! - x,
+            height: projected.map(\.y).max()! - y)))
+    }
+    for body in game.bodies {
+      guard let mesh = meshes[body.id] else { continue }
+      append(
+        mesh.vertices.map { game.viewPosition(body.modelVector($0) + body.position) },
+        bodyID: body.id)
+    }
+    for celestial in game.celestials where celestial.radius.isFinite && celestial.radius > 0 {
+      let center = game.viewPosition(celestial.position)
+      let r = celestial.radius
+      // A view-space box encloses every projected sphere point, including its forward limb.
+      let corners = [-r, r].flatMap { x in
+        [-r, r].flatMap { y in [-r, r].map { z in center + Vector3(x, y, z) } }
+      }
+      append(corners, bodyID: nil)
+    }
+    return .init(
+      bodies: game.bodies, celestials: game.celestials, meshes: meshes,
+      glowOccluders: envelopes)
+  }
+
+  static func nearest(
+    origin: Vector3, direction: Vector3, maxDistance: Double,
+    scene: OcclusionScene, ignoring: Set<Int> = []
+  ) -> GameplayHit? {
+    guard let ray = Ray(origin: origin, direction: direction, limit: maxDistance) else {
+      return nil
+    }
+    var candidates: [Candidate] = []
+    for body in scene.bodies where !ignoring.contains(body.id) && finite(body.position) {
+      let geometry = scene.meshes[body.id]
+      guard let geometry, let local = localRay(ray, body: body),
+        let entry = meshEntry(local, mesh: geometry)
+      else { continue }
+      candidates.append(
+        .init(target: .body(body.id), ray: local, entry: entry, geometry: .mesh(geometry)))
+    }
+    for celestial in scene.celestials {
       guard let entry = sphereEntry(ray, center: celestial.position, radius: celestial.radius)
       else { continue }
       candidates.append(
