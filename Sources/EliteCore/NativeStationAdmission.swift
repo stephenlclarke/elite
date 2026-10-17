@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 enum NativeStationRuntimeError: Error, Equatable {
   case invalidSource, invalidState, unavailable, unsafePlacement, capacity, unsafeEntry, unsafeExit
@@ -198,6 +199,7 @@ struct NativeMainStationObservation: Equatable, Codable, Sendable {
 
 /// Persistent source/pose wrapper; G3 owns the unchanged logical lifecycle and receipt ledger.
 struct NativeStationWorld: Equatable, Codable, Sendable {
+  private let validationMemo = NativeStationValidationMemo()
   let adapterRevision: String
   let geometryRevision: String
   let clockOrigin: Double
@@ -238,6 +240,16 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   }
 
   var valid: Bool {
+    let content = NativeStationWorldContent(self)
+    if validationMemo.contains(content) { return true }
+    guard validWithoutMemo else { return false }
+    validationMemo.recordValidated(content)
+    return true
+  }
+
+  /// The original complete source, ownership, pose and receipt predicate.
+  /// Decode and every changed semantic world must still pass all of it.
+  private var validWithoutMemo: Bool {
     let originals = Set(mainStations)
     guard adapterRevision == NativeStationSource.adapterRevision,
       geometryRevision == NativeStationGeometry.adapterRevision, clockOrigin == 0,
@@ -269,6 +281,10 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
         && receipt.sequence == nextMainDockSequence - 1 && receipt.commanderOwner == ledger.world
     }
     return true
+  }
+
+  static func == (lhs: NativeStationWorld, rhs: NativeStationWorld) -> Bool {
+    NativeStationWorldContent(lhs) == NativeStationWorldContent(rhs)
   }
 
   func pose(for station: NativeStationIdentity) -> NativeStationSavedPose? {
@@ -335,5 +351,20 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
     }
     poses = result
     guard valid else { throw NativeStationRuntimeError.invalidState }
+  }
+}
+
+/// One derived immutable validation witness, shared safely across value snapshots.
+/// Only a complete successful source check may replace it. Neither disk nor UI
+/// can supply the witness, and a hit requires full semantic equality, not an ID.
+private final class NativeStationValidationMemo: Sendable {
+  private let state = OSAllocatedUnfairLock<NativeStationWorldContent?>(initialState: nil)
+
+  func contains(_ content: NativeStationWorldContent) -> Bool {
+    state.withLock { $0 == content }
+  }
+
+  func recordValidated(_ content: NativeStationWorldContent) {
+    state.withLock { $0 = content }
   }
 }

@@ -226,7 +226,8 @@ extension Game {
         guard body.energy <= 0 else { throw NativeStationRuntimeError.invalidState }
         continue
       }
-      world.poses[index].energy = max(0, body.energy)
+      let condition = max(0, body.energy)
+      if world.poses[index].energy != condition { world.poses[index].energy = condition }
       if body.energy <= 0 {
         try world.ledger.destroy(
           identity, binding: .init(actor: physical.identity, bodyID: body.id))
