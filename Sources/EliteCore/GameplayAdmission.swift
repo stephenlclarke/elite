@@ -4,6 +4,9 @@ extension Game {
   /// One runtime allocator admits complete batches against the current scene,
   /// including reserves. Proposals never allocate identities themselves.
   mutating func admitEncounterPlan(_ plan: EncounterPlan) -> [SpawnReceipt] {
+    // Empty plans have no admission effects. The frame adopts existing actors
+    // once; every real request still performs the complete native preflight.
+    guard plan.batches.contains(where: { !$0.requests.isEmpty }) else { return [] }
     ensurePhysicalActors()
     guard let context = gameplayContext(), plan.system == context.system,
       plan.visit == context.visit, plan.revision == context.revision
