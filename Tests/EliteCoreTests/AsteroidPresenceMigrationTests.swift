@@ -74,9 +74,11 @@ struct AsteroidPresenceMigrationTests {
       }
     }
     #expect(totals.allSatisfy { $0 > 0 })
-    #expect(
-      present[0...2].reduce(0, +) * totals[5...7].reduce(0, +)
-        > present[5...7].reduce(0, +) * totals[0...2].reduce(0, +))
+    let industrialPresent = present[0...2].reduce(0, +)
+    let industrialTotal = totals[0...2].reduce(0, +)
+    let agriculturalPresent = present[5...7].reduce(0, +)
+    let agriculturalTotal = totals[5...7].reduce(0, +)
+    #expect(industrialPresent * agriculturalTotal > agriculturalPresent * industrialTotal)
   }
 
   @Test func currentAbsenceIsPinnedButUnworkedWorldsChangeAndMigrationIsIdempotent() throws {

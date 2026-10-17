@@ -111,7 +111,7 @@ struct RRSCourierLedger: Codable, Sendable, Equatable {
     guard
       boards.count <= Self.maximumBoards && jobs.count <= Self.maximumJobs
         && Set(jobs.map(\.id)).count == jobs.count && Set(jobs.map(\.packet)).count == jobs.count
-        && jobs.filter { $0.terminal == nil }.count <= 1
+        && jobs.filter({ $0.terminal == nil }).count <= 1
         && boards.allSatisfy({ key, board in
           key == board.station.key && board.valid && board.station.world == owner
             && (board.accepted.map { id in jobs.contains { $0.id == id && $0.board == board } }
