@@ -647,6 +647,16 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   let fixture = try NPCFixture(edits: edits)
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
+  let (shooter, target) = try arrangeActualNPCCrossfire(&game, id: id)
+  // Keep future rendering copies and verification temporaries out of the deep emission call.
+  game.advanceScriptNPCWeapons(delta: 0.1)
+  verifyActualNPCCrossfireFirstEmission(&game, shooter: shooter, target: target)
+  verifyActualNPCCrossfireBeams(&game, shooter: shooter, expected: 2)
+  try destroyActualNPCCrossfireTurret(&game, shooter: shooter, target: target)
+  verifyActualNPCCrossfireBeams(&game, shooter: shooter, expected: 1)
+}
+
+private func arrangeActualNPCCrossfire(_ game: inout Game, id: UUID) throws -> (Int, Int) {
   let shooter = try npcIndex(game, id)
   let target = try npcIndex(game, id, "wing")
   game.bodies[shooter].position = .init(200, 0, 1000)
@@ -657,10 +667,16 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   game.bodies[shooter].orientation = pose
   try setNPCIntent(
     &game, id: id, command: npcIntent("attack", request: "crossfire", target: "wing", speed: 0))
-  game.advanceScriptNPCWeapons(delta: 0.1)
+  return (shooter, target)
+}
+
+private func verifyActualNPCCrossfireFirstEmission(_ game: inout Game, shooter: Int, target: Int) {
   #expect(game.bodies[shooter].scriptNPC?.shots == 2)
   #expect(game.bodies[target].energy == 99)
   game.commander.shipDisplayStyle = .shadedPanels
+}
+
+private func verifyActualNPCCrossfireBeams(_ game: inout Game, shooter: Int, expected: Int) {
   func colouredBeams(_ frame: Frame) -> Int {
     frame.graphics.filter {
       if case .panel(let panel) = $0 { return panel.colour == 4_281_597_951 }
@@ -669,16 +685,16 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   }
   var frame = Frame()
   Display.draw(game.bodies[shooter], game: game, into: &frame)
-  #expect(colouredBeams(frame) == 2)
+  #expect(colouredBeams(frame) == expected)
+}
+
+private func destroyActualNPCCrossfireTurret(_ game: inout Game, shooter: Int, target: Int) throws {
   let actualWeapon = try #require(game.bodies[target].scriptNPC?.fit.definition.lasers?.first)
   for _ in 0..<Int(ceil(40 / actualWeapon.damage)) {
     try applyActualNPCLaser(
       &game, sourceID: game.bodies[target].id, targetID: game.bodies[shooter].id,
       targetPart: "turret")
   }
-  frame = Frame()
-  Display.draw(game.bodies[shooter], game: game, into: &frame)
-  #expect(colouredBeams(frame) == 1)
 }
 
 @Test func nativeProfiledPatrolUsesActualPlayerLasersAutomaticDockingAndStationConfirmation()
