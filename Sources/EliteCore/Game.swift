@@ -38,6 +38,7 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedEMPState: EMPState?
   var savedPlayerElectrical: ElectricalReserve?
   var savedEMPCharge: EMPChargeState?
+  var savedCrimboState: NativeCrimboRegistry?
   var savedNativePeopleCustody: NativePeopleCustodyState?
   var savedSalvageLedger: SalvageLedger?
   var savedAlienStorageReference: AlienStorageReference?
@@ -221,6 +222,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedPlayerElectrical
     case savedEMPCharge
     case savedNativePeopleCustody
+    case savedCrimboState
     case savedSalvageLedger
     case savedAlienStorageReference
     case savedEquipmentVersion
@@ -430,6 +432,7 @@ public struct Game: Sendable {
   var pendingNewSaveDestination: URL?
   var newCommanderSaveReceipt: CommanderFileReceipt?
   var nativeStationRuntimeEpoch = UUID()
+  var nativeCrimboMotionSample: NativeCrimboMotionSample?
   var pendingNativeStationDock: NativeStationEntryProof?
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?

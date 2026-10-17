@@ -300,10 +300,109 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
         || (pirate && spawn.member < 5)
     case .security:
       return police && snapshot.hull == .viper && spawn.member < 8
+    case .provider:
+      return spawn.system == NativeCrimboRegistry.system && spawn.sequence > 0
+        && snapshot.population == .civilian
+        && ((spawn.member < 6 && snapshot.catalogueShipID == "SH151"
+          && snapshot.hull == .viper && snapshot.npc.role == .escort)
+          || (spawn.member == 6 && snapshot.catalogueShipID == "SH150"
+            && snapshot.hull == .cobra && snapshot.npc.role == .trader))
     case .persistence:
       return (civilian || pirate || police) && spawn.sequence > 0
         && spawn.sequence < nextOffer && spawn.member == 0
     default: return false
+    }
+  }
+
+  /// Removes the exact originals atomically. The caller must park these in the same world candidate.
+  /// High-water marks survive removal; a replay cannot register an old physical actor again.
+  mutating func takeProviderOriginals(
+    expected: [NPCLogicalIdentity: NPCPersistenceSnapshot], protection: MissionProtection
+  ) throws -> [NPCLogicalIdentity: NPCPersistenceSnapshot] {
+    guard valid, !expected.isEmpty, expected.count <= 7,
+      expected.allSatisfy({ logical, snapshot in
+        let entry = entries[logical.firstActor]
+        return Self.validProviderOriginal(logical, snapshot: snapshot, protection: protection)
+          && entry?.snapshot == snapshot && entry?.terminal == nil
+      })
+    else { throw NativeCrimboError.invalidTransfer }
+    var candidate = self
+    for logical in expected.keys { candidate.entries.removeValue(forKey: logical.firstActor) }
+    candidate.normalizeProviderReferences(protection: protection)
+    guard candidate.valid else { throw NativeCrimboError.invalidTransfer }
+    self = candidate
+    return expected
+  }
+
+  /// Replaces only exact fresh provisional registrations created by native admission.
+  /// Actual bodies must already contain the parked resources; importing never supplies stock.
+  mutating func importProviderOriginals(
+    parked: [NPCLogicalIdentity: NPCPersistenceSnapshot],
+    admitted: [NPCLogicalIdentity: NPCPersistenceSnapshot], protection: MissionProtection
+  ) throws {
+    guard valid, !parked.isEmpty, parked.count <= 7, Set(parked.keys) == Set(admitted.keys),
+      Set(admitted.values.map(\.actor)).count == admitted.count,
+      let firstAdmission = admitted.values.map({ $0.actor.entity }).min(),
+      parked.values.allSatisfy({ $0.actor.entity < firstAdmission })
+    else { throw NativeCrimboError.invalidTransfer }
+    var candidate = self
+    for (logical, original) in parked {
+      guard let current = admitted[logical],
+        Self.validProviderOriginal(logical, snapshot: original, protection: protection),
+        Self.validProviderOriginal(logical, snapshot: current, protection: protection),
+        logical.firstActor.entity <= highestActor, entries[logical.firstActor] == nil,
+        current.actor.entity > original.actor.entity, current.actor.visit >= original.actor.visit,
+        current.actor.system == system, current.physicalTime >= original.physicalTime,
+        let provisional = entries[current.actor], provisional.binding == current.actor,
+        provisional.terminal == nil, provisional.offer == nil,
+        Self.providerResourceState(provisional.snapshot) == Self.providerResourceState(current)
+      else { throw NativeCrimboError.invalidTransfer }
+      var expected = original
+      expected.actor = current.actor
+      expected.physicalTime = current.physicalTime
+      guard Self.providerResourceState(expected) == Self.providerResourceState(current) else {
+        throw NativeCrimboError.invalidTransfer
+      }
+      candidate.entries.removeValue(forKey: current.actor)
+      candidate.entries[logical.firstActor] = .init(snapshot: current, binding: current.actor)
+    }
+    candidate.normalizeProviderReferences(protection: protection)
+    guard candidate.valid else { throw NativeCrimboError.invalidTransfer }
+    self = candidate
+  }
+
+  private static func validProviderOriginal(
+    _ logical: NPCLogicalIdentity, snapshot: NPCPersistenceSnapshot,
+    protection: MissionProtection
+  ) -> Bool {
+    let slot = snapshot.catalogueShipID == "SH150" ? 6 : 0
+    return logical.firstActor.system == NativeCrimboRegistry.system
+      && logical.firstActor.entity >= 2 && logical.firstActor.entity < UInt64.max
+      && logical.firstActor.visit > 0 && logical.firstActor.visit <= snapshot.actor.visit
+      && snapshot.actor.entity >= logical.firstActor.entity
+      && !protection.protectedActors.contains(logical.firstActor)
+      && !protection.protectedActors.contains(snapshot.actor)
+      && snapshot.valid && snapshot.actor.system == NativeCrimboRegistry.system
+      && snapshot.population == .civilian
+      && snapshot.catalogueShipID == (slot == 6 ? "SH150" : "SH151")
+      && snapshot.hull == (slot == 6 ? .cobra : .viper)
+      && snapshot.npc.role == (slot == 6 ? .trader : .escort)
+  }
+
+  private static func providerResourceState(_ snapshot: NPCPersistenceSnapshot)
+    -> NPCPersistenceSnapshot
+  {
+    var result = snapshot
+    result.firstAggressorBinding = nil
+    result.intentionTargetBinding = nil
+    return result
+  }
+
+  private mutating func normalizeProviderReferences(protection: MissionProtection) {
+    for logical in Array(entries.keys) {
+      guard let snapshot = entries[logical]?.snapshot else { continue }
+      entries[logical]?.snapshot = bindingReferences(
+        snapshot, previous: snapshot, protection: protection)
     }
   }
 
