@@ -103,11 +103,9 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
   let loadedFirst = game.load(first)
   try #require(loadedFirst)
   game.launch()
-  for _ in 0...game.bodies.count {
-    game.key("r")
-    if game.autoTargetBody?.id == 0 { break }
-  }
-  try #require(game.autoTargetBody?.id == 0 && game.dockingComputer)
+  game.key("r")
+  let firstTarget = try #require(game.autoTargetBody)
+  try #require(firstTarget.hull == .cobra && firstTarget.position.z > 0)
   let firstOrigin = try #require(game.gameplayContext()?.player.identity)
   var second = Commander()
   try second.prepareEquipment(legacy: false)
@@ -120,8 +118,16 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
   #expect(game.autoPilot.targetID == nil && game.autoPilot.status == "OFF")
   game.launch()
   try #require(game.gameplayContext()?.player.identity == firstOrigin)
+  // The previous real cycle is still partial: its next entry would be the old station.
+  game.key("r")
+  let firstNewTarget = try #require(game.autoTargetBody)
+  #expect(
+    firstNewTarget.id == firstTarget.id && firstNewTarget.hull == .cobra
+      && firstNewTarget.position.z > 0,
+    Comment(rawValue: "First new Commander selection: " + actualStationGuidanceDiagnostic(game)))
   var selected: [Int] = []
-  for _ in 0...game.bodies.count {
+  selected.append(firstNewTarget.id)
+  for _ in 1...game.bodies.count {
     game.key("r")
     if let target = game.autoPilot.targetID, selected.count < 16 { selected.append(target) }
     if game.autoTargetBody?.id == 0 { break }
