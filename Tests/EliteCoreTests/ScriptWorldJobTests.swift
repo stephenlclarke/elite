@@ -527,3 +527,53 @@ private struct WorldJobFixture {
   #expect(game.commander.scriptState.worldJobs[id] == unloaded)
   #expect(game.commander.valid)
 }
+
+@Test(arguments: [false, true])
+func firstWorldJobFaultPublicationRetainsDestinationOwnershipAndOnlyAcknowledgesSuccess(
+  blocked: Bool
+) async throws {
+  let fixture = try WorldJobFixture()
+  defer { fixture.clean() }
+  var (game, origin, id) = try fixture.game()
+  game.commander.scriptState.worldJobs[id]?.elapsed = 1e12
+  let runtime = GameRuntime(game: game)
+  let parent = fixture.root.appendingPathComponent("first-publication")
+  let file = parent.appendingPathComponent("commander.json")
+  _ = try await runtime.registerNewCommanderDestination(at: file)
+  let blocker = Data("writer blocked after registration".utf8)
+  if blocked { try blocker.write(to: parent) }
+  let before = await runtime.snapshot()
+  var expectedJob = try #require(before.commander.scriptState.worldJobs[id])
+  expectedJob.suspension = "World job clock limit reached."
+  _ = await runtime.advance(delta: 0.1)
+  let suspended = await runtime.snapshot()
+  #expect(suspended.commander.scriptState.worldJobs[id] == expectedJob)
+  #expect(
+    suspended.commander.scriptState.instances[origin]
+      == before.commander.scriptState.instances[origin])
+  #expect(suspended.commander.credits == before.commander.credits)
+  #expect(suspended.commander.equipmentInventory == before.commander.equipmentInventory)
+  #expect(suspended.commander.salvageLedger == before.commander.salvageLedger)
+  #expect(suspended.bodies == before.bodies && suspended.docked == before.docked)
+  if blocked {
+    #expect(suspended.pendingNewSaveDestination == file)
+    #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
+    #expect(try Data(contentsOf: parent) == blocker)
+    try FileManager.default.removeItem(at: parent)
+  } else {
+    #expect(suspended.pendingNewSaveDestination == nil)
+    let receipt = await runtime.takeNewCommanderSaveReceipt()
+    #expect(receipt?.url == file && receipt?.isTrial == false)
+    let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: file), from: file)
+    #expect(saved.valid && saved.scriptState == suspended.commander.scriptState)
+  }
+  // Success replaces our own pointer normally; failure retries the still-unpublished destination.
+  try await runtime.save(to: file)
+  let committed = await runtime.snapshot()
+  #expect(committed.pendingNewSaveDestination == nil)
+  let receipt = await runtime.takeNewCommanderSaveReceipt()
+  #expect(blocked ? receipt?.url == file : receipt == nil)
+  let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: file), from: file)
+  #expect(saved.valid && saved.scriptState == committed.commander.scriptState)
+  #expect(saved.equipmentInventory == committed.commander.equipmentInventory)
+}

@@ -492,12 +492,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         }
       }
       if let self, self.restoreOnLaunch {
-        do {
-          try await self.bindNewCommanderSaveIfNeeded(afterFailedRestore: failedRestore)
-        } catch {
-          self.commanderFileFailure(error)
-          return
-        }
+        await self.prepareNewCommanderSaveIfNeeded(afterFailedRestore: failedRestore)
       }
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
@@ -522,6 +517,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           await Task.yield()
         }
       }
+    }
+  }
+  func prepareNewCommanderSaveIfNeeded(afterFailedRestore: Bool) async {
+    do {
+      try await bindNewCommanderSaveIfNeeded(afterFailedRestore: afterFailedRestore)
+    } catch {
+      // Keep the ordered consumer alive so Open or Save As can recover a writable destination.
+      commanderFileFailure(error)
     }
   }
   func bindNewCommanderSaveIfNeeded(afterFailedRestore: Bool) async throws {
