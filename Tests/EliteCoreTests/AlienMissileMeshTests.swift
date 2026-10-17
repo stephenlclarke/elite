@@ -9,9 +9,12 @@ private func alienMeshGame(profile: OrdnanceProfile) throws -> Game {
   game.screen = .front
   game.commander.flightSimulation.enter(game.systemIdentity, arriving: true)
   let player = try #require(game.commander.flightSimulation.player)
-  let target = try #require(game.commander.flightSimulation.allocateActor())
-  let projectile = try #require(game.commander.flightSimulation.allocateActor())
-  let origin = try #require(game.makeAttackOrigin(owner: player, ordnance: projectile))
+  let targetAllocation = game.commander.flightSimulation.allocateActor()
+  let target = try #require(targetAllocation)
+  let projectileAllocation = game.commander.flightSimulation.allocateActor()
+  let projectile = try #require(projectileAllocation)
+  let attackOrigin = game.makeAttackOrigin(owner: player, ordnance: projectile)
+  let origin = try #require(attackOrigin)
   let position = Vector3(0, 0, 500)
   let state = try #require(
     OrdnanceState(
@@ -37,7 +40,8 @@ struct AlienMissileMeshTests {
     #expect(body.hull == .missile && body.physical?.catalogueShipID == nil)
     #expect(mesh.vertices == override.vertices && mesh.faces == override.faces)
     #expect(mesh.vertices != Mesh.hull(.missile).vertices)
-    #expect(mesh.vertices.allSatisfy(\.finite))
+    let verticesAreFinite = mesh.vertices.allSatisfy(\.finite)
+    #expect(verticesAreFinite)
     var edges: [String: Int] = [:]
     var directed: Set<String> = []
     var signedVolume = 0.0

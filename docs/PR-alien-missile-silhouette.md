@@ -7,3 +7,5 @@ Focused regression source checks finite closed geometry, consistent edge winding
 ## Validation and limits
 
 Worker checks are strict source formatting lint, scoped Markdown lint and whitespace checks only. No compile, typecheck, test execution, native process, media generation, CI or publishing ran while the central validation lease was active. Tests remain uncompiled and unexecuted. Coder 1 owns integration and runtime verification. The mesh is immutable and cached once; no save or ownership schema changes are required. See [motivation](ISSUE-alien-missile-silhouette.md).
+
+Composed check 248 stopped during compilation before any test executed: Testing macros cannot invoke mutating actor/attack-origin allocators through immutable closure values, and the key-path `allSatisfy` macro expansion lost its rethrows context. The correction stages each actual allocation/result in a local before asserting it; geometry and all assertions remain unchanged. The original failure evidence is preserved.
