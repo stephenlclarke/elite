@@ -193,9 +193,36 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   var (game, id) = try patrolGame()
   let lead = try actualActor(game, alias: "lead", instance: id)
   let index = try #require(game.bodies.firstIndex { $0.id == lead.id })
-  game.bodies[index].energy = 0
-  game.bodies[index].destroyedByPlayer = true
+  let station = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+  // Place this real encounter outside station protection; source hostility remains authored.
+  game.bodies[station].position = .init(5000, 0, 0)
+  game.bodies[index].position = .init(0, 0, 2000)
+  game.bodies[index].orientation = Basis3()
+  game.bodies[index].energy = 1
+  game.bodies = game.bodies.filter { $0.id == 0 || $0.missionInstanceID == id }
+  game.celestials = []
+  game.ensurePhysicalActors()
+  let context = try #require(game.gameplayContext())
+  try #require((context.player.position - context.anchors.station.position).length > 1200)
+  let queried = try game.nearestMissionCollision(
+    from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+    includePlayer: false)
+  let contact = try #require(queried)
+  try #require(contact.hit.target == .body(lead.id) && contact.victimPart == nil)
+  let allocated = game.makeAttackOrigin(owner: context.player.identity)
+  let origin = try #require(allocated)
+  let laser = try #require(game.commander.laser(on: .front))
+  let damage = game.commander.laserDamage(against: lead.hull, mount: .front)
+  try #require(damage >= 1)
   let before = game.commander.credits
+  let struck = game.applyCombatHit(
+    contact.hit, origin: origin, kind: .laser, damage: damage,
+    laser: laser, mount: .front, emissionPosition: context.player.position)
+  let incident = try #require(struck)
+  #expect(incident.origin == origin && incident.victim != nil)
+  let fatal = try #require(game.bodies.first { $0.id == lead.id })
+  #expect(fatal.energy == 0 && fatal.physical?.deathOrigin == origin)
+  #expect(fatal.physical?.deathIncidentID != nil)
   game.dock()
   #expect(game.commander.kills == 1 && game.commander.credits == before + 50)
   #expect(
