@@ -317,7 +317,7 @@ public enum Display {
       game.commander.shipDisplayStyle = .shadedPanels
     }
     let center = game.viewPosition(body.position)
-    let mesh = mesh ?? game.gameplayMesh(for: body)
+    let mesh = mesh ?? game.scriptNPCMesh(body) ?? game.gameplayMesh(for: body)
     let vertices = mesh.vertices.map { vertex -> Vector3 in
       let rotated = game.viewPosition(body.modelVector(vertex))
       return rotated + center
@@ -377,6 +377,7 @@ public enum Display {
         }
       }
     }
+    drawScriptBeams(body, game: game, into: &frame, projection: projection)
     if body.hull == .station {
       let hatch = [
         Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
