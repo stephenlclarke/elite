@@ -4,12 +4,24 @@ import Testing
 @testable import EliteCore
 
 struct MissionSceneCalendarIntegrationTests {
-  @Test func anOrdinaryNativeLaunchDoesNotCreateMissionCalendarState() {
+  @Test func anOrdinaryNativeLaunchCreatesStationCalendarWithoutAMission() {
     var game = Game(executive: false)
     game.screen = .status
     game.launch()
     #expect(!game.docked && game.commander.valid)
-    #expect(game.commander.scriptState == ScriptEngineState() && !game.requiresScriptDurability)
+    var calendar = ScriptCalendarLedger(origin: .newCommander)
+    calendar.operation = 1
+    calendar.lastAdjustment = .init(
+      operation: 1, kind: .launch, seconds: 600, before: 0, after: 600)
+    var expected = ScriptEngineState()
+    expected.calendarLedger = calendar
+    expected.calendarSeconds = 600
+    let key = "main-orbital:\(game.commander.galaxy):\(game.commander.system)"
+    expected.stationResources[key] = .init(
+      identity: Game.worldResourceIdentity("main-station-v1:\(key)"),
+      galaxy: game.commander.galaxy, system: game.commander.system)
+    #expect(game.commander.scriptState == expected && game.requiresScriptDurability)
+    #expect(game.commander.nativeStations != nil)
   }
 
   @Test func aCalendarLaunchRefusalPreservesPhysicalAndCommanderState() {
