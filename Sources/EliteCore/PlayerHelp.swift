@@ -37,7 +37,8 @@ public enum PlayerHelp {
         .init(
           title: "MORE ACTIONS",
           rows: [
-            "GAME MENU: MISSIONS / CONTACTS / RUMOURS",
+            "GAME: MISSIONS / CONTACTS / CONTRACTS",
+            "GAME MENU: MISSION LIBRARY",
             "L - MISSION GALLERY",
             "B (DOCKED) - MISSION CONTACTS",
             "U (DOCKED) - STATION RUMOURS",
@@ -240,6 +241,28 @@ public enum PlayerHelp {
           "LEFT / RIGHT, RETURN - CONFIRM / BACK",
           "CLICK SORT: A-Z / POWER (STRONGEST)",
           "POWER: ENERGY + SHIELDS + WEAPONS",
+        ])
+    case .contracts:
+      .init(
+        title: "STATION CONTRACTS",
+        rows: [
+          "UP / DOWN - SELECT OFFER", "RETURN / CLICK - READ BRIEFING",
+          "LEFT / RIGHT - ACCEPT / DECLINE / BACK", "RETURN - CHOOSE; BACK IS THE DEFAULT",
+          "ESC - BACK TO BOARD, THEN STATION", "SCROLL - READ LONG BRIEFINGS",
+          "READING DOES NOT START A DEADLINE", "ACTIVE WORK REMAINS IN MISSION GALLERY",
+        ])
+    case .library:
+      .init(
+        title: "MISSION LIBRARY",
+        rows: [
+          "UP / DOWN - SELECT OR SCROLL",
+          "RETURN / CLICK - OPEN BOOK OR CHAPTER",
+          "LEFT / RIGHT - PREVIOUS / NEXT CHAPTER",
+          "TAB - CONTENTS / READING",
+          "I - BOOK SOURCE / LICENCE",
+          "OPTION-UP/DOWN - PAGE TEXT",
+          "ESC - CONTENTS, BOOKS, PREVIOUS SCREEN",
+          "READ ONLY; FLIGHT IS PAUSED",
         ])
     case .gallery:
       .init(
