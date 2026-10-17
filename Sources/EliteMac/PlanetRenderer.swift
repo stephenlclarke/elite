@@ -6,6 +6,7 @@ import EliteCore
 enum PlanetRenderer {
   private struct ImageKey: Equatable {
     let identity: PlanetIdentity
+    let appearance: PlanetPalette
     let diameter: Int
     let phase: Int
   }
@@ -56,13 +57,14 @@ enum PlanetRenderer {
     guard (32...768).contains(diameter), preview.angle.isFinite else { return nil }
     startGPUPreparation()
     let phase = Int(preview.angle.truncatingRemainder(dividingBy: 2 * .pi) / 0.006)
-    let key = ImageKey(identity: preview.identity, diameter: diameter, phase: phase)
+    let key = ImageKey(
+      identity: preview.identity, appearance: preview.appearance, diameter: diameter, phase: phase)
     if imageKey == key { return imageCache }
     var accelerated: CGImage?
     if let shader = gpuShader {
       accelerated = shader.image(
         identity: preview.identity, terrain: cachedTerrain(for: preview.identity),
-        palette: PlanetPalette(identity: preview.identity),
+        palette: preview.appearance,
         angle: Double(phase) * 0.006, diameter: diameter)
       // Persistent command/device failures must not stall every subsequent frame.
       if accelerated == nil { gpuShader = nil }
@@ -87,10 +89,11 @@ enum PlanetRenderer {
   static func referenceImage(for preview: PlanetPreview, diameter: Int) -> CGImage? {
     guard (32...768).contains(diameter), preview.angle.isFinite else { return nil }
     let phase = Int(preview.angle.truncatingRemainder(dividingBy: 2 * .pi) / 0.006)
-    let key = ImageKey(identity: preview.identity, diameter: diameter, phase: phase)
+    let key = ImageKey(
+      identity: preview.identity, appearance: preview.appearance, diameter: diameter, phase: phase)
     if referenceKey == key { return referenceImageCache }
     let terrain = cachedTerrain(for: preview.identity)
-    let palette = PlanetPalette(identity: preview.identity)
+    let palette = preview.appearance
     let angle = Double(phase) * 0.006
     var bytes = [UInt8](repeating: 0, count: diameter * diameter * 4)
     for y in 0..<diameter {
@@ -105,8 +108,8 @@ enum PlanetRenderer {
         bytes[offset + 1] = byte(colour.y)
         bytes[offset + 2] = byte(colour.z)
         // Preserve the premultiplied atmospheric rim while keeping space transparent.
-        let haze = max(0, 1 - (sqrt(radius) - 1) / 0.035)
-        bytes[offset + 3] = radius < 1 ? 255 : byte(haze * haze * 0.25)
+        let haze = max(0, 1 - (sqrt(radius) - 1) / palette.profile.rimWidth)
+        bytes[offset + 3] = radius < 1 ? 255 : byte(haze * haze * palette.profile.rimOpacity)
       }
     }
     let data = Data(bytes) as CFData
@@ -130,8 +133,8 @@ enum PlanetRenderer {
     terrain: PlanetTerrain, palette: PlanetPalette
   ) -> Vector3 {
     guard radius < 1 else {
-      let haze = max(0, 1 - (sqrt(radius) - 1) / 0.035)
-      return Vector3(0.12, 0.35, 0.66) * (haze * haze * 0.25)
+      let haze = max(0, 1 - (sqrt(radius) - 1) / palette.profile.rimWidth)
+      return palette.profile.atmosphereColour * (haze * haze * palette.profile.rimOpacity)
     }
     let nz = sqrt(1 - radius)
     let latitude = asin(ny)
@@ -141,16 +144,25 @@ enum PlanetRenderer {
       terrain.clouds, longitude: longitude + angle * 0.08, latitude: latitude)
     let coast = smooth(palette.seaLevel - 0.018, palette.seaLevel + 0.018, height)
     let highland = smooth(palette.seaLevel + 0.04, 0.8, height)
-    let land = blend(palette.land, Vector3(0.56, 0.46, 0.30), highland * 0.65)
+    var land = blend(
+      palette.land, palette.profile.highland, highland * palette.profile.highlandStrength)
+    let vegetation =
+      smooth(palette.seaLevel + 0.015, palette.seaLevel + 0.13, height)
+      * (1 - highland) * palette.profile.vegetationStrength
+    land = blend(land, palette.profile.vegetation, vegetation)
     var surface = blend(palette.ocean, land, coast)
     let ice = smooth(palette.ice - 0.06, palette.ice + 0.02, abs(ny))
     surface = blend(surface, Vector3(0.81, 0.89, 0.93), ice)
-    let cloudOpacity = smooth(0.50, 0.67, cloud) * 0.80
-    surface = blend(surface, Vector3(0.92, 0.95, 1), cloudOpacity)
+    let cloudOpacity =
+      smooth(palette.profile.cloudLow, palette.profile.cloudHigh, cloud)
+      * palette.profile.cloudOpacity
+    surface = blend(surface, palette.profile.cloudColour, cloudOpacity)
+    surface = blend(surface, palette.profile.atmosphereColour, palette.profile.surfaceHaze)
     let sunlight = -nx * 0.52 + ny * 0.35 + nz * 0.78
     let illumination = 0.035 + 0.965 * smooth(-0.10, 0.80, sunlight)
-    let atmosphere = pow(1 - nz, 3) * smooth(-0.12, 0.50, sunlight) * 0.40
-    return surface * illumination + Vector3(0.20, 0.49, 0.85) * atmosphere
+    let atmosphere =
+      pow(1 - nz, 3) * smooth(-0.12, 0.50, sunlight) * palette.profile.atmosphereStrength
+    return surface * illumination + palette.profile.atmosphereColour * atmosphere
   }
 
   private static func smooth(_ low: Double, _ high: Double, _ value: Double) -> Double {
