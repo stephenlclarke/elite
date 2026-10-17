@@ -45,6 +45,15 @@ final class PlanetFrameProfiler {
     var yaw: Double?
     var roll: Double?
     var throttle: Double?
+    var keyWindow: Bool?
+    var windowVisible: Bool?
+    var docked: Bool?
+    var paused: Bool?
+    var energy: Double?
+    var frontShield: Double?
+    var rearShield: Double?
+    var message: String?
+    var nativeStations: [NativeStationFlightObservation]?
   }
   private struct DrawEvent: Codable {
     let submission: UInt64?
@@ -141,14 +150,22 @@ final class PlanetFrameProfiler {
   private var finished = false
   private var lastCameraKey: String?
   private let windowWarmupFrames = 60
+  private let diagnosticCaptures: Bool
+  private var capturedStationViews: Set<String> = []
+  private var previousPose: ShipPose?
+  private var previousPhysicalTime: Double?
 
-  init(directory: URL, sourceSHA: String, system: StarSystem, mode: WindowMode) throws {
+  init(
+    directory: URL, sourceSHA: String, system: StarSystem, mode: WindowMode,
+    diagnosticCaptures: Bool = false
+  ) throws {
     guard directory.path.hasPrefix("/"), !FileManager.default.fileExists(atPath: directory.path),
       sourceSHA.count == 40, sourceSHA.allSatisfy({ "0123456789abcdef".contains($0) })
     else { throw CocoaError(.fileWriteInvalidFileName) }
     self.directory = directory
     self.sourceSHA = sourceSHA
     self.mode = mode
+    self.diagnosticCaptures = diagnosticCaptures
     phase = mode == .compact ? .warmWindow : .fullscreenTransition
     currentPhase = phase
     systemDescription =
@@ -189,14 +206,23 @@ final class PlanetFrameProfiler {
       id: nextID, phase: phase.rawValue, startedSeconds: Self.elapsed(clockOrigin, now),
       loopIntervalMilliseconds: lastLoopByPhase[phase.rawValue].map { Self.elapsed($0, now) * 1000 }
     )
+    if var sample = samples[nextID] {
+      observeWindowAndGame(in: view, sample: &sample)
+      samples[nextID] = sample
+    }
     lastLoopByPhase[phase.rawValue] = now
     view.held.removeAll()
     if phase == .flyby {
-      guard view.window?.isKeyWindow == true, view.window?.isVisible == true,
-        !view.game.docked, view.game.screen.isFlight,
+      guard view.window?.isKeyWindow == true, view.window?.isVisible == true else {
+        fail("The native flyby window lost key or visible status.")
+        return
+      }
+      guard !view.game.docked, view.game.screen.isFlight,
         let anchors = view.game.commander.flightSimulation.anchors
       else {
-        fail("The controlled native flight window is no longer active.")
+        fail(
+          "The native flyby left flight: \(view.game.screen), docked=\(view.game.docked), energy=\(view.game.energy)."
+        )
         return
       }
       // The original +Z launch line passes planet at 1.795R and sun at 4.746R.
@@ -238,6 +264,8 @@ final class PlanetFrameProfiler {
         || view.game.commander.unlimitedJumps,
       energy: view.game.energy, fuel: view.game.commander.fuel)
     flightStarted = ContinuousClock.now
+    previousPose = flight.pose
+    previousPhysicalTime = flight.physicalTime
     changePhase(.warmFlight)
   }
 
@@ -253,6 +281,11 @@ final class PlanetFrameProfiler {
     sample.speed = view.game.speed
     sample.cabinTemperature = view.game.cabinTemperature
     sample.camera = String(describing: view.game.screen)
+    observeWindowAndGame(in: view, sample: &sample)
+    sample.nativeStations = view.game.nativeStationFlightObservations(
+      from: previousPose, delta: previousPhysicalTime.map { flight.physicalTime - $0 })
+    previousPose = flight.pose
+    previousPhysicalTime = flight.physicalTime
     sample.fingerCount = view.trackpad.fingerCount
     let controls = view.controls
     sample.pitch = controls.pitch
@@ -322,6 +355,18 @@ final class PlanetFrameProfiler {
     samples[id] = sample
   }
 
+  private func observeWindowAndGame(in view: GameView, sample: inout Sample) {
+    sample.keyWindow = view.window?.isKeyWindow == true
+    sample.windowVisible = view.window?.isVisible == true
+    sample.docked = view.game.docked
+    sample.paused = view.game.paused
+    sample.camera = String(describing: view.game.screen)
+    sample.energy = view.game.energy
+    sample.frontShield = view.game.frontShield
+    sample.rearShield = view.game.rearShield
+    sample.message = view.game.message
+  }
+
   func endFrame(
     in view: GameView, started: ContinuousClock.Instant, deadline: ContinuousClock.Instant
   ) {
@@ -333,6 +378,12 @@ final class PlanetFrameProfiler {
       samples[id] = sample
     }
     guard phase == currentPhase else { return }
+    if diagnosticCaptures, phase == .flyby {
+      do { try captureStationViews(in: view) } catch {
+        fail(error.localizedDescription)
+        return
+      }
+    }
     phaseFrames += 1
     switch phase {
     case .warmWindow where phaseFrames >= windowWarmupFrames:
@@ -380,7 +431,27 @@ final class PlanetFrameProfiler {
     phaseFrames = 0
   }
 
-  private func capture(_ view: GameView) throws {
+  private func captureStationViews(in view: GameView) throws {
+    guard let id = currentID,
+      let nearest = samples[id]?.nativeStations?
+        .min(by: { $0.centerRange < $1.centerRange })
+    else { return }
+    var name: String?
+    if nearest.sweepClear == false {
+      name = "station-contact"
+    } else if nearest.centerRange < nearest.meshRadius * 0.7 {
+      name = "station-close"
+    } else if nearest.centerRange < nearest.meshRadius * 1.25 {
+      name = "station-approach"
+    }
+    guard let name, capturedStationViews.insert(name).inserted else { return }
+    try capture(view, name: name)
+    let data = try JSONEncoder().encode(samples[id])
+    try data.write(
+      to: directory.appendingPathComponent(name + ".json"), options: .withoutOverwriting)
+  }
+
+  private func capture(_ view: GameView, name: String? = nil) throws {
     capturing = true
     defer { capturing = false }
     guard let image = view.bitmapImageRepForCachingDisplay(in: view.bounds) else {
@@ -391,7 +462,8 @@ final class PlanetFrameProfiler {
       throw CocoaError(.fileWriteUnknown)
     }
     try data.write(
-      to: directory.appendingPathComponent(mode.rawValue + ".png"), options: .withoutOverwriting)
+      to: directory.appendingPathComponent((name ?? mode.rawValue) + ".png"),
+      options: .withoutOverwriting)
   }
 
   private func finish(error: String?) {

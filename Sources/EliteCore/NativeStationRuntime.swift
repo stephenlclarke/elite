@@ -497,7 +497,7 @@ extension Game {
 
   /// A conservative box encloses every effective-hull vertex at both sweep ends and
   /// expands by the angular-motion bound. Triangle clipping detects face/edge contacts too.
-  private func nativeStationHullSweepClear(
+  func nativeStationHullSweepClear(
     _ player: Mesh, from start: ShipPose, to end: ShipPose, saved: NativeStationSavedPose,
     fromOrientation: Basis3, toOrientation: Basis3, margin: Double, mesh: Mesh
   ) -> Bool {
