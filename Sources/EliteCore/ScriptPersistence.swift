@@ -174,10 +174,11 @@ struct ScriptSavePointer: Codable {
 
 /// Publication is synchronous inside GameRuntime: no actor reentrancy can overwrite newer simulation state.
 enum ScriptSaveStore {
+  @discardableResult
   static func write(
     commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander",
     exclusive: Bool = false
-  ) throws {
+  ) throws -> AlienStoragePublication? {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid,
       world.consistent(with: commander)
@@ -188,45 +189,67 @@ enum ScriptSaveStore {
     guard try semantic.encode(commander.scriptState).count <= 33_554_432,
       try semantic.encode(commander.contracts).count <= 33_554_432
     else { throw SaveError.invalidCommander }
+    let generation = UUID().uuidString
+    let root = url.appendingPathExtension("missions")
+    let directory = root.appendingPathComponent(generation, isDirectory: true)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let alienPublication = try AlienStorageVersionedSave.stage(commander, in: directory)
     let encoder = ScriptValueStorage.encoder()
     var header = commander
+    header.publishAlienStorage(alienPublication)
     header.scriptState = ScriptEngineState()
     header.contracts = ScriptContractState()
-    let chunks = [
+    var chunks = [
       "commander.json": try encoder.encode(header),
       "missions.json": try encoder.encode(commander.scriptState),
       "world.json": try encoder.encode(world),
       "contracts.json": try encoder.encode(commander.contracts),
     ]
+    if let alienPublication {
+      let store = try AlienStoragePageStore(directory: directory)
+      let rootData = try store.readGenerationRoot()
+      guard ScriptPackLibrary.hash(rootData) == alienPublication.after.reference?.rootHash else {
+        throw AlienStorageError.hashMismatch
+      }
+      chunks[AlienStorageVersionedSave.rootName] = rootData
+    }
     guard chunks["commander.json"]!.count <= 4_194_304,
       chunks["missions.json"]!.count <= 134_217_728,
       chunks["world.json"]!.count <= 8_388_608
         && chunks["contracts.json"]!.count <= 134_217_728
     else { throw SaveError.invalidCommander }
-    let generation = UUID().uuidString
-    let root = url.appendingPathExtension("missions")
-    let directory = root.appendingPathComponent(generation, isDirectory: true)
-    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     // Never replace an old generation; a failed publication leaves the previous pointer valid.
-    for key in chunks.keys.sorted() {
-      try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
+    if alienPublication != nil {
+      let store = try AlienStoragePageStore(directory: directory)
+      for key in chunks.keys.sorted() where key != AlienStorageVersionedSave.rootName {
+        let limit =
+          key == "commander.json" ? 4_194_304 : key == "world.json" ? 8_388_608 : 134_217_728
+        try store.writeGenerationChunk(chunks[key]!, name: key, maximumBytes: limit)
+      }
+    } else {
+      for key in chunks.keys.sorted() {
+        try chunks[key]!.write(to: directory.appendingPathComponent(key), options: .atomic)
+      }
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: commander.usesEconomyMiningSaveVersion
-        ? 26
-        : commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
-          || commander.usesModularDriveSaveVersion
-          ? 25
-          : commander.usesNativePeopleSaveVersion
-            ? 24
-            : commander.scriptState.financeLedger != nil
-              ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
+      schemaVersion: alienPublication != nil
+        ? 27
+        : commander.usesEconomyMiningSaveVersion
+          ? 26
+          : commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
+            || commander.usesModularDriveSaveVersion
+            ? 25
+            : commander.usesNativePeopleSaveVersion
+              ? 24
+              : commander.scriptState.financeLedger != nil
+                ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
     let bytes = try encoder.encode(pointer)
     try CommanderSavePublication.write(bytes, to: url, exclusive: exclusive)
+    return alienPublication
   }
   static func generationDirectory(_ generation: String, from url: URL) throws -> URL {
     guard UUID(uuidString: generation)?.uuidString == generation else {
@@ -239,11 +262,12 @@ enum ScriptSaveStore {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     try ScriptSaveJSONPreflight.validate(pointerBytes)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-    let names: Set<String> =
+    var names: Set<String> =
       pointer.schemaVersion >= 8
       ? ["commander.json", "missions.json", "world.json", "contracts.json"]
       : ["commander.json", "missions.json", "world.json"]
-    guard pointer.format == "elite-script-save", (2...26).contains(pointer.schemaVersion),
+    if pointer.schemaVersion == 27 { names.insert(AlienStorageVersionedSave.rootName) }
+    guard pointer.format == "elite-script-save", (2...27).contains(pointer.schemaVersion),
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -262,6 +286,9 @@ enum ScriptSaveStore {
       ("commander.json", 4_194_304), ("missions.json", storedLimit), ("world.json", 8_388_608),
     ]
     if pointer.schemaVersion >= 8 { limits.append(("contracts.json", storedLimit)) }
+    if pointer.schemaVersion == 27 {
+      limits.append((AlienStorageVersionedSave.rootName, AlienStoragePageCodec.maximumRootBytes))
+    }
     for (name, limit) in limits {
       let location = directory.appendingPathComponent(name)
       let properties = try location.resourceValues(forKeys: [
@@ -276,6 +303,9 @@ enum ScriptSaveStore {
         throw SaveError.invalidCommander
       }
       try ScriptSaveJSONPreflight.validate(data)
+      if name == "commander.json" {
+        try AlienStorageVersionedSave.validateHeader(data, schema: pointer.schemaVersion)
+      }
       if name == "commander.json", pointer.schemaVersion < 26 {
         try EconomyMiningVersionedSave.rejectFields(data)
       }
@@ -314,6 +344,14 @@ enum ScriptSaveStore {
     }
     var commander = try ScriptValueStorage.decoder(typed: typed).decode(
       Commander.self, from: chunks["commander.json"]!)
+    guard (pointer.schemaVersion == 27) == commander.usesAlienStorageSaveVersion else {
+      throw SaveError.invalidCommander
+    }
+    if pointer.schemaVersion == 27 {
+      try AlienStorageVersionedSave.hydrate(
+        &commander, rootHash: pointer.hashes[AlienStorageVersionedSave.rootName]!,
+        directory: directory)
+    }
     if pointer.schemaVersion <= 4 { commander.migrateLegacyPassengerMarker() }
     let missionsDecoder = ScriptValueStorage.decoder(typed: typed)
     missionsDecoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
@@ -323,7 +361,8 @@ enum ScriptSaveStore {
       pointer.schemaVersion < 23
         ? commander.scriptState.financeLedger == nil
         : pointer.schemaVersion == 23 ? commander.scriptState.financeLedger != nil : true,
-      (pointer.schemaVersion == 26) == commander.usesEconomyMiningSaveVersion,
+      pointer.schemaVersion >= 27
+        || (pointer.schemaVersion == 26) == commander.usesEconomyMiningSaveVersion,
       pointer.schemaVersion >= 26
         || (pointer.schemaVersion == 25)
           == (commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
