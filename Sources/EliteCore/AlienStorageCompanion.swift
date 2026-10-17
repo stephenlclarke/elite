@@ -40,43 +40,9 @@ extension AlienStorageWorldProgress {
   func emissions(plan: AlienStorageWorldPlan) throws -> [AlienStorageEmissionOrigin:
     SalvageLootItem]
   {
-    try validate(plan: plan)
-    var result: [AlienStorageEmissionOrigin: SalvageLootItem] = [:]
-    var serial: UInt32 = 0
-    func identity() throws -> SalvageLotIdentity {
-      guard let lot = UInt16(exactly: serial), serial < nextLot else {
-        throw AlienStorageError.invalidJoin
-      }
-      return .init(section: plan.plan.section, lot: lot)
-    }
-    if issuedStructural > 0 {
-      guard let materialKind else { throw AlienStorageError.invalidJoin }
-      let id = try identity()
-      result[.structural] = SalvageLotEmission.structural(
-        plan: plan.plan, quantity: structuralUnits, material: materialKind, identity: id)
-      serial += 1
-    }
-    for index in plan.plan.items.indices where !discarded[index] && issued[index] > 0 {
-      let item = plan.plan.items[index]
-      let limit = SalvageLotEmission.chunkLimit(item)
-      let count = (issued[index] - 1) / limit + 1
-      guard let originalIndex = UInt16(exactly: index) else {
-        throw AlienStorageError.invalidJoin
-      }
-      for ordinal in 0..<count {
-        guard let chunkOrdinal = UInt16(exactly: ordinal) else {
-          throw AlienStorageError.invalidJoin
-        }
-        let id = try identity()
-        result[.planned(itemIndex: originalIndex, chunkOrdinal: chunkOrdinal)] =
-          SalvageLotEmission.chunk(
-            item, identity: id,
-            quantity: min(limit, SalvageLotEmission.quantity(item) - ordinal * limit))
-        serial += 1
-      }
-    }
-    guard serial == nextLot else { throw AlienStorageError.invalidJoin }
-    return result
+    try validateNativeTiming(plan: plan)
+    return try SalvageSectionEmissionView(seed: plan.seed, plan: plan.plan, progress: self)
+      .emissions()
   }
 }
 
