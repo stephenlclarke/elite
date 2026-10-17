@@ -1,5 +1,7 @@
 # feat: add navigation computers and responsive flight assistance
 
+Historical delivery handoff: its navigation/shield names and prices describe that checkpoint. Current component grades, stock values, upgrade progression and retained save-key mappings are documented in [Equipment modules](EQUIPMENT-MODULES.md).
+
 Modern Mac windows now use full-width smooth flight graphics, compact original-font instruments and a larger scanner. Stable targeting, full station docking and contextual mission browsing accompany fuel-limited route planning and a grouped equipment shop.
 
 ## Behaviour

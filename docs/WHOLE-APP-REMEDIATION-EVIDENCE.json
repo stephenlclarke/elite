@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "asOfDate": "2026-10-17",
   "timezone": "Europe/London",
-  "composedSource": "b30c291f1701519dda9c3fded5343426ffe0a19d",
+  "composedSource": "7666e892b42ecf42b34c3b590db8f48bd0f9d302",
   "sourceReconciliationDraft": {
     "path": "/tmp/elite-g3-whole-app-remediation-ledger-20261017.md",
     "sha256": "12657e569b939e40cfbf94204d7b11c02de6cf4ace360c18375fce57ce9171a1",
@@ -1026,7 +1026,7 @@
     "focusedFixture113Passed": false,
     "currentCompleteCI": false,
     "finalRendererMediaCurrent": true,
-    "qualification": "Actualcomposed renderer177 passed onb30source(all171;fivegeneratedoutputs); focused149/150/156/167/171 remain exacthistoricalselections. Baselinefull152/158/169/172failed. Newcomposedtestcataloguenotcompiled/executed; finalcomposedmakeci,sanitizers/leaks,nativevisual/performance,Sonar,cleanGitHubreview/releasepending.",
+    "qualification": "Fresh1661cataloguecompiled. Full190FAILED15issueheaders/sixmethods plusSIGBUS10;191diagnosticnotoriginalcrashattribution;192originalNPCfocusedPASS;193selectedzero-testsandisFAILEDselection;194compilefailedbeforeexecutiontheninternaltestimportfixed. OriginalGallery188PASS andrenderer189PASS remain source-qualified. Finalfrozenfull195pending; nofinalreview/Sonar/releaseacceptance.",
     "focusedFixture114Passed": false,
     "focusedRendererAndWeapon115Passed": true,
     "npcRestoreSourceIntegrated": "05d165a694d943589677598e58aaf585fb47d7a3",
@@ -1711,5 +1711,192 @@
     "protectedInputsUnchanged": true,
     "allOwnedStartSignaturesGone": true,
     "qualification": "Renderer generation only; no native GUI, performance, full CI or release acceptance."
-  }
+  },
+  "qualifiedReleaseReadiness183194": [
+    {
+      "checkpoint": 183,
+      "path": "/tmp/elite-full-review-ci-183/root-qualified-183.json",
+      "sha256": "411892349cd2455b18b1a9fb171554a485389614185ac65542fcf9f849362d89",
+      "source": "0a4db147a3e9e44805deaac241fbc04a2f317183",
+      "status": "FAILED maintained full CI attempt",
+      "signalCodes": [
+        "10"
+      ],
+      "rawLogSHA256": "de3e6f34c54e53c011295c5c3a7bd821a9758ddc156e7f983a1aa827247dc79e",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "Complete fresh catalogue and maintained make ci attempt; full CI acceptance only on complete successful coverage, thread sanitizer, serial address sanitizer and leak stages. Failed or interrupted evidence is not all-tests acceptance; no Sonar, release or hosted-crash equivalence claim.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 184,
+      "path": "/tmp/elite-debug-crash-184/actual-stopped-thread.json",
+      "sha256": "bcc21594b74b91fec8e111174bad07320de597eca2c1cadba853d37eb24dd513",
+      "source": "0a4db147a3e9e44805deaac241fbc04a2f317183",
+      "qualification": "Actual separately observed default coverage binary debugger stop; original183SIGBUS noOSreportmatch, no causalidentity/gatepass inferred",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 184,
+      "path": "/tmp/elite-debug-crash-184/root-game-test-verification-184.json",
+      "sha256": "d6db3162e82562dcefb4ae4042f53f091ce1245db0e5e69c3620aa0a35b18193",
+      "source": "0a4db147a3e9e44805deaac241fbc04a2f317183",
+      "status": "DIAGNOSTIC debugger probe completed",
+      "signals": [],
+      "rawLogSHA256": "3b55a95f4403bbe1a82003fba2518caa98736fd0371fec3867376a05d5a0cd66",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "No compilation invoked, exact previously compiled binary verified. Debugger diagnostic only; no gate/pass or original crash equivalence claim.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 185,
+      "path": "/tmp/elite-gallery-retry-old-coverage-185/root-game-test-verification-185.json",
+      "sha256": "cad913538a73466daca091ab3c4875319f72b635ffeacc99ca0b9e1ccfbc1b95",
+      "source": "0a4db147a3e9e44805deaac241fbc04a2f317183",
+      "status": "FAILED execution",
+      "signals": [
+        "10"
+      ],
+      "rawLogSHA256": "aa67231033083ae9c87b08e82ab6d0a3db4a2bd2daf77942a5fad5eb327fbaad",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "One controlled focused coverage/default-parallel execution; full CI, sanitizer, leak, Sonar, release and hosted crash equivalence gates remain unestablished.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 186,
+      "path": "/tmp/elite-gallery-retry-phase-186/root-game-test-verification-186.json",
+      "sha256": "74b11a1ab06b162bdc0be30ecece0a3a789ed1f5509136ca7e8a3e30348a740f",
+      "source": "6e41f78d4bcce4e85492a35b61efcc33a3135e3f",
+      "status": "FAILED execution",
+      "signals": [
+        "10"
+      ],
+      "rawLogSHA256": "d34f318b857eff0429522bd94183b4b7a55c33037ab50a4a1df4cfc9d84e9322",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "One controlled focused coverage/default-parallel execution; full CI, sanitizer, leak, Sonar, release and hosted crash equivalence gates remain unestablished.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 187,
+      "path": "/tmp/elite-debug-crash-187/actual-stopped-thread.json",
+      "sha256": "1f25d2e553cc10daee82cce6378c5471785b6c3379d04e73797978524b0a895a",
+      "source": "6e41f78d4bcce4e85492a35b61efcc33a3135e3f",
+      "qualification": "Separately observed debugger stop on exact186coveragebinary; nooriginalSIGBUSOSreportmatch/equivalence orpass inferred",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 187,
+      "path": "/tmp/elite-debug-crash-187/root-game-test-verification-187.json",
+      "sha256": "7240152ac34177463a8c937af969edcbf6d29438584b74009922bdee82f72418",
+      "source": "6e41f78d4bcce4e85492a35b61efcc33a3135e3f",
+      "status": "DIAGNOSTIC debugger probe completed",
+      "signals": [],
+      "rawLogSHA256": "9ae19af9e6cf120390128312bbf97727e1c9db2026b551d92b559e8ace312f00",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "No compilation invoked, exact previously compiled binary verified. Debugger diagnostic only; no gate/pass or original crash equivalence claim.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 188,
+      "path": "/tmp/elite-gallery-save-phase-188/root-game-test-verification-188.json",
+      "sha256": "81b6e1683bfbd3a1ffb09e44b05b9b423a74eeb7b836b28160fe3c79804e0897",
+      "source": "53ad4c6caa92a76ac9b1c421936664f0e382a621",
+      "status": "PASS isolated execution",
+      "signals": [],
+      "rawLogSHA256": "47ab70b516a9179d3777782d574c32d8b4d82f2bc9ae0801aa5a9253f4d96558",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "One controlled focused coverage/default-parallel execution; full CI, sanitizer, leak, Sonar, release and hosted crash equivalence gates remain unestablished.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 189,
+      "path": "/tmp/elite-renderer-media-189/root-media-verification-189.json",
+      "sha256": "700bab2394226d0c8505b3bf4fa8aca65b3f4d676484a25b8bd7b8c1fc65c7b5",
+      "source": "53ad4c6caa92a76ac9b1c421936664f0e382a621",
+      "status": "PASS maintained renderer generation and currentness",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "Renderer generation only; no native GUI, performance, full CI or release acceptance.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 190,
+      "path": "/tmp/elite-full-review-ci-190/root-qualified-190.json",
+      "sha256": "c5867cab7c336047763706e860253cd32033ca25759111a9a84416568ad33367",
+      "source": "7e474867618129cd66368d0fd483b4ea8755bcd5",
+      "status": "FAILED maintained full CI attempt",
+      "signalCodes": [
+        "10"
+      ],
+      "rawLogSHA256": "d0c4bc7552ea9cc08b132bebb744a4263fffe340e8950aca8ba440fbf842e89d",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "Complete fresh catalogue and maintained make ci attempt; full CI acceptance only on complete successful coverage, thread sanitizer, serial address sanitizer and leak stages. Failed or interrupted evidence is not all-tests acceptance; no Sonar, release or hosted-crash equivalence claim.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 191,
+      "path": "/tmp/elite-debug-crash-191/actual-stopped-thread.json",
+      "sha256": "fa85061f47eb52f3b7c670de2b9b783311cf9bbcc7327c40d5540ae147de34e1",
+      "source": "7e474867618129cd66368d0fd483b4ea8755bcd5",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 191,
+      "path": "/tmp/elite-debug-crash-191/root-game-test-verification-191.json",
+      "sha256": "02e2e4e1c56fadb02b939b7d8102d33638f4cd56cc9c8bd03cc2b292e3a50424",
+      "source": "7e474867618129cd66368d0fd483b4ea8755bcd5",
+      "status": "DIAGNOSTIC debugger probe completed",
+      "signals": [],
+      "rawLogSHA256": "f30212104ac9eee356441fda2e5c660b49cd11e1e87493a7d27af75eb01ab8c2",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "No compilation invoked, exact previously compiled binary verified. Debugger diagnostic only; no gate/pass or original crash equivalence claim.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 192,
+      "path": "/tmp/elite-npc-profile-phase-192/root-game-test-verification-192.json",
+      "sha256": "90ab2c295cc5c5604b1efd1c46fa5e9ae1617764996ff741177ccfada3acc219",
+      "source": "53a3ebe569c9bcf1d0226587521969d0f248bed8",
+      "status": "PASS isolated execution",
+      "signals": [],
+      "rawLogSHA256": "935b5a01d10c5337eded01cf82fd10402db9f6182b789c282e638bcc082ba16d",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "One controlled focused coverage/default-parallel execution; full CI, sanitizer, leak, Sonar, release and hosted crash equivalence gates remain unestablished.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 193,
+      "path": "/tmp/elite-targeting-fixtures-193/root-game-test-verification-193.json",
+      "sha256": "89bb66181b846c1d7bb84e96e6662a497af6962e8aa498f2a2d0bab6eaae18e1",
+      "source": "782928a0c62611dcb4740a5bd2a23d9ef3201b53",
+      "status": "FAILED runner selection; zero tests executed",
+      "signals": [],
+      "rawLogSHA256": "4c8003d316e1512ae21fb9de0aaf635bde0dcbdfcc7da77cdbf7096489332e3d",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "One controlled focused coverage/default-parallel execution; full CI, sanitizer, leak, Sonar, release and hosted crash equivalence gates remain unestablished.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    },
+    {
+      "checkpoint": 194,
+      "path": "/tmp/elite-targeting-navigation-fixtures-194/root-game-test-verification-194.json",
+      "sha256": "b08cc5ec5b2c5f4ad0635b1020427f823860910e35b210c430db2b289a0d3c8d",
+      "source": "120a3bab1c421c227a4c1a3a14200d9bda6808f5",
+      "status": "FAILED execution",
+      "signals": [],
+      "rawLogSHA256": "717ca722a5a31b87e43ab86e842c10dd549058fad9d689ca9475425c20fc07ab",
+      "protectedInputsUnchanged": true,
+      "allOwnedStartSignaturesGone": true,
+      "qualification": "Compilation failed; zero test execution. Existing binary hash belongs to the previous artifact, not a compiled candidate; full CI, sanitizer, leak, Sonar, release and hosted crash equivalence gates remain unestablished.",
+      "scope": "Exact recorded run only; debugger/compile/zero-selection/focused/renderer outcomes do not establish full CI. No causal OS-report equivalence inferred."
+    }
+  ]
 }
