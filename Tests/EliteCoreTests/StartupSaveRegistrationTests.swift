@@ -317,8 +317,18 @@ struct StartupSaveRegistrationTests {
       view.pending.append(" ")
     }
     view.pending.append("0")
-    view.controls.pitch = 0.35
+    await delegate.processPendingCommands(in: view)
+    func pitchEvent(_ type: NSEvent.EventType) throws -> NSEvent {
+      try #require(
+        NSEvent.keyEvent(
+          with: type, location: .zero, modifierFlags: [], timestamp: 0,
+          windowNumber: window.windowNumber, context: nil, characters: "",
+          charactersIgnoringModifiers: "", isARepeat: false, keyCode: 126))
+    }
+    view.keyDown(with: try pitchEvent(.keyDown))
+    try #require(view.held.contains("up") && view.controls.pitch != 0)
     await delegate.processFrame(in: view, delta: { 0.1 })
+    view.keyUp(with: try pitchEvent(.keyUp))
     let flying = await delegate.runtime.snapshot()
     #expect(!flying.docked && flying.scriptDurabilityAvailable && flying.requiresScriptDurability)
     #expect(flying.commander.flightSimulation.physicalTime > 0 && flying.pitch != 0)
