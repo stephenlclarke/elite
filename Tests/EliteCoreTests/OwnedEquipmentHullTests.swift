@@ -44,14 +44,82 @@ import Testing
   #expect(after.credits == quote.balance)
   #expect(after.accommodation == before.accommodation)
   #expect(after.accommodation.storedBerths.map(\.id) == [cabin])
+  try verifyOwnedHullPortableProperty(before: before, after: after)
   for id in stored {
     #expect(after.equipmentInventory?.items.first { $0.id == id }?.location == nil)
   }
+  try #require(after.npcPersistence.count == 0)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: file), from: file)
   #expect(saved == after)
   let reloaded = GameRuntime()
   try await reloaded.load(from: file, persistMigrations: false)
   #expect(await reloaded.snapshot().commander == after)
+}
+
+@Test func ordinaryHullTradeSurvivesLaterExplicitSaveFailureAndSavesCurrentPropertyOnRetry()
+  async throws
+{
+  let folder = try missionGearFolder()
+  defer { try? FileManager.default.removeItem(at: folder) }
+  let directory = folder.appendingPathComponent("save")
+  let file = directory.appendingPathComponent("commander.json")
+  var game = try missionGearGame(missiles: 4)
+  let stored = try missionPrepareSmallHullExchange(&game)
+  game.screen = .showroom
+  game.showroom.selection = "SH001"
+  game.commander.credits = 10_000_000
+  try #require(!game.requiresScriptDurability)
+  let quote = try #require(game.shipTradeQuote)
+  try #require(quote.allowed)
+  let runtime = GameRuntime(game: game, saveURL: file)
+  try await runtime.save(to: file)
+  let before = await runtime.snapshot().commander
+  let bytes = try Data(contentsOf: file)
+  let property = try ownedHullSaveFiles(at: directory)
+  let backup = folder.appendingPathComponent("backup")
+  try FileManager.default.moveItem(at: directory, to: backup)
+  try Data("blocked".utf8).write(to: directory)
+  await runtime.key("showroom-trade")
+  await runtime.key("right")
+  await runtime.key("return")
+  let acceptedGame = await runtime.snapshot()
+  let accepted = acceptedGame.commander
+  try #require(!acceptedGame.requiresScriptDurability && accepted.npcPersistence.count == 0)
+  #expect(accepted.shipID == "SH001" && accepted.missiles == 1 && accepted.valid)
+  #expect(accepted.credits == quote.balance && !acceptedGame.showroom.trading)
+  try verifyOwnedHullPortableProperty(before: before, after: accepted)
+  for id in stored {
+    #expect(accepted.equipmentInventory?.items.first { $0.id == id }?.location == nil)
+  }
+  await #expect(throws: (any Error).self) { try await runtime.save(to: file) }
+  #expect(await runtime.snapshot().commander == accepted)
+  #expect(try Data(contentsOf: backup.appendingPathComponent("commander.json")) == bytes)
+  #expect(try ownedHullSaveFiles(at: backup) == property)
+  try FileManager.default.removeItem(at: directory)
+  try FileManager.default.moveItem(at: backup, to: directory)
+  // Freeze the independent expected disk property before writing, not from readback.
+  let expectedDisk = accepted
+  try await runtime.save(to: file)
+  #expect(await runtime.snapshot().commander == expectedDisk)
+  let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: file))
+  #expect(saved == expectedDisk)
+}
+
+private func verifyOwnedHullPortableProperty(before: Commander, after: Commander) throws {
+  let original = try #require(before.equipmentInventory)
+  let transferred = try #require(after.equipmentInventory)
+  try #require(original.items.allSatisfy { $0.boundHull == nil })
+  #expect(transferred.owner == original.owner && transferred.activeHull != original.activeHull)
+  #expect(transferred.revision == original.revision + 1)
+  #expect(Set(transferred.items.map(\.id)) == Set(original.items.map(\.id)))
+  for item in original.items {
+    let retained = try #require(transferred.items.first { $0.id == item.id })
+    #expect(retained.moved(to: nil) == item.moved(to: nil))
+    #expect(retained.location?.slot == item.location?.slot)
+    #expect(retained.location == nil || retained.location?.hullInstanceID == transferred.activeHull)
+  }
+  #expect(after.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
+  #expect(after.cargo == before.cargo && after.fuel == before.fuel)
 }
 
 private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
