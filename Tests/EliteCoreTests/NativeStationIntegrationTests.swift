@@ -116,7 +116,7 @@ struct NativeStationIntegrationTests {
     try await verifyNativeEntryAndExit(&game, kind: kind, storage: storage)
   }
 
-  @Test(arguments: ["speed", "facing", "aperture", "nonfinite"])
+  @Test(arguments: ["speed", "facing", "aperture", "nonfinite", "stationPose"])
   func unsafeActualApproachCannotIssueADockingReceipt(reason: String) async throws {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
@@ -448,6 +448,13 @@ private func verifyUnsafeNativeApproach(
     pose.position = pose.position + pose.orientation.x * 125
     NativeStationTestFixture.reframe(&game, to: pose)
   case "nonfinite": game.commander.flightSimulation.pose.position.x = .nan
+  case "stationPose":
+    let index = try #require(
+      game.bodies.firstIndex {
+        $0.nativeStationIdentity?.definition
+          == NativeStationGeometry.Kind.headquarters.sourceDefinition
+      })
+    game.bodies[index].position.x += 300
   default: throw NativeStationRuntimeError.invalidState
   }
   let runtime = GameRuntime(game: game, saveURL: storage.url)
