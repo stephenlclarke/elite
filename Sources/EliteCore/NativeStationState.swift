@@ -63,7 +63,7 @@ struct NativeStationBinding: Equatable, Codable, Sendable {
 
   func valid(for identity: NativeStationIdentity) -> Bool {
     actor.system == identity.system && actor.visit > 0 && actor.visit <= UInt64(Int64.max)
-      && actor.entity > 0 && actor.entity <= UInt64(Int64.max) && bodyID > 0
+      && actor.entity >= 2 && actor.entity <= UInt64(Int64.max) && bodyID > 0
   }
 }
 
@@ -149,6 +149,17 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
       else { return false }
     }
     guard let receipt = currentDock else { return true }
+    guard
+      !records.contains(where: { record in
+        guard record.identity.slot != receipt.station.slot,
+          let binding = record.binding ?? record.tombstone?.destroyedBinding
+        else { return false }
+        return binding.actor == receipt.dockingBinding.actor
+          || (binding.actor.system == receipt.dockingBinding.actor.system
+            && binding.actor.visit == receipt.dockingBinding.actor.visit
+            && binding.bodyID == receipt.dockingBinding.bodyID)
+      })
+    else { return false }
     return receipt.sequence > 0 && receipt.sequence < nextDockSequence
       && receipt.dockingBinding.valid(for: receipt.station)
       && records.contains {
@@ -224,7 +235,20 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
   init(from decoder: Decoder) throws {
     let values = try decoder.container(keyedBy: CodingKeys.self)
     world = try values.decode(UUID.self, forKey: .world)
-    records = try values.decode([NativeStationRecord].self, forKey: .records)
+    var entries = try values.nestedUnkeyedContainer(forKey: .records)
+    guard entries.count.map({ $0 <= Self.recordLimit }) ?? true else {
+      throw DecodingError.dataCorruptedError(
+        forKey: .records, in: values, debugDescription: "Native station record limit exceeded.")
+    }
+    var decoded: [NativeStationRecord] = []
+    while !entries.isAtEnd {
+      guard decoded.count < Self.recordLimit else {
+        throw DecodingError.dataCorruptedError(
+          forKey: .records, in: values, debugDescription: "Native station record limit exceeded.")
+      }
+      decoded.append(try entries.decode(NativeStationRecord.self))
+    }
+    records = decoded
     nextDockSequence = try values.decode(UInt64.self, forKey: .nextDockSequence)
     currentDock = try values.decodeIfPresent(NativeStationDockReceipt.self, forKey: .currentDock)
     guard valid else {

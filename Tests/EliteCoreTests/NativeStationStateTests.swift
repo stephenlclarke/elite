@@ -226,3 +226,48 @@ private struct StationStateFixture {
   }
   #expect(ledger == before && ledger.nextDockSequence == 1 && ledger.currentDock == nil)
 }
+
+@Test func nativeStationReservedActorsAndHistoricalDockAliasesRefuse() throws {
+  let fixture = StationStateFixture()
+  let way = fixture.record()
+  let hq = fixture.record(key: "hq", definition: "rrs_headquarters")
+  var ledger = try NativeStationLedger(world: fixture.world, records: [way, hq])
+  for entity in [UInt64(0), UInt64(1)] {
+    let before = ledger
+    #expect(throws: NativeStationStateError.self) {
+      try ledger.rebind(way.identity, to: fixture.binding(entity: entity))
+    }
+    #expect(ledger == before)
+  }
+  let old = fixture.binding()
+  try ledger.rebind(way.identity, to: old)
+  try ledger.recordDock(at: way.identity, binding: old, commanderOwner: fixture.owner)
+  let receipt = ledger.currentDock
+  try ledger.rebind(way.identity, to: fixture.binding(visit: 2, entity: 12, body: 12))
+  let before = ledger
+  for alias in [
+    old, fixture.binding(entity: 20, body: old.bodyID),
+    fixture.binding(entity: old.actor.entity, body: 20),
+  ] {
+    #expect(throws: NativeStationStateError.self) { try ledger.rebind(hq.identity, to: alias) }
+    #expect(ledger == before && ledger.currentDock == receipt)
+  }
+  try ledger.rebind(hq.identity, to: fixture.binding(visit: 2, entity: 13, body: 13))
+  #expect(ledger.valid && ledger.currentDock == receipt && ledger.nextDockSequence == 2)
+}
+
+@Test func nativeStationDecoderRejectsOversizedRecordArrayBeforeDecodingElements() throws {
+  let fixture = StationStateFixture()
+  let ledger = try NativeStationLedger(world: fixture.world, records: [])
+  var object = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(ledger)) as? [String: Any])
+  // Invalid elements would produce a type mismatch if decoded before budget admission.
+  object["records"] = Array(repeating: "not a station record", count: 373)
+  let bytes = try JSONSerialization.data(withJSONObject: object)
+  do {
+    _ = try JSONDecoder().decode(NativeStationLedger.self, from: bytes)
+    Issue.record("Oversized station registry must refuse before element decoding")
+  } catch DecodingError.dataCorrupted(let context) {
+    #expect(context.debugDescription == "Native station record limit exceeded.")
+  }
+}
