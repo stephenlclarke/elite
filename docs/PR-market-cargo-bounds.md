@@ -6,7 +6,7 @@ Manual buying now checks the existing per-commodity save bound before debiting c
 
 ## Validation
 
-Three regression methods cover seven cases through `GameRuntime`: refusal at the supported limit, acceptance of the last unit followed by refusal and a genuine save/reload, and an actually fitted four-cabin hold. Formatting and runtime validation will be recorded after execution; no passing result is claimed yet.
+Three regression methods cover seven cases through `GameRuntime`: refusal at the supported limit, acceptance of the last unit followed by refusal and a genuine save/reload, and an actually fitted four-cabin hold. Formatting and Markdown lint passed. Root150 compiled and passed all eight selected market/hold compatibility methods at `44960dd5f119134fc874f20a59e51f9de584bdcc`, including all seven new actor cases. The maximum accepted quantity survived actual save/reload, and refusal conserved the whole commander and market. Source, human save and preferences were unchanged and all owned processes exited.
 
 ## Compatibility
 

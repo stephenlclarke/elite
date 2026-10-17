@@ -6,10 +6,10 @@
 
 ## Validation
 
-Source review confirms all five previous-state dependencies have matching replacements. Formatting, compilation and runtime checks will be recorded after execution. Existing discharge-event and speech-feed regressions, together with native frame processing, cover the surrounding behavior; no playback or performance result is claimed before validation.
+Independent source review found no actionable behavior change. Formatting and Markdown lint passed. Root149 compiled the change and passed all 52 selected methods at `312b52878ef4a01fbae39a0e6997ca36e30d01aa`, including discharge, speech and actual native frame processing. Source, the human commander save and preferences were unchanged, and all owned validation processes exited. This validates surrounding event behavior and native execution; it does not assert audible playback quality or measured performance.
 
 ## Compatibility and risks
 
-There are no save, equipment, controls, sound format or public API changes. There is no frame-rate claim or numerical memory benchmark. Full coverage, sanitizer, leak and release acceptance remain separate gates, including the already known mission-ledger test setup crash.
+There are no save, equipment, controls, sound format or public API changes. There is no frame-rate claim or numerical memory benchmark. Full coverage, sanitizer, leak and release acceptance remain separate gates, the mission-ledger regression now passes in the focused run; full-suite acceptance is still pending.
 
 See [the issue](ISSUE-audio-snapshot-retention.md).
