@@ -100,9 +100,23 @@ private func threatenedGame(sources: [Int] = [1], salvo: Int = 1) -> Game {
     }
   }
 }
-@Test func unlimitedRetaliationAndNewAttacksRespectAmmoAndManualDisarm() {
+@Test func unlimitedRetaliationAndNewAttacksRespectAmmoAndManualDisarm() throws {
   var game = threatenedGame()
-  game.commander.missiles = 0
+  let initialInventory = try #require(game.commander.equipmentInventory)
+  let rounds = initialInventory.items.filter {
+    $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+  }
+  try #require(rounds.count == 3)
+  for round in rounds {
+    let inventory = try #require(game.commander.equipmentInventory)
+    try game.commander.storeEquipment(round, expectedRevision: inventory.revision)
+  }
+  let emptyInventory = try #require(game.commander.equipmentInventory)
+  try #require(
+    emptyInventory.items.filter {
+      $0.node == EquipmentRuntimeCatalog.standardMissile && $0.location != nil
+    }.isEmpty && game.commander.missiles == 0 && game.commander.valid)
+  try game.commander.validateEquipmentState()
   game.commander.unlimitedMissiles = true
   game.ecm()
   for _ in 0..<60 { game.tick(delta: 0.02) }
