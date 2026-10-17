@@ -94,8 +94,8 @@ struct NativePeoplePersistenceTests {
     let source = try NativePeopleTestFixture.source(game)
     // Restore the exact pre-24 record shape: original producer, no sampled schedule or captures.
     game.commander.savedEMPState?.records[source]?.savedDisableEpisodes = nil
-    game.commander.savedEMPState?.records[source]?.nextEjectionAt =
-      game.commander.flightSimulation.physicalTime + 1
+    let nextLegacyEjection = game.commander.flightSimulation.physicalTime + 1
+    game.commander.savedEMPState?.records[source]?.nextEjectionAt = nextLegacyEjection
     try #require(game.commander.valid)
     let writer = GameRuntime(game: game, saveURL: storage.url)
     try await writer.save(to: storage.url)
