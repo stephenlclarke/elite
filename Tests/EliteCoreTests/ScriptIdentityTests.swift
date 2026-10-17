@@ -71,11 +71,13 @@ private func physicalIDs(_ state: ScriptInstance) -> Set<UUID> {
   let origin = UUID()
   var game = try identityGame(pack, origin: origin)
   game.bodies = [try #require(game.bodies.first { $0.id == 0 })]
-  for id in 1..<1024 {
+  for id in 1..<128 {
     game.bodies.append(
       SpaceBody(id: id, hull: .cargo, position: .init(Double(id) * 30, 10000, 10000)))
   }
-  game.nextBodyID = 1024
+  game.nextBodyID = 128
+  game.ensurePhysicalActors()
+  try #require(game.bodies.count == 128 && game.bodies.allSatisfy { $0.physical != nil })
   var state = try #require(game.commander.scriptState.instances[origin])
   let pending = try game.ensureScriptEncounter("opponents", pack: pack, state: &state)
   #expect(pending.0 == "encounter.pending")
