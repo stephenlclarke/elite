@@ -236,6 +236,7 @@ struct NPCPersistenceRuntimeTests {
 
 private func verifyDockedNPCPersistence(_ game: inout Game) async throws {
   try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
   try #require(game.persistNPCStates().isEmpty)
   let before = game.commander
   let actor = try #require(game.bodies[0].physical?.identity)
