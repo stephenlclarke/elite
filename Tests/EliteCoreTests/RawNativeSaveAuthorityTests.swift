@@ -54,9 +54,10 @@ private func verifyRawDockRefusal(
   let original = try #require(game.commander.nativeStations?.mainStations.first)
   game.dock(atMainStation: main)
   if main {
+    let calendarSeconds = game.commander.scriptState.calendarSeconds
     game.commander.nativeStations?.currentMainDock = .init(
       station: original, actor: mainActor, commanderOwner: owner,
-      sequence: 1, calendarSeconds: game.commander.scriptState.calendarSeconds)
+      sequence: 1, calendarSeconds: calendarSeconds)
     game.commander.nativeStations?.nextMainDockSequence = 2
   } else {
     try game.commander.nativeStations?.ledger.recordDock(
