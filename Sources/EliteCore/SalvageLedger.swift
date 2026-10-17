@@ -136,6 +136,19 @@ private struct SalvagePlanProgress: Equatable, Codable, Sendable {
   let structuralUnits: Int
   var issuedStructural = 0
   var materialKind: CommodityIdentity?
+
+  var emissionProgress: AlienStorageWorldProgress {
+    .init(
+      issued: issued, discarded: discarded, structuralUnits: structuralUnits,
+      issuedStructural: issuedStructural, materialKind: materialKind, nextLot: nextLot)
+  }
+  mutating func adopt(_ progress: AlienStorageWorldProgress) {
+    issued = progress.issued
+    discarded = progress.discarded
+    nextLot = progress.nextLot
+    issuedStructural = progress.issuedStructural
+    materialKind = progress.materialKind
+  }
 }
 
 /// G1 publishes this state with cargo, equipment and cash in one actor transaction.
@@ -149,6 +162,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public static let maximumSettledItems = 2048
   private let seed: UInt64
   private var plans: [WreckSectionIdentity: SalvagePlanProgress] = [:]
+  private var nativeTransferredSections: Set<WreckSectionIdentity> = []
   private var motions: [WreckIdentity: SalvageWreckMotion] = [:]
   private var depleted: [WreckIdentity: UInt64] = [:]
   private var destroyedWrecks: Set<WreckIdentity> = []
@@ -168,6 +182,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   private enum CodingKeys: String, CodingKey {
     case seed, plans, motions, depleted, work, damagedTechnology, pending, stored, offers, bindings
     case settlements, lastOperation, settledItemCount, sequence, revision, destroyedWrecks
+    case nativeTransferredSections
   }
 
   public init(from decoder: Decoder) throws {
@@ -176,6 +191,9 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     plans =
       try values.decodeIfPresent([WreckSectionIdentity: SalvagePlanProgress].self, forKey: .plans)
       ?? [:]
+    nativeTransferredSections =
+      try values.decodeIfPresent(
+        Set<WreckSectionIdentity>.self, forKey: .nativeTransferredSections) ?? []
     motions =
       try values.decodeIfPresent([WreckIdentity: SalvageWreckMotion].self, forKey: .motions) ?? [:]
     depleted = try values.decode([WreckIdentity: UInt64].self, forKey: .depleted)
@@ -219,6 +237,15 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
 
   private var validState: Bool {
     guard plans.count <= Self.maximumPlans,
+      nativeTransferredSections.isSubset(of: Set(plans.keys)),
+      !pending.keys.contains(where: { nativeTransferredSections.contains($0.section) }),
+      !stored.values.contains(where: {
+        if case .technology(let id, _, _) = $0.content {
+          return nativeTransferredSections.contains($0.identity.section)
+            && AlienModuleDefinition.isAttachmentDefinition(id)
+        }
+        return false
+      }),
       plans.allSatisfy({ validProgress($0.value, section: $0.key) }),
       trackedWrecks.count <= Self.maximumWrecks,
       destroyedWrecks.count <= Self.maximumWrecks,
@@ -409,6 +436,83 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   }
   public func progress(_ section: WreckSectionIdentity) -> Double { work[section, default: 0] }
 
+  func isNativeTransferred(_ section: WreckSectionIdentity) -> Bool {
+    nativeTransferredSections.contains(section)
+  }
+
+  /// Only this ledger can seal an export. Revision alone cannot detect pose changes.
+  func exportNativeSection(_ section: WreckSectionIdentity) throws -> SalvageNativeSectionExport {
+    guard validState, !nativeTransferredSections.contains(section), let record = plans[section]
+    else { throw AlienStorageError.invalidJoin }
+    let progress = record.emissionProgress
+    let emissions = try SalvageSectionEmissionView(
+      seed: seed, plan: record.plan, progress: progress
+    ).emissions()
+    let evidence = nativeSectionCustody(section)
+    let identities = Set(emissions.values.map(\.identity))
+    let actual = Set(evidence.pending.map(\.identity)).union(evidence.stored.map(\.identity))
+      .union(
+        evidence.settlements.flatMap { $0.items.map(\.identity) }.filter { $0.section == section })
+    guard actual.isSubset(of: identities),
+      Set(evidence.offers.values).isDisjoint(with: evidence.bindings.keys),
+      Set(evidence.bindings.values).count == evidence.bindings.count,
+      evidence.offers.keys.allSatisfy({
+        $0.visit > 0 && $0.visit < UInt64.max && $0.sequence > 0 && $0.sequence < UInt64.max
+          && $0.member == 0
+      }),
+      evidence.bindings.values.allSatisfy({
+        $0.visit > 0 && $0.visit < UInt64.max && $0.entity >= 2 && $0.entity < UInt64.max
+      })
+    else { throw AlienStorageError.invalidJoin }
+    return .init(
+      original: self, section: section, seed: seed, plan: record.plan, progress: progress,
+      partialWork: work[section], damagedTechnology: damagedTechnology.contains(section),
+      depleted: isDepleted(section), sectionDestroyed: record.destroyed,
+      wreckDestroyed: isWreckDestroyed(section.wreck), lastOperation: lastOperation,
+      evidence: evidence)
+  }
+
+  /// Move current custody once while retaining the original plan and settlement audit.
+  /// The actor must publish this candidate with normalized history and property together.
+  mutating func transferNativeSection(_ export: SalvageNativeSectionExport) throws {
+    guard export.matches(self), !nativeTransferredSections.contains(export.section),
+      revision < UInt64.max
+    else { throw AlienStorageError.historyChanged }
+    var candidate = self
+    let identities = Set(export.evidence.pending.map(\.identity))
+    let reserved = Set(
+      export.evidence.stored.compactMap { lot -> SalvageLotIdentity? in
+        guard case .technology(let id, _, _) = lot.content,
+          AlienModuleDefinition.isAttachmentDefinition(id)
+        else { return nil }
+        return lot.identity
+      })
+    candidate.pending = candidate.pending.filter { !identities.contains($0.key) }
+    candidate.offers = candidate.offers.filter { !identities.contains($0.value) }
+    candidate.bindings = candidate.bindings.filter { !identities.contains($0.key) }
+    candidate.stored = candidate.stored.filter { !reserved.contains($0.key) }
+    candidate.nativeTransferredSections.insert(export.section)
+    candidate.revision += 1
+    guard candidate.validState else { throw AlienStorageError.invalidJoin }
+    self = candidate
+  }
+
+  private func nativeSectionCustody(_ section: WreckSectionIdentity)
+    -> AlienStorageLegacyCustodyEvidence
+  {
+    .init(
+      pending: pending.values.filter { $0.identity.section == section },
+      stored: stored.values.filter { $0.identity.section == section },
+      offers: offers.filter { $0.value.section == section },
+      bindings: bindings.filter { $0.key.section == section },
+      settlements: settlements.values.compactMap {
+        guard case .committed(let proposal) = $0,
+          proposal.items.contains(where: { $0.identity.section == section })
+        else { return nil }
+        return proposal
+      })
+  }
+
   /// Conditions are resolved against the actual moving surface by the G1 physics adapter.
   public mutating func advance(
     wreck: WreckIdentity, section: SalvageSectionProfile, pose: ShipPose,
@@ -417,7 +521,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     source: SalvageLootSource? = nil
   ) -> SalvageWorkResult {
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
-    guard Self.validWreck(wreck), !isWreckDestroyed(wreck),
+    guard !nativeTransferredSections.contains(identity),
+      Self.validWreck(wreck), !isWreckDestroyed(wreck),
       section.index < 64, elapsed.isFinite, elapsed > 0, elapsed <= 1,
       section.workSeconds.isFinite, section.workSeconds > 0,
       section.localPosition.length.isFinite, section.normal.length.isFinite,
@@ -469,7 +574,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public mutating func destroy(section: WreckSectionIdentity, operation: UInt64)
     -> SalvageWorkResult
   {
-    guard Self.validWreck(section.wreck), !isWreckDestroyed(section.wreck), section.section < 64,
+    guard !nativeTransferredSections.contains(section),
+      Self.validWreck(section.wreck), !isWreckDestroyed(section.wreck), section.section < 64,
       lastOperation.map({ operation > $0 }) ?? true
     else {
       return .blocked
@@ -808,6 +914,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     source: SalvageLootSource
   ) -> SalvageLootPlan? {
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
+    guard !nativeTransferredSections.contains(identity) else { return nil }
     if let existing = plans[identity] { return existing.plan }
     guard Self.validWreck(wreck), !isWreckDestroyed(wreck), section.index < 64,
       !isDepleted(identity),
@@ -1053,80 +1160,35 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       guard let source, staged.inspectLoot(wreck: wreck, section: section, source: source) != nil
       else { return .capacityRefused }
     }
-    guard var record = staged.plans[identity], !record.destroyed else { return .alreadyDepleted }
-    if record.materialKind == nil { record.materialKind = tool == .cutter ? .alloys : .minerals }
-    if tool == .miningLaser || damagedTechnology.contains(identity) {
-      for index in record.issued.indices where record.issued[index] == 0 {
-        if case .technology = record.plan.items[index].content {
-          record.issued[index] = 1
-          record.discarded[index] = true
-        }
-      }
-    }
-    let next = min(section.workSeconds, progress(identity) + elapsed)
-    if next < section.workSeconds {
+    guard var record = staged.plans[identity] else { return .alreadyDepleted }
+    let result = SalvageSectionCycle.advance(
+      plan: record.plan, progress: record.emissionProgress, destroyed: record.destroyed,
+      partialWork: progress(identity), damagedTechnology: damagedTechnology.contains(identity),
+      section: section, pose: pose, velocity: velocity, angularVelocity: angularVelocity,
+      tool: tool, elapsed: elapsed, availableEmissionSlots: Self.maximumPending - pending.count)
+    switch result {
+    case .blocked: return .blocked
+    case .capacityRefused: return .capacityRefused
+    case .alreadyDepleted: return .alreadyDepleted
+    case .progress(let progress, let seconds):
+      record.adopt(progress)
       staged.plans[identity] = record
-      staged.work[identity] = next
+      staged.work[identity] = seconds
       staged.lastOperation = operation
       self = staged
-      return .progress(seconds: next, required: section.workSeconds)
+      return .progress(seconds: seconds, required: section.workSeconds)
+    case .released(let progress, let lots, let complete):
+      record.adopt(progress)
+      staged.plans[identity] = record
+      staged.work.removeValue(forKey: identity)
+      staged.damagedTechnology.remove(identity)
+      staged.lastOperation = operation
+      for lot in lots { staged.pending[lot.identity] = lot }
+      if complete { staged.depleted[wreck, default: 0] |= 1 << section.index }
+      staged.revision &+= 1
+      self = staged
+      return lots.isEmpty ? .destroyed : .released(lots)
     }
-    var items: [SalvageLootItem] = []
-    func append(_ item: SalvageLootItem) -> Bool {
-      guard record.nextLot < 65536 else { return false }
-      items.append(item)
-      record.nextLot += 1
-      return true
-    }
-    if record.issuedStructural < record.structuralUnits {
-      guard
-        append(structuralItem(record, lot: .init(section: identity, lot: UInt16(record.nextLot))))
-      else { return .capacityRefused }
-      record.issuedStructural = record.structuralUnits
-    }
-    for index in record.issued.indices {
-      let item = record.plan.items[index]
-      while record.issued[index] < nativeQuantity(item) && items.count < 8 {
-        guard record.nextLot < 65536 else { return .capacityRefused }
-        let quantity = min(chunkLimit(item), nativeQuantity(item) - record.issued[index])
-        let issued = chunk(
-          item, identity: .init(section: identity, lot: UInt16(record.nextLot)), quantity: quantity)
-        guard append(issued) else { return .capacityRefused }
-        record.issued[index] += quantity
-      }
-    }
-    guard pending.count + items.count <= Self.maximumPending else { return .capacityRefused }
-    let normal = pose.orientation.apply(section.normal) * (1 / section.normal.length)
-    let cardinal = abs(normal.x) < 0.8 ? Vector3(1, 0, 0) : Vector3(0, 1, 0)
-    let cross = normal.cross(cardinal)
-    let tangent = cross * (1 / cross.length)
-    let offset = pose.orientation.apply(section.localPosition)
-    let lots = items.enumerated().map { index, item -> SalvageLot in
-      let content: SalvageLotContent
-      switch item.content {
-      case .commodity(let amount): content = .commodity(amount)
-      case .technology(let id, let quality, let condition, _):
-        content = .technology(definitionID: id, quality: quality, conditionPercent: condition)
-      }
-      return .init(
-        identity: item.identity, content: content,
-        position: pose.position + offset + normal * (item.halfExtents.length + 10)
-          + tangent * Double(index % 5) * 8,
-        velocity: velocity + angularVelocity.cross(offset) + normal * 3,
-        halfExtents: item.halfExtents, massKg: item.massKg, loot: item)
-    }
-    guard lots.allSatisfy({ $0.position.length.isFinite && $0.velocity.length.isFinite }) else {
-      return .blocked
-    }
-    staged.plans[identity] = record
-    staged.work.removeValue(forKey: identity)
-    staged.damagedTechnology.remove(identity)
-    staged.lastOperation = operation
-    for lot in lots { staged.pending[lot.identity] = lot }
-    if fullyIssued(record) { staged.depleted[wreck, default: 0] |= 1 << section.index }
-    staged.revision &+= 1
-    self = staged
-    return lots.isEmpty ? .destroyed : .released(lots)
   }
 
   private func sorted(_ lots: Dictionary<SalvageLotIdentity, SalvageLot>.Values) -> [SalvageLot] {
@@ -1199,4 +1261,44 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
         halfExtents: content.1, massKg: content.2)
     }
   }
+}
+
+/// A transient seal of the complete original ledger, not decoded collection authority.
+/// Missing historical work and times are deliberately not filled in by this export.
+struct SalvageNativeSectionExport: Sendable {
+  private let original: SalvageLedger
+  let section: WreckSectionIdentity
+  let seed: UInt64
+  let plan: SalvageLootPlan
+  let progress: AlienStorageWorldProgress
+  let partialWork: Double?
+  let damagedTechnology: Bool
+  let depleted: Bool
+  let sectionDestroyed: Bool
+  let wreckDestroyed: Bool
+  let lastOperation: UInt64?
+  let evidence: AlienStorageLegacyCustodyEvidence
+  var revision: UInt64 { original.revision }
+
+  fileprivate init(
+    original: SalvageLedger, section: WreckSectionIdentity, seed: UInt64, plan: SalvageLootPlan,
+    progress: AlienStorageWorldProgress, partialWork: Double?, damagedTechnology: Bool,
+    depleted: Bool, sectionDestroyed: Bool, wreckDestroyed: Bool, lastOperation: UInt64?,
+    evidence: AlienStorageLegacyCustodyEvidence
+  ) {
+    self.original = original
+    self.section = section
+    self.seed = seed
+    self.plan = plan
+    self.progress = progress
+    self.partialWork = partialWork
+    self.damagedTechnology = damagedTechnology
+    self.depleted = depleted
+    self.sectionDestroyed = sectionDestroyed
+    self.wreckDestroyed = wreckDestroyed
+    self.lastOperation = lastOperation
+    self.evidence = evidence
+  }
+
+  func matches(_ ledger: SalvageLedger) -> Bool { original == ledger }
 }
