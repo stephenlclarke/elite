@@ -1,4 +1,5 @@
 import AppKit
+import CryptoKit
 import Testing
 
 @testable import EliteCore
@@ -91,6 +92,27 @@ struct NativeShipTextureTests {
         let image = try #require(imageForGame(game, width: width, height: height))
         #expect(image.width == width && image.height == height)
         #expect(image.dataProvider?.data != nil)
+        if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
+          let directory = URL(fileURLWithPath: path)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          let name = "ship-texture-\(id)-\(width)x\(height)"
+          let png = try #require(
+            NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+          try png.write(to: directory.appendingPathComponent(name + ".png"))
+          let evidence: [String: Any] = [
+            "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"]
+              ?? "unrecorded",
+            "ship": id, "width": width, "height": height, "mode": "shadedPanels",
+            "textureAssets": triangles.map(\.texture).sorted(),
+            "pngSHA256": SHA256.hash(data: png).map { String(format: "%02x", $0) }.joined(),
+            "qualification":
+              "Actual native renderer export; not physical window delivery or frame-time acceptance.",
+          ]
+          try JSONSerialization.data(
+            withJSONObject: evidence, options: [.sortedKeys, .prettyPrinted]
+          )
+          .write(to: directory.appendingPathComponent(name + ".json"))
+        }
       }
     }
   }
