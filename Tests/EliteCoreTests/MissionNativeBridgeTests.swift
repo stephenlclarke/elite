@@ -6,6 +6,52 @@ import Testing
 private let bridgeInstance = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
 private let bridgeActor = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
 
+private func bridgeLaserInvalidGeometryPreservesState(
+  _ game: Game, source: SpaceBody, weapon: ScriptNPCWeapon, muzzle: Vector3
+) throws {
+  var invalid = game
+  invalid.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: -1)]
+  let invalidBefore = (commander: invalid.commander, bodies: invalid.bodies)
+  #expect(throws: MissionNativeBridgeError.invalidGeometry) {
+    try invalid.makeMissionNativeLaserProof(
+      sourceBodyID: source.id, weapon: weapon,
+      component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
+  }
+  #expect(invalid.commander == invalidBefore.commander && invalid.bodies == invalidBefore.bodies)
+}
+
+private func bridgeLaserChangedSourceRefusesProof(
+  _ game: Game, source: SpaceBody, proof: MissionNativeLaserProof
+) throws {
+  var sourceChanged = game
+  let sourceIndex = try #require(sourceChanged.bodies.firstIndex { $0.id == source.id })
+  sourceChanged.bodies[sourceIndex].energy -= 1
+  #expect(throws: MissionNativeBridgeError.staleBinding) {
+    try sourceChanged.validateMissionNativeLaserProof(proof)
+  }
+}
+
+private func bridgeLaserLaterEmissionRefusesProof(
+  _ game: Game, proof: MissionNativeLaserProof
+) {
+  var laterEmission = game
+  let allocatedLater = laterEmission.makeAttackOrigin(owner: proof.source.nativeActor)
+  #expect(allocatedLater != nil)
+  #expect(throws: MissionNativeBridgeError.staleBinding) {
+    try laterEmission.validateMissionNativeLaserProof(proof)
+  }
+}
+
+private func bridgeLaserLaterClockRefusesProof(
+  _ game: Game, proof: MissionNativeLaserProof
+) {
+  var laterClock = game
+  laterClock.commander.flightSimulation.advancePhysicalTime(0.01)
+  #expect(throws: MissionNativeBridgeError.staleBinding) {
+    try laterClock.validateMissionNativeLaserProof(proof)
+  }
+}
+
 private func bridgeFixture() throws -> (SpaceBody, EncounterContext) {
   var game = Game(executive: false)
   game.launch()
@@ -553,15 +599,8 @@ struct MissionNativeBridgeTests {
         component: nil, muzzle: muzzle, direction: .init(0, 0, 0))
     }
     #expect(game.commander == original.commander && game.bodies == original.bodies)
-    var invalid = game
-    invalid.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: -1)]
-    let invalidBefore = (commander: invalid.commander, bodies: invalid.bodies)
-    #expect(throws: MissionNativeBridgeError.invalidGeometry) {
-      try invalid.makeMissionNativeLaserProof(
-        sourceBodyID: source.id, weapon: weapon,
-        component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
-    }
-    #expect(invalid.commander == invalidBefore.commander && invalid.bodies == invalidBefore.bodies)
+    try bridgeLaserInvalidGeometryPreservesState(
+      game, source: source, weapon: weapon, muzzle: muzzle)
     let queryBefore = (commander: game.commander, bodies: game.bodies)
     let query = try game.queryMissionNativeLaser(
       sourceBodyID: source.id, weapon: weapon,
@@ -585,23 +624,9 @@ struct MissionNativeBridgeTests {
     let freshBefore = (commander: game.commander, bodies: game.bodies)
     try game.validateMissionNativeLaserProof(proof)
     #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
-    var sourceChanged = game
-    let sourceIndex = try #require(sourceChanged.bodies.firstIndex { $0.id == source.id })
-    sourceChanged.bodies[sourceIndex].energy -= 1
-    #expect(throws: MissionNativeBridgeError.staleBinding) {
-      try sourceChanged.validateMissionNativeLaserProof(proof)
-    }
-    var laterEmission = game
-    let allocatedLater = laterEmission.makeAttackOrigin(owner: proof.source.nativeActor)
-    #expect(allocatedLater != nil)
-    #expect(throws: MissionNativeBridgeError.staleBinding) {
-      try laterEmission.validateMissionNativeLaserProof(proof)
-    }
-    var laterClock = game
-    laterClock.commander.flightSimulation.advancePhysicalTime(0.01)
-    #expect(throws: MissionNativeBridgeError.staleBinding) {
-      try laterClock.validateMissionNativeLaserProof(proof)
-    }
+    try bridgeLaserChangedSourceRefusesProof(game, source: source, proof: proof)
+    bridgeLaserLaterEmissionRefusesProof(game, proof: proof)
+    bridgeLaserLaterClockRefusesProof(game, proof: proof)
   }
 
   @Test func actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift() throws
