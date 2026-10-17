@@ -296,11 +296,10 @@ extension AmbientEncounterPolicyTests {
         actor: physical.identity, seed: game.gameplaySeed, government: government, role: .trader))
     #expect(physical.spawnIdentity == nil && body.hostile == policy.hostile)
     #expect(npc.routeProvenance == .generated && npc.legalProvenance == .generated)
-    #expect(
-      npc.intention
-        == (policy.hostile
-          ? .engage(try #require(game.commander.flightSimulation.player))
-          : .dock(try #require(game.commander.flightSimulation.anchors?.station.identity))))
+    let player = try #require(game.commander.flightSimulation.player)
+    let station = try #require(game.commander.flightSimulation.anchors?.station.identity)
+    let intention: NPCAction = policy.hostile ? .engage(player) : .dock(station)
+    #expect(npc.intention == intention)
     if government == 0 { #expect(npc.legal == policy.legalOverride) }
     if government == 7 { #expect(!body.hostile && !npc.legal.wanted) }
     let snapshot = try #require(game.commander.npcPersistence.snapshot(for: physical.identity))
