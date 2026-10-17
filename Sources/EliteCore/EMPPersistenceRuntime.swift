@@ -5,7 +5,15 @@ extension Game {
   mutating func advanceEMPActors() {
     guard !docked, persistEMPState() else { return }
     recoverEMPHulls()
-    guard var state = commander.savedEMPState else { return }
+    guard let sources = coastEMPArchives() else { return }
+    for source in sources {
+      if admitEMPArchiveObjects(source: source) { ejectOneEMPCrewMember(source: source) }
+    }
+  }
+
+  // Finish the archive pass before entering real actor admission and crew ejection.
+  private mutating func coastEMPArchives() -> [ActorIdentity]? {
+    guard var state = commander.savedEMPState else { return nil }
     let now = commander.flightSimulation.physicalTime
     for source in state.sources {
       guard var record = state.records[source] else { continue }
@@ -27,23 +35,25 @@ extension Game {
       state.records[source] = record
     }
     commander.savedEMPState = state
-    for source in state.sources {
-      guard let record = commander.savedEMPState?.records[source], source.system == systemIdentity
-      else { continue }
-      if !record.terminal, !record.isRecovered, record.hull.binding == nil {
-        _ = admitEMPObject(record.hull, source: source, sequence: record.sequence, member: 0)
-      }
-      for i in record.pods.indices
-      where record.pods[i].binding == nil
-        && record.pods[i].body.physical?.empCrewPod.map({ commander.worldOwnedPod($0) }) == true
-      {
-        guard let person = record.pods[i].body.physical?.empCrewPod else { continue }
-        _ = admitEMPObject(
-          record.pods[i], source: source, sequence: record.sequence,
-          member: UInt16(person.ordinal + 1))
-      }
-      if !record.isRecovered { ejectOneEMPCrewMember(source: source) }
+    return state.sources
+  }
+
+  private mutating func admitEMPArchiveObjects(source: ActorIdentity) -> Bool {
+    guard let record = commander.savedEMPState?.records[source], source.system == systemIdentity
+    else { return false }
+    if !record.terminal, !record.isRecovered, record.hull.binding == nil {
+      _ = admitEMPObject(record.hull, source: source, sequence: record.sequence, member: 0)
     }
+    for i in record.pods.indices
+    where record.pods[i].binding == nil
+      && record.pods[i].body.physical?.empCrewPod.map({ commander.worldOwnedPod($0) }) == true
+    {
+      guard let person = record.pods[i].body.physical?.empCrewPod else { continue }
+      _ = admitEMPObject(
+        record.pods[i], source: source, sequence: record.sequence,
+        member: UInt16(person.ordinal + 1))
+    }
+    return !record.isRecovered
   }
 
   private func coastEMPObject(_ object: inout EMPStoredObject, to now: Double) {
