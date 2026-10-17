@@ -31,7 +31,8 @@ enum AmbientEncounterPolicy {
   }
 
   /// Preserve the existing generated intent over idle role defaults, not over real combat,
-  /// retreat, collection or retargeting. No flags, random draws or save fields are created here.
+  /// retreat, collection or retargeting. Generated route evidence remains stable when a
+  /// real unlawful shot changes legal provenance to recorded. No state is resampled here.
   static func preserveIntent(
     of actor: ActorSnapshot, context: EncounterContext, proposed: NPCAction?
   ) -> NPCAction? {
@@ -41,7 +42,7 @@ enum AmbientEncounterPolicy {
       actor.identity.system == context.system, actor.identity.visit == context.visit,
       !context.protection.protectedActors.contains(actor.identity),
       !context.protection.protectedActors.contains(context.player.identity),
-      context.player.energy > 0, let npc = actor.npc, npc.legalProvenance == .generated,
+      context.player.energy > 0, let npc = actor.npc, npc.routeProvenance == .generated,
       [.trader, .miner, .pirate].contains(npc.role), let current = npc.intention
     else { return proposed }
     if current == .engage(context.player.identity) {
