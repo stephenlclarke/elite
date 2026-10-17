@@ -120,14 +120,17 @@ private struct NativeWorkFixture {
     let preferences = try #require(UserDefaults(suiteName: identifier))
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(identifier)
     let save = directory.appendingPathComponent("commander.json")
-    let bytes = try JSONEncoder().encode(game.commander)
     let delegate = AppDelegate(
       restoreOnLaunch: false,
       saves: CommanderSaveSession(preferences: preferences, defaultURL: save),
       windowSize: .init(width: Double(width), height: Double(height)))
     do {
       try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-      try bytes.write(to: save)
+      let writer = GameRuntime(game: game)
+      try await writer.save(to: save)
+      let bytes = try Data(contentsOf: save)
+      let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+      #expect(pointer.schemaVersion == 21)
       delegate.applicationDidFinishLaunching(
         Notification(name: NSApplication.didFinishLaunchingNotification))
       let window = try #require(delegate.window)

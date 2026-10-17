@@ -1,0 +1,5 @@
+# Native work fixture must load a genuine versioned scene
+
+Full 222 records `invalidCommander` in all five native mining/salvage/steering/braking methods before their input assertions. The shared fixture encodes a current native Commander as raw JSON, then calls the real loader, whose retained-world authority boundary correctly rejects raw native state. This is source-backed setup diagnosis pending focused execution; no raw/downgrade guard should be waived.
+
+Create the fixture's baseline through the actual runtime save barrier and load that genuine schema-21 pointer using its existing loader. Keep the controlled source scene, real keyboard/input cases, custody/property assertions, private-file/preferences conservation and capture timing bounds unchanged. See [the correction](PR-native-work-versioned-fixture.md).
