@@ -162,6 +162,36 @@ private struct NativeCabinFixture {
     return try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)
       .count
   }
+
+  func exportEvidence(_ stage: String) throws {
+    guard let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] else {
+      return
+    }
+    let output = URL(fileURLWithPath: path, isDirectory: true)
+    try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+    let snapshot = view.game
+    try #require(snapshot.passengerBerthSelected)
+    let accommodation = snapshot.commander.accommodation
+    for (width, height) in [(512, 518), (1512, 982)] {
+      let image = try #require(imageForGame(snapshot, width: width, height: height, scale: 1))
+      #expect(image.width == width && image.height == height)
+      let data = try #require(
+        NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+      let name = "passenger-cabins-\(stage)-\(width)x\(height)"
+      try data.write(to: output.appendingPathComponent(name + ".png"))
+      let receipt: [String: Any] = [
+        "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"] ?? "local",
+        "stage": stage, "width": width, "height": height, "scale": 1,
+        "selection": snapshot.selection, "selectedItem": Equipment.all[snapshot.selection].name,
+        "fittedIDs": accommodation.fitted.map(\.uuidString).sorted(),
+        "storedIDs": accommodation.storedBerths.map { $0.id.uuidString }.sorted(),
+        "creditsTenths": snapshot.commander.credits, "cargoTonnes": snapshot.commander.cargoTonnes,
+        "pngSHA256": ScriptPackLibrary.hash(data),
+      ]
+      try JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys])
+        .write(to: output.appendingPathComponent(name + ".json"))
+    }
+  }
 }
 
 extension NativeViewTests {
@@ -178,6 +208,7 @@ extension NativeViewTests {
     let berth = try #require(fixture.view.game.commander.accommodation.fittedBerths.first?.id)
     #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
     #expect(fixture.view.game.commander.cargoTonnes == 5)
+    try fixture.exportEvidence("fitted")
     let afterBuy = try fixture.generations()
     #expect(afterBuy == 1)
     try fixture.paint()
@@ -189,6 +220,7 @@ extension NativeViewTests {
     await fixture.delegate.processPendingCommands(in: fixture.view)
     #expect(fixture.view.game.commander.accommodation.storedBerths.map(\.id) == [berth])
     #expect(fixture.view.game.commander.cargoTonnes == 0)
+    try fixture.exportEvidence("stored")
     #expect(try fixture.generations() == afterBuy + 1)
     try fixture.paint()
     try fixture.queue(15, text: "r")
