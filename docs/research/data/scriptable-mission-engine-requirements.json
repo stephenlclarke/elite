@@ -776,5 +776,402 @@
         }
       }
     }
+  },
+  "current_implementation_assessment": {
+    "assessment_id": "ELITE-MISSION-ENGINE-IMPLEMENTATION-2026-10-17",
+    "as_of": "2026-10-17",
+    "source_commit": "7666e892b42ecf42b34c3b590db8f48bd0f9d302",
+    "report": "../../MISSION-ENGINE-COMPLETION.md",
+    "basis": "One source and existing-test inventory on the composed canonical head; no new builds/tests/native execution. Original design checkpoint, provenance and proposed implementation_status fields are preserved.",
+    "status_meanings": {
+      "implemented": "Reusable capability present in source with existing regressions; not final acceptance of every referenced mission or this composed head.",
+      "partial": "Named foundations exist, but explicit required reusable seams remain missing.",
+      "absent": "No implementation provider found for the named capability; used in missing_capabilities, not for a composite requirement that has foundations.",
+      "unverified": "Implementation/evidence scaffolding exists, but the required matching-head validation has not passed."
+    },
+    "counts": {
+      "implemented": 9,
+      "partial": 13,
+      "absent": 0,
+      "unverified": 2
+    },
+    "full_engine_ready": false,
+    "matching_head_full_ci_passed": false,
+    "validation_note": "Existing test definitions are coverage references, not claims of new execution. WHOLE-APP-REMEDIATION records historical focused passes, failed full sanitizer runs, app compilation and renderer/media evidence with distinct scopes.",
+    "requirements": {
+      "R01": {
+        "status": "implemented",
+        "present": "Schema 1 campaigns and schema 2 Lua folders coexist; dispatch runs pack code without mission-specific Swift.",
+        "remaining": "Individual retained campaigns remain content work.",
+        "source": [
+          "Sources/EliteCore/PackRuntime.swift",
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/ScriptDirector.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptMissionTests.swift",
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift"
+        ]
+      },
+      "R02": {
+        "status": "implemented",
+        "present": "Immutable folder content identities, modules, assets, exact dependencies and saved-version suspension are implemented.",
+        "remaining": "Folder installation is separate from the legacy picker; author tooling is R21.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/ScriptModules.swift",
+          "Sources/EliteCore/ScriptLibrary.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptModuleTests.swift",
+          "Tests/EliteCoreTests/BundledScriptPackTests.swift"
+        ]
+      },
+      "R03": {
+        "status": "implemented",
+        "present": "Fresh bounded Lua evaluation and explicit typed serializable state are implemented.",
+        "remaining": "Matching composed-head validation is pending.",
+        "source": [
+          "Sources/EliteCore/ScriptEvaluator.swift",
+          "Sources/EliteCore/ScriptValueStorage.swift",
+          "Sources/MissionScript/MissionScript.c"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift",
+          "Tests/EliteCoreTests/ScriptValueStorageTests.swift"
+        ]
+      },
+      "R04": {
+        "status": "unverified",
+        "present": "GameRuntime actor ownership, MainActor app presentation and protected C interpreter frames are present.",
+        "remaining": "No completed matching-head combined coverage/TSan/ASan/leak/native acceptance is recorded.",
+        "source": [
+          "Sources/EliteCore/Game.swift",
+          "Sources/EliteMac/EliteApp.swift",
+          "Sources/MissionScript/MissionScript.c"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/NativeMissionRuntimeFrameTests.swift",
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift"
+        ]
+      },
+      "R05": {
+        "status": "partial",
+        "present": "Native actor admission, impacts, causal event envelopes, deduplication and completion receipts are implemented.",
+        "remaining": "No mission NPC wormhole or rescued-person transfer receipts.",
+        "source": [
+          "Sources/EliteCore/ScriptEventContext.swift",
+          "Sources/EliteCore/NativeMissionActorAdmission.swift",
+          "Sources/EliteCore/ScriptCompletion.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEventHistoryTests.swift",
+          "Tests/EliteCoreTests/NativeMissionImpactTests.swift"
+        ]
+      },
+      "R06": {
+        "status": "partial",
+        "present": "Credits, native resource quotes, partial collection receipts and all-or-nothing publication exist.",
+        "remaining": "Shared monetary debt, lender obligations, interest and finance escrow are absent; equipment loans are a different implemented service.",
+        "source": [
+          "Sources/EliteCore/ScriptCommands.swift",
+          "Sources/EliteCore/ScriptCollections.swift",
+          "Sources/EliteCore/ScriptTransactions.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptTransactionTests.swift",
+          "Tests/EliteCoreTests/ScriptCollectionTests.swift"
+        ]
+      },
+      "R07": {
+        "status": "implemented",
+        "present": "Saved deterministic cohorts, measured components, whole native admission and pending refusal are implemented.",
+        "remaining": "The 82-root regression is not a completed Maenes mission or crew/care implementation.",
+        "source": [
+          "Sources/EliteCore/ScriptEncounters.swift",
+          "Sources/EliteCore/NativeMissionActorAdmission.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+          "Tests/EliteCoreTests/ScriptActorAdmissionSourceTests.swift"
+        ]
+      },
+      "R08": {
+        "status": "partial",
+        "present": "Authored hold/approach/follow/attack/flee steering with request/result and target-loss handling exists.",
+        "remaining": "No authored NPC docking/scoop/transit action and physical result bridge; formation orchestration remains limited to local follow offsets.",
+        "source": [
+          "Sources/EliteCore/ScriptNPCProfile.swift",
+          "Sources/EliteCore/ScriptNPCFlight.swift",
+          "Sources/EliteCore/TrafficIntent.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptNPCTests.swift"
+        ]
+      },
+      "R09": {
+        "status": "partial",
+        "present": "Measured authored hull/component guns, plasma, native finite ordnance and ECM boundaries exist.",
+        "remaining": "Authored missile controllers/target-selection commands and complete retained source combat-profile acceptance are not established.",
+        "source": [
+          "Sources/EliteCore/ScriptNPCWeapons.swift",
+          "Sources/EliteCore/NativeMissionEmission.swift",
+          "Sources/EliteCore/GameplayOrdnanceRuntime.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/NativeMissionEmissionTests.swift",
+          "Tests/EliteCoreTests/ScriptNPCTests.swift"
+        ]
+      },
+      "R10": {
+        "status": "partial",
+        "present": "Flight/local/calendar/mission-calendar clocks, native travel adjustments and independent resource-owned pulse jobs exist.",
+        "remaining": "Transit seconds have no native advancement producer; living-person care jobs and full source-specific schedules remain absent.",
+        "source": [
+          "Sources/EliteCore/ScriptDirector.swift",
+          "Sources/EliteCore/ScriptMissionCalendar.swift",
+          "Sources/EliteCore/ScriptWorldJobs.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptCalendarTests.swift",
+          "Tests/EliteCoreTests/ScriptWorldJobTests.swift"
+        ]
+      },
+      "R11": {
+        "status": "partial",
+        "present": "Charter person identities, fitted 5-tonne/1-unit berths, life-support checks and common fitting exist.",
+        "remaining": "Intrinsic crew rosters, occupied rescue pods, rescued-person transfer and medical custody are absent.",
+        "source": [
+          "Sources/EliteCore/PassengerCustody.swift",
+          "Sources/EliteCore/ShipAccommodation.swift",
+          "Sources/EliteCore/PassengerFitting.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/PassengerCustodyTests.swift",
+          "Tests/EliteCoreTests/NativePassengerCabinViewTests.swift"
+        ]
+      },
+      "R12": {
+        "status": "implemented",
+        "present": "Canonical equipment identities, finite ammunition, held storage, loan obligations, hull transfer and linked showroom orientation exist.",
+        "remaining": "Matching whole-app/native visual acceptance remains separate.",
+        "source": [
+          "Sources/EliteCore/OwnedEquipmentInventory.swift",
+          "Sources/EliteCore/EquipmentIssueTransactions.swift",
+          "Sources/EliteCore/ShipTrade.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/OwnedEquipmentTests.swift",
+          "Tests/EliteCoreTests/ShipTradeTests.swift",
+          "Tests/EliteCoreTests/ShowroomUXTests.swift"
+        ]
+      },
+      "R13": {
+        "status": "partial",
+        "present": "Saved seeded generic main-station boards and generated courier jobs exist; typed RRS waystation/HQ scenario 2 is composed.",
+        "remaining": "Generic Lua boards remain main-station-only; RRS is a closed native consumer. Remaining RRS providers and composed RRS runtime acceptance are pending.",
+        "source": [
+          "Sources/EliteCore/ScriptContractCore.swift",
+          "Sources/EliteCore/ContractBoard.swift",
+          "Sources/EliteCore/RRSCourier.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptContractTests.swift",
+          "Tests/EliteCoreTests/RRSCourierTests.swift"
+        ]
+      },
+      "R14": {
+        "status": "partial",
+        "present": "Child completion joins, exclusive/repeatable choices, scoped campaigns, books and equipment obligations exist.",
+        "remaining": "Shared financial loans, rich dossiers and all retained shared-contact/service compositions remain incomplete.",
+        "source": [
+          "Sources/EliteCore/ScriptCampaignCommands.swift",
+          "Sources/EliteCore/ScriptChoices.swift",
+          "Sources/EliteCore/ScriptBooks.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptCampaignTests.swift",
+          "Tests/EliteCoreTests/ScriptCompletionTests.swift",
+          "Tests/EliteCoreTests/ScriptBookTests.swift"
+        ]
+      },
+      "R15": {
+        "status": "implemented",
+        "present": "Hashed immutable save generations, typed chunks, exact content suspension and bounded legacy migrations are implemented.",
+        "remaining": "Current composed-head gates remain pending; historical passes do not validate new source.",
+        "source": [
+          "Sources/EliteCore/ScriptPersistence.swift",
+          "Sources/EliteCore/ScriptSaveJSONPreflight.swift",
+          "Sources/EliteCore/ScriptTransactions.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptIdentityTests.swift",
+          "Tests/EliteCoreTests/ScriptDurabilityTests.swift",
+          "Tests/EliteCoreTests/ScriptSolarSaveTests.swift"
+        ]
+      },
+      "R16": {
+        "status": "implemented",
+        "present": "Versioned seeds, stable ordering, derived new identities and preserved legacy identity provenance exist.",
+        "remaining": "Crew/person and transit draws cannot be certified before those providers exist.",
+        "source": [
+          "Sources/EliteCore/ScriptIdentity.swift",
+          "Sources/EliteCore/ScriptCourierGeneration.swift",
+          "Sources/EliteCore/ScriptSimulationSave.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptIdentityTests.swift",
+          "Tests/EliteCoreTests/ScriptCourierGenerationTests.swift",
+          "Tests/EliteCoreTests/ScriptEventHistoryTests.swift"
+        ]
+      },
+      "R17": {
+        "status": "partial",
+        "present": "Native dialogue, choices, journals, contract pages, text books and painted-page input proofs exist.",
+        "remaining": "No general authored rich-table/3D-panel/dossier presentation schema.",
+        "source": [
+          "Sources/EliteCore/ScriptConversations.swift",
+          "Sources/EliteCore/ScriptPageInput.swift",
+          "Sources/EliteCore/ScriptLibraryDisplay.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptPageInputTests.swift",
+          "Tests/EliteCoreTests/ScriptConversationTests.swift",
+          "Tests/EliteCoreTests/ScriptBookTests.swift"
+        ]
+      },
+      "R18": {
+        "status": "partial",
+        "present": "Seeded isolated pack/provider trials, restart/return, separate writers and read-only RRS Gallery entries exist.",
+        "remaining": "Arbitrary declared checkpoints and missing finance/crew/transit scenarios are not implemented; RRS projection is not a playable trial.",
+        "source": [
+          "Sources/EliteCore/ScriptGalleryTrial.swift",
+          "Sources/EliteCore/ScriptCampaignGallery.swift",
+          "Sources/EliteCore/RRSCourierGallery.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift",
+          "Tests/EliteCoreTests/RRSCourierGalleryTests.swift"
+        ]
+      },
+      "R19": {
+        "status": "implemented",
+        "present": "Space/orbital environment restrictions, content hashes/licenses and labelled source/adaptation status exist.",
+        "remaining": "Every retained content adaptation still needs its own source/provenance acceptance.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/MissionGallery.swift",
+          "docs/research/implementation-scope.md"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptMissionTests.swift",
+          "Tests/EliteCoreTests/ScriptModuleTests.swift"
+        ]
+      },
+      "R20": {
+        "status": "implemented",
+        "present": "Protected C instruction/heap/allocation/output budgets, restricted libraries and explicit recovery are implemented.",
+        "remaining": "Current combined sanitizer/leak evidence remains R04/R24 work.",
+        "source": [
+          "Sources/MissionScript/MissionScript.c",
+          "Sources/EliteCore/ScriptEvaluator.swift",
+          "Sources/EliteCore/ScriptValueStorage.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift",
+          "Tests/EliteCoreTests/ScriptValueStorageTests.swift"
+        ]
+      },
+      "R21": {
+        "status": "partial",
+        "present": "Manifest/module/resource validation, folder discovery, isolated trials and the schema 2 guide exist.",
+        "remaining": "The native picker/CLI validate legacy packs only; no schema 2 CLI, migration dry-run, isolated hot reload or general scenario/replay tooling.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteMac/EliteApp.swift",
+          "docs/SCRIPT-MISSION-PACKS.md"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptModuleTests.swift",
+          "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift"
+        ]
+      },
+      "R22": {
+        "status": "partial",
+        "present": "Implemented-capability registry, unsupported-content gating and truthful Gallery/source status exist.",
+        "remaining": "Capability registration alone is not a completed per-profile acceptance gate; the old design ledger requires this separate current assessment.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/ScriptDirector.swift",
+          "Sources/EliteCore/MissionGallery.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptMissionTests.swift",
+          "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift"
+        ]
+      },
+      "R23": {
+        "status": "partial",
+        "present": "Terminal anti-revival guards, once-only credits, courier/RRS outcomes and independent station jobs exist.",
+        "remaining": "Living rescue/medical care and the source-specific late full-pay failed personnel variants are not implemented.",
+        "source": [
+          "Sources/EliteCore/ScriptCommands.swift",
+          "Sources/EliteCore/ScriptCourier.swift",
+          "Sources/EliteCore/ScriptWorldJobs.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptCompletionTests.swift",
+          "Tests/EliteCoreTests/ScriptCourierTests.swift",
+          "Tests/EliteCoreTests/ScriptWorldJobTests.swift"
+        ]
+      },
+      "R24": {
+        "status": "unverified",
+        "present": "Broad VM/save/native/transaction regressions and maintained CI workflows exist.",
+        "remaining": "No completed matching-head full gates or playable Maenes/finance/all-RRS acceptance; exact-main Sonar and release remain integrator-owned.",
+        "source": [
+          "Makefile",
+          "docs/WHOLE-APP-REMEDIATION.md",
+          "docs/MISSION-IMPLEMENTATION.md"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/NativeMissionRuntimeFrameTests.swift",
+          "Tests/EliteCoreTests/RRSCourierTests.swift"
+        ]
+      }
+    },
+    "missing_capabilities": [
+      {
+        "status": "absent",
+        "capability": "shared monetary debt/finance obligations and escrow"
+      },
+      {
+        "status": "absent",
+        "capability": "authored NPC wormhole transit and transit-clock receipts"
+      },
+      {
+        "status": "absent",
+        "capability": "occupied rescue-pod/person transfer and medical custody"
+      },
+      {
+        "status": "absent",
+        "capability": "generic schema 2 RRS board/service origin adapter"
+      },
+      {
+        "status": "absent",
+        "capability": "schema 2 CLI/migration dry-run/isolated hot reload"
+      }
+    ],
+    "proposed_next_slice": {
+      "status": "proposal_only; await Orchestrator file ownership and authorization before core edits",
+      "requirement": "R06",
+      "capability": "finance-obligations-basic-v2 (not registered)",
+      "content_blocked": [
+        "P19 shared GSE financial loan",
+        "P04 Bank of the Black Monks financial liability foundation"
+      ],
+      "scope": "Fixed principal loan and partial repayment with stable creditor/borrower identities, Confirm-bound native quotes, once-only receipts, and obligations surviving mission terminal state. Reuse current transaction/dialogue/save/Gallery services. Interest, collection AI, rich finance content and full source-profile acceptance remain later slices.",
+      "proposal_document": "../../MISSION-ENGINE-COMPLETION.md"
+    }
   }
 }
