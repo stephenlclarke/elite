@@ -121,6 +121,7 @@ struct NativeViewTests {
     let saves = CommanderSaveSession(preferences: preferences, defaultURL: url)
     let delegate = AppDelegate(saves: saves)
     let before = await delegate.runtime.snapshot().commander
+    let beforePacks = await delegate.runtime.snapshot().scriptPacks.map(\.digest)
     let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
     delegate.applicationDidFinishLaunching(notification)
     let window = try #require(delegate.window)
@@ -132,6 +133,8 @@ struct NativeViewTests {
     await loop.value
     #expect(delegate.loop == nil)
     #expect(await delegate.runtime.snapshot().commander == before)
+    let afterPacks = await delegate.runtime.snapshot().scriptPacks.map(\.digest)
+    #expect(afterPacks == beforePacks)
     #expect(view.pending == ["x", "y", "z", "z", "y"])
   }
 

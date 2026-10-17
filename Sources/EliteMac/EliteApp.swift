@@ -439,10 +439,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     installMenu()
     NSApp.activate(ignoringOtherApps: true)
     let runtime = self.runtime
+    // Controlled launches retain their configured script library.
+    let shouldLoadDefaultScriptPacks = restoreOnLaunch
     loop = Task { [weak view, weak self] in
       guard !Task.isCancelled else { return }
       await runtime.loadMissionPacks()
-      let packErrors = await runtime.snapshot().missionPacks.errors
+      guard !Task.isCancelled else { return }
+      var packErrors = await runtime.snapshot().missionPacks.errors
+      guard !Task.isCancelled else { return }
+      if shouldLoadDefaultScriptPacks {
+        packErrors += await runtime.loadDefaultScriptPacks()
+      }
       guard !Task.isCancelled else { return }
       if !packErrors.isEmpty {
         let alert = NSAlert()

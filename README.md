@@ -312,7 +312,9 @@ The Constrictor hunt, Thargoid plans delivery and Blackjack's Bullion now load t
 
 Choose **Commander > Install Mission Pack...**, select a validated `.toml`, then open **Game > Mission Gallery**. At an eligible main station, **Game > Mission Contacts** or **B** opens its Confirm/Back dialog. Installing supported content does not require rebuilding the app. Packs are stored in `~/.xyzzy/elite/mission-packs/`; manual copying there takes effect at next launch. The optional [Lave courier example](docs/mission-packs/courier.toml) demonstrates a new two-stage parcel delivery and once-only 50 CR reward.
 
-See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. Unsupported AI, passenger cabins, crew, station boards and other new mechanics still require engine work; the research queue is not automatically playable.
+Development builds also discover the bundled generated courier jobs during normal startup. Open station **Contracts** to review a data or package delivery, or use **Mission Gallery** to inspect its requirements. Choose a commander save before accepting a job; discovery alone accepts nothing and creates no save or user folder. Additional script-pack directories belong in `~/.xyzzy/elite/script-packs/`. Installed versions retain their exact content identity so older saved consignments can still resolve their original pack.
+
+See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. Packs remain unavailable while their declared capabilities or exact dependencies are missing; the research queue is not automatically playable.
 
 ## Mission Gallery
 
