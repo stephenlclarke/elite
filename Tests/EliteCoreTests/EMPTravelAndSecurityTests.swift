@@ -271,9 +271,9 @@ struct EMPTravelAndSecurityTests {
         #expect((current.physical?.npc?.resources?.electrical?.remaining ?? 0) > 0)
       }
     }
-    #expect(
-      Set(game.bodies.compactMap { $0.physical?.empCrewPod }.filter { $0.source == source })
-        .isSubset(of: afterPeople))
+    let livePods = game.bodies.compactMap { $0.physical?.empCrewPod }
+    let liveSourcePeople = Set(livePods.filter { $0.source == source })
+    #expect(liveSourcePeople.isSubset(of: afterPeople))
     #expect(!game.bodies.contains { $0.physical?.spawnIdentity == before.originalSpawn })
     for _ in 0..<20 { game.tick(delta: 0.1) }
     #expect(game.commander.savedEMPState?.records[source]?.pods.count == after.pods.count)
