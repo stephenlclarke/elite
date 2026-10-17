@@ -55,7 +55,8 @@ private func verifyTexturedHullVisibility(_ game: inout Game, id: String) throws
   game.commander.installTargetingComputer(.basic)
   game.viewportWidth = 512
   game.viewportHeight = 518
-  let actor = try #require(game.commander.flightSimulation.allocateActor())
+  let allocated = game.commander.flightSimulation.allocateActor()
+  let actor = try #require(allocated)
   var body = SpaceBody(id: 42, hull: .cobra, position: .init(0, 0, 1000))
   body.physical = game.nativePhysicalActorState(for: body, identity: actor)
   body.physical?.catalogueShipID = id

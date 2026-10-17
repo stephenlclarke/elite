@@ -15,3 +15,7 @@ Recognise actual ship surfaces from plain panels or valid textured triangles int
 Actual native GIF export must produce 24 decodable 256-square frames for both SH169 and SH170. Front visibility and actual Basic acquisition must accept centred and partially visible hulls, reject behind/offscreen hulls and retain all three display styles. Separate surface checks cover HUD/wire-only commands, viewport-corner rejection, degenerate triangles and both graphic collections.
 
 Strict Swift formatting, Markdown lint and diff checks pass. Authored tests have not been compiled or run in this worker. Root must execute the focused cases, regenerate media through the game renderer and complete the composed quality gates. The failed 176 run is not accepted media or runtime validation. See [the implementation handoff](PR-textured-ship-surface-presence.md).
+
+## Compiler follow-up
+
+Checkpoint 178 stopped during test compilation because `#require(game.commander.flightSimulation.allocateActor())` expands through an immutable macro argument. No tests or full quality lane executed. The fixture now invokes the real mutating allocator once into a local, then requires that optional identity. This preserves allocation and nil refusal without changing the production allocator or assertions. The correction still requires compilation and actual execution.
