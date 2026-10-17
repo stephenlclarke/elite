@@ -32,6 +32,8 @@ final class GameView: NSView {
     guard displayedScriptPageSize == bounds.size else { return nil }
     return displayedScriptPage
   }
+  var frameProfile: PlanetFrameProfiler?
+  var profileSubmittedFrame: UInt64?
   let audio = AudioPresenter()
   var held: Set<String> = []
   var pressedKeys: [UInt16: String] = [:]
@@ -89,8 +91,17 @@ final class GameView: NSView {
     bounds.fill()
     guard let context = NSGraphicsContext.current?.cgContext else { return }
     let snapshot = game
+    let presentationStart = frameProfile == nil ? nil : ContinuousClock.now
     let frame = Display.presentation(snapshot, width: bounds.width, height: bounds.height)
+    let drawStart = frameProfile == nil ? nil : ContinuousClock.now
     drawFrame(frame, context: context, rect: bounds)
+    if let presentationStart, let drawStart {
+      let now = ContinuousClock.now
+      frameProfile?.drew(
+        in: self, id: profileSubmittedFrame, frame: frame,
+        presentation: PlanetFrameProfiler.elapsed(presentationStart, drawStart),
+        drawing: PlanetFrameProfiler.elapsed(drawStart, now), at: now)
+    }
     paintedInventoryInteraction = frame.inventoryInteraction
     paintedInventoryState = frame.inventoryInteraction.map { _ in
       InventoryPaintState(game: snapshot, bounds: bounds)
@@ -418,7 +429,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   NSMenuItemValidation
 {
   var window: NSWindow?
-  let runtime = GameRuntime()
+  let runtime: GameRuntime
+  let frameProfile: PlanetFrameProfiler?
   var loop: Task<Void, Never>?
   var missionMenu: NativeMissionMenu?
   let saves: CommanderSaveSession
@@ -430,10 +442,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   init(
     restoreOnLaunch: Bool = true, saves: CommanderSaveSession? = nil,
     windowSize: NSSize = .init(width: 768, height: 768),
+    runtime: GameRuntime = GameRuntime(), frameProfile: PlanetFrameProfiler? = nil,
     commanderFileFailure: @escaping @MainActor (any Error) -> Void = {
       NSAlert(error: $0).runModal()
     }
   ) {
+    self.runtime = runtime
+    self.frameProfile = frameProfile
     self.windowSize = windowSize
     self.restoreOnLaunch = restoreOnLaunch
     self.commanderFileFailure = commanderFileFailure
@@ -444,6 +459,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     // Warm immutable texture pixels before any normal frame can encounter a textured craft.
     ShipTextureAssets.preload()
     let view = GameView(frame: NSRect(origin: .zero, size: windowSize))
+    view.frameProfile = frameProfile
     view.wantsLayer = true
     let window = NSWindow(
       contentRect: view.frame, styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -494,6 +510,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       if let self, self.restoreOnLaunch {
         await self.prepareNewCommanderSaveIfNeeded(afterFailedRestore: failedRestore)
       }
+      if self?.frameProfile != nil { _ = await PlanetRenderer.prepareGPU() }
       var previousTick = ContinuousClock.now
       while !Task.isCancelled {
         guard let view else { return }
@@ -501,6 +518,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         let framesPerSecond = max(1, min(60, view.window?.screen?.maximumFramesPerSecond ?? 60))
         let deadline = frameStart.advanced(by: .seconds(1.0 / Double(framesPerSecond)))
         if let self {
+          self.frameProfile?.beginFrame(in: view)
+          guard !Task.isCancelled else { return }
           await self.processFrame(in: view) {
             let now = ContinuousClock.now
             let elapsed = previousTick.duration(to: now).components
@@ -510,6 +529,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         } else {
           return
         }
+        self?.frameProfile?.endFrame(in: view, started: frameStart, deadline: deadline)
         // Account for work inside the interval; overdue frames yield without a catch-up burst.
         if ContinuousClock.now < deadline {
           do { try await Task.sleep(until: deadline, clock: .continuous) } catch { return }
@@ -546,13 +566,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     }
   }
   func processFrame(in view: GameView, delta: () -> Double) async {
+    let commandStart = frameProfile == nil ? nil : ContinuousClock.now
     await processPendingCommands(in: view)
     await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
     await runtime.setControls(view.controls)
-    view.game = await runtime.advance(delta: delta())
+    let advanceStart = frameProfile == nil ? nil : ContinuousClock.now
+    let snapshot = await runtime.advance(delta: delta())
+    let advanceEnd = frameProfile == nil ? nil : ContinuousClock.now
+    view.profileSubmittedFrame = frameProfile?.currentID
+    view.game = snapshot
     await acknowledgeNewCommanderSave()
     view.audio.update(view.game)
     view.needsDisplay = true
+    if let commandStart, let advanceStart, let advanceEnd {
+      frameProfile?.submitted(
+        in: view, commands: PlanetFrameProfiler.elapsed(commandStart, advanceStart),
+        advance: PlanetFrameProfiler.elapsed(advanceStart, advanceEnd),
+        submission: PlanetFrameProfiler.elapsed(advanceEnd, ContinuousClock.now))
+    }
   }
   // The frame loop and native integration checks share one ordered command batch.
   // Awaiting this method acknowledges actual processing instead of elapsed time.
@@ -685,13 +716,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     view.processedInventoryInputGeneration = inventoryGeneration
     if !events.isEmpty { view.game = await runtime.snapshot() }
   }
-  func applicationShouldTerminateAfterLastWindowClosed(_ _: NSApplication) -> Bool { true }
+  func applicationShouldTerminateAfterLastWindowClosed(_ _: NSApplication) -> Bool {
+    frameProfile == nil
+  }
   func applicationWillTerminate(_ notification: Notification) {
     windowWillClose(notification)
   }
   func windowWillClose(_ _: Notification) {
+    frameProfile?.cancelled()
     loop?.cancel()
     loop = nil
+  }
+  func windowDidEnterFullScreen(_ notification: Notification) {
+    if let window = notification.object as? NSWindow {
+      frameProfile?.enteredFullscreen(window: window)
+    }
+  }
+  func windowDidFailToEnterFullScreen(_ _: NSWindow) {
+    frameProfile?.fail("AppKit refused the native fullscreen transition.")
   }
   func windowDidResignKey(_ _: Notification) {
     (window?.contentView as? GameView)?.held.removeAll()
@@ -956,6 +998,36 @@ struct EliteApp {
       return
     }
     let app = NSApplication.shared
+    if let index = CommandLine.arguments.firstIndex(of: "--profile-planet-frames") {
+      guard CommandLine.arguments.indices.contains(index + 2),
+        CommandLine.arguments[index + 1].hasPrefix("/")
+      else { throw CocoaError(.fileWriteInvalidFileName) }
+      let directory = URL(fileURLWithPath: CommandLine.arguments[index + 1], isDirectory: true)
+      let system = Universe.galaxy(number: 0).filter { $0.economy == 0 }
+        .sorted { $0.technology == $1.technology ? $0.id < $1.id : $0.technology > $1.technology }
+        .first!
+      let profile = try PlanetFrameProfiler(
+        directory: directory, sourceSHA: CommandLine.arguments[index + 2], system: system)
+      var game = Game(executive: false)
+      game.commander.system = system.id
+      game.commander.shipDisplayStyle = .shadedPanels
+      game.screen = .status
+      game.launch()
+      let runtime = GameRuntime(game: game)
+      let saves = CommanderSaveSession(
+        preferences: nil, defaultURL: directory.appendingPathComponent("commander.json"))
+      let delegate = AppDelegate(
+        restoreOnLaunch: false, saves: saves, windowSize: .init(width: 512, height: 540),
+        runtime: runtime, frameProfile: profile,
+        commanderFileFailure: { profile.fail($0.localizedDescription) })
+      app.setActivationPolicy(.regular)
+      app.delegate = delegate
+      withExtendedLifetime(delegate) { app.run() }
+      delegate.loop?.cancel()
+      delegate.window?.orderOut(nil)
+      guard profile.completedSuccessfully else { throw CocoaError(.coderInvalidValue) }
+      return
+    }
     let sizeArgument = CommandLine.arguments.first { $0.hasPrefix("--window-size=") }
     let dimensions =
       sizeArgument?.dropFirst(14).split(separator: "x").compactMap { Double($0) } ?? []

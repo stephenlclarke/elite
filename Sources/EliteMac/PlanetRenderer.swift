@@ -23,6 +23,7 @@ enum PlanetRenderer {
   private static var imageCache: CGImage?
   private static var gpuPreparation: Task<Void, Never>?
   private static var gpuShader: PlanetGPUShader?
+  static var backendDescription: String { gpuShader?.deviceName ?? "CPU fallback" }
 
   private static func startGPUPreparation() {
     guard gpuPreparation == nil else { return }
