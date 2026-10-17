@@ -97,7 +97,9 @@ public enum TrafficIntent {
         }
       case .police, .escort, .mission: action = nil
       }
-      return action.map { NPCIntent(actor: actor.identity, action: $0) }
+      let retained = AmbientEncounterPolicy.preserveIntent(
+        of: actor, context: context, proposed: action)
+      return retained.map { NPCIntent(actor: actor.identity, action: $0) }
     }
   }
 
