@@ -568,6 +568,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   func processFrame(in view: GameView, delta: () -> Double) async {
     let commandStart = frameProfile == nil ? nil : ContinuousClock.now
     await processPendingCommands(in: view)
+    frameProfile?.willAdvance(in: view)
     await runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
     await runtime.setControls(view.controls)
     let advanceStart = frameProfile == nil ? nil : ContinuousClock.now
@@ -999,20 +1000,25 @@ struct EliteApp {
     }
     let app = NSApplication.shared
     if let index = CommandLine.arguments.firstIndex(of: "--profile-planet-frames") {
-      guard CommandLine.arguments.indices.contains(index + 2),
-        CommandLine.arguments[index + 1].hasPrefix("/")
+      guard CommandLine.arguments.indices.contains(index + 3),
+        CommandLine.arguments[index + 1].hasPrefix("/"),
+        let mode = PlanetFrameProfiler.WindowMode(rawValue: CommandLine.arguments[index + 3])
       else { throw CocoaError(.fileWriteInvalidFileName) }
       let directory = URL(fileURLWithPath: CommandLine.arguments[index + 1], isDirectory: true)
-      let system = Universe.galaxy(number: 0).filter { $0.economy == 0 }
-        .sorted { $0.technology == $1.technology ? $0.id < $1.id : $0.technology > $1.technology }
-        .first!
+      guard
+        let system = Universe.galaxy(number: 0).filter({ $0.economy == 0 && $0.government == 7 })
+          .sorted(by: {
+            $0.technology == $1.technology ? $0.id < $1.id : $0.technology > $1.technology
+          })
+          .first
+      else { throw CocoaError(.coderInvalidValue) }
       let profile = try PlanetFrameProfiler(
-        directory: directory, sourceSHA: CommandLine.arguments[index + 2], system: system)
+        directory: directory, sourceSHA: CommandLine.arguments[index + 2], system: system,
+        mode: mode)
       var game = Game(executive: false)
       game.commander.system = system.id
       game.commander.shipDisplayStyle = .shadedPanels
       game.screen = .status
-      game.launch()
       let runtime = GameRuntime(game: game)
       let saves = CommanderSaveSession(
         preferences: nil, defaultURL: directory.appendingPathComponent("commander.json"))
