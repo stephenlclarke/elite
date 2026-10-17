@@ -9,15 +9,19 @@ private struct StationStateFixture {
   let system = SystemIdentity(galaxy: 0, system: 237)
 
   func record(
-    key: String = "waystation", capabilities: [NativeStationCapability] = [.rrsContractBoard]
+    key: String = "waystation", system: SystemIdentity? = nil,
+    definition: String = "rescue_station",
+    capabilities: [NativeStationCapability] = [.rrsContractBoard]
   )
     -> NativeStationRecord
   {
     .init(
       identity: .init(
-        world: world, system: system, definition: "rescue_station", version: "1.5.4", key: key),
+        world: world, system: system ?? self.system, definition: definition, version: "1.5.4",
+        key: key),
       descriptor: .init(
-        definition: "rescue_station", version: "1.5.4", boardOrigin: .source,
+        definition: definition, version: "1.5.4",
+        boardOrigin: definition == "rescue_station" ? .source : .projectExtension,
         capabilities: capabilities), revision: 1, binding: nil, tombstone: nil)
   }
 
@@ -122,12 +126,23 @@ private struct StationStateFixture {
   #expect(throws: NativeStationStateError.self) {
     _ = try NativeStationLedger(world: UUID(), records: [record])
   }
-  let records = (0..<373).map { fixture.record(key: "station-\($0)") }
+  #expect(throws: NativeStationStateError.self) {
+    _ = try NativeStationLedger(
+      world: fixture.world, records: [record, fixture.record(key: "alias")])
+  }
+  let changedVersion = NativeStationIdentity(
+    world: fixture.world, system: fixture.system, definition: "rescue_station",
+    version: "1.5.5", key: "replacement")
+  #expect(!changedVersion.valid && changedVersion.slot == record.identity.slot)
+  let records = (0..<373).map {
+    fixture.record(key: "station-\($0)", system: .init(galaxy: $0 / 256, system: $0 % 256))
+  }
   #expect(throws: NativeStationStateError.self) {
     _ = try NativeStationLedger(world: fixture.world, records: records)
   }
   var ledger = try NativeStationLedger(
-    world: fixture.world, records: [record, fixture.record(key: "other")])
+    world: fixture.world,
+    records: [record, fixture.record(key: "hq", definition: "rrs_headquarters")])
   try ledger.rebind(record.identity, to: fixture.binding())
   let before = ledger
   let otherIdentity = ledger.records[1].identity
@@ -180,7 +195,9 @@ private struct StationStateFixture {
 @Test func nativeStationStructuralMetadataAndRevisionLimitsAreChecked() throws {
   let fixture = StationStateFixture()
   let record = fixture.record()
-  let maximum = (0..<372).map { fixture.record(key: "station-\($0)") }
+  let maximum = (0..<372).map {
+    fixture.record(key: "station-\($0)", system: .init(galaxy: $0 / 256, system: $0 % 256))
+  }
   #expect(try NativeStationLedger(world: fixture.world, records: maximum).valid)
   var invalid = record
   invalid.revision = 0

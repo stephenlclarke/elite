@@ -11,8 +11,11 @@ struct NativeStationIdentity: Hashable, Codable, Sendable {
   var valid: Bool {
     (0..<8).contains(system.galaxy) && (0..<256).contains(system.system)
       && ["rescue_station", "rrs_headquarters"].contains(definition)
-      && Self.token(version) && Self.token(key)
+      && version == "1.5.4" && Self.token(key)
   }
+
+  /// One logical source-class slot per system, independent of provenance or display key.
+  var slot: NativeStationSlot { .init(world: world, system: system, definition: definition) }
 
   private static func token(_ value: String) -> Bool {
     !value.isEmpty && value.utf8.count <= 80
@@ -21,6 +24,12 @@ struct NativeStationIdentity: Hashable, Codable, Sendable {
           || [45, 46, 95].contains($0)
       }
   }
+}
+
+struct NativeStationSlot: Hashable, Sendable {
+  let world: UUID
+  let system: SystemIdentity
+  let definition: String
 }
 
 enum NativeStationCapability: String, Hashable, Codable, Sendable { case rrsContractBoard }
@@ -125,7 +134,8 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
     guard records.count <= Self.recordLimit, nextDockSequence > 0,
       nextDockSequence < UInt64(Int64.max),
       records.allSatisfy({ $0.valid && $0.identity.world == world }),
-      Set(records.map(\.identity)).count == records.count
+      Set(records.map(\.identity)).count == records.count,
+      Set(records.map { $0.identity.slot }).count == records.count
     else { return false }
     let bindings = records.compactMap { $0.binding ?? $0.tombstone?.destroyedBinding }
     guard Set(bindings.map(\.actor)).count == bindings.count else { return false }
