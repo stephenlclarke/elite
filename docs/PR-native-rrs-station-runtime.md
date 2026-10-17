@@ -1,0 +1,13 @@
+# Native RRS station boundary
+
+The checked native adapter authenticates the retained 364-waystation/eight-headquarters population and keeps both stations distinct in headquarters systems. Actual scene population allocates physical actors without replacing original main station body zero. Waystation geometry rotates at the source rate; headquarters retain a chosen saved orientation. Headquarters orientation and compressed placement are explicit native adaptations.
+
+Movement tests the effective player hull against the real aperture, bounded swept structure, approach clearance, facing, roll and speed. Successful RRS entry commits a historical receipt through the existing durable candidate publisher. Launch uses the same station's source exit and rejects unproved clearance. Damage, genuine destruction, actor rebinding and receipts are retained without manufacturing a new arrival on load.
+
+Live board and original-main destination/arrival contexts have private initializers and current runtime epochs. Non-serializable docking evidence originates only from actual entry or validated restoration. Public factual queries carry no service authority. The board capability supplies no general market, refuelling or equipment service; intrinsic owned-property actions retain their existing rules. Headquarters board availability is an explicit project extension, separate from the source board at waystations.
+
+Persistent station state joins the canonical equipment owner and existing simulation calendar. The board hour is the floor of persisted calendar seconds divided by 3600, with native origin zero. Existing launch and journey adjustments remain the sole calendar mutations. Original main-station identity, observation and genuine arrival receipts have separate bounded storage; temporary absence is unavailable, while an actual saved destruction tombstone remains destruction.
+
+Validation status: four pure adapter/pose/decoder/clock tests were authored in the first source phase. This production phase has source formatting, strict formatting lint and diff checks only; it has not been compiled or executed. Integration, service and persistence tests, independent source review, renderer checks and complete `make ci` remain required. No playable documents mission, full source parity, release or whole-game completion is claimed by this phase. Source and geometry provenance remain in [the geometry adaptation](RRS-NATIVE-GEOMETRY.md).
+
+Related motivation: [native docking authority issue](ISSUE-native-rrs-station-runtime.md). Integrate with the separately owned NPC scene restoration and texture-attribute changes, preserving their hooks. Publish and merge only after the project's completed `@codex review` fix/re-review loop and final required checks.

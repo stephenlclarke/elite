@@ -188,6 +188,7 @@ extension GameRuntime {
     scriptSaveURL = target
     game = candidate
     controls = Controls()
+    game.invalidateNativeStationAuthority()
     invalidateInventoryContext()
   }
   public func restartScriptGalleryTrial() throws {
@@ -210,6 +211,7 @@ extension GameRuntime {
   private func publishRestartedScriptGalleryTrial(_ candidate: inout Game) {
     game = candidate
     controls = Controls()
+    game.invalidateNativeStationAuthority()
     invalidateInventoryContext()
   }
   public func returnFromScriptGalleryTrial() throws {
@@ -217,6 +219,7 @@ extension GameRuntime {
       throw MissionPackError("This standalone trial has no live commander to return to.")
     }
     game = parent.game
+    game.invalidateNativeStationAuthority()
     game.gallery.presentationGeneration = UUID()
     controls = parent.controls
     scriptSaveURL = parent.saveURL

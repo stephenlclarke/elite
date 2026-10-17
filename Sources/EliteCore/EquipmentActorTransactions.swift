@@ -150,7 +150,7 @@ extension Game {
   private mutating func performShopPurchase(
     _ context: EquipmentPurchaseContext, requireEquipmentScreen: Bool
   ) -> EquipmentMutationResult {
-    guard docked, !paused, !requireEquipmentScreen || screen == .equipment,
+    guard stationAllowsEquipmentServices, !paused, !requireEquipmentScreen || screen == .equipment,
       inventoryContextEpoch == context.epoch, commander == context.commander,
       selection == context.selection, equipmentMount == context.mount,
       equipmentWorkTool == context.workTool, Equipment.all.indices.contains(selection),

@@ -378,10 +378,18 @@ public enum Display {
       }
     }
     if body.hull == .station {
-      let hatch = [
-        Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
-        Vector3(-30, 10, -90),
-      ].map { game.viewPosition(body.modelVector($0)) + center }
+      let aperture: [Vector3]
+      if let identity = body.nativeStationIdentity,
+        let source = NativeStationSource.binding(for: identity)
+      {
+        aperture = source.geometry.docking.aperture.map { source.geometry.docking.center + $0 }
+      } else {
+        aperture = [
+          Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
+          Vector3(-30, 10, -90),
+        ]
+      }
+      let hatch = aperture.map { game.viewPosition(body.modelVector($0)) + center }
       let normal = game.viewPosition(body.entranceNormal)
       guard normal.dot(hatch[0]) < 0 else { return }
       if game.commander.shipDisplayStyle == .shadedPanels {

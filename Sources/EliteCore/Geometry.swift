@@ -132,6 +132,7 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var scriptShot: ScriptNPCShot?
   public var ecmEnabled = false
   public var physical: PhysicalActorState?
+  var nativeStationIdentity: NativeStationIdentity?
   public init(id: Int, hull: Hull, position: Vector3, hostile: Bool = false) {
     self.id = id
     self.hull = hull

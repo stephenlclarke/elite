@@ -37,6 +37,7 @@ public struct Commander: Sendable, Equatable, Codable {
   var savedEquipmentPurchaseHistory: EquipmentPurchaseHistory?
   var savedSalvageLedger: SalvageLedger?
   var savedEquipmentVersion: Int?
+  var nativeStations: NativeStationWorld?
   private var savedFlightSimulation: FlightSimulationState?
   public var flightSimulation: FlightSimulationState {
     get { savedFlightSimulation ?? FlightSimulationState() }
@@ -205,6 +206,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedEquipmentPurchaseHistory
     case savedSalvageLedger
     case savedEquipmentVersion
+    case nativeStations
     case savedFlightSimulation
     case savedCrimeLedger
     case savedStationSecurity
@@ -266,7 +268,8 @@ public struct Commander: Sendable, Equatable, Codable {
     ][thresholds.filter { kills >= $0 }.count]
   }
   public var valid: Bool {
-    ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && cargo.count == 17
+    ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
+      && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
       && (0...256).contains(system) && (0..<8).contains(galaxy)
@@ -386,6 +389,10 @@ public struct Game: Sendable {
   var scriptDispatching = false
   var scriptEventsDeferred = false
   var scriptDurabilityAvailable = false
+  var nativeStationRuntimeEpoch = UUID()
+  var pendingNativeStationDock: NativeStationEntryProof?
+  var nativeStationDockEvidence: NativeStationDockEvidence?
+  var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
   public var scriptPacks: [ScriptPack] = []
   public var scriptAvailablePackDigest: String?
   public var scriptOffer: UUID?
@@ -528,6 +535,7 @@ public struct Game: Sendable {
     scriptReferenceFrame = nil
     scriptStartupTime = nil
     commander = value
+    invalidateNativeStationAuthority()
     if commander.npcPersistence.count > 0 {
       commander.npcPersistence.resetPhysicalBindings(
         system: .init(galaxy: value.galaxy, system: value.system))
@@ -545,7 +553,7 @@ public struct Game: Sendable {
     showroom = ShowroomState()
     galacticBrowse = GalaxyBrowseState()
     systemInspection = nil
-    dockedAtMainStation = true
+    dockedAtMainStation = commander.nativeStations?.ledger.currentDock == nil
     enforceBlackjackWanted()
     commander.migrateXYZzyPolicy()
     commander.migrateLegacyXYZzyMounts()
@@ -903,7 +911,10 @@ public struct Game: Sendable {
     manuallySelectSystem(selected)
   }
   public mutating func trade(buy: Bool) {
-    guard docked, market.indices.contains(selection) else { return }
+    guard stationAllowsMarketServices, market.indices.contains(selection) else {
+      if docked { notify("MARKET UNAVAILABLE AT THIS STATION") }
+      return
+    }
     let index = selection
     let item = market[index]
     if buy {
@@ -934,7 +945,10 @@ public struct Game: Sendable {
   /// Sells the hold, then buys the most profitable exports for a destination.
   /// Government changes route risk, while commodity prices follow Elite's economy rules.
   public mutating func autoTrade() {
-    guard docked else { return }
+    guard stationAllowsMarketServices else {
+      if docked { notify("AUTO TRADE UNAVAILABLE AT THIS STATION") }
+      return
+    }
     let oldSelection = selection
     for index in commander.cargo.indices where commander.sellableCargo(index) > 0 {
       let saleQuantity = commander.sellableCargo(index)
@@ -1000,7 +1014,21 @@ public struct Game: Sendable {
     return gross / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
+    guard
+      commander.nativeStations?.ledger.currentDock == nil
+        || nativeStationDockEvidenceIsCurrent
+    else {
+      notify("RRS DOCKING CUSTODY UNAVAILABLE - LAUNCH REFUSED")
+      return
+    }
     var candidate = self
+    do {
+      try candidate.activateNativeStationWorld()
+      try candidate.persistNativeStationConditions()
+    } catch {
+      notify("RRS STATION STATE UNAVAILABLE - LAUNCH REFUSED")
+      return
+    }
     if candidate.requiresScriptDurability, !candidate.recordCalendarLaunch(wasDocked: docked) {
       notify("CALENDAR LIMIT - LAUNCH NOT COMMITTED")
       return
@@ -1009,6 +1037,9 @@ public struct Game: Sendable {
       try candidate.preflightActiveMissionProjectiles()
       candidate.persistScriptActors(unloading: true)
       try candidate.performNativeLaunch()
+    } catch is NativeStationRuntimeError {
+      notify("RRS EXIT UNAVAILABLE - LAUNCH REFUSED")
+      return
     } catch {
       paused = true
       notify("MISSION FLIGHT RESTORE REFUSED - PAUSED", voiced: false)
@@ -1021,6 +1052,7 @@ public struct Game: Sendable {
     self = candidate
   }
   private mutating func performNativeLaunch() throws {
+    let stationReceipt = commander.nativeStations?.ledger.currentDock
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -1048,9 +1080,16 @@ public struct Game: Sendable {
     preloadNavigation()
     restoreBlackjackEncounter()
     applyScriptStationResources()
+    try registerOriginalNativeMainStation()
     try restoreScriptActors()
+    if let stationReceipt { try launchFromNativeStation(stationReceipt) }
+    commander.nativeStations?.currentMainDock = nil
   }
   public mutating func dock(atMainStation: Bool = true) {
+    do { try persistNativeStationConditions() } catch {
+      notify("DOCKING DEFERRED: RRS STATE UNAVAILABLE")
+      return
+    }
     resolveDestroyed()
     if atMainStation,
       commander.scriptState.stationResources[contractStation.key]?.destroyed == true
@@ -1078,6 +1117,8 @@ public struct Game: Sendable {
     }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
+    commander.nativeStations?.currentMainDock = nil
+    commander.nativeStations?.ledger.depart()
     dockedAtMainStation = atMainStation
     retaliation.clear()
     weaponsTargetID = nil
@@ -1161,6 +1202,8 @@ public struct Game: Sendable {
     self = candidate
   }
   private mutating func performNativeArrival() throws {
+    try activateNativeStationWorld()
+    try persistNativeStationConditions()
     resolveDestroyed()
     guard !hasUnsettledWreckDeaths else {
       jumpCountdown = nil
@@ -1215,6 +1258,7 @@ public struct Game: Sendable {
     notify(currentSystem.name)
     restoreBlackjackEncounter()
     applyScriptStationResources()
+    try registerOriginalNativeMainStation()
     try restoreScriptActors()
   }
   public mutating func galacticJump() {
@@ -1485,6 +1529,12 @@ public struct Game: Sendable {
         bodies[index].position = bodies[index].position - autoPilot.velocity * dt
         bodies[index].position.z -= speed * dt * 18
         bodies[index].rotation += dt * bodies[index].rotationRate
+        if let identity = bodies[index].nativeStationIdentity,
+          let source = NativeStationSource.binding(for: identity), bodies[index].energy > 0
+        {
+          bodies[index].energy = min(
+            source.maximumEnergy, bodies[index].energy + source.recharge * dt)
+        }
         advanceCanonicalModelSpin(at: index, delta: dt)
         if let physical = bodies[index].physical, physical.spawnIdentity != nil,
           physical.ordnance == nil, bodies[index].scriptShot == nil,
@@ -1503,9 +1553,14 @@ public struct Game: Sendable {
       }
     }
     advanceNativeMissionFrame(from: before, to: commander.flightSimulation.pose, delta: dt)
-    if let station = bodies.first(where: { $0.hull == .station }), station.containsPlayer {
+    detectNativeStationEntry(from: before, delta: dt)
+    if pendingNativeStationDock != nil { return }
+    collideWithNativeStationStructures(from: before, delta: dt)
+    if let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
+      station.containsPlayer
+    {
       if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
-        dock(atMainStation: station.id == 0)
+        dockAtOriginalNativeMainStation(station, from: before)
         return
       }
       applyDamage(dt * 100, front: true)
@@ -1570,6 +1625,10 @@ public struct Game: Sendable {
     }
   }
   mutating func resolveDestroyed() {
+    do { try persistNativeStationConditions() } catch {
+      notify("RRS LIFECYCLE UNAVAILABLE - SETTLEMENT DEFERRED", voiced: false)
+      return
+    }
     let initial = bodies.filter { $0.energy <= 0 }
     if !initial.isEmpty { ensurePhysicalActors() }
     for body in initial { settleLegacyCombatDeath(body) }
@@ -1615,6 +1674,7 @@ public actor GameRuntime {
   var scriptSaveURL: URL?
   public init(game: Game = Game(), saveURL: URL? = nil) {
     var prepared = game
+    prepared.invalidateNativeStationAuthority()
     prepared.inventoryContextEpoch = .init()
     if (try? prepared.commander.prepareEquipment()) != nil {
       prepared.commander.mirrorFittedEquipment()
@@ -1644,6 +1704,7 @@ public actor GameRuntime {
     let namespace = Self.newGalleryNamespace()
     let target = namespace.appendingPathComponent("commander.json")
     var candidate = trialGame
+    candidate.invalidateNativeStationAuthority()
     try candidate.commander.prepareEquipment()
     candidate.inventoryContextEpoch = .init()
     candidate.ensureScriptCalendar(origin: .newCommander)
@@ -1807,6 +1868,7 @@ public actor GameRuntime {
         delta: delta, flight: flightActive, local: localActive, calendar: calendarActive,
         missionCalendar: game.missionCalendarActive)
     game.tick(delta: delta, controls: controls)
+    commitPendingNativeStationEntry()
     if wasLive && game.screen == .gameOver {
       if game.energy.isFinite && game.energy < 0 { game.energy = 0 }
       game.markCourierFatalLoss()
@@ -1848,6 +1910,7 @@ public actor GameRuntime {
   /// The returned live Game keeps bindings; only the disk Commander clears them.
   static func prepareNativeSaveState(_ value: Game) throws -> (game: Game, commander: Commander) {
     var candidate = value
+    try candidate.persistNativeStationConditions()
     try candidate.commander.prepareEquipment()
     candidate.commander.mirrorFittedEquipment()
     candidate.resolveDestroyed()
@@ -1910,6 +1973,7 @@ public actor GameRuntime {
         migrateScriptCalendar(&candidate, untrackedJump: world.jumpCountdown != nil)
       }
       candidate.restoreScriptWorld(world)
+      try candidate.rebindNativeStationsAfterLoad()
       try candidate.validateInstalledCourierContent()
       candidate.resolveCourierTerminals()
       candidate.suspendUnavailableScriptContent()
@@ -1936,6 +2000,7 @@ public actor GameRuntime {
     commander.migrateLegacyPassengerMarker()
     var candidate = game
     guard candidate.load(commander) else { throw SaveError.invalidCommander }
+    try candidate.rebindNativeStationsAfterLoad()
     if candidate.requiresScriptDurability { migrateScriptCalendar(&candidate) }
     guard candidate.commander.valid else { throw SaveError.invalidCommander }
     if persistMigrations && candidate.commander != original {
