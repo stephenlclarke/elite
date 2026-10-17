@@ -122,7 +122,7 @@ Mission flags retain the original TP low-nibble states and default to unstarted 
 
 ## XYZZY
 
-Type `xyzzy` in the game to become Commander Clarke in the canonical Cobra Mk III and open the secret menu. On first activation you receive 1,000,000 CR, with finite cash accounting, maximum supported hardware, four additional fuel units (35 LY total capacity), an Advanced navigation module, a full missile rack, fuel, shields and energy. The 21-LY stock Advanced jump cap and remaining fuel still limit each jump. Unlimited missiles, fuel replenishment, cargo, auto-trade, speech, AUTO targeting, automatic ECM and Military retaliation start enabled; shaded panels are selected. Naval lasers, Advanced II shields (the legacy Capital reward), Military targeting and the Advanced energy module (legacy Naval Energy Unit) are fitted, while Mining capability, ECM and scoops are retained.
+Type `xyzzy` in the game to become Commander Clarke in the canonical Cobra Mk III and open the secret menu. On first activation you receive 1,000,000 CR, with finite cash accounting, maximum supported hardware, four additional fuel units (35 LY total capacity), an Advanced navigation module, a full missile rack, fuel, shields and energy. The 21-LY stock Advanced jump cap and remaining fuel still limit each jump. Unlimited missiles, fuel replenishment, cargo, auto-trade, speech, AUTO targeting, automatic ECM and Military retaliation start enabled; shaded panels are selected. Current development source fits Naval lasers, the Elite Shield Module, Military targeting and the Advanced energy module (legacy Naval Energy Unit), while Mining capability, ECM and scoops are retained.
 
 Auto-trade immediately sells and restocks when activation happens while docked, so the initial grant can be spent immediately. Cash then changes through ordinary purchases, sales, fuel and rewards. Reopening XYZZY or loading a save never replenishes cash; re-entry retains switch choices and restores the Cobra Mk III with maximum hardware. C repeats this free refit without granting cash or running auto-trade; excess cargo enables unlimited capacity to preserve it. Old XYZZY saves with unlimited cash receive the finite starting balance once, then persist the migration; finite old balances and ordinary commanders are preserved. Old unlimited-jump flags cannot bypass current jump limits. Location and mission progress remain intact. A new game starts as Jameson again.
 
@@ -254,8 +254,8 @@ Current shield components use **Basic → Basic II → Intermediate → Intermed
 | Intermediate | 600 | 1.8 | 1 |
 | Intermediate II | 750 | 2 | 1 |
 | Advanced | 4,500 | 2.3 | 1 |
-| Advanced II | Elite-rank reward / XYZZY; PLUGH stock | 6.9 | 1 |
-| Elite | Recovered-upgrade progression; no ordinary shop row | 9.2 | 1 |
+| Advanced II | Elite-rank legacy reward; PLUGH stock | 6.9 | 1 |
+| Elite | XYZZY / recovered-upgrade progression; no ordinary shop row | 9.2 | 1 |
 
 The Elite combat-rank reward retains its legacy Capital identity and supplies the stock Advanced II component; Elite component grade is a separate progression threshold. Old laser-named saved boosters retain their real statistics and provenance: for example, a legacy Mining booster keeps its 5× capacity rather than being reduced to the new 1.8× Intermediate stock value. Purchase history, stored ownership and fitted grade are distinct. A weaker purchase is stored instead of replacing a stronger fit. Recharge upgrades affect actual shield recharge independently of energy-system regeneration.
 
