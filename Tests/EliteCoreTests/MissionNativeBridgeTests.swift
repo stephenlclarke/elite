@@ -546,7 +546,7 @@ struct MissionNativeBridgeTests {
     let muzzle =
       source.position
       + source.orientation.apply(weapon.muzzle * source.scriptNPC!.fit.definition.scale)
-    let original = game
+    let original = (commander: game.commander, bodies: game.bodies)
     #expect(throws: (any Error).self) {
       try game.makeMissionNativeLaserProof(
         sourceBodyID: source.id, weapon: weapon,
@@ -555,14 +555,14 @@ struct MissionNativeBridgeTests {
     #expect(game.commander == original.commander && game.bodies == original.bodies)
     var invalid = game
     invalid.celestials = [.init(kind: .planet, position: .init(0, 0, 200), radius: -1)]
-    let invalidBefore = invalid
+    let invalidBefore = (commander: invalid.commander, bodies: invalid.bodies)
     #expect(throws: MissionNativeBridgeError.invalidGeometry) {
       try invalid.makeMissionNativeLaserProof(
         sourceBodyID: source.id, weapon: weapon,
         component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
     }
     #expect(invalid.commander == invalidBefore.commander && invalid.bodies == invalidBefore.bodies)
-    let queryBefore = game
+    let queryBefore = (commander: game.commander, bodies: game.bodies)
     let query = try game.queryMissionNativeLaser(
       sourceBodyID: source.id, weapon: weapon,
       component: nil, muzzle: muzzle, direction: .init(0, 1, 0))
@@ -582,7 +582,7 @@ struct MissionNativeBridgeTests {
     #expect(game.commander.flightSimulation.nextEmission == emission + 1)
     #expect(game.bodies == original.bodies)
     #expect(game.commander.scriptState == original.commander.scriptState)
-    let freshBefore = game
+    let freshBefore = (commander: game.commander, bodies: game.bodies)
     try game.validateMissionNativeLaserProof(proof)
     #expect(game.commander == freshBefore.commander && game.bodies == freshBefore.bodies)
     var sourceChanged = game
