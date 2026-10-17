@@ -1287,7 +1287,11 @@ public struct Game: Sendable {
     var candidate = self
     do {
       try candidate.preflightActiveMissionProjectiles()
-      try candidate.performNativeArrival()
+      guard try candidate.performNativeArrival() else {
+        jumpCountdown = candidate.jumpCountdown
+        notify(candidate.message)
+        return
+      }
       guard candidate.commander.valid else { throw SaveError.invalidCommander }
     } catch {
       paused = true
@@ -1296,19 +1300,19 @@ public struct Game: Sendable {
     }
     self = candidate
   }
-  private mutating func performNativeArrival() throws {
+  private mutating func performNativeArrival() throws -> Bool {
     try activateNativeStationWorld()
     try persistNativeStationConditions()
     resolveDestroyed()
     guard !hasUnsettledWreckDeaths else {
       jumpCountdown = nil
       notify("JUMP DEFERRED: WRECK SETTLEMENT PENDING")
-      return
+      return false
     }
     guard persistSalvagePoses() else {
       jumpCountdown = nil
       notify("JUMP DEFERRED: SALVAGE STATE UNAVAILABLE")
-      return
+      return false
     }
     persistOrePoses()
     let journey = requiresScriptDurability ? completeCalendarJourney() : nil
@@ -1357,6 +1361,7 @@ public struct Game: Sendable {
     applyScriptStationResources()
     try registerOriginalNativeMainStation()
     try restoreScriptActors()
+    return true
   }
   public mutating func galacticJump() {
     guard !docked, !playerEMPDisabled, commander.equipment.contains("Galactic Hyperdrive") else {
@@ -1395,7 +1400,7 @@ public struct Game: Sendable {
     systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
     selectedSystem = commander.system
     try preflightActiveMissionProjectiles()
-    try performNativeArrival()
+    guard try performNativeArrival() else { return false }
     commander.fuel = commander.fuelCapacity
     return true
   }
