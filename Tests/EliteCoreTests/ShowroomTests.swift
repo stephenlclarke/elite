@@ -201,6 +201,7 @@ private func showroomGame() -> Game {
     game.showroom.compare = false
     game.showroom.detail = true
     let frame = Display.presentation(game, width: 1512, height: 982)
+    #expect(frame.flightClip == frame.canvas)
     #expect(frame.hasShipSurfaces, "\(ship.name)")
     #expect(frame.shipLines.isEmpty)
   }

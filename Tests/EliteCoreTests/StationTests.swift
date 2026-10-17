@@ -38,9 +38,12 @@ import Testing
   let kinds: [LaserKind?] = [.pulse, .mining, .beam, nil]
   for (index, mount) in LaserMount.allCases.enumerated() {
     var game = Game(executive: false)
+    game.commander.laserMounts = LaserMounts(front: .pulse, left: .mining, right: .beam)
     game.launch()
     game.speed = 0
-    game.commander.laserMounts = LaserMounts(front: .pulse, left: .mining, right: .beam)
+    #expect(game.commander.laser(on: mount) == kinds[index])
+    #expect(
+      game.commander.fittedEquipment(at: .laser(mount))?.node.key == kinds[index]?.equipmentName)
     game.screen = Screen(rawValue: mount.rawValue)!
     let position: Vector3
     switch mount {
