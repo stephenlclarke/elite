@@ -358,13 +358,21 @@ private func timerFixture() throws -> DurableFixture {
   game.emitScriptEvent("station.undocked", drain: false)
   game.drainScriptEvents()
   #expect(game.commander.scriptState.pendingEvents.contains { $0.kind == "encounter.admitted" })
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
   try Data("blocked directory".utf8).write(to: fixture.container)
   let runtime = GameRuntime(game: game)
+  #expect(await runtime.snapshot().commander == game.commander)
   await #expect(throws: (any Error).self) { try await runtime.save(to: fixture.url) }
   #expect(await runtime.snapshot().commander == game.commander)
   #expect(await runtime.snapshot().bodies == game.bodies)
   try FileManager.default.removeItem(at: fixture.container)
   try await runtime.save(to: fixture.url)
+  let (pending, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
+  #expect(pending.scriptState.pendingEvents.contains { $0.kind == "encounter.admitted" })
+  #expect(pending.scriptState.instances.values.first?.data["phase"] == .string("launch"))
+  // Saving binds the writer; a real runtime turn publishes the pending native result handler.
+  _ = await runtime.advance(delta: 0.1)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
   #expect(saved.scriptState.instances.values.first?.data["phase"] == .string("battle"))
 }
