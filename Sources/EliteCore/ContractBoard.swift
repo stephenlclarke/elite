@@ -13,8 +13,9 @@ public struct ContractBoardRow: Sendable {
   var rrs: RRSCourierRow? = nil
   var finance: ScriptFinanceRow? = nil
   var people: NativePeopleStationRow? = nil
+  var provider: ProviderContractRow? = nil
   public var key: String {
-    people?.key ?? finance?.key ?? rrs?.key
+    provider?.key ?? people?.key ?? finance?.key ?? rrs?.key
       ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
   }
 }
@@ -33,6 +34,7 @@ private enum ContractBoardReview: Sendable {
   case rrs(RRSCourierQuote)
   case finance(ScriptFinanceQuote)
   case people(NativePeopleStationQuote)
+  case provider(ProviderContractQuote)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -96,6 +98,19 @@ public struct ContractBoardUI: Sendable {
       }
     }
   }
+  var providerQuote: ProviderContractQuote? {
+    get {
+      guard case .provider(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .provider(newValue)
+      } else if case .provider(_)? = review {
+        review = nil
+      }
+    }
+  }
   var previous: Screen = .status
   var restoredSelection: String?
   public init() {}
@@ -139,6 +154,8 @@ extension Game {
     candidate.contractBoard.rrsQuote = nil
     candidate.contractBoard.financeQuote = nil
     candidate.contractBoard.peopleQuote = nil
+    candidate.contractBoard.providerQuote = nil
+    candidate.gallery.providerIntent = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
   }
@@ -150,7 +167,7 @@ extension Game {
     failures: [String: String] = [:], restoring save: ContractScreenSave? = nil
   ) {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
-    var rows = rrsCourierRows + financeRows + nativePeopleRows
+    var rows = rrsCourierRows + financeRows + nativePeopleRows + providerContractRows
     for pack in scriptPacks.sorted(by: {
       ($0.manifest.id, $0.manifest.version, $0.digest) < (
         $1.manifest.id, $1.manifest.version, $1.digest
@@ -182,7 +199,7 @@ extension Game {
       contractBoard.previous = save.previous
       refreshSelectedContractQuote()
       if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
-        || contractBoard.peopleQuote != nil
+        || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
       {
         contractBoard.action = .back
       }
@@ -190,6 +207,12 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let row = contractBoard.selected?.provider {
+      contractBoard.providerQuote = .init(
+        row: row, issues: contractBoard.selected?.reason.map { [$0] } ?? [])
+      return
+    }
+    contractBoard.providerQuote = nil
     if let row = contractBoard.selected?.people {
       contractBoard.peopleQuote = nativePeopleQuote(row)
       return
@@ -217,6 +240,8 @@ extension Game {
         contractBoard.rrsQuote = nil
         contractBoard.financeQuote = nil
         contractBoard.peopleQuote = nil
+        contractBoard.providerQuote = nil
+        gallery.providerIntent = nil
       } else {
         screen = contractBoard.previous
       }
@@ -254,9 +279,21 @@ extension Game {
       contractBoard.rrsQuote = nil
       contractBoard.financeQuote = nil
       contractBoard.peopleQuote = nil
+      contractBoard.providerQuote = nil
+      gallery.providerIntent = nil
       return
     }
     do {
+      if contractBoard.selected?.provider != nil {
+        if contractBoard.action == .decline {
+          gallery.providerIntent = nil
+          contractBoard.detail = false
+          contractBoard.providerQuote = nil
+        } else {
+          try stageProviderContractIntent()
+        }
+        return
+      }
       if let row = contractBoard.selected?.people {
         guard contractBoard.action == .accept, let quote = contractBoard.peopleQuote,
           quote.row == row

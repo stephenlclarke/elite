@@ -60,6 +60,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let collections: [ScriptCollectionDefinition]?
   public let loans: [ScriptFinanceDefinition]?
   public let children: [ScriptChildDefinition]?
+  var providerContract: ScriptProviderContractDefinition? = nil
   public var stateID: String { id + "/" + mission.id }
 }
 public struct ScriptPack: Sendable {
@@ -124,6 +125,7 @@ public enum ScriptCapabilities {
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
     "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen", "book.unlocked",
     "collection.delivered", "campaign.child.started", "courier.terminated",
+    "provider.transition", "provider.closed",
   ]
 }
 
@@ -137,7 +139,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -146,6 +148,18 @@ public enum ScriptPackLibrary {
     if root.contains(key: "board") {
       try keys(
         root.table(forKey: "board"), "id title generator clock refreshSeconds exclusiveGroup")
+    }
+    if root.contains(key: "providerContract") {
+      let provider = try root.table(forKey: "providerContract")
+      try keys(
+        provider,
+        "provider origin destination payload observation fullReward urgentReward recoveryReward crewReward"
+      )
+      try keys(provider.table(forKey: "origin"), "galaxy system")
+      try keys(provider.table(forKey: "destination"), "galaxy system")
+      try keys(
+        provider.table(forKey: "observation"),
+        "contactRange contactSpeed contactSeconds escortRange escortSeconds checkpoints")
     }
     if root.contains(key: "courier") {
       try keys(
@@ -350,6 +364,7 @@ public enum ScriptPackLibrary {
     try validateFinance(manifest)
     try validatePledge(manifest)
     try validateCourier(manifest)
+    try validateProviderContract(manifest)
     try validateCampaignChildren(manifest)
     let requirements = manifest.receiptRequirements ?? []
     guard requirements.count <= 32, Set(requirements.map(\.id)).count == requirements.count,

@@ -27,6 +27,7 @@ public struct ScriptGalleryPageIdentity: Codable, Sendable, Equatable {
   var allowedKeys: Set<String> {
     if mode == .review { return ScriptPagePresentation.controlKeys.union(["l"]) }
     var keys = ScriptPagePresentation.controlKeys.union(["tab", "l", "t", "gallery-trial"])
+    if mode == .detail { keys.formUnion(["m", "u", "c", "k", "d", "x", "b"]) }
     if mode != .links { keys.formUnion(["r", "mission-resume"]) }
     return keys
   }
@@ -190,6 +191,7 @@ extension Game {
       courierGallerySummary(state),
       campaignImmediateOwner?.uuidString ?? "", gallery.campaignPreviewIdentity ?? "",
     ]
+    fields += providerGalleryPageFacts(state)
     if let review = gallery.campaignReview {
       fields += [review.source.uuidString, review.root.uuidString, review.digest]
     }

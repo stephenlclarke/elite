@@ -42,6 +42,8 @@ public struct MissionGalleryState: Sendable {
   var campaignTrialRequested = false
   var campaignHistory: [CampaignGalleryLocation] = []
   var campaignSelection: CampaignGallerySelection?
+  var providerPresentations: [ProviderMissionPresentation] = []
+  var providerIntent: ProviderMissionIntent?
   var presentationGeneration = UUID()
   var previousScreen: Screen = .status
   var previouslyPaused = false
@@ -115,6 +117,7 @@ extension Game {
   }
   mutating func galleryKey(_ key: String) {
     clampGallerySelection()
+    if stageProviderGalleryIntent(key) { return }
     let previousPage = scriptGalleryPageIdentity
     defer { finishGalleryNavigation(from: previousPage) }
     if gallery.campaignReview != nil {
@@ -409,6 +412,13 @@ extension Display {
       game.gallery.detail
       ? "Arrows: read  Tab: list  Esc: back" : "Arrows: mission  Return: details  Esc: back"
     if game.canTrialSelectedMission { actions += "  T: trial" }
+    if game.gallery.detail,
+      game.selectedGalleryMission?.savedInstance.flatMap({
+        game.commander.scriptState.instances[$0]?.savedProviderContract
+      })?.stage.terminal == false
+    {
+      actions += "  M: manifest  U: urgent  C: confirm  K: core  D: deliver  X: return  B: back"
+    }
     if game.campaignImmediateOwner != nil { actions = "Return: links  T: Try campaign  Esc: back" }
     if game.gallery.campaignLinks { actions = "Arrows: link  Return / click: open  Esc: back" }
     if game.gallery.campaignReview != nil {

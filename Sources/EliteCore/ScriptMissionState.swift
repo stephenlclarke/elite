@@ -71,6 +71,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
     set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
   }
   public var completionReceipt: ScriptCompletionReceipt?
+  var savedProviderContract: ScriptProviderContractState?
   public var courier: ScriptCourierCustody?
   public var pledgeReceiptID: UUID?
   public var receiptJoins: [String: [UUID]]?
@@ -226,6 +227,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
           } ?? true)
           && (instance.courier.map { $0.valid(state: instance, engine: self) }
             ?? (instance.contract?.offer.courier == nil))
+          && (instance.savedProviderContract.map { $0.valid(instance: instance) } ?? true)
           && instance.collectionsValid(engine: self)
           && instance.conversationReceipts.count <= 1024
           && instance.conversationReceipts.allSatisfy {

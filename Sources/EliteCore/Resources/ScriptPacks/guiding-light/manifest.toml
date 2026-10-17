@@ -1,0 +1,126 @@
+schemaVersion = 2
+missionAPI = 2
+id = "project.crimbo"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "cargo-v2", "durable-commands-v2", "gallery-basic-v2", "ordinary-provider-dispatch-v1"]
+priority = 570
+source = "FR055 project-authored optional mission project.crimbo.guiding-light; original game ship discovery remains independent."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "guiding-light"
+title = "The Guiding Light"
+briefing = "Crimbo Dispatch offers one protected 1t navigation relay. Request Santa's immutable dispatch manifest on the ordinary orbital route, then keep real contact for five continuous physical seconds within 5km and at most 100m/s relative speed. Calibrate three actual forward route checks at 6, 12 and 18km while within 8km, with at least 60 qualified seconds. Deliver to the actual Atisen main orbital dispatch desk. After receiving the manifest, explicitly reviewed urgent dispatch is irreversible. If Santa is lost or disabled, a lawful original computer core or actual original crew care at Crimbo can recover dispatch. There are no guaranteed drops. Unlawful convoy attacks or selling its original people void every unpaid reward. Return the held relay to Crimbo for zero base payment. No deadline, deposit, equipment gift or advance."
+destination = "Galaxy 8 / Atisen main orbital dispatch desk"
+reward = "Full 3,000 CR OR urgent 1,500 CR OR recovered 2,000 CR; optional original crew care 500 CR once. Maximum 3,500 CR."
+milestones = ["Deliver the exact held relay to the actual Atisen main orbital dispatch desk"]
+
+[providerContract]
+provider = "crimbo-convoy"
+payload = "navigation-relay"
+fullReward = 30000
+urgentReward = 15000
+recoveryReward = 20000
+crewReward = 5000
+[providerContract.origin]
+galaxy = 7
+system = 8
+[providerContract.destination]
+galaxy = 7
+system = 202
+[providerContract.observation]
+contactRange = 5000.0
+contactSpeed = 100.0
+contactSeconds = 5.0
+escortRange = 8000.0
+escortSeconds = 60.0
+checkpoints = [6000.0, 12000.0, 18000.0]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "provider.transition"
+function = "transition"
+[[handlers]]
+event = "provider.closed"
+function = "closed"
+
+[[dialogs]]
+id = "offer"
+text = "Crimbo Dispatch: One relay, one tonne, and a short trip to Atisen. Fly alongside Santa to calibrate it, then deliver it to their orbital station. Full calibration pays 3,000 credits; urgent dispatch pays 1,500. Interested?"
+
+[[dialogs]]
+id = "accepted"
+text = "Crimbo Dispatch: Relay secured. Find Santa on the orbital route and request the dispatch manifest. Keep your weapons safe: the Rudolfs take their work seriously."
+
+[[dialogs]]
+id = "hello"
+text = "Santa: Dispatch sent you? Good. Hold within five kilometres while we sign the manifest. Presents are easy. Paperwork is the real cargo."
+
+[[dialogs]]
+id = "calibrate"
+text = "Santa: Manifest signed. Stay within eight kilometres while we make eighteen kilometres of route. Your relay has three lights to collect. There's no prize for bumping the sleigh."
+
+[[dialogs]]
+id = "checkpoint1"
+text = "Relay: First calibration light confirmed."
+
+[[dialogs]]
+id = "checkpoint2"
+text = "Relay: Second calibration light confirmed."
+
+[[dialogs]]
+id = "checkpoint3"
+text = "Relay: Third calibration light confirmed."
+
+[[dialogs]]
+id = "fullReady"
+text = "Santa: All lights green and the timing checks out. Take that relay to Atisen's orbital dispatch desk. Safe passage, Commander."
+
+[[dialogs]]
+id = "urgentChoice"
+text = "Dispatch: Send the signed relay without full calibration? Delivery pays 1,500 credits. You can keep calibrating instead."
+
+[[dialogs]]
+id = "disabled"
+text = "Dispatch: Santa's drive is offline. Your relay is safe. Wait for recovery, use your signed manifest for urgent delivery, or recover a certified manifest through the crew or the original computer core."
+
+[[dialogs]]
+id = "lostSanta"
+text = "Dispatch: We've lost Santa's ship. We cannot replace that crew with a new signal. Recover the original computer core or bring a surviving crew member safely to Crimbo. If neither is possible, return the relay."
+
+[[dialogs]]
+id = "rescue"
+text = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Thank you, Commander. Dispatch has approved your 500-credit crew commendation."
+
+[[dialogs]]
+id = "recoveryReady"
+text = "Dispatch: Recovered manifest authenticated. Atisen will accept the relay. Recovery delivery pays 2,000 credits."
+
+[[dialogs]]
+id = "completeFull"
+text = "Atisen Dispatch: Relay received, all three checks verified. 3,000 credits transferred. Crimbo's next delivery has a guiding light."
+
+[[dialogs]]
+id = "completeUrgent"
+text = "Atisen Dispatch: Urgent relay received with its signed manifest. 1,500 credits transferred. We'll finish the calibration here."
+
+[[dialogs]]
+id = "completeRecovery"
+text = "Atisen Dispatch: Relay and recovered manifest received. 2,000 credits transferred. We've recorded what happened to the convoy."
+
+[[dialogs]]
+id = "betrayed"
+text = "Crimbo Dispatch: Native incident records identify your unlawful attack on this convoy. This contract will not pay. Return the relay to close its custody record."
+
+[[dialogs]]
+id = "unavailable"
+text = "Dispatch: The assigned dispatch contact is unavailable. Keep the relay; your progress is saved. Another port cannot sign for this delivery."
+
+[[dialogs]]
+id = "return"
+text = "Crimbo Dispatch: Relay returned. Contract closed without a delivery payment."
