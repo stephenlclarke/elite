@@ -559,5 +559,11 @@
     "protectedInputsUnchanged": true,
     "allOwnedStartSignaturesGone": true,
     "qualification": "Distribution11tests and171shipcurrentness passed; showroom39tests had1failure; freshcatalogue is discoveryonly. No coverage/sanitizer/leak/native or release acceptance."
+  },
+  "preExistingGpuExperiment": {
+    "methods": 4,
+    "optInEnvironment": "ELITE_PLANET_GPU_EXPERIMENT=1",
+    "environmentChangedByThisWork": false,
+    "qualification": "Actual lane skips must be recorded separately; discovery/summary totals are not all executed passes. H036 summary898 comprised894passes+4preexistingoptinSkips."
   }
 }
