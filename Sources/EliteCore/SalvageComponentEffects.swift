@@ -27,6 +27,12 @@ public enum SalvageComponentEffects {
     guard let lot = ledger.inventory.first(where: { $0.identity == lotID }) else {
       throw SalvageComponentEffectError.missingStoredItem
     }
+    // Reserved attachments belong to the separate alien fitting model, never capped scalar progression.
+    if case .technology(let id, _, _) = lot.content,
+      AlienModuleDefinition.isAttachmentDefinition(id)
+    {
+      throw SalvageComponentEffectError.unsupportedEffect
+    }
     guard let component else { throw SalvageComponentEffectError.missingComponent }
     guard
       case .equipment(
