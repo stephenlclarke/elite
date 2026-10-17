@@ -45,3 +45,11 @@ All Elite and distribution-tap PRs require an actual `@codex review` comment, a 
 ## Links
 
 [FR055 problem statement](ISSUE-guiding-light-provider-contract.md). Root owns assignment coordination; G1 owns integration, native validation and publication.
+
+## Follow-up to the frozen source review
+
+Parent source leaf `362d91b51d0ec5d097bdae4c62809367cdefd9f6` remains preserved. Joined care/sale and combat-betrayal proofs now form one bounded sequence before mission effects. An earlier betrayal prevents later care from creating care, manifest or recovery authorization. A genuinely earlier care remains recorded when a later betrayal voids its unpaid claim. Duplicated projection of the same actual sale is joined once; distinct native operations cannot share an ambiguous order.
+
+Persisted terminal state now requires exactly completed/complete, innocent cancellation/abandoned, and betrayed cancellation or lost-cargo failure/failed. Care cues distinguish an actual transferred reward from eligible payment pending and omit voided reward wording. Betrayal wording covers both native unlawful attack and original-person sale without inventing a cause; stale manifest/dispatch/calibration instructions are suppressed after betrayal. Payment in the same update as care emits one paid cue, and later payment has its own finite cue.
+
+Authored regressions cover earlier-combat/later-care and earlier-care/later-combat within a single facts snapshot, native care preservation, replay, all terminal stage/outcome combinations after decoding, and paid/pending/voided Lua presentation. The care test still uses actual existing native transfer fixtures with supplied provider linkage/common ordering; it is not actual Santa authentication or an enabled mission playthrough. No compiler, typecheck, test execution or native jobs were run. Existing capability, producer and save-integration gates remain required.

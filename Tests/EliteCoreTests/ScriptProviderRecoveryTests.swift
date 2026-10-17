@@ -79,7 +79,8 @@ struct ScriptProviderRecoveryTests {
     #expect(!game.providerCoreClaimIsAuthentic(foreign, state: state))
   }
 
-  @Test func actualNativeCareReceiptJoinsOriginalPeopleAndPaysOnce() async throws {
+  @Test(arguments: [UInt64(0), 2, 4])
+  func oneSnapshotOrdersActualCareAndProjectedCombatBetrayal(_ betrayalOrder: UInt64) async throws {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
     let runtime = try await NativePeopleTestFixture.capturedRuntime(storage: storage)
@@ -116,21 +117,41 @@ struct ScriptProviderRecoveryTests {
       id: id, definition: "project.test/provider", version: "1.0.0",
       digest: String(repeating: "a", count: 64))
     instance.payloads[terms.payload] = 1
+    let incident = try #require(game.commander.savedEMPState?.records[source]?.disableIncident)
+    // Common orders and betrayal adjudication are supplied boundary inputs, not G1 authentication.
     let facts = try game.resolveProviderMissionFacts(
       .init(
         provider: provider, subject: subject,
         currentBinding: nil, manifest: manifest, origin: dock.station, destination: destination,
         available: .unloaded, operationsReady: ScriptProviderContractDefinition.requiredOperations,
         routeAvailable: false, playerThreat: false,
-        currentOrder: 3,
+        currentOrder: 5,
         interval: nil, core: nil,
-        personOperations: [.init(operation: receipt.operation, source: source, order: 2)],
-        betrayal: nil, relay: nil))
+        personOperations: [.init(operation: receipt.operation, source: source, order: 3)],
+        betrayal: betrayalOrder == 0
+          ? nil
+          : .init(
+            provider: provider, member: subject,
+            incident: incident, personSale: nil, order: betrayalOrder), relay: nil))
     let cash = game.commander.credits
     try game.reconcileProviderEvidence(facts, instance: &instance, state: &state)
     try game.reconcileProviderEvidence(facts, instance: &instance, state: &state)
-    #expect(state.crew?.operation == receipt.operation && state.crew?.dock == dock)
-    #expect(state.branch == .recovery && state.manifest == manifest && state.crewPaid == 5000)
-    #expect(game.commander.credits == cash + 5000 && state.valid)
+    #expect(game.commander.nativePeople?.transfers.last == receipt)
+    #expect(state.valid)
+    if betrayalOrder == 0 {
+      #expect(state.crew?.operation == receipt.operation && state.crew?.dock == dock)
+      #expect(state.branch == .recovery && state.manifest == manifest && state.crewPaid == 5000)
+      #expect(game.commander.credits == cash + 5000)
+    } else if betrayalOrder < 3 {
+      #expect(state.crew == nil && state.manifest == nil && state.branch == nil)
+      #expect(state.receipts == [.accepted, .betrayed])
+      #expect(game.commander.credits == cash && state.crewPaid == 0)
+    } else {
+      #expect(
+        state.crew?.disposition == .voided && state.manifest == manifest
+          && state.branch == .recovery)
+      #expect(state.receipts.contains(.care) && state.receipts.contains(.crewVoided))
+      #expect(game.commander.credits == cash && state.crewPaid == 0)
+    }
   }
 }

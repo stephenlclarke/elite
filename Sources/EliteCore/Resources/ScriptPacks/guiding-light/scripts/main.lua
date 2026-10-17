@@ -10,12 +10,12 @@ local cues = {
   ["urgentChoice"] = "Dispatch: Send the signed relay without full calibration? Delivery pays 1,500 credits. You can keep calibrating instead.",
   ["disabled"] = "Dispatch: Santa's drive is offline. Your relay is safe. Wait for recovery, use your signed manifest for urgent delivery, or recover a certified manifest through the crew or the original computer core.",
   ["lostSanta"] = "Dispatch: We've lost Santa's ship. We cannot replace that crew with a new signal. Recover the original computer core or bring a surviving crew member safely to Crimbo. If neither is possible, return the relay.",
-  ["rescue"] = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Thank you, Commander. Dispatch has approved your 500-credit crew commendation.",
+  ["rescue"] = "Crimbo Welfare: Crew identity confirmed and safe handover recorded. Your 500-credit crew commendation was transferred.",
   ["recoveryReady"] = "Dispatch: Recovered manifest authenticated. Atisen will accept the relay. Recovery delivery pays 2,000 credits.",
   ["completeFull"] = "Atisen Dispatch: Relay received, all three checks verified. 3,000 credits transferred. Crimbo's next delivery has a guiding light.",
   ["completeUrgent"] = "Atisen Dispatch: Urgent relay received with its signed manifest. 1,500 credits transferred. We'll finish the calibration here.",
   ["completeRecovery"] = "Atisen Dispatch: Relay and recovered manifest received. 2,000 credits transferred. We've recorded what happened to the convoy.",
-  ["betrayed"] = "Crimbo Dispatch: Native incident records identify your unlawful attack on this convoy. This contract will not pay. Return the relay to close its custody record.",
+  ["betrayed"] = "Crimbo Dispatch: Native records identify a breach of this convoy contract. All unpaid rewards are void. Return any held relay to close its custody record.",
   ["unavailable"] = "Dispatch: The assigned dispatch contact is unavailable. Keep the relay; your progress is saved. Another port cannot sign for this delivery.",
   ["return"] = "Crimbo Dispatch: Relay returned. Contract closed without a delivery payment.",
 }
@@ -28,16 +28,25 @@ return {
   end,
   transition = function(e, w, d)
     local commands = {}
+    local hasCrewPaid = false
     for _, receipt in ipairs(e.receipts or {}) do
-      if receipt == "manifest" then record(commands, "calibrate")
-      elseif receipt == "ready" then
+      if receipt == "crewPaid" then hasCrewPaid = true end
+    end
+    for _, receipt in ipairs(e.receipts or {}) do
+      if receipt == "manifest" and not w.provider.betrayed then record(commands, "calibrate")
+      elseif receipt == "ready" and not w.provider.betrayed then
         if w.provider.branch == "full" then record(commands, "fullReady")
         elseif w.provider.branch == "recovery" then record(commands, "recoveryReady") end
-      elseif receipt == "care" then record(commands, "rescue")
+      elseif receipt == "care" then
+        if w.provider.crew_paid and not hasCrewPaid then record(commands, "rescue")
+        elseif w.provider.crew_eligible_pending then
+          commands[#commands + 1] = {op = "journal.append", text = "Crimbo Welfare: Safe handover recorded. Your eligible 500-credit crew commendation is pending payment."}
+        end
+      elseif receipt == "crewPaid" and w.provider.crew_paid then record(commands, "rescue")
       elseif receipt == "betrayed" then record(commands, "betrayed") end
     end
     for i = 1, 3 do
-      if math.floor((e.checkpoints or 0) / (2 ^ (i - 1))) % 2 == 1 then
+      if not w.provider.betrayed and math.floor((e.checkpoints or 0) / (2 ^ (i - 1))) % 2 == 1 then
         record(commands, "checkpoint" .. i)
       end
     end
