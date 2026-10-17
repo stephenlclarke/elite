@@ -318,6 +318,9 @@ public enum Display {
     }
     let center = game.viewPosition(body.position)
     let mesh = mesh ?? game.scriptNPCMesh(body) ?? game.gameplayMesh(for: body)
+    let oreInk = body.physical?.rock.flatMap { identity in
+      game.miningFields.lazy.flatMap(\.rocks).first { $0.identity == identity }
+    }.flatMap { MiningRockAppearance.ink(for: $0) }
     let vertices = mesh.vertices.map { vertex -> Vector3 in
       let rotated = game.viewPosition(body.modelVector(vertex))
       return rotated + center
@@ -369,7 +372,7 @@ public enum Display {
       }
       let ink: Ink =
         game.commander.shipDisplayStyle == .whiteWireframe
-        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+        ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for edge in face.indices {
         let i = face[edge]
         let j = face[(edge + 1) % face.count]
@@ -386,7 +389,7 @@ public enum Display {
     if game.commander.shipDisplayStyle != .shadedPanels {
       let ink: Ink =
         game.commander.shipDisplayStyle == .whiteWireframe
-        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+        ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for detail in mesh.details where visibleFaces.contains(detail.face) {
         if let line = project(vertices[detail.start], vertices[detail.end], projection: projection)
         {
@@ -416,7 +419,7 @@ public enum Display {
       } else {
         let ink: Ink =
           game.commander.shipDisplayStyle == .whiteWireframe
-          ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+          ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
         for index in hatch.indices {
           if let line = project(
             hatch[index], hatch[(index + 1) % hatch.count], projection: projection)

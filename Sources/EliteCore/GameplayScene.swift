@@ -49,7 +49,9 @@ extension Game {
           kind: .sun, position: flight.pose.shipPoint(anchors.sun.position),
           radius: anchors.sun.radius),
       ]
-      miningFields = MiningFields.generate(anchors: anchors, seed: gameplaySeed)
+      miningFields = MiningFields.generate(
+        anchors: anchors, seed: gameplaySeed,
+        includingLegacy: commander.miningLedger.retainsLegacyFields)
       salvageSites = SalvageSites.generate(anchors: anchors, seed: gameplaySeed)
     }
     commander.miningLedger.resetPhysicalBindings(system: systemIdentity)

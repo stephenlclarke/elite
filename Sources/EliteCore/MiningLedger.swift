@@ -185,6 +185,25 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     isDepleted(rock.identity) ? 0 : partial[rock.identity, default: rock.energy]
   }
 
+  /// Resource admission is checked before the emitter allocates an attack or spends power.
+  func canAdmitMiningHit(rock: MiningRock, damage: Double) -> Bool {
+    guard valid, damage.isFinite, damage > 0, rock.energy.isFinite, rock.energy > 0,
+      Self.validMotion(rock.position), bit(rock.identity) != nil, !isDepleted(rock.identity)
+    else { return false }
+    if let chunk = AsteroidBeltDefinition.chunk(for: rock.identity),
+      rock.energy != chunk.energy || rock.radius != chunk.radius
+    {
+      return false
+    }
+    let remaining = max(0, remainingEnergy(for: rock) - damage)
+    return hitStorageFits(rock: rock, remaining: remaining, mining: true)
+  }
+  private func hitStorageFits(rock: MiningRock, remaining: Double, mining: Bool) -> Bool {
+    let count = remaining == 0 && mining ? yield(for: rock).count : 0
+    return pending.count + count <= Self.maximumPending
+      && (remaining == 0 || partial[rock.identity] != nil || partial.count < Self.maximumPartial)
+  }
+
   /// G1 must resolve the nearest physical rock and pass its matching incident.
   public mutating func hit(rock: MiningRock, incident: CombatIncident, damage: Double)
     -> MiningHitResult
@@ -237,8 +256,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     }
     let remaining = max(0, remainingEnergy(for: rock) - damage)
     let payloads = remaining == 0 && mining ? yield(for: rock) : []
-    guard pending.count + payloads.count <= Self.maximumPending,
-      remaining == 0 || partial[rock.identity] != nil || partial.count < Self.maximumPartial
+    guard hitStorageFits(rock: rock, remaining: remaining, mining: mining)
     else { return .capacityRefused }
     if rock.identity.field >= 4, ringTerminal == nil { ringTerminal = [:] }
     lastIncident = eventID

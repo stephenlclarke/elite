@@ -133,7 +133,7 @@ struct GameCommanderStorageTests {
     let savedBytes = try Data(contentsOf: save)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: savedBytes)
     let (saved, _) = try ScriptSaveStore.read(savedBytes, from: save)
-    #expect(pointer.schemaVersion == 21)
+    #expect(pointer.schemaVersion == 25)
     let liveCommander = committed.commander
     try #require(liveCommander.npcPersistence.count > 0)
     let liveNPCs = committed.bodies.compactMap { body -> ActorIdentity? in

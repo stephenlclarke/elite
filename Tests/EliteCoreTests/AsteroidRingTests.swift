@@ -99,10 +99,13 @@ struct AsteroidRingTests {
     let untouched = ledger
     let falseEnergy = MiningRock(
       identity: rock.identity, position: rock.position, radius: rock.radius, energy: 1)
-    #expect(ledger.hit(rock: falseEnergy, incident: ringIncident(1), damage: 10) == .ignored)
+    let ledgerAssertion1 =
+      ledger.hit(rock: falseEnergy, incident: ringIncident(1), damage: 10) == .ignored
+    #expect(ledgerAssertion1)
     #expect(ledger == untouched)
-    #expect(
-      ledger.hit(rock: rock, incident: ringIncident(1), damage: 10) == .damaged(rock.energy - 10))
+    let ledgerAssertion2 =
+      ledger.hit(rock: rock, incident: ringIncident(1), damage: 10) == .damaged(rock.energy - 10)
+    #expect(ledgerAssertion2)
     ledger = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
     guard
       case .extracted(let lots) = ledger.hit(
@@ -117,20 +120,24 @@ struct AsteroidRingTests {
     ledger = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
     var cargo = Array(repeating: 0, count: Commodity.all.count)
     for lot in lots {
-      #expect(
+      let ledgerAssertion3 =
         ledger.collect(
           payload: lot.identity, into: &cargo, freeTonnes: 100,
-          hasScoops: true, approachAllowed: true, protection: .init()) == .collected(lot.amount))
+          hasScoops: true, approachAllowed: true, protection: .init()) == .collected(lot.amount)
+      #expect(ledgerAssertion3)
     }
     #expect(cargo[chunk.content.commodity.rawValue] == 50 && ledger.pendingPayloads.isEmpty)
-    #expect(
+    let ledgerAssertion4 =
       ledger.collect(
         payload: lots[0].identity, into: &cargo, freeTonnes: 100,
-        hasScoops: true, approachAllowed: true, protection: .init()) == .refused(.unavailable))
+        hasScoops: true, approachAllowed: true, protection: .init()) == .refused(.unavailable)
+    #expect(ledgerAssertion4)
     ledger.depart(system: rock.identity.system)
     ledger.resetPhysicalBindings(system: rock.identity.system)
     #expect(ledger.isDepleted(rock.identity))
-    #expect(ledger.hit(rock: rock, incident: ringIncident(3), damage: rock.energy) == .ignored)
+    let ledgerAssertion5 =
+      ledger.hit(rock: rock, incident: ringIncident(3), damage: rock.energy) == .ignored
+    #expect(ledgerAssertion5)
     #expect(ledger.valid)
   }
 

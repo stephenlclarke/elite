@@ -67,6 +67,7 @@ public struct Commander: Sendable, Equatable, Codable {
     set { savedCargoDebrisLedger = newValue }
   }
   private var savedMiningLedger: MiningLedger?
+  var usesRingMiningSaveVersion: Bool { savedMiningLedger?.usesRingSaveVersion == true }
   public var miningLedger: MiningLedger {
     get { savedMiningLedger ?? MiningLedger() }
     set { savedMiningLedger = newValue }
@@ -2108,6 +2109,7 @@ public actor GameRuntime {
     try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
     try EMPVersionedSave.rejectFields(data, part: .commander)
     try NativePeopleVersionedSave.rejectFields(data)
+    try RingMiningVersionedSave.rejectFields(data)
     try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.

@@ -293,3 +293,69 @@ struct MiningWorkToolTests {
     #expect(inventory.items.first { $0.id == tool.id }?.location == nil)
   }
 }
+
+extension MiningWorkToolTests {
+  @Test func actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation() throws {
+    var game = try workToolGame()
+    let owner = try #require(game.commander.flightSimulation.player)
+    // Retained off-scene ore is a ledger fixture; the refusal below uses the
+    // actual fitted work tool, mesh contact and current source, without a fake shot.
+    for index in 0..<5 {
+      let identity = RockIdentity(system: .init(galaxy: 0, system: 8 + index), field: 6, rock: 2)
+      let chunk = try #require(AsteroidBeltDefinition.chunk(for: identity))
+      let rock = MiningRock(
+        identity: identity, position: .init(100, 200, 300),
+        radius: chunk.radius, energy: chunk.energy)
+      let allocated = game.commander.flightSimulation.allocateIncident()
+      let id = try #require(allocated)
+      let incident = CombatIncident(
+        id: id, physicalTime: game.commander.flightSimulation.physicalTime,
+        origin: .init(emissionID: id, owner: owner, emittedAt: 0, ownerLegalAtEmission: .init()),
+        victim: nil, kind: .laser, outcome: .hit, position: rock.position,
+        victimLegalBeforeAttack: nil, firstAggressor: nil, victimRole: nil,
+        victimIsStation: false, laser: .mining, mount: .front)
+      let result = game.commander.miningLedger.hit(
+        rock: rock, incident: incident, damage: rock.energy)
+      guard case .extracted(let lots) = result else {
+        Issue.record("Ore fixture refused")
+        return
+      }
+      try #require(lots.count == 50)
+    }
+    let rock = try #require(
+      game.miningFields.flatMap(\.rocks).first {
+        AsteroidBeltDefinition.chunk(for: $0.identity)?.units == 50
+      })
+    let allocated = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocated)
+    var body = SpaceBody(id: 80, hull: .asteroid, position: .init(0, 0, 500))
+    body.physical = .init(identity: actor, population: .asteroid, rock: rock.identity)
+    let incidentAllocation = game.commander.flightSimulation.allocateIncident()
+    let incidentID = try #require(incidentAllocation)
+    let incident = CombatIncident(
+      id: incidentID, physicalTime: game.commander.flightSimulation.physicalTime,
+      origin: .init(
+        emissionID: incidentID, owner: owner, emittedAt: 0, ownerLegalAtEmission: .init()),
+      victim: actor, kind: .laser, outcome: .hit, position: rock.position,
+      victimLegalBeforeAttack: nil, firstAggressor: nil, victimRole: nil,
+      victimIsStation: false, laser: .mining, mount: .front)
+    let partial = game.commander.miningLedger.hit(
+      rock: rock, incident: incident, damage: rock.energy - 5)
+    try #require(partial == .damaged(5))
+    body.energy = 5
+    game.bodies = [body]
+    game.nextBodyID = max(game.nextBodyID, 80)
+    game.ensurePhysicalActors()
+    try #require(game.commander.miningLedger.pendingPayloads.count == 250)
+    let before = game.commander
+    let bodies = game.bodies
+    let power = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash]
+    let audio = game.dischargeAudio.events
+    let fired = game.fireMiningWorkTool()
+    #expect(!fired)
+    #expect(game.commander == before && game.bodies == bodies)
+    #expect([game.energy, game.laserHeat, game.fireCooldown, game.laserFlash] == power)
+    #expect(game.dischargeAudio.events == audio)
+    #expect(game.message.contains("ORE STORAGE FULL"))
+  }
+}

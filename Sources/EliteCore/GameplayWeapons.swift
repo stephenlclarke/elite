@@ -213,9 +213,10 @@ extension Game {
       let rock = miningFields.lazy.flatMap(\.rocks).first(where: { $0.identity == identity })
     else { return base }
     let radius = base.vertices.map(\.length).max() ?? 1
-    return .init(
+    let scaled = Mesh(
       vertices: base.vertices.map { $0 * (rock.radius / radius) }, faces: base.faces,
       details: base.details, materials: base.materials, faceMaterials: base.faceMaterials,
       faceTextures: base.faceTextures, preserveWinding: true)
+    return MiningRockAppearance.materials(for: rock, mesh: scaled)
   }
 }

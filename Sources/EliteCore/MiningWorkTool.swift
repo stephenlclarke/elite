@@ -44,7 +44,14 @@ extension Game {
       rock.energy.isFinite, rock.energy > 0,
       commander.miningLedger.remainingEnergy(for: rock).isFinite,
       commander.miningLedger.remainingEnergy(for: rock) > 0,
-      let player = commander.flightSimulation.player,
+      let player = commander.flightSimulation.player
+    else { return false }
+    guard commander.miningLedger.canAdmitMiningHit(rock: rock, damage: LaserKind.mining.damage)
+    else {
+      notify("ORE STORAGE FULL OR SOURCE UNAVAILABLE - NO SHOT FIRED")
+      return false
+    }
+    guard
       let origin = makeAttackOrigin(
         owner: player,
         sourcePart: commander.fittedMiningWorkTool.map { "work-tool:" + $0.id.uuidString }
