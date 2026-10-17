@@ -199,10 +199,23 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   )
   #expect(game.campaignTrialReview == nil && !game.canReviewSelectedCampaignTrial)
   #expect(!game.canTrialSelectedMission)
+  // Match the actor's canonical equipment preparation before checking rejected UI actions.
+  let unprepared = game.commander
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.savedEquipmentVersion == 2)
+  #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
+  #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
+  #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
+  #expect(game.commander.scriptState == unprepared.scriptState)
+  #expect(game.commander.contracts == unprepared.contracts)
+  #expect(game.commander.accommodation == unprepared.accommodation)
   let before = game.commander
   let epoch = game.ecmControl.epoch
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   try await runtime.save(to: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   let bytes = try Data(contentsOf: fixture.save)
   await runtime.key("t")
   await runtime.key("return")
@@ -503,9 +516,21 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   let (_, child) = try fixture.start(&game)
   try fixture.select(child, game: &game)
   game.scriptPacks.removeAll { $0.digest == fixture.parents[1].digest }
+  // Establish the same native state as GameRuntime.init without changing campaign property.
+  let unprepared = game.commander
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.savedEquipmentVersion == 2)
+  #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
+  #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
+  #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
+  #expect(game.commander.scriptState == unprepared.scriptState)
+  #expect(game.commander.contracts == unprepared.contracts)
+  #expect(game.commander.accommodation == unprepared.accommodation)
   let before = game.commander
   #expect(game.campaignTrialUnavailableReason == "Requires: test.gallery-1@1.0.0")
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   await runtime.key("t")
   #expect(await runtime.snapshot().gallery.campaignReview == nil)
   #expect(await runtime.gallerySaveDirectory() == nil)
