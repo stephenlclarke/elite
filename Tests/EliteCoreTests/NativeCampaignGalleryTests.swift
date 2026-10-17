@@ -256,7 +256,8 @@ extension NativeViewTests {
       before.campaignTrialUnavailableReason
         == "Trials of saved contract assignments are not supported.")
     let (menu, trialIndex) = try harness.menuItem("gallery-trial")
-    #expect(!harness.delegate.validateMenuItem(menu.items[trialIndex]))
+    let trialTarget = try #require(menu.items[trialIndex].target as? NativeMissionMenu)
+    #expect(!trialTarget.validateMenuItem(menu.items[trialIndex]))
     // Even a queued menu command must fail closed against this actual painted page.
     harness.view.enqueueGalleryCommand("gallery-trial")
     try harness.press("t")
@@ -454,12 +455,13 @@ extension NativeViewTests {
     try await harness.selectChild()
     harness.view.game = await harness.delegate.runtime.snapshot()
     let (menu, trialIndex) = try harness.menuItem("gallery-trial")
-    #expect(harness.delegate.validateMenuItem(menu.items[trialIndex]))
+    let trialTarget = try #require(menu.items[trialIndex].target as? NativeMissionMenu)
+    #expect(!trialTarget.validateMenuItem(menu.items[trialIndex]))
     menu.performActionForItem(at: trialIndex)
     await harness.drain()
     #expect(await harness.delegate.runtime.snapshot().gallery.campaignReview == nil)
     try await harness.frame()
-    #expect(harness.delegate.validateMenuItem(menu.items[trialIndex]))
+    #expect(trialTarget.validateMenuItem(menu.items[trialIndex]))
     #expect(menu.items[trialIndex].title == "Try Campaign")
     menu.performActionForItem(at: trialIndex)
     await harness.drain()
@@ -477,7 +479,8 @@ extension NativeViewTests {
     await harness.delegate.runtime.nativeCommand { @Sendable game in game.commander.credits = 3000 }
     try await harness.frame()
     let (retryMenu, retryIndex) = try harness.menuItem("mission-resume")
-    #expect(harness.delegate.validateMenuItem(retryMenu.items[retryIndex]))
+    let retryTarget = try #require(retryMenu.items[retryIndex].target as? NativeMissionMenu)
+    #expect(retryTarget.validateMenuItem(retryMenu.items[retryIndex]))
     retryMenu.performActionForItem(at: retryIndex)
     retryMenu.performActionForItem(at: retryIndex)
     await harness.drain()
@@ -485,7 +488,7 @@ extension NativeViewTests {
       await harness.delegate.runtime.snapshot().commander.scriptState.instances[harness.first.1]?
         .suspension == nil)
     harness.view.game = await harness.delegate.runtime.snapshot()
-    #expect(!harness.delegate.validateMenuItem(retryMenu.items[retryIndex]))
+    #expect(!retryTarget.validateMenuItem(retryMenu.items[retryIndex]))
   }
 }
 
