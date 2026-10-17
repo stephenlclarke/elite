@@ -258,8 +258,20 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   if policy == "suspend" {
     #expect(game.commander.scriptState.instances[child]?.revision == revision)
   }
+  let unprepared = game.commander
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.savedEquipmentVersion == 2)
+  #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
+  #expect(game.commander.shipID == unprepared.shipID && game.commander.name == unprepared.name)
+  #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
+  #expect(game.commander.scriptState == unprepared.scriptState)
+  #expect(game.commander.contracts == unprepared.contracts)
+  #expect(game.commander.accommodation == unprepared.accommodation)
   let runtime = GameRuntime(game: game)
+  #expect(await runtime.snapshot().commander == game.commander)
   try await runtime.save(to: fixture.save)
+  #expect(await runtime.snapshot().commander == game.commander)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
   #expect(await loaded.snapshot().commander == game.commander)
@@ -498,7 +510,22 @@ private func nestedCampaigns(_ fixture: CampaignFixture, count: Int) throws -> [
     selected.commander.scriptState.instances.values.first { $0.campaignParent == nil })
   let child = try #require(owner.campaignChildren["patrol"]?.child)
   // Test hardware setup only; all objectives use actual player controls and native physics.
-  await runtime.nativeCommand { $0.commander.installTargetingComputer(.docking) }
+  let beforeHardware = await runtime.snapshot().commander
+  await runtime.nativeCommand { game in
+    do {
+      try game.commander.grantEquipment(
+        TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .legacyUnknown)
+    } catch { Issue.record(error) }
+  }
+  let fitted = await runtime.snapshot().commander
+  try #require(fitted.hasAutomaticDocking)
+  #expect(
+    fitted.fittedEquipment(at: .targetingCore)?.node.key == TargetingTier.docking.equipmentName)
+  #expect(fitted.credits == beforeHardware.credits && fitted.cargo == beforeHardware.cargo)
+  #expect(fitted.scriptState == beforeHardware.scriptState)
+  #expect(
+    fitted.contracts == beforeHardware.contracts
+      && fitted.accommodation == beforeHardware.accommodation)
   await runtime.key("0")
   var firing = Controls()
   firing.fire = true
