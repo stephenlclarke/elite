@@ -481,7 +481,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let shouldLoadDefaultScriptPacks = restoreOnLaunch
     loop = Task { [weak view, weak self] in
       guard !Task.isCancelled else { return }
-      await runtime.loadMissionPacks()
+      if let profile = self?.frameProfile {
+        await runtime.loadMissionPacks(
+          directory: profile.directory.appendingPathComponent("mission-packs"))
+      } else {
+        await runtime.loadMissionPacks()
+      }
       guard !Task.isCancelled else { return }
       var packErrors = await runtime.snapshot().missionPacks.errors
       guard !Task.isCancelled else { return }
