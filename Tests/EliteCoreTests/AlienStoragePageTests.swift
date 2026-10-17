@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import Testing
 
@@ -142,8 +143,13 @@ struct AlienStoragePageTests {
   }
 
   @Test func nativePageStoreIsImmutableAndRefusesSymbolicLinks() throws {
-    let directory = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
-      .appendingPathComponent("alien-storage-" + UUID().uuidString)
+    // Foundation can retain macOS's /var alias; this store requires a physical no-follow path.
+    let temporary = FileManager.default.temporaryDirectory.path
+    let resolved = temporary.withCString { realpath($0, nil) }
+    let physical = try #require(resolved)
+    defer { free(physical) }
+    let base = URL(fileURLWithPath: String(cString: physical), isDirectory: true)
+    let directory = base.appendingPathComponent("alien-storage-" + UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: directory) }
     var fixture = AlienStorageTestFixture()
     for _ in 0..<130 { _ = try fixture.acquire(kind: AlienModuleKind.allCases[0]) }
@@ -176,6 +182,10 @@ struct AlienStoragePageTests {
       at: directory.appendingPathComponent("alien-pages"), to: linkedDirectory)
     try FileManager.default.createSymbolicLink(
       at: directory.appendingPathComponent("alien-pages"), withDestinationURL: linkedDirectory)
+    let linkedRoot = base.appendingPathComponent("alien-root-link-" + UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: linkedRoot) }
+    try FileManager.default.createSymbolicLink(at: linkedRoot, withDestinationURL: directory)
+    #expect(throws: (any Error).self) { try AlienStoragePageStore(directory: linkedRoot) }
     let store = try AlienStoragePageStore(directory: directory)
     let hash = String(repeating: "a", count: 64)
     #expect(throws: (any Error).self) { try store.readPage(hash: hash) }

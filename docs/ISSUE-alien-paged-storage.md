@@ -18,3 +18,5 @@ The original planned item identity is not necessarily its issued identity: the s
 ## Execution boundary
 
 This issue's companion change supplies only new storage files and focused tests. Native collector, migration, Commander references and final save publication remain integration work. No compiler, tests, native executable, CI or media jobs ran here; those checks belong to the main coder's serialized execution lease.
+
+Actual 289 compiled and completed all fourteen methods without a signal: thirteen passed, including the single-item history beyond the old gates, and the native filesystem fixture failed with POSIX ENOTDIR. A read-only Foundation/POSIX probe showed that this Mac's temporaryDirectory.resolvingSymlinksInPath retained the system `/var` alias, while POSIX realpath returned `/private/var`. The production no-follow ancestor check correctly refused the aliased fixture path. Preserve that check; supply an actual physical test base. Raw SHA256 `5e5d88bc790539b062ddc3b3b37805c4003c9d1480e9941e2db6eb241b840443`.
