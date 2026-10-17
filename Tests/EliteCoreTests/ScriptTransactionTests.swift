@@ -115,12 +115,17 @@ private struct DurableFixture {
 private func actualGameOverRuntime(_ fixture: DurableFixture) async throws -> GameRuntime {
   var game = try fixture.game(destination: false)
   game.launch()
-  game.energy = 0
+  let delta = 0.001
+  let recharge = game.commander.performance.recharge * game.commander.energyRechargeMultiplier
+  try #require(recharge.isFinite && recharge >= 0 && recharge * delta < 1)
+  // Actual shield/hull damage leaves a finite deficit larger than this positive tick's recharge.
+  game.applyDamage(game.frontShield + game.energy + 1, front: true)
+  try #require(game.energy == -1)
   game.speed = 0
   game.bodies = []
   game.celestials = []
   let runtime = GameRuntime(game: game, saveURL: fixture.url)
-  let dead = await runtime.advance(delta: 0)
+  let dead = await runtime.advance(delta: delta)
   try #require(dead.screen == .gameOver && dead.requiresScriptDurability)
   try await runtime.save(to: fixture.url)
   return runtime
