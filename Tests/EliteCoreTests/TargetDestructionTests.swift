@@ -4,11 +4,13 @@ import Testing
 
 private func lockedGame() -> Game {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(.military)
   game.launch()
   game.speed = 0
-  game.commander.installTargetingComputer(.military)
+  #expect(game.commander.targetingTier == .military)
   game.bodies = [.init(id: 42, hull: .cobra, position: .init(0, 0, 1000), hostile: true)]
   game.key("r")
+  #expect(game.autoPilot.targetID == 42 && game.weaponsTargetID == 42)
   return game
 }
 private func announcements(_ game: Game, _ text: String) -> Int {

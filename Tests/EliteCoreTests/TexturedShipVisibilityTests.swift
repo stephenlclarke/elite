@@ -50,9 +50,10 @@ struct TexturedShipVisibilityTests {
 }
 
 private func verifyTexturedHullVisibility(_ game: inout Game, id: String) throws {
+  game.commander.installTargetingComputer(.basic)
   game.launch()
   game.speed = 0
-  game.commander.installTargetingComputer(.basic)
+  #expect(game.commander.targetingTier == .basic)
   game.viewportWidth = 512
   game.viewportHeight = 518
   let allocated = game.commander.flightSimulation.allocateActor()
