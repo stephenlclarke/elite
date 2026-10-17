@@ -195,8 +195,7 @@ private func afterRobbery() throws -> Game {
   game = try PackReservedCargoTestFixture.refuseExternalRemoval(game, index: 10)
   if game.screen == .handoff { game.key("escape") }
   game.missionPacks = MissionPackLibrary.bundled
-  game.commander.galaxy = 1
-  game.systems = Universe.galaxy(number: 1)
+  #expect(game.commander.galaxy == 1)
   visit(&game, 127)
   let before = game.commander
   game.key("escape")
