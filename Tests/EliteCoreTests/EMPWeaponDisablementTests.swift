@@ -67,10 +67,10 @@ struct EMPWeaponDisablementTests {
     var controls = Controls()
     controls.yaw = 0.045 / (0.1 * game.commander.performance.yaw)
     game.tick(delta: 0.1, controls: controls)
-    let contact = try #require(
-      game.nearestMissionCollision(
-        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: Game.empRange,
-        radius: 0, includePlayer: false))
+    let meshContact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: Game.empRange,
+      radius: 0, includePlayer: false)
+    let contact = try #require(meshContact)
     try #require(contact.hit.target == .body(id))
     let before = try #require(
       game.bodies.first { $0.physical?.identity == missileActor }?.physical?.ordnance)
