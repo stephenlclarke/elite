@@ -21,11 +21,18 @@ public struct PlanetIdentity: Sendable, Equatable, Hashable {
 public struct PlanetPreview: Sendable, Equatable {
   public let identity: PlanetIdentity
   public let appearance: PlanetPalette
+  public let lighting: PlanetLighting
+  public let night: PlanetNightProfile
   public let bounds: CanvasRect
   public let angle: Double
-  public init(galaxy: Int, system: StarSystem, bounds: CanvasRect, time: Double) {
+  public init(
+    galaxy: Int, system: StarSystem, bounds: CanvasRect, time: Double,
+    lighting: PlanetLighting = .presentation
+  ) {
     identity = .init(galaxy: galaxy, system: system)
     appearance = PlanetPalette(identity: identity, economy: system.economy)
+    self.lighting = lighting
+    night = PlanetNightProfile(system: system)
     self.bounds = bounds
     angle = time * 0.025
   }
@@ -99,7 +106,7 @@ public struct PlanetTerrain: Sendable, Equatable {
     return Self.mix(top, bottom, y - Double(iy))
   }
   private static func mix(_ a: Double, _ b: Double, _ t: Double) -> Double { a + (b - a) * t }
-  private static func noise(_ p: Vector3, seed: UInt64) -> Double {
+  static func noise(_ p: Vector3, seed: UInt64) -> Double {
     let x = Int(floor(p.x))
     let y = Int(floor(p.y))
     let z = Int(floor(p.z))
