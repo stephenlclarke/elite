@@ -150,17 +150,20 @@ extension Display {
           layout.left, y, scale: scale, ink: .cyan)
         let pledge = row.offer.flatMap { try? game.pledgePreview(board: row.board, offer: $0.id) }
         let courier = row.offer?.courier.map { ScriptCourierPreview(terms: $0) }
-        let summary =
-          row.reason ?? (row.rrs == nil ? nil : "Protected packet / 0 tonnes / Confirm required")
-          ?? courier?.summary ?? pledge.map {
-            "Pledge \($0.charge) / local standing +1 / once"
-          } ?? row.offer
-          .map {
-            String(
-              format: "Pay %.1f CR / deposit %.1f CR / %@", Double($0.reward) / 10,
-              Double($0.deposit) / 10,
-              $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
-          } ?? "Unavailable"
+        let rrsSummary: String? =
+          row.rrs == nil ? nil : "Protected packet / 0 tonnes / Confirm required"
+        let pledgeSummary: String? = pledge.map {
+          "Pledge \($0.charge) / local standing +1 / once"
+        }
+        let offerSummary: String? = row.offer.map {
+          String(
+            format: "Pay %.1f CR / deposit %.1f CR / %@", Double($0.reward) / 10,
+            Double($0.deposit) / 10,
+            $0.duration == 0 ? "no limit" : String(format: "%.0fs", $0.duration))
+        }
+        let summary: String =
+          row.reason ?? rrsSummary ?? courier?.summary ?? pledgeSummary ?? offerSummary
+          ?? "Unavailable"
         frame.label(
           short(summary), layout.left, y + 18, scale: scale,
           ink: row.reason == nil ? .white : .orange)
