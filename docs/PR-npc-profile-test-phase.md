@@ -6,7 +6,7 @@ The [fixture lifetime issue](ISSUE-npc-profile-test-phase.md) is addressed by mo
 
 ## Validation
 
-An inverse-inline check reconstructs the complete original test file byte for byte. The exact old coverage binary and debugger evidence are retained outside the repository. Runtime validation is pending; the original focused test and full `make ci` remain required.
+An inverse-inline check reconstructs the complete original test file byte for byte. The exact old coverage binary and debugger evidence are retained outside the repository. The unchanged original test passed in the focused coverage-enabled run at `53a3ebe569c9bcf1d0226587521969d0f248bed8` (14.64 seconds to compile; 9.463 seconds to execute). Protected source, commander save, preferences and process closure were independently checked. The full `make ci` gate remains required; this focused pass does not accept the release.
 
 ## Compatibility and risks
 
