@@ -78,7 +78,9 @@ extension Game {
   }
   func constructScriptTrial(packDigest: String, seed: UInt64) throws -> Game {
     if packDigest == NativePeopleGallery.digest {
-      return try constructNativePeopleTrial(seed: seed)
+      var trial = try constructNativePeopleTrial(seed: seed)
+      try trial.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+      return trial
     }
     guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {
       throw MissionPackError("Choose an installed mission for a trial.")
@@ -118,9 +120,10 @@ extension Game {
       trial.rearShield = trial.commander.shieldCapacity
       for _ in 0..<scene.cabins { try trial.confirmPassengerBerth(trial.passengerBerthQuote) }
     }
-    // Reviews must bind the physical property and mirrors that the trial writer publishes.
+    // Reviews bind the physical property, mirrors and mining policy published by the writer.
     try trial.commander.prepareEquipment(legacy: false)
     trial.commander.mirrorFittedEquipment()
+    try trial.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
     return trial
   }
   mutating func prepareScriptTrial(packDigest: String, seed: UInt64) throws {
