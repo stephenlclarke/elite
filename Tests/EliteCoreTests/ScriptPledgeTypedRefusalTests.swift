@@ -7,7 +7,8 @@ import Testing
   let fixture = try PledgeFixture()
   defer { fixture.clean() }
   var live = fixture.game(cash: 100000, food: 0)
-  live.commander.name = "LIVE PLEDGE REFUSAL"
+  live.commander.name = "PLEDGE REFUSAL"
+  try #require(live.commander.valid)
   let runtime = GameRuntime(game: live, saveURL: fixture.save)
   try await runtime.save(to: fixture.save)
   let liveCommander = await runtime.snapshot().commander
