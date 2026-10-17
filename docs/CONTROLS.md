@@ -52,7 +52,7 @@ Every action in this table is visible in the **Flight** menu. Equipment requirem
 | Detonate energy bomb | Flight > Detonate Energy Bomb |
 | Launch escape pod | Command-Shift-E, or Flight > Launch Escape Pod |
 
-Escape is reserved for Back. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Option-Up/Down pages its wrapped cargo, route and resource readings. Pass scoopable cargo below your nose with Fuel Scoops fitted.
+Escape is reserved for Back. R has no flight-targeting action. Tab selects targets and never detonates the energy bomb. I expands or collapses the target-camera panel. Option-Up/Down pages its wrapped cargo, route and resource readings. Pass scoopable cargo below your nose with Fuel Scoops fitted.
 
 Flight HUD bearings point to the actual moving planet and sun, including astern and off-screen directions. Fuel Scoops collect solar fuel automatically when cruising nose-first in the outer corona; no extra key is needed. Stay near the corona edge, watch Cabin temp, and turn away to cool before it reaches the limit. Sun and planet surfaces are fatal, and overheating destroys the ship even with unlimited XYZZY fuel. Ordinary commander files load docked at the saved system. In the current development source, saves retain ordinary NPC identities and condition, owned equipment and accommodation, cargo custody and mission-owned actors/projectiles. Versioned mission saves additionally retain flight/world state for restoration; they do not create a fresh local scene or refill spent NPC resources. Restoration rechecks retained custody and native context. Final quality/release acceptance of the composed development changes remains pending.
 
@@ -151,7 +151,7 @@ Type XYZZY outside a search to become Commander Clarke in a fully fitted Cobra M
 
 ## Compatibility shortcuts
 
-Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; R for targeting; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
+Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
 
 Existing browser-specific close aliases (L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
 

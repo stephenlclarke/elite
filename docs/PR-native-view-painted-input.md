@@ -1,5 +1,7 @@
 # Exercise native view and work guidance through painted input
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 ## Change
 
 Native frame and MacBook control tests now use the existing actual-view draw helper before protected key input and verify the emitted packet's decoded presentation and key. The Blackjack contact test similarly verifies the real page-click packet, painted presentation and converted pointer coordinates. Raw unprotected keys and all existing control/held-key assertions remain intact. The standalone MacBook input fixture uses a bounded 512-by-518 viewport so its actual paint has a valid bitmap size.

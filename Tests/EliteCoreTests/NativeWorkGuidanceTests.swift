@@ -302,13 +302,20 @@ private struct NativeWorkFixture {
 }
 
 extension NativeViewTests {
-  @MainActor @Test func nativeMiningKeysSelectRealRockThroughTabAndR() async throws {
+  @MainActor @Test func nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction() async throws {
     for (code, text) in [(UInt16(48), "\t"), (UInt16(15), "r")] {
       let (game, actor) = try nativeMiningScene()
       var fixture = try await NativeWorkFixture.open(game)
       defer { fixture.close() }
       try await fixture.press(3, "f")
+      let beforeSelection = await fixture.delegate.runtime.snapshot()
       try await fixture.press(code, text)
+      if code == 15 {
+        let unchanged = await fixture.delegate.runtime.snapshot()
+        #expect(unchanged.autoPilot.targetID == nil && unchanged.workGuidance == nil)
+        #expect(unchanged.commander == beforeSelection.commander)
+        try await fixture.press(48, "\t")
+      }
       let snapshot = await fixture.delegate.runtime.snapshot()
       #expect(snapshot.workTargetFilter == .mining)
       #expect(
@@ -335,7 +342,14 @@ extension NativeViewTests {
         let history = game.commander.equipmentPurchaseHistory
         try await fixture.press(3, "f")
         try await fixture.press(3, "f")
+        let beforeSelection = await fixture.delegate.runtime.snapshot()
         try await fixture.press(code, text)
+        if code == 15 {
+          let unchanged = await fixture.delegate.runtime.snapshot()
+          #expect(unchanged.autoPilot.targetID == nil && unchanged.workGuidance == nil)
+          #expect(unchanged.commander == beforeSelection.commander)
+          try await fixture.press(48, "\t")
+        }
         try await fixture.frame()
         let snapshot = await fixture.delegate.runtime.snapshot()
         #expect(snapshot.workTargetFilter == .salvage)
@@ -346,7 +360,7 @@ extension NativeViewTests {
         let frame = Display.presentation(snapshot, width: Double(width), height: Double(height))
         let labels = frame.labels.map(\.text).joined(separator: " ").uppercased()
         for line in snapshot.autoHUDLines { #expect(labels.contains(line.uppercased())) }
-        try fixture.capture(name: code == 48 ? "tab" : "r", scale: scale)
+        try fixture.capture(name: code == 48 ? "tab" : "tab-after-retired-r", scale: scale)
         let velocity = snapshot.flightWorldVelocity
         #expect(velocity.length > 0)
         try await fixture.press(12, "q")
@@ -377,7 +391,14 @@ extension NativeViewTests {
       defer { fixture.close() }
       let initialFiles = try nativeWorkSavedFiles(fixture.directory)
       try await fixture.press(3, "f")
+      let beforeSelection = await fixture.delegate.runtime.snapshot()
       try await fixture.press(code, text)
+      if code == 15 {
+        let unchanged = await fixture.delegate.runtime.snapshot()
+        #expect(unchanged.autoPilot.targetID == nil && unchanged.workGuidance == nil)
+        #expect(unchanged.commander == beforeSelection.commander)
+        try await fixture.press(48, "\t")
+      }
       let snapshot = await fixture.delegate.runtime.snapshot()
       #expect(snapshot.workGuidance == nil && snapshot.autoPilot.targetID == nil)
       #expect(snapshot.message == "FIT A MINING TARGETING MODULE")
@@ -397,7 +418,7 @@ extension NativeViewTests {
     var fixture = try await NativeWorkFixture.open(game)
     defer { fixture.close() }
     try await fixture.press(3, "f")
-    try await fixture.press(15, "r")
+    try await fixture.press(48, "\t")
     let before = await fixture.delegate.runtime.snapshot()
     #expect(before.workGuidance?.mode == .hold(.mining))
     #expect(before.flightWorldVelocity.length > 0)
@@ -424,7 +445,7 @@ extension NativeViewTests {
     defer { fixture.close() }
     try await fixture.press(3, "f")
     try await fixture.press(3, "f")
-    try await fixture.press(15, "r")
+    try await fixture.press(48, "\t")
     try await fixture.frame()
     let active = await fixture.delegate.runtime.snapshot()
     try #require(active.workGuidance?.parent == actor)

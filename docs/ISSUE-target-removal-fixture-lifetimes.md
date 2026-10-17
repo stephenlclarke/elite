@@ -1,5 +1,7 @@
 # Target-removal fixture retains later scenarios during target setup
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 The original `thirdPartyDestructionRangeLossAndDespawnCannotClaimPlayerKill` test reproduced signal 4 alone under the unchanged baseline thread-sanitizer binary at checkpoint 174. No assertion failure or matching original OS crash report was found. Its debugger reproduction at 173 stopped in the real `lockedGame` → key R → automatic targeting → front visibility → mesh drawing path.
 
 ## Evidence and required behavior

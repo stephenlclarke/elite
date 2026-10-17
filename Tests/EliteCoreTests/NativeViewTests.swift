@@ -1,7 +1,7 @@
 import AppKit
-@testable import EliteCore
 import Testing
 
+@testable import EliteCore
 @testable import EliteMac
 
 @MainActor
@@ -440,7 +440,7 @@ extension NativeViewTests {
     for key in "xyzzy" { game.key(String(key)) }
     game.key("return")
     game.bodies = [.init(id: 1, hull: .constrictor, position: .init(0, 0, 1000))]
-    game.key("r")
+    game.key("tab")
     game.targetPanelExpanded = true
     for width in [512, 1512] {
       for style in ShipDisplayStyle.allCases {
@@ -532,7 +532,7 @@ extension NativeViewTests {
 }
 
 extension NativeViewTests {
-  @MainActor @Test func rClearsHeldSteeringAndStationGuidanceOwnsTheTrackpad() throws {
+  @MainActor @Test func tabClearsHeldSteeringAndStationGuidanceOwnsTheTrackpad() throws {
     let view = GameView()
     view.game.commander.installTargetingComputer(.military)
     view.game.launch()
@@ -542,14 +542,23 @@ extension NativeViewTests {
     view.game.bodies = [.init(id: 0, hull: .station, position: .init(0, 0, 1500))]
     view.held = ["x", "left", ",", " "]
     view.updateTrackpad(positions: [.zero, .zero, .zero])
+    let retired = try #require(
+      NSEvent.keyEvent(
+        with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0,
+        context: nil, characters: "r", charactersIgnoringModifiers: "r", isARepeat: false,
+        keyCode: 15))
+    view.keyDown(with: retired)
+    #expect(view.held.contains("x") && view.held.contains("left"))
+    view.game.key("r")
+    #expect(view.game.autoPilot.targetID == nil && !view.game.dockingComputer)
     let event = try #require(
       NSEvent.keyEvent(
         with: .keyDown, location: .zero,
-        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "r",
-        charactersIgnoringModifiers: "r", isARepeat: false, keyCode: 15))
+        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\t",
+        charactersIgnoringModifiers: "\t", isARepeat: false, keyCode: 48))
     view.keyDown(with: event)
     #expect(view.controls.pitch == 0 && view.controls.roll == 0 && view.controls.yaw == 0)
-    view.game.key("r")
+    view.game.key("tab")
     #expect(view.game.dockingComputer && view.controls.throttle == 0 && view.held.isEmpty)
     view.updateTrackpad(positions: [.zero, .zero, .zero])
     #expect(view.controls.throttle == 0 && view.trackpad.fingerCount == 0)

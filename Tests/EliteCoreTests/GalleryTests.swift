@@ -37,7 +37,7 @@ import Testing
   game.commander.autoTarget = true
   game.key("v")
   game.key("]")
-  game.key("r")
+  game.key("tab")
   game.tick(delta: 0.1)
   let runtime = GameRuntime(game: game)
   let ready = await runtime.snapshot()

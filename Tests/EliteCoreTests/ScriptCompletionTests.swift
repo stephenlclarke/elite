@@ -103,7 +103,7 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
   let loadedFirst = game.load(first)
   try #require(loadedFirst)
   game.launch()
-  game.key("r")
+  game.key("tab")
   let firstTarget = try #require(game.autoTargetBody)
   try #require(firstTarget.hull == .cobra && firstTarget.position.z > 0)
   let firstOrigin = try #require(game.gameplayContext()?.player.identity)
@@ -119,7 +119,7 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
   game.launch()
   try #require(game.gameplayContext()?.player.identity == firstOrigin)
   // The previous real cycle is still partial: its next entry would be the old station.
-  game.key("r")
+  game.key("tab")
   let firstNewTarget = try #require(game.autoTargetBody)
   #expect(
     firstNewTarget.id == firstTarget.id && firstNewTarget.hull == .cobra
@@ -128,7 +128,7 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
   var selected: [Int] = []
   selected.append(firstNewTarget.id)
   for _ in 1...game.bodies.count {
-    game.key("r")
+    game.key("tab")
     if let target = game.autoPilot.targetID, selected.count < 16 { selected.append(target) }
     if game.autoTargetBody?.id == 0 { break }
   }
@@ -170,7 +170,7 @@ private func completionPatrolTargetIsOwned(_ game: Game, child: UUID) -> Bool {
 private func selectCompletionPatrolTarget(_ game: inout Game, child: UUID) throws {
   for _ in 0...game.bodies.count {
     if completionPatrolTargetIsOwned(game, child: child) { return }
-    game.key("r")
+    game.key("tab")
   }
   try #require(
     completionPatrolTargetIsOwned(game, child: child),
@@ -319,7 +319,7 @@ private struct CompletionFixture {
     var stationCycle: [String] = []
     // Sequential sorties retain more targets; cycle the actual scene rather than assuming eight.
     for attempt in 0...game.bodies.count {
-      game.key("r")
+      game.key("tab")
       if stationCycle.count < 16 {
         stationCycle.append(
           "\(attempt):target=\(String(describing: game.autoPilot.targetID)),actor=\(String(describing: game.autoPilot.targetActor)),docking=\(game.dockingComputer)"
@@ -585,7 +585,7 @@ private struct CompletionFixture {
   #expect(await trial.snapshot().commander.legal == legalBefore)
   await trial.setControls(Controls())
   for _ in 0..<8 {
-    await trial.key("r")
+    await trial.key("tab")
     if await trial.snapshot().autoPilot.targetID == 0 { break }
   }
   var actual = await trial.snapshot()

@@ -245,12 +245,12 @@ import Testing
     TargetingTier.docking.equipmentName, at: .targetingCore,
     provenance: .grant("jump-docking-fixture"))
   game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
-  game.key("r")
+  game.key("tab")
   #expect(game.dockingComputer)
   game.key("p")
   #expect(!game.dockingComputer)
   game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
-  game.key("r")
+  game.key("tab")
   let anchors = try #require(game.commander.flightSimulation.anchors)
   for _ in 0..<game.bodies.count {
     if let selected = game.autoTargetBody, selected.id == 0,
@@ -258,7 +258,7 @@ import Testing
     {
       break
     }
-    game.key("r")
+    game.key("tab")
   }
   let station = try #require(game.autoTargetBody)
   try #require(

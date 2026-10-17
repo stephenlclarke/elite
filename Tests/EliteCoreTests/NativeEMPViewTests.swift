@@ -214,8 +214,8 @@ extension NativeViewTests {
     let people = Set(view.game.bodies.compactMap { $0.physical?.empCrewPod })
     #expect(people.count == record.crewTotal)
     try verifyNativeEMPPixels(view, bodyID: salvage.id, ink: .orange, stage: "disabled-empty")
-    // Use the player's real filter/target commands and controller to reach a cutter hold.
-    for (code, text) in [(UInt16(3), "f"), (3, "f"), (15, "r")] {
+    // Use the player's real filter/Tab target commands and controller to reach a cutter hold.
+    for (code, text) in [(UInt16(3), "f"), (3, "f"), (48, "\t")] {
       view.keyDown(with: try event(code, text, down: true))
       view.keyUp(with: try event(code, text, down: false))
       await delegate.processPendingCommands(in: view)

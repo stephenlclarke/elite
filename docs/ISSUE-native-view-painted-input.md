@@ -1,5 +1,7 @@
 # Native control fixtures must supply current painted page proofs
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 ## Problem
 
 Native view tests still expect raw arrow, Return, Tab and page-key strings, or the former handoff-click packet. Production input protects those actions with the actual painted page presentation. The work-guidance fixture sends Tab and R before any native draw, so those targeting inputs cannot carry a current presentation and guidance never engages.

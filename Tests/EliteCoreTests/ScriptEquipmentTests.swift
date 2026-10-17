@@ -98,7 +98,7 @@ struct GearScriptFixture {
   #expect(scene.commander.system == 129 && scene.commander.fuel < 70)
   #expect(scene.commander.equipmentInventory?.items.contains { $0.id == unit } == true)
   for _ in 0..<8 {
-    await runtime.key("r")
+    await runtime.key("tab")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
   for _ in 0..<10000 where !scene.docked { scene = await runtime.advance(delta: 0.02) }

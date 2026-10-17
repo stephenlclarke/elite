@@ -20,7 +20,7 @@ struct AutoTargetHullLimitsTests {
           id: hull == .station ? 0 : 5, hull: hull,
           position: .init(1800, 1400, 1800))
       ]
-      game.key("r")
+      game.key("tab")
       #expect(game.autoPilot.targetID != nil)
       game.tick(delta: 0.1)
       let craft = game.commander.performance

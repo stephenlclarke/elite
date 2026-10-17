@@ -1,5 +1,7 @@
 # Galactic travel fixture assumes the next target is always the original station
 
+> Current controls (FR-008): Tab alone selects flight targets. R references below describe historical source or validation evidence; they are not current flight instructions. Archived input/evidence records are retained unchanged.
+
 ## Partial-run evidence and source inference
 
 Active full CI checkpoint 222 reports the final guided-docking assertion failing in `jumpTravelDockingAndGalacticDrive`. The failure output does not identify the selected actor. Source shows a current-system waystation in galaxy one, system seven, and target cycling restores native station bodies after the fixture replaces its visible scene. Cancelling guidance preserves cycling history, so a subsequent R input can select an unvisited waystation rather than original station zero.
