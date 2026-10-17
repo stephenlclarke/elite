@@ -225,25 +225,44 @@ private func passengerGame() throws -> (Game, ScriptPack) {
 }
 @Test func nativeEquipmentPurchaseCannotOverspendCabinEquipmentCapacity() throws {
   var (game, _) = try passengerGame()
-  game.commander.fuelStorageUnits = 4
-  game.commander.equipment.formUnion([
-    "Fuel Scoops", "E.C.M. System", Equipment.navalEnergyUnit, "Energy Bomb",
-  ])
+  for unit in 0..<4 {
+    try game.commander.grantEquipment(
+      FuelStorage.equipmentName, at: .fuelStorage(unit), provenance: .grant("fixture"))
+  }
+  let hardware: [(String, ComponentFittingSlot)] = [
+    ("Fuel Scoops", .utility(.fuelScoops)), ("E.C.M. System", .utility(.ecm)),
+    (Equipment.navalEnergyUnit, .energy), ("Energy Bomb", .utility(.energyBomb)),
+  ]
+  for (name, slot) in hardware {
+    try game.commander.grantEquipment(name, at: slot, provenance: .grant("fixture"))
+  }
   #expect(game.commander.commonEquipmentUnits == 10 && game.commander.valid)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Galactic Hyperdrive" })
+  let lowTechnology = game.commander
   game.purchase()
-  #expect(game.commander.commonEquipmentUnits == 10)
+  #expect(game.commander.commonEquipmentUnits == 10 && game.commander == lowTechnology)
   // Lave's low technology denies this item. Fit the last unit through a native fuel-storage purchase instead.
-  game.commander.fuelStorageUnits = 3
-  game.commander.equipment.insert("Galactic Hyperdrive")
+  let removedFuel = try game.commander.removeFittedEquipment(FuelStorage.equipmentName)
+  try #require(removedFuel)
+  try game.commander.grantEquipment(
+    "Galactic Hyperdrive", at: .utility(.galacticHyperdrive), provenance: .grant("fixture"))
+  #expect(game.commander.fuelStorageUnits == 3 && game.commander.commonEquipmentUnits == 10)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == FuelStorage.equipmentName })
+  let cash = game.commander.credits
   game.purchase()
   #expect(game.commander.commonEquipmentUnits == 11 && game.commander.valid)
-  game.commander.equipment.insert("Escape Pod")
-  game.commander.fuelStorageUnits = 3
+  #expect(
+    game.commander.fuelStorageUnits == 4 && game.commander.credits == cash - FuelStorage.price)
+  let removedSecondFuel = try game.commander.removeFittedEquipment(FuelStorage.equipmentName)
+  try #require(removedSecondFuel)
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("fixture"))
+  #expect(game.commander.fuelStorageUnits == 3 && game.commander.commonEquipmentUnits == 11)
+  #expect(game.commander.accommodation.fittedBerths.count == 1 && game.commander.valid)
   let original = game.commander
-  game.purchase()
-  #expect(game.commander == original && game.message.contains("CANNOT FIT"))
+  let refused = game.purchaseImmediately()
+  #expect(refused == .refused(.invalidState))
+  #expect(game.commander == original)
 }
 
 @Test func wrongStationRepeatedBoardingAndEscapePodCannotManufacturePassengerTravel() throws {
