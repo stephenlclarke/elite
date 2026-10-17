@@ -239,41 +239,47 @@ extension Game {
       } else {
         continue
       }
-      do {
-        var candidate = self
-        guard candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1 else {
-          throw MissionPackError("Courier terminal receipt capacity reached.")
-        }
-        var state = old
-        let nextProof = candidate.courierProof(
-          token: "native:" + cause.rawValue, revision: state.revision)
-        let proof =
-          custody.pendingLoss.map { loss in
-            ScriptCourierActionProof(
-              sequence: nextProof.sequence, token: "native:" + loss.id.uuidString,
-              revision: nextProof.revision, epoch: loss.epoch, clock: loss.clock,
-              station: loss.station)
-          } ?? nextProof
-        candidate.commander.scriptState.nextEvent = proof.sequence
-        try completeCourier(cause, proof: proof, state: &state, candidate: &candidate.commander)
-        state.revision += 1
-        state.acknowledge(proof.sequence)
-        state.completionReceipt = candidate.nativeCourierCompletionReceipt(
-          state,
-          sequence: proof.sequence,
-          cause: custody.pendingLoss?.context ?? candidate.scriptEventContext(old))
-        if state.journal.count < 512 {
-          state.journal.append("Courier " + cause.title + ". Paid: 0 CR.")
-        }
-        candidate.commander.scriptState.instances[id] = state
-        candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
-        if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
-        guard candidate.commander.valid else { throw SaveError.invalidCommander }
-        try publish?(&candidate)
-        self = candidate
-      } catch {
-        notify("COURIER OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE")
+      resolveCourierTerminal(cause, id: id, old: old, custody: custody, publish: publish)
+    }
+  }
+  private mutating func resolveCourierTerminal(
+    _ cause: ScriptCourierTerminalCause, id: UUID, old: ScriptInstance,
+    custody: ScriptCourierCustody, publish: ScriptPublisher?
+  ) {
+    do {
+      var candidate = self
+      guard candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1 else {
+        throw MissionPackError("Courier terminal receipt capacity reached.")
       }
+      var state = old
+      let nextProof = candidate.courierProof(
+        token: "native:" + cause.rawValue, revision: state.revision)
+      let proof =
+        custody.pendingLoss.map { loss in
+          ScriptCourierActionProof(
+            sequence: nextProof.sequence, token: "native:" + loss.id.uuidString,
+            revision: nextProof.revision, epoch: loss.epoch, clock: loss.clock,
+            station: loss.station)
+        } ?? nextProof
+      candidate.commander.scriptState.nextEvent = proof.sequence
+      try completeCourier(cause, proof: proof, state: &state, candidate: &candidate.commander)
+      state.revision += 1
+      state.acknowledge(proof.sequence)
+      state.completionReceipt = candidate.nativeCourierCompletionReceipt(
+        state,
+        sequence: proof.sequence,
+        cause: custody.pendingLoss?.context ?? candidate.scriptEventContext(old))
+      if state.journal.count < 512 {
+        state.journal.append("Courier " + cause.title + ". Paid: 0 CR.")
+      }
+      candidate.commander.scriptState.instances[id] = state
+      candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
+      if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
+      guard candidate.commander.valid else { throw SaveError.invalidCommander }
+      try publish?(&candidate)
+      self = candidate
+    } catch {
+      notify("COURIER OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE")
     }
   }
   mutating func confirmCourierDialogue(_ id: UUID, dialogue: ScriptDialogue) throws {
