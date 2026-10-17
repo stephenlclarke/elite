@@ -51,7 +51,8 @@ public enum SalvageSites {
         ^ UInt64(truncatingIfNeeded: anchors.system.system))
     let roll = random.next() % 100
     let count = roll < 55 ? 0 : (roll < 93 ? 1 : 2)
-    let fields = MiningFields.generate(anchors: anchors, seed: seed)
+    // Existing wreck identities keep their original deterministic source positions.
+    let fields = MiningFields.legacyFields(anchors: anchors, seed: seed)
     var result: [SalvageSite] = []
     for index in 0..<count {
       let infrastructure = random.next() % 16 == 0

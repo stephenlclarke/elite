@@ -112,6 +112,20 @@ extension Display {
       ("Gross productivity: \(star.productivity) MCR", .white),
       ("Average radius: \(star.radius) km", .white),
     ]
+    let belt = AsteroidBeltDefinition.isPresent(system: star, galaxy: game.inspectedGalaxy)
+    rows.append(("Asteroid belt: " + (belt ? "sparse star-centred ring" : "none"), .cyan))
+    if belt {
+      rows += [
+        (
+          "Ring radius: 2x planet-star distance. Chunks: 1, 5, 10, ... 50 native commodity units.",
+          .white
+        ),
+        (
+          "Ore surfaces: minerals grey/white; alloys blue; gold gold; platinum cyan. Mineable cues: orange.",
+          .white
+        ),
+      ]
+    }
     if star.isPlugh {
       rows += [
         (

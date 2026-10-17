@@ -13,6 +13,13 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   public static let maximumPartial = 256
   private let seed: UInt64
   private var terminal: [SystemIdentity: UInt64] = [:]
+  private var ringTerminal: [SystemIdentity: UInt64]? = [:]
+  private var generation: Int? = 1
+  public var retainsLegacyFields: Bool { generation == nil }
+  public var usesRingSaveVersion: Bool {
+    generation != nil || ringTerminal != nil || partial.keys.contains { $0.field >= 4 }
+      || pending.keys.contains { if case .ore(let rock, _) = $0 { rock.field >= 4 } else { false } }
+  }
   private var partial: [RockIdentity: Double] = [:]
   private var pending: [PayloadIdentity: TypedCargoPayload] = [:]
   private var offers: [SpawnIdentity: PayloadIdentity] = [:]
@@ -22,7 +29,8 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   public init(seed: UInt64 = 0) { self.seed = seed }
   private enum CodingKeys: String, CodingKey {
-    case seed, terminal, partial, pending, offers, bindings, lastIncident, sequence
+    case seed, terminal, ringTerminal, generation, partial, pending, offers, bindings, lastIncident,
+      sequence
   }
 
   public init(from decoder: Decoder) throws {
@@ -30,13 +38,31 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     seed = try values.decode(UInt64.self, forKey: .seed)
     terminal = try Self.decodeBounded(
       SystemIdentity.self, UInt64.self,
-      from: values, key: .terminal, maximum: 8 * 257)
+      from: values, key: .terminal, maximum: 8 * 257, keyAllowed: Self.validSystem)
+    generation = try values.decodeIfPresent(Int.self, forKey: .generation)
+    if values.contains(.ringTerminal), try !values.decodeNil(forKey: .ringTerminal) {
+      ringTerminal = try Self.decodeBounded(
+        SystemIdentity.self, UInt64.self, from: values, key: .ringTerminal, maximum: 8 * 257,
+        keyAllowed: Self.validSystem)
+    } else {
+      ringTerminal = nil
+    }
+    let mask = (UInt64(1) << 48) - 1
+    guard generation == nil || generation == 1,
+      terminal.values.allSatisfy({ $0 > 0 && $0 & ~mask == 0 }),
+      ringTerminal?.values.allSatisfy({ $0 > 0 && $0 & ~mask == 0 }) ?? true
+    else { throw SaveError.invalidCommander }
     partial = try Self.decodeBounded(
       RockIdentity.self, Double.self,
-      from: values, key: .partial, maximum: Self.maximumPartial)
+      from: values, key: .partial, maximum: Self.maximumPartial, keyAllowed: Self.validRock)
     pending = try Self.decodeBounded(
       PayloadIdentity.self, TypedCargoPayload.self,
-      from: values, key: .pending, maximum: Self.maximumPending)
+      from: values, key: .pending, maximum: Self.maximumPending,
+      keyAllowed: { identity in
+        guard case .ore(let rock, let fragment) = identity else { return false }
+        return Self.validRock(rock)
+          && Int(fragment) < (AsteroidBeltDefinition.chunk(for: rock)?.units ?? 7)
+      })
     offers = try Self.decodeBounded(
       SpawnIdentity.self, PayloadIdentity.self,
       from: values, key: .offers, maximum: Self.maximumPending)
@@ -54,9 +80,11 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   private static func decodeBounded<Key: Hashable & Decodable, Value: Decodable>(
     _ keyType: Key.Type, _ valueType: Value.Type,
-    from values: KeyedDecodingContainer<CodingKeys>, key: CodingKeys, maximum: Int
+    from values: KeyedDecodingContainer<CodingKeys>, key: CodingKeys, maximum: Int,
+    keyAllowed: (Key) -> Bool = { _ in true }
   ) throws -> [Key: Value] {
     var records = try values.nestedUnkeyedContainer(forKey: key)
+    guard (records.count ?? 0) <= maximum * 2 else { throw SaveError.invalidCommander }
     var result: [Key: Value] = [:]
     while !records.isAtEnd {
       guard result.count < maximum else {
@@ -65,10 +93,10 @@ public struct MiningLedger: Equatable, Codable, Sendable {
             codingPath: records.codingPath, debugDescription: "Mining collection exceeds bound"))
       }
       let identity = try records.decode(Key.self)
-      guard result[identity] == nil else {
+      guard keyAllowed(identity), result[identity] == nil else {
         throw DecodingError.dataCorrupted(
           .init(
-            codingPath: records.codingPath, debugDescription: "Duplicate mining key"))
+            codingPath: records.codingPath, debugDescription: "Invalid or duplicate mining key"))
       }
       result[identity] = try records.decode(Value.self)
     }
@@ -77,17 +105,23 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   public var valid: Bool {
     let mask = (UInt64(1) << 48) - 1
-    guard terminal.count <= 8 * 257, partial.count <= Self.maximumPartial,
+    guard generation == nil || generation == 1,
+      (ringTerminal?.count ?? 0) <= 8 * 257,
+      ringTerminal?.allSatisfy({ Self.validSystem($0.key) && $0.value > 0 && $0.value & ~mask == 0 }
+      ) ?? true,
+      terminal.count <= 8 * 257, partial.count <= Self.maximumPartial,
       pending.count <= Self.maximumPending, offers.count <= Self.maximumPending,
       bindings.count <= Self.maximumPending,
       terminal.allSatisfy({ Self.validSystem($0.key) && $0.value > 0 && $0.value & ~mask == 0 }),
-      partial.allSatisfy({
-        bit($0.key) != nil && !isDepleted($0.key)
-          && $0.value.isFinite && $0.value > 0
+      partial.allSatisfy({ identity, energy in
+        bit(identity) != nil && (identity.field < 4 || ringTerminal != nil) && !isDepleted(identity)
+          && energy.isFinite && energy > 0
+          && (AsteroidBeltDefinition.chunk(for: identity).map { energy <= $0.energy } ?? true)
       }),
       pending.allSatisfy({ identity, item in
         guard identity == item.identity, case .ore(let rock, let fragment) = identity,
-          bit(rock) != nil, isDepleted(rock), fragment < 7,
+          bit(rock) != nil, isDepleted(rock),
+          Int(fragment) < (AsteroidBeltDefinition.chunk(for: rock)?.units ?? 7),
           item.amount.quantity == 1,
           [.minerals, .alloys, .gold, .platinum].contains(item.amount.commodity)
         else { return false }
@@ -117,7 +151,13 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     guard sequence < UInt64.max,
       lastIncident.map({ $0 > 0 && $0 < UInt64.max }) ?? true
     else { return false }
-    return (terminal.isEmpty && partial.isEmpty && pending.isEmpty) || lastIncident != nil
+    return
+      (terminal.isEmpty && (ringTerminal?.isEmpty ?? true) && partial.isEmpty && pending.isEmpty)
+      || lastIncident != nil
+  }
+
+  private static func validRock(_ rock: RockIdentity) -> Bool {
+    validSystem(rock.system) && rock.field < 8 && rock.rock < 12
   }
 
   private static func validSystem(_ system: SystemIdentity) -> Bool {
@@ -135,7 +175,10 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   public func isDepleted(_ identity: RockIdentity) -> Bool {
     guard let bit = bit(identity) else { return false }
-    return terminal[identity.system, default: 0] & bit != 0
+    let mask =
+      identity.field < 4
+      ? terminal[identity.system, default: 0] : ringTerminal?[identity.system] ?? 0
+    return mask & bit != 0
   }
 
   public func remainingEnergy(for rock: MiningRock) -> Double {
@@ -187,18 +230,30 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       eventID > 0, eventID < UInt64.max,
       lastIncident.map({ eventID > $0 }) ?? true
     else { return .ignored }
+    if let chunk = AsteroidBeltDefinition.chunk(for: rock.identity),
+      rock.energy != chunk.energy || rock.radius != chunk.radius
+    {
+      return .ignored
+    }
     let remaining = max(0, remainingEnergy(for: rock) - damage)
     let payloads = remaining == 0 && mining ? yield(for: rock) : []
     guard pending.count + payloads.count <= Self.maximumPending,
       remaining == 0 || partial[rock.identity] != nil || partial.count < Self.maximumPartial
     else { return .capacityRefused }
+    if rock.identity.field >= 4, ringTerminal == nil { ringTerminal = [:] }
     lastIncident = eventID
     if remaining > 0 {
       partial[rock.identity] = remaining
       return .damaged(remaining)
     }
     // Commit the tombstone before offering any physical spawn.
-    terminal[rock.identity.system, default: 0] |= bit(rock.identity)!
+    if rock.identity.field < 4 {
+      terminal[rock.identity.system, default: 0] |= bit(rock.identity)!
+    } else {
+      var mask = ringTerminal ?? [:]
+      mask[rock.identity.system, default: 0] |= bit(rock.identity)!
+      ringTerminal = mask
+    }
     partial.removeValue(forKey: rock.identity)
     for payload in payloads { pending[payload.identity] = payload }
     return mining ? .extracted(payloads) : .destroyed
@@ -320,10 +375,8 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   }
 
   private func bit(_ rock: RockIdentity) -> UInt64? {
-    guard (0..<8).contains(rock.system.galaxy), (0...256).contains(rock.system.system),
-      rock.field < 4, rock.rock < 12
-    else { return nil }
-    return UInt64(1) << (UInt64(rock.field) * 12 + UInt64(rock.rock))
+    guard Self.validRock(rock) else { return nil }
+    return UInt64(1) << (UInt64(rock.field % 4) * 12 + UInt64(rock.rock))
   }
 
   private func key(_ identity: PayloadIdentity) -> String {
@@ -334,6 +387,15 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   }
 
   private func yield(for rock: MiningRock) -> [TypedCargoPayload] {
+    if let chunk = AsteroidBeltDefinition.chunk(for: rock.identity) {
+      return (0..<chunk.units).map { index in
+        TypedCargoPayload(
+          identity: .ore(rock.identity, fragment: UInt16(index)),
+          amount: .init(commodity: chunk.content.commodity, quantity: 1),
+          position: rock.position + Vector3(Double(index % 5) * 12, Double(index / 5) * 12, 10),
+          velocity: .init(Double(index % 5), 2, 3))
+      }
+    }
     var state =
       seed ^ UInt64(truncatingIfNeeded: rock.identity.system.galaxy) &* 0x9E37_79B9_7F4A_7C15
     state ^= UInt64(truncatingIfNeeded: rock.identity.system.system) &* 0xBF58_476D_1CE4_E5B9

@@ -230,7 +230,8 @@ extension Display {
       layout.local ? "SHORT RANGE CHART" : "Viewing Galaxy \(game.viewedGalaxy + 1)", 16, 10,
       scale: layout.font, ink: .yellow)
     frame.label(
-      "M: " + game.mapColour.rawValue, layout.local ? 16 : 220, layout.local ? 32 : 10,
+      "M: " + game.mapColour.rawValue + "  <> belt", layout.local ? 16 : 220,
+      layout.local ? 32 : 10,
       scale: layout.font, ink: .cyan)
     if !layout.local {
       frame.label(
@@ -255,13 +256,16 @@ extension Display {
         }) : [:]
     let markerBoxes = visible.map { system -> CanvasRect in
       let point = layout.point(system, current: game.currentSystem)
-      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 3)
+      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 4)
       return .init(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2)
     }
     for system in visible {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
+      if AsteroidBeltDefinition.isPresent(system: system, galaxy: game.viewedGalaxy) {
+        frame.ellipse(point.x, point.y, radius + 2, radius + 1, .cyan)
+      }
       if ranks[system.id] != nil {
         frame.ellipse(point.x, point.y, radius + 7, radius + 7, .gold)
       }
@@ -368,7 +372,9 @@ extension Display {
     let values = [
       "Selected: G\(game.viewedGalaxy + 1) / " + system.name, "Economy: " + system.economyName,
       "Government: " + system.governmentName,
-      "Tech \(system.technology + 1)  Radius \(system.radius) km",
+      "Tech \(system.technology + 1)  Radius \(system.radius) km  Belt: "
+        + (AsteroidBeltDefinition.isPresent(system: system, galaxy: game.viewedGalaxy)
+          ? "Yes" : "No"),
       game.mapIsCurrentGalaxy
         ? String(format: "Distance %.1f light-years", game.currentSystem.distance(to: system))
         : "Distance: unavailable across galaxies",
