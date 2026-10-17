@@ -481,12 +481,17 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     fitted.contracts == beforeHardware.contracts
       && fitted.accommodation == beforeHardware.accommodation)
   await runtime.key("0")
+  let legalBefore = await runtime.snapshot().commander.legal
+  try #require(legalBefore == 0)
   let beforeFire = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
   var observedFlash = false
   var firing = Controls()
   for _ in 0..<200 {
-    try await selectCampaignPatrolTarget(runtime, child: child)
-    firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    firing = Controls()
+    if try campaignPatrolOutsideStationZone(await runtime.snapshot()) {
+      try await selectCampaignPatrolTarget(runtime, child: child)
+      firing.fire = await runtime.snapshot().autoPilot.status == "TRACKING TARGET"
+    }
     await runtime.setControls(firing)
     actual = await runtime.advance(delta: 0.1)
     observedFlash = observedFlash || actual.laserFlash > 0
@@ -500,6 +505,9 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     Comment(
       rawValue: "beforeFire: \(beforeFire); observedFlash=\(observedFlash); afterFire: "
         + campaignPatrolDiagnostic(actual, child: child)))
+  #expect(
+    actual.commander.legal == legalBefore,
+    Comment(rawValue: campaignPatrolDiagnostic(actual, child: child)))
   await runtime.setControls(Controls())
   for _ in 0..<8 {
     await runtime.key("r")
@@ -515,6 +523,7 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     Comment(
       rawValue: "afterStationSelection: \(beforeDock); afterDockFlight: "
         + campaignPatrolDiagnostic(actual, child: child)))
+  #expect(actual.commander.legal == legalBefore)
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == child)
   let report = await runtime.snapshot().scriptPagePresentation
