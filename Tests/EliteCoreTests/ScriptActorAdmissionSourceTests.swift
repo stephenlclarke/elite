@@ -269,8 +269,6 @@ struct ScriptActorAdmissionSourceTests {
     let later = try #require(
       game.commander.scriptState.instances[instance]?.ownedEncounters["z-later"]?.actors["later"])
     let laterIndex = try #require(game.bodies.firstIndex { $0.missionActorID == later.identity })
-    // The retained source stays genuine; only the actual current native owner's join is broken.
-    game.bodies[laterIndex].missionInstanceID = UUID()
     let sources = try game.retainedMissionActorAdmissionSources()
     try #require(sources.count == 2)
     let initial = try #require(sources.first { $0.encounterID == "opponents" })
@@ -281,6 +279,8 @@ struct ScriptActorAdmissionSourceTests {
     case .pending:
       Issue.record("This fixture must isolate a valid first cohort or an outside no-op.")
     }
+    // The retained source stays genuine; only the actual current native owner's join is broken.
+    game.bodies[laterIndex].missionInstanceID = UUID()
     let before = game.commander
     let bodies = game.bodies
     let nextID = game.nextBodyID
