@@ -17,7 +17,8 @@ extension Game {
     }
     guard !eligible.isEmpty else { return [] }
     for index in eligible where bodies[index].physical?.deathIncidentID == nil {
-      bodies[index].physical?.deathIncidentID = commander.flightSimulation.allocateIncident()
+      let incident = commander.flightSimulation.allocateIncident()
+      bodies[index].physical?.deathIncidentID = incident
     }
     let ordered = eligible.sorted {
       (bodies[$0].physical?.deathIncidentID ?? UInt64.max)
