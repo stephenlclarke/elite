@@ -109,6 +109,19 @@ struct CampaignGalleryFixture {
     return game
   }
 
+  func prepareNativeCommanderForComparison(_ game: inout Game) throws {
+    let before = game.commander
+    try game.commander.prepareEquipment()
+    game.commander.mirrorFittedEquipment()
+    try #require(game.commander.savedEquipmentVersion == 2)
+    #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
+    #expect(game.commander.shipID == before.shipID && game.commander.name == before.name)
+    #expect(game.commander.fuel == before.fuel && game.commander.missiles == before.missiles)
+    #expect(game.commander.scriptState == before.scriptState)
+    #expect(game.commander.contracts == before.contracts)
+    #expect(game.commander.accommodation == before.accommodation)
+  }
+
   func start(_ game: inout Game, parent: ScriptPack? = nil) throws -> (UUID, UUID) {
     let id = try game.acceptScriptMission(parent ?? parents[0])
     for _ in 0..<8 { game.drainScriptEvents() }
@@ -399,8 +412,10 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   var game = fixture.game()
   let (parent, child) = try fixture.start(&game)
   try fixture.select(parent, game: &game)
+  try fixture.prepareNativeCommanderForComparison(&game)
   let before = game.commander
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   let layout = GalleryLayout(width: game.viewportWidth, height: game.viewportHeight)
   await runtime.campaignGalleryClick(x: 20, y: layout.actionTop + 1)
   await runtime.campaignGalleryClick(x: 20, y: layout.listTop + 1)
@@ -449,7 +464,22 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   #expect(actual.commander.scriptState.calendarSeconds == 0.1)
   #expect(actual.ecmControl.epoch != liveSelection.ecmControl.epoch)
   // Test hardware setup only; targets, destruction, docking and receipts use native gameplay.
-  await runtime.nativeCommand { $0.commander.installTargetingComputer(.docking) }
+  let beforeHardware = await runtime.snapshot().commander
+  await runtime.nativeCommand { game in
+    do {
+      try game.commander.grantEquipment(
+        TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .legacyUnknown)
+    } catch { Issue.record(error) }
+  }
+  let fitted = await runtime.snapshot().commander
+  try #require(fitted.hasAutomaticDocking)
+  #expect(
+    fitted.fittedEquipment(at: .targetingCore)?.node.key == TargetingTier.docking.equipmentName)
+  #expect(fitted.credits == beforeHardware.credits && fitted.cargo == beforeHardware.cargo)
+  #expect(fitted.scriptState == beforeHardware.scriptState)
+  #expect(
+    fitted.contracts == beforeHardware.contracts
+      && fitted.accommodation == beforeHardware.accommodation)
   await runtime.key("0")
   var firing = Controls()
   firing.fire = true
@@ -609,11 +639,13 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   var game = fixture.game()
   let (_, child) = try fixture.start(&game)
   try fixture.select(child, game: &game)
+  try fixture.prepareNativeCommanderForComparison(&game)
   let before = game.commander
   game.scriptPacks.removeAll { $0.digest == fixture.child.digest }
   #expect(game.selectedGalleryMission?.savedInstance == child)
   #expect(game.campaignTrialUnavailableReason == "Restore the exact campaign assignment content.")
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == before)
   await runtime.key("t")
   #expect(await runtime.gallerySaveDirectory() == nil)
   #expect(await runtime.snapshot().commander == before)
@@ -645,7 +677,9 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   var game = fixture.game()
   let (_, child) = try fixture.start(&game)
   try fixture.select(child, game: &game)
+  try fixture.prepareNativeCommanderForComparison(&game)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  #expect(await runtime.snapshot().commander == game.commander)
   let childPage = await runtime.snapshot().scriptPagePresentation
   await runtime.scriptPageKey("t", expected: childPage)
   await runtime.scriptPageKey("return", expected: childPage)
