@@ -73,7 +73,8 @@ func nearPlaneShipKeepsVisibleGeometryWhenItsCenterIsBehind(style: ShipDisplaySt
   #expect(try game.applyEquipmentPurchase(quote))
   let inventory = try #require(game.commander.equipmentInventory)
   let bound = try #require(inventory.items.first { $0.boundHull != nil })
-  #expect(game.commander.standardCargoCapacity == 35)
+  let performance = game.commander.nativePerformance
+  #expect(game.commander.standardCargoCapacity == performance.cargo + performance.cargoExpansion)
   game.screen = .status
   game.openShowroom()
   game.showroom.selection = "SH013"
@@ -81,7 +82,8 @@ func nearPlaneShipKeepsVisibleGeometryWhenItsCenterIsBehind(style: ShipDisplaySt
   let projected = try #require(game.showroomProfile)
   let profileAgain = try #require(game.showroomProfile)
   #expect(projected.fields == profileAgain.fields)
-  #expect(projected.fields.first { $0.key == "physical_hold" }?.number == 125)
+  let selected = try #require(ShipCatalogue.ship("SH013")?.game)
+  #expect(projected.fields.first { $0.key == "physical_hold" }?.number == Double(selected.cargo))
   game.showroom.baselineUsesCurrent = false
   game.showroom.baseline = "SH013"
   #expect(game.showroomBaselineProfile?.fields == projected.fields)

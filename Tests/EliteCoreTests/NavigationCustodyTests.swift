@@ -74,29 +74,36 @@ extension NavigationCustodyTests {
   @Test(arguments: [false, true])
   func purchasedCabinReservesRealHoldEvenWithUnlimitedCargo(unlimited: Bool) throws {
     var game = Game(executive: false)
+    let hold = game.commander.standardCargoCapacity
+    let freeHold = hold - 5
     game.commander.credits = 100000
     game.commander.unlimitedCargo = unlimited
     try game.confirmPassengerBerth(game.passengerBerthQuote)
     try #require(game.commander.accommodation.fittedBerths.count == 1)
-    try #require(game.commander.cargoTonnes == 5 && game.commander.tradeCargoCapacity == 20)
+    try #require(game.commander.cargoTonnes == 5 && game.commander.tradeCargoCapacity == hold)
     let destination = try navigationTradeMargin(&game, commodity: 0)
     let before = game.commander
     let market = game.market
-    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == 15)
+    #expect(
+      NavigationGraph(game: game).trade(game.commander.system, destination) == Double(freeHold))
     #expect(game.commander == before && game.market == market)
     game.selection = 0
-    for _ in 0..<15 { game.trade(buy: true) }
+    for _ in 0..<freeHold { game.trade(buy: true) }
     let full = game.commander
     game.trade(buy: true)
-    #expect(game.commander == full && game.commander.cargo[0] == 15)
+    #expect(game.commander == full && game.commander.cargo[0] == freeHold)
   }
 
-  @Test func fourPurchasedCabinsLeaveNoTonneTradeOrPurchaseRoom() throws {
+  @Test func purchasedCabinsFillActualHoldAndLeaveNoTonneTradeOrPurchaseRoom() throws {
     var game = Game(executive: false)
     game.commander.credits = 100000
-    for _ in 0..<4 { try game.confirmPassengerBerth(game.passengerBerthQuote) }
-    try #require(game.commander.accommodation.fittedBerths.count == 4)
-    try #require(game.commander.cargoTonnes == 20 && game.commander.tradeCargoCapacity == 20)
+    let hold = game.commander.standardCargoCapacity
+    let cabinTonnes = AccommodationFitting.tonnesPerCommonBerth
+    try #require(hold > 0 && hold % cabinTonnes == 0)
+    let cabinCount = hold / cabinTonnes
+    for _ in 0..<cabinCount { try game.confirmPassengerBerth(game.passengerBerthQuote) }
+    try #require(game.commander.accommodation.fittedBerths.count == cabinCount)
+    try #require(game.commander.cargoTonnes == hold && game.commander.tradeCargoCapacity == hold)
     let destination = try navigationTradeMargin(&game, commodity: 0)
     let before = game.commander
     let market = game.market
@@ -109,11 +116,13 @@ extension NavigationCustodyTests {
 
   @Test func markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold() throws {
     var game = try markedFirearmRoute()
-    game.commander.cargo[0] = 19
+    let hold = game.commander.tradeCargoCapacity
+    game.commander.cargo[0] = hold - 1
     let destination = try navigationTradeMargin(&game, commodity: 0)
-    try #require(game.commander.cargoTonnes == 20 && game.commander.valid)
+    try #require(game.commander.cargoTonnes == hold && game.commander.valid)
     let before = game.commander
-    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == 19)
+    #expect(
+      NavigationGraph(game: game).trade(game.commander.system, destination) == Double(hold - 1))
     #expect(game.commander == before && game.commander.sellableCargo(10) == 0)
   }
 
@@ -130,31 +139,35 @@ extension NavigationCustodyTests {
     try #require(game.commander.cargoTonnes == 1 && game.commander.valid)
     let destination = try navigationTradeMargin(&game, commodity: 0)
     let before = game.commander
-    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == 19)
+    #expect(
+      NavigationGraph(game: game).trade(game.commander.system, destination)
+        == Double(game.commander.tradeCargoCapacity - 1))
     #expect(game.commander == before)
   }
 
   @Test func fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade() throws {
     var game = Game(executive: false)
-    game.commander.cargo[0] = 20
+    let hold = game.commander.tradeCargoCapacity
+    game.commander.cargo[0] = hold
     let destination = try navigationTradeMargin(&game, commodity: 0)
     try #require(game.commander.cargoTonnes == game.commander.tradeCargoCapacity)
     let before = game.commander
-    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == 20)
+    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == Double(hold))
     #expect(game.commander == before)
   }
 
   @Test func nonTonneTradeStillLoadsWithAnOccupiedHold() throws {
     var game = Game(executive: false)
     game.commander.credits = 100000
-    game.commander.cargo[0] = 20
+    let hold = game.commander.tradeCargoCapacity
+    game.commander.cargo[0] = hold
     let destination = try navigationTradeMargin(&game, commodity: 13)
     let before = game.commander
     #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == 63)
     #expect(game.commander == before)
     game.selection = 13
     game.trade(buy: true)
-    #expect(game.commander.cargo[13] == 1 && game.commander.cargoTonnes == 20)
+    #expect(game.commander.cargo[13] == 1 && game.commander.cargoTonnes == hold)
   }
 
   @Test func maximumValidOrdinaryTonnageKeepsTradeScoringFinite() throws {
@@ -187,7 +200,8 @@ extension NavigationCustodyTests {
     let lot = try #require(ledger.pendingLots.first)
     var cargo = game.commander.cargo
     let receipt = ledger.collect(
-      lot: lot.identity, cargo: &cargo, freeTonnes: 20,
+      lot: lot.identity, cargo: &cargo,
+      freeTonnes: game.commander.tradeCargoCapacity - game.commander.cargoTonnes,
       apertureHalfExtents: .init(100, 100, 100), hasScoops: true, approachAllowed: true,
       protection: .init())
     try #require(receipt == .collected(lot) && ledger.reservedTonnes == 1)
@@ -196,7 +210,9 @@ extension NavigationCustodyTests {
     try #require(game.commander.cargoTonnes == 1 && game.commander.valid)
     let destination = try navigationTradeMargin(&game, commodity: 0)
     let before = game.commander
-    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == 19)
+    #expect(
+      NavigationGraph(game: game).trade(game.commander.system, destination)
+        == Double(game.commander.tradeCargoCapacity - 1))
     #expect(game.commander == before)
   }
 }

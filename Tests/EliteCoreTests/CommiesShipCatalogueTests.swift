@@ -22,7 +22,7 @@ import Testing
       #expect(game.roll == 0.5 && game.pitch == 0.5 && game.yaw == 0.5)
     case "SH169":
       #expect(ship.name == "Ray Mk I")
-      #expect(game.cargo == 10 && game.cargoExpansion == 0 && game.missiles == 1)
+      #expect(game.cargo == 30 && game.cargoExpansion == 0 && game.missiles == 1)
       #expect(game.speed == 35.657 && game.acceleration == 18.75)
       #expect(game.energy == 300 && game.recharge == 1.75 && game.price == 137_000)
       #expect(game.roll == 1.4 && game.pitch == 2.1 && game.yaw == 2.1)
@@ -79,7 +79,7 @@ import Testing
         .number == 0)
     #expect(try field(ray, profile: "COMMIES-2.20-comminer2", key: "max_cargo").number == 16)
     #expect(try field(ray, profile: "COMMIES-2.20-comviper", key: "max_cargo").number == 4)
-    #expect(try field(ray, profile: "PROJECT-PLAYER-SH169", key: "cargo_tonnes").number == 10)
+    #expect(try field(ray, profile: "PROJECT-PLAYER-SH169", key: "cargo_tonnes").number == 30)
     #expect(try field(stingray, profile: "COMMIES-2.20-commilray", key: "fuel").number == 160)
     #expect(stingray.game?.fuel == 70 && stingray.game?.jump == 7)
     #expect(
@@ -102,7 +102,9 @@ import Testing
     #expect(
       try field(ray, profile: "PROJECT-CREW-SH169", key: "first_acquisition_remaining_hold_tonnes")
         .number == 5)
-    #expect(ray.game?.cargo == 10)
+    #expect(ray.game?.cargo == 30)
+    #expect(
+      try field(ray, profile: "PROJECT-PLAYER-SH169", key: "usable_cargo_after_fit").number == 25)
     #expect(
       try field(stingray, profile: "PROJECT-PLAYER-SH170", key: "forward_weapon_emitter_count")
         .number == 2)
@@ -119,18 +121,22 @@ import Testing
     var commander = Commander()
     commander.shipID = "SH128"
     commander.missiles = 1
-    commander.cargo[0] = 12
-    #expect(commander.standardCargoCapacity == 12 && commander.capacity == 12)
-    #expect(commander.cargoTonnes == 12 && commander.valid)
-    commander.cargo[0] = 13
-    #expect(commander.cargoTonnes == 13 && !commander.valid)
+    let hold = commander.nativePerformance.cargo
+    #expect(hold == 150)
+    commander.cargo[0] = hold
+    #expect(commander.standardCargoCapacity == hold && commander.capacity == hold)
+    #expect(commander.cargoTonnes == hold && commander.valid)
+    commander.cargo[0] = hold + 1
+    #expect(commander.cargoTonnes == hold + 1 && !commander.valid)
     let ship = commander.ship
     #expect(ship.game?.price == 65_000 && ship.game?.cargoExpansion == 0)
     for key in ["cargo_tonnes", "usable_cargo_after_fit"] {
       let cargo = try field(ship, profile: "PROJECT-PLAYER-SH128", key: key)
-      #expect(cargo.number == 12)
-      #expect(cargo.status == "borrowed native NPC capacity for player adaptation")
+      #expect(cargo.number == Double(hold))
+      #expect(cargo.status == "project gameplay balance")
     }
+    #expect(
+      try field(ship, profile: "O08-oolite_template_transporter", key: "max_cargo").number == 12)
     let historical = try #require(
       ship.profiles.flatMap(\.fields).first { $0.key == "player_cargo_capacity_tonnes" })
     #expect(historical.number == 0 && historical.status == "estimated - low confidence")

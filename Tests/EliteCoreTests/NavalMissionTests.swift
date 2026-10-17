@@ -110,7 +110,8 @@ private func finishMessage(_ game: inout Game) {
 
 @Test func plansMustBeCollectedBeforeDeliveryAndRewardReplacesStandardUnit() {
   var game = navalGame(galaxy: 2, score: 1280, stage: .reportToCeerdi)
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   moveCommander(&game, galaxy: 2, system: 36)
   #expect(
     game.currentSystem.name == "BIRERA" && game.currentSystem.x == 63 && game.currentSystem.y == 72)
@@ -118,7 +119,7 @@ private func finishMessage(_ game: inout Game) {
   #expect(game.commander.missionStage == .reportToCeerdi)
   moveCommander(&game, galaxy: 2, system: 83)
   game.dock()
-  #expect(game.commander.missionStage == .carryingPlans && game.commander.cargoTonnes == 20)
+  #expect(game.commander.missionStage == .carryingPlans && game.commander.cargoTonnes == hold)
   #expect(game.missionNotice?.message == .plansCollection)
   finishMessage(&game)
   moveCommander(&game, galaxy: 1, system: 36)
@@ -128,7 +129,7 @@ private func finishMessage(_ game: inout Game) {
   game.commander.equipment.insert("Extra Energy Unit")
   game.dock()
   #expect(game.commander.missionStage == .plansDelivered && game.commander.kills == 1536)
-  #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == 20)
+  #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == hold)
   #expect(game.commander.equipment.contains(Equipment.navalEnergyUnit))
   #expect(!game.commander.equipment.contains("Extra Energy Unit") && game.commander.valid)
   finishMessage(&game)

@@ -148,17 +148,18 @@ private func afterRobbery() throws -> Game {
   visit(&game, 233)
   game.key("return")
   game.key("b")
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   let before = game.commander
   game.key("return")
   #expect(
     game.commander == before && game.screen == .handoff && game.message.contains("FREE TONNE"))
   game.key("escape")
-  game.commander.cargo[0] = 19
+  game.commander.cargo[0] = hold - 1
   game.key("b")
   game.key("return")
-  #expect(game.commander.cargoTonnes == 20 && game.commander.markedFirearms == 1)
-  #expect(!game.commander.canCarryMissionCargo(capacity: 19))
+  #expect(game.commander.cargoTonnes == hold && game.commander.markedFirearms == 1)
+  #expect(!game.commander.canCarryMissionCargo(capacity: hold - 1))
   game.screen = .sell
   game.selection = 10
   game.trade(buy: false)
@@ -177,16 +178,17 @@ private func afterRobbery() throws -> Game {
   game.launch()
   game.escapePod()
   #expect(game.commander.cargo[10] == 1 && game.commander.valid)
-  #expect(game.commander.canCarryMissionCargo(capacity: 20))
+  #expect(game.commander.canCarryMissionCargo(capacity: game.commander.tradeCargoCapacity))
   visit(&game, 127)
   game.key("return")
   #expect(game.commander.cargo[10] == 0)
 }
 @Test func blackjackGoldFitsATonneFullHoldAndNumericCapacityDefersRatherThanLosesReward() throws {
   var game = blackjackGame()
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   _ = try defeat(&game, .bolts)
-  #expect(game.commander.cargoTonnes == 20 && game.commander.cargo[13] == 20)
+  #expect(game.commander.cargoTonnes == hold && game.commander.cargo[13] == 20)
   game = blackjackGame()
   game.commander.cargo[13] = Int.max / 17 - 10
   let target = try defeat(&game, .bolts)

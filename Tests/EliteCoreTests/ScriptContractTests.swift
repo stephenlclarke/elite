@@ -146,7 +146,7 @@ private struct ContractFixture {
   let fixture = try ContractFixture()
   defer { fixture.clean() }
   var game = fixture.game()
-  game.commander.cargo[0] = 20
+  game.commander.cargo[0] = game.commander.tradeCargoCapacity
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let board = try #require(await runtime.snapshot().commander.contracts.boards[key])
@@ -237,7 +237,8 @@ private struct ContractFixture {
   var game = fixture.game()
   game.scriptDurabilityAvailable = true
   game.commander.credits = 10_000_000
-  game.commander.cargo[0] = 20
+  let ordinaryCargo = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = ordinaryCargo
   let key = try game.ensureContractBoard(fixture.pack)
   let board = try #require(game.commander.contracts.boards[key])
   let before = game.contractAcceptanceQuote(board: key, offer: board.offers[0].id)
@@ -256,7 +257,9 @@ private struct ContractFixture {
   #expect(throws: MissionPackError.self) { try game.confirmContract(after) }
   let latest = game.contractAcceptanceQuote(board: key, offer: board.offers[0].id)
   _ = try game.confirmContract(latest)
-  #expect(game.commander.cargoTonnes == 20 + Int(board.offers[0].parameters["tonnes"]!.integer!))
+  #expect(
+    game.commander.cargoTonnes == ordinaryCargo
+      + Int(board.offers[0].parameters["tonnes"]!.integer!))
 }
 
 @Test func genuineDeadlinePulsesAndLateHandoffsUseFrozenFailureTermsWithoutRevivingSuccess()
