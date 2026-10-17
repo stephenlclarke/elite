@@ -100,11 +100,39 @@ struct RRSCourierTests {
     try await verifyRRSLedgerForgery(&game, reason: reason, storage: storage)
   }
 
-  @Test func actualOriginalMainMissileDestructionFailsWithoutReplacementDelivery() async throws {
+  @Test(arguments: ["boards", "jobs"])
+  func oversizedLedgerCollectionsRejectBeforeDecodingInvalidSentinels(field: String) throws {
+    var object: [String: Any] = ["owner": UUID().uuidString, "boards": [:], "jobs": []]
+    let message: String
+    if field == "boards" {
+      object[field] = Dictionary(
+        uniqueKeysWithValues: (0...RRSCourierLedger.maximumBoards).map {
+          ("oversize-\($0)", "this value must never decode as an RRS board")
+        })
+      message = "RRS board cache limit exceeded."
+    } else {
+      object[field] = Array(
+        repeating: "this value must never decode as an RRS job",
+        count: RRSCourierLedger.maximumJobs + 1)
+      message = "RRS job receipt limit exceeded."
+    }
+    do {
+      _ = try JSONDecoder().decode(
+        RRSCourierLedger.self,
+        from: JSONSerialization.data(withJSONObject: object))
+      Issue.record("Oversized RRS ledger decoded")
+    } catch DecodingError.dataCorrupted(let context) {
+      #expect(context.codingPath.last?.stringValue == field)
+      #expect(context.debugDescription == message)
+    }
+  }
+
+  @Test func validatedOriginalMainResourceTombstoneFailsOnceAndCannotDeliverAfterLoad() async throws
+  {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
     var game = try rrsApproach(.waystation)
-    try await verifyRRSMainDestruction(&game, storage: storage)
+    try await verifyRRSMainTombstone(&game, storage: storage)
   }
 }
 
@@ -479,51 +507,55 @@ private func verifyRRSDepartureWriterFailure(
   #expect(game.commander.contracts.rrs == ledger)
 }
 
-private func verifyRRSMainDestruction(
+private func verifyRRSMainTombstone(
   _ game: inout Game, storage: NativeStationTestStorage
 ) async throws {
   try await acceptRRS(&game, storage: storage)
   game.screen = .status
-  game.enableXYZzy()
-  game.secretKey("b")
-  game.secretKey("e")
-  game.screen = .status
   game.launch()
   let active = try #require(game.commander.contracts.rrs?.active)
-  let station = try #require(game.bodies.first { $0.id == 0 })
-  let old = game.commander.flightSimulation.pose
-  var pose = ShipPose()
-  pose.position = old.systemPoint(station.position + station.entranceNormal * 1000)
-  pose.orientation.y = old.orientation.apply(station.entranceUp)
-  pose.orientation.z = old.orientation.apply(station.entranceNormal) * -1
-  pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
-  NativeStationTestFixture.reframe(&game, to: pose)
-  game.speed = 0
+  let index = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+  #expect(
+    game.bodies[index].physical?.identity
+      == game.commander.flightSimulation.anchors?.station.identity)
+  #expect(
+    game.commander.scriptState.stationResources[active.destination.key]?.identity
+      == active.destination.resource)
+  // Explicit terminal-condition fixture, as in ScriptWorldJobTests: player weapons cannot
+  // destroy the immune original main station. Native lifecycle code forms the resource tombstone.
+  game.bodies[index].energy = 0
+  game.resolveDestroyed()
+  #expect(!game.bodies.contains { $0.id == 0 && $0.hull == .station })
+  #expect(game.commander.valid && game.scriptWorldSave.consistent(with: game.commander))
+  if case .destroyed(let identity) = game.nativeOriginalMainStationDestination {
+    #expect(identity == active.destination)
+  } else {
+    Issue.record("Original main terminal condition did not retain its actual resource identity")
+  }
   let credits = game.commander.credits
   let runtime = GameRuntime(game: game, saveURL: storage.url)
-  for _ in 0..<32 where game.weaponsTargetID != station.id {
-    await runtime.key("r")
-    game = await runtime.snapshot()
-  }
-  #expect(game.weaponsTargetID == station.id)
-  for frame in 0..<5000
-  where game.commander.contracts.rrs?.active != nil
-    && game.screen != .gameOver && !game.paused
-  {
-    if frame % 11 == 0 {
-      await runtime.key("t")
-      await runtime.key("m")
-    }
-    game = await runtime.advance(delta: 0.1)
-  }
+  await runtime.key("rrs-test-no-op")
+  game = await runtime.snapshot()
   let ledger = try #require(game.commander.contracts.rrs)
   #expect(game.commander.scriptState.stationResources[active.destination.key]?.destroyed == true)
   #expect(ledger.jobs[0].terminal?.outcome == .originalMainDestroyed)
   #expect(ledger.failed == 1 && ledger.completed == 0 && ledger.reputation == -10)
   #expect(game.commander.credits == credits && !ledger.jobs[0].carriesPacket)
-  game = await runtime.advance(delta: 0.1)
+  await runtime.key("rrs-test-no-op")
+  game = await runtime.snapshot()
   #expect(game.commander.contracts.rrs == ledger)
   try await expectRRSRefusal(runtime, quote: game.rrsCourierQuote(for: .debrief(active.id)))
+  try await runtime.save(to: storage.url)
+  let restored = GameRuntime(game: Game(executive: false))
+  try await restored.load(from: storage.url, persistMigrations: false)
+  game = await restored.snapshot()
+  #expect(game.commander.contracts.rrs == ledger && game.commander.credits == credits)
+  #expect(game.commander.scriptState.stationResources[active.destination.key]?.destroyed == true)
+  #expect(!game.bodies.contains { $0.id == 0 && $0.hull == .station })
+  await restored.key("rrs-test-no-op")
+  game = await restored.snapshot()
+  #expect(game.commander.contracts.rrs == ledger)
+  try await expectRRSRefusal(restored, quote: game.rrsCourierQuote(for: .debrief(active.id)))
 }
 
 private func verifyRRSLedgerForgery(
@@ -568,12 +600,16 @@ private func verifyRRSLedgerForgery(
     ]
   }
   object["jobs"] = jobs
-  let forged = try JSONDecoder().decode(
-    RRSCourierLedger.self,
-    from: JSONSerialization.data(withJSONObject: object))
-  var commander = before
-  commander.contracts.rrs = forged
-  #expect(!commander.valid && !commander.contractsValid)
+  do {
+    let forged = try JSONDecoder().decode(
+      RRSCourierLedger.self,
+      from: JSONSerialization.data(withJSONObject: object))
+    var commander = before
+    commander.contracts.rrs = forged
+    #expect(!commander.valid && !commander.contractsValid)
+  } catch DecodingError.dataCorrupted(let context) {
+    #expect(context.debugDescription == "Invalid RRS courier ledger.")
+  }
   let liveUnchanged = game.commander == before
   #expect(liveUnchanged)
 }

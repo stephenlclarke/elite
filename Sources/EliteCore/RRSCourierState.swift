@@ -98,6 +98,8 @@ struct RRSCourierJob: Codable, Sendable, Equatable {
 }
 
 struct RRSCourierLedger: Codable, Sendable, Equatable {
+  static let maximumBoards = 372
+  static let maximumJobs = 1024
   let owner: UUID
   var boards: [String: RRSCourierBoard] = [:]
   var jobs: [RRSCourierJob] = []
@@ -107,7 +109,7 @@ struct RRSCourierLedger: Codable, Sendable, Equatable {
   var reputation: Int { jobs.compactMap(\.terminal).reduce(0) { $0 + $1.outcome.reputation } }
   var valid: Bool {
     guard
-      boards.count <= 372 && jobs.count <= 1024
+      boards.count <= Self.maximumBoards && jobs.count <= Self.maximumJobs
         && Set(jobs.map(\.id)).count == jobs.count && Set(jobs.map(\.packet)).count == jobs.count
         && jobs.filter { $0.terminal == nil }.count <= 1
         && boards.allSatisfy({ key, board in
@@ -146,5 +148,57 @@ struct RRSCourierLedger: Codable, Sendable, Equatable {
           $0.identity == job.origin.station && NativeStationSource.authentic($0, owner: owner)
         } && world.mainStations.contains(job.destination)
       }
+  }
+
+  init(owner: UUID, boards: [String: RRSCourierBoard] = [:], jobs: [RRSCourierJob] = []) {
+    self.owner = owner
+    self.boards = boards
+    self.jobs = jobs
+  }
+
+  private enum CodingKeys: String, CodingKey { case owner, boards, jobs }
+  private struct BoardKey: CodingKey {
+    let stringValue: String
+    var intValue: Int? { nil }
+    init?(stringValue: String) { self.stringValue = stringValue }
+    init?(intValue: Int) { return nil }
+  }
+
+  init(from decoder: Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    let boardValues = try values.nestedContainer(keyedBy: BoardKey.self, forKey: .boards)
+    let keys = boardValues.allKeys
+    guard keys.count <= Self.maximumBoards else {
+      throw DecodingError.dataCorruptedError(
+        forKey: .boards, in: values, debugDescription: "RRS board cache limit exceeded.")
+    }
+    var jobValues = try values.nestedUnkeyedContainer(forKey: .jobs)
+    guard jobValues.count.map({ $0 <= Self.maximumJobs }) ?? true else {
+      throw DecodingError.dataCorruptedError(
+        forKey: .jobs, in: values, debugDescription: "RRS job receipt limit exceeded.")
+    }
+    owner = try values.decode(UUID.self, forKey: .owner)
+    var decodedBoards: [String: RRSCourierBoard] = [:]
+    for key in keys {
+      guard decodedBoards.count < Self.maximumBoards, key.stringValue.utf8.count <= 80 else {
+        throw DecodingError.dataCorruptedError(
+          forKey: .boards, in: values, debugDescription: "RRS board cache limit exceeded.")
+      }
+      decodedBoards[key.stringValue] = try boardValues.decode(RRSCourierBoard.self, forKey: key)
+    }
+    boards = decodedBoards
+    var decodedJobs: [RRSCourierJob] = []
+    while !jobValues.isAtEnd {
+      guard decodedJobs.count < Self.maximumJobs else {
+        throw DecodingError.dataCorruptedError(
+          forKey: .jobs, in: values, debugDescription: "RRS job receipt limit exceeded.")
+      }
+      decodedJobs.append(try jobValues.decode(RRSCourierJob.self))
+    }
+    jobs = decodedJobs
+    guard valid else {
+      throw DecodingError.dataCorruptedError(
+        forKey: .jobs, in: values, debugDescription: "Invalid RRS courier ledger.")
+    }
   }
 }
