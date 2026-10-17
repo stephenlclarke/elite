@@ -22,12 +22,12 @@ struct EMPSalvageTests {
     game.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
     let actor = try #require(game.bodies[0].physical?.identity)
     let catalogue = try #require(game.bodies[0].physical?.catalogueShipID)
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     try #require(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
     let cutterResult = game.fireSalvageCutter(delta: 0.1)
     #expect(!cutterResult)
-    for _ in 0..<30 { game.tick(delta: 0.1) }
+    try ejectScheduledEMPCrewBoundary(&game, source: source)
     let record = try #require(game.commander.savedEMPState?.records[source])
     try #require(record.crewAboard == 0 && record.pods.count == record.crewTotal)
     var index = try #require(game.bodies.firstIndex { $0.physical?.empSource == source })
@@ -104,9 +104,10 @@ struct EMPSalvageTests {
 
   @Test func occupiedPodsRemainPeopleAndCannotBeCutDamagedOrScoopedAsCargo() throws {
     var game = try empFixture()
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     try #require(empResult)
-    for _ in 0..<30 { game.tick(delta: 0.1) }
+    let source = try #require(game.commander.savedEMPState?.records.keys.first)
+    try ejectScheduledEMPCrewBoundary(&game, source: source)
     let podIndex = try #require(game.bodies.firstIndex { $0.physical?.empCrewPod != nil })
     let person = try #require(game.bodies[podIndex].physical?.empCrewPod)
     let podActor = try #require(game.bodies[podIndex].physical?.identity)
@@ -136,7 +137,7 @@ struct EMPSalvageTests {
     async throws
   {
     var game = try empFixture(catalogue: "SH001")
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     try #require(empResult)
     let source = try #require(game.commander.savedEMPState?.records.keys.first)
     if partial {
@@ -160,7 +161,7 @@ struct EMPSalvageTests {
     for ordinal in 0..<dead.crewTotal {
       #expect(
         dead.crewOutcome(ordinal: ordinal)
-          == (ordinal < before.pods.count
+          == (before.pods.contains { $0.body.physical?.empCrewPod?.ordinal == ordinal }
             ? .occupiedPod : .deceasedWithHull))
     }
     let cargo = Set(game.commander.cargoDebrisLedger.pendingPayloads.map(\.identity))
@@ -192,12 +193,12 @@ struct EMPSalvageTests {
 
   @Test func leavingAndReenteringTheSceneRebindsOneDisabledSourceAndItsOriginalPeople() throws {
     var game = try empFixture()
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     try #require(empResult)
-    for _ in 0..<30 { game.tick(delta: 0.1) }
+    let source = try #require(game.commander.savedEMPState?.records.keys.first)
+    try ejectScheduledEMPCrewBoundary(&game, source: source)
     let salvagePersistenceResult = game.persistSalvagePoses()
     try #require(salvagePersistenceResult)
-    let source = try #require(game.commander.savedEMPState?.records.keys.first)
     let original = try #require(game.commander.savedEMPState?.records[source])
     let cargo = original.cargo
     let legal = original.legal

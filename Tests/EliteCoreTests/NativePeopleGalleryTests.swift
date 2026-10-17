@@ -45,14 +45,26 @@ struct NativePeopleGalleryTests {
 extension GameRuntime {
   func nativePeopleTrialAimAndDisable() throws {
     let body = try #require(game.bodies.first { $0.id == game.weaponsTargetID })
-    let world = game.commander.flightSimulation.pose.systemPoint(body.position)
-    var pose = ShipPose()
-    pose.position = world - Vector3(0, 0, 1000)
-    NativeStationTestFixture.reframe(&game, to: pose)
-    game.speed = 0
-    game.screen = .front
-    let fireEMPPirateBlasterResult1 = game.fireEMPPirateBlaster()
-    try #require(fireEMPPirateBlasterResult1)
-    try NativePeopleTestFixture.aimCutter(&game)
+    let actor = try #require(body.physical?.identity)
+    try fitEliteEMPTestEnergy(&game)
+    let remaining = try disableNativeEMPActor(actor, game: &game)
+    game.selectFlightTool(.salvageCutter)
+    while game.workTargetFilter != .salvage { game.key("f") }
+    for _ in 0...game.bodies.count {
+      game.key("tab")
+      if game.workGuidance?.parent == actor { break }
+    }
+    try #require(game.workGuidance?.parent == actor)
+    for _ in 0..<remaining {
+      if game.workGuidance?.holding == true { return }
+      game.tick(delta: 0.1)
+      let actual = try #require(game.bodies.first { $0.physical?.identity == actor })
+      let context = try #require(game.gameplayContext())
+      try #require(game.nativeCrewCaptureAvailable(actual, context: context))
+      try #require(game.screen != .gameOver && !game.docked)
+    }
+    try #require(
+      game.workGuidance?.holding == true,
+      "Native cutter approach did not reach the real work surface inside the shared flight budget")
   }
 }

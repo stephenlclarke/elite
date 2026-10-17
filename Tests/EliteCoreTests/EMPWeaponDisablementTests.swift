@@ -19,7 +19,7 @@ struct EMPWeaponDisablementTests {
     let armedHeat = try #require(armed.bodies[0].physical?.npc?.resources?.laserHeat)
     let originalHeat = try #require(game.bodies[0].physical?.npc?.resources?.laserHeat)
     #expect(armedHeat > originalHeat)
-    let fired = game.fireEMPPirateBlaster()
+    let fired = try releaseDamagedEMPBoundary(&game)
     try #require(fired)
     let source = try #require(game.bodies[0].physical?.empSource)
     let custody = try #require(game.commander.savedEMPState?.records[source])
@@ -60,10 +60,9 @@ struct EMPWeaponDisablementTests {
     game.bodies[0].missiles = 2
     let owner = try #require(game.bodies[0].physical?.identity)
     let id = game.bodies[0].id
-    let launched = game.launchGameplayNPCMissile(bodyID: id)
-    try #require(launched)
-    let missileActor = try #require(game.bodies.first { $0.enemyMissile }?.physical?.identity)
-    // Aim at the actual Cobra's wing through real camera motion, clearing its emitted missile.
+    // Aim at the actual Cobra's wing through real camera motion. Emit its missile
+    // immediately before the charged pulse, so a short-range live projectile has
+    // not already completed its legitimate flight during the ten-second warmup.
     var controls = Controls()
     controls.yaw = 0.045 / (0.1 * game.commander.performance.yaw)
     game.tick(delta: 0.1, controls: controls)
@@ -72,9 +71,17 @@ struct EMPWeaponDisablementTests {
       radius: 0, includePlayer: false)
     let contact = try #require(meshContact)
     try #require(contact.hit.target == .body(id))
-    let before = try #require(
-      game.bodies.first { $0.physical?.identity == missileActor }?.physical?.ordnance)
-    let fired = game.fireEMPPirateBlaster()
+    var emittedActor: ActorIdentity?
+    var emittedState: OrdnanceState?
+    let fired = try releaseDamagedEMPBoundary(&game) { scene in
+      let launched = scene.launchGameplayNPCMissile(bodyID: id)
+      try #require(launched)
+      let missile = try #require(scene.bodies.first { $0.enemyMissile })
+      emittedActor = missile.physical?.identity
+      emittedState = missile.physical?.ordnance
+    }
+    let missileActor = try #require(emittedActor)
+    let before = try #require(emittedState)
     try #require(fired)
     let disabled = try #require(game.bodies.first { $0.id == id })
     #expect(game.targetColourCue(for: disabled) == .recoverable)

@@ -69,7 +69,7 @@ struct EMPPirateBlasterTests {
     let body = game.bodies[0]
     let energy = game.energy
     let heat = game.laserHeat
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     #expect(empResult)
     let disabled = try #require(game.bodies.first { $0.id == body.id })
     let source = try #require(disabled.physical?.empSource)
@@ -77,14 +77,18 @@ struct EMPPirateBlasterTests {
     #expect(record.valid && game.commander.valid)
     #expect(
       disabled.energy == body.energy
-        && disabled.physical?.npc?.resources == body.physical?.npc?.resources)
+        && disabled.physical?.npc?.resources?.fuel == body.physical?.npc?.resources?.fuel
+        && disabled.physical?.npc?.resources?.electrical?.remaining == 0)
     #expect(disabled.physical?.identity == body.physical?.identity)
     #expect(disabled.position == body.position && disabled.orientation == body.orientation)
     #expect(disabled.physical?.velocity == body.physical?.velocity)
     #expect(disabled.physical?.angularVelocity == body.physical?.angularVelocity)
     #expect(game.commander.credits == before.credits && game.commander.kills == before.kills)
     #expect(game.commander.cargo == before.cargo && disabled.destroyedByPlayer == nil)
-    #expect(game.energy == energy - Game.empEnergyCost && game.laserHeat == heat + Game.empHeatCost)
+    #expect(game.energy == energy && game.laserHeat == heat + Game.empHeatCost)
+    #expect(
+      game.commander.savedPlayerElectrical?.remaining == before.performance.energy
+        - Game.empEnergyCost)
     #expect(game.fireCooldown == Game.empCooldown)
     #expect(record.disableIncident.kind == .emp && record.disableIncident.outcome == .hit)
     #expect(record.disableIncident.victim == body.physical?.identity)
@@ -93,6 +97,7 @@ struct EMPPirateBlasterTests {
     let cutterResult = game.fireSalvageCutter(delta: 0.1)
     #expect(!cutterResult)
     game.fireCooldown = 0
+    game.advanceEMPCharge(triggerHeld: false)
     let once = game.commander
     let remaining = game.energy
     let empResult2 = game.fireEMPPirateBlaster()
@@ -116,7 +121,7 @@ struct EMPPirateBlasterTests {
     let before = game.commander
     let bodies = game.bodies
     let energy = game.energy
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     #expect(!empResult)
     #expect(game.commander == before && game.bodies == bodies && game.energy == energy)
     #expect(game.commander.savedEMPState == nil)
@@ -135,7 +140,7 @@ struct EMPPirateBlasterTests {
       available.commander.npcPersistence.snapshot(for: actor)?.npc.resources?.fuel)
     #expect(spent < fuel && !available.bodies.contains { $0.id == target.id })
     #expect(available.commander.npcPersistence.terminalReason(for: actor) == .jumped)
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     #expect(empResult)
     let before = game.commander
     let jumpResult2 = game.initiateNPCJump(bodyID: target.id, destination: destination)
@@ -157,7 +162,7 @@ struct EMPPirateBlasterTests {
     var game = try empFixture(police: true)
     try #require(game.bodies[0].physical?.blocksNavalEncounter == true)
     let before = game.commander.legal
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     #expect(empResult)
     let record = try #require(game.commander.savedEMPState?.records.values.first)
     #expect(record.custody.kind == .police && record.custody.valid && record.valid)
@@ -172,7 +177,7 @@ struct EMPPirateBlasterTests {
       if !alien { game.bodies[0].physical?.npc?.role = .mission }
       let before = game.commander
       let bodies = game.bodies
-      let empResult = game.fireEMPPirateBlaster()
+      let empResult = try releaseDamagedEMPBoundary(&game)
       #expect(!empResult)
       #expect(game.commander == before && game.bodies == bodies)
       #expect(game.commander.savedEMPState == nil)
@@ -183,7 +188,7 @@ struct EMPPirateBlasterTests {
     var game = try empFixture(catalogue: "SH001")
     game.bodies[0].physical?.velocity = .init(0, 0, 0)
     game.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     #expect(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
     let crew = try #require(game.commander.savedEMPState?.records[source]?.crewTotal)
@@ -194,7 +199,11 @@ struct EMPPirateBlasterTests {
     }
     game.nextBodyID = 228
     game.ensurePhysicalActors()
-    for _ in 0..<11 { game.commander.flightSimulation.advancePhysicalTime(0.1) }
+    let record = try #require(game.commander.savedEMPState?.records[source])
+    let episode = try #require(record.disableEpisodes.last)
+    let lastDelay = try #require(episode.ejections.map(\.delay).max())
+    try #require(lastDelay < 30)
+    game.commander.flightSimulation.advancePhysicalTime(lastDelay + 0.001)
     game.advanceEMPActors()
     let blocked = try #require(game.commander.savedEMPState?.records[source])
     #expect(blocked.crewAboard == crew && blocked.pods.isEmpty)

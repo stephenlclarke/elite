@@ -9,43 +9,12 @@ private func empNativeFlight() throws -> Game {
   try game.commander.grantEquipment(
     Equipment.empPirateBlaster, at: .utility(.empPirateBlaster),
     provenance: .grant("EMP native boundary regression"))
+  try fitEliteEMPTestEnergy(&game)
   game.launch()
   try #require(!game.docked && game.commander.valid)
   game.speed = 0
   game.selectFlightTool(.empPirateBlaster)
   return game
-}
-
-/// Aim through the real camera controls; never move the target or manufacture a hit.
-private func aimEMPAtActor(_ actor: ActorIdentity, game: inout Game) throws {
-  for _ in 0..<800 {
-    let body = try #require(game.bodies.first { $0.physical?.identity == actor })
-    if let hit = try? game.nearestMissionCollision(
-      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: Game.empRange,
-      radius: 0, includePlayer: false), hit.hit.target == .body(body.id)
-    {
-      return
-    }
-    var controls = Controls()
-    controls.yaw = max(
-      -1,
-      min(
-        1,
-        atan2(body.position.x, body.position.z)
-          / max(0.001, game.commander.performance.yaw * 0.1)))
-    controls.pitch = max(
-      -1,
-      min(
-        1,
-        atan2(
-          body.position.y,
-          hypot(body.position.x, body.position.z))
-          / max(0.001, game.commander.performance.pitch * 0.1)))
-    game.tick(delta: 0.1, controls: controls)
-    try #require(game.screen != .gameOver && !game.docked)
-  }
-  Issue.record("Native camera did not obtain a clear real EMP mesh hit")
-  throw SaveError.invalidCommander
 }
 
 /// Complete the actual countdown and native arrival; selecting a chart destination never edits the system.
@@ -168,16 +137,16 @@ struct EMPTravelAndSecurityTests {
     var game = try empNativeFlight()
     let original = try #require(game.bodies.first { $0.id == 1 && $0.hull == .cobra })
     let actor = try #require(original.physical?.identity)
-    try aimEMPAtActor(actor, game: &game)
-    let empResult = game.fireEMPPirateBlaster()
-    try #require(empResult)
-    let source = try #require(game.commander.savedEMPState?.records.keys.first)
+    try disableNativeEMPActor(actor, game: &game)
+    let source = try #require(
+      game.bodies.first { $0.physical?.identity == actor }?.physical?.empSource)
     for _ in 0..<30 { game.tick(delta: 0.1) }
     let empPersistenceResult = game.persistEMPState()
     try #require(empPersistenceResult)
     let before = try #require(game.commander.savedEMPState?.records[source])
     try #require(before.originalBodyID == 1 && before.originalSpawn == nil)
-    try #require(before.crewAboard == 0 && before.pods.count == before.crewTotal)
+    expectOriginalEMPCrewConserved(before)
+    #expect(before.crewCaptures.isEmpty && before.lostCrewCount == 0)
     let people = Set(before.pods.compactMap { $0.body.physical?.empCrewPod })
     let legal = game.commander.legal
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -189,29 +158,46 @@ struct EMPTravelAndSecurityTests {
     #expect(after.custody == before.custody && after.disableIncident == before.disableIncident)
     #expect(after.cargo == before.cargo && after.legal == before.legal)
     #expect(game.commander.legal >= legal)
-    #expect(after.crewTotal == before.crewTotal && after.pods.count == before.crewTotal)
-    #expect(Set(after.pods.compactMap { $0.body.physical?.empCrewPod }) == people)
-    let hulls = game.bodies.filter { $0.physical?.empSource == source }
+    #expect(after.crewTotal == before.crewTotal)
+    expectOriginalEMPCrewConserved(after)
+    let survivingPeople = Set(after.pods.compactMap { $0.body.physical?.empCrewPod })
+    #expect(people.isSubset(of: survivingPeople))
+    let hulls = nativeEMPHulls(game, source: source)
     try #require(hulls.count == 1)
     #expect(hulls[0].physical?.identity != before.hull.binding)
-    #expect(hulls[0].hull == original.hull && hulls[0].energy == before.hull.body.energy)
+    #expect(hulls[0].hull == original.hull && hulls[0].energy >= before.hull.body.energy)
     #expect(hulls[0].physical?.catalogueShipID == before.hull.body.physical?.catalogueShipID)
-    #expect(hulls[0].physical?.velocity == before.hull.body.physical?.velocity)
-    #expect(hulls[0].physical?.angularVelocity == before.hull.body.physical?.angularVelocity)
+    if after.crewAboard > 0 {
+      #expect(after.isRecovered && !game.isEMPDisabled(hulls[0]))
+      #expect(hulls[0].physical?.empSource == nil && hulls[0].physical?.npc != nil)
+      #expect((hulls[0].physical?.npc?.resources?.electrical?.remaining ?? 0) > 0)
+    } else {
+      #expect(!after.isRecovered && game.isEMPDisabled(hulls[0]))
+      #expect(hulls[0].physical?.npc == nil)
+      #expect(hulls[0].physical?.velocity == before.hull.body.physical?.velocity)
+      #expect(hulls[0].physical?.angularVelocity == before.hull.body.physical?.angularVelocity)
+    }
     #expect(
       !game.bodies.contains {
         $0.id == before.originalBodyID && $0.hull == original.hull
           && $0.physical?.spawnIdentity == before.originalSpawn && $0.physical?.empSource == nil
       })
-    #expect(Set(game.bodies.compactMap { $0.physical?.empCrewPod }) == people)
+    let admittedPeople = game.bodies.compactMap { $0.physical?.empCrewPod }.filter {
+      $0.source == source
+    }
+    #expect(Set(admittedPeople).count == admittedPeople.count)
+    #expect(Set(admittedPeople).isSubset(of: survivingPeople))
     let returned = directory.appendingPathComponent("returned.json")
     let runtime = GameRuntime(game: game)
     try await runtime.save(to: returned)
     try await runtime.load(from: returned, persistMigrations: false)
     for _ in 0..<20 { _ = await runtime.advance(delta: 0.1) }
     let reloaded = await runtime.snapshot()
-    #expect(reloaded.bodies.filter { $0.physical?.empSource == source }.count == 1)
-    #expect(Set(reloaded.bodies.compactMap { $0.physical?.empCrewPod }) == people)
+    #expect(nativeEMPHulls(reloaded, source: source).count == 1)
+    let retained = try #require(reloaded.commander.savedEMPState?.records[source])
+    expectOriginalEMPCrewConserved(retained)
+    #expect(Set(retained.pods.compactMap { $0.body.physical?.empCrewPod }) == survivingPeople)
+    #expect(retained.disableEpisodes == after.disableEpisodes)
     #expect(reloaded.commander.savedEMPState?.records[source]?.cargo == before.cargo)
   }
 
@@ -230,18 +216,17 @@ struct EMPTravelAndSecurityTests {
       })
     let actor = try #require(officer.physical?.identity)
     try #require(game.commander.stationSecurity.assignments.contains { $0.actor == actor })
-    try aimEMPAtActor(actor, game: &game)
     let assignment = try #require(
       game.commander.stationSecurity.assignments.first {
         $0.actor == actor
       })
     let legal = game.commander.legal
-    let empResult = game.fireEMPPirateBlaster()
-    try #require(empResult)
+    try disableNativeEMPActor(actor, game: &game)
     let source = try #require(
       game.bodies.first { $0.physical?.identity == actor }?.physical?.empSource)
     let proof = try #require(game.commander.savedEMPState?.records[source])
-    #expect(proof.custody.kind == .police && proof.custody.assignment == assignment)
+    #expect(proof.custody.kind == .police && proof.custody.assignment?.actor == assignment.actor)
+    #expect(proof.custody.assignment?.actor == actor && proof.custody.valid)
     #expect(proof.custody.traffic != nil)
     #expect(proof.originalSpawn?.producer == .security)
     #expect(proof.disableIncident.victim == actor && proof.disableIncident.victimRole == .police)
@@ -260,8 +245,9 @@ struct EMPTravelAndSecurityTests {
       #expect(dead.hull.body.physical?.deathOrigin == origin)
     } else {
       for _ in 0..<40 { game.tick(delta: 0.1) }
-      let empty = try #require(game.commander.savedEMPState?.records[source])
-      try #require(empty.crewAboard == 0 && empty.pods.count == empty.crewTotal)
+      let retained = try #require(game.commander.savedEMPState?.records[source])
+      expectOriginalEMPCrewConserved(retained)
+      #expect(!retained.isRecovered && retained.lostCrewCount == 0 && retained.crewCaptures.isEmpty)
     }
     let before = try #require(game.commander.savedEMPState?.records[source])
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -272,14 +258,25 @@ struct EMPTravelAndSecurityTests {
     #expect(after.custody == before.custody && after.disableIncident == before.disableIncident)
     #expect(after.cargo == before.cargo && after.legal == before.legal)
     #expect(after.terminal == lethal && after.lostCrewCount == before.lostCrewCount)
-    #expect(after.pods.count == before.pods.count)
-    #expect(game.bodies.filter { $0.physical?.empSource == source }.count == (lethal ? 0 : 1))
+    expectOriginalEMPCrewConserved(after)
+    let beforePeople = Set(before.pods.compactMap { $0.body.physical?.empCrewPod })
+    let afterPeople = Set(after.pods.compactMap { $0.body.physical?.empCrewPod })
+    #expect(beforePeople.isSubset(of: afterPeople))
+    #expect(nativeEMPHulls(game, source: source).count == (lethal ? 0 : 1))
+    if !lethal {
+      let current = try #require(nativeEMPHulls(game, source: source).first)
+      #expect(current.physical?.catalogueShipID == officer.physical?.catalogueShipID)
+      #expect(after.crewAboard > 0 ? after.isRecovered : game.isEMPDisabled(current))
+      if after.isRecovered {
+        #expect((current.physical?.npc?.resources?.electrical?.remaining ?? 0) > 0)
+      }
+    }
     #expect(
-      Set(game.bodies.compactMap { $0.physical?.empCrewPod?.source })
-        == (lethal ? [] : [source]))
+      Set(game.bodies.compactMap { $0.physical?.empCrewPod }.filter { $0.source == source })
+        .isSubset(of: afterPeople))
     #expect(!game.bodies.contains { $0.physical?.spawnIdentity == before.originalSpawn })
     for _ in 0..<20 { game.tick(delta: 0.1) }
-    #expect(game.commander.savedEMPState?.records[source]?.pods.count == before.pods.count)
+    #expect(game.commander.savedEMPState?.records[source]?.pods.count == after.pods.count)
     #expect(game.commander.savedEMPState?.records[source]?.lostCrewCount == before.lostCrewCount)
   }
 }

@@ -18,14 +18,14 @@ struct TargetColourCueTests {
     throws
   {
     var game = try empFixture(hostile: true)
-    let empResult = game.fireEMPPirateBlaster()
+    let empResult = try releaseDamagedEMPBoundary(&game)
     try #require(empResult)
     let source = try #require(game.bodies[0].physical?.empSource)
     let occupied = try #require(game.commander.savedEMPState?.records[source])
     try #require(occupied.crewAboard == occupied.crewTotal && occupied.pods.isEmpty)
     #expect(game.bodies[0].hostile)
     #expect(
-      game.empTargetStatus(game.bodies[0])?.contains("WEAPONS DISABLED - CREW ABOARD") == true)
+      game.empTargetStatus(game.bodies[0])?.contains("CREW ABOARD / CUTTER CAPTURE") == true)
     #expect(game.flightStatus == "Safe")
     for style in ShipDisplayStyle.allCases {
       game.commander.shipDisplayStyle = style
@@ -50,14 +50,14 @@ struct TargetColourCueTests {
             hud.labels.contains {
               $0.ink == .orange && $0.text.contains("#" + String(game.bodies[0].id))
             })
-          #expect(game.targetInformation?.status?.contains("WEAPONS DISABLED") == true)
+          #expect(game.targetInformation?.status?.contains("CREW ABOARD / CUTTER CAPTURE") == true)
         }
         if style == .whiteWireframe {
           #expect(!frame.shipLines.isEmpty && frame.shipLines.allSatisfy { $0.ink == .white })
         }
       }
     }
-    for _ in 0..<30 { game.tick(delta: 0.1) }
+    try ejectScheduledEMPCrewBoundary(&game, source: source)
     let body = try #require(game.bodies.first { $0.physical?.empSource == source })
     #expect(game.commander.savedEMPState?.records[source]?.crewAboard == 0)
     #expect(game.targetColourCue(for: body) == .recoverable)
