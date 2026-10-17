@@ -63,6 +63,7 @@ extension Game {
     ensurePhysicalActors()
     if let freshLaunchTrafficID { initializeNativeLaunchDisposition(bodyID: freshLaunchTrafficID) }
     _ = persistNPCStates()
+    do { try prepareNativeCrimboVisit() } catch { return false }
     admitPersistentNPCs()
     if let context = gameplayContext() {
       commander.encounterDirector = EncounterDirector(context: context)

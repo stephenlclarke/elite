@@ -433,6 +433,8 @@ public struct Game: Sendable {
   var newCommanderSaveReceipt: CommanderFileReceipt?
   var nativeStationRuntimeEpoch = UUID()
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
+  // Enabled only by G1 after supported native save/world/durability validation. Never saved.
+  var nativeCrimboLifecycleAvailable = false
   var pendingNativeStationDock: NativeStationEntryProof?
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
@@ -1312,7 +1314,7 @@ public struct Game: Sendable {
     let journey = requiresScriptDurability ? completeCalendarJourney() : nil
     let destination = journey?.destination ?? selectedSystem
     persistScriptActors(unloading: true)
-    if destination != commander.system { departOrdinarySimulation() }
+    if destination != commander.system { try departOrdinarySimulation() }
     persistBlackjackTargets()
     retaliation.clear()
     weaponsTargetID = nil
@@ -1384,7 +1386,7 @@ public struct Game: Sendable {
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
     persistBlackjackTargets()
-    departOrdinarySimulation()
+    try departOrdinarySimulation()
     bodies = []
     commander.galaxy = (commander.galaxy + 1) & 7
     if commander.system == Plugh.systemID { commander.system = Plugh.rumourStation }
@@ -1392,7 +1394,8 @@ public struct Game: Sendable {
     systemInspection = nil
     systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
     selectedSystem = commander.system
-    arrive()
+    try preflightActiveMissionProjectiles()
+    try performNativeArrival()
     commander.fuel = commander.fuelCapacity
     return true
   }

@@ -15,7 +15,8 @@ extension Game {
   mutating func observeNativeCrimboCombat(incident: CombatIncident, resolution: CrimeResolution)
     throws
   {
-    guard resolution.accepted, let victim = incident.victim, !incident.victimIsStation,
+    guard nativeCrimboLifecycleAvailable, resolution.accepted, let victim = incident.victim,
+      !incident.victimIsStation,
       [.laser, .missile, .bomb, .plasma, .emp].contains(incident.kind),
       [.targetedLaunch, .hit, .destruction, .componentDestruction].contains(incident.outcome),
       var registry = commander.savedCrimboState,
@@ -61,7 +62,9 @@ extension Game {
 
   /// G1's native law/threat owner calls only when this exact original threat genuinely ends.
   mutating func endNativeCrimboThreat(incident: UInt64) throws {
-    guard var registry = commander.savedCrimboState, registry.threat?.incident == incident else {
+    guard nativeCrimboLifecycleAvailable, var registry = commander.savedCrimboState,
+      registry.threat?.incident == incident
+    else {
       return
     }
     try registry.validate()
@@ -71,7 +74,7 @@ extension Game {
   }
 
   func nativeCrimboDefenceIntents() -> [NativeCrimboDefenceIntent] {
-    guard let registry = commander.savedCrimboState,
+    guard nativeCrimboLifecycleAvailable, let registry = commander.savedCrimboState,
       registry.world == commander.equipmentOwnerID,
       registry.spawnSequence < commander.flightSimulation.nextSpawn,
       (try? registry.validate()) != nil,
@@ -107,7 +110,9 @@ extension Game {
   /// Authenticates the original registry/ordinary ledger/body join before the generic stamp factory.
   /// Missing native core/care/relay/service/law joins remain unavailable; no capability is advertised.
   func nativeProviderMissionFacts(instance: UUID?) throws -> NativeProviderMissionFacts? {
-    guard let registry = commander.savedCrimboState else { return nil }
+    guard nativeCrimboLifecycleAvailable, let registry = commander.savedCrimboState else {
+      return nil
+    }
     try registry.validate()
     guard registry.world == commander.equipmentOwnerID,
       let destination = registry.destination,

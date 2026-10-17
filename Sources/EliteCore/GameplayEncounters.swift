@@ -34,7 +34,7 @@ extension Game {
     admitPendingOre()
     admitPendingCargo()
     admitPendingSalvage()
-    advanceNativeCrimbo(delta: delta)
+    if nativeCrimboLifecycleAvailable { advanceNativeCrimbo(delta: delta) }
     guard let live = gameplayContext() else { return }
     let intents = (TrafficIntent.intents(context: live) + security.encounters.intents).filter {
       !isNativeCrimboMember($0.actor)

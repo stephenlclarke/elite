@@ -199,3 +199,114 @@ struct NativeCrimboRegistry: Equatable, Codable, Sendable {
     try validate()
   }
 }
+
+/// Actual native scene geometry; all lengths remain source model/world units.
+struct NativeCrimboOrbitEnvironment: Sendable {
+  let planet: SphereAnchor
+  let sun: SphereAnchor
+  let playerPosition: Vector3
+  let reference: Basis3
+  let hullRadii: [Double]
+  let limits: [OrbitFormationLimits]
+  let obstacles: [SphereAnchor]
+}
+
+enum NativeCrimboOrbitPolicy {
+  /// Matches the existing ordinary admission sphere gap. It is not a metre conversion.
+  static let admissionGap = 8.0
+
+  static func circleDistance(_ sphere: SphereAnchor, center: Vector3, basis: Basis3, radius: Double)
+    -> Double
+  {
+    let offset = sphere.position - center
+    let height = offset.dot(basis.z)
+    let planar = (offset - basis.z * height).length
+    return hypot(planar - radius, height)
+  }
+
+  /// Solve the complete static circle against each actual sphere, rather than checking one waypoint.
+  static func derive(
+    environment: NativeCrimboOrbitEnvironment, incarnation: UUID, anchorIdentity: UUID
+  ) throws -> OrbitFormationState {
+    let e = environment
+    guard e.hullRadii.count == 7, e.limits.count == 7,
+      e.planet.position.finite, e.sun.position.finite, e.playerPosition.finite,
+      e.reference.validRotation,
+      [e.planet.radius, e.sun.radius].allSatisfy({ $0.isFinite && $0 > 0 }),
+      e.hullRadii.allSatisfy({ $0.isFinite && $0 > 0 }),
+      e.limits.allSatisfy({
+        [$0.speed, $0.acceleration, $0.turnRate].allSatisfy { $0.isFinite && $0 > 0 }
+      }), e.obstacles.count <= 129,
+      e.obstacles.allSatisfy({ $0.position.finite && $0.radius.isFinite && $0.radius > 0 }),
+      let hull = e.hullRadii.max()
+    else { throw NativeCrimboError.invalidMotion }
+    let solar = e.sun.position - e.planet.position
+    guard solar.length.isFinite, solar.length > 0 else { throw NativeCrimboError.invalidMotion }
+    let normal = solar.unit
+    func projected(_ vector: Vector3) -> Vector3 { vector - normal * vector.dot(normal) }
+    let playerRadial = projected(e.playerPosition - e.planet.position)
+    let referenceX = projected(e.reference.x)
+    let radial =
+      playerRadial.length > 1e-8
+      ? playerRadial
+      : (referenceX.length > 1e-8 ? referenceX : projected(e.reference.y))
+    guard radial.length.isFinite, radial.length > 0 else { throw NativeCrimboError.invalidMotion }
+    var basis = Basis3()
+    basis.x = radial.unit
+    basis.z = normal
+    basis.y = normal.cross(basis.x).unit
+    let chord = 2 * hull + admissionGap
+    let clearance = hull + admissionGap
+    var radius = max(
+      e.planet.radius + clearance + hull,
+      chord / (2 * sin(Double.pi / 7)) + hull)
+    let spheres = e.obstacles + [.init(position: e.sun.position, radius: 4 * e.sun.radius)]
+    var exclusions: [(lower: Double, upper: Double)] = []
+    for sphere in spheres {
+      let offset = sphere.position - e.planet.position
+      let height = abs(offset.dot(normal))
+      let planar = projected(offset).length
+      let required = sphere.radius + hull + admissionGap
+      guard height.isFinite, planar.isFinite, required.isFinite else {
+        throw NativeCrimboError.invalidMotion
+      }
+      if height <= required {
+        let halfWidth = sqrt(max(0, (required - height) * (required + height)))
+        guard halfWidth.isFinite else { throw NativeCrimboError.invalidMotion }
+        exclusions.append((max(0, planar - halfWidth), planar + halfWidth))
+      }
+    }
+    for interval in exclusions.sorted(by: { $0.lower < $1.lower }) {
+      if (interval.lower...interval.upper).contains(radius) {
+        radius = interval.upper + admissionGap
+      }
+    }
+    let spacing = 2 * asin(chord / (2 * radius))
+    let speed = try requireMinimum(e.limits.map(\.speed))
+    let acceleration = try requireMinimum(e.limits.map(\.acceleration))
+    let turn = try requireMinimum(e.limits.map(\.turnRate))
+    let rate = min(0.75 * speed / radius, sqrt(0.5 * acceleration / radius), 0.75 * turn)
+    guard radius.isFinite, spacing.isFinite, rate.isFinite, rate > 0,
+      7 * spacing < 2 * .pi,
+      spheres.allSatisfy({
+        circleDistance($0, center: e.planet.position, basis: basis, radius: radius)
+          > $0.radius + hull
+      })
+    else { throw NativeCrimboError.invalidMotion }
+    return try .init(
+      incarnation: incarnation,
+      anchor: .init(
+        identity: anchorIdentity, center: e.planet.position, basis: basis,
+        planetRadius: e.planet.radius, orbitRadius: radius, surfaceClearance: clearance),
+      configuration: .init(
+        direction: .positive, angularSpeed: rate, slotSpacing: spacing,
+        captureDistance: 2 * radius, captureTimeout: 2 * .pi / rate), phase: 0)
+  }
+
+  private static func requireMinimum(_ values: [Double]) throws -> Double {
+    guard let value = values.min(), value.isFinite, value > 0 else {
+      throw NativeCrimboError.invalidMotion
+    }
+    return value
+  }
+}
