@@ -933,6 +933,10 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
           == SalvageDefinitions.saleValue(definition: definition, conditionPercent: condition),
         !item.requiresChunking
       else { return false }
+      if AlienModuleDefinition.isAttachmentDefinition(id) {
+        guard source.roles.contains(.thargoid) else { return false }
+        return (try? AlienModuleDefinition.validatePlanned(item)) != nil
+      }
       if case .scalar(let axes) = definition.effect {
         return axis.map { axes.contains($0) && item.effect == .scalar(axes: [$0]) } == true
           && item.bonusBasisPoints == quality.bonusBasisPoints
