@@ -12,7 +12,10 @@ struct EquipmentVersionMigrationTests {
     commander.savedEquipmentInventory = try .init(
       owner: inventory.owner, activeHull: inventory.activeHull,
       revision: revision,
-      items: inventory.items.filter { $0.node != EquipmentRuntimeCatalog.standardMissile })
+      items: inventory.items.filter {
+        $0.node != EquipmentRuntimeCatalog.standardMissile
+          && $0.node.family != HyperspaceDriveDefinition.purchaseFamily
+      })
     commander.savedEquipmentVersion = 1
     try commander.validateEquipmentState()
     return commander
@@ -46,31 +49,49 @@ struct EquipmentVersionMigrationTests {
     }
     #expect(commander == migrated && allocations == 2)
     try commander.prepareEquipment()
-    #expect(commander == migrated)
+    let prepared = try #require(commander.equipmentInventory)
+    #expect(commander.savedEquipmentVersion == 3 && commander.missiles == 2)
+    #expect(
+      prepared.items.filter { !$0.isReservedStockDrive } == migrated.equipmentInventory?.items)
+    #expect(commander.equipmentPurchaseHistory == migrated.equipmentPurchaseHistory)
+    let once = commander
+    try commander.prepareEquipment()
+    #expect(commander == once)
   }
 
   @Test func aSavedVersionTwoEmptyRackRemainsEmptyAcrossReadsAndAdmission() throws {
     var commander = Commander()
     commander.missiles = 0
     try commander.prepareEquipment(legacy: false)
-    let original = commander
+    let modern = try #require(commander.equipmentInventory)
+    commander.savedEquipmentInventory = try .init(
+      owner: modern.owner, activeHull: modern.activeHull, revision: modern.revision,
+      items: modern.items.filter { $0.node.family != HyperspaceDriveDefinition.purchaseFamily })
+    commander.savedEquipmentVersion = 2
+    commander.mirrorFittedEquipment()
+    try commander.validateEquipmentState()
     let restored = try JSONDecoder().decode(Commander.self, from: JSONEncoder().encode(commander))
     #expect(restored.savedEquipmentVersion == 2 && restored.missiles == 0)
+    let oldItems = try #require(restored.equipmentInventory?.items)
+    for _ in 0..<10 { try commander.prepareEquipment() }
+    #expect(commander.savedEquipmentVersion == 3 && commander.missiles == 0)
+    #expect(commander.equipmentInventory?.items.filter { !$0.isReservedStockDrive } == oldItems)
     #expect(
-      restored.equipmentInventory?.items.contains {
+      commander.equipmentInventory?.items.contains {
         $0.node == EquipmentRuntimeCatalog.standardMissile
       } == false)
-    for _ in 0..<10 {
-      #expect(
-        commander.equipmentInventory == original.equipmentInventory && commander.missiles == 0)
-      try commander.prepareEquipment()
-    }
-    #expect(commander == original)
     var game = Game()
     let loaded = game.load(restored)
+    #expect(loaded && game.commander.savedEquipmentVersion == 3 && game.commander.missiles == 0)
     #expect(
-      loaded && game.commander.missiles == 0
-        && game.commander.equipmentInventory == original.equipmentInventory)
+      game.commander.equipmentInventory?.items.filter { !$0.isReservedStockDrive } == oldItems)
+  }
+
+  @Test func failedFinalDriveStageRollsBackAnOtherwiseValidFiniteAmmunitionMigration() throws {
+    var commander = try versionOne(rounds: 1, revision: .max - 1)
+    let original = commander
+    #expect(throws: OwnedEquipmentError.revisionExhausted) { try commander.prepareEquipment() }
+    #expect(commander == original && commander.savedEquipmentVersion == 1)
   }
 
   @Test func versionTwoCounterMismatchRejectsTheWholeLoadInsteadOfRepairingIt() throws {

@@ -28,6 +28,13 @@ extension Commander {
   }
 
   mutating func prepareEquipment(legacy: Bool = true) throws {
+    var candidate = self
+    try candidate.prepareEquipmentCandidate(legacy: legacy)
+    self = candidate
+  }
+
+  /// All migration stages publish together, including finite ammunition and the stock drive.
+  private mutating func prepareEquipmentCandidate(legacy: Bool) throws {
     if legacyOwnedEquipment != nil {
       try migrateLegacyOwnedEquipment(owner: UUID(), hull: UUID()) { UUID() }
       try migrateStockHyperspaceDrive { UUID() }
