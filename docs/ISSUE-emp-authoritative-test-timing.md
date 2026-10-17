@@ -1,0 +1,5 @@
+# Update older EMP regressions for electrical power and real charge timing
+
+Older EMP, salvage, people and native travel tests assume instant disablement, unchanged NPC resources, hull-energy firing cost and one-second crew ejection. Current production requires a ten-second charge, drains the actual struck shield before electrical reserve, and disables only at electrical zero. Original people have sampled 0.5–45 second ejection delays and a 30-second capture/recovery deadline. Surviving crew may recover their current craft after positive power is earned.
+
+Retain every existing test and its custody, law, ownership, cargo, identity and persistence objectives. Separate controlled release-boundary unit scenes from actual native input workflows. Keep the common stock empFixture unchanged for the new electrical tests. Native workflows must use legitimate owned equipment and real controls within their original frame budget, with no invulnerability, target/observer teleport or weakened disablement requirement.

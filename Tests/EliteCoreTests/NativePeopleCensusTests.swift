@@ -20,7 +20,7 @@ enum NativePeopleTestFixture {
     game.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
     game.bodies[0].rotationRate = 0
     game.seedScriptTrial(seed)
-    let fireEMPPirateBlasterResult1 = game.fireEMPPirateBlaster()
+    let fireEMPPirateBlasterResult1 = try releaseDamagedEMPBoundary(&game, seed: nil)
     try #require(fireEMPPirateBlasterResult1)
     return game
   }
@@ -213,6 +213,8 @@ struct NativePeopleCensusTests {
     let original = try #require(game.commander.savedEMPState?.records[source])
     #expect(original.crewDeadline == original.disableIncident.physicalTime + 30)
     let counts = original.crewTotal
+    game.advanceEMPCharge(triggerHeld: false)
+    game.fireCooldown = 0
     let fireEMPPirateBlasterResult2 = game.fireEMPPirateBlaster()
     #expect(!fireEMPPirateBlasterResult2)
     #expect(game.commander.savedEMPState?.records[source]?.crewDeadline == original.crewDeadline)
@@ -221,6 +223,13 @@ struct NativePeopleCensusTests {
     #expect(
       after.crewAboard + after.pods.count + after.capturedCrewCount + after.lostCrewCount == counts)
     #expect(after.crewCaptures.isEmpty && game.commander.nativeCaptiveCount == 0)
+    expectOriginalEMPCrewConserved(after)
+    try #require(after.crewAboard > 0 && after.isRecovered)
+    let current = try #require(nativeEMPHulls(game, source: source).first)
+    #expect(!game.isEMPDisabled(current) && current.physical?.empSource == nil)
+    #expect((current.physical?.npc?.resources?.electrical?.remaining ?? 0) > 0)
+    #expect(current.physical?.catalogueShipID == original.hull.body.physical?.catalogueShipID)
+    #expect(current.physical?.npc?.ordinaryCargo == original.cargo)
     let pods = after.pods.count
     for _ in 0..<20 { game.tick(delta: 0.1) }
     #expect(game.commander.savedEMPState?.records[source]?.pods.count == pods)
