@@ -65,14 +65,15 @@ public enum PlayerHelp {
           "RETURN ALSO CLOSES THIS GUIDE",
           "NO FUNCTION OR KEYPAD KEYS REQUIRED",
         ]))
-    return pages
+    return pages.flatMap(paginate)
   }
 
   private static func paginate(_ context: HelpPage) -> [HelpPage] {
-    stride(from: 0, to: context.rows.count, by: 16).map { offset in
+    let rows = context.rows.flatMap { ScriptLibraryText.wrap($0, width: 40) }
+    return stride(from: 0, to: rows.count, by: 16).map { offset in
       HelpPage(
         title: context.title,
-        rows: Array(context.rows[offset..<min(offset + 16, context.rows.count)]))
+        rows: Array(rows[offset..<min(offset + 16, rows.count)]))
     }
   }
 
