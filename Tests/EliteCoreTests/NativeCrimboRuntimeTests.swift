@@ -346,3 +346,117 @@ struct NativeCrimboRuntimeTests {
   }
 
 }
+
+/// A genuinely generated native wreck admitted through the ordinary runtime, with no fake refusal hook.
+private func nativeArrivalWreckFixture() throws -> (Game, SalvageSite) {
+  for system in 0..<256 {
+    var game = Game(executive: false)
+    game.commander.system = system
+    game.launch()
+    game.speed = 0
+    game.bodies = []
+    game.commander.npcPersistence = .init()
+    guard let site = game.salvageSites.first,
+      let anchors = game.commander.flightSimulation.anchors,
+      let profile = SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID)
+    else { continue }
+    let distance = profile.bounds.radius + profile.bounds.center.length + 2000
+    let directions: [Vector3] = [
+      .init(0, 0, 1), .init(0, 0, -1), .init(1, 0, 0), .init(-1, 0, 0),
+      .init(0, 1, 0), .init(0, -1, 0),
+    ]
+    guard
+      let observer = directions.map({ site.position + $0 * distance }).first(where: {
+        ($0 - anchors.planet.position).length > anchors.planet.radius * 2
+          && ($0 - anchors.sun.position).length > anchors.sun.radius * 4
+          && ($0 - anchors.station.position).length > 1200
+      })
+    else { continue }
+    let before = game.commander.flightSimulation.pose
+    let translation = before.shipVector(observer - before.position)
+    game.commander.flightSimulation.pose.position = observer
+    for index in game.celestials.indices {
+      game.celestials[index].position = game.celestials[index].position - translation
+    }
+    game.activateNearbySalvageSites()
+    if game.bodies.contains(where: { $0.physical?.salvage?.wreck == site.identity }) {
+      return (game, site)
+    }
+  }
+  throw SaveError.invalidCommander
+}
+
+extension NativeCrimboRuntimeTests {
+  @Test(arguments: [false, true])
+  func genuineNativeArrivalSoftRefusalKeepsDriveFuelCargoAndOriginalWorld(
+    unsettledDeath: Bool
+  ) throws {
+    var (game, site) = try nativeArrivalWreckFixture()
+    try game.commander.grantEquipment(
+      "Galactic Hyperdrive", at: .utility(.galacticHyperdrive),
+      provenance: .grant("native-arrival-soft-refusal"))
+    let index = try #require(
+      game.bodies.firstIndex { $0.physical?.salvage?.wreck == site.identity })
+    game.commander.fuel = 11
+    game.commander.cargo[CommodityIdentity.food.rawValue] = 7
+    if unsettledDeath {
+      var record = try #require(
+        JSONSerialization.jsonObject(
+          with: JSONEncoder().encode(game.commander.salvageLedger)) as? [String: Any])
+      record["revision"] = UInt64.max
+      game.commander.salvageLedger = try JSONDecoder().decode(
+        SalvageLedger.self, from: JSONSerialization.data(withJSONObject: record))
+      game.bodies[index].energy = 0
+      game.resolveDestroyed()
+      #expect(game.hasUnsettledWreckDeaths)
+    } else {
+      // This is the existing real native persistence refusal for an invalid live angular state.
+      game.bodies[index].physical?.angularVelocity = .init(.infinity, 0, 0)
+      #expect(!game.persistSalvagePoses())
+    }
+    game.jumpCountdown = 3
+    let before = game.commander
+    let bodies = game.bodies
+    game.arrive()
+    #expect(game.commander == before && game.bodies == bodies)
+    #expect(!game.paused && game.jumpCountdown == nil)
+    #expect(
+      game.message
+        == (unsettledDeath
+          ? "JUMP DEFERRED: WRECK SETTLEMENT PENDING" : "JUMP DEFERRED: SALVAGE STATE UNAVAILABLE"))
+    game.galacticJump()
+    #expect(game.commander == before && game.bodies == bodies)
+    #expect(game.commander.equipment.contains("Galactic Hyperdrive"))
+    #expect(game.commander.fuel == 11 && game.commander.cargo[CommodityIdentity.food.rawValue] == 7)
+    #expect(game.commander.salvageLedger == before.salvageLedger)
+    #expect(game.commander.flightSimulation == before.flightSimulation)
+  }
+
+  @Test func successfulGalacticJumpCommitsRealArrivalActorsAnchorsAndVisit() throws {
+    var game = Game(executive: false)
+    game.launch()
+    #expect(!game.docked)
+    try game.commander.grantEquipment(
+      "Galactic Hyperdrive", at: .utility(.galacticHyperdrive),
+      provenance: .grant("native-arrival-success"))
+    game.commander.fuel = 11
+    game.commander.cargo[CommodityIdentity.food.rawValue] = 7
+    let before = game.commander.flightSimulation
+    let expected = SystemIdentity(
+      galaxy: (game.commander.galaxy + 1) & 7, system: game.commander.system)
+    game.galacticJump()
+    let flight = game.commander.flightSimulation
+    let anchors = try #require(flight.anchors)
+    #expect(
+      game.systemIdentity == expected && flight.system == expected && anchors.system == expected)
+    #expect(flight.visit > before.visit && flight.player?.system == expected)
+    #expect(flight.player?.visit == flight.visit && flight.pose.position.z == -16000)
+    let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+    #expect(station.physical?.identity == anchors.station.identity)
+    #expect((flight.pose.systemPoint(station.position) - anchors.station.position).length < 1e-8)
+    #expect(!game.docked && game.screen == .front)
+    #expect(!game.commander.equipment.contains("Galactic Hyperdrive"))
+    #expect(game.commander.fuel == game.commander.fuelCapacity)
+    #expect(game.commander.cargo[CommodityIdentity.food.rawValue] == 7)
+  }
+}
