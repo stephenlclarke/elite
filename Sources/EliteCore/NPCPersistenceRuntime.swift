@@ -54,6 +54,14 @@ extension Game {
   @discardableResult
   mutating func persistNPCStates() -> Set<Int> {
     guard let context = gameplayContext() else { return [] }
+    let pose = commander.flightSimulation.pose
+    return persistNPCStates(context: context, pose: pose)
+  }
+
+  /// Synchronous callers may reuse their current validated physical context and pose.
+  /// Capture order and every admission guard are identical to the ordinary boundary.
+  @discardableResult
+  mutating func persistNPCStates(context: EncounterContext, pose: ShipPose) -> Set<Int> {
     var refused = Set<Int>()
     for body in bodies.sorted(by: {
       ($0.physical?.identity.entity ?? 0) < ($1.physical?.identity.entity ?? 0)
@@ -65,7 +73,7 @@ extension Game {
       else { continue }
       guard
         let snapshot = NPCPersistenceSnapshot.capture(
-          body: body, pose: commander.flightSimulation.pose, physicalTime: context.physicalTime,
+          body: body, pose: pose, physicalTime: context.physicalTime,
           protection: context.protection)
       else {
         refused.insert(body.id)

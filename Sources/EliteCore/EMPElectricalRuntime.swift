@@ -264,9 +264,10 @@ extension Game {
     -> Bool
   {
     guard let actual = bodies.first(where: { $0.id == id }),
+      let actor = actual.physical?.identity, let facts = commander.empDisableFacts(actor: actor),
       actual.physical?.npc?.resources?.electrical?.remaining == 0,
       actual.physical?.npc?.resources?.electrical?.disabledAt
-        == commander.flightSimulation.physicalTime
+        == facts.time
     else { return false }
     guard
       let index = bodies.firstIndex(where: { $0.id == id }),
@@ -281,15 +282,14 @@ extension Game {
       let ship = ShipCatalogue.ship(catalogue),
       EMPState.hasSupportedCrew(ship),
       let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue),
-      let crew = try? ShipAccommodationProfile(ship: ship).operatingCrew, crew > 0,
-      let owner = commander.equipmentOwnerID
+      let crew = try? ShipAccommodationProfile(ship: ship).operatingCrew, crew > 0
     else { return false }
     // A repeated hit has no new disable/ejection/loot transition or additional cost.
     guard physical.empSource == nil else { return false }
-    var state = commander.savedEMPState ?? EMPState()
+    var state = facts.state
     guard state.valid else { return false }
     let priorSource =
-      commander.npcPersistence.logicalIdentity(for: physical.identity)
+      facts.logical
       ?? state.records.first(where: {
         $0.value.isRecovered && $0.value.hull.binding == physical.identity
       })?.key
@@ -305,7 +305,7 @@ extension Game {
         state.nextSequence < 1_000_000_000 - 1
       else { return false }
     }
-    guard let custody = claimEMPSource(bodyID: id),
+    guard let custody = claimEMPSource(bodyID: id, context: context, pose: facts.pose),
       let current = bodies.firstIndex(where: { $0.id == id })
     else { return false }
     let logical = previous?.source ?? custody.logical
@@ -327,7 +327,7 @@ extension Game {
     var record: EMPHullRecord
     if var retained = previous {
       retained.hull = .init(
-        body: bodies[current], pose: commander.flightSimulation.pose,
+        body: bodies[current], pose: facts.pose,
         time: context.physicalTime)
       retained.savedCurrentTrafficTransfer = custody.traffic
       retained.savedCurrentCargo = npc.ordinaryCargo
@@ -339,16 +339,16 @@ extension Game {
       record = EMPHullRecord(
         source: logical, sequence: sequence, wreck: wreck, crewTotal: crew,
         originalSpawn: physical.spawnIdentity, originalBodyID: id, custody: custody,
-        disableIncident: incident, weapon: tool, weaponOwner: owner,
+        disableIncident: incident, weapon: tool, weaponOwner: facts.owner,
         hull: .init(
-          body: bodies[current], pose: commander.flightSimulation.pose,
+          body: bodies[current], pose: facts.pose,
           time: context.physicalTime), cargo: npc.ordinaryCargo, legal: npc.legal,
         nextEjectionAt: context.physicalTime + 1)
     }
     let ejections = sampleEMPCrewEjections(ordinals: record.aboardOrdinals)
     guard
       record.appendCrewDisableEpisode(
-        incident: incident, weapon: tool, owner: owner, ejections: ejections), record.valid
+        incident: incident, weapon: tool, owner: facts.owner, ejections: ejections), record.valid
     else { return false }
     state.records[logical] = record
     if previous == nil { state.nextSequence += 1 }
@@ -356,5 +356,74 @@ extension Game {
     notify("ENGINES AND WEAPONS DISABLED - CREW EJECTION PENDING")
     guard commander.valid else { return false }
     return true
+  }
+}
+
+extension Game {
+  /// Police bookkeeping is not mission immunity. Actual traffic custody is retired only when it exists.
+  private mutating func claimEMPSource(
+    bodyID: Int, context: EncounterContext, pose: ShipPose
+  ) -> EMPSourceCustody? {
+    guard let body = bodies.first(where: { $0.id == bodyID }), let physical = body.physical,
+      let npc = physical.npc,
+      !context.protection.protectedActors.contains(physical.identity)
+    else { return nil }
+    if !physical.blocksNavalEncounter {
+      guard !persistNPCStates(context: context, pose: pose).contains(bodyID) else { return nil }
+    } else if npc.role != .police || physical.population != .police {
+      return nil
+    }
+    let facts = commander.empSourceClaimFacts(actor: physical.identity)
+    let logical = facts.logical
+    let traffic = facts.traffic
+    let evidence = EMPSourceCustody(
+      kind: npc.role == .police ? .police : .ordinary,
+      logical: logical,
+      original: .init(
+        body: body, pose: pose,
+        time: context.physicalTime), traffic: traffic,
+      assignment: facts.assignment)
+    guard evidence.valid else { return nil }
+    if traffic != nil {
+      guard commander.npcPersistence.terminal(actor: physical.identity, reason: .empTransferred)
+      else {
+        return nil
+      }
+    }
+    return evidence
+  }
+}
+
+private struct EMPDisableFacts {
+  let time: Double
+  let pose: ShipPose
+  let owner: UUID
+  let state: EMPState
+  let logical: ActorIdentity?
+}
+private struct EMPSourceClaimFacts {
+  let logical: ActorIdentity
+  let traffic: NPCPersistenceSnapshot?
+  let assignment: PoliceAssignment?
+}
+extension Commander {
+  /// Read the large commander value once, retaining only immutable transition facts.
+  fileprivate func empDisableFacts(actor: ActorIdentity) -> EMPDisableFacts? {
+    guard let owner = equipmentOwnerID else { return nil }
+    return .init(
+      time: flightSimulation.physicalTime, pose: flightSimulation.pose,
+      owner: owner, state: savedEMPState ?? EMPState(),
+      logical: npcPersistence.logicalIdentity(for: actor))
+  }
+  fileprivate func empSourceClaimFacts(actor: ActorIdentity) -> EMPSourceClaimFacts {
+    let logical =
+      npcPersistence.logicalIdentity(for: actor)
+      ?? savedEMPState?.records.first(where: {
+        $0.value.isRecovered && $0.value.savedOrdinaryTerminal == nil
+          && $0.value.hull.binding == actor
+      })?.key ?? actor
+    return .init(
+      logical: logical, traffic: npcPersistence.snapshot(for: logical),
+      assignment: stationSecurity.assignments.first { $0.actor == actor })
   }
 }

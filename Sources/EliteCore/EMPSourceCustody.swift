@@ -34,45 +34,6 @@ struct EMPSourceCustody: Equatable, Codable, Sendable {
   }
 }
 
-extension Game {
-  /// Police bookkeeping is not mission immunity. Actual traffic custody is retired only when it exists.
-  mutating func claimEMPSource(bodyID: Int) -> EMPSourceCustody? {
-    guard let body = bodies.first(where: { $0.id == bodyID }), let physical = body.physical,
-      let npc = physical.npc, let context = gameplayContext(),
-      !context.protection.protectedActors.contains(physical.identity)
-    else { return nil }
-    if !physical.blocksNavalEncounter {
-      guard !persistNPCStates().contains(bodyID) else { return nil }
-    } else if npc.role != .police || physical.population != .police {
-      return nil
-    }
-    let logical =
-      commander.npcPersistence.logicalIdentity(for: physical.identity)
-      ?? commander.savedEMPState?.records.first(where: {
-        $0.value.isRecovered && $0.value.savedOrdinaryTerminal == nil
-          && $0.value.hull.binding == physical.identity
-      })?.key ?? physical.identity
-    let traffic = commander.npcPersistence.snapshot(for: logical)
-    let evidence = EMPSourceCustody(
-      kind: npc.role == .police ? .police : .ordinary,
-      logical: logical,
-      original: .init(
-        body: body, pose: commander.flightSimulation.pose,
-        time: context.physicalTime), traffic: traffic,
-      assignment: commander.stationSecurity.assignments.first(where: {
-        $0.actor == physical.identity
-      }))
-    guard evidence.valid else { return nil }
-    if traffic != nil {
-      guard commander.npcPersistence.terminal(actor: physical.identity, reason: .empTransferred)
-      else {
-        return nil
-      }
-    }
-    return evidence
-  }
-}
-
 extension Commander {
   var empCustodyStateValid: Bool {
     guard let state = savedEMPState else { return npcPersistence.empTransfers.isEmpty }
