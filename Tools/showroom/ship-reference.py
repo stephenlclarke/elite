@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -44,7 +45,8 @@ def needs_render(path, shared, previous, gif):
 
 def escape(text):
     """Keep source facts inside portable Markdown table cells."""
-    return str(text).replace('|','\\|').replace('\n',' ').strip() or '(empty)'
+    escaped = str(text).replace('|','\\|').replace('\n',' ').strip() or '(empty)'
+    return re.sub(r'(?<![<(])https?://[^\s<>]*[^\s<>.,;)]', r'<\g<0>>', escaped)
 
 
 def spec_text(key, number):
