@@ -46,6 +46,16 @@ struct NativeStationPersistenceTests {
     var game = Game(executive: false)
     try await verifyLegacyStationAbsence(&game, storage: storage)
   }
+
+  @Test(arguments: [false, true])
+  func saveCannotLaunderUnprovedRRSOrMainDockCustodyIntoRestoredAuthority(main: Bool)
+    async throws
+  {
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    var game = try NativeStationTestFixture.launched()
+    try await verifyUnprovedStationSaveRefusal(&game, main: main, storage: storage)
+  }
 }
 
 private func emptyStationRuntime() -> GameRuntime {
@@ -227,4 +237,40 @@ private func verifyLegacyStationAbsence(
   #expect(!game.nativeStationDockEvidenceIsCurrent && !game.nativeMainStationDockEvidenceIsCurrent)
   #expect(game.commander.credits == commander.credits && game.commander.cargo == commander.cargo)
   #expect(game.commander.equipmentInventory == commander.equipmentInventory)
+}
+
+private func verifyUnprovedStationSaveRefusal(
+  _ game: inout Game, main: Bool, storage: NativeStationTestStorage
+) async throws {
+  let originalRuntime = GameRuntime(game: game, saveURL: storage.url)
+  try await originalRuntime.save(to: storage.url)
+  game = await originalRuntime.snapshot()
+  let files = try stationSaveFiles(storage.directory)
+  let station = try #require(game.bodies.first { $0.nativeStationIdentity != nil })
+  let identity = try #require(station.nativeStationIdentity)
+  let actor = try #require(station.physical?.identity)
+  let mainActor = try #require(game.commander.flightSimulation.anchors?.station.identity)
+  let owner = try #require(game.commander.equipmentOwnerID)
+  let original = try #require(game.commander.nativeStations?.mainStations.first)
+  game.dock(atMainStation: main)
+  if main {
+    game.commander.nativeStations?.currentMainDock = .init(
+      station: original, actor: mainActor, commanderOwner: owner,
+      sequence: 1, calendarSeconds: game.commander.scriptState.calendarSeconds)
+    game.commander.nativeStations?.nextMainDockSequence = 2
+  } else {
+    try game.commander.nativeStations?.ledger.recordDock(
+      at: identity, binding: .init(actor: actor, bodyID: station.id), commanderOwner: owner)
+  }
+  #expect(game.commander.nativeStationStateValid)
+  #expect(!game.nativeStationDockEvidenceIsCurrent && !game.nativeMainStationDockEvidenceIsCurrent)
+  let commander = game.commander
+  let runtime = GameRuntime(game: game, saveURL: storage.url)
+  await #expect(throws: SaveError.invalidCommander) { try await runtime.save(to: storage.url) }
+  game = await runtime.snapshot()
+  let completeCommanderUnchanged = game.commander == commander
+  #expect(completeCommanderUnchanged)
+  #expect(try stationSaveFiles(storage.directory) == files)
+  #expect(game.nativeStationBoardContext == nil)
+  #expect(game.nativeMainStationArrivalContext(for: original) == nil)
 }
