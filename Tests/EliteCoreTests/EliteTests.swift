@@ -541,10 +541,10 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
+  #expect(pointer.schemaVersion == 21)
+  // Versioned loading restores ordinary NPC bindings from the retained physical scene.
   var expected = game.commander
-  if expected.npcPersistence.count > 0 {
-    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
-  }
   var restoredGame = await restored.snapshot()
   let savedWorld = try #require(expected.nativeStations)
   expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: &restoredGame)
