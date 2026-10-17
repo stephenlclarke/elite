@@ -135,6 +135,11 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
 
 @Test func foreignEventsCullingAndDuplicateDeathsDoNotCompleteTheOwnedCohort() throws {
   var (game, id) = try patrolGame()
+  try verifyPatrolForeignEventsCullingAndDuplicateDeaths(&game, id: id)
+}
+
+private func verifyPatrolForeignEventsCullingAndDuplicateDeaths(_ game: inout Game, id: UUID) throws
+{
   let before = game.commander.credits
   game.emitScriptEvent(
     "actor.destroyed", values: ["encounter_id": .string("raiders"), "alias": .string("lead")],
@@ -202,6 +207,12 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
 @Test func nativeCompletionRequiresActualAdmittedDestructionAndRollbackIncludesBodies() throws {
   let pack = try ScriptPackLibrary.read(patrolDirectory)
   var (game, id) = try patrolGame()
+  try verifyPatrolNativeCompletionAndRollback(&game, id: id, pack: pack)
+}
+
+private func verifyPatrolNativeCompletionAndRollback(_ game: inout Game, id: UUID, pack: ScriptPack)
+  throws
+{
   var state = try #require(game.commander.scriptState.instances[id])
   state.milestones = [0, 1, 2]
   var candidate = game.commander
@@ -229,6 +240,10 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
 
 @Test func sameFrameFatalHitBeforeDockRecordsDeathAndOrdinaryBountyExactlyOnce() throws {
   var (game, id) = try patrolGame()
+  try verifyPatrolFatalHitAndBounty(&game, id: id)
+}
+
+private func verifyPatrolFatalHitAndBounty(_ game: inout Game, id: UUID) throws {
   let lead = try actualActor(game, alias: "lead", instance: id)
   let index = try #require(game.bodies.firstIndex { $0.id == lead.id })
   let station = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
@@ -273,6 +288,10 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
 
 @Test func missingLocalStationMeshRetainsTheCanonicalReferenceWithoutMovingActors() throws {
   var (game, id) = try patrolGame()
+  try verifyPatrolMissingStationReference(&game, id: id)
+}
+
+private func verifyPatrolMissingStationReference(_ game: inout Game, id: UUID) throws {
   game.persistScriptActors()
   let oldFrame = try #require(game.scriptReferenceFrame)
   let lead = try actualActor(game, alias: "lead", instance: id)
@@ -298,6 +317,10 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
 
 @Test func physicalSaveRejectsInconsistentOwnershipBeforePublication() throws {
   var (game, id) = try patrolGame()
+  try verifyPatrolPhysicalSaveConsistency(&game, id: id)
+}
+
+private func verifyPatrolPhysicalSaveConsistency(_ game: inout Game, id: UUID) throws {
   game.persistScriptActors()
   let body = try actualActor(game, alias: "lead", instance: id)
   let index = try #require(game.bodies.firstIndex { $0.id == body.id })
@@ -309,6 +332,10 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
 
 @Test func nativeSceneLoadCannotAwardOldCommanderDeathsToANewSave() throws {
   var (game, _) = try patrolGame()
+  try verifyPatrolNewCommanderSceneIsolation(&game)
+}
+
+private func verifyPatrolNewCommanderSceneIsolation(_ game: inout Game) throws {
   for index in game.bodies.indices where game.bodies[index].missionActorID != nil {
     game.bodies[index].energy = 0
     game.bodies[index].destroyedByPlayer = true
