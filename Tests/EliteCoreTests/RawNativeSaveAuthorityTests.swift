@@ -34,6 +34,9 @@ struct RawNativeSaveAuthorityTests {
     #expect(throws: SaveError.invalidCommander) {
       try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
     }
+    #expect(throws: SaveError.invalidCommander) {
+      try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .currentCommanderHeader)
+    }
   }
 }
 
@@ -106,6 +109,15 @@ private func verifyVersionedDockRestore(
   game = await runtime.snapshot()
   let beforeCommander = game.commander
   let beforeFiles = try rawAuthorityFiles(storage.directory)
+  let pointer = try JSONDecoder().decode(
+    ScriptSavePointer.self, from: Data(contentsOf: storage.url))
+  #expect(pointer.schemaVersion == 21)
+  let downgraded = ScriptSavePointer(
+    format: pointer.format, schemaVersion: 20, generation: pointer.generation,
+    hashes: pointer.hashes, scope: pointer.scope, valueCodec: pointer.valueCodec)
+  #expect(throws: SaveError.invalidCommander) {
+    _ = try ScriptSaveStore.read(JSONEncoder().encode(downgraded), from: storage.url)
+  }
   let oldEpoch = game.nativeStationRuntimeEpoch
   let reloaded = GameRuntime(game: Game(executive: false))
   try await reloaded.load(from: storage.url, persistMigrations: false)

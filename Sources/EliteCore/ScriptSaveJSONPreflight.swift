@@ -48,7 +48,7 @@ enum ScriptSaveJSONPreflight {
 }
 
 extension ScriptSaveJSONPreflight {
-  enum CourierLocation { case rawCommander, missions, contracts }
+  enum CourierLocation { case rawCommander, currentCommanderHeader, missions, contracts }
   /// Inspect native schema paths only. Authored data/payload keys are not schema.
   static func rejectCourierFields(_ data: Data, location: CourierLocation) throws {
     guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
@@ -103,6 +103,14 @@ extension ScriptSaveJSONPreflight {
     switch location {
     case .missions: containsNativeFields = missions(root)
     case .contracts: containsNativeFields = contracts(root)
+    case .currentCommanderHeader:
+      // Versioned station state lives in this header; its retained world is checked later.
+      // Mission/contract custody still belongs exclusively in the separate native chunks.
+      let rrs = (root["savedContracts"] as? [String: Any])?["rrs"]
+      containsNativeFields =
+        (rrs != nil && !(rrs is NSNull))
+        || missions(root["savedScriptState"] as? [String: Any] ?? [:])
+        || contracts(root["savedContracts"] as? [String: Any] ?? [:])
     case .rawCommander:
       // Station custody requires the versioned world and its native save barrier.
       // A legacy Commander has no retained scene that can authenticate a dock receipt.

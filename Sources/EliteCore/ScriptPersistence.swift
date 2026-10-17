@@ -255,7 +255,8 @@ enum ScriptSaveStore {
           ? .missions
           : name == "contracts.json"
             ? .contracts
-            : name == "commander.json" ? .rawCommander : nil
+            : name == "commander.json"
+              ? (pointer.schemaVersion >= 21 ? .currentCommanderHeader : .rawCommander) : nil
         if let location {
           try ScriptSaveJSONPreflight.rejectCourierFields(data, location: location)
         }
