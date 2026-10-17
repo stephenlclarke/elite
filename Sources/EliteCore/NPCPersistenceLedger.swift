@@ -422,9 +422,11 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
 
   private mutating func normalizeProviderReferences(protection: MissionProtection) {
     for logical in Array(entries.keys) {
-      guard let snapshot = entries[logical]?.snapshot else { continue }
-      entries[logical]?.snapshot = bindingReferences(
+      guard var entry = entries[logical] else { continue }
+      let snapshot = entry.snapshot
+      entry.snapshot = bindingReferences(
         snapshot, previous: snapshot, protection: protection)
+      entries[logical] = entry
     }
   }
 
