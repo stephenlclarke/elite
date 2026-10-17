@@ -110,6 +110,9 @@ extension Game {
       trial.rearShield = trial.commander.shieldCapacity
       for _ in 0..<scene.cabins { try trial.confirmPassengerBerth(trial.passengerBerthQuote) }
     }
+    // Reviews must bind the physical property and mirrors that the trial writer publishes.
+    try trial.commander.prepareEquipment(legacy: false)
+    trial.commander.mirrorFittedEquipment()
     return trial
   }
   mutating func prepareScriptTrial(packDigest: String, seed: UInt64) throws {

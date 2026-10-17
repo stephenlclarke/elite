@@ -377,6 +377,7 @@ extension NativeViewTests {
       trial.contractBoard.detail && trial.contractBoard.action == .back
         && trial.contractBoard.rows.count == 6)
     try captureCourierView(trial, name: "trial-review")
+    #expect(trial.contractBoard.quote?.resources == trial.commander.contractQuoteResources)
     try await harness.paint()
     try harness.press("right")
     await harness.drain()
@@ -404,6 +405,7 @@ extension NativeViewTests {
     )
     try await harness.paint()
     try captureCourierView(harness.view.game, name: "trial-restart")
+    #expect(restarted.contractBoard.quote?.resources == restarted.commander.contractQuoteResources)
     try harness.menu("trial-return")
     await harness.drain()
     let restored = await harness.delegate.runtime.snapshot()
