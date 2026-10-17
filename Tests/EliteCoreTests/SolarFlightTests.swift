@@ -14,6 +14,32 @@ private func solarGame(distance: Double = 2970) -> Game {
   return game
 }
 
+private func solarWorldAfterRelaunch(
+  _ game: inout Game, saved: NativeStationWorld
+) throws -> NativeStationWorld {
+  var expected = saved
+  let flight = game.commander.flightSimulation
+  let anchors = try #require(flight.anchors)
+  for record in saved.ledger.records
+  where record.identity.system == game.systemIdentity && record.tombstone == nil {
+    let body = try #require(
+      game.bodies.first { $0.nativeStationIdentity == record.identity })
+    let actor = try #require(body.physical?.identity)
+    #expect(actor.system == game.systemIdentity && actor.visit == flight.visit)
+    #expect(record.binding?.actor != actor)
+    try expected.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: body.id))
+  }
+  // A new visit observes the same original station with its new physical actor.
+  expected.mainObservations = saved.mainObservations.map { observation in
+    guard observation.station.system == game.systemIdentity else { return observation }
+    return .init(
+      station: observation.station, actor: anchors.station.identity,
+      calendarSeconds: game.commander.scriptState.calendarSeconds)
+  }
+  #expect(expected.valid)
+  return expected
+}
+
 @Test func solarScoopAccumulatesFractionalFuelAndRespectsTankCapacity() {
   var game = solarGame()
   for _ in 0..<10 { game.advanceSolarFlight(delta: 0.1) }
@@ -128,6 +154,10 @@ private func solarGame(distance: Double = 2970) -> Game {
     JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
   actual["equipment"] = game.commander.equipment.sorted()
   expected["equipment"] = commander.equipment.sorted()
+  let savedWorld = try #require(commander.nativeStations)
+  let reboundWorld = try solarWorldAfterRelaunch(&game, saved: savedWorld)
+  expected["nativeStations"] = try JSONSerialization.jsonObject(
+    with: JSONEncoder().encode(reboundWorld))
   for key in [
     "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
     "encounterDirector", "savedNPCPersistence",
