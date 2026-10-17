@@ -115,7 +115,8 @@ public struct NPCResources: Equatable, Codable, Sendable {
       frontShield: frontShield, frontCapacity: frontCapacity,
       rearShield: rearShield, rearCapacity: rearCapacity,
       laserHeat: laserHeat, heatCapacity: heatCapacity,
-      fuelTenthsLY: fuel ?? -1, fuelCapacityTenthsLY: fuelCapacity ?? -1)
+      fuelTenthsLY: fuel ?? -1, fuelCapacityTenthsLY: fuelCapacity ?? -1,
+      electricalPower: electrical?.remaining, electricalCapacity: electrical?.capacity)
   }
 }
 

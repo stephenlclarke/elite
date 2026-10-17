@@ -60,6 +60,7 @@ extension Game {
   }
 
   mutating func beginWorkGuidance(body: SpaceBody, mode: WorkTargetMode, velocity: Vector3) {
+    guard !playerEMPDisabled else { return }
     guard let context = gameplayContext(), let actor = body.physical?.identity,
       let metadata = recoverableMetadata(for: body, context: context),
       let surface = workSurface(for: body, metadata: metadata)
@@ -180,6 +181,10 @@ extension Game {
 
   mutating func advanceWorkGuidance(delta: Double) {
     approvedWorkMotion = nil
+    guard !playerEMPDisabled else {
+      releaseWorkGuidance()
+      return
+    }
     if let body = bodies.first(where: {
       $0.physical?.identity == workGuidance?.parent && $0.energy <= 0
     }),
@@ -294,6 +299,10 @@ extension Game {
   }
 
   mutating func authorizeWorkThrust(delta: Double) {
+    guard !playerEMPDisabled else {
+      approvedWorkMotion = nil
+      return
+    }
     guard let motion = approvedWorkMotion else { return }
     let cost = delta * 2 * min(1, motion.acceleration.length / workLimits.acceleration)
     guard energy.isFinite, energy > cost else {
@@ -320,6 +329,7 @@ extension Game {
   }
 
   mutating func advanceWorkBraking(delta: Double) {
+    guard !playerEMPDisabled else { return }
     guard let state = workBraking,
       let player = preparedWorkHull(mesh: commander.playerMesh, key: "player"),
       let obstacles = workObstacles(excluding: nil, delta: delta)
@@ -365,6 +375,7 @@ extension Game {
   }
 
   mutating func selectNextMinedOre() {
+    guard !playerEMPDisabled else { return }
     guard let rock = workRecoveryRock, let context = gameplayContext() else { return }
     let eligible = bodies.filter { body in
       guard body.energy > 0, let payload = body.physical?.payload,

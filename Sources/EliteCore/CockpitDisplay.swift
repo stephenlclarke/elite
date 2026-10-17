@@ -34,7 +34,8 @@ public struct CockpitLayout: Sendable {
     let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
     let toolLines = ["TOOL: " + game.selectedFlightTool.label.uppercased() + " / W CHANGE"]
     extraLines =
-      (game.autoHUDLines + toolLines + game.salvageHUDLines + game.solarHUDLines + weaponLines
+      (game.autoHUDLines + game.electricalHUDLines + toolLines + game.salvageHUDLines
+      + game.solarHUDLines + weaponLines
       + game.spin.hudLines)
       .flatMap {
         MissionNotice.wrap($0, width: textColumns)
@@ -215,7 +216,9 @@ extension Display {
         layout: layout, ink: .green, signed: index > 0, into: &frame)
     }
     let y = layout.instrumentsTop + 3 * layout.row
-    frame.label("Energy", x, y, scale: layout.font, ink: .yellow)
+    frame.label(
+      game.commander.savedPlayerElectrical == nil ? "Energy" : "Hull", x, y,
+      scale: layout.font, ink: .yellow)
     let barX = x + min(instrumentWidth * 0.75, 13 * 6 * layout.instrumentScale)
     let barEnd = min(x + instrumentWidth, barX + 160)
     for bank in 0..<4 {

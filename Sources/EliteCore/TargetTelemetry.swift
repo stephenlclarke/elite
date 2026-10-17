@@ -26,9 +26,12 @@ public enum TargetTelemetry {
     public let heatCapacity: Double
     public let fuelTenthsLY: Int
     public let fuelCapacityTenthsLY: Int
+    public let electricalPower: Double?
+    public let electricalCapacity: Double?
     public init(
       frontShield: Double, frontCapacity: Double, rearShield: Double, rearCapacity: Double,
-      laserHeat: Double, heatCapacity: Double, fuelTenthsLY: Int, fuelCapacityTenthsLY: Int
+      laserHeat: Double, heatCapacity: Double, fuelTenthsLY: Int, fuelCapacityTenthsLY: Int,
+      electricalPower: Double? = nil, electricalCapacity: Double? = nil
     ) {
       self.frontShield = frontShield
       self.frontCapacity = frontCapacity
@@ -38,6 +41,8 @@ public enum TargetTelemetry {
       self.heatCapacity = heatCapacity
       self.fuelTenthsLY = fuelTenthsLY
       self.fuelCapacityTenthsLY = fuelCapacityTenthsLY
+      self.electricalPower = electricalPower
+      self.electricalCapacity = electricalCapacity
     }
   }
 
@@ -103,6 +108,12 @@ public enum TargetTelemetry {
         .init(label: "Laser heat", value: reading(resources?.laserHeat, resources?.heatCapacity)),
         .init(label: "Fuel", value: fuel),
       ]
+      if let resources, resources.electricalPower != nil {
+        result.append(
+          .init(
+            label: "Electrical power",
+            value: reading(resources.electricalPower, resources.electricalCapacity)))
+      }
     }
     return result
   }

@@ -13,3 +13,5 @@ Zero alone creates a disable episode and random ejection schedule. Recovery wins
 ## Compatibility and validation
 
 New physical fields require the next conditional versioned header and legacy downgrade refusal; preserve all old records and first-custody evidence. Focused model/producer/actor tests precede full native flows. Passing profile tests or historical instant-EMP tests cannot accept this runtime. Required final `make ci`, renderer media, native performance, main-only Sonar and clean PR review remain open.
+
+Player power loss must also prevent later Tab guidance, automatic scoop/next-rock selection and braking from restarting powered motion; masking manual controls alone is insufficient. Present separate electrical power and hull readings plus real charge progress so a nonlethal zero is visible.

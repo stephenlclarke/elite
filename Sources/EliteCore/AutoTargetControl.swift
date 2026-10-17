@@ -333,6 +333,10 @@ extension Game {
     dockingComputer = false
   }
   mutating func cycleAutoTarget() {
+    guard !playerEMPDisabled else {
+      notify("NO ELECTRICAL POWER - AUTO FLIGHT UNAVAILABLE")
+      return
+    }
     targetPanelScroll = 0
     guard !docked, screen.isFlight else { return }
     guard let tier = commander.targetingTier else {
