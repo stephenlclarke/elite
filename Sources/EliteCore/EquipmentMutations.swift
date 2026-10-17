@@ -253,22 +253,30 @@ extension Commander {
 
 extension Game {
   mutating func storeEquipment(_ item: OwnedEquipmentItem, expectedRevision: UInt64) throws {
-    guard docked else { throw EquipmentRuntimeError.unavailable }
+    guard docked, ownedEquipmentEventCapacityAvailable else {
+      throw EquipmentRuntimeError.unavailable
+    }
     var candidate = self
     try candidate.commander.storeEquipment(
       item, expectedRevision: expectedRevision, command: UUID())
     candidate.preserveEquipmentResourceFractions(from: self)
     self = candidate
+    emitScriptEvent(
+      "equipment.changed", values: ["item": .string(item.id.uuidString), "fitted": .bool(false)])
   }
 
   mutating func fitEquipment(
     _ item: OwnedEquipmentItem, at slot: ComponentFittingSlot, expectedRevision: UInt64
   ) throws {
-    guard docked else { throw EquipmentRuntimeError.unavailable }
+    guard docked, ownedEquipmentEventCapacityAvailable else {
+      throw EquipmentRuntimeError.unavailable
+    }
     var candidate = self
     try candidate.commander.fitEquipment(
       item, at: slot, expectedRevision: expectedRevision, command: UUID())
     candidate.preserveEquipmentResourceFractions(from: self)
     self = candidate
+    emitScriptEvent(
+      "equipment.changed", values: ["item": .string(item.id.uuidString), "fitted": .bool(true)])
   }
 }
