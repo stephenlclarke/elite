@@ -82,6 +82,31 @@ private func fillActualMissionEvents(_ game: inout Game, instance: UUID, count: 
   try #require(game.commander.scriptState.pendingEvents.count == count)
 }
 
+private func verifyFullActualQueueProjectileRetry(
+  _ game: inout Game, proof: MissionNativeImpactProof
+) throws {
+  try fillActualMissionEvents(&game, instance: proof.sourceInstanceID, count: 4096)
+  let before = game.commander
+  let bodies = game.bodies
+  #expect(throws: ScriptMissionEventCapacityError.insufficientCapacity) {
+    try game.applyMissionImpact(proof)
+  }
+  #expect(game.commander == before && game.bodies == bodies)
+  #expect(game.bodies.first { $0.scriptShot?.identity == proof.shotID }?.energy == 1)
+  game.drainScriptEvents()
+  try #require(game.commander.scriptState.pendingEvents.count < 4096)
+  let candidate = try game.missionNativeImpactProof(projectileID: proof.shotID, delta: 0.5)
+  let retry = try #require(candidate)
+  let receipt = try game.applyMissionImpact(retry)
+  game.projectScriptMissionImpact(receipt)
+  #expect(receipt.damageAdmitted && receipt.terminalShotID == proof.shotID)
+  #expect(game.commander.scriptState.projectiles[proof.shotID] == nil)
+  #expect(
+    game.commander.flightSimulation.nextIncident == before.flightSimulation.nextIncident + 1)
+  #expect(
+    game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.damaged" }.count == 1)
+}
+
 struct NativeMissionImpactTests {
   @Test func actualLaserPreviewCountsDamageDeathAndSourceFireWithoutAllocating() throws {
     var (game, instance, index) = try actualMissionBridgeGame()
@@ -120,26 +145,7 @@ struct NativeMissionImpactTests {
 
   @Test func aFullActualQueueRefusesProjectileImpactAndAllowsRetryAfterRealEventDraining() throws {
     var (game, proof) = try actualRestoredImpactGame(immuneStation: false)
-    try fillActualMissionEvents(&game, instance: proof.sourceInstanceID, count: 4096)
-    let before = game.commander
-    let bodies = game.bodies
-    #expect(throws: ScriptMissionEventCapacityError.insufficientCapacity) {
-      try game.applyMissionImpact(proof)
-    }
-    #expect(game.commander == before && game.bodies == bodies)
-    #expect(game.bodies.first { $0.scriptShot?.identity == proof.shotID }?.energy == 1)
-    game.drainScriptEvents()
-    try #require(game.commander.scriptState.pendingEvents.count < 4096)
-    let candidate = try game.missionNativeImpactProof(projectileID: proof.shotID, delta: 0.5)
-    let retry = try #require(candidate)
-    let receipt = try game.applyMissionImpact(retry)
-    game.projectScriptMissionImpact(receipt)
-    #expect(receipt.damageAdmitted && receipt.terminalShotID == proof.shotID)
-    #expect(game.commander.scriptState.projectiles[proof.shotID] == nil)
-    #expect(
-      game.commander.flightSimulation.nextIncident == before.flightSimulation.nextIncident + 1)
-    #expect(
-      game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.damaged" }.count == 1)
+    try verifyFullActualQueueProjectileRetry(&game, proof: proof)
   }
 
   @Test func fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit() throws {
