@@ -539,8 +539,15 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     completed.commander.scriptState.instances[root.id]?.receiptJoins?["owned-report"] == [child])
   let saved = try await runtime.saveForInterface(expectedEpoch: completed.ecmControl.epoch)
   #expect(saved.isTrial && saved.url.path.hasPrefix(namespace.path + "/"))
+  let saveDifference = try campaignPersistenceDiagnostic(
+    completed.commander, await runtime.snapshot().commander, url: saved.url)
   _ = try await runtime.loadForInterface(expectedEpoch: completed.ecmControl.epoch)
-  #expect(await runtime.snapshot().commander == completed.commander)
+  let restoredMatchesOriginal = await runtime.snapshot().commander == completed.commander
+  let loadDifference = try campaignPersistenceDiagnostic(
+    completed.commander, await runtime.snapshot().commander, url: saved.url)
+  #expect(
+    restoredMatchesOriginal,
+    Comment(rawValue: "afterSave: \(saveDifference); afterLoad: \(loadDifference)"))
   #expect(try Data(contentsOf: fixture.save) == bytes)
   await runtime.key("trial-return")
   let restored = await runtime.snapshot()
