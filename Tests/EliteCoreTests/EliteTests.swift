@@ -545,14 +545,14 @@ import Testing
   if expected.npcPersistence.count > 0 {
     expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
   }
-  let restoredGame = await restored.snapshot()
+  var restoredGame = await restored.snapshot()
   let savedWorld = try #require(expected.nativeStations)
-  expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: restoredGame)
+  expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: &restoredGame)
   #expect(await restored.snapshot().commander == expected)
 }
 
 private func reboundJumpLimitWorldAfterLoad(
-  _ saved: NativeStationWorld, restored: borrowing Game
+  _ saved: NativeStationWorld, restored: inout Game
 ) throws -> NativeStationWorld {
   var expected = saved
   for record in saved.ledger.records
