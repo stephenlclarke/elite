@@ -27,15 +27,16 @@ import Testing
   #expect(hq.kind.sourceRoles == ["rrs_galactic_hq", "rrs_group_spacestation"])
 }
 
-@Test func nativeRRSRotationPreservesSourceWindingAndSeparateLaunchDock() {
+@Test func nativeRRSRotationAdaptsFaceConventionAndPreservesSeparateLaunchDock() {
   let native = NativeStationGeometry.nativePoint
   #expect(native(Vector3(1, 0, 0)).cross(native(Vector3(0, 1, 0))) == native(Vector3(0, 0, 1)))
   let mesh = NativeStationGeometry.waystation.mesh
   let face = mesh.faces[0]
   let normal = (mesh.vertices[face[1]] - mesh.vertices[face[0]])
     .cross(mesh.vertices[face[2]] - mesh.vertices[face[0]])
-  // Source triangle 88/109/108 has +Y normal; Y180 leaves it +Y.
-  #expect(normal == Vector3(0, 700, 0))
+  // Proper Y180 preserves handedness; the explicit native surface convention
+  // reverses the source triangle so native back-face culling sees the right side.
+  #expect(normal == Vector3(0, -700, 0))
   // Actual source launch subentity applies X180 before native Y180.
   #expect(mesh.vertices[136] == Vector3(-112.80569, 46.72565, 210))
 }
@@ -84,8 +85,8 @@ import Testing
       // Independent rectangular/diagonal half-plane calculation on the actual effective mesh.
       let fits = player.vertices.allSatisfy { vertex in
         if geometry.kind == .headquarters { return abs(vertex.x) < 125 && abs(vertex.y) < 62.5 }
-        return abs(vertex.x) < 112.80569 && abs(vertex.y) < 112.80569
-          && abs(vertex.x) + abs(vertex.y) < 159.53134
+        return abs(vertex.x) < 106.72374 && abs(vertex.y) < 106.72374
+          && abs(vertex.x) + abs(vertex.y) < 150.93016
       }
       #expect(geometry.docking.fits(player) == fits, "\(ship.id) docking")
       #expect(geometry.launch.fits(player) == fits, "\(ship.id) launch")
