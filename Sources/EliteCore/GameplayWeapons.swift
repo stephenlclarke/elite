@@ -171,7 +171,7 @@ extension Game {
     var result: [Int: Mesh] = [:]
     for body in bodies {
       if body.physical?.catalogueShipID != nil || body.physical?.rock != nil
-        || body.physical?.salvage?.lot != nil
+        || body.physical?.salvage?.lot != nil || body.nativeStationIdentity != nil
       {
         result[body.id] = gameplayMesh(for: body)
       }
