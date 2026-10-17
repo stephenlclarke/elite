@@ -208,7 +208,7 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: commander.usesRingMiningSaveVersion
+      schemaVersion: commander.usesRingMiningSaveVersion || commander.usesModularDriveSaveVersion
         ? 25
         : commander.usesNativePeopleSaveVersion
           ? 24
@@ -270,6 +270,7 @@ enum ScriptSaveStore {
       try ScriptSaveJSONPreflight.validate(data)
       if name == "commander.json", pointer.schemaVersion < 25 {
         try RingMiningVersionedSave.rejectFields(data)
+        try HyperspaceDriveVersionedSave.rejectFields(data)
       }
       if name == "commander.json", pointer.schemaVersion < 24 {
         try NativePeopleVersionedSave.rejectFields(data)
@@ -308,7 +309,8 @@ enum ScriptSaveStore {
       pointer.schemaVersion < 23
         ? commander.scriptState.financeLedger == nil
         : pointer.schemaVersion == 23 ? commander.scriptState.financeLedger != nil : true,
-      (pointer.schemaVersion == 25) == commander.usesRingMiningSaveVersion,
+      (pointer.schemaVersion == 25)
+        == (commander.usesRingMiningSaveVersion || commander.usesModularDriveSaveVersion),
       pointer.schemaVersion >= 25
         || (pointer.schemaVersion == 24) == commander.usesNativePeopleSaveVersion
     else {

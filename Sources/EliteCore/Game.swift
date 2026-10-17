@@ -309,6 +309,7 @@ public struct Equipment: Sendable {
   public static let empPirateBlaster = "EMP Pirate Blaster"
   public static var validNames: Set<String> {
     Set(all.map(\.name)).subtracting([FuelStorage.equipmentName, PassengerCabin.equipmentName])
+      .union(Set(HyperspaceDriveTier.allCases.map(\.label)))
       .union([
         navalEnergyUnit, navalLaser, ShieldBooster.capital.equipmentName, legacyDockingComputer,
         "Targeting: Mining Module", "Targeting: Salvage Module", "Salvage Cutter",
@@ -319,6 +320,7 @@ public struct Equipment: Sendable {
     validNames.subtracting(
       [
         legacyDockingComputer, "Extra Energy Unit", navalEnergyUnit, "Pulse Laser", "Beam Laser",
+        HyperspaceDriveTier.basic.label, HyperspaceDriveTier.intermediate.label,
         "Military Laser",
       ]
         + TargetingTier.allCases.map(\.equipmentName) + NavigationTier.allCases.map(\.equipmentName)
@@ -368,6 +370,8 @@ public struct Equipment: Sendable {
     ]
     + ShieldBooster.allCases.compactMap(\.shopItem) + [
       .init(name: ShieldBooster.capital.equipmentName, price: 0, technology: 0),
+      .init(name: HyperspaceDriveTier.intermediate.label, price: 50000, technology: 9),
+      .init(name: HyperspaceDriveTier.advanced.label, price: 150000, technology: 12),
       .init(name: PassengerCabin.equipmentName, price: PassengerCabin.price, technology: 0),
     ]
 }
@@ -548,7 +552,9 @@ public struct Game: Sendable {
     return true
   }
   private mutating func loadCommander(_ value: Commander) -> Bool {
-    guard value.valid, !value.usesEMPSaveVersion, value.scriptState.financeLedger == nil else {
+    guard value.valid, !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
+      value.scriptState.financeLedger == nil
+    else {
       return false
     }
     // The loaded commander owns a different native allocation timeline. Invalidate old
@@ -1214,7 +1220,13 @@ public struct Game: Sendable {
       notify("FUEL TOO LOW")
       return
     }
-    guard !massLocked else {
+    guard let drive = commander.hyperspaceDrivePolicy,
+      commander.fittedComponent(at: .drive) != nil
+    else {
+      notify("FIT A HYPERSPACE DRIVE")
+      return
+    }
+    guard !hyperspaceMassLocked else {
       notify("MASS LOCKED")
       return
     }
@@ -1228,7 +1240,13 @@ public struct Game: Sendable {
         return
       }
     }
-    candidate.jumpCountdown = commander.performance.spool
+    switch drive.activation {
+    case .timed(let seconds): candidate.jumpCountdown = seconds
+    case .immediate:
+      // This branch remains unreachable until an authentic alien fitting supplies it.
+      candidate.arrive()
+      guard candidate.commander.system == selectedSystem, candidate.commander.valid else { return }
+    }
     candidate.notify("HYPERSPACE")
     self = candidate
   }
@@ -2110,6 +2128,7 @@ public actor GameRuntime {
     try EMPVersionedSave.rejectFields(data, part: .commander)
     try NativePeopleVersionedSave.rejectFields(data)
     try RingMiningVersionedSave.rejectFields(data)
+    try HyperspaceDriveVersionedSave.rejectFields(data)
     try ScriptFinanceVersionedSave.rejectFields(data, part: .commander)
     var commander = try ScriptValueStorage.decoder(typed: false).decode(Commander.self, from: data)
     // Native pledge evidence belongs to versioned missions chunks.

@@ -76,7 +76,10 @@ public enum OwnedEquipmentError: Error, Equatable, Sendable {
 
 /// Physical items only: no funds, entitlement history, salvage consumption or resource levels.
 public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
+  /// Ordinary physical items. One authenticated born-stock drive has a reserved place
+  /// so migration never evicts any of an old commander's 256 owned items.
   public static let maximumCount = 256
+  var ordinaryItemCount: Int { items.filter { !$0.isReservedStockDrive }.count }
   public let owner: UUID
   public let activeHull: UUID
   public private(set) var revision: UInt64
@@ -102,7 +105,7 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
     var records = try values.nestedUnkeyedContainer(forKey: .items)
     var decoded: [OwnedEquipmentItem] = []
     while !records.isAtEnd {
-      guard decoded.count < Self.maximumCount else { throw OwnedEquipmentError.capacity }
+      guard decoded.count < Self.maximumCount + 1 else { throw OwnedEquipmentError.capacity }
       decoded.append(try records.decode(OwnedEquipmentItem.self))
     }
     items = decoded
@@ -155,7 +158,6 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
     _ item: OwnedEquipmentItem, expectedRevision: UInt64, context: OwnedEquipmentContext
   ) throws {
     try mutate(expectedRevision: expectedRevision, context: context) { items in
-      guard items.count < Self.maximumCount else { throw OwnedEquipmentError.capacity }
       guard !items.contains(where: { $0.id == item.id }) else {
         throw OwnedEquipmentError.duplicateItem
       }
@@ -229,7 +231,10 @@ public struct OwnedEquipmentInventory: Equatable, Codable, Sendable {
   }
 
   private func validateStructure() throws {
-    guard items.count <= Self.maximumCount else { throw OwnedEquipmentError.capacity }
+    guard items.count <= Self.maximumCount + 1,
+      items.filter(\.isReservedStockDrive).count <= 1,
+      ordinaryItemCount <= Self.maximumCount
+    else { throw OwnedEquipmentError.capacity }
     guard Set(items.map(\.id)).count == items.count else { throw OwnedEquipmentError.duplicateItem }
     let locations = items.compactMap(\.location)
     guard Set(locations).count == locations.count else { throw OwnedEquipmentError.occupiedSlot }

@@ -49,8 +49,8 @@ extension Commander {
     if let ratio = fittedComponent(at: .energy)?.statistics[.energyCapacity] {
       result.energy *= ratio
     }
-    if let ratio = fittedComponent(at: .navigation)?.statistics[.jumpSpool] {
-      result.spool *= ratio
+    if let policy = hyperspaceDrivePolicy, case .timed(let seconds) = policy.activation {
+      result.spool = seconds
     }
     return result
   }
