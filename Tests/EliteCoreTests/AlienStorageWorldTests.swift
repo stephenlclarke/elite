@@ -50,7 +50,11 @@ struct AlienStorageWorldTests {
       id: AlienStorageTestFixture.uuid(11), owner: AlienStorageTestFixture.owner,
       plan: planID, itemIndex: 0, issuedAt: 1,
       state: .pending(lot: lot, physicalTime: 1, offer: nil, binding: nil))
-    let snapshot = snapshot([.plan(worldPlan), .lot(worldLot)])
+    let companions = try companionRecords(plan: worldPlan, lots: lots)
+    let snapshot = snapshot([.plan(worldPlan), .lot(worldLot)] + companions)
+    #expect(throws: (any Error).self) {
+      try self.snapshot([.plan(worldPlan), .lot(worldLot)]).validate()
+    }
     try snapshot.validate()
     var pages = AlienStorageMemoryPages()
     let archive = try AlienStoragePageCodec.encode(snapshot: snapshot, previous: nil, into: &pages)
@@ -63,7 +67,7 @@ struct AlienStorageWorldTests {
       itemIndex: 0, issuedAt: 1,
       state: .pending(lot: oldIdentity, physicalTime: 1, offer: nil, binding: nil))
     #expect(throws: (any Error).self) {
-      try self.snapshot([.plan(worldPlan), .lot(fabricated)]).validate()
+      try self.snapshot([.plan(worldPlan), .lot(fabricated)] + companions).validate()
     }
     let sourceID = AlienStorageTestFixture.uuid(12)
     let attachmentID = AlienStorageTestFixture.uuid(13)
@@ -72,7 +76,7 @@ struct AlienStorageWorldTests {
       itemIndex: 0, issuedAt: 1, state: .acquired(source: sourceID, at: 2))
     let owned = AlienStorageSnapshot(
       owner: snapshot.owner, revision: 1, worldRevision: 2,
-      world: [.plan(worldPlan), .lot(acquired)],
+      world: [.plan(worldPlan), .lot(acquired)] + companions,
       sources: [.init(id: sourceID, owner: snapshot.owner, lot: lot, acquisition: sourceID)],
       attachments: [
         .init(
@@ -132,7 +136,10 @@ struct AlienStorageWorldTests {
     // One structural lot, six tonne chunks and three kilogram chunks precede the tech.
     #expect(derived.lot == 10)
     #expect(derived != original.items[index].identity)
-    try snapshot([.plan(worldPlan)]).validate()
+    let companions = try companionRecords(plan: worldPlan, lots: emitted)
+    #expect(companions.count == emitted.count)
+    try snapshot([.plan(worldPlan)] + companions).validate()
+    #expect(throws: (any Error).self) { try self.snapshot([.plan(worldPlan)]).validate() }
     let rewind = AlienStorageWorldProgress(
       issued: Array(repeating: 0, count: original.items.count),
       discarded: Array(repeating: false, count: original.items.count),
@@ -252,6 +259,24 @@ struct AlienStorageWorldTests {
         inRange: true, aligned: true, lineOfSight: true, resourcesAvailable: true,
         ownershipAuthorized: true),
       source: original.source)
+  }
+  private func companionRecords(plan: AlienStorageWorldPlan, lots: [SalvageLot]) throws
+    -> [AlienStorageWorldRecord]
+  {
+    let emissions = try plan.progress.emissions(plan: plan)
+    return try lots.compactMap { lot in
+      if case .technology(let id, _, _) = lot.content,
+        AlienModuleDefinition.isAttachmentDefinition(id)
+      {
+        return nil
+      }
+      let origin = try #require(emissions.first { $0.value.identity == lot.identity }?.key)
+      return .companion(
+        .init(
+          id: AlienStorageTestFixture.uuid(1000 + UInt64(lot.identity.lot)),
+          owner: plan.owner, plan: plan.id, origin: origin, issuedAt: 1,
+          state: .pending(lot: lot, physicalTime: 1, offer: nil, binding: nil)))
+    }
   }
   private func plan(id: UUID, seed: UInt64, saved: SavedProgress) -> AlienStorageWorldPlan {
     .init(

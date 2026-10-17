@@ -114,6 +114,15 @@ struct AlienStorageSnapshot: Sendable, Equatable {
         commandMap[source.acquisition] != nil
       else { throw AlienStorageError.invalidJoin }
     }
+    for case .companion(let companion) in world {
+      if case .collected(let receipt) = companion.state,
+        case .technology(let storage) = receipt.effect
+      {
+        guard attachmentMap[storage] == nil, upgradeMap[storage] == nil else {
+          throw AlienStorageError.invalidJoin
+        }
+      }
+    }
     try AlienStorageWorldValidation.validate(world, owner: owner, sources: sources)
     let receiptsByCommand = Dictionary(grouping: receipts, by: \.operation)
     guard receiptsByCommand.keys.allSatisfy({ commandMap[$0] != nil }) else {
