@@ -27,6 +27,9 @@ public enum ShipCatalogueType: String, Codable, Sendable, CaseIterable {
     }
   }
 }
+public enum ShipCatalogueCapitalSubtype: String, Codable, Sendable {
+  case vessel, station
+}
 public enum ShipCataloguePurchasePolicy: String, Codable, Sendable {
   case blueprintFabrication, pendingFabrication, xyzzyOnly, never
 }
@@ -99,7 +102,9 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
   public let normalPurchaseEligible: Bool
   public let purchasePolicy: ShipCataloguePurchasePolicy
   public let minimumBuildTechLevel: Int?
+  /// Structural parent, independent of functional/display taxonomy.
   public let isCapital: Bool
+  public let capitalSubtype: ShipCatalogueCapitalSubtype?
   public let collectionMilestone: ShipCatalogueCollectionMilestone
   public let damagePolicy: ShipCatalogueDamagePolicy
   /// Natural ecology only; never a fabrication licence, faction entitlement or legal status.
@@ -185,11 +190,22 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
       return discoveryEligible && objectKind == .ship
         && (purchasePolicy == .blueprintFabrication || purchasePolicy == .pendingFabrication)
     case .destruction:
-      return discoveryEligible && isCapital && purchasePolicy == .never
+      return discoveryEligible && isCapital && capitalSubtype == .vessel && purchasePolicy == .never
         && damagePolicy == .destructible
     case .docking:
-      return discoveryEligible && (objectKind == .station || objectKind == .platform)
+      return discoveryEligible && isCapital && capitalSubtype == .station
+        && (objectKind == .station || objectKind == .platform)
         && purchasePolicy == .never && damagePolicy == .activeStationIndestructible
+    }
+  }
+
+  private var validCapitalHierarchy: Bool {
+    guard isCapital == (capitalSubtype != nil) else { return false }
+    switch capitalSubtype {
+    case .none: return objectKind != .station && collectionMilestone != .docking
+    case .some(.vessel): return objectKind == .ship && collectionMilestone == .destruction
+    case .some(.station):
+      return (objectKind == .station || objectKind == .platform) && collectionMilestone == .docking
     }
   }
 
@@ -218,7 +234,7 @@ public struct ShipCatalogueMetadata: Codable, Sendable, Equatable {
       objectKind == .ship || primaryType == nil,
       objectKind != .ship || encounterMode == .none || primaryRole != nil,
       habitat?.valid ?? true,
-      !isCapital || objectKind == .ship
+      validCapitalHierarchy
     else { return false }
     guard validPurchasePolicy, validCollectionPolicy,
       objectKind != .station || collectionMilestone == .docking,

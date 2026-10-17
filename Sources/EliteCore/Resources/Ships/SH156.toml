@@ -28,10 +28,11 @@ regions = []
 basis = "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
 primaryRole = "military"
 placementStatus = "pending"
-isCapital = false
+isCapital = true
 purchasePolicy = "never"
 collectionMilestone = "docking"
 damagePolicy = "activeStationIndestructible"
+capitalSubtype = "station"
 
 [design]
 vertices = [

@@ -1,5 +1,7 @@
 # Define catalogue v2 blueprint, habitat and collection policies
 
+[FR054 capital/station hierarchy](PR-ship-capital-station-hierarchy.md) adds stations under the Capital parent while retaining this document's exact docking, damage and purchase policies.
+
 Adds an intentional metadata correction after frozen `b1ec8d1`, keeping all 171 identity/mechanics/design/archive/people/crew records intact. Huntsman's effective project cargo basis is refreshed to explain retained25t after the Military supersession; numeric capacity and historical profiles remain unchanged. `schemaVersion = 2` separates the eight displayed primary types from the seven functional AI roles. SH112-SH125 and SH171 display Alien; their functional military eligibility and existing origin remain separate. Ionics SH152-SH155 display/function Military, superseding Huntsman's former Trader classification without reducing its hold.
 
 ## Fabrication and habitats
