@@ -267,7 +267,8 @@ struct AlienStorageCompanionTests {
         }
       })
     var ledger = SalvageLedger(seed: seed)
-    let original = try #require(ledger.inspectLoot(wreck: wreck, section: section, source: source))
+    let inspected = ledger.inspectLoot(wreck: wreck, section: section, source: source)
+    let original = try #require(inspected)
     var lots: [SalvageLot] = []
     for operation in UInt64(1)...4 {
       let result = ledger.advance(
