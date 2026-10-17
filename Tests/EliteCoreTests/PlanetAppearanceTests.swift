@@ -82,7 +82,8 @@ private func appearanceSystem(economy: Int, government: Int = 3) -> StarSystem {
   let values = PlanetGPUShader.uniformValues(
     palette: preview.appearance, angle: 0.222, diameter: 128)
   #expect(values.count == PlanetGPUUniform.allCases.count)
-  #expect(values.allSatisfy(\.isFinite))
+  let allFinite = values.allSatisfy(\.isFinite)
+  #expect(allFinite)
   #expect(values[PlanetGPUUniform.diameter.rawValue] == 128)
   #expect(values[PlanetGPUUniform.angle.rawValue] == Float(0.222))
   #expect(values[PlanetGPUUniform.cloudLow.rawValue] == Float(preview.appearance.profile.cloudLow))
