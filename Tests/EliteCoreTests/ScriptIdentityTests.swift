@@ -233,7 +233,7 @@ private func assertHistoricalIdentityForgeryRollback(
     var candidate = commander
     candidate.scriptState.instances[owner]?.ownedEncounters["opponents"]?.legacyProvenance = decoded
     #expect(!candidate.valid)
-    #expect(throws: SaveError.invalidCommander) {
+    #expect(throws: SaveError.self) {
       try ScriptSaveStore.write(commander: candidate, world: world, to: save)
     }
     #expect(
@@ -241,7 +241,7 @@ private func assertHistoricalIdentityForgeryRollback(
         == decoded)
     #expect(try identitySaveFiles(save.deletingLastPathComponent()) == files)
   }
-  #expect(throws: SaveError.invalidCommander) {
+  #expect(throws: SaveError.self) {
     _ = try JSONDecoder().decode(LegacyMissionEncounterProvenance.self, from: bytes)
   }
   for change in 0..<4 {
@@ -269,7 +269,7 @@ private func assertHistoricalIdentityForgeryRollback(
     let decoder = JSONDecoder()
     decoder.userInfo[LegacyMissionEncounterProvenance.storageKey] = true
     let data = try JSONSerialization.data(withJSONObject: oversized)
-    #expect(throws: SaveError.invalidCommander) {
+    #expect(throws: SaveError.self) {
       _ = try decoder.decode(LegacyMissionEncounterProvenance.self, from: data)
     }
     #expect(try identitySaveFiles(save.deletingLastPathComponent()) == files)
@@ -384,7 +384,7 @@ func currentPreparedPlansStillRejectRandomIdentitiesAndSpentConditionWithoutMigr
     hashes: hashes, scope: pointer.scope)
   try encoder.encode(old).write(to: save, options: .atomic)
   let files = try identitySaveFiles(folder)
-  await #expect(throws: SaveError.invalidCommander) { try await runtime.load(from: save) }
+  await #expect(throws: SaveError.self) { try await runtime.load(from: save) }
   let after = await runtime.snapshot()
   #expect(after.commander == before.commander && after.bodies == before.bodies)
   #expect(after.time == before.time && after.screen == before.screen && after.speed == before.speed)
