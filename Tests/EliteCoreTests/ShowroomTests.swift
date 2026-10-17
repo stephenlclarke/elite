@@ -201,7 +201,7 @@ private func showroomGame() -> Game {
     game.showroom.compare = false
     game.showroom.detail = true
     let frame = Display.presentation(game, width: 1512, height: 982)
-    #expect(!frame.shipPanels.isEmpty, "\(ship.name)")
+    #expect(frame.hasShipSurfaces, "\(ship.name)")
     #expect(frame.shipLines.isEmpty)
   }
   game.showroom.selection = "SH002"
