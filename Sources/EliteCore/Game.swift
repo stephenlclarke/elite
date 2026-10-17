@@ -913,6 +913,7 @@ public struct Game: Sendable {
     let item = market[index]
     if buy {
       guard item.quantity > 0, commander.availableCredits >= item.price,
+        commander.cargo[index] < Int.max / 17,
         Commodity.all[index].unit != "t" || commander.cargoTonnes < commander.tradeCargoCapacity
       else {
         notify("CANNOT BUY")

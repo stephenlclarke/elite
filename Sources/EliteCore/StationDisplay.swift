@@ -48,7 +48,10 @@ extension Game {
     }
     if market[index].quantity == 0 { return "NO STOCK" }
     if commander.availableCredits < market[index].price { return "NO CASH" }
-    if Commodity.all[index].unit == "t" && commander.cargoTonnes >= commander.capacity {
+    if commander.cargo[index] >= Int.max / 17
+      || (Commodity.all[index].unit == "t"
+        && commander.cargoTonnes >= commander.tradeCargoCapacity)
+    {
       return "HOLD FULL"
     }
     return "BUY"
