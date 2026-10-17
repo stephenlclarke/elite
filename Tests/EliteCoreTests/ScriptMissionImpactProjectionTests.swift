@@ -158,7 +158,7 @@ struct ScriptMissionImpactProjectionTests {
 
   @Test func actualClassicMissionConstrictorImmunityProducesNoDamageOrTerminalScriptEvents() throws
   {
-    var (game, _, sourceID, _) = try projectionActors(component: false)
+    var (game, _, sourceID, _) = try projectionActors(component: false, includeAnchor: true)
     let original = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
       .appendingPathComponent("docs/mission-packs/scripted-patrol")

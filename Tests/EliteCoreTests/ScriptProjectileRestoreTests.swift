@@ -48,13 +48,15 @@ private func fillActualNativeProjectileBudget(_ game: inout Game) throws {
   let sequence = try #require(allocatedSequence)
   let context = try #require(game.gameplayContext())
   let count = PopulationClass.projectile.maximum - context.budget.active[.projectile, default: 0]
+  let missileRadius = try #require(Mesh.hull(.missile).vertices.map(\.length).max())
+  try #require(missileRadius * 2 + 8 < 200)
   let requests = (0..<count).map { index in
     SpawnRequest(
       identity: .init(
         system: context.system, visit: context.visit, sequence: sequence, member: UInt16(index),
         producer: .ordnance),
       population: .projectile, hull: .missile,
-      position: context.player.position + .init(10_000, Double(index) * 20, 10_000),
+      position: context.player.position + .init(10_000, Double(index) * 200, 10_000),
       orientation: Basis3(), velocity: .init(0, 0, 0), npc: nil, rock: nil, payload: nil,
       priority: .mission)
   }

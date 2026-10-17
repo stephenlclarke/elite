@@ -315,6 +315,7 @@ private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
   }
   var fresh = Commander()
   try fresh.prepareEquipment(legacy: false)
+  fresh.mirrorFittedEquipment()
   let loaded = game.load(fresh)
   #expect(loaded && game.commander == fresh)
   #expect(game.bodies.isEmpty && game.scriptReferenceFrame == nil)
