@@ -106,7 +106,9 @@ extension Game {
       identity: shotID, owner: source.actorID, instance: source.instanceID,
       weapon: authored.id, component: component, velocity: velocity, age: 0,
       lifetime: lifetime, damage: authored.damage, radius: radius, collisionDelay: delay)
-    guard let descriptor = shot.missionDescriptor else { throw MissionNativeBridgeError.invalidShot }
+    guard let descriptor = shot.missionDescriptor else {
+      throw MissionNativeBridgeError.invalidShot
+    }
     let archive = try MissionNativeBridge.makeLaunchArchive(
       shot: descriptor, source: source, intendedTarget: target, judgement: judgement)
     var body = SpaceBody(id: nextBodyID, hull: .missile, position: muzzle)
