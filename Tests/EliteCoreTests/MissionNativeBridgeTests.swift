@@ -441,6 +441,236 @@ private func bridgeLegacyPlasmaRotatedShot(_ fixture: BridgeLegacyPlasmaFixture)
   #expect(rotatedProof.hit.target == .body(101) && rotatedProof.originalOrigin == nil)
 }
 
+private final class BridgeArchivedPlasmaFixture: Sendable {
+  let game: Game
+  let sourceBody: SpaceBody
+  let binding: MissionActorBinding
+  let origin: AttackOrigin
+  let law: MissionLaunchJudgement
+  let shotID: UUID
+  let shot: ScriptNPCShot
+  let index: Int
+
+  init(
+    game: Game, sourceBody: SpaceBody, binding: MissionActorBinding, origin: AttackOrigin,
+    law: MissionLaunchJudgement, shotID: UUID, shot: ScriptNPCShot, index: Int
+  ) {
+    self.game = game
+    self.sourceBody = sourceBody
+    self.binding = binding
+    self.origin = origin
+    self.law = law
+    self.shotID = shotID
+    self.shot = shot
+    self.index = index
+  }
+}
+
+private func makeBridgeArchivedPlasmaFixture() throws -> BridgeArchivedPlasmaFixture {
+  let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    .deletingLastPathComponent().deletingLastPathComponent()
+    .appendingPathComponent("docs/mission-packs/profiled-skirmish")
+  let pack = try ScriptPackLibrary.read(directory)
+  var game = Game(executive: false)
+  game.screen = .status
+  game.scriptPacks = [pack]
+  let instance = try game.acceptScriptMission(pack)
+  game.launch()
+  game.emitScriptEvent("station.undocked")
+  game.drainScriptEvents()
+  game.ensurePhysicalActors()
+  let sourceBody = try #require(
+    game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
+  game.bodies = [sourceBody]
+  game.celestials = []
+  let binding = try game.currentMissionNativeBinding(bodyID: sourceBody.id)
+  let componentSpec = try #require(
+    sourceBody.scriptNPC?.fit.definition.components?.first {
+      ($0.weapons ?? []).contains { $0.kind == .plasma }
+    })
+  let weapon = try #require(componentSpec.weapons?.first { $0.kind == .plasma })
+  let componentID = try #require(sourceBody.scriptNPC?.components[componentSpec.id]?.identity)
+  let allocatedOrigin = game.makeAttackOrigin(
+    owner: binding.nativeActor, sourcePart: componentID.uuidString)
+  let origin = try #require(allocatedOrigin)
+  let context = try #require(game.gameplayContext())
+  let launchPosition = Vector3(0, 0, 500)
+  let law = try game.commander.crimeLedger.freezeMissionLaunchJudgement(
+    origin: origin,
+    intendedVictim: context.player,
+    emissionPosition: game.commander.flightSimulation.pose.systemPoint(launchPosition),
+    context: context)
+  let speed = try #require(weapon.projectileSpeed)
+  let lifetime = try #require(weapon.lifetime)
+  let radius = try #require(weapon.collisionRadius)
+  let delay = try #require(weapon.collisionDelay)
+  let shotID = UUID(uuidString: "00000000-0000-0000-0000-000000000060")!
+  let descriptor = MissionShotDescriptor(
+    identity: shotID, owner: binding.actorID,
+    instance: binding.instanceID, weapon: weapon.id, component: componentID,
+    velocity: .init(0, 0, -speed), age: 0, lifetime: lifetime, damage: weapon.damage,
+    radius: radius, collisionDelay: delay)
+  let archive = try MissionNativeBridge.makeLaunchArchive(
+    shot: descriptor, source: binding,
+    intendedTarget: nil, judgement: law)
+  let shot = ScriptNPCShot(
+    identity: shotID, owner: binding.actorID, instance: binding.instanceID,
+    weapon: weapon.id, component: componentID, velocity: descriptor.velocity, age: 0,
+    lifetime: lifetime, damage: weapon.damage, radius: radius, collisionDelay: delay,
+    nativeAttribution: archive)
+  let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocatedSpawn)
+  let request = SpawnRequest(
+    identity: .init(
+      system: context.system, visit: context.visit,
+      sequence: sequence, member: 0, producer: .ordnance), population: .projectile,
+    hull: .missile, position: game.commander.flightSimulation.pose.systemPoint(launchPosition),
+    orientation: .init(), velocity: descriptor.velocity, npc: nil, rock: nil, payload: nil,
+    priority: .ordinary)
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit,
+      revision: context.revision, batches: [.init(requests: [request], atomic: true)], intents: []
+    ))
+  let actor = try #require(receipts.first?.actor)
+  let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+  game.bodies[index].scriptShot = shot
+  game.bodies[index].physical?.attackOrigin = archive.origin
+  let live = game.bodies[index]
+  game.commander.scriptState.projectiles[shotID] = .init(
+    galaxy: game.commander.galaxy,
+    system: game.commander.system, body: live, presence: .present)
+  return .init(
+    game: game, sourceBody: sourceBody, binding: binding, origin: origin, law: law, shotID: shotID,
+    shot: shot, index: index
+  )
+}
+
+private func assertBridgeArchivedPlasma(_ fixture: BridgeArchivedPlasmaFixture) throws {
+  let known = try bridgeArchivedPlasmaKnownProof(fixture)
+  try bridgeArchivedPlasmaChangedSource(fixture, known: known)
+  try bridgeArchivedPlasmaOlderClock(fixture)
+  try bridgeArchivedPlasmaFutureArchive(fixture)
+  try bridgeArchivedPlasmaAbsentSource(fixture)
+  try bridgeArchivedPlasmaIncidentalVictim(fixture)
+  try bridgeArchivedPlasmaMalformedOrigin(fixture)
+}
+
+private func bridgeArchivedPlasmaKnownProof(_ fixture: BridgeArchivedPlasmaFixture) throws
+  -> MissionNativeImpactProof
+{
+  let game = fixture.game
+  let binding = fixture.binding
+  let origin = fixture.origin
+  let law = fixture.law
+  let shotID = fixture.shotID
+  let knownValue = try game.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  let known = try #require(knownValue)
+  #expect(known.hit.target == .player && known.currentSource == binding.nativeActor)
+  #expect(known.originalOrigin == origin && known.frozenJudgement == law)
+  let freshKnownBefore = (commander: game.commander, bodies: game.bodies)
+  try game.validateMissionNativeImpactProof(known)
+  #expect(game.commander == freshKnownBefore.commander && game.bodies == freshKnownBefore.bodies)
+  return known
+}
+
+private func bridgeArchivedPlasmaChangedSource(
+  _ fixture: BridgeArchivedPlasmaFixture, known: MissionNativeImpactProof
+) throws {
+  let game = fixture.game
+  let sourceBody = fixture.sourceBody
+  var changedSource = game
+  let sourceIndex = try #require(changedSource.bodies.firstIndex { $0.id == sourceBody.id })
+  changedSource.bodies[sourceIndex].energy -= 1
+  #expect(throws: MissionNativeBridgeError.staleBinding) {
+    try changedSource.validateMissionNativeImpactProof(known)
+  }
+}
+
+private func bridgeArchivedPlasmaOlderClock(_ fixture: BridgeArchivedPlasmaFixture) throws {
+  let game = fixture.game
+  let origin = fixture.origin
+  let law = fixture.law
+  let shotID = fixture.shotID
+  var older = game
+  older.commander.flightSimulation.advancePhysicalTime(1)
+  let historicalValue = try older.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  let historical = try #require(historicalValue)
+  #expect(historical.originalOrigin == origin && historical.frozenJudgement == law)
+  #expect(origin.emittedAt < older.commander.flightSimulation.physicalTime)
+}
+
+private func bridgeArchivedPlasmaFutureArchive(_ fixture: BridgeArchivedPlasmaFixture) throws {
+  let game = fixture.game
+  let shotID = fixture.shotID
+  let shot = fixture.shot
+  let index = fixture.index
+  var shotJSON = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(shot)) as? [String: Any])
+  var archiveJSON = try #require(shotJSON["nativeAttribution"] as? [String: Any])
+  var judgementJSON = try #require(archiveJSON["judgement"] as? [String: Any])
+  var factsJSON = try #require(judgementJSON["facts"] as? [String: Any])
+  var originJSON = try #require(factsJSON["origin"] as? [String: Any])
+  originJSON["emittedAt"] = game.commander.flightSimulation.physicalTime + 100
+  factsJSON["origin"] = originJSON
+  judgementJSON["facts"] = factsJSON
+  archiveJSON["judgement"] = judgementJSON
+  shotJSON["nativeAttribution"] = archiveJSON
+  let futureShot = try JSONDecoder().decode(
+    ScriptNPCShot.self,
+    from: JSONSerialization.data(withJSONObject: shotJSON))
+  let futureArchive = try #require(futureShot.nativeAttribution)
+  #expect(futureArchive.valid && futureShot.valid)
+  var future = game
+  future.bodies[index].scriptShot = futureShot
+  future.bodies[index].physical?.attackOrigin = futureArchive.origin
+  future.commander.scriptState.projectiles[shotID]?.body.scriptShot = futureShot
+  future.commander.scriptState.projectiles[shotID]?.body.physical?.attackOrigin =
+    futureArchive.origin
+  let futureBefore = (commander: future.commander, bodies: future.bodies)
+  #expect(throws: MissionNativeBridgeError.invalidArchive) {
+    try future.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  }
+  #expect(future.commander == futureBefore.commander && future.bodies == futureBefore.bodies)
+}
+
+private func bridgeArchivedPlasmaAbsentSource(_ fixture: BridgeArchivedPlasmaFixture) throws {
+  let game = fixture.game
+  let sourceBody = fixture.sourceBody
+  let origin = fixture.origin
+  let shotID = fixture.shotID
+  var absent = game
+  absent.bodies.removeAll { $0.id == sourceBody.id }
+  let unknownValue = try absent.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  let unknown = try #require(unknownValue)
+  #expect(unknown.hit.target == .player && unknown.currentSource == nil)
+  #expect(unknown.originalOrigin == origin && unknown.frozenJudgement == nil)
+}
+
+private func bridgeArchivedPlasmaIncidentalVictim(_ fixture: BridgeArchivedPlasmaFixture) throws {
+  let game = fixture.game
+  let origin = fixture.origin
+  let shotID = fixture.shotID
+  var incidental = game
+  incidental.bodies.append(.init(id: 999, hull: .cargo, position: .init(0, 0, 250)))
+  incidental.ensurePhysicalActors()
+  let blockedValue = try incidental.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  let blocked = try #require(blockedValue)
+  #expect(blocked.hit.target == .body(999) && blocked.currentVictim != nil)
+  #expect(blocked.originalOrigin == origin && blocked.frozenJudgement == nil)
+}
+
+private func bridgeArchivedPlasmaMalformedOrigin(_ fixture: BridgeArchivedPlasmaFixture) throws {
+  let game = fixture.game
+  let shotID = fixture.shotID
+  let index = fixture.index
+  var malformed = game
+  malformed.bodies[index].physical?.attackOrigin = nil
+  #expect(throws: MissionNativeBridgeError.invalidShot) {
+    try malformed.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
+  }
+}
+
 private func bridgeFixture() throws -> (SpaceBody, EncounterContext) {
   var game = Game(executive: false)
   game.launch()
@@ -972,143 +1202,8 @@ struct MissionNativeBridgeTests {
   }
 
   @Test func actualArchivedPlasmaProofUsesFrozenLawOnlyForCurrentSourceAndIntendedVictim() throws {
-    let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
-      .deletingLastPathComponent().deletingLastPathComponent()
-      .appendingPathComponent("docs/mission-packs/profiled-skirmish")
-    let pack = try ScriptPackLibrary.read(directory)
-    var game = Game(executive: false)
-    game.screen = .status
-    game.scriptPacks = [pack]
-    let instance = try game.acceptScriptMission(pack)
-    game.launch()
-    game.emitScriptEvent("station.undocked")
-    game.drainScriptEvents()
-    game.ensurePhysicalActors()
-    let sourceBody = try #require(
-      game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
-    game.bodies = [sourceBody]
-    game.celestials = []
-    let binding = try game.currentMissionNativeBinding(bodyID: sourceBody.id)
-    let componentSpec = try #require(
-      sourceBody.scriptNPC?.fit.definition.components?.first {
-        ($0.weapons ?? []).contains { $0.kind == .plasma }
-      })
-    let weapon = try #require(componentSpec.weapons?.first { $0.kind == .plasma })
-    let componentID = try #require(sourceBody.scriptNPC?.components[componentSpec.id]?.identity)
-    let allocatedOrigin = game.makeAttackOrigin(
-      owner: binding.nativeActor, sourcePart: componentID.uuidString)
-    let origin = try #require(allocatedOrigin)
-    let context = try #require(game.gameplayContext())
-    let launchPosition = Vector3(0, 0, 500)
-    let law = try game.commander.crimeLedger.freezeMissionLaunchJudgement(
-      origin: origin,
-      intendedVictim: context.player,
-      emissionPosition: game.commander.flightSimulation.pose.systemPoint(launchPosition),
-      context: context)
-    let speed = try #require(weapon.projectileSpeed)
-    let lifetime = try #require(weapon.lifetime)
-    let radius = try #require(weapon.collisionRadius)
-    let delay = try #require(weapon.collisionDelay)
-    let shotID = UUID(uuidString: "00000000-0000-0000-0000-000000000060")!
-    let descriptor = MissionShotDescriptor(
-      identity: shotID, owner: binding.actorID,
-      instance: binding.instanceID, weapon: weapon.id, component: componentID,
-      velocity: .init(0, 0, -speed), age: 0, lifetime: lifetime, damage: weapon.damage,
-      radius: radius, collisionDelay: delay)
-    let archive = try MissionNativeBridge.makeLaunchArchive(
-      shot: descriptor, source: binding,
-      intendedTarget: nil, judgement: law)
-    let shot = ScriptNPCShot(
-      identity: shotID, owner: binding.actorID, instance: binding.instanceID,
-      weapon: weapon.id, component: componentID, velocity: descriptor.velocity, age: 0,
-      lifetime: lifetime, damage: weapon.damage, radius: radius, collisionDelay: delay,
-      nativeAttribution: archive)
-    let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
-    let sequence = try #require(allocatedSpawn)
-    let request = SpawnRequest(
-      identity: .init(
-        system: context.system, visit: context.visit,
-        sequence: sequence, member: 0, producer: .ordnance), population: .projectile,
-      hull: .missile, position: game.commander.flightSimulation.pose.systemPoint(launchPosition),
-      orientation: .init(), velocity: descriptor.velocity, npc: nil, rock: nil, payload: nil,
-      priority: .ordinary)
-    let receipts = game.admitEncounterPlan(
-      .init(
-        system: context.system, visit: context.visit,
-        revision: context.revision, batches: [.init(requests: [request], atomic: true)], intents: []
-      ))
-    let actor = try #require(receipts.first?.actor)
-    let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
-    game.bodies[index].scriptShot = shot
-    game.bodies[index].physical?.attackOrigin = archive.origin
-    let live = game.bodies[index]
-    game.commander.scriptState.projectiles[shotID] = .init(
-      galaxy: game.commander.galaxy,
-      system: game.commander.system, body: live, presence: .present)
-    let knownValue = try game.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    let known = try #require(knownValue)
-    #expect(known.hit.target == .player && known.currentSource == binding.nativeActor)
-    #expect(known.originalOrigin == origin && known.frozenJudgement == law)
-    let freshKnownBefore = game
-    try game.validateMissionNativeImpactProof(known)
-    #expect(game.commander == freshKnownBefore.commander && game.bodies == freshKnownBefore.bodies)
-    var changedSource = game
-    let sourceIndex = try #require(changedSource.bodies.firstIndex { $0.id == sourceBody.id })
-    changedSource.bodies[sourceIndex].energy -= 1
-    #expect(throws: MissionNativeBridgeError.staleBinding) {
-      try changedSource.validateMissionNativeImpactProof(known)
-    }
-    var older = game
-    older.commander.flightSimulation.advancePhysicalTime(1)
-    let historicalValue = try older.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    let historical = try #require(historicalValue)
-    #expect(historical.originalOrigin == origin && historical.frozenJudgement == law)
-    #expect(origin.emittedAt < older.commander.flightSimulation.physicalTime)
-    var shotJSON = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(shot)) as? [String: Any])
-    var archiveJSON = try #require(shotJSON["nativeAttribution"] as? [String: Any])
-    var judgementJSON = try #require(archiveJSON["judgement"] as? [String: Any])
-    var factsJSON = try #require(judgementJSON["facts"] as? [String: Any])
-    var originJSON = try #require(factsJSON["origin"] as? [String: Any])
-    originJSON["emittedAt"] = game.commander.flightSimulation.physicalTime + 100
-    factsJSON["origin"] = originJSON
-    judgementJSON["facts"] = factsJSON
-    archiveJSON["judgement"] = judgementJSON
-    shotJSON["nativeAttribution"] = archiveJSON
-    let futureShot = try JSONDecoder().decode(
-      ScriptNPCShot.self,
-      from: JSONSerialization.data(withJSONObject: shotJSON))
-    let futureArchive = try #require(futureShot.nativeAttribution)
-    #expect(futureArchive.valid && futureShot.valid)
-    var future = game
-    future.bodies[index].scriptShot = futureShot
-    future.bodies[index].physical?.attackOrigin = futureArchive.origin
-    future.commander.scriptState.projectiles[shotID]?.body.scriptShot = futureShot
-    future.commander.scriptState.projectiles[shotID]?.body.physical?.attackOrigin =
-      futureArchive.origin
-    let futureBefore = future
-    #expect(throws: MissionNativeBridgeError.invalidArchive) {
-      try future.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    }
-    #expect(future.commander == futureBefore.commander && future.bodies == futureBefore.bodies)
-    var absent = game
-    absent.bodies.removeAll { $0.id == sourceBody.id }
-    let unknownValue = try absent.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    let unknown = try #require(unknownValue)
-    #expect(unknown.hit.target == .player && unknown.currentSource == nil)
-    #expect(unknown.originalOrigin == origin && unknown.frozenJudgement == nil)
-    var incidental = game
-    incidental.bodies.append(.init(id: 999, hull: .cargo, position: .init(0, 0, 250)))
-    incidental.ensurePhysicalActors()
-    let blockedValue = try incidental.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    let blocked = try #require(blockedValue)
-    #expect(blocked.hit.target == .body(999) && blocked.currentVictim != nil)
-    #expect(blocked.originalOrigin == origin && blocked.frozenJudgement == nil)
-    var malformed = game
-    malformed.bodies[index].physical?.attackOrigin = nil
-    #expect(throws: MissionNativeBridgeError.invalidShot) {
-      try malformed.missionNativeImpactProof(projectileID: shotID, delta: 0.5)
-    }
+    let fixture = try makeBridgeArchivedPlasmaFixture()
+    try assertBridgeArchivedPlasma(fixture)
   }
 
   @Test func realRoundedCapitalAndFighterFacesPreserveNativeZeroRayAndAcceptSweptQueries() throws {
