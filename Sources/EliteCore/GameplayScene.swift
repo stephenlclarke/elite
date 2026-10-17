@@ -21,7 +21,7 @@ extension Game {
       | UInt64(currentSystem.seed.c)
   }
 
-  mutating func beginGameplayVisit(arriving: Bool) {
+  mutating func beginGameplayVisit(arriving: Bool, freshLaunchTrafficID: Int? = nil) {
     commander.savedEMPCharge = nil
     if var state = commander.savedEMPState {
       for source in state.records.keys {
@@ -61,11 +61,35 @@ extension Game {
     commander.npcPersistence.resetPhysicalBindings(system: systemIdentity)
     gameplayRevision &+= 1
     ensurePhysicalActors()
+    if let freshLaunchTrafficID { initializeNativeLaunchDisposition(bodyID: freshLaunchTrafficID) }
     _ = persistNPCStates()
     admitPersistentNPCs()
     if let context = gameplayContext() {
       commander.encounterDirector = EncounterDirector(context: context)
     }
+  }
+
+  /// Called only for the actual new launch body before its first ledger capture.
+  private mutating func initializeNativeLaunchDisposition(bodyID: Int) {
+    let flight = commander.flightSimulation
+    guard let index = bodies.firstIndex(where: { $0.id == bodyID }),
+      bodies[index].hull == .cobra, !bodies[index].navalTarget,
+      bodies[index].missionInstanceID == nil, bodies[index].blackjackRole == nil,
+      let physical = bodies[index].physical, physical.spawnIdentity == nil,
+      physical.empSource == nil, physical.salvage == nil,
+      physical.identity.system == systemIdentity, physical.identity.visit == flight.visit,
+      var npc = physical.npc, npc.routeProvenance == .inferredLocal,
+      let player = flight.player, let station = flight.anchors?.station.identity,
+      let disposition = AmbientEncounterPolicy.nativeLaunch(
+        actor: physical.identity, seed: gameplaySeed,
+        government: currentSystem.government, role: npc.role)
+    else { return }
+    npc.legal = disposition.legalOverride ?? npc.legal
+    npc.legalProvenance = .generated
+    npc.routeProvenance = .generated
+    npc.intention = disposition.hostile ? .engage(player) : .dock(station)
+    bodies[index].hostile = disposition.hostile
+    bodies[index].physical?.npc = npc
   }
 
   /// Legacy/native encounter creators are adopted before their first attack.

@@ -1115,16 +1115,18 @@ public struct Game: Sendable {
       SpaceBody(id: 0, hull: .station, position: .init(0, 0, -500)),
       SpaceBody(id: 2, hull: .asteroid, position: .init(-280, 100, 2200)),
     ]
+    var freshLaunchTrafficID: Int?
     if commander.npcPersistence.count == 0,
       commander.savedEMPState?.records.values.contains(where: {
         $0.source.system == systemIdentity && $0.originalSpawn == nil && $0.originalBodyID == 1
       }) != true
     {
       bodies.insert(.init(id: 1, hull: .cobra, position: .init(90, 20, 1400)), at: 1)
+      freshLaunchTrafficID = 1
     }
     commander.legal |= commander.cargo[3] + 2 * commander.cargo[6] + commander.cargo[10]
     resetCelestialFlight()
-    beginGameplayVisit(arriving: false)
+    beginGameplayVisit(arriving: false, freshLaunchTrafficID: freshLaunchTrafficID)
     notify("LAUNCHING FROM " + currentSystem.name)
     preloadNavigation()
     restoreBlackjackEncounter()

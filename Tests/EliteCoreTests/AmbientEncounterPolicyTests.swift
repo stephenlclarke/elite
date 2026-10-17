@@ -278,3 +278,33 @@ struct AmbientEncounterPolicyTests {
         == destination)
   }
 }
+
+extension AmbientEncounterPolicyTests {
+  @Test(arguments: Array(0..<8))
+  func actualFreshLaunchTrafficUsesGovernmentPolicyBeforeItsFirstPersistentCapture(
+    government: Int
+  ) throws {
+    var game = Game(executive: false)
+    game.commander.system = try #require(game.systems.first { $0.government == government }?.id)
+    game.launch()
+    try #require(!game.docked && game.screen == .front)
+    let body = try #require(game.bodies.first { $0.id == 1 && $0.hull == .cobra })
+    let physical = try #require(body.physical)
+    let npc = try #require(physical.npc)
+    let policy = try #require(
+      AmbientEncounterPolicy.nativeLaunch(
+        actor: physical.identity, seed: game.gameplaySeed, government: government, role: .trader))
+    #expect(physical.spawnIdentity == nil && body.hostile == policy.hostile)
+    #expect(npc.routeProvenance == .generated && npc.legalProvenance == .generated)
+    #expect(
+      npc.intention
+        == (policy.hostile
+          ? .engage(try #require(game.commander.flightSimulation.player))
+          : .dock(try #require(game.commander.flightSimulation.anchors?.station.identity))))
+    if government == 0 { #expect(npc.legal == policy.legalOverride) }
+    if government == 7 { #expect(!body.hostile && !npc.legal.wanted) }
+    let snapshot = try #require(game.commander.npcPersistence.snapshot(for: physical.identity))
+    #expect(snapshot.npc == npc && snapshot.energy == body.energy)
+    #expect(game.commander.valid)
+  }
+}

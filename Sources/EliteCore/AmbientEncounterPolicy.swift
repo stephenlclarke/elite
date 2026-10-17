@@ -25,7 +25,28 @@ enum AmbientEncounterPolicy {
       ^ mix(identity.visit ^ 0x5649_5349_5430_3031)
       ^ mix(identity.sequence ^ 0x5345_5155_454e_4345)
       ^ mix(UInt64(identity.member) ^ 0x4d45_4d42_4552_3031)
-    return .init(
+    return resolve(source: source, government: government)
+  }
+
+  /// The legacy launch producer owns a real newly allocated actor, not an ambient proposal.
+  /// It shares the disposition policy without fabricating a SpawnIdentity or resampling a save.
+  static func nativeLaunch(
+    actor: ActorIdentity, seed: UInt64, government: Int, role: NPCRole
+  ) -> AmbientEncounterDisposition? {
+    guard hostilityPercentages.indices.contains(government), role == .trader,
+      actor.entity > 1, actor.visit > 0,
+      (0..<8).contains(actor.system.galaxy), (0...256).contains(actor.system.system)
+    else { return nil }
+    let source =
+      seed
+      ^ mix(UInt64(actor.system.galaxy) &* 257 &+ UInt64(actor.system.system))
+      ^ mix(actor.visit ^ 0x5649_5349_5430_3031)
+      ^ mix(actor.entity ^ 0x4c41_554e_4348_3031)
+    return resolve(source: source, government: government)
+  }
+
+  private static func resolve(source: UInt64, government: Int) -> AmbientEncounterDisposition {
+    .init(
       hostile: mix(source ^ 0x484f_5354_494c_4531) % 100 < UInt64(hostilityPercentages[government]),
       wanted: government == 0 ? mix(source ^ 0x5741_4e54_4544_3031) % 100 < 90 : nil)
   }
