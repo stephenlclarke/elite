@@ -46,6 +46,7 @@ struct AlienModuleLootProducerTests {
       } else if let kind = AlienModuleKind.allCases.first(where: { $0.definitionID == id }) {
         modules += 1
         moduleTypes.insert(kind)
+        try AlienModuleDefinition.validatePlanned(item)
         #expect(try AlienModuleDefinition.kind(for: producedLot(item)) == kind)
         #expect(
           axis == nil && item.bonusBasisPoints == 1000 && item.effect == .scalar(axes: kind.axes))
@@ -53,6 +54,7 @@ struct AlienModuleLootProducerTests {
         upgrades += 1
         upgradeTypes.insert(kind)
         qualities.insert(quality)
+        try AlienModuleDefinition.validatePlanned(item)
         #expect(
           try AlienModuleDefinition.upgradeBonus(for: producedLot(item), kind: kind)
             == quality.bonusBasisPoints)
@@ -71,6 +73,36 @@ struct AlienModuleLootProducerTests {
     #expect(
       moduleTypes == Set(AlienModuleKind.allCases) && upgradeTypes == Set(AlienModuleKind.allCases))
     #expect(qualities == Set(SalvageQuality.allCases))
+  }
+
+  @Test func plannedTypedValidatorRejectsHumanProvenanceAndOutOfContractSections() throws {
+    let source = alienProducerSource([.thargoid])
+    let item = try #require(
+      (UInt64(0)..<500).lazy.flatMap {
+        SalvageLootProfiles.plan(section: alienProducerSection, seed: $0, source: source).items
+      }.first {
+        if case .technology(let id, _, _, _) = $0.content {
+          AlienModuleDefinition.isAttachmentDefinition(id)
+        } else {
+          false
+        }
+      })
+    try AlienModuleDefinition.validatePlanned(item)
+    let identity = SalvageLotIdentity(
+      section: .init(wreck: item.identity.section.wreck, section: 64), lot: item.identity.lot)
+    for human in [false, true] {
+      let invalid = SalvageLootItem(
+        identity: human ? item.identity : identity, content: item.content,
+        effect: item.effect, bonusBasisPoints: item.bonusBasisPoints, massKg: item.massKg,
+        halfExtents: item.halfExtents, provenance: human ? .human : .alien,
+        saleValueTenths: item.saleValueTenths, legality: item.legality,
+        requiresChunking: item.requiresChunking)
+      #expect(throws: AlienAttachmentError.invalidSource) {
+        try AlienModuleDefinition.validatePlanned(invalid)
+      }
+    }
+    #expect(!AlienModuleDefinition.isAttachmentDefinition("alien-artefact"))
+    #expect(!AlienModuleDefinition.isAttachmentDefinition("energy-technology"))
   }
 
   @Test func humanSourceProfilesNeverGenerateAlienAttachmentsOrTheirUpgrades() {
