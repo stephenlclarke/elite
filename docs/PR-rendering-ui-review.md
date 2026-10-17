@@ -1,5 +1,7 @@
 # Repair rendering, showroom, chart and discharge audio boundaries
 
+Historical source handoff: the validation statements below describe its original checkpoint. Subsequent integration and exact-source execution are recorded in the [current qualified ledger](WHOLE-APP-REMEDIATION.md); they do not rewrite the original evidence.
+
 Ship drawing now rejects only meshes whose transformed geometry is entirely behind the near plane, retaining existing face and segment clipping and finite-coordinate checks. Selected and pinned native showroom profiles share a pure projection with the actual trade quote, retaining portable device identities and removing old hull-bound fittings. Incompatible fits have unavailable numerical comparisons and an explicit visible profile title. Current-hull comparisons retain current bound equipment.
 
 Chart search Clear uses a bounded rectangle, so outside clicks dismiss search without erasing the query. Actual combat, mining and accepted cutter operations emit bounded transient events with a monotonic sequence and session epoch. A presentation cursor prevents repeated or older snapshots within a session from replaying sound. Continuous cutter ticks keep at most one cutter sound playing. Successful commander loads reset events; refused operations and failed loads preserve state. The Game state/reset hook is a separate integration commit because the central actor implementation is owned by another worker.

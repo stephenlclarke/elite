@@ -1,0 +1,586 @@
+{
+  "package_id": "P30",
+  "version": "1.5.4",
+  "source_files": [
+    {
+      "path": "Scripts/rescue_scenario_4a.js",
+      "sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_slaver.js",
+      "sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_sbdef.js",
+      "sha256": "e9af9f592a7c71d583ca3b1f47b26eeafa6ec4f237107db14b959e64c93e88b6"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e"
+    },
+    {
+      "path": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1"
+    },
+    {
+      "path": "Scripts/rrs_eq_cargo.js",
+      "sha256": "ccc4222f2eb1f69d97e12f6fd05f6b7c90e4dbb614d153aa48d92d97cc858f31"
+    },
+    {
+      "path": "Scripts/rescue_missions.js",
+      "sha256": "0df0c819f618ee2927fa5a20a2bdbee47957742f5013d01e3a149471a9e4449f"
+    },
+    {
+      "path": "Scripts/rescue_news.js",
+      "sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_sbdefAI.plist",
+      "sha256": "c355d4a5bbe0a92979520cc04ed8c4b4b69754b5db70348f777c6666b28f1a56"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_slaverAI.plist",
+      "sha256": "6ff82830f0348814de5d13176fb13238c6eff5084c931e297ac0318969875759"
+    },
+    {
+      "path": "AIs/rescue_scenario_4a_slaverbaseAI.plist",
+      "sha256": "361331a3577cb4a4b928c9f515098ca8b8e49dda5250fb6fd90c56389363187e"
+    },
+    {
+      "path": "Config/shipdata.plist",
+      "sha256": "489517ba8d056211bb58a789113638476643d540eb05091f19709258fbbc073d"
+    },
+    {
+      "path": "Config/equipment.plist",
+      "sha256": "9ef6e45552d52b5a0ccf83f87e2bcef33e1b4d8c09dcf34a4042cb84c8f1f997"
+    },
+    {
+      "path": "Config/missiontext.plist",
+      "sha256": "7dd04953048531809d2079503fbbb1d06db695ee9aa6dba77490e1868c90ea1a"
+    }
+  ],
+  "scope": "Selected main/child callbacks for research-open4a. Source defects and missing custody are asserted as observations, not approved gameplay. No complete route/ship/AI/project profile readiness claim.",
+  "runtime": "v26.9.0",
+  "total": 74,
+  "passed": 74,
+  "cases": [
+    {
+      "name": "ejection strict third energy 99.99",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.20045799999999758,
+      "passed": true
+    },
+    {
+      "name": "ejection strict third energy 100",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.008459000000001993,
+      "passed": true
+    },
+    {
+      "name": "ejection timer starts1second repeats2seconds",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.7540829999999943,
+      "passed": true
+    },
+    {
+      "name": "pod ejection stage 30",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.034250000000000114,
+      "passed": true
+    },
+    {
+      "name": "pod ejection stage 40",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.009292000000002076,
+      "passed": true
+    },
+    {
+      "name": "pod ejection stage 41",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.005707999999998492,
+      "passed": true
+    },
+    {
+      "name": "five pods then sixth timer tick transitions40/jump",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.027082999999997526,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 30",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.017499999999998295,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 31",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.007125000000002046,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 34",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.010874999999998636,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 35",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.004958000000002016,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 39",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.003667000000000087,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 40",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.0030000000000001137,
+      "passed": true
+    },
+    {
+      "name": "slaver death source pods/state 41",
+      "source": "Scripts/rescue_scenario_4a_slaver.js",
+      "source_sha256": "d60a2998f743035e1cc08bb259b687cc4ddd25f7569e7c1dac5dea363881093c",
+      "duration_ms": 0.002834000000000003,
+      "passed": true
+    },
+    {
+      "name": "player pod scoop unverifiedholder/source stage 2",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.03612499999999841,
+      "passed": true
+    },
+    {
+      "name": "player pod scoop unverifiedholder/source stage 30",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.007166000000005113,
+      "passed": true
+    },
+    {
+      "name": "player pod scoop unverifiedholder/source stage 40",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.004791000000004431,
+      "passed": true
+    },
+    {
+      "name": "player pod scoop unverifiedholder/source stage 41",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.003917000000001281,
+      "passed": true
+    },
+    {
+      "name": "player pod scoop unverifiedholder/source stage 44",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.003875000000000739,
+      "passed": true
+    },
+    {
+      "name": "player pod scoop unverifiedholder/source stage 45",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.003917000000001281,
+      "passed": true
+    },
+    {
+      "name": "NPC scoop has no native failure/counter receipt",
+      "source": "Scripts/rescue_scenario_4a_slaverpod.js",
+      "source_sha256": "801db6d33c3973abd32feef83405b348649ed32e1fdd70c23cb50eecee1621a1",
+      "duration_ms": 0.050916999999998325,
+      "passed": true
+    },
+    {
+      "name": "base attack emergency slaver gate 0,300,true,11",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.0359589999999983,
+      "passed": true
+    },
+    {
+      "name": "base attack emergency slaver gate 1,99.99,true,11",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.006292000000001963,
+      "passed": true
+    },
+    {
+      "name": "base attack emergency slaver gate 1,100,true,11",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.0030420000000006553,
+      "passed": true
+    },
+    {
+      "name": "base attack emergency slaver gate 0,300,false,11",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.002625000000001876,
+      "passed": true
+    },
+    {
+      "name": "base attack emergency slaver gate 0,300,true,30",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.0025839999999988095,
+      "passed": true
+    },
+    {
+      "name": "defender sends FOUND_BASE while source AI expects BASE_FOUND",
+      "source": "Scripts/rescue_scenario_4a_sbdef.js",
+      "source_sha256": "e9af9f592a7c71d583ca3b1f47b26eeafa6ec4f237107db14b959e64c93e88b6",
+      "duration_ms": 0.03458299999999781,
+      "passed": true
+    },
+    {
+      "name": "forced launch/damage precedes undefined rstation error",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.2048330000000007,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n1 U0",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.05229200000000134,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n1 U0.9999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.01041699999999679,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n2 U0",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.009583000000006336,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n2 U0.9999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.009124999999997385,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n3 U0",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.009124999999997385,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n3 U0.9999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.008958000000006905,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n4 U0",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.009083000000003949,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n4 U0.9999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.009000000000000341,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n5 U0",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.00954099999999869,
+      "passed": true
+    },
+    {
+      "name": "medical station source pilot lottery/initial rewards n5 U0.9999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.0105829999999969,
+      "passed": true
+    },
+    {
+      "name": "source slaver failure reputation 80",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.02199999999999136,
+      "passed": true
+    },
+    {
+      "name": "source slaver failure reputation 1000",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.008082999999999174,
+      "passed": true
+    },
+    {
+      "name": "source slaver failure reputation 1001",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.007874999999998522,
+      "passed": true
+    },
+    {
+      "name": "variant gate 19,0,1,0.5,true,true",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.025832999999991557,
+      "passed": true
+    },
+    {
+      "name": "variant gate 20,50,1,0.6,true,true",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.02112500000001205,
+      "passed": true
+    },
+    {
+      "name": "variant gate 20,51,1,0.5,true,true",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.007374999999996135,
+      "passed": true
+    },
+    {
+      "name": "variant gate 20,0,0,0.5,true,true",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.006875000000007958,
+      "passed": true
+    },
+    {
+      "name": "variant gate 20,0,1,0.600001,true,true",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.006624999999999659,
+      "passed": true
+    },
+    {
+      "name": "variant gate 20,0,1,0.5,false,true",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.00750000000000739,
+      "passed": true
+    },
+    {
+      "name": "variant gate 20,0,1,0.5,true,false",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.007625000000004434,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 0,0,0",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.028666999999998666,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 6,1,6",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.009500000000002728,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 14.99,1,25",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.015500000000002956,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 15,1,15",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.010082999999994513,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 6,2,6",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.008667000000002645,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 6,1,",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.0098339999999979,
+      "passed": true
+    },
+    {
+      "name": "native target no lower bound 6,1,25.001",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.008082999999999174,
+      "passed": true
+    },
+    {
+      "name": "expiry only before contact 2,200",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.028874999999999318,
+      "passed": true
+    },
+    {
+      "name": "expiry only before contact 2,200.01",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.017291999999997643,
+      "passed": true
+    },
+    {
+      "name": "expiry only before contact 10,200.01",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.00695899999999483,
+      "passed": true
+    },
+    {
+      "name": "expiry only before contact 11,99999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.006957999999997355,
+      "passed": true
+    },
+    {
+      "name": "expiry only before contact 30,99999",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.007709000000005517,
+      "passed": true
+    },
+    {
+      "name": "full home pay including late 1000",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.08258300000001384,
+      "passed": true
+    },
+    {
+      "name": "full home pay including late 1001",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.010750000000001592,
+      "passed": true
+    },
+    {
+      "name": "first medical station is home 90,199.99",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.02049999999999841,
+      "passed": true
+    },
+    {
+      "name": "first medical station is home 90,200",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.012374999999991587,
+      "passed": true
+    },
+    {
+      "name": "first medical station is home 91,200.01",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.011249999999989768,
+      "passed": true
+    },
+    {
+      "name": "away medical screens90->91->100",
+      "source": "Scripts/rescue_scenario_4a.js",
+      "source_sha256": "d2f22954d691ab69a1f1610853a1f0e1c0c6a17aa9144083544e71765d658f40",
+      "duration_ms": 0.03100000000000591,
+      "passed": true
+    },
+    {
+      "name": "source nil launch still sets30",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.012167000000005146,
+      "passed": true
+    },
+    {
+      "name": "slaver launch bounty doubling 0",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.02241700000000435,
+      "passed": true
+    },
+    {
+      "name": "slaver launch bounty doubling 0.9999",
+      "source": "Scripts/rescue_scenario_4a_slaverbase.js",
+      "source_sha256": "6526404a5f7054dd6a7bb45b6c92f71cd885d1d5e75acfab1ebb2238969af04e",
+      "duration_ms": 0.0035829999999918982,
+      "passed": true
+    },
+    {
+      "name": "optional source news inclusive boundary false,,0,0.1",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.026166000000003464,
+      "passed": true
+    },
+    {
+      "name": "optional source news inclusive boundary true,,0.1,0.1",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.02224999999999966,
+      "passed": true
+    },
+    {
+      "name": "optional source news inclusive boundary true,,0.100001,0.1",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.0024999999999977263,
+      "passed": true
+    },
+    {
+      "name": "optional source news inclusive boundary true,,0,0",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.004375000000010232,
+      "passed": true
+    },
+    {
+      "name": "optional source news inclusive boundary true,debug,0.99,0.1",
+      "source": "Scripts/rescue_news.js",
+      "source_sha256": "52dcc05179afdc55cbec081ecb89bc0e49a803212b0c2b0a2eb63a15ffb2d365",
+      "duration_ms": 0.004125000000001933,
+      "passed": true
+    }
+  ]
+}

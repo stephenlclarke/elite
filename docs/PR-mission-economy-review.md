@@ -1,5 +1,7 @@
 # Fix mission catalog replacement, resource updates and profit estimates
 
+Historical source handoff: the validation statements below describe its original checkpoint. Subsequent integration and exact-source execution are recorded in the [current qualified ledger](WHOLE-APP-REMEDIATION.md); they do not rewrite the original evidence.
+
 This change addresses [CR-03, CR-04, CR-08, CR-12 and CR-13](ISSUE-mission-economy-review.md) against central base `b2d882e719ff3906b6c390c0df1ae57cfabae6e3`. The production and regression source checkpoint is `2d683988e73e9b69b7435c4befb697fc85d94b34`.
 
 Gallery replacement retains the selected mission by its stable state ID across installed and missing-content entries. Removed selections are clamped, and detail access safely handles stale or empty catalogs. Installation checks the prospective external-file count before writing, permits identical reinstall at the original filename, and refuses an unrelated filename collision. A failed installation preserves both the current catalog and existing file bytes.

@@ -1,0 +1,265 @@
+{
+  "package_id": "P30",
+  "profile_id": "PROJECT-P30-MATERIALS-6-v1",
+  "scope": "Selected exact source replacements with mocked Oolite lexical scope. project.canTransfer stands for a real atomic cargo-fit/manifest transaction; native cargo/physics/AI/high-count batching and entry/save implementation still require native tests. Source count/late/custody/identity defects repaired, not claimed as recovered original outcomes.",
+  "runtime": "v26.9.0",
+  "total": 29,
+  "passed": 29,
+  "patches": [
+    {
+      "label": "Only0/0NaN count repaired to1; positive/zero Infinity retains4",
+      "from": "var x = Math.sqrt(Math.random()/Math.random());",
+      "to": "var x = Math.sqrt(Math.random()/Math.random());\n if (Number.isNaN(x)) return 1;"
+    },
+    {
+      "label": "Explicit non-replay offer choice",
+      "from": "this.missionOfferDecision = function (choice) {",
+      "to": "this.missionOfferDecision = function (choice) {\n if (project.accepted || ![\"NO\",\"YES\",\"MAP\"].includes(choice)) return;"
+    },
+    {
+      "label": "Actual cargo acceptance receipt/clock anchor precedes accepted stage",
+      "from": "missionVariables.rescuestation_stage = 2;",
+      "to": "if (!project.canTransfer()) return;\n project.accepted=true;\n missionVariables.rescuestation_deadline=clock.seconds+project.duration;\n missionVariables.rescuestation_stage = 2;"
+    },
+    {
+      "label": "Restore valid system0 map target",
+      "from": "if (worldScripts[\"Rescue Stations\"].restoreDestination) {",
+      "to": "if (worldScripts[\"Rescue Stations\"].restoreDestination !== undefined) {"
+    },
+    {
+      "label": "Actual unique package/exact destination/first arrival receipt",
+      "from": "if (rstation.hasRole(\"rescue_station\") && system.ID == missionVariables.rescuestation_destsystem && missionVariables.rescuestation_stage == 2) {",
+      "to": "if (project.active && project.arrival === null && project.hasPackage && rstation === project.destination && system.ID == missionVariables.rescuestation_destsystem && missionVariables.rescuestation_stage == 2) {\n project.arrival=clock.seconds;"
+    },
+    {
+      "label": "Late outcome uses actual arrival once, not delayed debrief clock",
+      "from": "var lateness = clock.seconds - missionVariables.rescuestation_deadline;",
+      "to": "if (!project.active || project.outcomeConsumed || project.arrival === null) return;\n project.outcomeConsumed=true;\n var lateness = project.arrival - missionVariables.rescuestation_deadline;"
+    },
+    {
+      "label": "On-time reward actual delivery receipt once",
+      "from": "var reward = missionVariables.rescuestation_reward;",
+      "to": "if (!project.active || project.outcomeConsumed || project.arrival === null) return;\n project.outcomeConsumed=true;\n var reward = missionVariables.rescuestation_reward;"
+    },
+    {
+      "label": "One same-attempt genuine jump-entry budget draw",
+      "from": "this.rescue_shipWillExitWitchspace = function() {",
+      "to": "this.rescue_shipWillExitWitchspace = function() {\n if (!project.active || !project.accepted || project.arrival !== null || project.entryConsumed) return;\n project.entryConsumed=true;"
+    },
+    {
+      "label": "Require requested actual wave and track own actors",
+      "from": "for (var i=0;i<assassins.length;i++) {",
+      "to": "if (!assassins || assassins.length !== appear) { worldScripts[\"Rescue Stations\"].failMission(); return; }\n project.ownHunters.push(...assassins);\n for (var i=0;i<assassins.length;i++) {"
+    },
+    {
+      "label": "Own actual nearby living hunter speech only",
+      "from": "var assassins = system.shipsWithPrimaryRole(\"rrs-vicious-hunter\",player.ship,25600);",
+      "to": "var assassins = project.active && project.accepted && project.arrival === null ? project.ownHunters.filter(s=>s.isValid !== false && s.position.distanceTo(player.ship.position)<=25600) : [];"
+    }
+  ],
+  "cases": [
+    {
+      "name": "materials finite count repair 0,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.20049999999999812,
+      "passed": true
+    },
+    {
+      "name": "materials finite count repair 0.5,0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.014582999999994684,
+      "passed": true
+    },
+    {
+      "name": "materials finite count repair 0,0.5",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.009000000000000341,
+      "passed": true
+    },
+    {
+      "name": "materials finite count repair 0.5,0.125",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.010209000000003243,
+      "passed": true
+    },
+    {
+      "name": "materials finite count repair 0.9,0.1",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.009042000000000883,
+      "passed": true
+    },
+    {
+      "name": "materials finite count repair 0.64,0.04",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.007207999999998549,
+      "passed": true
+    },
+    {
+      "name": "materials explicit cargo-fit acceptance dismiss",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.04266600000000409,
+      "passed": true
+    },
+    {
+      "name": "materials explicit cargo-fit acceptance back",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.007332999999995593,
+      "passed": true
+    },
+    {
+      "name": "materials explicit cargo-fit acceptance full",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.012541999999996278,
+      "passed": true
+    },
+    {
+      "name": "materials explicit cargo-fit acceptance accept",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.05124999999999602,
+      "passed": true
+    },
+    {
+      "name": "materials explicit cargo-fit acceptance decline",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.018750000000004263,
+      "passed": true
+    },
+    {
+      "name": "materials map restores 0",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.04958299999999838,
+      "passed": true
+    },
+    {
+      "name": "materials map restores 7",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.009917000000001508,
+      "passed": true
+    },
+    {
+      "name": "materials actual destination/custody exact",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.03220799999999713,
+      "passed": true
+    },
+    {
+      "name": "materials actual destination/custody role-clone",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.0061249999999972715,
+      "passed": true
+    },
+    {
+      "name": "materials actual destination/custody missing-package",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005915999999999144,
+      "passed": true
+    },
+    {
+      "name": "materials actual destination/custody terminal",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.004666000000000281,
+      "passed": true
+    },
+    {
+      "name": "materials frozen actual arrival and once outcome on-time",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.07233299999999332,
+      "passed": true
+    },
+    {
+      "name": "materials frozen actual arrival and once outcome equal",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.020708999999996536,
+      "passed": true
+    },
+    {
+      "name": "materials frozen actual arrival and once outcome one-day",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.013708000000001164,
+      "passed": true
+    },
+    {
+      "name": "materials frozen actual arrival and once outcome ten-days",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.02983300000000355,
+      "passed": true
+    },
+    {
+      "name": "materials jump-entry budget/actual wave real",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.07195799999999508,
+      "passed": true
+    },
+    {
+      "name": "materials jump-entry budget/actual wave duplicate",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.012167000000005146,
+      "passed": true
+    },
+    {
+      "name": "materials jump-entry budget/actual wave arrived",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.005542000000005487,
+      "passed": true
+    },
+    {
+      "name": "materials jump-entry budget/actual wave terminal",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.004832999999997867,
+      "passed": true
+    },
+    {
+      "name": "materials jump-entry budget/actual wave short",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.02041600000000443,
+      "passed": true
+    },
+    {
+      "name": "materials jump-entry budget/actual wave remainder-one",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.006334000000002504,
+      "passed": true
+    },
+    {
+      "name": "materials no ambient threat authority false",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.01937499999999659,
+      "passed": true
+    },
+    {
+      "name": "materials no ambient threat authority true",
+      "source": "Scripts/rescue_scenario_6.js",
+      "source_sha256": "3d78a5605b5953bc5780cf95e215d8832c7167d1e093f3b87f20efae9b8c216f",
+      "duration_ms": 0.015417000000006453,
+      "passed": true
+    }
+  ]
+}

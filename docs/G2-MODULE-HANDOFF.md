@@ -1,5 +1,7 @@
 # Encounter and mining modules
 
+Historical module handoff, retained for its original API and evidence. Its integration and pending-slice statements are historical; encounter, mining, salvage and persistence consumers have since changed. Consult the [current qualified ledger](WHOLE-APP-REMEDIATION.md) and [NPC resource mapping](PR-npc-resources-persistence.md) for current source and acceptance.
+
 These independent modules require G1 runtime integration. Passing module tests
 does not establish delivery in normal play.
 

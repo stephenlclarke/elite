@@ -18,9 +18,9 @@ Paths in the table are under `Sources/EliteCore` and `Tests/EliteCoreTests`. The
 
 Actual NPC hyperspace actions and their fuel consumption remain outside this checkpoint. Offscene coasting does not invent AI actions, jump consumption or solar collection. Mission craft retain their explicitly separate legacy energy-only behavior.
 
-## Current validation and delivery gates
+## Historical checkpoint 094 and final delivery gates
 
-Coordinator run 094 on the frozen source failed in coverage. Reported failures include a nested campaign-trial stack overflow/SIGBUS and Cabin, combat, Gallery and help assertions. The run is nonpassing; it cannot qualify this handoff, and passing individual focused cases do not close the integrated gate. Repairs remain with their assigned integration owners.
+This section retains the original checkpoint 094 handoff. Later exact-source results and outstanding release gates are recorded in the [current qualified ledger](WHOLE-APP-REMEDIATION.md). Coordinator run 094 on the frozen source failed in coverage. Reported failures include a nested campaign-trial stack overflow/SIGBUS and Cabin, combat, Gallery and help assertions. The run is nonpassing; it cannot qualify this handoff, and passing individual focused cases do not close the integrated gate. Repairs remain with their assigned integration owners.
 
 Acceptance still requires `make ci` on the final integrated source, including coverage, both sanitizers and leak gates, and renderer-produced media from `make readme-media`. No build, test or renderer execution was performed for this document. Required final-head PR review and GitHub checks must complete before merge; main-only Sonar analysis must use the exact committed main SHA.
 

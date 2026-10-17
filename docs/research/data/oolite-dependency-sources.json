@@ -1,0 +1,385 @@
+{
+  "access_date": "2026-10-13",
+  "packages": [
+    {
+      "description": "Adds a range of ships and stations to each dictatorship and offers new trading opportunities to players.",
+      "category": "Systems",
+      "download_url": "https://wiki.alioth.net/img_auth.php/e/e2/Dictators_2.8.oxz",
+      "version": "2.8",
+      "required_oolite_version": "1.82",
+      "author": "Ramirez, phkb, gsagostinho",
+      "upload_date": "1770183837",
+      "requires_oxps": [
+        {
+          "version": "2.5",
+          "identifier": "oolite.oxp.spara.ImperialAstrofactory"
+        }
+      ],
+      "license": "CC BY-NC-SA 3",
+      "information_url": "http://wiki.alioth.net/index.php/Dictators_OXP",
+      "title": "Dictators",
+      "maximum_oolite_version": "",
+      "identifier": "oolite.oxp.Ramirez.Dictators",
+      "file_size": "29949446",
+      "conflict_oxps": [],
+      "optional_oxps": [
+        {
+          "version": "1.16.2",
+          "identifier": "oolite.oxp.Ramirez.FeudalStates"
+        }
+      ],
+      "sha256": "2dfffe33eb648ac5b52ae90ccb2f35575c5c60f5774bd51166256df3bde4a33e",
+      "bytes_fetched": 29949446,
+      "files": [
+        {
+          "path": "AIs/ambienceAttackerAI.js",
+          "sha256": "001e365746ebb5fd299418137758e785410de6373dd950eb9cdfdde5619f9f3c",
+          "bytes": 1599
+        },
+        {
+          "path": "AIs/imperialpoliceAI.plist",
+          "sha256": "509fcce76a6cd96791966f4171c0f2662bd786b6f7e2c398d5cacbc96d57a4e5",
+          "bytes": 4323
+        },
+        {
+          "path": "AIs/imptransportAI.plist",
+          "sha256": "c08959dabfd6b40be64c46a28c4b94f12d51240234261ca9e3f0505fb6942dd0",
+          "bytes": 2921
+        },
+        {
+          "path": "AIs/juntapoliceAI.plist",
+          "sha256": "da87b711aea53b7385181c833350f77097b1e1abd23178c343785c52ee3f4bd0",
+          "bytes": 4214
+        },
+        {
+          "path": "AIs/loaderAI.plist",
+          "sha256": "ff7de978ec2d96f1ba04efe867ce462405b4f956214fc05ad4ebf9755f92afd1",
+          "bytes": 1563
+        },
+        {
+          "path": "AIs/prisonshipAI.plist",
+          "sha256": "a58807f27da8d657e83d64e6b3d68c6a35013da8f66d9af4ef1b78aa743cd041",
+          "bytes": 2179
+        },
+        {
+          "path": "Config/descriptions.plist",
+          "sha256": "4c41cbe494b7613fe759dc140c9db1448d78dc1f0faad0facd3ee801f9cd60a7",
+          "bytes": 3335
+        },
+        {
+          "path": "Config/missiontext.plist",
+          "sha256": "28e714266f1a2e89538f35c39af7ec4866afc65632bbfcc56e867a4bb44d064c",
+          "bytes": 12033
+        },
+        {
+          "path": "Config/role-categories.plist",
+          "sha256": "78e1a1b4cda847392235bb3d12e509444520a9218562e7ea1f4294279f87b17e",
+          "bytes": 78
+        },
+        {
+          "path": "Config/shipdata.plist",
+          "sha256": "1deca2139df947b20625778b3ee1aa3473ccf2471a91fc55075a3ab521d6ea8b",
+          "bytes": 52567
+        },
+        {
+          "path": "Config/shiplibrary.plist",
+          "sha256": "b84d59ded5bb273c3bbfffe58ded3c5120e804cb6801ca5ce4d27e145fa8c2d7",
+          "bytes": 1842
+        },
+        {
+          "path": "Config/world-scripts.plist",
+          "sha256": "218911beabffaad769ea1cdf1e0a2a57943b0d4c8dc06e9a80654f2d04abfce6",
+          "bytes": 82
+        },
+        {
+          "path": "Models/astrofactory.dat",
+          "sha256": "a815c2f87db8a817fb4443cb2b50ee1758c840cf620a4a408a2a4e6f6c800cc4",
+          "bytes": 69147
+        },
+        {
+          "path": "Models/dictators_cargo.dat",
+          "sha256": "1d4edaaa4bc26a1272e0dc1d90053c534bdc22efc87b88e6fef6d37d2375391d",
+          "bytes": 3272
+        },
+        {
+          "path": "Models/dictators_cargo_connect.dat",
+          "sha256": "87000231a26250e467d9f98fca32f465e3c3ee5f20b5d98fa4dbdf7485485023",
+          "bytes": 46486
+        },
+        {
+          "path": "Models/dictators_cargo_connect2.dat",
+          "sha256": "9b626a5ecf8b3a0a1e6c54115878e78d17fb33b3c24ff991bb7085a53acbebac",
+          "bytes": 46446
+        },
+        {
+          "path": "Models/dictators_freighter.dat",
+          "sha256": "261cd764c4c7e2202a12b598648aabe9e86684d74ea167be57ab710c186f73a2",
+          "bytes": 34054
+        },
+        {
+          "path": "Models/dictators_freighter_bay.dat",
+          "sha256": "542bc8f5376926b326ec961459ca454b93ea2a5a52d8569b042af4d98d6324e5",
+          "bytes": 11238
+        },
+        {
+          "path": "Models/dictators_freighter_engines.dat",
+          "sha256": "cb466fe4fd788b0e1f1434e8fa1544da3d55278bb21082f39e9b14793892d795",
+          "bytes": 62599
+        },
+        {
+          "path": "Models/dictators_freighter_parts.dat",
+          "sha256": "1a0c759067d7a5d3ab404a019aa48be5663e0636f126537c748ac5ca7d80c85f",
+          "bytes": 34800
+        },
+        {
+          "path": "Models/dictators_loader.dat",
+          "sha256": "ef559dd38f0cadce4551870217fd660533b515788663a7c180c5776c4e95be98",
+          "bytes": 36530
+        },
+        {
+          "path": "Models/factorydock.dat",
+          "sha256": "a33744862cbec68f0ba053ad914bc90856f5354036d35a93185640448a54cb5d",
+          "bytes": 1902
+        },
+        {
+          "path": "Scripts/ambienceAttacker.js",
+          "sha256": "c1971b07d1ed2c970d4f16e69bafacf69ac1bb3a280d7ce0dfd0aad9d7bb8c8e",
+          "bytes": 255
+        },
+        {
+          "path": "Scripts/astrofactory_market.js",
+          "sha256": "bcc7562244a1e35f9c6706615b49d6a511ff682b0cbf040814709aefd11e6fb6",
+          "bytes": 2212
+        },
+        {
+          "path": "Scripts/dictators.js",
+          "sha256": "ab22382975d2f97515354707c4775c7ad08e23408ac19e598f7b9b4cc4211eaf",
+          "bytes": 9176
+        },
+        {
+          "path": "Scripts/dictators_book.js",
+          "sha256": "4d19a66dc4bf78333de533c3f29b9d649a4198c7d81bce543c274a9ca0037510",
+          "bytes": 1198
+        },
+        {
+          "path": "Scripts/dictators_conditions.js",
+          "sha256": "595ed554968aa00ab66f0daf07e77cdcb03ea6031de1186c36353d9d4bfa7279",
+          "bytes": 1506
+        },
+        {
+          "path": "manifest.plist",
+          "sha256": "fee608e6e2fa1f0e94624043b87a74b7a3942086b8d6c7984a9cf2842230b217",
+          "bytes": 605
+        },
+        {
+          "path": "Readme.txt",
+          "sha256": "7abe7de1dc33b72f76326417ea5210711c17e53323d8c0914933236bf19fe57d",
+          "bytes": 4274
+        }
+      ]
+    },
+    {
+      "description": "Adds Galactic Navy Carriers to the game. Carriers include four different types of Behemoths and a Navy Class Carrier. In total 40 uniquely named carriers escorted by navy grade Vipers, Asps and Sidewinders.",
+      "category": "Dockables",
+      "download_url": "https://wiki.alioth.net/img_auth.php/f/f8/Behemoth_3.1.1.oxz",
+      "version": "3.1.1",
+      "required_oolite_version": "1.80",
+      "author": "ADCK, Aegidian, Griff, Eric Walch, PAGroove, SimonB, spara",
+      "upload_date": "1610873518",
+      "requires_oxps": [],
+      "license": "CC-BY-NC-SA 4.0",
+      "information_url": "http://wiki.alioth.net/index.php/Behemoth",
+      "title": "Behemoth",
+      "maximum_oolite_version": "",
+      "identifier": "oolite.oxp.spara.behemoth",
+      "file_size": "20039295",
+      "conflict_oxps": [],
+      "optional_oxps": [],
+      "sha256": "5e6d0f3d234f3f522a312100a22b3b048802ee75ee6a9d8e3cccbcde5283bad4",
+      "bytes_fetched": 20039295,
+      "files": [
+        {
+          "path": "AIs/behemothCarrierInterceptAI.plist",
+          "sha256": "ae775ee07937c188ca3e9295bc0239888b4adee3145bd97999672df9ebc4580f",
+          "bytes": 2624
+        },
+        {
+          "path": "AIs/behemothEscortAI.plist",
+          "sha256": "0aa58336d3b763dae00ff568f8721da60f10bbaf59553d590b64a019e6f8f1ba",
+          "bytes": 3694
+        },
+        {
+          "path": "AIs/behemothFighterDockingAI.plist",
+          "sha256": "862f511c82b4203b734699913ffff8a7bc4eabac19ecb37ea4e49dba37ff480c",
+          "bytes": 6887
+        },
+        {
+          "path": "AIs/behemothFighterInterceptAI.plist",
+          "sha256": "498b15e7247ba0ec595fce8802862b597d2f713f59d4d6190c61b6f6a0baf326",
+          "bytes": 2531
+        },
+        {
+          "path": "AIs/behemothGotoWaypointAI.plist",
+          "sha256": "cff39eb6ab7f0744568c40a41a32dd2d2a3d0a83ce1d15f7b029565195740ded",
+          "bytes": 1616
+        },
+        {
+          "path": "AIs/behemothPatrolAI.plist",
+          "sha256": "4f9e625bcfab9c0a31962619631cb3fe1d75cf99d10d01b126c18c62136ec390",
+          "bytes": 6795
+        },
+        {
+          "path": "AIs/behemothReceiveDockingAI.plist",
+          "sha256": "2c6af86a662e7d062c3b754bc605bef4544ad986e0ddc5c01ad12280668857d0",
+          "bytes": 1469
+        },
+        {
+          "path": "AIs/nccCarrierInterceptAI.plist",
+          "sha256": "65e36b387c01d017d8166aaec901bad24d1d5c95fe3c831e3667100ce5845a00",
+          "bytes": 2620
+        },
+        {
+          "path": "AIs/nccCollectorAI.plist",
+          "sha256": "814f8b67bdae13c7b217cd0bac6dbafe0644c963aabc602606b3ff5535e44d9f",
+          "bytes": 3411
+        },
+        {
+          "path": "AIs/nccPatrolAI.plist",
+          "sha256": "ce7d3fddf482dba8a753cff9117aad2de0909b6aac0229abf47bb1d4d47dfa77",
+          "bytes": 6786
+        },
+        {
+          "path": "Config/commodities.plist",
+          "sha256": "aa78ddd411269baabcaadde3dfd1e7696e02e04447f4ac8628419c0a1548ea8d",
+          "bytes": 1355
+        },
+        {
+          "path": "Config/script.js",
+          "sha256": "2445d86d5340522093b5bfd31a3e53f0d0dc49e1b822c7a704c03cc80575f0aa",
+          "bytes": 2465
+        },
+        {
+          "path": "Config/shipdata.plist",
+          "sha256": "eaa513e30719f656b318c180d1bd0c1ef68e1bd29952dd5fba6f33cad08f1b10",
+          "bytes": 111565
+        },
+        {
+          "path": "Models/behe3_adck_bhmtype1.dat",
+          "sha256": "297ba30e0147a958b7a976b44acac9256bd9e8d55b757c73efdafc0d34a7e487",
+          "bytes": 41513
+        },
+        {
+          "path": "Models/behe3_adck_bhmtype2.dat",
+          "sha256": "06f57742075f4f7adc26dc28aff36e8708594e20e9cd84aab62626fcaa6f0743",
+          "bytes": 50765
+        },
+        {
+          "path": "Models/behe3_adck_bhmtype3.dat",
+          "sha256": "80140b13a0eb4f3c92019460d4f73d7e3e729d34a019ce6b810dfbdd283fb5be",
+          "bytes": 63431
+        },
+        {
+          "path": "Models/behe3_adck_bhmtype4.dat",
+          "sha256": "7bbd3171c804d49994496ce698195e584580ebdc0ef9388009c479047548ab6b",
+          "bytes": 159910
+        },
+        {
+          "path": "Models/behe3_adck_navy-asp.dat",
+          "sha256": "830f13ae38b8ee6d6ca130c7628c2c0c6f5bf6c23dd84fa0f648aa677fa1831a",
+          "bytes": 79846
+        },
+        {
+          "path": "Models/behe3_adck_navy-viper.dat",
+          "sha256": "4332fc70754b0c48927caced26e38997f3733743ddb00070b33afd48aa5f7800",
+          "bytes": 115152
+        },
+        {
+          "path": "Models/behe3_griff-dock.dat",
+          "sha256": "5d37c664bf87a62068c7f866606ec5ec5c0dee8ac3d4015211fd56a475389348",
+          "bytes": 1797
+        },
+        {
+          "path": "Models/ncc_carrier-big-gun.dat",
+          "sha256": "ff79a24fa1d9df31ec4b0b80183eaa63bb33c4326944cce036d6013369883fa1",
+          "bytes": 8029
+        },
+        {
+          "path": "Models/ncc_carrier-big-turret.dat",
+          "sha256": "0d79d442e11a5e1f87ca9fa119940ab2284755f8f408f4bfca55dea96fba99b2",
+          "bytes": 14259
+        },
+        {
+          "path": "Models/ncc_carrier-cubes.dat",
+          "sha256": "8ff1270d7b3e81dd658f950df17f9d23358aee7c65453a0530d649cc7a6663d4",
+          "bytes": 129692
+        },
+        {
+          "path": "Models/ncc_carrier-smooths.dat",
+          "sha256": "e332de7d61d1f528aa8cd5ac1424545d467e94692febaadbdb51c589a41fab6d",
+          "bytes": 763339
+        },
+        {
+          "path": "Models/ncc_dock.dat",
+          "sha256": "6e5bb6b3e48ce7474682408712b2490210275fd3f158c6ce5cf725889aa0ca60",
+          "bytes": 2062
+        },
+        {
+          "path": "Models/ncc_nswx-peng.dat",
+          "sha256": "61f54eb78df83fe1e4c5f013b5b4c1ad39de5c38d1f6f658124abe1a1dbbeec7",
+          "bytes": 57432
+        },
+        {
+          "path": "Models/ncc_nswx-seng.dat",
+          "sha256": "589f0f0485f1618b5536dfc38dc669e786c36908c79a7e4d2ed66d7519133a36",
+          "bytes": 57196
+        },
+        {
+          "path": "Models/ncc_nswx.dat",
+          "sha256": "46ad0ccfdd43bd49a7811cd8c81dc38ddc97ae259f4ecc81fb8ab2c5950943f0",
+          "bytes": 68670
+        },
+        {
+          "path": "Models/ncc_thargon-collector.dat",
+          "sha256": "bc991f727e8434752b99e42bee13fce265ecdbf10750abf0f1d9829db958da49",
+          "bytes": 120827
+        },
+        {
+          "path": "Scripts/behemoth-carrier.js",
+          "sha256": "1b1b6085c3825e8ef8ac25b8695cc0fc87dbf6d195c99e094820c40c2d260ff3",
+          "bytes": 2062
+        },
+        {
+          "path": "Scripts/behemoth-fighter.js",
+          "sha256": "33b28ff647a851a206fbc6db55d5b55012f1d75eb0c1886c1f889c7289122c0c",
+          "bytes": 2428
+        },
+        {
+          "path": "Scripts/behemoth-market.js",
+          "sha256": "2d1bcac456cbe4560498053b612c6edbffab740db83c0f439e05a7e8d3b88479",
+          "bytes": 1128
+        },
+        {
+          "path": "Scripts/ncc_carrier.js",
+          "sha256": "2961c09ffa05742d7c57acfb151db153775bba45a2ddab0329a879fb336132fa",
+          "bytes": 2762
+        },
+        {
+          "path": "Scripts/ncc_collector.js",
+          "sha256": "3cde77e7550de916e6da9babfed90c39c53e8db1b209a73c1858493a524f72b4",
+          "bytes": 520
+        },
+        {
+          "path": "behemoth3.txt",
+          "sha256": "dc2388266e21ff59b1180389777d51638e18f5f816d7b8f458c8181affb33cd6",
+          "bytes": 1596
+        },
+        {
+          "path": "manifest.plist",
+          "sha256": "1529a205dad5b1836f2010e0d72788b087713ff1b9a0b3b4d6c28cd494eb439c",
+          "bytes": 557
+        }
+      ]
+    }
+  ],
+  "limits": "Source dependencies fetched for required mission roles; no original assets copied into repository. Current dependency versions do not establish old-distribution parity."
+}
