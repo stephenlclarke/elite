@@ -25,22 +25,52 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   return try #require(game.bodies.first { $0.missionActorID == identity })
 }
 
+private func fitScriptedPatrolTargeting(_ game: inout Game) throws {
+  let beforeHardware = game.commander
+  try game.commander.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .legacyUnknown)
+  try #require(game.commander.hasAutomaticDocking)
+  #expect(
+    game.commander.fittedEquipment(at: .targetingCore)?.node.key
+      == TargetingTier.docking.equipmentName)
+  #expect(
+    game.commander.credits == beforeHardware.credits && game.commander.cargo == beforeHardware.cargo
+  )
+  #expect(game.commander.scriptState == beforeHardware.scriptState)
+  #expect(
+    game.commander.contracts == beforeHardware.contracts
+      && game.commander.accommodation == beforeHardware.accommodation)
+  #expect(game.commander.laser(on: .front) == beforeHardware.laser(on: .front))
+  #expect(
+    game.commander.laserDamage(against: .sidewinder, mount: .front)
+      == beforeHardware.laserDamage(against: .sidewinder, mount: .front))
+}
+
 @Test func scriptedPatrolFightsActualTargetsAndReportsThroughNativeStationControls() async throws {
   var game = Game(executive: false)
   game.screen = .status
-  game.commander.installTargetingComputer(.docking)
+  try fitScriptedPatrolTargeting(&game)
   game.scriptPacks = [try ScriptPackLibrary.read(patrolDirectory)]
   let runtime = GameRuntime(game: game)
   await runtime.key("contacts-open")
   await runtime.key("return")
   let id = try #require(await runtime.snapshot().commander.scriptState.instances.keys.first)
   await runtime.key("0")
+  let legalBefore = await runtime.snapshot().commander.legal
+  try #require(legalBefore == 0)
   var firing = Controls()
-  firing.fire = true
-  await runtime.setControls(firing)
+  var observedFlash = false
   var battle = await runtime.snapshot()
   for _ in 0..<200 {
+    // Use actual outbound motion and tracking; fire only at a current owned hull contact.
+    firing = Controls()
+    if try campaignPatrolOutsideStationZone(await runtime.snapshot()) {
+      try await selectCampaignPatrolTarget(runtime, child: id)
+      firing.fire = try campaignPatrolHasActualLaserContact(await runtime.snapshot(), child: id)
+    }
+    await runtime.setControls(firing)
     battle = await runtime.advance(delta: 0.1)
+    observedFlash = observedFlash || battle.laserFlash > 0
     if battle.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true {
       break
     }
@@ -48,6 +78,7 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   #expect(battle.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true)
   #expect(battle.commander.kills == 2)
   #expect(battle.commander.scriptState.instances[id]?.data["phase"] == .string("report"))
+  #expect(observedFlash && battle.commander.legal == legalBefore)
   let combatBalance = battle.commander.credits
   await runtime.setControls(Controls())
   for _ in 0..<8 {
@@ -57,6 +88,7 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   var returned = await runtime.snapshot()
   for _ in 0..<5000 where !returned.docked { returned = await runtime.advance(delta: 0.02) }
   #expect(returned.docked && returned.dockedAtMainStation)
+  #expect(returned.commander.legal == legalBefore)
   await runtime.key("contacts-open")
   #expect(await runtime.snapshot().scriptOffer == id)
   await runtime.key("return")
@@ -251,7 +283,8 @@ private func actualActor(_ game: Game, alias: String, instance: UUID) throws -> 
   let canonical = try #require(
     game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.actors["lead"]?.body
       .position)
-  #expect(abs(canonical.z - oldCanonical.z) <= 6.01)  // Existing classic NPC actually advances at 60 units/s.
+  // Existing classic NPC actually advances at 60 units/s.
+  #expect(abs(canonical.z - oldCanonical.z) <= 6.01)
   try game.restoreScriptActors()
   #expect(game.bodies.filter { $0.id == 0 }.count == 1)
   #expect(game.bodies.filter { $0.missionActorID == lead.missionActorID }.count == 1)
