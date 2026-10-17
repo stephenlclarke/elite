@@ -589,8 +589,20 @@ private struct SweepTriangle: Sendable {
   let a: Vector3
   let b: Vector3
   let c: Vector3
-  var vertices: [Vector3] { [a, b, c] }
-  var edges: [(Vector3, Vector3)] { [(a, b), (b, c), (c, a)] }
+  func vertex(at index: Int) -> Vector3 {
+    switch index {
+    case 0: a
+    case 1: b
+    default: c
+    }
+  }
+  func edge(at index: Int) -> (Vector3, Vector3) {
+    switch index {
+    case 0: (a, b)
+    case 1: (b, c)
+    default: (c, a)
+    }
+  }
   var bounds: SweepBounds {
     .init(
       lower: .init(min(a.x, min(b.x, c.x)), min(a.y, min(b.y, c.y)), min(a.z, min(b.z, c.z))),
@@ -697,11 +709,22 @@ private func sweepPointTriangle(_ point: Vector3, _ triangle: SweepTriangle) -> 
   let normal = (triangle.b - triangle.a).cross(triangle.c - triangle.a)
   let square = normal.dot(normal)
   let projected = point - normal * ((point - triangle.a).dot(normal) / square)
-  let inside = triangle.edges.allSatisfy {
-    ($0.1 - $0.0).cross(projected - $0.0).dot(normal) >= 0
+  var inside = true
+  for index in 0..<3 {
+    let edge = triangle.edge(at: index)
+    if !((edge.1 - edge.0).cross(projected - edge.0).dot(normal) >= 0) {
+      inside = false
+      break
+    }
   }
   if inside { return abs((point - triangle.a).dot(normal)) / sqrt(square) }
-  return triangle.edges.map { sweepPointSegment(point, $0.0, $0.1) }.min() ?? .infinity
+  var distance = sweepPointSegment(point, triangle.a, triangle.b)
+  for index in 1..<3 {
+    let edge = triangle.edge(at: index)
+    let candidate = sweepPointSegment(point, edge.0, edge.1)
+    if candidate < distance { distance = candidate }
+  }
+  return distance
 }
 private func sweepRay(
   _ origin: Vector3, direction: Vector3, triangle: SweepTriangle
@@ -742,21 +765,33 @@ private func sweepSegmentDistance(_ a: (Vector3, Vector3), _ b: (Vector3, Vector
   return (r + d * s - e * t).length
 }
 private func sweepTriangleDistance(_ a: SweepTriangle, _ b: SweepTriangle) -> Double {
-  for (start, end) in a.edges {
+  for index in 0..<3 {
+    let (start, end) = a.edge(at: index)
     if let hit = sweepRay(start, direction: end - start, triangle: b), hit.distance <= 1 {
       return 0
     }
   }
-  for (start, end) in b.edges {
+  for index in 0..<3 {
+    let (start, end) = b.edge(at: index)
     if let hit = sweepRay(start, direction: end - start, triangle: a), hit.distance <= 1 {
       return 0
     }
   }
-  var distance = min(
-    a.vertices.map { sweepPointTriangle($0, b) }.min() ?? .infinity,
-    b.vertices.map { sweepPointTriangle($0, a) }.min() ?? .infinity)
-  for first in a.edges {
-    for second in b.edges { distance = min(distance, sweepSegmentDistance(first, second)) }
+  var distance = min(sweepVertexDistance(a, to: b), sweepVertexDistance(b, to: a))
+  for firstIndex in 0..<3 {
+    let first = a.edge(at: firstIndex)
+    for secondIndex in 0..<3 {
+      distance = min(distance, sweepSegmentDistance(first, b.edge(at: secondIndex)))
+    }
+  }
+  return distance
+}
+
+private func sweepVertexDistance(_ source: SweepTriangle, to target: SweepTriangle) -> Double {
+  var distance = sweepPointTriangle(source.a, target)
+  for index in 1..<3 {
+    let candidate = sweepPointTriangle(source.vertex(at: index), target)
+    if candidate < distance { distance = candidate }
   }
   return distance
 }
