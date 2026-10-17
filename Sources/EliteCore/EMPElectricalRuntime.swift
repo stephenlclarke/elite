@@ -269,12 +269,34 @@ extension Game {
   private mutating func disableEMPHull(
     id: Int, incident: CombatIncident, tool: OwnedEquipmentItem, context: EncounterContext
   ) -> Bool {
+    guard let preparation = prepareEMPDisable(id: id, context: context),
+      let custody = claimEMPSource(bodyID: id, context: context, pose: preparation.facts.pose),
+      var record = constructDisabledEMPRecord(
+        id: id, incident: incident, tool: tool, context: context,
+        preparation: preparation, custody: custody)
+    else { return false }
+    let ejections = sampleEMPCrewEjections(ordinals: record.aboardOrdinals)
+    guard
+      record.appendCrewDisableEpisode(
+        incident: incident, weapon: tool, owner: preparation.facts.owner, ejections: ejections),
+      record.valid
+    else { return false }
+    var state = preparation.facts.state
+    state.records[record.source] = record
+    if preparation.previousSource == nil { state.nextSequence += 1 }
+    commander.savedEMPState = state
+    notify("ENGINES AND WEAPONS DISABLED - CREW EJECTION PENDING")
+    return true
+  }
+
+  // Finish immutable eligibility reads before claiming the complete original source.
+  private func prepareEMPDisable(id: Int, context: EncounterContext) -> EMPDisablePreparation? {
     guard let actual = bodies.first(where: { $0.id == id }),
       let actor = actual.physical?.identity, let facts = commander.empDisableFacts(actor: actor),
       actual.physical?.npc?.resources?.electrical?.remaining == 0,
       actual.physical?.npc?.resources?.electrical?.disabledAt
         == facts.time
-    else { return false }
+    else { return nil }
     guard
       let index = bodies.firstIndex(where: { $0.id == id }),
       let physical = bodies[index].physical, let npc = physical.npc,
@@ -288,11 +310,11 @@ extension Game {
       EMPState.hasSupportedCrew(ship),
       let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue),
       let crew = try? ShipAccommodationProfile(ship: ship).operatingCrew, crew > 0
-    else { return false }
+    else { return nil }
     // A repeated hit has no new disable/ejection/loot transition or additional cost.
-    guard physical.empSource == nil else { return false }
-    var state = facts.state
-    guard state.valid else { return false }
+    guard physical.empSource == nil else { return nil }
+    let state = facts.state
+    guard state.valid else { return nil }
     let priorSource =
       facts.logical
       ?? state.records.first(where: {
@@ -303,63 +325,64 @@ extension Game {
       guard previous.isRecovered, !previous.terminal, previous.savedOrdinaryTerminal == nil,
         previous.crewAboard > 0,
         previous.disableEpisodes.count < EMPHullRecord.maximumDisableEpisodes
-      else { return false }
+      else { return nil }
     } else {
       guard state.records.count < EMPState.maximumHulls,
         crew <= EMPState.maximumPeople - state.records.values.reduce(0, { $0 + $1.crewTotal }),
         state.nextSequence < 1_000_000_000 - 1
-      else { return false }
+      else { return nil }
     }
-    guard let custody = claimEMPSource(bodyID: id, context: context, pose: facts.pose),
-      let current = bodies.firstIndex(where: { $0.id == id })
-    else { return false }
+    return .init(
+      facts: facts, previousSource: previous?.source, catalogue: catalogue, crew: crew,
+      profile: profile, originalSpawn: physical.spawnIdentity,
+      cargo: npc.ordinaryCargo, legal: npc.legal)
+  }
+
+  // Construct the record after custody admission, before sampling or validating its episode.
+  private mutating func constructDisabledEMPRecord(
+    id: Int, incident: CombatIncident, tool: OwnedEquipmentItem, context: EncounterContext,
+    preparation: EMPDisablePreparation, custody: EMPSourceCustody
+  ) -> EMPHullRecord? {
+    guard let current = bodies.firstIndex(where: { $0.id == id }) else { return nil }
+    let previous = preparation.previousSource.flatMap { preparation.facts.state.records[$0] }
     let logical = previous?.source ?? custody.logical
-    guard previous == nil || custody.logical == logical else { return false }
-    let sequence = previous?.sequence ?? state.nextSequence
+    guard previous == nil || custody.logical == logical else { return nil }
+    let sequence = previous?.sequence ?? preparation.facts.state.nextSequence
     let wreck =
       previous?.wreck
       ?? WreckIdentity(
         system: context.system,
         site: 0x8000_0000 + UInt32(sequence), lineage: logical.visit)
     bodies[current].physical?.canonicalSpin = true
-    bodies[current].physical?.catalogueShipID = catalogue
+    bodies[current].physical?.catalogueShipID = preparation.catalogue
     bodies[current].physical?.spawnIdentity = .init(
       system: context.system, visit: context.visit, sequence: sequence, member: 0, producer: .emp)
     bodies[current].physical?.empSource = logical
     bodies[current].physical?.salvage = .init(
       category: .wreck, ownership: .occupied, claimant: nil, wreck: wreck, section: nil, lot: nil,
-      bounds: profile.bounds, workSurfaces: profile.surfaces(wreck: wreck))
+      bounds: preparation.profile.bounds, workSurfaces: preparation.profile.surfaces(wreck: wreck))
     var record: EMPHullRecord
     if var retained = previous {
       retained.hull = .init(
-        body: bodies[current], pose: facts.pose,
+        body: bodies[current], pose: preparation.facts.pose,
         time: context.physicalTime)
       retained.savedCurrentTrafficTransfer = custody.traffic
-      retained.savedCurrentCargo = npc.ordinaryCargo
-      retained.savedCurrentLegal = npc.legal
+      retained.savedCurrentCargo = preparation.cargo
+      retained.savedCurrentLegal = preparation.legal
       retained.savedRecoveredAt = nil
       retained.savedOrdinaryTerminal = nil
       record = retained
     } else {
       record = EMPHullRecord(
-        source: logical, sequence: sequence, wreck: wreck, crewTotal: crew,
-        originalSpawn: physical.spawnIdentity, originalBodyID: id, custody: custody,
-        disableIncident: incident, weapon: tool, weaponOwner: facts.owner,
+        source: logical, sequence: sequence, wreck: wreck, crewTotal: preparation.crew,
+        originalSpawn: preparation.originalSpawn, originalBodyID: id, custody: custody,
+        disableIncident: incident, weapon: tool, weaponOwner: preparation.facts.owner,
         hull: .init(
-          body: bodies[current], pose: facts.pose,
-          time: context.physicalTime), cargo: npc.ordinaryCargo, legal: npc.legal,
+          body: bodies[current], pose: preparation.facts.pose,
+          time: context.physicalTime), cargo: preparation.cargo, legal: preparation.legal,
         nextEjectionAt: context.physicalTime + 1)
     }
-    let ejections = sampleEMPCrewEjections(ordinals: record.aboardOrdinals)
-    guard
-      record.appendCrewDisableEpisode(
-        incident: incident, weapon: tool, owner: facts.owner, ejections: ejections), record.valid
-    else { return false }
-    state.records[logical] = record
-    if previous == nil { state.nextSequence += 1 }
-    commander.savedEMPState = state
-    notify("ENGINES AND WEAPONS DISABLED - CREW EJECTION PENDING")
-    return true
+    return record
   }
 }
 
@@ -404,6 +427,16 @@ private struct EMPDisableFacts {
   let owner: UUID
   let state: EMPState
   let logical: ActorIdentity?
+}
+private struct EMPDisablePreparation {
+  let facts: EMPDisableFacts
+  let previousSource: ActorIdentity?
+  let catalogue: String
+  let crew: Int
+  let profile: SalvageProfile
+  let originalSpawn: SpawnIdentity?
+  let cargo: [CommodityAmount]
+  let legal: LegalRecord
 }
 private struct EMPSourceClaimFacts {
   let logical: ActorIdentity
