@@ -1,33 +1,31 @@
-# Observe native station geometry during the reported fly-through
+# Render complete station surfaces and resolve structural contact
 
-## Result
+## Problem and resulting behavior
 
-Opt-in native frame profiling now records explicit window, docked, paused, camera, energy, shield and message state, including the state at a refused frame. The original combined guard is split into the same two required conditions with distinct failure reasons. A read-only Core projection returns the actual bound station identity, rendered and canonical poses, source mesh counts/bounds, center range, effective player radius and the same conservative sweep result used by native station collision handling.
+The native flyby displayed large, apparently incomplete blue panels. Actual diagnostic capture 310 identifies the object as the RRS waystation and confirms that this particular flight passed clear of its solid structure: 1423 consistent station observations, no blocked resolved sweep, and full player shields and energy. Independent source witnesses identify inverted face conventions in the closed exterior components and open receiving interiors. Separately, the collision handler applied damage while retaining the attempted player pose, allowing travel after a genuine structural contact.
 
-An additional `--profile-station-geometry` option captures at most three actual AppKit renderer views for approach, close pass and failed clearance, each with its corresponding sample JSON. Capture draws remain identified and excluded from distinct-draw statistics. The production loop, normal commander, seed, original +Z heading, three-finger throttle, collision behavior, guarded active window, warm-up, trajectory and time budgets are unchanged. This diagnostic does not fix or dismiss the reported visual defect.
+Each audited component now explicitly converts its face order during assembly. Closed waystation and HQ rock surfaces face outward; open construction and receiving interiors follow their independent exterior/bore witnesses. All original vertices, embedded source faces, topology, openings, source roles and station identities remain retained. Waystation docking and launch fit use the smaller main bore (106.72374/44.20642), while the wider original liner geometry stays visible.
+
+Structural impact now stops player cruise, residual/work momentum, spin and automatic guidance. The response reprojects current actor and celestial poses into the retained player frame rather than restoring old body snapshots, preserving earlier NPC movement, projectiles, station spin, physical time and impact damage. Original main-station wrong-side contacts use the same stop with their existing contact and doorway predicates. Motion observers receive the retained endpoint; valid RRS entry keeps its separately swept endpoint and existing atomic publisher.
+
+## Rotating contact and uncertainty
+
+A rotating arm can reach a stationary ship's previous pose. When needed, the response carries that pose by the station's actual rigid rotation, bounds displacement by real surface movement and checks the full effective hull at the final station orientation and the current neighboring scene. It uses no arbitrary outward relocation or station/time rewind. Unresolved conservative contact stops and pauses flight with the existing time-scaled impact damage; it does not imply instant destruction or a proven safe endpoint. Invalid initial overlap remains unsupported.
+
+`stationImpactRevision` records the actual contact frame. G1 must join it at the future actual post-motion provider caller so contact transport cannot earn escort calibration credit. This change does not advertise or activate that incomplete provider capability.
 
 ## Validation
 
-Source parsing, strict formatting, scoped Markdown lint and whitespace checks precede source handoff. Two focused tests check actual bound source geometry, read-only behavior, unresolved time and refusal of a stale physical binding. Compilation, test execution and the enhanced native capture are pending the sole validation lease. The prior 309 compact protocol result is not native visual acceptance; fullscreen remains incomplete.
+Source parsing, strict formatting, scoped Markdown lint and whitespace checks passed before the source was frozen. Validation 310 passed two TSan observation tests and completed the actual compact diagnostic on the preceding diagnostic source; it is before-fix evidence, not acceptance of this repair. Fullscreen 309 stopped under the earlier ambiguous active-flight guard and remains incomplete.
 
-## Compatibility and remaining risk
+The reviewed focused selection has 27 unique methods and 39 expanded cases: component exterior/interior visibility, retained closed topology, bore fit, near-plane panels, actual manual/residual/work impacts, stationary rotating contact, independently moving NPC conservation, unresolved-contact refusal of instant death, genuine RRS/main doorway entry, automatic docking, native save/reload and entry-writer rollback. Original iterations, time steps and concurrency remain unchanged. Compilation and execution of this repair are pending validation 311. After a pass, one comparable corrected compact/fullscreen native capture remains required.
 
-The projection confers no gameplay, docking or collection authority. It performs extra opt-in diagnostic work, so compare performance only with the same instrumentation. A failed conservative sweep is a refused-clearance observation, not an exact penetration depth. Inspect the images and actual state before implementing the geometry or motion repair, then run the relevant regressions and native validation. No full CI, coverage, leak, clean GitHub review or release claim is made here.
+## Compatibility and remaining acceptance
+
+The geometry correction retains adapter identity `rrs-native-geometry-v1`, source coordinates, saved poses and receipt formats. Historical native entry already required a whole-hull structural sweep; the corrected fit envelope does not replace that proof. The read-only opt-in diagnostic projection and bounded AppKit captures confer no gameplay or docking authority. Their extra observation work requires identical instrumentation for any performance comparison.
+
+Full CI, coverage, sanitizer/leak gates, renderer-generated media, a completed clean GitHub review, protected merge, main-branch SonarQube and distribution validation remain outstanding for the coherent release. No native visual correctness, full-screen smoothness or before/after performance improvement is claimed by this source handoff.
 
 ## Link
 
 [ISSUE-native-station-flythrough.md](ISSUE-native-station-flythrough.md).
-
-## Structure and physical response correction
-
-Each of the five audited source component types explicitly converts its face convention during assembly. Closed waystation/HQ rock surfaces face outward; open construction and receiving interiors follow their independent front/bore witnesses. All original vertices, embedded source faces, connected topology, source roles, identities and openings remain retained. Waystation effective docking and launch fit use the actual smaller main bore, while the original wider liner geometry remains visible.
-
-The shared native station impact response refuses the attempted player pose and stops cruise, residual/work momentum, rotation and automatic guidance. It reprojects the current actor and celestial poses into the retained player frame instead of restoring old body snapshots, so earlier NPC movement, projectiles, station spin and impact damage remain committed. Original main-station wrong-side collisions use the same stop while retaining their existing doorway/contact predicates. Mission-frame observation occurs after the retained collision endpoint; valid RRS entry keeps its separately swept endpoint and publishes through the existing owner.
-
-New regressions cover exterior faces on both arms, both bore liners, HQ rock/front/eight bay interiors, closed topology and signed orientation, real narrow-bore fit and near-plane straddling panels. Native solid-arm tests drive manual cruise, residual momentum and work braking through the real tick path; separate checks preserve every current actor world pose and stop an original-main wrong-side impact. Existing genuine doorway entry, unsafe approach, automatic docking, save rollback and guided movement checks remain required. These source changes are not yet compiled or executed; the 310 pass applies to the prior diagnostic source only.
-
-## Rotating contact and unresolved geometry
-
-A prior ship pose is not automatically clear of a station at its new orientation. If necessary, contact transport applies only the station's actual rigid rotation to the prior ship pose. It bounds displacement by real surface movement and checks the whole effective hull at the final station orientation and the current surrounding scene. Other actors and physical time remain advanced. A conservative refusal cannot establish physical crushing: an unresolved contact stops and pauses flight with the existing time-scaled impact damage, rather than killing a full-energy commander or claiming a safe endpoint. Invalid initial overlap remains unsupported; no arbitrary outward relocation or station/time rewind is used.
-
-A stationary near-arm regression finds a genuinely clear initial placement against the actual mesh, proves the rotated surface reaches it, and checks bounded contact transport and final hull clearance. Collision-frame conservation now observes an independently moving ordinary NPC through the actual native tick. A separate invalid-start test verifies that conservative uncertainty cannot cause instant death. `stationImpactRevision` marks the actual physical frame so future provider attained-motion observations can refuse calibration credit for contact transport; G1 must join this at the actual post-motion caller.
