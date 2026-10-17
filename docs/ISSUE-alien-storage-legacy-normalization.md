@@ -24,3 +24,5 @@ This issue supplies seven new files: pure schema, pure validation, focused test 
 Authored regressions cover actual old producer/collector/settlement values, unknown terminal outcomes, structural and commodity chunk identities, partial work, old batch resets, mining damage distinctions, reserved versus ordinary stored custody, a 128-item settlement spanning multiple sections, immutable history and rejection of contradictory joins. The isolated source handoff is limited to formatting/parser, Markdown lint and source audits. Compilation, test execution, supported-record page encoding, actual native migration and `make ci` remain G1-owned integration checks.
 
 Related implementation details are in [PR-alien-storage-legacy-normalization.md](PR-alien-storage-legacy-normalization.md). No GitHub issue or PR number has been assigned.
+
+Run 307 stopped during test compilation because the offer fixture supplied `SpawnIdentity` arguments in the wrong declaration order; zero of the 51 selected methods ran. The narrow child correction preserves all fixture values, tests and assertions. It remains unexecuted pending G1's rerun.
