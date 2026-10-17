@@ -23,14 +23,44 @@ public struct ContractScreenSave: Codable, Sendable {
     (selection?.count ?? 0) <= 512 && (0...100000).contains(scroll) && previous != .contracts
   }
 }
+private enum ContractBoardReview: Sendable {
+  case contract(ContractAcceptanceQuote)
+  case rrs(RRSCourierQuote)
+}
+
 public struct ContractBoardUI: Sendable {
   public var selection = 0
   public var detail = false
   public var action: ContractBoardAction = .back
   public var scroll = 0
   public var rows: [ContractBoardRow] = []
-  public var quote: ContractAcceptanceQuote?
-  var rrsQuote: RRSCourierQuote?
+  private var review: ContractBoardReview?
+  public var quote: ContractAcceptanceQuote? {
+    get {
+      guard case .contract(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .contract(newValue)
+      } else if case .contract(_)? = review {
+        review = nil
+      }
+    }
+  }
+  var rrsQuote: RRSCourierQuote? {
+    get {
+      guard case .rrs(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .rrs(newValue)
+      } else if case .rrs(_)? = review {
+        review = nil
+      }
+    }
+  }
   var presentationGeneration = UUID()
   var reviewToken = UUID()
   var previous: Screen = .status
