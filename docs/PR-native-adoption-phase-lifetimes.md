@@ -1,0 +1,5 @@
+# fix(actors): finish native adoption before station admission
+
+`ensurePhysicalActors` now calls a private helper for its original system-entry, immutable flight snapshot and native-body adoption loop. After that helper returns, the unchanged station-admission call and refusal notification run. The original actor allocator, all predicates, identities, station checks, geometry, ownership and error handling remain. No cache, early return, removed validation, altered fixture, stack setting or serialization is introduced. See [the actual stopped path](ISSUE-native-adoption-phase-lifetimes.md).
+
+Inlining the helper reconstructs the entire original `GameplayScene.swift` byte-for-byte before formatting; proof `/tmp/elite-debug-composed-core-crash-281/actor-adoption-phases-source-proof.json`. Strict source formatting and whitespace checks pass. This source proof does not establish emitted stack reduction or runtime acceptance. The unchanged seventy-method composed batch and final `make ci` remain required.

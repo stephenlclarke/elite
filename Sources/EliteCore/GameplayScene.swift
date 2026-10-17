@@ -95,6 +95,14 @@ extension Game {
 
   /// Legacy/native encounter creators are adopted before their first attack.
   mutating func ensurePhysicalActors() {
+    adoptNativePhysicalActors()
+    do { try populateNativeStations() } catch {
+      notify("RRS STATION ADMISSION UNAVAILABLE", voiced: false)
+    }
+  }
+
+  // Release completed adoption buffers before station admission enters its own geometry checks.
+  private mutating func adoptNativePhysicalActors() {
     if commander.flightSimulation.system != systemIdentity {
       commander.flightSimulation.enter(systemIdentity, arriving: false)
     }
@@ -112,9 +120,6 @@ extension Game {
       guard let identity else { continue }
       let body = bodies[index]
       bodies[index].physical = nativePhysicalActorState(for: body, identity: identity)
-    }
-    do { try populateNativeStations() } catch {
-      notify("RRS STATION ADMISSION UNAVAILABLE", voiced: false)
     }
   }
 
