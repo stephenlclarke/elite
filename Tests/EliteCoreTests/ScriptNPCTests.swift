@@ -611,7 +611,9 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   #expect(game.commander == before)
   #expect(game.commander.playerMesh.vertices == playerMesh.vertices)
   #expect(game.commander.playerMesh.faces == playerMesh.faces)
-  #expect(game.commander.playerMesh.faceTextures == playerMesh.faceTextures)
+  #expect(game.commander.playerMesh.details == playerMesh.details)
+  #expect(game.commander.playerMesh.materials == playerMesh.materials)
+  #expect(game.commander.playerMesh.faceMaterials == playerMesh.faceMaterials)
   #expect(game.commander.valid)
 }
 
