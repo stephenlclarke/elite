@@ -543,9 +543,10 @@ private func aimNPCAtPlayer(_ game: inout Game, id: UUID) throws -> Int {
   record["body"] = body
   projectiles[1] = record
   json["savedProjectiles"] = projectiles
-  let forged = try JSONDecoder().decode(
-    ScriptEngineState.self, from: JSONSerialization.data(withJSONObject: json))
-  #expect(!forged.valid)
+  #expect(throws: MissionNativeBridgeError.invalidArchive) {
+    try JSONDecoder().decode(
+      ScriptEngineState.self, from: JSONSerialization.data(withJSONObject: json))
+  }
 }
 
 @Test func sweptSphereContactIncludesFacesEdgesCornersAndNonunitLocalDirections() {

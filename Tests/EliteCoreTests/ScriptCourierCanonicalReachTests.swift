@@ -72,6 +72,7 @@ struct ScriptCourierCanonicalReachTests {
     game.screen = .inventory
     try game.commander.prepareEquipment(legacy: false)
     game.commander.system = Plugh.systemID
+    game.commander.discoverPlugh(in: game.commander.galaxy)
     game.commander.credits = 1_000_000
     for tier in [NavigationTier.advanced, .military] {
       let item = try #require(Equipment.all.first { $0.name == tier.equipmentName })
