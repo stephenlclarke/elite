@@ -251,6 +251,10 @@ private func applyActualNPCLaser(
   let fixture = try NPCFixture()
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
+  try verifyComponentRayContactsAndBounty(&game, id: id)
+}
+
+private func verifyComponentRayContactsAndBounty(_ game: inout Game, id: UUID) throws {
   let index = try npcIndex(game, id)
   let targetID = game.bodies[index].id
   game.bodies[index].position = .init(0, 0, 2000)
