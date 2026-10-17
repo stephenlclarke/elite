@@ -1,5 +1,5 @@
 import AppKit
-import EliteCore
+@testable import EliteCore
 import Testing
 
 @testable import EliteMac
