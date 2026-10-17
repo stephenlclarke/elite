@@ -232,7 +232,8 @@ struct ScriptFinancePersistenceTests {
     try #require(commander.valid && !commander.usesEMPSaveVersion)
     var game = Game(executive: false)
     let before = game.commander
-    #expect(!game.load(commander) && game.commander == before)
+    let loaded = game.load(commander)
+    #expect(!loaded && game.commander == before)
     let raw = fixture.storage.root.appendingPathComponent("raw-finance.json")
     try JSONEncoder().encode(commander).write(to: raw)
     let reader = GameRuntime()

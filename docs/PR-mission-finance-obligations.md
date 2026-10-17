@@ -19,3 +19,5 @@ This worker has not compiled, typechecked or executed any test or native app. Bo
 ## Remaining requirements
 
 The [problem](ISSUE-mission-finance-obligations.md) and [original example](mission-packs/finance-obligation/README.md) describe this generic profile. Historical GSE has different short/zero-payment closure and timing rules and is not delivered here. Interest, escrow, default/instalment scheduling, secondary finance facilities, content migration tooling and complete P04/P19 adaptation remain open. This first vertical slice does not complete the mission engine or R06 as a whole.
+
+The raw-load refusal fixture evaluates its one mutating Game load before the assertion macro, retaining the same refusal polarity and complete unchanged-Commander comparison. This is fixture evaluation staging only; production behavior, financial custody guards and test budgets stay unchanged.
