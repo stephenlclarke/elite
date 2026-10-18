@@ -10,6 +10,8 @@ Nonempty journals use exact envelopes 31/32, joined to Alien presence and existi
 
 ## Validation
 
+The ordinary in-memory `Game.load(Commander)` path also explicitly refuses any present clue journal. Its focused regression earns a real protected terminal award using a checked version-two equipment shape, asserts that every earlier loader guard passes, verifies rejection preserves installed state, then removes only the journal and proves the corresponding Commander remains loadable. Current-format store and actor restoration retain their separate checked paths.
+
 Source-only regressions exercise real guarded contact confirmation and protected Lua settlement, publication rollback, replay, excluded outcomes/acceptance, untrusted name/version claims, exact-ID progress, source removal, hull transfer, escape, cold read/write and rehashed save tampering. Alien coexistence uses the existing checked storage fixture and does not claim native acquisition gameplay.
 
 Swift formatting, Markdown lint and `git diff --check` are the permitted local static checks. Compilation, focused test execution, full `make ci`, coverage, sanitizer/leak gates and final PR checks remain with G1. Before merge, request `@codex review`, resolve every actionable finding and repeat until clean on the final head.

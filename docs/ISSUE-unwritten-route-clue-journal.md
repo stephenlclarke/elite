@@ -14,6 +14,8 @@ Reserve exact save envelopes 31 without Alien storage and 32 with Alien storage 
 
 ## Acceptance and limits
 
+The ordinary in-memory `Game.load(Commander)` path also explicitly refuses any present clue journal. Its focused regression earns a real protected terminal award using a checked version-two equipment shape, asserts that every earlier loader guard passes, verifies rejection preserves installed state, then removes only the journal and proves the corresponding Commander remains loadable. Current-format store and actor restoration retain their separate checked paths.
+
 Focused regression sources cover the protected terminal transaction, replay, failed publication, name/version distrust, non-success and acceptance exclusions, exact identities, read-only progress, source removal, hull transfer, escape and cold persistence with authenticated malformed-chunk mutations. Internal immutable fixture trust must never authorize ordinary production loading or publication.
 
 This slice adds no runnable original campaign, automatic provider binding, Medusa trail, spawn, purchase gate or HUD spoiler. Source and static review are permitted; G1 owns execution, coverage, sanitizer, leak gates, review and integration. No compiler, native, GUI or CI jobs are claimed here.
