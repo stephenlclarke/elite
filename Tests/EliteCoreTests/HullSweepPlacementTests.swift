@@ -418,7 +418,9 @@ struct HullSweepPlacementTests {
     let result = HullSweepSafety.validateSceneMotion(
       motion, player: player, obstacles: [.init(hull: obstacle, pose: pose)])
     #expect(!result.safe && result.failure == .unproven)
-    #expect(result.distanceQueries == 3 && result.triangleTests > 0)
+    // The standard subdivision budget is retained: large numerical headroom stays
+    // unresolved after the endpoint/midpoint checks and attempts further subdivision.
+    #expect(result.distanceQueries > 3 && result.triangleTests > 0)
     #expect((result.minimumSampledClearance ?? 0) > 99999)
   }
 }

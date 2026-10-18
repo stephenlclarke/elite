@@ -37,3 +37,7 @@ Source checks are static only. Compilation, discovered argument counts, executio
 ## Linked issue
 
 [Original source-support motivation](ISSUE-degenerate-source-support.md).
+
+## Collapsed-transform test premise correction
+
+The collapsed-transform regression retains the standard subdivision budget, original pose/vertices, collapse precondition, positive sampled-distance oracle and actual `unproven` refusal. With zero motion and large retained numerical headroom, the proof attempts further subdivisions after its endpoint/midpoint checks; the test therefore requires more than three charged distance queries and positive triangle work rather than incorrectly expecting exactly three queries. This is a source-only expectation correction, with no production, budget, case-count or certification change and no measured execution result.
