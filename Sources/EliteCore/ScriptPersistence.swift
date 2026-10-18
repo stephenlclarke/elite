@@ -65,6 +65,15 @@ struct ScriptWorldSave: Codable, Sendable {
         .sceneSalvage, commander: commander, boundary: diagnosticBoundary)
       return false
     }
+    return consistentAfterNativeSalvage(
+      with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+  }
+  // Later EMP/station/actor proof buffers are materialized only after the native-first check returns.
+  @inline(never)
+  private func consistentAfterNativeSalvage(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     if let emp = commander.savedEMPState {
       guard
         emp.sceneIsConsistent(
@@ -261,6 +270,21 @@ enum ScriptSaveStore {
     clueTrust: ScriptClueTrustCatalog = .production,
     navigationBinding: ScriptNavigationTradeBinding? = nil
   ) throws -> AlienStoragePublication? {
+    try validateForPublication(
+      commander: commander, world: world, scope: scope, diagnostics: diagnostics,
+      diagnosticBoundary: diagnosticBoundary, clueTrust: clueTrust,
+      navigationBinding: navigationBinding)
+    return try publishValidated(
+      commander: commander, world: world, to: url, scope: scope, exclusive: exclusive,
+      diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+  }
+  // Keep the original read-only parameter convention for the unchanged logical guard expressions.
+  @inline(never)
+  private static func validateForPublication(
+    commander: Commander, world: ScriptWorldSave, scope: String,
+    diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary,
+    clueTrust: ScriptClueTrustCatalog, navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, ScriptFreightVersionedSave.validateClaims(commander),
       commander.usesFreightNativeSaveVersion || !commander.usesProviderContractSaveVersion,
@@ -284,6 +308,13 @@ enum ScriptSaveStore {
     else {
       throw SaveError.invalidCommander
     }
+  }
+  // The original deliberate header copy and all encoding/file work begin only after validation returns.
+  @inline(never)
+  private static func publishValidated(
+    commander: Commander, world: ScriptWorldSave, to url: URL, scope: String, exclusive: Bool,
+    diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary
+  ) throws -> AlienStoragePublication? {
     let semantic = JSONEncoder()
     guard try semantic.encode(commander.scriptState).count <= 33_554_432,
       try semantic.encode(commander.contracts).count <= 33_554_432
