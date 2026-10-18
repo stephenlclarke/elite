@@ -219,7 +219,12 @@ import Testing
   #expect(game.message == "FUEL TOO LOW")
   game.commander.fuel = 70
   game.key("h")
-  #expect(game.jumpCountdown == 15)
+  #expect(
+    game.commander.fittedEquipment(at: .drive)?.node == HyperspaceDriveDefinition.node(for: .basic))
+  #expect(game.commander.fittedEquipment(at: .drive)?.provenance == .standard)
+  #expect(game.commander.fittedComponent(at: .drive)?.statistics[.jumpSpool] == 10)
+  #expect(game.commander.hyperspaceDrivePolicy?.activation == .timed(seconds: 10))
+  #expect(game.jumpCountdown == 10)
   game.jumpCountdown = 0.01
   game.tick(delta: 0.02)
   #expect(game.commander.system == 129 && game.commander.fuel == 14 && game.jumpCountdown == nil)
