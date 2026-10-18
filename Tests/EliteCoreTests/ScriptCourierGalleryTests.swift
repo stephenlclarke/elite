@@ -214,7 +214,7 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
   try #require(!state.docked && state.bodies.contains { $0.id == 0 && $0.hull == .station })
   var selections = 0
   while state.autoTargetBody?.id != 0, selections < 32 {
-    await runtime.key("r")
+    await runtime.key("tab")
     state = await runtime.snapshot()
     selections += 1
   }

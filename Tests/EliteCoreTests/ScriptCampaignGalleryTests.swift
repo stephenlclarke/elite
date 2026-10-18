@@ -527,7 +527,7 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
     Comment(rawValue: campaignPatrolDiagnostic(actual, child: child)))
   await runtime.setControls(Controls())
   for _ in 0..<8 {
-    await runtime.key("r")
+    await runtime.key("tab")
     if await runtime.snapshot().autoPilot.targetID == 0 { break }
   }
   let beforeDock = campaignPatrolDiagnostic(await runtime.snapshot(), child: child)
