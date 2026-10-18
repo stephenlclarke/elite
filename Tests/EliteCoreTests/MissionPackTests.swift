@@ -213,7 +213,9 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   #expect(result.entries.count == 3 && result.errors.count == 2)
 }
 
-@Test func legacyMigrationPreservesEveryNavalAndBlackjackOutcomeWithoutReplayingActions() throws {
+@Test func legacyMigrationPreservesEveryNavalAndBlackjackOutcomeWithoutReplayingActions()
+  async throws
+{
   for stage in NavalMissionStage.allCases {
     var commander = Commander()
     commander.missionStage = stage
@@ -228,8 +230,42 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
           == true)
     }
     let twice = game.commander
-    let loadedTwice = game.load(twice)
-    #expect(loadedTwice && game.commander == twice)
+    try #require(twice.savedEquipmentVersion == 3 && twice.usesEconomyMiningSaveVersion)
+    try #require(twice.miningLedger.retainsLegacyFields)
+    try #require(twice.scriptState.calendarLedger == nil && !game.requiresScriptDurability)
+    try #require(
+      game.bodies.isEmpty && twice.nativeStations == nil && twice.npcPersistence.count == 0)
+    // The first legacy admission has already pinned mining and allocated owned stock hardware.
+    // Only the missing calendar changes at current publication; migration must not run again.
+    var expected = twice
+    expected.scriptState.calendarLedger = .init(origin: .newCommander)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let file = directory.appendingPathComponent("commander.json")
+    let runtime = GameRuntime(game: game)
+    try #require(await runtime.snapshot().commander == twice)
+    try await runtime.save(to: file)
+    #expect(await runtime.snapshot().commander == expected)
+    let bytes = try Data(contentsOf: file)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    try #require(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
+    try #require(pointer.scope == "commander" && pointer.valueCodec == ScriptValueStorage.codec)
+    let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: file)
+    let names = Set(["commander.json", "missions.json", "world.json", "contracts.json"])
+    try #require(Set(pointer.hashes.keys) == names)
+    try #require(Set(try FileManager.default.contentsOfDirectory(atPath: generation.path)) == names)
+    for name in names {
+      let chunk = try Data(contentsOf: generation.appendingPathComponent(name))
+      try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
+    }
+    let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
+    #expect(stored == expected && world.valid && world.consistent(with: stored))
+    let files = try ScriptFinanceTestFixture.files(directory)
+    try await runtime.load(from: file, persistMigrations: false)
+    let reloaded = await runtime.snapshot()
+    #expect(reloaded.commander == expected)
+    #expect(reloaded.commander.miningLedger == twice.miningLedger)
+    #expect(try ScriptFinanceTestFixture.files(directory) == files)
   }
   for stage in BlackjackStage.allCases {
     var commander = Commander()

@@ -13,6 +13,13 @@ import Testing
   game.commander.cargo[0] = 3
   game.commander.missionStage = .huntingConstrictor
   game.commander.installLaser(.beam, on: .rear)
+  let rawEquipment = game.commander.equipment
+  try #require(game.commander.equipmentInventory == nil)
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  #expect(game.commander.equipment == rawEquipment.union([HyperspaceDriveTier.basic.label]))
+  let drive = try #require(game.commander.fittedEquipment(at: .drive))
+  try #require(drive.isReservedStockDrive)
   game.key("6")
   for query in ["liberator", "DSV2", "SH171"] {
     game.showroom.query = query
@@ -20,6 +27,8 @@ import Testing
   }
   game.showroom.selection = "SH171"
   let original = game.commander
+  let inventory = try #require(original.equipmentInventory)
+  try #require(inventory.items.allSatisfy { $0.boundHull == nil })
   let quote = try #require(game.shipTradeQuote)
   #expect(quote.allowed && quote.purchase == 4_150_000 && quote.allowance == 1_125_000)
   #expect(game.showroomComparison.contains { $0.label == "Cargo" && $0.rating == .better })
@@ -31,6 +40,19 @@ import Testing
   #expect(game.commander.missionStage == original.missionStage)
   #expect(game.commander.laserMounts == original.laserMounts)
   #expect(game.commander.fuel == original.fuel && game.commander.missiles == original.missiles)
+  let transferred = try #require(game.commander.equipmentInventory)
+  #expect(transferred.owner == inventory.owner && transferred.activeHull != inventory.activeHull)
+  #expect(transferred.revision == inventory.revision + 1)
+  #expect(Set(transferred.items.map(\.id)) == Set(inventory.items.map(\.id)))
+  for item in inventory.items {
+    let retained = try #require(transferred.items.first { $0.id == item.id })
+    #expect(retained.moved(to: nil) == item.moved(to: nil))
+    #expect(retained.location?.slot == item.location?.slot)
+    #expect(retained.location == nil || retained.location?.hullInstanceID == transferred.activeHull)
+  }
+  #expect(game.commander.equipmentPurchaseHistory == original.equipmentPurchaseHistory)
+  #expect(game.commander.fittedEquipment(at: .drive)?.id == drive.id)
+  #expect(game.commander.fittedComponent(at: .drive) == drive.component)
   game.launch()
   game.bodies = []
   game.speed = 0

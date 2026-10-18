@@ -223,8 +223,7 @@ struct ScriptCourierCanonicalReachTests {
     let admitted = await runtime.snapshot()
     #expect(admitted.commander.valid && admitted.commander.contracts.boards[key] == golden.board)
     #expect(admitted.commander.scriptState.instances[id] == golden.instance)
-    let loaded = game.load(admitted.commander)
-    try #require(loaded)
+    game = admitted
     let stock = try #require(game.commander.equipmentInventory?.items.first { $0.id == prepared.1 })
     try game.fitEquipment(
       stock, at: .navigation, expectedRevision: game.commander.equipmentInventory!.revision)
