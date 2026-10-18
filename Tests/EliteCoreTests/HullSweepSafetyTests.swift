@@ -478,3 +478,45 @@ func hullSweepConcaveThinBridgeCannotHideInsideBroadArmBehindMergedCrossings(sca
     }
   }
 }
+
+@Test(arguments: (1...171).map { String(format: "SH%03d", $0) })
+func hullSweepEveryCatalogueDefinitionPreparesOriginalPrimitivesWithoutFiltering(id: String) throws
+{
+  // This is a future genuine preparation inventory, not a predicate scan or a capability filter.
+  let ship = try #require(ShipCatalogue.ship(id))
+  let mesh = ship.design.rawMesh
+  let hull = try PreparedHull(mesh: mesh)
+  let originalTriangles = mesh.faces.filter { $0.count == 3 }.count
+  let retainedPrimitives = hull.triangleCount
+  let finiteRadius = hull.radius.isFinite && hull.radius > 0
+  #expect(retainedPrimitives >= originalTriangles)
+  #expect(finiteRadius)
+}
+
+@Test func hullSweepSixOriginalZeroAndSliverPrimitivesRetainTheirSourceFaceIndices() throws {
+  let cases: [(String, [(Int, [Int])])] = [
+    ("SH038", [(13, [0, 392, 2])]),
+    (
+      "SH066",
+      [
+        (1752, [931, 944, 1148]), (2090, [1120, 1205, 1113]),
+        (2296, [1211, 1224, 1428]), (2634, [1400, 1485, 1393]),
+      ]
+    ),
+    ("SH154", [(148, [87, 75, 74])]),
+  ]
+  for (id, faces) in cases {
+    let ship = try #require(ShipCatalogue.ship(id))
+    let mesh = ship.design.rawMesh
+    let triangular = mesh.faces.allSatisfy { $0.count == 3 }
+    #expect(triangular)
+    let hull = try PreparedHull(mesh: mesh)
+    let retainedPrimitives = hull.triangleCount
+    let originalFaces = mesh.faces.count
+    #expect(retainedPrimitives == originalFaces)
+    for (index, vertices) in faces {
+      let observedVertices = mesh.faces[index]
+      #expect(observedVertices == vertices)
+    }
+  }
+}
