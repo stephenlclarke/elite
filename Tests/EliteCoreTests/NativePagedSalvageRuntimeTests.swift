@@ -168,6 +168,37 @@ struct NativePagedSalvageRuntimeTests {
     let noWriter = await control.advance(delta: 0.02)
     try FileManager.default.removeItem(at: folder)
     try FileManager.default.moveItem(at: preserved, to: folder)
+    // The original ordinary producer is an independent custody/content oracle.
+    // It uses the actual retained parent pose, without granting any scene admission.
+    let releaseBody = try #require(
+      refused.bodies.first { $0.physical?.identity == hot.actor })
+    let releasePhysical = try #require(releaseBody.physical)
+    var oracle = SalvageLedger(seed: hot.seed)
+    let inspected = oracle.inspectLoot(
+      wreck: hot.plan.section.wreck, section: hot.section, source: hot.plan.source)
+    #expect(inspected == hot.plan)
+    var remaining = hot.section.workSeconds
+    var operation: UInt64 = 0
+    var expectedLots: [SalvageLot] = []
+    while remaining > 0 {
+      let elapsed = min(1, remaining)
+      operation += 1
+      let result = oracle.advance(
+        wreck: hot.plan.section.wreck, section: hot.section,
+        pose: refused.modelPose(of: releaseBody), velocity: releasePhysical.velocity,
+        angularVelocity: releasePhysical.angularVelocity, tool: .cutter,
+        elapsed: elapsed, operation: operation,
+        conditions: NativePagedSalvageFixture.permitted, source: hot.plan.source)
+      remaining -= elapsed
+      if remaining == 0 {
+        guard case .released(let lots) = result else { throw SaveError.invalidCommander }
+        expectedLots = lots
+      } else {
+        guard case .progress = result else { throw SaveError.invalidCommander }
+      }
+    }
+    #expect(!expectedLots.isEmpty)
+    let originalRelease = try oracle.exportNativeSection(hot.plan.section)
     let retry = await runtime.advance(delta: 0.02)
     // The completed budget spends no second cutter work, energy or heat. Guidance
     // and ordinary frame recharge still run identically in both actual simulations.
@@ -176,9 +207,24 @@ struct NativePagedSalvageRuntimeTests {
     let native = try #require(retry.commander.alienStorageState?.current.salvage)
     let cycle = try #require(native.native.works[hot.cycle.inspection.id])
     #expect(cycle.releases == 1 && cycle.currentWorkSeconds == 0 && !cycle.damagedTechnology)
+    #expect(cycle.progress == originalRelease.progress)
     #expect(!native.pending.isEmpty && native.pending.count <= 8)
+    #expect(Set(native.pending.keys) == Set(expectedLots.map(\.identity)))
+    for lot in expectedLots {
+      let pending = try #require(native.pending[lot.identity])
+      #expect(pending.lot.content == lot.content && pending.lot.loot == lot.loot)
+      #expect(pending.lot.massKg == lot.massKg && pending.lot.halfExtents == lot.halfExtents)
+      #expect(pending.lot.position == lot.position && pending.lot.velocity == lot.velocity)
+      #expect(pending.offer == nil)
+    }
+    #expect(native.pending.values.contains { $0.binding != nil })
     for pending in native.pending.values {
-      let released = try #require(retry.bodies.first { $0.physical?.identity == pending.binding })
+      guard let binding = pending.binding else {
+        // A released lot can await safe placement without becoming a fake body.
+        #expect(!retry.bodies.contains { $0.physical?.payload == .salvage(pending.lot.identity) })
+        continue
+      }
+      let released = try #require(retry.bodies.first { $0.physical?.identity == binding })
       let position = retry.commander.flightSimulation.pose.systemPoint(released.position)
       #expect((position - pending.lot.position - pending.lot.velocity * 0.02).length < 1e-7)
       #expect(retry.currentSalvageLot(for: released)?.identity == pending.lot.identity)
