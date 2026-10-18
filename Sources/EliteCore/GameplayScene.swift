@@ -179,79 +179,177 @@ extension Game {
   }
 
   func gameplayContext() -> EncounterContext? {
-    let flight = commander.flightSimulation
+    let flight = Self.currentGameplayFlight(commander)
     guard let playerID = flight.player, let canonical = flight.anchors else { return nil }
-    var anchors = canonical
-    if let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }) {
-      var orientation = Basis3()
-      orientation.x = flight.pose.orientation.apply(station.modelVector(.init(1, 0, 0)))
-      orientation.y = flight.pose.orientation.apply(station.modelVector(.init(0, 1, 0)))
-      orientation.z = flight.pose.orientation.apply(station.modelVector(.init(0, 0, 1)))
-      let normal = flight.pose.orientation.apply(station.entranceNormal)
-      anchors = .init(
-        system: canonical.system,
-        station: .init(
-          identity: canonical.station.identity,
-          position: flight.pose.systemPoint(station.position), orientation: orientation,
-          exitPosition: flight.pose.systemPoint(station.entrancePosition) + normal * 400,
-          exitDirection: normal),
-        arrival: canonical.arrival, planet: canonical.planet, sun: canonical.sun)
+    let anchors = Self.gameplayAnchors(bodies, flight: flight, canonical: canonical)
+    let actors = Self.gameplayActors(bodies, pose: flight.pose)
+    return Self.finishGameplayContext(
+      self, flight: flight, playerID: playerID, anchors: anchors, actors: actors)
+  }
+
+  @inline(never)
+  private static func currentGameplayFlight(_ commander: borrowing Commander)
+    -> FlightSimulationState
+  {
+    commander.flightSimulation
+  }
+
+  // Station and actor projection finish before the later protection/player/mining phases.
+  @inline(never)
+  private static func gameplayAnchors(
+    _ bodies: borrowing [SpaceBody], flight: FlightSimulationState, canonical: SystemAnchors
+  ) -> SystemAnchors {
+    for index in bodies.indices where bodies[index].id == 0 && bodies[index].hull == .station {
+      return projectedGameplayAnchors(bodies[index], flight: flight, canonical: canonical)
     }
-    let actors: [ActorSnapshot] = bodies.compactMap { body -> ActorSnapshot? in
-      guard let physical = body.physical else { return nil }
-      let native: ShipPerformance? = physical.catalogueShipID.flatMap {
-        ShipCatalogue.ship($0)?.game
-      }
-      let maximumEnergy: Double =
-        body.nativeStationIdentity.flatMap { NativeStationSource.binding(for: $0)?.maximumEnergy }
-        ?? body.scriptNPC?.fit.definition.energy
-        ?? physical.npc?.resources?.energyCapacity ?? native?.energy ?? body.hull.navalEnergy ?? 100
-      let maximumSpeed: Double =
-        body.scriptNPC?.fit.definition.speed
-        ?? ((native?.speed ?? ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20) * 18)
-      let legal: LegalRecord = physical.npc?.legal ?? LegalRecord()
-      let cargo: [CommodityAmount] = physical.npc?.ordinaryCargo ?? []
-      var orientation = Basis3()
-      orientation.x = flight.pose.orientation.apply(body.orientation.x)
-      orientation.y = flight.pose.orientation.apply(body.orientation.y)
-      orientation.z = flight.pose.orientation.apply(body.orientation.z)
-      return ActorSnapshot(
-        identity: physical.identity, hull: body.hull,
-        position: flight.pose.systemPoint(body.position), orientation: orientation,
-        velocity: physical.velocity, energy: body.energy,
-        maximumEnergy: maximumEnergy, maximumSpeedUnitsPerSecond: maximumSpeed,
-        legal: legal, npc: physical.npc,
-        rock: physical.rock, payload: physical.payload,
-        ordinaryCargo: cargo,
-        catalogueShipID: physical.catalogueShipID, angularVelocity: physical.angularVelocity,
-        salvage: physical.salvage)
+    return canonical
+  }
+
+  @inline(never)
+  private static func projectedGameplayAnchors(
+    _ station: borrowing SpaceBody, flight: FlightSimulationState, canonical: SystemAnchors
+  ) -> SystemAnchors {
+    var orientation = Basis3()
+    orientation.x = flight.pose.orientation.apply(station.modelVector(.init(1, 0, 0)))
+    orientation.y = flight.pose.orientation.apply(station.modelVector(.init(0, 1, 0)))
+    orientation.z = flight.pose.orientation.apply(station.modelVector(.init(0, 0, 1)))
+    let normal = flight.pose.orientation.apply(station.entranceNormal)
+    return .init(
+      system: canonical.system,
+      station: .init(
+        identity: canonical.station.identity,
+        position: flight.pose.systemPoint(station.position), orientation: orientation,
+        exitPosition: flight.pose.systemPoint(station.entrancePosition) + normal * 400,
+        exitDirection: normal),
+      arrival: canonical.arrival, planet: canonical.planet, sun: canonical.sun)
+  }
+
+  // Borrow each actual body in order; missing physical state retains the original omission rule.
+  @inline(never)
+  private static func gameplayActors(_ bodies: borrowing [SpaceBody], pose: ShipPose)
+    -> [ActorSnapshot]
+  {
+    var actors: [ActorSnapshot] = []
+    for index in bodies.indices {
+      if let actor = gameplayActor(bodies[index], pose: pose) { actors.append(actor) }
     }
+    return actors
+  }
+
+  @inline(never)
+  private static func gameplayActor(_ body: borrowing SpaceBody, pose: ShipPose) -> ActorSnapshot? {
+    guard let physical = body.physical else { return nil }
+    let limits = gameplayActorLimits(body, physical: physical)
+    return projectedGameplayActor(body, physical: physical, pose: pose, limits: limits)
+  }
+
+  @inline(never)
+  private static func gameplayActorLimits(
+    _ body: borrowing SpaceBody, physical: borrowing PhysicalActorState
+  ) -> (energy: Double, speed: Double) {
+    let native: ShipPerformance? = physical.catalogueShipID.flatMap {
+      ShipCatalogue.ship($0)?.game
+    }
+    let maximumEnergy = gameplayActorMaximumEnergy(body, physical: physical, native: native)
+    let maximumSpeed = gameplayActorMaximumSpeed(body, native: native)
+    return (maximumEnergy, maximumSpeed)
+  }
+
+  @inline(never)
+  private static func gameplayActorMaximumEnergy(
+    _ body: borrowing SpaceBody, physical: borrowing PhysicalActorState, native: ShipPerformance?
+  ) -> Double {
+    if let identity = body.nativeStationIdentity,
+      let maximum = NativeStationSource.binding(for: identity)?.maximumEnergy
+    {
+      return maximum
+    }
+    if let maximum = body.scriptNPC?.fit.definition.energy { return maximum }
+    if let maximum = physical.npc?.resources?.energyCapacity { return maximum }
+    if let maximum = native?.energy { return maximum }
+    if let maximum = body.hull.navalEnergy { return maximum }
+    return 100
+  }
+
+  @inline(never)
+  private static func gameplayActorMaximumSpeed(
+    _ body: borrowing SpaceBody, native: ShipPerformance?
+  ) -> Double {
+    if let maximum = body.scriptNPC?.fit.definition.speed { return maximum }
+    if let speed = native?.speed { return speed * 18 }
+    let speed = ShipCatalogue.nativeShip(body.hull)?.game?.speed ?? 20
+    return speed * 18
+  }
+
+  @inline(never)
+  private static func projectedGameplayActor(
+    _ body: borrowing SpaceBody, physical: borrowing PhysicalActorState, pose: ShipPose,
+    limits: (energy: Double, speed: Double)
+  ) -> ActorSnapshot {
+    let maximumEnergy = limits.energy
+    let maximumSpeed = limits.speed
+    let legal: LegalRecord = physical.npc?.legal ?? LegalRecord()
+    let cargo: [CommodityAmount] = physical.npc?.ordinaryCargo ?? []
+    var orientation = Basis3()
+    orientation.x = pose.orientation.apply(body.orientation.x)
+    orientation.y = pose.orientation.apply(body.orientation.y)
+    orientation.z = pose.orientation.apply(body.orientation.z)
+    return ActorSnapshot(
+      identity: physical.identity, hull: body.hull,
+      position: pose.systemPoint(body.position), orientation: orientation,
+      velocity: physical.velocity, energy: body.energy,
+      maximumEnergy: maximumEnergy, maximumSpeedUnitsPerSecond: maximumSpeed,
+      legal: legal, npc: physical.npc,
+      rock: physical.rock, payload: physical.payload,
+      ordinaryCargo: cargo,
+      catalogueShipID: physical.catalogueShipID, angularVelocity: physical.angularVelocity,
+      salvage: physical.salvage)
+  }
+
+  @inline(never)
+  private static func finishGameplayContext(
+    _ game: borrowing Game, flight: FlightSimulationState, playerID: ActorIdentity,
+    anchors: SystemAnchors, actors: [ActorSnapshot]
+  ) -> EncounterContext {
     var protection = MissionProtection()
     protection.protectedActors = Set(
-      bodies.filter { !$0.gameplayProtectionReasons.isEmpty }
+      game.bodies.filter { !$0.gameplayProtectionReasons.isEmpty }
         .compactMap { $0.physical?.identity })
-    protection.blocksNavalEncounter = bodies.contains { $0.physical?.blocksNavalEncounter == true }
-    var budget = AdmissionBudget(total: bodies.count)
-    for body in bodies where body.id != 0 {
+    protection.blocksNavalEncounter = game.bodies.contains {
+      $0.physical?.blocksNavalEncounter == true
+    }
+    var budget = AdmissionBudget(total: game.bodies.count)
+    for body in game.bodies where body.id != 0 {
       if let population = body.physical?.population { budget.active[population, default: 0] += 1 }
     }
     let player = ActorSnapshot(
       identity: playerID, hull: .cobra, position: flight.pose.position,
       orientation: flight.pose.orientation,
-      velocity: flightWorldVelocity,
-      energy: energy, maximumEnergy: commander.performance.energy,
-      maximumSpeedUnitsPerSecond: commander.performance.speed * 18,
-      legal: .init(value: min(255, commander.legal)), npc: nil, rock: nil, payload: nil,
-      ordinaryCargo: commander.ordinaryCommodityAmounts, catalogueShipID: commander.shipID)
-    let miningPresence = resolvedMiningPresence
-    let depleted = Set(
-      miningFields.flatMap(\.rocks).filter { commander.miningLedger.isDepleted($0.identity) }
-        .map(\.identity))
+      velocity: game.flightWorldVelocity,
+      energy: game.energy, maximumEnergy: game.commander.performance.energy,
+      maximumSpeedUnitsPerSecond: game.commander.performance.speed * 18,
+      legal: .init(value: min(255, game.commander.legal)), npc: nil, rock: nil, payload: nil,
+      ordinaryCargo: game.commander.ordinaryCommodityAmounts, catalogueShipID: game.commander.shipID
+    )
+    let miningPresence = game.resolvedMiningPresence
+    let depleted = Self.depletedGameplayRocks(game)
     return .init(
-      system: systemIdentity, seed: gameplaySeed, government: currentSystem.government,
-      visit: flight.visit, revision: gameplayRevision, physicalTime: flight.physicalTime,
+      system: game.systemIdentity, seed: game.gameplaySeed,
+      government: game.currentSystem.government,
+      visit: flight.visit, revision: game.gameplayRevision, physicalTime: flight.physicalTime,
       anchors: anchors, player: player, actors: actors, protection: protection,
       budget: budget, perceptionRadius: 6000, depletedRocks: depleted,
       miningPresence: miningPresence)
+  }
+
+  @inline(never)
+  private static func depletedGameplayRocks(_ game: borrowing Game) -> Set<RockIdentity> {
+    var depleted = Set<RockIdentity>()
+    for field in game.miningFields {
+      for rock in field.rocks where game.commander.miningLedger.isDepleted(rock.identity) {
+        depleted.insert(rock.identity)
+      }
+    }
+    return depleted
   }
 }
