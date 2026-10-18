@@ -55,18 +55,31 @@ struct ScriptWorldSave: Codable, Sendable {
       && (0...256).contains(selectedSystem) && (0..<1_000_000_000).contains(nextBodyID)
       && nextBodyID >= (bodies.map(\.id).max() ?? 0)
   }
-  func consistent(with commander: Commander) -> Bool {
+  func consistent(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic? = nil,
+    diagnosticBoundary: ScriptRefusalBoundary = .publication
+  ) -> Bool {
     guard commander.nativeSalvageSceneIsConsistent(bodies, docked: docked, atColdBoundary: true)
-    else { return false }
+    else {
+      diagnostics?.recordSceneFailure(
+        .sceneSalvage, commander: commander, boundary: diagnosticBoundary)
+      return false
+    }
     if let emp = commander.savedEMPState {
       guard
         emp.sceneIsConsistent(
           bodies, flight: commander.flightSimulation, people: commander.nativePeople)
-      else { return false }
+      else {
+        diagnostics?.recordSceneFailure(
+          .sceneEMP, commander: commander, boundary: diagnosticBoundary)
+        return false
+      }
     } else if bodies.contains(where: {
       $0.physical?.empSource != nil || $0.physical?.empCrewPod != nil
         || $0.physical?.spawnIdentity?.producer == .emp
     }) {
+      diagnostics?.recordSceneFailure(
+        .sceneEMPUnowned, commander: commander, boundary: diagnosticBoundary)
       return false
     }
     if let stations = commander.nativeStations {
@@ -75,8 +88,14 @@ struct ScriptWorldSave: Codable, Sendable {
           bodies: bodies, docked: docked, mainStation: mainStation,
           system: .init(galaxy: commander.galaxy, system: commander.system),
           flight: commander.flightSimulation)
-      else { return false }
+      else {
+        diagnostics?.recordSceneFailure(
+          .sceneStations, commander: commander, boundary: diagnosticBoundary)
+        return false
+      }
     } else if bodies.contains(where: { $0.nativeStationIdentity != nil }) {
+      diagnostics?.recordSceneFailure(
+        .sceneStationUnowned, commander: commander, boundary: diagnosticBoundary)
       return false
     }
     guard
@@ -86,9 +105,15 @@ struct ScriptWorldSave: Codable, Sendable {
       ].allSatisfy({ level, capacity in
         capacity.isFinite && capacity > 0 && level <= max(1e12, capacity)
       })
-    else { return false }
+    else {
+      diagnostics?.recordSceneFailure(
+        .sceneCapacity, commander: commander, boundary: diagnosticBoundary)
+      return false
+    }
     if screen == .library, let saved = libraryScreen, saved.mode != .books {
       guard let selected = saved.selected, commander.scriptState.books[selected] != nil else {
+        diagnostics?.recordSceneFailure(
+          .sceneLibrary, commander: commander, boundary: diagnosticBoundary)
         return false
       }
     }
@@ -98,6 +123,8 @@ struct ScriptWorldSave: Codable, Sendable {
           && $0.contract?.offer.courier?.variant == .package
       })
     {
+      diagnostics?.recordSceneFailure(
+        .sceneCourierFatal, commander: commander, boundary: diagnosticBoundary)
       return false
     }
     if screen == .gameOver,
@@ -106,6 +133,8 @@ struct ScriptWorldSave: Codable, Sendable {
           && $0.savedOwnedCargo?.pendingLoss == nil
       })
     {
+      diagnostics?.recordSceneFailure(
+        .sceneFreightFatal, commander: commander, boundary: diagnosticBoundary)
       return false
     }
     let stationKey = "main-orbital:\(commander.galaxy):\(commander.system)"
@@ -114,8 +143,14 @@ struct ScriptWorldSave: Codable, Sendable {
       if resource.destroyed {
         guard actual == nil, !(docked && mainStation),
           referenceFrame.map({ $0.station.energy <= 0 }) ?? true
-        else { return false }
+        else {
+          diagnostics?.recordSceneFailure(
+            .sceneMainDestroyed, commander: commander, boundary: diagnosticBoundary)
+          return false
+        }
       } else if let actual, actual.energy != resource.energy {
+        diagnostics?.recordSceneFailure(
+          .sceneMainEnergy, commander: commander, boundary: diagnosticBoundary)
         return false
       }
     }
@@ -123,7 +158,11 @@ struct ScriptWorldSave: Codable, Sendable {
     for instance in commander.scriptState.instances.values {
       for encounter in instance.ownedEncounters.values {
         for actor in encounter.actors.values {
-          guard records[actor.identity] == nil else { return false }
+          guard records[actor.identity] == nil else {
+            diagnostics?.recordSceneFailure(
+              .sceneActorDuplicate, commander: commander, boundary: diagnosticBoundary)
+            return false
+          }
           records[actor.identity] = (instance.id, encounter.galaxy, encounter.system, actor)
         }
       }
@@ -132,31 +171,57 @@ struct ScriptWorldSave: Codable, Sendable {
     let expectedShots = commander.scriptState.projectiles.values.filter { $0.presence == .present }
     guard shotBodies.count == expectedShots.count,
       expectedShots.allSatisfy({ $0.galaxy == commander.galaxy && $0.system == commander.system })
-    else { return false }
+    else {
+      diagnostics?.recordSceneFailure(
+        .sceneShotPopulation, commander: commander, boundary: diagnosticBoundary)
+      return false
+    }
     for body in shotBodies {
       guard let shot = body.scriptShot,
         let record = commander.scriptState.projectiles[shot.identity],
         record.presence == .present, record.body.id == body.id, let anchor = referenceFrame?.station
-      else { return false }
+      else {
+        diagnostics?.recordSceneFailure(
+          .sceneShotBinding, commander: commander, boundary: diagnosticBoundary)
+        return false
+      }
       var canonical = shot
       canonical.velocity = anchor.orientation.inverse(shot.velocity)
-      guard canonical == record.body.scriptShot else { return false }
+      guard canonical == record.body.scriptShot else {
+        diagnostics?.recordSceneFailure(
+          .sceneShotCanonical, commander: commander, boundary: diagnosticBoundary)
+        return false
+      }
     }
     if let ledger = commander.scriptState.calendarLedger {
       if let journey = ledger.pendingJourney {
         guard !docked, jumpCountdown != nil, journey.galaxy == commander.galaxy,
           journey.origin == commander.system
-        else { return false }
+        else {
+          diagnostics?.recordSceneFailure(
+            .scenePendingJourney, commander: commander, boundary: diagnosticBoundary)
+          return false
+        }
       } else if jumpCountdown != nil && !ledger.legacyUntrackedJourney {
+        diagnostics?.recordSceneFailure(
+          .sceneUnadmittedJump, commander: commander, boundary: diagnosticBoundary)
         return false
       }
-      if ledger.legacyUntrackedJourney && (docked || jumpCountdown == nil) { return false }
+      if ledger.legacyUntrackedJourney && (docked || jumpCountdown == nil) {
+        diagnostics?.recordSceneFailure(
+          .sceneLegacyJourney, commander: commander, boundary: diagnosticBoundary)
+        return false
+      }
     }
     let physical = bodies.filter { $0.missionActorID != nil }
     let expected = records.values.filter { $0.3.presence == .present }
     guard physical.count == expected.count,
       expected.allSatisfy({ $0.1 == commander.galaxy && $0.2 == commander.system })
-    else { return false }
+    else {
+      diagnostics?.recordSceneFailure(
+        .sceneActorPopulation, commander: commander, boundary: diagnosticBoundary)
+      return false
+    }
     for body in physical {
       var canonicalNPC = body.scriptNPC
       if let velocity = canonicalNPC?.velocity, let anchor = referenceFrame?.station {
@@ -168,7 +233,11 @@ struct ScriptWorldSave: Codable, Sendable {
         canonicalNPC == record.3.body.scriptNPC,
         body.energy == record.3.body.energy, body.missiles == record.3.body.missiles,
         body.ecmEnabled == record.3.body.ecmEnabled, body.hostile == record.3.body.hostile
-      else { return false }
+      else {
+        diagnostics?.recordSceneFailure(
+          .sceneActorBinding, commander: commander, boundary: diagnosticBoundary)
+        return false
+      }
     }
     return true
   }
@@ -193,7 +262,8 @@ enum ScriptSaveStore {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, ScriptFreightVersionedSave.validateClaims(commander),
       commander.usesFreightNativeSaveVersion || !commander.usesProviderContractSaveVersion,
-      world.consistent(with: commander)
+      world.consistent(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
     else {
       if let diagnostics, !diagnostics.contains(diagnosticBoundary) {
         // True guard prefix; bits 32/64/1/2/4/8/16: scope, calendar, commander, world, claims,

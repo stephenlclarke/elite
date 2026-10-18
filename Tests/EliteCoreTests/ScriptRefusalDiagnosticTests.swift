@@ -96,3 +96,43 @@ private func refusalChecks(_ detail: String, boundary: ScriptRefusalBoundary) ->
   let pointerExists = FileManager.default.fileExists(atPath: target.path)
   #expect(!pointerExists)
 }
+
+@Test func scriptSceneRefusalIdentifiesUnadmittedJumpWithoutPublishing() throws {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.ensureScriptCalendar(origin: .newCommander)
+  try game.commander.prepareEquipment()
+  let baseline = game.scriptWorldSave
+  let baselineValid =
+    game.commander.valid && baseline.valid
+    && ScriptFreightVersionedSave.validateClaims(game.commander)
+    && (game.commander.usesFreightNativeSaveVersion
+      || !game.commander.usesProviderContractSaveVersion)
+    && baseline.consistent(with: game.commander)
+  let noJourney =
+    game.commander.scriptState.calendarLedger.map {
+      $0.pendingJourney == nil && !$0.legacyUntrackedJourney
+    } ?? false
+  try #require(baselineValid && noJourney)
+  var world = baseline
+  world.jumpCountdown = 1
+  let stillStructurallyValid = world.valid
+  try #require(stillStructurallyValid)
+  let diagnostics = ScriptRefusalDiagnostic()
+  let target = FileManager.default.temporaryDirectory
+    .appendingPathComponent("scene-refusal-" + UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: target.appendingPathExtension("missions")) }
+  defer { try? FileManager.default.removeItem(at: target) }
+  var refused = false
+  do {
+    _ = try ScriptSaveStore.write(
+      commander: game.commander, world: world, to: target, diagnostics: diagnostics)
+  } catch {
+    refused = error is SaveError
+  }
+  #expect(refused)
+  let detail = try #require(diagnostics.detail())
+  #expect(detail.contains("publication=sceneUnadmittedJump,error=save.invalidCommander"))
+  let pointerExists = FileManager.default.fileExists(atPath: target.path)
+  #expect(!pointerExists)
+}

@@ -7,6 +7,12 @@ enum ScriptRefusalStage: String, Sendable {
   case freightGuard, freightFinish, completionEnqueue, freightCommander, freightPublish
   case commandFlush, commandPublish, nativePeople, nativeDock, nativeStations, equipment
   case nativeDestruction, salvagePoses, nativeSaveValidation, storeValidation, storeSize, storeWrite
+  case sceneSalvage, sceneEMP, sceneEMPUnowned, sceneStations, sceneStationUnowned
+  case sceneCapacity, sceneLibrary, sceneCourierFatal, sceneFreightFatal, sceneMainDestroyed
+  case sceneMainEnergy, sceneActorDuplicate, sceneShotPopulation, sceneShotBinding,
+    sceneShotCanonical
+  case scenePendingJourney, sceneUnadmittedJump, sceneLegacyJourney, sceneActorPopulation,
+    sceneActorBinding
 }
 
 struct ScriptRefusalObservation: Sendable {
@@ -98,6 +104,14 @@ final class ScriptRefusalDiagnostic: Sendable {
 
   func record(_ boundary: ScriptRefusalBoundary, _ observation: ScriptRefusalObservation) {
     state.withLock { if $0[boundary] == nil { $0[boundary] = observation } }
+  }
+
+  /// The writer maps this existing false predicate to its unchanged invalidCommander refusal.
+  func recordSceneFailure(
+    _ stage: ScriptRefusalStage, commander: Commander, boundary: ScriptRefusalBoundary
+  ) {
+    guard !contains(boundary) else { return }
+    record(boundary, .init(stage: stage, error: SaveError.invalidCommander, commander: commander))
   }
 
   func detail() -> String? {
