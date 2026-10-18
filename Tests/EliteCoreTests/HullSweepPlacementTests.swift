@@ -14,6 +14,12 @@ private func placementBox() -> Mesh {
     ], preserveWinding: true)
 }
 
+private func mixedSourceSupport(_ support: [Vector3]) -> Mesh {
+  Mesh(
+    vertices: support + [.init(100, 100, 100), .init(101, 100, 100), .init(100, 101, 100)],
+    faces: [[0, 1, 2], [3, 4, 5]], preserveWinding: true)
+}
+
 struct HullSweepPlacementTests {
   @Test func separationRequiresStrictGapAndNumericalHeadroomAndRejectsInterior() throws {
     let hull = try PreparedHull(mesh: placementBox())
@@ -184,5 +190,121 @@ struct HullSweepPlacementTests {
     #expect(exhausted.failure == .workBudgetExceeded)
     #expect(exhausted.distanceQueries == 1 && exhausted.triangleTests > 0)
     #expect((exhausted.minimumSampledClearance ?? 0) > 0)
+  }
+
+  @Test func sourceSegmentSupportKeepsCollisionAndProvesUsefulExteriorSeparation() throws {
+    let hull = try PreparedHull(
+      mesh: mixedSourceSupport([.init(0, 0, 0), .init(10, 0, 0), .init(5, 0, 0)]))
+    #expect(hull.triangleCount == 2 && !hull.isClosed)
+    for pose in [ShipPose(), .init(position: .init(1000, -2000, 3000))] {
+      let clear = HullSweepSafety.validatePlacement(
+        center: pose.systemPoint(.init(5, 3, 4)), radius: 1, hull: hull, pose: pose)
+      #expect(clear.safe)
+      // The original segment's exact distance is 5; radius 1 leaves separation 4.
+      #expect((clear.minimumSampledClearance ?? 0) > 3.999999)
+      #expect((clear.minimumSampledClearance ?? .infinity) <= 4)
+      let blocked = HullSweepSafety.validatePlacement(
+        center: pose.systemPoint(.init(5, 0, 0.5)), radius: 1, hull: hull, pose: pose)
+      #expect(!blocked.safe)
+    }
+  }
+
+  @Test func unresolvedNonzeroSourceTriangleKeepsItsFilledInterior() throws {
+    let epsilon = Double.ulpOfOne / 8
+    let hull = try PreparedHull(
+      mesh: mixedSourceSupport([.init(-1, -1, 0), .init(1, 1, 0), .init(0, epsilon, 0)]))
+    // This exactly representable point is .25*A + .25*B + .5*C. All three edges
+    // are a positive distance away; an edge-only replacement would miss the filled interior.
+    let interior = HullSweepSafety.validatePlacement(
+      center: .init(0, epsilon / 2, 0), radius: Double.leastNormalMagnitude,
+      hull: hull, pose: .init())
+    #expect(!interior.safe)
+    #expect((interior.minimumSampledClearance ?? .infinity) <= 0)
+    let exterior = HullSweepSafety.validatePlacement(
+      center: .init(0, epsilon / 2, 10), radius: 1, hull: hull, pose: .init())
+    #expect(exterior.safe)
+    #expect((exterior.minimumSampledClearance ?? 0) > 8.999999)
+  }
+
+  @Test func originalSupportRejectsCrossingsAndAllowsSeparatedExactPlayerMotion() throws {
+    let hull = try PreparedHull(
+      mesh: mixedSourceSupport([.init(0, 0, 0), .init(10, 0, 0), .init(5, 0, 0)]))
+    let player = try PreparedHull(mesh: placementBox())
+    for exact in [false, true] {
+      let clearMotion = HullSceneMotion(
+        start: .init(position: .init(5, 0, 40)), end: .init(position: .init(5.1, 0, 40)),
+        initialVelocity: .init(1, 0, 0), acceleration: .init(0, 0, 0),
+        worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: player.radius)
+      let clear = HullSweepSafety.validateSceneMotion(
+        clearMotion, player: exact ? player : nil, obstacles: [.init(hull: hull, pose: .init())])
+      #expect(clear.safe)
+      let crossing = HullSceneMotion(
+        start: .init(position: .init(5, 0, -20)), end: .init(position: .init(5, 0, 20)),
+        initialVelocity: .init(0, 0, 400), acceleration: .init(0, 0, 0),
+        worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: player.radius)
+      let blocked = HullSweepSafety.validateSceneMotion(
+        crossing, player: exact ? player : nil, obstacles: [.init(hull: hull, pose: .init())])
+      #expect(!blocked.safe)
+    }
+  }
+
+  @Test func zeroOnlyComponentCannotAcquireClosedVolumeFromEdgeIncidence() throws {
+    let box = placementBox()
+    let mesh = Mesh(
+      vertices: [Vector3(0, 0, 0), .init(10, 0, 0), .init(5, 0, 0)]
+        + box.vertices.map { $0 + Vector3(100, 100, 100) },
+      faces: [[0, 1, 2], [2, 1, 0]] + box.faces.map { $0.map { $0 + 3 } },
+      preserveWinding: true)
+    let hull = try PreparedHull(mesh: mesh)
+    #expect(!hull.isClosed)
+    let unresolved = HullSweepSafety.validatePlacement(
+      center: .init(5, 0, 0), radius: 0.1, hull: hull, pose: .init())
+    #expect(unresolved.failure == .unproven)
+    let genuineInterior = HullSweepSafety.validatePlacement(
+      center: .init(100, 100, 100), radius: 1, hull: hull, pose: .init())
+    #expect(genuineInterior.failure == .insideHull)
+  }
+
+  @Test func supportBVHRetainsNearestPrimitiveAcrossDifferentSourceOrders() throws {
+    for reversed in [false, true] {
+      var vertices: [Vector3] = []
+      var faces: [[Int]] = []
+      for z in [40.0, 30, 20, 10, 0, 50, 60, 70, 80, 90] {
+        let index = vertices.count
+        vertices += [.init(0, 0, z), .init(10, 0, z), .init(5, 0, z)]
+        faces.append([index, index + 1, index + 2])
+      }
+      let index = vertices.count
+      vertices += [.init(100, 100, 100), .init(101, 100, 100), .init(100, 101, 100)]
+      faces.append([index, index + 1, index + 2])
+      let hull = try PreparedHull(
+        mesh: Mesh(
+          vertices: vertices, faces: reversed ? Array(faces.reversed()) : faces,
+          preserveWinding: true))
+      let result = HullSweepSafety.validatePlacement(
+        center: .init(5, 0, 1), radius: 0.5, hull: hull, pose: .init())
+      #expect(result.safe && result.nodeVisits > 1)
+      #expect((result.minimumSampledClearance ?? 0) > 0.499999)
+      #expect((result.minimumSampledClearance ?? .infinity) <= 0.5)
+    }
+  }
+
+  @Test func coveredZeroSupportDoesNotPreventCertifiedClosedInteriorRefusal() throws {
+    let box = placementBox()
+    var faces = box.faces.filter { $0 != [0, 1, 5, 4] }
+    // The zero face bridges the full 0->1 edge to the two halves on the adjacent
+    // unchanged cube surface. Every edge still has two incidences; no closure is forced.
+    faces += [[0, 8, 4], [8, 1, 4], [1, 5, 4], [0, 1, 8]]
+    let hull = try PreparedHull(
+      mesh: Mesh(
+        vertices: box.vertices + [.init(0, -10, -10)], faces: faces,
+        preserveWinding: true))
+    #expect(hull.triangleCount == 14 && hull.isClosed)
+    let inside = HullSweepSafety.validatePlacement(
+      center: .init(0, 0, 0), radius: 1, hull: hull, pose: .init())
+    #expect(inside.failure == .insideHull)
+    let outside = HullSweepSafety.validatePlacement(
+      center: .init(0, -30, -30), radius: 1, hull: hull, pose: .init())
+    #expect(outside.safe)
   }
 }
