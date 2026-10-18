@@ -449,7 +449,10 @@ public enum HullSweepSafety {
         continue
       }
       if let (left, right) = node.children {
-        pending += [right, left]
+        // Approximate box gaps order work only; certified pruning above is unchanged.
+        let lhs = hull.nodes[left].bounds.distanceSquared(to: bounds)
+        let rhs = hull.nodes[right].bounds.distanceSquared(to: bounds)
+        pending += rhs < lhs ? [left, right] : [right, left]
       } else {
         for index in node.triangles {
           try work.triangle()
