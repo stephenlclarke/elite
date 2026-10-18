@@ -41,38 +41,7 @@ func freightAuthenticIssueRejectsForgedCustodyWithoutRepair(field: String) async
     state.payloads[ScriptOwnedCargoState.payloadKey] = 6
     changed.scriptState.instances[id] = state
   }
-  #expect(!changed.freightCargoValid && !changed.valid)
-  let originalFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
-  #expect(throws: SaveError.self) {
-    _ = try ScriptSaveStore.write(commander: changed, world: game.scriptWorldSave, to: fixture.save)
-  }
-  let unchangedFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
-  #expect(unchangedFiles == originalFiles)
-  // Resign the actual missions chunk so refusal must come from native joins, not a bad checksum.
-  let pointerBytes = try Data(contentsOf: fixture.save)
-  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-  let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: fixture.save)
-  let missions = try ScriptValueStorage.encoder().encode(changed.scriptState)
-  try missions.write(to: directory.appendingPathComponent("missions.json"))
-  var hashes = pointer.hashes
-  hashes["missions.json"] = ScriptPackLibrary.hash(missions)
-  let forgedPointer = ScriptSavePointer(
-    format: pointer.format, schemaVersion: pointer.schemaVersion,
-    generation: pointer.generation, hashes: hashes, scope: pointer.scope,
-    valueCodec: pointer.valueCodec)
-  let forgedBytes = try JSONEncoder().encode(forgedPointer)
-  #expect(throws: (any Error).self) {
-    _ = try ScriptSaveStore.read(forgedBytes, from: fixture.save)
-  }
-  try forgedBytes.write(to: fixture.save)
-  let badFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
-  await #expect(throws: (any Error).self) {
-    try await runtime.load(from: fixture.save, persistMigrations: false)
-  }
-  let afterReadFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
-  #expect(badFiles == afterReadFiles)
-  let retained = await runtime.snapshot()
-  #expect(retained.commander == game.commander)
+  try await fixture.rejectForgedState(changed, genuine: game, runtime: runtime)
 }
 
 @Test func freightCannotBeSoldOrManufacturedAndCompatibleHullKeepsUnitIdentities() async throws {
@@ -141,6 +110,13 @@ func freightAuthenticIssueRejectsForgedCustodyWithoutRepair(field: String) async
   let earlier = try #require(
     partial.commander.scriptState.instances[id]?.collections[plan.template.id]?.lots)
   await runtime.key("0")
+  let launched = await runtime.snapshot()
+  let files = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  let preserved = try fixture.blockWrites("escape")
+  await runtime.key("escape-pod")
+  let refused = await runtime.snapshot()
+  #expect(refused.commander == launched.commander && refused.docked == launched.docked)
+  try fixture.restoreWrites(preserved, files: files)
   await runtime.key("escape-pod")
   let escaped = await runtime.snapshot()
   let state = try #require(escaped.commander.scriptState.instances[id])
@@ -160,18 +136,15 @@ func freightAuthenticIssueRejectsForgedCustodyWithoutRepair(field: String) async
   let before = await runtime.snapshot()
   try #require(!before.docked && before.screen.isFlight)
   let units = try #require(before.commander.scriptState.instances[id]?.savedOwnedCargo?.held)
-  let parent = fixture.save.deletingLastPathComponent()
-  let preserved = fixture.root.appendingPathComponent("preserved-fatal")
-  try FileManager.default.moveItem(at: parent, to: preserved)
-  try Data([1]).write(to: parent)
+  let files = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  let preserved = try fixture.blockWrites("fatal")
   try await runtime.freightFatalHit()
   _ = await runtime.advance(delta: 0.1)
   let dead = await runtime.snapshot()
   let pending = try #require(dead.commander.scriptState.instances[id]?.savedOwnedCargo?.pendingLoss)
   #expect(dead.screen == .gameOver && pending.units == units)
   #expect(dead.commander.scriptState.instances[id]?.savedOwnedCargo?.held == units)
-  try FileManager.default.removeItem(at: parent)
-  try FileManager.default.moveItem(at: preserved, to: parent)
+  try fixture.restoreWrites(preserved, files: files)
   _ = await runtime.advance(delta: 0.1)
   let settled = await runtime.snapshot()
   let state = try #require(settled.commander.scriptState.instances[id])

@@ -8,6 +8,10 @@ Count the existing mission payload mirror once. Require actual standard hold eve
 
 Reserve `savedOwnedCargo`, `freightPlan` and `freightGeneration` at their declared native paths. G1 owns activation and exact save/header/raw/world gates for outer 29/30 and their Alien/provider cross-product. Version 28 remains separately reserved. The freight helper must reject key presence, including null and misplaced native fields, below the supported boundary, without recursively banning ordinary authored data or payload keys.
 
+Independent review of the frozen `27ec730` source found two missing historical joins: paired terminal/job settlement clocks could lie after the current mission calendar, and a final completion receipt could describe a different revision or committed context from the final unit-transfer lot. The corrective child bounds every terminal clock by the current mission clock and joins final completion revision/context to its collection lot. Existing native producers already generate those equal values; no producer or save-helper API change is required.
+
+Boundary regression source must also retain the active partial state through save/no-write reload before final delivery, conserve full state and files when issue/partial/final/abandon/escape/fatal publication refuses, reject stale or wrong contact authority, and reject a hold filled through actual paid market purchases after review. Exact deadline equality and expiry writer refusal use explicitly controlled calendar copies of genuine partial custody in a separate save destination; they establish semantic boundaries only. The original bounded native expiry travel remains necessary and unchanged.
+
 This allocation is source-only on `f6b74c67cc4809321271adc1191afd7beb44a399`. No compiler, test, runtime, log, UI, media or remote job is authorized. Independent source review and one later G1 combined build precede real acceptance; current stability diagnostics keep execution priority.
 
 [PR-generated-supplied-freight.md](PR-generated-supplied-freight.md).

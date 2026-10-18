@@ -112,6 +112,7 @@ struct ScriptOwnedCargoState: Codable, Sendable, Equatable {
       guard state.outcome == terminal.cause.outcome, job.settled,
         terminal.sequence > issue.sequence, terminal.sequence <= engine.nextEvent,
         state.hasAcknowledged(terminal.sequence), terminal.clock == job.settledAt,
+        terminal.clock <= engine.clock(.missionCalendar),
         held.isEmpty, pendingLoss == nil,
         let receipt = state.completionReceipt, receipt.sequence == terminal.sequence,
         receipt.outcome == state.outcome, let due = job.deadline
@@ -185,8 +186,11 @@ extension Commander {
     else { return false }
     switch terminal.cause {
     case .delivered:
-      return receipt.causeKind == "dialogue.confirmed"
-        && state.collections[plan.template.id]?.lots[terminal.sequence]?.cause == cause
+      guard let lot = state.collections[plan.template.id]?.lots[terminal.sequence] else {
+        return false
+      }
+      return receipt.causeKind == "dialogue.confirmed" && lot.cause == cause
+        && lot.revision == receipt.revision && lot.committed == receipt.committed
     case .abandoned:
       return receipt.causeKind == "dialogue.confirmed" && cause.galaxy == plan.origin.galaxy
         && cause.system == plan.origin.system

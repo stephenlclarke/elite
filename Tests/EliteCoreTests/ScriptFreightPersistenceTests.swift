@@ -73,3 +73,76 @@ import Testing
   let after = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
   #expect(restored.commander == before.commander && files == after)
 }
+
+@Test func freightGenuineAbandonmentRejectsPairedFutureSettlement() async throws {
+  let fixture = try ScriptFreightFixture()
+  defer { fixture.clean() }
+  let (runtime, id, _) = try await fixture.accepted(row: 1)
+  await runtime.key("contacts-open")
+  try await ScriptFreightFixture.confirm(runtime)
+  let genuine = await runtime.snapshot()
+  let state = try #require(genuine.commander.scriptState.instances[id])
+  try #require(state.savedOwnedCargo?.terminal?.cause == .abandoned)
+  try #require(genuine.commander.valid && genuine.commander.freightCargoValid)
+  let future = genuine.commander.scriptState.clock(.missionCalendar) + 1
+  let due = try #require(state.contract?.deadline)
+  try #require(future <= due)
+  let changed = try ScriptFreightFixture.forgedState(genuine, id: id) { object in
+    var job = object["contract"] as! [String: Any]
+    var cargo = object["savedOwnedCargo"] as! [String: Any]
+    var terminal = cargo["terminal"] as! [String: Any]
+    job["settledAt"] = future
+    terminal["clock"] = future
+    cargo["terminal"] = terminal
+    object["contract"] = job
+    object["savedOwnedCargo"] = cargo
+  }
+  try await fixture.rejectForgedState(changed, genuine: genuine, runtime: runtime)
+}
+
+@Test(arguments: ["revision", "committed-context"])
+func freightGenuineFinalReceiptRejectsDifferentTransferTransaction(field: String) async throws {
+  let fixture = try ScriptFreightFixture()
+  defer { fixture.clean() }
+  let (runtime, id, plan) = try await fixture.accepted()
+  try await ScriptProcurementFixture.travel(runtime, path: plan.path)
+  await runtime.key("contacts-open")
+  try await ScriptFreightFixture.confirm(runtime)
+  let completed = await runtime.snapshot()
+  let final = try #require(completed.commander.scriptState.instances[id])
+  let receipt = try #require(final.completionReceipt)
+  let lot = try #require(final.collections[plan.template.id]?.lots[receipt.sequence])
+  try #require(final.outcome == .complete && lot.revision == receipt.revision)
+  try #require(lot.committed == receipt.committed && completed.commander.freightCargoValid)
+  if field == "committed-context" {
+    // Obtain a real later arrival; do not fabricate a native dock receipt.
+    await runtime.key("0")
+    try await ScriptProcurementFixture.dock(runtime)
+  }
+  try await runtime.save(to: fixture.save)
+  let genuine = await runtime.snapshot()
+  try #require(genuine.commander.valid && genuine.commander.freightCargoValid)
+  let later = genuine.scriptEventContext(final)
+  if field == "committed-context" {
+    try #require(later.nativeMainDock != receipt.committed.nativeMainDock)
+    try #require(genuine.commander.freightHistoricalContextValid(later, requiresDock: true))
+  }
+  let encodedContext = try JSONEncoder().encode(later)
+  let decodedContext = try JSONSerialization.jsonObject(with: encodedContext)
+  let contextObject = try #require(decodedContext as? [String: Any])
+  let changed = try ScriptFreightFixture.forgedState(genuine, id: id) { object in
+    var completion = object["completionReceipt"] as! [String: Any]
+    if field == "revision" {
+      let revision = (object["revision"] as! NSNumber).uint64Value + 1
+      var committed = completion["committed"] as! [String: Any]
+      object["revision"] = revision
+      completion["revision"] = revision
+      committed["revision"] = revision
+      completion["committed"] = committed
+    } else {
+      completion["committed"] = contextObject
+    }
+    object["completionReceipt"] = completion
+  }
+  try await fixture.rejectForgedState(changed, genuine: genuine, runtime: runtime)
+}
