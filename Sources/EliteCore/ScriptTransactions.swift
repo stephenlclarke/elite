@@ -15,37 +15,80 @@ extension GameRuntime {
     let namespace = galleryNamespace
     let diagnostics = scriptRefusalDiagnostic
     return { candidate in
-      try Self.requireGalleryFileAccess(url, namespace: namespace)
-      // Both publication paths pin current policy before choosing the save schema.
-      try candidate.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
-      if candidate.commander.scriptState.calendarLedger == nil {
-        let legacy =
-          candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
-        candidate.ensureScriptCalendar(origin: legacy ? .inactiveLegacyMigration : .newCommander)
-        if candidate.jumpCountdown != nil {
-          candidate.commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
-        }
-      }
-      candidate.persistScriptActors()
-      let prepared = try Self.prepareNativeSaveState(
-        candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+      let prepared = try Self.prepareScriptPublication(
+        &candidate, to: url, namespace: namespace, diagnostics: diagnostics,
+        diagnosticBoundary: diagnosticBoundary)
       let alienPublication: AlienStoragePublication?
       do {
-        alienPublication = try ScriptSaveStore.write(
-          commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
-          scope: namespace == nil ? "commander" : "gallery",
+        alienPublication = try Self.writeScriptPublication(
+          prepared, to: url, namespace: namespace,
           exclusive: candidate.pendingNewSaveDestination == url, diagnostics: diagnostics,
           diagnosticBoundary: diagnosticBoundary, navigationBinding: navigationBinding)
       } catch {
-        diagnostics?.record(
-          diagnosticBoundary, .init(stage: .storeWrite, error: error, game: prepared.game))
+        Self.recordScriptPublicationFailure(
+          prepared, error: error, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
         throw error
       }
-      candidate = prepared.game
-      candidate.commander.publishAlienStorage(alienPublication)
-      candidate.recordNewCommanderSavePublication(to: url)
+      Self.commitScriptPublication(
+        prepared, alienPublication: alienPublication, to: url, candidate: &candidate)
     }
   }
+
+  /// Return only immutable native ownership before the encoder call chain begins.
+  @inline(never)
+  private static func prepareScriptPublication(
+    _ candidate: inout Game, to url: URL, namespace: URL?,
+    diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary
+  ) throws -> NativeSavePreparation {
+    try Self.requireGalleryFileAccess(url, namespace: namespace)
+    // Both publication paths pin current policy before choosing the save schema.
+    try candidate.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+    if candidate.commander.scriptState.calendarLedger == nil {
+      let legacy =
+        candidate.commander.legacyOwnedEquipment != nil || candidate.jumpCountdown != nil
+      candidate.ensureScriptCalendar(origin: legacy ? .inactiveLegacyMigration : .newCommander)
+      if candidate.jumpCountdown != nil {
+        candidate.commander.scriptState.calendarLedger?.legacyUntrackedJourney = true
+      }
+    }
+    candidate.persistScriptActors()
+    return try Self.prepareNativeSaveState(
+      candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+  }
+
+  @inline(never)
+  private static func writeScriptPublication(
+    _ prepared: NativeSavePreparation, to url: URL, namespace: URL?, exclusive: Bool,
+    diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws -> AlienStoragePublication? {
+    try ScriptSaveStore.write(
+      commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
+      scope: namespace == nil ? "commander" : "gallery",
+      exclusive: exclusive, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary,
+      navigationBinding: navigationBinding)
+  }
+
+  @inline(never)
+  private static func recordScriptPublicationFailure(
+    _ prepared: NativeSavePreparation, error: any Error,
+    diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary
+  ) {
+    diagnostics?.record(
+      diagnosticBoundary, .init(stage: .storeWrite, error: error, game: prepared.game))
+  }
+
+  /// The original whole-candidate copy and post-publication effects stay together.
+  @inline(never)
+  private static func commitScriptPublication(
+    _ prepared: NativeSavePreparation, alienPublication: AlienStoragePublication?, to url: URL,
+    candidate: inout Game
+  ) {
+    candidate = prepared.game
+    candidate.commander.publishAlienStorage(alienPublication)
+    candidate.recordNewCommanderSavePublication(to: url)
+  }
+
   /// User commands are staged before a frame is published. Disk failure publishes no
   /// command effects; autonomous physics uses a separate proposal-only barrier.
   func commitScriptCommand(
