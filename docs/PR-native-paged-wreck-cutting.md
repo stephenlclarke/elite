@@ -40,6 +40,8 @@ New pure-record tests explicitly confer no scene authority. Actual source/offer/
 
 The offer leaf has scoped formatting, Markdown and whitespace checks only. Its new sources are not compiled or executed yet. The unchanged ordinary nine-case fragment-admission guard test remains an affected future regression. The separate human thin-hull preparation and procurement defensive preflight fixes, coherent renderer metadata refresh, `make ci`, coverage, sanitizers, leaks, main-only SonarQube, clean completed review and protected merge remain required.
 
+The supervised combined compile 378 failed before test execution because the new wrong-wreck negative case read the computed `game.systemIdentity` during an exclusive mutation of `game.bodies`. The corrective test-only child captures that same identity before the assignment and uses the local in the unchanged forged wreck identity. Production code, fixture geometry, cases and budgets are unchanged. The failed compilation and mixed artifacts remain retained; a reviewed fresh build and runtime validation are still required.
+
 ## Genuine old-parent retention before safe readmission
 
 The independent native-offer review identified old pending custody whose existing physical parent lacks the newer native-wreck record. Original native plan and sealed legacy import readers permit this shape. Restored bodies are skipped by site activation, so the strict native parent/source check cannot be satisfied merely by staging an offer. This is a source-confirmed compatibility gap in the incomplete earlier path; no runtime reproduction or cause of the earlier missing fragment is claimed.
