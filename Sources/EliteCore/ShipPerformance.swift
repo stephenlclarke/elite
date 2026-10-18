@@ -49,6 +49,7 @@ extension Commander {
     if let ratio = fittedComponent(at: .energy)?.statistics[.energyCapacity] {
       result.energy *= ratio
     }
+    result.energy *= fittedAlienSummary(.energyCapacity).multiplier
     if let policy = hyperspaceDrivePolicy, case .timed(let seconds) = policy.activation {
       result.spool = seconds
     }

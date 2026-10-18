@@ -53,6 +53,8 @@ struct AlienStorageCommand: Codable, Sendable, Equatable {
   enum Action: Codable, Sendable, Equatable {
     case acquireAttachment(attachment: UUID, source: UUID)
     case acquireUpgrade(upgrade: UUID, source: UUID)
+    case migrateStoredAttachment(attachment: UUID, source: UUID, section: UUID, claim: UUID)
+    case migrateStoredUpgrade(upgrade: UUID, source: UUID, section: UUID, claim: UUID)
     case applyUpgrade(attachment: UUID, upgrade: UUID)
     case relocate(attachment: UUID, to: AlienStorageDisposition)
     case retireAttachment(attachment: UUID, reason: AlienAttachmentRetirement)
@@ -123,7 +125,17 @@ struct AlienStorageSnapshot: Sendable, Equatable {
         }
       }
     }
-    try AlienStorageWorldValidation.validate(world, owner: owner, sources: sources)
+    for case .legacyCurrent(let current) in world {
+      if case .collected(let receipt) = current.state,
+        case .technology(let storage) = receipt.effect
+      {
+        guard attachmentMap[storage] == nil, upgradeMap[storage] == nil else {
+          throw AlienStorageError.invalidJoin
+        }
+      }
+    }
+    try AlienStorageWorldValidation.validate(
+      world, owner: owner, sources: sources, commands: commands)
     let receiptsByCommand = Dictionary(grouping: receipts, by: \.operation)
     guard receiptsByCommand.keys.allSatisfy({ commandMap[$0] != nil }) else {
       throw AlienStorageError.invalidJoin
@@ -218,7 +230,8 @@ private struct AlienStorageReplay {
     upgrades upgradeDefinitions: [UUID: AlienStorageUpgrade]
   ) throws {
     switch command.action {
-    case .acquireAttachment(let id, let sourceID):
+    case .acquireAttachment(let id, let sourceID),
+      .migrateStoredAttachment(let id, let sourceID, _, _):
       guard receipts.isEmpty, attachments[id] == nil, let definition = definitions[id],
         definition.source == sourceID, let source = sources[sourceID],
         source.acquisition == command.id,
@@ -227,7 +240,7 @@ private struct AlienStorageReplay {
       else { throw AlienStorageError.invalidJoin }
       attachments[id] = .init(
         disposition: .stored, bonus: AlienModuleDefinition.baseBonusBasisPoints)
-    case .acquireUpgrade(let id, let sourceID):
+    case .acquireUpgrade(let id, let sourceID), .migrateStoredUpgrade(let id, let sourceID, _, _):
       guard receipts.isEmpty, upgrades[id] == nil, let definition = upgradeDefinitions[id],
         definition.source == sourceID, let source = sources[sourceID],
         source.acquisition == command.id,

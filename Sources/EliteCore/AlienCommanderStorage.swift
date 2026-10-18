@@ -64,8 +64,12 @@ extension Commander {
 
   /// Constructors validate the complete history; this check never replays it in a frame.
   var alienStorageStateValid: Bool {
-    guard let state = alienStorageState else { return savedAlienStorageReference == nil }
+    guard let state = alienStorageState else {
+      return savedAlienStorageReference == nil
+        && salvageLedger.nativeTransferredSectionIdentities.isEmpty
+    }
     return state.current.owner == equipmentOwnerID && state.reference == savedAlienStorageReference
+      && state.current.transferredSections == salvageLedger.nativeTransferredSectionIdentities
   }
 
   /// Only native actor transaction producers call this after resolving physical authority.

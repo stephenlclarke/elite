@@ -4,6 +4,9 @@ import Foundation
 /// Swift checks Sendable because the snapshot and all derived values are immutable.
 final class AlienStorageValidatedState: Sendable, Equatable {
   let snapshot: AlienStorageSnapshot
+  let transferredSections: Set<WreckSectionIdentity>
+  let salvage: AlienNativeSalvageIndex
+  let storedMassKg: Double
   private let fitted: [UUID: [AlienModuleKind: AlienAttachmentSummary]]
   private static let empty = Dictionary(
     uniqueKeysWithValues: AlienModuleKind.allCases.map {
@@ -24,6 +27,27 @@ final class AlienStorageValidatedState: Sendable, Equatable {
       fitted[hull] = summaries
     }
     self.snapshot = snapshot
+    salvage = try AlienNativeSalvageIndex(snapshot.world)
+    let sources = Dictionary(uniqueKeysWithValues: snapshot.sources.map { ($0.id, $0) })
+    var mass = salvage.storedTechnology.values.reduce(0) { $0 + $1.item.massKg }
+    for attachment in snapshot.attachments {
+      if case .stored = attachment.disposition {
+        guard let source = sources[attachment.source] else { throw AlienStorageError.invalidJoin }
+        mass += source.lot.massKg
+      }
+    }
+    for upgrade in snapshot.upgrades {
+      if case .stored = upgrade.disposition {
+        guard let source = sources[upgrade.source] else { throw AlienStorageError.invalidJoin }
+        mass += source.lot.massKg
+      }
+    }
+    guard mass.isFinite, mass >= 0 else { throw AlienStorageError.arithmeticOverflow }
+    storedMassKg = mass
+    transferredSections = Set(
+      snapshot.world.compactMap {
+        if case .legacySection(let section) = $0 { section.plan.section } else { nil }
+      })
     self.fitted = fitted
   }
 

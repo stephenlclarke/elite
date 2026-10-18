@@ -47,19 +47,23 @@ extension Commander {
     nativePerformance.shield
       * (fittedComponent(at: .shield)?.statistics[.frontShieldCapacity]
         ?? shieldBooster?.multiplier ?? 1)
+      * fittedAlienSummary(.shieldCapacity).multiplier
   }
   public var rearShieldCapacity: Double {
     nativePerformance.shield
       * (fittedComponent(at: .shield)?.statistics[.rearShieldCapacity]
         ?? shieldBooster?.multiplier ?? 1)
+      * fittedAlienSummary(.shieldCapacity).multiplier
   }
   public var frontShieldRecharge: Double {
     nativePerformance.shieldRecharge
       * (fittedComponent(at: .shield)?.statistics[.frontShieldRecharge] ?? 1)
+      * fittedAlienSummary(.shieldRecharge).multiplier
   }
   public var rearShieldRecharge: Double {
     nativePerformance.shieldRecharge
       * (fittedComponent(at: .shield)?.statistics[.rearShieldRecharge] ?? 1)
+      * fittedAlienSummary(.shieldRecharge).multiplier
   }
   public var effectiveLaser: String { activeLaser?.equipmentName ?? "None" }
   public mutating func installShieldBooster(_ booster: ShieldBooster) {
