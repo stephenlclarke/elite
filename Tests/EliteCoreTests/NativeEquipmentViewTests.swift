@@ -47,6 +47,7 @@ private struct NativeEquipmentFixture {
   let directory: URL
   let save: URL
   let originalSave: Data
+  let originalFiles: [String: Data]
   let originalMenu: NSMenu?
 
   static func open(commander: Commander, width: Int, height: Int) async throws -> Self {
@@ -58,13 +59,64 @@ private struct NativeEquipmentFixture {
       identifier, isDirectory: true)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     let save = directory.appendingPathComponent("commander.json")
-    let originalSave = try nativeEquipmentBytes(commander)
-    try originalSave.write(to: save, options: .atomic)
-    let saves = CommanderSaveSession(preferences: preferences, defaultURL: save)
-    let delegate = AppDelegate(
-      restoreOnLaunch: false, saves: saves,
-      windowSize: NSSize(width: Double(width), height: Double(height)))
+    var openedDelegate: AppDelegate?
     do {
+      // Match the initial docked scene formerly supplied by legacy load, retaining all current property.
+      try #require(commander.valid && commander.savedEquipmentVersion == 3)
+      var bootstrap = Game(executive: false)
+      bootstrap.commander = commander
+      bootstrap.screen = .status
+      bootstrap.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
+      bootstrap.selectedSystem = commander.system
+      bootstrap.market = MarketItem.at(bootstrap.currentSystem, fluctuation: 0)
+      bootstrap.docked = true
+      bootstrap.dockedAtMainStation = true
+      bootstrap.energy = commander.performance.energy
+      bootstrap.frontShield = commander.shieldCapacity
+      bootstrap.rearShield = commander.rearShieldCapacity
+      var expected = commander
+      try expected.prepareEquipment()
+      expected.mirrorFittedEquipment()
+      expected.miningLedger = commander.miningLedger
+      if expected.scriptState.calendarLedger == nil {
+        expected.scriptState.calendarLedger = .init(origin: .newCommander)
+      }
+      let writer = GameRuntime(game: bootstrap)
+      try await writer.save(to: save)
+      let published = await writer.snapshot()
+      #expect(published.commander == expected)
+      #expect(published.commander.equipmentOwnerID == commander.equipmentOwnerID)
+      #expect(published.commander.hullInstanceID == commander.hullInstanceID)
+      #expect(published.commander.equipmentInventory == commander.equipmentInventory)
+      #expect(published.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
+      #expect(published.commander.salvageLedger == commander.salvageLedger)
+      #expect(
+        published.commander.credits == commander.credits
+          && published.commander.cargo == commander.cargo)
+      #expect(
+        published.commander.name == commander.name && published.commander.shipID == commander.shipID
+      )
+      #expect(
+        published.commander.fuel == commander.fuel
+          && published.commander.missiles == commander.missiles)
+      #expect(published.commander.contracts == commander.contracts)
+      #expect(published.commander.accommodation == commander.accommodation)
+      #expect(published.commander.missionProgress == commander.missionProgress)
+      #expect(
+        published.commander.missionStage == commander.missionStage
+          && published.commander.blackjack == commander.blackjack)
+      #expect(published.commander.scriptState == expected.scriptState)
+      let originalSave = try Data(contentsOf: save)
+      let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: originalSave)
+      try #require(pointer.schemaVersion == 26 && pointer.scope == "commander")
+      let (stored, world) = try ScriptSaveStore.read(originalSave, from: save)
+      #expect(stored == expected && world.valid && world.consistent(with: stored))
+      let originalFiles = try recoveredSaveFiles(directory)
+      let saves = CommanderSaveSession(preferences: preferences, defaultURL: save)
+      let delegate = AppDelegate(
+        restoreOnLaunch: false, saves: saves,
+        windowSize: NSSize(width: Double(width), height: Double(height)))
+      openedDelegate = delegate
       delegate.applicationDidFinishLaunching(
         Notification(name: NSApplication.didFinishLaunchingNotification))
       let window = try #require(delegate.window)
@@ -77,18 +129,29 @@ private struct NativeEquipmentFixture {
       window.setContentSize(NSSize(width: Double(width), height: Double(height)))
       await delegate.runtime.setViewport(width: view.bounds.width, height: view.bounds.height)
       view.game = await delegate.runtime.snapshot()
+      #expect(view.game.commander == expected)
+      #expect(view.game.docked && view.game.dockedAtMainStation && view.game.bodies.isEmpty)
+      #expect(view.game.selectedSystem == commander.system && view.game.market == bootstrap.market)
+      #expect(view.game.energy == bootstrap.energy)
+      #expect(
+        view.game.frontShield == bootstrap.frontShield
+          && view.game.rearShield == bootstrap.rearShield)
+      let loadedFiles = try recoveredSaveFiles(directory)
+      #expect(loadedFiles == originalFiles)
       view.pending.removeAll()
       let fixture = Self(
         delegate: delegate, view: view, window: window, preferences: preferences,
         identifier: identifier, directory: directory, save: save, originalSave: originalSave,
-        originalMenu: originalMenu)
+        originalFiles: originalFiles, originalMenu: originalMenu)
       try await fixture.press(20, text: "3", expected: "3")
       #expect(view.game.screen == .equipment && view.isFlipped)
       #expect(view.bounds.width == Double(width) && view.bounds.height == Double(height))
+      let paintedFiles = try recoveredSaveFiles(directory)
+      #expect(paintedFiles == originalFiles)
       return fixture
     } catch {
-      delegate.windowWillClose(Notification(name: NSWindow.willCloseNotification))
-      delegate.window?.orderOut(nil)
+      openedDelegate?.windowWillClose(Notification(name: NSWindow.willCloseNotification))
+      openedDelegate?.window?.orderOut(nil)
       NSApp.mainMenu = originalMenu
       preferences.removePersistentDomain(forName: identifier)
       try? FileManager.default.removeItem(at: directory)
@@ -176,8 +239,11 @@ private struct NativeEquipmentFixture {
   }
 
   func verifyUnchanged(_ commander: Data) throws {
-    #expect(try nativeEquipmentBytes(view.game.commander) == commander)
-    #expect(try Data(contentsOf: save) == originalSave)
+    let liveBytes = try nativeEquipmentBytes(view.game.commander)
+    let savedBytes = try Data(contentsOf: save)
+    let savedFiles = try recoveredSaveFiles(directory)
+    #expect(liveBytes == commander)
+    #expect(savedBytes == originalSave && savedFiles == originalFiles)
     #expect(delegate.saves.activeURL == save)
   }
 
