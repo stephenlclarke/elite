@@ -2,12 +2,14 @@ import Foundation
 
 extension Commander {
   var ordinaryCommodityAmounts: [CommodityAmount] {
-    CommodityIdentity.allCases.compactMap { commodity in
+    var amounts: [CommodityAmount] = []
+    for commodity in CommodityIdentity.allCases {
       let reserved =
         commodity == .firearms ? markedFirearms : commodity == .slaves ? nativeCaptiveCount : 0
       let quantity = max(0, cargo[commodity.rawValue] - reserved)
-      return quantity > 0 ? .init(commodity: commodity, quantity: quantity) : nil
+      if quantity > 0 { amounts.append(.init(commodity: commodity, quantity: quantity)) }
     }
+    return amounts
   }
 }
 
@@ -311,42 +313,133 @@ extension Game {
     _ game: borrowing Game, flight: FlightSimulationState, playerID: ActorIdentity,
     anchors: SystemAnchors, actors: [ActorSnapshot]
   ) -> EncounterContext {
-    var protection = MissionProtection()
-    protection.protectedActors = Set(
-      game.bodies.filter { !$0.gameplayProtectionReasons.isEmpty }
-        .compactMap { $0.physical?.identity })
-    protection.blocksNavalEncounter = game.bodies.contains {
-      $0.physical?.blocksNavalEncounter == true
-    }
-    var budget = AdmissionBudget(total: game.bodies.count)
-    for body in game.bodies where body.id != 0 {
-      if let population = body.physical?.population { budget.active[population, default: 0] += 1 }
-    }
-    let player = ActorSnapshot(
-      identity: playerID, hull: .cobra, position: flight.pose.position,
-      orientation: flight.pose.orientation,
-      velocity: game.flightWorldVelocity,
-      energy: game.energy, maximumEnergy: game.commander.performance.energy,
-      maximumSpeedUnitsPerSecond: game.commander.performance.speed * 18,
-      legal: .init(value: min(255, game.commander.legal)), npc: nil, rock: nil, payload: nil,
-      ordinaryCargo: game.commander.ordinaryCommodityAmounts, catalogueShipID: game.commander.shipID
-    )
-    let miningPresence = game.resolvedMiningPresence
+    let scene = Self.gameplayProtectionAndBudget(game.bodies)
+    let player = Self.gameplayPlayer(game, flight: flight, playerID: playerID)
+    let miningPresence = Self.gameplayMiningPresence(game)
     let depleted = Self.depletedGameplayRocks(game)
     return .init(
-      system: game.systemIdentity, seed: game.gameplaySeed,
-      government: game.currentSystem.government,
+      system: Self.gameplaySystemIdentity(game.commander), seed: Self.gameplayContextSeed(game),
+      government: Self.gameplayCurrentSystem(game).government,
       visit: flight.visit, revision: game.gameplayRevision, physicalTime: flight.physicalTime,
-      anchors: anchors, player: player, actors: actors, protection: protection,
-      budget: budget, perceptionRadius: 6000, depletedRocks: depleted,
+      anchors: anchors, player: player, actors: actors, protection: scene.protection,
+      budget: scene.budget, perceptionRadius: 6000, depletedRocks: depleted,
       miningPresence: miningPresence)
+  }
+
+  @inline(never)
+  private static func gameplayProtectionAndBudget(_ bodies: borrowing [SpaceBody])
+    -> (protection: MissionProtection, budget: AdmissionBudget)
+  {
+    var protection = MissionProtection()
+    protection.protectedActors = Set(
+      bodies.filter { !$0.gameplayProtectionReasons.isEmpty }
+        .compactMap { $0.physical?.identity })
+    protection.blocksNavalEncounter = bodies.contains {
+      $0.physical?.blocksNavalEncounter == true
+    }
+    var budget = AdmissionBudget(total: bodies.count)
+    for body in bodies where body.id != 0 {
+      if let population = body.physical?.population { budget.active[population, default: 0] += 1 }
+    }
+    return (protection, budget)
+  }
+
+  @inline(never)
+  private static func gameplayPlayer(
+    _ game: borrowing Game, flight: FlightSimulationState, playerID: ActorIdentity
+  ) -> ActorSnapshot {
+    return ActorSnapshot(
+      identity: playerID, hull: .cobra, position: flight.pose.position,
+      orientation: flight.pose.orientation,
+      velocity: Self.currentFlightWorldVelocity(game),
+      energy: game.energy, maximumEnergy: Self.gameplayPlayerMaximumEnergy(game.commander),
+      maximumSpeedUnitsPerSecond: Self.gameplayPlayerMaximumSpeed(game.commander),
+      legal: .init(value: Self.gameplayPlayerLegal(game.commander)), npc: nil, rock: nil,
+      payload: nil,
+      ordinaryCargo: Self.gameplayPlayerCargo(game.commander),
+      catalogueShipID: Self.gameplayPlayerShipID(game.commander)
+    )
+  }
+
+  @inline(never)
+  private static func gameplayPlayerMaximumEnergy(_ commander: borrowing Commander) -> Double {
+    commander.performance.energy
+  }
+
+  @inline(never)
+  private static func gameplayPlayerMaximumSpeed(_ commander: borrowing Commander) -> Double {
+    commander.performance.speed * 18
+  }
+
+  @inline(never)
+  private static func gameplayPlayerLegal(_ commander: borrowing Commander) -> Int {
+    min(255, commander.legal)
+  }
+
+  @inline(never)
+  private static func gameplayPlayerCargo(_ commander: borrowing Commander) -> [CommodityAmount] {
+    commander.ordinaryCommodityAmounts
+  }
+
+  @inline(never)
+  private static func gameplayPlayerShipID(_ commander: borrowing Commander) -> String {
+    commander.shipID
+  }
+
+  @inline(never)
+  private static func gameplaySystemIndex(_ commander: borrowing Commander) -> Int {
+    commander.system
+  }
+
+  @inline(never)
+  private static func gameplayGalaxy(_ commander: borrowing Commander) -> Int {
+    commander.galaxy
+  }
+
+  @inline(never)
+  private static func gameplaySystemIdentity(_ commander: borrowing Commander) -> SystemIdentity {
+    .init(galaxy: commander.galaxy, system: commander.system)
+  }
+
+  @inline(never)
+  private static func gameplayCurrentSystem(_ game: borrowing Game) -> StarSystem {
+    game.systems[Self.gameplaySystemIndex(game.commander)]
+  }
+
+  @inline(never)
+  private static func gameplayContextSeed(_ game: borrowing Game) -> UInt64 {
+    UInt64(Self.gameplayCurrentSystem(game).seed.a) << 32
+      | UInt64(Self.gameplayCurrentSystem(game).seed.b) << 16
+      | UInt64(Self.gameplayCurrentSystem(game).seed.c)
+  }
+
+  @inline(never)
+  private static func gameplayMiningLedger(_ commander: borrowing Commander) -> MiningLedger {
+    commander.miningLedger
+  }
+
+  @inline(never)
+  private static func gameplayMiningPresence(_ game: borrowing Game) -> MiningScenePresence {
+    let ledger = Self.gameplayMiningLedger(game.commander)
+    return .init(
+      ringPresent: ledger.ringPresence(
+        system: Self.gameplayCurrentSystem(game), galaxy: Self.gameplayGalaxy(game.commander)),
+      includingLegacy: ledger.retainsLegacyFields)
+  }
+
+  @inline(never)
+  private static func gameplayRockIsDepleted(
+    _ rock: RockIdentity, commander: borrowing Commander
+  ) -> Bool {
+    commander.miningLedger.isDepleted(rock)
   }
 
   @inline(never)
   private static func depletedGameplayRocks(_ game: borrowing Game) -> Set<RockIdentity> {
     var depleted = Set<RockIdentity>()
     for field in game.miningFields {
-      for rock in field.rocks where game.commander.miningLedger.isDepleted(rock.identity) {
+      for rock in field.rocks
+      where Self.gameplayRockIsDepleted(rock.identity, commander: game.commander) {
         depleted.insert(rock.identity)
       }
     }
