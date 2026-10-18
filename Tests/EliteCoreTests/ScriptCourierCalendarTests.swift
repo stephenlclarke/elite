@@ -186,6 +186,43 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
   #expect(
     arrived.commander.scriptState.clock(.missionCalendar) > job.acceptedAt + pinned.lowerBound)
   let due = try #require(job.deadline)
+  let originalControls = await runtime.courierControlsFixture()
+  try #require(
+    originalControls.pitch == 0 && originalControls.roll == 0 && originalControls.yaw == 0
+      && originalControls.throttle == 0 && !originalControls.fire
+      && originalControls.spinContacts == 0 && originalControls.spinRecognition == 0
+      && !originalControls.spinSlower && !originalControls.spinFaster)
+  try #require(arrived.screen.isFlight && !arrived.paused && !arrived.docked && arrived.energy > 0)
+  try #require(
+    arrived.energy.isFinite && arrived.flightWorldVelocity.finite
+      && arrived.flightWorldVelocity.length > 0)
+  try #require(
+    arrived.commander.performance.acceleration.isFinite
+      && arrived.commander.performance.acceleration > 0)
+  try #require(
+    arrived.workGuidance == nil && arrived.workBraking == nil && !arrived.manualResidualFlight)
+  try #require(
+    !arrived.dockingComputer && arrived.autoPilot.targetID == nil
+      && arrived.autoPilot.velocity == .init(0, 0, 0))
+  let arrivalImpact = arrived.stationImpactRevision
+  let stationCenter: Vector3
+  let stationRadius: Double
+  let playerRadius: Double
+  do {
+    let anchors = try #require(arrived.commander.flightSimulation.anchors)
+    let station = try #require(arrived.bodies.first { $0.id == 0 && $0.hull == .station })
+    try #require(station.physical?.identity == anchors.station.identity)
+    stationCenter = anchors.station.position
+    stationRadius = try #require(arrived.gameplayMesh(for: station).vertices.map(\.length).max())
+    playerRadius = try #require(arrived.commander.playerMesh.vertices.map(\.length).max())
+    try #require(
+      stationRadius.isFinite && stationRadius > 0 && playerRadius.isFinite && playerRadius > 0)
+  }
+  var brakingControls = originalControls
+  brakingControls.throttle = -1
+  await runtime.setControls(brakingControls)
+  var controlsRestored = false
+  var stoppedSafely = false
   // Quiet controlled scenery keeps unrelated encounters from dominating this clock boundary fixture.
   // Every second still comes from real clamped Runtime.advance flight, never an edited mission clock.
   var steps = 0
@@ -207,9 +244,22 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
         "temperature": state.cabinTemperature, "message": state.message,
       ]
     }
+    var restoreAfterAdvance = false
     do {
       let state = await runtime.advance(delta: min(0.1, due - now))
       let afterClock = state.commander.scriptState.clock(.missionCalendar)
+      if !controlsRestored, state.speed == 0, state.flightWorldVelocity == .init(0, 0, 0) {
+        restoreAfterAdvance = true
+        let pose = state.commander.flightSimulation.pose
+        let clearance = (pose.position - stationCenter).length
+        stoppedSafely =
+          state.screen.isFlight && !state.paused && !state.docked
+          && state.energy.isFinite && state.energy > 0 && pose.position.finite
+          && pose.orientation.validRotation && clearance.isFinite
+          && clearance > stationRadius + playerRadius
+          && state.stationImpactRevision == arrivalImpact
+        #expect(stoppedSafely)
+      }
       if firstInactiveFrame == nil,
         afterClock <= now || state.paused || state.docked || !state.screen.isFlight
       {
@@ -237,7 +287,15 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
           withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys])
       }
     }
+    if restoreAfterAdvance {
+      await runtime.setControls(originalControls)
+      controlsRestored = true
+    }
     steps += 1
+  }
+  if !controlsRestored {
+    await runtime.setControls(originalControls)
+    controlsRestored = true
   }
   let finalClock = await runtime.snapshot().commander.scriptState.clock(.missionCalendar)
   if steps == 0 || steps >= 20000 || finalClock != due,
@@ -250,6 +308,7 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
       "courier-deadline-origin-\(pinned.origin)-row-\(pinned.row)-late-\(boundary.late)-first-inactive.json"
     try evidence.write(to: directory.appendingPathComponent(name), options: .withoutOverwriting)
   }
+  #expect(stoppedSafely && controlsRestored)
   #expect(steps > 0 && steps < 20000)
   #expect(await runtime.snapshot().commander.scriptState.clock(.missionCalendar) == due)
   if boundary.late { _ = await runtime.advance(delta: 0.1) }
