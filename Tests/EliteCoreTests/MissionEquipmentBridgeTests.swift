@@ -16,7 +16,9 @@ private func equipmentPlansDelivery() throws -> Game {
 }
 
 struct MissionEquipmentBridgeTests {
-  @Test func originalPlansDeliveryGrantsActualNavalHardwareAndCannotDuplicateAfterReload() throws {
+  @Test func originalPlansDeliveryGrantsActualNavalHardwareAndCannotDuplicateAfterReload()
+    async throws
+  {
     var game = try equipmentPlansDelivery()
     let entry = try #require(game.missionPacks.entries.first { $0.pack.id == "xyzzy.plans" })
     let delivered = game.dispatchMission(.dock, naval: true)
@@ -27,11 +29,7 @@ struct MissionEquipmentBridgeTests {
     #expect(reward.provenance == .grant("mission-pack:" + entry.digest))
     #expect(game.commander.energyRechargeMultiplier == 3)
     #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
-    let saved = try JSONEncoder().encode(game.commander)
-    let decoded = try JSONDecoder().decode(Commander.self, from: saved)
-    var restored = Game()
-    let loaded = restored.load(decoded)
-    #expect(loaded)
+    var restored = try await CurrentBodylessSaveTestFixture.restore(game)
     let inventory = restored.commander.equipmentInventory
     let second = restored.dispatchMission(.dock, naval: true)
     #expect(!second && restored.commander.kills == 1536)
