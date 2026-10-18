@@ -10,7 +10,7 @@ User FR-026 requires ordinary activation times 10, 5 and 1 seconds; later FR-027
 
 ## Required correction
 
-Require the exact four-family order, exact ordered stable IDs within each family, matching identity family/version, uniqueness, nonempty display names and existing revisions. Keep the complete original shield ID assertion. Every actual grade must still pass the real 500-basis-point `moduleQuote` through the full production definition validator; no family or grade is skipped.
+Require the exact four-family order, exact ordered stable IDs within each family, matching identity family/version, uniqueness, available display names and existing revisions. Keep the complete original shield ID assertion. Every actual grade must still pass the real 500-basis-point `moduleQuote` through the full production definition validator; no family or grade is skipped.
 
 Adjacent grades must retain identical required axes, improve or preserve every required axis in its declared beneficial direction, and strictly improve at least one. Require the independent lower-is-better jump-spool direction and exact 10/5/1 stock seconds. This changes no production identity, migration, ordinary positive floor, mass-lock policy or upgrade calculation. Existing drive policy and legacy module tests remain unchanged.
 

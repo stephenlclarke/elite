@@ -2,7 +2,7 @@
 
 ## Changes
 
-The generic module-definition test now requires the exact four-family registry, including hyperspace drives, and exact ordered persisted IDs per family. It retains identity family/version and uniqueness checks, energy revision two versus revision one elsewhere, nonempty display names and the original explicit shield ID list. Drive IDs remain `basic`, `intermediate`, `advanced`; no production prefix or migration policy changes.
+The generic module-definition test now requires the exact four-family registry, including hyperspace drives, and exact ordered persisted IDs per family. It retains identity family/version and uniqueness checks, energy revision two versus revision one elsewhere, available display names and the original explicit shield ID list. Drive IDs remain `basic`, `intermediate`, `advanced`; no production prefix or migration policy changes.
 
 Every grade still executes the actual 500-basis-point quote through the full progression validator. Adjacent grades retain identical required axes, cannot worsen any required axis in its declared beneficial direction, and must strictly benefit at least one. An independent assertion pins jump-spool as lower-is-better and stock drive seconds as 10/5/1. The ordinary 0.7-second floor, mass-lock policy, real upgrade effects and all legacy compatibility tests remain unchanged. Elite energy remains present as requested by FR-020.
 
