@@ -586,6 +586,9 @@ private func poisonNativeFragment(_ reason: String, game: inout Game, lot: Salva
   let actor = try #require(game.bodies[index].physical?.identity)
   let spawn = try #require(game.bodies[index].physical?.spawnIdentity)
   switch reason {
+  case "naval": game.bodies[index].navalTarget = true
+  case "blackjack": game.bodies[index].blackjackIdentity = UUID()
+  case "projectile": game.bodies[index].enemyMissile = true
   case "npc":
     game.bodies[index].physical?.npc = .init(
       role: .trader, origin: game.systemIdentity,
@@ -711,6 +714,7 @@ extension NativeSalvageCollectionRuntimeTests {
   @Test(arguments: [
     "npc", "emp", "mission", "shape", "claimant", "spawn-highwater",
     "spawn-producer", "actor-highwater", "cargo-owner", "mining-owner", "npc-owner",
+    "naval", "blackjack", "projectile",
   ])
   func conflictingNativeFragmentOwnersCannotBeScoopedOrSaved(reason: String) async throws {
     let (initial, lot) = try nativeSalvageScoopFixture()
