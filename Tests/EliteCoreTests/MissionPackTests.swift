@@ -391,6 +391,18 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let original = try String(contentsOf: file, encoding: .utf8)
   try (original + failure).write(to: file, atomically: true, encoding: .utf8)
   let entry = try MissionPackLibrary.read(file)
+  func failedEntry(in value: Game) throws -> GalleryMission {
+    let index = try #require(
+      value.missionPacks.entries.firstIndex {
+        $0.pack.stateID == entry.pack.stateID && $0.digest == entry.digest
+      })
+    let catalogue = value.missionCatalogue
+    try #require(catalogue.indices.contains(index))
+    let progress = try #require(value.commander.missionProgress[entry.pack.stateID])
+    #expect(progress.digest == entry.digest && progress.version == entry.pack.version)
+    #expect(progress.stage == "failed")
+    return catalogue[index]
+  }
   var game = Game(executive: false)
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
@@ -399,8 +411,8 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.launch()
   game.tick(delta: 0.1)
   #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == 0)
-  #expect(game.missionCatalogue.last?.status == .failed)
-  #expect(game.missionCatalogue.last?.completed == 1)
+  let failed = try failedEntry(in: game)
+  #expect(failed.status == .failed && failed.completed == 1)
   game.selectedSystem = 129
   game.arrive()
   #expect(
@@ -412,8 +424,17 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let runtime = GameRuntime(game: game)
   let save = folder.appendingPathComponent("failed.json")
   try await runtime.save(to: save)
+  let saved = await runtime.snapshot().commander
+  let bytes = try Data(contentsOf: save)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: save)
+  #expect(stored == saved)
   try await runtime.load(from: save)
-  #expect(await runtime.snapshot().missionCatalogue.last?.status == .failed)
+  let loaded = await runtime.snapshot()
+  let restoredFailure = try failedEntry(in: loaded)
+  #expect(restoredFailure.status == .failed && restoredFailure.completed == 1)
+  #expect(loaded.commander.credits == 1000 && loaded.commander.cargoTonnes == 0)
   let outgoing = """
 
     [[transitions]]
