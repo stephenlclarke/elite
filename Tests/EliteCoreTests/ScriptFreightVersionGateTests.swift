@@ -250,13 +250,15 @@ struct ScriptFreightVersionGateTests {
     }
     var destination = Game(executive: false)
     let before = try ScriptValueStorage.encoder().encode(destination.commander)
-    #expect(!destination.load(game.commander))
+    let nativeLoaded = destination.load(game.commander)
+    #expect(!nativeLoaded)
     #expect(try ScriptValueStorage.encoder().encode(destination.commander) == before)
     // Existing native flags may also refuse this genuine commander. No stripped bypass fixture
     // is substituted to make a claim about which guard caused the refusal.
     var ordinary = Commander()
     ordinary.name = "ORDINARY LOAD"
-    #expect(destination.load(ordinary) && destination.commander.name == ordinary.name)
+    let ordinaryLoaded = destination.load(ordinary)
+    #expect(ordinaryLoaded && destination.commander.name == ordinary.name)
   }
 
   @Test func freightVersionRequiresActualFreightAndProviderOnlyRemainsUnsupported() async throws {
