@@ -124,6 +124,7 @@ extension GameRuntime {
         && state.target == facts.threat?.identity
     }
     return facts.identity?.player == player && !game.playerEMPDisabled && !game.workFireSuspended
+      && !game.ecmControl.fieldActive
       && game.energy > 1 && game.jumpCountdown == nil && game.pendingNativeStationDock == nil
       && ScriptProcurementMissilePolicy.requestsFallback(
         facts, steps: steps, pulse: game.commander.laser(on: .front) == .pulse,
