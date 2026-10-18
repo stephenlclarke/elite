@@ -109,7 +109,9 @@ struct ScriptProcurementFixture {
   }
 
   /// Buy the canonical docking equipment, then use real launch/controls/station entry.
-  func nativeRuntime() async throws -> GameRuntime {
+  func nativeRuntime(diagnostic: ScriptProcurementFlightDiagnostic? = nil) async throws
+    -> GameRuntime
+  {
     var game = Game(executive: false)
     game.screen = .status
     game.commander.system = 0
@@ -159,10 +161,13 @@ struct ScriptProcurementFixture {
     let runtime = GameRuntime(game: game, saveURL: save)
     try await runtime.save(to: save)
     await runtime.key("0")
-    try await Self.dock(runtime)
+    try await Self.dock(runtime, diagnostic: diagnostic, phase: "initial-dock")
     return runtime
   }
-  static func dock(_ runtime: GameRuntime) async throws {
+  static func dock(
+    _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic? = nil,
+    phase: String = "dock"
+  ) async throws {
     for _ in 0..<32 {
       let main = await runtime.procurementTargetIsMain()
       if main { break }
@@ -175,14 +180,21 @@ struct ScriptProcurementFixture {
       let facts = await runtime.procurementFlightFacts()
       if facts.docked { break }
       try #require(facts.live && !facts.paused)
-      _ = await runtime.advance(delta: 0.1)
+      if let diagnostic {
+        await diagnosticAdvance(runtime, diagnostic: diagnostic, phase: phase, step: steps)
+      } else {
+        _ = await runtime.advance(delta: 0.1)
+      }
       steps += 1
     }
     let docked = await runtime.procurementNativeDockIsCurrent()
     try #require(steps > 0 && steps < 3000 && docked)
   }
-  static func travel(_ runtime: GameRuntime, path: [Int]) async throws {
+  static func travel(
+    _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil
+  ) async throws {
     for destination in path.dropFirst() {
+      let leg = diagnostic == nil ? "" : "travel-leg-\(path.firstIndex(of: destination) ?? 0)"
       await runtime.key("0")
       var controls = Controls()
       controls.throttle = 1
@@ -191,7 +203,12 @@ struct ScriptProcurementFixture {
       while departure < 300 {
         let locked = await runtime.procurementMassLocked()
         if !locked { break }
-        _ = await runtime.advance(delta: 0.1)
+        if let diagnostic {
+          await diagnosticAdvance(
+            runtime, diagnostic: diagnostic, phase: leg + "-departure", step: departure)
+        } else {
+          _ = await runtime.advance(delta: 0.1)
+        }
         departure += 1
       }
       await runtime.setControls(Controls())
@@ -205,14 +222,31 @@ struct ScriptProcurementFixture {
       while steps < 500 {
         let jumping = await runtime.procurementJumping()
         if !jumping { break }
-        _ = await runtime.advance(delta: 0.1)
+        if let diagnostic {
+          await diagnosticAdvance(
+            runtime, diagnostic: diagnostic, phase: leg + "-jump", step: steps)
+        } else {
+          _ = await runtime.advance(delta: 0.1)
+        }
         steps += 1
       }
       let system = await runtime.procurementCurrentSystem()
       try #require(steps > 0 && steps < 500 && system == destination)
-      try await dock(runtime)
+      try await dock(runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : leg + "-dock")
       if destination != path.last { await runtime.procurementRefuel() }
     }
+  }
+  private static func diagnosticAdvance(
+    _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic, phase: String, step: Int
+  ) async {
+    guard await diagnostic.active else {
+      _ = await runtime.advance(delta: 0.1)
+      return
+    }
+    let before = await runtime.procurementFlightDiagnosticFacts()
+    _ = await runtime.advance(delta: 0.1)
+    let after = await runtime.procurementFlightDiagnosticFacts()
+    await diagnostic.record(before: before, after: after, phase: phase, step: step)
   }
   static func contact(_ runtime: GameRuntime) async {
     await runtime.key("contacts-open")
@@ -221,7 +255,91 @@ struct ScriptProcurementFixture {
   }
 }
 
+struct ScriptProcurementFlightDiagnosticFacts: Sendable {
+  let docked: Bool
+  let live: Bool
+  let paused: Bool
+  let scalars: [String: String]
+}
+
+/// Test-only, opt-in state. It retains no Game, Commander, actor inventory or authority.
+actor ScriptProcurementFlightDiagnostic {
+  private var emitted = false
+  private var lastLive: [String: String]?
+  var active: Bool { !emitted }
+
+  func record(
+    before: ScriptProcurementFlightDiagnosticFacts,
+    after: ScriptProcurementFlightDiagnosticFacts, phase: String, step: Int
+  ) {
+    guard !emitted else { return }
+    if before.live && !before.paused {
+      var scalars = before.scalars
+      scalars["phase"] = phase
+      scalars["step"] = String(step)
+      lastLive = scalars
+    }
+    guard !after.docked, !after.live || after.paused else { return }
+    emitted = true
+    var failure = after.scalars
+    failure["phase"] = phase
+    failure["step"] = String(step + 1)
+    let payload: [String: Any] = [
+      "kind": "procurement-flight-first-failure",
+      "lastLivePreAdvance": lastLive ?? [:],
+      "firstFailurePostAdvance": failure,
+      "immediatePreAdvanceWasLive": before.live && !before.paused,
+    ]
+    do {
+      let data = try JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys])
+      // The budget includes print's single trailing newline. Refusal never dumps the payload.
+      guard data.count < 4096, let text = String(data: data, encoding: .utf8) else {
+        print("PROCUREMENT_FLIGHT_DIAGNOSTIC_REFUSED limit=4096")
+        return
+      }
+      print(text)
+    } catch {
+      print("PROCUREMENT_FLIGHT_DIAGNOSTIC_REFUSED encoding")
+    }
+  }
+}
+
 extension GameRuntime {
+  /// Scalar reads only; numeric strings preserve nonfinite values without JSON NaN failures.
+  func procurementFlightDiagnosticFacts() -> ScriptProcurementFlightDiagnosticFacts {
+    let facts = procurementFlightFacts()
+    let stationContainsPlayer =
+      game.bodies.first { $0.id == 0 && $0.hull == .station }
+      .map { String($0.containsPlayer) } ?? "unavailable"
+    return .init(
+      docked: facts.docked, live: facts.live, paused: facts.paused,
+      scalars: [
+        "docked": String(facts.docked), "live": String(facts.live),
+        "paused": String(facts.paused), "screen": String(describing: game.screen),
+        "energy": String(game.energy), "energyFinite": String(game.energy.isFinite),
+        "frontShield": String(game.frontShield), "rearShield": String(game.rearShield),
+        "cabinTemperature": String(game.cabinTemperature), "altitude": String(game.altitude),
+        "system": String(game.commander.system),
+        "visit": String(game.commander.flightSimulation.visit),
+        "physicalTime": String(game.commander.flightSimulation.physicalTime),
+        "calendarSeconds": String(game.commander.scriptState.calendarSeconds),
+        "missionSeconds": game.commander.scriptState.missionCalendar.map { String($0.seconds) }
+          ?? "unavailable",
+        "fuel": String(game.commander.fuel), "credits": String(game.commander.credits),
+        "cargoTonnes": String(game.commander.cargoTonnes),
+        "speed": String(game.speed), "roll": String(game.roll),
+        "autoPilotStatus": String(game.autoPilot.status.prefix(80)),
+        "finalApproach": String(game.autoPilot.finalApproach),
+        "positionError": String(game.autoPilot.positionError),
+        "phaseError": String(game.autoPilot.phaseError),
+        "rateError": String(game.autoPilot.rateError),
+        "targetID": game.autoPilot.targetID.map { String($0) } ?? "nil",
+        "mainStationContainsPlayer": stationContainsPlayer,
+        "gameplayRevisionFrameStamp": String(game.gameplayRevision),
+        "stationImpactRevisionFrameStamp": game.stationImpactRevision.map { String($0) } ?? "nil",
+        "message": String(game.message.prefix(160)),
+      ])
+  }
   func procurementTargetIsMain() -> Bool { game.autoTargetBody?.id == 0 }
   func procurementFlightFacts() -> (docked: Bool, live: Bool, paused: Bool) {
     (game.docked, game.screen != .gameOver && game.energy > 0, game.paused)
