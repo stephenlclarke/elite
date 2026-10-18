@@ -8,4 +8,6 @@ Carry the authentic radius into the transient work surface and validate the actu
 
 The retained named radius must also remain equal to current metadata alongside its section, point and normal. A changed patch must not borrow an older hold's authorization.
 
+The first composed compilation (validation 347) found one existing synthetic work-status fixture still calling the old memberwise initializer. It requires an explicit nil radius for its existing nil section; every other fixture value and disclosure assertion must remain unchanged. No test executed in that failed compilation.
+
 [PR handoff](PR-salvage-work-surface-contract.md).
