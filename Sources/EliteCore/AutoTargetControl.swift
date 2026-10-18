@@ -279,8 +279,11 @@ public struct AutoTargetControl: Sendable {
       && rateError < 0.02 && velocity.length < 1
     if ready { finalApproach = true }
     var desired: Vector3
+    var finalEnvelope: Double?
     if finalApproach {
-      desired = finalVelocity(target, acceleration: acceleration)
+      let motion = finalVelocity(target, delta: delta, limits: limits)
+      desired = motion.velocity
+      finalEnvelope = motion.envelope
     } else if stationStaged {
       // Hold at the safe external goal while facing the doorway and matching spin.
       desired = .init(0, 0, 0)
@@ -311,15 +314,20 @@ public struct AutoTargetControl: Sendable {
         target, desired: desired, acceleration: acceleration,
         delta: delta, clearance: clearance)
     let maximumSpeed =
-      stationStaged || finalApproach ? min(Self.policyLimits.speed, limits.speed) : limits.speed
+      stationStaged && !finalApproach ? min(Self.policyLimits.speed, limits.speed) : limits.speed
     let requestedThrust = acceleration * delta
     let thrustBudget = requestedThrust.isFinite ? requestedThrust : Double.greatestFiniteMagnitude
     // One thrust budget covers approach, braking and station avoidance. Existing
     // overspeed coasts down within that budget rather than projecting velocity instantly.
-    velocity =
-      velocity
-      + (safeDesired.limited(to: maximumSpeed) - velocity)
-      .limited(to: thrustBudget)
+    let speed = velocity.length
+    let overspeed =
+      finalEnvelope.map {
+        speed > $0 + max(speed.ulp, $0.ulp) * 16
+      } ?? false
+    let requested =
+      overspeed
+      ? velocity.unit * max(0, speed - thrustBudget) : safeDesired.limited(to: maximumSpeed)
+    velocity = velocity + (requested - velocity).limited(to: thrustBudget)
   }
 
   /// Reserve one complete step and the stopping distance before the current external waypoint.
@@ -339,7 +347,34 @@ public struct AutoTargetControl: Sendable {
     let stoppingSpeed = (root * 0.5) * (root / halfDenominator)
     return min(maximumSpeed, distance * 0.8, stoppingSpeed)
   }
-  private mutating func finalVelocity(_ target: SpaceBody, acceleration: Double) -> Vector3 {
+  /// Full-step reserve plus native hull braking to the conservative near-door speed.
+  /// At or below that terminal speed no further deceleration is needed at the boundary.
+  static func finalCruiseSpeed(
+    distance: Double, delta: Double, acceleration: Double, maximumSpeed: Double
+  ) -> Double {
+    guard distance.isFinite, delta.isFinite, delta > 0,
+      acceleration.isFinite, acceleration > 0, maximumSpeed.isFinite, maximumSpeed > 0
+    else { return 0 }
+    guard distance >= 0 else { return 0 }
+    let terminal = min(48, maximumSpeed)
+    guard distance > 200 else { return terminal }
+    let available = distance - 200
+    let root = sqrt(acceleration) * sqrt(2) * sqrt(available)
+    let reaction = acceleration * delta
+    let combined = hypot(root, terminal)
+    let halfDenominator = hypot(combined, reaction) * 0.5 + reaction * 0.5
+    guard combined.isFinite, reaction.isFinite, halfDenominator.isFinite,
+      halfDenominator > 0
+    else { return terminal }
+    // Rationalize sqrt(reaction² + terminal² + 2*a*d) - reaction without squaring.
+    let bounded = (combined * 0.5) * (combined / halfDenominator)
+    guard bounded.isFinite else { return terminal }
+    return min(maximumSpeed, max(terminal, bounded))
+  }
+
+  private mutating func finalVelocity(
+    _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits
+  ) -> (velocity: Vector3, envelope: Double) {
     let door = target.entrancePosition
     let normal = target.entranceNormal
     let distance = -door.dot(normal)
@@ -348,11 +383,14 @@ public struct AutoTargetControl: Sendable {
       facingError < 0.03 && abs(phaseError) < 0.08 && rateError < 0.06 && lateral.length < 15
     if !aligned {
       status = "HOLDING FOR ALIGNMENT"
-      return lateral * 1.8 + normal * (distance < 200 ? 40 : 0)
+      let envelope = min(48, limits.speed)
+      return ((lateral * 1.8 + normal * (distance < 200 ? 40 : 0)).limited(to: envelope), envelope)
     }
     status = "FINAL APPROACH"
-    let speed = min(distance < 200 ? 48.0 : 96.0, sqrt(max(0, distance + 20) * acceleration))
-    return lateral * 1.8 - normal * speed
+    let envelope = Self.finalCruiseSpeed(
+      distance: distance, delta: delta, acceleration: limits.acceleration,
+      maximumSpeed: limits.speed)
+    return ((lateral * 1.8 - normal * envelope).limited(to: envelope), envelope)
   }
   private func approachWaypoint(_ target: SpaceBody, goal: Vector3, clearance: Double) -> Vector3 {
     let closest =

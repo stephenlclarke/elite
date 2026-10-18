@@ -84,7 +84,7 @@ private func verifyActualNativeAutoDock(
   let source = try #require(NativeStationSource.binding(for: identity))
   let maximumSpeed = game.workLimits.speed
   let alignmentSpeed = min(144, maximumSpeed)
-  let maximumAcceleration = min(240, game.workLimits.acceleration)
+  let maximumAcceleration = game.workLimits.acceleration
   let property = game.commander
   let runtime = GameRuntime(game: game, saveURL: storage.url)
   try await runtime.save(to: storage.url)
@@ -110,24 +110,40 @@ private func verifyActualNativeAutoDock(
   var maximumStep = 0.0
   var observedMaximumSpeed = 0.0
   var travelled = 0.0
+  var crossingWasSlow = false
   let delta = 0.02
   // The same bounded full-approach budget used by the native station guidance tests.
   for _ in 0..<9000 where !game.docked && healthy {
     let before = game.commander.flightSimulation.pose.position
     let beforeVelocity = game.flightWorldVelocity
     let beforeApproachSpeed = game.autoPilot.velocity.length
+    let beforeDoorDistance = game.autoTargetBody.map { -$0.entrancePosition.dot($0.entranceNormal) }
     game = await runtime.advance(delta: delta)
     let step = (game.commander.flightSimulation.pose.position - before).length
     travelled += step
     maximumStep = max(maximumStep, step)
     observedMaximumSpeed = max(observedMaximumSpeed, game.autoPilot.velocity.length)
     healthy = !game.paused && game.screen != .gameOver && game.energy > 0
-    if game.docked { break }
+    if game.docked {
+      crossingWasSlow =
+        beforeApproachSpeed < 144 && beforeApproachSpeed <= min(48, maximumSpeed) + 1e-6
+      break
+    }
     #expect(
       (game.flightWorldVelocity - beforeVelocity).length <= maximumAcceleration * delta + 1e-6)
-    if game.autoPilot.status != "APPROACHING" {
-      // Alignment/final entry keep the reference ceiling; inherited momentum brakes gradually.
+    if !game.autoPilot.finalApproach && game.autoPilot.status != "APPROACHING" {
+      // Acquisition retains its reference ceiling; inherited momentum brakes gradually.
       #expect(game.autoPilot.velocity.length <= max(alignmentSpeed, beforeApproachSpeed) + 1e-6)
+    }
+    if game.autoPilot.status == "FINAL APPROACH", let distance = beforeDoorDistance {
+      let speed = game.flightWorldVelocity.length
+      let terminal = min(48, maximumSpeed)
+      if speed > terminal + 1e-6 {
+        #expect(
+          speed * delta + (speed * speed - terminal * terminal) / (2 * maximumAcceleration)
+            <= distance - 200 + 1e-5)
+      }
+      if distance <= 200 { #expect(speed <= terminal + 1e-6) }
     }
     phases.insert(game.autoPilot.status)
     sawApproach = sawApproach || game.autoPilot.status == "APPROACHING"
@@ -172,7 +188,7 @@ private func verifyActualNativeAutoDock(
   #expect(receipt.dockingBinding == .init(actor: actor, bodyID: station.id))
   #expect(receipt.commanderOwner == property.equipmentOwnerID && receipt.sequence == 1)
   #expect(game.commander.nativeStations?.currentMainDock == nil)
-  #expect(game.nativeStationDockEvidenceIsCurrent)
+  #expect(game.nativeStationDockEvidenceIsCurrent && crossingWasSlow)
   let board = try #require(await runtime.nativeStationBoardContext())
   #expect(board.service.receipt == receipt && game.acceptsNativeStationBoardContext(board))
   #expect(game.commander.credits == property.credits && game.commander.cargo == property.cargo)
