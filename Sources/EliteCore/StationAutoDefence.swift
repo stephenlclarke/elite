@@ -7,6 +7,8 @@ struct StationAutoGuidance: Sendable {
   var hazard = StationAutoHazard.clear
   var interruptionAllowed = false
   var clearanceRadius = 0.0
+  var handoverAllowed = false
+  var joinedIncoming = false
 
   var hasManeuver: Bool { aim != nil || lateralVelocity.length > 0 }
 }
@@ -136,11 +138,34 @@ extension Game {
     return !closing.isFinite || body.position.length <= 1500 + closing
   }
 
-  /// Current observations only; no cached firing or entry authority.
-  private func stationAutoHazard(_ assessment: StationAutoAssessment) -> StationAutoHazard {
+  private func stationAutoThreatObserved(_ body: SpaceBody, context: EncounterContext) -> Bool {
+    guard let physical = body.physical, let npc = physical.npc, npc.resources?.valid == true,
+      physical.identity.system == context.system, physical.identity.visit == context.visit,
+      physical.identity != context.player.identity,
+      body.position.finite, body.position.length.isFinite, body.energy.isFinite,
+      body.orientation.validRotation, physical.velocity.finite,
+      bodies.filter({ $0.id == body.id }).count == 1,
+      bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
+      context.actors.filter({ $0.identity == physical.identity }).count == 1,
+      let snapshot = context.actors.first(where: { $0.identity == physical.identity }),
+      snapshot.hull == body.hull, snapshot.npc == npc, snapshot.energy == body.energy,
+      body.scriptNPC == nil, body.scriptShot == nil,
+      let native = ShipCatalogue.nativeShip(body.hull),
+      physical.catalogueShipID == nil || physical.catalogueShipID == native.id,
+      physical.empSource == nil || isEMPDisabled(body)
+    else { return false }
+    return true
+  }
+
+  /// Current observations only; scan all sources even after finding an authentic attacker.
+  private func stationAutoHazards(_ assessment: StationAutoAssessment) -> (
+    hazard: StationAutoHazard, handoverKnown: Bool, joinedIncoming: Bool
+  ) {
     let context = assessment.context
     var uncertain = false
     var closing = false
+    var active = false
+    var joinedIncoming = false
     for body in assessment.incoming {
       if let physical = body.physical, let ordnance = physical.ordnance, ordnance.valid,
         physical.identity == ordnance.origin.ordnance,
@@ -156,35 +181,27 @@ extension Game {
         bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
         context.actors.filter({ $0.identity == physical.identity }).count == 1
       {
-        return .active
+        active = true
+        joinedIncoming = true
+      } else {
+        uncertain = true
       }
-      uncertain = true
     }
     for body in assessment.threats {
-      if isEMPDisabled(body) { continue }
-      if body.physical?.empSource != nil {
-        uncertain = true
-        continue
-      }
-      guard let physical = body.physical, let npc = physical.npc, npc.resources?.valid == true,
-        physical.identity.system == context.system, physical.identity.visit == context.visit,
-        body.position.finite, body.position.length.isFinite, body.energy.isFinite,
-        bodies.filter({ $0.id == body.id }).count == 1,
-        bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
-        context.actors.filter({ $0.identity == physical.identity }).count == 1,
-        let snapshot = context.actors.first(where: { $0.identity == physical.identity }),
-        snapshot.hull == body.hull, snapshot.npc == npc, snapshot.energy == body.energy
+      guard stationAutoThreatObserved(body, context: context), let physical = body.physical,
+        let npc = physical.npc
       else {
         uncertain = true
         continue
       }
+      if isEMPDisabled(body) { continue }
       guard
         commander.crimeLedger.hasCurrentUnlawfulAttack(
           from: physical.identity, against: context.player.identity, context: context)
       else { continue }
       // Native ordinary flee/navigation does not emit a beam or run hostile naval tactics.
       if !body.hostile, physical.spawnIdentity?.producer == .ambient,
-        body.scriptNPC == nil, body.missionInstanceID == nil, !body.navalTarget,
+        body.missionInstanceID == nil, !body.navalTarget,
         body.blackjackRole == nil, ![Hull.constrictor, .thargoid, .thargon].contains(body.hull)
       {
         switch npc.intention {
@@ -215,13 +232,14 @@ extension Game {
         }
       }
       if pulseOnly && body.position.length > 1500 {
-        // Preserve a native one-step closing buffer without re-entering on the same boundary.
         closing = true
       } else {
-        return .active
+        active = true
       }
     }
-    return uncertain ? .unknown : (closing ? .closing : .clear)
+    let hazard: StationAutoHazard =
+      active ? .active : (uncertain ? .unknown : (closing ? .closing : .clear))
+    return (hazard, !uncertain && assessment.incoming.isEmpty, joinedIncoming)
   }
 
   mutating func stationAutoGuidance(target station: SpaceBody) -> StationAutoGuidance? {
@@ -232,7 +250,8 @@ extension Game {
       return .init(aim: nil, lateralVelocity: .init(0, 0, 0), hazard: .unknown)
     }
     let context = assessment.context
-    let hazard = stationAutoHazard(assessment)
+    let observations = stationAutoHazards(assessment)
+    let hazard = observations.hazard
     let stationMesh = gameplayMeshOverrides[station.id] ?? Mesh.hull(station.hull)
     let structureRadius =
       (stationMesh.vertices.map(\.length).max() ?? .infinity)
@@ -275,7 +294,9 @@ extension Game {
       stationAutoDefence?.evasionWorld = nil
       return .init(
         aim: nil, lateralVelocity: .init(0, 0, 0), hazard: hazard,
-        interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius)
+        interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
+        handoverAllowed: observations.handoverKnown && interruptionAllowed,
+        joinedIncoming: observations.joinedIncoming)
     }
     let goal = station.entrancePosition + station.entranceNormal * station.stationApproachDistance
     let route = goal.unit
@@ -305,7 +326,9 @@ extension Game {
     let aim = canFaceForResponse ? combat?.position : nil
     return .init(
       aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure),
-      hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius)
+      hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
+      handoverAllowed: observations.handoverKnown && interruptionAllowed,
+      joinedIncoming: observations.joinedIncoming)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {
