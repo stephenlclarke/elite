@@ -132,7 +132,9 @@ extension Game {
     {
       guard commander.alienStorageStateValid, physical.identity.system == systemIdentity,
         physical.identity.visit == commander.flightSimulation.visit,
-        let pending = native?.pending[identity], pending.binding == physical.identity
+        let pending = native?.pending[identity], pending.binding == physical.identity,
+        commander.nativeSalvageBodyOwnershipMatches(body, lot: pending.lot),
+        !commander.salvageLedger.ownsPhysicalActor(physical.identity)
       else { return nil }
       return nativeSalvageMotion[identity]?.lot ?? pending.lot
     }

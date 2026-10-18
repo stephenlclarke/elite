@@ -57,6 +57,7 @@ extension Game {
       body.energy.isFinite, body.energy > 0, body.position.z > 0, body.position.y < 0,
       body.position.length < 85,
       let lot = currentSalvageLot(for: body),
+      commander.nativeSalvageBodyOwnershipMatches(body, lot: lot),
       !context.protection.protectedActors.contains(physical.identity),
       !context.protection.protectedPayloads.contains(.salvage(lot.identity)),
       let owner = commander.equipmentOwnerID, let hull = commander.hullInstanceID,

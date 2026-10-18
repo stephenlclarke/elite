@@ -261,6 +261,8 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     pending.values.sorted { key($0.identity) < key($1.identity) }
   }
   public func boundActor(for payload: PayloadIdentity) -> ActorIdentity? { bindings[payload] }
+  /// Read-only cross-backend custody join; this does not expose mutable bindings.
+  func ownsPhysicalActor(_ actor: ActorIdentity) -> Bool { bindings.values.contains(actor) }
 
   public func isDepleted(_ identity: RockIdentity) -> Bool {
     guard let bit = bit(identity) else { return false }

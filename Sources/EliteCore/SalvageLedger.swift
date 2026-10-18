@@ -448,6 +448,11 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   public var pendingLots: [SalvageLot] { sorted(pending.values) }
   /// The acknowledged live body is the only scene actor allowed to transfer this lot.
   public func boundActor(for lot: SalvageLotIdentity) -> ActorIdentity? { bindings[lot] }
+  func ownsPhysicalActor(_ actor: ActorIdentity) -> Bool { bindings.values.contains(actor) }
+  func wasNativeSpawnAllocated(_ spawn: SpawnIdentity) -> Bool {
+    spawn.producer == .salvage && spawn.sequence > 0 && spawn.sequence <= sequence
+  }
+
   /// Admission may inspect only a still-pending lot offered under this exact spawn identity.
   public func offeredLot(for request: SpawnIdentity) -> SalvageLot? {
     offers[request].flatMap { pending[$0] }

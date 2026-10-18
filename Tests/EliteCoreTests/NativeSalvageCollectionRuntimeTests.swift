@@ -3,7 +3,9 @@ import Testing
 
 @testable import EliteCore
 
-private func nativeSalvageScoopFixture() throws -> (Game, SalvageLot) {
+private func nativeSalvageScoopFixture(
+  definition: String = AlienModuleKind.energyCapacity.definitionID
+) throws -> (Game, SalvageLot) {
   var game = try missionGearGame()
   game.commander.system = 7
   try game.commander.grantEquipment(
@@ -14,11 +16,11 @@ private func nativeSalvageScoopFixture() throws -> (Game, SalvageLot) {
   game.speed = 0
   game.bodies = []
   game.celestials = []
-  var original = try AlienLegacyFixture.make()
+  var original = try AlienLegacyFixture.make(definition: definition)
   let target = try #require(
     original.ledger.pendingLots.first {
       if case .technology(let id, _, _) = $0.content {
-        return id == AlienModuleKind.energyCapacity.definitionID
+        return id == definition
       }
       return false
     })
@@ -129,7 +131,8 @@ struct NativeSalvageCollectionRuntimeTests {
   @Test func directTickAndUnboundActorCannotPublishACollectionOrRemoveTheActualFragment()
     async throws
   {
-    var (game, lot) = try nativeSalvageScoopFixture()
+    let (initial, lot) = try nativeSalvageScoopFixture()
+    var game = initial
     let previous = game.commander.salvageLedger
     game.tick(delta: 0.1)
     #expect(game.pendingNativeSalvageCollections.count == 1)
@@ -143,8 +146,11 @@ struct NativeSalvageCollectionRuntimeTests {
   }
 }
 
-private func recoveredModuleAtActualPlughDock(_ file: URL) async throws -> (GameRuntime, UUID) {
-  let (initial, lot) = try nativeSalvageScoopFixture()
+private func recoveredModuleAtActualPlughDock(
+  _ file: URL,
+  kind: AlienModuleKind = .energyCapacity
+) async throws -> (GameRuntime, UUID) {
+  let (initial, lot) = try nativeSalvageScoopFixture(definition: kind.definitionID)
   let recovery = GameRuntime(game: initial)
   try await recovery.save(to: file)
   var game = await recovery.advance(delta: 0.1)
@@ -158,6 +164,12 @@ private func recoveredModuleAtActualPlughDock(_ file: URL) async throws -> (Game
   game.commander.system = Plugh.systemID
   game.launch()
   try #require(!game.docked && game.commander.valid)
+  let runtime = try await dockAtActualPlughDoorway(game, file: file)
+  return (runtime, item.id)
+}
+
+private func dockAtActualPlughDoorway(_ input: Game, file: URL) async throws -> GameRuntime {
+  var game = input
   let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
   let old = game.commander.flightSimulation.pose
   var pose = ShipPose()
@@ -173,15 +185,18 @@ private func recoveredModuleAtActualPlughDock(_ file: URL) async throws -> (Game
   try #require(game.nativeMainStationDockEvidenceIsCurrent && game.nativeAlienFittingAvailable)
   // Select inventory through the actor after the actual doorway supplies its receipt.
   await runtime.nativeCommand { $0.screen = .inventory }
-  return (runtime, item.id)
+  return runtime
 }
 
 extension NativeSalvageCollectionRuntimeTests {
-  @Test func actualPlughDockFitsAndStoresTheSameModuleWithoutRefillCashOrSourceLoss() async throws {
+  @Test(arguments: AlienModuleKind.allCases)
+  func actualPlughDockFitsAndStoresTheSameModuleWithoutRefillCashOrSourceLoss(kind: AlienModuleKind)
+    async throws
+  {
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
-    let (runtime, id) = try await recoveredModuleAtActualPlughDock(file)
+    let (runtime, id) = try await recoveredModuleAtActualPlughDock(file, kind: kind)
     await runtime.nativeCommand {
       $0.energy = 100
       $0.frontShield = 50
@@ -193,9 +208,35 @@ extension NativeSalvageCollectionRuntimeTests {
     #expect(applied.applied)
     let fitted = await runtime.snapshot()
     #expect(
-      abs(fitted.commander.performance.energy - before.commander.performance.energy * 1.1) < 1e-9)
+      abs(
+        fitted.commander.performance.energy
+          - before.commander.performance.energy * (kind == .energyCapacity ? 1.1 : 1)) < 1e-9)
+    #expect(
+      abs(
+        fitted.commander.energyRechargeMultiplier
+          - before.commander.energyRechargeMultiplier * (kind == .energyRecharge ? 1.1 : 1)) < 1e-9)
+    #expect(
+      abs(
+        fitted.commander.shieldCapacity
+          - before.commander.shieldCapacity * (kind == .shieldCapacity ? 1.1 : 1)) < 1e-9)
+    #expect(
+      abs(
+        fitted.commander.rearShieldCapacity
+          - before.commander.rearShieldCapacity * (kind == .shieldCapacity ? 1.1 : 1)) < 1e-9)
+    #expect(
+      abs(
+        fitted.commander.frontShieldRecharge
+          - before.commander.frontShieldRecharge * (kind == .shieldRecharge ? 1.1 : 1)) < 1e-9)
+    #expect(
+      abs(
+        fitted.commander.rearShieldRecharge
+          - before.commander.rearShieldRecharge * (kind == .shieldRecharge ? 1.1 : 1)) < 1e-9)
+    let pulse = try EMPPulseProfile.resolve(for: fitted.commander)
+    #expect(pulse.energyStage == (kind.isEnergyModule ? 1 : 0))
+    #expect(pulse.power == (kind.isEnergyModule ? 48 : 32))
+    #expect(pulse.range == (kind.isEnergyModule ? 4500 : 3000))
     #expect(fitted.energy == 100 && fitted.frontShield == 50 && fitted.rearShield == 40)
-    #expect(fitted.commander.fittedAlienEnergyModuleCount == 1)
+    #expect(fitted.commander.fittedAlienEnergyModuleCount == (kind.isEnergyModule ? 1 : 0))
     #expect(fitted.commander.credits == before.commander.credits)
     #expect(
       fitted.commander.alienStorageState?.current.snapshot.sources
@@ -215,6 +256,13 @@ extension NativeSalvageCollectionRuntimeTests {
     let stored = await runtime.snapshot()
     #expect(stored.commander.fittedAlienEnergyModuleCount == 0)
     #expect(stored.commander.performance.energy == before.commander.performance.energy)
+    #expect(stored.commander.energyRechargeMultiplier == before.commander.energyRechargeMultiplier)
+    #expect(stored.commander.shieldCapacity == before.commander.shieldCapacity)
+    #expect(stored.commander.rearShieldCapacity == before.commander.rearShieldCapacity)
+    #expect(stored.commander.frontShieldRecharge == before.commander.frontShieldRecharge)
+    #expect(stored.commander.rearShieldRecharge == before.commander.rearShieldRecharge)
+    let storedPulse = try EMPPulseProfile.resolve(for: stored.commander)
+    #expect(storedPulse.energyStage == 0)
     #expect(stored.energy == 100 && stored.frontShield == 50 && stored.rearShield == 40)
     #expect(stored.commander.credits == before.commander.credits)
     #expect(
@@ -287,7 +335,8 @@ extension NativeSalvageCollectionRuntimeTests {
   @Test func actualNativeFragmentMotionStaysHotUntilSaveAndCullReentryRetainsTheSameLot()
     async throws
   {
-    var (game, original) = try nativeSalvageScoopFixture()
+    let (initial, original) = try nativeSalvageScoopFixture()
+    var game = initial
     let index = try #require(
       game.bodies.firstIndex { $0.physical?.payload == .salvage(original.identity) })
     game.bodies[index].position = .init(0, -45, 400)
@@ -353,5 +402,459 @@ extension NativeSalvageCollectionRuntimeTests {
       returned.bodies.filter { $0.physical?.payload == .salvage(original.identity) }.count == 1)
     #expect(
       returned.commander.salvageLedger.pendingLots.allSatisfy { $0.identity != original.identity })
+  }
+}
+
+/// Add a controlled genuine original ledger outcome using the retained seed and allocator.
+/// Admission and collection use their actual native paths; this is not fresh cutting coverage.
+private func admitLegacyAlienOutcome(_ definition: String, in game: inout Game) throws -> SalvageLot
+{
+  let section = try #require(
+    game.commander.alienStorageState?.current.snapshot.world.compactMap {
+      if case .legacySection(let value) = $0 { return value }
+      return nil
+    }.first)
+  let source = section.plan.source
+  let identity = try #require(
+    (UInt32(1001)..<4000).map {
+      WreckSectionIdentity(
+        wreck: .init(system: game.systemIdentity, site: $0, lineage: 123), section: 1)
+    }.first { identity in
+      !game.commander.salvageLedger.isNativeTransferred(identity)
+        && SalvageLootProfiles.plan(section: identity, seed: section.seed, source: source).items
+          .contains {
+            if case .technology(let id, _, _, _) = $0.content { return id == definition }
+            return false
+          }
+    })
+  let profile = SalvageSectionProfile(
+    index: 1, kind: .computer,
+    localPosition: .init(10, 0, 0), normal: .init(0, 0, 1), radius: 10,
+    workSeconds: 1, structural: true, technologyDefinitionIDs: [], sourceFaceIndex: 0)
+  let operation = try #require(game.commander.flightSimulation.allocateIncident())
+  let result = game.commander.salvageLedger.advance(
+    wreck: identity.wreck, section: profile,
+    pose: ShipPose(), velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0),
+    tool: .cutter, elapsed: 1, operation: operation,
+    conditions: .init(
+      toolInstalled: true, inRange: true, aligned: true, lineOfSight: true,
+      resourcesAvailable: true, ownershipAuthorized: true), source: source)
+  guard case .released = result else { throw AlienStorageError.invalidJoin }
+  let original = try #require(
+    game.commander.salvageLedger.pendingLots.first {
+      guard $0.identity.section == identity else { return false }
+      if case .technology(let id, _, _) = $0.content { return id == definition }
+      return false
+    })
+  game.commander.salvageLedger.updateLot(
+    original.identity,
+    position: game.commander.flightSimulation.pose.systemPoint(.init(0, -45, 400)),
+    velocity: .init(0, 0, 0))
+  let context = try #require(game.gameplayContext())
+  let requests = game.commander.salvageLedger.spawnRequests(context: context)
+  let request = try #require(requests.first { $0.payload == .salvage(original.identity) })
+  let receipts = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit,
+      revision: context.revision, batches: [.init(requests: [request], atomic: false)], intents: [])
+  )
+  try #require(receipts.count == 1 && receipts[0].actor != nil && receipts[0].refusal == nil)
+  game.commander.salvageLedger.acknowledge(receipts: receipts)
+  let index = try #require(
+    game.bodies.firstIndex { $0.physical?.payload == .salvage(original.identity) })
+  game.bodies[index].position = .init(0, -45, 55)
+  game.bodies[index].rotationRate = 0
+  game.bodies[index].physical?.velocity = .init(0, 0, 0)
+  let persisted = game.persistSalvagePoses()
+  try #require(persisted)
+  return try #require(game.currentSalvageLot(for: game.bodies[index]))
+}
+
+extension NativeSalvageCollectionRuntimeTests {
+  @Test func twoActuallyRecoveredUpgradesChangeOnePhysicalModuleWithoutIncreasingEMPCount()
+    async throws
+  {
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let backup = folder.appendingPathExtension("preserved")
+    defer {
+      try? FileManager.default.removeItem(at: folder)
+      try? FileManager.default.removeItem(at: backup)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    let (initialRuntime, module) = try await recoveredModuleAtActualPlughDock(file)
+    var runtime = initialRuntime
+    let first = await runtime.snapshot()
+    let fit = try #require(first.inventoryActionPreview(for: .alienAttachment(module)).command)
+    let fitResult = await runtime.equipmentTransaction(.inventory(fit))
+    try #require(fitResult.applied)
+    var contribution = AlienModuleDefinition.baseBonusBasisPoints
+    var originalUpgradeIDs: [UUID] = []
+    var originalLots: [SalvageLotIdentity] = []
+    for iteration in 0..<2 {
+      var flight = await runtime.snapshot()
+      flight.launch()
+      try #require(!flight.docked)
+      let lot = try admitLegacyAlienOutcome(
+        AlienModuleKind.energyCapacity.upgradeDefinitionID, in: &flight)
+      originalLots.append(lot.identity)
+      runtime = GameRuntime(game: flight, saveURL: file)
+      try await runtime.save(to: file)
+      let recovered = await runtime.advance(delta: 0.1)
+      let upgrade = try #require(
+        recovered.commander.alienStorageState?.current.snapshot.upgrades.first {
+          item in
+          recovered.commander.alienStorageState?.current.snapshot.sources.first {
+            $0.id == item.source
+          }?.lot.identity == lot.identity
+        })
+      originalUpgradeIDs.append(upgrade.id)
+      #expect(upgrade.disposition == .stored)
+      runtime = try await dockAtActualPlughDoorway(recovered, file: file)
+      await runtime.nativeCommand {
+        $0.energy = 100
+        $0.frontShield = 50
+        $0.rearShield = 40
+      }
+      let before = await runtime.snapshot()
+      let command = try #require(
+        before.inventoryActionPreview(for: .alienUpgrade(upgrade.id)).command)
+      if iteration == 1 {
+        let bytes = try Data(contentsOf: file)
+        try FileManager.default.moveItem(at: folder, to: backup)
+        try Data("blocked writer".utf8).write(to: folder)
+        let failed = await runtime.equipmentTransaction(.inventory(command))
+        #expect(!failed.applied)
+        let refused = await runtime.snapshot()
+        #expect(refused.commander == before.commander && refused.energy == before.energy)
+        #expect(
+          refused.frontShield == before.frontShield && refused.rearShield == before.rearShield)
+        #expect(try Data(contentsOf: backup.appendingPathComponent("commander.json")) == bytes)
+        try FileManager.default.removeItem(at: folder)
+        try FileManager.default.moveItem(at: backup, to: folder)
+      }
+      let result = await runtime.equipmentTransaction(.inventory(command))
+      try #require(result.applied)
+      guard case .technology(_, let quality, _) = lot.content else {
+        throw AlienStorageError.invalidJoin
+      }
+      contribution += quality.bonusBasisPoints
+      let after = await runtime.snapshot()
+      let current = try #require(after.commander.alienStorageState?.current.snapshot)
+      let physical = try #require(current.attachments.first { $0.id == module })
+      #expect(physical.contributionBasisPoints == contribution)
+      #expect(current.attachments.count == 1 && after.commander.fittedAlienEnergyModuleCount == 1)
+      #expect(
+        abs(
+          after.commander.performance.energy - after.commander.nativePerformance.energy
+            * (1 + Double(contribution) / 10000)) < 1e-9)
+      let pulse = try EMPPulseProfile.resolve(for: after.commander)
+      #expect(pulse.energyStage == 1 && pulse.power == 48 && pulse.range == 4500)
+      #expect(after.energy == 100 && after.frontShield == 50 && after.rearShield == 40)
+      #expect(after.commander.credits == before.commander.credits)
+      #expect(current.sources == before.commander.alienStorageState?.current.snapshot.sources)
+      #expect(
+        current.receipts.filter {
+          if case .upgrade(let target, let source, _) = $0.effect {
+            return target == module && source == upgrade.id
+          }
+          return false
+        }.count == 1)
+      let replay = await runtime.equipmentTransaction(.inventory(command))
+      #expect(!replay.applied)
+      #expect(after.inventoryActionPreview(for: .alienUpgrade(upgrade.id)).command == nil)
+    }
+    #expect(Set(originalLots).count == 2 && Set(originalUpgradeIDs).count == 2)
+    let beforeStore = await runtime.snapshot()
+    let store = try #require(
+      beforeStore.inventoryActionPreview(for: .alienAttachment(module)).command)
+    let storeResult = await runtime.equipmentTransaction(.inventory(store))
+    try #require(storeResult.applied)
+    let stored = await runtime.snapshot()
+    #expect(stored.commander.fittedAlienEnergyModuleCount == 0)
+    #expect(stored.commander.alienStorageState?.current.snapshot.attachments.first?.id == module)
+    #expect(
+      stored.commander.alienStorageState?.current.snapshot.attachments.first?
+        .contributionBasisPoints == contribution)
+    try await runtime.load(from: file, persistMigrations: false)
+    #expect(await runtime.snapshot().commander == stored.commander)
+  }
+}
+
+private func poisonNativeFragment(_ reason: String, game: inout Game, lot: SalvageLot) throws {
+  let index = try #require(
+    game.bodies.firstIndex { $0.physical?.payload == .salvage(lot.identity) })
+  let actor = try #require(game.bodies[index].physical?.identity)
+  let spawn = try #require(game.bodies[index].physical?.spawnIdentity)
+  switch reason {
+  case "npc":
+    game.bodies[index].physical?.npc = .init(
+      role: .trader, origin: game.systemIdentity,
+      destination: game.systemIdentity)
+  case "emp": game.bodies[index].physical?.empSource = actor
+  case "mission":
+    game.bodies[index].missionActorID = UUID()
+    game.bodies[index].missionInstanceID = UUID()
+  case "shape", "claimant":
+    let old = try #require(game.bodies[index].physical?.salvage)
+    game.bodies[index].physical?.salvage = .init(
+      category: old.category, ownership: old.ownership,
+      claimant: reason == "claimant" ? game.commander.flightSimulation.player : old.claimant,
+      wreck: old.wreck, section: old.section, lot: old.lot,
+      bounds: .init(
+        center: old.bounds.center, radius: old.bounds.radius + (reason == "shape" ? 1 : 0)),
+      workSurfaces: old.workSurfaces)
+  case "spawn-highwater", "spawn-producer":
+    game.bodies[index].physical?.spawnIdentity = .init(
+      system: spawn.system, visit: spawn.visit,
+      sequence: reason == "spawn-highwater" ? UInt64.max - 1 : spawn.sequence,
+      member: spawn.member, producer: reason == "spawn-producer" ? .ambient : .salvage)
+  case "actor-highwater":
+    let unallocated = ActorIdentity(
+      system: actor.system, visit: actor.visit,
+      entity: game.commander.flightSimulation.nextActor)
+    var object = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(game.bodies[index])) as? [String: Any]
+    )
+    var physical = try #require(object["physical"] as? [String: Any])
+    physical["identity"] = try JSONSerialization.jsonObject(with: JSONEncoder().encode(unallocated))
+    object["physical"] = physical
+    game.bodies[index] = try JSONDecoder().decode(
+      SpaceBody.self,
+      from: JSONSerialization.data(withJSONObject: object))
+    let previous = try #require(game.commander.alienStorageState?.current.snapshot)
+    let world = previous.world.map { record -> AlienStorageWorldRecord in
+      guard case .legacyCurrent(let current) = record,
+        case .pending(let pending, let at, let offer, let binding) = current.state,
+        pending.identity == lot.identity, binding == actor
+      else { return record }
+      return .legacyCurrent(
+        .init(
+          id: current.id, owner: current.owner, claim: current.claim,
+          state: .pending(lot: pending, at: at, offer: offer, binding: unallocated)))
+    }
+    try game.commander.replaceAlienStorage(
+      with: .init(
+        owner: previous.owner,
+        revision: previous.revision, worldRevision: previous.worldRevision + 1, world: world,
+        sources: previous.sources, attachments: previous.attachments, upgrades: previous.upgrades,
+        receipts: previous.receipts, commands: previous.commands))
+  case "mining-owner":
+    var ledger = MiningLedger(seed: 42)
+    let rock = MiningRock(
+      identity: .init(system: game.systemIdentity, field: 0, rock: 0),
+      position: .init(1000, 0, 0), radius: 40, energy: 1)
+    let player = try #require(game.commander.flightSimulation.player)
+    let attack = CombatIncident(
+      id: 1, physicalTime: 0,
+      origin: .init(
+        emissionID: 1, owner: player, ordnance: nil, emittedAt: 0,
+        ownerLegalAtEmission: .init()), victim: nil, kind: .laser, outcome: .hit,
+      position: rock.position, victimLegalBeforeAttack: nil, firstAggressor: nil,
+      victimRole: nil, victimIsStation: false, laser: .mining, mount: .front)
+    let extracted = ledger.hit(rock: rock, incident: attack, damage: 1)
+    guard case .extracted = extracted else { throw AlienStorageError.invalidJoin }
+    let context = try #require(game.gameplayContext())
+    let requests = ledger.pendingSpawnRequests(
+      context: context,
+      fields: [.init(position: rock.position, rocks: [rock])])
+    let request = try #require(requests.first)
+    ledger.acknowledge(receipts: [.init(request: request.identity, actor: actor, refusal: nil)])
+    try #require(ledger.ownsPhysicalActor(actor))
+    game.commander.miningLedger = ledger
+  case "npc-owner":
+    var other = SpaceBody(id: game.bodies[index].id, hull: .sidewinder, position: .init(1000, 0, 0))
+    let performance = try #require(ShipCatalogue.nativeShip(.sidewinder)?.game)
+    var npc = NPCState(role: .trader, origin: game.systemIdentity, destination: game.systemIdentity)
+    let resources = try #require(NPCResources.stock(performance))
+    npc.resources = resources
+    other.energy = performance.energy
+    other.missiles = performance.missiles
+    other.physical = .init(
+      identity: actor, population: .civilian, npc: npc,
+      spawnIdentity: .init(
+        system: actor.system, visit: actor.visit, sequence: 1, member: 0, producer: .ambient))
+    let snapshot = try #require(
+      NPCPersistenceSnapshot.capture(
+        body: other,
+        pose: game.commander.flightSimulation.pose, physicalTime: 0, protection: .init()))
+    let captured = game.commander.npcPersistence.capture(snapshot, protection: .init())
+    guard case .refused = captured else {
+      try #require(game.commander.npcPersistence.logicalIdentity(for: actor) != nil)
+      return
+    }
+    throw AlienStorageError.invalidJoin
+  case "cargo-owner":
+    let dead = try #require(game.commander.flightSimulation.allocateActor())
+    let source = ActorSnapshot(
+      identity: dead, hull: .cobra, position: .init(1000, 0, 0),
+      orientation: .init(), velocity: .init(0, 0, 0), energy: 0, maximumEnergy: 100,
+      maximumSpeedUnitsPerSecond: 100, legal: .init(),
+      npc: .init(role: .trader, origin: game.systemIdentity, destination: game.systemIdentity),
+      rock: nil, payload: nil, ordinaryCargo: [.init(commodity: .food, quantity: 1)])
+    let registered = game.commander.cargoDebrisLedger.registerDeath(
+      actor: source,
+      manifest: source.ordinaryCargo, settlementID: 1, physicalTime: 0, protection: .init())
+    try #require(registered == .registered(lots: 1))
+    let context = try #require(game.gameplayContext())
+    let requests = game.commander.cargoDebrisLedger.pendingSpawnRequests(context: context)
+    let request = try #require(requests.first)
+    // Poison a real producer offer with a conflicting existing physical owner.
+    game.commander.cargoDebrisLedger.acknowledge(receipts: [
+      .init(request: request.identity, actor: actor, refusal: nil)
+    ])
+    try #require(game.commander.cargoDebrisLedger.ownsPhysicalActor(actor))
+  default: throw AlienStorageError.invalidJoin
+  }
+}
+
+extension NativeSalvageCollectionRuntimeTests {
+  @Test(arguments: [
+    "npc", "emp", "mission", "shape", "claimant", "spawn-highwater",
+    "spawn-producer", "actor-highwater", "cargo-owner", "mining-owner", "npc-owner",
+  ])
+  func conflictingNativeFragmentOwnersCannotBeScoopedOrSaved(reason: String) async throws {
+    let (initial, lot) = try nativeSalvageScoopFixture()
+    var game = initial
+    let owner = try #require(game.commander.equipmentOwnerID)
+    let imported = try NativeSalvageImport(
+      ledger: game.commander.salvageLedger,
+      section: lot.identity.section, owner: owner, at: game.commander.flightSimulation.physicalTime,
+      previous: nil)
+    try imported.apply(to: &game.commander)
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let file = folder.appendingPathComponent("commander.json")
+    try GameRuntime.writeCommander(&game, to: file)
+    let bytes = try Data(contentsOf: file)
+    try poisonNativeFragment(reason, game: &game, lot: lot)
+    #expect(!game.commander.nativeSalvageSceneIsConsistent(game.bodies, docked: false))
+    let before = game.commander
+    let bodies = game.bodies
+    game.scoopCargo()
+    #expect(game.pendingNativeSalvageCollections.isEmpty)
+    #expect(game.commander == before && game.bodies == bodies)
+    let runtime = GameRuntime(game: game)
+    let beforeSave = await runtime.snapshot()
+    await #expect(throws: (any Error).self) { try await runtime.save(to: file) }
+    let after = await runtime.snapshot()
+    #expect(after.commander == beforeSave.commander && after.bodies == beforeSave.bodies)
+    #expect(try Data(contentsOf: file) == bytes)
+  }
+}
+
+extension NativeSalvageCollectionRuntimeTests {
+  @Test func twoDistinctActuallyFittedEnergyKindsStrengthenEMPByPhysicalCountOnly() async throws {
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let file = folder.appendingPathComponent("commander.json")
+    let (initialRuntime, firstID) = try await recoveredModuleAtActualPlughDock(file)
+    var runtime = initialRuntime
+    let initial = await runtime.snapshot()
+    let firstFit = try #require(
+      initial.inventoryActionPreview(for: .alienAttachment(firstID)).command)
+    let fittedFirst = await runtime.equipmentTransaction(.inventory(firstFit))
+    try #require(fittedFirst.applied)
+    var flight = await runtime.snapshot()
+    flight.launch()
+    let lot = try admitLegacyAlienOutcome(AlienModuleKind.energyRecharge.definitionID, in: &flight)
+    runtime = GameRuntime(game: flight, saveURL: file)
+    try await runtime.save(to: file)
+    let recovered = await runtime.advance(delta: 0.1)
+    let second = try #require(
+      recovered.commander.alienStorageState?.current.snapshot.attachments.first {
+        item in
+        recovered.commander.alienStorageState?.current.snapshot.sources.first {
+          $0.id == item.source
+        }?.lot.identity == lot.identity
+      })
+    #expect(second.id != firstID && second.kind == .energyRecharge)
+    runtime = try await dockAtActualPlughDoorway(recovered, file: file)
+    let before = await runtime.snapshot()
+    let command = try #require(
+      before.inventoryActionPreview(for: .alienAttachment(second.id)).command)
+    let fittedSecond = await runtime.equipmentTransaction(.inventory(command))
+    try #require(fittedSecond.applied)
+    let both = await runtime.snapshot()
+    let pulse = try EMPPulseProfile.resolve(for: both.commander)
+    #expect(both.commander.fittedAlienEnergyModuleCount == 2)
+    #expect(pulse.energyStage == 2 && pulse.power == 64 && pulse.range == 6000)
+    #expect(
+      abs(both.commander.performance.energy - both.commander.nativePerformance.energy * 1.1) < 1e-9)
+    #expect(abs(both.commander.energyRechargeMultiplier - 1.1) < 1e-9)
+    #expect(
+      both.energy == before.energy && both.frontShield == before.frontShield
+        && both.rearShield == before.rearShield)
+    #expect(both.commander.credits == before.commander.credits)
+    try await runtime.load(from: file, persistMigrations: false)
+    #expect(await runtime.snapshot().commander == both.commander)
+  }
+
+  @Test func actualHullQuotesAndFailedThenSuccessfulTradePreserveNativeModuleIdentityAndReceipts()
+    async throws
+  {
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let backup = folder.appendingPathExtension("preserved")
+    defer {
+      try? FileManager.default.removeItem(at: folder)
+      try? FileManager.default.removeItem(at: backup)
+    }
+    let file = folder.appendingPathComponent("commander.json")
+    let (runtime, id) = try await recoveredModuleAtActualPlughDock(file)
+    let initial = await runtime.snapshot()
+    let fit = try #require(initial.inventoryActionPreview(for: .alienAttachment(id)).command)
+    let fitted = await runtime.equipmentTransaction(.inventory(fit))
+    try #require(fitted.applied)
+    await runtime.nativeCommand { game in
+      game.screen = .showroom
+      game.showroom.selection = "SH013"
+      game.commander.credits = 10_000_000
+    }
+    let before = await runtime.snapshot()
+    let original = try #require(before.commander.alienStorageState?.current.snapshot)
+    let oldHull = try #require(before.commander.hullInstanceID)
+    let quote = try #require(before.shipTradeQuote)
+    try #require(quote.allowed)
+    for _ in 0..<5 {
+      let again = try #require(before.shipTradeQuote)
+      #expect(again.balance == quote.balance && again.allowed)
+      let projected = try before.commander.projectedEquipmentTransfer(to: "SH013")
+      #expect(projected.hullInstanceID == oldHull)
+      #expect(projected.alienStorageState?.current.snapshot == original)
+    }
+    #expect(await runtime.snapshot().commander == before.commander)
+    await runtime.key("showroom-trade")
+    await runtime.key("right")
+    let beforeFailure = await runtime.snapshot()
+    let bytes = try Data(contentsOf: file)
+    try FileManager.default.moveItem(at: folder, to: backup)
+    try Data("blocked writer".utf8).write(to: folder)
+    await runtime.key("return")
+    let refused = await runtime.snapshot()
+    #expect(refused.commander == beforeFailure.commander)
+    #expect(refused.commander.alienStorageState?.current.snapshot == original)
+    #expect(try Data(contentsOf: backup.appendingPathComponent("commander.json")) == bytes)
+    try FileManager.default.removeItem(at: folder)
+    try FileManager.default.moveItem(at: backup, to: folder)
+    await runtime.key("return")
+    let after = await runtime.snapshot()
+    let newHull = try #require(after.commander.hullInstanceID)
+    let next = try #require(after.commander.alienStorageState?.current.snapshot)
+    #expect(after.commander.shipID == "SH013" && newHull != oldHull)
+    #expect(after.commander.credits == quote.balance)
+    #expect(next.sources == original.sources && next.upgrades == original.upgrades)
+    let item = try #require(next.attachments.first { $0.id == id })
+    #expect(item.disposition == .fitted(hull: newHull))
+    #expect(
+      item.contributionBasisPoints
+        == original.attachments.first { $0.id == id }?.contributionBasisPoints)
+    #expect(
+      after.commander.fittedAlienEnergyModuleCount == before.commander.fittedAlienEnergyModuleCount)
+    #expect(next.commands.count == original.commands.count + 1)
+    #expect(next.receipts.count == original.receipts.count + 1)
+    #expect(next.receipts.filter { $0.effect == .transfer(attachment: id) }.count == 1)
+    let saved = try NativeSaveTestFixture.readVersionedCommander(from: file)
+    #expect(saved == after.commander)
+    try await runtime.load(from: file, persistMigrations: false)
+    #expect(await runtime.snapshot().commander == after.commander)
   }
 }

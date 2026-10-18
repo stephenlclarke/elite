@@ -55,6 +55,8 @@ public struct CargoDebrisLedger: Equatable, Codable, Sendable {
     pending.values.map(\.payload).sorted { Self.precedes($0.identity, $1.identity) }
   }
   public func boundActor(for payload: PayloadIdentity) -> ActorIdentity? { bindings[payload] }
+  /// Read-only cross-backend custody join; this does not expose mutable bindings.
+  func ownsPhysicalActor(_ actor: ActorIdentity) -> Bool { bindings.values.contains(actor) }
 
   public var valid: Bool {
     sources.count <= Self.maximumSources && pending.count <= Self.maximumPending
