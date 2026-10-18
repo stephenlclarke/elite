@@ -307,4 +307,50 @@ struct HullSweepPlacementTests {
       center: .init(0, -30, -30), radius: 1, hull: hull, pose: .init())
     #expect(outside.safe)
   }
+
+  @Test func exactTriangleBVHVisitsNearerSupportBeforeFarLeafWithinOriginalBudget() throws {
+    let player = try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(0, 0, 0), .init(1, 0, 0), .init(0, 1, 0)],
+        faces: [[0, 1, 2]], preserveWinding: true))
+    var vertices: [Vector3] = []
+    var faces: [[Int]] = []
+    for z in [0.0, 1, 2, 3, 4, 5, 6, 7, 80, 81, 82, 83, 84, 85, 86, 87] {
+      let index = vertices.count
+      vertices += [
+        .init(0, 0, z), .init(1, 0, z), .init(z == 87 ? 0.5 : 0, z == 87 ? 0 : 1, z),
+      ]
+      faces.append([index, index + 1, index + 2])
+    }
+    // Two eight-primitive leaves: at z=100 the right leaf must be visited first.
+    // Each of three stationary samples can test eight primitives and prune the far leaf.
+    // Fixed left-first traversal instead spends sixteen tests in its first sample.
+    let budget = HullSweepBudget(
+      distanceQueries: 3, triangleTests: 24, nodeVisits: 9, subdivisionDepth: 0)
+    for reversed in [false, true] {
+      let hull = try PreparedHull(
+        mesh: Mesh(
+          vertices: vertices, faces: reversed ? Array(faces.reversed()) : faces,
+          preserveWinding: true))
+      #expect(hull.triangleCount == 16)
+      for z in [100.0, 87] {
+        let pose = ShipPose(position: .init(0, 0, z))
+        let motion = HullSceneMotion(
+          start: pose, end: pose, initialVelocity: .init(0, 0, 0),
+          acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+          duration: 0.1, playerRadius: player.radius)
+        let result = HullSweepSafety.validateSceneMotion(
+          motion, player: player, obstacles: [.init(hull: hull, pose: .init())], budget: budget)
+        if z == 100 {
+          #expect(result.safe)
+          #expect(
+            result.distanceQueries == 3 && result.triangleTests == 24 && result.nodeVisits == 9)
+          #expect((result.minimumSampledClearance ?? 0) > 12.999999)
+          #expect((result.minimumSampledClearance ?? .infinity) <= 13)
+        } else {
+          #expect(!result.safe)
+        }
+      }
+    }
+  }
 }
