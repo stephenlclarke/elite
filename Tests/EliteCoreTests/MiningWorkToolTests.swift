@@ -28,8 +28,16 @@ private func verifyWorkToolFixtureHardware(_ game: inout Game) throws {
   try #require(game.commander.nativeStations?.ledger.world == inventory.owner)
 }
 
-@discardableResult private func workToolRock(_ game: inout Game) throws -> Int {
-  let rock = try #require(game.miningFields.first?.rocks.first)
+@discardableResult private func workToolRock(_ game: inout Game, minimumEnergy: Double = 0) throws
+  -> Int
+{
+  let rock: MiningRock
+  if minimumEnergy > 0 {
+    rock = try #require(
+      game.miningFields.lazy.flatMap(\.rocks).first { $0.energy > minimumEnergy })
+  } else {
+    rock = try #require(game.miningFields.first?.rocks.first)
+  }
   let allocated = game.commander.flightSimulation.allocateActor()
   let actor = try #require(allocated)
   var body = SpaceBody(id: 80, hull: .asteroid, position: .init(0, 0, 500))
@@ -42,7 +50,7 @@ private func verifyWorkToolFixtureHardware(_ game: inout Game) throws {
 struct MiningWorkToolTests {
   @Test func shieldedIncomingDamageStopsManualMiningUntilTheTriggerIsReleased() throws {
     var game = try workToolGame()
-    let id = try workToolRock(&game)
+    let id = try workToolRock(&game, minimumEnergy: 2 * LaserKind.mining.damage)
     game.selectFlightTool(.miningLaser)
     var controls = Controls()
     controls.fire = true

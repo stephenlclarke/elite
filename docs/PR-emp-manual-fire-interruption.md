@@ -7,3 +7,5 @@ A new regression drives the real selected EMP through its first ten-second charg
 Source formatting, parsing, Markdown lint and whitespace checks precede review. Execution remains pending: compose this bounded maintained fix with the independently reviewed six-method fixture packet, then run one coherent affected coverage/default-parallel selection under the original 600/640-second budgets. No full CI, sanitizer, leak, feature-completion or release claim is made. Current help describes incoming damage cancelling work guidance and remains accurate.
 
 [Issue](ISSUE-emp-manual-fire-interruption.md).
+
+Source review identified that a real one-unit belt chunk may have exactly 100 energy, so two 50-damage cuts can destroy it. The new two-cut interruption test now requests an actual generated rock with energy strictly greater than twice Mining Laser damage. The shared helper defaults to its byte-identical original first-rock lookup for every pre-existing caller; only the new case requests the stronger source rock. No rock energy, quantity, identity, ledger or loot is changed. This test-only child remains uncompiled/unexecuted.
