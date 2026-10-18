@@ -425,7 +425,7 @@ public enum HullSweepSafety {
         a: target.shipPoint(ship.systemPoint(original.a)),
         b: target.shipPoint(ship.systemPoint(original.b)),
         c: target.shipPoint(ship.systemPoint(original.c)), conditioned: original.conditioned,
-        unresolvedSupport: original.unresolvedSupport)
+        unresolvedSupport: original.unresolvedSupport, transformedFrom: original)
       best = try triangleDistance(triangle, hull: obstacle, startingBest: best, work: &work)
       if best < 1e-9 { return 0 }
     }
@@ -640,6 +640,35 @@ private struct SweepBounds: Sendable {
   }
 }
 
+/// The scalar normal chooses a component only. Outward interval arithmetic encloses its
+/// exact determinant on the represented vertices; excluding zero certifies nonzero area.
+/// Cancellation, underflow, overflow or collapse cannot pass an uncertain certificate.
+private func sweepSelectedNormalResolved(
+  _ a: Vector3, _ b: Vector3, _ c: Vector3, approximateNormal: Vector3
+) -> Bool {
+  let first: (Double, Double, Double)
+  let second: (Double, Double, Double)
+  switch sweepAxis(
+    .init(abs(approximateNormal.x), abs(approximateNormal.y), abs(approximateNormal.z)))
+  {
+  case 0:
+    first = (a.y, b.y, c.y)
+    second = (a.z, b.z, c.z)
+  case 1:
+    first = (a.z, b.z, c.z)
+    second = (a.x, b.x, c.x)
+  default:
+    first = (a.x, b.x, c.x)
+    second = (a.y, b.y, c.y)
+  }
+  let determinant =
+    (SweepInterval(first.1) - SweepInterval(first.0))
+    * (SweepInterval(second.2) - SweepInterval(second.0))
+    - (SweepInterval(second.1) - SweepInterval(second.0))
+    * (SweepInterval(first.2) - SweepInterval(first.0))
+  return determinant.finite && (determinant.lower > 0 || determinant.upper < 0)
+}
+
 private struct SweepTriangle: Sendable {
   let a: Vector3
   let b: Vector3
@@ -649,7 +678,8 @@ private struct SweepTriangle: Sendable {
   let unresolvedSupport: Bool
 
   init(
-    a: Vector3, b: Vector3, c: Vector3, conditioned: Bool = false, unresolvedSupport: Bool = false
+    a: Vector3, b: Vector3, c: Vector3, conditioned: Bool = false, unresolvedSupport: Bool = false,
+    transformedFrom original: SweepTriangle? = nil
   ) {
     self.a = a
     self.b = b
@@ -659,11 +689,23 @@ private struct SweepTriangle: Sendable {
     let scale = max(first.length, max(second.length, (c - b).length))
     // These are only the boundaries of the pre-existing fast query path, never
     // acceptance. Newly resolved small triangles need conservative queries as well.
-    let area = first.cross(second).length
-    let normal = (SweepIntervalVector(b) - SweepIntervalVector(a)).cross(
-      SweepIntervalVector(c) - SweepIntervalVector(a))
-    let certificate = normal.length
-    let resolved = certificate.finite && certificate.lower > 0
+    let approximateNormal = first.cross(second)
+    let area = approximateNormal.length
+    let resolved: Bool
+    if let original, original.hasResolvedArea, !original.conditioned,
+      !original.unresolvedSupport, sweepFinite(a), sweepFinite(b), sweepFinite(c),
+      scale.isFinite, area.isFinite, area > scale * scale * 1e-6, area > 1e-9,
+      sweepSelectedNormalResolved(a, b, c, approximateNormal: approximateNormal)
+    {
+      // Reuse prepared resolution only after certifying the represented transformed vertices.
+      // One outward determinant avoids constructing a full interval normal and square root.
+      resolved = true
+    } else {
+      let normal = (SweepIntervalVector(b) - SweepIntervalVector(a)).cross(
+        SweepIntervalVector(c) - SweepIntervalVector(a))
+      let certificate = normal.length
+      resolved = certificate.finite && certificate.lower > 0
+    }
     let supportOnly = unresolvedSupport || !resolved
     hasResolvedArea = resolved
     self.unresolvedSupport = supportOnly
