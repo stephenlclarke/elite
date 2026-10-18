@@ -38,7 +38,7 @@ struct NativePagedSalvageRuntimeTests {
         $0.physical?.salvage?.wreck == site.identity && $0.physical?.payload == nil
       })
     game.selectFlightTool(.salvageCutter)
-    game.beginWorkGuidance(body: body, mode: .hold(.salvage), velocity: body.physical!.velocity)
+    try NativePagedSalvageFixture.engageSalvageTarget(&game, body: body, section: hot.plan.section)
     let folder = try NativePagedSalvageFixture.folder()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
@@ -124,7 +124,10 @@ struct NativePagedSalvageRuntimeTests {
     var (game, site) = try NativePagedSalvageFixture.game()
     let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
     game.selectFlightTool(.salvageCutter)
-    game.beginWorkGuidance(body: body, mode: .hold(.salvage), velocity: body.physical!.velocity)
+    let metadata = try #require(body.physical?.salvage)
+    let originalSurface = game.workSurface(for: body, metadata: metadata)
+    let originalSection = try #require(originalSurface?.section)
+    try NativePagedSalvageFixture.engageSalvageTarget(&game, body: body, section: originalSection)
     let folder = try NativePagedSalvageFixture.folder()
     let preserved = folder.appendingPathExtension("preserved")
     defer {

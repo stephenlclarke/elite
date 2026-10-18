@@ -42,7 +42,7 @@ struct NativeMultiBatchRuntimeTests {
     let property = game.commander.equipmentInventory
     let credits = game.commander.credits
     game.selectFlightTool(.salvageCutter)
-    game.beginWorkGuidance(body: body, mode: .hold(.salvage), velocity: body.physical!.velocity)
+    try NativePagedSalvageFixture.engageSalvageTarget(&game, body: body, section: identity)
     try #require(game.workGuidance?.surface.section == identity)
     let folder = try NativePagedSalvageFixture.folder()
     defer { try? FileManager.default.removeItem(at: folder) }
@@ -136,8 +136,8 @@ struct NativeMultiBatchRuntimeTests {
     let reacquiredBody = try #require(
       loaded.bodies.first { $0.physical?.identity == retainedBody.physical?.identity })
     loaded.selectFlightTool(.salvageCutter)
-    loaded.beginWorkGuidance(
-      body: reacquiredBody, mode: .hold(.salvage), velocity: reacquiredBody.physical!.velocity)
+    try NativePagedSalvageFixture.engageSalvageTarget(
+      &loaded, body: reacquiredBody, section: identity)
     try #require(loaded.workGuidance?.surface.section == identity)
     let resumed = GameRuntime(game: loaded)
     try await resumed.save(to: file)
