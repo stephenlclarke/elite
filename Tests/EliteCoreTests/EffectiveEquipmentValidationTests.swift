@@ -211,7 +211,8 @@ struct EffectiveEquipmentValidationTests {
     let original = try #require(supported.fittedEquipment(at: .navigation))
     var raw = Game(executive: false)
     let rawBefore = raw
-    #expect(!raw.load(supported))
+    let loadedCurrent = raw.load(supported)
+    #expect(!loadedCurrent)
     try expectEffectiveGamePreserved(raw, rawBefore)
     var source = Game(executive: false)
     source.commander = supported
