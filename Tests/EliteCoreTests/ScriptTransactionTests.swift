@@ -581,6 +581,10 @@ private func fitPhysicalDeathTargeting(_ game: inout Game) throws {
   let owned = game.commander.accommodation
   var legacy = game.commander
   legacy.equipment.insert(PassengerCabin.equipmentName)
+  try #require(legacy.equipmentInventory == nil && legacy.savedEquipmentVersion == nil)
+  try #require(!legacy.usesModularDriveSaveVersion && !legacy.usesRingMiningSaveVersion)
+  try #require(!legacy.usesEconomyMiningSaveVersion && !legacy.usesEMPSaveVersion)
+  let originalWorld = game.scriptWorldSave
   let file = fixture.root.appendingPathComponent("legacy.json")
   let bytes = try JSONEncoder().encode(legacy)
   try bytes.write(to: file)
@@ -590,35 +594,41 @@ private func fitPhysicalDeathTargeting(_ game: inout Game) throws {
   #expect(restored.commander.valid && restored.commander.accommodation == owned)
   #expect(!restored.commander.equipment.contains(PassengerCabin.equipmentName))
   #expect(try Data(contentsOf: file) == bytes)
-  // Reconstruct a schema4 prototype fixture; its real cabin remains the authority.
-  try await runtime.save(to: fixture.url)
-  let pointer = try JSONDecoder().decode(
-    ScriptSavePointer.self, from: Data(contentsOf: fixture.url))
-  let directory = fixture.url.appendingPathExtension("missions").appendingPathComponent(
-    pointer.generation)
+  // Construct the prototype's three complete untyped chunks from the untouched original.
   let oldGeneration = UUID().uuidString
-  let oldDirectory = directory.deletingLastPathComponent().appendingPathComponent(oldGeneration)
-  try FileManager.default.copyItem(at: directory, to: oldDirectory)
-  let headerFile = oldDirectory.appendingPathComponent("commander.json")
-  var header = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: headerFile))
-  header.equipment.insert(PassengerCabin.equipmentName)
-  let headerBytes = try JSONEncoder().encode(header)
-  try headerBytes.write(to: headerFile)
-  let missionFile = oldDirectory.appendingPathComponent("missions.json")
-  let missionState = try ScriptValueStorage.decoder(typed: true).decode(
-    ScriptEngineState.self, from: Data(contentsOf: missionFile))
-  let legacyMissionBytes = try JSONEncoder().encode(missionState)
-  try legacyMissionBytes.write(to: missionFile)
-  var hashes = pointer.hashes
-  hashes["missions.json"] = ScriptPackLibrary.hash(legacyMissionBytes)
-  hashes.removeValue(forKey: "contracts.json")
-  hashes["commander.json"] = ScriptPackLibrary.hash(headerBytes)
+  let oldDirectory = fixture.url.appendingPathExtension("missions").appendingPathComponent(
+    oldGeneration)
+  try FileManager.default.createDirectory(at: oldDirectory, withIntermediateDirectories: true)
+  var header = legacy
+  header.scriptState = ScriptEngineState()
+  try #require(legacy.contracts.boards.isEmpty && legacy.contracts.rrs == nil)
+  let encoder = JSONEncoder()
+  let chunks = [
+    "commander.json": try encoder.encode(header),
+    "missions.json": try encoder.encode(legacy.scriptState),
+    "world.json": try encoder.encode(originalWorld),
+  ]
+  for (name, chunk) in chunks { try chunk.write(to: oldDirectory.appendingPathComponent(name)) }
   let old = ScriptSavePointer(
-    format: pointer.format, schemaVersion: 4, generation: oldGeneration, hashes: hashes)
-  try JSONEncoder().encode(old).write(to: fixture.url)
-  try await runtime.load(from: fixture.url)
+    format: "elite-script-save", schemaVersion: 4, generation: oldGeneration,
+    hashes: chunks.mapValues(ScriptPackLibrary.hash))
+  let pointerBytes = try encoder.encode(old)
+  try pointerBytes.write(to: fixture.url)
+  #expect(
+    Set(try FileManager.default.contentsOfDirectory(atPath: oldDirectory.path)) == Set(chunks.keys))
+  let (oldCommander, oldWorld) = try ScriptSaveStore.read(pointerBytes, from: fixture.url)
+  #expect(oldCommander.accommodation == owned && oldCommander.valid)
+  #expect(!oldCommander.equipment.contains(PassengerCabin.equipmentName))
+  #expect(oldWorld.valid && oldWorld.consistent(with: oldCommander))
+  try await runtime.load(from: fixture.url, persistMigrations: false)
   #expect(await runtime.snapshot().commander.accommodation == owned)
   #expect(await runtime.snapshot().commander.valid)
+  #expect(!(await runtime.snapshot().commander.equipment.contains(PassengerCabin.equipmentName)))
+  #expect(try Data(contentsOf: fixture.url) == pointerBytes)
+  #expect(try Data(contentsOf: file) == bytes)
+  for (name, chunk) in chunks {
+    #expect(try Data(contentsOf: oldDirectory.appendingPathComponent(name)) == chunk)
+  }
 }
 
 @Test func galleryCannotLoadProductionThroughALinkedGeneration() async throws {

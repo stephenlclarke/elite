@@ -20,22 +20,58 @@ import Testing
   old.payloads[ScriptCourierCustody.payloadKey] = 1
   game.commander.scriptState.instances[id] = old
   #expect(game.commander.valid)
-  try GameRuntime.writeCommander(&game, to: fixture.save)
-  let original = try JSONDecoder().decode(
-    ScriptSavePointer.self, from: Data(contentsOf: fixture.save))
+  let original = game.commander
+  try #require(original.equipmentInventory == nil && original.savedEquipmentVersion == nil)
+  try #require(!original.usesModularDriveSaveVersion && !original.usesRingMiningSaveVersion)
+  try #require(!original.usesEconomyMiningSaveVersion && !original.usesEMPSaveVersion)
+  try #require(old.courier == nil && old.contract == nil && old.timers.isEmpty)
+  var header = original
+  header.scriptState = ScriptEngineState()
+  header.contracts = ScriptContractState()
+  let generation = UUID().uuidString
+  let directory = fixture.save.appendingPathExtension("missions").appendingPathComponent(generation)
+  try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+  let encoder = ScriptValueStorage.encoder()
+  let chunks = [
+    "commander.json": try encoder.encode(header),
+    "missions.json": try encoder.encode(original.scriptState),
+    "contracts.json": try encoder.encode(original.contracts),
+    "world.json": try encoder.encode(game.scriptWorldSave),
+  ]
+  for (name, chunk) in chunks { try chunk.write(to: directory.appendingPathComponent(name)) }
   let format20 = ScriptSavePointer(
-    format: original.format, schemaVersion: 20,
-    generation: original.generation, hashes: original.hashes, scope: original.scope,
-    valueCodec: original.valueCodec)
-  let bytes = try JSONEncoder().encode(format20)
-  let (loaded, _) = try ScriptSaveStore.read(bytes, from: fixture.save)
+    format: "elite-script-save", schemaVersion: 20, generation: generation,
+    hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: "commander",
+    valueCodec: ScriptValueStorage.codec)
+  let bytes = try encoder.encode(format20)
+  try bytes.write(to: fixture.save)
+  #expect(
+    Set(try FileManager.default.contentsOfDirectory(atPath: directory.path)) == Set(chunks.keys))
+  let (loaded, world) = try ScriptSaveStore.read(bytes, from: fixture.save)
   #expect(loaded.scriptState.instances[id]?.data == old.data)
   #expect(loaded.scriptState.instances[id]?.payloads[ScriptCourierCustody.payloadKey] == 1)
+  #expect(loaded.scriptState.instances[id] == old && world.valid && world.consistent(with: loaded))
+  let versioned = GameRuntime()
+  try await versioned.load(from: fixture.save, persistMigrations: false)
+  let admitted = try #require(await versioned.snapshot().commander.scriptState.instances[id])
+  #expect(admitted.id == old.id && admitted.definition == old.definition)
+  #expect(admitted.version == old.version && admitted.digest == old.digest)
+  #expect(admitted.data == old.data && admitted.payloads == old.payloads)
   let raw = fixture.root.appendingPathComponent("legacy.json")
-  try JSONEncoder().encode(game.commander).write(to: raw)
+  let rawBytes = try JSONEncoder().encode(original)
+  try rawBytes.write(to: raw)
   let runtime = GameRuntime()
-  try await runtime.load(from: raw)
+  try await runtime.load(from: raw, persistMigrations: false)
   #expect(await runtime.snapshot().commander.scriptState.instances[id]?.data == old.data)
+  let rawInstance = try #require(await runtime.snapshot().commander.scriptState.instances[id])
+  #expect(rawInstance.id == old.id && rawInstance.definition == old.definition)
+  #expect(rawInstance.version == old.version && rawInstance.digest == old.digest)
+  #expect(rawInstance.payloads == old.payloads)
+  #expect(try Data(contentsOf: raw) == rawBytes)
+  #expect(try Data(contentsOf: fixture.save) == bytes)
+  for (name, chunk) in chunks {
+    #expect(try Data(contentsOf: directory.appendingPathComponent(name)) == chunk)
+  }
 }
 
 @Test func courierPre21PresenceGuardsCheckNativePathsIncludingUUIDPairDictionaries() throws {

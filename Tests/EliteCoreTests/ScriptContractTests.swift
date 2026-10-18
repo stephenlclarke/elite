@@ -328,28 +328,92 @@ private struct ContractFixture {
   try #require(game.commander.xyzzyActive && game.commander.xyzzyCashGranted)
   #expect(game.commander.credits == cash && !game.commander.unlimitedCash)
   #expect(!game.commander.unlimitedJumps)
+  let before = game.commander
+  let inventory = try #require(before.equipmentInventory)
+  try #require(inventory.items.allSatisfy { $0.boundHull == nil })
+  try #require(!game.requiresScriptDurability && !before.usesEMPSaveVersion)
+  try #require(before.scriptState.calendarLedger == nil && !before.usesEconomyMiningSaveVersion)
+  #expect(game.commander == before)
+  var expectedInitialized = before
+  expectedInitialized.mirrorFittedEquipment()
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let initialized = await runtime.snapshot()
+  try #require(initialized.commander == expectedInitialized)
+  try #require(!initialized.requiresScriptDurability && !initialized.commander.usesEMPSaveVersion)
+  try #require(initialized.commander.scriptState.calendarLedger == nil)
+  #expect(!FileManager.default.fileExists(atPath: fixture.save.path))
   await runtime.key("c")
-  let refitted = await runtime.snapshot().commander
+  let published = await runtime.snapshot()
+  let refitted = published.commander
   #expect(refitted.shipID == "SH023" && refitted.cargo[0] == 80 && refitted.credits == cash)
   #expect(refitted.unlimitedCargo && refitted.valid)
   #expect(refitted.equipmentInventory?.items.first { $0.id == original.id }?.location == nil)
-  #expect(!FileManager.default.fileExists(atPath: fixture.save.path))
+  #expect(published.requiresScriptDurability && refitted.usesEMPSaveVersion)
+  try #require(refitted.fittedEquipment(at: .utility(.empPirateBlaster)) != nil)
+  #expect(refitted.scriptState.calendarLedger == ScriptCalendarLedger(origin: .newCommander))
+  #expect(refitted.usesEconomyMiningSaveVersion && refitted.miningLedger == MiningLedger())
+  #expect(refitted.xyzzyActive && refitted.xyzzyCashGranted && !refitted.unlimitedCash)
+  #expect(!refitted.unlimitedJumps && refitted.scriptState.instances.isEmpty)
+  let refittedInventory = try #require(refitted.equipmentInventory)
+  #expect(
+    refittedInventory.owner == inventory.owner
+      && refittedInventory.activeHull != inventory.activeHull)
+  for item in inventory.items {
+    let retained = try #require(refittedInventory.items.first { $0.id == item.id })
+    #expect(retained.moved(to: nil) == item.moved(to: nil))
+  }
+  #expect(refitted.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
+  let autoBytes = try Data(contentsOf: fixture.save)
+  let autoPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: autoBytes)
+  try #require(autoPointer.format == "elite-script-save" && autoPointer.schemaVersion == 26)
+  try #require(
+    autoPointer.scope == "commander" && autoPointer.valueCodec == ScriptValueStorage.codec)
+  let autoDirectory = try ScriptSaveStore.generationDirectory(
+    autoPointer.generation, from: fixture.save)
+  let names = Set(["commander.json", "missions.json", "world.json", "contracts.json"])
+  try #require(Set(autoPointer.hashes.keys) == names)
+  try #require(
+    Set(try FileManager.default.contentsOfDirectory(atPath: autoDirectory.path)) == names)
+  var autoChunks: [String: Data] = [:]
+  for name in names {
+    let chunk = try Data(contentsOf: autoDirectory.appendingPathComponent(name))
+    try #require(ScriptPackLibrary.hash(chunk) == autoPointer.hashes[name])
+    autoChunks[name] = chunk
+  }
+  let (autoSaved, autoWorld) = try ScriptSaveStore.read(autoBytes, from: fixture.save)
+  #expect(autoSaved == refitted && autoWorld.valid && autoWorld.consistent(with: autoSaved))
+  let encoder = ScriptValueStorage.encoder()
+  #expect(try encoder.encode(autoWorld) == encoder.encode(published.scriptWorldSave))
   try await runtime.save(to: fixture.save)
   let explicitlySaved = await runtime.snapshot().commander
   #expect(explicitlySaved == refitted)
-  let persisted = try JSONDecoder().decode(
-    Commander.self, from: CommanderSaveInput.read(from: fixture.save))
+  let explicitBytes = try Data(contentsOf: fixture.save)
+  let explicitPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: explicitBytes)
+  #expect(
+    explicitPointer.schemaVersion == 26 && explicitPointer.generation != autoPointer.generation)
+  let (persisted, explicitWorld) = try ScriptSaveStore.read(explicitBytes, from: fixture.save)
+  #expect(explicitWorld.valid && explicitWorld.consistent(with: persisted))
+  #expect(try encoder.encode(explicitWorld) == encoder.encode(autoWorld))
+  for (name, chunk) in autoChunks {
+    #expect(try Data(contentsOf: autoDirectory.appendingPathComponent(name)) == chunk)
+  }
   #expect(persisted == refitted && persisted.xyzzyCashGranted)
   let decoded = GameRuntime(game: fixture.game())
-  try await decoded.load(from: fixture.save)
+  try await decoded.load(from: fixture.save, persistMigrations: false)
   let reloaded = await decoded.snapshot().commander
   #expect(reloaded.xyzzyCashGranted == refitted.xyzzyCashGranted && reloaded.credits == cash)
   #expect(reloaded == refitted)
+  #expect(try Data(contentsOf: fixture.save) == explicitBytes)
   await runtime.key("escape")
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let offer = try #require(await runtime.snapshot().commander.contracts.boards[key]?.offers.first)
+  let beforeQuote = await runtime.snapshot().commander
+  try #require(beforeQuote.passengerFit?.allowed == false)
+  try #require(beforeQuote.standardCargoCapacity < beforeQuote.cargo[0])
+  let quoteBytes = try Data(contentsOf: fixture.save)
   #expect(!(await runtime.contractAcceptanceQuote(board: key, offer: offer.id)).allowed)
+  #expect(await runtime.snapshot().commander == beforeQuote)
+  #expect(try Data(contentsOf: fixture.save) == quoteBytes)
   #expect(await runtime.snapshot().commander.scriptState.instances.isEmpty)
   await runtime.key("screen:9")
   let snapshot = await runtime.snapshot()
@@ -364,6 +428,12 @@ private struct ContractFixture {
   let after = await runtime.snapshot()
   #expect(after.commander.equipmentInventory?.items.first { $0.id == item.id }?.location == nil)
   #expect(await runtime.snapshot().commander.cargo[0] == 80)
+  let retained = try #require(after.commander.equipmentInventory?.items.first { $0.id == item.id })
+  #expect(retained.moved(to: nil) == item.moved(to: nil))
+  let (storedCommander, storedWorld) = try ScriptSaveStore.read(
+    Data(contentsOf: fixture.save), from: fixture.save)
+  #expect(storedCommander == after.commander)
+  #expect(storedWorld.valid && storedWorld.consistent(with: storedCommander))
 }
 
 @Test func acceptedCancellationRequiresItsOriginalStationContactAndReturnsOnlyItsOwnCargo()
