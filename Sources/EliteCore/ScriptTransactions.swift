@@ -3,7 +3,8 @@ import Foundation
 typealias ScriptPublisher = @Sendable (inout Game) throws -> Void
 
 extension GameRuntime {
-  /// Captures only value paths. No writer, actor or interpreter callback escapes this turn.
+  /// Captures value paths and a bounded Sendable, non-authoritative observation reference.
+  /// No writer, actor or interpreter callback escapes this turn.
   func scriptPublisher(
     requireNativeSalvage: Bool = false, diagnosticBoundary: ScriptRefusalBoundary = .publication
   ) -> ScriptPublisher? {

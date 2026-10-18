@@ -8,8 +8,13 @@ extension GameRuntime {
   func scriptRefusalObservationDetail() -> String? { scriptRefusalDiagnostic?.detail() }
 }
 
-private func refusalChecks(_ detail: String) -> UInt16? {
-  guard let value = detail.components(separatedBy: ",checks=").last?.split(separator: ",").first
+private func refusalChecks(_ detail: String, boundary: ScriptRefusalBoundary) -> UInt16? {
+  let prefix = "SCRIPT_REFUSAL "
+  guard detail.hasPrefix(prefix),
+    let record = detail.dropFirst(prefix.count).split(separator: ";").first(where: {
+      $0.hasPrefix(boundary.rawValue + "=")
+    }),
+    let value = String(record).components(separatedBy: ",checks=").last?.split(separator: ",").first
   else {
     return nil
   }
@@ -53,21 +58,22 @@ private func refusalChecks(_ detail: String) -> UInt16? {
   var invalid = game
   invalid.commander.cargo = []
   let before = invalid.commander
-  let native = ScriptRefusalDiagnostic()
+  let diagnostics = ScriptRefusalDiagnostic()
   var nativeRefused = false
   do {
-    _ = try GameRuntime.prepareNativeSaveState(invalid, diagnostics: native)
+    _ = try GameRuntime.prepareNativeSaveState(
+      invalid, diagnostics: diagnostics, diagnosticBoundary: .resolver)
   } catch {
     nativeRefused = error is SaveError
   }
   #expect(nativeRefused && invalid.commander == before)
-  let nativeDetail = try #require(native.detail())
-  #expect(nativeDetail.contains("publication=nativeSaveValidation,error=save.invalidCommander"))
-  let nativeChecks = try #require(refusalChecks(nativeDetail))
+  let nativeDetail = try #require(diagnostics.detail())
+  #expect(nativeDetail.contains("resolver=nativeSaveValidation,error=save.invalidCommander"))
+  #expect(!nativeDetail.contains("publication="))
+  let nativeChecks = try #require(refusalChecks(nativeDetail, boundary: .resolver))
   #expect(nativeChecks & 4 == 0 && nativeDetail.contains("count=0"))
   var world = game.scriptWorldSave
   world.energy = -1
-  let store = ScriptRefusalDiagnostic()
   let target = FileManager.default.temporaryDirectory
     .appendingPathComponent("refusal-" + UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: target.appendingPathExtension("missions")) }
@@ -75,14 +81,17 @@ private func refusalChecks(_ detail: String) -> UInt16? {
   var storeRefused = false
   do {
     _ = try ScriptSaveStore.write(
-      commander: game.commander, world: world, to: target, diagnostics: store)
+      commander: game.commander, world: world, to: target, diagnostics: diagnostics)
   } catch {
     storeRefused = error is SaveError
   }
   #expect(storeRefused)
-  let storeDetail = try #require(store.detail())
+  let storeDetail = try #require(diagnostics.detail())
   #expect(storeDetail.contains("publication=storeValidation,error=save.invalidCommander"))
-  let storeChecks = try #require(refusalChecks(storeDetail))
+  #expect(storeDetail.contains("resolver=nativeSaveValidation,error=save.invalidCommander"))
+  let retainedNativeChecks = try #require(refusalChecks(storeDetail, boundary: .resolver))
+  #expect(retainedNativeChecks == nativeChecks)
+  let storeChecks = try #require(refusalChecks(storeDetail, boundary: .publication))
   #expect(storeChecks & 1 == 1 && storeChecks & 2 == 0 && storeChecks & 96 == 96)
   let pointerExists = FileManager.default.fileExists(atPath: target.path)
   #expect(!pointerExists)
