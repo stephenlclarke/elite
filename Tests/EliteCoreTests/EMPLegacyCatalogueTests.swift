@@ -47,17 +47,32 @@ private func expectLegacyCatalogueRefusal(
 }
 
 struct EMPLegacyCatalogueTests {
-  @Test func actualNativeAliasPinsItsResolvedCatalogueAcrossPartialAndZeroPulses() throws {
+  @Test func actualNativeAliasKeepsItsPartialMeshAndPinsCanonicalIdentityOnlyAtZero() throws {
     var game = try legacyCatalogueGame()
     let original = game.bodies[0]
     let actor = try #require(original.physical?.identity)
     let inventory = game.commander.equipmentInventory
+    let originalMesh = game.gameplayMesh(for: original)
     let native = try #require(ShipCatalogue.nativeShip(.cobra))
     try releaseLegacyCataloguePulse(&game)
     let partial = try #require(game.bodies.first { $0.id == original.id })
     #expect(partial.physical?.identity == actor && partial.hull == original.hull)
     #expect(partial.energy == original.energy)
-    #expect(partial.physical?.catalogueShipID == native.id)
+    #expect(partial.physical?.catalogueShipID == nil)
+    #expect(partial.position == original.position && partial.orientation == original.orientation)
+    #expect(partial.rotation == original.rotation && partial.rotationRate == original.rotationRate)
+    #expect(partial.physical?.velocity == original.physical?.velocity)
+    #expect(partial.physical?.angularVelocity == original.physical?.angularVelocity)
+    let partialMesh = game.gameplayMesh(for: partial)
+    #expect(
+      partialMesh.vertices == originalMesh.vertices && partialMesh.faces == originalMesh.faces)
+    #expect(
+      partialMesh.details.map { [$0.start, $0.end, $0.face] }
+        == originalMesh.details.map { [$0.start, $0.end, $0.face] })
+    #expect(partialMesh.materials.map(\.name) == originalMesh.materials.map(\.name))
+    #expect(partialMesh.materials.map(\.colour) == originalMesh.materials.map(\.colour))
+    #expect(partialMesh.materials.map(\.emissive) == originalMesh.materials.map(\.emissive))
+    #expect(partialMesh.faceMaterials == originalMesh.faceMaterials)
     #expect(partial.physical?.npc?.resources?.legacyElectricalRecharge == native.game?.recharge)
     #expect(partial.physical?.npc?.resources?.electrical?.remaining == 20)
     #expect(partial.physical?.npc?.ordinaryCargo == original.physical?.npc?.ordinaryCargo)
@@ -171,6 +186,16 @@ struct EMPLegacyCatalogueTests {
     let began = game.fireEMPPirateBlaster()
     try #require(began && game.commander.valid)
     game.commander.flightSimulation.advancePhysicalTime(10)
+    let now = game.commander.flightSimulation.physicalTime
+    var targetResources = try #require(game.bodies[0].physical?.npc?.resources)
+    targetResources.legacyElectricalRecharge = native.recharge
+    var targetReserve = try #require(
+      ElectricalReserve(
+        capacity: targetResources.energyCapacity, recharge: native.recharge, at: now))
+    let lowered = targetReserve.drain(targetResources.energyCapacity - 5, at: now)
+    try #require(lowered && targetReserve.remaining == 5 && targetReserve.disabledAt == nil)
+    targetResources.electrical = targetReserve
+    game.bodies[0].physical?.npc?.resources = targetResources
     let before = game.commander
     let bodies = game.bodies
     let simulation = game.scriptSimulationSave
@@ -181,7 +206,8 @@ struct EMPLegacyCatalogueTests {
       &game, before: before, bodies: bodies, simulation: simulation,
       audio: audio, energy: energy, heat: heat)
     #expect(game.bodies[0].physical?.catalogueShipID == nil)
-    #expect(game.bodies[0].physical?.npc?.resources?.legacyElectricalRecharge == nil)
+    #expect(game.bodies[0].physical?.npc?.resources?.legacyElectricalRecharge == native.recharge)
+    #expect(game.bodies[0].physical?.npc?.resources?.electrical?.remaining == 5)
     game.bodies.removeAll { $0.id == 99 }
     game.advanceEMPCharge(triggerHeld: false)
     try releaseLegacyCataloguePulse(&game)
