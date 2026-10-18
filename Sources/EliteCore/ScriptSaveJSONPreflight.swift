@@ -48,6 +48,54 @@ enum ScriptSaveJSONPreflight {
 }
 
 extension ScriptSaveJSONPreflight {
+  /// Freight custody belongs only in its native chunks. Version 28 remains reserved;
+  /// provider claims may coexist only inside a validated freight envelope.
+  static func validateFreightFields(
+    _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
+  ) throws {
+    let freight =
+      schema == ScriptFreightVersionedSave.version
+      || schema == ScriptFreightVersionedSave.alienVersion
+    if freight, part != .commander {
+      try ScriptFreightVersionedSave.validateFields(data, part: part)
+      if part == .missions { try validateFreightProviderFields(data) }
+    } else {
+      try ScriptFreightVersionedSave.rejectFields(data, part: part)
+    }
+    if !freight || part == .commander {
+      switch part {
+      case .commander: try ScriptProviderVersionedSave.rejectFields(data, part: .commander)
+      case .missions: try ScriptProviderVersionedSave.rejectFields(data, part: .missions)
+      case .contracts: break
+      }
+    }
+  }
+
+  /// Optional native custody must not disappear through decodeIfPresent(null).
+  /// Freight inspection has already bounded and authenticated the instance keys.
+  private static func validateFreightProviderFields(_ data: Data) throws {
+    guard let root = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+      throw SaveError.invalidCommander
+    }
+    let instances: [Any]
+    if let dictionary = root["instances"] as? [String: Any] {
+      instances = Array(dictionary.values)
+    } else if let pairs = root["instances"] as? [Any] {
+      instances = stride(from: 1, to: pairs.count, by: 2).map { pairs[$0] }
+    } else {
+      instances = []
+    }
+    for raw in instances {
+      guard let instance = raw as? [String: Any],
+        let provider = instance["savedProviderContract"]
+      else { continue }
+      guard let object = provider as? [String: Any] else { throw SaveError.invalidCommander }
+      _ = try JSONDecoder().decode(
+        ScriptProviderContractState.self,
+        from: JSONSerialization.data(withJSONObject: object))
+    }
+  }
+
   enum CourierLocation { case rawCommander, currentCommanderHeader, missions, contracts }
   /// Inspect native schema paths only. Authored data/payload keys are not schema.
   static func rejectCourierFields(_ data: Data, location: CourierLocation) throws {

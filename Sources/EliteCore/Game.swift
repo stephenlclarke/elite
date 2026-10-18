@@ -581,6 +581,7 @@ public struct Game: Sendable {
     guard value.valid, !value.usesAlienStorageSaveVersion,
       !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
       !value.usesEconomyMiningSaveVersion,
+      !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
       value.scriptState.financeLedger == nil
     else {
       return false
@@ -2276,6 +2277,7 @@ public actor GameRuntime {
       throw MissionPackError("Legacy commander files cannot replace a Gallery trial.")
     }
     try ScriptSaveJSONPreflight.rejectCourierFields(data, location: .rawCommander)
+    try ScriptSaveJSONPreflight.validateFreightFields(data, part: .commander)
     try AlienStorageVersionedSave.rejectFields(data)
     try EMPVersionedSave.rejectFields(data, part: .commander)
     try NativePeopleVersionedSave.rejectFields(data)
