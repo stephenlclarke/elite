@@ -337,7 +337,7 @@ private func verifyPatrolPhysicalSaveConsistency(_ game: inout Game, id: UUID) t
     game.bodies[index].destroyedByPlayer = true
   }
   let dead = game.bodies.filter { $0.missionActorID != nil }
-  try #require(!dead.isEmpty && dead.allSatisfy { $0.energy == 0 && $0.destroyedByPlayer })
+  try #require(!dead.isEmpty && dead.allSatisfy { $0.energy == 0 && $0.destroyedByPlayer == true })
   let oldCommander = game.commander
   var fresh = Game(executive: false)
   fresh.screen = .status
