@@ -1114,6 +1114,8 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   try #require(
     game.commander.crimeLedger.hasCurrentUnlawfulAttack(
       from: source, against: context.player.identity, context: context))
+  game.applyAutoTarget(delta: 0.1, controls: Controls())
+  try #require(game.autoPilot.stationDefencePhase == .defending && !game.autoPilot.finalApproach)
   if condition == "unknown-projectile" {
     let projectile = game.nextBodyID
     game.nextBodyID += 1
@@ -1132,7 +1134,9 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   let station = try #require(game.autoTargetBody)
   let requested = game.stationAutoGuidance(target: station)
   let guidance = try #require(requested)
-  #expect(guidance.hazard == .active && !guidance.handoverAllowed && !guidance.joinedIncoming)
+  let expected: StationAutoHazard =
+    condition == "malformed-threat" || condition == "ambiguous-threat" ? .unknown : .active
+  #expect(guidance.hazard == expected && !guidance.handoverAllowed && !guidance.joinedIncoming)
   for _ in 0..<8 {
     let before = game.flightWorldVelocity
     game.applyAutoTarget(delta: 0.1, controls: Controls())
