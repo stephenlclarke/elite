@@ -604,22 +604,24 @@ private func poisonNativeFragment(_ reason: String, game: inout Game, lot: Salva
   case "blackjack": game.bodies[index].blackjackIdentity = UUID()
   case "projectile": game.bodies[index].enemyMissile = true
   case "npc":
-    game.bodies[index].physical?.npc = .init(
+    let npc = NPCState(
       role: .trader, origin: game.systemIdentity,
       destination: game.systemIdentity)
+    game.bodies[index].physical?.npc = npc
   case "emp": game.bodies[index].physical?.empSource = actor
   case "mission":
     game.bodies[index].missionActorID = UUID()
     game.bodies[index].missionInstanceID = UUID()
   case "shape", "claimant":
     let old = try #require(game.bodies[index].physical?.salvage)
-    game.bodies[index].physical?.salvage = .init(
+    let metadata = SalvageTargetMetadata(
       category: old.category, ownership: old.ownership,
       claimant: reason == "claimant" ? game.commander.flightSimulation.player : old.claimant,
       wreck: old.wreck, section: old.section, lot: old.lot,
       bounds: .init(
         center: old.bounds.center, radius: old.bounds.radius + (reason == "shape" ? 1 : 0)),
       workSurfaces: old.workSurfaces)
+    game.bodies[index].physical?.salvage = metadata
   case "spawn-highwater", "spawn-producer":
     game.bodies[index].physical?.spawnIdentity = .init(
       system: spawn.system, visit: spawn.visit,

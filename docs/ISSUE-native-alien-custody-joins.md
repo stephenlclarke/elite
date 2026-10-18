@@ -7,3 +7,5 @@ The hull exchange preview also deliberately reuses the current hull identity. Ca
 Add boundary validation and negative regressions while keeping old non-native behavior, original audit records, valid command/associated receipt sharing, and honest later legacy imports. Exercise all four live stat axes, both physical energy-module kinds, repeated upgrades on one UUID, actual actor writer rollback, and native hull quotes/exchange. Source findings are not claims of an executed exploit or passing acceptance.
 
 [PR-native-alien-custody-joins.md](PR-native-alien-custody-joins.md).
+
+Validation 323 compiled production code but failed while compiling poisoned-body test setup: the NPC and metadata assignments wrote through game.bodies while their initializer arguments read other Game properties. Swift correctly rejects that exclusive-access overlap. Construct the identical NPC/metadata value in a local first, then perform the same assignment. No tests executed and no runtime issue was established by this compiler failure.
