@@ -22,7 +22,9 @@ import Testing
   let trial = await runtime.snapshot()
   try #require(namespace != nil)
   #expect(trial.isMissionTrial && !trial.docked && trial.screen.isFlight)
-  #expect(trial.trialSeed == 42 && trial.commander.credits == 100000)
+  #expect(trial.trialSeed == 42 && fixture.pack.manifest.trial?.credits == 100000)
+  try ScriptProcurementFixture.requirePaidG03Preparation(trial)
+  #expect(trial.commander.cargo == before.commander.cargo)
   #expect(trial.commander.scriptState.instances.isEmpty && trial.commander.contracts.boards.isEmpty)
   #expect(
     trial.commander.flightSimulation.player != nil && !trial.nativeMainStationDockEvidenceIsCurrent)
@@ -33,8 +35,33 @@ import Testing
   #expect(
     restarted.isMissionTrial && !restarted.docked
       && restarted.commander.scriptState.instances.isEmpty)
+  try ScriptProcurementFixture.requirePaidG03Preparation(restarted)
+  #expect(restarted.commander.cargo == trial.commander.cargo)
+  #expect(restarted.commander.equipmentOwnerID != trial.commander.equipmentOwnerID)
+  let initialTransactions = trial.commander.equipmentPurchaseHistory?.paid.map(\.transaction)
+  let restartedTransactions = restarted.commander.equipmentPurchaseHistory?.paid.map(\.transaction)
+  #expect(initialTransactions != restartedTransactions)
   try await runtime.returnFromScriptGalleryTrial()
   let restored = await runtime.snapshot()
   let afterFiles = try ScriptFinanceTestFixture.files(fixture.root.appendingPathComponent("save"))
   #expect(restored.commander == before.commander && !restored.isMissionTrial && files == afterFiles)
+}
+
+@Test func g03PaidPreparationRefusesAnAlreadyOwnedDefenceWithoutPublishingEarlierPurchases() throws
+{
+  let fixture = try ScriptProcurementFixture()
+  defer { fixture.clean() }
+  var game = try fixture.policyGame()
+  game.commander.credits = 100000
+  let item = try #require(Equipment.all.first { $0.name == "Pulse Shield Booster" })
+  let quote = try game.quoteEquipmentPurchase(item)
+  let fitted = try game.applyEquipmentPurchase(quote)
+  try #require(fitted && game.commander.credits == 97000)
+  let before = game
+  // The private preparation buys three targeting tiers before the real fourth quote refuses.
+  #expect(throws: EquipmentRuntimeError.alreadyOwned) { try game.prepareG03FlightEquipment() }
+  #expect(game.commander == before.commander && game.commander.targetingTier == nil)
+  #expect(game.energy == before.energy && game.frontShield == before.frontShield)
+  #expect(game.rearShield == before.rearShield && game.bodies == before.bodies)
+  #expect(game.gameplayRevision == before.gameplayRevision && game.nextBodyID == before.nextBodyID)
 }
