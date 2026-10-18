@@ -28,6 +28,7 @@ extension Game {
         (lot.position - context.player.position).length <= context.perceptionRadius
       else { continue }
       var candidate = self
+      guard candidate.prepareNativeSalvageOfferParent(for: lot) else { continue }
       guard
         let spawn = candidate.commander.salvageLedger.reserveNativeSpawnIdentity(
           system: context.system, visit: context.visit),
