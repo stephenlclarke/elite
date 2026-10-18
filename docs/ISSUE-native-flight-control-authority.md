@@ -5,6 +5,7 @@ The generated flight control definitions describe W to change weapon, held Retur
 ## Required behavior
 
 - Consume generated bindings in native input, menus and actual runtime help pages, preserving each menu's own Return/W meanings and Tab/F/I flight behavior.
+- Keep the player control guide consistent with the shared bindings: Return operates the selected tool, W cycles fitted tool types, and the retired A fire alias is not documented as active.
 - Select the mining laser or cutter once when acquiring its supported hold. Preserve a manual W override, cycle fitted tools, and never substitute a combat shot for an unavailable work tool.
 - Require fresh Return after selection, approach-to-hold readiness or interruption. Releasing Return stops the operation and retains guidance; Q releases guidance with world momentum and pending native custody intact.
 - Reserve a WEAPON row above the scanner in every flight view and display style, including without a selected target. Derive activity from actual selected emissions and charge state, and readiness from resources and real native work contacts.

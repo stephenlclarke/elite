@@ -29,10 +29,14 @@ The Screens menu offers these same destinations. Plain numbers are the navigatio
 | Left / Right | Roll left / right |
 | Hold Space | Accelerate |
 | Hold Delete | Brake; releasing holds the reached speed |
-| Hold Return | Fire the laser in the current view |
+| Hold Return | Fire the selected weapon or tool |
+| W | Change weapon: cycle fitted combat, mining, salvage and EMP tools |
+| F | Cycle target filters: Ships / Mining / Salvage / All |
 | Tab | Select the next target with a fitted targeting computer; selecting the station engages full automatic docking at Docking tier or higher |
-| Q | Disengage automatic guidance |
+| Q | Release automatic guidance and stop the tool, preserving momentum |
 | 4 / 5, then H | Select a chart destination, then begin hyperspace in flight |
+
+The WEAPON row above the scanner shows the selected weapon and its activity. Changing weapon or target, reaching work-hold readiness, or interrupting an operation requires a fresh Return press. See the [shared flight control reference](FLIGHT-CONTROLS.generated.md) for tool-specific requirements.
 
 Trackpad: two fingers steer at the current speed, one brakes, three accelerate. Hold two fingers off centre to keep turning. Centre them or lift all fingers to centre the yoke and cruise. macOS gestures can intercept three-finger input; see the README trackpad section.
 
@@ -153,7 +157,7 @@ Type XYZZY outside a search to become Commander Clarke in a fully fitted Cobra M
 
 ## Compatibility shortcuts
 
-Experienced players can still use A for laser fire; X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
+Experienced players can still use X/S for pitch; comma/less-than and full-stop/greater-than for roll; slash/question-mark for braking; P for cancelling guidance outside charts and the navigation screen; in those browsers P toggles the profit scan. Left/Right in buy/sell screens still buys/sells one unit. B/U/L still open mission contacts, rumours and the gallery where appropriate. X outside showroom search clears its filter; B/R/C/V and comma/full stop still control its baseline, comparison and profiles, and Space controls rotation.
 
 Existing browser-specific close aliases (L, N or U in their own browser) and Return in help, rumours or XYZZY remain available for compatibility. Escape is the single primary Back control shown throughout the UI. No compatibility shortcut runs while ordinary text is being entered in search.
 
