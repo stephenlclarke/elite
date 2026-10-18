@@ -1,7 +1,7 @@
 import Foundation
 
 extension Game {
-  func prepareProcurementTrial(_ pack: ScriptPack) throws {
+  mutating func prepareProcurementTrial(_ pack: ScriptPack) throws {
     try ScriptPackLibrary.validateProcurement(pack.manifest)
     guard isMissionTrial, trialDigest == pack.digest, pack.manifest.trial?.flight == true,
       docked, !paused
