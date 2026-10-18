@@ -103,6 +103,7 @@ public enum ScriptCapabilities {
     "library-books-basic-v2", "partial-collections-v2", "scoped-campaigns-basic-v2",
     "station-pledges-basic-v2", "courier-contracts-basic-v2", "mission-calendar-v2",
     "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
+    ScriptNavigationTradeContent.capability,
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [

@@ -185,6 +185,7 @@ extension Game {
         var planned = commander
         planned.fuel = commander.fuelCapacity
         if !commander.unlimitedCash { planned.credits -= context.price }
+        try planned.recordNavigationTradeFuelPurchase(before: commander, paid: context.price)
         guard planned.valid else { throw ShopRefusal(.invalidState) }
         commander = planned
         receipt = .purchase(item: item.name, physicalItem: nil, fitted: true)

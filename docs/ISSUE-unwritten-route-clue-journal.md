@@ -6,7 +6,7 @@ The approved original L337 design requires one permanent zero-mass clue from eac
 
 ## Bounded implementation
 
-Keep the exact source/clue/receipt identities from the approved `medusa-mystery/completion-hooks.json` in a descriptive native catalog. Authorize executable content separately using native pins of definition, version, digest and admitted terminal event. Production pins remain empty until translated runtime content and provider bindings receive separate approval. A source name, manifest, saved claim or design hash supplies no authority.
+Keep the exact source/clue/receipt identities from the approved `medusa-mystery/completion-hooks.json` in a descriptive native catalog. Authorize executable content separately using native pins of definition, version, digest and admitted terminal event. The foundation began with empty production pins. The Navigation and trade practice slice now pins its exact translated runtime bytes; its separate original-world binding remains unavailable, so content identity alone grants no authority. A source name, manifest, saved claim or design hash supplies no authority.
 
 Store an owner-bound journal in native mission state. Each first award retains and joins its successful completion receipt, including instance, revision, sequence and native contexts. Repeated source successes cannot replace the first proof or fill another source. Retained records do not depend on installed content, ship hull or cargo. Query exact collected/missing clue IDs without scanning history or awarding retroactively.
 

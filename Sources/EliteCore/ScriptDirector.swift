@@ -45,7 +45,9 @@ extension Game {
         && $0.digest == instance.digest
     }
   }
-  mutating func suspendUnavailableScriptContent() {
+  mutating func suspendUnavailableScriptContent(
+    navigationBinding: ScriptNavigationTradeBinding? = nil
+  ) {
     suspendUnavailableWorldJobs()
     for id in orderedScriptInstances {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
@@ -53,7 +55,9 @@ extension Game {
       else { continue }
       if let reason = campaignExecutionIssue(instance) {
         commander.scriptState.instances[id]?.suspension = reason
-      } else if let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil {
+      } else if let pack = scriptPack(for: instance),
+        scriptUnavailable(pack, navigationBinding: navigationBinding) == nil
+      {
         if let reason = campaignContentIssue(instance, pack: pack)
           ?? procurementContentIssue(instance, pack: pack)
           ?? freightContentIssue(instance, pack: pack)
@@ -66,7 +70,14 @@ extension Game {
       }
     }
   }
-  func scriptUnavailable(_ pack: ScriptPack) -> String? {
+  func scriptUnavailable(
+    _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
+  ) -> String? {
+    if let reason = navigationTradeUnavailable(
+      pack, binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
+    {
+      return reason
+    }
     if !pack.missingCapabilities.isEmpty {
       return "Not available in this build: "
         + Set(pack.missingCapabilities.map(ScriptCapabilities.playerFeatureName)).sorted().joined(
@@ -96,6 +107,7 @@ extension Game {
   }
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
+    fields["navigation_trade"] = navigationTradeQuery(instance)
     fields["provider"] = providerMissionQuery(instance)
     fields["children"] = campaignChildrenQuery(instance)
     fields["collections"] = collectionQuery(instance)
@@ -153,11 +165,13 @@ extension Game {
   mutating func acceptScriptMission(
     _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445,
     contract: ScriptContractJob? = nil, campaignParent: ScriptChildBinding? = nil,
-    drainAccepted: Bool = true, freightAdmission: ScriptFreightIssueAdmission? = nil
+    drainAccepted: Bool = true, freightAdmission: ScriptFreightIssueAdmission? = nil,
+    navigationBinding: ScriptNavigationTradeBinding? = nil
   ) throws -> UUID {
     let instance = try prepareScriptMissionAcceptance(
       pack, instanceID: instanceID, randomSeed: randomSeed,
-      contract: contract, campaignParent: campaignParent, freightAdmission: freightAdmission)
+      contract: contract, campaignParent: campaignParent, freightAdmission: freightAdmission,
+      navigationBinding: navigationBinding)
     return try installScriptMissionAcceptance(
       pack, instance: instance, drainAccepted: drainAccepted)
   }
@@ -176,9 +190,11 @@ extension Game {
     _ pack: ScriptPack, instanceID: UUID, randomSeed: UInt64,
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState? = nil,
-    freightAdmission: ScriptFreightIssueAdmission? = nil
+    freightAdmission: ScriptFreightIssueAdmission? = nil,
+    navigationBinding: ScriptNavigationTradeBinding? = nil
   ) throws -> ScriptInstance {
-    guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
+    guard scriptUnavailable(pack, navigationBinding: navigationBinding) == nil,
+      commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
       pack.manifest.mission.parentOnly != true || campaignParent != nil,
       campaignParent == nil || contract == nil,
@@ -193,6 +209,7 @@ extension Game {
       pack.manifest.board != nil || campaignParent != nil
         || !commander.scriptState.instances.values.contains(where: {
           $0.definition == pack.manifest.stateID
+            && !(ScriptNavigationTradeContent.matches(pack) && $0.outcome != .active)
         }), (pack.manifest.board == nil) == (contract == nil)
     else {
       throw MissionPackError(
@@ -299,7 +316,8 @@ extension Game {
     }
   }
   mutating func drainScriptEvents(
-    publish: ScriptPublisher? = nil, clueTrust: ScriptClueTrustCatalog = .production
+    publish: ScriptPublisher? = nil, clueTrust: ScriptClueTrustCatalog = .production,
+    navigationBinding: ScriptNavigationTradeBinding? = nil
   ) {
     guard !scriptDispatching, !scriptEventsDeferred else { return }
     scriptDispatching = true
@@ -310,7 +328,9 @@ extension Game {
       guard let instance = commander.scriptState.instances[event.instance],
         instance.suspension == nil
       else { continue }
-      guard let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil else {
+      guard let pack = scriptPack(for: instance),
+        scriptUnavailable(pack, navigationBinding: navigationBinding) == nil
+      else {
         commander.scriptState.instances[event.instance]?.suspension =
           "Restore the exact saved mission version and its requirements."
         continue
@@ -339,6 +359,23 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
+          if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability) {
+            let allowed: Set<String> = [
+              "journal.append", "dialogue.offer", "dialogue.commit",
+              "milestone.ensure", "mission.finish", "training.trade.begin",
+              "training.trade.receive",
+              "training.trade.cancel", "training.trade.acknowledge-loss",
+            ]
+            guard allowed.contains(command["op"]?.string ?? "") else {
+              throw MissionPackError("Training scripts cannot invent cargo or economic settlement.")
+            }
+          }
+          if command["op"]?.string?.hasPrefix("training.trade.") == true {
+            try applyNavigationTradeCommand(
+              command, event: event, pack: pack, state: &next,
+              binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
+            continue
+          }
           if pack.manifest.freight != nil,
             !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
           {
@@ -447,6 +484,12 @@ extension Game {
           event: event, pack: pack, derivedEvents: &derivedEvents, publish: publish,
           clueTrust: clueTrust)
         self = candidate
+      } catch let refusal as ScriptNavigationTradeRefusal {
+        // A refused user confirmation commits no proposal effects and cannot replay later.
+        commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
+        commander.scriptState.instances[event.instance]?.acknowledge(event.sequence)
+        commander.scriptState.instances[event.instance]?.dialogue = nil
+        notify(refusal.message)
       } catch {
         recordScriptFailure(event.instance, error: error, publish: publish)
       }
@@ -767,7 +810,10 @@ extension Game {
   }
   mutating func offerAvailableScriptMission() -> Bool {
     guard docked, dockedAtMainStation, screen != .handoff else { return false }
-    let accepted = Set(commander.scriptState.instances.values.map(\.definition))
+    let accepted = Set(
+      commander.scriptState.instances.values.filter {
+        $0.definition != ScriptNavigationTradeContent.sourceID || $0.outcome == .active
+      }.map(\.definition))
     guard
       let pack = scriptPacks.sorted(by: {
         ($0.manifest.priority, $0.manifest.id) < ($1.manifest.priority, $1.manifest.id)
@@ -804,7 +850,10 @@ extension Game {
       let dialogue = scriptPresentedDialogue
     else { return nil }
     let text = scriptPack(for: instance)?.manifest.dialogs?.first { $0.id == dialogue.id }?.text
-    return text.map { $0 + (offeredCollectionText.map { "\n\n" + $0 } ?? "") }
+    return text.map {
+      $0 + (offeredCollectionText.map { "\n\n" + $0 } ?? "")
+        + (navigationTradeContactText(instance).map { "\n\n" + $0 } ?? "")
+    }
   }
   private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
     if pack.manifest.providerContract != nil { return providerGalleryEntry(pack, state: state) }
