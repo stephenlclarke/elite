@@ -148,6 +148,17 @@ struct NPCReferenceRuntimeTests {
     let savedA = try #require(disk.npcPersistence.snapshot(for: a))
     #expect(savedA.npc.intention == .flee(b))
     try await runtime.load(from: url)
+    let retained = await runtime.snapshot()
+    #expect(!retained.docked && retained.commander.flightSimulation.visit == oldVisit)
+    #expect(
+      retained.commander.npcPersistence.binding(for: a)
+        == game.commander.npcPersistence.binding(for: a))
+    #expect(
+      retained.commander.npcPersistence.binding(for: b)
+        == game.commander.npcPersistence.binding(for: b))
+    // Retained flight is distinct from the subsequent genuine actor visit transition.
+    await runtime.nativeCommand { $0.dock() }
+    #expect(await runtime.snapshot().docked)
     await runtime.key("0")
     game = await runtime.snapshot()
     let afterLoadB = try referenceBringIn(&game, logical: b)

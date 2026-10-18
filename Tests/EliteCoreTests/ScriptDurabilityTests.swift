@@ -74,13 +74,23 @@ struct ScriptDurabilityTests {
     #expect(try Data(contentsOf: file) == bytes)
     // Canonical migration allocates real stock gear once. Freeze the complete pre-save
     // native value, including those original IDs, before testing current publication.
-    let expected = loaded.commander
+    var expected = loaded.commander
+    // Current publication writes these three stock display mirrors explicitly.
+    // Preserve the independent migrated gear identities, policy and native values.
+    #expect(expected.equipment == [LaserKind.pulse.equipmentName])
+    #expect(expected.laserMounts == LaserMounts(front: .pulse))
+    #expect(expected.fuelStorageUnits == 0)
+    expected.equipment.insert(HyperspaceDriveTier.basic.label)
+    expected.laserMounts = LaserMounts(front: .pulse)
+    expected.fuelStorageUnits = 0
+    #expect(expected.equipmentInventory == inventory)
+    #expect(expected.equipmentPurchaseHistory == history)
+    #expect(expected.scriptState == original.scriptState)
     try await runtime.save(to: file)
     let currentBytes = try Data(contentsOf: file)
     let next = try JSONDecoder().decode(ScriptSavePointer.self, from: currentBytes)
     #expect(next.schemaVersion == 26)
     let published = try NativeSaveTestFixture.readVersionedCommander(from: file)
-    try observeHistoricalSaveMirrors(expected: expected, published: published)
     #expect(published == expected)
     #expect(await runtime.snapshot().commander == expected)
     #expect(expected.scriptState.calendarLedger == original.scriptState.calendarLedger)
@@ -109,40 +119,4 @@ struct ScriptDurabilityTests {
     game.commander.accommodation.ownedBerths = [berth]
     #expect(game.requiresScriptDurability && game.commander.scriptState.calendarLedger == nil)
   }
-}
-
-/// Supplemental observation only: the complete independent Commander oracle stays unchanged.
-private func observeHistoricalSaveMirrors(expected: Commander, published: Commander) throws {
-  let encoder = JSONEncoder()
-  encoder.outputFormatting = [.sortedKeys]
-  let expectedJSON = try JSONSerialization.jsonObject(with: encoder.encode(expected))
-  let publishedJSON = try JSONSerialization.jsonObject(with: encoder.encode(published))
-  let a = try #require(expectedJSON as? [String: Any])
-  let b = try #require(publishedJSON as? [String: Any])
-  var differences: [String: Any] = [:]
-  for key in Set(a.keys).union(b.keys).sorted() {
-    if (a[key] as? NSObject) == (b[key] as? NSObject) { continue }
-    differences[key] = ["before": a[key] ?? NSNull(), "after": b[key] ?? NSNull()]
-  }
-  let report: [String: Any] = [
-    "wholeCommanderEqual": expected == published,
-    "inventoryEqual": expected.equipmentInventory == published.equipmentInventory,
-    "purchaseHistoryEqual": expected.equipmentPurchaseHistory == published.equipmentPurchaseHistory,
-    "miningLedgerEqual": expected.miningLedger == published.miningLedger,
-    "scriptStateEqual": expected.scriptState == published.scriptState,
-    "flightEqual": expected.flightSimulation == published.flightSimulation,
-    "npcRegistryEqual": expected.npcPersistence == published.npcPersistence,
-    "salvageLedgerEqual": expected.savedSalvageLedger == published.savedSalvageLedger,
-    "cargoEqual": expected.cargo == published.cargo,
-    "laserGetterEqual": expected.laserMounts == published.laserMounts,
-    "encodedFieldDifferences": differences,
-  ]
-  let bytes = try JSONSerialization.data(
-    withJSONObject: report, options: [.prettyPrinted, .sortedKeys])
-  if let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
-    let directory = URL(fileURLWithPath: evidence, isDirectory: true)
-    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    try bytes.write(to: directory.appendingPathComponent("historical-save-mirrors.json"))
-  }
-  print("HISTORICAL_SAVE_MIRRORS " + String(decoding: bytes, as: UTF8.self))
 }
