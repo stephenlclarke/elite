@@ -623,7 +623,7 @@ extension Game {
     if let index = bodies.firstIndex(where: { $0.id == 0 && $0.hull == .station }) {
       return bodies[index].energy > 0 ? bodies[index] : nil
     }
-    guard let frame, frame.galaxy == commander.galaxy,
+    guard let frame = copy frame, frame.galaxy == commander.galaxy,
       frame.system == commander.system, frame.station.energy > 0
     else { return nil }
     return frame.station
