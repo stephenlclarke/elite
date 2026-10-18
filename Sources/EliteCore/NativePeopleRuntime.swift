@@ -97,8 +97,8 @@ extension Game {
   }
   fileprivate func nativePeopleCaptureSeal(fire: Bool) -> NativePeopleCaptureSeal? {
     guard !docked, !paused, screen != .gameOver, energy.isFinite, energy > 0,
-      jumpCountdown == nil, pendingNativeStationDock == nil, commander.valid,
-      hasNativeRescueTools, let context = gameplayContext(),
+      jumpCountdown == nil, pendingNativeStationDock == nil, hasNativeRescueTools,
+      commander.valid, let context = gameplayContext(),
       let owner = commander.equipmentOwnerID, let hull = commander.hullInstanceID,
       let inventory = commander.equipmentInventory,
       let scoops = commander.fittedEquipment(at: .utility(.fuelScoops)),
