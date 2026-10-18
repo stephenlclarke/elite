@@ -168,8 +168,10 @@ struct ScriptFreightVersionGateTests {
         var destination = Game(executive: false)
         destination.scriptPacks = packs
         let reader = GameRuntime(game: destination)
+        let filesBefore = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
         try await reader.load(from: save, persistMigrations: false)
         let restored = await reader.snapshot()
+        #expect(try ScriptFinanceTestFixture.files(save.deletingLastPathComponent()) == filesBefore)
         #expect(restored.commander.scriptState.instances[id]?.savedOwnedCargo == originalCargo)
         #expect(restored.commander.usesProviderContractSaveVersion == provider)
         #expect(restored.commander.usesAlienStorageSaveVersion == alien)
@@ -367,6 +369,8 @@ struct ScriptFreightVersionGateTests {
     let dead = await runtime.snapshot()
     let pending = try #require(
       dead.commander.scriptState.instances[id]?.savedOwnedCargo?.pendingLoss)
+    let originalState = try #require(dead.commander.scriptState.instances[id])
+    let originalCargo = try #require(originalState.savedOwnedCargo)
     try #require(dead.screen == .gameOver)
     let prepared = try GameRuntime.prepareNativeSaveState(dead)
     let save = fixture.root.appendingPathComponent("pending-loss/commander.json")
@@ -375,18 +379,27 @@ struct ScriptFreightVersionGateTests {
     let loaded = try ScriptSaveStore.read(Data(contentsOf: save), from: save)
     #expect(loaded.0.scriptState.instances[id]?.savedOwnedCargo?.pendingLoss == pending)
     #expect(loaded.0.scriptState.instances[id]?.savedOwnedCargo?.held == pending.units)
+    #expect(loaded.0.scriptState.instances[id]?.savedOwnedCargo == originalCargo)
     var missing = prepared.commander
     missing.scriptState.instances[id]?.savedOwnedCargo?.pendingLoss = nil
     #expect(throws: SaveError.self) {
       try ScriptSaveStore.write(commander: missing, world: prepared.game.scriptWorldSave, to: save)
     }
     let reader = GameRuntime(game: dead)
+    let filesBefore = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
     try await reader.load(from: save, persistMigrations: false)
     let restored = await reader.snapshot()
+    #expect(try ScriptFinanceTestFixture.files(save.deletingLastPathComponent()) == filesBefore)
     let state = try #require(restored.commander.scriptState.instances[id])
     #expect(state.savedOwnedCargo?.terminal?.cause == .shipDestroyed)
     #expect(state.savedOwnedCargo?.terminal?.removed == pending.units)
     #expect(state.completionReceipt?.cause == pending.context)
     #expect(state.contract?.settlementAmount == 0)
+    #expect(state.savedOwnedCargo?.issue == originalCargo.issue)
+    #expect(state.savedOwnedCargo?.transfers == originalCargo.transfers)
+    #expect(state.collections == originalState.collections)
+    #expect(state.conversationReceipts == originalState.conversationReceipts)
+    #expect(restored.commander.cargo == dead.commander.cargo)
+    #expect(restored.commander.credits == dead.commander.credits)
   }
 }
