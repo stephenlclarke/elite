@@ -37,7 +37,12 @@ struct EMPPulseProfile: Equatable, Sendable {
     guard let grade = definition.grades.first(where: { $0.identity == component.grade }),
       (0...3).contains(grade.order)
     else { throw EMPPulseProfileError.invalidEnergyGrade }
-    return Self(energyStage: grade.order)
+    guard let modules = commander.fittedAlienEnergyModuleCount else {
+      throw EMPPulseProfileError.invalidEnergyGrade
+    }
+    let stage = grade.order.addingReportingOverflow(modules)
+    guard !stage.overflow else { throw EMPPulseProfileError.invalidEnergyGrade }
+    return Self(energyStage: stage.partialValue)
   }
 
   func primaryDrain(remainingReserve: Double) throws -> Double {

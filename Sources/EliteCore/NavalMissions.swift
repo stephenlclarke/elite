@@ -102,11 +102,17 @@ public enum MissionRules {
 extension Commander {
   public var energyRechargeMultiplier: Double {
     if let multiplier = fittedComponent(at: .energy)?.statistics[.energyRecharge] {
-      return multiplier
+      return multiplier * fittedAlienSummary(.energyRecharge).multiplier
     }
-    if equipment.contains(Equipment.eliteEnergyUnit) { return 4 }
-    if equipment.contains(Equipment.navalEnergyUnit) { return 3 }
-    return equipment.contains("Extra Energy Unit") ? 2 : 1
+    let ordinary: Double
+    if equipment.contains(Equipment.eliteEnergyUnit) {
+      ordinary = 4
+    } else if equipment.contains(Equipment.navalEnergyUnit) {
+      ordinary = 3
+    } else {
+      ordinary = equipment.contains("Extra Energy Unit") ? 2 : 1
+    }
+    return ordinary * fittedAlienSummary(.energyRecharge).multiplier
   }
   public func laserDamage(against hull: Hull, mount: LaserMount = .front) -> Double {
     guard let laser = laser(on: mount) else { return 0 }

@@ -190,7 +190,7 @@ extension Game {
       return source.geometry.mesh
     }
     if let payload = body.physical?.payload, case .salvage(let identity) = payload,
-      let lot = commander.salvageLedger.pendingLots.first(where: { $0.identity == identity })
+      let lot = salvageLotForGeometry(identity)
     {
       let base = Mesh.hull(.cargo)
       let x = base.vertices.map { abs($0.x) }.max() ?? 1

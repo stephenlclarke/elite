@@ -11,6 +11,10 @@ enum AlienStorageVersionedSave {
     guard !keys.contains("savedAlienStorageReference"), keys.isDisjoint(with: runtimeFields) else {
       throw SaveError.invalidCommander
     }
+    guard let header = try JSONSerialization.jsonObject(with: bytes) as? [String: Any],
+      (header["savedSalvageLedger"] as? [String: Any])?.keys.contains("nativeTransferredSections")
+        != true
+    else { throw SaveError.invalidCommander }
   }
 
   static func validateHeader(_ bytes: Data, schema: Int) throws {

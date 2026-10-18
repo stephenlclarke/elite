@@ -44,7 +44,10 @@ extension Commander {
     let rescue = total.addingReportingOverflow(rescuedPodTonnes)
     guard !rescue.overflow else { return nil }
     total = rescue.partialValue
-    let mass = salvageLedger.inventoryMassKg
+    guard alienStorageStateValid else { return nil }
+    // Combine actual stored mass before rounding once. Fitted modules and applied
+    // upgrades no longer occupy cargo space.
+    let mass = salvageLedger.inventoryMassKg + (alienStorageState?.current.storedMassKg ?? 0)
     let tonnes = ceil(mass / 1000)
     guard mass.isFinite, mass >= 0, tonnes.isFinite, tonnes < Double(Int.max) else { return nil }
     let reserved = total.addingReportingOverflow(Int(tonnes))

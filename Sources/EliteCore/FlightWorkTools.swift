@@ -152,6 +152,7 @@ extension Game {
   }
 
   mutating func admitPendingSalvage() {
+    admitPendingNativeSalvage()
     guard let context = gameplayContext() else { return }
     let requests = commander.salvageLedger.spawnRequests(context: context)
     let receipts = admitEncounterPlan(
@@ -162,12 +163,16 @@ extension Game {
   }
 
   @discardableResult
-  mutating func persistSalvagePoses() -> Bool {
+  mutating func persistSalvagePoses(cold: Bool = true) -> Bool {
     guard persistEMPState() else { return false }
     var ledger = commander.salvageLedger
     for body in bodies {
       guard let physical = body.physical else { continue }
       if let payload = physical.payload, case .salvage(let lot) = payload {
+        if commander.alienStorageState?.current.salvage.sections.contains(lot.section) == true {
+          guard observeNativeSalvageMotion(body) else { return false }
+          continue
+        }
         if body.energy <= 0 { continue }
         let position = commander.flightSimulation.pose.systemPoint(body.position)
         guard physical.identity.system == systemIdentity,
@@ -195,6 +200,6 @@ extension Game {
       }
     }
     if ledger != commander.salvageLedger { commander.salvageLedger = ledger }
-    return true
+    return !cold || flushNativeSalvageMotion()
   }
 }

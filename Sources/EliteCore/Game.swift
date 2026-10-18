@@ -436,6 +436,8 @@ public struct Game: Sendable {
   var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
   // Enabled only by G1 after supported native save/world/durability validation. Never saved.
   var nativeCrimboLifecycleAvailable = false
+  var nativeSalvageMotion: [SalvageLotIdentity: NativeSalvageMotion] = [:]
+  var pendingNativeSalvageCollections: [NativeSalvageCollectionObservation] = []
   var pendingNativeStationDock: NativeStationEntryProof?
   var nativeStationDockEvidence: NativeStationDockEvidence?
   var nativeMainStationDockEvidence: NativeMainStationDockEvidence?
@@ -585,6 +587,8 @@ public struct Game: Sendable {
     gameplayRevision &+= 1
     consumedMissionLaserEmission = 0
     legacySimulationSpawnClock = nil
+    nativeSalvageMotion.removeAll(keepingCapacity: true)
+    pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     bodies = []
     scriptReferenceFrame = nil
     scriptStartupTime = nil
@@ -1194,6 +1198,10 @@ public struct Game: Sendable {
       notify("DOCKING DEFERRED: SALVAGE STATE UNAVAILABLE")
       return
     }
+    guard flushNativeSalvageMotion(parkingSystem: systemIdentity) else {
+      notify("SALVAGE STATE UNAVAILABLE")
+      return
+    }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
     if commander.npcPersistence.count > 0 {
@@ -1318,6 +1326,7 @@ public struct Game: Sendable {
     persistOrePoses()
     let journey = requiresScriptDurability ? completeCalendarJourney() : nil
     let destination = journey?.destination ?? selectedSystem
+    guard flushNativeSalvageMotion(parkingSystem: systemIdentity) else { return false }
     persistScriptActors(unloading: true)
     if destination != commander.system { try departOrdinarySimulation() }
     persistBlackjackTargets()
@@ -1388,6 +1397,7 @@ public struct Game: Sendable {
       return false
     }
     guard try consumeNativeEquipment("Galactic Hyperdrive") else { return false }
+    guard flushNativeSalvageMotion(parkingSystem: systemIdentity) else { return false }
     persistScriptActors(unloading: true)
     mapSearch = PlanetSearchState()
     commander.navigationPlan = nil
@@ -1516,6 +1526,7 @@ public struct Game: Sendable {
     return Int((randomState >> 32) & 255)
   }
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
+    pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
     if screen == .showroom {
@@ -1697,7 +1708,7 @@ public struct Game: Sendable {
     persistBlackjackTargets()
     persistCargoPoses()
     persistOrePoses()
-    guard persistSalvagePoses() else {
+    guard persistSalvagePoses(cold: false) else {
       if message != "SALVAGE STATE UNAVAILABLE" || messageTime <= 0 {
         notify("SALVAGE STATE UNAVAILABLE")
       }
@@ -1708,6 +1719,13 @@ public struct Game: Sendable {
     guard persistEMPState() else { return }
     let departing = bodies.filter {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
+    }
+    if !departing.isEmpty {
+      guard flushNativeSalvageMotion(parking: Set(departing.compactMap { $0.physical?.identity }))
+      else {
+        notify("SALVAGE STATE UNAVAILABLE")
+        return
+      }
     }
     for body in departing {
       if var ordnance = body.physical?.ordnance {
@@ -1767,6 +1785,7 @@ public struct Game: Sendable {
     for body in initial { settleLegacyCombatDeath(body) }
     var deferred = registerDestroyedCargo()
     deferred.formUnion(registerDestroyedWrecks())
+    deferred.formUnion(registerDestroyedNativeSalvage())
     guard registerEMPHullDeaths() else {
       notify("EMP CUSTODY SETTLEMENT DEFERRED")
       return
@@ -1777,7 +1796,9 @@ public struct Game: Sendable {
         _ = commander.miningLedger.destroy(payload: payload)
         _ = commander.cargoDebrisLedger.destroy(
           payload: payload, protection: gameplayContext()?.protection)
-        if case .salvage(let lot) = payload, let context = gameplayContext() {
+        if case .salvage(let lot) = payload, let context = gameplayContext(),
+          commander.alienStorageState?.current.salvage.sections.contains(lot.section) != true
+        {
           _ = commander.salvageLedger.destroy(lot: lot, protection: context.protection)
         }
       }
@@ -1984,10 +2005,12 @@ public actor GameRuntime {
   }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
+    game.pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return game }
     game.tick(delta: delta, controls: controls)
+    commitNativeSalvageCollections()
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)

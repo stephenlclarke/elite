@@ -12,6 +12,8 @@ public struct InventoryContextEpoch: Sendable, Equatable {
 public enum InventorySubject: Sendable, Equatable {
   case equipment(OwnedEquipmentItem)
   case recovered(SalvageLot)
+  case alienAttachment(UUID)
+  case alienUpgrade(UUID)
 }
 
 public struct InventoryInformationRow: Sendable, Equatable {
@@ -32,6 +34,12 @@ public struct InventoryInformationRow: Sendable, Equatable {
 
 public struct InventoryCommand: Sendable, Equatable {
   enum Action: Sendable, Equatable {
+    case alienRelocate(
+      UUID, fit: Bool, revision: UInt64, worldRevision: UInt64,
+      service: NativeMainStationArrivalContext)
+    case alienApplyUpgrade(
+      upgrade: UUID, attachment: UUID, revision: UInt64, worldRevision: UInt64,
+      service: NativeMainStationArrivalContext)
     case fit(OwnedEquipmentItem, ComponentFittingSlot)
     case store(OwnedEquipmentItem)
     case installFeature(SalvageLot, definition: RecoveredFeatureDefinition)
@@ -92,6 +100,10 @@ extension Game {
     }
     do {
       switch subject {
+      case .alienAttachment(let id):
+        return nativeAlienInventoryPreview(id, upgrade: false, inventory: inventory)
+      case .alienUpgrade(let id):
+        return nativeAlienInventoryPreview(id, upgrade: true, inventory: inventory)
       case .equipment(let item): return try inventoryEquipmentPreview(item, inventory: inventory)
       case .recovered(let lot): return try inventoryRecoveredPreview(lot, inventory: inventory)
       }
@@ -216,6 +228,8 @@ extension Game {
     var candidate = self
     do {
       switch command.action {
+      case .alienRelocate, .alienApplyUpgrade:
+        try candidate.applyNativeAlienFitting(command.action)
       case .fit(let item, let slot):
         try candidate.fitEquipment(item, at: slot, expectedRevision: command.ownedRevision)
         candidate.notify("EQUIPMENT FITTED")

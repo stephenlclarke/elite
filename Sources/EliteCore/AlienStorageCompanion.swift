@@ -67,7 +67,8 @@ enum AlienStorageCompanionValidation {
     let system = item.identity.section.wreck.system
     switch value.state {
     case .pending(let lot, let time, let offer, let binding):
-      guard time.isFinite, time >= value.issuedAt, !plan.destroyed, offer == nil || binding == nil
+      // Parent death cannot destroy an already released independent fragment.
+      guard time.isFinite, time >= value.issuedAt, offer == nil || binding == nil
       else { throw AlienStorageError.invalidJoin }
       try SalvageLotEmission.validate(lot, item: item)
       if let offer {

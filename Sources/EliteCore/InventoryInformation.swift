@@ -85,6 +85,32 @@ extension Game {
         append("  " + name, .white)
       }
     }
+    if let native = commander.alienStorageState?.current {
+      append("Alien modules - separate physical fittings", .yellow)
+      for kind in AlienModuleKind.allCases {
+        let summary = commander.fittedAlienSummary(kind)
+        let label = SalvageDefinitions.definition(id: kind.definitionID)?.label ?? kind.rawValue
+        append(
+          String(format: "%@: %d fitted; +%.2f%%", label, summary.count, summary.percent), .cyan)
+      }
+      for item in native.snapshot.attachments.sorted(by: { $0.id.uuidString < $1.id.uuidString }) {
+        if case .retired = item.disposition { continue }
+        let label =
+          SalvageDefinitions.definition(id: item.kind.definitionID)?.label ?? item.kind.rawValue
+        append(label + " " + item.id.uuidString.prefix(8), .white)
+        append(
+          String(format: "Contribution +%.2f%%", Double(item.contributionBasisPoints) / 100), .cyan)
+        action(.alienAttachment(item.id))
+      }
+      for item in native.snapshot.upgrades.sorted(by: { $0.id.uuidString < $1.id.uuidString }) {
+        guard item.disposition == .stored else { continue }
+        let label =
+          SalvageDefinitions.definition(id: item.kind.upgradeDefinitionID)?.label
+          ?? item.kind.rawValue
+        append(label + " " + item.id.uuidString.prefix(8), .white)
+        action(.alienUpgrade(item.id))
+      }
+    }
     if !commander.salvageLedger.inventory.isEmpty {
       append("Salvage hold", .yellow)
       for lot in commander.salvageLedger.inventory {

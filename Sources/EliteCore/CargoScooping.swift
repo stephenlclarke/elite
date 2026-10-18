@@ -34,6 +34,10 @@ extension Game {
         var cargo = commander.cargo
         let freeTonnes = max(0, commander.capacity - commander.cargoTonnes)
         if case .salvage(let identity) = payload {
+          if usesNativeSalvageCollection(body) {
+            observeNativeSalvageCollection(body)
+            continue
+          }
           guard let actor = body.physical?.identity,
             actor.system == context.system, actor.visit == context.visit,
             identity.section.wreck.system == context.system,

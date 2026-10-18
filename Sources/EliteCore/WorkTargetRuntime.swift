@@ -84,9 +84,7 @@ extension Game {
           commander.cargoDebrisLedger.boundActor(for: payload) == physical.identity
           && commander.cargoDebrisLedger.pendingPayloads.contains { $0.identity == payload }
       case .salvage(let lot):
-        available =
-          commander.salvageLedger.boundActor(for: lot) == physical.identity
-          && commander.salvageLedger.pendingLots.contains { $0.identity == lot }
+        available = currentSalvageLot(for: body)?.identity == lot
       case .mission: available = true
       }
       guard available else { return nil }
@@ -159,8 +157,8 @@ extension Game {
   }
 
   func collectibleHalfExtents(_ body: SpaceBody) -> Vector3? {
-    if let payload = body.physical?.payload, case .salvage(let lot) = payload {
-      return commander.salvageLedger.pendingLots.first { $0.identity == lot }?.halfExtents
+    if let payload = body.physical?.payload, case .salvage = payload {
+      return currentSalvageLot(for: body)?.halfExtents
     }
     let mesh = gameplayMesh(for: body)
     guard !mesh.vertices.isEmpty else { return nil }

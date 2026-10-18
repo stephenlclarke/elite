@@ -37,6 +37,7 @@ extension Commander {
       context: EquipmentRuntimeCatalog.context(
         owner: inventory.owner, hull: hullID, performance: candidate.nativePerformance))
     candidate.savedEquipmentInventory = transferred
+    try candidate.transferAlienFittings(from: inventory.activeHull, to: hullID)
     candidate.mirrorFittedEquipment()
     guard candidate.valid else { throw EquipmentRuntimeError.incompatibleFit }
     self = candidate

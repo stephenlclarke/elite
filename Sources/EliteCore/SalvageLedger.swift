@@ -235,6 +235,30 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     }
   }
 
+  public func encode(to encoder: any Encoder) throws {
+    var values = encoder.container(keyedBy: CodingKeys.self)
+    try values.encode(seed, forKey: .seed)
+    try values.encode(plans, forKey: .plans)
+    try values.encode(motions, forKey: .motions)
+    try values.encode(depleted, forKey: .depleted)
+    try values.encode(destroyedWrecks, forKey: .destroyedWrecks)
+    try values.encode(work, forKey: .work)
+    try values.encode(damagedTechnology, forKey: .damagedTechnology)
+    try values.encode(pending, forKey: .pending)
+    try values.encode(stored, forKey: .stored)
+    try values.encode(offers, forKey: .offers)
+    try values.encode(bindings, forKey: .bindings)
+    try values.encode(settlements, forKey: .settlements)
+    try values.encodeIfPresent(lastOperation, forKey: .lastOperation)
+    try values.encode(settledItemCount, forKey: .settledItemCount)
+    try values.encode(sequence, forKey: .sequence)
+    try values.encode(revision, forKey: .revision)
+    // Ordinary/pre-27 saves must never gain a reserved native field, even empty.
+    if !nativeTransferredSections.isEmpty {
+      try values.encode(nativeTransferredSections, forKey: .nativeTransferredSections)
+    }
+  }
+
   private var validState: Bool {
     guard plans.count <= Self.maximumPlans,
       nativeTransferredSections.isSubset(of: Set(plans.keys)),
@@ -439,6 +463,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
   func isNativeTransferred(_ section: WreckSectionIdentity) -> Bool {
     nativeTransferredSections.contains(section)
   }
+  var nativeTransferredSectionIdentities: Set<WreckSectionIdentity> { nativeTransferredSections }
 
   /// Only this ledger can seal an export. Revision alone cannot detect pose changes.
   func exportNativeSection(_ section: WreckSectionIdentity) throws -> SalvageNativeSectionExport {
@@ -497,7 +522,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     self = candidate
   }
 
-  private func nativeSectionCustody(_ section: WreckSectionIdentity)
+  /// Read-only current custody projection; it is not an import or collection seal.
+  func nativeSectionCustody(_ section: WreckSectionIdentity)
     -> AlienStorageLegacyCustodyEvidence
   {
     .init(
@@ -591,6 +617,15 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     damagedTechnology.remove(section)
     revision &+= 1
     return .destroyed
+  }
+
+  /// Native world custody shares the original producer namespace and allocator.
+  /// This reserves no ordinary pending/inventory slot and authorizes no admission.
+  mutating func reserveNativeSpawnIdentity(system: SystemIdentity, visit: UInt64) -> SpawnIdentity?
+  {
+    guard visit > 0, visit < UInt64.max, sequence < UInt64.max - 1 else { return nil }
+    sequence += 1
+    return .init(system: system, visit: visit, sequence: sequence, member: 0, producer: .salvage)
   }
 
   public mutating func spawnRequests(context: EncounterContext) -> [SpawnRequest] {

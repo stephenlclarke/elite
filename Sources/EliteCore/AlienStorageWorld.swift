@@ -35,11 +35,21 @@ enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
   case plan(AlienStorageWorldPlan)
   case lot(AlienStorageWorldLot)
   case companion(AlienStorageCompanion)
+  case legacySection(AlienStorageLegacySection)
+  case legacyLot(AlienStorageLegacyLot)
+  case legacySettlement(AlienStorageLegacySettlement)
+  case legacySettlementItem(AlienStorageLegacySettlementItem)
+  case legacyCurrent(AlienStorageLegacyCurrent)
   var id: UUID {
     switch self {
     case .plan(let value): value.id
     case .lot(let value): value.id
     case .companion(let value): value.id
+    case .legacySection(let value): value.id
+    case .legacyLot(let value): value.id
+    case .legacySettlement(let value): value.id
+    case .legacySettlementItem(let value): value.id
+    case .legacyCurrent(let value): value.id
     }
   }
   var owner: UUID {
@@ -47,6 +57,11 @@ enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
     case .plan(let value): value.owner
     case .lot(let value): value.owner
     case .companion(let value): value.owner
+    case .legacySection(let value): value.owner
+    case .legacyLot(let value): value.owner
+    case .legacySettlement(let value): value.owner
+    case .legacySettlementItem(let value): value.owner
+    case .legacyCurrent(let value): value.owner
     }
   }
 }
@@ -54,7 +69,16 @@ enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
 enum AlienStorageWorldValidation {
   static func validate(
     _ records: [AlienStorageWorldRecord], owner: UUID,
-    sources: [AlienStorageSource]
+    sources: [AlienStorageSource], commands: [AlienStorageCommand] = []
+  ) throws {
+    let legacySources = try AlienStorageLegacyWorldValidation.validate(
+      records, owner: owner, sources: sources, commands: commands)
+    try validateNative(
+      records, owner: owner, sources: sources.filter { !legacySources.contains($0.id) })
+  }
+
+  private static func validateNative(
+    _ records: [AlienStorageWorldRecord], owner: UUID, sources: [AlienStorageSource]
   ) throws {
     var plans: [UUID: AlienStorageWorldPlan] = [:]
     var lots: [UUID: AlienStorageWorldLot] = [:]
@@ -84,6 +108,8 @@ enum AlienStorageWorldValidation {
         plans[value.id] = value
       case .lot(let value): lots[value.id] = value
       case .companion(let value): companions.append(value)
+      case .legacySection, .legacyLot, .legacySettlement, .legacySettlementItem, .legacyCurrent:
+        break
       }
     }
     var sourceMap: [UUID: AlienStorageSource] = [:]
@@ -138,7 +164,8 @@ enum AlienStorageWorldValidation {
           throw AlienStorageError.invalidJoin
         }
       case .pending(let evidence, let time, let offer, let binding):
-        guard let issued = lot.issuedAt, time.isFinite, time >= issued, !plan.destroyed,
+        // Released fragments retain their own custody after the parent is destroyed.
+        guard let issued = lot.issuedAt, time.isFinite, time >= issued,
           offer == nil || binding == nil
         else { throw AlienStorageError.invalidJoin }
         try validate(
@@ -272,6 +299,11 @@ enum AlienStorageWorldValidation {
         }
       case (.companion(let a), .companion(let b)):
         try AlienStorageCompanionValidation.preserve(a, in: b)
+      case (.legacyCurrent(let a), .legacyCurrent(let b)):
+        try b.preserve(a)
+      case (.legacySection, .legacySection), (.legacyLot, .legacyLot),
+        (.legacySettlement, .legacySettlement), (.legacySettlementItem, .legacySettlementItem):
+        guard old == next else { throw AlienStorageError.historyChanged }
       default: throw AlienStorageError.historyChanged
       }
     }
@@ -367,5 +399,50 @@ extension AlienStorageWorldPlan {
     try values.encode(destroyed, forKey: .destroyed)
     try values.encodeIfPresent(lastOperation, forKey: .lastOperation)
     try values.encode(progress, forKey: .progress)
+  }
+}
+
+extension AlienStorageLegacySection {
+  private enum CodingKeys: String, CodingKey {
+    case id, owner, importOperation, importedAt, ledgerRevision, seed, plan, progress
+    case savedPartialWorkSeconds, savedDamagedTechnology, sectionDepleted, sectionDestroyed
+    case wreckDestroyed, savedLedgerLastOperation
+  }
+  init(from decoder: any Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    self.init(
+      id: try values.decode(UUID.self, forKey: .id),
+      owner: try values.decode(UUID.self, forKey: .owner),
+      importOperation: try values.decode(UUID.self, forKey: .importOperation),
+      importedAt: try values.decode(Double.self, forKey: .importedAt),
+      ledgerRevision: try values.decode(UInt64.self, forKey: .ledgerRevision),
+      seed: try values.decode(UInt64.self, forKey: .seed),
+      plan: try values.decode(AlienStoragePlanEvidence.self, forKey: .plan).value(),
+      progress: try values.decode(AlienStorageWorldProgress.self, forKey: .progress),
+      savedPartialWorkSeconds: try values.decodeIfPresent(
+        Double.self, forKey: .savedPartialWorkSeconds),
+      savedDamagedTechnology: try values.decode(Bool.self, forKey: .savedDamagedTechnology),
+      sectionDepleted: try values.decode(Bool.self, forKey: .sectionDepleted),
+      sectionDestroyed: try values.decode(Bool.self, forKey: .sectionDestroyed),
+      wreckDestroyed: try values.decode(Bool.self, forKey: .wreckDestroyed),
+      savedLedgerLastOperation: try values.decodeIfPresent(
+        UInt64.self, forKey: .savedLedgerLastOperation))
+  }
+  func encode(to encoder: any Encoder) throws {
+    var values = encoder.container(keyedBy: CodingKeys.self)
+    try values.encode(id, forKey: .id)
+    try values.encode(owner, forKey: .owner)
+    try values.encode(importOperation, forKey: .importOperation)
+    try values.encode(importedAt, forKey: .importedAt)
+    try values.encode(ledgerRevision, forKey: .ledgerRevision)
+    try values.encode(seed, forKey: .seed)
+    try values.encode(AlienStoragePlanEvidence(plan), forKey: .plan)
+    try values.encode(progress, forKey: .progress)
+    try values.encodeIfPresent(savedPartialWorkSeconds, forKey: .savedPartialWorkSeconds)
+    try values.encode(savedDamagedTechnology, forKey: .savedDamagedTechnology)
+    try values.encode(sectionDepleted, forKey: .sectionDepleted)
+    try values.encode(sectionDestroyed, forKey: .sectionDestroyed)
+    try values.encode(wreckDestroyed, forKey: .wreckDestroyed)
+    try values.encodeIfPresent(savedLedgerLastOperation, forKey: .savedLedgerLastOperation)
   }
 }
