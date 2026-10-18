@@ -298,7 +298,9 @@ extension Game {
           context: scriptEventContext(instance)))
     }
   }
-  mutating func drainScriptEvents(publish: ScriptPublisher? = nil) {
+  mutating func drainScriptEvents(
+    publish: ScriptPublisher? = nil, clueTrust: ScriptClueTrustCatalog = .production
+  ) {
     guard !scriptDispatching, !scriptEventsDeferred else { return }
     scriptDispatching = true
     defer { scriptDispatching = false }
@@ -442,7 +444,8 @@ extension Game {
         }
         try Self.finishScriptEventCandidate(
           original: self, candidate: &candidate, instance: instance, next: &next,
-          event: event, pack: pack, derivedEvents: &derivedEvents, publish: publish)
+          event: event, pack: pack, derivedEvents: &derivedEvents, publish: publish,
+          clueTrust: clueTrust)
         self = candidate
       } catch {
         recordScriptFailure(event.instance, error: error, publish: publish)
@@ -455,7 +458,8 @@ extension Game {
     original: borrowing Game, candidate: inout Game,
     instance: ScriptInstance, next: inout ScriptInstance,
     event: ScriptEvent, pack: ScriptPack,
-    derivedEvents: inout [(String, [String: ScriptValue])], publish: ScriptPublisher?
+    derivedEvents: inout [(String, [String: ScriptValue])], publish: ScriptPublisher?,
+    clueTrust: ScriptClueTrustCatalog
   ) throws {
     for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
       let choice = next.choiceReceipts[group]!
@@ -487,6 +491,7 @@ extension Game {
       next.completionReceipt = candidate.completionReceipt(next, event: event, pack: pack)
     }
     candidate.commander.scriptState.instances[next.id] = next
+    try candidate.awardScriptClue(previous: instance, next: next, trust: clueTrust)
     let oldEnergy = original.commander.performance.energy
     let newEnergy = candidate.commander.performance.energy
     if oldEnergy != newEnergy {
