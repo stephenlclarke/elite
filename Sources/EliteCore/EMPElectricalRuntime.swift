@@ -231,13 +231,17 @@ extension Game {
       let index = bodies.firstIndex(where: { $0.id == id }), empPulseEligible(bodies[index]),
       var resources = bodies[index].physical?.npc?.resources
     else { return false }
-    if resources.profile == .legacyEnergyOnly, resources.legacyElectricalRecharge == nil {
+    if resources.profile == .legacyEnergyOnly {
       guard
         let catalogue = bodies[index].physical?.catalogueShipID
           ?? ShipCatalogue.nativeShip(bodies[index].hull)?.id,
-        let native = ShipCatalogue.ship(catalogue)?.game, native.valid
+        let native = ShipCatalogue.ship(catalogue)?.game, native.valid,
+        resources.legacyElectricalRecharge == nil
+          || resources.legacyElectricalRecharge == native.recharge
       else { return false }
       resources.legacyElectricalRecharge = native.recharge
+      // Pin the validated native alias before either partial persistence or zero-power custody.
+      bodies[index].physical?.catalogueShipID = catalogue
     }
     guard
       var reserve = resources.electrical

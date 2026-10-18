@@ -1,0 +1,11 @@
+# Pin canonical identity within the existing legacy pulse transaction
+
+The legacy-energy branch resolves its current explicit catalogue or existing native-hull alias, validates that same ship/performance, and requires any retained legacy recharge to match. It records that canonical ID alongside its unchanged catalogue-backed recharge on the caller's private candidate. This occurs before electrical draining, partial NPC publication and zero-power custody. Existing explicit IDs retain their exact value. The first-hit and retained-partial paths use the same rule. All strict validators, adoption, save formats, profiles, costs, physical timing, actor/crew/law ownership and transaction publication remain unchanged.
+
+Four new unit methods/five cases cover the actual native physical creator's nil alias through a partial P80 pulse and a later real zero, an independently retained positive partial alias through actual canonical save/strict read/load and zero, explicit unknown IDs and forged recharge refusing without publication, and late unrelated physical-capture refusal rolling back the entire candidate including the new ID. The latter repairs only its injected unrelated fault and retries, requiring the first emitted audio ID to remain one; failed candidate audio cannot consume an event number. Refusals compare the whole Commander with only the original consumed-release fields, every body, sorted complete simulation encoding, audio epoch/events and player resources. The partial-save case preserves its entire original file tree.
+
+These are explicit model unit-release boundaries: they advance the authoritative charge clock, and do not claim native timing/control acceptance. The existing two full-stock native travel scenarios, shared aiming controls, 800-frame budget and all custody/crew/law/travel/save oracles remain byte-identical. The independently reviewed native UI timeline and security feasibility work are separate leaves.
+
+Source formatting/parsing, strict lint, Markdownlint, whitespace, exact guard/diff/hash and unchanged-validator checks precede review. No compiler, test or native job runs for this leaf before review. Actual original-Cobra success, retained-alias acceptance and aggregate quality remain unproven until execution. No full CI, sanitizer, leak or release claim follows.
+
+[Issue](ISSUE-emp-legacy-native-catalogue.md).
