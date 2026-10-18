@@ -93,8 +93,13 @@ func fitEliteEMPTestEnergy(_ game: inout Game) throws {
 /// Native inputs, live target resources and the original 800-frame aiming budget.
 /// Charge, cooldown, reacquisition and every pulse share that budget; no actor or clock is moved.
 @discardableResult
-func disableNativeEMPActor(_ actor: ActorIdentity, game: inout Game) throws -> Int {
+func disableNativeEMPActor(
+  _ actor: ActorIdentity, game: inout Game, stopAfterFirstEmission: Bool = false
+) throws -> Int {
   game.selectFlightTool(.empPirateBlaster)
+  let initialEMPDischarge =
+    stopAfterFirstEmission
+    ? game.dischargeAudio.events.last { $0.tool == .empPirateBlaster }?.id : nil
   var observedStarts = 0
   var observedReleases = 0
   var observedCancellations = 0
@@ -165,7 +170,17 @@ func disableNativeEMPActor(_ actor: ActorIdentity, game: inout Game) throws -> I
         + "preTickTargetElectrical=\(String(describing: body.physical?.npc?.resources?.electrical?.remaining))"
     }
     try #require(continuingFlight, Comment(rawValue: failureDetails))
+    if stopAfterFirstEmission,
+      game.dischargeAudio.events.last(where: { $0.tool == .empPirateBlaster })?.id
+        != initialEMPDischarge,
+      let released = game.commander.savedEMPCharge, released.phase == .released,
+      released.player == game.commander.flightSimulation.player, released.target == actor
+    {
+      return 800 - frame - 1
+    }
   }
+  try #require(
+    !stopAfterFirstEmission, "No actual player EMP emission inside the native flight budget")
   let body = try #require(game.bodies.first { $0.physical?.identity == actor })
   try #require(
     game.isEMPDisabled(body),
