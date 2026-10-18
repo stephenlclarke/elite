@@ -1200,3 +1200,46 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   }
   #expect(control.stationDefencePhase == .returning && control.finalApproach && control.ready)
 }
+
+@Test func stationAutoActualNativeFinalTrajectoryBrakesBeforeStrictEntryAndPublishesRealDock()
+  async throws
+{
+  let fixture = try ScriptFreightFixture()
+  defer { fixture.clean() }
+  var game = try await stationAutoEntryBoundary()
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  var peak = 0.0
+  var nearFrames = 0
+  var crossingWasSlow = false
+  for _ in 0..<512 {
+    let before = game
+    let station = try #require(before.autoTargetBody)
+    let distance = -station.entrancePosition.dot(station.entranceNormal)
+    game = await runtime.advance(delta: 0.1)
+    if game.docked {
+      crossingWasSlow =
+        before.flightWorldVelocity.length < 144
+        && before.flightWorldVelocity.length <= 48 + 1e-8
+      break
+    }
+    let speed = game.flightWorldVelocity.length
+    peak = max(peak, speed)
+    #expect(
+      (game.flightWorldVelocity - before.flightWorldVelocity).length
+        <= before.workLimits.acceleration * 0.1 + 1e-8)
+    #expect(speed <= before.workLimits.speed + 1e-8)
+    if speed > 48 + 1e-8 {
+      #expect(
+        speed * 0.1 + (speed * speed - 48 * 48) / (2 * before.workLimits.acceleration)
+          <= distance - 200 + 1e-6)
+    }
+    if distance <= 200 {
+      nearFrames += 1
+      #expect(speed <= 48 + 1e-8)
+    }
+    #expect(game.screen != .gameOver && game.message != "DOCKING COLLISION")
+  }
+  #expect(peak > 144 && nearFrames > 0 && crossingWasSlow)
+  #expect(game.docked && game.nativeMainStationDockEvidenceIsCurrent)
+}

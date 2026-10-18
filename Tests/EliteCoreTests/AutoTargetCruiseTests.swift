@@ -111,12 +111,8 @@ struct AutoTargetCruiseTests {
     var door = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
     door.rotationRate = 0
     var final = AutoTargetControl()
-    for _ in 0..<20 {
-      let before = final.velocity
-      _ = final.steer(target: door, delta: delta, limits: limits)
-      #expect((final.velocity - before).length <= limits.acceleration * delta + 1e-8)
-      #expect(final.velocity.length <= 96 + 1e-8)
-    }
+    let peak = verifyMovingFinalApproach(&final, station: &door, limits: limits, delta: delta)
+    #expect(peak > 144)
     #expect(final.finalApproach && final.status == "FINAL APPROACH")
     door.position.z = 280
     for _ in 0..<20 {
@@ -168,5 +164,137 @@ extension AutoTargetCruiseTests {
       delta: delta, limits: limits)
     #expect(abs((control.velocity - inherited).length - limits.acceleration * delta) < 1e-8)
     #expect(control.velocity.length > limits.speed && control.velocity.z < inherited.z)
+  }
+}
+
+private func verifyMovingFinalApproach(
+  _ control: inout AutoTargetControl, station: inout SpaceBody, limits: RelativeWorkLimits,
+  delta: Double
+) -> Double {
+  var peak = 0.0
+  var fullImpulse = 0.0
+  var crossed = false
+  let terminal = min(48, limits.speed)
+  for _ in 0..<2000 {
+    let before = control.velocity
+    let distance = -station.entrancePosition.dot(station.entranceNormal)
+    let steering = control.steer(target: station, delta: delta, limits: limits)
+    let speed = control.velocity.length
+    peak = max(peak, speed)
+    fullImpulse = max(fullImpulse, (control.velocity - before).length)
+    #expect((control.velocity - before).length <= limits.acceleration * delta + 1e-8)
+    #expect(speed <= limits.speed + 1e-8)
+    if speed > terminal + 1e-8 {
+      // Independent physical check after this frame's impulse, before its actual translation.
+      let travelAndBrake =
+        speed * delta + (speed * speed - terminal * terminal) / (2 * limits.acceleration)
+      #expect(travelAndBrake <= distance - 200 + 1e-7)
+    }
+    if distance <= 200 { #expect(speed <= terminal + 1e-8) }
+    station.position = station.position - control.velocity * delta
+    let afterDistance = -station.entrancePosition.dot(station.entranceNormal)
+    if distance >= 0 && afterDistance < 0 {
+      crossed = true
+      #expect(speed < 144 && speed <= terminal + 1e-8)
+      #expect(station.containsPlayer && station.canEnter(roll: steering.roll ?? 0, speed: speed))
+      #expect(
+        control.facingError < 0.03 && abs(control.phaseError) < 0.08 && control.rateError < 0.06)
+      break
+    }
+  }
+  #expect(crossed)
+  #expect(fullImpulse >= limits.acceleration * delta - 1e-8)
+  return peak
+}
+
+extension AutoTargetCruiseTests {
+  @Test(arguments: ["SH009", "SH043"])
+  func nativeHighAndLowThrustFinalApproachesReserveBrakingToRealEntryGate(shipID: String) throws {
+    let craft = try #require(ShipCatalogue.ship(shipID)?.game)
+    let limits = RelativeWorkLimits(
+      acceleration: craft.acceleration * 18, speed: craft.speed * 18,
+      pitchRate: craft.pitch, yawRate: craft.yaw, rollRate: craft.roll)
+    var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+    station.rotationRate = 0
+    var control = AutoTargetControl()
+    let peak = verifyMovingFinalApproach(&control, station: &station, limits: limits, delta: 0.05)
+    if shipID == "SH009" { #expect(peak > 144) }
+  }
+
+  @Test(arguments: ["SH023", "SH009", "SH043"])
+  func inheritedFinalOverspeedBrakesFullVectorBeforeLateralCorrectionAndCannotClaimEntry(
+    shipID: String
+  ) throws {
+    let craft = try #require(ShipCatalogue.ship(shipID)?.game)
+    let limits = RelativeWorkLimits(
+      acceleration: craft.acceleration * 18, speed: craft.speed * 18,
+      pitchRate: craft.pitch, yawRate: craft.yaw, rollRate: craft.roll)
+    var control = AutoTargetControl()
+    var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+    station.rotationRate = 0
+    _ = control.steer(target: station, delta: 0.05, limits: limits)
+    try #require(control.finalApproach)
+    station.position = .init(30, 0, 280)
+    let before = Vector3(90, -60, max(limits.speed * 2, 144 * 2))
+    control.setApproachVelocity(before)
+    _ = control.steer(target: station, delta: 0.05, limits: limits)
+    let impulse = limits.acceleration * 0.05
+    let physicallyBraked = before.unit * (before.length - impulse)
+    #expect((control.velocity - physicallyBraked).length < 1e-8)
+    #expect(abs((control.velocity - before).length - impulse) < 1e-8)
+    #expect(control.velocity.length > limits.speed && !control.ready)
+    #expect(control.status == "HOLDING FOR ALIGNMENT")
+    station.position = .init(0, 0, 90)
+    #expect(!station.canEnter(roll: 0, speed: control.velocity.length))
+  }
+
+  @Test(arguments: ["facing", "phase", "lateral"])
+  func unalignedFinalApproachNeverAddsForwardAcceleration(condition: String) {
+    var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+    station.rotationRate = 0
+    var control = AutoTargetControl()
+    _ = control.steer(target: station, delta: 0.1)
+    control.setApproachVelocity(.init(10, -5, 120))
+    switch condition {
+    case "facing": station.orientation.rotate(pitch: 0, roll: 0, yaw: 0.2)
+    case "phase": station.rotation = 0.2
+    case "lateral": station.position.x = 30
+    default: break
+    }
+    let before = control.velocity
+    let inward = station.entranceNormal * -1
+    _ = control.steer(target: station, delta: 0.1)
+    #expect(control.status == "HOLDING FOR ALIGNMENT" && !control.ready)
+    #expect(control.velocity.dot(inward) <= before.dot(inward))
+    #expect((control.velocity - before).length <= 24 + 1e-8)
+  }
+
+  @Test func finalCruiseEnvelopeUsesFinitePhysicalBrakingAndTerminalBoundary() {
+    for acceleration in [8.1, 216, 337.5] {
+      for delta in [0.02, 0.05, 0.1] {
+        for distance in [-25.0, -0.1, 0.0, 199, 200, 200.01, 201, 400, 1000, 1e300] {
+          let speed = AutoTargetControl.finalCruiseSpeed(
+            distance: distance, delta: delta, acceleration: acceleration, maximumSpeed: 576)
+          #expect(speed.isFinite && speed >= 0 && speed <= 576)
+          if distance < 0 { #expect(speed == 0) }
+          if distance >= 0 && distance <= 200 { #expect(speed == 48) }
+          if speed > 48 + 1e-8 {
+            #expect(
+              speed * delta + (speed * speed - 48 * 48) / (2 * acceleration)
+                <= distance - 200 + 1e-7)
+          }
+        }
+      }
+    }
+    for distance in [1e-300, 1e300, Double.greatestFiniteMagnitude] {
+      let speed = AutoTargetControl.finalCruiseSpeed(
+        distance: distance, delta: 0.1, acceleration: 216,
+        maximumSpeed: Double.greatestFiniteMagnitude)
+      #expect(speed.isFinite && speed >= 0)
+    }
+    let extreme = AutoTargetControl.finalCruiseSpeed(
+      distance: Double.greatestFiniteMagnitude, delta: 0.1,
+      acceleration: Double.greatestFiniteMagnitude, maximumSpeed: 1800)
+    #expect(extreme.isFinite && extreme >= 0 && extreme <= 1800)
   }
 }
