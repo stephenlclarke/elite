@@ -1129,3 +1129,72 @@ struct NativeSalvageAdmissionRuntimeTests {
     game.bodies[index].position = game.commander.flightSimulation.pose.shipPoint(position)
   }
 }
+
+extension GameRuntime {
+  /// Exercise the actual admission path without injecting custody, actors or geometry.
+  fileprivate func attemptPendingSalvageForGeometryCacheTest() -> Game {
+    game.admitPendingNativeSalvage()
+    return game
+  }
+}
+
+@Test(arguments: ["old-native", "legacy-current"])
+func nativeOldUnsafeAdmissionsRetainOnlyPreparedGeometryAcrossAttemptsAndRealMotion(format: String)
+  async throws
+{
+  let fixture = try await NativeSalvageOldParentFixture.loaded(format: format)
+  defer { try? FileManager.default.removeItem(at: fixture.folder) }
+  let original = await fixture.runtime.snapshot()
+  let parent = try #require(original.bodies.first { $0.id == fixture.parent.id })
+  let catalogue = try #require(parent.physical?.catalogueShipID)
+  let profile = try #require(SalvageCatalogue.profile(catalogueShipID: catalogue))
+  let lot = try #require(fixture.lots.first)
+  let cold = original.salvageAdmissionGeometry[catalogue] == nil
+  try #require(cold, "The genuine no-write load must begin with cold admission geometry.")
+  let first = await fixture.runtime.attemptPendingSalvageForGeometryCacheTest()
+  let cached = try #require(first.salvageAdmissionGeometry[catalogue])
+  let sourceMatches =
+    cached.mesh.vertices == profile.mesh.vertices
+    && cached.mesh.faces == profile.mesh.faces
+  #expect(sourceMatches && first.salvageAdmissionGeometry.count <= 128)
+  #expect(first.commander == original.commander && first.bodies == original.bodies)
+  #expect(
+    first.nextBodyID == original.nextBodyID && first.gameplayRevision == original.gameplayRevision)
+  let initialPose = original.modelPose(of: parent)
+  let initialProof = HullSweepSafety.validatePlacement(
+    center: lot.position, radius: lot.halfExtents.length, hull: cached.hull,
+    pose: initialPose, requiredClearance: 8)
+  try #require(!initialProof.safe)
+  let repeated = await fixture.runtime.attemptPendingSalvageForGeometryCacheTest()
+  let retained = try #require(repeated.salvageAdmissionGeometry[catalogue])
+  let sameSource =
+    retained.mesh.vertices == cached.mesh.vertices
+    && retained.mesh.faces == cached.mesh.faces
+  #expect(sameSource && retained.hull.triangleCount == cached.hull.triangleCount)
+  #expect(repeated.commander == original.commander && repeated.bodies == original.bodies)
+  #expect(repeated.nextBodyID == original.nextBodyID)
+  let beforeMotionFiles = try NativeSalvageOldParentFixture.files(in: fixture.folder)
+  #expect(beforeMotionFiles == fixture.files)
+  // A genuine frame changes the parent pose; only immutable local source geometry survives.
+  let moved = await fixture.runtime.advance(delta: 0.02)
+  let movingParent = try #require(moved.bodies.first { $0.id == parent.id })
+  let movingPose = moved.modelPose(of: movingParent)
+  let changedPose = movingPose != initialPose
+  try #require(changedPose)
+  let movingProof = HullSweepSafety.validatePlacement(
+    center: lot.position, radius: lot.halfExtents.length, hull: retained.hull,
+    pose: movingPose, requiredClearance: 8)
+  try #require(!movingProof.safe)
+  #expect(movingProof.minimumSampledClearance != initialProof.minimumSampledClearance)
+  let afterMotionAttempt = await fixture.runtime.attemptPendingSalvageForGeometryCacheTest()
+  let movingCache = try #require(afterMotionAttempt.salvageAdmissionGeometry[catalogue])
+  let stillOriginalSource =
+    movingCache.mesh.vertices == profile.mesh.vertices
+    && movingCache.mesh.faces == profile.mesh.faces
+  #expect(stillOriginalSource && afterMotionAttempt.salvageAdmissionGeometry.count <= 128)
+  #expect(
+    afterMotionAttempt.commander == moved.commander && afterMotionAttempt.bodies == moved.bodies)
+  #expect(afterMotionAttempt.nextBodyID == moved.nextBodyID)
+  let unchangedFiles = try NativeSalvageOldParentFixture.files(in: fixture.folder)
+  #expect(unchangedFiles == fixture.files)
+}
