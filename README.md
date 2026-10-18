@@ -344,6 +344,8 @@ For **schema 2 Lua missions**, copy the complete validated pack folder into `~/.
 
 Development builds also discover the bundled generated courier jobs during normal startup. Open station **Contracts** to review a data or package delivery, or use **Mission Gallery** to inspect its requirements. A save destination is required before accepting a job; the app prepares one for a new commander, and Save As chooses another. Discovery alone accepts nothing and creates no save or user folder. Additional script-pack directories belong in `~/.xyzzy/elite/script-packs/`. Installed versions retain their exact content identity so older saved consignments can still resolve their original pack.
 
+The installable [generated procurement candidate](docs/mission-packs/generated-procurement/README.md) is procurement-only: acquire ordinary goods through the real market, retain partial deliveries and Confirm the final handoff at the destination main station. It is not bundled by default. This development source is uncompiled and unexecuted, pending review, validation and integration; it is not a feature of the v1.4.0 release.
+
 See the [schema, capabilities, save compatibility and validation commands](docs/MISSION-PACKS.md). Missing/changed packs suspend intact progress and reserved cargo. Packs remain unavailable while their declared capabilities or exact dependencies are missing; the research queue is not automatically playable.
 
 ### Development RRS document assignments

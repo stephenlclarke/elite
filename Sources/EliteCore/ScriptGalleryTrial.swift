@@ -131,6 +131,10 @@ extension Game {
     guard let pack = scriptPacks.first(where: { $0.digest == packDigest }) else {
       throw MissionPackError("Choose an installed mission for a trial.")
     }
+    if pack.manifest.procurement != nil {
+      try prepareProcurementTrial(pack)
+      return
+    }
     if pack.manifest.board != nil {
       let key = try ensureContractBoard(pack)
       let offers = commander.contracts.boards[key]?.offers ?? []

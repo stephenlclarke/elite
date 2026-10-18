@@ -145,6 +145,13 @@ extension Game {
     -> ScriptCollectionQuote?
   {
     let commander = candidate ?? self.commander
+    if state.contract.map({ ScriptProcurementPlan.isMarked($0.offer.parameters) }) == true {
+      guard let pack = scriptPack(for: state),
+        procurementContactIsCurrent(state, commander: commander),
+        state.collections[id]?.definition
+          == resolvedScriptCollectionDefinition(id, pack: pack, state: state, commander: commander)
+      else { return nil }
+    }
     guard let collection = state.collections[id], docked, dockedAtMainStation,
       commander.galaxy == collection.definition.galaxy,
       commander.system == collection.definition.system
@@ -205,7 +212,8 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string,
       let id = fields["id"]?.string, state.outcome == .active,
       pack.manifest.capabilities.contains("partial-collections-v2"),
-      let definition = pack.manifest.collections?.first(where: { $0.id == id })
+      let definition = resolvedScriptCollectionDefinition(
+        id, pack: pack, state: state, commander: candidate)
     else { throw MissionPackError("Collection requests require a declared active collection.") }
     if op == "collection.ensure" {
       guard Set(fields.keys) == ["op", "id"] else {
@@ -231,6 +239,8 @@ extension Game {
     else {
       throw MissionPackError("Review current positive materials at the assigned orbital station.")
     }
+    let procurementAdmission = try prepareProcurementDelivery(
+      state: state, pack: pack, event: event, candidate: candidate)
     // This operation is itself the real confirmation. A story flag or a prior callback cannot grant it.
     try applyScriptCommand(
       .object([
@@ -253,6 +263,10 @@ extension Game {
       committed: scriptEventContext(committed))
     collection.lots[event.sequence] = lot
     state.collections[id] = collection
+    if let procurementAdmission {
+      try completeProcurementDelivery(
+        procurementAdmission, pack: pack, state: &state, candidate: &candidate)
+    }
     return (
       "collection.delivered",
       [
@@ -268,9 +282,10 @@ extension Game {
 extension ScriptPackLibrary {
   static func validateCollections(_ manifest: ScriptManifest) throws {
     let definitions = manifest.collections ?? []
-    let ids = Set(definitions.map(\.id))
+    let dynamic = manifest.procurement.map { [$0.collectionTemplate.id] } ?? []
+    let ids = Set(definitions.map(\.id) + dynamic)
     let required = manifest.mission.requiredCollections ?? []
-    guard definitions.count <= 32 && ids.count == definitions.count,
+    guard definitions.count <= 32 && ids.count == definitions.count + dynamic.count,
       definitions.allSatisfy(\.valid), Set(required).count == required.count,
       Set(required).isSubset(of: ids),
       definitions.isEmpty

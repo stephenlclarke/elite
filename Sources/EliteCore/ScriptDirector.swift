@@ -54,7 +54,9 @@ extension Game {
       if let reason = campaignExecutionIssue(instance) {
         commander.scriptState.instances[id]?.suspension = reason
       } else if let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil {
-        if let reason = campaignContentIssue(instance, pack: pack) {
+        if let reason = campaignContentIssue(instance, pack: pack)
+          ?? procurementContentIssue(instance, pack: pack)
+        {
           commander.scriptState.instances[id]?.suspension = reason
         }
       } else {
@@ -198,6 +200,7 @@ extension Game {
       throw MissionPackError("Ordinary provider acceptance requires fresh native authority.")
     }
     try ScriptPackLibrary.validateCourier(pack.manifest)
+    try ScriptPackLibrary.validateProcurement(pack.manifest)
     if pack.manifest.courier != nil, scriptCourierAdmission == nil {
       throw MissionPackError("Courier requires its native board confirmation.")
     }
@@ -216,7 +219,23 @@ extension Game {
         requirement.child.map { (requirement.id, $0) }
       })
     instance.savedCampaignReceiptScopes = scopes.isEmpty ? nil : scopes
-    if let contract, let due = contract.deadline, contract.offer.courier == nil {
+    if pack.manifest.procurement != nil {
+      guard let contract, let plan = ScriptProcurementPlan.read(contract.offer.parameters),
+        ScriptProcurementGeneration.valid(contract), plan.matches(pack),
+        instanceID == Self.contractJobIdentity(contract.offer.id),
+        commander.contracts.boards[contract.boardKey]?.offers.first(where: {
+          $0.id == contract.offer.id
+        })?.status == .accepted(instanceID),
+        let definition = plan.collection
+      else {
+        throw MissionPackError("Procurement requires its original native board acceptance.")
+      }
+      try requireProcurementResources(plan)
+      instance.collections[definition.id] = .init(definition: definition)
+    }
+    if let contract, let due = contract.deadline, contract.offer.courier == nil,
+      pack.manifest.procurement == nil
+    {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
@@ -289,6 +308,7 @@ extension Game {
         continue
       }
       if let reason = campaignExecutionIssue(instance) ?? campaignContentIssue(instance, pack: pack)
+        ?? procurementContentIssue(instance, pack: pack)
       {
         commander.scriptState.instances[event.instance]?.suspension = reason
         continue
@@ -306,6 +326,13 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
+          if pack.manifest.procurement != nil,
+            !["journal.append", "dialogue.offer", "collection.ensure", "collection.deliver"]
+              .contains(command["op"]?.string ?? "")
+          {
+            throw MissionPackError(
+              "Procurement scripts may present contacts and request real material lots only.")
+          }
           if pack.manifest.providerContract != nil,
             !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
           {
@@ -639,7 +666,9 @@ extension Game {
       else { continue }
       scriptOffer = id
       scriptPresentedDialogue = dialogue
-      scriptConfirmSelected = state.contract?.offer.courier == nil
+      scriptConfirmSelected =
+        state.contract?.offer.courier == nil
+        && state.contract.map({ !ScriptProcurementPlan.isMarked($0.offer.parameters) }) != false
       scriptChoiceSelection = 0
       blackjackReturn = screen
       packDialogScroll = 0
@@ -672,6 +701,16 @@ extension Game {
         closeBlackjackHandoff()
       } catch { notify(String(error.localizedDescription.prefix(512))) }
       return
+    }
+    if let job = state.contract, ScriptProcurementPlan.isMarked(job.offer.parameters) {
+      guard let plan = ScriptProcurementPlan.read(job.offer.parameters) else { return }
+      if dialogue.id == plan.abandonContact {
+        do {
+          try confirmProcurementAbandon(id, dialogue: dialogue)
+          closeBlackjackHandoff()
+        } catch { notify(String(error.localizedDescription.prefix(512))) }
+        return
+      }
     }
     if dialogue.collectionQuote?.positive == false {
       notify("NO REQUESTED UNRESERVED MATERIALS AVAILABLE")
