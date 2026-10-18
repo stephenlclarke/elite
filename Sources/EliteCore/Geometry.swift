@@ -64,12 +64,12 @@ public struct Mesh: Sendable {
     self.details = details
     self.materials = materials
     self.faceMaterials = faceMaterials
-    let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
     if preserveWinding {
       self.faces = faces
       self.faceTextures = faceTextures
       return
     }
+    let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
     // A consistent outward winding is essential to preserve silhouette edges.
     var correctedTextures = faceTextures
     self.faces = faces.enumerated().map { index, face in

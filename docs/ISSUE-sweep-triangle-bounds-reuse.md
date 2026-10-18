@@ -6,4 +6,6 @@ Within `HullSweepSafety.triangleDistance`, every visited BVH node recomputes the
 
 The original 600/640-second validation continues unchanged. This isolated source change does not alter its inputs, budgets, controls, source or outcome. Preserve that run's terminal evidence and compiled artifacts before any later composition or execution.
 
+The same source audit found that `Mesh.init` computes its winding-correction center before its `preserveWinding` early return. That branch never uses the center. Retain the exact calculation for the correction branch after the return; preserve every supplied vertex, face, material and texture. The compiler may already optimize this unused work, so source inspection alone establishes no runtime improvement.
+
 [PR handoff](PR-sweep-triangle-bounds-reuse.md).
