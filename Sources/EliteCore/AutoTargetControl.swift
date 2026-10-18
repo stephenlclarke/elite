@@ -132,6 +132,8 @@ public struct AutoTargetControl: Sendable {
     status = "FACING TARGET"
   }
 
+  static let stationStagingTolerance = 40.0
+
   /// Standalone callers retain the original controller policy. Runtime supplies actual hull limits.
   static let policyLimits = RelativeWorkLimits(
     acceleration: 240, speed: 144, pitchRate: 0.8, yawRate: 0.8, rollRate: 1)
@@ -155,19 +157,36 @@ public struct AutoTargetControl: Sendable {
     let canInterrupt =
       station && defence?.interruptionAllowed == true
       && target.position.length > clearance + stopping
-    if station, defence?.hazard == .active, canInterrupt {
-      if stationDefencePhase != .defending {
-        ready = false
-        finalApproach = false
-        stationStaged = false
-        stationDefencePhase = .defending
-      }
-    } else if stationDefencePhase == .defending, defence?.hazard == .clear {
-      stationDefencePhase = .returning
+    let shouldInterrupt =
+      station && defence?.hazard == .active && canInterrupt
+      && stationDefencePhase != .defending
+      && (stationDefencePhase != .returning || defence?.joinedIncoming == true)
+    if shouldInterrupt {
+      ready = false
+      finalApproach = false
+      stationStaged = false
+      stationDefencePhase = .defending
+    } else if station && stationDefencePhase == .defending {
+      let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
+      positionError = goal.length
+      let waypoint = approachWaypoint(target, goal: goal, clearance: clearance)
+      let speed = velocity.length
+      let braking = speed * speed / (2 * limits.acceleration) + speed * delta
+      let handover =
+        defence?.handoverAllowed == true && canInterrupt
+        && waypoint == goal && waypoint.length <= braking + Self.stationStagingTolerance
+      if defence?.hazard == .clear || handover { stationDefencePhase = .returning }
     }
     let canStage =
       stationDefencePhase != .defending
-      && (defence == nil || defence?.hazard == .clear)
+      && (defence == nil || defence?.hazard == .clear
+        || (stationDefencePhase == .returning && defence?.handoverAllowed == true))
+    if stationDefencePhase == .returning && !canStage && canInterrupt {
+      // Unknown exterior observations revoke acquisition, not the native doorway safety rules.
+      ready = false
+      finalApproach = false
+      stationStaged = false
+    }
     var aim: Vector3
     if station {
       let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
@@ -176,11 +195,11 @@ public struct AutoTargetControl: Sendable {
       // smaller staging radius also keeps final lateral correction inside the door.
       if canStage && !finalApproach && positionError < 12 && velocity.length < 8 {
         stationStaged = true
-        stationDefencePhase = .approach
+        if defence == nil || defence?.hazard == .clear { stationDefencePhase = .approach }
       }
       aim =
         stationStaged || finalApproach
-        ? target.entranceNormal * -1 : approachWaypoint(target, goal: goal)
+        ? target.entranceNormal * -1 : approachWaypoint(target, goal: goal, clearance: clearance)
     } else {
       aim = target.position
     }
@@ -254,7 +273,8 @@ public struct AutoTargetControl: Sendable {
     let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
     positionError = goal.length
     ready =
-      canStage && spinFeasible && stationStaged && positionError < 40 && facingError < 0.02
+      canStage && spinFeasible && stationStaged && positionError < Self.stationStagingTolerance
+      && facingError < 0.02
       && abs(phaseError) < 0.03
       && rateError < 0.02 && velocity.length < 1
     if ready { finalApproach = true }
@@ -270,7 +290,7 @@ public struct AutoTargetControl: Sendable {
     } else {
       // Existing cruise momentum brakes under the acceleration limit. Once the
       // waypoint is ahead, thrust follows the same bearing as the forward view.
-      let waypoint = approachWaypoint(target, goal: goal)
+      let waypoint = approachWaypoint(target, goal: goal, clearance: clearance)
       let cruiseSpeed = Self.approachCruiseSpeed(
         distance: waypoint.length, acceleration: acceleration, delta: delta,
         maximumSpeed: limits.speed)
@@ -334,16 +354,18 @@ public struct AutoTargetControl: Sendable {
     let speed = min(distance < 200 ? 48.0 : 96.0, sqrt(max(0, distance + 20) * acceleration))
     return lateral * 1.8 - normal * speed
   }
-  private func approachWaypoint(_ target: SpaceBody, goal: Vector3) -> Vector3 {
+  private func approachWaypoint(_ target: SpaceBody, goal: Vector3, clearance: Double) -> Vector3 {
     let closest =
       target.position - goal * max(0, min(1, target.position.dot(goal) / max(1, goal.dot(goal))))
-    guard closest.length < target.stationClearanceRadius && positionError > 40 else { return goal }
+    guard closest.length < clearance && positionError > Self.stationStagingTolerance else {
+      return goal
+    }
     let radial = target.position.unit * -1
     // Avoidance belongs to the station's fixed entrance axis, not its spinning
     // doorway phase. A rotating detour can outrun the player's transit speed.
     var tangent = target.orientation.x
     if abs(tangent.dot(radial)) > 0.8 { tangent = target.orientation.y }
-    return target.position + (radial + tangent * 0.8).unit * (target.stationClearanceRadius * 1.5)
+    return target.position + (radial + tangent * 0.8).unit * (clearance * 1.5)
   }
   private mutating func stationClearanceVelocity(
     _ target: SpaceBody, desired: Vector3, acceleration: Double, delta: Double, clearance: Double
