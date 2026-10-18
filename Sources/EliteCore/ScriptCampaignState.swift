@@ -65,26 +65,48 @@ extension ScriptEngineState {
   var campaignsValid: Bool {
     var childIDs = Set<UUID>()
     for parent in instances.values {
-      let scopes = parent.savedCampaignReceiptScopes ?? [:]
-      guard parent.campaignChildren.count <= 32, scopes.count <= 32,
-        scopes.allSatisfy({ PackValidation.localID($0.key) && PackValidation.localID($0.value) }),
-        scopes.allSatisfy({ key, alias in
-          guard let joins = parent.receiptJoins?[key] else { return true }
-          return parent.campaignChildren[alias].map { joins == [$0.child] } ?? false
-        })
+      guard Self.campaignReceiptScopesAreValid(parent),
+        campaignChildBindingsAreValid(parent, childIDs: &childIDs),
+        campaignParentBindingIsValid(parent)
       else { return false }
-      for (alias, binding) in parent.campaignChildren {
-        guard alias == binding.definition.id, let child = instances[binding.child],
-          child.campaignParent == binding,
-          binding.valid(parent: parent, child: child, engine: self),
-          childIDs.insert(child.id).inserted
-        else { return false }
-      }
-      if let binding = parent.campaignParent {
-        guard let owner = instances[binding.parent],
-          owner.campaignChildren[binding.definition.id] == binding
-        else { return false }
-      }
+    }
+    return true
+  }
+
+  // Scope closure captures finish before child/owner lookup storage becomes active.
+  @inline(never)
+  private static func campaignReceiptScopesAreValid(_ parent: ScriptInstance) -> Bool {
+    let scopes = parent.savedCampaignReceiptScopes ?? [:]
+    guard parent.campaignChildren.count <= 32, scopes.count <= 32,
+      scopes.allSatisfy({ PackValidation.localID($0.key) && PackValidation.localID($0.value) }),
+      scopes.allSatisfy({ key, alias in
+        guard let joins = parent.receiptJoins?[key] else { return true }
+        return parent.campaignChildren[alias].map { joins == [$0.child] } ?? false
+      })
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func campaignChildBindingsAreValid(
+    _ parent: ScriptInstance, childIDs: inout Set<UUID>
+  ) -> Bool {
+    for (alias, binding) in parent.campaignChildren {
+      guard alias == binding.definition.id, let child = instances[binding.child],
+        child.campaignParent == binding,
+        binding.valid(parent: parent, child: child, engine: self),
+        childIDs.insert(child.id).inserted
+      else { return false }
+    }
+    return true
+  }
+
+  @inline(never)
+  private func campaignParentBindingIsValid(_ parent: ScriptInstance) -> Bool {
+    if let binding = parent.campaignParent {
+      guard let owner = instances[binding.parent],
+        owner.campaignChildren[binding.definition.id] == binding
+      else { return false }
     }
     return true
   }

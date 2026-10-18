@@ -21,7 +21,14 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   private var savedScriptState: ScriptEngineState?
   public var scriptState: ScriptEngineState {
-    get { savedScriptState ?? ScriptEngineState() }
+    _read {
+      if savedScriptState != nil {
+        yield savedScriptState!
+      } else {
+        let empty = ScriptEngineState()
+        yield empty
+      }
+    }
     set { savedScriptState = newValue == ScriptEngineState() ? nil : newValue }
     _modify {
       if savedScriptState == nil { savedScriptState = ScriptEngineState() }
@@ -2239,12 +2246,22 @@ public actor GameRuntime {
     game.scriptDurabilityAvailable = true
   }
 
+  /// Immutable per-publication ownership, never serialized or reused as validation authority.
+  final class NativeSavePreparation: Sendable {
+    let game: Game
+    let commander: Commander
+    init(game: consuming Game, commander: consuming Commander) {
+      self.game = consume game
+      self.commander = consume commander
+    }
+  }
+
   /// Shared native persistence barrier before either ordinary JSON or Script chunks.
   /// The returned live Game keeps bindings; only the disk Commander clears them.
   static func prepareNativeSaveState(
     _ value: Game, diagnostics: ScriptRefusalDiagnostic? = nil,
     diagnosticBoundary: ScriptRefusalBoundary = .publication
-  ) throws -> (game: Game, commander: Commander) {
+  ) throws -> NativeSavePreparation {
     var candidate = value
     var stage = ScriptRefusalStage.nativePeople
     do {
@@ -2278,9 +2295,7 @@ public actor GameRuntime {
   private static func finishNativeSaveState(
     _ candidate: inout Game, diagnostics: ScriptRefusalDiagnostic? = nil,
     diagnosticBoundary: ScriptRefusalBoundary = .publication
-  ) throws -> (
-    game: Game, commander: Commander
-  ) {
+  ) throws -> NativeSavePreparation {
     candidate.persistCargoPoses()
     candidate.persistOrePoses()
     guard candidate.persistSalvagePoses() else {
@@ -2319,7 +2334,7 @@ public actor GameRuntime {
     if persistedCommander.npcPersistence.count > 0 {
       persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
     }
-    return (candidate, persistedCommander)
+    return NativeSavePreparation(game: copy candidate, commander: consume persistedCommander)
   }
 
   public func restoreStartup(from url: URL) throws {

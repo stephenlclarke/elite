@@ -596,11 +596,32 @@ extension Game {
   ) throws {
     candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
     if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
-    guard candidate.commander.valid else {
-      throw MissionPackError(
-        candidate.commander.passengerFit?.issues.first
-          ?? "Mission transfer cannot fit the commander or saved state.")
+    try validateScriptEventCommander(candidate)
+    try emitScriptEventResultQueue(candidate: &candidate, next: next, derivedEvents: derivedEvents)
+  }
+
+  @inline(never)
+  private static func validateScriptEventCommander(_ candidate: borrowing Game) throws {
+    guard scriptEventCommanderIsValid(candidate.commander) else {
+      throw MissionPackError(scriptEventCommanderFitIssue(candidate))
     }
+  }
+
+  @inline(never)
+  private static func scriptEventCommanderIsValid(_ commander: borrowing Commander) -> Bool {
+    commander.valid
+  }
+
+  @inline(never)
+  private static func scriptEventCommanderFitIssue(_ candidate: borrowing Game) -> String {
+    candidate.commander.passengerFit?.issues.first
+      ?? "Mission transfer cannot fit the commander or saved state."
+  }
+
+  @inline(never)
+  private static func emitScriptEventResultQueue(
+    candidate: inout Game, next: ScriptInstance, derivedEvents: [(String, [String: ScriptValue])]
+  ) throws {
     guard candidate.commander.scriptState.pendingEvents.count + derivedEvents.count <= 4096,
       candidate.commander.scriptState.nextEvent <= UInt64(Int64.max) - 1
         - UInt64(derivedEvents.count)
