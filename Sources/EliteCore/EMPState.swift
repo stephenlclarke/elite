@@ -26,22 +26,31 @@ struct EMPStoredObject: Equatable, Codable, Sendable {
 
   @inline(never)
   private func resourcesAreValid(_ physical: borrowing PhysicalActorState) -> Bool {
-    return (physical.npc?.resources?.valid ?? true)
-      && (physical.npc?.resources?.legacyElectricalRecharge.map {
-        $0 == physical.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.recharge }
-      } ?? true)
+    guard physical.npc?.resources?.valid ?? true else { return false }
+    guard let recharge = physical.npc?.resources?.legacyElectricalRecharge else { return true }
+    return recharge == physical.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.recharge }
   }
 
   @inline(never)
   private func identityAndBindingAreValid(_ physical: borrowing PhysicalActorState) -> Bool {
-    return body.missionActorID == nil && body.missionInstanceID == nil
-      && body.scriptNPC == nil && body.scriptShot == nil && !body.navalTarget
-      && !body.enemyMissile && body.playerMissileTarget == nil && body.missileSourceID == nil
-      && body.nativeStationIdentity == nil && physical.npc?.role != .mission
-      && body.blackjackRole == nil && body.blackjackIdentity == nil
-      && physical.ordnance == nil && physical.payload == nil && physical.rock == nil
-      && (!physical.blocksNavalEncounter || physical.npc?.role == .police)
-      && (binding == nil || binding == physical.identity)
+    guard
+      body.missionActorID == nil && body.missionInstanceID == nil
+        && body.scriptNPC == nil && body.scriptShot == nil && !body.navalTarget
+        && !body.enemyMissile && body.playerMissileTarget == nil && body.missileSourceID == nil
+        && body.nativeStationIdentity == nil
+    else { return false }
+    guard physical.npc?.role != .mission else { return false }
+    guard body.blackjackRole == nil && body.blackjackIdentity == nil else { return false }
+    guard physical.ordnance == nil else { return false }
+    guard physical.payload == nil else { return false }
+    guard physical.rock == nil else { return false }
+    if physical.blocksNavalEncounter {
+      guard physical.npc?.role == .police else { return false }
+    }
+    if binding != nil {
+      guard binding == physical.identity else { return false }
+    }
+    return true
   }
 
   init(body: SpaceBody, pose: ShipPose, time: Double) {
