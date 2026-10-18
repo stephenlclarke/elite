@@ -28,11 +28,14 @@ struct ScriptNavigationTradeBinding: Sendable, Equatable {
       && training.worldID != destination.worldID && training.system.id != destination.system.id
   }
   func matches(_ game: borrowing Game) -> Bool {
-    valid && game.commander.galaxy == training.galaxy
-      && game.systems.indices.contains(training.system.id)
-      && game.systems.indices.contains(destination.system.id)
-      && game.systems[training.system.id] == training.system
-      && game.systems[destination.system.id] == destination.system
+    guard valid else { return false }
+    let galaxy = game.commander.galaxy
+    guard galaxy == training.galaxy else { return false }
+    let systems = game.systems
+    return systems.indices.contains(training.system.id)
+      && systems.indices.contains(destination.system.id)
+      && systems[training.system.id] == training.system
+      && systems[destination.system.id] == destination.system
   }
 }
 
