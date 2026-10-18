@@ -20,6 +20,8 @@ This phase changes only hull preparation and its conditioned queries, two existi
 
 Authored tests cover the original 7016-triangle SH127 assembly, scaled/translated/reversed thin triangles, thin closed/open interiors, sphere and exact-player sweeps, continuous crossings, boundary clearance, unresolved/zero/malformed inputs and work-budget refusal. Translation that collapses a thin dimension below the stored Double precision must fail rather than perturb the geometry. These tests have not been compiled or executed by the source author.
 
+Source review corrected the budget test premise before compilation: a zero triangle budget is invalid input and must report invalid motion without queries. Actual exhaustion is exercised separately with a positive one-query budget, a clear first endpoint and a required second endpoint. The test requires evidence of that first real distance/triangle query before the work-budget refusal.
+
 The integrator must compile and run focused geometry tests and the unchanged actual SH127 human eight/eight regression. Numerical conservatism can refuse a genuinely close or unresolved query; runtime success, performance and coverage remain unproven. The required final `make ci` coverage, sanitizers and leaks remain outstanding. Because the ship-media fingerprint includes every Core Swift source, `make ships` and `make ships-check` are required after the combined source freeze even though ship definitions remain byte-identical. Generated media/hashes must not be patched manually.
 
 ## References

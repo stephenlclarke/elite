@@ -18,6 +18,8 @@ New source checks that SH127 retains its original 3806 vertices, 7016 triangles 
 
 Source formatting, scoped Markdown lint, whitespace and bounded scope/hash checks are the only author-run checks. No compiler, typecheck, discovery, test, runtime, media or remote job is performed in this source allocation. Interval conservatism may refuse an otherwise physically clear query; actual native success, query cost, sanitizer behavior and coverage still need the integrator's execution. A source predicate scan is not all-171 preparation acceptance.
 
+The source-review follow-up fixes one test premise without changing production code: zero triangle budget is asserted as invalid motion before any query. A separate valid moving sweep has positive geometry budgets and only one allowed distance query; it must prove a positive first-endpoint separation and then exhaust on the second required endpoint. The original crossing and safety assertions remain intact.
+
 ## Compatibility and remaining work
 
 Ship source geometry, appearance/provenance, source-face mappings, save formats, actors, work budgets and controllers are unchanged. The six genuinely zero/roundoff-collinear source faces remain a separate importer/maintained-data repair; this change does not turn them into valid closed surfaces. The integration owner must run one authoritative `make ships` after combined Core freeze, then `make ships-check` and the required `make ci` gates. The existing media dependency includes all Core Swift files, so this applies even without a TOML change. No generated GIF or manifest hash is hand-edited. Main-only SonarQube, final review and protected merge remain required.

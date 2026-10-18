@@ -168,10 +168,21 @@ struct HullSweepPlacementTests {
         obstacles: [.init(hull: target, pose: .init())])
       #expect(!result.safe)
     }
-    let exhausted = HullSweepSafety.validatePlacement(
+    let invalidBudget = HullSweepSafety.validatePlacement(
       center: .init(5, 0, 20), radius: 1, hull: target, pose: .init(),
       budget: .init(distanceQueries: 1, triangleTests: 0, nodeVisits: 1, subdivisionDepth: 0))
+    #expect(!invalidBudget.safe && invalidBudget.failure == .invalidMotion)
+    #expect(invalidBudget.distanceQueries == 0 && invalidBudget.triangleTests == 0)
+    let clearMotion = HullSceneMotion(
+      start: .init(position: .init(5, 0, 20)), end: .init(position: .init(5.1, 0, 20)),
+      initialVelocity: .init(1, 0, 0), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: 1)
+    let exhausted = HullSweepSafety.validateSceneMotion(
+      clearMotion, obstacles: [.init(hull: target, pose: .init())],
+      budget: .init(distanceQueries: 1, triangleTests: 100, nodeVisits: 100, subdivisionDepth: 0))
     #expect(!exhausted.safe)
     #expect(exhausted.failure == .workBudgetExceeded)
+    #expect(exhausted.distanceQueries == 1 && exhausted.triangleTests > 0)
+    #expect((exhausted.minimumSampledClearance ?? 0) > 0)
   }
 }
