@@ -248,7 +248,14 @@ enum NativePagedSalvageFixture {
     try #require(game.workGuidance?.parent == actor)
     try #require(game.workGuidance?.mode == .hold(.salvage))
     try #require(game.workGuidance?.surface.section == section)
-    try #require(!game.workFireSuspended)
+    try #require(game.workFireSuspended)
+    for _ in 0..<500 where game.workGuidance?.holding != true {
+      game.tick(delta: 0.02)
+    }
+    try #require(game.workGuidance?.holding == true)
+    game.key("return")
+    let freshPress = game.admitFlightFire(held: true)
+    try #require(freshPress)
   }
 
   static func folder() throws -> URL {

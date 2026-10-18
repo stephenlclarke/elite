@@ -75,6 +75,8 @@ struct SalvageCutterRuntimeTests {
     let bodyEnergy = game.bodies[0].energy
     var audio = DischargeAudioFeed()
     #expect(audio.update(game.dischargeAudio).isEmpty)
+    game.key("return")
+    _ = game.admitFlightFire(held: true)
     game.fireSelectedFlightTool(delta: 0.1)
     #expect(audio.update(game.dischargeAudio) == [.salvageCutter])
     #expect(audio.update(game.dischargeAudio).isEmpty)

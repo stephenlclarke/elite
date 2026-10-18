@@ -225,7 +225,8 @@ extension NativeViewTests {
           timestamp: 0, windowNumber: window.windowNumber, context: nil,
           characters: text, charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
     }
-    for _ in 0..<3 {
+    for _ in 0..<FlightWorkTool.allCases.count
+    where view.game.selectedFlightTool != .empPirateBlaster {
       view.keyDown(with: try event(13, "w", down: true))
       view.keyUp(with: try event(13, "w", down: false))
       await delegate.processPendingCommands(in: view)

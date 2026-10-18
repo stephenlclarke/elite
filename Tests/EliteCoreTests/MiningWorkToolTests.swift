@@ -114,6 +114,8 @@ struct MiningWorkToolTests {
     let bodies = game.bodies
     let resources = [game.energy, game.laserHeat, game.fireCooldown, game.laserFlash]
     let audioBefore = game.dischargeAudio.events
+    game.key("return")
+    _ = game.admitFlightFire(held: true)
     game.fireSelectedFlightTool(delta: 0.05)
     #expect(game.dischargeAudio.events == audioBefore)
     #expect(game.commander == before && game.bodies == bodies)
@@ -132,6 +134,8 @@ struct MiningWorkToolTests {
     let id = try workToolRock(&game)
     let before = try #require(game.bodies.first { $0.id == id }?.energy)
     game.selectFlightTool(.miningLaser)
+    game.key("return")
+    _ = game.admitFlightFire(held: true)
     game.fireSelectedFlightTool(delta: 0.05)
     #expect(game.bodies.first { $0.id == id }?.energy == before - LaserKind.mining.damage)
   }

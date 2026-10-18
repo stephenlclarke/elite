@@ -84,19 +84,20 @@ extension Game {
       parent: actor, mode: mode, surface: surface, collectionOffset: offset,
       controller: .init(parent: actor, wreck: metadata.wreck, category: metadata.category),
       scoop: .init(parent: actor), velocity: velocity, angularVelocity: .init(0, 0, 0))
+    selectAcquiredWorkTool(mode)
     workBraking = nil
     manualResidualFlight = false
     approvedWorkMotion = nil
     spin.stop(immediate: true)
     speed = 0
     autoPilot.setApproachVelocity(.init(0, 0, 0))
-    notify("WORK GUIDANCE ENGAGED - Q CANCELS")
+    notify("WORK GUIDANCE ENGAGED - Q RELEASE HOLD")
   }
 
   /// Manual release retains actual world momentum; it never snaps velocity to zero.
   mutating func releaseWorkGuidance() {
     guard workGuidance != nil || workBraking != nil else { return }
-    workFireSuspended = true
+    interruptFlightTool()
     let local = commander.flightSimulation.pose.shipVector(flightWorldVelocity)
     speed = 0
     manualResidualFlight = true
@@ -249,15 +250,14 @@ extension Game {
           angularVelocity: state.angularVelocity, target: target, playerRadius: playerHull.radius,
           limits: workLimits, cutterRange: state.surface.section == nil ? 6000 : 300,
           delta: delta, collectionOffset: state.collectionOffset), validate: validate)
+      let wasHolding = state.holding
       state.holding = output.status == .holding
+      if state.holding && !wasHolding { interruptFlightTool() }
       state.status = workStatus(output.status)
       if let sweep = output.validatedSweep { approvedWorkMotion = .init(from: sweep) }
       for transition in output.transitions {
         switch transition {
-        case .selectTool(let tool):
-          if !state.manualToolOverride {
-            selectedFlightTool = tool == .miningLaser ? .miningLaser : .salvageCutter
-          }
+        case .selectTool: break
         case .workComplete: notify("SECTION EXHAUSTED - HOLDING POSITION")
         case .status: break
         }
@@ -430,7 +430,7 @@ extension Game {
     switch status {
     case .idle, .approaching: "APPROACHING WORK SURFACE"
     case .matching: "MATCHING TARGET MOTION"
-    case .holding: "HOLDING - RETURN OPERATES SELECTED TOOL"
+    case .holding: "HOLDING - RETURN FIRES SELECTED WEAPON"
     case .blocked(let reason): "HOLD BLOCKED: " + workBlockMessage(reason)
     case .cancelled: "CANCELLED"
     case .targetLost, .changedPrimary: "TARGET LOST"

@@ -5,10 +5,10 @@ public enum FlightWorkTool: CaseIterable, Sendable, Equatable {
 
   public var label: String {
     switch self {
-    case .combatLaser: "Combat laser"
-    case .miningLaser: "Mining laser"
-    case .salvageCutter: "Salvage cutter"
-    case .empPirateBlaster: "EMP Pirate Blaster"
+    case .combatLaser: FlightControlAuthority.Weapon.mainLaser.rawValue
+    case .miningLaser: FlightControlAuthority.Weapon.miningLaser.rawValue
+    case .salvageCutter: FlightControlAuthority.Weapon.salvageCutter.rawValue
+    case .empPirateBlaster: FlightControlAuthority.Weapon.empBlaster.rawValue
     }
   }
 }
@@ -16,28 +16,23 @@ public enum FlightWorkTool: CaseIterable, Sendable, Equatable {
 extension Game {
   public mutating func selectFlightTool(_ tool: FlightWorkTool) {
     guard !docked, screen.isFlight else { return }
+    interruptFlightTool()
     guard flushNativeSalvageWork() else { return }
     workGuidance?.manualToolOverride = true
     selectedFlightTool = tool
-    let installed: Bool
-    switch tool {
-    case .combatLaser: installed = LaserMount.from(screen).flatMap(commander.laser(on:)) != nil
-    case .miningLaser:
-      installed = commander.hasMiningWorkTool || commander.laser(on: .front) == .mining
-    case .empPirateBlaster:
-      installed = commander.fittedEquipment(at: .utility(.empPirateBlaster)) != nil
-    case .salvageCutter:
-      installed =
-        commander.performance.workTools?.contains(.salvageCutter) == true
-        && commander.fittedEquipment(at: .utility(.salvageCutter)) != nil
-    }
+    let installed = flightToolIsFitted(tool)
     notify(installed ? "SELECTED " + tool.label.uppercased() : "FIT " + tool.label.uppercased())
   }
 
   mutating func cycleFlightTool() {
-    let tools = FlightWorkTool.allCases
-    let index = tools.firstIndex(of: selectedFlightTool) ?? 0
-    selectFlightTool(tools[(index + 1) % tools.count])
+    let tools = fittedFlightTools
+    guard !tools.isEmpty else {
+      interruptFlightTool()
+      notify("NO FITTED WEAPON")
+      return
+    }
+    let next = tools.firstIndex(of: selectedFlightTool).map { ($0 + 1) % tools.count } ?? 0
+    selectFlightTool(tools[next])
   }
 
   /// An unavailable selected utility never falls through to a combat weapon.
@@ -50,11 +45,21 @@ extension Game {
     {
       return
     }
+    let priorEvent = dischargeAudio.events.last?.id
     switch selectedFlightTool {
-    case .combatLaser: fireLaser()
+    case .combatLaser:
+      guard LaserMount.from(screen).flatMap(commander.laser(on:)).map({ $0 != .mining }) == true
+      else { return }
+      fireLaser()
     case .miningLaser: _ = fireMiningWorkTool()
     case .salvageCutter: _ = fireSalvageCutter(delta: delta, publish: nativeSalvagePublish)
     case .empPirateBlaster: _ = fireEMPPirateBlaster()
+    }
+    if dischargeAudio.events.last?.id != priorEvent,
+      dischargeAudio.events.last?.tool == selectedFlightTool
+    {
+      selectedToolActivity = .init(
+        tool: selectedFlightTool, physicalTime: commander.flightSimulation.physicalTime)
     }
   }
 

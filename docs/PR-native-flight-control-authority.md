@@ -1,0 +1,11 @@
+# fix(controls): use shared flight bindings and interrupt held weapon actions
+
+Native flight input and menu labels consume the generated W/Return/E/Q bindings. W cycles fitted weapons; acquisition selects its work tool immediately and preserves a subsequent manual override. Trigger transitions stop held actions after selection, hold readiness and interruption. EMP charging cancels when Return is released. Transient safety stops precede the actor's rollback snapshot, allowing Q to release guidance despite a refused salvage flush without losing pending work or changing momentum.
+
+A reserved WEAPON row above the scanner displays the actual selected weapon, charge progress, resources, cooldown, fitted mount and work-ray restrictions. Actual selected emissions drive activity; autonomous shots and global laser flashes do not. Every actual runtime help page receives a scoped generated control block, with menu Return instructions retained.
+
+## Validation
+
+Authored focused tests cover fitted cycling, fresh press and charge interruption, physical Return/keypad input, context-repeat rejection, live status, every actual help-page context, scanner placement, hold override and absent tools. Real native actor tests cover refused hot-work flush and refused writer rollback, pending salvage retention, unchanged momentum, no unauthorized target/tool changes and no continued charge. Existing direct selected-tool tests now explicitly press Return; the native salvage fixture waits for actual hold readiness before its fresh press. Original release, custody, save and reload assertions remain.
+
+Strict Swift formatting and whitespace checks are run by the source author. Compilation, focused native tests, coverage, sanitizers, leaks and full `make ci` remain the integrator's validation responsibility; no runtime pass is claimed here. This isolated leaf is excluded from the integrator's current frozen CI revision. Capital-hull hold eligibility, manual-target fallback and physical breakup/mass accounting are not completed by this leaf.
