@@ -403,13 +403,20 @@ struct ScriptProcurementFixture {
     }
     while budget.steps < 3000 {
       let action = facts.requestedAction(steps: budget.steps)
-      if action == .clear { break }
+      if action == .clear {
+        budget.retreat = nil
+        break
+      }
       try #require(action != .refuse, "Preflight refused at total step \(budget.steps).")
-      budget = try await runtime.procurementMissileFallback(expected: facts, budget: budget)
+      budget.updateRetreat(facts)
+      if budget.retreat == nil {
+        budget = try await runtime.procurementMissileFallback(expected: facts, budget: budget)
+      }
       facts = await runtime.procurementPreflightFacts()
       let active = await diagnostic?.active ?? false
       let result = await runtime.procurementPilotStep(
-        expected: facts, steps: budget.steps, automatic: false, diagnostic: active)
+        expected: facts, steps: budget.steps, automatic: false, diagnostic: active,
+        retreat: budget.retreat)
       if let diagnostic, let before = result.before, let after = result.after {
         await diagnostic.record(
           before: before, after: after, phase: phase + "-preflight", step: budget.steps)
@@ -451,6 +458,7 @@ struct ScriptProcurementPilotBudget: Sendable {
   private(set) var tools = 0
   private(set) var automaticAdvances = 0
   var missileDefence = ScriptProcurementMissileBudget()
+  var retreat: ScriptProcurementRetreat?
 
   mutating func reserveTab() -> Bool {
     guard tabs < 32 else { return false }
@@ -502,6 +510,10 @@ struct ScriptProcurementPreflightThreat: Sendable, Equatable {
   let identity: ActorIdentity
   let position: Vector3
   let wanted: Bool
+  var pulseOnly = false
+  var closingMargin = 0.0
+
+  var immediate: Bool { !pulseOnly || position.length <= 1500 + closingMargin }
 }
 
 /// Test policy values are never accepted by a native hit, law, source or receipt producer.
@@ -515,6 +527,14 @@ struct ScriptProcurementPreflightFacts: Sendable, Equatable {
   var paused = false
   var automaticEngaged = false
   var threat: ScriptProcurementPreflightThreat?
+  var threats: [ScriptProcurementPreflightThreat] = []
+  var pulseHeatBlocked = false
+  var frontShieldLow = false
+
+  var immediateThreats: [ScriptProcurementPreflightThreat] {
+    (threats.isEmpty ? threat.map { [$0] } ?? [] : threats).filter(\.immediate)
+  }
+  var needsDefence: Bool { incoming || !immediateThreats.isEmpty }
   var incoming = false
   var outsideNoFireZones = false
   var exactForwardHit = false
@@ -530,7 +550,7 @@ struct ScriptProcurementPreflightFacts: Sendable, Equatable {
 
   func requestedDockAction(defensive: Bool, steps: Int) -> ScriptProcurementDockAction {
     guard valid, live, !docked, !paused, steps >= 0, steps < 3000 else { return .refuse }
-    if defensive, threat != nil || incoming { return .react }
+    if defensive, needsDefence { return .react }
     return mainTargetCurrent ? .automatic : .acquire
   }
 
@@ -542,7 +562,7 @@ struct ScriptProcurementPreflightFacts: Sendable, Equatable {
     guard valid, live, !docked, !paused, !automaticEngaged,
       steps >= 0, steps < 3000
     else { return .refuse }
-    guard threat != nil || incoming else { return .clear }
+    guard needsDefence else { return .clear }
     guard threat?.wanted == true, outsideNoFireZones, exactForwardHit,
       combatLaser, frontLaser
     else { return .track }
@@ -705,28 +725,50 @@ extension GameRuntime {
     facts.speed = game.speed
     facts.pitchRate = game.commander.performance.pitch
     facts.yawRate = game.commander.performance.yaw
+    facts.frontShieldLow =
+      game.frontShield.isFinite && game.commander.shieldCapacity.isFinite
+      && game.commander.shieldCapacity > 0
+      && game.frontShield <= game.commander.shieldCapacity * 0.5
+    facts.pulseHeatBlocked =
+      game.commander.laser(on: .front) == .pulse
+      && game.laserHeat.isFinite && max(0, game.laserHeat - 0.1 * 12) >= 240
     var threats: [ScriptProcurementPreflightThreat] = []
-    for body in game.bodies where body.energy > 0 && body.hull.isTargetShip {
-      guard let physical = body.physical,
-        physical.npc?.intention == .engage(player),
-        !context.protection.protectedActors.contains(physical.identity)
-      else { continue }
+    for body in game.bodies where body.hull.isTargetShip {
+      if !body.energy.isFinite && body.hostile { return facts }
+      guard body.energy > 0 else { continue }
+      guard let physical = body.physical else {
+        if body.hostile { return facts }
+        continue
+      }
+      if body.hostile && physical.npc?.intention == nil { return facts }
+      guard physical.npc?.intention == .engage(player) else { continue }
       guard physical.identity != player, physical.identity.system == context.system,
         physical.identity.visit == context.visit, body.energy.isFinite,
         body.position.finite, body.position.length.isFinite,
         game.bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
-        context.actors.contains(where: { $0.identity == physical.identity && $0.energy > 0 })
+        context.actors.filter({ $0.identity == physical.identity && $0.energy > 0 }).count == 1
       else { return facts }
       threats.append(
         .init(
           identity: physical.identity, position: body.position,
-          wanted: physical.npc?.legal.wanted == true))
+          wanted: physical.npc?.legal.wanted == true
+            && !context.protection.protectedActors.contains(physical.identity),
+          pulseOnly: ScriptProcurementRangePolicy.pulseOnly(body, context: context),
+          closingMargin: ScriptProcurementRangePolicy.closingMargin(body, context: context) ?? 0))
     }
-    facts.threat = threats.min {
+    facts.threats = threats
+    let immediate = threats.filter(\.immediate)
+    facts.threat = (immediate.isEmpty ? threats : immediate).min {
       $0.position.length == $1.position.length
         ? $0.identity.entity < $1.identity.entity : $0.position.length < $1.position.length
     }
     for body in game.bodies where body.energy > 0 {
+      if body.enemyMissile || body.scriptShot != nil
+        || (body.hull == .missile && body.playerMissileTarget == nil
+          && body.physical?.ordnance == nil)
+      {
+        facts.incoming = true
+      }
       guard let physical = body.physical, let ordnance = physical.ordnance,
         ordnance.target == player, ordnance.termination == nil
       else { continue }
@@ -800,7 +842,8 @@ extension GameRuntime {
   /// A policy request is not native emission permission. Rejoin immediately before normal advance.
   /// No await, source/hit factory or observer callback occurs between controls and that advance.
   func procurementPilotStep(
-    expected: ScriptProcurementPreflightFacts, steps: Int, automatic: Bool, diagnostic: Bool
+    expected: ScriptProcurementPreflightFacts, steps: Int, automatic: Bool, diagnostic: Bool,
+    retreat: ScriptProcurementRetreat? = nil
   ) -> ScriptProcurementPilotStepResult {
     let facts = procurementPreflightFacts()
     guard facts.rejoins(expected) else { return .init(status: .refused) }
@@ -815,13 +858,26 @@ extension GameRuntime {
       let action = facts.requestedAction(steps: steps)
       guard action == .track || action == .requestFire else { return .init(status: .refused) }
       var input = Controls()
-      input.throttle = facts.speed > 0 ? -1 : 0
-      if let threat = facts.threat {
-        let p = threat.position
-        input.pitch = max(-1, min(1, atan2(p.y, hypot(p.x, p.z)) * 1.8 / facts.pitchRate))
-        input.yaw = max(-1, min(1, atan2(p.x, p.z) * 1.8 / facts.yawRate))
+      let steeringThreat: ScriptProcurementPreflightThreat?
+      if let retreat {
+        guard let target = facts.threats.first(where: { $0.identity == retreat.target }),
+          target.pulseOnly, facts.threats.allSatisfy(\.pulseOnly),
+          retreat.turnSign == -1 || retreat.turnSign == 1
+        else { return .init(status: .refused) }
+        steeringThreat = target
+      } else {
+        steeringThreat = facts.threat
       }
-      input.fire = action == .requestFire
+      input.throttle = retreat == nil ? (facts.speed > 0 ? -1 : 0) : 1
+      if let threat = steeringThreat {
+        let p = retreat == nil ? threat.position : threat.position * -1
+        let angle = atan2(p.x, p.z)
+        // Keep the chosen break-turn side across the +/-pi seam until facing away.
+        let yaw = p.z < 0 ? retreat.map { abs(angle) * $0.turnSign } ?? angle : angle
+        input.pitch = max(-1, min(1, atan2(p.y, hypot(p.x, p.z)) * 1.8 / facts.pitchRate))
+        input.yaw = max(-1, min(1, yaw * 1.8 / facts.yawRate))
+      }
+      input.fire = retreat == nil && action == .requestFire
       setControls(input)
     }
     let before =
