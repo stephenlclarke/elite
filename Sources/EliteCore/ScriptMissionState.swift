@@ -101,6 +101,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   public var randomState: UInt64 = 0x45_4c49_5445
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
+  var savedClueJournal: ScriptClueJournal?
   var financeLedger: ScriptFinanceLedger?
   public var missionCalendar: ScriptMissionCalendar?
   public var pledgeLedger: ScriptPledgeLedger?
@@ -156,7 +157,8 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
     }
   }
   var valid: Bool {
-    guard worldJobsValid, booksValid, financeLedger?.valid(engine: self) ?? true,
+    guard savedClueJournal?.valid(engine: self) ?? true, worldJobsValid, booksValid,
+      financeLedger?.valid(engine: self) ?? true,
       missionCalendar.map({
         $0.valid && $0.seconds <= calendarSeconds
           && $0.lastNativeOperation <= (calendarLedger?.operation ?? 0)

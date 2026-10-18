@@ -257,7 +257,8 @@ enum ScriptSaveStore {
   static func write(
     commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander",
     exclusive: Bool = false, diagnostics: ScriptRefusalDiagnostic? = nil,
-    diagnosticBoundary: ScriptRefusalBoundary = .publication
+    diagnosticBoundary: ScriptRefusalBoundary = .publication,
+    clueTrust: ScriptClueTrustCatalog = .production
   ) throws -> AlienStoragePublication? {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, ScriptFreightVersionedSave.validateClaims(commander),
@@ -275,6 +276,9 @@ enum ScriptSaveStore {
             stage: .storeValidation, error: SaveError.invalidCommander, commander: commander,
             checks: checks))
       }
+      throw SaveError.invalidCommander
+    }
+    guard ScriptClueVersionedSave.validateClaims(commander, trust: clueTrust) else {
       throw SaveError.invalidCommander
     }
     let semantic = JSONEncoder()
@@ -335,20 +339,23 @@ enum ScriptSaveStore {
     }
     let pointer = ScriptSavePointer(
       format: "elite-script-save",
-      schemaVersion: commander.usesFreightNativeSaveVersion
+      schemaVersion: commander.scriptState.savedClueJournal != nil
         ? (alienPublication != nil
-          ? ScriptFreightVersionedSave.alienVersion : ScriptFreightVersionedSave.version)
-        : alienPublication != nil
-          ? 27
-          : commander.usesEconomyMiningSaveVersion
-            ? 26
-            : commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
-              || commander.usesModularDriveSaveVersion
-              ? 25
-              : commander.usesNativePeopleSaveVersion
-                ? 24
-                : commander.scriptState.financeLedger != nil
-                  ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
+          ? ScriptClueVersionedSave.alienVersion : ScriptClueVersionedSave.version)
+        : commander.usesFreightNativeSaveVersion
+          ? (alienPublication != nil
+            ? ScriptFreightVersionedSave.alienVersion : ScriptFreightVersionedSave.version)
+          : alienPublication != nil
+            ? 27
+            : commander.usesEconomyMiningSaveVersion
+              ? 26
+              : commander.usesRingMiningSaveVersion || commander.usesElectricalSaveVersion
+                || commander.usesModularDriveSaveVersion
+                ? 25
+                : commander.usesNativePeopleSaveVersion
+                  ? 24
+                  : commander.scriptState.financeLedger != nil
+                    ? 23 : (commander.usesEMPSaveVersion ? 22 : 21),
       generation: generation,
       hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: scope,
       valueCodec: ScriptValueStorage.codec)
@@ -363,15 +370,20 @@ enum ScriptSaveStore {
     return url.appendingPathExtension("missions").appendingPathComponent(
       generation, isDirectory: true)
   }
-  static func read(_ pointerBytes: Data, from url: URL) throws -> (Commander, ScriptWorldSave) {
+  static func read(
+    _ pointerBytes: Data, from url: URL, clueTrust: ScriptClueTrustCatalog = .production
+  ) throws -> (Commander, ScriptWorldSave) {
     guard pointerBytes.count <= 262144 else { throw SaveError.invalidCommander }
     try ScriptSaveJSONPreflight.validate(pointerBytes)
+    try ScriptClueVersionedSave.validateFields(pointerBytes, part: .contracts, schema: nil)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
+    let clues = ScriptClueVersionedSave.contains(pointer.schemaVersion)
     let freight =
       pointer.schemaVersion == ScriptFreightVersionedSave.version
       || pointer.schemaVersion == ScriptFreightVersionedSave.alienVersion
     let alien =
       pointer.schemaVersion == 27
+      || pointer.schemaVersion == ScriptClueVersionedSave.alienVersion
       || pointer.schemaVersion == ScriptFreightVersionedSave.alienVersion
     var names: Set<String> =
       pointer.schemaVersion >= 8
@@ -379,7 +391,7 @@ enum ScriptSaveStore {
       : ["commander.json", "missions.json", "world.json"]
     if alien { names.insert(AlienStorageVersionedSave.rootName) }
     guard pointer.format == "elite-script-save",
-      (2...27).contains(pointer.schemaVersion) || freight,
+      (2...27).contains(pointer.schemaVersion) || freight || clues,
       UUID(uuidString: pointer.generation)?.uuidString == pointer.generation,
       Set(pointer.hashes.keys) == names,
       pointer.schemaVersion < 6 || ["commander", "gallery"].contains(pointer.scope ?? "")
@@ -415,9 +427,12 @@ enum ScriptSaveStore {
         throw SaveError.invalidCommander
       }
       try ScriptSaveJSONPreflight.validate(data)
+      if name == "world.json" {
+        try ScriptClueVersionedSave.validateFields(data, part: .contracts, schema: nil)
+      }
       if name == "commander.json" {
         // This helper's >=27 branch describes Alien storage, not every newer envelope.
-        let alienHeaderSchema = freight ? (alien ? 27 : 26) : pointer.schemaVersion
+        let alienHeaderSchema = freight || clues ? (alien ? 27 : 26) : pointer.schemaVersion
         try AlienStorageVersionedSave.validateHeader(data, schema: alienHeaderSchema)
         try ScriptSaveJSONPreflight.validateFreightFields(
           data, part: .commander, schema: pointer.schemaVersion)
@@ -522,10 +537,14 @@ enum ScriptSaveStore {
     {
       throw SaveError.invalidCommander
     }
-    guard freight == commander.usesFreightNativeSaveVersion else {
+    guard clues || freight == commander.usesFreightNativeSaveVersion,
+      clues == (commander.scriptState.savedClueJournal != nil),
+      commander.usesFreightNativeSaveVersion || !commander.usesProviderContractSaveVersion,
+      ScriptClueVersionedSave.validateClaims(commander, trust: clueTrust)
+    else {
       throw SaveError.invalidCommander
     }
-    if freight, !ScriptFreightVersionedSave.validateClaims(commander) {
+    if freight || clues, !ScriptFreightVersionedSave.validateClaims(commander) {
       throw SaveError.invalidCommander
     }
     let world = try ScriptValueStorage.decoder(typed: typed).decode(

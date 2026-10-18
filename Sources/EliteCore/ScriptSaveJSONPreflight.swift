@@ -53,8 +53,10 @@ extension ScriptSaveJSONPreflight {
   static func validateFreightFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
+    try ScriptClueVersionedSave.validateFields(data, part: part, schema: schema)
     let freight =
-      schema == ScriptFreightVersionedSave.version
+      ScriptClueVersionedSave.contains(schema)
+      || schema == ScriptFreightVersionedSave.version
       || schema == ScriptFreightVersionedSave.alienVersion
     if freight, part != .commander {
       try ScriptFreightVersionedSave.validateFields(data, part: part)
