@@ -112,6 +112,13 @@ extension Game {
       return
     }
     let now = commander.flightSimulation.physicalTime
+    guard triggerHeld else {
+      charge.phase = .cancelled
+      charge.endedAt = now
+      commander.savedEMPCharge = charge
+      notify("EMP CHARGE CANCELLED - RETURN RELEASED")
+      return
+    }
     guard now + 1e-9 >= charge.startedAt + 10 else { return }
     charge.phase = .released
     charge.endedAt = now

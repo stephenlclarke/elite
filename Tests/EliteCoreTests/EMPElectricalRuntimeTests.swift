@@ -31,13 +31,15 @@ struct EMPElectricalRuntimeTests {
     let charge = game.commander.savedEMPCharge
     let repeatRequest = game.fireEMPPirateBlaster()
     #expect(!repeatRequest && game.commander.savedEMPCharge == charge)
-    for _ in 0..<99 { game.tick(delta: 0.1) }
+    var held = Controls()
+    held.fire = true
+    for _ in 0..<99 { game.tick(delta: 0.1, controls: held) }
     #expect(game.commander.savedEMPCharge?.phase == .charging)
     #expect(game.commander.savedEMPState == nil)
     #expect(
       game.bodies.first { $0.physical?.identity == target }?.physical?.npc?.resources?.electrical
         == nil)
-    game.tick(delta: 0.1)
+    game.tick(delta: 0.1, controls: held)
     #expect(abs(game.commander.flightSimulation.physicalTime - start - 10) < 1e-8)
     #expect(game.commander.savedEMPCharge?.phase == .released)
     let actual = try #require(game.bodies.first { $0.physical?.identity == target })
@@ -332,7 +334,9 @@ extension EMPElectricalRuntimeTests {
     var game = try electricalGame()
     let began = game.fireEMPPirateBlaster()
     try #require(began)
-    game.tick(delta: 0.1)
+    var held = Controls()
+    held.fire = true
+    game.tick(delta: 0.1, controls: held)
     let charging = Display.cockpit(game, width: 768, height: 768)
     #expect(charging.labels.contains { $0.text.contains("EMP CHARGE: 9.9 S") })
     game.commander.flightSimulation.advancePhysicalTime(10)

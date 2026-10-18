@@ -494,6 +494,8 @@ public struct Game: Sendable {
   var plannedLegacyWorkMotion: [Int: HullSweepObstacle] = [:]
   var workScenePlanned = false
   var workFireSuspended = false
+  var flightTrigger = FlightTriggerState()
+  var selectedToolActivity: FlightToolActivity?
   var manualResidualFlight = false
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
@@ -669,16 +671,21 @@ public struct Game: Sendable {
     return true
   }
   public mutating func key(_ raw: String) {
+    let key = raw.lowercased()
+    if prepareFlightControlKey(key) { return }
     guard flushNativeSalvageWork() else {
       notify("SALVAGE STATE UNAVAILABLE")
       return
     }
-    let key = raw.lowercased()
+    let priorScreen = screen
+    let priorPause = paused
+    defer { if screen != priorScreen || paused != priorPause { interruptFlightTool() } }
     if interfaceKey(key) { return }
     keyAfterInterface(key)
   }
   private mutating func keyAfterInterface(_ key: String) {
     if !docked && screen.isFlight {
+      if sharedFlightKey(key) { return }
       switch key {
       case "tab":
         cycleAutoTarget()
@@ -689,16 +696,8 @@ public struct Game: Sendable {
       case "i":
         targetPanelExpanded = !(targetPanelExpanded ?? (viewportWidth >= 1100))
         return
-      case "q":
-        let engaged = autoPilot.targetID != nil || workGuidance != nil || workBraking != nil
-        cancelAutoTarget()
-        if engaged { notify("MANUAL CONTROL") }
-        return
       case "f":
         cycleWorkTargetFilter()
-        return
-      case "w":
-        cycleFlightTool()
         return
       case "v":
         if autoTargetBody?.hull == .station || workGuidance != nil || workBraking != nil {
@@ -1589,9 +1588,12 @@ public struct Game: Sendable {
     lastAppliedWorkMotion = nil
     plannedLegacyWorkMotion.removeAll(keepingCapacity: true)
     workScenePlanned = false
-    if !controls.fire { workFireSuspended = false }
+    let fireRequested = controls.fire
+    let wasElectricalDisabled = playerEMPDisabled
     commander.flightSimulation.advancePhysicalTime(dt)
     advancePlayerElectrical()
+    if wasElectricalDisabled != playerEMPDisabled { interruptFlightTool() }
+    let fireAdmitted = admitFlightFire(held: fireRequested)
     let controls = playerEMPDisabled ? Controls() : controls
     gameplayRevision &+= 1
     ensurePhysicalActors()
@@ -1614,7 +1616,7 @@ public struct Game: Sendable {
     energy = min(craft.energy, energy + dt * craft.recharge * commander.energyRechargeMultiplier)
     frontShield = min(commander.shieldCapacity, frontShield + dt * commander.frontShieldRecharge)
     rearShield = min(commander.rearShieldCapacity, rearShield + dt * commander.rearShieldRecharge)
-    if controls.fire && screen.isFlight {
+    if fireAdmitted && screen.isFlight {
       fireSelectedFlightTool(delta: dt, nativeSalvagePublish: nativeSalvagePublish)
     } else {
       fireStationAutoLaser()
@@ -1653,7 +1655,16 @@ public struct Game: Sendable {
         delta: dt, speed: speed, pitch: pitch, roll: roll, yaw: yaw, translation: autoPilot.velocity
       )
     }
-    advanceEMPCharge(triggerHeld: controls.fire)
+    let beforeEMPEvent = dischargeAudio.events.last?.id
+    advanceEMPCharge(
+      triggerHeld: fireAdmitted && !workFireSuspended && selectedFlightTool == .empPirateBlaster)
+    if selectedFlightTool == .empPirateBlaster,
+      dischargeAudio.events.last?.id != beforeEMPEvent,
+      dischargeAudio.events.last?.tool == .empPirateBlaster
+    {
+      selectedToolActivity = .init(
+        tool: .empPirateBlaster, physicalTime: commander.flightSimulation.physicalTime)
+    }
     resolveDestroyed()
     persistBlackjackTargets()
     if let id = weaponsTargetID, !bodies.contains(where: { $0.id == id && $0.energy > 0 }) {
@@ -1902,6 +1913,8 @@ public actor GameRuntime {
     prepared.invalidateNativeStationAuthority()
     prepared.stationAutoDefence = nil
     prepared.gameplayCombatTrace = nil
+    prepared.flightTrigger = .init()
+    prepared.selectedToolActivity = nil
     prepared.inventoryContextEpoch = .init()
     if (try? prepared.commander.prepareEquipment()) != nil {
       prepared.commander.mirrorFittedEquipment()
@@ -1952,6 +1965,13 @@ public actor GameRuntime {
     keyAfterGallery(key)
   }
   private func keyAfterGallery(_ key: String) {
+    // Safety input survives a refused candidate command because it precedes its rollback snapshot.
+    let stopsTool = game.flightKeyStopsTool(key)
+    if game.prepareFlightControlKey(key) {
+      controls.fire = false
+      return
+    }
+    if stopsTool { controls.fire = false }
     game.resolveCourierTerminals(publish: scriptPublisher())
     game.resolveFreightTerminals(
       publish: scriptPublisher(diagnosticBoundary: .resolver), diagnostics: scriptRefusalDiagnostic)
@@ -2068,6 +2088,7 @@ public actor GameRuntime {
   public func galleryClick(x: Double, y: Double) { campaignGalleryClick(x: x, y: y) }
   public func setControls(_ value: Controls, expectedEpoch: UUID? = nil) {
     controls = expectedEpoch == nil || expectedEpoch == game.ecmControl.epoch ? value : Controls()
+    game.observeFlightFire(held: controls.fire)
   }
   public func setViewport(width: Double, height: Double) {
     game.viewportWidth = width

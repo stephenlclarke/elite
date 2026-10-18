@@ -7,15 +7,14 @@ public enum PlayerHelp {
   public static func pages(for game: Game) -> [HelpPage] {
     let screen = game.screen == .help ? game.helpReturn : game.screen
     if game.paused {
-      return [
+      return paginate(
         .init(
           title: "PAUSED",
-          rows: ["ESC / COMMAND-P - RESUME", "K - CLOSE HELP", ": - SPEECH ON/OFF"])
-      ]
+          rows: ["ESC / COMMAND-P - RESUME", "K - CLOSE HELP", ": - SPEECH ON/OFF"]))
     }
     var contextGame = game
     contextGame.screen = screen
-    var pages = paginate(context(for: screen, game: contextGame))
+    var pages = [context(for: screen, game: contextGame)]
     if ![Screen.demo, .title, .gameOver, .secret, .mission, .handoff].contains(screen)
       && !(screen == .showroom && game.showroom.trading)
     {
@@ -55,7 +54,7 @@ public enum PlayerHelp {
             "COMMAND-Q - QUIT",
           ]))
       if !game.docked {
-        if !screen.isFlight { pages.append(contentsOf: paginate(context(for: .front, game: game))) }
+        if !screen.isFlight { pages.append(context(for: .front, game: game)) }
         pages.append(contentsOf: flightReference)
       }
     }
@@ -74,10 +73,17 @@ public enum PlayerHelp {
 
   private static func paginate(_ context: HelpPage) -> [HelpPage] {
     let rows = context.rows.flatMap { ScriptLibraryText.wrap($0, width: 40) }
-    return stride(from: 0, to: rows.count, by: 16).map { offset in
+    let footer =
+      ["FLIGHT ONLY; MENUS KEEP THEIR KEYS"]
+      + FlightControlAuthority.ActionID.allCases.map {
+        $0.binding.key.uppercased() + " - " + $0.binding.label.uppercased()
+          + ($0 == .fire ? " (HOLD)" : "")
+      }
+    let capacity = 16 - footer.count
+    return stride(from: 0, to: max(1, rows.count), by: capacity).map { offset in
       HelpPage(
         title: context.title,
-        rows: Array(rows[offset..<min(offset + 16, rows.count)]))
+        rows: Array(rows[offset..<min(offset + capacity, rows.count)]) + footer)
     }
   }
 
@@ -130,13 +136,13 @@ public enum PlayerHelp {
         rows: [
           "ARROWS - PITCH / ROLL",
           "SPACE - ACCELERATE; DELETE - BRAKE",
-          "RETURN - USE SELECTED TOOL (HOLD)",
-          "W - COMBAT / MINING / CUTTER / EMP",
+          "HOLD RETURN TO USE THE SELECTED WEAPON",
+          "W CYCLES FITTED WEAPONS; KEEPS HOLD",
           "TAB - NEXT TARGET / AUTO GUIDANCE",
           "F - SHIPS / MINING / SALVAGE / ALL",
           "WORK HOLD NEEDS ITS FITTED MODULE",
           "SMALL ITEMS: AUTO SCOOP; LARGE: HOLD",
-          "Q - CANCEL AUTOMATIC GUIDANCE",
+          "Q RELEASES GUIDANCE; MOMENTUM REMAINS",
           "4 / 5 - CHART; H - HYPERSPACE",
           "DRIVE CHARGE: BASIC 10 / MID 5 / ADV 1S",
           "NAVIGATION UPGRADES REDUCE CHARGE",
@@ -426,7 +432,7 @@ public enum PlayerHelp {
         "E - ECM; G - GALACTIC HYPERDRIVE",
         "J - IN-SYSTEM JUMP",
         "TAB SELECTS TARGET / STATION AUTO",
-        "P / Q - CANCEL AUTOMATIC GUIDANCE",
+        "Q - RELEASE HOLD; P - CANCEL AUTO",
         "I - TARGET CAMERA DETAILS / HIDE",
         "OPTION-UP/DOWN - PAGE TARGET DETAILS",
         "COMMAND-SHIFT-E - LAUNCH ESCAPE POD",
@@ -437,7 +443,8 @@ public enum PlayerHelp {
     .init(
       title: "EMP PIRATE BLASTER",
       rows: [
-        "W SELECTS EMP; RETURN FIRES FORWARD",
+        "W SELECTS EMP; HOLD RETURN TO CHARGE",
+        "TEN SECONDS; RELEASE RETURN CANCELS",
         "3000 CR AT TL9; RANGE 3000",
         "USES 8 ENERGY / 18 HEAT; 1.5S RECHARGE",
         "DISABLES DRIVES AND WEAPONS; DRIFT REMAINS",

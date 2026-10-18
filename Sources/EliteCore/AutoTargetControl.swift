@@ -447,10 +447,11 @@ extension Game {
         "AUTO: " + work.status, "F FILTER: " + workTargetFilter.label.uppercased() + " / Q OFF",
       ]
     }
-    if workBraking != nil { return ["AUTO: BRAKING AFTER COLLECTION / Q OFF"] }
+    if workBraking != nil { return ["AUTO: BRAKING AFTER COLLECTION / Q RELEASE HOLD"] }
     guard let target = autoTargetBody else {
       return [
-        "AUTO: TAB SELECT TARGET / Q OFF", "F FILTER: " + workTargetFilter.label.uppercased(),
+        "AUTO: TAB SELECT TARGET / Q RELEASE HOLD",
+        "F FILTER: " + workTargetFilter.label.uppercased(),
       ]
     }
     return [
@@ -458,6 +459,7 @@ extension Game {
     ]
   }
   mutating func cancelAutoTarget() {
+    interruptFlightTool()
     stationAutoDefence = nil
     let stationActive = autoTargetBody?.hull == .station
     let stationVelocity =
@@ -477,6 +479,7 @@ extension Game {
     dockingComputer = false
   }
   mutating func cycleAutoTarget() {
+    interruptFlightTool()
     guard !playerEMPDisabled else {
       notify("NO ELECTRICAL POWER - AUTO FLIGHT UNAVAILABLE")
       return

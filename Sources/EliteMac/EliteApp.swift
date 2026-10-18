@@ -258,6 +258,10 @@ final class GameView: NSView {
       clearSteeringInput()
     }
     if game.screen.isFlight && !game.paused {
+      // A menu/context transition can clear held input; an old Return repeat is not a new press.
+      if key == FlightControlInput.token(for: .fire), event.isARepeat, !held.contains(key) {
+        return
+      }
       held.insert(key)
       pressedKeys[event.keyCode] = key
     }
@@ -379,7 +383,7 @@ final class GameView: NSView {
     controls.throttle =
       (held.contains(" ") ? 1 : 0)
       - (held.contains("backspace") || held.contains("/") || held.contains("?") ? 1 : 0)
-    controls.fire = held.contains("return") || held.contains("a")
+    controls.fire = FlightControlInput.fireIsHeld(held)
     if acceptsTrackpadFlight {
       let touch = game.spin.mode ? trackpad.spinControls : trackpad.controls
       controls.pitch = max(-1, min(1, controls.pitch + touch.pitch))
@@ -408,7 +412,7 @@ final class GameView: NSView {
     }
     switch event.keyCode {
     case 51: return "backspace"
-    case 36: return "return"
+    case 36, 76: return FlightControlInput.token(for: .fire)
     case 48: return "tab"
     case 53: return "escape"
     case 117: return "delete"
@@ -794,9 +798,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     menu.addItem(flight)
     flight.submenu = NSMenu(title: "Flight")
     let flightActions = [
-      ("Next Target", "tab"), ("Cancel Automatic Guidance", "q"),
+      ("Next Target", "tab"),
+      (
+        FlightControlAuthority.ActionID.changeWeapon.binding.label,
+        FlightControlInput.token(for: .changeWeapon)
+      ),
+      (
+        FlightControlAuthority.ActionID.releaseHold.binding.label,
+        FlightControlInput.token(for: .releaseHold)
+      ),
       ("Hyperspace to Selected System", "h"), ("In-system Jump", "j"),
-      ("Galactic Hyperdrive", "g"), ("Activate ECM", "e"),
+      ("Galactic Hyperdrive", "g"),
+      (FlightControlAuthority.ActionID.ecm.binding.label, FlightControlInput.token(for: .ecm)),
       ("Arm Missile", "t"), ("Disarm Missile", "u"), ("Fire Missile", "m"),
       ("Detonate Energy Bomb", "energy-bomb"), ("Launch Escape Pod", "escape-pod"),
     ]

@@ -12,6 +12,8 @@ public struct CockpitLayout: Sendable {
   public let sideWidth: Double
   public let leftColumns: Int
   public let extraLines: [String]
+  public let weaponLines: [String]
+  public let weaponTop: Double
   public var flightClip: CanvasRect {
     .init(x: 0, y: 24, width: width, height: max(40, dashboardTop - 52))
   }
@@ -31,11 +33,12 @@ public struct CockpitLayout: Sendable {
     sideWidth = (width - radarWidth - 48) / 2
     leftColumns = sideWidth >= 400 ? 2 : 1
     let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
-    let weaponLines = game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
-    let toolLines = ["TOOL: " + game.selectedFlightTool.label.uppercased() + " / W CHANGE"]
+    let retaliationLines =
+      game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
+    weaponLines = MissionNotice.wrap(game.flightWeaponDisplay.text, width: textColumns)
     extraLines =
-      (game.autoHUDLines + game.electricalHUDLines + toolLines + game.salvageHUDLines
-      + game.solarHUDLines + weaponLines
+      (game.autoHUDLines + game.electricalHUDLines + game.salvageHUDLines
+      + game.solarHUDLines + retaliationLines
       + game.spin.hudLines)
       .flatMap {
         MissionNotice.wrap($0, width: textColumns)
@@ -43,9 +46,11 @@ public struct CockpitLayout: Sendable {
     let rows = max(4, Int(ceil(6 / Double(leftColumns))))
     let scannerHeight = width < 900 ? 80.0 : 108.0
     let panelHeight =
-      16 + row * Double(1 + extraLines.count) + max(row * Double(rows), scannerHeight)
+      16 + row * Double(1 + extraLines.count + weaponLines.count)
+      + max(row * Double(rows), scannerHeight)
     dashboardTop = max(120, self.height - panelHeight)
-    instrumentsTop = dashboardTop + 8 + row * Double(1 + extraLines.count)
+    weaponTop = dashboardTop + 8 + row * Double(1 + extraLines.count)
+    instrumentsTop = weaponTop + row * Double(weaponLines.count)
   }
 }
 
@@ -106,6 +111,12 @@ extension Display {
       frame.label(
         line, 12, layout.dashboardTop + 8 + layout.row * Double(index + 1), scale: layout.font,
         ink: .cyan)
+    }
+    for (index, line) in layout.weaponLines.enumerated() {
+      let x = max(12, (layout.width - Double(line.count) * 6 * layout.instrumentScale) / 2)
+      frame.label(
+        line, x, layout.weaponTop + layout.row * Double(index),
+        scale: layout.instrumentScale, ink: .yellow)
     }
     cockpitInstruments(game, layout: layout, into: &frame)
     return frame

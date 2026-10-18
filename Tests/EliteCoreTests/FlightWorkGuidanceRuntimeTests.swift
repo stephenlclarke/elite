@@ -445,6 +445,8 @@ struct FlightWorkGuidanceRuntimeTests {
     }
     #expect(game.workGuidance?.holding == true && game.selectedFlightTool == .salvageCutter)
     let beforeEnergy = game.bodies[0].energy
+    game.key("return")
+    _ = game.admitFlightFire(held: true)
     game.fireSelectedFlightTool(delta: 0.1)
     #expect(game.commander.salvageLedger.progress(section) == 0.1)
     #expect(game.bodies[0].energy == beforeEnergy)
@@ -978,5 +980,50 @@ struct ManualResidualFlightTests {
         positions: Array(repeating: SIMD2<Double>(0.5, 0.5), count: count), spinMode: true)
       #expect(pad.spinControls.throttle == 0)
     }
+  }
+}
+
+extension FlightWorkGuidanceRuntimeTests {
+  @Test func acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness() throws {
+    var game = try actualLargeWorkHold()
+    let parent = try #require(game.workGuidance?.parent)
+    #expect(game.selectedFlightTool == .salvageCutter)
+    #expect(game.workGuidance?.parent == parent)
+    _ = game.admitFlightFire(held: true)
+    game.key("w")
+    #expect(game.selectedFlightTool == .combatLaser)
+    #expect(game.workGuidance?.parent == parent && game.workGuidance?.manualToolOverride == true)
+    game.key("i")
+    #expect(game.workGuidance?.parent == parent)
+    for _ in 0..<30 {
+      game.advanceWorkGuidance(delta: 0.02)
+      _ = game.moveWorkFrame(delta: 0.02)
+    }
+    #expect(game.workGuidance?.holding == true)
+    #expect(game.selectedFlightTool == .combatLaser)
+    #expect(game.workGuidance?.manualToolOverride == true)
+    let staleHeld = game.admitFlightFire(held: true)
+    #expect(!staleHeld)
+    game.key("return")
+    let freshPress = game.admitFlightFire(held: true)
+    #expect(freshPress)
+    #expect(game.workGuidance?.parent == parent)
+  }
+
+  @Test func actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter() throws {
+    var game = try actualLargeWorkHold()
+    let cutter = try #require(game.commander.fittedEquipment(at: .utility(.salvageCutter)))
+    let revision = try #require(game.commander.equipmentInventory?.revision)
+    try game.commander.storeEquipment(cutter, expectedRevision: revision)
+    let parent = try #require(game.workGuidance?.parent)
+    let body = try #require(game.bodies.first { $0.physical?.identity == parent })
+    game.beginWorkGuidance(body: body, mode: .hold(.salvage), velocity: game.flightWorldVelocity)
+    #expect(game.selectedFlightTool == .salvageCutter)
+    #expect(game.flightWeaponDisplay.status == "NOT FITTED")
+    let before = game.dischargeAudio.events
+    var held = Controls()
+    held.fire = true
+    game.tick(delta: 0.02, controls: held)
+    #expect(game.dischargeAudio.events == before && game.workGuidance?.parent == parent)
   }
 }
