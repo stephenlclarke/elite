@@ -9,7 +9,7 @@ private enum FreightGateFixture {
   static func provider(in commander: inout Commander) throws -> (ScriptPack, UUID) {
     let pack = try ProviderContractFixture.pack()
     let terms = try #require(pack.manifest.providerContract)
-    let owner = commander.equipmentOwnerID
+    let owner = try #require(commander.equipmentOwnerID)
     let used = try #require(commander.checkedCargoTonnes)
     try #require(used < commander.standardCargoCapacity)
     let id = UUID()
@@ -40,9 +40,10 @@ private enum FreightGateFixture {
   }
 
   static func emptyAlien(in commander: inout Commander) throws {
+    let owner = try #require(commander.equipmentOwnerID)
     try commander.replaceAlienStorage(
       with: .init(
-        owner: commander.equipmentOwnerID, revision: 0, worldRevision: 0,
+        owner: owner, revision: 0, worldRevision: 0,
         world: [], sources: [], attachments: [], upgrades: [], receipts: [], commands: []))
     try #require(commander.usesAlienStorageSaveVersion)
   }
