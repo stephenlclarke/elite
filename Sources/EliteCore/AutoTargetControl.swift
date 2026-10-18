@@ -197,7 +197,6 @@ public struct AutoTargetControl: Sendable {
     _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits
   ) {
     let acceleration = min(Self.policyLimits.acceleration, limits.acceleration)
-    let maximumSpeed = min(Self.policyLimits.speed, limits.speed)
     let maximumRoll = min(Self.policyLimits.rollRate, limits.rollRate)
     phaseError = atan2(target.entranceUp.x, target.entranceUp.y)
     let matchRate = -target.rotationRate * target.orientation.z.z
@@ -230,7 +229,11 @@ public struct AutoTargetControl: Sendable {
     } else {
       // Existing cruise momentum brakes under the acceleration limit. Once the
       // waypoint is ahead, thrust follows the same bearing as the forward view.
-      desired = facingError < 0.12 ? approachWaypoint(target, goal: goal) * 0.8 : .init(0, 0, 0)
+      let waypoint = approachWaypoint(target, goal: goal)
+      let cruiseSpeed = Self.approachCruiseSpeed(
+        distance: waypoint.length, acceleration: acceleration, delta: delta,
+        maximumSpeed: limits.speed)
+      desired = facingError < 0.12 ? waypoint.unit * cruiseSpeed : .init(0, 0, 0)
       status = "APPROACHING"
     }
     let safeDesired =
@@ -239,12 +242,35 @@ public struct AutoTargetControl: Sendable {
       : stationClearanceVelocity(
         target, desired: desired, acceleration: acceleration,
         delta: delta)
+    let maximumSpeed =
+      stationStaged || finalApproach ? min(Self.policyLimits.speed, limits.speed) : limits.speed
+    let thrustBudget =
+      delta > 1 && acceleration > Double.greatestFiniteMagnitude / delta
+      ? Double.greatestFiniteMagnitude : acceleration * delta
     // One thrust budget covers approach, braking and station avoidance. Existing
     // overspeed coasts down within that budget rather than projecting velocity instantly.
     velocity =
       velocity
       + (safeDesired.limited(to: maximumSpeed) - velocity)
-      .limited(to: acceleration * delta)
+      .limited(to: thrustBudget)
+  }
+
+  /// Reserve one complete step and the stopping distance before the current external waypoint.
+  static func approachCruiseSpeed(
+    distance: Double, acceleration: Double, delta: Double, maximumSpeed: Double
+  ) -> Double {
+    guard [distance, acceleration, delta, maximumSpeed].allSatisfy({ $0.isFinite && $0 > 0 })
+    else { return 0 }
+    let available = min(Self.policyLimits.acceleration, acceleration)
+    // Factor the square root; 2*a*d could overflow even when its square root is finite.
+    let root = sqrt(2 * available) * sqrt(distance)
+    guard delta <= 1 || available <= Double.greatestFiniteMagnitude / delta else { return 0 }
+    let reaction = available * delta
+    // Rationalize sqrt(reaction² + 2*a*d) - reaction without squaring or adding two large values.
+    let halfDenominator = hypot(root, reaction) * 0.5 + reaction * 0.5
+    guard halfDenominator.isFinite && halfDenominator > 0 else { return 0 }
+    let stoppingSpeed = (root * 0.5) * (root / halfDenominator)
+    return min(maximumSpeed, distance * 0.8, stoppingSpeed)
   }
   private mutating func finalVelocity(_ target: SpaceBody, acceleration: Double) -> Vector3 {
     let door = target.entrancePosition

@@ -1,0 +1,7 @@
+# Use hull capability on the far station approach
+
+The original hands-off courier approach in preserved validation 357 stayed at 144 world units/second while the station remained more than 11 km away. Its default SH023 Cobra has authoritative speed 32 and acceleration 12; the native conversion supplies 576 units/second and 216 units/second squared to the controller. Runtime units are consistent. The global reference speed cap dates to the initial controller and was deliberately retained by the earlier hull-limit work. It now limits long approaches to one quarter of this Cobra's available speed.
+
+The recorded failure includes rear-shield and energy depletion, zero cabin heat, no station-impact revision in its 32 retained damage/contact pairs, and unlawful attack windows for two nearby pirates. These are bounded observations, not a per-hit or fatal-hit history. A hull-aware approach improves travel control; hostile combat remains genuine and the unchanged courier delivery must still be verified.
+
+Only unstaged Approaching travel should use supplied hull speed, with enough distance for one complete step and braking before the existing external staging or detour waypoint. Preserve facing, angular authority, station clearance, inherited overspeed, one acceleration budget, spin/alignment and final doorway policies. Keep actual traffic, celestial bodies, equipment, route, commands, clocks and original delivery/custody checks.
