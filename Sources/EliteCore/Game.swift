@@ -496,6 +496,9 @@ public struct Game: Sendable {
   var workFireSuspended = false
   var flightTrigger = FlightTriggerState()
   var selectedToolActivity: FlightToolActivity?
+  /// Immutable presentation for the delivered runtime snapshot, prepared off the paint path.
+  public internal(set) var flightWeaponDisplay = FlightWeaponDisplay(
+    weapon: "UNAVAILABLE", status: "SNAPSHOT REQUIRED")
   var manualResidualFlight = false
   public var viewportWidth = 768.0
   public var viewportHeight = 768.0
@@ -1981,7 +1984,10 @@ public actor GameRuntime {
   public func inventoryCommand(_ command: InventoryCommand) -> Bool {
     equipmentTransaction(.inventory(command)).applied
   }
-  public func snapshot() -> Game { game }
+  public func snapshot() -> Game {
+    game.prepareFlightWeaponDisplay()
+    return game
+  }
   public func key(_ key: String) {
     if galleryAction(key) { return }
     keyAfterGallery(key)
@@ -2121,7 +2127,7 @@ public actor GameRuntime {
     game.pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
-    guard let context = prepareAdvance(delta: delta) else { return game }
+    guard let context = prepareAdvance(delta: delta) else { return snapshot() }
     game.tick(
       delta: delta, controls: controls,
       nativeSalvagePublish: scriptPublisher(requireNativeSalvage: true))
@@ -2130,7 +2136,7 @@ public actor GameRuntime {
     commitPendingNativeStationEntry()
     if game.docked { game.stationAutoDefence = nil }
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
-    return game
+    return snapshot()
   }
   private typealias AdvanceContext = (
     wasDocked: Bool, wasLive: Bool, location: (Int, Int), localActive: Bool, flightActive: Bool,

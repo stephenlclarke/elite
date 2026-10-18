@@ -8,7 +8,13 @@ public struct FlightWeaponDisplay: Sendable, Equatable {
 }
 
 extension Game {
-  public var flightWeaponDisplay: FlightWeaponDisplay {
+  /// Explicit preparation for actor publication or a directly constructed offscreen scene.
+  /// Cockpit layout and native painting consume the stored projection without deriving it.
+  public mutating func prepareFlightWeaponDisplay() {
+    flightWeaponDisplay = deriveFlightWeaponDisplay()
+  }
+
+  public func deriveFlightWeaponDisplay() -> FlightWeaponDisplay {
     let weapon = fittedFlightTools.isEmpty ? "NONE" : selectedFlightTool.label.uppercased()
     return .init(weapon: weapon, status: selectedWeaponStatus)
   }

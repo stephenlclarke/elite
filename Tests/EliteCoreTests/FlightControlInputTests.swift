@@ -66,22 +66,22 @@ struct FlightControlInputTests {
     game.observeFlightFire(held: false)
     game.laserFlash = 1
     game.dischargeAudio.record(.combatLaser)
-    #expect(game.flightWeaponDisplay.status == "READY")
+    #expect(game.deriveFlightWeaponDisplay().status == "READY")
     game.energy = 1
-    #expect(game.flightWeaponDisplay.status == "NO ENERGY")
+    #expect(game.deriveFlightWeaponDisplay().status == "NO ENERGY")
     game.energy = 100
     game.laserHeat = 240
-    #expect(game.flightWeaponDisplay.status == "OVERHEATED")
+    #expect(game.deriveFlightWeaponDisplay().status == "OVERHEATED")
     game.laserHeat = 0
     game.fireCooldown = 0.7
-    #expect(game.flightWeaponDisplay.status == "COOLDOWN 0.7S")
+    #expect(game.deriveFlightWeaponDisplay().status == "COOLDOWN 0.7S")
     game.fireCooldown = 0
     game.screen = .rear
-    #expect(game.flightWeaponDisplay.status == "NOT FITTED IN VIEW")
+    #expect(game.deriveFlightWeaponDisplay().status == "NOT FITTED IN VIEW")
     game.screen = .front
     game.selectFlightTool(.miningLaser)
-    #expect(game.flightWeaponDisplay.weapon == "MINING LASER")
-    #expect(game.flightWeaponDisplay.status == "NOT FITTED")
+    #expect(game.deriveFlightWeaponDisplay().weapon == "MINING LASER")
+    #expect(game.deriveFlightWeaponDisplay().status == "NOT FITTED")
   }
 
   @Test func actualEMPChargeProgressIsDisplayedWithoutASelectedTrackingTarget() throws {
@@ -90,9 +90,9 @@ struct FlightControlInputTests {
     held.fire = true
     game.tick(delta: 0.1, controls: held)
     try #require(game.autoPilot.targetActor == nil)
-    #expect(game.flightWeaponDisplay.status == "CHARGING 0.0/10S")
+    #expect(game.deriveFlightWeaponDisplay().status == "CHARGING 0.0/10S")
     game.tick(delta: 0.1, controls: held)
-    #expect(game.flightWeaponDisplay.status == "CHARGING 0.1/10S")
+    #expect(game.deriveFlightWeaponDisplay().status == "CHARGING 0.1/10S")
   }
 
   @Test func everyActualHelpPageIncludesScopedGeneratedControls() {
@@ -127,6 +127,7 @@ struct FlightControlInputTests {
       game.commander.shipDisplayStyle = style
       for screen in [Screen.front, .rear, .left, .right] {
         game.screen = screen
+        game.prepareFlightWeaponDisplay()
         for width in [320.0, 512, 768, 1512, 2560] {
           let frame = Display.cockpit(game, width: width, height: 768)
           let layout = CockpitLayout(game: game, width: width, height: 768)
@@ -193,6 +194,8 @@ extension FlightControlInputTests {
     await runtime.key(key)
     let stopped = await runtime.snapshot()
     #expect(stopped.workFireSuspended && !stopped.flightTrigger.pressPending)
+    #expect(stopped.flightWeaponDisplay == stopped.deriveFlightWeaponDisplay())
+    #expect(stopped.flightWeaponDisplay.status != "READY")
     #expect(stopped.commander == before.commander && stopped.bodies == before.bodies)
     #expect(stopped.nativeSalvageWork?.cycle == hot.cycle)
     #expect(stopped.nativeSalvageWork?.originalCycle == hot.originalCycle)
@@ -257,6 +260,8 @@ extension FlightControlInputTests {
     #expect(refused.autoPilot.targetActor == before.autoPilot.targetActor)
     #expect(refused.selectedFlightTool == before.selectedFlightTool)
     #expect(refused.workFireSuspended && !refused.flightTrigger.pressPending)
+    #expect(refused.flightWeaponDisplay == refused.deriveFlightWeaponDisplay())
+    #expect(refused.flightWeaponDisplay.status == "BLOCKED: FRESH RETURN")
     #expect(refused.commander.savedEMPCharge == before.commander.savedEMPCharge)
     let advanced = await runtime.advance(delta: 0.1)
     #expect(advanced.dischargeAudio.events == before.dischargeAudio.events)
