@@ -1887,6 +1887,7 @@ public actor GameRuntime {
   var galleryParent: GalleryParentState?
   var scriptSaveURL: URL?
   var nativePeopleFailureGate: NativePeopleFailureGate?
+  var scriptRefusalDiagnostic: ScriptRefusalDiagnostic?
   public init(game: Game = Game(), saveURL: URL? = nil) {
     var prepared = game
     prepared.invalidateNativeStationAuthority()
@@ -1941,12 +1942,13 @@ public actor GameRuntime {
   }
   private func keyAfterGallery(_ key: String) {
     game.resolveCourierTerminals(publish: scriptPublisher())
-    game.resolveFreightTerminals(publish: scriptPublisher())
+    game.resolveFreightTerminals(
+      publish: scriptPublisher(diagnosticBoundary: .resolver), diagnostics: scriptRefusalDiagnostic)
     let before = game
     let held = controls
     applyKey(key)
     game.resolveCourierTerminals()
-    game.resolveFreightTerminals()
+    game.resolveFreightTerminals(diagnostics: scriptRefusalDiagnostic)
     game.scriptDurabilityAvailable = scriptSaveURL != nil
     if before.screen == .gameOver, [" ", "return"].contains(key) {
       game.scriptPacks = before.scriptPacks
@@ -2137,7 +2139,8 @@ public actor GameRuntime {
         startTime: startPhysicalTime, startPlayer: startPlayer, delta: delta)
     }
     game.resolveCourierTerminals(publish: scriptPublisher())
-    game.resolveFreightTerminals(publish: scriptPublisher())
+    game.resolveFreightTerminals(
+      publish: scriptPublisher(diagnosticBoundary: .resolver), diagnostics: scriptRefusalDiagnostic)
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
     game.scriptEventsDeferred = false
     if localActive && !game.docked {
@@ -2173,15 +2176,29 @@ public actor GameRuntime {
 
   /// Shared native persistence barrier before either ordinary JSON or Script chunks.
   /// The returned live Game keeps bindings; only the disk Commander clears them.
-  static func prepareNativeSaveState(_ value: Game) throws -> (game: Game, commander: Commander) {
+  static func prepareNativeSaveState(
+    _ value: Game, diagnostics: ScriptRefusalDiagnostic? = nil,
+    diagnosticBoundary: ScriptRefusalBoundary = .publication
+  ) throws -> (game: Game, commander: Commander) {
     var candidate = value
-    try candidate.recordNativePeopleLossIfNeeded()
-    try validateNativeDockEvidenceForSave(&candidate)
-    try candidate.persistNativeStationConditions()
-    try candidate.commander.prepareEquipment()
-    candidate.commander.mirrorFittedEquipment()
-    candidate.resolveDestroyed()
-    return try finishNativeSaveState(&candidate)
+    var stage = ScriptRefusalStage.nativePeople
+    do {
+      try candidate.recordNativePeopleLossIfNeeded()
+      stage = .nativeDock
+      try validateNativeDockEvidenceForSave(&candidate)
+      stage = .nativeStations
+      try candidate.persistNativeStationConditions()
+      stage = .equipment
+      try candidate.commander.prepareEquipment()
+      candidate.commander.mirrorFittedEquipment()
+      stage = .nativeDestruction
+      candidate.resolveDestroyed()
+      return try finishNativeSaveState(
+        &candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    } catch {
+      diagnostics?.record(diagnosticBoundary, .init(stage: stage, error: error, game: candidate))
+      throw error
+    }
   }
 
   private static func validateNativeDockEvidenceForSave(_ candidate: inout Game) throws {
@@ -2193,12 +2210,20 @@ public actor GameRuntime {
     else { throw SaveError.invalidCommander }
   }
 
-  private static func finishNativeSaveState(_ candidate: inout Game) throws -> (
+  private static func finishNativeSaveState(
+    _ candidate: inout Game, diagnostics: ScriptRefusalDiagnostic? = nil,
+    diagnosticBoundary: ScriptRefusalBoundary = .publication
+  ) throws -> (
     game: Game, commander: Commander
   ) {
     candidate.persistCargoPoses()
     candidate.persistOrePoses()
-    guard candidate.persistSalvagePoses() else { throw SaveError.invalidCommander }
+    guard candidate.persistSalvagePoses() else {
+      diagnostics?.record(
+        diagnosticBoundary,
+        .init(stage: .salvagePoses, error: SaveError.invalidCommander, game: candidate))
+      throw SaveError.invalidCommander
+    }
     candidate.persistBlackjackTargets()
     let refusedNPCs = candidate.persistNPCStates()
     guard refusedNPCs.isEmpty, !candidate.hasUnsettledWreckDeaths, candidate.commander.valid,
@@ -2206,7 +2231,25 @@ public actor GameRuntime {
         $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
           && $0.physical?.npc?.role != .mission
       })
-    else { throw SaveError.invalidCommander }
+    else {
+      if let diagnostics, !diagnostics.contains(diagnosticBoundary) {
+        // Bits 1/2/4/8: no NPC refusals, no unsettled wreck, commander valid, no dead ordinary NPC.
+        let checks: UInt16 =
+          (refusedNPCs.isEmpty ? 1 : 0)
+          | (!candidate.hasUnsettledWreckDeaths ? 2 : 0)
+          | (candidate.commander.valid ? 4 : 0)
+          | (!candidate.bodies.contains(where: {
+            $0.energy <= 0 && $0.hull.isTargetShip && $0.physical?.npc != nil
+              && $0.physical?.npc?.role != .mission
+          }) ? 8 : 0)
+        diagnostics.record(
+          diagnosticBoundary,
+          .init(
+            stage: .nativeSaveValidation, error: SaveError.invalidCommander, game: candidate,
+            checks: checks, count: refusedNPCs.count))
+      }
+      throw SaveError.invalidCommander
+    }
     var persistedCommander = candidate.commander
     if persistedCommander.npcPersistence.count > 0 {
       persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
