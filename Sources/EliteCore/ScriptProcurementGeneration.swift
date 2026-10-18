@@ -11,13 +11,18 @@ enum ScriptProcurementGeneration {
     else { throw MissionPackError("Procurement requires a current native owner and provider.") }
     let reach = ScriptCourierReach(commander)
     let paths = ScriptCourierGeneration.routes(origin: origin, reach: reach)
-    guard !paths.isEmpty else {
-      throw MissionPackError("No destination within three native jumps.")
+    let candidates = (0..<3).map { row in
+      ScriptProcurementPlan.candidatePaths(
+        paths, galaxy: origin.galaxy, row: row, generatorRevision: declaration.generatorRevision)
+    }
+    guard candidates.allSatisfy({ !$0.isEmpty }) else {
+      throw MissionPackError("No native procurement route fits every required tier's deadline.")
     }
     let initial = Game.pledgeProfileSeed(seed)
     var state = initial
     let draws = (0..<6).map { _ in ScriptCourierGeneration.next(&state) }
     return (0..<3).map { row in
+      let paths = candidates[row]
       let index = ScriptProcurementPlan.index(draws[row * 2], count: paths.count)
       return .init(
         profile: declaration.profile, generatorRevision: declaration.generatorRevision,

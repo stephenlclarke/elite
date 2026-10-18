@@ -32,11 +32,13 @@ extension Game {
   func requireProcurementResources(_ plan: ScriptProcurementPlan) throws {
     guard plan.valid, plan.owner == commander.equipmentOwnerID,
       contractStation == plan.origin, nativeMainStationDockEvidenceIsCurrent, !paused,
-      plan.calendarLowerBoundSeconds < plan.duration,
       commander.scriptState.missionCalendar != nil,
       commander.scriptState.clock(.missionCalendar) <= 1e12 - plan.duration,
       plan.commodity != nil
     else { throw MissionPackError("Review this reachable job at its actual native main station.") }
+    guard plan.calendarLowerBoundSeconds < plan.duration else {
+      throw MissionPackError("This frozen route cannot meet the job's deadline.")
+    }
     guard plan.capacityFits(commander) else {
       throw MissionPackError("Make room for the requested goods; protected goods cannot count.")
     }

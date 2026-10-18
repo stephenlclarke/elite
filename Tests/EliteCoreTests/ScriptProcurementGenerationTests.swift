@@ -198,7 +198,7 @@ struct ProcurementDrawFixture: Sendable {
 func procurementAllNineTierCommodityGoldensRetainTheirOriginalSeed(frozen: ProcurementDrawFixture)
   throws
 {
-  let fixture = try ScriptProcurementFixture()
+  let fixture = try ScriptProcurementFixture(legacyV1: true)
   defer { fixture.clean() }
   let game = try fixture.policyGame()
   let plans = try fixture.plans(game, revision: frozen.revision)
@@ -207,4 +207,63 @@ func procurementAllNineTierCommodityGoldensRetainTheirOriginalSeed(frozen: Procu
   #expect(plan.seedHex == frozen.seed && plan.initialState == frozen.initial)
   #expect(plan.draws == frozen.draws && plan.finalState == frozen.draws.last)
   #expect(plan.commodityIndex == frozen.commodity && plan.quantity == [1, 5, 10][frozen.row])
+}
+
+@Test(arguments: [0, 1, 2])
+func procurementV2SelectsFromStableFeasibleCandidatesBeforeItsFrozenDraw(row: Int) throws {
+  let fixture = try ScriptProcurementFixture()
+  defer { fixture.clean() }
+  let game = try fixture.policyGame()
+  let plans = try fixture.plans(game)
+  let repeated = try fixture.plans(game)
+  let plan = plans[row]
+  let routes = ScriptCourierGeneration.routes(origin: plan.origin, reach: plan.reach)
+  let systems = Universe.systemsIncludingPlugh(number: plan.origin.galaxy)
+  // Independent calendar sum over the original ordered native BFS, before selection.
+  let eligible = routes.filter { path in
+    let cost = zip(path, path.dropFirst()).reduce(0.0) { value, edge in
+      let distance = systems[edge.0].scriptCalendarDistance(to: systems[edge.1])
+      return value + 600 + distance * distance * 3600
+    }
+    return cost < plan.duration
+  }
+  try #require(!eligible.isEmpty && eligible.count < routes.count)
+  let index = Int(floor(Double(plan.draws[row * 2]) / 4294967296.0 * Double(eligible.count)))
+  #expect(plan.generatorRevision == 2 && plan.valid && plans == repeated)
+  #expect(plan.routeIndex == index && plan.path == eligible[index])
+  #expect(plan.calendarLowerBoundSeconds < plan.duration)
+  #expect(
+    fixture.pack.manifest.version == "1.1.0"
+      && fixture.pack.digest == "bc8362634b96ee8b5326e29980a8dbac0920fecee9df3114c0be1b8061074a0b")
+  #expect(plan.seedHex == "9d9cc806d16f18be" && plan.initialState == 3_513_718_974)
+  #expect(
+    plan.draws == [
+      2_103_505_346, 138_972_590, 643_132_240, 3_973_773_103, 4_124_477_488, 3_200_504_152,
+    ] && plan.finalState == 3_200_504_152)
+}
+
+/// Numeric feasibility is strict; actual handoff at the deadline remains inclusive.
+@Test(arguments: [-0.1, 0.0, 0.1])
+func procurementV2TravelFeasibilityExcludesTheDeadlineBoundary(offset: Double) {
+  for row in 0..<3 {
+    let allowed = ScriptProcurementPlan.feasible(
+      calendarCost: ScriptProcurementPlan.duration(row: row) + offset, row: row)
+    #expect(allowed == (offset < 0))
+  }
+}
+
+@Test func procurementV2EmptyFeasiblePoolNeverFallsBackToTheLegacyRoute() throws {
+  let fixture = try ScriptProcurementFixture(legacyV1: true)
+  defer { fixture.clean() }
+  let game = try fixture.policyGame()
+  let plans = try fixture.plans(game)
+  let old = plans[0]
+  try #require(old.valid && old.calendarLowerBoundSeconds >= old.duration)
+  let legacy = ScriptProcurementPlan.candidatePaths(
+    [old.path], galaxy: old.origin.galaxy, row: 0, generatorRevision: 1)
+  let current = ScriptProcurementPlan.candidatePaths(
+    [old.path], galaxy: old.origin.galaxy, row: 0, generatorRevision: 2)
+  let unsupported = ScriptProcurementPlan.candidatePaths(
+    [old.path], galaxy: old.origin.galaxy, row: 0, generatorRevision: 3)
+  #expect(legacy == [old.path] && current.isEmpty && unsupported.isEmpty)
 }
