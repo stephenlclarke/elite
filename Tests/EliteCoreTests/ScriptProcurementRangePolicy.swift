@@ -63,30 +63,48 @@ struct ScriptProcurementRetreat: Sendable, Equatable {
 }
 
 extension ScriptProcurementPilotBudget {
-  /// Cooling or a nearer ordinary actor never cancels an established break turn.
-  mutating func updateRetreat(_ facts: ScriptProcurementPreflightFacts) {
+  /// One assessment updates the local phase and describes the pre-heat fallback opportunity.
+  /// Only the native fallback's own fresh actor/law/stock joins can admit a missile.
+  @discardableResult
+  mutating func updateRetreat(_ facts: ScriptProcurementPreflightFacts) -> Bool {
     guard facts.valid, facts.live, !facts.paused, !facts.docked, !facts.automaticEngaged,
       facts.needsDefence, facts.threats.allSatisfy(\.pulseOnly)
     else {
       retreat = nil
-      return
+      return false
     }
-    if let phase = retreat,
-      let target = facts.threats.first(where: { $0.identity == phase.target }), target.pulseOnly,
-      target.immediate || facts.incoming
-    {
-      if phase.mode == .breakAway, target.immediate, facts.rearShieldLow,
-        !facts.pulseHeatBlocked
+    if var phase = retreat {
+      // Re-engagement deliberately adopts the current selected actor before heat handling.
+      // Break-away retains its actor and turn side across ordinary nearest-target changes.
+      if phase.mode == .reengage, let selected = facts.threat,
+        let player = facts.identity?.player, selected.pulseOnly, selected.immediate,
+        selected.identity != player, selected.identity.system == player.system,
+        selected.identity.visit == player.visit,
+        facts.threats.filter({ $0.identity == selected.identity }).count == 1,
+        facts.threats.contains(selected)
       {
-        retreat?.mode = .reengage
+        phase = .init(target: selected.identity, turnSign: phase.turnSign, mode: .reengage)
       }
-      if phase.mode == .reengage, facts.pulseHeatBlocked { retreat?.mode = .breakAway }
-      return
+      if let target = facts.threats.first(where: { $0.identity == phase.target }),
+        target.pulseOnly, target.immediate || facts.incoming
+      {
+        let fallbackOpportunity = phase.permitsCombat(facts)
+        if phase.mode == .breakAway, target.immediate, facts.rearShieldLow,
+          !facts.pulseHeatBlocked
+        {
+          phase.mode = .reengage
+        } else if phase.mode == .reengage, facts.pulseHeatBlocked {
+          phase.mode = .breakAway
+        }
+        retreat = phase
+        return fallbackOpportunity
+      }
     }
     retreat = nil
     guard let threat = facts.threat, threat.pulseOnly, threat.immediate,
       facts.pulseHeatBlocked || facts.frontShieldLow
-    else { return }
+    else { return false }
     retreat = .init(target: threat.identity, turnSign: threat.position.x <= 0 ? 1 : -1)
+    return false
   }
 }
