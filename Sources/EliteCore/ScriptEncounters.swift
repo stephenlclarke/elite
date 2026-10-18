@@ -611,10 +611,19 @@ public struct ScriptReferenceFrame: Codable, Sendable, Equatable {
 
 extension Game {
   var scriptAnchor: SpaceBody? {
-    if let actual = bodies.first(where: { $0.id == 0 && $0.hull == .station }) {
-      return actual.energy > 0 ? actual : nil
+    Self.resolveScriptAnchor(bodies: bodies, frame: scriptReferenceFrame, commander: commander)
+  }
+
+  // Borrow only the inputs used by anchor selection; do not materialize a Game or Commander.
+  @inline(never)
+  private static func resolveScriptAnchor(
+    bodies: borrowing [SpaceBody], frame: borrowing ScriptReferenceFrame?,
+    commander: borrowing Commander
+  ) -> SpaceBody? {
+    if let index = bodies.firstIndex(where: { $0.id == 0 && $0.hull == .station }) {
+      return bodies[index].energy > 0 ? bodies[index] : nil
     }
-    guard let frame = scriptReferenceFrame, frame.galaxy == commander.galaxy,
+    guard let frame, frame.galaxy == commander.galaxy,
       frame.system == commander.system, frame.station.energy > 0
     else { return nil }
     return frame.station
@@ -748,6 +757,18 @@ extension Game {
   /// Native facts retain canonical location/condition and never infer death from disappearance.
   mutating func persistScriptActors(unloading: Bool = false) {
     guard !commander.scriptState.instances.isEmpty else { return }
+    refreshScriptPersistenceStation()
+    guard
+      let anchor = Self.resolveScriptAnchor(
+        bodies: bodies, frame: scriptReferenceFrame, commander: commander)
+    else { return }
+    persistScriptShots(anchor: anchor, unloading: unloading)
+    captureScriptActors(anchor: anchor, unloading: unloading)
+  }
+
+  // Station loss and reference-frame refresh finish before actor capture allocates its records.
+  @inline(never)
+  private mutating func refreshScriptPersistenceStation() {
     if let actual = bodies.first(where: { $0.id == 0 && $0.hull == .station }) {
       if actual.energy <= 0 { recordScriptWorldResourceLoss(actual) }
       if commander.scriptState.stationResources[contractStation.key] != nil {
@@ -756,8 +777,10 @@ extension Game {
       scriptReferenceFrame = ScriptReferenceFrame(
         galaxy: commander.galaxy, system: commander.system, station: actual)
     }
-    guard let anchor = scriptAnchor else { return }
-    persistScriptShots(anchor: anchor, unloading: unloading)
+  }
+
+  @inline(never)
+  private mutating func captureScriptActors(anchor: borrowing SpaceBody, unloading: Bool) {
     if unloading {
       for body in bodies where body.missionActorID != nil && body.energy <= 0 {
         recordScriptActorRemoval(body, destroyed: true)
