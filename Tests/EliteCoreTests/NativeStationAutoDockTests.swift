@@ -82,7 +82,9 @@ private func verifyActualNativeAutoDock(
   let initialRange = station.entrancePosition.length
   let initialRotation = station.rotation
   let source = try #require(NativeStationSource.binding(for: identity))
-  let maximumSpeed = min(AutoTargetControl.policyLimits.speed, game.workLimits.speed)
+  let maximumSpeed = game.workLimits.speed
+  let alignmentSpeed = min(144, maximumSpeed)
+  let maximumAcceleration = min(240, game.workLimits.acceleration)
   let property = game.commander
   let runtime = GameRuntime(game: game, saveURL: storage.url)
   try await runtime.save(to: storage.url)
@@ -112,6 +114,8 @@ private func verifyActualNativeAutoDock(
   // The same bounded full-approach budget used by the native station guidance tests.
   for _ in 0..<9000 where !game.docked && healthy {
     let before = game.commander.flightSimulation.pose.position
+    let beforeVelocity = game.flightWorldVelocity
+    let beforeApproachSpeed = game.autoPilot.velocity.length
     game = await runtime.advance(delta: delta)
     let step = (game.commander.flightSimulation.pose.position - before).length
     travelled += step
@@ -119,6 +123,12 @@ private func verifyActualNativeAutoDock(
     observedMaximumSpeed = max(observedMaximumSpeed, game.autoPilot.velocity.length)
     healthy = !game.paused && game.screen != .gameOver && game.energy > 0
     if game.docked { break }
+    #expect(
+      (game.flightWorldVelocity - beforeVelocity).length <= maximumAcceleration * delta + 1e-6)
+    if game.autoPilot.status != "APPROACHING" {
+      // Alignment/final entry keep the reference ceiling; inherited momentum brakes gradually.
+      #expect(game.autoPilot.velocity.length <= max(alignmentSpeed, beforeApproachSpeed) + 1e-6)
+    }
     phases.insert(game.autoPilot.status)
     sawApproach = sawApproach || game.autoPilot.status == "APPROACHING"
     sawAlignment =
