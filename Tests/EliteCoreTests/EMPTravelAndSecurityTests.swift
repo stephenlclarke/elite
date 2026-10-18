@@ -59,7 +59,8 @@ private func empTravel(to destination: Int, game: inout Game) throws {
         + "sampledEMPRecord=\(String(describing: emp?.source)), "
         + "empCrew=\(String(describing: emp?.crewAboard)), "
         + "empDeadline=\(String(describing: emp?.crewDeadline)), "
-        + "empRecovered=\(String(describing: emp?.isRecovered))"
+        + "empRecovered=\(String(describing: emp?.isRecovered)), "
+        + "retainedPlayerThreatEvidence=\(empRetainedPlayerThreatEvidence(game))"
     }
     try #require(continuingFlight, Comment(rawValue: failureDetails))
   }
@@ -79,6 +80,45 @@ private func empTravel(to destination: Int, game: inout Game) throws {
   #expect(game.commander.fuel < fuel)
   #expect(game.commander.fuel == fuel - debit)
   #expect(game.commander.flightSimulation.system == game.systemIdentity)
+}
+
+private struct EMPTravelThreatLedger: Decodable {
+  struct Window: Decodable {
+    let owner: ActorIdentity
+    let victim: ActorIdentity
+    let lastAttack: Double
+    let unlawful: Bool
+    let authorityAction: Bool
+  }
+  let attacks: [Window]
+}
+
+/// Failure-only retained windows are threat evidence, not a per-hit damage or fatal-hit history.
+private func empRetainedPlayerThreatEvidence(_ game: borrowing Game) -> String {
+  guard let player = game.commander.flightSimulation.player else {
+    return "unavailable: no player identity"
+  }
+  do {
+    let bytes = try JSONEncoder().encode(game.commander.crimeLedger)
+    let ledger = try JSONDecoder().decode(EMPTravelThreatLedger.self, from: bytes)
+    let windows = ledger.attacks.filter { $0.victim == player }.sorted {
+      $0.lastAttack == $1.lastAttack
+        ? $0.owner.entity < $1.owner.entity : $0.lastAttack > $1.lastAttack
+    }.prefix(4)
+    var evidence: [String] = []
+    for window in windows {
+      let body = game.bodies.first { $0.physical?.identity == window.owner }
+      evidence.append(
+        "owner=\(window.owner), lastAttack=\(window.lastAttack), unlawful=\(window.unlawful), "
+          + "authorityAction=\(window.authorityAction), "
+          + "currentRole=\(String(describing: body?.physical?.npc?.role)), "
+          + "currentSpawnProducer=\(String(describing: body?.physical?.spawnIdentity?.producer)), "
+          + "currentPosition=\(String(describing: body?.position))")
+    }
+    return "[" + evidence.joined(separator: "; ") + "]"
+  } catch {
+    return "unavailable: \(error)"
+  }
 }
 
 private func empOtherSystem(_ game: Game) throws -> Int {
