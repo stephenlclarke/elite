@@ -60,8 +60,9 @@ private func expectEffectiveGamePreserved(_ actual: borrowing Game, _ before: bo
   #expect(inventoryEpochPreserved)
   let stationEpochPreserved = actual.nativeStationRuntimeEpoch == before.nativeStationRuntimeEpoch
   #expect(stationEpochPreserved)
-  let pauseAndToolPreserved =
-    actual.paused == before.paused && actual.selectedFlightTool == before.selectedFlightTool
+  let pausePreserved = actual.paused == before.paused
+  let selectedToolPreserved = actual.selectedFlightTool == before.selectedFlightTool
+  let pauseAndToolPreserved = pausePreserved && selectedToolPreserved
   #expect(pauseAndToolPreserved)
   let manualFlightPreserved = actual.manualResidualFlight == before.manualResidualFlight
   #expect(manualFlightPreserved)
@@ -75,11 +76,13 @@ private func expectEffectiveGamePreserved(_ actual: borrowing Game, _ before: bo
   #expect(audioEpochPreserved)
   let audioEventsPreserved = actual.dischargeAudio.events == before.dischargeAudio.events
   #expect(audioEventsPreserved)
-  let messagePreserved =
-    actual.message == before.message && actual.messageTime == before.messageTime
+  let messageTextPreserved = actual.message == before.message
+  let messageTimePreserved = actual.messageTime == before.messageTime
+  let messagePreserved = messageTextPreserved && messageTimePreserved
   #expect(messagePreserved)
-  let equipmentSelectionPreserved =
-    actual.selection == before.selection && actual.equipmentMount == before.equipmentMount
+  let selectionPreserved = actual.selection == before.selection
+  let equipmentMountPreserved = actual.equipmentMount == before.equipmentMount
+  let equipmentSelectionPreserved = selectionPreserved && equipmentMountPreserved
   #expect(equipmentSelectionPreserved)
   let workToolPreserved = actual.equipmentWorkTool == before.equipmentWorkTool
   #expect(workToolPreserved)
@@ -97,17 +100,24 @@ private func expectEffectiveGamePreserved(_ actual: borrowing Game, _ before: bo
 
 /// This bodyless owned scene permits only explicit current mining-presence storage at publication.
 private func effectivePublicationExpectation(_ before: borrowing Game) throws -> Commander {
-  let isDockedStatus = before.docked && before.dockedAtMainStation && before.screen == .status
+  let isDocked = before.docked
+  let isAtMainStation = before.dockedAtMainStation
+  let isStatus = before.screen == .status
+  let isDockedStatus = isDocked && isAtMainStation && isStatus
   try #require(isDockedStatus)
-  let hasNoBodyOrNPC = before.bodies.isEmpty && before.commander.npcPersistence.count == 0
+  let hasNoBodies = before.bodies.isEmpty
+  let hasNoNPCs = before.commander.npcPersistence.count == 0
+  let hasNoBodyOrNPC = hasNoBodies && hasNoNPCs
   try #require(hasNoBodyOrNPC)
-  let hasNoStationOrEMP =
-    before.commander.nativeStations == nil && before.commander.savedEMPState == nil
+  let hasNoStations = before.commander.nativeStations == nil
+  let hasNoEMP = before.commander.savedEMPState == nil
+  let hasNoStationOrEMP = hasNoStations && hasNoEMP
   try #require(hasNoStationOrEMP)
   let hasNoAlienStorage = before.commander.alienStorageState == nil
   try #require(hasNoAlienStorage)
-  let hasNoScriptInstanceOrBoard =
-    before.commander.scriptState.instances.isEmpty && before.commander.contracts.boards.isEmpty
+  let hasNoInstances = before.commander.scriptState.instances.isEmpty
+  let hasNoBoards = before.commander.contracts.boards.isEmpty
+  let hasNoScriptInstanceOrBoard = hasNoInstances && hasNoBoards
   try #require(hasNoScriptInstanceOrBoard)
   let hasCalendar = before.commander.scriptState.calendarLedger != nil
   try #require(hasCalendar)

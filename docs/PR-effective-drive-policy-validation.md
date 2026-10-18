@@ -13,3 +13,5 @@ Source formatting, strict lint, Markdown lint, exact outside-scope reversal and 
 [Issue](ISSUE-effective-drive-policy-validation.md).
 
 Compiler-only follow-up after attempt 353: each new helper now binds its unchanged comparison or precondition to a local Boolean before its individual Testing macro. Borrowed Game parameters, all checked values and every gameplay/test boundary remain unchanged; there is no whole-Game macro capture. The failed compile artifacts are preserved separately, and the same affected focused scope still requires execution.
+
+Attempt 354 identified the remaining short-circuit `&&` autoclosures in seven helper expressions. Their unchanged individual predicates are now bound before combining Boolean values, so neither Testing macros nor Boolean autoclosures capture a borrowed Game. No original test method, value, assertion, control or budget changed.
