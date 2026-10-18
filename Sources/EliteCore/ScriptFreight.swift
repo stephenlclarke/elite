@@ -222,7 +222,7 @@ extension Game {
 
   var freightPageFacts: [String] {
     commander.scriptState.instances.values.filter { $0.savedOwnedCargo != nil }
-      .sorted { $0.id.uuidString < $1.id.uuidString }.flatMap { state in
+      .sorted { $0.id.uuidString < $1.id.uuidString }.flatMap { state -> [String] in
         guard let cargo = state.savedOwnedCargo else { return [] }
         return [
           state.id.uuidString, String(state.revision), cargo.consignment.uuidString,
