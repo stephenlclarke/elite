@@ -68,9 +68,47 @@ struct ScriptWorldSave: Codable, Sendable {
     return consistentAfterNativeSalvage(
       with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
   }
-  // Later EMP/station/actor proof buffers are materialized only after the native-first check returns.
+  // Complete each category before the next category's record/body storage becomes active.
   @inline(never)
   private func consistentAfterNativeSalvage(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
+    guard
+      consistentEMPScene(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    guard
+      consistentNativeStationScene(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    guard
+      consistentCapacityAndInterface(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    guard
+      consistentMainStationResource(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    guard
+      let records = missionActorConsistencyRecords(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    guard
+      consistentProjectiles(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    guard
+      consistentCalendarJourney(
+        with: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    else { return false }
+    return consistentMissionActors(
+      with: commander, records: records, diagnostics: diagnostics,
+      diagnosticBoundary: diagnosticBoundary)
+  }
+
+  @inline(never)
+  private func consistentEMPScene(
     with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
     diagnosticBoundary: ScriptRefusalBoundary
   ) -> Bool {
@@ -91,6 +129,14 @@ struct ScriptWorldSave: Codable, Sendable {
         .sceneEMPUnowned, commander: commander, boundary: diagnosticBoundary)
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func consistentNativeStationScene(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     if let stations = commander.nativeStations {
       guard
         stations.sceneIsConsistent(
@@ -107,6 +153,14 @@ struct ScriptWorldSave: Codable, Sendable {
         .sceneStationUnowned, commander: commander, boundary: diagnosticBoundary)
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func consistentCapacityAndInterface(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     guard
       [
         (energy, commander.performance.energy), (frontShield, commander.shieldCapacity),
@@ -146,6 +200,14 @@ struct ScriptWorldSave: Codable, Sendable {
         .sceneFreightFatal, commander: commander, boundary: diagnosticBoundary)
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func consistentMainStationResource(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     let stationKey = "main-orbital:\(commander.galaxy):\(commander.system)"
     if let resource = commander.scriptState.stationResources[stationKey] {
       let actual = bodies.first { $0.id == 0 && $0.hull == .station }
@@ -163,6 +225,14 @@ struct ScriptWorldSave: Codable, Sendable {
         return false
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func missionActorConsistencyRecords(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> [UUID: (UUID, Int, Int, ScriptOwnedActor)]? {
     var records: [UUID: (UUID, Int, Int, ScriptOwnedActor)] = [:]
     for instance in commander.scriptState.instances.values {
       for encounter in instance.ownedEncounters.values {
@@ -170,12 +240,20 @@ struct ScriptWorldSave: Codable, Sendable {
           guard records[actor.identity] == nil else {
             diagnostics?.recordSceneFailure(
               .sceneActorDuplicate, commander: commander, boundary: diagnosticBoundary)
-            return false
+            return nil
           }
           records[actor.identity] = (instance.id, encounter.galaxy, encounter.system, actor)
         }
       }
     }
+    return records
+  }
+
+  @inline(never)
+  private func consistentProjectiles(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     let shotBodies = bodies.filter { $0.scriptShot != nil }
     let expectedShots = commander.scriptState.projectiles.values.filter { $0.presence == .present }
     guard shotBodies.count == expectedShots.count,
@@ -202,6 +280,14 @@ struct ScriptWorldSave: Codable, Sendable {
         return false
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func consistentCalendarJourney(
+    with commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     if let ledger = commander.scriptState.calendarLedger {
       if let journey = ledger.pendingJourney {
         guard !docked, jumpCountdown != nil, journey.galaxy == commander.galaxy,
@@ -222,6 +308,15 @@ struct ScriptWorldSave: Codable, Sendable {
         return false
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func consistentMissionActors(
+    with commander: Commander, records: [UUID: (UUID, Int, Int, ScriptOwnedActor)],
+    diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) -> Bool {
     let physical = bodies.filter { $0.missionActorID != nil }
     let expected = records.values.filter { $0.3.presence == .present }
     guard physical.count == expected.count,
