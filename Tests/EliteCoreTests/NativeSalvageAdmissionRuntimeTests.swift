@@ -45,7 +45,7 @@ enum NativeSalvageAdmissionTestFixture {
     await runtime.setControls(NativePagedSalvageFixture.firingControls)
     var released = await runtime.snapshot()
     for _ in 0..<2000 {
-      released = await runtime.advance(delta: 0.02)
+      released = await NativePagedSalvageFixture.advanceHeldWork(runtime, delta: 0.02)
       if released.commander.alienStorageState?.current.salvage.native.works.values.contains(
         where: { $0.releases == 1 }) == true
       {

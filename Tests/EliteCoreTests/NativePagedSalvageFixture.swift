@@ -249,13 +249,18 @@ enum NativePagedSalvageFixture {
     try #require(game.workGuidance?.mode == .hold(.salvage))
     try #require(game.workGuidance?.surface.section == section)
     try #require(game.workFireSuspended)
-    for _ in 0..<500 where game.workGuidance?.holding != true {
-      game.tick(delta: 0.02)
+  }
+
+  /// Release and press Return at real readiness inside the caller's existing frame budget.
+  /// This sends input only; there are no setup ticks or forced controller transitions.
+  static func advanceHeldWork(_ runtime: GameRuntime, delta: Double) async -> Game {
+    let before = await runtime.snapshot()
+    if before.workGuidance?.holding == true && before.workFireSuspended {
+      await runtime.setControls(.init())
+      await runtime.key("return")
+      await runtime.setControls(firingControls)
     }
-    try #require(game.workGuidance?.holding == true)
-    game.key("return")
-    let freshPress = game.admitFlightFire(held: true)
-    try #require(freshPress)
+    return await runtime.advance(delta: delta)
   }
 
   static func folder() throws -> URL {

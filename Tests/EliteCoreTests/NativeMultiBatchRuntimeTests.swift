@@ -55,7 +55,7 @@ struct NativeMultiBatchRuntimeTests {
       let prior = observeWork(
         first, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
-      first = await runtime.advance(delta: 0.02)
+      first = await NativePagedSalvageFixture.advanceHeldWork(runtime, delta: 0.02)
       let currentWork = observeWork(
         first, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
@@ -147,7 +147,7 @@ struct NativeMultiBatchRuntimeTests {
       let prior = observeWork(
         second, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
-      second = await resumed.advance(delta: 0.02)
+      second = await NativePagedSalvageFixture.advanceHeldWork(resumed, delta: 0.02)
       let currentWork = observeWork(
         second, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)

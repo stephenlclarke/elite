@@ -47,7 +47,7 @@ struct NativePagedSalvageRuntimeTests {
     await runtime.setControls(NativePagedSalvageFixture.firingControls)
     var released = await runtime.snapshot()
     for _ in 0..<2000 {
-      released = await runtime.advance(delta: 0.02)
+      released = await NativePagedSalvageFixture.advanceHeldWork(runtime, delta: 0.02)
       if released.commander.alienStorageState?.current.salvage.native.works[
         hot.cycle.inspection.id]?.releases == 1
       {
@@ -143,7 +143,7 @@ struct NativePagedSalvageRuntimeTests {
     await runtime.setControls(NativePagedSalvageFixture.firingControls)
     var refused = await runtime.snapshot()
     for _ in 0..<2000 {
-      refused = await runtime.advance(delta: 0.02)
+      refused = await NativePagedSalvageFixture.advanceHeldWork(runtime, delta: 0.02)
       if refused.message == "SALVAGE SAVE FAILED - COMPLETED WORK RETAINED" { break }
     }
     #expect(refused.message == "SALVAGE SAVE FAILED - COMPLETED WORK RETAINED")
