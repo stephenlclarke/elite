@@ -199,7 +199,7 @@ public enum WorkTargetSelection {
     _ candidate: WorkTargetCandidate, mode: WorkTargetMode, filter: WorkTargetFilter
   ) -> Bool {
     if filter == .ships, candidate.kind == .capitalShip { return true }
-    switch (filter, mode) {
+    return switch (filter, mode) {
     case (.all, _), (.ships, .ship), (.ships, .docking),
       (.mining, .hold(.mining)), (.mining, .autoScoop(.mining)), (.mining, .tracking(.mining)),
       (.salvage, .hold(.salvage)), (.salvage, .autoScoop(.salvage)),
