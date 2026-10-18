@@ -8,4 +8,6 @@ This is a source-demonstrated targeting inconsistency. The procurement failure p
 
 Regression source must cover real adopted actors, actual NPC and player assault transitions, rejection of missing/stale identity and nonplayer intentions, continued legitimate player attacks, occlusion and Blackjack eligibility. Compilation and execution require the Orchestrator's separate validation lease; no successful runtime result is claimed.
 
+Combined compile 381 failed before tests because the nonplayer regression allocated an actor inside `#require`. Swift Testing expanded the mutating call through an immutable macro operand. The minimal test-only correction captures the allocation result first and unwraps that local. All other macro operands in this file were reviewed as read-only state comparisons or captured optional results. Production code, fixture inputs, six methods, eighteen source cases, assertions and budgets are unchanged; no rebuild or test result is claimed for this correction.
+
 [PR-legacy-npc-intent.md](PR-legacy-npc-intent.md).

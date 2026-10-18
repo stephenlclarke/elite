@@ -8,6 +8,8 @@ At the genuine crime retaliation boundary, ordinary target hostility now reflect
 
 The source-only branch is based on `b615727adade0c5e681e32911df965baffccfd9b`. It changes only `Game.swift`, `GameplayCombat.swift`, the new test file and this issue/PR pair. Scope, formatting, Markdown and whitespace checks precede the frozen handoff. No compiler, discovery, tests, native UI, renderer, SonarQube or remote jobs are authorized in this slice. Independent source review, affected runtime validation and maintained `make ci` remain required before release; the GitHub review/check/approval gates remain unchanged.
 
+Combined compile 381 failed before tests because the nonplayer regression allocated an actor inside `#require`. Swift Testing expanded the mutating call through an immutable macro operand. The minimal test-only correction captures the allocation result first and unwraps that local. All other macro operands in this file were reviewed as read-only state comparisons or captured optional results. Production code, fixture inputs, six methods, eighteen source cases, assertions and budgets are unchanged; no rebuild or test result is claimed for this correction.
+
 The repair is not attributed as the cause of procurement run 380. Its retained scalar pair contains no attacker identity, and a stale unlawful-attack notice is not attribution. Procurement entry preflight and the AUTO input barrier are unchanged. No save schema, equipment, route, health, traffic, timing or gameplay budget changes are included.
 
 [ISSUE-legacy-npc-intent.md](ISSUE-legacy-npc-intent.md).
