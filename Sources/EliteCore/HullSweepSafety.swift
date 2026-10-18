@@ -796,6 +796,9 @@ private struct SweepTriangle: Sendable {
   let a: Vector3
   let b: Vector3
   let c: Vector3
+  // Arithmetic reuse for the existing fast query, never an area or separation certificate.
+  let fastNormal: Vector3
+  let fastNormalSquared: Double
   let conditioned: Bool
   let hasResolvedArea: Bool
   let unresolvedSupport: Bool
@@ -813,6 +816,8 @@ private struct SweepTriangle: Sendable {
     // These are only the boundaries of the pre-existing fast query path, never
     // acceptance. Newly resolved small triangles need conservative queries as well.
     let approximateNormal = first.cross(second)
+    fastNormal = approximateNormal
+    fastNormalSquared = approximateNormal.dot(approximateNormal)
     let area = approximateNormal.length
     let resolved: Bool
     if let original, original.hasResolvedArea, !original.conditioned,
@@ -1265,8 +1270,8 @@ private func sweepPointTriangle(
   _ point: Vector3, _ triangle: SweepTriangle, conditioned: Bool = false
 ) -> Double {
   if conditioned || triangle.conditioned { return sweepConditionedPointTriangle(point, triangle) }
-  let normal = (triangle.b - triangle.a).cross(triangle.c - triangle.a)
-  let square = normal.dot(normal)
+  let normal = triangle.fastNormal
+  let square = triangle.fastNormalSquared
   let projected = point - normal * ((point - triangle.a).dot(normal) / square)
   var inside = true
   for index in 0..<3 {
