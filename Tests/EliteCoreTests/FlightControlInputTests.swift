@@ -144,12 +144,17 @@ struct FlightControlInputTests {
   }
 
   @Test @MainActor func nativeReturnAndKeypadEnterHoldFireAndContextRepeatsCannotRestartIt()
-    throws
+    async throws
   {
+    _ = NSApplication.shared
     let view = GameView(frame: .init(x: 0, y: 0, width: 768, height: 768))
     var game = Game(executive: false)
     game.launch()
-    view.game = game
+    let runtime = GameRuntime(game: game)
+    let delegate = AppDelegate(
+      restoreOnLaunch: false,
+      saves: CommanderSaveSession(preferences: nil), runtime: runtime)
+    view.game = await runtime.snapshot()
     func event(_ code: UInt16, down: Bool, repeatKey: Bool = false) throws -> NSEvent {
       try #require(
         NSEvent.keyEvent(
@@ -157,19 +162,67 @@ struct FlightControlInputTests {
           windowNumber: 0, context: nil, characters: "\r", charactersIgnoringModifiers: "\r",
           isARepeat: repeatKey, keyCode: code))
     }
+    // Return retains the existing proof requirement; an unpainted key cannot queue a command.
+    view.keyDown(with: try event(36, down: true))
+    #expect(view.controls.fire && view.pending.isEmpty)
+    view.keyUp(with: try event(36, down: false))
     for code: UInt16 in [36, 76] {
+      try paintCampaignGalleryView(view)
+      let painted = try #require(view.paintedMissionMenuPresentation)
+      try #require(painted.page == nil)
       view.keyDown(with: try event(code, down: true))
-      #expect(view.controls.fire && view.pending.last == "return")
+      #expect(view.controls.fire && view.pending.count == 1)
+      try verifyNativePaintedKey(view, key: "return", painted: painted)
+      await delegate.processPendingCommands(in: view)
+      let pressed = await runtime.snapshot()
+      #expect(pressed.flightTrigger.held && pressed.flightTrigger.pressPending)
+      #expect(view.pending.isEmpty)
       view.keyUp(with: try event(code, down: false))
       #expect(!view.controls.fire)
+      await runtime.setControls(view.controls)
     }
-    view.game.screen = .help
-    view.game.screen = .front
-    view.pending = []
+    try paintCampaignGalleryView(view)
+    let beforeHelpPaint = try #require(view.paintedMissionMenuPresentation)
+    view.keyDown(with: try event(36, down: true))
+    try verifyNativePaintedKey(view, key: "return", painted: beforeHelpPaint)
+    await delegate.processPendingCommands(in: view)
+    try #require(view.controls.fire)
+    // Exercise real context transitions while Return remains physically held.
+    await runtime.key("k")
+    view.game = await runtime.snapshot()
+    try #require(view.game.screen == .help)
+    #expect(!view.controls.fire)
+    await runtime.key("escape")
+    view.game = await runtime.snapshot()
+    try #require(view.game.screen == .front)
     view.keyDown(with: try event(36, down: true, repeatKey: true))
     #expect(!view.controls.fire && view.pending.isEmpty)
+    try paintCampaignGalleryView(view)
+    let painted = try #require(view.paintedMissionMenuPresentation)
     view.keyDown(with: try event(36, down: true))
-    #expect(view.controls.fire && view.pending == ["return"])
+    #expect(view.controls.fire && view.pending.count == 1)
+    try verifyNativePaintedKey(view, key: "return", painted: painted)
+    await delegate.processPendingCommands(in: view)
+    let fresh = await runtime.snapshot()
+    #expect(fresh.flightTrigger.pressPending && view.pending.isEmpty)
+    await runtime.key("w")
+    view.game = await runtime.snapshot()
+    let interrupted = await runtime.snapshot()
+    #expect(interrupted.workFireSuspended && !interrupted.flightTrigger.pressPending)
+    view.keyDown(with: try event(36, down: true, repeatKey: true))
+    #expect(view.controls.fire && view.pending.isEmpty)
+    view.keyUp(with: try event(36, down: false))
+    // Release/repress between simulation frames still supplies a genuine new queued press.
+    try paintCampaignGalleryView(view)
+    let changedPaint = try #require(view.paintedMissionMenuPresentation)
+    view.keyDown(with: try event(36, down: true))
+    #expect(view.controls.fire && view.pending.count == 1)
+    try verifyNativePaintedKey(view, key: "return", painted: changedPaint)
+    await delegate.processPendingCommands(in: view)
+    let repressed = await runtime.snapshot()
+    #expect(repressed.flightTrigger.pressPending && view.pending.isEmpty)
+    view.keyUp(with: try event(36, down: false))
+    await runtime.setControls(view.controls)
   }
 }
 
