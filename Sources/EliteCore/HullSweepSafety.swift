@@ -464,9 +464,6 @@ public enum HullSweepSafety {
         if lower.isFinite, upper.isFinite, lower >= upper { continue }
       }
       if left.children == nil, right.children == nil {
-        // An actually compared vertex pair supplies an attempt scale only, not authority.
-        // It avoids certificates for equal-gap rows after conditioned lower-bound rounding.
-        var vertexGateSquared = Double.infinity
         for first in left.triangles {
           for (offset, second) in right.triangles.enumerated() {
             try work.triangle()
@@ -492,17 +489,13 @@ public enum HullSweepSafety {
               let rowBounds = triangle.bounds
               let upper = SweepInterval(best).square.upper
               if rowBounds.finite, right.bounds.finite, upper.isFinite,
-                rowBounds.distanceSquared(to: right.bounds) > max(upper, vertexGateSquared)
+                rowBounds.distanceSquared(to: right.bounds) > upper
               {
                 let lower = rowBounds.certifiedLowerSquared(to: right.bounds)
                 if lower.isFinite, lower >= upper { break }
               }
             }
-            let targetTriangle = obstacle.triangles[second]
-            let vertexGap = triangle.a - targetTriangle.a
-            let vertexSquared = vertexGap.dot(vertexGap)
-            if vertexSquared.isFinite { vertexGateSquared = min(vertexGateSquared, vertexSquared) }
-            best = min(best, sweepTriangleDistance(triangle, targetTriangle))
+            best = min(best, sweepTriangleDistance(triangle, obstacle.triangles[second]))
             if best < 1e-9 { return 0 }
           }
         }
