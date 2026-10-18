@@ -54,6 +54,48 @@ private func prepareLedgerImpactLaunch(
   return instance
 }
 
+/// Keep terminal-only preparation locals out of the common sealed-contact fixture frame.
+private func prepareTerminalLedgerImpactDamage(
+  _ game: inout Game, rock: MiningRock?, projectileDamage: Double
+) throws {
+  // Damage live condition through the ordinary native kernel, never canonical rock metadata.
+  let rock = try #require(rock)
+  let chunk = try #require(AsteroidBeltDefinition.chunk(for: rock.identity))
+  try #require(rock.energy == chunk.energy && rock.radius == chunk.radius)
+  try #require(game.commander.miningLedger == MiningLedger() && game.commander.miningLedger.valid)
+  game.commander.miningLedger = MiningLedger(seed: 17)
+  let fitted = try #require(game.commander.fittedEquipment(at: .laser(.front)))
+  let laser = try #require(game.commander.laser(on: .front))
+  let damage = game.commander.laserDamage(against: .asteroid, mount: .front)
+  try #require(fitted.node.key == laser.equipmentName && laser == .pulse)
+  try #require(damage == laser.damage && damage == 15 && projectileDamage == 15)
+  for _ in 0..<Int(ceil(rock.energy / damage)) {
+    let remaining = game.commander.miningLedger.remainingEnergy(for: rock)
+    if remaining <= projectileDamage { break }
+    try #require(remaining > damage)
+    let current = try #require(game.gameplayContext())
+    let contact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+      includePlayer: false)
+    let hit = try #require(contact)
+    try #require(hit.selectedTargetBody?.physical?.rock == rock.identity)
+    let allocated = game.makeAttackOrigin(owner: current.player.identity)
+    let pulseOrigin = try #require(allocated)
+    let applied = game.applyCombatHit(
+      hit.hit, origin: pulseOrigin, kind: .laser, damage: damage, laser: laser, mount: .front,
+      emissionPosition: current.player.position)
+    let incident = try #require(applied)
+    try #require(incident.kind == .laser && incident.laser == .pulse)
+    let actual = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
+    try #require(actual.energy == remaining - damage)
+    try #require(actual.energy == game.commander.miningLedger.remainingEnergy(for: rock))
+    try #require(!game.commander.miningLedger.isDepleted(rock.identity))
+    try #require(game.commander.miningLedger.pendingPayloads.isEmpty)
+  }
+  let remaining = game.commander.miningLedger.remainingEnergy(for: rock)
+  try #require(remaining > 0 && remaining <= projectileDamage && game.commander.miningLedger.valid)
+}
+
 private func prepareLedgerImpactContact(
   _ game: inout Game, instance: UUID, reentry: Bool, absentSource: Bool,
   incidental: Bool, mining: Bool, terminalPreDamage: Bool
@@ -113,42 +155,7 @@ private func prepareLedgerImpactContact(
   }
   game.ensurePhysicalActors()
   if terminalPreDamage {
-    // Damage live condition through the ordinary native kernel, never canonical rock metadata.
-    let rock = try #require(rock)
-    let chunk = try #require(AsteroidBeltDefinition.chunk(for: rock.identity))
-    try #require(rock.energy == chunk.energy && rock.radius == chunk.radius)
-    try #require(game.commander.miningLedger == MiningLedger() && game.commander.miningLedger.valid)
-    game.commander.miningLedger = MiningLedger(seed: 17)
-    let fitted = try #require(game.commander.fittedEquipment(at: .laser(.front)))
-    let laser = try #require(game.commander.laser(on: .front))
-    let damage = game.commander.laserDamage(against: .asteroid, mount: .front)
-    try #require(fitted.node.key == laser.equipmentName && laser == .pulse)
-    try #require(damage == laser.damage && damage == 15 && weapon.damage == 15)
-    for _ in 0..<Int(ceil(rock.energy / damage)) {
-      let remaining = game.commander.miningLedger.remainingEnergy(for: rock)
-      if remaining <= weapon.damage { break }
-      try #require(remaining > damage)
-      let current = try #require(game.gameplayContext())
-      let contact = try game.nearestMissionCollision(
-        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
-        includePlayer: false)
-      let hit = try #require(contact)
-      try #require(hit.selectedTargetBody?.physical?.rock == rock.identity)
-      let allocated = game.makeAttackOrigin(owner: current.player.identity)
-      let pulseOrigin = try #require(allocated)
-      let applied = game.applyCombatHit(
-        hit.hit, origin: pulseOrigin, kind: .laser, damage: damage, laser: laser, mount: .front,
-        emissionPosition: current.player.position)
-      let incident = try #require(applied)
-      try #require(incident.kind == .laser && incident.laser == .pulse)
-      let actual = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
-      try #require(actual.energy == remaining - damage)
-      try #require(actual.energy == game.commander.miningLedger.remainingEnergy(for: rock))
-      try #require(!game.commander.miningLedger.isDepleted(rock.identity))
-      try #require(game.commander.miningLedger.pendingPayloads.isEmpty)
-    }
-    let remaining = game.commander.miningLedger.remainingEnergy(for: rock)
-    try #require(remaining > 0 && remaining <= weapon.damage && game.commander.miningLedger.valid)
+    try prepareTerminalLedgerImpactDamage(&game, rock: rock, projectileDamage: weapon.damage)
   }
   let context = try #require(game.gameplayContext())
   let evaluatedResult2 = game.commander.flightSimulation.allocateSpawn()
