@@ -323,6 +323,46 @@ private enum NativeSalvageOldParentFixture {
   }
 }
 
+/// Failure-only scalar facts; eight rows and an ASCII UTF-8 ceiling prevent corpus dumps.
+private func oldParentClearanceFacts(
+  format: String, body: SpaceBody, pose: ShipPose, metadata: SalvageTargetMetadata,
+  lots: [SalvageLot], results: [SalvageLotIdentity: HullSweepResult]
+) -> String {
+  func vector(_ value: Vector3) -> String { "(\(value.x),\(value.y),\(value.z))" }
+  func asciiField(_ value: String) -> String {
+    String(decoding: value.utf8.prefix(16).filter { $0 < 128 }, as: UTF8.self)
+  }
+  let catalogue = asciiField(body.physical?.catalogueShipID ?? "nil")
+  let velocity = body.physical.map { vector($0.velocity) } ?? "nil"
+  let angular = body.physical.map { vector($0.angularVelocity) } ?? "nil"
+  var rows = [
+    "No original released lot proves mesh clearance and broad-parent overlap",
+    "format=\(asciiField(format)) catalogue=\(catalogue) pose=\(vector(pose.position))"
+      + " basisX=\(vector(pose.orientation.x)) basisY=\(vector(pose.orientation.y))"
+      + " basisZ=\(vector(pose.orientation.z)) v=\(velocity) omega=\(angular)"
+      + " broadRadius=\(metadata.bounds.radius) broadCenter=\(vector(metadata.bounds.center))"
+      + " broadReach=\(metadata.bounds.radius + metadata.bounds.center.length)",
+  ]
+  for lot in lots.prefix(8) {
+    let id = lot.identity
+    let wreck = id.section.wreck
+    let identity =
+      "\(wreck.system.galaxy)/\(wreck.system.system)/\(wreck.site)/\(wreck.lineage)"
+      + "/\(id.section.section)/\(id.lot)"
+    let result = results[id]
+    let reason = result?.failure.map { String(describing: $0) } ?? "none"
+    let minimum = result?.minimumSampledClearance.map { String($0) } ?? "nil"
+    let overlap =
+      (lot.position - pose.position).length < metadata.bounds.radius
+      + metadata.bounds.center.length + lot.halfExtents.length + 8
+    rows.append(
+      "lot=\(identity) p=\(vector(lot.position)) half=\(vector(lot.halfExtents))"
+        + " broad=\(overlap) safe=\(result?.safe ?? false) reason=\(reason) min=\(minimum)")
+  }
+  // All emitted fields are ASCII scalars/identities; reserve one byte for the newline.
+  return String(decoding: rows.joined(separator: "\n").utf8.prefix(4095), as: UTF8.self) + "\n"
+}
+
 struct NativeSalvageOldParentAdmissionTests {
   @Test(arguments: ["old-native", "legacy-current"])
   func originalReleasedOldCustodyReadmitsAfterRealNoWriteLoadWithoutAnotherCut(format: String)
@@ -337,17 +377,33 @@ struct NativeSalvageOldParentAdmissionTests {
     let hull = try PreparedHull(mesh: profile.mesh)
     let pose = fixture.game.modelPose(of: body)
     // Original emission order is fixed; its first row need not clear every hull component.
-    let first = try #require(
-      fixture.lots.first { lot in
-        let overlapsParent =
-          (lot.position - pose.position).length < metadata.bounds.radius
-          + metadata.bounds.center.length + lot.halfExtents.length + 8
-        guard overlapsParent else { return false }
-        let clearance = HullSweepSafety.validatePlacement(
+    var clearanceResults: [SalvageLotIdentity: HullSweepResult] = [:]
+    let selected = fixture.lots.first { lot in
+      let overlapsParent =
+        (lot.position - pose.position).length < metadata.bounds.radius
+        + metadata.bounds.center.length + lot.halfExtents.length + 8
+      guard overlapsParent else { return false }
+      let clearance = HullSweepSafety.validatePlacement(
+        center: lot.position, radius: lot.halfExtents.length, hull: hull, pose: pose,
+        requiredClearance: 8)
+      clearanceResults[lot.identity] = clearance
+      return clearance.safe && (clearance.minimumSampledClearance ?? -.infinity) > 8
+    }
+    let failureMessage: String
+    if selected == nil {
+      // Reuse every selector result; only unqueried originals complete the eight-row inventory.
+      for lot in fixture.lots.prefix(8) where clearanceResults[lot.identity] == nil {
+        clearanceResults[lot.identity] = HullSweepSafety.validatePlacement(
           center: lot.position, radius: lot.halfExtents.length, hull: hull, pose: pose,
           requiredClearance: 8)
-        return clearance.safe && (clearance.minimumSampledClearance ?? -.infinity) > 8
-      }, "No original released lot proves mesh clearance and broad-parent overlap")
+      }
+      failureMessage = oldParentClearanceFacts(
+        format: format, body: body, pose: pose, metadata: metadata, lots: fixture.lots,
+        results: clearanceResults)
+    } else {
+      failureMessage = "No original released lot proves mesh clearance and broad-parent overlap"
+    }
+    let first = try #require(selected, Comment(rawValue: failureMessage))
     #expect(
       (first.position - pose.position).length < metadata.bounds.radius
         + metadata.bounds.center.length + first.halfExtents.length + 8)
