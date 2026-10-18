@@ -63,7 +63,7 @@ extension Game {
   mutating func beginWorkGuidance(body: SpaceBody, mode: WorkTargetMode, velocity: Vector3) {
     guard !playerEMPDisabled else { return }
     guard let context = gameplayContext(), let actor = body.physical?.identity,
-      let metadata = recoverableMetadata(for: body, context: context),
+      let metadata = holdSurfaceMetadata(for: body, context: context),
       let surface = workSurface(for: body, metadata: metadata)
     else {
       cancelAutoTarget()
@@ -275,7 +275,7 @@ extension Game {
           delta: delta), validate: validate)
       state.status = scoopStatus(output.status)
       if let sweep = output.validatedSweep { approvedWorkMotion = .init(from: sweep) }
-    case .ship, .docking:
+    case .ship, .docking, .tracking:
       cancelAutoTarget()
       return
     }
@@ -295,8 +295,9 @@ extension Game {
     if let source = body.physical?.empSource,
       let record = commander.savedEMPState?.records[source], record.crewAboard > 0
     {
-      return nativeCrewCaptureAvailable(body, context: context) && hasNativeRescueTools
-        && freeNativePeopleTonnes > 0
+      // Keeping a physical hull hold does not grant crew capture. The native people
+      // producer independently checks its rescue tools, deadline, capacity and custody.
+      return state.mode == .hold(.salvage) && workTargetCapabilities.salvageModule
     }
     guard let section = state.surface.section else { return true }
     guard let metadata = recoverableMetadata(for: body, context: context),

@@ -43,6 +43,8 @@ extension Game {
     var compatible = false
     if body.hull == .station {
       kind = .activeStation
+    } else if isCapitalHoldVessel(body), physical.salvage == nil {
+      kind = .capitalShip
     } else if let metadata = recoverableMetadata(for: body, context: context) {
       kind = .recoverable(metadata, payload: physical.payload)
       compatible = automaticScoopShapeCompatible(body, context: context)
@@ -58,6 +60,28 @@ extension Game {
       nativePod: nativePodFacts(body, context: context),
       nativeCrewCapture: nativeCrewCaptureAvailable(body, context: context)
         && freeNativePeopleTonnes > 0)
+  }
+
+  func isCapitalHoldVessel(_ body: SpaceBody) -> Bool {
+    guard body.hull != .station, let id = body.physical?.catalogueShipID,
+      let ship = ShipCatalogue.ship(id)
+    else { return false }
+    return ship.catalogue.isCapital && ship.catalogue.capitalSubtype == .vessel
+  }
+
+  /// Geometry for guidance only. This never installs salvage authority on a live actor.
+  /// Cutter permission continues to require physical.salvage and native custody joins.
+  func holdSurfaceMetadata(for body: SpaceBody, context: EncounterContext)
+    -> SalvageTargetMetadata?
+  {
+    if let metadata = recoverableMetadata(for: body, context: context) { return metadata }
+    guard isCapitalHoldVessel(body) else { return nil }
+    return .init(
+      category: .wreck, ownership: .occupied, claimant: nil,
+      wreck: nil, section: nil, lot: nil,
+      bounds: .init(
+        center: .init(0, 0, 0),
+        radius: gameplayMesh(for: body).vertices.map(\.length).max() ?? 0), workSurfaces: [])
   }
 
   func recoverableMetadata(for body: SpaceBody, context: EncounterContext) -> SalvageTargetMetadata?

@@ -1027,3 +1027,66 @@ extension FlightWorkGuidanceRuntimeTests {
     #expect(game.dischargeAudio.events == before && game.workGuidance?.parent == parent)
   }
 }
+
+extension FlightWorkGuidanceRuntimeTests {
+  @Test func liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage() throws {
+    var game = try workRuntimeGame(scoops: false)
+    let ship = try #require(ShipCatalogue.ship("SH043"))
+    try #require(ship.catalogue.isCapital && ship.catalogue.capitalSubtype == .vessel)
+    let craft = try #require(ship.game)
+    game.bodies = [.init(id: 70, hull: .cobra, position: .init(0, 0, 20000))]
+    game.ensurePhysicalActors()
+    game.bodies[0].physical?.catalogueShipID = ship.id
+    game.bodies[0].physical?.npc?.resources = .stock(craft)
+    let body = game.bodies[0]
+    let context = try #require(game.gameplayContext())
+    let candidate = try #require(
+      game.workTargetCandidate(
+        for: body, context: context,
+        frontVisible: true))
+    #expect(candidate.kind == .capitalShip)
+    #expect(game.recoverableMetadata(for: body, context: context) == nil)
+    let surface = try #require(game.holdSurfaceMetadata(for: body, context: context))
+    #expect(surface.wreck == nil && surface.workSurfaces.isEmpty)
+    let commander = game.commander
+    game.key("tab")
+    #expect(game.workGuidance?.parent == body.physical?.identity)
+    #expect(game.workGuidance?.mode == .hold(.salvage))
+    #expect(game.selectedFlightTool == .salvageCutter)
+    #expect(game.bodies[0].physical?.salvage == nil)
+    #expect(game.commander == commander && game.dischargeAudio.events.isEmpty)
+    let cut = game.fireSalvageCutter(delta: 0.1)
+    #expect(!cut && game.nativeSalvageWork == nil)
+    let module = try #require(game.commander.fittedEquipment(at: .targetingSalvage))
+    let revision = try #require(game.commander.equipmentInventory?.revision)
+    try game.commander.storeEquipment(module, expectedRevision: revision)
+    game.key("q")
+    game.key("tab")
+    #expect(game.autoPilot.targetActor == body.physical?.identity)
+    #expect(game.workGuidance == nil && game.workBraking == nil && !game.dockingComputer)
+  }
+
+  @Test(arguments: [SalvageOwnership.claimed, .occupied, .missionProtected])
+  func nativeProtectedParentPermitsHoldButEveryCutterGuardRemains(ownership: SalvageOwnership)
+    throws
+  {
+    var (game, _) = try NativePagedSalvageFixture.game()
+    let index = try #require(game.bodies.firstIndex { $0.physical?.salvage?.wreck != nil })
+    let old = try #require(game.bodies[index].physical?.salvage)
+    game.bodies[index].physical?.salvage = .init(
+      category: old.category, ownership: ownership,
+      claimant: ownership == .claimed ? game.commander.flightSimulation.player : nil,
+      wreck: old.wreck, section: old.section, lot: old.lot, bounds: old.bounds,
+      workSurfaces: old.workSurfaces)
+    game.workTargetFilter = .salvage
+    let commander = game.commander
+    let resources = [game.energy, game.laserHeat, game.fireCooldown]
+    game.key("tab")
+    #expect(game.workGuidance?.parent == game.bodies[index].physical?.identity)
+    #expect(game.workGuidance?.mode == .hold(.salvage))
+    let cut = game.fireSalvageCutter(delta: 0.1)
+    #expect(!cut && game.commander == commander && game.nativeSalvageWork == nil)
+    #expect(game.dischargeAudio.events.isEmpty)
+    #expect([game.energy, game.laserHeat, game.fireCooldown] == resources)
+  }
+}
