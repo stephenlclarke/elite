@@ -843,7 +843,9 @@ private func recoveredSaveFiles(_ directory: URL) throws -> [String: Data] {
     guard try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true else {
       continue
     }
-    files[String(url.path.dropFirst(directory.path.count))] = try Data(contentsOf: url)
+    let path = try nativeEquipmentRelativeSavePath(url, in: directory)
+    try #require(files[path] == nil)
+    files[path] = try Data(contentsOf: url)
   }
   return files
 }
@@ -1002,21 +1004,22 @@ private func verifyNativeEquipmentPublication(
   let expectedWorldObject = try #require(expectedWorldValue as? NSDictionary)
   try #require(worldObject.isEqual(expectedWorldObject))
   let files = try recoveredSaveFiles(fixture.directory)
-  let pointerPath = "/" + fixture.save.lastPathComponent
+  let pointerPath = try nativeEquipmentRelativeSavePath(fixture.save, in: fixture.directory)
   try #require(files[pointerPath] == bytes && bytes != fixture.originalSave)
   for (path, originalBytes) in fixture.originalFiles where path != pointerPath {
     try #require(files[path] == originalBytes)
   }
   let added = Set(files.keys).subtracting(fixture.originalFiles.keys)
   let expectedAdded = Set(
-    names.map {
-      String(generation.appendingPathComponent($0).path.dropFirst(fixture.directory.path.count))
+    try names.map {
+      try nativeEquipmentRelativeSavePath(
+        generation.appendingPathComponent($0), in: fixture.directory)
     })
   try #require(added == expectedAdded)
   try #require(Set(fixture.originalFiles.keys).isSubset(of: Set(files.keys)))
   for name in names {
-    let path = String(
-      generation.appendingPathComponent(name).path.dropFirst(fixture.directory.path.count))
+    let path = try nativeEquipmentRelativeSavePath(
+      generation.appendingPathComponent(name), in: fixture.directory)
     let chunk = try #require(files[path])
     try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
   }
@@ -1037,7 +1040,16 @@ private func verifyNativeEquipmentPostcommitRefusal(
   try #require(live.rearShield == expected.rearShield)
   let files = try recoveredSaveFiles(fixture.directory)
   let pointerBytes = try Data(contentsOf: fixture.save)
+  let pointerPath = try nativeEquipmentRelativeSavePath(fixture.save, in: fixture.directory)
   try #require(files == checkpoint)
-  try #require(pointerBytes == checkpoint["/" + fixture.save.lastPathComponent])
+  try #require(pointerBytes == checkpoint[pointerPath])
   try #require(fixture.delegate.saves.activeURL == fixture.save)
+}
+
+// Enumeration and expected URLs must agree across temporary-directory aliases and separators.
+private func nativeEquipmentRelativeSavePath(_ url: URL, in directory: URL) throws -> String {
+  let root = directory.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+  let path = url.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+  try #require(path.count > root.count && path.prefix(root.count).elementsEqual(root))
+  return path.dropFirst(root.count).joined(separator: "/")
 }
