@@ -242,15 +242,23 @@ extension Game {
       } == true
         && stationAutoKnownTarget(body, context: assessment.context)
     }
+    let needsMissile =
+      max(0, laserHeat - 0.1 * 12) >= 240
+      || commander.laser(on: .front) == nil || commander.laser(on: .front) == .mining
+    // Filter each actor's genuine response eligibility before selecting nearest.
+    // A closer unhurt craft must not mask a current authenticated attacker.
     let target =
       confirmed
-      ?? assessment.threats.filter {
-        $0.position.z > 0 && stationAutoImmediate($0, context: assessment.context)
-          && stationAutoKnownTarget($0, context: assessment.context)
+      ?? assessment.threats.filter { body in
+        guard body.position.z > 0, stationAutoImmediate(body, context: assessment.context),
+          stationAutoKnownTarget(body, context: assessment.context),
+          let actor = body.physical?.identity
+        else { return false }
+        return needsMissile
+          || commander.crimeLedger.hasCurrentUnlawfulAttack(
+            from: actor, against: assessment.context.player.identity, context: assessment.context)
       }.min { $0.position.length < $1.position.length }
     guard let target, target.position.z > 0, let actor = target.physical?.identity,
-      max(0, laserHeat - 0.1 * 12) >= 240 || commander.laser(on: .front) == nil
-        || commander.laser(on: .front) == .mining || confirmed != nil,
       !bodies.contains(where: {
         $0.energy > 0
           && $0.physical?.ordnance.map {
@@ -269,6 +277,16 @@ extension Game {
       {
         guard case .body(let id) = contact.hit.target, id == target.id else { return nil }
       }
+      // Check the explicit homing source's current mesh line separately from the forward muzzle.
+      // This permits off-axis locks while refusing a station or unrelated intervening body.
+      let muzzle = Vector3(0, 0, 24)
+      let offset = target.position - muzzle
+      guard offset.length.isFinite, offset.length > 0,
+        let source = try nearestMissionCollision(
+          from: muzzle, direction: offset.unit, range: offset.length, radius: 0,
+          excludingBodyIDs: [], includePlayer: false),
+        case .body(let id) = source.hit.target, id == target.id
+      else { return nil }
     } catch { return nil }
     return target
   }

@@ -498,3 +498,152 @@ func stationAutoMountedFireUsesActualMeshContactAtNativeBeamRangeBoundary(offset
     after.commander.flightSimulation.pose.position
       != before.commander.flightSimulation.pose.position)
 }
+
+private func stationAutoEntryBoundary() async throws -> Game {
+  var game = try stationAutoGame()
+  let station = try #require(game.autoTargetBody)
+  let stationActor = try #require(station.physical?.identity)
+  // A controlled, initially resting unit at the genuine external staging point.
+  // Only ordinary native ticks establish its subsequent entry attitude and phase.
+  for index in game.bodies.indices where game.bodies[index].physical?.npc != nil {
+    game.bodies[index].hostile = false
+    game.bodies[index].physical?.npc?.legal = .init()
+    game.bodies[index].physical?.npc?.intention = .dock(stationActor)
+  }
+  let pose = game.commander.flightSimulation.pose
+  let goal = pose.systemPoint(
+    station.entrancePosition + station.entranceNormal * station.stationApproachDistance)
+  let forward = pose.orientation.apply(station.entranceNormal * -1).unit
+  let up = pose.orientation.apply(station.entranceUp).unit
+  var orientation = Basis3()
+  orientation.z = forward
+  orientation.x = up.cross(forward).unit
+  orientation.y = forward.cross(orientation.x).unit
+  NativePagedSalvageFixture.moveObserver(&game, to: .init(position: goal, orientation: orientation))
+  game.speed = 0
+  game.autoPilot.setApproachVelocity(.init(0, 0, 0))
+  let runtime = GameRuntime(game: game)
+  for _ in 0..<128 {
+    if game.autoPilot.finalApproach { break }
+    game = await runtime.advance(delta: 0.1)
+  }
+  try #require(game.stationAutoDockingActive && game.autoPilot.finalApproach && !game.docked)
+  return game
+}
+
+private func stationAutoAddNativeAttacker(_ game: inout Game, position: Vector3, sequence: UInt64)
+  throws -> Int
+{
+  let id = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: id, hull: .cobra, position: position, hostile: true))
+  game.ensurePhysicalActors()
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  let spawn = SpawnIdentity(
+    system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
+    sequence: sequence, member: 0, producer: .ambient)
+  game.bodies[index].physical?.spawnIdentity = spawn
+  game.bodies[index].physical?.catalogueShipID = ShipCatalogue.nativeShip(.cobra)?.id
+  game.bodies[index].physical?.npc?.legal = .init(value: 16)
+  game.bodies[index].physical?.npc?.routeProvenance = .generated
+  return id
+}
+
+@Test func stationAutoAuthenticatedColdOffAxisResponsePublishesWhileGenuineEntryAttitudeContinues()
+  async throws
+{
+  let fixture = try ScriptFreightFixture()
+  defer { fixture.clean() }
+  var game = try await stationAutoEntryBoundary()
+  let id = try stationAutoAddNativeAttacker(&game, position: .init(400, 0, 1000), sequence: 903)
+  let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
+  let player = try #require(game.commander.flightSimulation.player)
+  let shield = game.frontShield
+  // The existing native NPC beam makes its own origin, physical hit and law window.
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield < shield)
+  let attackContext = try #require(game.gameplayContext())
+  try #require(
+    game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: actor, against: player, context: attackContext))
+  let nearer = try stationAutoAddNativeAttacker(&game, position: .init(-400, 0, 500), sequence: 904)
+  let nearerActor = try #require(game.bodies.first { $0.id == nearer }?.physical?.identity)
+  let context = try #require(game.gameplayContext())
+  try #require(
+    !game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: nearerActor, against: player, context: context))
+  try #require(game.laserHeat == 0 && game.stationAutoMissileTarget()?.physical?.identity == actor)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  try await runtime.save(to: fixture.save)
+  let before = await runtime.snapshot()
+  await runtime.advanceStationAutoMissile(delta: 0.1)
+  let staged = await runtime.snapshot()
+  let missile = try #require(
+    staged.bodies.first { $0.energy > 0 && $0.physical?.ordnance?.origin.owner == player })
+  #expect(
+    missile.physical?.ordnance?.target == actor
+      && staged.commander.missiles == before.commander.missiles - 1)
+  #expect(
+    staged.autoPilot.finalApproach && staged.autoPilot.targetActor == before.autoPilot.targetActor)
+  #expect(staged.autoPilot.velocity == before.autoPilot.velocity)
+  #expect(staged.pitch == before.pitch && staged.yaw == before.yaw && staged.roll == before.roll)
+  #expect(staged.weaponsTargetID == before.weaponsTargetID && staged.commander.legal == 0)
+  #expect(
+    staged.commander.flightSimulation.physicalTime == before.commander.flightSimulation.physicalTime
+  )
+  let moved = await runtime.advance(delta: 0.1)
+  #expect(
+    moved.autoPilot.finalApproach && moved.autoPilot.targetActor == before.autoPilot.targetActor)
+  #expect(
+    moved.commander.flightSimulation.pose.position
+      != staged.commander.flightSimulation.pose.position)
+}
+
+@Test(arguments: ["clean-unhurt", "wanted-unhurt", "station-occluded", "craft-occluded"])
+func stationAutoColdMissileRequiresActualAttackAndClearExplicitSourcePath(condition: String)
+  async throws
+{
+  var game = try await stationAutoEntryBoundary()
+  let id = try stationAutoAddNativeAttacker(&game, position: .init(400, 0, 1000), sequence: 905)
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  let actor = try #require(game.bodies[index].physical?.identity)
+  let player = try #require(game.commander.flightSimulation.player)
+  if condition == "clean-unhurt" { game.bodies[index].physical?.npc?.legal = .init() }
+  if condition == "station-occluded" || condition == "craft-occluded" {
+    let shield = game.frontShield
+    game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+    try #require(game.frontShield < shield)
+    let context = try #require(game.gameplayContext())
+    try #require(
+      game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: actor, against: player, context: context))
+    if condition == "station-occluded" {
+      let station = try #require(game.autoTargetBody)
+      let hidden = station.position + .init(250, 250, 500)
+      game.bodies[index].position = hidden
+      game.bodies[index].physical?.npc?.intention = .flee(player)
+      let offset = hidden - Vector3(0, 0, 24)
+      let occlusion = try #require(
+        try game.nearestMissionCollision(
+          from: .init(0, 0, 24), direction: offset.unit, range: offset.length, radius: 0,
+          excludingBodyIDs: [], includePlayer: false))
+      try #require(occlusion.selectedTargetBody?.id == station.id)
+    } else {
+      let blocker = game.nextBodyID
+      game.nextBodyID += 1
+      game.bodies.append(.init(id: blocker, hull: .cobra, position: .init(200, 0, 512)))
+      game.ensurePhysicalActors()
+      let offset = game.bodies[index].position - Vector3(0, 0, 24)
+      let occlusion = try #require(
+        try game.nearestMissionCollision(
+          from: .init(0, 0, 24), direction: offset.unit, range: offset.length, radius: 0,
+          excludingBodyIDs: [], includePlayer: false))
+      try #require(occlusion.selectedTargetBody?.id == blocker)
+    }
+  }
+  let before = game
+  #expect(game.laserHeat == 0 && game.stationAutoMissileTarget() == nil)
+  #expect(game.commander == before.commander && game.bodies == before.bodies)
+  #expect(
+    game.autoPilot.finalApproach && game.autoPilot.targetActor == before.autoPilot.targetActor)
+}
