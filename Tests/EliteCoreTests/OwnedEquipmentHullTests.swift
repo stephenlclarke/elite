@@ -56,7 +56,7 @@ import Testing
   #expect(await reloaded.snapshot().commander == after)
 }
 
-@Test func ordinaryHullTradeSurvivesLaterExplicitSaveFailureAndSavesCurrentPropertyOnRetry()
+@Test func currentVersionedHullTradeRefusesUnavailableStorageAndRetainsPropertyUntilRetry()
   async throws
 {
   let folder = try missionGearFolder()
@@ -73,6 +73,68 @@ import Testing
   try #require(quote.allowed)
   let runtime = GameRuntime(game: game, saveURL: file)
   try await runtime.save(to: file)
+  let savedBefore = await runtime.snapshot()
+  #expect(savedBefore.requiresScriptDurability)
+  let before = savedBefore.commander
+  let bytes = try Data(contentsOf: file)
+  let property = try ownedHullSaveFiles(at: directory)
+  let backup = folder.appendingPathComponent("backup")
+  try FileManager.default.moveItem(at: directory, to: backup)
+  try Data("blocked".utf8).write(to: directory)
+  await runtime.key("showroom-trade")
+  await runtime.key("right")
+  let beforeFailure = await runtime.snapshot()
+  await runtime.key("return")
+  let refused = await runtime.snapshot()
+  #expect(refused.commander == before && refused.bodies == beforeFailure.bodies)
+  #expect(refused.inventoryContextEpoch == beforeFailure.inventoryContextEpoch)
+  #expect(refused.showroom.trading)
+  #expect(try Data(contentsOf: backup.appendingPathComponent("commander.json")) == bytes)
+  #expect(try ownedHullSaveFiles(at: backup) == property)
+  try FileManager.default.removeItem(at: directory)
+  try FileManager.default.moveItem(at: backup, to: directory)
+  await runtime.key("return")
+  let acceptedGame = await runtime.snapshot()
+  let accepted = acceptedGame.commander
+  #expect(acceptedGame.requiresScriptDurability && accepted.valid)
+  #expect(accepted.shipID == "SH001" && accepted.missiles == 1)
+  #expect(accepted.credits == quote.balance && !acceptedGame.showroom.trading)
+  try verifyOwnedHullPortableProperty(before: before, after: accepted)
+  for id in stored {
+    #expect(accepted.equipmentInventory?.items.first { $0.id == id }?.location == nil)
+  }
+  #expect(try NativeSaveTestFixture.readVersionedCommander(from: file) == accepted)
+  let reloaded = GameRuntime()
+  try await reloaded.load(from: file, persistMigrations: false)
+  #expect(await reloaded.snapshot().commander == accepted)
+}
+
+@Test func nonDurableHullTradeSurvivesLaterExplicitSaveFailureAndPromotesOnRetry()
+  async throws
+{
+  let folder = try missionGearFolder()
+  defer { try? FileManager.default.removeItem(at: folder) }
+  let directory = folder.appendingPathComponent("save")
+  let file = directory.appendingPathComponent("commander.json")
+  var legacyCommander = Commander()
+  legacyCommander.missiles = 4
+  var game = Game(executive: false)
+  let loaded = game.load(legacyCommander)
+  try #require(loaded && game.commander.valid)
+  game.screen = .inventory
+  let stored = try missionPrepareSmallHullExchange(&game)
+  game.screen = .showroom
+  game.showroom.selection = "SH001"
+  game.commander.credits = 10_000_000
+  try #require(!game.requiresScriptDurability)
+  let quote = try #require(game.shipTradeQuote)
+  try #require(quote.allowed)
+  let runtime = GameRuntime(game: game, saveURL: file)
+  // This is a genuine older raw fixture, not output from the current app writer.
+  try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+  let legacyBytes = try JSONEncoder().encode(legacyCommander)
+  try HyperspaceDriveVersionedSave.rejectFields(legacyBytes)
+  try legacyBytes.write(to: file)
   let before = await runtime.snapshot().commander
   let bytes = try Data(contentsOf: file)
   let property = try ownedHullSaveFiles(at: directory)
@@ -98,10 +160,11 @@ import Testing
   try FileManager.default.removeItem(at: directory)
   try FileManager.default.moveItem(at: backup, to: directory)
   // Freeze the independent expected disk property before writing, not from readback.
-  let expectedDisk = accepted
+  var expectedDisk = accepted
+  expectedDisk.scriptState.calendarLedger = .init(origin: .newCommander)
   try await runtime.save(to: file)
   #expect(await runtime.snapshot().commander == expectedDisk)
-  let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: file))
+  let saved = try NativeSaveTestFixture.readVersionedCommander(from: file)
   #expect(saved == expectedDisk)
 }
 

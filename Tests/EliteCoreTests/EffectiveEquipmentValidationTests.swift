@@ -77,21 +77,35 @@ struct EffectiveEquipmentValidationTests {
   @Test func strongerFiniteGrandfatheredStatisticsRetainIdentityAndResourcesThroughSave()
     async throws
   {
-    let commander = try commanderWithRatio(slot: .energy, axis: .energyCapacity, value: 1e100)
+    var commander = try commanderWithRatio(slot: .energy, axis: .energyCapacity, value: 1e100)
+    commander.scriptState.calendarLedger = .init(origin: .newCommander)
     #expect(commander.valid && commander.performance.energy.isFinite)
     let original = try #require(commander.fittedEquipment(at: .energy))
+    var expected = commander
+    var policy = MiningLedger.legacyUnworked()
+    let system = Universe.systemsIncludingPlugh(number: commander.galaxy)[commander.system]
+    try policy.migratePresence(
+      current: .init(system: system, galaxy: commander.galaxy), historical: [])
+    expected.miningLedger = policy
     let runtime = GameRuntime(game: Game())
     let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: url) }
-    try JSONEncoder().encode(commander).write(to: url)
+    var historical = Game(executive: false)
+    historical.commander = commander
+    historical.energy = commander.performance.energy
+    historical.frontShield = commander.shieldCapacity
+    historical.rearShield = commander.rearShieldCapacity
+    try ScriptSaveStore.write(commander: commander, world: historical.scriptWorldSave, to: url)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
+    #expect(pointer.schemaVersion == 25)
     try await runtime.load(from: url, persistMigrations: false)
     let loaded = await runtime.snapshot()
-    #expect(loaded.commander == commander && loaded.energy == commander.performance.energy)
+    #expect(loaded.commander == expected && loaded.energy == commander.performance.energy)
     #expect(loaded.commander.fittedEquipment(at: .energy) == original)
     try await runtime.save(to: url)
     try await runtime.load(from: url, persistMigrations: false)
-    #expect(await runtime.snapshot().commander == commander)
-    #expect(try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url)) == commander)
+    #expect(await runtime.snapshot().commander == expected)
+    #expect(try NativeSaveTestFixture.readVersionedCommander(from: url) == expected)
   }
 
   @Test func tinyFuelCostsCannotOverflowSearchRadiusOrItsChartInteger() throws {

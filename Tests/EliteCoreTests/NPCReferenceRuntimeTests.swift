@@ -7,6 +7,7 @@ private func referenceGame(flee: Bool = true, protectedB: Bool = false) throws -
   Game, ActorIdentity, ActorIdentity
 ) {
   var game = Game(executive: false)
+  try NativeSaveTestFixture.prepareCurrentPolicy(&game)
   game.docked = false
   game.screen = .front
   game.commander.flightSimulation.enter(game.systemIdentity, arriving: false)
@@ -40,13 +41,16 @@ private func referenceGame(flee: Bool = true, protectedB: Bool = false) throws -
     body.missiles = 1 + index
     body.ecmEnabled = true
     body.navalTarget = index == 1 && protectedB
+    let allocatedSpawn = game.commander.flightSimulation.allocateSpawn()
+    let sequence = try #require(allocatedSpawn)
     body.physical = .init(
       identity: actor, population: .civilian, npc: npc,
       laserCooldown: 0.19,
       spawnIdentity: .init(
         system: game.systemIdentity,
-        visit: game.commander.flightSimulation.visit, sequence: UInt64(index + 1), member: 0))
+        visit: game.commander.flightSimulation.visit, sequence: sequence, member: 0))
     game.bodies.append(body)
+    game.nextBodyID = max(game.nextBodyID, body.id + 1)
   }
   #expect(game.persistNPCStates().isEmpty)
   return (game, a, b)
@@ -138,7 +142,7 @@ struct NPCReferenceRuntimeTests {
     defer { try? FileManager.default.removeItem(at: url) }
     let runtime = GameRuntime(game: game)
     try await runtime.save(to: url)
-    let disk = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+    let disk = try NativeSaveTestFixture.readVersionedCommander(from: url)
     #expect(
       disk.npcPersistence.binding(for: a) == nil && disk.npcPersistence.binding(for: b) == nil)
     let savedA = try #require(disk.npcPersistence.snapshot(for: a))
