@@ -61,7 +61,7 @@
     {
       "id": "mining",
       "title": "Asteroid mining",
-      "detail": "Asteroid targeting establishes a safe target-relative hold and selects the fitted Mining Laser. W can select Main Laser instead; held Return then breaks the rock into much smaller chunks, leaving strictly less than 5% of its original mass recoverable. Most rock disintegrates permanently. Collect surviving chunks with fitted scoops; changing weapon or firing does not release the hold before the parent breaks apart."
+      "detail": "Asteroid targeting establishes a safe target-relative hold and selects the fitted Mining Laser. W can select Main Laser instead; held Return then shatters the rock into smaller debris. Collectible commodity cargo must total strictly less than 5% of the original intact mass. The remaining mass is unrecoverable as cargo, but all physical mass and momentum are conserved and debris remains an impact hazard. Collect eligible chunks with fitted scoops; changing weapon or firing does not release the hold before the parent breaks apart."
     },
     {
       "id": "salvage",
@@ -119,7 +119,7 @@
       "detail": "Every help topic includes the same Flight controls block. Context-specific menu instructions remain visibly separate."
     }
   ],
-  "asteroidDestruction": "Asteroid targeting establishes a safe target-relative hold and selects the fitted Mining Laser. W can select Main Laser instead; held Return then breaks the rock into much smaller chunks, leaving strictly less than 5% of its original mass recoverable. Most rock disintegrates permanently. Collect surviving chunks with fitted scoops; changing weapon or firing does not release the hold before the parent breaks apart.",
+  "asteroidDestruction": "Asteroid targeting establishes a safe target-relative hold and selects the fitted Mining Laser. W can select Main Laser instead; held Return then shatters the rock into smaller debris. Collectible commodity cargo must total strictly less than 5% of the original intact mass. The remaining mass is unrecoverable as cargo, but all physical mass and momentum are conserved and debris remains an impact hazard. Collect eligible chunks with fitted scoops; changing weapon or firing does not release the hold before the parent breaks apart.",
   "provenance": {
     "controlsSHA256": "a62c33f20b7f183510078d12e604a626b3cdebaf65dc9e24a86b08d9855c4abe",
     "sources": [
@@ -142,6 +142,10 @@
       {
         "path": "inputs/salvage-ux.json",
         "sha256": "45192c598eb3d258e3c28409ad593c490b9cfc8fd5844ae84a75e4c27983c887"
+      },
+      {
+        "path": "docs/L337-IMPLEMENTATION.md",
+        "sha256": "202fc5ff8cd4edc2b27881d4b7e28af61af5e062b2d6b6dfc753019a43dcb641"
       }
     ]
   },
@@ -152,7 +156,7 @@
     "If the extraction tool is absent, state Salvage Cutter not fitted or Mining Laser not fitted and retain a safe hold. Never replace an attempted extraction shot with combat fire. The player may explicitly select an equipped Main Laser and press Return to destroy the target.",
     "A wreck can be cut only at an eligible recoverable section. Occupied, claimed or mission-protected targets display their state; merely holding position does not make them abandoned or grant salvage rights. A living ship must meet the existing abandonment/disablement and custody rules before extraction is enabled.",
     "Active stations retain their docking action and protection; this capital-ship hold rule does not convert an operational station into a destructible salvage target.",
-    "Main Laser damage follows normal combat and legal rules. Destroying an asteroid produces much smaller collectible chunks with total recoverable mass strictly below 5% of the original rock; the rest disintegrates permanently. This is poor-yield salvage, not normal Mining Laser extraction. Destruction of ship systems can lose recoverable components. Depletion, destruction and disappearance are separate outcomes."
+    "Main Laser damage follows normal combat and legal rules. Destroying an asteroid produces smaller debris with a finite collectible commodity-yield pool strictly below 5% of the original intact mass. Unrecoverable commodity material remains physical debris: conserve all physical mass and momentum, and retain its impact hazard. Keep physical hazard accounting separate from commodity yield, preserving original creation mass, already extracted amounts and descendants across save/reload. This is poor-yield salvage, not normal Mining Laser extraction. Destruction of ship systems can lose recoverable components. Depletion, destruction and disappearance are separate outcomes."
   ],
   "holdRules": [
     "Selecting a capital-sized ship or asteroid automatically approaches a safe surface-relative work position and matches drift and spin when the matching guidance module is installed. Acquisition never fires a tool. Show APPROACHING, MATCHING MOTION, HOLDING or an explicit BLOCKED reason.",
