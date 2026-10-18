@@ -35,6 +35,18 @@ extension Game {
       }
       guard flushNativeSalvageWork() else { return false }
     }
+    return prepareColdNativeSalvageWork(
+      body: body, section: section, source: source, actor: actor, wreck: wreck,
+      owner: owner, hull: hull, identity: identity)
+  }
+
+  // Keep private candidate preparation out of the repeated section-work call frame.
+  @inline(never)
+  private mutating func prepareColdNativeSalvageWork(
+    body: SpaceBody, section: SalvageSectionProfile, source: SalvageLootSource,
+    actor: ActorIdentity, wreck: WreckIdentity, owner: UUID, hull: UUID,
+    identity: WreckSectionIdentity
+  ) -> Bool {
     guard commander.alienStorageStateValid else { return false }
     do {
       var candidate = self
