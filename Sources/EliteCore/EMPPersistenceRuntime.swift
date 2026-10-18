@@ -247,6 +247,14 @@ extension Game {
   /// Save/departure/culling capture the same physical objects. Missing actors become unbound, never replenished.
   @discardableResult
   mutating func persistEMPState() -> Bool {
+    guard captureEMPArchiveState() else { return false }
+    guard let state = commander.savedEMPState else { return true }
+    return state.sceneIsConsistent(
+      bodies, flight: commander.flightSimulation, people: commander.nativePeople)
+  }
+
+  /// Capture keeps its original initial/final state guards and publication point.
+  private mutating func captureEMPArchiveState() -> Bool {
     guard var state = commander.savedEMPState else {
       return !bodies.contains {
         $0.physical?.empSource != nil || $0.physical?.empCrewPod != nil
@@ -295,7 +303,6 @@ extension Game {
     }
     guard state.valid else { return false }
     commander.savedEMPState = state
-    return state.sceneIsConsistent(
-      bodies, flight: commander.flightSimulation, people: commander.nativePeople)
+    return true
   }
 }
