@@ -140,3 +140,38 @@ private struct CommanderQueryFixture {
   #expect(commodities.map { $0["unit"] } == Commodity.all.map { .string($0.unit) })
   #expect(game.commander.valid)
 }
+
+@Test func baseScriptSnapshotRetainsAllReadSectionsAndIndependentNativeValues() throws {
+  var game = try missionGearGame()
+  game.commander.credits = 123456
+  game.commander.cargo[0] = 5
+  game.commander.scriptState.flightSeconds = 12
+  game.commander.scriptState.localSeconds = 34
+  game.commander.scriptState.transitSeconds = 78
+  let before = game.commander
+  let snapshot = game.scriptSnapshot
+  let fields = try #require(snapshot.object)
+  #expect(
+    Set(fields.keys) == [
+      "galaxy", "system", "docked", "main_station", "station_id", "durable_commands",
+      "jump_range_ly", "fitted_equipment", "stored_equipment", "free_equipment_units",
+      "credits", "commander", "library", "free_tonnes", "flight_seconds", "local_seconds",
+      "calendar_seconds", "calendar_day", "calendar_profile", "transit_seconds",
+    ])
+  #expect(fields["galaxy"] == .integer(0) && fields["system"] == .integer(7))
+  #expect(fields["docked"] == .bool(true) && fields["main_station"] == .bool(true))
+  #expect(fields["station_id"] == .string(game.contractStation.key))
+  #expect(fields["durable_commands"] == .bool(false))
+  #expect(fields["jump_range_ly"] == .number(7))
+  #expect(fields["credits"] == .integer(123456) && fields["free_tonnes"] == .integer(25))
+  #expect(fields["flight_seconds"] == .number(12) && fields["local_seconds"] == .number(34))
+  #expect(fields["calendar_seconds"] == .number(0) && fields["transit_seconds"] == .number(78))
+  #expect(fields["calendar_profile"] == .null && fields["calendar_day"] == .integer(0))
+  #expect(fields["fitted_equipment"] == before.ownedGearCounts(fitted: true))
+  #expect(fields["stored_equipment"] == before.ownedGearCounts(fitted: false))
+  #expect(
+    fields["free_equipment_units"] == .integer(Int64(before.passengerFit?.freeEquipmentUnits ?? 0)))
+  #expect(fields["commander"] == game.scriptCommanderQuery)
+  #expect(fields["library"] == .array(game.referenceBooks.map(\.header)))
+  #expect(game.commander == before)
+}
