@@ -2,7 +2,7 @@
 
 ## Changes
 
-The contract-trial isolation baseline now follows the first successful live save. Explicit `KEEP`, 7654-credit and original live-cargo checks protect the save barrier itself. Trial resources, foreign-quote rejection, isolated trial save/load, the entire normalized live commander and exact live file bytes remain checked. Awaited snapshots and throwing reads are bound before assertions, apart from the intentional expected-throw closure.
+The contract-trial isolation baseline now follows the first successful live save. Explicit `KEEP`, 7654 native cash units (765.4 CR) and original live-cargo checks protect the save barrier itself. Trial resources, foreign-quote rejection, isolated trial save/load, the entire normalized live commander and exact live file bytes remain checked. Awaited snapshots and throwing reads are bound before assertions, apart from the intentional expected-throw closure.
 
 Successful game-over reset and retry now require the exact fresh `ScriptEngineState` containing only `ScriptCalendarLedger(origin: .newCommander)`, canonical durability, valid cleared mission state, default name/credits, zero cargo and a new equipment owner. They require a new schema-26 commander-scope pointer/generation, strict `ScriptSaveStore.read`, whole saved/reset equality and actual runtime reload equality. The failed-publication path retains all original native-state, nine-control-value, original-save-byte and parsed prior-save assertions; the successful retry also checks cleared controls. No raw decoder fallback is introduced.
 
