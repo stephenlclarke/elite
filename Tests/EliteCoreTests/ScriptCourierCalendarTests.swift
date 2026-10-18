@@ -189,12 +189,66 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
   // Quiet controlled scenery keeps unrelated encounters from dominating this clock boundary fixture.
   // Every second still comes from real clamped Runtime.advance flight, never an edited mission clock.
   var steps = 0
+  var firstInactiveFrame: Data?
+  var diagnosticSnapshots = 0
   while steps < 20000 {
     let now = await runtime.snapshot().commander.scriptState.clock(.missionCalendar)
     if now >= due { break }
     if steps % 100 == 0 { await runtime.prepareCourierJumpFixture(destination: pinned.path.last!) }
-    _ = await runtime.advance(delta: min(0.1, due - now))
+    var beforeFacts: [String: Any] = [:]
+    if firstInactiveFrame == nil {
+      // Retain primitive observations, never an additional Game across flight advances.
+      let state = await runtime.snapshot()
+      diagnosticSnapshots += 1
+      beforeFacts = [
+        "clock": now, "physicalTime": state.commander.flightSimulation.physicalTime,
+        "screen": state.screen.rawValue, "paused": state.paused, "docked": state.docked,
+        "energy": state.energy, "frontShield": state.frontShield, "rearShield": state.rearShield,
+        "temperature": state.cabinTemperature, "message": state.message,
+      ]
+    }
+    do {
+      let state = await runtime.advance(delta: min(0.1, due - now))
+      let afterClock = state.commander.scriptState.clock(.missionCalendar)
+      if firstInactiveFrame == nil,
+        afterClock <= now || state.paused || state.docked || !state.screen.isFlight
+      {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        let evidence: [String: Any] = [
+          "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"] ?? "local",
+          "row": pinned.row, "path": pinned.path, "late": boundary.late, "due": due,
+          "step": steps, "requestedDelta": min(0.1, due - now),
+          "additionalSnapshotsThroughFirstInactiveFrame": diagnosticSnapshots,
+          "before": beforeFacts,
+          "after": [
+            "clock": afterClock, "physicalTime": state.commander.flightSimulation.physicalTime,
+            "screen": state.screen.rawValue, "paused": state.paused, "docked": state.docked,
+            "energy": state.energy, "frontShield": state.frontShield,
+            "rearShield": state.rearShield,
+            "temperature": state.cabinTemperature, "message": state.message,
+            "gameplayRevision": state.gameplayRevision,
+            "stationImpactRevision": state.stationImpactRevision.map { $0 as Any } ?? NSNull(),
+          ],
+          "commander": try JSONSerialization.jsonObject(with: encoder.encode(state.commander)),
+          "world": try JSONSerialization.jsonObject(with: encoder.encode(state.scriptWorldSave)),
+        ]
+        firstInactiveFrame = try JSONSerialization.data(
+          withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys])
+      }
+    }
     steps += 1
+  }
+  let finalClock = await runtime.snapshot().commander.scriptState.clock(.missionCalendar)
+  if steps == 0 || steps >= 20000 || finalClock != due,
+    let evidence = firstInactiveFrame,
+    let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"]
+  {
+    let directory = URL(fileURLWithPath: path)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let name =
+      "courier-deadline-origin-\(pinned.origin)-row-\(pinned.row)-late-\(boundary.late)-first-inactive.json"
+    try evidence.write(to: directory.appendingPathComponent(name), options: .withoutOverwriting)
   }
   #expect(steps > 0 && steps < 20000)
   #expect(await runtime.snapshot().commander.scriptState.clock(.missionCalendar) == due)
