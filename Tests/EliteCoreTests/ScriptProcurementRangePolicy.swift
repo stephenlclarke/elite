@@ -52,6 +52,14 @@ enum ScriptProcurementRangePolicy {
 struct ScriptProcurementRetreat: Sendable, Equatable {
   let target: ActorIdentity
   let turnSign: Double
+  var mode = Mode.breakAway
+
+  enum Mode: Sendable, Equatable { case breakAway, reengage }
+
+  func permitsCombat(_ facts: ScriptProcurementPreflightFacts) -> Bool {
+    mode == .reengage && facts.threat?.identity == target && facts.threat?.pulseOnly == true
+      && facts.threats.allSatisfy(\.pulseOnly)
+  }
 }
 
 extension ScriptProcurementPilotBudget {
@@ -67,6 +75,12 @@ extension ScriptProcurementPilotBudget {
       let target = facts.threats.first(where: { $0.identity == phase.target }), target.pulseOnly,
       target.immediate || facts.incoming
     {
+      if phase.mode == .breakAway, target.immediate, facts.rearShieldLow,
+        !facts.pulseHeatBlocked
+      {
+        retreat?.mode = .reengage
+      }
+      if phase.mode == .reengage, facts.pulseHeatBlocked { retreat?.mode = .breakAway }
       return
     }
     retreat = nil
