@@ -1,0 +1,11 @@
+# Preserve complete native values through the current save format
+
+The private NPC fixture now establishes current mining/calendar policy before its independent expected values are captured, allocates its real spawn sequence and advances the body highwater beyond its original body 40. The absent-salvage fixture likewise establishes the current policy before its original full-value preservation checks. The three actual save callers use the production versioned reader; no raw fallback or weakened save guard is introduced. Every existing complete Commander and spent NPC resource/reference assertion remains.
+
+A new actual legacy-load/current-save regression constructs its expected legacy-origin mining policy from the fixed original system, then independently adds the required calendar before saving. It checks full Commander equality, unchanged gear identities and resources, absent salvage state, schema 26, raw-file refusal by the versioned reader and byte-preserving reload. Expected values never come from saved readback.
+
+The temporary intentionally failing diagnostic method and helper are removed after recording its durable evidence; the original tests remain. Diagnostic source and exact binary stay in Git history and `/tmp/elite-native-save-caller-diagnostic-317/tsan-snapshot`. All 695 compiled artifacts were preserved and independently verified. The actual stage reports are under that run's `native-evidence` directory. Validation 317 is diagnostic failure evidence, not a passing gate.
+
+Source parsing, strict formatting, Markdown lint and whitespace checks precede frozen-source review and grouped meaningful execution with the actual convoy repairs and post-collision actor callback. Validation 316's other 44 completed scopes remain retained. A source inventory of other actual native-save/raw-decoder candidates is kept separately; pure JSON roundtrips and raw authority checks are untouched. Full coherent CI, coverage/ASan/leaks, renderer media, completed clean PR review, protected merge, main-only Sonar and release remain pending.
+
+[ISSUE-native-save-callers.md](ISSUE-native-save-callers.md).
