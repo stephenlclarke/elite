@@ -45,6 +45,8 @@ public struct ScriptContractOffer: Codable, Sendable, Equatable, Identifiable {
   public var status: ContractOfferStatus = .available
   var valid: Bool {
     (courier.map { $0.matches(self) } ?? true)
+      && (!ScriptProcurementPlan.isMarked(parameters)
+        || ScriptProcurementPlan.read(parameters)?.matches(self) == true)
       && PackValidation.localID(key) && (1...160).contains(title.count)
       && (1...12000).contains(briefing.utf8.count)
       && (0..<8).contains(destinationGalaxy) && (0...255).contains(destinationSystem)
@@ -71,7 +73,13 @@ public struct ScriptContractBoard: Codable, Sendable, Equatable {
   public var courierGeneration: ScriptCourierGeneration? = nil
   public var cacheKey: String { digest + "/" + id + "/" + station.key }
   var valid: Bool {
-    PackValidation.identifier(provider) && PackValidation.version(version)
+    if clock == .missionCalendar, courierGeneration == nil {
+      return ScriptProcurementGeneration.valid(self)
+    }
+    guard !offers.contains(where: { ScriptProcurementPlan.isMarked($0.parameters) }) else {
+      return false
+    }
+    return PackValidation.identifier(provider) && PackValidation.version(version)
       && digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
       && PackValidation.localID(id) && station.valid && (1...160).contains(title.count)
       && revision >= 0 && revision <= 1_000_000_000_000 && period.isFinite
@@ -112,6 +120,10 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
   public var settlementAmount: Int?
   public var settledAt: Double?
   var valid: Bool {
+    if clock == .missionCalendar, offer.courier == nil {
+      return ScriptProcurementGeneration.valid(self)
+    }
+    guard !ScriptProcurementPlan.isMarked(offer.parameters) else { return false }
     let path = boardKey.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
     let groupParts = group.split(separator: "/", omittingEmptySubsequences: false).map(String.init)
     guard offer.valid, path.count == 3, path[0] == digest, PackValidation.localID(path[1]),
@@ -215,6 +227,13 @@ extension Commander {
   var contractsValid: Bool {
     guard contracts.valid, contracts.rrs?.valid(for: self) ?? true else { return false }
     for board in contracts.boards.values {
+      if board.clock == .missionCalendar && board.courierGeneration == nil {
+        guard ScriptProcurementGeneration.valid(board),
+          board.offers.allSatisfy({
+            ScriptProcurementPlan.read($0.parameters)?.owner == equipmentOwnerID
+          })
+        else { return false }
+      }
       for offer in board.offers {
         if case .accepted(let id) = offer.status {
           var frozen = offer
@@ -230,7 +249,8 @@ extension Commander {
     }
     return scriptState.instances.allSatisfy { _, instance in
       guard let job = instance.contract else { return true }
-      return job.valid && job.digest == instance.digest && job.version == instance.version
+      return job.valid && procurementStateValid(instance)
+        && job.digest == instance.digest && job.version == instance.version
         && instance.id == Game.contractJobIdentity(job.offer.id)
         && instance.definition.hasPrefix(job.provider + "/")
         && (instance.outcome == .active

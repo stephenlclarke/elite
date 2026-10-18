@@ -183,6 +183,10 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
 extension ScriptPackLibrary {
   static func validateCourier(_ manifest: ScriptManifest) throws {
     guard let courier = manifest.courier else {
+      if manifest.procurement != nil {
+        try validateProcurement(manifest)
+        return
+      }
       guard manifest.board?.clock != .missionCalendar,
         !manifest.capabilities.contains("courier-contracts-basic-v2"),
         !manifest.capabilities.contains("mission-calendar-v2"),

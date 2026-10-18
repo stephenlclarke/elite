@@ -124,7 +124,10 @@ extension Game {
       }
       state.dialogue = ScriptDialogue(
         collectionQuote: quote,
-        id: id, token: state.id.uuidString + ":" + String(event.sequence) + ":" + id,
+        id: id,
+        token: pack.manifest.procurement == nil
+          ? state.id.uuidString + ":" + String(event.sequence) + ":" + id
+          : procurementDialogueToken(state.id.uuidString + ":" + String(event.sequence) + ":" + id),
         galaxy: candidate.galaxy, system: candidate.system, revision: state.revision + 1)
     case "dialogue.commit":
       let id = try identifier("id")
@@ -196,8 +199,20 @@ extension Game {
   // Native donations and authored finishes share every completion and settlement guard.
   func finishScriptMission(
     _ outcome: ScriptOutcome, pack: ScriptPack,
-    state: inout ScriptInstance, candidate: inout Commander
+    state: inout ScriptInstance, candidate: inout Commander,
+    procurementAdmission: ScriptProcurementAdmission? = nil
   ) throws {
+    if pack.manifest.procurement != nil
+      || state.contract.map({ ScriptProcurementPlan.isMarked($0.offer.parameters) }) == true
+    {
+      guard
+        procurementAdmission?.permits(outcome, game: self, state: state, candidate: candidate)
+          == true
+      else {
+        throw MissionPackError(
+          "Procurement completion requires a current native lot or abandon confirmation.")
+      }
+    }
     guard pack.manifest.capabilities.contains("story-v2") else {
       throw MissionPackError("Command requires declared story-v2")
     }
@@ -237,7 +252,8 @@ extension Game {
           && (pack.manifest.mission.requiredCollections ?? []).allSatisfy { id in
             state.collections[id]?.complete == true
               && state.collections[id]?.definition
-                == pack.manifest.collections?.first(where: { $0.id == id })
+                == resolvedScriptCollectionDefinition(
+                  id, pack: pack, state: state, commander: candidate)
           }
           && scriptAnswersSatisfied(pack, state: state)
           && state.gearIssues.values.allSatisfy { !$0.loan || $0.status != .issued }

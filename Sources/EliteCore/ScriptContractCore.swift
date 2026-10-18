@@ -27,7 +27,8 @@ extension Game {
   }
   mutating func ensureContractBoard(_ pack: ScriptPack) throws -> String {
     try ScriptPackLibrary.validateCourier(pack.manifest)
-    if pack.manifest.courier != nil { ensureMissionCalendar() }
+    try ScriptPackLibrary.validateProcurement(pack.manifest)
+    if pack.manifest.courier != nil || pack.manifest.procurement != nil { ensureMissionCalendar() }
     resolveCourierTerminals()
     guard docked, dockedAtMainStation, !paused, let definition = pack.manifest.board,
       scriptUnavailable(pack) == nil,
@@ -35,7 +36,9 @@ extension Game {
     else {
       throw MissionPackError("This station has no available contract provider for this pack.")
     }
-    if pack.manifest.pledge != nil || pack.manifest.courier != nil, commander.system >= 256 {
+    if pack.manifest.pledge != nil || pack.manifest.courier != nil
+      || pack.manifest.procurement != nil, commander.system >= 256
+    {
       throw MissionPackError("Station Aid pledges do not support this synthetic host site.")
     }
     let key = pack.digest + "/" + definition.id + "/" + contractStation.key
@@ -55,7 +58,18 @@ extension Game {
     let courierGeneration = try pack.manifest.courier.map { _ in
       try ScriptCourierGeneration(origin: contractStation, commander: commander, seed: initialSeed)
     }
+    if pack.manifest.procurement != nil, !nativeMainStationDockEvidenceIsCurrent {
+      throw MissionPackError("Procurement boards require the current actual main station dock.")
+    }
+    let procurementPlans = try pack.manifest.procurement.map { _ in
+      try ScriptProcurementGeneration.plans(
+        pack: pack, commander: commander, origin: contractStation, revision: revision,
+        seed: initialSeed)
+    }
     var world = scriptSnapshot.object ?? [:]
+    if let procurementPlans {
+      world["procurement_plan"] = try ScriptProcurementGeneration.value(procurementPlans)
+    }
     if let declaration = pack.manifest.courier, let courierGeneration {
       world["courier_plan"] = courierGeneration.plan(declaration)
     }
@@ -93,6 +107,11 @@ extension Game {
           throw MissionPackError("Authored courier row changed native terms or order.")
         }
       }
+    }
+    if let procurementPlans {
+      guard offers.count == procurementPlans.count,
+        zip(procurementPlans, offers).allSatisfy({ $0.matches($1) })
+      else { throw MissionPackError("Authored procurement rows changed native terms or order.") }
     }
     let board = ScriptContractBoard(
       id: definition.id, provider: pack.manifest.id, version: pack.manifest.version,
@@ -228,6 +247,15 @@ extension Game {
       throw MissionPackError("Insufficient cash for this contract's deposit.")
     }
     try ScriptPackLibrary.validateCourier(pack.manifest)
+    try ScriptPackLibrary.validateProcurement(pack.manifest)
+    if pack.manifest.procurement != nil {
+      guard let plan = ScriptProcurementPlan.read(offer.parameters), plan.matches(pack),
+        plan.matches(offer)
+      else {
+        throw MissionPackError("Procurement terms do not match their native provider.")
+      }
+      try requireProcurementResources(plan)
+    }
     if let terms = offer.courier { try requireCourierResources(terms) }
     let acceptedAt = commander.scriptState.clock(board.clock)
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
@@ -236,7 +264,8 @@ extension Game {
       digest: board.digest, station: board.station, boardRevision: board.revision,
       group: board.group,
       offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
-      deadlinePolicy: offer.courier == nil ? nil : .inclusiveConfirmation)
+      deadlinePolicy: offer.courier == nil && pack.manifest.procurement == nil
+        ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
     var pledgeAdmission: ScriptPledgeAdmission? = nil
     var courierAdmission: ScriptCourierAdmission? = nil
@@ -310,6 +339,14 @@ extension Game {
       candidate.scriptCourierAdmission = nil
       guard candidate.courierActionComplete(admission) else {
         throw MissionPackError("Courier item was not issued in its original confirmation.")
+      }
+    }
+    if pack.manifest.procurement != nil {
+      guard let state = candidate.commander.scriptState.instances[instanceID],
+        candidate.commander.procurementStateValid(state),
+        candidate.procurementContentIssue(state, pack: pack) == nil
+      else {
+        throw MissionPackError("Procurement acceptance did not retain its exact native objective.")
       }
     }
     guard candidate.commander.valid else {
