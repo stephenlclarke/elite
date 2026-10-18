@@ -157,30 +157,51 @@ private func solarWorldAfterRelaunch(
   // A current world restores its saved flight state, so actually dock before saving it.
   game.dock()
   try #require(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
+  let parked = game.commander.npcPersistence
+  try #require(parked.valid && parked.count > 0 && parked.livingCount > 0)
+  try #require(
+    !parked.unboundSnapshots.isEmpty && parked.unboundSnapshots.count == parked.livingCount)
+  try #require(parked.unboundSnapshots.values.allSatisfy { $0.valid })
+  try #require(game.bodies.isEmpty)
+  var alreadyParked = parked
+  alreadyParked.resetPhysicalBindings(system: game.systemIdentity)
+  try #require(alreadyParked == parked)
   var expectedCommander = game.commander
   let mining = expectedCommander.miningLedgerForMigration(legacyMissing: false)
   try #require(mining.usesEconomyWeightedPresence)
   expectedCommander.miningLedger = mining
   try #require(expectedCommander.scriptState.calendarLedger != nil)
-  try #require(expectedCommander.npcPersistence.count == 0 && game.bodies.isEmpty)
+  var expectedDisk = expectedCommander
+  expectedDisk.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  try #require(expectedDisk == expectedCommander && expectedDisk.npcPersistence == parked)
+  let expectedWorld = game.scriptWorldSave
+  let worldEncoder = ScriptValueStorage.encoder()
+  let expectedWorldBytes = try worldEncoder.encode(expectedWorld)
   let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: directory) }
   let file = directory.appendingPathComponent("commander.json")
   let runtime = GameRuntime(game: game)
   try #require(await runtime.snapshot().commander == game.commander)
   try await runtime.save(to: file)
-  let commander = await runtime.snapshot().commander
+  let published = await runtime.snapshot()
+  let commander = published.commander
   #expect(commander == expectedCommander)
+  #expect(published.commander.npcPersistence == parked)
+  #expect(try worldEncoder.encode(published.scriptWorldSave) == expectedWorldBytes)
   let bytes = try Data(contentsOf: file)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
   try #require(pointer.schemaVersion == 26 && pointer.scope == "commander")
   let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
   #expect(
-    stored == expectedCommander && world.docked && world.valid && world.consistent(with: stored))
+    stored == expectedDisk && world.docked && world.valid && world.consistent(with: stored))
+  #expect(stored.npcPersistence == parked)
+  #expect(try worldEncoder.encode(world) == expectedWorldBytes)
   let files = try ScriptFinanceTestFixture.files(directory)
   try await runtime.load(from: file, persistMigrations: false)
   game = await runtime.snapshot()
   #expect(game.commander == commander)
+  #expect(game.commander == expectedDisk && game.commander.npcPersistence == parked)
+  #expect(try worldEncoder.encode(game.scriptWorldSave) == expectedWorldBytes)
   #expect(try ScriptFinanceTestFixture.files(directory) == files)
   #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
   game.launch()
