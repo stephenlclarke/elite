@@ -18,6 +18,12 @@ extension Commander {
   mutating func migrateStockHyperspaceDrive(allocatingItemIDs: () -> UUID) throws {
     try validateEquipmentState()
     guard savedEquipmentVersion != 3 else { return }
+    try migrateStockHyperspaceDriveCandidate(allocatingItemIDs: allocatingItemIDs)
+  }
+
+  /// Allocate migration values only after the public validation/current-version boundary.
+  @inline(never)
+  private mutating func migrateStockHyperspaceDriveCandidate(allocatingItemIDs: () -> UUID) throws {
     guard let inventory = equipmentInventory,
       !inventory.items.contains(where: {
         $0.node.family == HyperspaceDriveDefinition.purchaseFamily
