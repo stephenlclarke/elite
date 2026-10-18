@@ -124,7 +124,7 @@ extension Game {
     for index in bodies.indices {
       bodies[index].position = end.shipPoint(start.systemPoint(bodies[index].position))
       bodies[index].orientation = change.composed(with: bodies[index].orientation)
-      bodies[index].rotation += delta * bodies[index].rotationRate
+      advanceBodyModelRotation(at: index, delta: delta)
       advanceCanonicalModelSpin(at: index, delta: delta)
       if let physical = bodies[index].physical, physical.spawnIdentity != nil,
         physical.ordnance == nil, bodies[index].scriptShot == nil,

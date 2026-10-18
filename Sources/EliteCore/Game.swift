@@ -1686,7 +1686,7 @@ public struct Game: Sendable {
         bodies[index].orientation.rotate(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
         bodies[index].position = bodies[index].position - autoPilot.velocity * dt
         bodies[index].position.z -= speed * dt * 18
-        bodies[index].rotation += dt * bodies[index].rotationRate
+        advanceBodyModelRotation(at: index, delta: dt)
         advanceCanonicalModelSpin(at: index, delta: dt)
         if let physical = bodies[index].physical, physical.spawnIdentity != nil,
           physical.ordnance == nil, bodies[index].scriptShot == nil,

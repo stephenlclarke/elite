@@ -64,6 +64,20 @@ extension Commander {
 }
 
 extension Game {
+  /// Arrival can admit a station after this tick has advanced physical time. Project its
+  /// source spin from that clock instead of integrating the already-current phase again.
+  mutating func advanceBodyModelRotation(at index: Int, delta: Double) {
+    if let identity = bodies[index].nativeStationIdentity,
+      let source = NativeStationSource.binding(for: identity)
+    {
+      bodies[index].rotation =
+        (commander.flightSimulation.physicalTime * source.rotationRate)
+        .truncatingRemainder(dividingBy: 2 * .pi)
+    } else {
+      bodies[index].rotation += delta * bodies[index].rotationRate
+    }
+  }
+
   /// Physical recharge is independent of whether manual or guided movement owns the camera.
   mutating func advanceNativeStationRecharge(delta: Double) {
     guard delta.isFinite, delta > 0, delta <= 0.1 else { return }
