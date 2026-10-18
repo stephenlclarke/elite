@@ -111,7 +111,10 @@ private func verifyVersionedDockRestore(
   let beforeFiles = try rawAuthorityFiles(storage.directory)
   let pointer = try JSONDecoder().decode(
     ScriptSavePointer.self, from: Data(contentsOf: storage.url))
-  #expect(pointer.schemaVersion == 21)
+  #expect(pointer.schemaVersion == 26)
+  let currentBytes = try Data(contentsOf: storage.url)
+  let (strictSaved, strictWorld) = try ScriptSaveStore.read(currentBytes, from: storage.url)
+  #expect(strictSaved.valid && strictWorld.consistent(with: strictSaved))
   let downgraded = ScriptSavePointer(
     format: pointer.format, schemaVersion: 20, generation: pointer.generation,
     hashes: pointer.hashes, scope: pointer.scope, valueCodec: pointer.valueCodec)
@@ -131,7 +134,8 @@ private func verifyVersionedDockRestore(
   } else {
     #expect(game.nativeStationBoardContext != nil)
   }
-  #expect(try rawAuthorityFiles(storage.directory) == beforeFiles)
+  let afterFiles = try rawAuthorityFiles(storage.directory)
+  #expect(afterFiles == beforeFiles)
 }
 
 private func verifyLegacyWithoutStations(

@@ -109,20 +109,73 @@ private func physicalIDs(_ state: ScriptInstance) -> Set<UUID> {
   game.commander.scriptState.instances[origin] = state
   #expect(game.commander.valid)
   let identities = physicalIDs(state)
-  let runtime = GameRuntime(game: game)
-  try await runtime.save(to: save)
-  #expect(await runtime.snapshot().commander.nativeStations == nil)
-  #expect(await runtime.snapshot().bodies.allSatisfy { $0.nativeStationIdentity == nil })
-  var pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: save))
-  let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: save)
-  let legacyBytes = try JSONEncoder().encode(game.commander.scriptState)
-  try legacyBytes.write(to: directory.appendingPathComponent("missions.json"))
-  var hashes = pointer.hashes
-  hashes["missions.json"] = ScriptPackLibrary.hash(legacyBytes)
-  pointer = .init(
-    format: pointer.format, schemaVersion: 11, generation: pointer.generation,
-    hashes: hashes, scope: pointer.scope)
-  try JSONEncoder().encode(pointer).write(to: save, options: .atomic)
+  let authoringCommander = game.commander
+  let authoringInventory = try #require(authoringCommander.equipmentInventory)
+  let historicalWorld = game.scriptWorldSave
+  try #require(authoringCommander.nativeStations == nil)
+  try #require(historicalWorld.bodies.count == 128 && historicalWorld.nextBodyID == 128)
+  try #require(historicalWorld.bodies.allSatisfy { $0.nativeStationIdentity == nil })
+  try #require(historicalWorld.bodies.allSatisfy { $0.physical?.npc?.resources?.electrical == nil })
+  // The prepared mission owns its original random identities; it does not require modern player gear.
+  var historical = Commander()
+  try #require(historical.shipID == authoringCommander.shipID)
+  try #require(
+    historical.galaxy == authoringCommander.galaxy && historical.system == authoringCommander.system
+  )
+  try #require(authoringCommander.contracts == ScriptContractState())
+  historical.scriptState = authoringCommander.scriptState
+  historical.flightSimulation = authoringCommander.flightSimulation
+  try #require(historical.equipmentInventory == nil && historical.savedEquipmentVersion == nil)
+  try #require(!historical.usesModularDriveSaveVersion && !historical.usesEconomyMiningSaveVersion)
+  try #require(
+    historical.valid && historicalWorld.valid && historicalWorld.consistent(with: historical))
+  let rawEncoder = JSONEncoder()
+  var header = historical
+  header.scriptState = ScriptEngineState()
+  header.contracts = ScriptContractState()
+  let chunks = [
+    "commander.json": try rawEncoder.encode(header),
+    "missions.json": try rawEncoder.encode(historical.scriptState),
+    "world.json": try rawEncoder.encode(historicalWorld),
+    "contracts.json": try rawEncoder.encode(historical.contracts),
+  ]
+  let headerBytes = try #require(chunks["commander.json"])
+  let worldBytes = try #require(chunks["world.json"])
+  try EconomyMiningVersionedSave.rejectFields(headerBytes)
+  try RingMiningVersionedSave.rejectFields(headerBytes)
+  try HyperspaceDriveVersionedSave.rejectFields(headerBytes)
+  try ElectricalVersionedSave.rejectFields(headerBytes)
+  try ElectricalVersionedSave.rejectFields(worldBytes)
+  try AlienStorageVersionedSave.rejectFields(headerBytes)
+  try NativePeopleVersionedSave.rejectFields(headerBytes)
+  try EMPVersionedSave.rejectFields(headerBytes, part: .commander)
+  try EMPVersionedSave.rejectFields(worldBytes, part: .world)
+  try ScriptFinanceVersionedSave.rejectFields(headerBytes, part: .commander)
+  let missionsBytes = try #require(chunks["missions.json"])
+  let contractsBytes = try #require(chunks["contracts.json"])
+  try ScriptFinanceVersionedSave.rejectFields(missionsBytes, part: .missions)
+  try ScriptSaveJSONPreflight.rejectCourierFields(headerBytes, location: .rawCommander)
+  try ScriptSaveJSONPreflight.rejectCourierFields(missionsBytes, location: .missions)
+  try ScriptSaveJSONPreflight.rejectCourierFields(contractsBytes, location: .contracts)
+  // Obtain a checked generation from an independently eligible historical store, never Runtime.save.
+  try ScriptSaveStore.write(commander: historical, world: historicalWorld, to: save)
+  let checkedBytes = try Data(contentsOf: save)
+  let checked = try JSONDecoder().decode(ScriptSavePointer.self, from: checkedBytes)
+  try #require(checked.schemaVersion == 21 && checked.scope == "commander")
+  let directory = try ScriptSaveStore.generationDirectory(checked.generation, from: save)
+  for (name, bytes) in chunks {
+    try ScriptSaveJSONPreflight.validate(bytes)
+    try bytes.write(to: directory.appendingPathComponent(name), options: .atomic)
+  }
+  let pointer = ScriptSavePointer(
+    format: checked.format, schemaVersion: 11, generation: checked.generation,
+    hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: checked.scope, valueCodec: nil)
+  let historicalPointerBytes = try rawEncoder.encode(pointer)
+  try historicalPointerBytes.write(to: save, options: .atomic)
+  #expect(game.commander == authoringCommander)
+  #expect(game.commander.equipmentInventory == authoringInventory)
+  #expect(game.bodies == historicalWorld.bodies && game.nextBodyID == historicalWorld.nextBodyID)
+  #expect(historical.scriptState == authoringCommander.scriptState)
   let loaded = GameRuntime(game: game)
   try await loaded.load(from: save)
   let imported = await loaded.snapshot().commander.scriptState.instances[origin]?
@@ -130,8 +183,11 @@ private func physicalIDs(_ state: ScriptInstance) -> Set<UUID> {
   try #require(imported?.sourceSchema == 11)
   // The capacity-pending plan must keep its original condition through a modern resave too.
   try await loaded.save(to: save)
-  let modern = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: save))
-  #expect(modern.schemaVersion == 21)
+  let modernBytes = try Data(contentsOf: save)
+  let modern = try JSONDecoder().decode(ScriptSavePointer.self, from: modernBytes)
+  #expect(modern.schemaVersion == 26)
+  let (strictSaved, strictWorld) = try ScriptSaveStore.read(modernBytes, from: save)
+  #expect(strictSaved.valid && strictWorld.consistent(with: strictSaved))
   let reloaded = GameRuntime(game: game)
   try await reloaded.load(from: save)
   var restored = await reloaded.snapshot()

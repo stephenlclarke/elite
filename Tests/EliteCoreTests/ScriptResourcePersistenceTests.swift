@@ -4,8 +4,7 @@ import Testing
 @testable import EliteCore
 
 private func grandfatheredMissionResources() throws -> Commander {
-  var commander = Commander()
-  try commander.prepareEquipment(legacy: false)
+  var commander = try PreDriveCommanderSaveFixture.commander()
   let inventory = try #require(commander.equipmentInventory)
   var items = inventory.items
   for slot in [ComponentFittingSlot.energy, .shield] {
@@ -36,18 +35,46 @@ private func grandfatheredMissionResources() throws -> Commander {
 }
 
 struct ScriptResourcePersistenceTests {
-  @Test func admittedHighNativeResourcesStartAMissionAndRoundTripThroughFormat21() async throws {
+  @Test func admittedHighNativeResourcesStartAMissionAndRoundTripThroughCurrentFormat() async throws
+  {
     let fixture = try GearScriptFixture(requiredReturn: false, accepted: "")
     defer { fixture.clean() }
     let commander = try grandfatheredMissionResources()
     let raw = fixture.root.appendingPathComponent("grandfathered.json")
-    try JSONEncoder().encode(commander).write(to: raw)
+    let originalRawBytes = try JSONEncoder().encode(commander)
+    try originalRawBytes.write(to: raw)
     var host = Game(executive: false)
     host.scriptPacks = [fixture.pack]
     let runtime = GameRuntime(game: host)
     try await runtime.load(from: raw, persistMigrations: false)
     var admitted = await runtime.snapshot()
     let inventory = try #require(admitted.commander.equipmentInventory)
+    let originalInventory = try #require(commander.equipmentInventory)
+    #expect(
+      inventory.owner == originalInventory.owner
+        && inventory.activeHull == originalInventory.activeHull)
+    #expect(admitted.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
+    for item in originalInventory.items {
+      #expect(inventory.items.first { $0.id == item.id } == item)
+    }
+    let originalIDs = Set(originalInventory.items.map(\.id))
+    let additions = inventory.items.filter { !originalIDs.contains($0.id) }
+    try #require(additions.count == 1)
+    let drive = try #require(additions.first)
+    try #require(drive.isReservedStockDrive && drive.location?.slot == .drive)
+    let retainedRawBytes = try Data(contentsOf: raw)
+    let rawObject = try JSONSerialization.jsonObject(with: retainedRawBytes) as? [String: Any]
+    #expect(rawObject?["savedEquipmentVersion"] as? Int == 2)
+    let decodedRaw = try JSONDecoder().decode(Commander.self, from: retainedRawBytes)
+    #expect(decodedRaw == commander && retainedRawBytes == originalRawBytes)
+    #expect(
+      admitted.commander.credits == commander.credits && admitted.commander.cargo == commander.cargo
+    )
+    #expect(
+      admitted.commander.name == commander.name && admitted.commander.shipID == commander.shipID)
+    #expect(
+      admitted.commander.fuel == commander.fuel && admitted.commander.missiles == commander.missiles
+    )
     #expect(admitted.energy == commander.performance.energy && admitted.energy > 1e12)
     #expect(admitted.frontShield == commander.shieldCapacity && admitted.frontShield > 1e12)
     #expect(admitted.rearShield == commander.rearShieldCapacity && admitted.rearShield > 1e12)
@@ -60,7 +87,7 @@ struct ScriptResourcePersistenceTests {
     try GameRuntime.writeCommander(&admitted, to: save)
     let bytes = try Data(contentsOf: save)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 21)
+    #expect(pointer.schemaVersion == 26)
     let (saved, world) = try ScriptSaveStore.read(bytes, from: save)
     #expect(saved.valid && world.valid && world.consistent(with: saved))
     #expect(saved.equipmentInventory == inventory)

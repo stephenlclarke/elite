@@ -187,7 +187,10 @@ private struct ValueStorageFixture {
   try await runtime.save(to: fixture.save)
   let original = try JSONDecoder().decode(
     ScriptSavePointer.self, from: Data(contentsOf: fixture.save))
-  #expect(original.schemaVersion == 21 && original.valueCodec == ScriptValueStorage.codec)
+  #expect(original.schemaVersion == 26 && original.valueCodec == ScriptValueStorage.codec)
+  let originalBytes = try Data(contentsOf: fixture.save)
+  let (strictSaved, strictWorld) = try ScriptSaveStore.read(originalBytes, from: fixture.save)
+  #expect(strictSaved.valid && strictWorld.consistent(with: strictSaved))
   let before = await runtime.snapshot()
   for (version, codec) in [(13, nil), (13, "unknown"), (12, ScriptValueStorage.codec)]
     as [(Int, String?)]
@@ -197,8 +200,9 @@ private struct ValueStorageFixture {
       hashes: original.hashes, scope: original.scope, valueCodec: codec)
     try JSONEncoder().encode(pointer).write(to: fixture.save, options: .atomic)
     await #expect(throws: SaveError.self) { try await runtime.load(from: fixture.save) }
-    #expect(await runtime.snapshot().commander == before.commander)
-    #expect(await runtime.snapshot().bodies == before.bodies)
+    let after = await runtime.snapshot()
+    #expect(after.commander == before.commander)
+    #expect(after.bodies == before.bodies)
   }
 }
 

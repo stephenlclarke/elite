@@ -254,7 +254,8 @@ extension NativeViewTests {
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
     let (saved, _) = try ScriptSaveStore.read(bytes, from: file)
-    #expect(pointer.schemaVersion == 22)
+    #expect(pointer.schemaVersion == 26)
+    #expect(!saved.usesAlienStorageSaveVersion)
     #expect(saved.savedEMPState?.records[source]?.pods.count == people.count)
     #expect(saved.savedEMPState?.records[source]?.hull.body.id == original.id)
   }

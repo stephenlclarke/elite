@@ -264,7 +264,7 @@ struct EquipmentActorBoundaryTests {
     #expect(nextInventory.items.count == oldInventory.items.count)
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+    #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
     let (saved, _) = try ScriptSaveStore.read(bytes, from: file)
     #expect(saved.valid && saved.salvageLedger == committed.commander.salvageLedger)
     #expect(saved.equipmentInventory == committed.commander.equipmentInventory)

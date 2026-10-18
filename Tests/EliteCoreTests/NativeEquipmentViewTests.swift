@@ -713,7 +713,7 @@ private func verifyRecoveredSaveAndRefusedReplay(
   let committed = await fixture.delegate.runtime.snapshot()
   let bytes = try Data(contentsOf: fixture.save)
   let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-  #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
   let (saved, _) = try ScriptSaveStore.read(bytes, from: fixture.save)
   #expect(saved.valid)
   #expect(saved.salvageLedger == committed.commander.salvageLedger)
@@ -728,8 +728,10 @@ private func verifyRecoveredSaveAndRefusedReplay(
   #expect(result == .refused(.staleContext))
   let replayed = await fixture.delegate.runtime.snapshot()
   #expect(replayed.commander == committed.commander)
-  #expect(try Data(contentsOf: fixture.save) == bytes)
-  #expect(try recoveredSaveFiles(fixture.directory) == beforeFiles)
+  let replayedBytes = try Data(contentsOf: fixture.save)
+  let replayedFiles = try recoveredSaveFiles(fixture.directory)
+  #expect(replayedBytes == bytes)
+  #expect(replayedFiles == beforeFiles)
 }
 
 private func recoveredSaveFiles(_ directory: URL) throws -> [String: Data] {

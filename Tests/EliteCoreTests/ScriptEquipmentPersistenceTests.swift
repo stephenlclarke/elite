@@ -62,7 +62,7 @@ struct ScriptEquipmentPersistenceTests {
     try GameRuntime.writeCommander(&game, to: file)
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 21)
+    #expect(pointer.schemaVersion == 26)
     let (loaded, _) = try ScriptSaveStore.read(bytes, from: file)
     #expect(loaded.valid && loaded.issuedEquipmentValid)
     #expect(loaded.equipmentInventory == game.commander.equipmentInventory)
@@ -73,6 +73,7 @@ struct ScriptEquipmentPersistenceTests {
     #expect(throws: SaveError.self) {
       try ScriptSaveStore.read(JSONEncoder().encode(claimed20), from: file)
     }
-    #expect(try Data(contentsOf: file) == bytes)
+    let unchangedBytes = try Data(contentsOf: file)
+    #expect(unchangedBytes == bytes)
   }
 }

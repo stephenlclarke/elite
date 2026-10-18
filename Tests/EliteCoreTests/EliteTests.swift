@@ -566,15 +566,19 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 22)
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26)
+  let (strictSaved, strictWorld) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(strictSaved.valid && strictWorld.valid && strictWorld.consistent(with: strictSaved))
   // Versioned loading restores ordinary NPC bindings from the retained physical scene.
   var expected = game.commander
   var restoredGame = await restored.snapshot()
   let savedWorld = try #require(expected.nativeStations)
   expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: &restoredGame)
   let differences = try jumpLimitSaveDifferences(expected, actual: restoredGame.commander)
-  #expect(await restored.snapshot().commander == expected, Comment(rawValue: differences))
+  let restoredCommander = await restored.snapshot().commander
+  #expect(restoredCommander == expected, Comment(rawValue: differences))
 }
 
 private func jumpLimitSaveDifferences(_ expected: Commander, actual: Commander) throws -> String {

@@ -154,7 +154,7 @@ struct ScriptProjectileRestoreTests {
   }
 
   @Test(arguments: [false, true])
-  func format21RuntimeRestoresThroughNativeAdmissionOnceAndRetainsExactShotHistory(archived: Bool)
+  func currentRuntimeRestoresThroughNativeAdmissionOnceAndRetainsExactShotHistory(archived: Bool)
     async throws
   {
     let root = try projectileSaveFolder()
@@ -165,10 +165,13 @@ struct ScriptProjectileRestoreTests {
     try GameRuntime.writeCommander(&game, to: file)
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 21)
+    #expect(pointer.schemaVersion == 26)
+    let (strictSaved, strictWorld) = try ScriptSaveStore.read(bytes, from: file)
+    #expect(strictSaved.valid && strictWorld.valid && strictWorld.consistent(with: strictSaved))
     let runtime = GameRuntime(game: game)
     try await runtime.load(from: file)
-    try #require(await runtime.snapshot().bodies.allSatisfy { $0.scriptShot?.identity != id })
+    let beforeAdmission = await runtime.snapshot()
+    try #require(beforeAdmission.bodies.allSatisfy { $0.scriptShot?.identity != id })
     // Zero physical time still takes the real runtime restoration path without moving the shot.
     let restored = await runtime.advance(delta: 0)
     let body = try #require(restored.bodies.first { $0.scriptShot?.identity == id })

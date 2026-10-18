@@ -36,7 +36,16 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   try await runtime.installMissionPack(from: courierURL, directory: folder)
   let entry = try MissionPackLibrary.read(courierURL)
   game = await runtime.snapshot()
-  #expect(game.missionCatalogue.count == 4)
+  try #require(
+    game.missingPackGallery.isEmpty && game.scriptGallery.isEmpty && game.rrsCourierGallery.isEmpty)
+  #expect(game.missionPacks.entries.count == MissionPackLibrary.bundled.entries.count + 1)
+  #expect(game.missionCatalogue.count == MissionPackLibrary.bundled.entries.count + 1 + 1)
+  let installed = game.missionPacks.entries.enumerated().filter {
+    $0.element.pack.stateID == entry.pack.stateID && $0.element.digest == entry.digest
+  }
+  try #require(installed.count == 1)
+  let index = try #require(installed.first?.offset)
+  try #require(game.missionCatalogue.indices.contains(index))
   game.key("b")
   #expect(game.screen == .handoff && game.offeredPack?.pack.id == entry.pack.id)
   game.key("escape")
@@ -65,7 +74,15 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.key("b")
   game.confirmPackOffer()
   #expect(game.commander.credits == 1500 && game.commander.valid)
-  #expect(game.missionCatalogue.last?.status == .complete)
+  let completedEntries = game.missionPacks.entries.enumerated().filter {
+    $0.element.pack.stateID == entry.pack.stateID && $0.element.digest == entry.digest
+  }
+  try #require(completedEntries.count == 1)
+  let completedIndex = try #require(completedEntries.first?.offset)
+  let catalogue = game.missionCatalogue
+  try #require(catalogue.indices.contains(completedIndex))
+  #expect(catalogue[completedIndex].status == .complete)
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.digest == entry.digest)
 }
 
 @Test func externalMissionTransfersRecheckLocationHoldAndAccountAtomically() throws {
@@ -112,11 +129,29 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.commander.system = 129
   game.dock()
   #expect(game.screen != .handoff && game.commander.credits == saved.credits)
-  #expect(game.missionCatalogue.last?.objective.contains("Suspended") == true)
+  try #require(changed.pack.stateID == entry.pack.stateID && changed.digest != entry.digest)
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.digest == entry.digest)
+  #expect(game.missingPackGallery.isEmpty)
+  let changedEntries = game.missionPacks.entries.enumerated().filter {
+    $0.element.pack.stateID == changed.pack.stateID && $0.element.digest == changed.digest
+  }
+  try #require(changedEntries.count == 1)
+  let changedIndex = try #require(changedEntries.first?.offset)
+  let catalogue = game.missionCatalogue
+  try #require(catalogue.indices.contains(changedIndex))
+  #expect(catalogue[changedIndex].status == .locked)
+  #expect(catalogue[changedIndex].objective == "Suspended: restore the saved pack version/content.")
+  #expect(game.commander.cargo == saved.cargo && game.commander.cargoTonnes == 1)
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.dock()
   game.key("return")
   #expect(game.commander.credits == saved.credits + 500)
+  game.dock()
+  game.key("b")
+  game.confirmPackOffer()
+  #expect(game.commander.credits == saved.credits + 500)
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.stage == "complete")
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.digest == entry.digest)
 }
 
 @Test func packValidationRejectsUnknownMechanicsKeysIDsVersionsAndReferences() throws {

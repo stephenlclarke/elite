@@ -132,7 +132,9 @@ private struct NativeWorkFixture {
       try await writer.save(to: save)
       let bytes = try Data(contentsOf: save)
       let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-      #expect(pointer.schemaVersion == 21)
+      #expect(pointer.schemaVersion == 26)
+      let (strictSaved, strictWorld) = try ScriptSaveStore.read(bytes, from: save)
+      #expect(strictSaved.valid && strictWorld.consistent(with: strictSaved))
       delegate.applicationDidFinishLaunching(
         Notification(name: NSApplication.didFinishLaunchingNotification))
       let window = try #require(delegate.window)
@@ -206,7 +208,7 @@ private struct NativeWorkFixture {
     let current = try Data(contentsOf: save)
     if current != bytes {
       let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: current)
-      try #require(pointer.schemaVersion == 21 && pointer.scope == "commander")
+      try #require(pointer.schemaVersion == 26 && pointer.scope == "commander")
       let (saved, world) = try ScriptSaveStore.read(current, from: save)
       let commanderMatches = saved == view.game.commander
       try #require(commanderMatches)
