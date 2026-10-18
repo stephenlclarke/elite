@@ -433,6 +433,7 @@ public struct Game: Sendable {
   var newCommanderSaveReceipt: CommanderFileReceipt?
   var nativeStationRuntimeEpoch = UUID()
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
+  var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
   // Enabled only by G1 after supported native save/world/durability validation. Never saved.
   var nativeCrimboLifecycleAvailable = false
   var pendingNativeStationDock: NativeStationEntryProof?
@@ -1983,6 +1984,8 @@ public actor GameRuntime {
   }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
+    game.nativeCrimboAttainedMotion = nil
+    game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return game }
     game.tick(delta: delta, controls: controls)
     let stationEntryAttempted = game.pendingNativeStationDock != nil
@@ -2042,6 +2045,10 @@ public actor GameRuntime {
       game.markCourierFatalLoss()
       commitNativePeopleLoss()
     }
+    game.observeNativeCrimboAttainedMotion(
+      delta: delta, flightWasActive: wasLive && !wasDocked && localActive && flightActive,
+      startTime: startPhysicalTime, startPlayer: startPlayer,
+      stationEntryAttempted: stationEntryAttempted)
     if wasLive && localActive && flightActive && !stationEntryAttempted {
       commitNativePeopleCapture(
         startTime: startPhysicalTime, startPlayer: startPlayer, delta: delta)
