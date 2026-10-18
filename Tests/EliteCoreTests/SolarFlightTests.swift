@@ -1,7 +1,49 @@
+import CoreFoundation
 import Foundation
 import Testing
 
 @testable import EliteCore
+
+// Codable represents enum-keyed maps and Sets as arrays; compare their values independent of order.
+private func solarEquipmentComparison(_ encoded: Any?) throws -> [String: Any] {
+  func statistics(_ encoded: Any?) throws -> [Any] {
+    let values = try #require(encoded as? [Any])
+    try #require(values.count.isMultiple(of: 2))
+    var pairs: [(axis: String, value: NSNumber)] = []
+    var axes: Set<String> = []
+    for index in stride(from: 0, to: values.count, by: 2) {
+      let axis = try #require(values[index] as? String)
+      try #require(ComponentAxis(rawValue: axis) != nil && axes.insert(axis).inserted)
+      let number = try #require(values[index + 1] as? NSNumber)
+      try #require(CFGetTypeID(number) != CFBooleanGetTypeID() && number.doubleValue.isFinite)
+      pairs.append((axis, number))
+    }
+    return pairs.sorted { $0.axis < $1.axis }.flatMap { [$0.axis, $0.value] as [Any] }
+  }
+  func members(_ encoded: Any?, axes: Bool = false) throws -> [String] {
+    let values = try #require(encoded as? [String])
+    try #require(Set(values).count == values.count)
+    if axes { try #require(values.allSatisfy { ComponentAxis(rawValue: $0) != nil }) }
+    return values.sorted()
+  }
+  var inventory = try #require(encoded as? [String: Any])
+  var items = try #require(inventory["items"] as? [[String: Any]])
+  for index in items.indices {
+    // Equipment without a component has no component maps or Sets to canonicalize.
+    guard let encodedComponent = items[index]["component"] else { continue }
+    var component = try #require(encodedComponent as? [String: Any])
+    var origin = try #require(component["origin"] as? [String: Any])
+    component["statistics"] = try statistics(component["statistics"])
+    component["features"] = try members(component["features"])
+    origin["statistics"] = try statistics(origin["statistics"])
+    origin["requiredAxes"] = try members(origin["requiredAxes"], axes: true)
+    origin["compatibleFeatures"] = try members(origin["compatibleFeatures"])
+    component["origin"] = origin
+    items[index]["component"] = component
+  }
+  inventory["items"] = items
+  return inventory
+}
 
 private func solarGame(distance: Double = 2970) -> Game {
   var game = Game(executive: false)
@@ -244,6 +286,10 @@ private func solarWorldAfterRelaunch(
     actual.removeValue(forKey: key)
     expected.removeValue(forKey: key)
   }
+  actual["savedEquipmentInventory"] = try solarEquipmentComparison(
+    actual["savedEquipmentInventory"])
+  expected["savedEquipmentInventory"] = try solarEquipmentComparison(
+    expected["savedEquipmentInventory"])
   #expect(NSDictionary(dictionary: actual).isEqual(to: expected))
 }
 
