@@ -194,11 +194,71 @@ struct EMPTravelAndSecurityTests {
     async throws
   {
     var game = try empNativeFlight()
-    let original = try #require(game.bodies.first { $0.id == 1 && $0.hull == .cobra })
+    let nativeIndex = try #require(game.bodies.firstIndex { $0.id == 1 && $0.hull == .cobra })
+    let fresh = game.bodies[nativeIndex]
+    try #require(fresh.physical?.catalogueShipID == nil)
+    let beforeCommander = game.commander
+    let beforeBodies = game.bodies
+    let beforeEnergy = game.energy
+    let beforeShields = (game.frontShield, game.rearShield)
+    let beforeBodyCursor = game.nextBodyID
+    let beforeRandom = game.scriptSimulationSave.randomState
+    let beforeTime = game.time
+    let catalogueID = try #require(
+      fresh.physical?.catalogueShipID ?? ShipCatalogue.nativeShip(fresh.hull)?.id)
+    try #require(catalogueID == "SH023")
+    let catalogue = try #require(ShipCatalogue.ship(catalogueID))
+    let native = try #require(catalogue.game)
+    try #require(native.valid && native.recharge == 2 && catalogue.nativeHull == fresh.hull)
+    // This persistence scenario starts with existing nonfatal power damage, before original capture.
+    var worn = try #require(fresh.physical?.npc?.resources)
+    try #require(worn.valid && worn.profile == .legacyEnergyOnly)
+    try #require(worn.frontShield == 0 && worn.rearShield == 0 && worn.electrical == nil)
+    try #require(
+      worn.legacyElectricalRecharge == nil || worn.legacyElectricalRecharge == native.recharge)
+    let now = game.commander.flightSimulation.physicalTime
+    var reserve = try #require(
+      ElectricalReserve(capacity: worn.energyCapacity, recharge: native.recharge, at: now))
+    let drained = reserve.drain(worn.energyCapacity - 1, at: now)
+    try #require(
+      drained && reserve.remaining == 1 && reserve.disabledAt == nil && reserve.physicalTime == now)
+    worn.legacyElectricalRecharge = native.recharge
+    worn.electrical = reserve
+    try #require(worn.valid)
+    var expectedBody = fresh
+    expectedBody.physical?.npc?.resources = worn
+    game.bodies[nativeIndex].physical?.npc?.resources = worn
+    var expectedBodies = beforeBodies
+    expectedBodies[nativeIndex] = expectedBody
+    try #require(game.bodies == expectedBodies && game.commander == beforeCommander)
+    try #require(
+      game.energy == beforeEnergy && game.frontShield == beforeShields.0
+        && game.rearShield == beforeShields.1)
+    try #require(game.nextBodyID == beforeBodyCursor && game.time == beforeTime)
+    try #require(game.scriptSimulationSave.randomState == beforeRandom)
+    let pulse = try EMPPulseProfile.resolve(for: game.commander)
+    try #require(pulse.power == 80 && pulse.warmup == 10)
+    try #require(1 + native.recharge * (pulse.warmup + 0.1) < pulse.power)
+    let original = game.bodies[nativeIndex]
+    try #require(original.physical?.catalogueShipID == nil)
+    try #require(original.physical?.empSource == nil && game.commander.savedEMPState == nil)
+    try #require(!game.isEMPDisabled(original))
     let actor = try #require(original.physical?.identity)
+    let emissionsBefore = game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count
     try disableNativeEMPActor(actor, game: &game)
+    try #require(
+      game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count == emissionsBefore
+        + 1)
+    let released = try #require(game.commander.savedEMPCharge)
+    let releasedAt = try #require(released.endedAt)
+    try #require(
+      released.phase == .released && abs(releasedAt - released.startedAt - pulse.warmup) < 1e-8)
     let source = try #require(
       game.bodies.first { $0.physical?.identity == actor }?.physical?.empSource)
+    let disabled = try #require(game.commander.savedEMPState?.records[source])
+    try #require(disabled.hull.body.physical?.catalogueShipID == catalogueID)
+    let expectedRecoveryDeadline = disabled.disableIncident.physicalTime + 30
+    try #require(disabled.crewDeadline == expectedRecoveryDeadline)
     for _ in 0..<30 { game.tick(delta: 0.1) }
     let empPersistenceResult = game.persistEMPState()
     try #require(empPersistenceResult)
@@ -226,10 +286,20 @@ struct EMPTravelAndSecurityTests {
     #expect(hulls[0].physical?.identity != before.hull.binding)
     #expect(hulls[0].hull == original.hull && hulls[0].energy >= before.hull.body.energy)
     #expect(hulls[0].physical?.catalogueShipID == before.hull.body.physical?.catalogueShipID)
+    try #require(after.crewDeadline == expectedRecoveryDeadline)
     if after.crewAboard > 0 {
-      #expect(after.isRecovered && !game.isEMPDisabled(hulls[0]))
-      #expect(hulls[0].physical?.empSource == nil && hulls[0].physical?.npc != nil)
-      #expect((hulls[0].physical?.npc?.resources?.electrical?.remaining ?? 0) > 0)
+      let deadlineReached = game.commander.flightSimulation.physicalTime >= expectedRecoveryDeadline
+      #expect(after.isRecovered == deadlineReached)
+      #expect(game.isEMPDisabled(hulls[0]) == !deadlineReached)
+      #expect(hulls[0].physical?.npc?.role == original.physical?.npc?.role)
+      let electrical = try #require(hulls[0].physical?.npc?.resources?.electrical)
+      if deadlineReached {
+        #expect(hulls[0].physical?.empSource == nil)
+        #expect(electrical.remaining > 0 && electrical.disabledAt == nil)
+      } else {
+        #expect(hulls[0].physical?.empSource == source)
+        #expect(electrical.remaining == 0 && electrical.disabledAt != nil)
+      }
     } else {
       #expect(!after.isRecovered && game.isEMPDisabled(hulls[0]))
       #expect(hulls[0].physical?.npc == nil)
@@ -258,6 +328,116 @@ struct EMPTravelAndSecurityTests {
     #expect(Set(retained.pods.compactMap { $0.body.physical?.empCrewPod }) == survivingPeople)
     #expect(retained.disableEpisodes == after.disableEpisodes)
     #expect(reloaded.commander.savedEMPState?.records[source]?.cargo == before.cargo)
+  }
+
+  @Test func fullStockNativeCobraRequiresTwoRealPulsesAndCannotAttackAfterElectricalZero() throws {
+    var game = try empNativeFlight()
+    let original = try #require(game.bodies.first { $0.id == 1 && $0.hull == .cobra })
+    let actor = try #require(original.physical?.identity)
+    let npc = try #require(original.physical?.npc)
+    let resources = try #require(npc.resources)
+    let player = try #require(game.commander.flightSimulation.player)
+    let catalogueID = try #require(
+      original.physical?.catalogueShipID ?? ShipCatalogue.nativeShip(original.hull)?.id)
+    try #require(catalogueID == "SH023")
+    let catalogue = try #require(ShipCatalogue.ship(catalogueID))
+    let native = try #require(catalogue.game)
+    let crew = try ShipAccommodationProfile(ship: catalogue).operatingCrew
+    try #require(native.valid && native.recharge == 2 && catalogue.nativeHull == original.hull)
+    try #require(resources.valid && resources.profile == .legacyEnergyOnly)
+    try #require(resources.energyCapacity == original.energy && resources.energyRecharge == 0)
+    try #require(resources.frontShield == 0 && resources.rearShield == 0)
+    try #require(resources.electrical == nil && resources.legacyElectricalRecharge == nil)
+    try #require(original.physical?.empSource == nil && game.commander.savedEMPState == nil)
+    let hardware = try #require(game.commander.equipmentInventory)
+    let history = try #require(game.commander.equipmentPurchaseHistory)
+    let weapon = try #require(game.commander.fittedEquipment(at: .utility(.empPirateBlaster)))
+    let credits = game.commander.credits
+    let cargo = game.commander.cargo
+    let legal = game.commander.legal
+    let kills = game.commander.kills
+    let pulse = try EMPPulseProfile.resolve(for: game.commander)
+    try #require(pulse.power == 80 && pulse.warmup == 10)
+    try #require(resources.energyCapacity > pulse.power)
+    let startedAt = game.commander.flightSimulation.physicalTime
+    let emissionsBefore = game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count
+    // One original 800-frame helper keeps both charges, real aiming and every native control unchanged.
+    let remainingFrames = try disableNativeEMPActor(actor, game: &game)
+    try #require((0...800).contains(remainingFrames))
+    let elapsed = game.commander.flightSimulation.physicalTime - startedAt
+    try #require(elapsed >= 2 * pulse.warmup && elapsed <= 800 * 0.1 + 1e-8)
+    let emissions = game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }
+    try #require(emissions.count == emissionsBefore + 2)
+    let charge = try #require(game.commander.savedEMPCharge)
+    let releasedAt = try #require(charge.endedAt)
+    try #require(charge.phase == .released && charge.player == player && charge.target == actor)
+    try #require(charge.weapon == weapon.id)
+    try #require(abs(releasedAt - charge.startedAt - pulse.warmup) < 1e-8)
+    let disabled = try #require(game.bodies.first { $0.physical?.identity == actor })
+    let source = try #require(disabled.physical?.empSource)
+    let record = try #require(game.commander.savedEMPState?.records[source])
+    try #require(
+      source == actor && record.originalBodyID == original.id && record.originalSpawn == nil)
+    try #require(record.custody.kind == .ordinary && record.custody.valid)
+    try #require(
+      record.custody.logical == actor && record.custody.original.body.physical?.identity == actor)
+    try #require(record.custody.traffic?.actor == actor && record.custody.assignment == nil)
+    try #require(
+      record.disableIncident.victim == actor && record.disableIncident.origin.owner == player)
+    try #require(record.disableIncident.physicalTime == releasedAt)
+    try #require(record.disableIncident.origin.sourcePart == "emp:" + weapon.id.uuidString)
+    try #require(record.weapon == weapon && record.weaponOwner == hardware.owner)
+    try #require(disabled.hull == original.hull && disabled.energy == original.energy)
+    try #require(disabled.physical?.catalogueShipID == catalogueID)
+    try #require(record.hull.body.physical?.catalogueShipID == catalogueID)
+    try #require(record.hull.body.energy == original.energy)
+    try #require(record.cargo == npc.ordinaryCargo && record.legal == npc.legal)
+    try #require(record.crewTotal == crew && record.crewAboard == crew)
+    try #require(record.pods.isEmpty && record.crewCaptures.isEmpty && record.lostCrewCount == 0)
+    expectOriginalEMPCrewConserved(record)
+    let zero = try #require(disabled.physical?.npc?.resources?.electrical)
+    try #require(
+      game.isEMPDisabled(disabled) && zero.remaining == 0 && zero.disabledAt == releasedAt)
+    try #require(
+      game.commander.equipmentInventory == hardware
+        && game.commander.equipmentPurchaseHistory == history)
+    try #require(
+      game.commander.credits == credits && game.commander.cargo == cargo
+        && game.commander.kills == kills)
+    try #require(game.commander.legal > legal && game.screen != .gameOver && !game.docked)
+    let beforeLedgerBytes = try JSONEncoder().encode(game.commander.crimeLedger)
+    let beforeLedger = try JSONDecoder().decode(EMPTravelThreatLedger.self, from: beforeLedgerBytes)
+    let priorWindows = beforeLedger.attacks.filter { $0.owner == actor }
+    try #require(priorWindows.count == 1)
+    let priorWindow = try #require(priorWindows.first)
+    try #require(priorWindow.victim == player && priorWindow.lastAttack.isFinite)
+    try #require(priorWindow.lastAttack <= record.disableIncident.physicalTime)
+    let fireReleased = Controls()
+    try #require(!fireReleased.fire)
+    game.tick(delta: 0.1, controls: fireReleased)
+    let stillDisabled = try #require(game.bodies.first { $0.physical?.identity == actor })
+    let stillZero = try #require(stillDisabled.physical?.npc?.resources?.electrical)
+    try #require(game.isEMPDisabled(stillDisabled) && stillZero.remaining == 0)
+    try #require(stillZero.disabledAt == releasedAt)
+    let afterLedgerBytes = try JSONEncoder().encode(game.commander.crimeLedger)
+    let afterLedger = try JSONDecoder().decode(EMPTravelThreatLedger.self, from: afterLedgerBytes)
+    let windows = afterLedger.attacks.filter { $0.owner == actor }
+    try #require(windows.count == priorWindows.count)
+    let window = try #require(windows.first)
+    try #require(window.owner == priorWindow.owner && window.victim == priorWindow.victim)
+    try #require(
+      window.unlawful == priorWindow.unlawful
+        && window.authorityAction == priorWindow.authorityAction)
+    try #require(window.lastAttack == priorWindow.lastAttack && window.lastAttack <= releasedAt)
+    let retained = try #require(game.commander.savedEMPState?.records[source])
+    try #require(
+      retained.disableIncident == record.disableIncident && retained.custody == record.custody)
+    try #require(retained.cargo == npc.ordinaryCargo && retained.legal == npc.legal)
+    expectOriginalEMPCrewConserved(retained)
+    try #require(
+      game.commander.equipmentInventory == hardware
+        && game.commander.equipmentPurchaseHistory == history)
+    try #require(game.commander.legal >= legal && game.screen != .gameOver && !game.docked)
   }
 
   @Test func aHealthyAssignedOfficerTakesOneRealShieldFirstPulseWithoutInventedZeroOrCrew() throws {
