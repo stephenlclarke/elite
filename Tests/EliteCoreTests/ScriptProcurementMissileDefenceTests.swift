@@ -130,6 +130,9 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
   defer { fixture.clean() }
   var game = Game(executive: false)
   game.screen = .status
+  game.commander.system = 0
+  game.selectedSystem = 0
+  game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
   game.commander.credits = 100000
   try game.prepareG03FlightEquipment()
   try ScriptProcurementFixture.requirePaidG03Preparation(game)
