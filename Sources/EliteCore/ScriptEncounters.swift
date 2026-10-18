@@ -264,17 +264,11 @@ extension Game {
 
   /// Rechecks a sealed source against actual installed authority without a caller snapshot.
   /// Prepared retention stays private to its adapter and must also match the staged patch.
+  @inline(never)
   func validateMissionActorAdmissionSource(_ source: MissionActorAdmissionSource) throws {
     let currentInputs = currentMissionActorAdmissionSourceValues()
-    guard let owner = currentInputs.instances[source.instanceID],
-      owner.id == source.instanceID, owner.revision == source.instanceRevision,
-      owner.digest == source.packDigest, owner.definition == source.definition,
-      owner.version == source.version, let pack = scriptPack(for: owner),
-      pack.digest == source.packDigest,
-      owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
-      source.retention.id == source.encounterID,
-      source.system == .init(galaxy: source.retention.galaxy, system: source.retention.system)
-    else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
+    let (owner, pack) = try validatedMissionActorAdmissionOwner(
+      source, instances: currentInputs.instances)
     let refreshed: MissionActorAdmissionSource
     switch source.mode {
     case .retained:
@@ -301,6 +295,23 @@ extension Game {
     guard refreshed.profile == source.profile else {
       throw MissionPackError("Actor admission profile changed before publication.")
     }
+  }
+
+  /// Finish installed-owner lookup/comparison temporaries before nested source refresh.
+  @inline(never)
+  private func validatedMissionActorAdmissionOwner(
+    _ source: MissionActorAdmissionSource, instances: [UUID: ScriptInstance]
+  ) throws -> (ScriptInstance, ScriptPack) {
+    guard let owner = instances[source.instanceID],
+      owner.id == source.instanceID, owner.revision == source.instanceRevision,
+      owner.digest == source.packDigest, owner.definition == source.definition,
+      owner.version == source.version, let pack = scriptPack(for: owner),
+      pack.digest == source.packDigest,
+      owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
+      source.retention.id == source.encounterID,
+      source.system == .init(galaxy: source.retention.galaxy, system: source.retention.system)
+    else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
+    return (owner, pack)
   }
 
   /// Reads only actual installed retained ownership; there is no caller-supplied state/body path.
@@ -471,9 +482,27 @@ extension Game {
 
   /// These stock-only temporaries are needed after measured template construction returns.
   /// Retained actors keep their existing spent condition and never enter this phase.
+  @inline(never)
   private static func validatePreparedMissionActorCondition(
     _ actor: ScriptOwnedActor, spec: ScriptActorDefinition,
     template: MissionActorAdmissionTemplate, legacy: LegacyMissionEncounterProvenance?
+  ) throws {
+    try validatePreparedMissionActorPose(actor, spec: spec)
+    if legacy != nil {
+      try validatePreparedMissionActorLegacy(actor, spec: spec, legacy: legacy)
+    } else {
+      try validatePreparedMissionActorEnergy(actor, template: template)
+      if let resources = preparedMissionActorNPCResources(actor) {
+        try validatePreparedMissionActorNPCResources(resources)
+      } else {
+        try validatePreparedMissionActorClassicResources(actor)
+      }
+    }
+  }
+
+  @inline(never)
+  private static func validatePreparedMissionActorPose(
+    _ actor: borrowing ScriptOwnedActor, spec: ScriptActorDefinition
   ) throws {
     guard actor.body.id == -1, actor.body.physical == nil,
       actor.body.position == .init(spec.x, spec.y, spec.z),
@@ -482,39 +511,97 @@ extension Game {
       throw MissionPackError(
         "A prepared actor must retain its actual authored initial condition.")
     }
-    if legacy != nil {
-      guard legacy?.actors[spec.id]?.prepared == actor else {
-        throw MissionPackError(
-          "Prepared historical condition differs from its imported snapshot.")
-      }
-    } else {
-      guard actor.body.energy == template.maximumHullEnergy,
-        template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
-      else {
-        throw MissionPackError(
-          "A prepared actor must retain its actual authored initial condition.")
-      }
-      if let npc = actor.body.scriptNPC {
-        guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
-          npc.velocity == .init(0, 0, 0),
-          actor.body.missiles == npc.fit.definition.missiles,
-          actor.body.ecmEnabled == npc.fit.definition.ecm,
-          npc.guns.values.allSatisfy({ $0 == ScriptNPCGunState() }),
-          npc.components.values.allSatisfy({
-            $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
-          })
-        else {
-          throw MissionPackError(
-            "Prepared NPC resources cannot substitute spent retained state.")
-        }
-      } else {
-        guard actor.body.missiles == actor.body.hull.navalMissiles,
-          actor.body.ecmEnabled == actor.body.hull.hasECM
-        else {
-          throw MissionPackError(
-            "Prepared classic stock differs from its actual hull defaults.")
-        }
-      }
+  }
+
+  @inline(never)
+  private static func validatePreparedMissionActorLegacy(
+    _ actor: borrowing ScriptOwnedActor, spec: ScriptActorDefinition,
+    legacy: LegacyMissionEncounterProvenance?
+  ) throws {
+    guard legacy?.actors[spec.id]?.prepared == actor else {
+      throw MissionPackError(
+        "Prepared historical condition differs from its imported snapshot.")
+    }
+  }
+
+  @inline(never)
+  private static func validatePreparedMissionActorEnergy(
+    _ actor: borrowing ScriptOwnedActor, template: borrowing MissionActorAdmissionTemplate
+  ) throws {
+    guard actor.body.energy == template.maximumHullEnergy,
+      template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
+    else {
+      throw MissionPackError(
+        "A prepared actor must retain its actual authored initial condition.")
+    }
+  }
+
+  private struct PreparedMissionActorNPCResources: Sendable {
+    let npc: ScriptNPCState
+    let missiles: Int
+    let ecmEnabled: Bool
+  }
+
+  /// End body-read temporaries before validating only the immutable NPC resource facts.
+  @inline(never)
+  private static func preparedMissionActorNPCResources(
+    _ actor: borrowing ScriptOwnedActor
+  ) -> PreparedMissionActorNPCResources? {
+    guard let npc = actor.body.scriptNPC else { return nil }
+    return .init(npc: npc, missiles: actor.body.missiles, ecmEnabled: actor.body.ecmEnabled)
+  }
+
+  @inline(never)
+  private static func validatePreparedMissionActorNPCResources(
+    _ resources: borrowing PreparedMissionActorNPCResources
+  ) throws {
+    guard preparedMissionActorNPCScalarsArePristine(resources),
+      preparedMissionActorGunsArePristine(resources.npc.guns),
+      preparedMissionActorComponentGunsArePristine(resources.npc.components)
+    else {
+      throw MissionPackError(
+        "Prepared NPC resources cannot substitute spent retained state.")
+    }
+  }
+
+  @inline(never)
+  private static func preparedMissionActorNPCScalarsArePristine(
+    _ resources: borrowing PreparedMissionActorNPCResources
+  ) -> Bool {
+    let npc = resources.npc
+    guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
+      npc.velocity == .init(0, 0, 0),
+      resources.missiles == npc.fit.definition.missiles,
+      resources.ecmEnabled == npc.fit.definition.ecm
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private static func preparedMissionActorGunsArePristine(
+    _ guns: borrowing [String: ScriptNPCGunState]
+  ) -> Bool {
+    guns.values.allSatisfy({ $0 == ScriptNPCGunState() })
+  }
+
+  @inline(never)
+  private static func preparedMissionActorComponentGunsArePristine(
+    _ components: borrowing [String: ScriptNPCComponentState]
+  ) -> Bool {
+    components.values.allSatisfy({
+      $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
+    })
+  }
+
+  @inline(never)
+  private static func validatePreparedMissionActorClassicResources(
+    _ actor: borrowing ScriptOwnedActor
+  ) throws {
+    guard actor.body.missiles == actor.body.hull.navalMissiles,
+      actor.body.ecmEnabled == actor.body.hull.hasECM
+    else {
+      throw MissionPackError(
+        "Prepared classic stock differs from its actual hull defaults.")
     }
   }
 
@@ -788,6 +875,7 @@ extension Game {
       })
   }
   /// Returns a later native result. A saved plan is not an admission receipt.
+  @inline(never)
   mutating func ensureScriptEncounter(
     _ id: String, pack: ScriptPack, state: inout ScriptInstance,
     worldJobID: UUID? = nil, worldJobPulse: UInt64? = nil
@@ -802,14 +890,60 @@ extension Game {
       throw MissionPackError(
         "Declare the classic encounter capability and an exact encounter definition.")
     }
-    _ = try missionActorAdmissionAuthority(
-      pack: pack, state: state, encounterID: id, galaxy: definition.galaxy,
-      system: definition.system, worldJob: worldJobID, pulse: worldJobPulse)
+    try Self.validateScriptEncounterAdmissionAuthority(
+      self, id: id, pack: pack, state: state, definition: definition,
+      worldJobID: worldJobID, worldJobPulse: worldJobPulse)
     let previousGeometry = commander.scriptState.geometry
     var publishesGeometry = false
     defer {
       if !publishesGeometry { commander.scriptState.geometry = previousGeometry }
     }
+    let encounter = try prepareScriptEncounterPlan(
+      id, pack: pack, state: state, definition: definition)
+    if encounter.admitted {
+      return ("encounter.admitted", ["encounter_id": .string(id), "existing": .bool(true)])
+    }
+    let source = try Self.prepareScriptEncounterAdmissionSource(
+      self, pack: pack, state: state, encounter: encounter,
+      worldJobID: worldJobID, worldJobPulse: worldJobPulse)
+    let preparation = try Self.prepareScriptEncounterNativeAdmission(self, source: source)
+    return try publishScriptEncounterAdmission(
+      preparation, id: id, encounter: encounter, state: &state,
+      publishesGeometry: &publishesGeometry)
+  }
+
+  /// Each borrowed Game read ends before the next admission phase starts.
+  @inline(never)
+  private static func validateScriptEncounterAdmissionAuthority(
+    _ game: borrowing Game, id: String, pack: ScriptPack, state: ScriptInstance,
+    definition: ScriptEncounterDefinition, worldJobID: UUID?, worldJobPulse: UInt64?
+  ) throws {
+    _ = try game.missionActorAdmissionAuthority(
+      pack: pack, state: state, encounterID: id, galaxy: definition.galaxy,
+      system: definition.system, worldJob: worldJobID, pulse: worldJobPulse)
+  }
+
+  @inline(never)
+  private static func prepareScriptEncounterAdmissionSource(
+    _ game: borrowing Game, pack: ScriptPack, state: ScriptInstance,
+    encounter: ScriptOwnedEncounter, worldJobID: UUID?, worldJobPulse: UInt64?
+  ) throws -> MissionActorAdmissionSource {
+    try game.preparedMissionActorAdmissionSource(
+      pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
+  }
+
+  @inline(never)
+  private static func prepareScriptEncounterNativeAdmission(
+    _ game: borrowing Game, source: MissionActorAdmissionSource
+  ) throws -> NativeMissionActorAdmissionPreparation {
+    try game.prepareMissionActorAdmission(source)
+  }
+
+  /// Actor/body construction storage returns before source/native validation starts.
+  @inline(never)
+  private mutating func prepareScriptEncounterPlan(
+    _ id: String, pack: ScriptPack, state: ScriptInstance, definition: ScriptEncounterDefinition
+  ) throws -> ScriptOwnedEncounter {
     var plan = state.ownedEncounters[id]
     if plan == nil {
       var actors: [String: ScriptOwnedActor] = [:]
@@ -837,15 +971,19 @@ extension Game {
         id: id, galaxy: definition.galaxy, system: definition.system, actors: actors)
     }
     guard let encounter = plan else { throw MissionPackError("Encounter plan was not prepared.") }
-    if encounter.admitted {
-      return ("encounter.admitted", ["encounter_id": .string(id), "existing": .bool(true)])
-    }
+    return encounter
+  }
+
+  /// Native preparation returns before selected-instance staging and commit storage starts.
+  @inline(never)
+  private mutating func publishScriptEncounterAdmission(
+    _ preparation: NativeMissionActorAdmissionPreparation, id: String,
+    encounter: ScriptOwnedEncounter, state: inout ScriptInstance, publishesGeometry: inout Bool
+  ) throws -> (String, [String: ScriptValue]) {
     func pending(_ reason: String) -> (String, [String: ScriptValue]) {
       ("encounter.pending", ["encounter_id": .string(id), "reason": .string(reason)])
     }
-    let source = try preparedMissionActorAdmissionSource(
-      pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
-    switch try prepareMissionActorAdmission(source) {
+    switch preparation {
     case .pending(let reason):
       state.ownedEncounters[id] = encounter
       publishesGeometry = true
