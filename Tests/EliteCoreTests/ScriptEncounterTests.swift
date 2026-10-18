@@ -341,9 +341,11 @@ private func verifyPatrolPhysicalSaveConsistency(_ game: inout Game, id: UUID) t
   let oldCommander = game.commander
   var fresh = Game(executive: false)
   fresh.screen = .status
-  fresh.commander.name = "FRESH SCENE OWNER"
+  fresh.commander.name = "NEW SCENE OWNER"
   try fresh.commander.prepareEquipment(legacy: false)
   fresh.commander.mirrorFittedEquipment()
+  let freshValid = fresh.commander.valid
+  try #require(freshValid)
   var rawProbe = game
   let rawLoaded = rawProbe.load(fresh.commander)
   #expect(!rawLoaded && rawProbe.commander == oldCommander)

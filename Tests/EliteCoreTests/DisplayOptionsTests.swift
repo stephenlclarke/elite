@@ -298,7 +298,8 @@ private func displayWorldAfterLoad(
   #expect(!MissionUIAction.retry.isEnabled(in: privateGallery))
   let privateRows = PlayerHelp.pages(for: privateGallery).flatMap(\.rows)
   #expect(!privateRows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
-  #expect(privateRows.contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+  #expect(
+    privateRows.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
   let after = await parent.snapshot().commander
   #expect(after == before && game.commander == original)
 }
