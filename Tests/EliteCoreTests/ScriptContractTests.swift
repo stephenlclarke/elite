@@ -434,11 +434,15 @@ private struct ContractFixture {
   game.commander.name = "KEEP"
   game.commander.credits = 7654
   let live = GameRuntime(game: game, saveURL: fixture.save)
-  let before = await live.snapshot().commander
   try await live.save(to: fixture.save)
+  // Saving publishes canonical policy/calendar state; isolate trial effects after that barrier.
+  let before = await live.snapshot().commander
+  #expect(before.name == "KEEP" && before.credits == 7654)
+  #expect(before.cargo == game.commander.cargo && before.cargoTonnes == 0)
   let bytes = try Data(contentsOf: fixture.save)
   let trial = try await live.scriptGalleryTrial(packDigest: fixture.pack.digest, seed: 123)
-  let namespace = try #require(await trial.gallerySaveDirectory())
+  let directory = await trial.gallerySaveDirectory()
+  let namespace = try #require(directory)
   defer { try? FileManager.default.removeItem(at: namespace) }
   let scene = await trial.snapshot()
   #expect(scene.isMissionTrial && scene.commander.scriptState.instances.count == 1)
@@ -449,9 +453,12 @@ private struct ContractFixture {
   await #expect(throws: MissionPackError.self) { try await trial.confirmContract(foreignQuote) }
   _ = try await trial.saveForInterface()
   _ = try await trial.loadForInterface()
-  #expect(await trial.snapshot().commander == scene.commander)
-  #expect(await live.snapshot().commander == before)
-  #expect(try Data(contentsOf: fixture.save) == bytes)
+  let restoredTrial = await trial.snapshot()
+  let retainedLive = await live.snapshot()
+  let retainedBytes = try Data(contentsOf: fixture.save)
+  #expect(restoredTrial.commander == scene.commander)
+  #expect(retainedLive.commander == before)
+  #expect(retainedBytes == bytes)
 }
 
 @Test func realContractFitRejectsAZeroHoldDespiteTheLegacyUnlimitedCargoSwitch() throws {
