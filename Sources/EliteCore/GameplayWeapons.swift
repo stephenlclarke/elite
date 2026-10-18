@@ -1,11 +1,19 @@
 import Foundation
 
 extension Game {
+  static let combatLaserEnergyCost = 1.0
   /// Mount direction, hull intersections and legal attribution share the same
   /// physical frame; a targeting lock never makes a shot pass through a ship.
   mutating func fireLaser() {
-    guard !playerEMPDisabled, fireCooldown <= 0, laserHeat < 240, energy > 1,
-      let mount = LaserMount.from(screen), let laser = commander.laser(on: mount)
+    guard let mount = LaserMount.from(screen) else { return }
+    fireLaser(mount: mount)
+  }
+
+  /// Autonomous fire uses the fitted mount without changing the user's view or selected tool.
+  mutating func fireLaser(mount: LaserMount) {
+    guard !playerEMPDisabled, fireCooldown <= 0, laserHeat < 240,
+      energy > Self.combatLaserEnergyCost,
+      let laser = commander.laser(on: mount)
     else { return }
     ensurePhysicalActors()
     let direction: Vector3
@@ -71,7 +79,7 @@ extension Game {
   private mutating func recordPlayerLaserDischarge(_ laser: LaserKind) {
     fireCooldown = laser.firingInterval
     laserHeat += 10
-    energy -= 1
+    energy -= Self.combatLaserEnergyCost
     laserFlash = 0.08
     dischargeAudio.record(.combatLaser)
   }

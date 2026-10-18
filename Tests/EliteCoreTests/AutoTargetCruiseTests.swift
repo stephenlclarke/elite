@@ -4,8 +4,12 @@ import Testing
 @testable import EliteCore
 
 struct AutoTargetCruiseTests {
-  @Test func actualCobraFarApproachUsesItsSpeedWithoutExceedingOneThrustBudget() async throws {
+  @Test(arguments: ["SH023", "SH009"])
+  func actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(
+    shipID: String
+  ) async throws {
     var game = Game(executive: false)
+    game.commander.shipID = shipID
     game.commander.installTargetingComputer(.docking)
     try game.commander.prepareEquipment()
     let destination = try #require(
@@ -20,12 +24,15 @@ struct AutoTargetCruiseTests {
     game.arrive()
     try #require(game.commander.system == destination.id && !game.docked)
     try #require(game.currentSystem.government == 7)
-    try #require(game.commander.shipID == "SH023" && game.bodies.count > 1)
+    try #require(game.commander.shipID == shipID && game.bodies.count > 1)
     try #require(Set(game.celestials.map(\.kind)) == [.sun, .planet])
     let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
     let actor = try #require(station.physical?.identity)
     let craft = game.commander.performance
-    try #require(craft.speed == 32 && craft.acceleration == 12)
+    if shipID == "SH023" { try #require(craft.speed == 32 && craft.acceleration == 12) }
+    if shipID == "SH009" {
+      try #require(craft.acceleration * 18 > AutoTargetControl.policyLimits.acceleration)
+    }
     let speedLimit = craft.speed * 18
     let acceleration = craft.acceleration * 18
     let runtime = GameRuntime(game: game)
@@ -37,12 +44,14 @@ struct AutoTargetCruiseTests {
     try #require(game.autoPilot.targetActor == actor && game.dockingComputer)
     let delta = 0.05
     var peakSpeed = 0.0
+    var peakImpulse = 0.0
     for _ in 0..<80 {
       let beforeVelocity = game.flightWorldVelocity
       let beforePosition = game.commander.flightSimulation.pose.position
       game = await runtime.advance(delta: delta)
       let speed = game.flightWorldVelocity.length
       peakSpeed = max(peakSpeed, speed)
+      peakImpulse = max(peakImpulse, (game.flightWorldVelocity - beforeVelocity).length)
       #expect(speed <= speedLimit + 1e-8)
       #expect((game.flightWorldVelocity - beforeVelocity).length <= acceleration * delta + 1e-8)
       #expect(
@@ -52,12 +61,13 @@ struct AutoTargetCruiseTests {
       #expect(game.autoPilot.status == "APPROACHING" && !game.autoPilot.finalApproach)
     }
     #expect(peakSpeed > 144 && game.flightWorldVelocity.length > 144)
+    #expect(peakImpulse >= acceleration * delta - 1e-8)
     #expect(game.autoTargetBody?.position.length ?? 0 > 10000)
   }
 
   @Test func fastLowAccelerationCruiseReservesBrakingDistanceAndOneCompleteStep() {
     for distance in [0.01, 1, 40, 180, 720, 5000, 16000] {
-      for acceleration in [0.1, 8.1, 216] {
+      for acceleration in [0.1, 8.1, 216, 270, 337.5] {
         for delta in [0.02, 0.05, 0.1] {
           let speed = AutoTargetControl.approachCruiseSpeed(
             distance: distance, acceleration: acceleration, delta: delta, maximumSpeed: 1800)
@@ -126,5 +136,33 @@ struct AutoTargetCruiseTests {
     let rates = obstructed.steer(target: closed, delta: delta, limits: limits)
     #expect(abs(rates.yaw) > 0 && abs(rates.yaw) <= limits.yawRate)
     #expect(obstructed.velocity == .init(0, 0, 0) && !obstructed.finalApproach)
+  }
+}
+
+extension AutoTargetCruiseTests {
+  @Test func actualHighThrustHullUsesAvailableBrakingAndCoastsDownInheritedOverspeed() throws {
+    var game = Game(executive: false)
+    game.commander.shipID = "SH009"
+    try game.commander.prepareEquipment(legacy: false)
+    let limits = game.workLimits
+    try #require(limits.acceleration > AutoTargetControl.policyLimits.acceleration)
+    let distance = 900.0
+    let delta = 0.1
+    let speed = AutoTargetControl.approachCruiseSpeed(
+      distance: distance, acceleration: limits.acceleration, delta: delta,
+      maximumSpeed: limits.speed)
+    let oldCap = AutoTargetControl.approachCruiseSpeed(
+      distance: distance, acceleration: AutoTargetControl.policyLimits.acceleration, delta: delta,
+      maximumSpeed: limits.speed)
+    #expect(speed > oldCap)
+    #expect(speed * delta + speed * speed / (2 * limits.acceleration) <= distance + 1e-8)
+    var control = AutoTargetControl()
+    let inherited = Vector3(0, 0, limits.speed * 2)
+    control.setApproachVelocity(inherited)
+    _ = control.steer(
+      target: .init(id: 0, hull: .station, position: .init(0, 0, 16000)),
+      delta: delta, limits: limits)
+    #expect(abs((control.velocity - inherited).length - limits.acceleration * delta) < 1e-8)
+    #expect(control.velocity.length > limits.speed && control.velocity.z < inherited.z)
   }
 }

@@ -17,3 +17,7 @@ Compared the guide with AppKit menu mappings, Game/ScreenNavigation handlers, sh
 ## Compatibility and risks
 
 Built-in MacBook keys remain sufficient. No save schema, geometry, media or rendering changes.
+
+### Station AUTO defence
+
+Station AUTO keeps its station destination while independently aiming fitted combat mounts and using bounded lateral evasion during the approach. Native thrust, braking, clearance, door alignment and spin remain authoritative; manual cancellation keeps its existing controls. No additional key is required. Docking-only fitted ECM uses normal energy without changing global options. Military source notifications remain, and a confirmed return-fire order is satisfied only by a durable native missile response. Autonomous ammunition requires the ordinary bound save barrier; refusal preserves stock and allows other defence and docking to continue. Production qualification is tracked in the paired station-auto-defence notes.

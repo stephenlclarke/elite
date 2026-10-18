@@ -484,6 +484,7 @@ public struct Game: Sendable {
   public var yaw = 0.0
   public var spin = SpinControl()
   public var autoPilot = AutoTargetControl()
+  var stationAutoDefence: StationAutoDefenceState?
   public var workTargetFilter: WorkTargetFilter = .ships
   var workGuidance: FlightWorkGuidance?
   var workBraking: FlightWorkBraking?
@@ -573,6 +574,7 @@ public struct Game: Sendable {
   }
   public mutating func load(_ value: Commander) -> Bool {
     var candidate = self
+    candidate.stationAutoDefence = nil
     guard candidate.loadCommander(value) else { return false }
     self = candidate
     return true
@@ -1179,6 +1181,7 @@ public struct Game: Sendable {
     commander.nativeStations?.currentMainDock = nil
   }
   public mutating func dock(atMainStation: Bool = true) {
+    stationAutoDefence = nil
     do { try persistNativeStationConditions() } catch {
       notify("DOCKING DEFERRED: RRS STATE UNAVAILABLE")
       return
@@ -1453,7 +1456,8 @@ public struct Game: Sendable {
     return true
   }
   public mutating func ecm() {
-    guard !docked, !playerEMPDisabled, commander.equipment.contains("E.C.M. System"), energy > 10,
+    guard !docked, !playerEMPDisabled, commander.equipment.contains("E.C.M. System"),
+      energy > ECMControl.activationEnergyCost,
       ecmFrames == 0
     else {
       return
@@ -1476,7 +1480,7 @@ public struct Game: Sendable {
     }
     ecmFrames = 32
     enemyECMSource = nil
-    energy -= 10
+    energy -= ECMControl.activationEnergyCost
     advanceGameplayOrdnance(allowEnemyECM: false)
     notify("E.C.M.", voiced: false)
   }
@@ -1610,6 +1614,8 @@ public struct Game: Sendable {
     rearShield = min(commander.rearShieldCapacity, rearShield + dt * commander.rearShieldRecharge)
     if controls.fire && screen.isFlight {
       fireSelectedFlightTool(delta: dt, nativeSalvagePublish: nativeSalvagePublish)
+    } else {
+      fireStationAutoLaser()
     }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
@@ -1622,6 +1628,7 @@ public struct Game: Sendable {
     let usedWorkCamera = workGuidance != nil || workBraking != nil
     moveBodies(dt: dt)
     if docked {
+      stationAutoDefence = nil
       reconcileEliteReward()
       return
     }
@@ -1891,6 +1898,7 @@ public actor GameRuntime {
   public init(game: Game = Game(), saveURL: URL? = nil) {
     var prepared = game
     prepared.invalidateNativeStationAuthority()
+    prepared.stationAutoDefence = nil
     prepared.inventoryContextEpoch = .init()
     if (try? prepared.commander.prepareEquipment()) != nil {
       prepared.commander.mirrorFittedEquipment()
@@ -2074,6 +2082,7 @@ public actor GameRuntime {
     commitNativeSalvageCollections()
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
+    if game.docked { game.stationAutoDefence = nil }
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
     return game
   }
@@ -2104,6 +2113,9 @@ public actor GameRuntime {
         return nil
       }
     }
+    // Projectile restoration must admit the frame before automatic ammunition can publish.
+    // Publish before advancing clocks or exposing the candidate projectile to physics.
+    advanceStationAutoMissile(delta: delta)
     // Physical facts commit first. A failed script save must never undo a real hit/death.
     let calendarActive = game.calendarActive
     game.scriptEventsDeferred = true
@@ -2170,6 +2182,8 @@ public actor GameRuntime {
     try Self.writeCommander(&candidate, to: url)
     game = candidate
     scriptSaveURL = url
+    game.stationAutoDefence?.missilePublicationRefused = false
+    game.stationAutoDefence?.saveBinding = url
     nativePeopleFailureGate = nil
     game.scriptDurabilityAvailable = true
   }

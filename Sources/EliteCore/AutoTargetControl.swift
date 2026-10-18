@@ -133,7 +133,7 @@ public struct AutoTargetControl: Sendable {
 
   mutating func steer(
     target: SpaceBody, delta: Double, aimTolerance: Double = 0.001,
-    limits: RelativeWorkLimits = Self.policyLimits
+    limits: RelativeWorkLimits = Self.policyLimits, defence: StationAutoGuidance? = nil
   ) -> (
     pitch: Double, yaw: Double, roll: Double?
   ) {
@@ -144,7 +144,7 @@ public struct AutoTargetControl: Sendable {
     let pitchLimit = min(Self.policyLimits.pitchRate, limits.pitchRate)
     let yawLimit = min(Self.policyLimits.yawRate, limits.yawRate)
     let station = target.hull == .station
-    let aim: Vector3
+    var aim: Vector3
     if station {
       let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
       positionError = goal.length
@@ -157,9 +157,17 @@ public struct AutoTargetControl: Sendable {
     } else {
       aim = target.position
     }
+    let stationFacing = hypot(atan2(aim.y, hypot(aim.x, aim.z)), atan2(aim.x, aim.z))
+    let defensiveSteering =
+      station && !stationStaged && !finalApproach
+      && target.position.length > target.stationClearanceRadius + target.stationApproachDistance
+    let guidance = defensiveSteering ? defence : nil
+    if let defensiveAim = guidance?.aim, defensiveAim.finite, defensiveAim.length > 0 {
+      aim = defensiveAim
+    }
     let pitchAngle = atan2(aim.y, hypot(aim.x, aim.z))
     let yawAngle = atan2(aim.x, aim.z)
-    facingError = hypot(pitchAngle, yawAngle)
+    facingError = station ? stationFacing : hypot(pitchAngle, yawAngle)
     let pitch = max(-pitchLimit, min(pitchLimit, pitchAngle * 1.8))
     let yaw = max(-yawLimit, min(yawLimit, yawAngle * 1.8))
     guard station else {
@@ -172,7 +180,7 @@ public struct AutoTargetControl: Sendable {
     }
     rollRate = max(-limits.rollRate, min(limits.rollRate, rollRate))
     let previousRate = rollRate
-    alignStation(target, delta: delta, limits: limits)
+    alignStation(target, delta: delta, limits: limits, defence: guidance)
     return (pitch, yaw, (previousRate + rollRate) / 2)
   }
 
@@ -194,9 +202,9 @@ public struct AutoTargetControl: Sendable {
   mutating func setApproachVelocity(_ value: Vector3) { velocity = value }
 
   private mutating func alignStation(
-    _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits
+    _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits, defence: StationAutoGuidance?
   ) {
-    let acceleration = min(Self.policyLimits.acceleration, limits.acceleration)
+    let acceleration = limits.acceleration
     let maximumRoll = min(Self.policyLimits.rollRate, limits.rollRate)
     phaseError = atan2(target.entranceUp.x, target.entranceUp.y)
     let matchRate = -target.rotationRate * target.orientation.z.z
@@ -217,7 +225,7 @@ public struct AutoTargetControl: Sendable {
       && abs(phaseError) < 0.03
       && rateError < 0.02 && velocity.length < 1
     if ready { finalApproach = true }
-    let desired: Vector3
+    var desired: Vector3
     if finalApproach {
       desired = finalVelocity(target, acceleration: acceleration)
     } else if stationStaged {
@@ -233,8 +241,9 @@ public struct AutoTargetControl: Sendable {
       let cruiseSpeed = Self.approachCruiseSpeed(
         distance: waypoint.length, acceleration: acceleration, delta: delta,
         maximumSpeed: limits.speed)
-      desired = facingError < 0.12 ? waypoint.unit * cruiseSpeed : .init(0, 0, 0)
-      status = "APPROACHING"
+      desired = facingError < 0.12 || defence != nil ? waypoint.unit * cruiseSpeed : .init(0, 0, 0)
+      status = defence == nil ? "APPROACHING" : "DEFENDING APPROACH"
+      if let evasion = defence?.lateralVelocity, evasion.finite { desired = desired + evasion }
     }
     let safeDesired =
       finalApproach
@@ -260,7 +269,7 @@ public struct AutoTargetControl: Sendable {
   ) -> Double {
     guard [distance, acceleration, delta, maximumSpeed].allSatisfy({ $0.isFinite && $0 > 0 })
     else { return 0 }
-    let available = min(Self.policyLimits.acceleration, acceleration)
+    let available = acceleration
     // Factor the square root; 2*a*d could overflow even when its square root is finite.
     let root = sqrt(2 * available) * sqrt(distance)
     guard delta <= 1 || available <= Double.greatestFiniteMagnitude / delta else { return 0 }
@@ -347,6 +356,7 @@ extension Game {
     ]
   }
   mutating func cancelAutoTarget() {
+    stationAutoDefence = nil
     let preserveMomentum = workGuidance != nil || workBraking != nil || manualResidualFlight
     releaseWorkGuidance()
     let remainingVelocity = autoPilot.velocity
@@ -368,6 +378,7 @@ extension Game {
       notify("FIT A TARGETING COMPUTER")
       return
     }
+    stationAutoDefence = nil
     let initialVelocity = flightWorldVelocity
     releaseWorkGuidance()
     ensurePhysicalActors()
@@ -474,8 +485,10 @@ extension Game {
     let previousPhase = autoPilot.status
     let focal = CockpitLayout(game: self, width: viewportWidth, height: viewportHeight).projection
       .focal
+    let defence = station ? stationAutoGuidance(target: target) : nil
+    if !station { stationAutoDefence = nil }
     let steering = autoPilot.steer(
-      target: target, delta: delta, aimTolerance: 1.5 / focal, limits: workLimits)
+      target: target, delta: delta, aimTolerance: 1.5 / focal, limits: workLimits, defence: defence)
     if station && previousPhase != autoPilot.status { notify("AUTO DOCKING: " + autoPilot.status) }
     pitch = steering.pitch
     yaw = steering.yaw

@@ -40,6 +40,7 @@ public struct ECMControl: Sendable {
   private var nextEvent = 0
   private var seen: Set<Int> = []
   /// Preserve the native 32-frame field at the documented 60 Hz reference cadence.
+  static let activationEnergyCost = 10.0
   public static let referenceFramesPerSecond = 60.0
   public static let fieldDuration = 32.0 / referenceFramesPerSecond
   public private(set) var remainingDuration = 0.0
@@ -119,7 +120,8 @@ extension Game {
   mutating func detectIncomingMissiles() {
     let incoming = ecmControl.detect(bodies)
     detectRetaliationSources()
-    if incoming && commander.xyzzyActive && commander.autoECM && ecmFrames == 0 { ecm() }
+    let automatic = (commander.xyzzyActive && commander.autoECM) || stationAutoDockingActive
+    if incoming && automatic && ecmFrames == 0 { ecm() }
   }
 }
 

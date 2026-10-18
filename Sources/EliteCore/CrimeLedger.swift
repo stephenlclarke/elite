@@ -511,9 +511,10 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
         owner: owner, victim: victim, legal: legalBefore, time: time, context: context)
     let lawful =
       missileLaunch.map { !$0.attack.unlawful }
-      ?? (!victimIsStation
-        && (defence != nil || authority
-          || (!inNoFireZone && (legalBefore.wanted || entitlement?.authorizesAttack == true))))
+      ?? Self.attackIsLawful(
+        station: victimIsStation, selfDefence: defence != nil, authority: authority,
+        inZone: inNoFireZone, wanted: legalBefore.wanted,
+        entitled: entitlement?.authorizesAttack == true)
     let firstAggressor = previous?.firstAggressor ?? defence?.firstAggressor ?? owner
     let window = AttackWindow(
       owner: owner, victim: victim, victimLegal: legalBefore, victimRole: roleBefore,
@@ -523,6 +524,67 @@ public struct CrimeLedger: Equatable, Codable, Sendable {
     return .init(
       window: window, firstInWindow: previous == nil, lawful: lawful,
       selfDefence: defence != nil, entitlement: entitlement)
+  }
+
+  private static func attackIsLawful(
+    station: Bool, selfDefence: Bool, authority: Bool, inZone: Bool, wanted: Bool, entitled: Bool
+  ) -> Bool {
+    !station && (selfDefence || authority || (!inZone && (wanted || entitled)))
+  }
+
+  func hasCurrentUnlawfulAttack(
+    from attacker: ActorIdentity, against victim: ActorIdentity,
+    context: EncounterContext
+  ) -> Bool {
+    guard attacker.system == context.system, attacker.visit == context.visit,
+      victim.system == context.system, victim.visit == context.visit,
+      context.physicalTime.isFinite
+    else { return false }
+    return attacks.contains {
+      $0.owner == attacker && $0.victim == victim && $0.unlawful
+        && threatActive($0, time: context.physicalTime, context: context, dying: false)
+    }
+  }
+
+  /// Read-only prospective law, not an emission, incident, hit or mission entitlement.
+  /// Native adjudication independently rejoins its actual origin and frozen attack window.
+  func permitsAutonomousDefence(
+    owner: ActorIdentity, victim: ActorIdentity, context: EncounterContext
+  )
+    -> Bool
+  {
+    guard owner == context.player.identity, owner != victim,
+      owner.system == context.system, owner.visit == context.visit,
+      victim.system == context.system, victim.visit == context.visit,
+      context.physicalTime.isFinite, context.physicalTime >= 0,
+      !context.protection.protectedActors.contains(owner),
+      !context.protection.protectedActors.contains(victim),
+      context.actors.filter({ $0.identity == victim }).count == 1,
+      let target = context.actors.first(where: { $0.identity == victim }),
+      target.energy.isFinite, target.energy > 0, target.hull != .station
+    else { return false }
+    let time = context.physicalTime
+    let previous = attacks.first {
+      $0.owner == owner && $0.victim == victim && time - $0.lastAttack <= 10
+    }
+    // Do not autonomously continue an already unlawful attack window.
+    guard previous?.unlawful != true else { return false }
+    let legal = previous?.victimLegal ?? target.legal
+    let defence = attacks.contains {
+      $0.owner == victim && $0.victim == owner && $0.unlawful
+        && threatActive($0, time: time, context: context, dying: false)
+    }
+    let inZone =
+      (context.player.position - context.anchors.station.position).length <= 1200
+      || context.actors.contains {
+        $0.hull == .station && $0.energy > 0
+          && ($0.position - context.player.position).length <= 1200
+      }
+    return Self.attackIsLawful(
+      station: false, selfDefence: defence,
+      authority: lawfulAuthority(
+        owner: owner, victim: victim, legal: legal, time: time, context: context),
+      inZone: inZone, wanted: legal.wanted, entitled: false)
   }
 
   private func lawfulAuthority(
