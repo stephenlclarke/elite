@@ -248,14 +248,28 @@ struct NativeCrimboObservationTests {
     let registry = try #require(game.commander.savedCrimboState)
     game.commander.savedCrimboState?.destination = registry.origin
     let runtime = GameRuntime(game: game)
-    let frame = await runtime.advance(delta: 0.01)
+    var frame = await runtime.advance(delta: 0.01)
     let fact = try #require(frame.nativeCrimboAttainedMotion)
-    let progress = ProviderMissionProgress(
+    // Pure retained-storage fixture, not native admission or versioned-save acceptance.
+    var state = ProviderContractFixture.state()
+    state.progress = .init(
       requested: true, handshakeSeconds: 5, distanceMeters: 12000, escortSeconds: 45,
       checkpointBits: 3)
+    var instance = ScriptInstance(
+      id: state.instance, definition: "project.crimbo/guiding-light", version: "1.0.0",
+      digest: String(repeating: "a", count: 64))
+    instance.savedProviderContract = state
+    instance.payloads[state.terms.payload] = 1
+    let valid = state.valid(instance: instance)
+    try #require(valid)
+    frame.commander.scriptState.instances[instance.id] = instance
+    let beforeCommander = frame.commander
+    let beforeInstance = try #require(frame.commander.scriptState.instances[instance.id])
+    let beforeContract = try #require(beforeInstance.savedProviderContract)
     let encoder = JSONEncoder()
     encoder.outputFormatting = .sortedKeys
-    let before = try encoder.encode(progress)
+    let beforeInstanceBytes = try encoder.encode(beforeInstance)
+    let beforeProgressBytes = try encoder.encode(beforeContract.progress)
     let revisions: [String?] = [nil, "", "historical-metres", "native-flight-metres-v2"]
     for revision in revisions {
       let projection = NativeCrimboMetricProjection.project(
@@ -270,8 +284,15 @@ struct NativeCrimboObservationTests {
     #expect(projection.missingMissionAuthorities.contains(.livingCrew))
     #expect(projection.missingMissionAuthorities.contains(.trackingThroughout))
     #expect(projection.missingMissionAuthorities.contains(.savedMetricRevision))
-    let after = try encoder.encode(progress)
-    #expect(before == after)
+    let afterInstance = try #require(frame.commander.scriptState.instances[instance.id])
+    let afterContract = try #require(afterInstance.savedProviderContract)
+    let afterInstanceBytes = try encoder.encode(afterInstance)
+    let afterProgressBytes = try encoder.encode(afterContract.progress)
+    #expect(beforeInstanceBytes == afterInstanceBytes)
+    #expect(beforeProgressBytes == afterProgressBytes)
+    #expect(beforeContract.progress.distanceMeters == 12000)
+    #expect(beforeContract.progress == afterContract.progress)
+    #expect(frame.commander == beforeCommander)
     let terms = ProviderContractFixture.terms.observation
     #expect(terms.contactRange == 5000 && terms.contactSpeed == 100 && terms.contactSeconds == 5)
     #expect(terms.checkpoints == [6000, 12000, 18000])
