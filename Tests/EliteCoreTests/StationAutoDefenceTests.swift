@@ -918,3 +918,78 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   #expect(game.autoPilot.stationDefencePhase == .approach && game.autoPilot.finalApproach)
   #expect(game.autoPilot.targetActor == before.autoPilot.targetActor)
 }
+
+@Test func stationAutoCombatTracePreservesNativeAdmissionCandidateIsolationAndLifecycle()
+  async throws
+{
+  let fixture = try ScriptFreightFixture()
+  defer { fixture.clean() }
+  let initial = try stationAutoGame()
+  let target = try #require(initial.bodies.first { $0.hostile })
+  let victim = try #require(target.physical?.identity)
+  let player = try #require(initial.commander.flightSimulation.player)
+  let ordinary = GameRuntime(game: initial)
+  let recording = GameRuntime(game: initial, saveURL: fixture.save)
+  await recording.enableStationDefenceDiagnostics()
+  try await recording.save(to: fixture.save)
+  let withoutTrace = await ordinary.advance(delta: 0.1)
+  let observed = await recording.advance(delta: 0.1)
+  let ordinaryVictim = try #require(withoutTrace.bodies.first { $0.id == target.id })
+  let observedVictim = try #require(observed.bodies.first { $0.id == target.id })
+  let trace = try #require(observed.gameplayCombatTrace)
+  let accepted = try #require(
+    trace.incidents.first {
+      $0.origin.owner == player && $0.victim == victim && $0.kind == .laser
+        && $0.outcome == .hit && $0.mount == .front
+    })
+  #expect(withoutTrace.gameplayCombatTrace == nil)
+  #expect(ordinaryVictim.energy < target.energy && observedVictim.energy == ordinaryVictim.energy)
+  #expect(
+    observed.laserHeat == withoutTrace.laserHeat
+      && observed.fireCooldown == withoutTrace.fireCooldown)
+  #expect(
+    observed.energy == withoutTrace.energy && observed.frontShield == withoutTrace.frontShield)
+  #expect(
+    observed.commander.legal == withoutTrace.commander.legal
+      && observed.commander.missiles == withoutTrace.commander.missiles)
+  #expect(observed.flightWorldVelocity == withoutTrace.flightWorldVelocity)
+
+  let contact = try #require(
+    try observed.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: observedVictim.position.unit,
+      range: observedVictim.position.length, radius: 0, excludingBodyIDs: [], includePlayer: false))
+  try #require(contact.selectedTargetBody?.physical?.identity == victim)
+  var rejected = observed
+  // Reuse a real origin and mesh contact; malformed damage must fail native admission.
+  let refused = rejected.applyCombatHit(
+    contact.hit, origin: accepted.origin, kind: .laser, damage: .nan)
+  #expect(refused == nil)
+  #expect(rejected.commander == observed.commander && rejected.bodies == observed.bodies)
+  #expect(rejected.gameplayCombatTrace?.incidents == trace.incidents)
+
+  do {
+    var discardedCandidate = observed
+    let launched = discardedCandidate.launchGameplayMissile(targetBodyID: target.id)
+    try #require(launched)
+    #expect(discardedCandidate.commander.missiles == observed.commander.missiles - 1)
+    #expect(
+      discardedCandidate.gameplayCombatTrace?.incidents.contains {
+        $0.origin.owner == player && $0.victim == victim && $0.kind == .missile
+          && $0.outcome == .targetedLaunch && $0.origin.ordnance != nil
+      } == true)
+  }
+  // The installed value still owns its original physical stock, bodies and observations.
+  let installed = await recording.snapshot()
+  #expect(installed.commander == observed.commander && installed.bodies == observed.bodies)
+  #expect(
+    installed.gameplayCombatTrace?.epoch == trace.epoch
+      && installed.gameplayCombatTrace?.incidents == trace.incidents
+      && installed.gameplayCombatTrace?.dropped == trace.dropped)
+  let restarted = GameRuntime(game: observed)
+  let freshRuntime = await restarted.snapshot()
+  #expect(freshRuntime.gameplayCombatTrace == nil)
+  try await recording.load(from: fixture.save, persistMigrations: false)
+  let loaded = await recording.snapshot()
+  #expect(loaded.gameplayCombatTrace == nil)
+  #expect(loaded.commander.missiles == initial.commander.missiles)
+}
