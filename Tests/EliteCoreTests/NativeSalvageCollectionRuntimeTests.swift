@@ -1,7 +1,19 @@
+import Darwin
 import Foundation
 import Testing
 
 @testable import EliteCore
+
+// Match the existing native page-store fixtures: every ancestor is a physical
+// directory so the production O_NOFOLLOW checks remain exercised unchanged.
+private func nativeSalvageTestDirectory() throws -> URL {
+  let path = FileManager.default.temporaryDirectory.path
+  let resolved = path.withCString { realpath($0, nil) }
+  let physical = try #require(resolved)
+  defer { free(physical) }
+  return URL(fileURLWithPath: String(cString: physical), isDirectory: true)
+    .appendingPathComponent("native-salvage-" + UUID().uuidString, isDirectory: true)
+}
 
 private func nativeSalvageScoopFixture(
   definition: String = AlienModuleKind.energyCapacity.definitionID
@@ -53,7 +65,7 @@ private func nativeSalvageScoopFixture(
 struct NativeSalvageCollectionRuntimeTests {
   @Test func actualScoopPublishesOriginalModuleAndRemovesOnlyItsBoundBodyAfterSave() async throws {
     let (game, lot) = try nativeSalvageScoopFixture()
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     let runtime = GameRuntime(game: game)
@@ -96,7 +108,7 @@ struct NativeSalvageCollectionRuntimeTests {
     async throws
   {
     let (game, lot) = try nativeSalvageScoopFixture()
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     let preserved = folder.appendingPathExtension("preserved")
     defer {
       try? FileManager.default.removeItem(at: folder)
@@ -198,7 +210,7 @@ extension NativeSalvageCollectionRuntimeTests {
   func actualPlughDockFitsAndStoresTheSameModuleWithoutRefillCashOrSourceLoss(kind: AlienModuleKind)
     async throws
   {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     let (runtime, id) = try await recoveredModuleAtActualPlughDock(file, kind: kind)
@@ -279,7 +291,7 @@ extension NativeSalvageCollectionRuntimeTests {
   }
 
   @Test func booleanPlughDockAndStaleServiceEpochCannotAuthorizeAlienFitting() async throws {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     let (runtime, id) = try await recoveredModuleAtActualPlughDock(file)
@@ -302,7 +314,7 @@ extension NativeSalvageCollectionRuntimeTests {
   @Test func failedPlughFitWriterRetainsChargeSourceCashAndPreviewThenSameCommandRetries()
     async throws
   {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     let preserved = folder.appendingPathExtension("preserved")
     defer {
       try? FileManager.default.removeItem(at: folder)
@@ -362,7 +374,7 @@ extension NativeSalvageCollectionRuntimeTests {
     game.nextBodyID += 1
     unrelated.physical = .init(identity: unrelatedActor, population: .cargo)
     game.bodies.append(unrelated)
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     let runtime = GameRuntime(game: game)
@@ -488,7 +500,7 @@ extension NativeSalvageCollectionRuntimeTests {
   @Test func twoActuallyRecoveredUpgradesChangeOnePhysicalModuleWithoutIncreasingEMPCount()
     async throws
   {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     let backup = folder.appendingPathExtension("preserved")
     defer {
       try? FileManager.default.removeItem(at: folder)
@@ -742,7 +754,7 @@ extension NativeSalvageCollectionRuntimeTests {
       section: lot.identity.section, owner: owner, at: game.commander.flightSimulation.physicalTime,
       previous: nil)
     try imported.apply(to: &game.commander)
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     try GameRuntime.writeCommander(&game, to: file)
@@ -765,7 +777,7 @@ extension NativeSalvageCollectionRuntimeTests {
 
 extension NativeSalvageCollectionRuntimeTests {
   @Test func twoDistinctActuallyFittedEnergyKindsStrengthenEMPByPhysicalCountOnly() async throws {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     let (initialRuntime, firstID) = try await recoveredModuleAtActualPlughDock(file)
@@ -813,7 +825,7 @@ extension NativeSalvageCollectionRuntimeTests {
   @Test func actualHullQuotesAndFailedThenSuccessfulTradePreserveNativeModuleIdentityAndReceipts()
     async throws
   {
-    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let folder = try nativeSalvageTestDirectory()
     let backup = folder.appendingPathExtension("preserved")
     defer {
       try? FileManager.default.removeItem(at: folder)

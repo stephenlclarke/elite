@@ -532,8 +532,8 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     -> AlienStorageLegacyCustodyEvidence
   {
     .init(
-      pending: pending.values.filter { $0.identity.section == section },
-      stored: stored.values.filter { $0.identity.section == section },
+      pending: pendingLots.filter { $0.identity.section == section },
+      stored: inventory.filter { $0.identity.section == section },
       offers: offers.filter { $0.value.section == section },
       bindings: bindings.filter { $0.key.section == section },
       settlements: settlements.values.compactMap {
