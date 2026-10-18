@@ -1574,9 +1574,7 @@ public struct Game: Sendable {
   }
 
   mutating func tick(delta: Double, controls: Controls, nativeSalvagePublish: ScriptPublisher?) {
-    if !controls.fire || paused || !screen.isFlight || selectedFlightTool != .salvageCutter {
-      guard flushNativeSalvageWork() else { return }
-    }
+    guard admitFlightWorkAdvance(controls: controls) else { return }
     pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
@@ -2124,6 +2122,7 @@ public actor GameRuntime {
   }
   public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
+    guard game.admitFlightWorkAdvance(controls: controls) else { return snapshot() }
     game.pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
