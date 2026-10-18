@@ -174,12 +174,15 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
 @Test func freightRealTravelExpiryKeepsEarlierDeliveryAndOrdinaryGoods() async throws {
   let fixture = try ScriptFreightFixture()
   defer { fixture.clean() }
-  let (runtime, id, plan) = try await fixture.accepted(row: 1)
+  let (runtime, id, plan) = try await fixture.accepted(
+    row: 1, selectionDiagnostic: .init(label: "freight-expiry-initial"))
   let accepted = await runtime.snapshot()
   let commodity = try #require(plan.commodity)
   try #require(accepted.market[commodity.rawValue].quantity > 0)
   await runtime.procurementBuy(commodity.rawValue)
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path, verifyDeparture: true)
+  try await ScriptProcurementFixture.travel(
+    runtime, path: plan.path, verifyDeparture: true,
+    selectionDiagnostic: .init(label: "freight-expiry-outbound", instance: id))
   await runtime.key("contacts-open")
   try await ScriptFreightFixture.confirm(runtime)
   let boundarySource = await runtime.snapshot()
@@ -189,12 +192,14 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let earlier = try #require(
     partial.commander.scriptState.instances[id]?.collections[plan.template.id]?.lots)
   var path = Array(plan.path.reversed())
-  for _ in 0..<6 {
+  for trip in 0..<6 {
     let current = await runtime.snapshot()
     if current.commander.scriptState.instances[id]?.outcome != .active { break }
     let origin = try #require(path.first)
     try await runtime.procurementRefuelForTurnaround(expectedSystem: origin)
-    try await ScriptProcurementFixture.travel(runtime, path: path, verifyDeparture: true)
+    try await ScriptProcurementFixture.travel(
+      runtime, path: path, verifyDeparture: true,
+      selectionDiagnostic: .init(label: "freight-expiry-trip-\(trip + 1)", instance: id))
     path.reverse()
   }
   let expired = await runtime.snapshot()
