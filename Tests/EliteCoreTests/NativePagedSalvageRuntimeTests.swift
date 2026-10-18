@@ -76,13 +76,15 @@ struct NativePagedSalvageRuntimeTests {
     async throws
   {
     var (game, site) = try NativePagedSalvageFixture.game()
-    #expect(game.fireSalvageCutter(delta: 0.1))
-    let hot = try #require(game.nativeSalvageWork)
+    game.selectFlightTool(.salvageCutter)
     let original = game.commander.salvageLedger
     let folder = try NativePagedSalvageFixture.folder()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
     let runtime = GameRuntime(game: game)
+    await runtime.setControls(NativePagedSalvageFixture.firingControls)
+    let worked = await runtime.advance(delta: 0.1)
+    let hot = try #require(worked.nativeSalvageWork)
     try await runtime.save(to: file)
     let ready = await runtime.snapshot()
     let snapshot = try #require(ready.commander.alienStorageState?.current.snapshot)
@@ -146,7 +148,11 @@ struct NativePagedSalvageRuntimeTests {
         $0.physical?.payload.map { if case .salvage = $0 { true } else { false } } == true
       })
     #expect(try Data(contentsOf: preserved.appendingPathComponent("commander.json")) == bytes)
-    let control = GameRuntime(game: refused)
+    var noWriterGame = refused
+    // A new actor invalidates scene authority. Retain the completed budget at the
+    // genuine cold value boundary, then reacquire it in that actor's own epoch.
+    #expect(noWriterGame.flushNativeSalvageWork())
+    let control = GameRuntime(game: noWriterGame)
     await control.setControls(NativePagedSalvageFixture.firingControls)
     let noWriter = await control.advance(delta: 0.02)
     try FileManager.default.removeItem(at: folder)
@@ -262,6 +268,7 @@ extension NativePagedSalvageRuntimeTests {
     let folder = try NativePagedSalvageFixture.folder()
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
+    #expect(game.flushNativeSalvageWork())
     let runtime = GameRuntime(game: game)
     try await runtime.save(to: file)
     try await runtime.load(from: file, persistMigrations: false)
@@ -319,6 +326,54 @@ extension NativePagedSalvageRuntimeTests {
     #expect(
       loaded.commander.alienStorageState?.current.salvage.native.works[hot.cycle.inspection.id]?
         .currentWorkSeconds == 0.1)
+    #expect(try Data(contentsOf: file) == bytes)
+    let anchors = try #require(loaded.commander.flightSimulation.anchors)
+    let expectedSites = SalvageSites.generate(anchors: anchors, seed: loaded.gameplaySeed)
+    #expect(loaded.salvageSites == expectedSites && expectedSites.contains(site))
+    #expect(!loaded.salvageHUDLines.isEmpty)
+    let loadedView = try #require(loaded.commander.alienStorageState?.current.salvage.native)
+    let originalInspection = try #require(loadedView.inspections[hot.plan.section])
+    let originalCycle = try #require(loadedView.works[hot.cycle.inspection.id])
+    let loadedParent = try #require(
+      loaded.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    let loadedActor = try #require(loadedParent.physical?.identity)
+    let observer = loaded.commander.flightSimulation.pose
+    var revisiting = loaded
+    NativePagedSalvageFixture.moveObserver(
+      &revisiting,
+      to: .init(position: observer.position + .init(50000, 0, 0), orientation: observer.orientation)
+    )
+    revisiting.tick(delta: 0.02)
+    #expect(!revisiting.bodies.contains { $0.physical?.identity == loadedActor })
+    let retained = try #require(
+      revisiting.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(retained.binding == nil && retained.destroyedAt == nil)
+    #expect(
+      revisiting.commander.alienStorageState?.current.salvage.native.inspections[hot.plan.section]
+        == originalInspection)
+    #expect(
+      revisiting.commander.alienStorageState?.current.salvage.native.works[hot.cycle.inspection.id]
+        == originalCycle)
+    NativePagedSalvageFixture.moveObserver(&revisiting, to: observer)
+    revisiting.activateNearbySalvageSites()
+    let admitted = revisiting.bodies.filter {
+      $0.physical?.salvage?.wreck == site.identity && $0.physical?.payload == nil
+    }
+    #expect(admitted.count == 1)
+    let returnedAfterLoad = try #require(admitted.first)
+    let returnedPose = revisiting.modelPose(of: returnedAfterLoad)
+    #expect(returnedAfterLoad.physical?.identity != loadedActor)
+    #expect((returnedPose.position - retained.motion.pose.position).length < 1e-8)
+    #expect((returnedPose.orientation.x - retained.motion.pose.orientation.x).length < 1e-8)
+    #expect((returnedPose.orientation.y - retained.motion.pose.orientation.y).length < 1e-8)
+    #expect((returnedPose.orientation.z - retained.motion.pose.orientation.z).length < 1e-8)
+    #expect(returnedAfterLoad.energy == retained.motion.energy)
+    #expect(returnedAfterLoad.physical?.velocity == retained.motion.velocity)
+    #expect(returnedAfterLoad.physical?.angularVelocity == retained.motion.angularVelocity)
+    #expect(
+      revisiting.commander.alienStorageState?.current.salvage.native.works[hot.cycle.inspection.id]
+        == originalCycle)
+    #expect(revisiting.commander.salvageLedger == loaded.commander.salvageLedger)
     #expect(try Data(contentsOf: file) == bytes)
   }
 
@@ -384,6 +439,12 @@ extension NativePagedSalvageRuntimeTests {
       let folder = try NativePagedSalvageFixture.folder()
       defer { try? FileManager.default.removeItem(at: folder) }
       let file = folder.appendingPathComponent("commander.json")
+      // Exercise the actual native save barrier while this hot epoch is still
+      // current, before checking the actor's separate refused value handoff.
+      #expect(game.nativeSalvageHotWorkIsCurrent(work))
+      #expect(throws: SaveError.invalidCommander) {
+        _ = try GameRuntime.prepareNativeSaveState(game)
+      }
       let runtime = GameRuntime(game: game)
       let before = await runtime.snapshot()
       var refused = false

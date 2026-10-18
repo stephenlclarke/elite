@@ -1,6 +1,13 @@
 import Foundation
 
 extension Game {
+  mutating func rebuildSalvageSites() {
+    salvageSites =
+      commander.flightSimulation.anchors.map {
+        SalvageSites.generate(anchors: $0, seed: gameplaySeed)
+      } ?? []
+  }
+
   var hasUnsettledWreckDeaths: Bool {
     bodies.contains { body in
       guard body.energy <= 0, body.physical?.npc == nil,

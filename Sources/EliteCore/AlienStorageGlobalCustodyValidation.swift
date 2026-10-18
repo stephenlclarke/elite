@@ -4,6 +4,7 @@ import Foundation
 /// collection receipts cannot borrow another transaction ID or resurrect spent evidence.
 enum AlienStorageGlobalCustodyValidation {
   static func validate(_ snapshot: AlienStorageSnapshot) throws {
+    try validateCurrentActors(snapshot.world)
     var reserved = Set(snapshot.commands.map(\.id))
     var settled: Set<SalvageLotIdentity> = []
     var claims: [UUID: AlienStorageLegacyLot] = [:]
@@ -59,4 +60,25 @@ enum AlienStorageGlobalCustodyValidation {
       }
     }
   }
+
+  /// Only current custody claims participate. Immutable legacy observation bindings
+  /// and the EMP audit reference to the same one physical body are not extra actors.
+  private static func validateCurrentActors(_ records: [AlienStorageWorldRecord]) throws {
+    var actors: Set<ActorIdentity> = []
+    for record in records {
+      let binding: ActorIdentity?
+      switch record {
+      case .nativeWreck(let wreck): binding = wreck.binding
+      case .lot(let lot):
+        if case .pending(_, _, _, let actor) = lot.state { binding = actor } else { binding = nil }
+      case .companion(let lot):
+        if case .pending(_, _, _, let actor) = lot.state { binding = actor } else { binding = nil }
+      case .legacyCurrent(let lot):
+        if case .pending(_, _, _, let actor) = lot.state { binding = actor } else { binding = nil }
+      default: binding = nil
+      }
+      if let binding, !actors.insert(binding).inserted { throw AlienStorageError.duplicateKey }
+    }
+  }
+
 }

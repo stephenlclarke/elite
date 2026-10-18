@@ -48,14 +48,43 @@ struct NativeSalvageHotWork: Sendable {
   let seed: UInt64
   let plan: SalvageLootPlan
   let actor: ActorIdentity
+  let hull: UUID
+  let epoch: UUID
+  let wreckRecord: UUID
+  let wreckSource: NativeSalvageWreck.Source
+  let catalogueShipID: String
+  let originalCycle: NativeSalvageWorkCycle
   var cycle: NativeSalvageWorkCycle
 }
 
 extension Game {
+  /// One bounded current authority join, reused before hot work and every cold flush.
+  /// Mutable motion is observed separately; immutable source and inspection cannot change.
+  func nativeSalvageHotWorkIsCurrent(_ hot: NativeSalvageHotWork) -> Bool {
+    guard commander.equipmentOwnerID == hot.cycle.owner, commander.hullInstanceID == hot.hull,
+      nativeStationRuntimeEpoch == hot.epoch, hot.actor.system == systemIdentity,
+      hot.actor.visit == commander.flightSimulation.visit,
+      let state = commander.alienStorageState,
+      state.current.owner == hot.cycle.owner,
+      state.reference == commander.savedAlienStorageReference,
+      state.current.salvage.native.works[hot.cycle.inspection.id] == hot.originalCycle,
+      let inspection = state.current.salvage.native.plans[hot.cycle.inspection.id],
+      inspection.seed == hot.seed, inspection.plan == hot.plan,
+      state.current.salvage.native.sectionProfiles[hot.cycle.inspection.id] == hot.section,
+      let wreck = state.current.salvage.native.wrecks[hot.plan.section.wreck],
+      wreck.id == hot.wreckRecord, wreck.source == hot.wreckSource,
+      wreck.owner == hot.cycle.owner, wreck.seed == hot.seed, wreck.binding == hot.actor,
+      wreck.destroyedAt == nil, wreck.catalogueShipID == hot.catalogueShipID
+    else { return false }
+    return true
+  }
+
   @discardableResult
   mutating func flushNativeSalvageWork() -> Bool {
     guard let hot = nativeSalvageWork else { return true }
-    guard let previous = commander.alienStorageState?.current.snapshot else { return false }
+    guard nativeSalvageHotWorkIsCurrent(hot),
+      let previous = commander.alienStorageState?.current.snapshot
+    else { return false }
     do {
       var world = previous.world
       if let index = world.firstIndex(where: { $0.id == hot.cycle.id }) {
@@ -64,6 +93,7 @@ extension Game {
       } else {
         world.append(.nativeWork(hot.cycle))
       }
+      world = try NativeSalvageWorkWorld.reconcile(hot.cycle, plan: hot.plan, in: world)
       if world != previous.world {
         try commander.replaceAlienStorage(with: previous.replacingNativeWorld(world))
       }
@@ -81,7 +111,7 @@ extension Game {
       notify("SAVE COMMANDER TO RELEASE SALVAGE")
       return false
     }
-    guard let hot = nativeSalvageWork,
+    guard let hot = nativeSalvageWork, nativeSalvageHotWorkIsCurrent(hot),
       body.physical?.identity == hot.actor, body.physical?.salvage?.wreck == hot.plan.section.wreck,
       hot.cycle.currentWorkSeconds == hot.section.workSeconds,
       let previous = commander.alienStorageState?.current.snapshot,
@@ -102,6 +132,7 @@ extension Game {
       } else {
         world.append(.nativeWork(cycle))
       }
+      world = try NativeSalvageWorkWorld.reconcile(cycle, plan: hot.plan, in: world)
       let emissions = try SalvageSectionEmissionView(
         seed: hot.seed, plan: hot.plan, progress: progress
       ).emissions()

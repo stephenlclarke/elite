@@ -39,7 +39,8 @@ struct NativeSalvageWorkCycle: Codable, Sendable, Equatable {
 
   func validate(
     seed: UInt64, plan: SalvageLootPlan, requiredWorkSeconds: Double,
-    originalProgress: AlienStorageWorldProgress
+    originalProgress: AlienStorageWorldProgress, section: SalvageSectionProfile,
+    baselineWork: Double, baselineDamage: Bool, baselineDepleted: Bool, baselineOperation: UInt64?
   ) throws {
     guard version == 1, beganAt.isFinite, beganAt >= 0,
       observedAt.isFinite, observedAt >= beganAt,
@@ -58,7 +59,7 @@ struct NativeSalvageWorkCycle: Codable, Sendable, Equatable {
       !depleted || destroyedAt != nil
         || (progress.issuedStructural == progress.structuralUnits
           && zip(progress.issued, plan.items).allSatisfy { $0 == SalvageLotEmission.quantity($1) }),
-      currentWorkSeconds == 0 || progress.materialKind != nil
+      section.workSeconds == requiredWorkSeconds
     else { throw AlienStorageError.invalidJoin }
     if let lastRelease {
       guard releases > 0, lastRelease.operation > 0,
@@ -69,9 +70,13 @@ struct NativeSalvageWorkCycle: Codable, Sendable, Equatable {
     } else if releases != 0 {
       throw AlienStorageError.invalidJoin
     }
+    try NativeSalvageCycleProof.validate(
+      self, plan: plan, section: section, original: originalProgress,
+      baselineWork: baselineWork, baselineDamage: baselineDamage,
+      baselineDepleted: baselineDepleted, baselineOperation: baselineOperation)
   }
 
-  func preserve(_ old: Self) throws {
+  func preserve(_ old: Self, plan: SalvageLootPlan, section: SalvageSectionProfile) throws {
     guard id == old.id, owner == old.owner, version == old.version,
       inspection == old.inspection, beganAt == old.beganAt, observedAt >= old.observedAt,
       releases >= old.releases, !old.depleted || depleted,
@@ -107,5 +112,6 @@ struct NativeSalvageWorkCycle: Codable, Sendable, Equatable {
         old.lastOperation.map({ release.operation > $0 }) ?? true
       else { throw AlienStorageError.historyChanged }
     }
+    try NativeSalvageCycleProof.preserve(old, in: self, plan: plan, section: section)
   }
 }

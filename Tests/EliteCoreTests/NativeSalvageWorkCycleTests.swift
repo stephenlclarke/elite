@@ -34,7 +34,7 @@ struct NativeSalvageWorkCycleTests {
     let adopted = NativeSalvageWorkCycle(
       id: UUID(), owner: owner, version: 1, inspection: .nativeSingleBudget(id),
       beganAt: 2, observedAt: 2, progress: export.progress, currentWorkSeconds: 0,
-      damagedTechnology: false, releases: 0, lastRelease: nil, lastOperation: 1,
+      damagedTechnology: false, releases: 0, lastRelease: nil, lastOperation: nil,
       depleted: false, destroyedAt: nil)
     // Storage-only physical source evidence; the Commander deterministic-site census
     // would still reject this fixture as a native actor or acquisition permission.
@@ -51,6 +51,23 @@ struct NativeSalvageWorkCycleTests {
         pose: .init(), velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), energy: 100),
       destroyedAt: nil)
     let view = try NativeSalvagePlanView([.nativeWreck(wreck), .plan(old), .nativeWork(adopted)])
+    let changedOriginal = AlienStorageWorldPlan(
+      id: old.id, owner: old.owner, seed: old.seed, plan: old.plan, inspectedAt: old.inspectedAt,
+      requiredWorkSeconds: old.requiredWorkSeconds, workSeconds: old.workSeconds,
+      damagedTechnology: old.damagedTechnology, depleted: old.depleted, destroyed: old.destroyed,
+      lastOperation: 2, progress: old.progress)
+    let beforeAdoption: [AlienStorageWorldRecord] = [.nativeWreck(wreck), .plan(old)]
+    let afterAdoption = beforeAdoption + [.nativeWork(adopted)]
+    let rewritten: [AlienStorageWorldRecord] = [
+      .nativeWreck(wreck), .plan(changedOriginal), .nativeWork(adopted),
+    ]
+    try AlienStorageWorldValidation.preserve(beforeAdoption, in: afterAdoption)
+    #expect(throws: (any Error).self) {
+      try AlienStorageWorldValidation.preserve(beforeAdoption, in: rewritten)
+    }
+    #expect(throws: (any Error).self) {
+      try AlienStorageWorldValidation.preserve(afterAdoption, in: rewritten)
+    }
     #expect(view.plans[id]?.workSeconds == current.workSeconds)
     #expect(view.works[id]?.currentWorkSeconds == 0 && view.works[id]?.releases == 0)
     let partial = SalvageSectionCycle.advance(
@@ -74,7 +91,7 @@ struct NativeSalvageWorkCycleTests {
     let released = try completed.releasing(
       at: 3, progress: next, operation: 2, requiredWorkSeconds: current.workSeconds,
       depleted: depleted)
-    try released.preserve(adopted)
+    try released.preserve(adopted, plan: old.plan, section: current)
     #expect(
       released.currentWorkSeconds == 0 && released.releases == 1 && !released.damagedTechnology)
     #expect(lots.first?.identity.lot == 8 && !lots.isEmpty && lots.count <= 8)

@@ -16,10 +16,13 @@ enum NativePagedSalvageFixture {
 
   /// Foreign ordinary history is created through its actual original producer,
   /// collector and settlement APIs. It confers no new native source or property.
-  static func fullOrdinaryLedger() throws -> SalvageLedger {
-    var ledger = SalvageLedger()
+  static func fullOrdinaryLedger(
+    starting: SalvageLedger = .init(), initialOperation: UInt64 = 0,
+    retainedWrecks: Int = 0, retainedPlans: Int = 0, retainedPartial: Int = 0
+  ) throws -> SalvageLedger {
+    var ledger = starting
     let system = SystemIdentity(galaxy: 7, system: 255)
-    var operation: UInt64 = 0
+    var operation = initialOperation
     var cargo = Array(repeating: 0, count: 17)
     func wreck(_ ordinal: Int) -> WreckIdentity {
       .init(system: system, site: UInt32(ordinal + 10000), lineage: 991)
@@ -59,11 +62,11 @@ enum NativePagedSalvageFixture {
       + SalvageLedger.maximumPending
     let source = SalvageLootSource(
       roles: [.asteroid], legalValue: 0, economy: 0, technology: 0, ownership: .abandoned)
-    for ordinal in firstPlan..<(firstPlan + SalvageLedger.maximumPlans) {
+    for ordinal in firstPlan..<(firstPlan + SalvageLedger.maximumPlans - retainedPlans) {
       #expect(ledger.inspectLoot(wreck: wreck(ordinal), section: section, source: source) != nil)
     }
-    let firstPartial = firstPlan + SalvageLedger.maximumPlans
-    for ordinal in firstPartial..<(firstPartial + SalvageLedger.maximumPartial) {
+    let firstPartial = firstPlan + SalvageLedger.maximumPlans - retainedPlans
+    for ordinal in firstPartial..<(firstPartial + SalvageLedger.maximumPartial - retainedPartial) {
       operation += 1
       #expect(
         ledger.advance(
@@ -71,8 +74,8 @@ enum NativePagedSalvageFixture {
           angularVelocity: .init(0, 0, 0), tool: .cutter, elapsed: 0.1,
           operation: operation, conditions: permitted) == .progress(seconds: 0.1, required: 1))
     }
-    let firstMotion = firstPartial + SalvageLedger.maximumPartial
-    for ordinal in firstMotion..<SalvageLedger.maximumWrecks {
+    let firstMotion = firstPartial + SalvageLedger.maximumPartial - retainedPartial
+    for ordinal in firstMotion..<(SalvageLedger.maximumWrecks - retainedWrecks) {
       #expect(
         ledger.updateWreck(
           identity: wreck(ordinal),
@@ -91,17 +94,24 @@ enum NativePagedSalvageFixture {
     return ledger
   }
 
-  /// A real deterministic Thargoid site is admitted by the production encounter path.
+  /// A real deterministic site is admitted by the production encounter path.
+  /// Human compatibility fixtures omit scoops and use the original manifest section.
   /// Only the observer is positioned for a verified visible catalogue face.
-  static func game(fullOrdinaryPools: Bool = false) throws -> (Game, SalvageSite) {
+  static func game(
+    fullOrdinaryPools: Bool = false, humanCargo: Bool = false, requireReserved: Bool = false
+  ) throws -> (Game, SalvageSite) {
     for system in 0..<256 {
       var game = Game(executive: false)
       game.commander.system = system
       try game.commander.prepareEquipment(legacy: false)
       try game.commander.grantEquipment(
         "Salvage Cutter", at: .utility(.salvageCutter), provenance: .grant("native cutter test"))
+      if !humanCargo {
+        try game.commander.grantEquipment(
+          "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("native cutter test"))
+      }
       try game.commander.grantEquipment(
-        "Fuel Scoops", at: .utility(.fuelScoops), provenance: .grant("native cutter test"))
+        "Targeting: Basic", at: .targetingCore, provenance: .grant("native cutter test"))
       try game.commander.grantEquipment(
         "Targeting: Salvage Module", at: .targetingSalvage, provenance: .grant("native cutter test")
       )
@@ -109,12 +119,38 @@ enum NativePagedSalvageFixture {
       game.speed = 0
       guard
         let site = game.salvageSites.first(where: {
-          SalvageCatalogue.profile(catalogueShipID: $0.catalogueShipID)?.sourceRoles.contains(
-            .thargoid) == true
+          guard let profile = SalvageCatalogue.profile(catalogueShipID: $0.catalogueShipID)
+          else { return false }
+          if humanCargo {
+            return !profile.sourceRoles.contains(.thargoid)
+              && (profile.sourceRoles.contains(.commercialTrader)
+                || profile.sourceRoles.contains(.militaryCapital))
+              && !game.salvageSites.contains {
+                SalvageCatalogue.profile(catalogueShipID: $0.catalogueShipID)?.sourceRoles.contains(
+                  .thargoid) == true
+              }
+          }
+          return profile.sourceRoles.contains(.thargoid)
         }), let profile = SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID)
       else { continue }
       if fullOrdinaryPools { game.commander.salvageLedger = try fullOrdinaryLedger() }
-      for section in profile.sections {
+      for section in profile.sections where !humanCargo || section.index == 1 {
+        if requireReserved {
+          let source = SalvageLootSource(
+            roles: profile.sourceRoles, legalValue: 0, economy: game.currentSystem.economy,
+            technology: game.currentSystem.technology, ownership: .abandoned)
+          let plan = SalvageLootProfiles.plan(
+            section: .init(wreck: site.identity, section: section.index),
+            seed: game.commander.salvageLedger.nativeInspectionSeed, source: source)
+          guard
+            plan.items.contains(where: {
+              if case .technology(let id, _, _, _) = $0.content {
+                return AlienModuleDefinition.isAttachmentDefinition(id)
+              }
+              return false
+            })
+          else { continue }
+        }
         let surface = site.position + site.orientation.apply(section.localPosition)
         let normal = site.orientation.apply(section.normal).unit
         var basis = Basis3()
@@ -134,6 +170,25 @@ enum NativePagedSalvageFixture {
         try NativeSaveTestFixture.prepareCurrentPolicy(&game)
         return (game, site)
       }
+    }
+    throw SaveError.invalidCommander
+  }
+
+  static func originalRelease(
+    ledger: inout SalvageLedger, section: SalvageSectionProfile, identity: WreckSectionIdentity,
+    source: SalvageLootSource, remaining: Double, operation: inout UInt64
+  ) throws -> [SalvageLot] {
+    var left = remaining
+    while left > 0 {
+      let elapsed = min(1, left)
+      operation += 1
+      let result = ledger.advance(
+        wreck: identity.wreck, section: section, pose: .init(), velocity: .init(0, 0, 0),
+        angularVelocity: .init(0, 0, 0), tool: .cutter, elapsed: elapsed,
+        operation: operation, conditions: permitted, source: source)
+      left -= elapsed
+      if case .released(let lots) = result { return lots }
+      guard case .progress = result else { throw SaveError.invalidCommander }
     }
     throw SaveError.invalidCommander
   }
