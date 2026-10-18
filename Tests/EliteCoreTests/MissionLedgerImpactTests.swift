@@ -96,10 +96,11 @@ private func prepareTerminalLedgerImpactDamage(
   try #require(remaining > 0 && remaining <= projectileDamage && game.commander.miningLedger.valid)
 }
 
-private func prepareLedgerImpactContact(
+/// Complete all scene preparation before the sealed producer reserves its validation temporaries.
+private func prepareLedgerImpactScene(
   _ game: inout Game, instance: UUID, reentry: Bool, absentSource: Bool,
   incidental: Bool, mining: Bool, terminalPreDamage: Bool
-) throws -> LedgerImpactFacts {
+) throws -> (projectileID: UUID, origin: AttackOrigin, rock: MiningRock?) {
   let source = try #require(
     game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
   let descriptor = try #require(game.currentMissionActorDescriptor(bodyID: source.id))
@@ -179,6 +180,17 @@ private func prepareLedgerImpactContact(
   game.commander.scriptState.projectiles[id] = .init(
     galaxy: game.commander.galaxy, system: game.commander.system, body: game.bodies[index],
     presence: .present)
+  return (id, origin, rock)
+}
+
+/// The preparation frame has returned before proof, context and final incident are obtained.
+private func prepareLedgerImpactContact(
+  _ game: inout Game, instance: UUID, reentry: Bool, absentSource: Bool,
+  incidental: Bool, mining: Bool, terminalPreDamage: Bool
+) throws -> LedgerImpactFacts {
+  let (id, origin, rock) = try prepareLedgerImpactScene(
+    &game, instance: instance, reentry: reentry, absentSource: absentSource,
+    incidental: incidental, mining: mining, terminalPreDamage: terminalPreDamage)
   let evaluatedResult3 = try game.missionNativeImpactProof(projectileID: id, delta: 0.6)
   let proof = try #require(evaluatedResult3)
   let current = try #require(game.gameplayContext())
