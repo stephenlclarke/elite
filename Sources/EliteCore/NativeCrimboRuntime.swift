@@ -20,6 +20,9 @@ struct NativeCrimboAttainedMotion: Equatable, Sendable {
   let playerStartVelocity: Vector3
   let playerEndVelocity: Vector3
   let tangentialDisplacementWorldUnits: Double
+  /// Absent unless the actual native integrator and retained endpoint agree.
+  var playerTrajectory: NativeCrimboPlayerTrajectory? = nil
+  var observationIdentity: NativeCrimboObservationIdentity? = nil
 }
 
 struct NativeCrimboMotionSample: Sendable {
@@ -36,6 +39,8 @@ struct NativeCrimboMotionSample: Sendable {
   let subjectVelocity: Vector3
   let playerVelocity: Vector3
   let tangent: Vector3
+  var normalPlayerStep: NativeCrimboNormalPlayerStep? = nil
+  var observationIdentity: NativeCrimboObservationIdentity? = nil
 }
 
 /// Bounded geometry checks use actual native displacement (new velocity * dt), not a goal pose.
@@ -286,7 +291,14 @@ extension Game {
           stationImpactRevision: stationImpactRevision,
           startTime: context.physicalTime - delta, endTime: context.physicalTime,
           subject: subject, player: commander.flightSimulation.pose,
-          subjectVelocity: velocity, playerVelocity: context.player.velocity, tangent: tangent)
+          subjectVelocity: velocity, playerVelocity: context.player.velocity, tangent: tangent,
+          normalPlayerStep: nativeCrimboNormalPlayerStep(delta: delta),
+          observationIdentity: record.ownership.logical.map {
+            .init(
+              world: registry.world, manifest: registry.manifest,
+              player: context.player.identity, sceneGeneration: registry.orbit.anchor.identity,
+              logical: $0)
+          })
       }
     }
     commander.savedCrimboState = registry
@@ -390,7 +402,9 @@ extension Game {
       playerStart: sample.player, playerEnd: commander.flightSimulation.pose,
       subjectStartVelocity: sample.subjectVelocity, subjectEndVelocity: actor.velocity,
       playerStartVelocity: sample.playerVelocity, playerEndVelocity: context.player.velocity,
-      tangentialDisplacementWorldUnits: displacement.dot(sample.tangent))
+      tangentialDisplacementWorldUnits: displacement.dot(sample.tangent),
+      playerTrajectory: nativeCrimboPlayerTrajectory(sample: sample),
+      observationIdentity: sample.observationIdentity)
   }
 
   /// G1 must clear the departed world in this SAME candidate before publishing the parked ownership.
