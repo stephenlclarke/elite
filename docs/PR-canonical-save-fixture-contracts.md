@@ -1,0 +1,23 @@
+# test(persistence): preserve canonical save fixture contracts
+
+## Changes
+
+Eleven existing test methods now distinguish canonical current saves from genuine legacy migration. Campaign isolation captures its live baseline after successful save and also requires whole-Commander equality against the prepared state with only the current mining policy persisted. Courier death/ordinary-flight checks capture prepared actor equipment before advancing, independently conserve original cash/cargo/hull and retain exact equipment/inventory/stock-drive identity during the callback.
+
+Current XYZZY cash restores, fresh mission-owner replacement and station target-cycle replacement use real schema-26 versioned writes, strict chunk reads and runtime loads. Completion uses one receiving runtime across both owners and both launches, retains the same visit tuple, requires a new epoch, and checks the complete target sequence through station docking. Encounter retains actual player-destroyed old mission bodies until accepted loading, keeps a negative modern raw-load probe, and requires the exact fresh Commander, empty scene/reference and no old death rewards. XYZZY retains real raw legacy unlimited/finite Clarke and ordinary JAMESON cases, exact cash accounting and no second cash grant.
+
+XYZZY's current flight save explicitly compares the stored Commander to the complete saved Commander with only documented transient NPC bindings cleared. Loading with `persistMigrations: false` restores those bindings and requires equality to the entire saved live Commander while preserving exact writer bytes. This does not relax migration or header validation. All temporary generation directories are cleaned.
+
+Pledge versions 2 through 19 use an independent genuine pre-writer header with their required codecs/chunk sets and exact expected legacy state/property. Current donation requires schema 26 and a real nonempty pledge ledger. Both the modern-header downgrade rejection and a second correctly rehashed envelope remain: the second has the exact accepted legacy commander-header hash and the actual donated mission/contract chunk hashes, exposing concealed pledge evidence without a modern header rejection masking the check. The actual live pointer bytes must remain unchanged.
+
+Ship exchange prepares canonical equipment before its quote, retains Back's whole-Commander equality, exact prices/cargo/fuel/missiles/mission property, and verifies every device ID, component, provenance and fitting address on the new hull. The stock drive remains the same device. Legacy mount migration requires the exact fitted mirror including one standard Basic drive and retains the held old Pulse Laser, empty side mounts, actual later mount grants and full inventory/history round trip. Trial save scope rejection retains exact schema 26, strict reading, live Commander equality and exact live file bytes.
+
+The world service assertion selects `savedInstance == origin.id` and retains its briefing, actual support identities/admission, completion and payment checks. Gallery help exercises both the available built-in trial with no external packs and the actual private built-in trial with disabled new-trial/retry actions, exact help gating and whole live-parent conservation.
+
+## Scope and validation
+
+The parent is `14899e22a04789fe280f69e54987be80b8c06011`. Exactly eleven existing methods/twelve expanded cases change in eleven test files; three nested fixture helpers are added and the superseded single-use scene helper is removed. This issue/PR pair is the only other scope. No production source or unrelated method changes. The frozen `1776096`, `bfd69a2`, `f0b2331` and `1224bd0` refs remain intact.
+
+Only source formatting/parsing, strict scoped lint, Markdownlint, JSON/hash/scope inventory and whitespace checks are performed here. No compiler, typecheck, discovery, test, build, GUI, media, GitHub, push, merge or Sonar job runs under MC1's lease. CI 331 remains failed. Root must review the frozen commit and selection before G1 composes the separate stack correction and performs the one authorized combined validation. No runtime pass or production mission readiness is claimed.
+
+Eventual PRs require a completed clean `@codex review` cycle, fixes and repeat reviews for every actionable finding, passing required checks on the final head, required independent approval and protected merge without bypass.

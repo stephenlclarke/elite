@@ -264,12 +264,41 @@ private func displayWorldAfterLoad(
   #expect(game.commander == commander)
 }
 
-@Test func emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry() {
+@Test func emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry() async throws {
   var game = Game(executive: false)
   game.screen = .gallery
+  game.commander.name = "LIVE HELP OWNER"
+  game.commander.credits = 4321
+  game.commander.cargo[0] = 2
   game.missionPacks = .init(entries: [], errors: [])
   game.scriptPacks = []
+  let original = game.commander
+  let entry = try #require(game.selectedGalleryMission)
+  #expect(entry.trialDigest == NativePeopleGallery.digest && entry.status == .available)
+  #expect(entry.savedInstance == nil)
   let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
-  #expect(!rows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
+  #expect(MissionUIAction.trial.isEnabled(in: game))
+  #expect(rows.contains("T - START PRIVATE MISSION TRIAL"))
+  #expect(!MissionUIAction.retry.isEnabled(in: game))
+  #expect(!rows.contains { $0.hasPrefix("R - ") })
   #expect(rows.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+  let parent = GameRuntime(game: game)
+  let before = await parent.snapshot().commander
+  #expect(before.name == original.name && before.credits == original.credits)
+  #expect(before.cargo == original.cargo && before.shipID == original.shipID)
+  let trial = try await parent.scriptGalleryTrial(packDigest: NativePeopleGallery.digest)
+  let trialNamespace = await trial.gallerySaveDirectory()
+  let namespace = try #require(trialNamespace)
+  defer { try? FileManager.default.removeItem(at: namespace) }
+  await trial.key("gallery-open")
+  let privateGallery = await trial.snapshot()
+  #expect(privateGallery.isMissionTrial && privateGallery.screen == .gallery)
+  #expect(privateGallery.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
+  #expect(!MissionUIAction.trial.isEnabled(in: privateGallery))
+  #expect(!MissionUIAction.retry.isEnabled(in: privateGallery))
+  let privateRows = PlayerHelp.pages(for: privateGallery).flatMap(\.rows)
+  #expect(!privateRows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
+  #expect(privateRows.contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+  let after = await parent.snapshot().commander
+  #expect(after == before && game.commander == original)
 }

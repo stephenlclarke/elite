@@ -215,14 +215,22 @@ private func sortedWorld(_ game: Game) throws -> Data {
   let runtime = GameRuntime(game: game, saveURL: mainFile)
   try await runtime.save(to: mainFile)
   let live = await runtime.snapshot().commander
+  let liveBytes = try Data(contentsOf: mainFile)
   try await runtime.startScriptGalleryTrial(packDigest: courier.digest)
-  let namespace = try #require(await runtime.gallerySaveDirectory())
+  let trialNamespace = await runtime.gallerySaveDirectory()
+  let namespace = try #require(trialNamespace)
   defer { try? FileManager.default.removeItem(at: namespace) }
   let saved = try await runtime.saveForInterface()
-  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: saved.url))
-  #expect(pointer.scope == "gallery" && pointer.schemaVersion == 21)
-  let clone = GameRuntime(game: await runtime.snapshot(), saveURL: mainFile)
-  let cloneNamespace = try #require(await clone.gallerySaveDirectory())
+  let trialBytes = try Data(contentsOf: saved.url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: trialBytes)
+  let (stored, _) = try ScriptSaveStore.read(trialBytes, from: saved.url)
+  let savedTrial = await runtime.snapshot().commander
+  #expect(stored == savedTrial)
+  #expect(pointer.scope == "gallery" && pointer.schemaVersion == 26)
+  let trial = await runtime.snapshot()
+  let clone = GameRuntime(game: trial, saveURL: mainFile)
+  let cloneDirectory = await clone.gallerySaveDirectory()
+  let cloneNamespace = try #require(cloneDirectory)
   defer { try? FileManager.default.removeItem(at: cloneNamespace) }
   await #expect(throws: MissionPackError.self) { try await clone.save(to: mainFile) }
   let copied = namespace.appendingPathComponent("copied-live.json")
@@ -234,7 +242,9 @@ private func sortedWorld(_ game: Game) throws -> Data {
   await #expect(throws: MissionPackError.self) {
     try await runtime.loadForInterface(from: saved.url)
   }
-  #expect(await runtime.snapshot().commander == live)
+  let returned = await runtime.snapshot()
+  let returnedLiveBytes = try Data(contentsOf: mainFile)
+  #expect(returned.commander == live && returnedLiveBytes == liveBytes)
 }
 @Test func aSavedFaultStaysSuspendedAfterReloadUntilExplicitGalleryRetry() async throws {
   let folder = try galleryFolder()

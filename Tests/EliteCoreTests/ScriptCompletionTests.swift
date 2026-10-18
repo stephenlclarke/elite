@@ -92,50 +92,77 @@ func actualStationGuidanceDiagnostic(_ game: Game) -> String {
 }
 
 @Test func loadingAnotherActualCommanderStartsANewStationTargetCycleEvenWithTheSameVisitTuple()
-  throws
+  async throws
 {
-  var first = Commander()
-  try first.prepareEquipment(legacy: false)
-  try first.grantEquipment(
-    TargetingTier.docking.equipmentName, at: .targetingCore,
-    provenance: .grant("first cycle commander"))
-  var game = Game(executive: false)
-  let loadedFirst = game.load(first)
-  try #require(loadedFirst)
-  game.launch()
-  game.key("tab")
-  let firstTarget = try #require(game.autoTargetBody)
-  try #require(firstTarget.hull == .cobra && firstTarget.position.z > 0)
-  let firstOrigin = try #require(game.gameplayContext()?.player.identity)
-  var second = Commander()
-  try second.prepareEquipment(legacy: false)
-  try second.grantEquipment(
-    TargetingTier.docking.equipmentName, at: .targetingCore,
-    provenance: .grant("second cycle commander"))
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  func writeOwner(_ label: String, to url: URL) async throws -> Commander {
+    var source = Game(executive: false)
+    source.screen = .status
+    try source.commander.prepareEquipment(legacy: false)
+    try source.commander.grantEquipment(
+      TargetingTier.docking.equipmentName, at: .targetingCore, provenance: .grant(label))
+    let writer = GameRuntime(game: source)
+    try await writer.save(to: url)
+    let expected = await writer.snapshot().commander
+    let bytes = try Data(contentsOf: url)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+    let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+    #expect(stored == expected)
+    return expected
+  }
+  let firstURL = directory.appendingPathComponent("first.json")
+  let secondURL = directory.appendingPathComponent("second.json")
+  let first = try await writeOwner("first cycle commander", to: firstURL)
+  let second = try await writeOwner("second cycle commander", to: secondURL)
   try #require(first.equipmentOwnerID != second.equipmentOwnerID)
-  let loadedSecond = game.load(second)
-  try #require(loadedSecond)
-  #expect(game.autoPilot.targetID == nil && game.autoPilot.status == "OFF")
-  game.launch()
-  try #require(game.gameplayContext()?.player.identity == firstOrigin)
+  let runtime = GameRuntime(game: Game(executive: false))
+  try await runtime.load(from: firstURL)
+  let loadedFirst = await runtime.snapshot()
+  #expect(loadedFirst.commander == first)
+  await runtime.nativeCommand { candidate in
+    candidate.launch()
+    candidate.key("tab")
+  }
+  let firstFlight = await runtime.snapshot()
+  let firstTarget = try #require(firstFlight.autoTargetBody)
+  try #require(firstTarget.hull == .cobra && firstTarget.position.z > 0)
+  let firstOrigin = try #require(firstFlight.gameplayContext()?.player.identity)
+  let firstEpoch = firstFlight.ecmControl.epoch
+  // The same receiving actor must invalidate the previous owner's partial target cycle.
+  try await runtime.load(from: secondURL)
+  let loadedSecond = await runtime.snapshot()
+  #expect(loadedSecond.commander == second)
+  #expect(loadedSecond.ecmControl.epoch != firstEpoch)
+  #expect(loadedSecond.autoPilot.targetID == nil && loadedSecond.autoPilot.status == "OFF")
+  await runtime.nativeCommand { candidate in candidate.launch() }
+  let secondFlight = await runtime.snapshot()
+  try #require(secondFlight.gameplayContext()?.player.identity == firstOrigin)
   // The previous real cycle is still partial: its next entry would be the old station.
-  game.key("tab")
-  let firstNewTarget = try #require(game.autoTargetBody)
+  await runtime.key("tab")
+  let newSelection = await runtime.snapshot()
+  let firstNewTarget = try #require(newSelection.autoTargetBody)
   #expect(
     firstNewTarget.id == firstTarget.id && firstNewTarget.hull == .cobra
       && firstNewTarget.position.z > 0,
-    Comment(rawValue: "First new Commander selection: " + actualStationGuidanceDiagnostic(game)))
-  var selected: [Int] = []
-  selected.append(firstNewTarget.id)
-  for _ in 1...game.bodies.count {
-    game.key("tab")
-    if let target = game.autoPilot.targetID, selected.count < 16 { selected.append(target) }
-    if game.autoTargetBody?.id == 0 { break }
+    Comment(
+      rawValue: "First new Commander selection: " + actualStationGuidanceDiagnostic(newSelection)))
+  var selected = [firstNewTarget.id]
+  var finalSelection = newSelection
+  for _ in 1...secondFlight.bodies.count {
+    await runtime.key("tab")
+    finalSelection = await runtime.snapshot()
+    if let target = finalSelection.autoPilot.targetID, selected.count < 16 {
+      selected.append(target)
+    }
+    if finalSelection.autoTargetBody?.id == 0 { break }
   }
   #expect(
-    game.autoTargetBody?.id == 0 && game.dockingComputer,
+    finalSelection.autoTargetBody?.id == 0 && finalSelection.dockingComputer,
     Comment(
-      rawValue: "actual new Commander cycle=\(selected); " + actualStationGuidanceDiagnostic(game)))
+      rawValue: "actual new Commander cycle=\(selected); "
+        + actualStationGuidanceDiagnostic(finalSelection)))
 }
 
 private func fitCompletionPatrolTargeting(_ game: inout Game) throws {

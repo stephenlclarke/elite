@@ -330,22 +330,47 @@ private func verifyPatrolPhysicalSaveConsistency(_ game: inout Game, id: UUID) t
   #expect(game.scriptWorldSave.consistent(with: game.commander))
 }
 
-@Test func nativeSceneLoadCannotAwardOldCommanderDeathsToANewSave() throws {
-  var (game, _) = try patrolGame()
-  try verifyPatrolNewCommanderSceneIsolation(&game)
-}
-
-private func verifyPatrolNewCommanderSceneIsolation(_ game: inout Game) throws {
+@Test func nativeSceneLoadCannotAwardOldCommanderDeathsToANewSave() async throws {
+  var (game, owner) = try patrolGame()
   for index in game.bodies.indices where game.bodies[index].missionActorID != nil {
     game.bodies[index].energy = 0
     game.bodies[index].destroyedByPlayer = true
   }
-  var fresh = Commander()
-  try fresh.prepareEquipment(legacy: false)
-  fresh.mirrorFittedEquipment()
-  let loaded = game.load(fresh)
-  #expect(loaded && game.commander == fresh)
-  #expect(game.bodies.isEmpty && game.scriptReferenceFrame == nil)
+  let dead = game.bodies.filter { $0.missionActorID != nil }
+  try #require(!dead.isEmpty && dead.allSatisfy { $0.energy == 0 && $0.destroyedByPlayer })
+  let oldCommander = game.commander
+  var fresh = Game(executive: false)
+  fresh.screen = .status
+  fresh.commander.name = "FRESH SCENE OWNER"
+  try fresh.commander.prepareEquipment(legacy: false)
+  fresh.commander.mirrorFittedEquipment()
+  var rawProbe = game
+  let rawLoaded = rawProbe.load(fresh.commander)
+  #expect(!rawLoaded && rawProbe.commander == oldCommander)
+  #expect(rawProbe.bodies == game.bodies)
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let url = directory.appendingPathComponent("fresh.json")
+  let writer = GameRuntime(game: fresh)
+  try await writer.save(to: url)
+  let expected = await writer.snapshot().commander
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(stored == expected)
+  let runtime = GameRuntime(game: game)
+  let before = await runtime.snapshot()
+  #expect(before.bodies == game.bodies && before.commander == oldCommander)
+  try await runtime.load(from: url)
+  let loaded = await runtime.snapshot()
+  let reloadedBytes = try Data(contentsOf: url)
+  #expect(loaded.commander == expected && reloadedBytes == bytes)
+  #expect(loaded.bodies.isEmpty && loaded.scriptReferenceFrame == nil)
+  #expect(loaded.commander.kills == 0 && loaded.commander.credits == fresh.commander.credits)
+  #expect(loaded.commander.scriptState.instances.isEmpty)
+  #expect(loaded.commander.scriptState.instances[owner] == nil)
+  #expect(loaded.commander.equipmentOwnerID != oldCommander.equipmentOwnerID)
 }
 
 @Test func scriptedMidflightTitleAndReadOnlyGalleryDoNotRunPhysicsOrDueTimers() async throws {

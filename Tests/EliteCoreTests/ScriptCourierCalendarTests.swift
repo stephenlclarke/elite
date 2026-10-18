@@ -281,14 +281,25 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
     game.celestials = []
     game.energy = fatal ? 0.01 : 30
     game.frontShield = 0
-    let commander = game.commander
+    let unprepared = game.commander
     let runtime = GameRuntime(game: game)
+    let commander = await runtime.snapshot().commander
+    #expect(commander.credits == unprepared.credits)
+    #expect(commander.cargo == unprepared.cargo && commander.shipID == unprepared.shipID)
+    #expect(commander.savedEquipmentVersion == 3)
+    let drive = commander.fittedEquipment(at: .drive)
+    #expect(drive?.node == HyperspaceDriveDefinition.node(for: .basic))
+    #expect(drive?.provenance == .standard)
+    #expect(drive?.component?.origin == HyperspaceDriveDefinition.template(for: .basic))
+    #expect(commander.equipment == unprepared.equipment.union([HyperspaceDriveTier.basic.label]))
     _ = await runtime.advance(delta: 0.1)
     let after = await runtime.snapshot()
-    #expect(
-      after.commander.credits == commander.credits && after.commander.cargo == commander.cargo
-        && after.commander.equipment == commander.equipment
-        && after.commander.shipID == commander.shipID)
+    #expect(after.commander.credits == commander.credits)
+    #expect(after.commander.cargo == commander.cargo)
+    #expect(after.commander.equipment == commander.equipment)
+    #expect(after.commander.shipID == commander.shipID)
+    #expect(after.commander.equipmentInventory == commander.equipmentInventory)
+    #expect(after.commander.fittedEquipment(at: .drive) == drive)
     #expect(after.commander.scriptState.instances.isEmpty)
     if fatal {
       #expect(after.screen == .gameOver && after.energy == 0 && after.scriptWorldSave.valid)
