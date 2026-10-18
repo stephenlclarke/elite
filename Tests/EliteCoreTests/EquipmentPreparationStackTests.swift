@@ -41,7 +41,28 @@ struct EquipmentPreparationStackTests {
         activeHull: inventory.activeHull, revision: inventory.revision,
         items: inventory.items.filter { $0.location?.slot != .drive })
     case "missile-mirror": commander.missiles += 1
-    case "runtime-statistics": commander.fuelStorageUnits = FuelStorage.maximumCount + 1
+    case "runtime-statistics":
+      let navigation = try #require(commander.fittedEquipment(at: .navigation))
+      let original = try #require(navigation.component)
+      var statistics = original.statistics
+      statistics[.jumpFuelCost] = 1e16
+      let component = ComponentInstance(
+        id: original.id, origin: original.origin, statistics: statistics,
+        grade: original.grade, features: original.features, receipts: original.receipts)
+      let item = OwnedEquipmentItem(
+        id: navigation.id, node: navigation.node, provenance: navigation.provenance,
+        component: component, location: navigation.location, boundHull: navigation.boundHull,
+        preferredSlot: navigation.preferredSlot, retainedLegacyState: navigation.retainedLegacyState
+      )
+      commander.savedEquipmentInventory = try .init(
+        owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
+        items: inventory.items.map { $0.id == navigation.id ? item : $0 })
+      try #require(commander.jumpFuelMultiplier == 1e16)
+      // The finite loaded component is legal; only its effective Int fuel cost is unsafe.
+      let changedInventory = try #require(commander.equipmentInventory)
+      try changedInventory.validate(
+        context: EquipmentRuntimeCatalog.context(
+          owner: inventory.owner, hull: inventory.activeHull, performance: commander.performance))
     case "component-statistics":
       let drive = try #require(commander.fittedEquipment(at: .drive))
       let original = try #require(drive.component)
