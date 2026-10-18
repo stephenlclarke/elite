@@ -10,7 +10,7 @@ struct AutoTargetCruiseTests {
     try game.commander.prepareEquipment()
     let destination = try #require(
       game.knownSystems.first {
-        $0.id != game.commander.system && $0.id != Plugh.systemID
+        $0.id != game.commander.system && $0.id != Plugh.systemID && $0.government == 7
           && game.currentSystem.distance(to: $0) > 0
           && game.currentSystem.distance(to: $0) <= game.commander.maximumJumpDistance
       })
@@ -19,6 +19,7 @@ struct AutoTargetCruiseTests {
     // The real arrival producer supplies station, ordinary traffic, celestials and bindings.
     game.arrive()
     try #require(game.commander.system == destination.id && !game.docked)
+    try #require(game.currentSystem.government == 7)
     try #require(game.commander.shipID == "SH023" && game.bodies.count > 1)
     try #require(Set(game.celestials.map(\.kind)) == [.sun, .planet])
     let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
