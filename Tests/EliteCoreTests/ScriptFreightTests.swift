@@ -192,15 +192,21 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let earlier = try #require(
     partial.commander.scriptState.instances[id]?.collections[plan.template.id]?.lots)
   var path = Array(plan.path.reversed())
-  for trip in 0..<6 {
-    let current = await runtime.snapshot()
-    if current.commander.scriptState.instances[id]?.outcome != .active { break }
-    let origin = try #require(path.first)
-    try await runtime.procurementRefuelForTurnaround(expectedSystem: origin)
-    try await ScriptProcurementFixture.travel(
-      runtime, path: path, verifyDeparture: true,
-      selectionDiagnostic: .init(label: "freight-expiry-trip-\(trip + 1)", instance: id))
-    path.reverse()
+  await runtime.beginScriptRefusalObservation()
+  do {
+    for trip in 0..<6 {
+      let current = await runtime.snapshot()
+      if current.commander.scriptState.instances[id]?.outcome != .active { break }
+      let origin = try #require(path.first)
+      try await runtime.procurementRefuelForTurnaround(expectedSystem: origin)
+      try await ScriptProcurementFixture.travel(
+        runtime, path: path, verifyDeparture: true,
+        selectionDiagnostic: .init(label: "freight-expiry-trip-\(trip + 1)", instance: id))
+      path.reverse()
+    }
+  } catch {
+    if let detail = await runtime.scriptRefusalObservationDetail() { Issue.record("\(detail)") }
+    throw error
   }
   let expired = await runtime.snapshot()
   let state = try #require(expired.commander.scriptState.instances[id])

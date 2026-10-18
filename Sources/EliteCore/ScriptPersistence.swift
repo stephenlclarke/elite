@@ -187,19 +187,35 @@ enum ScriptSaveStore {
   @discardableResult
   static func write(
     commander: Commander, world: ScriptWorldSave, to url: URL, scope: String = "commander",
-    exclusive: Bool = false
+    exclusive: Bool = false, diagnostics: ScriptRefusalDiagnostic? = nil,
+    diagnosticBoundary: ScriptRefusalBoundary = .publication
   ) throws -> AlienStoragePublication? {
     guard ["commander", "gallery"].contains(scope), commander.scriptState.calendarLedger != nil,
       commander.valid, world.valid, ScriptFreightVersionedSave.validateClaims(commander),
       commander.usesFreightNativeSaveVersion || !commander.usesProviderContractSaveVersion,
       world.consistent(with: commander)
     else {
+      if let diagnostics, !diagnostics.contains(diagnosticBoundary) {
+        // True guard prefix; bits 32/64/1/2/4/8/16: scope, calendar, commander, world, claims,
+        // envelope, scene. Later bits are unobserved, not evidence their predicates failed.
+        let checks = ScriptRefusalObservation.storeChecks(commander, world: world, scope: scope)
+        diagnostics.record(
+          diagnosticBoundary,
+          .init(
+            stage: .storeValidation, error: SaveError.invalidCommander, commander: commander,
+            checks: checks))
+      }
       throw SaveError.invalidCommander
     }
     let semantic = JSONEncoder()
     guard try semantic.encode(commander.scriptState).count <= 33_554_432,
       try semantic.encode(commander.contracts).count <= 33_554_432
-    else { throw SaveError.invalidCommander }
+    else {
+      diagnostics?.record(
+        diagnosticBoundary,
+        .init(stage: .storeSize, error: SaveError.invalidCommander, commander: commander))
+      throw SaveError.invalidCommander
+    }
     let generation = UUID().uuidString
     let root = url.appendingPathExtension("missions")
     let directory = root.appendingPathComponent(generation, isDirectory: true)
@@ -228,7 +244,12 @@ enum ScriptSaveStore {
       chunks["missions.json"]!.count <= 134_217_728,
       chunks["world.json"]!.count <= 8_388_608
         && chunks["contracts.json"]!.count <= 134_217_728
-    else { throw SaveError.invalidCommander }
+    else {
+      diagnostics?.record(
+        diagnosticBoundary,
+        .init(stage: .storeSize, error: SaveError.invalidCommander, commander: commander))
+      throw SaveError.invalidCommander
+    }
     // Never replace an old generation; a failed publication leaves the previous pointer valid.
     if alienPublication != nil {
       let store = try AlienStoragePageStore(directory: directory)

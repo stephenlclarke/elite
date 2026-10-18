@@ -4,11 +4,14 @@ typealias ScriptPublisher = @Sendable (inout Game) throws -> Void
 
 extension GameRuntime {
   /// Captures only value paths. No writer, actor or interpreter callback escapes this turn.
-  func scriptPublisher(requireNativeSalvage: Bool = false) -> ScriptPublisher? {
+  func scriptPublisher(
+    requireNativeSalvage: Bool = false, diagnosticBoundary: ScriptRefusalBoundary = .publication
+  ) -> ScriptPublisher? {
     guard game.requiresScriptDurability || requireNativeSalvage, let url = scriptSaveURL else {
       return nil
     }
     let namespace = galleryNamespace
+    let diagnostics = scriptRefusalDiagnostic
     return { candidate in
       try Self.requireGalleryFileAccess(url, namespace: namespace)
       // Both publication paths pin current policy before choosing the save schema.
@@ -22,11 +25,20 @@ extension GameRuntime {
         }
       }
       candidate.persistScriptActors()
-      let prepared = try Self.prepareNativeSaveState(candidate)
-      let alienPublication = try ScriptSaveStore.write(
-        commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
-        scope: namespace == nil ? "commander" : "gallery",
-        exclusive: candidate.pendingNewSaveDestination == url)
+      let prepared = try Self.prepareNativeSaveState(
+        candidate, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+      let alienPublication: AlienStoragePublication?
+      do {
+        alienPublication = try ScriptSaveStore.write(
+          commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
+          scope: namespace == nil ? "commander" : "gallery",
+          exclusive: candidate.pendingNewSaveDestination == url, diagnostics: diagnostics,
+          diagnosticBoundary: diagnosticBoundary)
+      } catch {
+        diagnostics?.record(
+          diagnosticBoundary, .init(stage: .storeWrite, error: error, game: prepared.game))
+        throw error
+      }
       candidate = prepared.game
       candidate.commander.publishAlienStorage(alienPublication)
       candidate.recordNewCommanderSavePublication(to: url)
@@ -35,27 +47,35 @@ extension GameRuntime {
   /// User commands are staged before a frame is published. Disk failure publishes no
   /// command effects; autonomous physics uses a separate proposal-only barrier.
   func commitScriptCommand(from before: Game) throws {
-    guard game.flushNativeSalvageWork() else { throw SaveError.invalidCommander }
-    let ownsPersistentState =
-      before.requiresScriptDurability || game.requiresScriptDurability
-    let changed =
-      before.commander != game.commander || before.docked != game.docked
-      || before.bodies != game.bodies || before.jumpCountdown != game.jumpCountdown
-    guard ownsPersistentState, changed else { return }
-    var candidate = game
-    if let publish = scriptPublisher() {
-      try publish(&candidate)
-    } else if before.requiresScriptDurability, !game.requiresScriptDurability,
-      let url = scriptSaveURL
-    {
-      // Clearing the last retained feature still replaces the bound save. Native-only
-      // commanders use the existing writer without inventing a new script calendar.
-      try requireGalleryFileAccess(url)
-      try Self.writeCommander(&candidate, to: url)
-    } else {
-      return
+    var stage = ScriptRefusalStage.commandFlush
+    do {
+      guard game.flushNativeSalvageWork() else { throw SaveError.invalidCommander }
+      let ownsPersistentState =
+        before.requiresScriptDurability || game.requiresScriptDurability
+      let changed =
+        before.commander != game.commander || before.docked != game.docked
+        || before.bodies != game.bodies || before.jumpCountdown != game.jumpCountdown
+      guard ownsPersistentState, changed else { return }
+      var candidate = game
+      stage = .commandPublish
+      if let publish = scriptPublisher() {
+        try publish(&candidate)
+      } else if before.requiresScriptDurability, !game.requiresScriptDurability,
+        let url = scriptSaveURL
+      {
+        // Clearing the last retained feature still replaces the bound save. Native-only
+        // commanders use the existing writer without inventing a new script calendar.
+        try requireGalleryFileAccess(url)
+        try Self.writeCommander(&candidate, to: url)
+      } else {
+        return
+      }
+      game = candidate
+    } catch {
+      scriptRefusalDiagnostic?.record(
+        .publication, .init(stage: stage, error: error, game: game))
+      throw error
     }
-    game = candidate
   }
   func scriptCommand<T>(_ action: (inout Game) throws -> T) throws -> T {
     let before = game

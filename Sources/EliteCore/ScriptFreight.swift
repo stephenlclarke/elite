@@ -141,7 +141,10 @@ extension Game {
   }
 
   /// No route replay or history decoding on the common no-due frame path.
-  mutating func resolveFreightTerminals(escape: Bool = false, publish: ScriptPublisher? = nil) {
+  mutating func resolveFreightTerminals(
+    escape: Bool = false, publish: ScriptPublisher? = nil,
+    diagnostics: ScriptRefusalDiagnostic? = nil
+  ) {
     let now = commander.scriptState.clock(.missionCalendar)
     let due = commander.scriptState.instances.compactMap { id, state -> UUID? in
       guard state.outcome == .active, let cargo = state.savedOwnedCargo,
@@ -151,8 +154,9 @@ extension Game {
       return id
     }.sorted { $0.uuidString < $1.uuidString }
     for id in due {
+      var candidate = self
+      var stage = ScriptRefusalStage.freightGuard
       do {
-        var candidate = self
         guard var state = candidate.commander.scriptState.instances[id],
           let cargo = state.savedOwnedCargo, candidate.commander.freightStateValid(state),
           candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
@@ -168,16 +172,35 @@ extension Game {
         let context = cargo.pendingLoss?.context ?? candidate.scriptEventContext(state)
         let sequence = candidate.commander.scriptState.nextEvent + 1
         candidate.commander.scriptState.nextEvent = sequence
+        stage = .freightFinish
         try candidate.finishFreight(
           cause, state: &state, sequence: sequence, context: context,
           candidate: &candidate.commander)
         candidate.commander.scriptState.instances[id] = state
         candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
+        stage = .completionEnqueue
         if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
+        stage = .freightCommander
         guard candidate.commander.valid else { throw SaveError.invalidCommander }
+        stage = .freightPublish
         try publish?(&candidate)
         self = candidate
-      } catch { notify("FREIGHT OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE") }
+      } catch {
+        if let diagnostics, !diagnostics.contains(.resolver) {
+          // Bits 1/2/4: retained freight proof, engine, whole commander; observations only.
+          let freight =
+            candidate.commander.scriptState.instances[id].map {
+              candidate.commander.freightStateValid($0)
+            } ?? false
+          let checks: UInt16 =
+            (freight ? 1 : 0)
+            | (candidate.commander.scriptState.valid ? 2 : 0)
+            | (candidate.commander.valid ? 4 : 0)
+          diagnostics.record(
+            .resolver, .init(stage: stage, error: error, game: candidate, checks: checks))
+        }
+        notify("FREIGHT OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE")
+      }
     }
   }
 
