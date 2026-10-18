@@ -50,6 +50,14 @@ extension Game {
           .cyan)
       }
     }
+    for state in commander.scriptState.instances.values.sorted(by: {
+      $0.id.uuidString < $1.id.uuidString
+    }) {
+      guard let cargo = state.savedOwnedCargo, !cargo.held.isEmpty else { continue }
+      append(
+        "Issuer-owned freight: \(cargo.held.count)t \(Commodity.all[cargo.commodity].name); reserved for its destination",
+        .cyan)
+    }
     append("Equipment - fitted and held", .yellow)
     if let history = commander.equipmentPurchaseHistory {
       append("Recorded purchases: \(history.paid.count)", .cyan)

@@ -56,6 +56,7 @@ extension Game {
       } else if let pack = scriptPack(for: instance), scriptUnavailable(pack) == nil {
         if let reason = campaignContentIssue(instance, pack: pack)
           ?? procurementContentIssue(instance, pack: pack)
+          ?? freightContentIssue(instance, pack: pack)
         {
           commander.scriptState.instances[id]?.suspension = reason
         }
@@ -152,11 +153,11 @@ extension Game {
   mutating func acceptScriptMission(
     _ pack: ScriptPack, instanceID: UUID = UUID(), randomSeed: UInt64 = 0x45_4c49_5445,
     contract: ScriptContractJob? = nil, campaignParent: ScriptChildBinding? = nil,
-    drainAccepted: Bool = true
+    drainAccepted: Bool = true, freightAdmission: ScriptFreightIssueAdmission? = nil
   ) throws -> UUID {
     let instance = try prepareScriptMissionAcceptance(
       pack, instanceID: instanceID, randomSeed: randomSeed,
-      contract: contract, campaignParent: campaignParent)
+      contract: contract, campaignParent: campaignParent, freightAdmission: freightAdmission)
     return try installScriptMissionAcceptance(
       pack, instance: instance, drainAccepted: drainAccepted)
   }
@@ -174,7 +175,8 @@ extension Game {
   private mutating func prepareScriptMissionAcceptance(
     _ pack: ScriptPack, instanceID: UUID, randomSeed: UInt64,
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
-    providerState: ScriptProviderContractState? = nil
+    providerState: ScriptProviderContractState? = nil,
+    freightAdmission: ScriptFreightIssueAdmission? = nil
   ) throws -> ScriptInstance {
     guard scriptUnavailable(pack) == nil, commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
@@ -213,6 +215,14 @@ extension Game {
     if let providerState { instance.payloads[providerState.terms.payload] = 1 }
     instance.randomState = randomSeed
     instance.contract = contract
+    if pack.manifest.freight != nil {
+      guard let freightAdmission, contract?.offer.freightPlan?.matches(pack) == true else {
+        throw MissionPackError("Supplied freight requires native issue admission.")
+      }
+      try freightAdmission.issue(into: &instance, game: self)
+    } else if freightAdmission != nil {
+      throw SaveError.invalidCommander
+    }
     instance.campaignParent = campaignParent
     let scopes = Dictionary(
       uniqueKeysWithValues: (pack.manifest.receiptRequirements ?? []).compactMap { requirement in
@@ -234,7 +244,7 @@ extension Game {
       instance.collections[definition.id] = .init(definition: definition)
     }
     if let contract, let due = contract.deadline, contract.offer.courier == nil,
-      pack.manifest.procurement == nil
+      pack.manifest.procurement == nil, pack.manifest.freight == nil
     {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
@@ -309,6 +319,7 @@ extension Game {
       }
       if let reason = campaignExecutionIssue(instance) ?? campaignContentIssue(instance, pack: pack)
         ?? procurementContentIssue(instance, pack: pack)
+        ?? freightContentIssue(instance, pack: pack)
       {
         commander.scriptState.instances[event.instance]?.suspension = reason
         continue
@@ -326,6 +337,11 @@ extension Game {
         var next = instance
         next.data = result.data
         for command in result.commands {
+          if pack.manifest.freight != nil,
+            !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
+          {
+            throw MissionPackError("Freight scripts may present native contacts only.")
+          }
           if pack.manifest.procurement != nil,
             !["journal.append", "dialogue.offer", "collection.ensure", "collection.deliver"]
               .contains(command["op"]?.string ?? "")
@@ -667,7 +683,7 @@ extension Game {
       scriptOffer = id
       scriptPresentedDialogue = dialogue
       scriptConfirmSelected =
-        state.contract?.offer.courier == nil
+        state.contract?.offer.courier == nil && state.contract?.offer.freightPlan == nil
         && state.contract.map({ !ScriptProcurementPlan.isMarked($0.offer.parameters) }) != false
       scriptChoiceSelection = 0
       blackjackReturn = screen
@@ -679,6 +695,7 @@ extension Game {
   }
   mutating func confirmScriptDialogue() {
     resolveCourierTerminals()
+    resolveFreightTerminals()
     guard !paused else {
       notify("RESUME TO CONFIRM MISSION CONTACT")
       return
@@ -693,6 +710,14 @@ extension Game {
     else {
       notify("CONTACT CHANGED - OPEN THE CONTACT AGAIN")
       closeBlackjackHandoff()
+      return
+    }
+    if state.contract?.offer.freightPlan != nil {
+      do {
+        try confirmFreightDialogue(id, dialogue: dialogue, choice: selectedScriptChoice?.id)
+        closeBlackjackHandoff()
+        _ = showScriptDialogue(only: id)
+      } catch { notify(String(error.localizedDescription.prefix(512))) }
       return
     }
     if state.contract?.offer.courier != nil {

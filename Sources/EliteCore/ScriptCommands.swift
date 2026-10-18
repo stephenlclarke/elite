@@ -68,6 +68,13 @@ extension Game {
         candidate.credits = Int(balance)
       } else {
         let key = try identifier("key")
+        guard
+          key != ScriptOwnedCargoState.payloadKey
+            || (state.savedOwnedCargo == nil && state.contract?.offer.freightPlan == nil)
+        else {
+          throw MissionPackError(
+            "Native issuer-owned units cannot be manufactured or removed by payload commands.")
+        }
         guard (1...1_000_000).contains(amount) else {
           throw MissionPackError("Payload amount must be positive.")
         }
@@ -122,12 +129,19 @@ extension Game {
         }
         quote = actual
       }
+      let baseToken = state.id.uuidString + ":" + String(event.sequence) + ":" + id
+      let contactToken: String
+      if pack.manifest.freight != nil {
+        contactToken = freightDialogueToken(baseToken)
+      } else if pack.manifest.procurement != nil {
+        contactToken = procurementDialogueToken(baseToken)
+      } else {
+        contactToken = baseToken
+      }
       state.dialogue = ScriptDialogue(
         collectionQuote: quote,
         id: id,
-        token: pack.manifest.procurement == nil
-          ? state.id.uuidString + ":" + String(event.sequence) + ":" + id
-          : procurementDialogueToken(state.id.uuidString + ":" + String(event.sequence) + ":" + id),
+        token: contactToken,
         galaxy: candidate.galaxy, system: candidate.system, revision: state.revision + 1)
     case "dialogue.commit":
       let id = try identifier("id")
@@ -202,6 +216,11 @@ extension Game {
     state: inout ScriptInstance, candidate: inout Commander,
     procurementAdmission: ScriptProcurementAdmission? = nil
   ) throws {
+    guard pack.manifest.freight == nil, state.contract?.offer.freightPlan == nil,
+      state.savedOwnedCargo == nil
+    else {
+      throw MissionPackError("Supplied freight finishes only through native custody transitions.")
+    }
     if pack.manifest.procurement != nil
       || state.contract.map({ ScriptProcurementPlan.isMarked($0.offer.parameters) }) == true
     {

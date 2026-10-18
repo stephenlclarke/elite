@@ -290,7 +290,7 @@ public struct Commander: Sendable, Equatable, Codable {
   public var valid: Bool {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
-      && nativeSalvageOriginalSourcesValid
+      && nativeSalvageOriginalSourcesValid && freightCargoValid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -1507,6 +1507,10 @@ public struct Game: Sendable {
       notify("COURIER LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
       return
     }
+    guard candidate.loseFreightOnEscape() else {
+      notify("FREIGHT LOSS COULD NOT BE RECORDED - ESCAPE NOT COMMITTED")
+      return
+    }
     let leftPeople = !(candidate.commander.nativePeople?.held.isEmpty ?? true)
     do {
       try candidate.abandonNativePeopleOnEscape()
@@ -1936,10 +1940,12 @@ public actor GameRuntime {
   }
   private func keyAfterGallery(_ key: String) {
     game.resolveCourierTerminals(publish: scriptPublisher())
+    game.resolveFreightTerminals(publish: scriptPublisher())
     let before = game
     let held = controls
     applyKey(key)
     game.resolveCourierTerminals()
+    game.resolveFreightTerminals()
     game.scriptDurabilityAvailable = scriptSaveURL != nil
     if before.screen == .gameOver, [" ", "return"].contains(key) {
       game.scriptPacks = before.scriptPacks
@@ -2118,6 +2124,7 @@ public actor GameRuntime {
     if wasLive && game.screen == .gameOver {
       if game.energy.isFinite && game.energy < 0 { game.energy = 0 }
       game.markCourierFatalLoss()
+      game.markFreightFatalLoss()
       commitNativePeopleLoss()
     }
     game.observeNativeCrimboAttainedMotion(
@@ -2129,6 +2136,7 @@ public actor GameRuntime {
         startTime: startPhysicalTime, startPlayer: startPlayer, delta: delta)
     }
     game.resolveCourierTerminals(publish: scriptPublisher())
+    game.resolveFreightTerminals(publish: scriptPublisher())
     game.observeScriptLocation(wasDocked: wasDocked, galaxy: location.0, system: location.1)
     game.scriptEventsDeferred = false
     if localActive && !game.docked {
@@ -2154,6 +2162,7 @@ public actor GameRuntime {
     try requireGalleryFileAccess(url)
     var candidate = game
     candidate.resolveCourierTerminals()
+    candidate.resolveFreightTerminals()
     try Self.writeCommander(&candidate, to: url)
     game = candidate
     scriptSaveURL = url
@@ -2251,6 +2260,7 @@ public actor GameRuntime {
       try candidate.rebindNativeStationsAfterLoad()
       try candidate.validateInstalledCourierContent()
       candidate.resolveCourierTerminals()
+      candidate.resolveFreightTerminals()
       candidate.suspendUnavailableScriptContent()
       guard candidate.commander.valid else { throw SaveError.invalidCommander }
       if persistMigrations && candidate.commander != commander {

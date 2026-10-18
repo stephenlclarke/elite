@@ -41,10 +41,12 @@ public struct ScriptContractOffer: Codable, Sendable, Equatable, Identifiable {
   public let refundOnFailure: Bool
   public let duration: Double
   public let parameters: ScriptValue
+  var freightPlan: ScriptFreightPlan? = nil
   public var courier: ScriptCourierTerms? = nil
   public var status: ContractOfferStatus = .available
   var valid: Bool {
-    (courier.map { $0.matches(self) } ?? true)
+    (freightPlan.map { $0.matches(self) } ?? !ScriptFreightPlan.isMarked(parameters))
+      && (courier.map { $0.matches(self) } ?? true)
       && (!ScriptProcurementPlan.isMarked(parameters)
         || ScriptProcurementPlan.read(parameters)?.matches(self) == true)
       && PackValidation.localID(key) && (1...160).contains(title.count)
@@ -70,9 +72,15 @@ public struct ScriptContractBoard: Codable, Sendable, Equatable {
   public let period: Double
   public let group: String
   public var offers: [ScriptContractOffer]
+  var freightGeneration: ScriptFreightGeneration? = nil
   public var courierGeneration: ScriptCourierGeneration? = nil
   public var cacheKey: String { digest + "/" + id + "/" + station.key }
   var valid: Bool {
+    if freightGeneration != nil { return ScriptFreightGeneration.valid(self) }
+    guard
+      !offers.contains(where: { $0.freightPlan != nil || ScriptFreightPlan.isMarked($0.parameters) }
+      )
+    else { return false }
     if clock == .missionCalendar, courierGeneration == nil {
       return ScriptProcurementGeneration.valid(self)
     }
@@ -120,6 +128,8 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
   public var settlementAmount: Int?
   public var settledAt: Double?
   var valid: Bool {
+    if offer.freightPlan != nil { return ScriptFreightGeneration.valid(self) }
+    guard !ScriptFreightPlan.isMarked(offer.parameters) else { return false }
     if clock == .missionCalendar, offer.courier == nil {
       return ScriptProcurementGeneration.valid(self)
     }
@@ -227,7 +237,11 @@ extension Commander {
   var contractsValid: Bool {
     guard contracts.valid, contracts.rrs?.valid(for: self) ?? true else { return false }
     for board in contracts.boards.values {
-      if board.clock == .missionCalendar && board.courierGeneration == nil {
+      if board.freightGeneration != nil {
+        guard ScriptFreightGeneration.valid(board),
+          board.offers.allSatisfy({ $0.freightPlan?.owner == equipmentOwnerID })
+        else { return false }
+      } else if board.clock == .missionCalendar && board.courierGeneration == nil {
         guard ScriptProcurementGeneration.valid(board),
           board.offers.allSatisfy({
             ScriptProcurementPlan.read($0.parameters)?.owner == equipmentOwnerID
@@ -249,7 +263,7 @@ extension Commander {
     }
     return scriptState.instances.allSatisfy { _, instance in
       guard let job = instance.contract else { return true }
-      return job.valid && procurementStateValid(instance)
+      return job.valid && procurementStateValid(instance) && freightStateValid(instance)
         && job.digest == instance.digest && job.version == instance.version
         && instance.id == Game.contractJobIdentity(job.offer.id)
         && instance.definition.hasPrefix(job.provider + "/")

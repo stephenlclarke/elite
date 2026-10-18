@@ -16,6 +16,7 @@ private struct PreparedContractAcceptance: Sendable {
   let instanceID: UUID
   let pledgeAdmission: ScriptPledgeAdmission?
   let courierAdmission: ScriptCourierAdmission?
+  let freightAdmission: ScriptFreightIssueAdmission?
 }
 
 extension Game {
@@ -28,8 +29,14 @@ extension Game {
   mutating func ensureContractBoard(_ pack: ScriptPack) throws -> String {
     try ScriptPackLibrary.validateCourier(pack.manifest)
     try ScriptPackLibrary.validateProcurement(pack.manifest)
-    if pack.manifest.courier != nil || pack.manifest.procurement != nil { ensureMissionCalendar() }
+    try ScriptPackLibrary.validateFreight(pack.manifest)
+    if pack.manifest.courier != nil || pack.manifest.procurement != nil
+      || pack.manifest.freight != nil
+    {
+      ensureMissionCalendar()
+    }
     resolveCourierTerminals()
+    resolveFreightTerminals()
     guard docked, dockedAtMainStation, !paused, let definition = pack.manifest.board,
       scriptUnavailable(pack) == nil,
       [.local, .flight, .calendar, .missionCalendar].contains(definition.clock)
@@ -37,7 +44,7 @@ extension Game {
       throw MissionPackError("This station has no available contract provider for this pack.")
     }
     if pack.manifest.pledge != nil || pack.manifest.courier != nil
-      || pack.manifest.procurement != nil, commander.system >= 256
+      || pack.manifest.procurement != nil || pack.manifest.freight != nil, commander.system >= 256
     {
       throw MissionPackError("Station Aid pledges do not support this synthetic host site.")
     }
@@ -66,7 +73,22 @@ extension Game {
         pack: pack, commander: commander, origin: contractStation, revision: revision,
         seed: initialSeed)
     }
+    let freightPlans = try pack.manifest.freight.map { _ in
+      guard nativeMainStationDockEvidenceIsCurrent else {
+        throw MissionPackError("Freight boards require an actual main-station dock.")
+      }
+      return try ScriptFreightGeneration.plans(
+        pack: pack, commander: commander, origin: contractStation, revision: revision,
+        seed: initialSeed)
+    }
+    let freightGeneration = freightPlans.map {
+      ScriptFreightGeneration(plans: $0, holdCapacity: commander.standardCargoCapacity)
+    }
     var world = scriptSnapshot.object ?? [:]
+    if let freightPlans {
+      world["freight_plan"] = try ScriptFreightGeneration.value(
+        freightPlans.filter { $0.quantity <= commander.standardCargoCapacity })
+    }
     if let procurementPlans {
       world["procurement_plan"] = try ScriptProcurementGeneration.value(procurementPlans)
     }
@@ -113,12 +135,24 @@ extension Game {
         zip(procurementPlans, offers).allSatisfy({ $0.matches($1) })
       else { throw MissionPackError("Authored procurement rows changed native terms or order.") }
     }
+    if let freightPlans {
+      let eligible = freightPlans.filter { $0.quantity <= commander.standardCargoCapacity }
+      guard offers.count == eligible.count else {
+        throw MissionPackError("Freight rows changed native order.")
+      }
+      for index in offers.indices {
+        offers[index].freightPlan = eligible[index]
+        guard eligible[index].matches(offers[index]) else {
+          throw MissionPackError("Freight rows changed native terms.")
+        }
+      }
+    }
     let board = ScriptContractBoard(
       id: definition.id, provider: pack.manifest.id, version: pack.manifest.version,
       digest: pack.digest, title: definition.title, station: contractStation, revision: revision,
       seed: initialSeed, clock: definition.clock, period: definition.period,
       group: pack.manifest.id + "/" + (definition.exclusiveGroup ?? definition.id), offers: offers,
-      courierGeneration: courierGeneration)
+      freightGeneration: freightGeneration, courierGeneration: courierGeneration)
     guard board.valid else {
       throw MissionPackError("Generated contract offers are invalid or duplicated.")
     }
@@ -159,12 +193,13 @@ extension Game {
       throw MissionPackError("Generated contract terms are incomplete or have invalid types.")
     }
     let id = Self.contractNamespace("contract-offer-v1:\(namespace):\(key)")
-    let offer = ScriptContractOffer(
+    var offer = ScriptContractOffer(
       id: id, key: key, title: title, briefing: briefing,
       destinationGalaxy: Int(galaxy), destinationSystem: Int(system), reward: Int(reward),
       deposit: Int(deposit),
       failureReward: Int(failureReward), refundOnFailure: refund, duration: duration,
       parameters: parameters)
+    offer.freightPlan = ScriptFreightPlan.read(parameters)
     guard offer.valid else { throw MissionPackError("Contract terms exceed supported limits.") }
     return offer
   }
@@ -224,6 +259,7 @@ extension Game {
     board key: String, offer id: UUID, confirmationToken: UUID
   ) throws -> ContractAcceptancePreflight {
     resolveCourierTerminals()
+    resolveFreightTerminals()
     guard docked, dockedAtMainStation, !paused, let board = commander.contracts.boards[key],
       board.station == contractStation, let index = board.offers.firstIndex(where: { $0.id == id }),
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
@@ -256,6 +292,10 @@ extension Game {
       }
       try requireProcurementResources(plan)
     }
+    if let plan = offer.freightPlan {
+      guard plan.matches(pack) else { throw SaveError.invalidCommander }
+      try requireFreightResources(plan)
+    }
     if let terms = offer.courier { try requireCourierResources(terms) }
     let acceptedAt = commander.scriptState.clock(board.clock)
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
@@ -265,6 +305,7 @@ extension Game {
       group: board.group,
       offer: offer, clock: board.clock, acceptedAt: acceptedAt, deadline: deadline,
       deadlinePolicy: offer.courier == nil && pack.manifest.procurement == nil
+        && pack.manifest.freight == nil
         ? nil : .inclusiveConfirmation)
     let instanceID = Self.contractJobIdentity(id)
     var pledgeAdmission: ScriptPledgeAdmission? = nil
@@ -297,7 +338,10 @@ extension Game {
     return .ready(
       .init(
         key: key, index: index, pack: pack, board: board, offer: offer, job: job,
-        instanceID: instanceID, pledgeAdmission: pledgeAdmission, courierAdmission: courierAdmission
+        instanceID: instanceID, pledgeAdmission: pledgeAdmission,
+        courierAdmission: courierAdmission,
+        freightAdmission: offer.freightPlan == nil
+          ? nil : try prepareFreightIssue(job: job, instance: instanceID)
       ))
   }
   private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
@@ -316,7 +360,8 @@ extension Game {
     candidate.commander.credits -= offer.deposit
     candidate.commander.contracts.boards[key]?.offers[index].status = .accepted(instanceID)
     _ = try candidate.acceptScriptMission(
-      pack, instanceID: instanceID, randomSeed: board.seed, contract: job, drainAccepted: false)
+      pack, instanceID: instanceID, randomSeed: board.seed, contract: job, drainAccepted: false,
+      freightAdmission: preparation.freightAdmission)
     candidate.drainScriptEvents()
     try Self.validateCompletedContractAcceptance(&candidate, pack: pack, instanceID: instanceID)
     return publishContractAcceptance(&candidate, instanceID: instanceID)
@@ -340,6 +385,12 @@ extension Game {
       guard candidate.courierActionComplete(admission) else {
         throw MissionPackError("Courier item was not issued in its original confirmation.")
       }
+    }
+    if pack.manifest.freight != nil {
+      guard let state = candidate.commander.scriptState.instances[instanceID],
+        candidate.commander.freightStateValid(state),
+        candidate.freightContentIssue(state, pack: pack) == nil
+      else { throw MissionPackError("Freight acceptance did not issue its actual consignment.") }
     }
     if pack.manifest.procurement != nil {
       guard let state = candidate.commander.scriptState.instances[instanceID],

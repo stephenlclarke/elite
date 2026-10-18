@@ -145,6 +145,9 @@ extension Game {
     -> ScriptCollectionQuote?
   {
     let commander = candidate ?? self.commander
+    if state.contract?.offer.freightPlan != nil {
+      return freightCollectionQuote(id, state: state, commander: commander)
+    }
     if state.contract.map({ ScriptProcurementPlan.isMarked($0.offer.parameters) }) == true {
       guard let pack = scriptPack(for: state),
         procurementContactIsCurrent(state, commander: commander),
@@ -215,6 +218,9 @@ extension Game {
       let definition = resolvedScriptCollectionDefinition(
         id, pack: pack, state: state, commander: candidate)
     else { throw MissionPackError("Collection requests require a declared active collection.") }
+    guard pack.manifest.freight == nil else {
+      throw MissionPackError("Supplied freight requires its native owned-unit confirmation.")
+    }
     if op == "collection.ensure" {
       guard Set(fields.keys) == ["op", "id"] else {
         throw MissionPackError("Unexpected collection authorization field.")
@@ -282,7 +288,9 @@ extension Game {
 extension ScriptPackLibrary {
   static func validateCollections(_ manifest: ScriptManifest) throws {
     let definitions = manifest.collections ?? []
-    let dynamic = manifest.procurement.map { [$0.collectionTemplate.id] } ?? []
+    let dynamic =
+      (manifest.procurement.map { [$0.collectionTemplate.id] } ?? [])
+      + (manifest.freight.map { [$0.collectionTemplate.id] } ?? [])
     let ids = Set(definitions.map(\.id) + dynamic)
     let required = manifest.mission.requiredCollections ?? []
     guard definitions.count <= 32 && ids.count == definitions.count + dynamic.count,
@@ -292,7 +300,10 @@ extension ScriptPackLibrary {
         || (manifest.capabilities.contains("partial-collections-v2")
           && manifest.capabilities.contains("story-v2")),
       (manifest.dialogs ?? []).allSatisfy({ dialog in
-        dialog.collection.map { ids.contains($0) && (dialog.choices ?? []).isEmpty } ?? true
+        dialog.collection.map {
+          ids.contains($0)
+            && ((dialog.choices ?? []).isEmpty || manifest.freight?.deliveryContact == dialog.id)
+        } ?? true
       }),
       !manifest.handlers.contains(where: { $0.event == "collection.delivered" })
         || manifest.capabilities.contains("partial-collections-v2")
