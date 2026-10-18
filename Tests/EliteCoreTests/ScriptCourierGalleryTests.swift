@@ -176,6 +176,78 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
   }
 }
 
+private struct CourierApproachVoiceEvidence: Encodable {
+  let id: Int
+  let text: String
+}
+
+private struct CourierApproachShotEvidence: Encodable {
+  let id: Int
+  let actor: ActorIdentity?
+  let hull: String
+  let position: Vector3
+  let origin: String
+}
+
+/// Primitive observations from existing consecutive snapshots; no simulation or extra actor read.
+private struct CourierApproachFrameEvidence: Encodable {
+  let time: Double
+  let physicalTime: Double
+  let energy: Double
+  let frontShield: Double
+  let rearShield: Double
+  let cabinTemperature: Double
+  let pose: ShipPose
+  let speed: Double
+  let velocity: Vector3
+  let autopilotStatus: String
+  let targetDistance: Double?
+  let gameplayRevision: UInt64
+  let stationImpactRevision: UInt64?
+  let message: String
+  let voiceEpoch: UUID
+  let voices: [CourierApproachVoiceEvidence]
+  let ecmRemainingDuration: Double
+  let nearbyShots: [CourierApproachShotEvidence]
+
+  init(_ state: borrowing Game) {
+    time = state.time
+    physicalTime = state.commander.flightSimulation.physicalTime
+    energy = state.energy
+    frontShield = state.frontShield
+    rearShield = state.rearShield
+    cabinTemperature = state.cabinTemperature
+    pose = state.commander.flightSimulation.pose
+    speed = state.speed
+    velocity = state.flightWorldVelocity
+    autopilotStatus = state.autoPilot.status
+    targetDistance = state.autoTargetBody?.position.length
+    gameplayRevision = state.gameplayRevision
+    stationImpactRevision = state.stationImpactRevision
+    message = state.message
+    voiceEpoch = state.ecmControl.epoch
+    voices = state.ecmControl.events.map { .init(id: $0.id, text: $0.announcement.text) }
+    ecmRemainingDuration = state.ecmControl.remainingDuration
+    var shots: [CourierApproachShotEvidence] = []
+    for body in state.bodies {
+      if body.hull == .missile || body.scriptShot != nil || body.physical?.ordnance != nil {
+        shots.append(
+          .init(
+            id: body.id, actor: body.physical?.identity,
+            hull: String(describing: body.hull), position: body.position,
+            origin: String(describing: body.physical?.attackOrigin)))
+      }
+    }
+    nearbyShots = Array(shots.sorted { $0.position.length < $1.position.length }.prefix(16))
+  }
+}
+
+private struct CourierApproachDamageEvidence: Encodable {
+  let frame: Int
+  let before: CourierApproachFrameEvidence
+  let after: CourierApproachFrameEvidence
+}
+
 /// Failure-only observer; these bytes are diagnostics, never a commander save or a restore source.
 private struct CourierApproachFailureEvidence: Encodable {
   let source: String?
@@ -185,6 +257,7 @@ private struct CourierApproachFailureEvidence: Encodable {
   let selections: Int
   let approachFrames: Int
   let collisionObserved: Bool
+  let lastDamageTransitions: [CourierApproachDamageEvidence]
   let commander: Commander
   let world: ScriptWorldSave
   let message: String
@@ -200,13 +273,15 @@ private struct CourierApproachFailureEvidence: Encodable {
 
 private func captureCourierApproachFailure(
   _ state: borrowing Game, row: Int, launchFrames: Int, jumpFrames: Int,
-  selections: Int, approachFrames: Int, collision: Bool
+  selections: Int, approachFrames: Int, collision: Bool,
+  damageTransitions: [CourierApproachDamageEvidence]
 ) throws {
   let evidence = CourierApproachFailureEvidence(
     source: ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"],
     row: row, launchFrames: launchFrames, jumpFrames: jumpFrames, selections: selections,
     approachFrames: approachFrames, collisionObserved: collision,
-    commander: state.commander, world: state.scriptWorldSave,
+    lastDamageTransitions: damageTransitions, commander: state.commander,
+    world: state.scriptWorldSave,
     message: state.message, messageTime: state.messageTime,
     autopilotStatus: state.autoPilot.status, autopilotTargetID: state.autoPilot.targetID,
     autopilotVelocity: state.autoPilot.velocity, target: state.autoTargetBody,
@@ -278,17 +353,31 @@ private func captureCourierApproachFailure(
   try captureCourierView(state, name: "row-\(row)-physical-approach")
   var approachFrames = 0
   var collision = false
+  var damageTransitions: [CourierApproachDamageEvidence] = []
   while !state.docked && state.screen != .gameOver, approachFrames < 20000 {
+    let beforeFrame = CourierApproachFrameEvidence(state)
     _ = await runtime.advance(delta: 0.05)
     state = await runtime.snapshot()
+    let afterFrame = CourierApproachFrameEvidence(state)
     collision = collision || state.message == "DOCKING COLLISION"
     approachFrames += 1
+    if afterFrame.energy < beforeFrame.energy
+      || afterFrame.frontShield < beforeFrame.frontShield
+      || afterFrame.rearShield < beforeFrame.rearShield
+      || afterFrame.stationImpactRevision != beforeFrame.stationImpactRevision
+    {
+      damageTransitions.append(.init(frame: approachFrames, before: beforeFrame, after: afterFrame))
+      if damageTransitions.count > 32 {
+        damageTransitions.removeFirst(damageTransitions.count - 32)
+      }
+    }
   }
   if !state.docked || state.screen != .status {
     do {
       try captureCourierApproachFailure(
         state, row: row, launchFrames: launchFrames, jumpFrames: jumpFrames,
-        selections: selections, approachFrames: approachFrames, collision: collision)
+        selections: selections, approachFrames: approachFrames, collision: collision,
+        damageTransitions: damageTransitions)
     } catch {
       print("Courier physical arrival diagnostic capture failed: \(error)")
     }
