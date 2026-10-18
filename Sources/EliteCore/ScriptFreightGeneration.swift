@@ -115,7 +115,9 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
     _ paths: [[Int]], galaxy: Int, row: Int, generatorRevision: Int
   ) -> [[Int]] {
     guard generatorRevision == 1, (0..<3).contains(row) else { return [] }
-    return paths.filter { feasible(calendarCost: calendarCost($0, galaxy: galaxy), row: row) }
+    guard !paths.isEmpty else { return [] }
+    let systems = Universe.systemsIncludingPlugh(number: galaxy)
+    return paths.filter { feasible(calendarCost: calendarCost($0, systems: systems), row: row) }
   }
   func capacityFits(_ commander: Commander) -> Bool {
     guard commodity != nil, commander.cargo.count == CommodityIdentity.allCases.count,
