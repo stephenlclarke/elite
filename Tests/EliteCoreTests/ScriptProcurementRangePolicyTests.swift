@@ -22,6 +22,14 @@ private func rangePolicyGame() throws -> Game {
   game.nextBodyID += 1
   game.bodies.append(.init(id: id, hull: .cobra, position: .init(0, 0, 1000), hostile: true))
   game.ensurePhysicalActors()
+  // Isolate this controlled unit's attacker without changing the actual journey's traffic.
+  let stationActor = try #require(game.commander.flightSimulation.anchors?.station.identity)
+  for retained in game.bodies.indices where game.bodies[retained].id != id {
+    if game.bodies[retained].physical?.npc != nil {
+      game.bodies[retained].hostile = false
+      game.bodies[retained].physical?.npc?.intention = .dock(stationActor)
+    }
+  }
   let index = try #require(game.bodies.firstIndex { $0.id == id })
   game.bodies[index].missiles = 0
   game.bodies[index].physical?.catalogueShipID = ShipCatalogue.nativeShip(.cobra)?.id
@@ -180,6 +188,7 @@ func procurementHalfActualShieldCapacityStartsEarlyBreakoff(offset: Double) asyn
   let runtime = GameRuntime(game: game)
   let facts = await runtime.procurementPreflightFacts()
   try #require(facts.valid && !facts.pulseHeatBlocked && facts.threat?.pulseOnly == true)
+  try requireLatchPremises(facts)
   var budget = ScriptProcurementPilotBudget()
   budget.updateRetreat(facts)
   #expect((budget.retreat != nil) == (offset <= 0))
@@ -204,6 +213,7 @@ func procurementHeatBreakoffUsesActualNextFrameCooling(offset: Double) async thr
   let before = await runtime.snapshot()
   let facts = await runtime.procurementPreflightFacts()
   try #require(facts.valid && facts.threat?.pulseOnly == true && facts.pulseHeatBlocked)
+  try requireLatchPremises(facts)
   var budget = ScriptProcurementPilotBudget()
   budget.updateRetreat(facts)
   let phase = try #require(budget.retreat)
@@ -265,4 +275,119 @@ func procurementHeatBreakoffUsesActualNextFrameCooling(offset: Double) async thr
   #expect(result.status == .refused)
   #expect(after.commander == before.commander && after.bodies == before.bodies)
   #expect(after.gameplayRevision == before.gameplayRevision)
+}
+
+private func requireLatchPremises(_ facts: ScriptProcurementPreflightFacts) throws {
+  try #require(facts.valid && facts.live && !facts.docked && !facts.paused)
+  try #require(!facts.automaticEngaged && facts.needsDefence)
+  try #require(!facts.threats.isEmpty && facts.threats.allSatisfy(\.pulseOnly))
+  try #require(facts.threat?.immediate == true)
+}
+
+@Test(arguments: [
+  "rear-high", "rear-half", "heat", "front-low", "identity", "far", "gone", "unknown",
+])
+func procurementReengagementPhaseUsesRearBoundaryHeatAndCurrentIdentity(condition: String) {
+  var facts = rangePolicyFacts(range: 1000)
+  facts.pulseHeatBlocked = true
+  var budget = ScriptProcurementPilotBudget()
+  budget.updateRetreat(facts)
+  let phase = budget.retreat!
+  facts.pulseHeatBlocked = false
+  facts.rearShieldLow = condition != "rear-high"
+  if condition == "heat" { facts.pulseHeatBlocked = true }
+  budget.updateRetreat(facts)
+  if ["rear-high", "heat"].contains(condition) {
+    #expect(budget.retreat?.mode == .breakAway)
+    return
+  }
+  #expect(budget.retreat?.mode == .reengage && budget.retreat?.target == phase.target)
+  switch condition {
+  case "front-low": facts.frontShieldLow = true
+  case "identity":
+    let other = ScriptProcurementPreflightThreat(
+      identity: .init(system: phase.target.system, visit: phase.target.visit, entity: 3),
+      position: .init(0, 0, 900), wanted: true, pulseOnly: true)
+    facts.threats.append(other)
+    facts.threat = other
+  case "far":
+    let old = facts.threat!
+    facts.threat = .init(
+      identity: old.identity, position: .init(0, 0, 6000), wanted: true, pulseOnly: true)
+    facts.threats = [facts.threat!]
+  case "gone":
+    facts.threat = nil
+    facts.threats = []
+  case "unknown":
+    let old = facts.threat!
+    facts.threat = .init(identity: old.identity, position: old.position, wanted: old.wanted)
+    facts.threats = [facts.threat!]
+  default: break
+  }
+  budget.updateRetreat(facts)
+  if ["far", "gone", "unknown"].contains(condition) {
+    #expect(budget.retreat == nil)
+  } else {
+    #expect(budget.retreat?.mode == .reengage)
+    #expect(budget.retreat?.target == phase.target)
+    #expect(budget.retreat?.permitsCombat(facts) == (condition != "identity"))
+    facts.pulseHeatBlocked = true
+    budget.updateRetreat(facts)
+    #expect(budget.retreat?.mode == .breakAway && budget.retreat?.turnSign == phase.turnSign)
+  }
+  #expect(budget.steps == 0 && budget.tabs == 0 && budget.tools == 0)
+}
+
+@Test(arguments: [-0.1, 0.0, 0.1])
+func procurementRearHalfCapacityAdmitsReengagementWithoutFrontShieldOscillation(offset: Double)
+  async throws
+{
+  var game = try rangePolicyGame()
+  game.laserHeat = 0
+  game.frontShield = game.commander.shieldCapacity * 0.25
+  game.rearShield = game.commander.rearShieldCapacity * 0.5 + offset
+  let runtime = GameRuntime(game: game)
+  let facts = await runtime.procurementPreflightFacts()
+  try requireLatchPremises(facts)
+  try #require(facts.frontShieldLow && !facts.pulseHeatBlocked)
+  var budget = ScriptProcurementPilotBudget()
+  budget.updateRetreat(facts)
+  try #require(budget.retreat?.mode == .breakAway)
+  budget.updateRetreat(facts)
+  #expect(budget.retreat?.mode == (offset <= 0 ? .reengage : .breakAway))
+}
+
+@Test func procurementNativeReengagementUsesNormalFacingBrakingAndCheckedPlayerFire() async throws {
+  var game = try rangePolicyGame()
+  game.laserHeat = 0
+  game.frontShield = game.commander.shieldCapacity * 0.25
+  game.rearShield = game.commander.rearShieldCapacity * 0.5
+  let runtime = GameRuntime(game: game)
+  let before = await runtime.snapshot()
+  let facts = await runtime.procurementPreflightFacts()
+  try requireLatchPremises(facts)
+  try #require(facts.requestedAction(steps: 0) == .requestFire)
+  var budget = ScriptProcurementPilotBudget()
+  budget.updateRetreat(facts)
+  budget.updateRetreat(facts)
+  let phase = try #require(budget.retreat)
+  try #require(phase.mode == .reengage && phase.permitsCombat(facts))
+  let result = await runtime.procurementPilotStep(
+    expected: facts, steps: 0, automatic: false, diagnostic: false, retreat: phase)
+  try #require(result.status == .defensive)
+  let after = await runtime.snapshot()
+  let cleared = await runtime.controls
+  #expect(after.speed < before.speed && after.laserHeat > before.laserHeat)
+  #expect(
+    abs(
+      after.commander.flightSimulation.physicalTime
+        - before.commander.flightSimulation.physicalTime - 0.1) < 1e-8)
+  #expect(after.commander.missiles == before.commander.missiles)
+  #expect(after.commander.equipmentInventory == before.commander.equipmentInventory)
+  #expect(after.commander.equipmentPurchaseHistory == before.commander.equipmentPurchaseHistory)
+  #expect(
+    after.commander.credits == before.commander.credits
+      && after.commander.cargo == before.commander.cargo)
+  #expect(after.commander.legal == 0 && budget.missileDefence.attempted.isEmpty)
+  #expect(cleared.pitch == 0 && cleared.yaw == 0 && cleared.throttle == 0 && !cleared.fire)
 }

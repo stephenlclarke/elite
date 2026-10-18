@@ -408,8 +408,10 @@ struct ScriptProcurementFixture {
         break
       }
       try #require(action != .refuse, "Preflight refused at total step \(budget.steps).")
+      // A re-engaging pilot may use the existing native fallback before heat starts a new turn.
+      let wasReengaging = budget.retreat?.permitsCombat(facts) == true
       budget.updateRetreat(facts)
-      if budget.retreat == nil {
+      if budget.retreat == nil || wasReengaging {
         budget = try await runtime.procurementMissileFallback(expected: facts, budget: budget)
       }
       facts = await runtime.procurementPreflightFacts()
@@ -530,6 +532,7 @@ struct ScriptProcurementPreflightFacts: Sendable, Equatable {
   var threats: [ScriptProcurementPreflightThreat] = []
   var pulseHeatBlocked = false
   var frontShieldLow = false
+  var rearShieldLow = false
 
   var immediateThreats: [ScriptProcurementPreflightThreat] {
     (threats.isEmpty ? threat.map { [$0] } ?? [] : threats).filter(\.immediate)
@@ -729,6 +732,10 @@ extension GameRuntime {
       game.frontShield.isFinite && game.commander.shieldCapacity.isFinite
       && game.commander.shieldCapacity > 0
       && game.frontShield <= game.commander.shieldCapacity * 0.5
+    facts.rearShieldLow =
+      game.rearShield.isFinite && game.commander.rearShieldCapacity.isFinite
+      && game.commander.rearShieldCapacity > 0
+      && game.rearShield <= game.commander.rearShieldCapacity * 0.5
     facts.pulseHeatBlocked =
       game.commander.laser(on: .front) == .pulse
       && game.laserHeat.isFinite && max(0, game.laserHeat - 0.1 * 12) >= 240
@@ -868,16 +875,20 @@ extension GameRuntime {
       } else {
         steeringThreat = facts.threat
       }
-      input.throttle = retreat == nil ? (facts.speed > 0 ? -1 : 0) : 1
+      let breakingAway = retreat?.mode == .breakAway
+      input.throttle = breakingAway ? 1 : (facts.speed > 0 ? -1 : 0)
       if let threat = steeringThreat {
-        let p = retreat == nil ? threat.position : threat.position * -1
+        let p = breakingAway ? threat.position * -1 : threat.position
         let angle = atan2(p.x, p.z)
         // Keep the chosen break-turn side across the +/-pi seam until facing away.
-        let yaw = p.z < 0 ? retreat.map { abs(angle) * $0.turnSign } ?? angle : angle
+        let yaw =
+          breakingAway && p.z < 0 ? retreat.map { abs(angle) * $0.turnSign } ?? angle : angle
         input.pitch = max(-1, min(1, atan2(p.y, hypot(p.x, p.z)) * 1.8 / facts.pitchRate))
         input.yaw = max(-1, min(1, yaw * 1.8 / facts.yawRate))
       }
-      input.fire = retreat == nil && action == .requestFire
+      // The selected ray/law facts can authorize only that same steering actor.
+      let combatMatches = retreat.map { $0.permitsCombat(facts) } ?? true
+      input.fire = combatMatches && action == .requestFire
       setControls(input)
     }
     let before =
