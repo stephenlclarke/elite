@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import Testing
 
@@ -8,8 +9,12 @@ struct ScriptFreightFixture {
   let pack: ScriptPack
   var save: URL { root.appendingPathComponent("save/commander.json") }
   init() throws {
-    root = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
-      .appendingPathComponent("freight-" + UUID().uuidString)
+    let path = FileManager.default.temporaryDirectory.path
+    let resolved = path.withCString { realpath($0, nil) }
+    let physical = try #require(resolved)
+    defer { free(physical) }
+    root = URL(fileURLWithPath: String(cString: physical), isDirectory: true)
+      .appendingPathComponent("freight-" + UUID().uuidString, isDirectory: true)
     let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
       .appendingPathComponent("docs/mission-packs/generated-supplied-freight")

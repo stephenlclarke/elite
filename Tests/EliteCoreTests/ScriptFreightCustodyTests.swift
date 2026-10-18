@@ -87,13 +87,17 @@ func freightAuthenticIssueRejectsForgedCustodyWithoutRepair(field: String) async
       && transferred.missiles == missiles)
   var small = game
   small.commander.unlimitedCargo = true
-  small.showroom.selection = "SH001"
-  let hold = try #require(small.showroomShip?.game?.cargo)
-  try #require(hold < plan.quantity)
+  small.showroom.selection = "SH038"
+  let selected = try #require(small.showroomShip)
+  let profile = try #require(selected.game)
+  let hold = profile.cargo
+  try #require(selected.catalogue.playerFlyable && selected.catalogue.normalPurchaseEligible)
+  try #require(hold == 2 && profile.cargoExpansion == 0 && hold < plan.quantity)
+  try #require(!small.commander.equipment.contains("Large Cargo Bay"))
   let quote = try #require(small.shipTradeQuote)
   #expect(!quote.allowed && quote.issues.contains { $0.contains("issuer-owned freight") })
   #expect(throws: EquipmentRuntimeError.self) {
-    try small.commander.transferEquipment(to: "SH001", hullID: UUID())
+    try small.commander.transferEquipment(to: "SH038", hullID: UUID())
   }
   #expect(small.commander.scriptState.instances[id]?.savedOwnedCargo == original)
 }
