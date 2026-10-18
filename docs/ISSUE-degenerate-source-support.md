@@ -23,3 +23,7 @@ Only formatting, lint and bounded source/hash/inverse checks are authorised for 
 ## References
 
 The source allocation is based on canonical `3102d89ffc2df6cbf2665c376af29e621fd91678`. The retained source-lineage and convex-support proposals are planning evidence, not native execution. The full all-171 and existing backlog scope remains unchanged. See [the implementation review](PR-degenerate-source-support.md).
+
+## Transformed-query cost correction
+
+Independent source review found eager full interval-area construction in every transformed player triangle. Separate the one-time preparation certificate from a bounded selected-component transformed certificate, preserving full fallback for any uncertainty or represented collapse. This is a source-proven added-work correction, not a measured regression or attribution of procurement run 380. Ordinary rigid transforms, near-collinear contact/exterior and actual large-coordinate collapse/refusal require regression coverage and later execution.

@@ -353,4 +353,72 @@ struct HullSweepPlacementTests {
       }
     }
   }
+
+  @Test func ordinaryExactPlayerRigidTransformsRetainUsefulSurfaceClearance() throws {
+    let player = try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(0, 0, 0), .init(10, 0, 0), .init(0, 10, 0)],
+        faces: [[0, 1, 2]], preserveWinding: true))
+    let obstacle = try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(-100, -100, 0), .init(100, -100, 0), .init(0, 100, 0)],
+        faces: [[0, 1, 2]], preserveWinding: true))
+    for offset in [Vector3(0, 0, 0), .init(1000, -2000, 3000)] {
+      var pose = ShipPose(position: offset + Vector3(0, 0, 30))
+      pose.orientation.x = .init(0, 1, 0)
+      pose.orientation.y = .init(-1, 0, 0)
+      let motion = HullSceneMotion(
+        start: pose, end: pose, initialVelocity: .init(0, 0, 0),
+        acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+        duration: 0.1, playerRadius: player.radius)
+      let result = HullSweepSafety.validateSceneMotion(
+        motion, player: player, obstacles: [.init(hull: obstacle, pose: .init(position: offset))])
+      #expect(result.safe && result.distanceQueries == 3)
+      #expect(abs((result.minimumSampledClearance ?? 0) - 30) < 1e-8)
+    }
+  }
+
+  @Test func nearCollinearExactPlayerTransformRetainsConservativeContactAndExterior() throws {
+    let player = try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(0, 0, 0), .init(10, 0, 0), .init(10, 0.000001, 0)],
+        faces: [[0, 1, 2]], preserveWinding: true))
+    let obstacle = try PreparedHull(mesh: placementBox())
+    for z in [30.0, 10] {
+      let pose = ShipPose(position: .init(0, 0, z))
+      let motion = HullSceneMotion(
+        start: pose, end: pose, initialVelocity: .init(0, 0, 0),
+        acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+        duration: 0.1, playerRadius: player.radius)
+      let result = HullSweepSafety.validateSceneMotion(
+        motion, player: player, obstacles: [.init(hull: obstacle, pose: .init())])
+      if z == 30 {
+        #expect(result.safe && (result.minimumSampledClearance ?? 0) > 19.999999)
+      } else {
+        #expect(!result.safe)
+      }
+    }
+  }
+
+  @Test func representedRigidTransformCollapseKeepsActualNumericalUnknownRefusal() throws {
+    let vertices = [Vector3(0, 0, 0), .init(1, 0, 0), .init(0, 1, 0)]
+    let player = try PreparedHull(
+      mesh: Mesh(vertices: vertices, faces: [[0, 1, 2]], preserveWinding: true))
+    let obstacle = try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(-100, -100, 100000), .init(100, -100, 100000), .init(0, 100, 100000)],
+        faces: [[0, 1, 2]], preserveWinding: true))
+    let pose = ShipPose(position: .init(1e20, 1e20, 1e20))
+    let represented = vertices.map { pose.shipPoint(pose.systemPoint($0)) }
+    try #require(represented.allSatisfy { $0 == .init(0, 0, 0) })
+    let motion = HullSceneMotion(
+      start: pose, end: pose, initialVelocity: .init(0, 0, 0),
+      acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+      duration: 0.1, playerRadius: player.radius)
+    let result = HullSweepSafety.validateSceneMotion(
+      motion, player: player, obstacles: [.init(hull: obstacle, pose: pose)])
+    #expect(!result.safe && result.failure == .unproven)
+    #expect(result.distanceQueries == 3 && result.triangleTests > 0)
+    #expect((result.minimumSampledClearance ?? 0) > 99999)
+  }
 }
