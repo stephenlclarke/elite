@@ -1,4 +1,14 @@
-# Script admission exhausts the cooperative test stack
+# Release script finalization temporaries before native publication
+
+The unchanged two-timer smoke 459 at `7eed87416eb77b8272951052185febc62cb1f6fa` still crashed before either method produced a terminal outcome. Its matched owned process PID 46281 reports SIGBUS and a 544 KiB cooperative thread stack limit. The authenticated chain is `registerDestroyedWrecks` -> `resolveDestroyed` -> `prepareNativeSaveState` -> `scriptPublisher` -> `finishScriptEventCandidate` -> `drainScriptEvents` -> `fireDueScriptTimers` -> the original durable timer callback at line 337. Earlier repairs moved the observed failure deeper; they did not establish a passing current timer path.
+
+The compiled-458 source manifest matches the exact maintained `ScriptDirector.swift`. Its finalizer performs all revision/acknowledgement, completion/clue receipts, resource scaling, candidate validation, derived events and JSON budget work before calling the synchronous publisher in the same frame. End that entire pre-publication frame before entering the deeper native save. Preserve every statement, guard, error, order, actor boundary and the same single publish call. Keep the original Game borrowed and the same candidate/next/events inout; introduce no new Game or Commander copies, unsafe state, concurrency or stack-limit workaround.
+
+The unchanged pre-publication body now lives in an `@inline(never)` helper. The existing thin wrapper calls it, waits for return, then invokes `publish` exactly once. Source body equivalence and static checks support this lifetime boundary; compiled wrapper/helper distinction and the original timer smoke still require G1 validation. No author compiler, native test, debugger or renderer job was run. The existing timer, failed-writer, EMP and actor tests remain unchanged; no implementation-mirroring regression was added.
+
+Compiled-458 evidence in `/tmp/elite-native-journeys-focused-459/script-finish-stack-compiled-observation.json` records eight Commander copy-witness relocations, eleven Commander-read relocations, one Commander metadata relocation and 52 stack-probe GOT relocations (26 probe pairs) in the old finalizer, separately from fixed subtraction `0xe30`. The callsite observation maps the matched crash ancestor offset 8472 to the return immediately after indirect `blr x8` publication at source line 576. These are concrete same-frame observations, not aggregate peak bytes or new-runtime acceptance.
+
+## Earlier admission extraction and qualified historical evidence
 
 The actual full `make ci` attempt 328 at `901f75fc58412b7a6caf5d63e4010b4cf59e0f4f` failed during coverage before any complete Swift test result. Its authenticated process crash explicitly reports thread stack exhaustion in mission actor template preparation, reached through encounter admission and script event dispatch. No coverage percentage, thread/address sanitizer or leak result was produced.
 

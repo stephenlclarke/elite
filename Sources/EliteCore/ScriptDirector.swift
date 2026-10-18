@@ -495,14 +495,26 @@ extension Game {
       }
     }
   }
-  /// Finalization runs after command admission returns, so its resource/save temporaries
-  /// do not share the nested actor-admission stack. Publication stays in this actor turn.
+  /// Finalization and native publication stay synchronous in the same actor turn.
   private static func finishScriptEventCandidate(
     original: borrowing Game, candidate: inout Game,
     instance: ScriptInstance, next: inout ScriptInstance,
     event: ScriptEvent, pack: ScriptPack,
     derivedEvents: inout [(String, [String: ScriptValue])], publish: ScriptPublisher?,
     clueTrust: ScriptClueTrustCatalog
+  ) throws {
+    try prepareScriptEventCandidateForPublication(
+      original: original, candidate: &candidate, instance: instance, next: &next,
+      event: event, pack: pack, derivedEvents: &derivedEvents, clueTrust: clueTrust)
+    try publish?(&candidate)
+  }
+  /// Return before entering the deeper native save, releasing Commander/encoding temporaries.
+  @inline(never)
+  private static func prepareScriptEventCandidateForPublication(
+    original: borrowing Game, candidate: inout Game,
+    instance: ScriptInstance, next: inout ScriptInstance,
+    event: ScriptEvent, pack: ScriptPack,
+    derivedEvents: inout [(String, [String: ScriptValue])], clueTrust: ScriptClueTrustCatalog
   ) throws {
     for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
       let choice = next.choiceReceipts[group]!
@@ -573,7 +585,6 @@ extension Game {
     guard savedBytes.count <= 33_554_432 else {
       throw MissionPackError("Mission save budget exceeded; proposal was not committed.")
     }
-    try publish?(&candidate)
   }
   // Separate branch frames keep commander-borrow receiver copies out of encounter admission.
   private static func dispatchCourierCommand(
