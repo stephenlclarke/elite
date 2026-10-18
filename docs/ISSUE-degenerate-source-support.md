@@ -27,3 +27,7 @@ The source allocation is based on canonical `3102d89ffc2df6cbf2665c376af29e621fd
 ## Transformed-query cost correction
 
 Independent source review found eager full interval-area construction in every transformed player triangle. Separate the one-time preparation certificate from a bounded selected-component transformed certificate, preserving full fallback for any uncertainty or represented collapse. This is a source-proven added-work correction, not a measured regression or attribution of procurement run 380. Ordinary rigid transforms, near-collinear contact/exterior and actual large-coordinate collapse/refusal require regression coverage and later execution.
+
+## Collapsed-transform test premise correction
+
+The collapsed-transform regression retains the standard subdivision budget, original pose/vertices, collapse precondition, positive sampled-distance oracle and actual `unproven` refusal. With zero motion and large retained numerical headroom, the proof attempts further subdivisions after its endpoint/midpoint checks; the test therefore requires more than three charged distance queries and positive triangle work rather than incorrectly expecting exactly three queries. This is a source-only expectation correction, with no production, budget, case-count or certification change and no measured execution result.
