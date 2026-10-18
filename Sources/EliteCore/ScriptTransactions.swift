@@ -4,8 +4,10 @@ typealias ScriptPublisher = @Sendable (inout Game) throws -> Void
 
 extension GameRuntime {
   /// Captures only value paths. No writer, actor or interpreter callback escapes this turn.
-  func scriptPublisher() -> ScriptPublisher? {
-    guard game.requiresScriptDurability, let url = scriptSaveURL else { return nil }
+  func scriptPublisher(requireNativeSalvage: Bool = false) -> ScriptPublisher? {
+    guard game.requiresScriptDurability || requireNativeSalvage, let url = scriptSaveURL else {
+      return nil
+    }
     let namespace = galleryNamespace
     return { candidate in
       try Self.requireGalleryFileAccess(url, namespace: namespace)
@@ -33,6 +35,7 @@ extension GameRuntime {
   /// User commands are staged before a frame is published. Disk failure publishes no
   /// command effects; autonomous physics uses a separate proposal-only barrier.
   func commitScriptCommand(from before: Game) throws {
+    guard game.flushNativeSalvageWork() else { throw SaveError.invalidCommander }
     let ownsPersistentState =
       before.requiresScriptDurability || game.requiresScriptDurability
     let changed =

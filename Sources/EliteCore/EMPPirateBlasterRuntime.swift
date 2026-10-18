@@ -33,7 +33,7 @@ extension Game {
     }
     if let profile = salvageProfile(for: body),
       profile.sections.allSatisfy({
-        commander.salvageLedger.isDepleted(.init(wreck: record.wreck, section: $0.index))
+        salvageSectionIsDepleted(.init(wreck: record.wreck, section: $0.index))
       })
     {
       return "ENGINES AND WEAPONS DISABLED - SALVAGE EXHAUSTED"

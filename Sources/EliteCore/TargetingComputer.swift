@@ -149,7 +149,7 @@ extension Game {
         fields.append(
           .init(
             label: "Section",
-            value: commander.salvageLedger.isDepleted(section) ? "Exhausted" : "Available"))
+            value: salvageSectionIsDepleted(section) ? "Exhausted" : "Available"))
       }
     }
     return .init(

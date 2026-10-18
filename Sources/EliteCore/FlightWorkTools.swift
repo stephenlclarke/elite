@@ -16,6 +16,7 @@ public enum FlightWorkTool: CaseIterable, Sendable, Equatable {
 extension Game {
   public mutating func selectFlightTool(_ tool: FlightWorkTool) {
     guard !docked, screen.isFlight else { return }
+    guard flushNativeSalvageWork() else { return }
     workGuidance?.manualToolOverride = true
     selectedFlightTool = tool
     let installed: Bool
@@ -40,7 +41,8 @@ extension Game {
   }
 
   /// An unavailable selected utility never falls through to a combat weapon.
-  mutating func fireSelectedFlightTool(delta: Double) {
+  mutating func fireSelectedFlightTool(delta: Double, nativeSalvagePublish: ScriptPublisher? = nil)
+  {
     guard !workFireSuspended, !playerEMPDisabled else { return }
     if let work = workGuidance, !work.holding,
       !((selectedFlightTool == .combatLaser || selectedFlightTool == .empPirateBlaster)
@@ -51,7 +53,7 @@ extension Game {
     switch selectedFlightTool {
     case .combatLaser: fireLaser()
     case .miningLaser: _ = fireMiningWorkTool()
-    case .salvageCutter: _ = fireSalvageCutter(delta: delta)
+    case .salvageCutter: _ = fireSalvageCutter(delta: delta, publish: nativeSalvagePublish)
     case .empPirateBlaster: _ = fireEMPPirateBlaster()
     }
   }
@@ -68,7 +70,7 @@ extension Game {
 
   /// Native project costs, separate from the four combat laser installations.
   @discardableResult
-  mutating func fireSalvageCutter(delta: Double) -> Bool {
+  mutating func fireSalvageCutter(delta: Double, publish: ScriptPublisher? = nil) -> Bool {
     let energyCost = delta * 2
     let heatCost = delta * 6
     guard !docked, screen == .front, delta.isFinite, delta > 0, delta <= 0.1,
@@ -101,7 +103,7 @@ extension Game {
         let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
         let surface = pose.systemPoint(section.localPosition)
         let normal = pose.orientation.apply(section.normal)
-        return !commander.salvageLedger.isDepleted(identity)
+        return !salvageSectionIsDepleted(identity)
           && (metadata.section == nil || metadata.section == identity)
           && metadata.workSurfaces.contains { $0.section == identity }
           && (surface - impact).length <= max(1, section.radius)
@@ -112,10 +114,6 @@ extension Game {
       })
     else { return false }
 
-    var candidate = self
-    guard let operation = candidate.commander.flightSimulation.allocateIncident() else {
-      return false
-    }
     var source = SalvageLootSource(
       roles: profile.sourceRoles, legalValue: physical.npc?.legal.value ?? 0,
       economy: currentSystem.economy, technology: currentSystem.technology,
@@ -128,6 +126,15 @@ extension Game {
         ownership: .abandoned, stolenProvenance: original.salvageLegal.value == 0,
         manifest: original.salvageCargo
       )
+    }
+    if usesNativeSalvageWork(wreck: wreck, profile: profile) {
+      return advanceNativeSalvageWork(
+        body: body, section: section, source: source, delta: delta, publish: publish)
+    }
+    guard flushNativeSalvageWork() else { return false }
+    var candidate = self
+    guard let operation = candidate.commander.flightSimulation.allocateIncident() else {
+      return false
     }
     let result = candidate.commander.salvageLedger.advance(
       wreck: wreck, section: section, pose: pose,
@@ -164,6 +171,27 @@ extension Game {
 
   @discardableResult
   mutating func persistSalvagePoses(cold: Bool = true) -> Bool {
+    cold ? persistSalvagePosesCold() : persistSalvagePosesInPlace(cold: false)
+  }
+
+  /// Cold validation may fail after another body was observed. Keep the complete
+  /// previous source state and hot session until every observation can be retained.
+  private mutating func persistSalvagePosesCold() -> Bool {
+    let original = commander
+    let work = nativeSalvageWork
+    let wreckMotion = nativeSalvageWreckMotion
+    let lotMotion = nativeSalvageMotion
+    guard persistSalvagePosesInPlace(cold: true) else {
+      commander = original
+      nativeSalvageWork = work
+      nativeSalvageWreckMotion = wreckMotion
+      nativeSalvageMotion = lotMotion
+      return false
+    }
+    return true
+  }
+
+  private mutating func persistSalvagePosesInPlace(cold: Bool) -> Bool {
     guard persistEMPState() else { return false }
     var ledger = commander.salvageLedger
     for body in bodies {
@@ -187,6 +215,10 @@ extension Game {
       if let metadata = physical.salvage, let wreck = metadata.wreck,
         [.wreck, .section].contains(metadata.category)
       {
+        if commander.alienStorageState?.current.salvage.native.wrecks[wreck] != nil {
+          guard observeNativeSalvageWreck(body) else { return false }
+          continue
+        }
         if body.energy <= 0 { continue }
         guard physical.identity.system == systemIdentity,
           physical.identity.visit == commander.flightSimulation.visit,
@@ -200,6 +232,7 @@ extension Game {
       }
     }
     if ledger != commander.salvageLedger { commander.salvageLedger = ledger }
-    return !cold || flushNativeSalvageMotion()
+    return !cold
+      || (flushNativeSalvageWork() && flushNativeSalvageWrecks() && flushNativeSalvageMotion())
   }
 }

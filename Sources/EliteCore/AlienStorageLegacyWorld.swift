@@ -55,6 +55,11 @@ enum AlienStorageLegacyWorldValidation {
             guard technology.insert(id).inserted else { throw AlienStorageError.duplicateKey }
           }
         }
+      case .nativeInspection(let value):
+        guard physicalSections.insert(value.plan.section).inserted else {
+          throw AlienStorageError.duplicateKey
+        }
+      case .nativeWreck, .nativeWork: break
       case .legacySection(let value): sections.append(value)
       case .legacyLot(let value): claims.append(value)
       case .legacySettlement(let value): headers.append(value)

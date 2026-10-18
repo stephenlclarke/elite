@@ -27,16 +27,18 @@ enum AlienStorageGlobalCustodyValidation {
       guard !reserved.contains(receipt.operation), collections.insert(receipt.operation).inserted
       else { throw AlienStorageError.invalidJoin }
     }
+    let native = try NativeSalvagePlanView(snapshot.world)
+    for plan in native.plans.values {
+      let emissions = try native.emissions(for: plan)
+      guard emissions.values.allSatisfy({ !settled.contains($0.identity) }) else {
+        throw AlienStorageError.invalidJoin
+      }
+    }
     for source in snapshot.sources where settled.contains(source.lot.identity) {
       throw AlienStorageError.invalidJoin
     }
     for record in snapshot.world {
       switch record {
-      case .plan(let plan):
-        let emissions = try plan.progress.emissions(plan: plan)
-        guard emissions.values.allSatisfy({ !settled.contains($0.identity) }) else {
-          throw AlienStorageError.invalidJoin
-        }
       case .lot(let lot):
         if case .pending(let item, _, _, _) = lot.state, settled.contains(item.identity) {
           throw AlienStorageError.invalidJoin

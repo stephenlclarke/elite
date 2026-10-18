@@ -56,6 +56,9 @@ extension Game {
     parking actors: Set<ActorIdentity> = [],
     parkingSystem: SystemIdentity? = nil
   ) -> Bool {
+    guard flushNativeSalvageWrecks(parking: actors, parkingSystem: parkingSystem) else {
+      return false
+    }
     guard let current = commander.alienStorageState?.current else {
       return nativeSalvageMotion.isEmpty
     }
@@ -125,9 +128,15 @@ extension Game {
 }
 
 extension Commander {
-  func nativeSalvageSceneIsConsistent(_ bodies: [SpaceBody], docked: Bool) -> Bool {
+  func nativeSalvageSceneIsConsistent(
+    _ bodies: [SpaceBody], docked: Bool, atColdBoundary: Bool = false
+  ) -> Bool {
     guard alienStorageStateValid else { return false }
     guard let native = alienStorageState?.current.salvage else { return true }
+    guard nativeWreckSceneIsConsistent(bodies, docked: docked, atColdBoundary: atColdBoundary)
+    else {
+      return false
+    }
     var seen: Set<SalvageLotIdentity> = []
     var actors: Set<ActorIdentity> = []
     for body in bodies {

@@ -190,6 +190,10 @@ extension Game {
         record.crewOutcome(ordinal: $0.ordinal) == .aboard
       }.map { record.currentCrewDisableIncident.physicalTime + $0.delay }.min()
         ?? record.crewDeadline ?? context.physicalTime
+    let birthNativeWreck =
+      record.crewAboard == 0
+      && (profile.sourceRoles.contains(.thargoid)
+        || candidate.commander.alienStorageState?.current.salvage.native.wrecks[record.wreck] != nil)
     if record.crewAboard == 0 {
       let bodyIndex = candidate.bodies.firstIndex(where: { $0.physical?.identity == binding })!
       candidate.bodies[bodyIndex].physical?.npc = nil
@@ -204,17 +208,23 @@ extension Game {
         body: candidate.bodies[bodyIndex], pose: candidate.commander.flightSimulation.pose,
         time: context.physicalTime)
       guard
-        candidate.commander.salvageLedger.updateWreck(
-          identity: record.wreck,
-          motion: .init(
-            pose: candidate.modelPose(of: candidate.bodies[bodyIndex]),
-            velocity: hull.velocity, angularVelocity: hull.angularVelocity,
-            energy: candidate.bodies[bodyIndex].energy))
+        birthNativeWreck
+          || candidate.commander.salvageLedger.updateWreck(
+            identity: record.wreck,
+            motion: .init(
+              pose: candidate.modelPose(of: candidate.bodies[bodyIndex]),
+              velocity: hull.velocity, angularVelocity: hull.angularVelocity,
+              energy: candidate.bodies[bodyIndex].energy))
       else { return }
       candidate.notify("CREW EJECTED - UNOCCUPIED SALVAGE")
     }
     guard record.valid else { return }
     candidate.commander.savedEMPState?.records[source] = record
+    if birthNativeWreck {
+      guard let body = candidate.bodies.first(where: { $0.physical?.identity == binding }),
+        candidate.retainNativeSalvageWreck(body)
+      else { return }
+    }
     self = candidate
   }
 

@@ -33,6 +33,9 @@ struct AlienStorageWorldLot: Codable, Sendable, Equatable {
 }
 enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
   case plan(AlienStorageWorldPlan)
+  case nativeWreck(NativeSalvageWreck)
+  case nativeInspection(NativeSalvageInspection)
+  case nativeWork(NativeSalvageWorkCycle)
   case lot(AlienStorageWorldLot)
   case companion(AlienStorageCompanion)
   case legacySection(AlienStorageLegacySection)
@@ -42,6 +45,9 @@ enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
   case legacyCurrent(AlienStorageLegacyCurrent)
   var id: UUID {
     switch self {
+    case .nativeWreck(let value): value.id
+    case .nativeInspection(let value): value.id
+    case .nativeWork(let value): value.id
     case .plan(let value): value.id
     case .lot(let value): value.id
     case .companion(let value): value.id
@@ -54,6 +60,9 @@ enum AlienStorageWorldRecord: Codable, Sendable, Equatable {
   }
   var owner: UUID {
     switch self {
+    case .nativeWreck(let value): value.owner
+    case .nativeInspection(let value): value.owner
+    case .nativeWork(let value): value.owner
     case .plan(let value): value.owner
     case .lot(let value): value.owner
     case .companion(let value): value.owner
@@ -80,7 +89,8 @@ enum AlienStorageWorldValidation {
   private static func validateNative(
     _ records: [AlienStorageWorldRecord], owner: UUID, sources: [AlienStorageSource]
   ) throws {
-    var plans: [UUID: AlienStorageWorldPlan] = [:]
+    let native = try NativeSalvagePlanView(records)
+    let plans = native.plans
     var lots: [UUID: AlienStorageWorldLot] = [:]
     var companions: [AlienStorageCompanion] = []
     var ids: Set<UUID> = []
@@ -105,10 +115,14 @@ enum AlienStorageWorldValidation {
           value.lastOperation.map({ $0 > 0 }) ?? (value.workSeconds == 0)
         else { throw AlienStorageError.invalidJoin }
         try value.progress.validate(plan: value)
-        plans[value.id] = value
       case .lot(let value): lots[value.id] = value
       case .companion(let value): companions.append(value)
-      case .legacySection, .legacyLot, .legacySettlement, .legacySettlementItem, .legacyCurrent:
+      case .nativeInspection(let value):
+        guard sections.insert(value.plan.section).inserted else {
+          throw AlienStorageError.duplicateKey
+        }
+      case .nativeWreck, .nativeWork, .legacySection, .legacyLot, .legacySettlement,
+        .legacySettlementItem, .legacyCurrent:
         break
       }
     }
@@ -121,7 +135,7 @@ enum AlienStorageWorldValidation {
     var emissions: [UUID: [AlienStorageEmissionOrigin: SalvageLootItem]] = [:]
     var expectedEmissions: Set<SalvageLotIdentity> = []
     for plan in plans.values {
-      let issued = try plan.progress.emissions(plan: plan)
+      let issued = try native.emissions(for: plan)
       emissions[plan.id] = issued
       expectedEmissions.formUnion(issued.values.map(\.identity))
     }
@@ -224,6 +238,14 @@ enum AlienStorageWorldValidation {
           if case .technology(let id, _, _, _) = item.content,
             AlienModuleDefinition.isAttachmentDefinition(id)
           {
+            if let baseline = native.baselineSerials[value.id] {
+              guard let index = value.plan.items.firstIndex(of: item),
+                value.progress.issued[index] > 0, !value.progress.discarded[index],
+                let emitted = try? value.progress.issuedIdentity(
+                  itemIndex: index, plan: value.plan),
+                UInt32(emitted.lot) >= baseline
+              else { return nil }
+            }
             return item.identity
           }
           return nil
@@ -270,6 +292,12 @@ enum AlienStorageWorldValidation {
     for old in previous {
       guard let next = records[old.id] else { throw AlienStorageError.historyChanged }
       switch (old, next) {
+      case (.nativeWreck(let a), .nativeWreck(let b)):
+        try b.preserve(a)
+      case (.nativeInspection, .nativeInspection):
+        guard old == next else { throw AlienStorageError.historyChanged }
+      case (.nativeWork(let a), .nativeWork(let b)):
+        try b.preserve(a)
       case (.plan(let a), .plan(let b)):
         guard a.owner == b.owner, a.seed == b.seed, a.plan == b.plan,
           a.inspectedAt == b.inspectedAt,
@@ -311,7 +339,7 @@ enum AlienStorageWorldValidation {
 }
 
 // Sets inside the original source are encoded in a stable order for content hashes.
-private struct AlienStorageSourceEvidence: Codable {
+struct AlienStorageSourceEvidence: Codable {
   let roles: [SalvageSourceRole]
   let legalValue: Int
   let economy: Int
@@ -344,7 +372,7 @@ private struct AlienStorageSourceEvidence: Codable {
     return source
   }
 }
-private struct AlienStoragePlanEvidence: Codable {
+struct AlienStoragePlanEvidence: Codable {
   let section: WreckSectionIdentity
   let source: AlienStorageSourceEvidence
   let profile: SalvageLootProfile?

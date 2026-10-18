@@ -56,7 +56,8 @@ struct ScriptWorldSave: Codable, Sendable {
       && nextBodyID >= (bodies.map(\.id).max() ?? 0)
   }
   func consistent(with commander: Commander) -> Bool {
-    guard commander.nativeSalvageSceneIsConsistent(bodies, docked: docked) else { return false }
+    guard commander.nativeSalvageSceneIsConsistent(bodies, docked: docked, atColdBoundary: true)
+    else { return false }
     if let emp = commander.savedEMPState {
       guard
         emp.sceneIsConsistent(

@@ -17,19 +17,22 @@ struct AlienNativeSalvageIndex: Sendable {
     let receipt: AlienStorageCompanionCollection
   }
 
+  let native: NativeSalvagePlanView
   let sections: Set<WreckSectionIdentity>
+  let wrecksWithSections: Set<WreckIdentity>
   let pending: [SalvageLotIdentity: Pending]
+  let pendingBySystem: [SystemIdentity: [Pending]]
   let storedTechnology: [UUID: StoredTechnology]
 
   init(_ records: [AlienStorageWorldRecord]) throws {
     var sections: Set<WreckSectionIdentity> = []
     var pending: [SalvageLotIdentity: Pending] = [:]
     var storedTechnology: [UUID: StoredTechnology] = [:]
-    var plans: [UUID: AlienStorageWorldPlan] = [:]
+    let native = try NativeSalvagePlanView(records)
+    let plans = native.plans
     var claims: [UUID: AlienStorageLegacyLot] = [:]
     var emissions: [UUID: [AlienStorageEmissionOrigin: SalvageLootItem]] = [:]
     for record in records {
-      if case .plan(let plan) = record { plans[plan.id] = plan }
       if case .legacyLot(let claim) = record { claims[claim.id] = claim }
     }
     func store(
@@ -50,6 +53,12 @@ struct AlienNativeSalvageIndex: Sendable {
           throw AlienStorageError.duplicateKey
         }
         value = nil
+      case .nativeInspection(let inspection):
+        guard sections.insert(inspection.plan.section).inserted else {
+          throw AlienStorageError.duplicateKey
+        }
+        value = nil
+      case .nativeWreck, .nativeWork: value = nil
       case .legacySection(let section):
         guard sections.insert(section.plan.section).inserted else {
           throw AlienStorageError.duplicateKey
@@ -71,7 +80,7 @@ struct AlienNativeSalvageIndex: Sendable {
           if case .collected(let receipt) = item.state, case .technology = receipt.effect {
             guard let plan = plans[item.plan] else { throw AlienStorageError.invalidJoin }
             if emissions[item.plan] == nil {
-              emissions[item.plan] = try plan.progress.emissions(plan: plan)
+              emissions[item.plan] = try native.emissions(for: plan)
             }
             guard let original = emissions[item.plan]?[item.origin] else {
               throw AlienStorageError.invalidJoin
@@ -100,8 +109,12 @@ struct AlienNativeSalvageIndex: Sendable {
         }
       }
     }
+    self.native = native
     self.sections = sections
+    wrecksWithSections = Set(sections.map(\.wreck))
     self.pending = pending
+    pendingBySystem = Dictionary(
+      grouping: Array(pending.values), by: { $0.lot.identity.section.wreck.system })
     self.storedTechnology = storedTechnology
   }
 }

@@ -136,8 +136,8 @@ extension Game {
       pose.orientation.apply($0.normal).dot(player - pose.systemPoint($0.point)) > 0
         && workRayReachesSurface(body: body, surface: $0, lateralOffset: 0)
     }.sorted { a, b in
-      let leftDepleted = a.section.map(commander.salvageLedger.isDepleted) ?? false
-      let rightDepleted = b.section.map(commander.salvageLedger.isDepleted) ?? false
+      let leftDepleted = a.section.map(salvageSectionIsDepleted) ?? false
+      let rightDepleted = b.section.map(salvageSectionIsDepleted) ?? false
       if leftDepleted != rightDepleted { return !leftDepleted }
       return (pose.systemPoint(a.point) - player).length
         < (pose.systemPoint(b.point) - player).length
@@ -242,7 +242,7 @@ extension Game {
         identity: state.parent, wreck: physical.salvage?.wreck,
         pose: targetPose, velocity: physical.velocity, angularVelocity: physical.angularVelocity,
         surfacePoint: state.surface.point, surfaceNormal: state.surface.normal,
-        depleted: state.surface.section.map(commander.salvageLedger.isDepleted) ?? false)
+        depleted: state.surface.section.map(salvageSectionIsDepleted) ?? false)
       let output = state.controller.step(
         .init(
           ship: pose, velocity: state.velocity,
