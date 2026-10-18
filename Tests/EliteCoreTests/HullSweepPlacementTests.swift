@@ -115,4 +115,63 @@ struct HullSweepPlacementTests {
     )
     #expect((result.minimumSampledClearance ?? -.infinity) > 8)
   }
+
+  @Test(arguments: [0.000001, 0.25, 1.0, 4.0, 1_000_000.0])
+  func resolvedThinSurfacePlacementPreservesScaleTranslationAndStrictGap(scale: Double) throws {
+    for translation in [Vector3(0, 0, 0), .init(10000, -30000, 20000)] {
+      for reversed in [false, true] {
+        let local = [Vector3(0, 0, 0), .init(10, 0, 0), .init(10, 0.000001, 0)]
+        let mesh = Mesh(
+          vertices: local.map { $0 * scale + translation },
+          faces: [reversed ? [2, 1, 0] : [0, 1, 2]], preserveWinding: true)
+        if scale == 0.000001 && translation != Vector3(0, 0, 0) {
+          // This translation loses the entire thin dimension in the stored Doubles.
+          // Refusing it is required; silently perturbing/welding a surface is not repair.
+          #expect(mesh.vertices[1] == mesh.vertices[2])
+          #expect(throws: HullSweepFailure.invalidGeometry) { try PreparedHull(mesh: mesh) }
+          continue
+        }
+        let hull = try PreparedHull(mesh: mesh)
+        #expect(hull.triangleCount == 1 && !hull.isClosed)
+        let radius = scale
+        let gap = 2 * scale
+        let boundary = translation + Vector3(5 * scale, 0, radius + gap)
+        let refused = HullSweepSafety.validatePlacement(
+          center: boundary, radius: radius, hull: hull, pose: .init(), requiredClearance: gap)
+        #expect(!refused.safe)
+        let additionalGap = max(0.1, 0.01 * scale)
+        let clear = HullSweepSafety.validatePlacement(
+          center: boundary + Vector3(0, 0, additionalGap), radius: radius,
+          hull: hull, pose: .init(), requiredClearance: gap)
+        #expect(clear.safe)
+        // A conservative lower bound cannot exceed this independently known plane gap.
+        #expect((clear.minimumSampledClearance ?? .infinity) <= gap + additionalGap + 1e-9)
+      }
+    }
+  }
+
+  @Test func thinSurfaceCrossingAndNearParallelPlayerEdgesNeverGrantFalseClearance() throws {
+    let target = try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(0, 0, 0), .init(10, 0, 0), .init(10, 0.000001, 0)],
+        faces: [[0, 1, 2]], preserveWinding: true))
+    let player = try PreparedHull(mesh: placementBox())
+    for exact in [false, true] {
+      let start = ShipPose(position: .init(5, 0, -20))
+      let end = ShipPose(position: .init(5, 0, 20))
+      let motion = HullSceneMotion(
+        start: start, end: end, initialVelocity: .init(0, 0, 400),
+        acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+        duration: 0.1, playerRadius: player.radius)
+      let result = HullSweepSafety.validateSceneMotion(
+        motion, player: exact ? player : nil,
+        obstacles: [.init(hull: target, pose: .init())])
+      #expect(!result.safe)
+    }
+    let exhausted = HullSweepSafety.validatePlacement(
+      center: .init(5, 0, 20), radius: 1, hull: target, pose: .init(),
+      budget: .init(distanceQueries: 1, triangleTests: 0, nodeVisits: 1, subdivisionDepth: 0))
+    #expect(!exhausted.safe)
+    #expect(exhausted.failure == .workBudgetExceeded)
+  }
 }

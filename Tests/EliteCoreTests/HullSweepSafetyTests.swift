@@ -327,3 +327,88 @@ private func hsSweep(
     )
   }
 }
+
+private func hsThinBox(reversed: Bool = false, open: Bool = false) -> Mesh {
+  let box = hsBox(.init(10, 0.000001, 10), reversed: reversed)
+  return Mesh(
+    vertices: box.vertices, faces: open ? Array(box.faces.dropLast()) : box.faces,
+    preserveWinding: true)
+}
+
+@Test func hullSweepPreparesOriginalTigerTraderWithoutRemovingItsThinSurface() throws {
+  let ship = try #require(ShipCatalogue.ship("SH127"))
+  let mesh = ship.design.rawMesh
+  #expect(mesh.vertices.count == 3806 && mesh.faces.count == 7016)
+  #expect(mesh.faces[747] == [227, 228, 328])
+  #expect(mesh.vertices[227] == Vector3(-4.77449, 8.10366, -36.96109))
+  #expect(mesh.vertices[228] == Vector3(-4.67319, 4.49747, -48.0395))
+  #expect(mesh.vertices[328] == Vector3(-4.71821, 6.10022, -43.11576))
+  let hull = try PreparedHull(mesh: mesh)
+  #expect(hull.triangleCount == 7016)
+  // The source assembly has open/nonmanifold components. Thin-face support must not
+  // turn their ambiguous interior into a fictitious watertight solid.
+  #expect(!hull.isClosed)
+  let far = HullSweepSafety.validatePlacement(
+    center: .init(0, -300, 0), radius: 69, hull: hull, pose: .init())
+  #expect(far.safe)
+}
+
+@Test(arguments: [false, true])
+func hullSweepResolvedThinClosedHullPreservesWindingAndInteriorRefusal(reversed: Bool) throws {
+  let hull = try PreparedHull(mesh: hsThinBox(reversed: reversed))
+  #expect(hull.isClosed && hull.triangleCount == 12)
+  let inside = HullSweepSafety.validatePlacement(
+    center: .init(0, 0, 0), radius: 0.0000001, hull: hull, pose: .init())
+  #expect(!inside.safe && inside.failure == .insideHull)
+  for exact in [false, true] {
+    let player = exact ? try PreparedHull(mesh: hsBox(.init(1, 1, 1))) : nil
+    let outside = HullSweepSafety.validate(hsSweep(), target: hull, player: player)
+    #expect(outside.safe)
+    let crossing = HullSweepSafety.validate(
+      hsSweep(position: .init(0, -5, 0), velocity: .init(0, 100, 0), gap: 0),
+      target: hull, player: player)
+    #expect(!crossing.safe)
+  }
+}
+
+@Test func hullSweepThinOpenInteriorAndRayBoundaryStayConservative() throws {
+  let open = try PreparedHull(mesh: hsThinBox(open: true))
+  #expect(!open.isClosed)
+  let interior = HullSweepSafety.validatePlacement(
+    center: .init(0, 0, 0), radius: 0.0000001, hull: open, pose: .init())
+  #expect(interior.failure == .unproven)
+  for point in [Vector3(10, 0, 0), .init(10, 0.000001, 10)] {
+    let boundary = HullSweepSafety.validatePlacement(
+      center: point, radius: 0.0000001, hull: open, pose: .init())
+    #expect(!boundary.safe)
+  }
+}
+
+@Test func hullSweepUnresolvedOrMalformedThinGeometryCannotBecomeAPreparedSurface() {
+  let uncertain = 200_000_000.0.nextUp
+  let vertices: [[Vector3]] = [
+    [.init(0, 0, 0), .init(1, 1, 0), .init(2, 2, 0)],
+    [.init(0, 0, 0), .init(100_000_000, 100_000_000, 0), .init(200_000_000, uncertain, 0)],
+    [.init(0, 0, 0), .init(1, 0, 0), .init(.nan, 0.000001, 0)],
+    [.init(0, 0, 0), .init(1, 0, 0), .init(.infinity, 0.000001, 0)],
+  ]
+  for points in vertices {
+    #expect(throws: HullSweepFailure.invalidGeometry) {
+      try PreparedHull(mesh: Mesh(vertices: points, faces: [[0, 1, 2]], preserveWinding: true))
+    }
+  }
+  for faces in [[[0, 1, 9]], [[0, 1, 1]]] {
+    #expect(throws: HullSweepFailure.invalidGeometry) {
+      try PreparedHull(
+        mesh: Mesh(
+          vertices: [.init(0, 0, 0), .init(10, 0, 0), .init(10, 0.000001, 0)],
+          faces: faces, preserveWinding: true))
+    }
+  }
+  #expect(throws: HullSweepFailure.invalidGeometry) {
+    try PreparedHull(
+      mesh: Mesh(
+        vertices: [.init(0, 0, 0), .init(2, 2, 0), .init(0, 2, 0), .init(2, 0, 0)],
+        faces: [[0, 1, 2, 3]], preserveWinding: true))
+  }
+}
