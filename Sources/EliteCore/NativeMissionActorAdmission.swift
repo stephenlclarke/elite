@@ -75,6 +75,12 @@ private enum MissionActorAdmissionSelection {
 }
 
 extension Game {
+  /// Read at the existing visit guard, then release the computed Commander receiver.
+  @inline(never)
+  private func currentMissionActorAdmissionVisit() -> UInt64 {
+    commander.flightSimulation.visit
+  }
+
   /// Invalid source/scene facts are refused before eligibility, temporary capacity or no-op.
   /// No native counter, body or retained address is published by preparation.
   func prepareMissionActorAdmission(_ source: MissionActorAdmissionSource) throws
@@ -90,7 +96,7 @@ extension Game {
       let anchor = scriptAnchor
     else { return .pending(.unavailableArrival) }
     guard anchor.position.finite, anchor.position.length.isFinite, anchor.orientation.validRotation,
-      context.system == systemIdentity, context.visit == commander.flightSimulation.visit
+      context.system == systemIdentity, context.visit == currentMissionActorAdmissionVisit()
     else { throw NativeMissionActorAdmissionError.invalidScene }
     switch try selectMissionActorAdmissionCohort(source, context: context, anchor: anchor) {
     case .outsideLocalBubble: return .pending(.outsideLocalBubble)
