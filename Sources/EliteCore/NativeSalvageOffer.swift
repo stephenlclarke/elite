@@ -112,6 +112,34 @@ extension Game {
     return pending.lot
   }
 
+  /// Old released custody may precede native-wreck records. Join a live parent
+  /// through the genuine current factory inside the caller's private candidate.
+  /// Independent orphan lots still use ordinary common admission without a parent.
+  mutating func prepareNativeSalvageOfferParent(for lot: SalvageLot) -> Bool {
+    guard commander.alienStorageStateValid,
+      let pending = commander.alienStorageState?.current.salvage.pending[lot.identity],
+      pending.lot == lot, pending.binding == nil, pending.offer == nil
+    else { return false }
+    let parents = bodies.filter {
+      guard let physical = $0.physical, physical.payload == nil,
+        let metadata = physical.salvage, metadata.wreck == lot.identity.section.wreck
+      else { return false }
+      return metadata.category == .wreck || metadata.category == .section
+    }
+    guard parents.count <= 1 else { return false }
+    guard let body = parents.first else {
+      return commander.alienStorageState?.current.salvage.native.wrecks[lot.identity.section.wreck]?
+        .binding == nil
+    }
+    if commander.alienStorageState?.current.salvage.native.wrecks[lot.identity.section.wreck] != nil
+    {
+      // An existing mismatched binding/source cannot be replaced by copied metadata.
+      return nativeSalvageOfferParentMatches(body, lot: lot)
+    }
+    guard retainNativeSalvageWreck(body) else { return false }
+    return nativeSalvageOfferParentMatches(body, lot: lot)
+  }
+
   /// The parent's broad-sphere exception belongs to its current native actor and
   /// retained original source, never another hull with copied wreck metadata.
   func nativeSalvageOfferParentMatches(_ body: SpaceBody, lot: SalvageLot) -> Bool {

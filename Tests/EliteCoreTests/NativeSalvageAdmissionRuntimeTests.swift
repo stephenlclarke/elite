@@ -145,6 +145,437 @@ enum NativeSalvageAdmissionTestFixture {
   }
 }
 
+/// Authored original-format custody, not a historical archive or a fresh human bootstrap.
+/// Its original producer and sealed import retain all eight emissions and old evidence.
+private enum NativeSalvageOldParentFixture {
+  struct Loaded {
+    let runtime: GameRuntime
+    let game: Game
+    let site: SalvageSite
+    let parent: SpaceBody
+    let lots: [SalvageLot]
+    let snapshot: AlienStorageSnapshot
+    let immutable: [AlienStorageWorldRecord]
+    let folder: URL
+    let file: URL
+    let generation: String
+    let files: [String: Data]
+  }
+
+  static func loaded(format: String) async throws -> Loaded {
+    var (game, site) = try NativePagedSalvageFixture.game(humanCargo: true)
+    try #require(game.commander.alienStorageState == nil)
+    let parent = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    let physical = try #require(parent.physical)
+    let profile = try #require(SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID))
+    let section = try #require(profile.sections.first { $0.index == 1 })
+    let owner = try #require(game.commander.equipmentOwnerID)
+    let identity = WreckSectionIdentity(wreck: site.identity, section: section.index)
+    let source = SalvageLootSource(
+      roles: profile.sourceRoles, legalValue: 0, economy: game.currentSystem.economy,
+      technology: game.currentSystem.technology, ownership: .abandoned,
+      manifest: [.init(commodity: .food, quantity: 120)])
+    var producer = game.commander.salvageLedger
+    var remaining = section.workSeconds
+    var lots: [SalvageLot] = []
+    while remaining > 0 {
+      let elapsed = min(1, remaining)
+      let allocated = game.commander.flightSimulation.allocateIncident()
+      let operation = try #require(allocated)
+      let result = producer.advance(
+        wreck: site.identity, section: section, pose: game.modelPose(of: parent),
+        velocity: physical.velocity, angularVelocity: physical.angularVelocity, tool: .cutter,
+        elapsed: elapsed, operation: operation, conditions: NativePagedSalvageFixture.permitted,
+        source: source)
+      remaining -= elapsed
+      if remaining == 0 {
+        guard case .released(let emitted) = result else { throw SaveError.invalidCommander }
+        lots = emitted
+      } else {
+        guard case .progress = result else { throw SaveError.invalidCommander }
+      }
+    }
+    try #require(lots.count == 8)
+    let original = try producer.exportNativeSection(identity)
+    if format == "legacy-current" {
+      game.commander.salvageLedger = producer
+      let imported = try NativeSalvageImport(
+        ledger: producer, section: identity, owner: owner,
+        at: game.commander.flightSimulation.physicalTime, previous: nil)
+      try imported.apply(to: &game.commander)
+    } else {
+      let id = UUID()
+      var world: [AlienStorageWorldRecord] = [
+        .plan(
+          .init(
+            id: id, owner: owner, seed: original.seed, plan: original.plan, inspectedAt: 0,
+            requiredWorkSeconds: section.workSeconds, workSeconds: section.workSeconds,
+            damagedTechnology: original.damagedTechnology, depleted: original.depleted,
+            destroyed: false, lastOperation: original.lastOperation, progress: original.progress))
+      ]
+      let emissions = try SalvageSectionEmissionView(
+        seed: original.seed, plan: original.plan, progress: original.progress
+      ).emissions()
+      for lot in lots {
+        let origin = try #require(emissions.first { $0.value.identity == lot.identity }?.key)
+        world.append(
+          .companion(
+            .init(
+              id: UUID(), owner: owner, plan: id, origin: origin, issuedAt: 0,
+              state: .pending(lot: lot, physicalTime: 0, offer: nil, binding: nil))))
+      }
+      try game.commander.replaceAlienStorage(
+        with: .init(
+          owner: owner, revision: 0, worldRevision: 1, world: world, sources: [], attachments: [],
+          upgrades: [], receipts: [], commands: []))
+    }
+    let old = try #require(game.commander.alienStorageState?.current.snapshot)
+    let (oldRoot, oldPages) = try NativeSalvageReleasedOldFormat.encode(old)
+    let folder = try NativePagedSalvageFixture.folder()
+    var completed = false
+    defer { if !completed { try? FileManager.default.removeItem(at: folder) } }
+    let file = folder.appendingPathComponent("commander.json")
+    let runtime = GameRuntime(game: game)
+    try await runtime.save(to: file)
+    let saved = await runtime.snapshot()
+    let bytes = try Data(contentsOf: file)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == 27)
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    let oldPointer = try encoder.encode(
+      FrozenV27SavePointer(generation: pointer.generation, hashes: pointer.hashes))
+    #expect(oldPointer == bytes)
+    let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: file)
+    let store = try AlienStoragePageStore(directory: directory)
+    let root = try store.readGenerationRoot()
+    #expect(root == oldRoot && pointer.hashes["alien-root.json"] == ScriptPackLibrary.hash(oldRoot))
+    for (hash, expected) in oldPages {
+      let actual = try store.readPage(hash: hash)
+      #expect(actual == expected)
+    }
+    let before = try files(in: folder)
+    try await runtime.load(from: file, persistMigrations: false)
+    let loaded = await runtime.snapshot()
+    #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
+    #expect(loaded.commander.alienStorageState?.current.snapshot == old)
+    #expect(loaded.commander.alienStorageState?.current.salvage.native.wrecks.isEmpty == true)
+    #expect(loaded.nativeSalvageWork == nil)
+    let after = try files(in: folder)
+    #expect(after == before)
+    let immutable = old.world.filter {
+      switch $0 {
+      case .plan, .legacySection, .legacyLot: true
+      default: false
+      }
+    }
+    completed = true
+    return .init(
+      runtime: runtime, game: loaded, site: site, parent: parent, lots: lots, snapshot: old,
+      immutable: immutable, folder: folder, file: file, generation: pointer.generation,
+      files: before)
+  }
+
+  static func files(in folder: URL) throws -> [String: Data] {
+    var result: [String: Data] = [:]
+    let enumerator = try #require(
+      FileManager.default.enumerator(at: folder, includingPropertiesForKeys: [.isRegularFileKey]))
+    for case let url as URL in enumerator {
+      if try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true {
+        result[String(url.path.dropFirst(folder.path.count + 1))] = try Data(contentsOf: url)
+      }
+    }
+    return result
+  }
+}
+
+struct NativeSalvageOldParentAdmissionTests {
+  @Test(arguments: ["old-native", "legacy-current"])
+  func originalReleasedOldCustodyReadmitsAfterRealNoWriteLoadWithoutAnotherCut(format: String)
+    async throws
+  {
+    let fixture = try await NativeSalvageOldParentFixture.loaded(format: format)
+    defer { try? FileManager.default.removeItem(at: fixture.folder) }
+    let first = try #require(fixture.lots.first)
+    let body = try #require(fixture.game.bodies.first { $0.id == fixture.parent.id })
+    let metadata = try #require(body.physical?.salvage)
+    let profile = try #require(
+      SalvageCatalogue.profile(catalogueShipID: fixture.site.catalogueShipID))
+    let hull = try PreparedHull(mesh: profile.mesh)
+    let pose = fixture.game.modelPose(of: body)
+    #expect(
+      (first.position - pose.position).length < metadata.bounds.radius
+        + metadata.bounds.center.length + first.halfExtents.length + 8)
+    let clear = HullSweepSafety.validatePlacement(
+      center: first.position, radius: first.halfExtents.length, hull: hull, pose: pose,
+      requiredClearance: 8)
+    try #require(clear.safe)
+    // No cutter, guidance acquisition or added work frame creates the missing record.
+    let admitted = await fixture.runtime.advance(delta: 0.02)
+    let native = try #require(admitted.commander.alienStorageState?.current.salvage)
+    let parent = try #require(native.native.wrecks[fixture.site.identity])
+    #expect(parent.binding == body.physical?.identity && parent.source == .generated(fixture.site))
+    #expect(
+      admitted.nativeSalvageWork == nil && native.native.works.isEmpty
+        && native.native.inspections.isEmpty)
+    #expect(Set(native.pending.keys) == Set(fixture.lots.map(\.identity)))
+    for lot in fixture.lots {
+      let pending = try #require(native.pending[lot.identity])
+      #expect(pending.lot.content == lot.content && pending.lot.loot == lot.loot)
+      #expect(pending.lot.massKg == lot.massKg && pending.lot.halfExtents == lot.halfExtents)
+      #expect(pending.offer == nil)
+    }
+    let binding = try #require(native.pending[first.identity]?.binding)
+    let fragment = try #require(admitted.bodies.first { $0.physical?.identity == binding })
+    let position = admitted.commander.flightSimulation.pose.systemPoint(fragment.position)
+    #expect((position - first.position - first.velocity * 0.02).length < 1e-7)
+    let currentWorld = try #require(admitted.commander.alienStorageState?.current.snapshot.world)
+    #expect(fixture.immutable.allSatisfy(currentWorld.contains))
+    let unchanged = try NativeSalvageOldParentFixture.files(in: fixture.folder)
+    #expect(unchanged == fixture.files)
+    try await fixture.runtime.save(to: fixture.file)
+    let saved = await fixture.runtime.snapshot()
+    let beforeLoad = try NativeSalvageOldParentFixture.files(in: fixture.folder)
+    try await fixture.runtime.load(from: fixture.file, persistMigrations: false)
+    let loaded = await fixture.runtime.snapshot()
+    #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
+    let afterLoad = try NativeSalvageOldParentFixture.files(in: fixture.folder)
+    #expect(afterLoad == beforeLoad)
+    for (relative, bytes) in fixture.files
+    where relative.hasPrefix("commander.json.missions/" + fixture.generation + "/") {
+      #expect(afterLoad[relative] == bytes)
+    }
+  }
+
+  @Test(arguments: ["wrong source", "protected parent", "player blocked", "retained mismatch"])
+  func oldParentFactoryAndGeometryRefusalsPreserveAllOriginalCustody(mismatch: String)
+    async throws
+  {
+    let fixture = try await NativeSalvageOldParentFixture.loaded(format: "legacy-current")
+    defer { try? FileManager.default.removeItem(at: fixture.folder) }
+    var game = fixture.game
+    let index = try #require(game.bodies.firstIndex { $0.id == fixture.parent.id })
+    switch mismatch {
+    case "wrong source": game.bodies[index].physical?.catalogueShipID = "SH001"
+    case "protected parent": game.bodies[index].navalTarget = true
+    case "player blocked":
+      var pose = game.commander.flightSimulation.pose
+      pose.position = try #require(fixture.lots.first).position
+      NativePagedSalvageFixture.moveObserver(&game, to: pose)
+    default:
+      let retained = game.retainNativeSalvageWreck(game.bodies[index])
+      try #require(retained)
+      let old = try #require(game.bodies[index].physical)
+      let allocated = game.commander.flightSimulation.allocateActor()
+      let actor = try #require(allocated)
+      game.bodies[index].physical = .init(
+        identity: actor, population: old.population, npc: old.npc, velocity: old.velocity,
+        laserCooldown: old.laserCooldown, rock: old.rock, payload: old.payload,
+        attackOrigin: old.attackOrigin, emissionPosition: old.emissionPosition,
+        deathOrigin: old.deathOrigin, deathIncidentID: old.deathIncidentID, ordnance: old.ordnance,
+        spawnIdentity: old.spawnIdentity, blocksNavalEncounter: old.blocksNavalEncounter,
+        catalogueShipID: old.catalogueShipID, angularVelocity: old.angularVelocity,
+        canonicalSpin: old.canonicalSpin, salvage: old.salvage, empSource: old.empSource,
+        empCrewPod: old.empCrewPod, suspendedNPCIntention: old.suspendedNPCIntention)
+    }
+    let before = game.commander
+    let bodies = game.bodies
+    game.admitPendingNativeSalvage()
+    #expect(game.commander == before && game.bodies == bodies)
+    let observed = try NativeSalvageOldParentFixture.files(in: fixture.folder)
+    #expect(observed == fixture.files)
+  }
+
+  @Test func actualParentDeathDoesNotRequireALiveParentToReadmitReleasedOldLots() async throws {
+    let fixture = try await NativeSalvageOldParentFixture.loaded(format: "old-native")
+    defer { try? FileManager.default.removeItem(at: fixture.folder) }
+    var game = fixture.game
+    let parent = try #require(game.bodies.first { $0.id == fixture.parent.id })
+    let player = try #require(game.commander.flightSimulation.player)
+    let allocated = game.makeAttackOrigin(owner: player)
+    let origin = try #require(allocated)
+    let contact = try game.nearestMissionCollision(
+      from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 300, radius: 0,
+      includePlayer: false)
+    let hit = try #require(contact?.hit)
+    try #require(hit.target == .body(parent.id))
+    let applied = game.applyCombatHit(
+      hit, origin: origin, kind: .laser, damage: parent.energy + 1, laser: .pulse)
+    try #require(applied != nil)
+    game.commander.crimeLedger.finishEmission(origin.emissionID)
+    game.resolveDestroyed()
+    try #require(!game.bodies.contains { $0.id == parent.id })
+    try #require(game.commander.salvageLedger.isWreckDestroyed(fixture.site.identity))
+    #expect(game.commander.alienStorageState?.current.snapshot == fixture.snapshot)
+    let runtime = GameRuntime(game: game)
+    try await runtime.save(to: fixture.file)
+    let admitted = await runtime.advance(delta: 0.02)
+    let native = try #require(admitted.commander.alienStorageState?.current.salvage)
+    #expect(native.native.wrecks.isEmpty && admitted.nativeSalvageWork == nil)
+    #expect(native.pending.values.contains { $0.binding != nil })
+    #expect(Set(native.pending.keys) == Set(fixture.lots.map(\.identity)))
+    for lot in fixture.lots { #expect(native.pending[lot.identity]?.lot.loot == lot.loot) }
+  }
+}
+
+/// Original schema-27 pending records only. New native tags are deliberately rejected.
+/// Field tables are frozen separately from the current page encoder, like FrozenV27SalvageFormat.
+/// Pending companion/legacy field tables match 55d57c4f5d1e3a61562cd13c55355d54051a48ad.
+private enum NativeSalvageReleasedOldFormat {
+  struct Companion: Encodable {
+    enum State: Encodable {
+      case pending(
+        lot: SalvageLot, physicalTime: Double, offer: SpawnIdentity?, binding: ActorIdentity?)
+    }
+    let id: UUID
+    let owner: UUID
+    let plan: UUID
+    let origin: AlienStorageEmissionOrigin
+    let issuedAt: Double
+    let state: State
+  }
+  struct LegacyLot: Encodable {
+    enum State: Encodable {
+      case pending(lot: SalvageLot, offer: SpawnIdentity?, binding: ActorIdentity?)
+    }
+    let id: UUID
+    let owner: UUID
+    let section: UUID
+    let origin: AlienStorageEmissionOrigin
+    let identity: SalvageLotIdentity
+    let state: State
+  }
+  struct LegacyCurrent: Encodable {
+    enum State: Encodable {
+      case pending(lot: SalvageLot, at: Double, offer: SpawnIdentity?, binding: ActorIdentity?)
+    }
+    let id: UUID
+    let owner: UUID
+    let claim: UUID
+    let state: State
+  }
+  enum World: Encodable {
+    case plan(FrozenV27WorldPlan)
+    case companion(Companion)
+    case legacySection(FrozenV27LegacySection)
+    case legacyLot(LegacyLot)
+    case legacyCurrent(LegacyCurrent)
+
+    init(_ value: AlienStorageWorldRecord) throws {
+      switch value {
+      case .plan(let p):
+        self = .plan(
+          .init(
+            id: p.id, owner: p.owner, seed: p.seed, plan: p.plan, inspectedAt: p.inspectedAt,
+            requiredWorkSeconds: p.requiredWorkSeconds, workSeconds: p.workSeconds,
+            damagedTechnology: p.damagedTechnology, depleted: p.depleted, destroyed: p.destroyed,
+            lastOperation: p.lastOperation, progress: .init(p.progress)))
+      case .companion(let p):
+        guard case .pending(let lot, let time, let offer, let binding) = p.state else {
+          throw AlienStorageError.invalidPage
+        }
+        self = .companion(
+          .init(
+            id: p.id, owner: p.owner, plan: p.plan, origin: p.origin,
+            issuedAt: p.issuedAt,
+            state: .pending(lot: lot, physicalTime: time, offer: offer, binding: binding)))
+      case .legacySection(let p):
+        self = .legacySection(
+          .init(
+            id: p.id, owner: p.owner, importOperation: p.importOperation, importedAt: p.importedAt,
+            ledgerRevision: p.ledgerRevision, seed: p.seed, plan: p.plan,
+            progress: .init(p.progress),
+            savedPartialWorkSeconds: p.savedPartialWorkSeconds,
+            savedDamagedTechnology: p.savedDamagedTechnology, sectionDepleted: p.sectionDepleted,
+            sectionDestroyed: p.sectionDestroyed, wreckDestroyed: p.wreckDestroyed,
+            savedLedgerLastOperation: p.savedLedgerLastOperation))
+      case .legacyLot(let p):
+        guard case .pending(let lot, let offer, let binding) = p.state else {
+          throw AlienStorageError.invalidPage
+        }
+        self = .legacyLot(
+          .init(
+            id: p.id, owner: p.owner, section: p.section, origin: p.origin,
+            identity: p.identity, state: .pending(lot: lot, offer: offer, binding: binding)))
+      case .legacyCurrent(let p):
+        guard case .pending(let lot, let time, let offer, let binding) = p.state else {
+          throw AlienStorageError.invalidPage
+        }
+        self = .legacyCurrent(
+          .init(
+            id: p.id, owner: p.owner, claim: p.claim,
+            state: .pending(lot: lot, at: time, offer: offer, binding: binding)))
+      default: throw AlienStorageError.invalidPage
+      }
+    }
+  }
+  enum Payload: Encodable { case world(World) }
+  struct Entry: Encodable {
+    let key: String
+    let payload: Payload
+  }
+  struct Tree: Encodable {
+    let hash: String?
+    let count: UInt64
+    let height: UInt64
+    let firstKey: String?
+    let lastKey: String?
+    static let empty = Self(hash: nil, count: 0, height: 0, firstKey: nil, lastKey: nil)
+  }
+  struct Index: Encodable {
+    let index: String
+    let tree: Tree
+  }
+  struct Root: Encodable {
+    let version: Int
+    let owner: UUID
+    let revision: UInt64
+    let worldRevision: UInt64
+    let indices: [Index]
+  }
+  struct Page: Encodable {
+    let version: Int
+    let owner: UUID
+    let index: String
+    let height: UInt64
+    let entries: [Entry]
+    let children: [Tree]
+  }
+  static func encode(_ snapshot: AlienStorageSnapshot) throws -> (Data, [String: Data]) {
+    guard snapshot.world.count <= 128, snapshot.sources.isEmpty, snapshot.attachments.isEmpty,
+      snapshot.upgrades.isEmpty, snapshot.receipts.isEmpty, snapshot.commands.isEmpty
+    else { throw AlienStorageError.invalidPage }
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+    let entries = try snapshot.world.sorted { $0.id.uuidString < $1.id.uuidString }.map {
+      Entry(key: $0.id.uuidString, payload: .world(try .init($0)))
+    }
+    var pages: [String: Data] = [:]
+    var indices: [Index] = []
+    for index in ["sources", "attachments", "upgrades", "receipts", "commands", "world"] {
+      var tree = Tree.empty
+      if index == "world", !entries.isEmpty {
+        let bytes = try encoder.encode(
+          Page(
+            version: 1, owner: snapshot.owner, index: index,
+            height: 0, entries: entries, children: []))
+        guard bytes.count <= 262144 else { throw AlienStorageError.oversizedRecord }
+        let hash = ScriptPackLibrary.hash(bytes)
+        pages[hash] = bytes
+        tree = .init(
+          hash: hash, count: UInt64(entries.count), height: 0,
+          firstKey: entries.first?.key, lastKey: entries.last?.key)
+      }
+      indices.append(.init(index: index, tree: tree))
+    }
+    let root = try encoder.encode(
+      Root(
+        version: 1, owner: snapshot.owner,
+        revision: snapshot.revision, worldRevision: snapshot.worldRevision, indices: indices))
+    return (root, pages)
+  }
+}
+
 struct NativeSalvageAdmissionRuntimeTests {
   @Test func genuineNativeReleaseAdmitsOnlyActualSafeActorsAndMovesThemInItsReleaseFrame()
     async throws
