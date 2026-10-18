@@ -270,3 +270,138 @@ private func verifyDockedNPCPersistence(_ game: inout Game) async throws {
   #expect(game.docked && game.bodies.isEmpty)
   #expect(try Data(contentsOf: file) == bytes)
 }
+
+/// Captures the existing failed native callers without changing their fixtures or assertions.
+@Test(arguments: ["flight", "docked", "absent"])
+func actualNativeSaveCallerDiagnosticRetainsWholeValues(variant: String) async throws {
+  var game = variant == "absent" ? Game(executive: false) : try persistedNPCGame()
+  var stages: [String: Any] = ["variant": variant]
+  var expected: Commander
+  if variant == "absent" {
+    game.screen = .status
+    expected = game.commander
+    let persisted = game.persistSalvagePoses()
+    stages["absentPosePersistence"] = persisted
+    game.dock()
+  } else if variant == "docked" {
+    try game.commander.prepareEquipment()
+    game.commander.mirrorFittedEquipment()
+    let refusals = game.persistNPCStates()
+    stages["initialNPCRefusals"] = refusals.count
+    expected = game.commander
+    expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+    game.dock()
+  } else {
+    expected = game.commander
+  }
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = [.sortedKeys]
+  let expectedBytes = try encoder.encode(expected)
+  stages["afterDockEqualsExpected"] = game.commander == expected
+  stages["afterDockEncodedFieldDifferences"] = try nativeSaveDiagnosticDifferences(
+    expectedBytes, encoder.encode(game.commander))
+  let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  let readyBytes = try encoder.encode(ready.commander)
+  stages["readyCommanderValid"] = ready.commander.valid
+  stages["readyFlightValid"] = ready.commander.flightSimulation.valid
+  stages["readyNPCRegistryValid"] = ready.commander.npcPersistence.valid
+  stages["readyEquipmentValid"] = ready.commander.equipmentStateValid
+  stages["readyStationValid"] = ready.commander.nativeStationStateValid
+  stages["readyScriptStateValid"] = ready.commander.scriptState.valid
+  stages["readyCargoTonnes"] = ready.commander.checkedCargoTonnes
+  stages["readyCargoCapacity"] = ready.commander.capacity
+  stages["readyWorldValid"] = ready.scriptWorldSave.valid
+  stages["readyWorldConsistent"] = ready.scriptWorldSave.consistent(with: ready.commander)
+  stages["readyRequiresVersionedDurability"] = ready.requiresScriptDurability
+  stages["runtimeInitEqualsInput"] = ready.commander == game.commander
+  stages["runtimeInitEncodedFieldDifferences"] = try nativeSaveDiagnosticDifferences(
+    encoder.encode(game.commander), readyBytes)
+  do {
+    let prepared = try GameRuntime.prepareNativeSaveState(ready)
+    stages["nativePrepare"] = "succeeded"
+    stages["preparedCommanderValid"] = prepared.commander.valid
+    stages["preparedWorldValid"] = prepared.game.scriptWorldSave.valid
+    stages["preparedWorldConsistent"] = prepared.game.scriptWorldSave.consistent(
+      with: prepared.commander)
+    stages["nativePrepareLiveEqualsReady"] = prepared.game.commander == ready.commander
+    stages["nativePrepareLiveEncodedFieldDifferences"] = try nativeSaveDiagnosticDifferences(
+      readyBytes, encoder.encode(prepared.game.commander))
+  } catch {
+    stages["nativePrepareError"] = String(reflecting: error)
+  }
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(
+    "native-save-diagnostic-" + UUID().uuidString, isDirectory: true)
+  try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let file = directory.appendingPathComponent("commander.json")
+  var action = "save"
+  do {
+    try await runtime.save(to: file)
+    stages["save"] = "succeeded"
+    let after = await runtime.snapshot()
+    stages["savedLiveEqualsReady"] = after.commander == ready.commander
+    stages["savedLiveEqualsExpected"] = after.commander == expected
+    stages["savedLiveEncodedFieldDifferences"] = try nativeSaveDiagnosticDifferences(
+      readyBytes, encoder.encode(after.commander))
+    let bytes = try Data(contentsOf: file)
+    let object = try JSONSerialization.jsonObject(with: bytes) as? [String: Any]
+    stages["fileTopLevelKeys"] = object?.keys.sorted()
+    if let pointer = try? JSONDecoder().decode(ScriptSavePointer.self, from: bytes) {
+      stages["schema"] = pointer.schemaVersion
+      action = "officialVersionedReader"
+      let (commander, world) = try ScriptSaveStore.read(bytes, from: file)
+      stages["officialVersionedReader"] = "succeeded"
+      stages["diskCommanderValid"] = commander.valid
+      stages["diskWorldConsistent"] = world.consistent(with: commander)
+      stages["diskEncodedFieldDifferencesFromSavedLive"] = try nativeSaveDiagnosticDifferences(
+        encoder.encode(after.commander), encoder.encode(commander))
+    } else {
+      action = "officialRawReader"
+      let commander = try JSONDecoder().decode(Commander.self, from: bytes)
+      stages["officialRawReader"] = "succeeded"
+      stages["diskCommanderValid"] = commander.valid
+      stages["diskEncodedFieldDifferencesFromSavedLive"] = try nativeSaveDiagnosticDifferences(
+        encoder.encode(after.commander), encoder.encode(commander))
+    }
+    action = "runtimeLoad"
+    try await runtime.load(from: file, persistMigrations: false)
+    stages["runtimeLoad"] = "succeeded"
+    let loaded = await runtime.snapshot()
+    stages["loadedEqualsSavedLive"] = loaded.commander == after.commander
+    stages["loadedEncodedFieldDifferencesFromSavedLive"] = try nativeSaveDiagnosticDifferences(
+      encoder.encode(after.commander), encoder.encode(loaded.commander))
+    stages["loadKeptSavedBytes"] = try Data(contentsOf: file) == bytes
+    // Retain the original complete-value oracle; diagnostics never normalize expected data.
+    #expect(after.commander == ready.commander)
+    #expect(try Data(contentsOf: file) == bytes)
+  } catch {
+    stages["failedAction"] = action
+    stages["error"] = String(reflecting: error)
+    Issue.record("Actual native save diagnostic failed at \(action): \(error)")
+  }
+  let result = try JSONSerialization.data(
+    withJSONObject: stages, options: [.prettyPrinted, .sortedKeys])
+  if let evidence = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
+    let output = URL(fileURLWithPath: evidence, isDirectory: true)
+    try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+    try result.write(to: output.appendingPathComponent("native-save-" + variant + ".json"))
+  }
+  print("NATIVE_SAVE_DIAGNOSTIC " + String(decoding: result, as: UTF8.self))
+}
+
+/// Encoded field deltas are supplemental; actual Commander equality remains the oracle.
+private func nativeSaveDiagnosticDifferences(_ before: Data, _ after: Data) throws -> [String: Any]
+{
+  guard let a = try JSONSerialization.jsonObject(with: before) as? [String: Any],
+    let b = try JSONSerialization.jsonObject(with: after) as? [String: Any]
+  else { throw SaveError.invalidCommander }
+  var changes: [String: Any] = [:]
+  for key in Set(a.keys).union(b.keys).sorted() {
+    let old = a[key] as? NSObject
+    let new = b[key] as? NSObject
+    if old == new { continue }
+    changes[key] = ["before": a[key] ?? NSNull(), "after": b[key] ?? NSNull()]
+  }
+  return changes
+}
