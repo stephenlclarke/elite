@@ -21,13 +21,31 @@ private func moduleQuote(
 }
 
 @Test func equipmentModuleTemplatesHaveStableMonotonicValidatedDefinitions() throws {
-  #expect(EMT.definitions.map(\.family.id) == ["shield", "navigation", "energy"])
+  #expect(
+    EMT.definitions.map(\.family.id) == ["shield", "navigation", "energy", "hyperspace-drive"])
+  let stableIDs: [String: [String]] = [
+    "shield": [
+      "shield.basic", "shield.basicII", "shield.intermediate", "shield.intermediateII",
+      "shield.advanced", "shield.advancedII", "shield.elite",
+    ],
+    "navigation": ["navigation.basic", "navigation.intermediate", "navigation.advanced"],
+    "energy": ["energy.basic", "energy.intermediate", "energy.advanced", "energy.elite"],
+    "hyperspace-drive": ["basic", "intermediate", "advanced"],
+  ]
+  #expect(!ComponentAxis.jumpSpool.higherIsBetter)
+  #expect(
+    HyperspaceDriveDefinition.componentDefinition.grades.map { $0.statistics[.jumpSpool] } == [
+      10, 5, 1,
+    ])
   for definition in EMT.definitions {
+    let identifiers = try #require(stableIDs[definition.family.id])
+    try #require(definition.grades.count == identifiers.count)
     #expect(definition.revision == (definition.family == EMT.energyFamily ? 2 : 1))
     #expect(Set(definition.grades.map(\.identity)).count == definition.grades.count)
-    for template in definition.grades {
+    for (index, template) in definition.grades.enumerated() {
       #expect(template.identity.version == 1)
-      #expect(template.identity.id.hasPrefix(definition.family.id + "."))
+      #expect(template.identity.family == definition.family)
+      #expect(template.identity.id == identifiers[index])
       #expect(EMT.displayName(for: template.identity) != nil)
       // A real quote exercises the progression engine's full definition validation.
       let axis = try #require(template.requiredAxes.first)
@@ -35,8 +53,18 @@ private func moduleQuote(
     }
     for (before, after) in zip(definition.grades, definition.grades.dropFirst()) {
       #expect(before.requiredAxes == after.requiredAxes)
-      #expect(before.requiredAxes.allSatisfy { after.statistics[$0]! >= before.statistics[$0]! })
-      #expect(before.requiredAxes.contains { after.statistics[$0]! > before.statistics[$0]! })
+      #expect(
+        before.requiredAxes.allSatisfy { axis in
+          let previous = before.statistics[axis]!
+          let next = after.statistics[axis]!
+          return axis.higherIsBetter ? next >= previous : next <= previous
+        })
+      #expect(
+        before.requiredAxes.contains { axis in
+          let previous = before.statistics[axis]!
+          let next = after.statistics[axis]!
+          return axis.higherIsBetter ? next > previous : next < previous
+        })
     }
   }
   #expect(
