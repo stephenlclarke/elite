@@ -216,7 +216,14 @@ extension Game {
       bodies[index].physical?.npc?.firstAggressor = resolution.firstAggressor
       if let attacker = resolution.offender ?? attacker {
         bodies[index].physical?.npc?.intention = .engage(attacker)
-        if attacker == context.player.identity { bodies[index].hostile = true }
+        if bodies[index].blackjackRole == nil, bodies[index].missionInstanceID == nil,
+          bodies[index].scriptNPC == nil
+        {
+          bodies[index].hostile = attacker == context.player.identity
+        } else if attacker == context.player.identity {
+          // Authored mission and Blackjack drivers retain their existing dispatch projection.
+          bodies[index].hostile = true
+        }
       }
     }
     if let report = resolution.report { commander.stationSecurity.receive(report) }
