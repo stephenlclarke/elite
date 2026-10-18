@@ -6,6 +6,24 @@ struct PreparedSalvageAdmissionHull: Sendable {
 }
 
 extension Game {
+  /// Immutable source geometry only: no pose, query result, custody or actor authority is cached.
+  mutating func preparedSalvageAdmissionHull(mesh: Mesh, catalogue: String) -> PreparedHull? {
+    if salvageAdmissionGeometry.count > 128 {
+      salvageAdmissionGeometry.removeAll(keepingCapacity: true)
+    }
+    if let cached = salvageAdmissionGeometry[catalogue],
+      cached.mesh.vertices == mesh.vertices, cached.mesh.faces == mesh.faces
+    {
+      return cached.hull
+    }
+    guard let hull = try? PreparedHull(mesh: mesh) else { return nil }
+    if salvageAdmissionGeometry.count >= 128 {
+      salvageAdmissionGeometry.removeAll(keepingCapacity: true)
+    }
+    salvageAdmissionGeometry[catalogue] = .init(mesh: mesh, hull: hull)
+    return hull
+  }
+
   /// The broad sphere stays authoritative for unrelated actors. Only an exactly offered
   /// fragment may replace its own live parent's sphere with an actual-mesh proof.
   mutating func releasedFragmentClearsParent(
@@ -61,15 +79,8 @@ extension Game {
       salvage: fragmentMetadata)
     guard request == expected else { return false }
     let mesh = gameplayMesh(for: body)
-    let prepared: PreparedHull
-    if let cached = salvageAdmissionGeometry[catalogue],
-      cached.mesh.vertices == mesh.vertices, cached.mesh.faces == mesh.faces
-    {
-      prepared = cached.hull
-    } else {
-      guard let hull = try? PreparedHull(mesh: mesh) else { return false }
-      salvageAdmissionGeometry[catalogue] = .init(mesh: mesh, hull: hull)
-      prepared = hull
+    guard let prepared = preparedSalvageAdmissionHull(mesh: mesh, catalogue: catalogue) else {
+      return false
     }
     return HullSweepSafety.validatePlacement(
       center: lot.position, radius: lot.halfExtents.length,
