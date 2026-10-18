@@ -197,8 +197,15 @@ extension Game {
     return true
   }
 
+  @inline(never)
   private mutating func persistSalvagePosesInPlace(cold: Bool) -> Bool {
     guard persistEMPState() else { return false }
+    return persistSalvagePosesAfterEMP(cold: cold)
+  }
+
+  /// Salvage observation temporaries are entered only after EMP persistence has returned.
+  @inline(never)
+  private mutating func persistSalvagePosesAfterEMP(cold: Bool) -> Bool {
     var ledger = commander.salvageLedger
     for body in bodies {
       guard let physical = body.physical else { continue }
