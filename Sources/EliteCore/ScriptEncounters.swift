@@ -518,7 +518,7 @@ extension Game {
     _ actor: borrowing ScriptOwnedActor, spec: ScriptActorDefinition,
     legacy: LegacyMissionEncounterProvenance?
   ) throws {
-    guard legacy?.actors[spec.id]?.prepared == actor else {
+    guard legacy?.actors[spec.id]?.prepared == (copy actor) else {
       throw MissionPackError(
         "Prepared historical condition differs from its imported snapshot.")
     }
