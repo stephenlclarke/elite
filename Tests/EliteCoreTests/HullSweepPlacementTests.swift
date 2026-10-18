@@ -561,4 +561,40 @@ struct HullSweepPlacementTests {
     #expect(result.distanceQueries == 1 && result.triangleTests == 1 && result.nodeVisits >= 2)
     #expect(result.minimumSampledClearance == nil)
   }
+
+  @Test func dualBVHLargePlayerSmallTargetFilledCrossingReachesChargedLeafRefusal() throws {
+    for reversed in [false, true] {
+      var vertices = [Vector3(0, -20, -5), .init(0, 20, -5), .init(0, 0, 5)]
+      var faces = [[0, 1, 2]]
+      for index in 1...8 {
+        let x = Double(index * 100)
+        let first = vertices.count
+        vertices += [.init(x, 0, 100), .init(x + 1, 0, 100), .init(x, 1, 100)]
+        faces.append([first, first + 1, first + 2])
+      }
+      // Reverse winding while preserving each component's first representative vertex.
+      let playerMesh = Mesh(
+        vertices: vertices, faces: reversed ? faces.map { [$0[0], $0[2], $0[1]] } : faces,
+        preserveWinding: true)
+      let targetVertices = [Vector3(-10, -10, 0), .init(10, -10, 0), .init(0, 10, 0)]
+      let targetMesh = Mesh(
+        vertices: targetVertices, faces: [reversed ? [0, 2, 1] : [0, 1, 2]],
+        preserveWinding: true)
+      // Target bounds have z=0, while every player component representative has z!=0.
+      // The target representative has x=-10, outside every player's x>=0 component box.
+      try #require(playerMesh.faces.allSatisfy { playerMesh.vertices[$0[0]].z != 0 })
+      try #require(playerMesh.vertices.allSatisfy { $0.x >= 0 } && targetVertices[0].x == -10)
+      let player = try PreparedHull(mesh: playerMesh)
+      let target = try PreparedHull(mesh: targetMesh)
+      #expect(player.triangleCount == 9 && target.triangleCount == 1)
+      // At z=0 the vertical filled triangle contains x=0,y in [-10,10]; so does
+      // the horizontal target. Their genuine intersection cannot be a containment refusal.
+      let result = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player), player: player,
+        obstacles: [.init(hull: target, pose: .init())])
+      #expect(!result.safe && result.failure == .clearanceViolation)
+      #expect(result.triangleTests > 0 && result.nodeVisits >= 4 && result.distanceQueries == 1)
+      #expect(result.minimumSampledClearance == 0)
+    }
+  }
 }
