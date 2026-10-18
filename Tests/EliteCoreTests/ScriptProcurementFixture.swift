@@ -612,6 +612,7 @@ actor ScriptProcurementFlightDiagnostic {
     "altitude": 32, "cabinTemperature": 32, "mainStationContainsPlayer": 32,
     "finalApproach": 32, "system": 32, "visit": 32, "physicalTime": 32,
     "missionSeconds": 32, "fuel": 32, "credits": 32, "legal": 32, "speed": 32,
+    "missilesRemaining": 32, "playerActiveMissiles": 32,
     "gameplayRevisionFrameStamp": 32, "stationImpactRevisionFrameStamp": 32,
     "targetID": 32, "phase": 64, "step": 32,
     "pilotAction": 32, "pilotThreat": 96, "pilotPosition": 96, "pilotWanted": 32,
@@ -848,6 +849,14 @@ extension GameRuntime {
     let stationContainsPlayer =
       game.bodies.first { $0.id == 0 && $0.hull == .station }
       .map { String($0.containsPlayer) } ?? "unavailable"
+    let player = game.commander.flightSimulation.player
+    let playerActiveMissiles = game.bodies.reduce(into: 0) { count, body in
+      guard let player, body.hull == .missile, body.energy > 0,
+        let ordnance = body.physical?.ordnance, ordnance.profile.attackKind == .missile,
+        ordnance.origin.owner == player, ordnance.termination == nil
+      else { return }
+      count += 1
+    }
     var scalars: [String: String] = [
       "docked": String(facts.docked), "live": String(facts.live),
       "paused": String(facts.paused), "screen": String(describing: game.screen),
@@ -861,6 +870,8 @@ extension GameRuntime {
       "missionSeconds": game.commander.scriptState.missionCalendar.map { String($0.seconds) }
         ?? "unavailable",
       "fuel": String(game.commander.fuel), "credits": String(game.commander.credits),
+      "missilesRemaining": String(game.commander.missiles),
+      "playerActiveMissiles": String(playerActiveMissiles),
       "legal": String(game.commander.legal),
       "cargoTonnes": String(game.commander.cargoTonnes),
       "speed": String(game.speed), "roll": String(game.roll),
