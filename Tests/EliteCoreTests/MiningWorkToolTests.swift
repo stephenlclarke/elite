@@ -400,9 +400,23 @@ extension MiningWorkToolTests {
 extension MiningWorkToolTests {
   @Test func realRockWithoutItsModuleRetainsManualTrackingAndSelectedWeaponWithoutHold() throws {
     var game = try workToolGame()
-    let module = try #require(game.commander.fittedEquipment(at: .targetingMining))
+    let inventory = try #require(game.commander.equipmentInventory)
+    let module = try #require(
+      inventory.items.first {
+        $0.node == EquipmentRuntimeCatalog.node(for: "Targeting: Mining Module")
+      })
+    try #require(module.location == nil && !game.workTargetCapabilities.miningModule)
+    try game.commander.fitEquipment(
+      module, at: .targetingMining,
+      expectedRevision: inventory.revision)
+    let fitted = try #require(game.commander.fittedEquipment(at: .targetingMining))
+    try #require(fitted.id == module.id && game.workTargetCapabilities.miningModule)
     let revision = try #require(game.commander.equipmentInventory?.revision)
-    try game.commander.storeEquipment(module, expectedRevision: revision)
+    try game.commander.storeEquipment(fitted, expectedRevision: revision)
+    #expect(game.commander.fittedEquipment(at: .targetingMining) == nil)
+    #expect(!game.workTargetCapabilities.miningModule)
+    #expect(game.commander.equipmentInventory?.items.first { $0.id == module.id } == module)
+    #expect(game.commander.equipmentInventory?.items.map(\.id) == inventory.items.map(\.id))
     let id = try workToolRock(&game)
     let body = try #require(game.bodies.first { $0.id == id })
     let selected = game.selectedFlightTool
