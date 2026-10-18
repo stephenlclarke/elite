@@ -403,16 +403,134 @@ struct NativeSalvageOldParentAdmissionTests {
     } else {
       failureMessage = "No original released lot proves mesh clearance and broad-parent overlap"
     }
-    let first = try #require(selected, Comment(rawValue: failureMessage))
+    let originalPhysical = try #require(body.physical)
+    let originalPlayer = try #require(fixture.game.commander.flightSimulation.player)
+    let originalOwner = try #require(fixture.game.commander.equipmentOwnerID)
+    let originalSeed = fixture.game.commander.salvageLedger.nativeInspectionSeed
+    let identities = Set(fixture.lots.map(\.identity))
+    func invariantFailure(_ game: Game, allowingBindings: Bool) -> String? {
+      guard !game.docked, !game.paused, game.screen.isFlight, game.energy > 0,
+        game.systemIdentity == fixture.game.systemIdentity, game.jumpCountdown == nil,
+        game.commander.flightSimulation.player == originalPlayer,
+        game.commander.equipmentOwnerID == originalOwner,
+        game.commander.salvageLedger.nativeInspectionSeed == originalSeed
+      else { return "flight/player/owner changed" }
+      let parents = game.bodies.filter { $0.physical?.identity == originalPhysical.identity }
+      guard parents.count == 1, let current = parents.first, let physical = current.physical,
+        current.id == body.id, current.hull == body.hull, current.energy > 0,
+        current.rotationRate == body.rotationRate, physical.salvage == metadata,
+        physical.catalogueShipID == originalPhysical.catalogueShipID,
+        physical.spawnIdentity == originalPhysical.spawnIdentity, physical.spawnIdentity != nil,
+        physical.canonicalSpin == true, physical.npc == nil, physical.payload == nil,
+        physical.velocity == originalPhysical.velocity,
+        physical.angularVelocity == originalPhysical.angularVelocity
+      else { return "parent identity/source/motion/liveness changed" }
+      guard let context = game.gameplayContext(), context.player.identity == originalPlayer,
+        !context.protection.protectedActors.contains(originalPhysical.identity),
+        fixture.lots.allSatisfy({
+          !context.protection.protectedPayloads.contains(.salvage($0.identity))
+            && ($0.position - context.player.position).length <= context.perceptionRadius
+        })
+      else { return "parent/lot protection or perception changed" }
+      guard let state = game.commander.alienStorageState?.current,
+        Set(state.salvage.pending.keys) == identities, state.snapshot.owner == originalOwner,
+        game.nativeSalvageWork == nil, game.workGuidance == nil, game.workBraking == nil,
+        state.salvage.native.works.isEmpty, state.salvage.native.inspections.isEmpty,
+        fixture.immutable.allSatisfy(state.snapshot.world.contains)
+      else { return "custody/history/work changed" }
+      if let retained = state.salvage.native.wrecks[fixture.site.identity] {
+        guard retained.binding == originalPhysical.identity,
+          retained.source == .generated(fixture.site), retained.seed == originalSeed,
+          retained.destroyedAt == nil
+        else { return "retained parent source/binding changed" }
+      }
+      for lot in fixture.lots {
+        guard let pending = state.salvage.pending[lot.identity], pending.offer == nil,
+          pending.lot.content == lot.content, pending.lot.loot == lot.loot,
+          pending.lot.massKg == lot.massKg, pending.lot.halfExtents == lot.halfExtents
+        else { return "original lot custody changed" }
+        if pending.binding == nil {
+          guard pending.lot == lot else { return "unbound original lot moved/changed" }
+        } else if !allowingBindings {
+          return "binding preceded observed first transition"
+        }
+      }
+      return nil
+    }
+    func boundedWaitFailure(_ reason: String, frame: Int) -> Comment {
+      let text = "old-readmission frame=\(frame)/1400 reason=\(reason)\n" + failureMessage
+      return Comment(rawValue: String(decoding: text.utf8.prefix(4095), as: UTF8.self) + "\n")
+    }
+    // Actual388 showed no original was initially eligible. The analytic moving-parent
+    // window supports this finite cap only; real pre-frame geometry controls acceptance.
+    var preFrame = fixture.game
+    var admitted = fixture.game
+    var newlyBound: [SalvageLot] = []
+    var frames = 0
+    for frame in 1...1400 {
+      preFrame = admitted
+      if let reason = invariantFailure(preFrame, allowingBindings: false) {
+        let valid = false
+        try #require(valid, boundedWaitFailure(reason, frame: frame))
+      }
+      let before = try #require(preFrame.commander.alienStorageState?.current.salvage)
+      // No control, cutter, target acquisition, copied actor or synthetic motion is supplied.
+      admitted = await fixture.runtime.advance(delta: 0.02)
+      frames = frame
+      if let reason = invariantFailure(admitted, allowingBindings: true) {
+        let valid = false
+        try #require(valid, boundedWaitFailure(reason, frame: frame))
+      }
+      let after = try #require(admitted.commander.alienStorageState?.current.salvage)
+      let previousParent = try #require(
+        preFrame.bodies.first { $0.physical?.identity == originalPhysical.identity })
+      let currentParent = try #require(
+        admitted.bodies.first { $0.physical?.identity == originalPhysical.identity })
+      let parentStep =
+        admitted.modelPose(of: currentParent).position
+        - preFrame.modelPose(of: previousParent).position - originalPhysical.velocity * 0.02
+      let timeStep =
+        admitted.commander.flightSimulation.physicalTime
+        - preFrame.commander.flightSimulation.physicalTime
+      let genuineStep = parentStep.length < 1e-7 && abs(timeStep - 0.02) < 1e-7
+      try #require(genuineStep, boundedWaitFailure("parent/time step changed", frame: frame))
+      newlyBound = fixture.lots.filter {
+        before.pending[$0.identity]?.binding == nil && after.pending[$0.identity]?.binding != nil
+      }
+      if !newlyBound.isEmpty { break }
+    }
+    let observedTransition = !newlyBound.isEmpty
+    try #require(
+      observedTransition, boundedWaitFailure("no binding within finite cap", frame: frames))
+    let admissionParent = try #require(
+      preFrame.bodies.first { $0.physical?.identity == originalPhysical.identity })
+    let admissionPose = preFrame.modelPose(of: admissionParent)
+    let originalCustody = try #require(preFrame.commander.alienStorageState?.current.salvage)
+    var eligibleOriginal: SalvageLot?
+    // At most eight additional queries: only originals actually bound in the FIRST transition.
+    // Their saved unbound poses and this authentic pre-frame parent pose are the oracle.
+    for lot in newlyBound.prefix(8) {
+      let pending = try #require(originalCustody.pending[lot.identity])
+      try #require(pending.binding == nil && pending.offer == nil && pending.lot == lot)
+      let broad =
+        (lot.position - admissionPose.position).length < metadata.bounds.radius
+        + metadata.bounds.center.length + lot.halfExtents.length + 8
+      let clearance = HullSweepSafety.validatePlacement(
+        center: lot.position, radius: lot.halfExtents.length, hull: hull, pose: admissionPose,
+        requiredClearance: 8)
+      if broad && clearance.safe && (clearance.minimumSampledClearance ?? -.infinity) > 8 {
+        eligibleOriginal = lot
+        break
+      }
+    }
+    let strictTransition = eligibleOriginal != nil
+    try #require(
+      strictTransition,
+      boundedWaitFailure("first binding lacks strict pre-frame proof", frame: frames))
+    let first = try #require(eligibleOriginal)
     #expect(
-      (first.position - pose.position).length < metadata.bounds.radius
+      (first.position - admissionPose.position).length < metadata.bounds.radius
         + metadata.bounds.center.length + first.halfExtents.length + 8)
-    let clear = HullSweepSafety.validatePlacement(
-      center: first.position, radius: first.halfExtents.length, hull: hull, pose: pose,
-      requiredClearance: 8)
-    try #require(clear.safe && (clear.minimumSampledClearance ?? -.infinity) > 8)
-    // No cutter, guidance acquisition or added work frame creates the missing record.
-    let admitted = await fixture.runtime.advance(delta: 0.02)
     let native = try #require(admitted.commander.alienStorageState?.current.salvage)
     let parent = try #require(native.native.wrecks[fixture.site.identity])
     #expect(parent.binding == body.physical?.identity && parent.source == .generated(fixture.site))
@@ -429,6 +547,10 @@ struct NativeSalvageOldParentAdmissionTests {
     let binding = try #require(native.pending[first.identity]?.binding)
     let fragment = try #require(admitted.bodies.first { $0.physical?.identity == binding })
     let position = admitted.commander.flightSimulation.pose.systemPoint(fragment.position)
+    let actualOwnership = admitted.commander.nativeSalvageBodyOwnershipMatches(fragment, lot: first)
+    try #require(actualOwnership)
+    #expect(fragment.physical?.payload == .salvage(first.identity))
+    #expect(fragment.physical?.velocity == first.velocity && fragment.energy > 0)
     #expect((position - first.position - first.velocity * 0.02).length < 1e-7)
     let currentWorld = try #require(admitted.commander.alienStorageState?.current.snapshot.world)
     #expect(fixture.immutable.allSatisfy(currentWorld.contains))
