@@ -124,9 +124,23 @@ private func approachGame(
   #expect(game.autoPilot.targetID != nil)
   var controls = Controls()
   controls.yaw = 0.4
+  let beforeTakeoverVelocity = game.flightWorldVelocity
+  let beforeTakeoverPosition = game.commander.flightSimulation.pose.position
   game.tick(delta: 0.02, controls: controls)
-  #expect(game.autoPilot.targetID == nil && game.autoPilot.velocity.length == 0)
+  #expect(game.autoPilot.targetID == nil && game.manualResidualFlight && game.speed == 0)
+  #expect((game.flightWorldVelocity - beforeTakeoverVelocity).length < 1e-8)
+  #expect(
+    (game.commander.flightSimulation.pose.position - beforeTakeoverPosition
+      - beforeTakeoverVelocity * 0.02).length < 1e-8)
   #expect(!game.dockingComputer)
+  let releasedPosition = game.commander.flightSimulation.pose.position
+  game.tick(delta: 0.02)
+  #expect(
+    (game.flightWorldVelocity - beforeTakeoverVelocity).length
+      <= game.workLimits.acceleration * 0.02 + 1e-8)
+  #expect(
+    (game.commander.flightSimulation.pose.position - releasedPosition
+      - beforeTakeoverVelocity * 0.02).length < 1e-8)
   game.bodies = [.init(id: 0, hull: .station, position: .init(500, 0, 2400))]
   game.speed = 0
   game.key("tab")

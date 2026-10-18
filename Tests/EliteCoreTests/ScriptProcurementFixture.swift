@@ -440,6 +440,7 @@ struct ScriptProcurementFixture {
       _ = await runtime.advance(delta: 0.1)
       return
     }
+    await runtime.enableStationDefenceDiagnostics()
     let before = await runtime.procurementFlightDiagnosticFacts()
     _ = await runtime.advance(delta: 0.1)
     let after = await runtime.procurementFlightDiagnosticFacts()
@@ -577,6 +578,7 @@ struct ScriptProcurementFlightDiagnosticFacts: Sendable {
   let live: Bool
   let paused: Bool
   let scalars: [String: String]
+  var defence: StationDefenceDiagnosticSnapshot? = nil
 }
 
 /// Opt-in expiry failure text; fixed scalar ceilings include the assertion's newline budget.
@@ -613,6 +615,25 @@ actor ScriptProcurementFlightDiagnostic {
   private let label: String
   private var emitted = false
   private var lastLive: [String: String]?
+  private var defenceSamples: [[String: String]] = []
+  private var defenceSamplesDropped = 0
+  private var defenceIntervalSkipped = 0
+  private var defenceValuesTruncated = 0
+  private var lastDefenceSampleTime: Double?
+  private var lastDefenceStamp: String?
+  private var lastDefencePlayer: String?
+  private var lastDefencePhase: String?
+  private var lastDefenceActor: String?
+  private var defencePhaseChanges = 0
+  private var defenceActorChanges = 0
+  private var latestCombatTrace: GameplayCombatTrace?
+  private var combatEpoch: UUID?
+  private var lastCombatIncident: UInt64 = 0
+  private var acceptedCounts: [String: Int] = [:]
+  private var audioEpoch: UUID?
+  private var lastAudioID: UInt64 = 0
+  private var laserDischarges = 0
+  private var audioEventsDropped = 0
   var active: Bool { !emitted }
 
   init(label: String = "procurement-partial") {
@@ -657,6 +678,9 @@ actor ScriptProcurementFlightDiagnostic {
     after: ScriptProcurementFlightDiagnosticFacts, phase: String, step: Int
   ) {
     guard !emitted else { return }
+    observeDefence(before.defence, phase: phase, step: step)
+    let failed = !after.docked && (!after.live || after.paused)
+    observeDefence(after.defence, phase: phase, step: step + 1, force: failed)
     if before.live && !before.paused {
       var scalars = before.scalars
       scalars["phase"] = phase
@@ -664,6 +688,7 @@ actor ScriptProcurementFlightDiagnostic {
       lastLive = scalars
     }
     guard !after.docked, !after.live || after.paused else { return }
+    defer { emitDefenceTrace() }
     emitted = true
     var failure = after.scalars
     failure["phase"] = phase
@@ -692,6 +717,152 @@ actor ScriptProcurementFlightDiagnostic {
       print(text)
     } catch {
       print("PROCUREMENT_FLIGHT_DIAGNOSTIC_REFUSED encoding")
+    }
+  }
+
+  private func observeDefence(
+    _ snapshot: StationDefenceDiagnosticSnapshot?, phase: String, step: Int, force: Bool = false
+  ) {
+    guard let snapshot else { return }
+    let player = snapshot.scalars["player"] ?? "nil"
+    if player != lastDefencePlayer {
+      defenceSamplesDropped += defenceSamples.count
+      defenceSamples.removeAll(keepingCapacity: true)
+      lastDefenceSampleTime = nil
+      lastDefenceStamp = nil
+      lastDefencePhase = nil
+      lastDefenceActor = nil
+      defencePhaseChanges = 0
+      defenceActorChanges = 0
+      acceptedCounts = [:]
+      laserDischarges = 0
+      audioEventsDropped = 0
+      lastDefencePlayer = player
+    }
+    if combatEpoch != snapshot.combat.epoch {
+      combatEpoch = snapshot.combat.epoch
+      lastCombatIncident = 0
+    }
+    for incident in snapshot.combat.incidents where incident.id > lastCombatIncident {
+      let owner = ScriptProcurementSelectionDiagnostic.actor(incident.origin.owner)
+      let victim = ScriptProcurementSelectionDiagnostic.actor(incident.victim)
+      let relation = owner == player ? "playerOwned" : (victim == player ? "playerVictim" : "other")
+      let key = relation + "/" + incident.kind.rawValue + "/" + incident.outcome.rawValue
+      acceptedCounts[key, default: 0] += 1
+    }
+    lastCombatIncident = max(lastCombatIncident, snapshot.combat.incidents.last?.id ?? 0)
+    latestCombatTrace = snapshot.combat
+    if audioEpoch == nil {
+      audioEpoch = snapshot.audioEpoch
+      lastAudioID = snapshot.audio.last?.id ?? 0
+    } else {
+      if audioEpoch != snapshot.audioEpoch {
+        audioEpoch = snapshot.audioEpoch
+        lastAudioID = 0
+      }
+      if let first = snapshot.audio.first, first.id > lastAudioID,
+        first.id - lastAudioID > 1
+      {
+        audioEventsDropped += Int(clamping: first.id - lastAudioID - 1)
+      }
+      laserDischarges +=
+        snapshot.audio.filter { $0.id > lastAudioID && $0.tool == .combatLaser }.count
+      lastAudioID = max(lastAudioID, snapshot.audio.last?.id ?? 0)
+    }
+    let stamp = (snapshot.scalars["revision"] ?? "nil") + "/" + String(snapshot.physicalTime)
+    if stamp == lastDefenceStamp && !force { return }
+    lastDefenceStamp = stamp
+    let currentPhase = snapshot.scalars["phase"]
+    let currentActor = snapshot.scalars["combatActor"]
+    if let previous = lastDefencePhase, previous != currentPhase { defencePhaseChanges += 1 }
+    if let previous = lastDefenceActor, previous != currentActor { defenceActorChanges += 1 }
+    lastDefencePhase = currentPhase
+    lastDefenceActor = currentActor
+    if !force, let time = lastDefenceSampleTime, snapshot.physicalTime >= time,
+      snapshot.physicalTime - time < 0.5 - 1e-8
+    {
+      defenceIntervalSkipped += 1
+      return
+    }
+    lastDefenceSampleTime = snapshot.physicalTime
+    var values = snapshot.scalars
+    values["journeyPhase"] = phase
+    values["journeyStep"] = String(step)
+    for (key, value) in values {
+      if value.utf8.count > 256 { defenceValuesTruncated += 1 }
+      values[key] = String(
+        decoding: value.utf8.prefix(256).map { (32...126).contains($0) ? $0 : 63 }, as: UTF8.self)
+    }
+    defenceSamples.append(values)
+    if defenceSamples.count > 64 {
+      defenceSamplesDropped += defenceSamples.count - 64
+      defenceSamples.removeFirst(defenceSamples.count - 64)
+    }
+  }
+
+  private func emitDefenceTrace() {
+    guard let trace = latestCombatTrace else { return }
+    let columns = defenceSamples.first.map { $0.keys.sorted() } ?? []
+    var samples = defenceSamples.map { sample in columns.map { sample[$0] ?? "nil" } }
+    let incidentColumns = [
+      "incident", "time", "emission", "emittedAt", "owner", "victim", "kind", "outcome", "laser",
+      "mount", "ordnance", "ownerLegal", "victimLegal", "positionWorld",
+    ]
+    var incidents = trace.incidents.map { incident -> [String] in
+      [
+        String(incident.id), String(incident.physicalTime), String(incident.origin.emissionID),
+        String(incident.origin.emittedAt),
+        ScriptProcurementSelectionDiagnostic.actor(incident.origin.owner),
+        ScriptProcurementSelectionDiagnostic.actor(incident.victim), incident.kind.rawValue,
+        incident.outcome.rawValue, incident.laser.map { String(describing: $0) } ?? "nil",
+        incident.mount?.rawValue ?? "nil",
+        ScriptProcurementSelectionDiagnostic.actor(incident.origin.ordnance),
+        String(incident.origin.ownerLegalAtEmission.value),
+        incident.victimLegalBeforeAttack.map { String($0.value) } ?? "nil",
+        "\(incident.position.x),\(incident.position.y),\(incident.position.z)",
+      ]
+    }
+    var outputSamplesDropped = 0
+    var outputIncidentsDropped = 0
+    while true {
+      let payload: [String: Any] = [
+        "kind": "station-defence-observational-trace", "fixture": label,
+        "coverage":
+          "common GameplayCombat accepted incidents only; mount/law and current combat-position/bearing observations are prospective, not accepted shots, hits or cached steering aim",
+        "combatEpoch": trace.epoch.uuidString, "player": lastDefencePlayer ?? "nil",
+        "columns": columns, "samples": samples, "incidentColumns": incidentColumns,
+        "acceptedIncidents": incidents, "acceptedCountsObservedCurrentPlayerVisit": acceptedCounts,
+        "nativeLaserDischargesCurrentPlayerVisit": laserDischarges,
+        "phaseChangesCurrentPlayerVisit": defencePhaseChanges,
+        "combatActorChangesCurrentPlayerVisit": defenceActorChanges,
+        "sampleIntervalSeconds": 0.5, "sampleCapacity": 64, "incidentCapacity": 128,
+        "samplesDropped": defenceSamplesDropped, "sampleIntervalSkipped": defenceIntervalSkipped,
+        "valuesTruncated": defenceValuesTruncated, "recorderIncidentsDropped": trace.dropped,
+        "audioEventsDropped": audioEventsDropped, "outputSamplesDropped": outputSamplesDropped,
+        "outputIncidentsDropped": outputIncidentsDropped,
+      ]
+      guard
+        let data = try? JSONSerialization.data(
+          withJSONObject: payload, options: [.sortedKeys, .withoutEscapingSlashes])
+      else {
+        print("STATION_DEFENCE_TRACE_REFUSED encoding")
+        return
+      }
+      if data.count < 65536 {
+        print(String(decoding: data, as: UTF8.self))
+        return
+      }
+      // Keep the newest causal window and explicitly count every output-budget omission.
+      if !samples.isEmpty {
+        samples.removeFirst()
+        outputSamplesDropped += 1
+      } else if !incidents.isEmpty {
+        incidents.removeFirst()
+        outputIncidentsDropped += 1
+      } else {
+        print("STATION_DEFENCE_TRACE_REFUSED limit=65536")
+        return
+      }
     }
   }
 }
@@ -977,7 +1148,9 @@ extension GameRuntime {
       ]
       scalars.merge(pilotScalars) { _, new in new }
     }
-    return .init(docked: facts.docked, live: facts.live, paused: facts.paused, scalars: scalars)
+    return .init(
+      docked: facts.docked, live: facts.live, paused: facts.paused, scalars: scalars,
+      defence: game.stationDefenceDiagnosticSnapshot())
   }
   /// At-failure reads only: no actor adoption, key, advance, publication or forced target.
   func procurementSelectionFailureDetail(

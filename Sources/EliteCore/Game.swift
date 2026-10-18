@@ -507,6 +507,7 @@ public struct Game: Sendable {
   public var laserHeat = 0.0
   public var laserFlash = 0.0
   public var dischargeAudio = DischargeAudioState()
+  var gameplayCombatTrace: GameplayCombatTrace?
   public var altitude = 1.0
   public var celestials: [CelestialBody] = []
   public var solarScoopState: SolarScoopState = .inactive
@@ -575,6 +576,7 @@ public struct Game: Sendable {
   public mutating func load(_ value: Commander) -> Bool {
     var candidate = self
     candidate.stationAutoDefence = nil
+    candidate.gameplayCombatTrace = nil
     guard candidate.loadCommander(value) else { return false }
     self = candidate
     return true
@@ -1899,6 +1901,7 @@ public actor GameRuntime {
     var prepared = game
     prepared.invalidateNativeStationAuthority()
     prepared.stationAutoDefence = nil
+    prepared.gameplayCombatTrace = nil
     prepared.inventoryContextEpoch = .init()
     if (try? prepared.commander.prepareEquipment()) != nil {
       prepared.commander.mirrorFittedEquipment()
