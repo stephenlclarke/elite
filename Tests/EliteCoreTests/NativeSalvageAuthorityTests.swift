@@ -7,7 +7,8 @@ struct NativeSalvageAuthorityTests {
   @Test(arguments: ["owner", "hull", "epoch", "actor", "section", "source", "cycle"])
   func staleHotAuthorityRefusesWorkAndEveryColdFlushWithoutChangingCustody(change: String) throws {
     var (game, _) = try NativePagedSalvageFixture.game()
-    #expect(game.fireSalvageCutter(delta: 0.1))
+    let observedCutterResult = game.fireSalvageCutter(delta: 0.1)
+    #expect(observedCutterResult)
     let original = try #require(game.nativeSalvageWork)
     let body = try #require(game.bodies.first { $0.physical?.identity == original.actor })
     let source = original.plan.source
@@ -51,14 +52,20 @@ struct NativeSalvageAuthorityTests {
     let commander = game.commander
     let energy = game.energy
     let heat = game.laserHeat
-    #expect(!game.beginNativeSalvageWork(body: body, section: original.section, source: source))
-    #expect(!game.flushNativeSalvageWork())
-    #expect(game.observeNativeSalvageWreck(body))
-    #expect(!game.flushNativeSalvageWrecks())
+    let observedWorkBegin = game.beginNativeSalvageWork(
+      body: body, section: original.section, source: source)
+    #expect(!observedWorkBegin)
+    let observedWorkFlush = game.flushNativeSalvageWork()
+    #expect(!observedWorkFlush)
+    let observedWreck = game.observeNativeSalvageWreck(body)
+    #expect(observedWreck)
+    let observedWreckFlush = game.flushNativeSalvageWrecks()
+    #expect(!observedWreckFlush)
     #expect(game.commander == commander && game.energy == energy && game.laserHeat == heat)
     #expect(game.nativeSalvageWork?.cycle == stale.cycle)
     game.nativeSalvageWork = original
-    #expect(game.flushNativeSalvageWork())
+    let observedWorkFlush2 = game.flushNativeSalvageWork()
+    #expect(observedWorkFlush2)
   }
 
   @Test func freshFactorySealsTheWholeOriginalLedgerAndNeverClampsExcessOldPartial() throws {
@@ -74,12 +81,13 @@ struct NativeSalvageAuthorityTests {
         wreck: site.identity, section: section, source: source))
     #expect(facts.matches(original))
     var changed = original
+    let observedWreckUpdate = changed.updateWreck(
+      identity: site.identity,
+      motion: .init(
+        pose: .init(position: .init(1, 0, 0)), velocity: .init(0, 0, 0),
+        angularVelocity: .init(0, 0, 0), energy: 100))
     #expect(
-      changed.updateWreck(
-        identity: site.identity,
-        motion: .init(
-          pose: .init(position: .init(1, 0, 0)), velocity: .init(0, 0, 0),
-          angularVelocity: .init(0, 0, 0), energy: 100)))
+      observedWreckUpdate)
     #expect(!facts.matches(changed))
     let shorter = SalvageSectionProfile(
       index: section.index, kind: section.kind, localPosition: section.localPosition,
@@ -87,11 +95,12 @@ struct NativeSalvageAuthorityTests {
       structural: section.structural, technologyDefinitionIDs: section.technologyDefinitionIDs,
       sourceFaceIndex: section.sourceFaceIndex)
     var partial = original
+    let observedWorkResult = partial.advance(
+      wreck: site.identity, section: section, pose: .init(),
+      velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
+      elapsed: 0.25, operation: 1, conditions: NativePagedSalvageFixture.permitted)
     #expect(
-      partial.advance(
-        wreck: site.identity, section: section, pose: .init(),
-        velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
-        elapsed: 0.25, operation: 1, conditions: NativePagedSalvageFixture.permitted)
+      observedWorkResult
         == .progress(seconds: 0.25, required: section.workSeconds))
     let before = partial
     #expect(

@@ -19,7 +19,8 @@ struct NativePreinspectionRuntimeTests {
       ownership: .abandoned)
     var operation: UInt64 = 0
     for section in profile.sections {
-      operation = try #require(game.commander.flightSimulation.allocateIncident())
+      let allocatedIncident = game.commander.flightSimulation.allocateIncident()
+      operation = try #require(allocatedIncident)
       let result = game.commander.salvageLedger.advance(
         wreck: site.identity, section: section,
         pose: game.modelPose(of: body), velocity: body.physical!.velocity,
@@ -27,9 +28,10 @@ struct NativePreinspectionRuntimeTests {
         elapsed: 0.25, operation: operation, conditions: NativePagedSalvageFixture.permitted)
       #expect(result == .progress(seconds: 0.25, required: section.workSeconds))
       if inspected {
+        let observedInspection = game.commander.salvageLedger.inspectLoot(
+          wreck: site.identity, section: section, source: source)
         #expect(
-          game.commander.salvageLedger.inspectLoot(
-            wreck: site.identity, section: section, source: source) != nil)
+          observedInspection != nil)
       }
     }
     game.commander.salvageLedger = try NativePagedSalvageFixture.fullOrdinaryLedger(
@@ -39,7 +41,8 @@ struct NativePreinspectionRuntimeTests {
     let original = game.commander.salvageLedger
     let energy = game.energy
     let heat = game.laserHeat
-    #expect(game.fireSalvageCutter(delta: 0.1))
+    let observedCutterResult = game.fireSalvageCutter(delta: 0.1)
+    #expect(observedCutterResult)
     let hot = try #require(game.nativeSalvageWork)
     #expect(abs(hot.cycle.currentWorkSeconds - 0.35) < 1e-12)
     #expect(hot.cycle.damagedTechnology == (tool == .miningLaser))
@@ -77,7 +80,9 @@ struct NativePreinspectionRuntimeTests {
       #expect(record.preinspection?.damagedTechnology == (tool == .miningLaser))
       #expect(record.initialProgress.materialKind == nil && record.initialProgress.nextLot == 0)
       var capped = original
-      #expect(capped.inspectLoot(wreck: site.identity, section: hot.section, source: source) == nil)
+      let observedInspection2 = capped.inspectLoot(
+        wreck: site.identity, section: hot.section, source: source)
+      #expect(observedInspection2 == nil)
       #expect(capped == original)
     }
     #expect(game.commander.salvageLedger == expectedOld)
@@ -86,7 +91,8 @@ struct NativePreinspectionRuntimeTests {
     let file = folder.appendingPathComponent("commander.json")
     // Preserve this direct cutter observation before the new actor invalidates
     // its predecessor's scene epoch; no stale hot authority is carried across.
-    #expect(game.flushNativeSalvageWork())
+    let observedWorkFlush = game.flushNativeSalvageWork()
+    #expect(observedWorkFlush)
     let runtime = GameRuntime(game: game)
     try await runtime.save(to: file)
     let saved = await runtime.snapshot()
@@ -110,6 +116,7 @@ struct NativePreinspectionRuntimeTests {
       loaded.commander.alienStorageState?.current.salvage.native.works[hot.cycle.inspection.id]
         == hot.cycle)
     #expect(loaded.commander.salvageLedger == expectedOld)
-    #expect(try Data(contentsOf: file) == bytes)
+    let observedFileBytes = try Data(contentsOf: file)
+    #expect(observedFileBytes == bytes)
   }
 }

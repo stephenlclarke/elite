@@ -53,7 +53,8 @@ enum NativePagedSalvageFixture {
           let proposal = try #require(
             ledger.prepareSettlement(
               command: UUID(), items: [lots[0].identity], action: .sell))
-          #expect(ledger.commitSettlement(proposal) == .committed(proposal))
+          let observedSettlement = ledger.commitSettlement(proposal)
+          #expect(observedSettlement == .committed(proposal))
         }
       }
     }
@@ -63,34 +64,39 @@ enum NativePagedSalvageFixture {
     let source = SalvageLootSource(
       roles: [.asteroid], legalValue: 0, economy: 0, technology: 0, ownership: .abandoned)
     for ordinal in firstPlan..<(firstPlan + SalvageLedger.maximumPlans - retainedPlans) {
-      #expect(ledger.inspectLoot(wreck: wreck(ordinal), section: section, source: source) != nil)
+      let observedInspection = ledger.inspectLoot(
+        wreck: wreck(ordinal), section: section, source: source)
+      #expect(observedInspection != nil)
     }
     let firstPartial = firstPlan + SalvageLedger.maximumPlans - retainedPlans
     for ordinal in firstPartial..<(firstPartial + SalvageLedger.maximumPartial - retainedPartial) {
       operation += 1
+      let observedWorkResult = ledger.advance(
+        wreck: wreck(ordinal), section: section, pose: .init(), velocity: .init(0, 0, 0),
+        angularVelocity: .init(0, 0, 0), tool: .cutter, elapsed: 0.1,
+        operation: operation, conditions: permitted)
       #expect(
-        ledger.advance(
-          wreck: wreck(ordinal), section: section, pose: .init(), velocity: .init(0, 0, 0),
-          angularVelocity: .init(0, 0, 0), tool: .cutter, elapsed: 0.1,
-          operation: operation, conditions: permitted) == .progress(seconds: 0.1, required: 1))
+        observedWorkResult == .progress(seconds: 0.1, required: 1))
     }
     let firstMotion = firstPartial + SalvageLedger.maximumPartial - retainedPartial
     for ordinal in firstMotion..<(SalvageLedger.maximumWrecks - retainedWrecks) {
+      let observedWreckUpdate = ledger.updateWreck(
+        identity: wreck(ordinal),
+        motion: .init(
+          pose: .init(position: .init(Double(ordinal), 0, 0)), velocity: .init(0, 0, 0),
+          angularVelocity: .init(0, 0, 0), energy: 10))
       #expect(
-        ledger.updateWreck(
-          identity: wreck(ordinal),
-          motion: .init(
-            pose: .init(position: .init(Double(ordinal), 0, 0)), velocity: .init(0, 0, 0),
-            angularVelocity: .init(0, 0, 0), energy: 10)))
+        observedWreckUpdate)
     }
     #expect(ledger.validState)
     #expect(ledger.pendingLots.count == SalvageLedger.maximumPending)
     #expect(ledger.inventory.count == SalvageLedger.maximumInventory)
+    let observedWreckUpdate2 = ledger.updateWreck(
+      identity: wreck(SalvageLedger.maximumWrecks),
+      motion: .init(
+        pose: .init(), velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), energy: 10))
     #expect(
-      !ledger.updateWreck(
-        identity: wreck(SalvageLedger.maximumWrecks),
-        motion: .init(
-          pose: .init(), velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), energy: 10)))
+      !observedWreckUpdate2)
     return ledger
   }
 
