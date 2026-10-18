@@ -412,3 +412,69 @@ func hullSweepResolvedThinClosedHullPreservesWindingAndInteriorRefusal(reversed:
         faces: [[0, 1, 2, 3]], preserveWinding: true))
   }
 }
+
+private func hsConcaveThinBridge(scale: Double, translation: Vector3, reversed: Bool) -> Mesh {
+  let delta = 0.000000001
+  let outline: [(Double, Double)] = [
+    (-1, -1), (1, -1), (1, 0.5), (3, 0.5), (3, -1), (3 + delta, -1),
+    (3 + delta, 1), (-1, 1),
+  ]
+  let caps = [[0, 1, 2], [0, 2, 7], [3, 4, 5], [3, 5, 6], [2, 3, 6], [2, 6, 7]]
+  let vertices = [-1.0, 1.0].flatMap { v in
+    outline.map { point in
+      let (s, u) = point
+      Vector3(s, 0.371 * s + u, 0.529 * s + v) * scale + translation
+    }
+  }
+  var faces = caps.map { Array($0.reversed()) } + caps.map { $0.map { $0 + 8 } }
+  for i in outline.indices {
+    let j = (i + 1) % outline.count
+    faces += [[i, j, j + 8], [i, j + 8, i + 8]]
+  }
+  return Mesh(
+    vertices: vertices, faces: reversed ? faces.map { Array($0.reversed()) } : faces,
+    preserveWinding: true)
+}
+
+@Test(arguments: [0.25, 1.0, 4.0])
+func hullSweepConcaveThinBridgeCannotHideInsideBroadArmBehindMergedCrossings(scale: Double)
+  throws
+{
+  // The first fixed containment ray hits three broad plates at t=1,3,3+1e-9.
+  // Thin connecting triangles are elsewhere in the same connected component. Conditioning
+  // only the triangles hit by the ray merges its last two real crossings into false parity.
+  for translation in [Vector3(0, 0, 0), .init(128, -64, 32)] {
+    for reversed in [false, true] {
+      let mesh = hsConcaveThinBridge(scale: scale, translation: translation, reversed: reversed)
+      #expect(mesh.vertices.count == 16 && mesh.faces.count == 28)
+      var edges: [[Int]: Int] = [:]
+      for face in mesh.faces {
+        for index in face.indices {
+          let edge = [face[index], face[(index + 1) % face.count]].sorted()
+          edges[edge, default: 0] += 1
+        }
+      }
+      #expect(edges.count == 42 && edges.values.allSatisfy { $0 == 2 })
+      let hull = try PreparedHull(mesh: mesh)
+      #expect(hull.triangleCount == 28 && hull.isClosed)
+      let point = Vector3(0, 0.1, 0.2) * scale + translation
+      let inside = HullSweepSafety.validatePlacement(
+        center: point, radius: 0.01 * scale, hull: hull, pose: .init())
+      #expect(!inside.safe)
+      #expect(inside.failure == .insideHull || inside.failure == .unproven)
+      let player = try PreparedHull(mesh: hsBox(Vector3(0.01, 0.01, 0.01) * scale))
+      for exact in [false, true] {
+        let pose = ShipPose(position: point)
+        let stationary = HullSceneMotion(
+          start: pose, end: pose, initialVelocity: .init(0, 0, 0),
+          acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+          duration: 0.1, playerRadius: player.radius)
+        let result = HullSweepSafety.validateSceneMotion(
+          stationary, player: exact ? player : nil,
+          obstacles: [.init(hull: hull, pose: .init())])
+        #expect(!result.safe)
+        #expect(result.failure == .insideHull || result.failure == .unproven)
+      }
+    }
+  }
+}

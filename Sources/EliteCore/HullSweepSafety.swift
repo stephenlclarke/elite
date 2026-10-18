@@ -158,7 +158,8 @@ public struct PreparedHull: Sendable {
     triangleCount = triangles.count
     radius = vertices.map(\.length).max() ?? 0
     guard radius.isFinite, radius > 0 else { throw HullSweepFailure.invalidGeometry }
-    components = sweepComponents(vertices: vertices, faces: faces, triangles: faceTriangles)
+    components = sweepComponents(
+      vertices: vertices, faces: faces, triangles: faceTriangles, geometry: triangles)
     isClosed = components.allSatisfy(\.closed)
     self.nodes = sweepBVH(triangles)
   }
@@ -471,11 +472,14 @@ public enum HullSweepSafety {
     var hits: [(distance: Double, uncertainty: Double, conditioned: Bool)] = []
     for index in component.triangles {
       try work.triangle()
-      if let hit = sweepRay(point, direction: direction, triangle: hull.triangles[index]) {
+      if let hit = sweepRay(
+        point, direction: direction, triangle: hull.triangles[index],
+        conditioned: component.conditioned)
+      {
         if hit.boundary {
           return nil
         }
-        hits.append((hit.distance, hit.uncertainty, hull.triangles[index].conditioned))
+        hits.append((hit.distance, hit.uncertainty, component.conditioned))
       }
     }
     hits.sort { $0.distance < $1.distance }
@@ -859,10 +863,11 @@ private struct SweepComponent: Sendable {
   let triangles: [Int]
   let closed: Bool
   let representative: Vector3
+  let conditioned: Bool
 }
 
 private func sweepComponents(
-  vertices: [Vector3], faces: [[Int]], triangles: [[Int]]
+  vertices: [Vector3], faces: [[Int]], triangles: [[Int]], geometry: [SweepTriangle]
 ) -> [SweepComponent] {
   var edges: [SweepEdge: [Int]] = [:]
   for (face, indices) in faces.enumerated() {
@@ -902,9 +907,13 @@ private func sweepComponents(
         edges[.init(indices[$0], indices[($0 + 1) % indices.count])]?.count == 2
       }
     }
+    let componentTriangles = members.flatMap { triangles[$0] }
+    // Thin connecting faces can make broad opposing plates part of a newly supported
+    // solid. Parity must condition the whole component even when the ray misses its bridge.
+    let conditioned = componentTriangles.contains { geometry[$0].conditioned }
     return .init(
-      bounds: bounds, triangles: members.flatMap { triangles[$0] }, closed: closed,
-      representative: points[0])
+      bounds: bounds, triangles: componentTriangles, closed: closed,
+      representative: points[0], conditioned: conditioned)
   }
 }
 
