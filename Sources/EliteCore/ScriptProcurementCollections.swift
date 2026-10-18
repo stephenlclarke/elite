@@ -186,6 +186,25 @@ extension Game {
 }
 
 extension Commander {
+  /// Historical contacts must belong to this retained native world. A later launch,
+  /// docking or reload does not replace an earlier genuine lot's arrival evidence.
+  private func procurementHistoricalContextValid(
+    _ context: ScriptEventContext, requiresDock: Bool
+  ) -> Bool {
+    guard context.valid, context.localSeconds <= scriptState.localSeconds,
+      context.flightSeconds <= scriptState.flightSeconds,
+      context.calendarSeconds <= scriptState.calendarSeconds,
+      context.transitSeconds <= scriptState.transitSeconds
+    else { return false }
+    guard let dock = context.nativeMainDock else { return !requiresDock }
+    guard let owner = equipmentOwnerID, let world = nativeStations else { return false }
+    return dock.commanderOwner == owner && world.ledger.world == owner
+      && dock.station.world == world.ledger.world && world.mainStations.contains(dock.station)
+      && dock.sequence < world.nextMainDockSequence
+      && dock.actor.visit <= flightSimulation.visit
+      && dock.calendarSeconds <= context.calendarSeconds
+  }
+
   func procurementStateValid(_ state: ScriptInstance) -> Bool {
     guard let job = state.contract, ScriptProcurementPlan.isMarked(job.offer.parameters) else {
       return true
@@ -202,12 +221,17 @@ extension Commander {
       collection.lots.values.allSatisfy({
         $0.dialogue == plan.deliveryContact && $0.cause.nativeMainDock != nil
           && $0.cause.nativeMainDock == $0.committed.nativeMainDock
+          && procurementHistoricalContextValid($0.cause, requiresDock: true)
+          && procurementHistoricalContextValid($0.committed, requiresDock: true)
       })
     else { return false }
     guard state.outcome != .active else { return state.completionReceipt == nil }
     guard let receipt = state.completionReceipt, let cause = receipt.cause,
       receipt.valid(for: state, engine: scriptState), let due = job.deadline,
-      let settled = job.settledAt
+      let settled = job.settledAt,
+      procurementHistoricalContextValid(cause, requiresDock: state.outcome != .failed),
+      procurementHistoricalContextValid(
+        receipt.committed, requiresDock: state.outcome != .failed)
     else { return false }
     switch state.outcome {
     case .complete:

@@ -10,9 +10,13 @@ Four new source files own bounded plan parsing/generation, closed declaration po
 
 Direct `Commander.contractsValid` validation replays the frozen native proof and joins owner, job, content identity, collection and receipt. The no-due expiry path reads only current active contract markers and deadlines; candidate and receipt buffers are allocated in a separate cold finalizer. Ordinary literal collection equality, G02/RRS branches and legacy nil deadline behavior remain intact.
 
+The source-review repair marks the Gallery launch helper mutating and validates every procurement historical contact context against the owning native world, retained main station, issued dock-sequence high-water mark and existing clock/visit ceilings. These checks cover partial/final lots and terminal cause/committed facts when present; earlier genuine receipts need not equal the current dock.
+
 ## Tests and verification
 
 New test source covers independently frozen unsigned draw/commodity fixtures, actual encoder limits, substitution rejection, native capacity arithmetic, direct current-container rejection, story-flag refusal, actual purchased goods/travel/dock/final receipt, real partial lots with failed final publication/retry, expiry through actual repeated travel, stale reload context and isolated Gallery entry. Runtime fixtures keep fixed market, route and survival premises; they fail explicitly rather than inject goods, health or clocks. No compiler, test discovery, build, runtime, native, media or Sonar job was run. Static checks and exact protected-source evidence are recorded in the handoff packet.
+
+Additional historical-receipt test source obtains actual partial, completed and abandoned jobs, performs a subsequent real launch/dock, then checks genuine history roundtrips. Twelve paired forgeries alter owner/world, unissued sequence, future visit or future dock clock consistently in lot and terminal facts. Direct writer, checksummed current-container reader and runtime load must refuse them while conserving live state and original files. These tests remain uncompiled and unexecuted.
 
 ## Compatibility and follow-ups
 

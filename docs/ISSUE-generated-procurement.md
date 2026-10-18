@@ -12,6 +12,8 @@ Implement one installable procurement variant from `PROJECT-SPACE-G03-1`, using 
 
 Freeze exact native reach, seed, six separate route/commodity draws, selected route, commodity, quantity, terms and owning content. Validate the same proof on direct current container reads/writes. Materialize one declared collection template centrally. Require the actual native destination dock and fresh confirmation; preserve partial deliveries and pay once after the final real lot. Expiry and abandonment are native zero-payment transitions.
 
+Saved partial and terminal contact facts must also join the commander's retained native world, original main-station identity, issued dock sequence and actual clock/visit ceilings. A structurally valid foreign or not-yet-issued paired receipt must fail direct container reads and writes. Genuine historical arrivals remain valid after later launches and dockings.
+
 ## Validation
 
 The isolated source-authoring allocation permits static formatting/lint and manifest inspection only. Meaningful policy, direct-container, real market/travel/dock/receipt, writer-failure and Gallery test source is included; none has been run. The native fixture keeps normal actors, clocks, resources and route controls and fails if a fixed market/route premise is unavailable. Focused execution, sanitizer/leak/coverage and `make ci` remain G1-owned.
