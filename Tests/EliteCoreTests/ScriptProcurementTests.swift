@@ -32,10 +32,14 @@ import Testing
   await runtime.key("contacts-open")
   let shown = await runtime.snapshot()
   try #require(shown.scriptPresentedDialogue?.id == "procurement-abandon")
-  await runtime.key("right")
+  let backSelected = !shown.scriptConfirmSelected
+  try #require(backSelected)
+  let shownFiles = try ScriptFinanceTestFixture.files(parent)
   await runtime.key("return")
   let backed = await runtime.snapshot()
   #expect(backed.commander == shown.commander)
+  let backedFiles = try ScriptFinanceTestFixture.files(parent)
+  #expect(backedFiles == shownFiles)
   await ScriptProcurementFixture.contact(runtime)
   let abandoned = await runtime.snapshot()
   let state = try #require(abandoned.commander.scriptState.instances[id])
@@ -132,7 +136,8 @@ import Testing
 @Test func procurementActualPartialAndFailedFinalPublicationPreserveEarlierReceipts() async throws {
   let fixture = try ScriptProcurementFixture()
   defer { fixture.clean() }
-  let runtime = try await fixture.nativeRuntime()
+  let diagnostic = ScriptProcurementFlightDiagnostic()
+  let runtime = try await fixture.nativeRuntime(diagnostic: diagnostic)
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let generated = await runtime.snapshot()
   let offer = try #require(generated.commander.contracts.boards[key]?.offers[1])
@@ -145,7 +150,7 @@ import Testing
   try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path)
+  try await ScriptProcurementFixture.travel(runtime, path: plan.path, diagnostic: diagnostic)
   await ScriptProcurementFixture.contact(runtime)
   let partial = await runtime.snapshot()
   let first = try #require(
