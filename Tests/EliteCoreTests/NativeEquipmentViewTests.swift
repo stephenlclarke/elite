@@ -394,15 +394,34 @@ extension NativeViewTests {
         y: rows.listTop + Double(row) * rows.row, width: rows.contentWidth - 32, height: rows.row))
     try fixture.verifyUnchanged(before)
     _ = try fixture.capture("shop-duplicate-return", scale: 1)
+    let beforePurchase = fixture.view.game
+    let item = try #require(Equipment.all.first { $0.name == "Fuel Scoops" })
+    let price = beforePurchase.shopPrice(item)
     try enqueue(36, "\r")
     try enqueue(36, "\r")
     #expect(fixture.view.pendingEquipmentPurchases.count == 2)
+    let originalContext = try #require(fixture.view.pendingEquipmentPurchases.first)
+    #expect(fixture.view.pendingEquipmentPurchases == [originalContext, originalContext])
     await fixture.delegate.processPendingCommands(in: fixture.view)
     let after = fixture.view.game.commander
     #expect(after.equipmentPurchaseHistory?.paid.count == paid + 1)
     #expect(after.equipmentInventory?.items.filter { $0.node.key == "Fuel Scoops" }.count == 1)
     #expect(after.credits < commander.credits)
-    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+    let history = try #require(after.equipmentPurchaseHistory)
+    let oldHistory = try #require(beforePurchase.commander.equipmentPurchaseHistory)
+    #expect(Array(history.paid.prefix(paid)) == oldHistory.paid)
+    let receipt = try #require(history.paid.last)
+    // Only these allocated identities come from the result; every semantic fact comes from before.
+    let expected = try independentNativePurchaseExpectation(
+      before: beforePurchase, item: item, price: price,
+      transaction: receipt.transaction, newItem: receipt.binding.request.newItem)
+    #expect(receipt == expected.commander.equipmentPurchaseHistory?.paid.last)
+    #expect(after.credits == beforePurchase.commander.credits - price)
+    let checkpoint = try await verifyNativeEquipmentPublication(
+      fixture: fixture, expected: expected)
+    try await verifyNativeEquipmentPostcommitRefusal(
+      fixture: fixture, intent: .purchase(originalContext), expected: expected,
+      checkpoint: checkpoint)
     #expect(fixture.delegate.saves.activeURL == fixture.save)
   }
 
@@ -621,6 +640,9 @@ extension NativeViewTests {
     _ = try fixture.capture("inventory-after-focus", scale: 1)
     let chosen = try #require(fixture.view.paintedInventoryInteraction?.primary)
     #expect(chosen != oldPrimary)
+    let beforeBytes = try nativeEquipmentBytes(before)
+    try fixture.verifyUnchanged(beforeBytes)
+    let expected = try independentNativeFitExpectation(before: fixture.view.game, command: chosen)
     try fixture.queueInventoryKey(36, text: "\r")
     try fixture.queueInventoryKey(36, text: "\r")
     #expect(fixture.view.pendingInventoryCommands == [chosen, chosen])
@@ -636,7 +658,10 @@ extension NativeViewTests {
         .revision + 1)
     #expect(fixture.view.game.commander.credits == before.credits)
     #expect(fixture.view.game.commander.equipmentPurchaseHistory == before.equipmentPurchaseHistory)
-    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+    let checkpoint = try await verifyNativeEquipmentPublication(
+      fixture: fixture, expected: expected)
+    try await verifyNativeEquipmentPostcommitRefusal(
+      fixture: fixture, intent: .inventory(chosen), expected: expected, checkpoint: checkpoint)
   }
 
   @MainActor @Test func nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext() async throws
@@ -675,20 +700,29 @@ extension NativeViewTests {
     let loaded = fixture.view.game.commander
     let acceptedOld = await fixture.delegate.runtime.inventoryCommand(control.command)
     #expect(!acceptedOld)
-    #expect(await fixture.delegate.runtime.snapshot().commander == loaded)
+    let refusedSnapshot = await fixture.delegate.runtime.snapshot()
+    #expect(refusedSnapshot.commander == loaded)
+    let loadedBytes = try nativeEquipmentBytes(loaded)
+    try fixture.verifyUnchanged(loadedBytes)
     _ = try fixture.capture("inventory-restored-paint", scale: 1)
     let fresh = try #require(
       fixture.view.paintedInventoryInteraction?.controls.first {
         if case .fit = $0.command.action { return true }
         return false
       })
+    let expected = try independentNativeFitExpectation(
+      before: fixture.view.game, command: fresh.command)
     try fixture.queueInventoryMouse(fresh.bounds)
     #expect(fixture.view.pendingInventoryCommands == [fresh.command])
     await fixture.delegate.processPendingCommands(in: fixture.view)
     if case .fit(let item, let slot) = fresh.command.action {
       #expect(fixture.view.game.commander.fittedEquipment(at: slot)?.id == item.id)
     }
-    #expect(try Data(contentsOf: fixture.save) == fixture.originalSave)
+    let checkpoint = try await verifyNativeEquipmentPublication(
+      fixture: fixture, expected: expected)
+    try await verifyNativeEquipmentPostcommitRefusal(
+      fixture: fixture, intent: .inventory(fresh.command), expected: expected,
+      checkpoint: checkpoint)
   }
 
   @MainActor @Test func nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()
@@ -812,4 +846,198 @@ private func recoveredSaveFiles(_ directory: URL) throws -> [String: Data] {
     files[String(url.path.dropFirst(directory.path.count))] = try Data(contentsOf: url)
   }
   return files
+}
+
+// These native UI tests expect lower-domain effects from the original state, independently of the actor.
+private func independentNativePurchaseExpectation(
+  before: Game, item: Equipment, price: Int, transaction: UUID, newItem: UUID
+) throws -> Game {
+  let inventory = try #require(before.commander.equipmentInventory)
+  let history = try #require(before.commander.equipmentPurchaseHistory)
+  try #require(
+    before.screen == .equipment && before.stationAllowsEquipmentServices && !before.paused)
+  try #require(Equipment.all.indices.contains(before.selection))
+  try #require(Equipment.all[before.selection].name == item.name)
+  let node = EquipmentNodeID(family: .init("utility-fuelScoops"), key: "Fuel Scoops")
+  let policy = try #require(EquipmentRuntimeCatalog.graph.nodes.first { $0.id == node })
+  try #require(item.name == node.key && policy.policy == .shop)
+  try #require(policy.prerequisites.isEmpty && policy.fittedPrerequisites.isEmpty)
+  try #require(history.paid.allSatisfy { $0.node != node })
+  try #require(!before.commander.unlimitedCash && price > 0)
+  try #require(before.shopPrice(item) == price && before.commander.availableCredits >= price)
+  try #require(EquipmentRuntimeCatalog.node(for: item.name) == node)
+  let location = ComponentFittingLocation(
+    hullInstanceID: inventory.activeHull, slot: .utility(.fuelScoops))
+  try #require(inventory.items.allSatisfy { $0.node != node && $0.location != location })
+  let originalIDs = Set(inventory.items.map(\.id) + inventory.items.compactMap { $0.component?.id })
+    .union([inventory.owner, inventory.activeHull])
+    .union(history.paid.flatMap { [$0.transaction, $0.binding.request.newItem] })
+  try #require(transaction != newItem && !originalIDs.contains(transaction))
+  try #require(!originalIDs.contains(newItem))
+  let request = EquipmentPurchaseRequest(
+    transaction: transaction, newItem: newItem,
+    offer: .init(
+      node: node, price: price,
+      shop: "galaxy:\(before.commander.galaxy)/system:\(before.commander.system)", revision: 1),
+    location: .init(hull: inventory.activeHull, slot: "utility.fuelScoops"))
+  let snapshot = try before.commander.purchaseSnapshot()
+  let purchase = try EquipmentPurchaseProgression.quote(
+    request: request, snapshot: snapshot, history: history, graph: EquipmentRuntimeCatalog.graph)
+  let quote = EquipmentRuntimePurchaseQuote(
+    source: before.commander, prepared: before.commander, item: item, mount: before.equipmentMount,
+    workTool: before.equipmentWorkTool, shop: request.offer.shop, location: location,
+    request: request, purchase: purchase)
+  var expected = before
+  let fitted = try expected.applyEquipmentPurchase(quote)
+  try #require(fitted)
+  let expectedInventory = try #require(expected.commander.equipmentInventory)
+  let expectedHistory = try #require(expected.commander.equipmentPurchaseHistory)
+  let expectedItem = OwnedEquipmentItem(
+    id: newItem, node: node, provenance: .paid(owner: inventory.owner, transaction: transaction),
+    location: location)
+  try #require(
+    expectedInventory.owner == inventory.owner
+      && expectedInventory.activeHull == inventory.activeHull)
+  try #require(expectedInventory.items == inventory.items + [expectedItem])
+  try #require(expectedInventory.revision == inventory.revision + 1)
+  try #require(expectedHistory.owner == history.owner && expectedHistory.legacy == history.legacy)
+  try #require(expectedHistory.revision == history.revision + 1)
+  try #require(expectedHistory.paid.count == history.paid.count + 1)
+  try #require(Array(expectedHistory.paid.dropLast()) == history.paid)
+  try #require(expectedHistory.paid.last?.binding.request == request)
+  try #require(expectedHistory.paid.last?.binding.snapshot == snapshot)
+  try #require(expected.commander.credits == before.commander.credits - price)
+  try #require(expected.commander.cargo == before.commander.cargo)
+  try #require(expected.commander.salvageLedger == before.commander.salvageLedger)
+  try #require(expected.commander.scriptState == before.commander.scriptState)
+  try #require(expected.energy == before.energy && expected.frontShield == before.frontShield)
+  try #require(expected.rearShield == before.rearShield)
+  return expected
+}
+
+private func independentNativeFitExpectation(before: Game, command: InventoryCommand) throws -> Game
+{
+  let inventory = try #require(before.commander.equipmentInventory)
+  try #require(before.screen == .inventory && before.docked && !before.paused)
+  try #require(command.owner == inventory.owner && command.hull == inventory.activeHull)
+  try #require(
+    command.shipID == before.commander.shipID && command.context == before.inventoryContextEpoch)
+  try #require(command.ownedRevision == inventory.revision && command.sourceRevision == nil)
+  guard case .fit(let item, let slot) = command.action else {
+    Issue.record("Expected the painted held-device Fit command")
+    throw EquipmentRuntimeError.incompatibleFit
+  }
+  try #require(inventory.items.contains(item) && item.location == nil)
+  try #require(
+    item.node == EquipmentNodeID(family: .init("utility-fuelScoops"), key: "Fuel Scoops"))
+  try #require(item.provenance == .grant("native display fixture") && item.component == nil)
+  try #require(slot == .utility(.fuelScoops))
+  let obligations = try before.commander.equipmentIssueObligations()
+  try #require(obligations.isEmpty)
+  let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
+  let occupied = inventory.items.first { $0.location == location }
+  let projected = inventory.items.map { original in
+    if original.id == item.id { return original.moved(to: location) }
+    if original.id == occupied?.id { return original.moved(to: nil) }
+    return original
+  }
+  var expectedCommander = before.commander
+  try expectedCommander.fitEquipment(item, at: slot, expectedRevision: inventory.revision)
+  var expected = before
+  try expected.fitEquipment(item, at: slot, expectedRevision: inventory.revision)
+  try #require(expected.commander == expectedCommander)
+  let expectedInventory = try #require(expected.commander.equipmentInventory)
+  try #require(
+    expectedInventory.owner == inventory.owner
+      && expectedInventory.activeHull == inventory.activeHull)
+  try #require(
+    expectedInventory.items == projected && expectedInventory.revision == inventory.revision + 1)
+  try #require(expected.commander.credits == before.commander.credits)
+  try #require(
+    expected.commander.equipmentPurchaseHistory == before.commander.equipmentPurchaseHistory)
+  try #require(expected.commander.salvageLedger == before.commander.salvageLedger)
+  try #require(expected.commander.scriptState == before.commander.scriptState)
+  try #require(expected.commander.cargo == before.commander.cargo)
+  try #require(expected.energy == before.energy && expected.frontShield == before.frontShield)
+  try #require(expected.rearShield == before.rearShield)
+  return expected
+}
+
+@MainActor
+private func verifyNativeEquipmentPublication(
+  fixture: NativeEquipmentFixture, expected: Game
+) async throws -> [String: Data] {
+  // Empty actors/events make native publication preparation a no-op for these three fixture states.
+  try #require(expected.bodies.isEmpty && expected.commander.scriptState.instances.isEmpty)
+  try #require(expected.commander.scriptState.pendingEvents.isEmpty)
+  try #require(
+    expected.commander.npcPersistence.count == 0 && expected.commander.contracts.boards.isEmpty)
+  try #require(expected.commander.scriptState.calendarLedger != nil)
+  try #require(expected.commander.savedEMPState == nil && expected.commander.nativeStations == nil)
+  try #require(expected.screen == .equipment || expected.screen == .inventory)
+  try #require(expected.commander.miningLedger.usesEconomyWeightedPresence)
+  let live = await fixture.delegate.runtime.snapshot()
+  try #require(
+    live.commander == expected.commander && fixture.view.game.commander == expected.commander)
+  try #require(live.energy == expected.energy && live.frontShield == expected.frontShield)
+  try #require(live.rearShield == expected.rearShield)
+  let bytes = try Data(contentsOf: fixture.save)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  let original = try JSONDecoder().decode(ScriptSavePointer.self, from: fixture.originalSave)
+  try #require(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
+  try #require(pointer.scope == "commander" && pointer.valueCodec == ScriptValueStorage.codec)
+  try #require(pointer.generation != original.generation)
+  let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: fixture.save)
+  let names = Set(["commander.json", "missions.json", "world.json", "contracts.json"])
+  try #require(Set(pointer.hashes.keys) == names)
+  let (stored, world) = try ScriptSaveStore.read(bytes, from: fixture.save)
+  try #require(stored == expected.commander && stored.valid)
+  try #require(world.valid && world.consistent(with: expected.commander))
+  // World has no actor bodies here; compare all JSON values, never re-encoded Commander Set hashes.
+  let worldBytes = try ScriptValueStorage.encoder().encode(world)
+  let expectedWorldBytes = try ScriptValueStorage.encoder().encode(expected.scriptWorldSave)
+  let worldValue = try JSONSerialization.jsonObject(with: worldBytes)
+  let expectedWorldValue = try JSONSerialization.jsonObject(with: expectedWorldBytes)
+  let worldObject = try #require(worldValue as? NSDictionary)
+  let expectedWorldObject = try #require(expectedWorldValue as? NSDictionary)
+  try #require(worldObject.isEqual(expectedWorldObject))
+  let files = try recoveredSaveFiles(fixture.directory)
+  let pointerPath = "/" + fixture.save.lastPathComponent
+  try #require(files[pointerPath] == bytes && bytes != fixture.originalSave)
+  for (path, originalBytes) in fixture.originalFiles where path != pointerPath {
+    try #require(files[path] == originalBytes)
+  }
+  let added = Set(files.keys).subtracting(fixture.originalFiles.keys)
+  let expectedAdded = Set(
+    names.map {
+      String(generation.appendingPathComponent($0).path.dropFirst(fixture.directory.path.count))
+    })
+  try #require(added == expectedAdded)
+  try #require(Set(fixture.originalFiles.keys).isSubset(of: Set(files.keys)))
+  for name in names {
+    let path = String(
+      generation.appendingPathComponent(name).path.dropFirst(fixture.directory.path.count))
+    let chunk = try #require(files[path])
+    try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
+  }
+  try #require(fixture.delegate.saves.activeURL == fixture.save)
+  return files
+}
+
+@MainActor
+private func verifyNativeEquipmentPostcommitRefusal(
+  fixture: NativeEquipmentFixture, intent: EquipmentMutationIntent, expected: Game,
+  checkpoint: [String: Data]
+) async throws {
+  let result = await fixture.delegate.runtime.equipmentTransaction(intent)
+  try #require(result == .refused(.staleContext))
+  let live = await fixture.delegate.runtime.snapshot()
+  try #require(live.commander == expected.commander)
+  try #require(live.energy == expected.energy && live.frontShield == expected.frontShield)
+  try #require(live.rearShield == expected.rearShield)
+  let files = try recoveredSaveFiles(fixture.directory)
+  let pointerBytes = try Data(contentsOf: fixture.save)
+  try #require(files == checkpoint)
+  try #require(pointerBytes == checkpoint["/" + fixture.save.lastPathComponent])
+  try #require(fixture.delegate.saves.activeURL == fixture.save)
 }
