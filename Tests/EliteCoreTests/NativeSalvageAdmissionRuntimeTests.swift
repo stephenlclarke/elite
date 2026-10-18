@@ -380,8 +380,45 @@ struct NativeSalvageOldParentAdmissionTests {
     }
     let before = game.commander
     let bodies = game.bodies
+    let original = try #require(before.alienStorageState?.current.salvage)
+    let first = try #require(fixture.lots.first)
+    if mismatch == "protected parent" {
+      let body = game.bodies[index]
+      let bounds = try #require(body.physical?.salvage?.bounds)
+      let distance = (first.position - game.modelPose(of: body).position).length
+      try #require(distance < bounds.radius + bounds.center.length + first.halfExtents.length + 8)
+    } else if mismatch == "player blocked" {
+      let radius = try #require(game.commander.playerMesh.vertices.map(\.length).max())
+      try #require(
+        (first.position - game.commander.flightSimulation.pose.position).length <= radius
+          + first.halfExtents.length + 8)
+    }
     game.admitPendingNativeSalvage()
-    #expect(game.commander == before && game.bodies == bodies)
+    if mismatch == "wrong source" || mismatch == "retained mismatch" {
+      // This source/binding mismatch rejects every lot before namespace allocation.
+      #expect(game.commander == before && game.bodies == bodies)
+    } else {
+      let current = try #require(game.commander.alienStorageState?.current.salvage)
+      #expect(Set(current.pending.keys) == Set(original.pending.keys))
+      let refused = try #require(current.pending[first.identity])
+      #expect(refused.binding == nil && refused.offer == nil && refused.lot == first)
+      #expect(!game.bodies.contains { $0.physical?.payload == .salvage(first.identity) })
+      for old in original.pending.values {
+        let retained = try #require(current.pending[old.lot.identity])
+        #expect(retained.lot == old.lot && retained.physicalTime == old.physicalTime)
+        #expect(retained.offer == nil)
+        if let binding = retained.binding {
+          let body = try #require(game.bodies.first { $0.physical?.identity == binding })
+          #expect(game.currentSalvageLot(for: body)?.identity == old.lot.identity)
+        }
+      }
+      let world = try #require(game.commander.alienStorageState?.current.snapshot.world)
+      #expect(fixture.immutable.allSatisfy(world.contains))
+      #expect(game.commander.credits == before.credits && game.commander.cargo == before.cargo)
+      #expect(game.commander.equipmentInventory == before.equipmentInventory)
+      #expect(game.commander.flightSimulation.physicalTime == before.flightSimulation.physicalTime)
+      #expect(game.commander.nativeSalvageSceneIsConsistent(game.bodies, docked: false))
+    }
     let observed = try NativeSalvageOldParentFixture.files(in: fixture.folder)
     #expect(observed == fixture.files)
   }
@@ -399,6 +436,8 @@ struct NativeSalvageOldParentAdmissionTests {
       includePlayer: false)
     let hit = try #require(contact?.hit)
     try #require(hit.target == .body(parent.id))
+    // Controlled lethal native hit/death settlement, not a stock pulse firing or
+    // damage/cadence/energy-cost acceptance test.
     let applied = game.applyCombatHit(
       hit, origin: origin, kind: .laser, damage: parent.energy + 1, laser: .pulse)
     try #require(applied != nil)
