@@ -26,7 +26,7 @@ extension GameRuntime {
       game.scriptPacks.append(pack)
     }
     game.notify(
-      pack.missingCapabilities.isEmpty
+      game.scriptUnavailable(pack) == nil
         ? (pack.manifest.board == nil
           ? "MISSION PACK INSTALLED - VISIT STATION CONTACTS"
           : "CONTRACT PROVIDER INSTALLED - OPEN STATION CONTRACTS")
