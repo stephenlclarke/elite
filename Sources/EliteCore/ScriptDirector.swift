@@ -516,6 +516,22 @@ extension Game {
     event: ScriptEvent, pack: ScriptPack,
     derivedEvents: inout [(String, [String: ScriptValue])], clueTrust: ScriptClueTrustCatalog
   ) throws {
+    try prepareScriptEventReceiptsAndClue(
+      candidate: &candidate, instance: instance, next: &next, event: event, pack: pack,
+      derivedEvents: &derivedEvents, clueTrust: clueTrust)
+    reconcileScriptEventCandidateResources(original: original, candidate: &candidate)
+    candidate.suspendTerminalCampaignChildren(next)
+    try prepareScriptEventResultQueue(
+      candidate: &candidate, next: next, event: event, derivedEvents: derivedEvents)
+    try validateScriptEventCandidateSaveBudget(candidate)
+  }
+
+  @inline(never)
+  private static func prepareScriptEventReceiptsAndClue(
+    candidate: inout Game, instance: ScriptInstance, next: inout ScriptInstance,
+    event: ScriptEvent, pack: ScriptPack, derivedEvents: inout [(String, [String: ScriptValue])],
+    clueTrust: ScriptClueTrustCatalog
+  ) throws {
     for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
       let choice = next.choiceReceipts[group]!
       derivedEvents.append(
@@ -547,6 +563,12 @@ extension Game {
     }
     candidate.commander.scriptState.instances[next.id] = next
     try candidate.awardScriptClue(previous: instance, next: next, trust: clueTrust)
+  }
+
+  @inline(never)
+  private static func reconcileScriptEventCandidateResources(
+    original: borrowing Game, candidate: inout Game
+  ) {
     let oldEnergy = original.commander.performance.energy
     let newEnergy = candidate.commander.performance.energy
     if oldEnergy != newEnergy {
@@ -565,7 +587,13 @@ extension Game {
       candidate.rearShield = Self.equipmentResourceLevel(
         candidate.rearShield, from: oldRear, to: newRear)
     }
-    candidate.suspendTerminalCampaignChildren(next)
+  }
+
+  @inline(never)
+  private static func prepareScriptEventResultQueue(
+    candidate: inout Game, next: ScriptInstance, event: ScriptEvent,
+    derivedEvents: [(String, [String: ScriptValue])]
+  ) throws {
     candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
     if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
     guard candidate.commander.valid else {
@@ -581,7 +609,21 @@ extension Game {
     for (kind, values) in derivedEvents {
       candidate.emitScriptEvent(kind, values: values, only: next.id, drain: false)
     }
-    let savedBytes = try JSONEncoder().encode(candidate.commander.scriptState)
+  }
+
+  /// Release the computed Commander receiver before entering the generic encoder.
+  @inline(never)
+  private static func scriptEventCandidateStateForEncoding(
+    _ candidate: borrowing Game
+  ) -> ScriptEngineState {
+    candidate.commander.scriptState
+  }
+
+  @inline(never)
+  private static func validateScriptEventCandidateSaveBudget(
+    _ candidate: borrowing Game
+  ) throws {
+    let savedBytes = try JSONEncoder().encode(scriptEventCandidateStateForEncoding(candidate))
     guard savedBytes.count <= 33_554_432 else {
       throw MissionPackError("Mission save budget exceeded; proposal was not committed.")
     }

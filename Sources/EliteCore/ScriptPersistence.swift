@@ -410,6 +410,27 @@ enum ScriptSaveStore {
     commander: Commander, world: ScriptWorldSave, to url: URL, scope: String, exclusive: Bool,
     diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary
   ) throws -> AlienStoragePublication? {
+    try validateSemanticPublicationSizes(
+      commander: commander, diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+    let generation = UUID().uuidString
+    let root = url.appendingPathExtension("missions")
+    let directory = root.appendingPathComponent(generation, isDirectory: true)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let alienPublication = try AlienStorageVersionedSave.stage(commander, in: directory)
+    let encoder = ScriptValueStorage.encoder()
+    let chunks = try encodePublicationChunks(
+      commander: commander, world: world, alienPublication: alienPublication, encoder: encoder)
+    return try publishEncodedChunks(
+      commander: commander, chunks: chunks, encoder: encoder, alienPublication: alienPublication,
+      directory: directory, generation: generation, to: url, scope: scope, exclusive: exclusive,
+      diagnostics: diagnostics, diagnosticBoundary: diagnosticBoundary)
+  }
+
+  @inline(never)
+  private static func validateSemanticPublicationSizes(
+    commander: borrowing Commander, diagnostics: ScriptRefusalDiagnostic?,
+    diagnosticBoundary: ScriptRefusalBoundary
+  ) throws {
     let semantic = JSONEncoder()
     guard try semantic.encode(commander.scriptState).count <= 33_554_432,
       try semantic.encode(commander.contracts).count <= 33_554_432
@@ -419,22 +440,85 @@ enum ScriptSaveStore {
         .init(stage: .storeSize, error: SaveError.invalidCommander, commander: commander))
       throw SaveError.invalidCommander
     }
-    let generation = UUID().uuidString
-    let root = url.appendingPathExtension("missions")
-    let directory = root.appendingPathComponent(generation, isDirectory: true)
-    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    let alienPublication = try AlienStorageVersionedSave.stage(commander, in: directory)
-    let encoder = ScriptValueStorage.encoder()
-    var header = commander
+  }
+
+  /// Own the one deliberate header copy without retaining its preparation frame in encoding.
+  private final class PreparedPublicationHeader: Sendable {
+    let commander: Commander
+    init(_ commander: consuming Commander) {
+      self.commander = consume commander
+    }
+  }
+
+  @inline(never)
+  private static func preparePublicationHeader(
+    commander: borrowing Commander, alienPublication: AlienStoragePublication?
+  ) -> PreparedPublicationHeader {
+    var header = copy commander
     header.publishAlienStorage(alienPublication)
     header.scriptState = ScriptEngineState()
     header.contracts = ScriptContractState()
-    var chunks = [
-      "commander.json": try encoder.encode(header),
-      "missions.json": try encoder.encode(commander.scriptState),
-      "world.json": try encoder.encode(world),
-      "contracts.json": try encoder.encode(commander.contracts),
+    return PreparedPublicationHeader(consume header)
+  }
+
+  @inline(never)
+  private static func encodePublicationHeader(
+    commander: borrowing Commander, alienPublication: AlienStoragePublication?, encoder: JSONEncoder
+  ) throws -> Data {
+    let header = preparePublicationHeader(commander: commander, alienPublication: alienPublication)
+    return try encodePreparedPublicationHeader(header.commander, encoder: encoder)
+  }
+
+  @inline(never)
+  private static func encodePreparedPublicationHeader(
+    _ header: borrowing Commander, encoder: JSONEncoder
+  ) throws -> Data {
+    try encoder.encode(header)
+  }
+
+  @inline(never)
+  private static func encodePublicationMissions(
+    commander: borrowing Commander, encoder: JSONEncoder
+  ) throws -> Data {
+    try encoder.encode(commander.scriptState)
+  }
+
+  @inline(never)
+  private static func encodePublicationWorld(
+    world: borrowing ScriptWorldSave, encoder: JSONEncoder
+  ) throws -> Data {
+    try encoder.encode(world)
+  }
+
+  @inline(never)
+  private static func encodePublicationContracts(
+    commander: borrowing Commander, encoder: JSONEncoder
+  ) throws -> Data {
+    try encoder.encode(commander.contracts)
+  }
+
+  @inline(never)
+  private static func encodePublicationChunks(
+    commander: borrowing Commander, world: borrowing ScriptWorldSave,
+    alienPublication: AlienStoragePublication?, encoder: JSONEncoder
+  ) throws -> [String: Data] {
+    [
+      "commander.json": try encodePublicationHeader(
+        commander: commander, alienPublication: alienPublication, encoder: encoder),
+      "missions.json": try encodePublicationMissions(commander: commander, encoder: encoder),
+      "world.json": try encodePublicationWorld(world: world, encoder: encoder),
+      "contracts.json": try encodePublicationContracts(commander: commander, encoder: encoder),
     ]
+  }
+
+  @inline(never)
+  private static func publishEncodedChunks(
+    commander: borrowing Commander, chunks encoded: [String: Data], encoder: JSONEncoder,
+    alienPublication: AlienStoragePublication?, directory: URL, generation: String,
+    to url: URL, scope: String, exclusive: Bool,
+    diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary
+  ) throws -> AlienStoragePublication? {
+    var chunks = encoded
     if let alienPublication {
       let store = try AlienStoragePageStore(directory: directory)
       let rootData = try store.readGenerationRoot()
