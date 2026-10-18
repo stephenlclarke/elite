@@ -10,6 +10,8 @@ struct AutoTargetCruiseTests {
   ) async throws {
     var game = Game(executive: false)
     game.commander.shipID = shipID
+    let startingRounds = min(3, game.commander.nativePerformance.missiles)
+    game.commander.missiles = startingRounds
     game.commander.installTargetingComputer(.docking)
     try game.commander.prepareEquipment()
     let destination = try #require(
@@ -143,6 +145,8 @@ extension AutoTargetCruiseTests {
   @Test func actualHighThrustHullUsesAvailableBrakingAndCoastsDownInheritedOverspeed() throws {
     var game = Game(executive: false)
     game.commander.shipID = "SH009"
+    let startingRounds = min(3, game.commander.nativePerformance.missiles)
+    game.commander.missiles = startingRounds
     try game.commander.prepareEquipment(legacy: false)
     let limits = game.workLimits
     try #require(limits.acceleration > AutoTargetControl.policyLimits.acceleration)
