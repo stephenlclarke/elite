@@ -176,6 +176,62 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
   }
 }
 
+/// Failure-only observer; these bytes are diagnostics, never a commander save or a restore source.
+private struct CourierApproachFailureEvidence: Encodable {
+  let source: String?
+  let row: Int
+  let launchFrames: Int
+  let jumpFrames: Int
+  let selections: Int
+  let approachFrames: Int
+  let collisionObserved: Bool
+  let commander: Commander
+  let world: ScriptWorldSave
+  let message: String
+  let messageTime: Double
+  let autopilotStatus: String
+  let autopilotTargetID: Int?
+  let autopilotVelocity: Vector3
+  let target: SpaceBody?
+  let dockingComputer: Bool
+  let playerVelocity: Vector3
+  let paused: Bool
+}
+
+private func captureCourierApproachFailure(
+  _ state: borrowing Game, row: Int, launchFrames: Int, jumpFrames: Int,
+  selections: Int, approachFrames: Int, collision: Bool
+) throws {
+  let evidence = CourierApproachFailureEvidence(
+    source: ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"],
+    row: row, launchFrames: launchFrames, jumpFrames: jumpFrames, selections: selections,
+    approachFrames: approachFrames, collisionObserved: collision,
+    commander: state.commander, world: state.scriptWorldSave,
+    message: state.message, messageTime: state.messageTime,
+    autopilotStatus: state.autoPilot.status, autopilotTargetID: state.autoPilot.targetID,
+    autopilotVelocity: state.autoPilot.velocity, target: state.autoTargetBody,
+    dockingComputer: state.dockingComputer, playerVelocity: state.flightWorldVelocity,
+    paused: state.paused)
+  print(
+    "Courier physical arrival failed: row=\(row), frames=\(approachFrames), "
+      + "collisionObserved=\(collision), energy=\(state.energy), "
+      + "frontShield=\(state.frontShield), rearShield=\(state.rearShield), "
+      + "physicalTime=\(state.commander.flightSimulation.physicalTime), "
+      + "targetDistance=\(String(describing: state.autoTargetBody?.position.length)), "
+      + "autopilot=\(state.autoPilot.status), message=\(state.message)")
+  guard let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] else {
+    return
+  }
+  let root = URL(fileURLWithPath: path)
+  try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+  let encoder = JSONEncoder()
+  encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+  let bytes = try encoder.encode(evidence)
+  try bytes.write(
+    to: root.appendingPathComponent("courier-row-\(row)-failed-physical-approach.json"),
+    options: .withoutOverwriting)
+}
+
 // These two pinned one-hop cases retain the real launch/arrival traffic, station pose and
 // celestials. Only public flight controls and actor frames can reach the receiving station.
 @MainActor private func physicallyDeliverCourier(
@@ -227,6 +283,15 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
     state = await runtime.snapshot()
     collision = collision || state.message == "DOCKING COLLISION"
     approachFrames += 1
+  }
+  if !state.docked || state.screen != .status {
+    do {
+      try captureCourierApproachFailure(
+        state, row: row, launchFrames: launchFrames, jumpFrames: jumpFrames,
+        selections: selections, approachFrames: approachFrames, collision: collision)
+    } catch {
+      print("Courier physical arrival diagnostic capture failed: \(error)")
+    }
   }
   try #require(
     state.docked && state.screen == .status,
