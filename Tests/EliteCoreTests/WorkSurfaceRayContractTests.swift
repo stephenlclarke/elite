@@ -107,6 +107,20 @@ struct WorkSurfaceRayContractTests {
     let hold = try #require(game.workGuidance)
     #expect(hold.collectionOffset == 0 && hold.surface.section == section)
     #expect(hold.surface.radius == cargo.radius)
+    let context = try #require(game.gameplayContext())
+    #expect(game.workSurfaceStillAuthorized(hold, body: game.bodies[0], context: context))
+    let changedSurfaces = metadata.workSurfaces.map {
+      SalvageWorkSurface(
+        section: $0.section, position: $0.position, normal: $0.normal,
+        radius: $0.section == section ? $0.radius * 0.5 : $0.radius)
+    }
+    game.bodies[0].physical?.salvage = .init(
+      category: metadata.category, ownership: metadata.ownership, claimant: metadata.claimant,
+      wreck: metadata.wreck, section: metadata.section, lot: metadata.lot,
+      bounds: metadata.bounds, workSurfaces: changedSurfaces)
+    #expect(!game.workSurfaceStillAuthorized(hold, body: game.bodies[0], context: context))
+    game.bodies[0] = body
+    #expect(game.workSurfaceStillAuthorized(hold, body: game.bodies[0], context: context))
     #expect(game.bodies[0] == body && game.commander == commander)
   }
 
