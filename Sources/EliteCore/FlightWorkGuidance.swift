@@ -3,6 +3,7 @@ import Foundation
 struct FlightWorkSurface: Sendable {
   let point: Vector3
   let normal: Vector3
+  let radius: Double?
   let section: WreckSectionIdentity?
 }
 
@@ -113,7 +114,9 @@ extension Game {
     if !metadata.workSurfaces.isEmpty {
       surfaces = metadata.workSurfaces.filter {
         metadata.section == nil || metadata.section == $0.section
-      }.map { .init(point: $0.position, normal: $0.normal, section: $0.section) }
+      }.map {
+        .init(point: $0.position, normal: $0.normal, radius: $0.radius, section: $0.section)
+      }
     } else {
       let mesh = gameplayMesh(for: body)
       surfaces = mesh.faces.compactMap { face in
@@ -126,7 +129,7 @@ extension Game {
         return .init(
           point: face.reduce(Vector3(0, 0, 0)) { $0 + mesh.vertices[$1] }
             * (1 / Double(face.count)),
-          normal: normal, section: nil)
+          normal: normal, radius: nil, section: nil)
       }
     }
     return surfaces.filter {
@@ -176,6 +179,14 @@ extension Game {
         maxDistance: 6000, bodies: scene.filter { $0.energy > 0 }, celestials: stars,
         meshOverrides: gameplayMeshOverrides), case .body(let id) = hit.target, id == body.id
     else { return false }
+    if surface.section != nil {
+      let point = pose.systemPoint(surface.point)
+      let impact = hypothetical.systemPoint(hit.point)
+      guard let radius = surface.radius, radius.isFinite, radius > 0,
+        (point - impact).length <= max(1, radius),
+        pose.orientation.apply(surface.normal).dot(hypothetical.position - point) > 0
+      else { return false }
+    }
     return true
   }
 
