@@ -416,22 +416,12 @@ extension Game {
   ) throws -> MissionActorAdmissionSource {
     let currentInputs = currentMissionActorAdmissionSourceValues()
     let legacy = encounter.legacyProvenance
-    if let legacy {
-      guard legacy.matches(owner: state, encounter: encounter),
-        currentInputs.instances[state.id]?.ownedEncounters[encounter.id] == encounter
-      else {
-        throw MissionPackError("Historical actor provenance differs from its installed owner.")
-      }
-    }
+    try Self.validateMissionActorAdmissionLegacy(
+      state: state, encounter: encounter, instances: currentInputs.instances, legacy: legacy)
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
-      guard let actor = encounter.actors[spec.id], actor.alias == spec.id,
-        legacy?.actors[spec.id]?.identity == actor.identity
-          || actor.identity
-            == ScriptIdentity.uuid(
-              "script-actor-v2:\(state.id):\(pack.digest):\(encounter.id):\(spec.id)"),
-        actor.body.missionInstanceID == state.id, actor.body.scriptShot == nil
-      else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
+      let actor = try Self.validatedMissionActorAdmissionActor(
+        spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy)
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
         installedModels: pack.models, geometry: currentInputs.geometry,
@@ -446,6 +436,37 @@ extension Game {
       mode: mode, authority: authority, instance: state, pack: pack,
       encounter: encounter, definition: definition, actors: templates,
       installedBaseEncounter: currentInputs.instances[state.id]?.ownedEncounters[encounter.id])
+  }
+
+  /// Finish full legacy comparison before any per-actor construction frame starts.
+  @inline(never)
+  private static func validateMissionActorAdmissionLegacy(
+    state: ScriptInstance, encounter: ScriptOwnedEncounter, instances: [UUID: ScriptInstance],
+    legacy: LegacyMissionEncounterProvenance?
+  ) throws {
+    if let legacy {
+      guard legacy.matches(owner: state, encounter: encounter),
+        instances[state.id]?.ownedEncounters[encounter.id] == encounter
+      else {
+        throw MissionPackError("Historical actor provenance differs from its installed owner.")
+      }
+    }
+  }
+
+  /// Return the same selected actor after its identity/body-read temporaries have ended.
+  @inline(never)
+  private static func validatedMissionActorAdmissionActor(
+    _ spec: ScriptActorDefinition, encounter: ScriptOwnedEncounter, instanceID: UUID,
+    packDigest: String, legacy: LegacyMissionEncounterProvenance?
+  ) throws -> ScriptOwnedActor {
+    guard let actor = encounter.actors[spec.id], actor.alias == spec.id,
+      legacy?.actors[spec.id]?.identity == actor.identity
+        || actor.identity
+          == ScriptIdentity.uuid(
+            "script-actor-v2:\(instanceID):\(packDigest):\(encounter.id):\(spec.id)"),
+      actor.body.missionInstanceID == instanceID, actor.body.scriptShot == nil
+    else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
+    return actor
   }
 
   /// These stock-only temporaries are needed after measured template construction returns.
@@ -498,13 +519,32 @@ extension Game {
   }
 
   /// Uses the current invocation's immutable dictionaries; no Game or interpreter is captured.
+  @inline(never)
   private static func measuredMissionActorAdmissionMesh(
     _ reference: String, modelHashes: [String: String], installedModels: [String: ShipDesign],
     geometry: [String: ShipDesign], scale: Double, offset: Vector3, pose: Basis3
   ) throws -> Mesh {
+    let installed = try validatedMissionActorAdmissionGeometry(
+      reference, modelHashes: modelHashes, installedModels: installedModels, geometry: geometry)
+    return transformedMissionActorAdmissionMesh(installed, scale: scale, offset: offset, pose: pose)
+  }
+
+  /// Keep the full installed-design equality and validity frame out of mesh transformation.
+  @inline(never)
+  private static func validatedMissionActorAdmissionGeometry(
+    _ reference: String, modelHashes: [String: String], installedModels: [String: ShipDesign],
+    geometry: [String: ShipDesign]
+  ) throws -> ShipDesign {
     guard let digest = modelHashes[reference], let installed = installedModels[reference],
       geometry[digest] == installed, ScriptPackLibrary.scriptGeometryValid(installed)
     else { throw MissionPackError("Exact admitted NPC geometry is unavailable or changed.") }
+    return installed
+  }
+
+  @inline(never)
+  private static func transformedMissionActorAdmissionMesh(
+    _ installed: ShipDesign, scale: Double, offset: Vector3, pose: Basis3
+  ) -> Mesh {
     let raw = installed.rawMesh
     return Mesh(
       vertices: raw.vertices.map { offset + pose.apply($0 * scale) }, faces: raw.faces,
@@ -512,7 +552,7 @@ extension Game {
   }
 
   /// Private to this invocation's declaration validation and subsequent construction.
-  private enum MissionActorAdmissionFit {
+  private enum MissionActorAdmissionFit: Sendable {
     case npc(ScriptNPCState, ScriptNPCDefinition)
     case classic(Hull)
   }
@@ -558,6 +598,25 @@ extension Game {
     fit: MissionActorAdmissionFit, installedModels: [String: ShipDesign],
     geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?
   ) throws -> MissionActorAdmissionTemplate {
+    let constructed = try constructMissionActorAdmissionParts(
+      actor, fit: fit, installedModels: installedModels, geometry: geometry, legacy: legacy)
+    return try finalizeMissionActorAdmissionTemplate(
+      actor, specification: specification, parts: constructed.parts,
+      maximumEnergy: constructed.maximumEnergy)
+  }
+
+  private struct MissionActorAdmissionParts: Sendable {
+    let parts: [MissionActorAdmissionPart]
+    let maximumEnergy: Double
+  }
+
+  /// Parts and their full geometry checks finish before bounds/canonical-body storage is needed.
+  @inline(never)
+  private static func constructMissionActorAdmissionParts(
+    _ actor: ScriptOwnedActor, fit: MissionActorAdmissionFit,
+    installedModels: [String: ShipDesign], geometry: [String: ShipDesign],
+    legacy: LegacyMissionActorProvenance?
+  ) throws -> MissionActorAdmissionParts {
     var parts: [MissionActorAdmissionPart] = []
     let maximumEnergy: Double
     switch fit {
@@ -592,6 +651,14 @@ extension Game {
           alias: nil, componentID: nil, energy: actor.body.energy, maximumEnergy: maximumEnergy,
           solid: true, mesh: Mesh.hull(hull)))
     }
+    return .init(parts: parts, maximumEnergy: maximumEnergy)
+  }
+
+  @inline(never)
+  private static func finalizeMissionActorAdmissionTemplate(
+    _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
+    parts: [MissionActorAdmissionPart], maximumEnergy: Double
+  ) throws -> MissionActorAdmissionTemplate {
     guard actor.body.energy <= maximumEnergy,
       actor.body.physical?.npc?.resources?.valid ?? true,
       actor.body.physical?.velocity.finite ?? true,
