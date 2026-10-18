@@ -57,7 +57,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
   // A synthetic controller isolates disclosure; this is not a work-motion or engagement fixture.
   game.workGuidance = .init(
     parent: parent, mode: .hold(.salvage),
-    surface: .init(point: .init(0, 0, 500), normal: .init(0, 0, -1), section: nil),
+    surface: .init(point: .init(0, 0, 500), normal: .init(0, 0, -1), radius: nil, section: nil),
     collectionOffset: 0,
     controller: .init(parent: parent, wreck: nil, category: .wreck),
     scoop: .init(parent: parent), velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0))

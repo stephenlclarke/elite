@@ -10,4 +10,6 @@ Four new methods/six cases cover a synthetic narrow named patch on the unchanged
 
 Source formatting, Markdown lint, whitespace, exact source correspondence and unchanged-source hash checks precede review. No compiler, test, native, profiler or renderer job runs for this isolated leaf before review. The original NativeEMP UI method, 2400/1200-frame loops and every cutting, cargo, crew and save oracle remain byte-identical. The original actual cutter and all ship TOML definitions remain unchanged. Native completion, performance improvement, coverage, sanitizer, leak and release acceptance remain unproven; no diagnostic failure or timeout is waived.
 
+A mechanical compiler follow-up adds `radius: nil` to the existing sectionless synthetic work-status fixture in `TargetingTests.swift`. Its prior initializer values and all disclosure assertions are unchanged. Validation 347 failed compilation before test execution; its transcript and all 718 compiled artifacts were preserved before repair. The next affected batch retains the original 48 methods/56 cases and adds only `workStatusRequiresARealMatchingPhysicalIdentity()` (49 methods/57 cases total). This is a compilation repair, not a domain or oracle change.
+
 [Issue](ISSUE-salvage-work-surface-contract.md).
