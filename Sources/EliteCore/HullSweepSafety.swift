@@ -431,10 +431,11 @@ public enum HullSweepSafety {
   ) throws -> Double {
     var best = startingBest
     var pending = [0]
+    let bounds = triangle.bounds
     while let index = pending.popLast() {
       try work.node()
       let node = hull.nodes[index]
-      if node.bounds.distanceSquared(to: triangle.bounds) >= best * best { continue }
+      if node.bounds.distanceSquared(to: bounds) >= best * best { continue }
       if let (left, right) = node.children {
         pending += [right, left]
       } else {
