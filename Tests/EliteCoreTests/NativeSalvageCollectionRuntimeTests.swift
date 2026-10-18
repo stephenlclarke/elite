@@ -16,10 +16,11 @@ private func nativeSalvageTestDirectory() throws -> URL {
 }
 
 private func nativeSalvageScoopFixture(
-  definition: String = AlienModuleKind.energyCapacity.definitionID
+  definition: String = AlienModuleKind.energyCapacity.definitionID, system: Int = 7
 ) throws -> (Game, SalvageLot) {
   var game = try missionGearGame()
-  game.commander.system = 7
+  game.commander.system = system
+  if system == Plugh.systemID { game.commander.discoverPlugh(in: game.commander.galaxy) }
   try game.commander.grantEquipment(
     "Fuel Scoops", at: .utility(.fuelScoops),
     provenance: .grant("native salvage scoop fixture"))
@@ -27,7 +28,7 @@ private func nativeSalvageScoopFixture(
   game.launch()
   game.speed = 0
   game.celestials = []
-  var original = try AlienLegacyFixture.make(definition: definition)
+  var original = try AlienLegacyFixture.make(definition: definition, system: system)
   let target = try #require(
     original.ledger.pendingLots.first {
       if case .technology(let id, _, _) = $0.content {
@@ -167,18 +168,23 @@ private func recoveredModuleAtActualPlughDock(
   _ file: URL,
   kind: AlienModuleKind = .energyCapacity
 ) async throws -> (GameRuntime, UUID) {
-  let (initial, lot) = try nativeSalvageScoopFixture(definition: kind.definitionID)
+  // Begin the controlled recovery scene at PLUGH; changing system after collecting
+  // would bypass actual travel and strand the retained original NPC ledger elsewhere.
+  let (initial, lot) = try nativeSalvageScoopFixture(
+    definition: kind.definitionID, system: Plugh.systemID)
   let recovery = GameRuntime(game: initial)
   try await recovery.save(to: file)
   var game = await recovery.advance(delta: 0.1)
   let item = try #require(game.commander.alienStorageState?.current.snapshot.attachments.first)
   #expect(
     game.commander.alienStorageState?.current.snapshot.sources.first?.lot.identity == lot.identity)
+  let retainedNPCs = game.commander.npcPersistence
+  try #require(retainedNPCs.system == game.systemIdentity)
+  var parkedNPCs = retainedNPCs
+  parkedNPCs.resetPhysicalBindings(system: game.systemIdentity)
   game.dock()
-  try #require(game.docked)
-  // Controlled next scene setup; no hyperspace travel or discovery mission claim.
-  game.commander.discoverPlugh(in: game.commander.galaxy)
-  game.commander.system = Plugh.systemID
+  try #require(game.docked && game.commander.npcPersistence == parkedNPCs)
+  // Controlled same-system relaunch; no hyperspace travel or discovery mission claim.
   game.launch()
   try #require(!game.docked && game.commander.valid)
   let runtime = try await dockAtActualPlughDoorway(game, file: file)
