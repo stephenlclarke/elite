@@ -1019,7 +1019,7 @@ extension FlightWorkGuidanceRuntimeTests {
     let body = try #require(game.bodies.first { $0.physical?.identity == parent })
     game.beginWorkGuidance(body: body, mode: .hold(.salvage), velocity: game.flightWorldVelocity)
     #expect(game.selectedFlightTool == .salvageCutter)
-    #expect(game.flightWeaponDisplay.status == "NOT FITTED")
+    #expect(game.deriveFlightWeaponDisplay().status == "NOT FITTED")
     let before = game.dischargeAudio.events
     var held = Controls()
     held.fire = true

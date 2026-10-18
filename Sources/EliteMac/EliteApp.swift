@@ -1084,6 +1084,7 @@ struct EliteApp {
     var game = Game()
     game.launch()
     game.bodies[1].position = .init(-35, 10, 320)
+    game.prepareFlightWeaponDisplay()
     guard let image = imageForGame(game, width: 1024, height: 768),
       let png = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/elite.png") as CFURL, UTType.png.identifier as CFString, 1, nil)
@@ -1107,6 +1108,7 @@ struct EliteApp {
         game.bodies[1].position = .init(-35, 10, 320)
         game.time = Double(index) / 6
       }
+      game.prepareFlightWeaponDisplay()
       guard let image = imageForGame(game, width: 1024, height: 768)
       else {
         throw SaveError.invalidCommander
