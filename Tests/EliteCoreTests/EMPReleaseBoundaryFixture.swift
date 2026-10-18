@@ -120,7 +120,18 @@ func disableNativeEMPActor(_ actor: ActorIdentity, game: inout Game) throws -> I
       game.commander.savedEMPCharge?.phase == .charging
       || (ready && contact?.hit.target == .body(body.id))
     game.tick(delta: 0.1, controls: controls)
-    try #require(game.screen != .gameOver && !game.docked)
+    let continuingFlight = game.screen != .gameOver && !game.docked
+    var failureDetails = ""
+    if !continuingFlight {
+      let physicalTime = game.commander.flightSimulation.physicalTime
+      failureDetails =
+        "EMP native flight stopped: frame=\(frame), time=\(physicalTime), "
+        + "screen=\(game.screen), docked=\(game.docked), energy=\(game.energy), "
+        + "shields=\(game.frontShield)/\(game.rearShield), "
+        + "temperature=\(game.cabinTemperature), altitude=\(game.altitude), speed=\(game.speed), "
+        + "message=\(game.message), preTickTargetRange=\(body.position.length)"
+    }
+    try #require(continuingFlight, Comment(rawValue: failureDetails))
   }
   let body = try #require(game.bodies.first { $0.physical?.identity == actor })
   try #require(
