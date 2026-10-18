@@ -62,7 +62,14 @@ func procurementFarExemptionRequiresJoinedOrdinaryPulseOnlyActor(condition: Stri
   }
   var context = try #require(game.gameplayContext())
   if condition == "protected", let actor = game.bodies[index].physical?.identity {
-    context.protection.protectedActors.insert(actor)
+    var protection = context.protection
+    protection.protectedActors.insert(actor)
+    context = EncounterContext(
+      system: context.system, seed: context.seed, government: context.government,
+      visit: context.visit, revision: context.revision, physicalTime: context.physicalTime,
+      anchors: context.anchors, player: context.player, actors: context.actors,
+      protection: protection, budget: context.budget, perceptionRadius: context.perceptionRadius,
+      depletedRocks: context.depletedRocks, miningPresence: context.miningPresence)
   }
   if condition == "duplicate", let actor = game.bodies[index].physical?.identity,
     let snapshot = context.actors.first(where: { $0.identity == actor })
@@ -125,11 +132,17 @@ func procurementRangeAssessmentAndPersistentRetreatUseAllCurrentThreats(conditio
       position: .init(0, 0, 6000), wanted: true)
     facts.threats.append(unknown)
   case "incoming":
-    facts.threats[0].position.z = 6000
+    let original = facts.threats[0]
+    facts.threats[0] = .init(
+      identity: original.identity, position: .init(original.position.x, original.position.y, 6000),
+      wanted: original.wanted, pulseOnly: original.pulseOnly, closingMargin: original.closingMargin)
     facts.threat = facts.threats[0]
     facts.incoming = true
   case "nearer-known":
-    facts.threats[0].position.z = 6000
+    let original = facts.threats[0]
+    facts.threats[0] = .init(
+      identity: original.identity, position: .init(original.position.x, original.position.y, 6000),
+      wanted: original.wanted, pulseOnly: original.pulseOnly, closingMargin: original.closingMargin)
     facts.threat = facts.threats[0]
     var unknown = facts.threat!
     unknown = .init(
