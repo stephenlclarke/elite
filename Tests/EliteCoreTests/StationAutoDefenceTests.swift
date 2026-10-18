@@ -1243,3 +1243,80 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   #expect(peak > 144 && nearFrames > 0 && crossingWasSlow)
   #expect(game.docked && game.nativeMainStationDockEvidenceIsCurrent)
 }
+
+@Test func stationAutoReturningAcquiresSpinDuringRealExteriorMotionWithoutPrematureEntry()
+  async throws
+{
+  var game = try await stationAutoEntryBoundary()
+  let station = try #require(game.autoTargetBody)
+  let pose = game.commander.flightSimulation.pose
+  var start = pose
+  start.position = pose.position + pose.orientation.apply(station.entranceNormal) * 600
+  start.orientation.rotate(pitch: 0, roll: 0.9, yaw: 0.4)
+  // Only the initial fixture is reframed; subsequent attitude and translation are native ticks.
+  NativePagedSalvageFixture.moveObserver(&game, to: start)
+  game.speed = 0
+  game.autoPilot.setApproachVelocity(.init(0, 0, 0))
+  let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 913)
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
+  let player = try #require(game.commander.flightSimulation.player)
+  let context = try #require(game.gameplayContext())
+  try #require(
+    game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: actor, against: player, context: context))
+  let destination = game.autoPilot.targetActor
+  var sawDefence = false
+  var sawMovingAcquisition = false
+  var firstMovingPhase: Double?
+  var minimumMovingPhase = Double.infinity
+  var moved = 0.0
+  var freshFinal = false
+  for _ in 0..<256 {
+    let before = game
+    game.tick(delta: 0.1)
+    let distance =
+      (game.commander.flightSimulation.pose.position
+      - before.commander.flightSimulation.pose.position).length
+    moved += distance
+    sawDefence = sawDefence || game.autoPilot.stationDefencePhase == .defending
+    #expect(game.autoPilot.targetActor == destination && game.screen != .gameOver)
+    #expect(
+      (game.flightWorldVelocity - before.flightWorldVelocity).length
+        <= game.workLimits.acceleration * 0.1 + 1e-8)
+    #expect(abs(game.autoPilot.rollRate) <= min(1, game.workLimits.rollRate) + 1e-8)
+    #expect(abs(game.autoPilot.rollRate - before.autoPilot.rollRate) <= 0.8 * 0.1 + 1e-8)
+    if game.autoPilot.stationDefencePhase == .returning && game.autoPilot.positionError > 40 {
+      #expect(!game.autoPilot.ready && !game.autoPilot.finalApproach)
+      if distance > 0 && abs(game.roll) > 1e-4 {
+        sawMovingAcquisition = true
+        let phase = abs(game.autoPilot.phaseError)
+        if firstMovingPhase == nil { firstMovingPhase = phase }
+        minimumMovingPhase = min(minimumMovingPhase, phase)
+        #expect(
+          game.commander.flightSimulation.pose.orientation
+            != before.commander.flightSimulation.pose.orientation)
+      }
+    }
+    let invalidEntryAcquisition =
+      before.flightWorldVelocity.length >= 1
+      || game.autoPilot.positionError >= 40 || game.autoPilot.facingError >= 0.02
+      || abs(game.autoPilot.phaseError) >= 0.03 || game.autoPilot.rateError >= 0.02
+    if invalidEntryAcquisition {
+      #expect(!game.autoPilot.ready && !game.autoPilot.finalApproach)
+    }
+    if game.autoPilot.ready {
+      #expect(before.flightWorldVelocity.length < 1 && game.autoPilot.positionError < 40)
+      #expect(
+        game.autoPilot.facingError < 0.02 && abs(game.autoPilot.phaseError) < 0.03
+          && game.autoPilot.rateError < 0.02)
+    }
+    if sawDefence && game.autoPilot.finalApproach {
+      freshFinal = true
+      break
+    }
+  }
+  let initialPhase = try #require(firstMovingPhase)
+  #expect(sawDefence && sawMovingAcquisition && moved > 100)
+  #expect(minimumMovingPhase < initialPhase && freshFinal)
+}

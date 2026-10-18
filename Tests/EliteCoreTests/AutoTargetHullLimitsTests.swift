@@ -68,6 +68,45 @@ struct AutoTargetHullLimitsTests {
     #expect(control.status == "STATION SPIN EXCEEDS HULL LIMIT")
   }
 
+  @Test(arguments: ["unknown", "mixed", "infeasible", "approach"])
+  func returningSpinAcquisitionCannotBypassCurrentFactsOrActualHullAuthority(condition: String)
+    throws
+  {
+    let limits = try heavyLimits()
+    var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+    station.rotationRate = 0
+    var control = AutoTargetControl()
+    _ = control.steer(target: station, delta: 0.1, limits: limits)
+    try #require(control.finalApproach)
+    control.setApproachVelocity(.init(0, 0, 40))
+    var facts = StationAutoGuidance(
+      aim: .init(600, 0, 0), lateralVelocity: .init(80, 0, 0),
+      hazard: .active, interruptionAllowed: true, clearanceRadius: 400, handoverAllowed: true)
+    _ = control.steer(target: station, delta: 0.1, limits: limits, defence: facts)
+    _ = control.steer(target: station, delta: 0.1, limits: limits, defence: facts)
+    try #require(control.stationDefencePhase == .returning)
+    station.position.z = 1600
+    station.rotation = 0.7
+    switch condition {
+    case "unknown":
+      facts.hazard = .unknown
+      facts.handoverAllowed = false
+    case "mixed": facts.handoverAllowed = false
+    case "infeasible": station.rotationRate = 0.3
+    case "approach":
+      control = AutoTargetControl()
+      facts.hazard = .clear
+    default: break
+    }
+    if condition == "infeasible" { try #require(station.rotationRate > limits.rollRate) }
+    control.setApproachVelocity(.init(0, 0, 100))
+    let before = control.velocity
+    let rates = control.steer(target: station, delta: 0.1, limits: limits, defence: facts)
+    #expect(rates.roll == 0 && control.rollRate == 0)
+    #expect(!control.ready && !control.finalApproach)
+    #expect((control.velocity - before).length <= limits.acceleration * 0.1 + 1e-8)
+  }
+
   private func heavyLimits() throws -> RelativeWorkLimits {
     let performance = try #require(ShipCatalogue.ship("SH043")?.game)
     return .init(
