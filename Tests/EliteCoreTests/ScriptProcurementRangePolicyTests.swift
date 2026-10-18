@@ -243,10 +243,20 @@ func procurementHeatBreakoffUsesActualNextFrameCooling(offset: Double) async thr
   #expect(after.commander.legal == 0 && budget.missileDefence.attempted.isEmpty)
   #expect(cleared.pitch == 0 && cleared.yaw == 0 && cleared.throttle == 0 && !cleared.fire)
   let current = await runtime.procurementPreflightFacts()
-  try requireLatchPremises(current)
-  try #require(!current.pulseHeatBlocked && current.threat?.identity == phase.target)
+  try #require(current.valid && current.live && !current.paused && !current.docked)
+  try #require(!current.automaticEngaged && !current.pulseHeatBlocked)
+  let player = try #require(after.commander.flightSimulation.player)
+  let targets = after.bodies.filter { $0.physical?.identity == phase.target }
+  try #require(targets.count <= 1)
+  if let target = targets.first {
+    try #require(target.energy.isFinite)
+    let npc = try #require(target.physical?.npc)
+    #expect(target.energy <= 0 || npc.intention != .engage(player))
+  }
+  // Native disappearance or disengagement is observed, never forced by this test pilot.
+  #expect(!current.needsDefence)
   budget.updateRetreat(current)
-  #expect(budget.retreat == phase)
+  #expect(budget.retreat == nil)
   #expect(budget.steps == 1)
   #expect(budget.tabs == 0 && budget.tools == 0)
   let stale = await runtime.procurementPilotStep(
@@ -361,7 +371,7 @@ func procurementRearHalfCapacityAdmitsReengagementWithoutFrontShieldOscillation(
   #expect(budget.retreat?.mode == (offset <= 0 ? .reengage : .breakAway))
 }
 
-@Test func procurementNativeReengagementUsesNormalFacingBrakingAndCheckedPlayerFire() async throws {
+@Test func procurementNativeReengagementUsesNormalFacingThrustAndCheckedPlayerFire() async throws {
   var game = try rangePolicyGame()
   game.laserHeat = 0
   game.frontShield = game.commander.shieldCapacity * 0.25
@@ -381,7 +391,10 @@ func procurementRearHalfCapacityAdmitsReengagementWithoutFrontShieldOscillation(
   try #require(result.status == .defensive)
   let after = await runtime.snapshot()
   let cleared = await runtime.controls
-  #expect(after.speed < before.speed && after.laserHeat > before.laserHeat)
+  #expect(after.speed > before.speed && after.laserHeat > before.laserHeat)
+  #expect(
+    after.commander.flightSimulation.pose.position
+      != before.commander.flightSimulation.pose.position)
   #expect(
     abs(
       after.commander.flightSimulation.physicalTime
@@ -468,7 +481,10 @@ func procurementReengagementRetargetsOnlyFreshImmediateKnownSelection(condition:
   let oldBefore = try #require(before.bodies.first { $0.physical?.identity == original })
   let oldAfter = try #require(after.bodies.first { $0.physical?.identity == original })
   #expect(newAfter.energy < newBefore.energy && oldAfter.energy == oldBefore.energy)
-  #expect(after.laserHeat > before.laserHeat && after.speed < before.speed)
+  #expect(after.laserHeat > before.laserHeat && after.speed > before.speed)
+  #expect(
+    after.commander.flightSimulation.pose.position
+      != before.commander.flightSimulation.pose.position)
   #expect(after.commander.missiles == before.commander.missiles)
   #expect(after.commander.equipmentInventory == before.commander.equipmentInventory)
   #expect(

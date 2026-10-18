@@ -875,7 +875,7 @@ extension GameRuntime {
         steeringThreat = facts.threat
       }
       let breakingAway = retreat?.mode == .breakAway
-      input.throttle = breakingAway ? 1 : (facts.speed > 0 ? -1 : 0)
+      input.throttle = 1
       if let threat = steeringThreat {
         let p = breakingAway ? threat.position * -1 : threat.position
         let angle = atan2(p.x, p.z)
