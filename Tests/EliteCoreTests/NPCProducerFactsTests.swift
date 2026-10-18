@@ -36,10 +36,25 @@ struct NPCProducerFactsTests {
   }
 
   @Test func generatedCraftCarryActualFactsCatalogueAndRoleLoadoutWithoutStockResources() throws {
+    // This case isolates role defaults; government-zero overrides have separate actual-policy coverage.
+    func roleContext(seed: UInt64, time: Double) -> EncounterContext {
+      let original = context(seed: seed, time: time)
+      return .init(
+        system: original.system, seed: original.seed, government: 1, visit: original.visit,
+        revision: original.revision, physicalTime: original.physicalTime, anchors: original.anchors,
+        player: original.player, actors: original.actors, protection: original.protection,
+        budget: original.budget, perceptionRadius: original.perceptionRadius,
+        depletedRocks: original.depletedRocks, miningPresence: original.miningPresence)
+    }
     var roles: Set<NPCRole> = []
     var commodities: Set<CommodityIdentity> = []
     for seed in 1...128 {
-      for request in requests(seed: UInt64(seed)) {
+      let initial = roleContext(seed: UInt64(seed), time: 0)
+      let current = roleContext(seed: UInt64(seed), time: 120)
+      #expect(initial.government == 1 && current.government == 1)
+      var director = EncounterDirector(context: initial)
+      let generated = director.advance(context: current).batches.flatMap(\.requests)
+      for request in generated {
         let npc = try #require(request.npc)
         roles.insert(npc.role)
         #expect(npc.legalProvenance == .generated)

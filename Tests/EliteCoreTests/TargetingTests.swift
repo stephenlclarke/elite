@@ -14,7 +14,9 @@ private func computerGame(_ tier: TargetingTier) -> Game {
 }
 
 @Test(arguments: TargetingTier.allCases)
-func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: TargetingTier) {
+func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: TargetingTier)
+  throws
+{
   var game = computerGame(tier)
   for (hull, hostile) in [
     (Hull.cobra, false), (.cobra, true), (.cargo, false), (.asteroid, false),
@@ -24,6 +26,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     game.bodies = [body]
     game.weaponsTargetID = body.id
     #expect(game.workGuidance == nil && body.physical == nil)
+    let flightBefore = game.commander.flightSimulation
     let info = game.targetInformation
     if hull == .station && tier < .docking {
       #expect(info == nil)
@@ -32,18 +35,27 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
     } else {
       let expected = hull == .station ? game.autoPilot.status : hostile ? "Hostile" : "Neutral"
       #expect(info?.status == expected)
+      let panelInfo = try #require(info)
+      let cockpit = CockpitLayout(game: game, width: 512, height: 518)
+      let panel = TargetPanelLayout(game: game, info: panelInfo, cockpit: cockpit)
+      let statusTop = panel.y + panel.row * Double(panel.headings.count)
+      let statusBottom = statusTop + panel.row * Double(panel.statuses.count)
+      let expectedInk: Ink = hostile ? .red : .cyan
       let frame = Display.cockpit(game, width: 512, height: 518)
       let statusRows = frame.labels.filter {
-        $0.x >= 256 && $0.y >= 32 && $0.y < 100 && $0.ink == .white
+        $0.x == panel.x && $0.y >= statusTop && $0.y < statusBottom
       }.sorted { $0.y < $1.y }
+      #expect(!statusRows.isEmpty && statusRows.allSatisfy { $0.ink == expectedInk })
       #expect(statusRows.map(\.text).joined(separator: " ") == expected + " I: Detail")
       #expect(
         statusRows.allSatisfy {
-          $0.bounds.maxX <= 512 && $0.bounds.maxY <= frame.flightClip.maxY
+          $0.x >= 256 && $0.y >= 32 && $0.bounds.maxX <= 512
+            && $0.bounds.maxY <= frame.flightClip.maxY
         })
     }
     // Looking at an unadopted target must not allocate a physical actor or a controller.
     #expect(game.bodies[0].physical == nil && game.workGuidance == nil)
+    #expect(game.commander.flightSimulation == flightBefore)
   }
 }
 
