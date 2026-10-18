@@ -9,3 +9,5 @@ The supported tiny-fuel positive case also called the legacy-only direct loader 
 This leaf changes only effective validation, the original overflow and tiny-fuel methods, necessary private current-boundary witnesses, one bounded combined-policy regression and the matching notes. Canonical CI inputs and every other test/helper remain unchanged. The full run failed coverage; sanitizer/leak/Sonar/release acceptance is not established. See the [PR handoff](PR-effective-drive-policy-validation.md).
 
 Focused attempt 353 stopped before test execution: Swift Testing macros captured borrowed Game parameters in the new preservation and publication helpers. Bind the same comparison or precondition as a local Boolean before invoking each macro, retaining the borrowed parameters and every original assertion.
+
+Attempt 354 identified the remaining short-circuit `&&` autoclosures in seven helper expressions. Their unchanged individual predicates are now bound before combining Boolean values, so neither Testing macros nor Boolean autoclosures capture a borrowed Game. No original test method, value, assertion, control or budget changed.
