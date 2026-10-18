@@ -150,6 +150,13 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
   // Each phase returns before the next full nested validator reserves its temporaries.
   @inline(never)
   private func sourceAndCrewAreValid() -> Bool {
+    guard sourceFactsBeforeCrewCensusAreValid(), crewCensusValid else { return false }
+    return crewCaptureReceiptsAreValid()
+  }
+
+  // Source/equipment temporaries end before census, and receipt temporaries start afterwards.
+  @inline(never)
+  private func sourceFactsBeforeCrewCensusAreValid() -> Bool {
     guard custody.logical == source, custody.original.body.id == originalBodyID,
       custody.original.body.physical?.spawnIdentity == originalSpawn,
       custody.original.body.physical?.npc?.ordinaryCargo == cargo,
@@ -172,9 +179,14 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
       originalSpawn?.system == source.system || originalSpawn == nil, wreck.system == source.system,
       wreck.site == 0x8000_0000 + UInt32(sequence), wreck.lineage == source.visit,
       (1...EMPState.maximumPeople).contains(crewTotal), pods.count <= crewTotal,
-      capturedCrewCount <= crewTotal - pods.count, crewAboard >= 0, crewDeadline != nil,
-      crewCensusValid,
-      crewCaptures.count <= EMPState.maximumPeople,
+      capturedCrewCount <= crewTotal - pods.count, crewAboard >= 0, crewDeadline != nil
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func crewCaptureReceiptsAreValid() -> Bool {
+    guard crewCaptures.count <= EMPState.maximumPeople,
       savedCrewCaptures == nil || !crewCaptures.isEmpty,
       Set(crewCaptures.map(\.operation)).count == crewCaptures.count,
       crewCaptures.allSatisfy({ $0.valid(record: self) }),
