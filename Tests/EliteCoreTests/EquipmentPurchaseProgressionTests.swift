@@ -269,7 +269,9 @@ private func epPaidChain(_ ids: [EquipmentNodeID]) throws -> EquipmentPurchaseHi
       quote, request: request, snapshot: snapshot,
       history: .init(owner: epOwner, revision: 1), graph: epGraph)
   }
-  let graph = EquipmentPurchaseGraph(revision: 2, nodes: epGraph.nodes, aliases: epGraph.aliases)
+  let graph = EquipmentPurchaseGraph(
+    revision: epGraph.revision + 1, nodes: epGraph.nodes, aliases: epGraph.aliases)
+  #expect(graph.revision != epGraph.revision && quote.binding.graphRevision == epGraph.revision)
   #expect(throws: EquipmentPurchaseError.staleQuote) {
     try EquipmentPurchaseProgression.apply(
       quote, request: request, snapshot: snapshot,

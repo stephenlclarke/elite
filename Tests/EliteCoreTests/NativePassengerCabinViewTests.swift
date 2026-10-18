@@ -202,15 +202,67 @@ extension NativeViewTests {
     defer { fixture.clean() }
     try fixture.paint()
     let cash = fixture.view.game.commander.credits
+    let beforeBuy = fixture.view.game.commander
+    let price = fixture.view.game.passengerBerthQuote.price
+    try #require(!beforeBuy.unlimitedCash && price.isFinite && price == PassengerCabin.price)
+    let beforeGenerations = try fixture.generations()
+    let beforeBytes = try Data(contentsOf: fixture.save)
+    let beforePointer = try JSONDecoder().decode(ScriptSavePointer.self, from: beforeBytes)
+    try #require(beforeGenerations > 0 && beforePointer.schemaVersion == 26)
+    try #require(
+      beforePointer.scope == "commander" && beforePointer.valueCodec == ScriptValueStorage.codec)
+    let (beforeStored, beforeWorld) = try ScriptSaveStore.read(beforeBytes, from: fixture.save)
+    #expect(
+      beforeStored == beforeBuy && beforeWorld.valid && beforeWorld.consistent(with: beforeBuy))
+    let generationRoot = fixture.save.appendingPathExtension("missions")
+    let originalGenerations = try FileManager.default.contentsOfDirectory(
+      atPath: generationRoot.path)
+    let enumeration = FileManager.default.enumerator(
+      at: generationRoot, includingPropertiesForKeys: [.isRegularFileKey])
+    let entries = try #require(enumeration)
+    var originalFiles: [URL: Data] = [:]
+    for case let url as URL in entries {
+      let values = try url.resourceValues(forKeys: [.isRegularFileKey])
+      if values.isRegularFile == true { originalFiles[url] = try Data(contentsOf: url) }
+    }
+    try #require(!originalFiles.isEmpty)
     try fixture.queue(36, text: "\r")
     #expect(fixture.view.pending == ["equipment-purchase"])
     await fixture.delegate.processPendingCommands(in: fixture.view)
     let berth = try #require(fixture.view.game.commander.accommodation.fittedBerths.first?.id)
+    try #require(!beforeBuy.accommodation.ownedBerths.contains { $0.id == berth })
+    var expectedPurchase = beforeBuy
+    expectedPurchase.accommodation.ownedBerths.append(PassengerBerth(id: berth))
+    expectedPurchase.accommodation.fitted.insert(berth)
+    expectedPurchase.credits -= price
+    #expect(fixture.view.game.commander == expectedPurchase)
     #expect(fixture.view.game.commander.credits == cash - PassengerCabin.price)
     #expect(fixture.view.game.commander.cargoTonnes == 5)
     try fixture.exportEvidence("fitted")
     let afterBuy = try fixture.generations()
-    #expect(afterBuy == 1)
+    #expect(afterBuy == beforeGenerations + 1)
+    let afterBytes = try Data(contentsOf: fixture.save)
+    let afterPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: afterBytes)
+    #expect(afterPointer.generation != beforePointer.generation && afterBytes != beforeBytes)
+    #expect(afterPointer.schemaVersion == 26 && afterPointer.scope == "commander")
+    #expect(afterPointer.valueCodec == ScriptValueStorage.codec)
+    let (afterStored, afterWorld) = try ScriptSaveStore.read(afterBytes, from: fixture.save)
+    #expect(
+      afterStored == expectedPurchase && afterStored == fixture.view.game.commander
+        && afterWorld.valid
+        && afterWorld.consistent(with: afterStored))
+    #expect(afterStored.equipmentInventory == beforeBuy.equipmentInventory)
+    #expect(afterStored.equipmentPurchaseHistory == beforeBuy.equipmentPurchaseHistory)
+    #expect(
+      afterStored.cargo == beforeBuy.cargo && afterStored.salvageLedger == beforeBuy.salvageLedger)
+    let currentGenerations = try FileManager.default.contentsOfDirectory(
+      atPath: generationRoot.path)
+    #expect(Set(originalGenerations).isSubset(of: Set(currentGenerations)))
+    #expect(Set(currentGenerations).subtracting(originalGenerations) == [afterPointer.generation])
+    for (url, original) in originalFiles {
+      let retained = try Data(contentsOf: url)
+      #expect(retained == original)
+    }
     try fixture.paint()
     try fixture.queue(1, text: "s", repeatKey: true)
     #expect(fixture.view.pending.isEmpty)

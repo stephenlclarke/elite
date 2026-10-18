@@ -63,19 +63,39 @@ struct SalvageDefinitionsTests {
   }
 
   @Test func scalarFitsRequireOneValidAxisAndRealLaser() throws {
+    let alienIDs = Set(
+      AlienModuleKind.allCases.flatMap { [$0.definitionID, $0.upgradeDefinitionID] })
+    var checkedAlien: Set<String> = []
+    var checkedOrdinary: Set<String> = []
     for item in SalvageDefinitions.all {
       guard case .scalar(let axes) = item.effect else { continue }
-      for axis in axes {
+      if alienIDs.contains(item.id) {
+        checkedAlien.insert(item.id)
+        // Typed attachments keep their authenticated fitting boundary; the pure legacy table cannot consume them.
+        for axis in axes {
+          let result = SalvageDefinitions.compatibility(
+            definition: item, action: .fit(axis: axis, mount: .front), context: context())
+          #expect(result == .refused(.incompatibleHardware))
+        }
+        let nilAxis = SalvageDefinitions.compatibility(
+          definition: item, action: .fit(axis: nil, mount: .front), context: context())
+        #expect(nilAxis == .refused(.incompatibleHardware))
+      } else {
+        checkedOrdinary.insert(item.id)
+        for axis in axes {
+          #expect(
+            SalvageDefinitions.compatibility(
+              definition: item,
+              action: .fit(axis: axis, mount: .front), context: context()) == .permitted)
+        }
         #expect(
           SalvageDefinitions.compatibility(
             definition: item,
-            action: .fit(axis: axis, mount: .front), context: context()) == .permitted)
+            action: .fit(axis: nil, mount: .front), context: context())
+            == .refused(.unsupportedAxis))
       }
-      #expect(
-        SalvageDefinitions.compatibility(
-          definition: item,
-          action: .fit(axis: nil, mount: .front), context: context()) == .refused(.unsupportedAxis))
     }
+    #expect(checkedAlien == alienIDs && !checkedOrdinary.isEmpty)
     let laser = try #require(SalvageDefinitions.definition(id: "laser-technology"))
     #expect(
       SalvageDefinitions.compatibility(
