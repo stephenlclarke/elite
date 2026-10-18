@@ -409,8 +409,7 @@ struct ScriptProcurementFixture {
       }
       try #require(action != .refuse, "Preflight refused at total step \(budget.steps).")
       // A re-engaging pilot may use the existing native fallback before heat starts a new turn.
-      let wasReengaging = budget.retreat?.permitsCombat(facts) == true
-      budget.updateRetreat(facts)
+      let wasReengaging = budget.updateRetreat(facts)
       if budget.retreat == nil || wasReengaging {
         budget = try await runtime.procurementMissileFallback(expected: facts, budget: budget)
       }
