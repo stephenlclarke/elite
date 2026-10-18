@@ -32,8 +32,8 @@ private enum ActorMotionFixture {
     // Explicit test boundary injection; G1 exclusively owns production readiness activation.
     game.nativeCrimboLifecycleAvailable = true
     game.commander.savedCrimboState = try CrimboFixture.registry(owner: owner, sequence: sequence)
-    game.commander.flightSimulation.advancePhysicalTime(0.1)
-    game.advanceNativeCrimbo(delta: 0.1)
+    // Advance the actual scene so rotating station models share the physical clock's phase.
+    game.tick(delta: 0.1)
     let count = CrimboFixture.convoyBodies(game).count
     try #require(count == 7)
     return game
@@ -199,6 +199,8 @@ struct NativeCrimboActorMotionTests {
         $0.nativeStationIdentity?.definition
           == NativeStationGeometry.Kind.waystation.sourceDefinition
       })
+    let rigid = world.bodyRigidPoseIsConsistent(station, flight: game.commander.flightSimulation)
+    try #require(rigid)
     let identity = try #require(station.nativeStationIdentity)
     let saved = try #require(world.pose(for: identity))
     let orientation = try #require(
@@ -214,7 +216,16 @@ struct NativeCrimboActorMotionTests {
     // A real doorway attempt is refused by the existing owner when no save destination exists.
     let runtime = GameRuntime(game: game)
     let before = await runtime.snapshot()
+    let oldDepth =
+      (orientation.inverse(before.commander.flightSimulation.pose.position - saved.position)
+      - port.center).dot(port.outward)
     let frame = await runtime.advance(delta: 0.1)
+    let endpointOrientation = saved.orientation(at: frame.commander.flightSimulation.physicalTime)
+    let endOrientation = try #require(endpointOrientation)
+    let depth =
+      (endOrientation.inverse(frame.commander.flightSimulation.pose.position - saved.position)
+      - port.center).dot(port.outward)
+    #expect(oldDepth > 0 && depth <= 0 && depth > -port.tunnelDepth)
     #expect(frame.message == "CHOOSE A SAVE LOCATION BEFORE RRS DOCKING")
     #expect(!frame.docked && frame.pendingNativeStationDock == nil)
     #expect(
