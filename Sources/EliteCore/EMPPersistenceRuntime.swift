@@ -314,34 +314,93 @@ extension Game {
 
   @inline(never)
   private mutating func validateCapturedEMPScene() -> Bool {
+    Self.capturedEMPSceneIsValid(commander, bodies: bodies)
+  }
+
+  @inline(never)
+  private static func capturedEMPSceneIsValid(
+    _ commander: borrowing Commander, bodies: borrowing [SpaceBody]
+  ) -> Bool {
     guard let state = commander.savedEMPState else { return true }
     return state.sceneIsConsistent(
       bodies, flight: commander.flightSimulation, people: commander.nativePeople)
   }
 
+  // Each read borrows the current Commander and ends before entering capture.
+  @inline(never)
+  private static func currentEMPArchiveState(_ commander: borrowing Commander) -> EMPState? {
+    commander.savedEMPState
+  }
+
+  @inline(never)
+  private static func currentEMPArchivePose(_ commander: borrowing Commander) -> ShipPose {
+    commander.flightSimulation.pose
+  }
+
+  @inline(never)
+  private static func currentEMPArchiveTime(_ commander: borrowing Commander) -> Double {
+    commander.flightSimulation.physicalTime
+  }
+
+  @inline(never)
+  private static func worldOwnsEMPArchivePod(
+    _ person: EMPCrewIdentity, commander: borrowing Commander
+  ) -> Bool {
+    commander.worldOwnedPod(person)
+  }
+
   /// Capture keeps its original initial/final state guards and publication point.
   @inline(never)
   private mutating func captureEMPArchiveState() -> Bool {
-    guard var state = commander.savedEMPState else { return false }
+    guard var state = Self.currentEMPArchiveState(commander) else { return false }
     guard state.valid else { return false }
     for source in state.records.keys {
-      guard var record = state.records[source] else { return false }
-      guard captureEMPArchiveRecord(&record) else { return false }
-      state.records[source] = record
+      guard captureEMPArchiveRecord(source: source, in: &state) else { return false }
     }
     guard state.valid else { return false }
     commander.savedEMPState = state
     return true
   }
 
-  /// Record temporaries finish before the archive's final validation and publication.
+  // A record's dictionary temporary ends before full archive validation.
+  @inline(never)
+  private mutating func captureEMPArchiveRecord(source: ActorIdentity, in state: inout EMPState)
+    -> Bool
+  {
+    guard var record = state.records[source] else { return false }
+    guard captureEMPArchiveRecord(&record) else { return false }
+    state.records[source] = record
+    return true
+  }
+
   @inline(never)
   private mutating func captureEMPArchiveRecord(_ record: inout EMPHullRecord) -> Bool {
-    let pose = commander.flightSimulation.pose
-    let now = commander.flightSimulation.physicalTime
+    let pose = Self.currentEMPArchivePose(commander)
+    let now = Self.currentEMPArchiveTime(commander)
     if record.isRecovered {
-      guard updateRecoveredEMPArchive(&record, pose: pose, now: now) else { return false }
-    } else if let binding = record.hull.binding {
+      guard captureRecoveredEMPArchiveRecord(&record, pose: pose, now: now) else { return false }
+    } else {
+      captureEMPArchiveHull(&record, pose: pose, now: now)
+    }
+    for i in record.pods.indices {
+      guard captureEMPArchivePod(&record.pods[i], pose: pose, now: now) else { return false }
+    }
+    return true
+  }
+
+  // Recovered receiver/body temporaries exist only when this branch is entered.
+  @inline(never)
+  private mutating func captureRecoveredEMPArchiveRecord(
+    _ record: inout EMPHullRecord, pose: ShipPose, now: Double
+  ) -> Bool {
+    updateRecoveredEMPArchive(&record, pose: pose, now: now)
+  }
+
+  @inline(never)
+  private mutating func captureEMPArchiveHull(
+    _ record: inout EMPHullRecord, pose: ShipPose, now: Double
+  ) {
+    if let binding = record.hull.binding {
       if let body = bodies.first(where: { $0.physical?.identity == binding }) {
         record.hull = .init(body: body, pose: pose, time: now)
         if body.energy <= 0, !record.terminal, !record.disableEpisodes.isEmpty {
@@ -357,19 +416,31 @@ extension Game {
         record.hull.binding = nil
       }
     }
-    for i in record.pods.indices {
-      guard let person = record.pods[i].body.physical?.empCrewPod else { return false }
-      guard commander.worldOwnedPod(person) else {
-        guard record.pods[i].binding == nil else { return false }
-        continue
-      }
-      if let binding = record.pods[i].binding {
-        if let body = bodies.first(where: { $0.physical?.identity == binding }) {
-          guard body.energy > 0 else { return false }
-          record.pods[i] = .init(body: body, pose: pose, time: now)
-        } else {
-          record.pods[i].binding = nil
-        }
+  }
+
+  // Resolve current person ownership before reserving the bound-body capture frame.
+  @inline(never)
+  private mutating func captureEMPArchivePod(
+    _ pod: inout EMPStoredObject, pose: ShipPose, now: Double
+  ) -> Bool {
+    guard let person = pod.body.physical?.empCrewPod else { return false }
+    guard Self.worldOwnsEMPArchivePod(person, commander: commander) else {
+      guard pod.binding == nil else { return false }
+      return true
+    }
+    return captureBoundEMPArchivePod(&pod, pose: pose, now: now)
+  }
+
+  @inline(never)
+  private mutating func captureBoundEMPArchivePod(
+    _ pod: inout EMPStoredObject, pose: ShipPose, now: Double
+  ) -> Bool {
+    if let binding = pod.binding {
+      if let body = bodies.first(where: { $0.physical?.identity == binding }) {
+        guard body.energy > 0 else { return false }
+        pod = .init(body: body, pose: pose, time: now)
+      } else {
+        pod.binding = nil
       }
     }
     return true
