@@ -23,7 +23,7 @@ private struct LedgerImpactFacts {
 /// Real retained pack, native allocators and geometric producer; no sealed constructor is used.
 private func ledgerImpactFixture(
   reentry: Bool = false, absentSource: Bool = false, incidental: Bool = false,
-  mining: Bool = false, fragileRock: Bool = false, emissionTime: Double = 0
+  mining: Bool = false, terminalPreDamage: Bool = false, emissionTime: Double = 0
 ) throws -> LedgerImpactFixture {
   let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
     .deletingLastPathComponent().deletingLastPathComponent()
@@ -33,7 +33,7 @@ private func ledgerImpactFixture(
   let instance = try prepareLedgerImpactLaunch(&game, pack: pack, emissionTime: emissionTime)
   let facts = try prepareLedgerImpactContact(
     &game, instance: instance, reentry: reentry, absentSource: absentSource,
-    incidental: incidental, mining: mining, fragileRock: fragileRock)
+    incidental: incidental, mining: mining, terminalPreDamage: terminalPreDamage)
   return .init(
     game: game, proof: facts.proof, context: facts.context, origin: facts.origin,
     eventID: facts.eventID, rock: facts.rock)
@@ -56,7 +56,7 @@ private func prepareLedgerImpactLaunch(
 
 private func prepareLedgerImpactContact(
   _ game: inout Game, instance: UUID, reentry: Bool, absentSource: Bool,
-  incidental: Bool, mining: Bool, fragileRock: Bool
+  incidental: Bool, mining: Bool, terminalPreDamage: Bool
 ) throws -> LedgerImpactFacts {
   let source = try #require(
     game.bodies.first { $0.missionInstanceID == instance && $0.scriptNPC != nil })
@@ -101,9 +101,7 @@ private func prepareLedgerImpactContact(
     var target = SpaceBody(id: 101, hull: mining ? .asteroid : .cobra, position: .init(0, 0, 500))
     if mining {
       let generated = try #require(game.miningFields.first?.rocks.first)
-      rock = .init(
-        identity: generated.identity, position: generated.position, radius: generated.radius,
-        energy: fragileRock ? weapon.damage / 2 : generated.energy)
+      rock = generated
       target.energy = rock!.energy
       game.miningFields = [.init(position: rock!.position, rocks: [rock!])]
       game.ensurePhysicalActors()
@@ -114,6 +112,44 @@ private func prepareLedgerImpactContact(
     game.bodies.append(target)
   }
   game.ensurePhysicalActors()
+  if terminalPreDamage {
+    // Damage live condition through the ordinary native kernel, never canonical rock metadata.
+    let rock = try #require(rock)
+    let chunk = try #require(AsteroidBeltDefinition.chunk(for: rock.identity))
+    try #require(rock.energy == chunk.energy && rock.radius == chunk.radius)
+    try #require(game.commander.miningLedger == MiningLedger() && game.commander.miningLedger.valid)
+    game.commander.miningLedger = MiningLedger(seed: 17)
+    let fitted = try #require(game.commander.fittedEquipment(at: .laser(.front)))
+    let laser = try #require(game.commander.laser(on: .front))
+    let damage = game.commander.laserDamage(against: .asteroid, mount: .front)
+    try #require(fitted.node.key == laser.equipmentName && laser == .pulse)
+    try #require(damage == laser.damage && damage == 15 && weapon.damage == 15)
+    for _ in 0..<Int(ceil(rock.energy / damage)) {
+      let remaining = game.commander.miningLedger.remainingEnergy(for: rock)
+      if remaining <= weapon.damage { break }
+      try #require(remaining > damage)
+      let current = try #require(game.gameplayContext())
+      let contact = try game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+        includePlayer: false)
+      let hit = try #require(contact)
+      try #require(hit.selectedTargetBody?.physical?.rock == rock.identity)
+      let allocated = game.makeAttackOrigin(owner: current.player.identity)
+      let pulseOrigin = try #require(allocated)
+      let applied = game.applyCombatHit(
+        hit.hit, origin: pulseOrigin, kind: .laser, damage: damage, laser: laser, mount: .front,
+        emissionPosition: current.player.position)
+      let incident = try #require(applied)
+      try #require(incident.kind == .laser && incident.laser == .pulse)
+      let actual = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
+      try #require(actual.energy == remaining - damage)
+      try #require(actual.energy == game.commander.miningLedger.remainingEnergy(for: rock))
+      try #require(!game.commander.miningLedger.isDepleted(rock.identity))
+      try #require(game.commander.miningLedger.pendingPayloads.isEmpty)
+    }
+    let remaining = game.commander.miningLedger.remainingEnergy(for: rock)
+    try #require(remaining > 0 && remaining <= weapon.damage && game.commander.miningLedger.valid)
+  }
   let context = try #require(game.gameplayContext())
   let evaluatedResult2 = game.commander.flightSimulation.allocateSpawn()
   let sequence = try #require(evaluatedResult2)
@@ -251,9 +287,14 @@ struct MissionLedgerImpactTests {
   }
 
   @Test func plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield() throws {
-    let fixture = try ledgerImpactFixture(mining: true, fragileRock: true)
+    let fixture = try ledgerImpactFixture(mining: true, terminalPreDamage: true)
     let rock = try #require(fixture.rock)
-    var ordinary = MiningLedger(seed: 17)
+    let chunk = try #require(AsteroidBeltDefinition.chunk(for: rock.identity))
+    try #require(rock.energy == chunk.energy && rock.radius == chunk.radius)
+    let remaining = fixture.game.commander.miningLedger.remainingEnergy(for: rock)
+    try #require(remaining > 0 && remaining <= fixture.proof.damage && fixture.proof.damage == 15)
+    try #require(fixture.proof.targetBody?.energy == remaining)
+    var ordinary = fixture.game.commander.miningLedger
     var scoped = ordinary
     let incident = CombatIncident(
       id: fixture.eventID, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
@@ -270,12 +311,27 @@ struct MissionLedgerImpactTests {
     #expect(
       scoped == ordinary && scoped.isDepleted(rock.identity) && scoped.pendingPayloads.isEmpty)
     #expect(scoped.valid)
+    let destroyed = scoped
+    let replay = scoped.hit(
+      rock: rock, proof: fixture.proof, eventID: fixture.eventID, context: fixture.context)
+    #expect(replay == .ignored && scoped == destroyed)
+    try #require(fixture.eventID > 1)
+    let older = scoped.hit(
+      rock: rock, proof: fixture.proof, eventID: fixture.eventID - 1, context: fixture.context)
+    #expect(older == .ignored && scoped == destroyed)
   }
 
   @Test func plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity() throws
   {
-    var fixture = try ledgerImpactFixture(mining: true, fragileRock: true)
-    var ledger = MiningLedger(seed: 17)
+    var fixture = try ledgerImpactFixture(mining: true, terminalPreDamage: true)
+    let rock = try #require(fixture.rock)
+    let chunk = try #require(AsteroidBeltDefinition.chunk(for: rock.identity))
+    try #require(rock.energy == chunk.energy && rock.radius == chunk.radius)
+    let remaining = fixture.game.commander.miningLedger.remainingEnergy(for: rock)
+    try #require(remaining > 0 && remaining <= fixture.proof.damage && fixture.proof.damage == 15)
+    try #require(fixture.proof.targetBody?.energy == remaining)
+    var ledger = fixture.game.commander.miningLedger
+    var lastQueueEvent = fixture.eventID
     var reachedCapacity = false
     // Seed retained custody through the unchanged ordinary ledger API. Only the new plasma
     // operation below uses the actual geometric sealed producer; no mission capability is faked.
@@ -287,27 +343,52 @@ struct MissionLedgerImpactTests {
         position: .init(100, 200, 300), radius: 40, energy: 1)
       let evaluatedResult15 = fixture.game.commander.flightSimulation.allocateIncident()
       let event = try #require(evaluatedResult15)
+      try #require(event > lastQueueEvent)
+      lastQueueEvent = event
       let ordinary = CombatIncident(
         id: event, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
         victim: fixture.proof.currentVictim, kind: .laser, outcome: .destruction,
         position: rock.position, victimLegalBeforeAttack: nil, firstAggressor: nil,
         victimRole: nil, victimIsStation: false, laser: .mining)
-      if ledger.hit(rock: rock, incident: ordinary, damage: 2) == .capacityRefused {
+      let before = ledger
+      let result = ledger.hit(rock: rock, incident: ordinary, damage: 2)
+      if result == .capacityRefused {
         reachedCapacity = true
-        break
+        #expect(ledger == before)
       }
+      try #require(ledger.valid && ledger.pendingPayloads.count <= MiningLedger.maximumPending)
+      if ledger.pendingPayloads.count == MiningLedger.maximumPending { break }
     }
-    try #require(reachedCapacity && ledger.valid && !ledger.pendingPayloads.isEmpty)
+    try #require(
+      reachedCapacity && ledger.valid && ledger.pendingPayloads.count == MiningLedger.maximumPending
+    )
     let custody = ledger.pendingPayloads
-    let rock = try #require(fixture.rock)
+    try fixture.game.validateMissionNativeImpactProof(fixture.proof)
     let evaluatedResult16 = fixture.game.commander.flightSimulation.allocateIncident()
     let event = try #require(evaluatedResult16)
+    try #require(event > lastQueueEvent)
+    var ordinary = ledger
+    let incident = CombatIncident(
+      id: event, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
+      victim: fixture.proof.currentVictim, kind: .plasma, outcome: .destruction,
+      position: fixture.context.player.position, victimLegalBeforeAttack: nil,
+      firstAggressor: nil, victimRole: nil, victimIsStation: false)
+    let expected = ordinary.hit(rock: rock, incident: incident, damage: fixture.proof.damage)
+    #expect(expected == .destroyed)
     let evaluatedResult17 =
       ledger.hit(
         rock: rock, proof: fixture.proof, eventID: event,
         context: fixture.context) == .destroyed
     #expect(evaluatedResult17)
     #expect(ledger.pendingPayloads == custody && ledger.isDepleted(rock.identity) && ledger.valid)
+    #expect(ledger == ordinary)
+    let destroyed = ledger
+    let replay = ledger.hit(
+      rock: rock, proof: fixture.proof, eventID: event, context: fixture.context)
+    #expect(replay == .ignored && ledger == destroyed)
+    let older = ledger.hit(
+      rock: rock, proof: fixture.proof, eventID: lastQueueEvent, context: fixture.context)
+    #expect(older == .ignored && ledger == destroyed)
   }
 
   @Test func futurePresentLaunchRefusesBeforeEventOrDeathWhileExactNowAndOlderRemainValid() throws {
