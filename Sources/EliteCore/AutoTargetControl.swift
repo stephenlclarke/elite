@@ -244,9 +244,8 @@ public struct AutoTargetControl: Sendable {
         delta: delta)
     let maximumSpeed =
       stationStaged || finalApproach ? min(Self.policyLimits.speed, limits.speed) : limits.speed
-    let thrustBudget =
-      delta > 1 && acceleration > Double.greatestFiniteMagnitude / delta
-      ? Double.greatestFiniteMagnitude : acceleration * delta
+    let requestedThrust = acceleration * delta
+    let thrustBudget = requestedThrust.isFinite ? requestedThrust : Double.greatestFiniteMagnitude
     // One thrust budget covers approach, braking and station avoidance. Existing
     // overspeed coasts down within that budget rather than projecting velocity instantly.
     velocity =
