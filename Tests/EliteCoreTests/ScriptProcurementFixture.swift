@@ -740,7 +740,7 @@ extension GameRuntime {
         if body.hostile { return facts }
         continue
       }
-      if body.hostile && physical.npc?.intention == nil { return facts }
+      if body.hostile && physical.npc?.intention != .engage(player) { return facts }
       guard physical.npc?.intention == .engage(player) else { continue }
       guard physical.identity != player, physical.identity.system == context.system,
         physical.identity.visit == context.visit, body.energy.isFinite,
