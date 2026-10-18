@@ -88,7 +88,9 @@ enum NativePagedSalvageFixture {
       #expect(
         observedWreckUpdate)
     }
-    #expect(ledger.validState)
+    let encodedLedger = try JSONEncoder().encode(ledger)
+    let decodedLedger = try JSONDecoder().decode(SalvageLedger.self, from: encodedLedger)
+    #expect(decodedLedger == ledger)
     #expect(ledger.pendingLots.count == SalvageLedger.maximumPending)
     #expect(ledger.inventory.count == SalvageLedger.maximumInventory)
     let observedWreckUpdate2 = ledger.updateWreck(
