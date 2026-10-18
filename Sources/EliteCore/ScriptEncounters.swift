@@ -246,7 +246,8 @@ extension Game {
   /// Rechecks a sealed source against actual installed authority without a caller snapshot.
   /// Prepared retention stays private to its adapter and must also match the staged patch.
   func validateMissionActorAdmissionSource(_ source: MissionActorAdmissionSource) throws {
-    guard let owner = commander.scriptState.instances[source.instanceID],
+    let currentInputs = commander.missionActorAdmissionSourceValues()
+    guard let owner = currentInputs.instances[source.instanceID],
       owner.id == source.instanceID, owner.revision == source.instanceRevision,
       owner.digest == source.packDigest, owner.definition == source.definition,
       owner.version == source.version, let pack = scriptPack(for: owner),
@@ -260,7 +261,7 @@ extension Game {
     case .retained:
       guard source.authority == .retained,
         owner.ownedEncounters[source.encounterID] == source.retention,
-        source.system == .init(galaxy: commander.galaxy, system: commander.system)
+        source.system == .init(galaxy: currentInputs.galaxy, system: currentInputs.system)
       else { throw MissionPackError("Retained actor admission source changed before publication.") }
       refreshed = try sealMissionActorAdmissionSource(
         mode: .retained, authority: .retained, pack: pack, state: owner,
@@ -314,7 +315,8 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
     worldJob: UUID? = nil, pulse: UInt64? = nil
   ) throws -> MissionActorAdmissionSource {
-    guard commander.scriptState.instances[state.id]?.ownedEncounters[encounter.id]?.admitted != true
+    let currentInputs = commander.missionActorAdmissionSourceValues()
+    guard currentInputs.instances[state.id]?.ownedEncounters[encounter.id]?.admitted != true
     else {
       throw MissionPackError("An admitted retained cohort cannot become a fresh prepared source.")
     }
@@ -393,11 +395,11 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
     definition: ScriptEncounterDefinition
   ) throws -> MissionActorAdmissionSource {
-    let currentScriptState = commander.scriptState
+    let currentInputs = commander.missionActorAdmissionSourceValues()
     let legacy = encounter.legacyProvenance
     if let legacy {
       guard legacy.matches(owner: state, encounter: encounter),
-        currentScriptState.instances[state.id]?.ownedEncounters[encounter.id] == encounter
+        currentInputs.instances[state.id]?.ownedEncounters[encounter.id] == encounter
       else {
         throw MissionPackError("Historical actor provenance differs from its installed owner.")
       }
@@ -413,57 +415,67 @@ extension Game {
       else { throw MissionPackError("Actor source identity or canonical condition is invalid.") }
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
-        installedModels: pack.models, geometry: currentScriptState.geometry,
+        installedModels: pack.models, geometry: currentInputs.geometry,
         legacy: legacy?.actors[spec.id])
       if mode == .prepared {
-        guard actor.body.id == -1, actor.body.physical == nil,
-          actor.body.position == .init(spec.x, spec.y, spec.z),
-          actor.body.orientation == Basis3(), actor.body.hostile == spec.hostile
-        else {
-          throw MissionPackError(
-            "A prepared actor must retain its actual authored initial condition.")
-        }
-        if legacy != nil {
-          guard legacy?.actors[spec.id]?.prepared == actor else {
-            throw MissionPackError(
-              "Prepared historical condition differs from its imported snapshot.")
-          }
-        } else {
-          guard actor.body.energy == template.maximumHullEnergy,
-            template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
-          else {
-            throw MissionPackError(
-              "A prepared actor must retain its actual authored initial condition.")
-          }
-          if let npc = actor.body.scriptNPC {
-            guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
-              npc.velocity == .init(0, 0, 0),
-              actor.body.missiles == npc.fit.definition.missiles,
-              actor.body.ecmEnabled == npc.fit.definition.ecm,
-              npc.guns.values.allSatisfy({ $0 == ScriptNPCGunState() }),
-              npc.components.values.allSatisfy({
-                $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
-              })
-            else {
-              throw MissionPackError(
-                "Prepared NPC resources cannot substitute spent retained state.")
-            }
-          } else {
-            guard actor.body.missiles == actor.body.hull.navalMissiles,
-              actor.body.ecmEnabled == actor.body.hull.hasECM
-            else {
-              throw MissionPackError(
-                "Prepared classic stock differs from its actual hull defaults.")
-            }
-          }
-        }
+        try Self.validatePreparedMissionActorCondition(
+          actor, spec: spec, template: template, legacy: legacy)
       }
       templates.append(template)
     }
     return .init(
       mode: mode, authority: authority, instance: state, pack: pack,
       encounter: encounter, definition: definition, actors: templates,
-      installedBaseEncounter: currentScriptState.instances[state.id]?.ownedEncounters[encounter.id])
+      installedBaseEncounter: currentInputs.instances[state.id]?.ownedEncounters[encounter.id])
+  }
+
+  /// These stock-only temporaries are needed after measured template construction returns.
+  /// Retained actors keep their existing spent condition and never enter this phase.
+  private static func validatePreparedMissionActorCondition(
+    _ actor: ScriptOwnedActor, spec: ScriptActorDefinition,
+    template: MissionActorAdmissionTemplate, legacy: LegacyMissionEncounterProvenance?
+  ) throws {
+    guard actor.body.id == -1, actor.body.physical == nil,
+      actor.body.position == .init(spec.x, spec.y, spec.z),
+      actor.body.orientation == Basis3(), actor.body.hostile == spec.hostile
+    else {
+      throw MissionPackError(
+        "A prepared actor must retain its actual authored initial condition.")
+    }
+    if legacy != nil {
+      guard legacy?.actors[spec.id]?.prepared == actor else {
+        throw MissionPackError(
+          "Prepared historical condition differs from its imported snapshot.")
+      }
+    } else {
+      guard actor.body.energy == template.maximumHullEnergy,
+        template.parts.allSatisfy({ $0.energy == $0.maximumEnergy })
+      else {
+        throw MissionPackError(
+          "A prepared actor must retain its actual authored initial condition.")
+      }
+      if let npc = actor.body.scriptNPC {
+        guard npc.shots == 0, npc.fuel == npc.fit.definition.fuel,
+          npc.velocity == .init(0, 0, 0),
+          actor.body.missiles == npc.fit.definition.missiles,
+          actor.body.ecmEnabled == npc.fit.definition.ecm,
+          npc.guns.values.allSatisfy({ $0 == ScriptNPCGunState() }),
+          npc.components.values.allSatisfy({
+            $0.guns.values.allSatisfy { $0 == ScriptNPCGunState() }
+          })
+        else {
+          throw MissionPackError(
+            "Prepared NPC resources cannot substitute spent retained state.")
+        }
+      } else {
+        guard actor.body.missiles == actor.body.hull.navalMissiles,
+          actor.body.ecmEnabled == actor.body.hull.hasECM
+        else {
+          throw MissionPackError(
+            "Prepared classic stock differs from its actual hull defaults.")
+        }
+      }
+    }
   }
 
   /// Uses the current invocation's immutable dictionaries; no Game or interpreter is captured.
@@ -856,5 +868,16 @@ extension Game {
         ], only: instanceID, drain: false)
       return
     }
+  }
+}
+
+extension Commander {
+  /// Borrow only the same immutable source fields before nested admission validation.
+  /// This transient tuple is neither an authority token nor a cached state owner.
+  fileprivate func missionActorAdmissionSourceValues() -> (
+    instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
+  ) {
+    let state = scriptState
+    return (state.instances, state.geometry, galaxy, system)
   }
 }
