@@ -3,7 +3,7 @@ import Testing
 
 @testable import EliteCore
 
-@Test func heldBeamDischargesSoundOnConsecutivePositiveFlashSnapshots() throws {
+@Test func heldBeamDischargesSoundOnConsecutivePositiveFlashSnapshots() async throws {
   var game = Game(executive: false)
   try game.commander.prepareEquipment()
   let pulse = try #require(game.commander.fittedEquipment(at: .laser(.front)))
@@ -39,8 +39,7 @@ import Testing
   #expect(!refused)
   #expect(game.dischargeAudio.epoch == epoch && game.dischargeAudio.events == events)
   #expect(feed.update(game.dischargeAudio).isEmpty)
-  let loaded = game.load(game.commander)
-  #expect(loaded)
+  game = try await CurrentBodylessSaveTestFixture.restore(game)
   #expect(game.dischargeAudio.epoch != epoch && game.dischargeAudio.events.isEmpty)
   #expect(feed.update(game.dischargeAudio).isEmpty)
 }
