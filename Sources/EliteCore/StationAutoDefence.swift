@@ -4,6 +4,15 @@ import Foundation
 struct StationAutoGuidance: Sendable {
   let aim: Vector3?
   let lateralVelocity: Vector3
+  var hazard = StationAutoHazard.clear
+  var interruptionAllowed = false
+  var clearanceRadius = 0.0
+
+  var hasManeuver: Bool { aim != nil || lateralVelocity.length > 0 }
+}
+
+enum StationAutoHazard: Sendable, Equatable {
+  case clear, closing, active, unknown
 }
 
 /// Transient, actor-owned state; never saved or accepted as attack/entry evidence.
@@ -127,13 +136,111 @@ extension Game {
     return !closing.isFinite || body.position.length <= 1500 + closing
   }
 
+  /// Current observations only; no cached firing or entry authority.
+  private func stationAutoHazard(_ assessment: StationAutoAssessment) -> StationAutoHazard {
+    let context = assessment.context
+    var uncertain = false
+    var closing = false
+    for body in assessment.incoming {
+      if let physical = body.physical, let ordnance = physical.ordnance, ordnance.valid,
+        physical.identity == ordnance.origin.ordnance,
+        physical.identity.system == context.system, physical.identity.visit == context.visit,
+        physical.attackOrigin == ordnance.origin,
+        ordnance.origin.owner.system == context.system,
+        ordnance.origin.owner.visit == context.visit,
+        ordnance.origin.emittedAt <= context.physicalTime,
+        ordnance.lastUpdatedAt <= context.physicalTime,
+        ordnance.target == context.player.identity, ordnance.termination == nil,
+        body.position.finite, body.energy.isFinite,
+        bodies.filter({ $0.id == body.id }).count == 1,
+        bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
+        context.actors.filter({ $0.identity == physical.identity }).count == 1
+      {
+        return .active
+      }
+      uncertain = true
+    }
+    for body in assessment.threats {
+      if isEMPDisabled(body) { continue }
+      if body.physical?.empSource != nil {
+        uncertain = true
+        continue
+      }
+      guard let physical = body.physical, let npc = physical.npc, npc.resources?.valid == true,
+        physical.identity.system == context.system, physical.identity.visit == context.visit,
+        body.position.finite, body.position.length.isFinite, body.energy.isFinite,
+        bodies.filter({ $0.id == body.id }).count == 1,
+        bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
+        context.actors.filter({ $0.identity == physical.identity }).count == 1,
+        let snapshot = context.actors.first(where: { $0.identity == physical.identity }),
+        snapshot.hull == body.hull, snapshot.npc == npc, snapshot.energy == body.energy
+      else {
+        uncertain = true
+        continue
+      }
+      guard
+        commander.crimeLedger.hasCurrentUnlawfulAttack(
+          from: physical.identity, against: context.player.identity, context: context)
+      else { continue }
+      // Native ordinary flee/navigation does not emit a beam or run hostile naval tactics.
+      if !body.hostile, physical.spawnIdentity?.producer == .ambient,
+        body.scriptNPC == nil, body.missionInstanceID == nil, !body.navalTarget,
+        body.blackjackRole == nil, ![Hull.constrictor, .thargoid, .thargon].contains(body.hull)
+      {
+        switch npc.intention {
+        case .flee, .navigate, .dock: continue
+        default: break
+        }
+      }
+      let pulseOnly = stationAutoPulseOnly(body, context: context)
+      if pulseOnly && !stationAutoImmediate(body, context: context) { continue }
+      // Only genuine stationary station geometry constitutes cover; a moving ship is not cover.
+      let towardPlayer = body.position * -1
+      if towardPlayer.length > 0 {
+        do {
+          if let hit = try nearestMissionCollision(
+            from: body.position, direction: towardPlayer.unit, range: towardPlayer.length,
+            radius: 0, excludingBodyIDs: [body.id], includePlayer: true),
+            case .body(let id) = hit.hit.target,
+            let cover = bodies.first(where: { $0.id == id }), cover.hull == .station,
+            cover.nativeStationIdentity != nil
+              ? nativeStationBodyIsCurrent(cover)
+              : cover.id == 0 && cover.physical?.identity == context.anchors.station.identity
+          {
+            continue
+          }
+        } catch {
+          uncertain = true
+          continue
+        }
+      }
+      if pulseOnly && body.position.length > 1500 {
+        // Preserve a native one-step closing buffer without re-entering on the same boundary.
+        closing = true
+      } else {
+        return .active
+      }
+    }
+    return uncertain ? .unknown : (closing ? .closing : .clear)
+  }
+
   mutating func stationAutoGuidance(target station: SpaceBody) -> StationAutoGuidance? {
-    guard let assessment = stationAutoAssessment(), let stationActor = station.physical?.identity
+    guard let assessment = stationAutoAssessment(), let stationActor = station.physical?.identity,
+      stationActor == autoPilot.targetActor, station.id == autoPilot.targetID
     else {
       stationAutoDefence = nil
-      return nil
+      return .init(aim: nil, lateralVelocity: .init(0, 0, 0), hazard: .unknown)
     }
     let context = assessment.context
+    let hazard = stationAutoHazard(assessment)
+    let stationMesh = gameplayMeshOverrides[station.id] ?? Mesh.hull(station.hull)
+    let structureRadius =
+      (stationMesh.vertices.map(\.length).max() ?? .infinity)
+      + (commander.playerMesh.vertices.map(\.length).max() ?? .infinity)
+    let clearanceRadius = max(station.stationClearanceRadius, structureRadius)
+    let interruptionAllowed =
+      pendingNativeStationDock == nil && !station.containsPlayer
+      && clearanceRadius.isFinite
     if stationAutoDefence?.station != stationActor
       || stationAutoDefence?.player != context.player.identity
     {
@@ -147,8 +254,14 @@ extension Game {
       } == true
         && stationAutoKnownTarget(body, context: context)
     }
+    let authenticated = nearby.filter { body in
+      guard let actor = body.physical?.identity else { return false }
+      return stationAutoKnownTarget(body, context: context)
+        && commander.crimeLedger.hasCurrentUnlawfulAttack(
+          from: actor, against: context.player.identity, context: context)
+    }.min { $0.position.length < $1.position.length }
     let combat =
-      confirmed
+      confirmed ?? authenticated
       ?? nearby.filter { stationAutoKnownTarget($0, context: context) }.min {
         $0.position.length == $1.position.length
           ? $0.id < $1.id : $0.position.length < $1.position.length
@@ -160,7 +273,9 @@ extension Game {
         ?? dangers.min(by: { $0.position.length < $1.position.length })
     else {
       stationAutoDefence?.evasionWorld = nil
-      return nil
+      return .init(
+        aim: nil, lateralVelocity: .init(0, 0, 0), hazard: hazard,
+        interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius)
     }
     let goal = station.entrancePosition + station.entranceNormal * station.stationApproachDistance
     let route = goal.unit
@@ -188,7 +303,9 @@ extension Game {
       (front != nil && front != .mining)
       || commander.missiles > 0 || commander.unlimitedMissiles
     let aim = canFaceForResponse ? combat?.position : nil
-    return .init(aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure))
+    return .init(
+      aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure),
+      hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {

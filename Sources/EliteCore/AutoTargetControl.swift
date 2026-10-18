@@ -41,7 +41,10 @@ extension SpaceBody {
   }
 }
 
+enum StationDefencePhase: Sendable, Equatable { case approach, defending, returning }
+
 public struct AutoTargetControl: Sendable {
+  private(set) var stationDefencePhase = StationDefencePhase.approach
   public private(set) var targetID: Int?
   public private(set) var targetActor: ActorIdentity?
   public private(set) var status = "OFF"
@@ -71,6 +74,7 @@ public struct AutoTargetControl: Sendable {
     ready = false
     finalApproach = false
     stationStaged = false
+    stationDefencePhase = .approach
     velocity = .init(0, 0, 0)
     rollRate = 0
     status = "OFF"
@@ -123,6 +127,7 @@ public struct AutoTargetControl: Sendable {
     ready = false
     finalApproach = false
     stationStaged = false
+    stationDefencePhase = .approach
     velocity = .init(0, 0, 0)
     status = "FACING TARGET"
   }
@@ -144,13 +149,35 @@ public struct AutoTargetControl: Sendable {
     let pitchLimit = min(Self.policyLimits.pitchRate, limits.pitchRate)
     let yawLimit = min(Self.policyLimits.yawRate, limits.yawRate)
     let station = target.hull == .station
+    let inwardSpeed = max(0, velocity.dot(target.position.unit))
+    let stopping = inwardSpeed * inwardSpeed / (2 * limits.acceleration) + inwardSpeed * delta
+    let clearance = max(target.stationClearanceRadius, defence?.clearanceRadius ?? 0)
+    let canInterrupt =
+      station && defence?.interruptionAllowed == true
+      && target.position.length > clearance + stopping
+    if station, defence?.hazard == .active, canInterrupt {
+      if stationDefencePhase != .defending {
+        ready = false
+        finalApproach = false
+        stationStaged = false
+        stationDefencePhase = .defending
+      }
+    } else if stationDefencePhase == .defending, defence?.hazard == .clear {
+      stationDefencePhase = .returning
+    }
+    let canStage =
+      stationDefencePhase != .defending
+      && (defence == nil || defence?.hazard == .clear)
     var aim: Vector3
     if station {
       let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
       positionError = goal.length
       // Finish the forward journey before turning to the entrance axis. The
       // smaller staging radius also keeps final lateral correction inside the door.
-      if !finalApproach && positionError < 12 && velocity.length < 8 { stationStaged = true }
+      if canStage && !finalApproach && positionError < 12 && velocity.length < 8 {
+        stationStaged = true
+        stationDefencePhase = .approach
+      }
       aim =
         stationStaged || finalApproach
         ? target.entranceNormal * -1 : approachWaypoint(target, goal: goal)
@@ -160,8 +187,11 @@ public struct AutoTargetControl: Sendable {
     let stationFacing = hypot(atan2(aim.y, hypot(aim.x, aim.z)), atan2(aim.x, aim.z))
     let defensiveSteering =
       station && !stationStaged && !finalApproach
-      && target.position.length > target.stationClearanceRadius + target.stationApproachDistance
-    let guidance = defensiveSteering ? defence : nil
+      && ((stationDefencePhase == .defending && canInterrupt)
+        || target.position.length > target.stationClearanceRadius + target.stationApproachDistance)
+    let guidance =
+      defensiveSteering && stationDefencePhase != .returning && defence?.hasManeuver == true
+      ? defence : nil
     if let defensiveAim = guidance?.aim, defensiveAim.finite, defensiveAim.length > 0 {
       aim = defensiveAim
     }
@@ -180,7 +210,9 @@ public struct AutoTargetControl: Sendable {
     }
     rollRate = max(-limits.rollRate, min(limits.rollRate, rollRate))
     let previousRate = rollRate
-    alignStation(target, delta: delta, limits: limits, defence: guidance)
+    alignStation(
+      target, delta: delta, limits: limits, defence: guidance,
+      canStage: canStage, clearance: clearance)
     return (pitch, yaw, (previousRate + rollRate) / 2)
   }
 
@@ -202,7 +234,8 @@ public struct AutoTargetControl: Sendable {
   mutating func setApproachVelocity(_ value: Vector3) { velocity = value }
 
   private mutating func alignStation(
-    _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits, defence: StationAutoGuidance?
+    _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits, defence: StationAutoGuidance?,
+    canStage: Bool, clearance: Double
   ) {
     let acceleration = limits.acceleration
     let maximumRoll = min(Self.policyLimits.rollRate, limits.rollRate)
@@ -221,7 +254,7 @@ public struct AutoTargetControl: Sendable {
     let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
     positionError = goal.length
     ready =
-      spinFeasible && stationStaged && positionError < 40 && facingError < 0.02
+      canStage && spinFeasible && stationStaged && positionError < 40 && facingError < 0.02
       && abs(phaseError) < 0.03
       && rateError < 0.02 && velocity.length < 1
     if ready { finalApproach = true }
@@ -241,8 +274,14 @@ public struct AutoTargetControl: Sendable {
       let cruiseSpeed = Self.approachCruiseSpeed(
         distance: waypoint.length, acceleration: acceleration, delta: delta,
         maximumSpeed: limits.speed)
-      desired = facingError < 0.12 || defence != nil ? waypoint.unit * cruiseSpeed : .init(0, 0, 0)
-      status = defence == nil ? "APPROACHING" : "DEFENDING APPROACH"
+      desired =
+        facingError < 0.12 || defence != nil || stationDefencePhase == .defending
+        ? waypoint.unit * cruiseSpeed : .init(0, 0, 0)
+      status =
+        stationDefencePhase == .returning
+        ? "RETURNING TO APPROACH"
+        : (stationDefencePhase == .defending || defence != nil
+          ? "DEFENDING APPROACH" : "APPROACHING")
       if let evasion = defence?.lateralVelocity, evasion.finite { desired = desired + evasion }
     }
     let safeDesired =
@@ -250,7 +289,7 @@ public struct AutoTargetControl: Sendable {
       ? desired
       : stationClearanceVelocity(
         target, desired: desired, acceleration: acceleration,
-        delta: delta)
+        delta: delta, clearance: clearance)
     let maximumSpeed =
       stationStaged || finalApproach ? min(Self.policyLimits.speed, limits.speed) : limits.speed
     let requestedThrust = acceleration * delta
@@ -307,19 +346,19 @@ public struct AutoTargetControl: Sendable {
     return target.position + (radial + tangent * 0.8).unit * (target.stationClearanceRadius * 1.5)
   }
   private mutating func stationClearanceVelocity(
-    _ target: SpaceBody, desired: Vector3, acceleration: Double, delta: Double
+    _ target: SpaceBody, desired: Vector3, acceleration: Double, delta: Double, clearance: Double
   ) -> Vector3 {
     let distance = target.position.length
     let outward = target.position.unit * -1
     let inwardSpeed = max(0, -velocity.dot(outward))
     let stoppingDistance = inwardSpeed * inwardSpeed / (2 * acceleration) + inwardSpeed * delta
-    if distance < target.stationClearanceRadius + stoppingDistance {
+    if distance < clearance + stoppingDistance {
       // If engagement starts too close to stop, apply the strongest legal outward
       // thrust. Avoidance cannot erase momentum or promise physically impossible clearance.
       status = "BRAKING FOR CLEARANCE"
       return outward * 80
     }
-    if (target.position - desired * delta).length < target.stationClearanceRadius {
+    if (target.position - desired * delta).length < clearance {
       return desired - outward * min(0, desired.dot(outward))
     }
     return desired
@@ -357,14 +396,21 @@ extension Game {
   }
   mutating func cancelAutoTarget() {
     stationAutoDefence = nil
+    let stationActive = autoTargetBody?.hull == .station
+    let stationVelocity =
+      stationActive
+      ? commander.flightSimulation.pose.shipVector(flightWorldVelocity) : nil
     let preserveMomentum = workGuidance != nil || workBraking != nil || manualResidualFlight
     releaseWorkGuidance()
     let remainingVelocity = autoPilot.velocity
-    if autoTargetBody?.hull == .station {
-      speed = max(speed, min(commander.performance.speed, max(0, autoPilot.velocity.z / 18)))
-    }
     autoPilot.disengage()
-    if preserveMomentum { autoPilot.setApproachVelocity(remainingVelocity) }
+    if let stationVelocity {
+      speed = 0
+      manualResidualFlight = true
+      autoPilot.setApproachVelocity(stationVelocity)
+    } else if preserveMomentum {
+      autoPilot.setApproachVelocity(remainingVelocity)
+    }
     dockingComputer = false
   }
   mutating func cycleAutoTarget() {
