@@ -64,6 +64,7 @@ extension Game {
         $0.owner == origin.owner && $0.victim == victim?.identity ? $0 : nil
       })
     guard resolution.accepted else { return nil }
+    gameplayCombatTrace?.append(incident)
     applyCrimeResolution(resolution, target: target, origin: origin, context: context)
     return incident
   }

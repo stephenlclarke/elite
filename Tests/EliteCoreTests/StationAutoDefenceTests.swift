@@ -873,7 +873,7 @@ func stationAutoAuthenticPulseHazardUsesNativeRangeAndClosingBuffer(range: Doubl
 }
 
 @Test(arguments: [true, false])
-func stationAutoIncomingInterruptionRequiresCurrentNativeOrdnanceJoin(joined: Bool) throws {
+func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(joined: Bool) throws {
   var game = try stationAutoGame()
   let index = try #require(game.bodies.firstIndex { $0.hostile })
   game.bodies[index].missiles = 1
@@ -883,5 +883,38 @@ func stationAutoIncomingInterruptionRequiresCurrentNativeOrdnanceJoin(joined: Bo
   if !joined { game.bodies[missile].physical = nil }
   let station = try #require(game.autoTargetBody)
   let guidance = game.stationAutoGuidance(target: station)
-  #expect(guidance?.hazard == (joined ? .active : .unknown))
+  // The genuine launch itself authenticates its owner independently of the projectile join.
+  let context = try #require(game.gameplayContext())
+  let owner = try #require(game.bodies[index].physical?.identity)
+  try #require(
+    game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: owner, against: context.player.identity, context: context))
+  #expect(guidance?.hazard == .active)
+}
+
+@Test func stationAutoUnjoinedProjectileAloneCannotAuthorizeInterruptionOrFire() async throws {
+  var game = try await stationAutoEntryBoundary()
+  let id = game.nextBodyID
+  game.nextBodyID += 1
+  var projectile = SpaceBody(id: id, hull: .missile, position: .init(100, 0, 300))
+  projectile.enemyMissile = true
+  game.bodies.append(projectile)
+  let station = try #require(game.autoTargetBody)
+  let context = try #require(game.gameplayContext())
+  for body in game.bodies {
+    guard let source = body.physical?.identity else { continue }
+    try #require(
+      !game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: source, against: context.player.identity, context: context))
+  }
+  let guidance = game.stationAutoGuidance(target: station)
+  #expect(guidance?.hazard == .unknown && guidance?.aim == nil)
+  let before = game
+  game.fireStationAutoLaser()
+  #expect(game.stationAutoMissileTarget() == nil)
+  #expect(game.commander == before.commander && game.bodies == before.bodies)
+  #expect(game.laserHeat == before.laserHeat && game.fireCooldown == before.fireCooldown)
+  game.applyAutoTarget(delta: 0.1, controls: Controls())
+  #expect(game.autoPilot.stationDefencePhase == .approach && game.autoPilot.finalApproach)
+  #expect(game.autoPilot.targetActor == before.autoPilot.targetActor)
 }
