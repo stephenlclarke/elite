@@ -170,6 +170,7 @@ struct NativePagedSalvageRuntimeTests {
     try FileManager.default.moveItem(at: preserved, to: folder)
     // The original ordinary producer is an independent custody/content oracle.
     // It uses the actual retained parent pose, without granting any scene admission.
+    let emissionPlayerPose = refused.commander.flightSimulation.pose
     let releaseBody = try #require(
       refused.bodies.first { $0.physical?.identity == hot.actor })
     let releasePhysical = try #require(releaseBody.physical)
@@ -214,7 +215,13 @@ struct NativePagedSalvageRuntimeTests {
       let pending = try #require(native.pending[lot.identity])
       #expect(pending.lot.content == lot.content && pending.lot.loot == lot.loot)
       #expect(pending.lot.massKg == lot.massKg && pending.lot.halfExtents == lot.halfExtents)
-      #expect(pending.lot.position == lot.position && pending.lot.velocity == lot.velocity)
+      // Durable physical admission observes a world/local/world projection before movement.
+      // Unbound custody has no body observation and retains the original producer position.
+      let expectedPosition =
+        pending.binding == nil
+        ? lot.position
+        : emissionPlayerPose.systemPoint(emissionPlayerPose.shipPoint(lot.position))
+      #expect(pending.lot.position == expectedPosition && pending.lot.velocity == lot.velocity)
       #expect(pending.offer == nil)
     }
     #expect(native.pending.values.contains { $0.binding != nil })
