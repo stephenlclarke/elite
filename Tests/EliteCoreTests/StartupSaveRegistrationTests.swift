@@ -45,14 +45,15 @@ struct StartupSaveRegistrationTests {
     #expect(flying.commander.scriptState.calendarSeconds == 600)
     let bytes = try Data(contentsOf: url)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 21 && pointer.scope == "commander")
+    #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
     let (saved, _) = try ScriptSaveStore.read(bytes, from: url)
     #expect(saved.valid && saved.nativeStations == flying.commander.nativeStations)
     #expect(saved.scriptState == flying.commander.scriptState)
     #expect(saved.equipmentInventory == flying.commander.equipmentInventory)
     #expect(CommanderSaveSession(preferences: preferences, defaultURL: url).startupURL == url)
     #expect(preferences.string(forKey: "lastCommanderSavePath") == url.path)
-    #expect(await delegate.runtime.takeNewCommanderSaveReceipt() == nil)
+    let acknowledgedReceipt = await delegate.runtime.takeNewCommanderSaveReceipt()
+    #expect(acknowledgedReceipt == nil)
   }
 
   @MainActor @Test(arguments: [false, true])

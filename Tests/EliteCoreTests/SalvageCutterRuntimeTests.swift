@@ -130,7 +130,7 @@ struct SalvageCutterRuntimeTests {
     try await runtime.save(to: save)
     let bytes = try Data(contentsOf: save)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 21)
+    #expect(pointer.schemaVersion == 26)
     let (saved, _) = try ScriptSaveStore.read(bytes, from: save)
     #expect(saved.salvageLedger.progress(section) == 0.1)
     #expect(saved.salvageLedger.wreckMotion(for: section.wreck)?.pose == expected)

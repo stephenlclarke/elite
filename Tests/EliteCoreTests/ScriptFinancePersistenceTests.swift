@@ -5,7 +5,7 @@ import Testing
 
 struct ScriptFinancePersistenceTests {
   @Test(arguments: [false, true])
-  func schema23RoundtripRetainsDebtAndOptionalRealEMPDevice(emp: Bool) async throws {
+  func currentSchemaRoundtripRetainsDebtAndOptionalRealEMPDevice(emp: Bool) async throws {
     let fixture = try ScriptFinanceTestFixture()
     defer { fixture.storage.clean() }
     let runtime = try await fixture.runtime()
@@ -22,7 +22,9 @@ struct ScriptFinancePersistenceTests {
     let saved = await writer.snapshot()
     let bytes = try Data(contentsOf: fixture.storage.url)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == 23)
+    #expect(pointer.schemaVersion == 26)
+    let (stored, world) = try ScriptSaveStore.read(bytes, from: fixture.storage.url)
+    #expect(stored == saved.commander && world.consistent(with: stored))
     let reader = GameRuntime(game: financeLibrary(fixture.pack))
     try await reader.load(from: fixture.storage.url, persistMigrations: false)
     let loaded = await reader.snapshot()
@@ -32,11 +34,13 @@ struct ScriptFinancePersistenceTests {
     #expect(loaded.commander.scriptState.financeLedger == saved.commander.scriptState.financeLedger)
     // A fresh native review uses rebound live authority; historical receipt epochs are unchanged.
     try await ScriptFinanceTestFixture.confirm(reader)
-    #expect(await reader.snapshot().commander.scriptState.financeLedger?.records[0].status == .paid)
+    let repaid = await reader.snapshot()
+    let receipt = try #require(repaid.commander.scriptState.financeLedger?.records.first)
+    #expect(receipt.status == .paid)
   }
 
   @Test(arguments: [false, true])
-  func genuineNonFinance21And22LoadWithoutInventingAnObligation(emp: Bool) async throws {
+  func currentNonFinanceRoundtripDoesNotInventAnObligation(emp: Bool) async throws {
     let fixture = try ScriptFinanceTestFixture()
     defer { fixture.storage.clean() }
     var game = Game(executive: false)
@@ -57,13 +61,141 @@ struct ScriptFinancePersistenceTests {
     try await writer.save(to: fixture.storage.url)
     let bytes = try Data(contentsOf: fixture.storage.url)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
-    #expect(pointer.schemaVersion == (emp ? 22 : 21))
+    #expect(pointer.schemaVersion == 26)
+    let saved = await writer.snapshot()
+    let (stored, world) = try ScriptSaveStore.read(bytes, from: fixture.storage.url)
+    #expect(stored == saved.commander && world.consistent(with: stored))
     let reader = GameRuntime()
     try await reader.load(from: fixture.storage.url, persistMigrations: false)
-    #expect(await reader.snapshot().commander.scriptState.financeLedger == nil)
+    let loaded = await reader.snapshot()
+    #expect(loaded.commander.scriptState.financeLedger == nil)
+    #expect(loaded.commander.scriptState.instances[instance.id]?.data == instance.data)
+    #expect(loaded.commander.usesEMPSaveVersion == emp)
+  }
+
+  @Test(arguments: [false, true])
+  func genuinePreDriveNonFinance21And22RetainAuthoredDataAndDevice(emp: Bool) throws {
+    let fixture = try ScriptFinanceTestFixture()
+    defer { fixture.storage.clean() }
+    var historical = Game(executive: false)
+    historical.screen = .status
+    historical.commander = try PreDriveCommanderSaveFixture.commander(emp: emp)
+    historical.commander.name = emp ? "HISTORY22" : "HISTORY21"
+    historical.commander.credits = 4567
+    historical.commander.fuel = 23
+    historical.commander.cargo[0] = 2
+    historical.ensureScriptCalendar(origin: .newCommander)
+    var instance = ScriptInstance(
+      id: UUID(), definition: "historical/innocent-data", version: "1.0.0",
+      digest: String(repeating: "a", count: 64))
+    instance.data = .object(["financeLedger": .string("fictional ledger in authored data")])
+    historical.commander.scriptState.instances[instance.id] = instance
+    let original = historical.commander
+    try #require(original.scriptState.financeLedger == nil)
+    try #require(!original.usesModularDriveSaveVersion && !original.usesEconomyMiningSaveVersion)
+    try ScriptSaveStore.write(
+      commander: original, world: historical.scriptWorldSave, to: fixture.storage.url)
+    let bytes = try Data(contentsOf: fixture.storage.url)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == (emp ? 22 : 21) && pointer.scope == "commander")
+    let files = try ScriptFinanceTestFixture.files(fixture.storage.directory)
+    let (loaded, world) = try ScriptSaveStore.read(bytes, from: fixture.storage.url)
+    try PreDriveCommanderSaveFixture.verifyMigration(from: original, to: loaded)
+    #expect(world.valid && world.consistent(with: loaded))
+    #expect(loaded.scriptState.financeLedger == nil && loaded.usesEMPSaveVersion == emp)
+    #expect(loaded.scriptState.instances[instance.id]?.data == instance.data)
     #expect(
-      await reader.snapshot().commander.scriptState.instances[instance.id]?.data == instance.data)
-    #expect(await reader.snapshot().commander.usesEMPSaveVersion == emp)
+      loaded.fittedEquipment(at: .utility(.empPirateBlaster))
+        == original.fittedEquipment(at: .utility(.empPirateBlaster)))
+    let afterFiles = try ScriptFinanceTestFixture.files(fixture.storage.directory)
+    #expect(afterFiles == files)
+  }
+
+  @Test(arguments: [false, true], [false, true])
+  func genuinePreDriveFinance23RetainsOriginalDebtAndReceipts(paid: Bool, emp: Bool) throws {
+    let fixture = try ScriptFinanceTestFixture()
+    defer { fixture.storage.clean() }
+    var historical = Game(executive: false)
+    historical.screen = .status
+    historical.commander = try PreDriveCommanderSaveFixture.commander(emp: emp)
+    historical.commander.name = "HISTORY23"
+    historical.commander.credits = 4567
+    historical.commander.fuel = 23
+    historical.commander.cargo[0] = 2
+    historical.ensureScriptCalendar(origin: .newCommander)
+    let owner = try #require(historical.commander.equipmentOwnerID)
+    let terms = ScriptFinanceDefinition(
+      id: "historical-loan", profile: "fixed-principal-v1", creditor: "workshop",
+      title: "Retained historical loan", principal: 777, galaxy: 0, system: 7)
+    let station = terms.station(owner: owner)
+    // These are retained historical facts, not fresh native arrival authority.
+    let dock = NativeMainStationDockReceipt(
+      station: station, actor: .init(system: station.system, visit: 1, entity: 1),
+      commanderOwner: owner, sequence: 1, calendarSeconds: 0)
+    let cause = ScriptEventContext(
+      galaxy: 0, system: 7, docked: true, mainStation: true, revision: 0,
+      frameSeconds: 0, localSeconds: 0, flightSeconds: 0, calendarSeconds: 0,
+      transitSeconds: 0, playerPosition: nil, nativeMainDock: dock)
+    let source = ScriptFinanceSource(
+      instance: UUID(), definition: "historical/finance", version: "1.0.0",
+      digest: String(repeating: "b", count: 64), sequence: 1, cause: cause)
+    let identity = source.identity(owner: owner, loan: terms.id)
+    var record = ScriptFinanceRecord(id: identity, terms: terms, source: source, createdRevision: 1)
+    let cash = historical.commander.credits
+    record.receipts = [
+      .init(
+        id: ScriptFinanceReceipt.identity(identity, revision: 2), token: UUID(),
+        obligation: identity,
+        operation: .borrow, revision: 2, beforeCash: cash, afterCash: cash + terms.principal,
+        beforePrincipal: 0, afterPrincipal: terms.principal, amount: terms.principal,
+        dock: dock, calendarSeconds: 0, epoch: UUID())
+    ]
+    if paid {
+      record.receipts.append(
+        .init(
+          id: ScriptFinanceReceipt.identity(identity, revision: 3), token: UUID(),
+          obligation: identity,
+          operation: .repay, revision: 3, beforeCash: cash + terms.principal, afterCash: cash,
+          beforePrincipal: terms.principal, afterPrincipal: 0, amount: terms.principal,
+          dock: dock, calendarSeconds: 0, epoch: UUID()))
+    }
+    var ledger = ScriptFinanceLedger(owner: owner)
+    ledger.revision = paid ? 3 : 2
+    ledger.records = [record]
+    historical.commander.scriptState.nextEvent = 1
+    historical.commander.scriptState.financeLedger = ledger
+    historical.commander.credits = paid ? cash : cash + terms.principal
+    var stations = try NativeStationWorld(owner: owner)
+    stations.mainStations = [station]
+    stations.nextMainDockSequence = 2
+    historical.commander.nativeStations = stations
+    historical.commander.scriptState.stationResources[station.key] = .init(
+      identity: station.resource, galaxy: station.system.galaxy, system: station.system.system)
+    let original = historical.commander
+    let originalEMP = original.fittedEquipment(at: .utility(.empPirateBlaster))
+    #expect(original.usesEMPSaveVersion == emp)
+    try #require(
+      original.valid && original.financeStateValid && ledger.valid(engine: original.scriptState))
+    try #require(!original.usesModularDriveSaveVersion && !original.usesEconomyMiningSaveVersion)
+    try ScriptSaveStore.write(
+      commander: original, world: historical.scriptWorldSave, to: fixture.storage.url)
+    let bytes = try Data(contentsOf: fixture.storage.url)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == 23 && pointer.scope == "commander")
+    let files = try ScriptFinanceTestFixture.files(fixture.storage.directory)
+    let (loaded, world) = try ScriptSaveStore.read(bytes, from: fixture.storage.url)
+    try PreDriveCommanderSaveFixture.verifyMigration(from: original, to: loaded)
+    #expect(loaded.usesEMPSaveVersion == emp)
+    #expect(loaded.fittedEquipment(at: .utility(.empPirateBlaster)) == originalEMP)
+    #expect(world.valid && world.consistent(with: loaded))
+    #expect(loaded.scriptState.financeLedger == ledger && loaded.credits == original.credits)
+    #expect(loaded.scriptState.financeLedger?.records.first?.remaining == (paid ? 0 : 777))
+    #expect(
+      loaded.scriptState.financeLedger?.records.first?.status == (paid ? .paid : .outstanding))
+    #expect(loaded.scriptState.financeLedger?.records.first?.receipts == record.receipts)
+    #expect(loaded.nativeStations?.currentMainDock == nil)
+    let afterFiles = try ScriptFinanceTestFixture.files(fixture.storage.directory)
+    #expect(afterFiles == files)
   }
 
   @Test func acceptedLiabilitySurvivesValidatedAbsentParentAndMissingLibrary() async throws {

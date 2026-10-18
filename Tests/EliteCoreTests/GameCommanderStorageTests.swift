@@ -121,8 +121,10 @@ struct GameCommanderStorageTests {
     #expect(refused.commander.nativeStations == nil)
     #expect(refused.commander.scriptState.calendarLedger == nil)
     #expect(refused.pendingNewSaveDestination == save)
-    #expect(await runtime.takeNewCommanderSaveReceipt() == nil)
-    #expect(try Data(contentsOf: blocker) == bytes)
+    let refusedReceipt = await runtime.takeNewCommanderSaveReceipt()
+    let blockerBytes = try Data(contentsOf: blocker)
+    #expect(refusedReceipt == nil)
+    #expect(blockerBytes == bytes)
     try FileManager.default.removeItem(at: blocker)
     await runtime.key("0")
     let committed = await runtime.snapshot()
@@ -133,7 +135,7 @@ struct GameCommanderStorageTests {
     let savedBytes = try Data(contentsOf: save)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: savedBytes)
     let (saved, _) = try ScriptSaveStore.read(savedBytes, from: save)
-    #expect(pointer.schemaVersion == 25)
+    #expect(pointer.schemaVersion == 26)
     let liveCommander = committed.commander
     try #require(liveCommander.npcPersistence.count > 0)
     let liveNPCs = committed.bodies.compactMap { body -> ActorIdentity? in
@@ -174,6 +176,7 @@ struct GameCommanderStorageTests {
       try JSONEncoder().encode(changedFields).write(
         to: evidence.appendingPathComponent("launch-saved-commander-diff.json"))
     }
-    #expect(await runtime.takeNewCommanderSaveReceipt()?.url == save)
+    let committedReceipt = await runtime.takeNewCommanderSaveReceipt()
+    #expect(committedReceipt?.url == save)
   }
 }
