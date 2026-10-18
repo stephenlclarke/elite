@@ -44,7 +44,8 @@ struct LegacyNPCIntentTests {
       game.bodies[0].physical?.npc?.intention = .dock(station)
     case .flee: game.bodies[0].physical?.npc?.intention = .flee(player)
     case .nonplayer:
-      let other = try #require(game.commander.flightSimulation.allocateActor())
+      let allocated = game.commander.flightSimulation.allocateActor()
+      let other = try #require(allocated)
       game.bodies[0].physical?.npc?.intention = .engage(other)
     case .staleTarget:
       let old = ActorIdentity(system: player.system, visit: player.visit - 1, entity: player.entity)
