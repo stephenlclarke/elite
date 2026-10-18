@@ -8,9 +8,9 @@ extension Game {
       || commander.salvageLedger.isDepleted(identity)
   }
 
-  func usesNativeSalvageWork(wreck: WreckIdentity, profile: SalvageProfile) -> Bool {
+  func usesNativeSalvageWork(section: WreckSectionIdentity, profile: SalvageProfile) -> Bool {
     profile.sourceRoles.contains(.thargoid)
-      || commander.alienStorageState?.current.salvage.wrecksWithSections.contains(wreck) == true
+      || commander.alienStorageState?.current.salvage.sections.contains(section) == true
   }
 
   /// The common cutter has already established actual hit, surface, fitting, protection,
@@ -19,17 +19,32 @@ extension Game {
     body: SpaceBody, section: SalvageSectionProfile, source: SalvageLootSource
   ) -> Bool {
     guard let actor = body.physical?.identity, let wreck = body.physical?.salvage?.wreck,
-      let owner = commander.equipmentOwnerID, actor.system == systemIdentity,
-      actor.visit == commander.flightSimulation.visit, commander.alienStorageStateValid
+      let owner = commander.equipmentOwnerID, let hull = commander.hullInstanceID,
+      actor.system == systemIdentity, actor.visit == commander.flightSimulation.visit
     else { return false }
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
     if let hot = nativeSalvageWork {
-      if hot.plan.section == identity && hot.actor == actor { return !hot.cycle.depleted }
+      if hot.plan.section == identity && hot.actor == actor {
+        // All comparisons are one bounded section/source, not lifetime history.
+        guard nativeSalvageHotWorkIsCurrent(hot), hot.section == section,
+          hot.catalogueShipID == body.physical?.catalogueShipID,
+          source.roles == hot.plan.source.roles
+        else { return false }
+        if case .fresh = hot.cycle.inspection, source != hot.plan.source { return false }
+        return !hot.cycle.depleted
+      }
       guard flushNativeSalvageWork() else { return false }
     }
+    guard commander.alienStorageStateValid else { return false }
     do {
       var candidate = self
-      guard candidate.retainNativeSalvageWreck(body) else { return false }
+      candidate.canonicalizeWorkTarget(actor)
+      guard
+        let canonical = candidate.bodies.first(where: {
+          $0.physical?.identity == actor && $0.id == body.id
+        }),
+        candidate.retainNativeSalvageWreck(canonical)
+      else { return false }
       if candidate.commander.salvageLedger.hasInspectedSection(identity),
         candidate.commander.alienStorageState?.current.salvage.sections.contains(identity) != true
       {
@@ -75,7 +90,7 @@ extension Game {
             id: UUID(), owner: owner, version: 1, inspection: reference, beganAt: time,
             observedAt: time, progress: original.progress, currentWorkSeconds: seconds,
             damagedTechnology: damage, releases: 0, lastRelease: nil,
-            lastOperation: original.lastOperation, depleted: false, destroyedAt: nil)
+            lastOperation: nil, depleted: false, destroyedAt: nil)
           world.append(.nativeWork(cycle))
         }
       } else if let legacy = world.compactMap({ record -> AlienStorageLegacySection? in
@@ -92,7 +107,7 @@ extension Game {
           observedAt: time, progress: legacy.progress,
           currentWorkSeconds: legacy.savedPartialWorkSeconds ?? 0,
           damagedTechnology: legacy.savedDamagedTechnology, releases: 0, lastRelease: nil,
-          lastOperation: legacy.savedLedgerLastOperation.flatMap { $0 > 0 ? $0 : nil },
+          lastOperation: nil,
           depleted: false, destroyedAt: nil)
         world.append(.nativeWork(cycle))
       } else {
@@ -100,14 +115,18 @@ extension Game {
           let facts = candidate.commander.salvageLedger.freshNativeInspection(
             wreck: wreck, section: section, source: source)
         else { return false }
+        guard facts.matches(candidate.commander.salvageLedger) else { return false }
         let inspection = try NativeSalvageInspection(
           id: UUID(), owner: owner, wreck: physicalWreck, at: time, section: section, facts: facts)
         plan = facts.plan
         seed = facts.seed
         cycle = .init(
           id: UUID(), owner: owner, version: 1, inspection: .fresh(inspection.id), beganAt: time,
-          observedAt: time, progress: facts.progress, currentWorkSeconds: 0,
-          damagedTechnology: false, releases: 0, lastRelease: nil, lastOperation: nil,
+          observedAt: time, progress: facts.progress,
+          currentWorkSeconds: facts.preinspection?.partialWorkSeconds ?? 0,
+          damagedTechnology: facts.preinspection?.damagedTechnology ?? false, releases: 0,
+          lastRelease: nil,
+          lastOperation: nil,
           depleted: false, destroyedAt: nil)
         world.append(.nativeInspection(inspection))
         world.append(.nativeWork(cycle))
@@ -127,8 +146,14 @@ extension Game {
       if world != previous.world {
         try candidate.commander.replaceAlienStorage(with: previous.replacingNativeWorld(world))
       }
+      guard
+        let retained = candidate.commander.alienStorageState?.current.salvage.native.wrecks[wreck]
+      else { return false }
       candidate.nativeSalvageWork = .init(
-        section: section, seed: seed, plan: plan, actor: actor, cycle: cycle)
+        section: section, seed: seed, plan: plan, actor: actor, hull: hull,
+        epoch: candidate.nativeStationRuntimeEpoch, wreckRecord: retained.id,
+        wreckSource: retained.source, catalogueShipID: retained.catalogueShipID,
+        originalCycle: cycle, cycle: cycle)
       self = candidate
       return true
     } catch { return false }
@@ -140,6 +165,7 @@ extension Game {
   ) -> Bool {
     guard beginNativeSalvageWork(body: body, section: section, source: source),
       var hot = nativeSalvageWork,
+      let actual = bodies.first(where: { $0.physical?.identity == hot.actor && $0.id == body.id }),
       let operation = commander.flightSimulation.allocateIncident()
     else { return false }
     let time = commander.flightSimulation.physicalTime
@@ -150,8 +176,8 @@ extension Game {
         case .progress(let progress, _) = SalvageSectionCycle.advance(
           plan: hot.plan, progress: hot.cycle.progress, destroyed: false,
           partialWork: 0, damagedTechnology: hot.cycle.damagedTechnology,
-          section: section, pose: modelPose(of: body), velocity: body.physical!.velocity,
-          angularVelocity: body.physical!.angularVelocity, tool: .cutter,
+          section: section, pose: modelPose(of: actual), velocity: actual.physical!.velocity,
+          angularVelocity: actual.physical!.angularVelocity, tool: .cutter,
           elapsed: 0, availableEmissionSlots: nil)
       else { return false }
       hot.cycle = hot.cycle.observing(
@@ -165,7 +191,8 @@ extension Game {
       nativeSalvageWork = hot
     }
     if hot.cycle.currentWorkSeconds == section.workSeconds {
-      _ = publishNativeSalvageRelease(body: body, at: time, operation: operation, publish: publish)
+      _ = publishNativeSalvageRelease(
+        body: actual, at: time, operation: operation, publish: publish)
     }
     return true
   }

@@ -20,15 +20,21 @@ struct SalvageNativeInspectionFacts: Sendable {
   let plan: SalvageLootPlan
   let progress: AlienStorageWorldProgress
   let requiredWorkSeconds: Double
+  let preinspection: NativeSalvagePreinspection?
+  private let original: SalvageLedger
+
+  func matches(_ ledger: SalvageLedger) -> Bool { original == ledger }
 
   fileprivate init(
     seed: UInt64, plan: SalvageLootPlan, progress: AlienStorageWorldProgress,
-    requiredWorkSeconds: Double
+    requiredWorkSeconds: Double, preinspection: NativeSalvagePreinspection?, original: SalvageLedger
   ) {
     self.seed = seed
     self.plan = plan
     self.progress = progress
     self.requiredWorkSeconds = requiredWorkSeconds
+    self.preinspection = preinspection
+    self.original = original
   }
 }
 
@@ -973,7 +979,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     wreck: WreckIdentity, section: SalvageSectionProfile, source: SalvageLootSource
   ) -> SalvageNativeInspectionFacts? {
     let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
-    guard Self.validWreck(wreck), section.index < 64, !isWreckDestroyed(wreck),
+    guard validState, Self.validWreck(wreck), section.index < 64, !isWreckDestroyed(wreck),
       !isDepleted(identity), !nativeTransferredSections.contains(identity),
       plans[identity] == nil, validSource(source), section.workSeconds.isFinite,
       section.workSeconds > 0
@@ -981,13 +987,20 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     let plan = SalvageLootProfiles.plan(section: identity, seed: seed, source: source)
     guard validPlan(plan), estimatedLots(plan) <= 65535 else { return nil }
     let structural = section.structural && plan.profile != .asteroid ? structuralUnits(identity) : 0
+    let baseline = work[identity].map { seconds in
+      NativeSalvagePreinspection(
+        partialWorkSeconds: seconds,
+        damagedTechnology: damagedTechnology.contains(identity), ledgerLastOperation: lastOperation,
+        ledgerRevision: revision)
+    }
+    guard baseline?.valid(required: section.workSeconds) ?? true else { return nil }
     return .init(
       seed: seed, plan: plan,
       progress: .init(
         issued: Array(repeating: 0, count: plan.items.count),
         discarded: Array(repeating: false, count: plan.items.count),
         structuralUnits: structural, issuedStructural: 0, materialKind: nil, nextLot: 0),
-      requiredWorkSeconds: section.workSeconds)
+      requiredWorkSeconds: section.workSeconds, preinspection: baseline, original: self)
   }
 
   /// Persist the original roll even when it is empty; changing source data cannot reroll it.
@@ -1388,4 +1401,17 @@ struct SalvageNativeSectionExport: Sendable {
 extension SalvageLedger {
   var nativeInspectionSeed: UInt64 { seed }
   func hasInspectedSection(_ section: WreckSectionIdentity) -> Bool { plans[section] != nil }
+}
+
+extension SalvageLedger {
+  func nativeUnplannedAuditMatches(
+    _ section: WreckSectionIdentity, baseline: NativeSalvagePreinspection
+  ) -> Bool {
+    plans[section] == nil && !nativeTransferredSections.contains(section)
+      && work[section] == baseline.partialWorkSeconds
+      && damagedTechnology.contains(section) == baseline.damagedTechnology
+      && revision >= baseline.ledgerRevision
+      && (baseline.ledgerLastOperation.map { old in lastOperation.map { $0 >= old } == true }
+        ?? true)
+  }
 }

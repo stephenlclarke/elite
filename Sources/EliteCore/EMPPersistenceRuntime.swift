@@ -24,7 +24,15 @@ extension Game {
         else { continue }
       }
       if !record.terminal, !record.isRecovered, record.hull.binding == nil {
-        coastEMPObject(&record.hull, to: now)
+        do {
+          if let native = try joinedNativeEMPWreck(record) {
+            // Native custody keeps the last actual pose while parked; the original
+            // ordinary EMP archive retains its existing offscreen coast behaviour.
+            guard nativeEMPArchiveMatches(record.hull, wreck: native) else { return nil }
+          } else {
+            coastEMPObject(&record.hull, to: now)
+          }
+        } catch { return nil }
       }
       for i in record.pods.indices
       where record.pods[i].binding == nil
@@ -68,6 +76,35 @@ extension Game {
 
   @discardableResult
   private mutating func admitEMPObject(
+    _ object: EMPStoredObject, source: ActorIdentity, sequence: UInt64, member: UInt16
+  ) -> Bool {
+    if member == 0, let record = commander.savedEMPState?.records[source],
+      commander.alienStorageState?.current.salvage.native.wrecks[record.wreck] != nil
+    {
+      return admitJoinedNativeEMPObject(object, source: source, sequence: sequence)
+    }
+    return admitEMPObjectInPlace(object, source: source, sequence: sequence, member: member)
+  }
+
+  private mutating func admitJoinedNativeEMPObject(
+    _ object: EMPStoredObject, source: ActorIdentity, sequence: UInt64
+  ) -> Bool {
+    guard let record = commander.savedEMPState?.records[source],
+      let wreck = try? joinedNativeEMPWreck(record), wreck.binding == nil,
+      nativeEMPArchiveMatches(object, wreck: wreck)
+    else { return false }
+    var candidate = self
+    guard candidate.admitEMPObjectInPlace(object, source: source, sequence: sequence, member: 0),
+      let actor = candidate.commander.savedEMPState?.records[source]?.hull.binding,
+      let actual = candidate.bodies.first(where: { $0.physical?.identity == actor }),
+      candidate.retainNativeSalvageWreck(actual)
+    else { return false }
+    self = candidate
+    return true
+  }
+
+  @discardableResult
+  private mutating func admitEMPObjectInPlace(
     _ object: EMPStoredObject, source: ActorIdentity, sequence: UInt64, member: UInt16
   ) -> Bool {
     if member == 0, let episode = commander.savedEMPState?.records[source]?.disableEpisodes.last,
@@ -314,5 +351,38 @@ extension Game {
     guard state.valid else { return false }
     commander.savedEMPState = state
     return true
+  }
+}
+
+extension Game {
+  /// This is compatibility for an exactly retained imported EMP source. It does not
+  /// admit a new source class or change ordinary occupied/recoverable EMP archives.
+  private func joinedNativeEMPWreck(_ record: EMPHullRecord) throws -> NativeSalvageWreck? {
+    guard let wreck = commander.alienStorageState?.current.salvage.native.wrecks[record.wreck]
+    else { return nil }
+    guard case .emp(let logical, let sequence) = wreck.source,
+      logical == record.source, sequence == record.sequence,
+      wreck.owner == commander.equipmentOwnerID,
+      wreck.catalogueShipID == record.hull.body.physical?.catalogueShipID,
+      record.crewAboard == 0, record.lostCrewCount == 0,
+      record.pods.count + record.capturedCrewCount == record.crewTotal, !record.isRecovered
+    else { throw AlienStorageError.invalidJoin }
+    return wreck
+  }
+
+  private func nativeEMPArchiveMatches(_ object: EMPStoredObject, wreck: NativeSalvageWreck) -> Bool
+  {
+    guard let physical = object.body.physical else { return false }
+    var orientation = Basis3()
+    orientation.x = object.body.modelVector(.init(1, 0, 0))
+    orientation.y = object.body.modelVector(.init(0, 1, 0))
+    orientation.z = object.body.modelVector(.init(0, 0, 1))
+    return (object.body.position - wreck.motion.pose.position).length < 1e-8
+      && (orientation.x - wreck.motion.pose.orientation.x).length < 1e-8
+      && (orientation.y - wreck.motion.pose.orientation.y).length < 1e-8
+      && (orientation.z - wreck.motion.pose.orientation.z).length < 1e-8
+      && physical.velocity == wreck.motion.velocity
+      && physical.angularVelocity == wreck.motion.angularVelocity
+      && object.body.energy == wreck.motion.energy && object.binding == wreck.binding
   }
 }

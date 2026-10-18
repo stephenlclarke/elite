@@ -1,0 +1,133 @@
+import Foundation
+import Testing
+
+@testable import EliteCore
+
+struct NativeMultiBatchRuntimeTests {
+  @Test func originalHumanManifestImportRequiresAFullSecondBudgetAcrossActualSaveAndReload()
+    async throws
+  {
+    var (game, site) = try NativePagedSalvageFixture.game(humanCargo: true)
+    let profile = try #require(SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID))
+    let section = try #require(profile.sections.first { $0.index == 1 })
+    let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    #expect(!profile.sourceRoles.contains(.thargoid))
+    #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops)) == nil)
+    let identity = WreckSectionIdentity(wreck: site.identity, section: section.index)
+    // Compatibility input is an original human producer and its sealed section export.
+    // This neither grants a Thargoid manifest nor claims a current human bootstrap path.
+    let source = SalvageLootSource(
+      roles: profile.sourceRoles, legalValue: 0, economy: game.currentSystem.economy,
+      technology: game.currentSystem.technology, ownership: .abandoned,
+      manifest: [.init(commodity: .food, quantity: 120)])
+    let operation = try #require(game.commander.flightSimulation.allocateIncident())
+    guard
+      case .progress = game.commander.salvageLedger.advance(
+        wreck: site.identity, section: section, pose: game.modelPose(of: body),
+        velocity: body.physical!.velocity, angularVelocity: body.physical!.angularVelocity,
+        tool: .cutter, elapsed: 0.25, operation: operation,
+        conditions: NativePagedSalvageFixture.permitted, source: source)
+    else { throw SaveError.invalidCommander }
+    let originalLedger = game.commander.salvageLedger
+    let original = try originalLedger.exportNativeSection(identity)
+    let imported = try NativeSalvageImport(
+      ledger: originalLedger, section: identity,
+      owner: try #require(game.commander.equipmentOwnerID),
+      at: game.commander.flightSimulation.physicalTime,
+      previous: game.commander.alienStorageState?.current.snapshot)
+    try imported.apply(to: &game.commander)
+    let oldRecord = try #require(imported.snapshot.world.first { $0.id == imported.section })
+    let cargo = game.commander.cargo
+    let property = game.commander.equipmentInventory
+    let credits = game.commander.credits
+    game.selectFlightTool(.salvageCutter)
+    game.beginWorkGuidance(body: body, mode: .hold(.salvage), velocity: body.physical!.velocity)
+    try #require(game.workGuidance?.surface.section == identity)
+    let folder = try NativePagedSalvageFixture.folder()
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let file = folder.appendingPathComponent("commander.json")
+    let runtime = GameRuntime(game: game)
+    try await runtime.save(to: file)
+    await runtime.setControls(NativePagedSalvageFixture.firingControls)
+    var first = await runtime.snapshot()
+    for _ in 0..<2500 {
+      first = await runtime.advance(delta: 0.02)
+      if first.commander.alienStorageState?.current.salvage.native.works[imported.section]?.releases
+        == 1
+      {
+        break
+      }
+    }
+    let firstCycle = try #require(
+      first.commander.alienStorageState?.current.salvage.native.works[imported.section])
+    #expect(firstCycle.releases == 1 && firstCycle.progress.nextLot == 8)
+    #expect(
+      firstCycle.currentWorkSeconds == 0 && !firstCycle.damagedTechnology && !firstCycle.depleted)
+    var oracle = originalLedger
+    var oracleOperation = operation
+    let expectedFirst = try NativePagedSalvageFixture.originalRelease(
+      ledger: &oracle, section: section, identity: identity, source: source,
+      remaining: section.workSeconds - (original.partialWork ?? 0), operation: &oracleOperation)
+    #expect(expectedFirst.count == 8)
+    let firstPending = try #require(first.commander.alienStorageState?.current.salvage.pending)
+    #expect(Set(firstPending.keys) == Set(expectedFirst.map(\.identity)))
+    for lot in expectedFirst { #expect(firstPending[lot.identity]?.lot.loot == lot.loot) }
+    #expect(first.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
+
+    var partial = first
+    for _ in 0..<2500 {
+      partial = await runtime.advance(delta: 0.02)
+      if (partial.nativeSalvageWork?.cycle.currentWorkSeconds ?? 0) > 0 { break }
+    }
+    let hot = try #require(partial.nativeSalvageWork)
+    #expect(hot.cycle.releases == 1 && hot.cycle.progress == firstCycle.progress)
+    #expect(hot.cycle.currentWorkSeconds > 0 && hot.cycle.currentWorkSeconds < section.workSeconds)
+    #expect(partial.commander.alienStorageState?.current.salvage.pending.count == 8)
+    try await runtime.save(to: file)
+    let saved = await runtime.snapshot()
+    let savedCycle = try #require(
+      saved.commander.alienStorageState?.current.salvage.native.works[imported.section])
+    #expect(savedCycle == hot.cycle)
+    let bytes = try Data(contentsOf: file)
+    try await runtime.load(from: file, persistMigrations: false)
+    var loaded = await runtime.snapshot()
+    #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
+    #expect(loaded.nativeSalvageWork == nil && (try Data(contentsOf: file)) == bytes)
+    #expect(loaded.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
+    let retainedBody = try #require(
+      loaded.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    loaded.selectFlightTool(.salvageCutter)
+    loaded.beginWorkGuidance(
+      body: retainedBody, mode: .hold(.salvage), velocity: retainedBody.physical!.velocity)
+    let resumed = GameRuntime(game: loaded)
+    try await resumed.save(to: file)
+    await resumed.setControls(NativePagedSalvageFixture.firingControls)
+    var second = await resumed.snapshot()
+    for _ in 0..<2500 {
+      second = await resumed.advance(delta: 0.02)
+      let current = second.commander.alienStorageState?.current.salvage.native.works[
+        imported.section]
+      if current?.releases == 2 { break }
+      #expect(current?.releases == 1)
+      #expect(second.commander.alienStorageState?.current.salvage.pending.count == 8)
+    }
+    let secondCycle = try #require(
+      second.commander.alienStorageState?.current.salvage.native.works[imported.section])
+    #expect(secondCycle.releases == 2 && secondCycle.progress.nextLot == 16)
+    #expect(secondCycle.currentWorkSeconds == 0 && !secondCycle.damagedTechnology)
+    #expect(secondCycle.lastRelease?.creditedWorkSeconds == section.workSeconds)
+    let expectedSecond = try NativePagedSalvageFixture.originalRelease(
+      ledger: &oracle, section: section, identity: identity, source: source,
+      remaining: section.workSeconds, operation: &oracleOperation)
+    #expect(expectedSecond.count == 8)
+    let secondPending = try #require(second.commander.alienStorageState?.current.salvage.pending)
+    #expect(Set(secondPending.keys) == Set((expectedFirst + expectedSecond).map(\.identity)))
+    for lot in expectedFirst + expectedSecond {
+      #expect(secondPending[lot.identity]?.lot.loot == lot.loot)
+    }
+    #expect(second.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
+    #expect(second.commander.cargo == cargo && second.commander.equipmentInventory == property)
+    #expect(second.commander.credits == credits)
+    #expect(second.commander.salvageLedger.pendingLots.isEmpty)
+  }
+}

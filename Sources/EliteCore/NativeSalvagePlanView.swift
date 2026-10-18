@@ -6,6 +6,7 @@ struct NativeSalvagePlanView: Sendable {
   let plans: [UUID: AlienStorageWorldPlan]
   let plansByWreck: [WreckIdentity: [AlienStorageWorldPlan]]
   let works: [UUID: NativeSalvageWorkCycle]
+  let sectionProfiles: [UUID: SalvageSectionProfile]
   let baselineSerials: [UUID: UInt32]
   let wrecks: [WreckIdentity: NativeSalvageWreck]
   let inspections: [WreckSectionIdentity: NativeSalvageInspection]
@@ -38,6 +39,7 @@ struct NativeSalvagePlanView: Sendable {
     var plans = originals
     var baselines: [UUID: UInt32] = [:]
     var works: [UUID: NativeSalvageWorkCycle] = [:]
+    var sections: [UUID: SalvageSectionProfile] = [:]
     for inspection in fresh.values {
       guard let wreck = wreckByID[inspection.wreck] else { throw AlienStorageError.invalidJoin }
       try inspection.validate(wreck: wreck)
@@ -45,20 +47,26 @@ struct NativeSalvagePlanView: Sendable {
         id: inspection.id, owner: inspection.owner, seed: inspection.seed, plan: inspection.plan,
         inspectedAt: inspection.inspectedAt,
         requiredWorkSeconds: inspection.sectionProfile.workSeconds,
-        workSeconds: 0, damagedTechnology: false, depleted: false,
-        destroyed: wreck.destroyedAt != nil, lastOperation: nil,
+        workSeconds: inspection.preinspection?.partialWorkSeconds ?? 0,
+        damagedTechnology: inspection.preinspection?.damagedTechnology ?? false, depleted: false,
+        destroyed: wreck.destroyedAt != nil,
+        lastOperation: inspection.preinspection?.ledgerLastOperation.flatMap { $0 > 0 ? $0 : nil },
         progress: inspection.initialProgress)
     }
     for cycle in cycles {
       let original: AlienStorageWorldPlan
+      let section: SalvageSectionProfile
       let baselineWork: Double
       let baselineDamage: Bool
       switch cycle.inspection {
       case .fresh(let id):
-        guard fresh[id] != nil, let value = plans[id] else { throw AlienStorageError.invalidJoin }
+        guard let inspection = fresh[id], let value = plans[id] else {
+          throw AlienStorageError.invalidJoin
+        }
         original = value
-        baselineWork = 0
-        baselineDamage = false
+        section = inspection.sectionProfile
+        baselineWork = value.workSeconds
+        baselineDamage = value.damagedTechnology
       case .nativeSingleBudget(let id):
         guard let value = originals[id] else { throw AlienStorageError.invalidJoin }
         guard let wreck = wrecks[value.plan.section.wreck], wreck.owner == value.owner,
@@ -66,8 +74,11 @@ struct NativeSalvagePlanView: Sendable {
           let profile = SalvageCatalogue.profile(catalogueShipID: wreck.catalogueShipID)
             ?? SalvageCatalogue.empProfile(catalogueShipID: wreck.catalogueShipID),
           profile.sourceRoles == value.plan.source.roles,
-          let section = profile.sections.first(where: { $0.index == value.plan.section.section })
+          let resolvedSection = profile.sections.first(where: {
+            $0.index == value.plan.section.section
+          })
         else { throw AlienStorageError.invalidJoin }
+        section = resolvedSection
         original = .init(
           id: value.id, owner: value.owner, seed: value.seed, plan: value.plan,
           inspectedAt: value.inspectedAt, requiredWorkSeconds: section.workSeconds,
@@ -84,9 +95,12 @@ struct NativeSalvagePlanView: Sendable {
           wreck.seed == value.seed,
           let profile = SalvageCatalogue.profile(catalogueShipID: wreck.catalogueShipID)
             ?? SalvageCatalogue.empProfile(catalogueShipID: wreck.catalogueShipID),
-          let section = profile.sections.first(where: { $0.index == value.plan.section.section }),
+          let resolvedSection = profile.sections.first(where: {
+            $0.index == value.plan.section.section
+          }),
           profile.sourceRoles == value.plan.source.roles
         else { throw AlienStorageError.invalidJoin }
+        section = resolvedSection
         original = .init(
           id: id, owner: value.owner, seed: value.seed, plan: value.plan,
           inspectedAt: value.importedAt, requiredWorkSeconds: section.workSeconds,
@@ -104,9 +118,12 @@ struct NativeSalvagePlanView: Sendable {
         !original.depleted || cycle.depleted,
         !original.destroyed || cycle.destroyedAt != nil
       else { throw AlienStorageError.invalidJoin }
+      sections[original.id] = section
       try cycle.validate(
         seed: original.seed, plan: original.plan, requiredWorkSeconds: original.requiredWorkSeconds,
-        originalProgress: original.progress)
+        originalProgress: original.progress, section: section, baselineWork: baselineWork,
+        baselineDamage: baselineDamage, baselineDepleted: original.depleted,
+        baselineOperation: nil)
       if cycle.releases == 0 {
         guard !cycle.depleted || original.depleted || cycle.destroyedAt != nil,
           cycle.currentWorkSeconds >= baselineWork,
@@ -149,6 +166,7 @@ struct NativeSalvagePlanView: Sendable {
     self.plans = plans
     plansByWreck = Dictionary(grouping: Array(plans.values), by: { $0.plan.section.wreck })
     self.works = works
+    sectionProfiles = sections
     baselineSerials = baselines
     self.wrecks = wrecks
     self.inspections = inspections

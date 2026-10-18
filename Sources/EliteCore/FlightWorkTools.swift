@@ -127,7 +127,8 @@ extension Game {
         manifest: original.salvageCargo
       )
     }
-    if usesNativeSalvageWork(wreck: wreck, profile: profile) {
+    if usesNativeSalvageWork(section: .init(wreck: wreck, section: section.index), profile: profile)
+    {
       return advanceNativeSalvageWork(
         body: body, section: section, source: source, delta: delta, publish: publish)
     }

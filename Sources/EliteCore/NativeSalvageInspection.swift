@@ -1,5 +1,19 @@
 import Foundation
 
+/// Known old work before the first inspection. No old material, date or completed
+/// cycle is inferred; the original ledger entry remains an immutable audit source.
+struct NativeSalvagePreinspection: Codable, Sendable, Equatable {
+  let partialWorkSeconds: Double
+  let damagedTechnology: Bool
+  let ledgerLastOperation: UInt64?
+  let ledgerRevision: UInt64
+
+  func valid(required: Double) -> Bool {
+    partialWorkSeconds.isFinite && partialWorkSeconds >= 0 && partialWorkSeconds <= required
+      && ledgerLastOperation != nil
+  }
+}
+
 /// A fresh source's original inspection is immutable, including an EMPTY result.
 /// Later cutting budgets live in the linked cycle, not in this inspection.
 struct NativeSalvageInspection: Codable, Sendable, Equatable {
@@ -11,6 +25,7 @@ struct NativeSalvageInspection: Codable, Sendable, Equatable {
   let sectionProfile: SalvageSectionProfile
   let inspectedAt: Double
   let initialProgress: AlienStorageWorldProgress
+  let preinspection: NativeSalvagePreinspection?
 
   init(
     id: UUID, owner: UUID, wreck: NativeSalvageWreck, at time: Double,
@@ -24,6 +39,7 @@ struct NativeSalvageInspection: Codable, Sendable, Equatable {
     sectionProfile = section
     inspectedAt = time
     initialProgress = facts.progress
+    preinspection = facts.preinspection
     guard facts.requiredWorkSeconds == section.workSeconds else {
       throw AlienStorageError.invalidJoin
     }
@@ -38,6 +54,7 @@ struct NativeSalvageInspection: Codable, Sendable, Equatable {
       profile.sections.first(where: { $0.index == sectionProfile.index }) == sectionProfile,
       plan.source.roles == profile.sourceRoles,
       sectionProfile.workSeconds.isFinite, sectionProfile.workSeconds > 0,
+      preinspection?.valid(required: sectionProfile.workSeconds) ?? true,
       initialProgress.issued.allSatisfy({ $0 == 0 }),
       !initialProgress.discarded.contains(true), initialProgress.issuedStructural == 0,
       initialProgress.materialKind == nil, initialProgress.nextLot == 0
@@ -52,7 +69,7 @@ struct NativeSalvageInspection: Codable, Sendable, Equatable {
   }
 
   private enum CodingKeys: String, CodingKey {
-    case id, owner, wreck, seed, plan, sectionProfile, inspectedAt, initialProgress
+    case id, owner, wreck, seed, plan, sectionProfile, inspectedAt, initialProgress, preinspection
   }
 
   init(from decoder: any Decoder) throws {
@@ -65,6 +82,8 @@ struct NativeSalvageInspection: Codable, Sendable, Equatable {
     sectionProfile = try values.decode(SalvageSectionProfile.self, forKey: .sectionProfile)
     inspectedAt = try values.decode(Double.self, forKey: .inspectedAt)
     initialProgress = try values.decode(AlienStorageWorldProgress.self, forKey: .initialProgress)
+    preinspection = try values.decodeIfPresent(
+      NativeSalvagePreinspection.self, forKey: .preinspection)
   }
 
   func encode(to encoder: any Encoder) throws {
@@ -77,5 +96,6 @@ struct NativeSalvageInspection: Codable, Sendable, Equatable {
     try values.encode(sectionProfile, forKey: .sectionProfile)
     try values.encode(inspectedAt, forKey: .inspectedAt)
     try values.encode(initialProgress, forKey: .initialProgress)
+    try values.encodeIfPresent(preinspection, forKey: .preinspection)
   }
 }

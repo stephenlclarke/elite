@@ -19,7 +19,6 @@ struct AlienNativeSalvageIndex: Sendable {
 
   let native: NativeSalvagePlanView
   let sections: Set<WreckSectionIdentity>
-  let wrecksWithSections: Set<WreckIdentity>
   let pending: [SalvageLotIdentity: Pending]
   let pendingBySystem: [SystemIdentity: [Pending]]
   let storedTechnology: [UUID: StoredTechnology]
@@ -111,7 +110,6 @@ struct AlienNativeSalvageIndex: Sendable {
     }
     self.native = native
     self.sections = sections
-    wrecksWithSections = Set(sections.map(\.wreck))
     self.pending = pending
     pendingBySystem = Dictionary(
       grouping: Array(pending.values), by: { $0.lot.identity.section.wreck.system })

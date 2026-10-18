@@ -133,6 +133,8 @@ extension Commander {
   ) -> Bool {
     guard alienStorageStateValid else { return false }
     guard let native = alienStorageState?.current.salvage else { return true }
+    let physicalActors = bodies.compactMap { $0.physical?.identity }
+    guard Set(physicalActors).count == physicalActors.count else { return false }
     guard nativeWreckSceneIsConsistent(bodies, docked: docked, atColdBoundary: atColdBoundary)
     else {
       return false

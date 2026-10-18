@@ -2238,6 +2238,7 @@ public actor GameRuntime {
       candidate.restoreScriptWorld(world)
       try candidate.migrateMiningPresence(legacyMissing: pointer.schemaVersion < 26)
       candidate.rebuildMiningFields()
+      candidate.rebuildSalvageSites()
       try candidate.restoreSavedNPCSceneBindings()
       try candidate.rebindNativeStationsAfterLoad()
       try candidate.validateInstalledCourierContent()

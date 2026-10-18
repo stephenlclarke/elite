@@ -283,6 +283,15 @@ enum AlienStorageWorldValidation {
   static func preserve(_ previous: [AlienStorageWorldRecord], in current: [AlienStorageWorldRecord])
     throws
   {
+    let workView = try NativeSalvagePlanView(current)
+    let adopted = Set(
+      (previous + current).compactMap { record -> UUID? in
+        if case .nativeWork(let cycle) = record, case .nativeSingleBudget(let id) = cycle.inspection
+        {
+          return id
+        }
+        return nil
+      })
     var records: [UUID: AlienStorageWorldRecord] = [:]
     for record in current {
       guard records.updateValue(record, forKey: record.id) == nil else {
@@ -297,8 +306,15 @@ enum AlienStorageWorldValidation {
       case (.nativeInspection, .nativeInspection):
         guard old == next else { throw AlienStorageError.historyChanged }
       case (.nativeWork(let a), .nativeWork(let b)):
-        try b.preserve(a)
+        guard let source = workView.plans[b.inspection.id],
+          let section = workView.sectionProfiles[b.inspection.id]
+        else { throw AlienStorageError.invalidJoin }
+        try b.preserve(a, plan: source.plan, section: section)
       case (.plan(let a), .plan(let b)):
+        if adopted.contains(a.id) {
+          guard a == b else { throw AlienStorageError.historyChanged }
+          continue
+        }
         guard a.owner == b.owner, a.seed == b.seed, a.plan == b.plan,
           a.inspectedAt == b.inspectedAt,
           a.requiredWorkSeconds == b.requiredWorkSeconds, b.workSeconds >= a.workSeconds,

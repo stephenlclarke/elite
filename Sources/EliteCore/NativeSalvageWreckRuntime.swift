@@ -119,6 +119,7 @@ extension Game {
       } == true
     guard !nativeSalvageWreckMotion.isEmpty || parking else { return true }
     guard let previous = commander.alienStorageState?.current.snapshot else { return false }
+    if let hot = nativeSalvageWork, !nativeSalvageHotWorkIsCurrent(hot) { return false }
     do {
       var deaths: [UUID: Double] = [:]
       var retained = previous.world
@@ -128,6 +129,9 @@ extension Game {
         } else {
           retained.append(.nativeWork(hot.cycle))
         }
+      }
+      if let hot = nativeSalvageWork {
+        retained = try NativeSalvageWorkWorld.reconcile(hot.cycle, plan: hot.plan, in: retained)
       }
       var world = retained.map { record -> AlienStorageWorldRecord in
         guard case .nativeWreck(let old) = record else { return record }
@@ -195,12 +199,14 @@ extension Commander {
   ) -> Bool {
     guard let native = alienStorageState?.current.salvage.native else { return true }
     var seen: Set<WreckIdentity> = []
+    var actors: Set<ActorIdentity> = []
     for body in bodies {
       guard let physical = body.physical, physical.payload == nil,
         let metadata = physical.salvage, let identity = metadata.wreck,
         let wreck = native.wrecks[identity]
       else { continue }
-      guard !docked, seen.insert(identity).inserted, wreck.owner == equipmentOwnerID,
+      guard !docked, seen.insert(identity).inserted, actors.insert(physical.identity).inserted,
+        wreck.owner == equipmentOwnerID,
         wreck.destroyedAt == nil, body.energy.isFinite, body.energy > 0,
         physical.npc == nil, physical.catalogueShipID == wreck.catalogueShipID,
         wreck.binding == physical.identity,
@@ -249,8 +255,16 @@ extension Commander {
       native.works.values.allSatisfy({
         $0.beganAt <= flightSimulation.physicalTime
           && $0.observedAt <= flightSimulation.physicalTime
+          && ($0.lastOperation.map { $0 < flightSimulation.nextIncident } ?? true)
       }), native.inspections.values.allSatisfy({ $0.inspectedAt <= flightSimulation.physicalTime })
     else { return false }
+    for inspection in native.inspections.values {
+      if let baseline = inspection.preinspection,
+        !salvageLedger.nativeUnplannedAuditMatches(inspection.plan.section, baseline: baseline)
+      {
+        return false
+      }
+    }
     var galaxies: [Int: [StarSystem]] = [:]
     var sites: [SystemIdentity: [SalvageSite]] = [:]
     for wreck in native.wrecks.values {
