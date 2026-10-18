@@ -152,13 +152,7 @@ public struct PreparedHull: Sendable {
       triangles += generated
     }
     guard !triangles.isEmpty else { throw HullSweepFailure.invalidGeometry }
-    guard
-      triangles.allSatisfy({ triangle in
-        let first = triangle.b - triangle.a
-        let second = triangle.c - triangle.a
-        let scale = max(first.length, max(second.length, (triangle.c - triangle.b).length))
-        return sweepFinite(first.cross(second)) && first.cross(second).length > scale * scale * 1e-6
-      })
+    guard triangles.allSatisfy(\.hasResolvedArea)
     else { throw HullSweepFailure.invalidGeometry }
     self.triangles = triangles
     triangleCount = triangles.count
@@ -419,7 +413,7 @@ public enum HullSweepSafety {
       let triangle = SweepTriangle(
         a: target.shipPoint(ship.systemPoint(original.a)),
         b: target.shipPoint(ship.systemPoint(original.b)),
-        c: target.shipPoint(ship.systemPoint(original.c)))
+        c: target.shipPoint(ship.systemPoint(original.c)), conditioned: original.conditioned)
       best = try triangleDistance(triangle, hull: obstacle, startingBest: best, work: &work)
       if best < 1e-9 { return 0 }
     }
@@ -474,20 +468,32 @@ public enum HullSweepSafety {
     _ point: Vector3, direction: Vector3, hull: PreparedHull, component: SweepComponent,
     work: inout SweepWork
   ) throws -> Bool? {
-    var hits: [Double] = []
+    var hits: [(distance: Double, uncertainty: Double, conditioned: Bool)] = []
     for index in component.triangles {
       try work.triangle()
       if let hit = sweepRay(point, direction: direction, triangle: hull.triangles[index]) {
         if hit.boundary {
           return nil
         }
-        hits.append(hit.distance)
+        hits.append((hit.distance, hit.uncertainty, hull.triangles[index].conditioned))
       }
     }
-    hits.sort()
+    hits.sort { $0.distance < $1.distance }
+    for (before, after) in zip(hits, hits.dropFirst())
+    where before.conditioned || after.conditioned {
+      let gap =
+        (SweepInterval(after.distance)
+        - (SweepInterval(before.distance) + SweepInterval(before.uncertainty))).lower
+      let furthest = (SweepInterval(abs(after.distance)) + SweepInterval(after.uncertainty)).upper
+      let tolerance = (SweepInterval(1e-8) * SweepInterval(max(1, furthest))).upper
+      // A thin surface may have a genuinely distinct nearby crossing. Do not merge
+      // uncertain crossings into a fictitious outside result as if they were duplicates.
+      if gap <= tolerance { return nil }
+    }
     var distinct: [Double] = []
-    for hit in hits where distinct.last.map({ abs($0 - hit) > 1e-8 * max(1, abs(hit)) }) ?? true {
-      distinct.append(hit)
+    for hit in hits
+    where distinct.last.map({ abs($0 - hit.distance) > 1e-8 * max(1, abs(hit.distance)) }) ?? true {
+      distinct.append(hit.distance)
     }
     return distinct.count % 2 == 1
   }
@@ -590,6 +596,27 @@ private struct SweepTriangle: Sendable {
   let a: Vector3
   let b: Vector3
   let c: Vector3
+  let conditioned: Bool
+
+  init(a: Vector3, b: Vector3, c: Vector3, conditioned: Bool = false) {
+    self.a = a
+    self.b = b
+    self.c = c
+    let first = b - a
+    let second = c - a
+    let scale = max(first.length, max(second.length, (c - b).length))
+    // These are only the boundaries of the pre-existing fast query path, never
+    // acceptance. Newly resolved small triangles need conservative queries as well.
+    let area = first.cross(second).length
+    self.conditioned = conditioned || area <= scale * scale * 1e-6 || area <= 1e-9
+  }
+
+  var hasResolvedArea: Bool {
+    let normal = (SweepIntervalVector(b) - SweepIntervalVector(a)).cross(
+      SweepIntervalVector(c) - SweepIntervalVector(a))
+    let area = normal.length
+    return area.finite && area.lower > 0
+  }
   func vertex(at index: Int) -> Vector3 {
     switch index {
     case 0: a
@@ -609,6 +636,217 @@ private struct SweepTriangle: Sendable {
       lower: .init(min(a.x, min(b.x, c.x)), min(a.y, min(b.y, c.y)), min(a.z, min(b.z, c.z))),
       upper: .init(max(a.x, max(b.x, c.x)), max(a.y, max(b.y, c.y)), max(a.z, max(b.z, c.z))))
   }
+}
+
+/// Outward rounding encloses operations on the stored Double coordinates. A zero-spanning
+/// area is unresolved, not permission to remove a surface or to infer a closed component.
+private struct SweepInterval {
+  let lower: Double
+  let upper: Double
+
+  init(_ value: Double) {
+    lower = value
+    upper = value
+  }
+
+  init(lower: Double, upper: Double) {
+    self.lower = lower
+    self.upper = upper
+  }
+
+  static let whole = Self(lower: -.infinity, upper: .infinity)
+  var finite: Bool { lower.isFinite && upper.isFinite }
+
+  private static func enclosing(_ lower: Double, _ upper: Double) -> Self {
+    guard !lower.isNaN, !upper.isNaN, lower <= upper else { return .whole }
+    return .init(lower: lower.nextDown, upper: upper.nextUp)
+  }
+
+  static func + (a: Self, b: Self) -> Self {
+    enclosing(a.lower + b.lower, a.upper + b.upper)
+  }
+
+  static func - (a: Self, b: Self) -> Self {
+    enclosing(a.lower - b.upper, a.upper - b.lower)
+  }
+
+  static func * (a: Self, b: Self) -> Self {
+    let products = [a.lower * b.lower, a.lower * b.upper, a.upper * b.lower, a.upper * b.upper]
+    guard products.allSatisfy({ !$0.isNaN }) else { return .whole }
+    return enclosing(products.min()!, products.max()!)
+  }
+
+  static func / (a: Self, b: Self) -> Self {
+    guard b.lower > 0 || b.upper < 0 else { return .whole }
+    return a * enclosing(1 / b.upper, 1 / b.lower)
+  }
+
+  var square: Self {
+    let maximum = max(abs(lower), abs(upper))
+    let minimum = lower <= 0 && upper >= 0 ? 0 : min(abs(lower), abs(upper))
+    return .init(
+      lower: max(0, (minimum * minimum).nextDown), upper: (maximum * maximum).nextUp)
+  }
+
+  var root: Self {
+    guard upper >= 0 else { return .whole }
+    return .init(
+      lower: max(0, sqrt(max(0, lower)).nextDown), upper: sqrt(upper).nextUp)
+  }
+
+  var magnitude: Self {
+    .init(
+      lower: lower <= 0 && upper >= 0 ? 0 : min(abs(lower), abs(upper)),
+      upper: max(abs(lower), abs(upper)))
+  }
+}
+
+private struct SweepIntervalVector {
+  let x: SweepInterval
+  let y: SweepInterval
+  let z: SweepInterval
+
+  init(_ value: Vector3) {
+    x = .init(value.x)
+    y = .init(value.y)
+    z = .init(value.z)
+  }
+
+  init(x: SweepInterval, y: SweepInterval, z: SweepInterval) {
+    self.x = x
+    self.y = y
+    self.z = z
+  }
+
+  static func - (a: Self, b: Self) -> Self {
+    .init(x: a.x - b.x, y: a.y - b.y, z: a.z - b.z)
+  }
+
+  static func * (a: Self, b: SweepInterval) -> Self {
+    .init(x: a.x * b, y: a.y * b, z: a.z * b)
+  }
+
+  func dot(_ other: Self) -> SweepInterval {
+    x * other.x + y * other.y + z * other.z
+  }
+
+  func cross(_ other: Self) -> Self {
+    .init(
+      x: y * other.z - z * other.y,
+      y: z * other.x - x * other.z,
+      z: x * other.y - y * other.x)
+  }
+
+  var length: SweepInterval { (x.square + y.square + z.square).root }
+}
+
+/// A projection gap along any finite axis is a lower bound on convex-set separation.
+/// The approximate closest-feature axis only improves tightness: it cannot grant safety.
+private func sweepSeparationLowerBound(_ a: [Vector3], _ b: [Vector3], axis: Vector3) -> Double {
+  guard sweepFinite(axis), axis.length > 0, let origin = a.first else { return 0 }
+  let direction = SweepIntervalVector(axis)
+  let length = direction.length
+  guard length.finite, length.lower > 0 else { return 0 }
+  let base = SweepIntervalVector(origin)
+  let left = a.map { (SweepIntervalVector($0) - base).dot(direction) }
+  let right = b.map { (SweepIntervalVector($0) - base).dot(direction) }
+  guard (left + right).allSatisfy(\.finite), !right.isEmpty else { return 0 }
+  let gap = max(
+    right.map(\.lower).min()! - left.map(\.upper).max()!,
+    left.map(\.lower).min()! - right.map(\.upper).max()!)
+  guard gap.isFinite else { return 0 }
+  // Both subtraction and division need outward rounding as well as the projections.
+  return max(0, (gap.nextDown / length.upper).nextDown)
+}
+
+private func sweepConditionedPointSegment(_ point: Vector3, _ a: Vector3, _ b: Vector3) -> Double {
+  let edge = b - a
+  let square = edge.dot(edge)
+  let fraction = square > 0 ? max(0, min(1, (point - a).dot(edge) / square)) : 0
+  return sweepSeparationLowerBound([point], [a, b], axis: point - a - edge * fraction)
+}
+
+private func sweepConditionedPointTriangle(_ point: Vector3, _ triangle: SweepTriangle) -> Double {
+  let a = SweepIntervalVector(triangle.a)
+  let normal = (SweepIntervalVector(triangle.b) - a).cross(SweepIntervalVector(triangle.c) - a)
+  let length = normal.length
+  guard length.finite, length.lower > 0 else { return 0 }
+  let offset = SweepIntervalVector(point) - a
+  let signedDistance = offset.dot(normal)
+  let plane = (signedDistance / length).magnitude
+  guard plane.finite else { return 0 }
+  let projected = offset - normal * (signedDistance / normal.dot(normal))
+  var definitelyOutside = false
+  for index in 0..<3 {
+    let edge = triangle.edge(at: index)
+    let start = SweepIntervalVector(edge.0) - a
+    let direction = SweepIntervalVector(edge.1) - SweepIntervalVector(edge.0)
+    if direction.cross(projected - start).dot(normal).upper < 0 {
+      definitelyOutside = true
+    }
+  }
+  // When the projection classification is uncertain, the infinite plane is a safe lower
+  // bound. It may refuse a close sweep; it never reports a missing thin surface as clear.
+  guard definitelyOutside else { return max(0, plane.lower) }
+  return (0..<3).map {
+    let edge = triangle.edge(at: $0)
+    return sweepConditionedPointSegment(point, edge.0, edge.1)
+  }.min() ?? 0
+}
+
+private func sweepConditionedRay(
+  _ origin: Vector3, direction: Vector3, triangle: SweepTriangle, maximumDistance: Double?
+) -> (distance: Double, boundary: Bool, uncertainty: Double)? {
+  guard
+    sweepRayMayReachBounds(
+      origin, direction: direction, bounds: triangle.bounds, maximumDistance: maximumDistance)
+  else { return nil }
+  let a = SweepIntervalVector(triangle.a)
+  let edge = SweepIntervalVector(triangle.b) - a
+  let other = SweepIntervalVector(triangle.c) - a
+  let ray = SweepIntervalVector(direction)
+  let cross = ray.cross(other)
+  let determinant = edge.dot(cross)
+  guard determinant.finite, determinant.lower > 0 || determinant.upper < 0 else {
+    return (0, true, .infinity)
+  }
+  let offset = SweepIntervalVector(origin) - a
+  let u = offset.dot(cross) / determinant
+  let perpendicular = offset.cross(edge)
+  let v = ray.dot(perpendicular) / determinant
+  let distance = other.dot(perpendicular) / determinant
+  guard u.finite, v.finite, distance.finite else { return (0, true, .infinity) }
+  let sum = u + v
+  if u.upper < 0 || v.upper < 0 || sum.lower > 1 || distance.upper < 0 { return nil }
+  let boundary =
+    u.lower < 1e-10 || v.lower < 1e-10 || sum.upper > 1 - 1e-10 || distance.lower < 0
+    || distance.upper - distance.lower > 1e-10 * max(1, abs(distance.lower))
+  return (max(0, distance.lower), boundary, (distance.upper - distance.lower).nextUp)
+}
+
+private func sweepRayMayReachBounds(
+  _ origin: Vector3, direction: Vector3, bounds: SweepBounds, maximumDistance: Double?
+) -> Bool {
+  var entry = 0.0
+  var exit = maximumDistance ?? .infinity
+  let axes = [
+    (origin.x, direction.x, bounds.lower.x, bounds.upper.x),
+    (origin.y, direction.y, bounds.lower.y, bounds.upper.y),
+    (origin.z, direction.z, bounds.lower.z, bounds.upper.z),
+  ]
+  for (point, rate, lower, upper) in axes {
+    if rate == 0 {
+      if point < lower || point > upper { return false }
+      continue
+    }
+    let first = (SweepInterval(lower) - SweepInterval(point)) / SweepInterval(rate)
+    let second = (SweepInterval(upper) - SweepInterval(point)) / SweepInterval(rate)
+    // Outward endpoint bounds can only enlarge the candidate interval.
+    entry = max(entry, min(first.lower, second.lower))
+    exit = min(exit, max(first.upper, second.upper))
+    if entry > exit { return false }
+  }
+  return true
 }
 
 private struct SweepNode: Sendable {
@@ -678,6 +916,12 @@ private func sweepCross(_ a: SweepPoint2, _ b: SweepPoint2, _ c: SweepPoint2) ->
   (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 }
 private func sweepTriangulate(_ vertices: [Vector3]) throws -> [SweepTriangle] {
+  // An original triangle needs no polygon projection or ear removal. In particular,
+  // absolute shoelace cutoffs would discard resolved small/translated source surfaces.
+  // PreparedHull applies the same certified area gate to every returned triangle.
+  if vertices.count == 3 {
+    return [.init(a: vertices[0], b: vertices[1], c: vertices[2])]
+  }
   let normal = (1..<(vertices.count - 1)).lazy.map {
     (vertices[$0] - vertices[0]).cross(vertices[$0 + 1] - vertices[0])
   }.first { $0.length > 1e-9 }
@@ -706,7 +950,10 @@ private func sweepPointSegment(_ point: Vector3, _ a: Vector3, _ b: Vector3) -> 
   let fraction = square > 0 ? max(0, min(1, (point - a).dot(edge) / square)) : 0
   return (point - a - edge * fraction).length
 }
-private func sweepPointTriangle(_ point: Vector3, _ triangle: SweepTriangle) -> Double {
+private func sweepPointTriangle(
+  _ point: Vector3, _ triangle: SweepTriangle, conditioned: Bool = false
+) -> Double {
+  if conditioned || triangle.conditioned { return sweepConditionedPointTriangle(point, triangle) }
   let normal = (triangle.b - triangle.a).cross(triangle.c - triangle.a)
   let square = normal.dot(normal)
   let projected = point - normal * ((point - triangle.a).dot(normal) / square)
@@ -728,8 +975,13 @@ private func sweepPointTriangle(_ point: Vector3, _ triangle: SweepTriangle) -> 
   return distance
 }
 private func sweepRay(
-  _ origin: Vector3, direction: Vector3, triangle: SweepTriangle
-) -> (distance: Double, boundary: Bool)? {
+  _ origin: Vector3, direction: Vector3, triangle: SweepTriangle, conditioned: Bool = false,
+  maximumDistance: Double? = nil
+) -> (distance: Double, boundary: Bool, uncertainty: Double)? {
+  if conditioned || triangle.conditioned {
+    return sweepConditionedRay(
+      origin, direction: direction, triangle: triangle, maximumDistance: maximumDistance)
+  }
   let edge = triangle.b - triangle.a
   let other = triangle.c - triangle.a
   let cross = direction.cross(other)
@@ -741,9 +993,9 @@ private func sweepRay(
   let v = direction.dot(perpendicular) / determinant
   let distance = other.dot(perpendicular) / determinant
   guard u >= 0, v >= 0, u + v <= 1, distance >= 0 else { return nil }
-  return (distance, min(u, min(v, 1 - u - v)) < 1e-10)
+  return (distance, min(u, min(v, 1 - u - v)) < 1e-10, 0)
 }
-private func sweepSegmentDistance(_ a: (Vector3, Vector3), _ b: (Vector3, Vector3)) -> Double {
+private func sweepSegmentAxis(_ a: (Vector3, Vector3), _ b: (Vector3, Vector3)) -> Vector3 {
   let d = a.1 - a.0
   let e = b.1 - b.0
   let r = a.0 - b.0
@@ -763,18 +1015,35 @@ private func sweepSegmentDistance(_ a: (Vector3, Vector3), _ b: (Vector3, Vector
     t = 1
     s = max(0, min(1, (de - dr) / aa))
   }
-  return (r + d * s - e * t).length
+  return r + d * s - e * t
+}
+private func sweepSegmentDistance(
+  _ a: (Vector3, Vector3), _ b: (Vector3, Vector3), conditioned: Bool
+) -> Double {
+  let closestAxis = sweepSegmentAxis(a, b)
+  guard conditioned else { return closestAxis.length }
+  // Even when the nearly parallel closest-line calculation is ill-conditioned, every
+  // axis below proves only a projection gap. An inaccurate axis can only lower the bound.
+  let axes = [closestAxis, a.0 - b.0, a.0 - b.1, a.1 - b.0, a.1 - b.1]
+  return axes.map { sweepSeparationLowerBound([a.0, a.1], [b.0, b.1], axis: $0) }.max() ?? 0
 }
 private func sweepTriangleDistance(_ a: SweepTriangle, _ b: SweepTriangle) -> Double {
+  let conditioned = a.conditioned || b.conditioned
   for index in 0..<3 {
     let (start, end) = a.edge(at: index)
-    if let hit = sweepRay(start, direction: end - start, triangle: b), hit.distance <= 1 {
+    if let hit = sweepRay(
+      start, direction: end - start, triangle: b, conditioned: conditioned, maximumDistance: 1),
+      hit.distance <= 1
+    {
       return 0
     }
   }
   for index in 0..<3 {
     let (start, end) = b.edge(at: index)
-    if let hit = sweepRay(start, direction: end - start, triangle: a), hit.distance <= 1 {
+    if let hit = sweepRay(
+      start, direction: end - start, triangle: a, conditioned: conditioned, maximumDistance: 1),
+      hit.distance <= 1
+    {
       return 0
     }
   }
@@ -782,16 +1051,18 @@ private func sweepTriangleDistance(_ a: SweepTriangle, _ b: SweepTriangle) -> Do
   for firstIndex in 0..<3 {
     let first = a.edge(at: firstIndex)
     for secondIndex in 0..<3 {
-      distance = min(distance, sweepSegmentDistance(first, b.edge(at: secondIndex)))
+      distance = min(
+        distance, sweepSegmentDistance(first, b.edge(at: secondIndex), conditioned: conditioned))
     }
   }
   return distance
 }
 
 private func sweepVertexDistance(_ source: SweepTriangle, to target: SweepTriangle) -> Double {
-  var distance = sweepPointTriangle(source.a, target)
+  let conditioned = source.conditioned || target.conditioned
+  var distance = sweepPointTriangle(source.a, target, conditioned: conditioned)
   for index in 1..<3 {
-    let candidate = sweepPointTriangle(source.vertex(at: index), target)
+    let candidate = sweepPointTriangle(source.vertex(at: index), target, conditioned: conditioned)
     if candidate < distance { distance = candidate }
   }
   return distance
