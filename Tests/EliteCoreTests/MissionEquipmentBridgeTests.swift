@@ -29,7 +29,7 @@ struct MissionEquipmentBridgeTests {
     #expect(reward.provenance == .grant("mission-pack:" + entry.digest))
     #expect(game.commander.energyRechargeMultiplier == 3)
     #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
-    var restored = try await CurrentBodylessSaveTestFixture.restore(game)
+    var restored = try await CurrentNativeSaveTestFixture.restore(game)
     let inventory = restored.commander.equipmentInventory
     let second = restored.dispatchMission(.dock, naval: true)
     #expect(!second && restored.commander.kills == 1536)

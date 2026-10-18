@@ -39,7 +39,7 @@ import Testing
   #expect(!refused)
   #expect(game.dischargeAudio.epoch == epoch && game.dischargeAudio.events == events)
   #expect(feed.update(game.dischargeAudio).isEmpty)
-  game = try await CurrentBodylessSaveTestFixture.restore(game)
+  game = try await CurrentNativeSaveTestFixture.restore(game)
   #expect(game.dischargeAudio.epoch != epoch && game.dischargeAudio.events.isEmpty)
   #expect(feed.update(game.dischargeAudio).isEmpty)
 }
