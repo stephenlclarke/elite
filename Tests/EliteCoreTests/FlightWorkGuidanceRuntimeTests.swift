@@ -1073,9 +1073,10 @@ extension FlightWorkGuidanceRuntimeTests {
     var (game, _) = try NativePagedSalvageFixture.game()
     let index = try #require(game.bodies.firstIndex { $0.physical?.salvage?.wreck != nil })
     let old = try #require(game.bodies[index].physical?.salvage)
+    let claimant = ownership == .claimed ? game.commander.flightSimulation.player : nil
     game.bodies[index].physical?.salvage = .init(
       category: old.category, ownership: ownership,
-      claimant: ownership == .claimed ? game.commander.flightSimulation.player : nil,
+      claimant: claimant,
       wreck: old.wreck, section: old.section, lot: old.lot, bounds: old.bounds,
       workSurfaces: old.workSurfaces)
     game.workTargetFilter = .salvage
