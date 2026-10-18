@@ -243,10 +243,29 @@ extension MissionActorAdmissionSource {
 }
 
 extension Game {
+  /// End the computed Commander receiver's lifetime before nested admission starts.
+  /// Every call reads the current Game and returns only immutable COW/scalar source facts.
+  @inline(never)
+  private func currentMissionActorAdmissionSourceValues() -> (
+    instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
+  ) {
+    commander.missionActorAdmissionSourceValues()
+  }
+
+  @inline(never)
+  private func currentMissionActorAdmissionOwner(_ id: UUID) -> ScriptInstance? {
+    commander.scriptState.instances[id]
+  }
+
+  @inline(never)
+  private func currentMissionActorAdmissionWorldJob(_ id: UUID) -> ScriptWorldJob? {
+    commander.scriptState.worldJobs[id]
+  }
+
   /// Rechecks a sealed source against actual installed authority without a caller snapshot.
   /// Prepared retention stays private to its adapter and must also match the staged patch.
   func validateMissionActorAdmissionSource(_ source: MissionActorAdmissionSource) throws {
-    let currentInputs = commander.missionActorAdmissionSourceValues()
+    let currentInputs = currentMissionActorAdmissionSourceValues()
     guard let owner = currentInputs.instances[source.instanceID],
       owner.id == source.instanceID, owner.revision == source.instanceRevision,
       owner.digest == source.packDigest, owner.definition == source.definition,
@@ -315,7 +334,7 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
     worldJob: UUID? = nil, pulse: UInt64? = nil
   ) throws -> MissionActorAdmissionSource {
-    let currentInputs = commander.missionActorAdmissionSourceValues()
+    let currentInputs = currentMissionActorAdmissionSourceValues()
     guard currentInputs.instances[state.id]?.ownedEncounters[encounter.id]?.admitted != true
     else {
       throw MissionPackError("An admitted retained cohort cannot become a fresh prepared source.")
@@ -331,7 +350,7 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounterID: String,
     galaxy: Int, system: Int, worldJob: UUID?, pulse: UInt64?
   ) throws -> MissionActorAdmissionAuthority {
-    guard let stored = commander.scriptState.instances[state.id], stored.id == state.id,
+    guard let stored = currentMissionActorAdmissionOwner(state.id), stored.id == state.id,
       stored.definition == state.definition, stored.version == state.version,
       stored.digest == state.digest, stored.revision == state.revision
     else { throw MissionPackError("Prepared actors require the actual command candidate owner.") }
@@ -340,7 +359,7 @@ extension Game {
     else { throw MissionPackError("Prepared authority requires its exact installed content.") }
     let authority: MissionActorAdmissionAuthority
     if let worldJob, let pulse {
-      guard let job = commander.scriptState.worldJobs[worldJob], job.identity == worldJob,
+      guard let job = currentMissionActorAdmissionWorldJob(worldJob), job.identity == worldJob,
         job.origin == state.id, job.status == .active, job.suspension == nil,
         job.pending?.sequence == pulse, job.valid, worldJobOwnerAlive(job),
         pack.manifest.worldJobs?.contains(job.definition) == true,
@@ -395,7 +414,7 @@ extension Game {
     pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
     definition: ScriptEncounterDefinition
   ) throws -> MissionActorAdmissionSource {
-    let currentInputs = commander.missionActorAdmissionSourceValues()
+    let currentInputs = currentMissionActorAdmissionSourceValues()
     let legacy = encounter.legacyProvenance
     if let legacy {
       guard legacy.matches(owner: state, encounter: encounter),
