@@ -34,6 +34,8 @@ The later observability child adds one `OSLog.Logger.notice` inside the existing
 
 This notice does not repair or attribute the procurement death and does not cover noncombat damage. Source/static review is the only validation authorized for this child. Later verification must exercise the real command path, correlate the actual process, subsystem, category and gameplay revision, and retain exactly one fatal event; a missing event is not alternative-cause attribution. No compiler, log query, tests, UI or runtime invocation was performed in the source-authoring allocation. The macOS telemetry skill guides the unified-log instrumentation; runtime verification remains pending.
 
+Compile 386 rejected the direct `gameplayRevision` interpolation as an escaping autoclosure capture of mutating `self`. The corrective child snapshots the same revision into an immutable local before logging, preserving all payload fields, bounds, privacy and gameplay order. The original failure proof and `8db33323` composition of `f6b74c67` and `d30feff2` remain retained; the child has source checks only, with compiler and real event acceptance still pending.
+
 ## Compatibility and follow-ups
 
 The pack is explicitly procurement-only and is not registered by default. Supplied issuer-owned freight, protected matching commodity producers, full G03/native Gallery handoff acceptance and broader generated families remain incomplete. G1 owns composition, compiled-allocation checks, focused and full CI, completed clean `@codex review`, protected merge and release. No PR was published by this source-authoring allocation.

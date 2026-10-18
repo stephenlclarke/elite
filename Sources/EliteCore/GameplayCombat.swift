@@ -147,9 +147,10 @@ extension Game {
     else { return nil }
     applyDamage(damage, front: hit.point.z >= 0, energyMultiplier: energyMultiplier)
     if energy <= 0 {
+      let revision = gameplayRevision
       let owner = incident.origin.owner
       gameplayCombatLogger.notice(
-        "PLAYER_COMBAT_FATAL revision=\(gameplayRevision, privacy: .public) incident=\(incident.id, privacy: .public) time=\(String(incident.physicalTime), privacy: .public) kind=\(incident.kind.rawValue, privacy: .public) ownerGalaxy=\(owner.system.galaxy, privacy: .public) ownerSystem=\(owner.system.system, privacy: .public) ownerVisit=\(owner.visit, privacy: .public) ownerEntity=\(owner.entity, privacy: .public) ordnance=\(incident.origin.ordnance == nil ? 0 : 1, privacy: .public) damage=\(String(damage), privacy: .public) energyMultiplier=\(String(energyMultiplier), privacy: .public)"
+        "PLAYER_COMBAT_FATAL revision=\(revision, privacy: .public) incident=\(incident.id, privacy: .public) time=\(String(incident.physicalTime), privacy: .public) kind=\(incident.kind.rawValue, privacy: .public) ownerGalaxy=\(owner.system.galaxy, privacy: .public) ownerSystem=\(owner.system.system, privacy: .public) ownerVisit=\(owner.visit, privacy: .public) ownerEntity=\(owner.entity, privacy: .public) ordnance=\(incident.origin.ordnance == nil ? 0 : 1, privacy: .public) damage=\(String(damage), privacy: .public) energyMultiplier=\(String(energyMultiplier), privacy: .public)"
       )
       recordCombat(
         origin: origin, kind: kind, outcome: .destruction, target: .player,
