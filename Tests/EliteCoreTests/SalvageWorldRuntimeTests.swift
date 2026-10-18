@@ -66,6 +66,7 @@ private func actualWreckHit(_ game: inout Game, id: Int, damage: Double) throws 
 struct SalvageWorldRuntimeTests {
   @Test func noOpPosePersistenceDockingAndSavingKeepTheAbsentLedgerAbsent() async throws {
     var game = Game(executive: false)
+    try NativeSaveTestFixture.prepareCurrentPolicy(&game)
     game.screen = .status
     let before = game.commander
     #expect(game.commander.savedSalvageLedger == nil)
@@ -78,7 +79,7 @@ struct SalvageWorldRuntimeTests {
     let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: url) }
     try await runtime.save(to: url)
-    let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+    let saved = try NativeSaveTestFixture.readVersionedCommander(from: url)
     #expect(saved == ready.commander && saved.savedSalvageLedger == nil)
     #expect(await runtime.snapshot().commander == ready.commander)
     game.commander.salvageLedger = .init()
