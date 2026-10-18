@@ -982,12 +982,22 @@ struct EliteApp {
       return
     }
     if let index = CommandLine.arguments.firstIndex(of: "--validate-mission-pack") {
-      guard CommandLine.arguments.indices.contains(index + 1) else {
-        throw MissionPackErrorCLI.missingPath
+      do {
+        guard CommandLine.arguments.indices.contains(index + 1) else {
+          throw MissionPackErrorCLI.missingPath
+        }
+        let input = try MissionPackInput(at: URL(fileURLWithPath: CommandLine.arguments[index + 1]))
+        let lines = try input.validationLines()
+        for line in lines { print(line) }
+      } catch MissionPackErrorCLI.missingPath {
+        FileHandle.standardError.write(
+          Data("Missing mission pack path. Use --validate-mission-pack <file-or-folder>.\n".utf8))
+        exit(EXIT_FAILURE)
+      } catch {
+        FileHandle.standardError.write(
+          Data("Invalid mission pack: \(error.localizedDescription)\n".utf8))
+        exit(EXIT_FAILURE)
       }
-      let input = try MissionPackInput(at: URL(fileURLWithPath: CommandLine.arguments[index + 1]))
-      let lines = try input.validationLines()
-      for line in lines { print(line) }
       return
     }
     if let index = CommandLine.arguments.firstIndex(of: "--ship-media") {
