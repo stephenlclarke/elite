@@ -7,7 +7,7 @@ struct ScriptProcurementFixture {
   let root: URL
   let pack: ScriptPack
   var save: URL { root.appendingPathComponent("save/commander.json") }
-  init() throws {
+  init(legacyV1: Bool = false) throws {
     root = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
       .appendingPathComponent("procurement-" + UUID().uuidString)
     let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
@@ -16,8 +16,13 @@ struct ScriptProcurementFixture {
     try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
     do {
       let folder = root.appendingPathComponent("pack")
-      try FileManager.default.copyItem(at: source, to: folder)
+      if legacyV1 {
+        try ScriptProcurementLegacyV1Fixture.write(to: folder)
+      } else {
+        try FileManager.default.copyItem(at: source, to: folder)
+      }
       pack = try ScriptPackLibrary.read(folder)
+      if legacyV1 { try #require(pack.digest == ScriptProcurementLegacyV1Fixture.digest) }
     } catch {
       try? FileManager.default.removeItem(at: root)
       throw error

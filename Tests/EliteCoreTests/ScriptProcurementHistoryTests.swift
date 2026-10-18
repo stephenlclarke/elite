@@ -106,7 +106,9 @@ extension ScriptProcurementFixture {
     let offer = try #require(generated.commander.contracts.boards[key]?.offers[row])
     let plan = try #require(ScriptProcurementPlan.read(offer.parameters))
     let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-    try #require(quote.allowed)
+    let quoteAllowed = quote.allowed
+    let quoteIssues = quote.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+    try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
     let id = try await runtime.confirmContract(quote)
     if stage != "abandoned" {
       let commodity = try #require(plan.commodity).rawValue

@@ -16,7 +16,7 @@ struct ScriptProcurementDefinition: Codable, Sendable, Equatable {
   let abandonContact: String
   let collectionTemplate: ScriptProcurementCollectionTemplate
   var valid: Bool {
-    profile == ScriptProcurementPlan.profileID && generatorRevision == 1
+    profile == ScriptProcurementPlan.profileID && (generatorRevision == 1 || generatorRevision == 2)
       && variant == "procurement" && deliveryContact == "procurement-delivery"
       && abandonContact == "procurement-abandon" && collectionTemplate.valid
   }
@@ -105,7 +105,21 @@ struct ScriptProcurementPlan: Codable, Sendable, Equatable {
     guard (0..<3).contains(row), (2...4).contains(path.count) else { return 0 }
     return ([750, 1500, 2500][row] + 300 * (path.count - 1)) * 10
   }
-  var duration: Double { row == 2 ? 259200 : 172800 }
+  var duration: Double { Self.duration(row: row) }
+  static func duration(row: Int) -> Double { row == 2 ? 259200 : 172800 }
+  static func feasible(calendarCost: Double, row: Int) -> Bool {
+    calendarCost.isFinite && calendarCost >= 0 && calendarCost < duration(row: row)
+  }
+  /// Revision 1 keeps its original pool even for unavailable deadline rows.
+  /// Revision 2 filters before selection; saved plans always replay their own revision.
+  static func candidatePaths(
+    _ paths: [[Int]], galaxy: Int, row: Int, generatorRevision: Int
+  ) -> [[Int]] {
+    if generatorRevision == 1 { return paths }
+    guard generatorRevision == 2, (0..<3).contains(row) else { return [] }
+    let systems = Universe.systemsIncludingPlugh(number: galaxy)
+    return paths.filter { feasible(calendarCost: calendarCost($0, systems: systems), row: row) }
+  }
   func capacityFits(_ commander: Commander) -> Bool {
     guard let commodity, commander.cargo.count == CommodityIdentity.allCases.count,
       commander.cargo.allSatisfy({ (0...Int.max / 17).contains($0) }),
@@ -161,7 +175,9 @@ struct ScriptProcurementPlan: Codable, Sendable, Equatable {
     else { return false }
     var state = initialState
     for draw in draws where ScriptCourierGeneration.next(&state) != draw { return false }
-    let routes = ScriptCourierGeneration.routes(origin: origin, reach: reach)
+    let routes = Self.candidatePaths(
+      ScriptCourierGeneration.routes(origin: origin, reach: reach), galaxy: origin.galaxy,
+      row: row, generatorRevision: generatorRevision)
     guard state == finalState, routes.indices.contains(routeIndex),
       routeIndex == Self.index(draws[row * 2], count: routes.count), path == routes[routeIndex],
       commodityIndex == Self.index(draws[row * 2 + 1], count: Self.commodities.count),
@@ -173,7 +189,9 @@ struct ScriptProcurementPlan: Codable, Sendable, Equatable {
     Int(floor(Double(draw) / 4294967296.0 * Double(count)))
   }
   static func calendarCost(_ path: [Int], galaxy: Int) -> Double {
-    let systems = Universe.systemsIncludingPlugh(number: galaxy)
+    calendarCost(path, systems: Universe.systemsIncludingPlugh(number: galaxy))
+  }
+  private static func calendarCost(_ path: [Int], systems: [StarSystem]) -> Double {
     return zip(path, path.dropFirst()).reduce(0) { value, edge in
       let distance = systems[edge.0].scriptCalendarDistance(to: systems[edge.1])
       return value + 600 + distance * distance * 3600

@@ -11,7 +11,9 @@ import Testing
   let before = await runtime.snapshot()
   let offer = try #require(before.commander.contracts.boards[key]?.offers[0])
   let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-  try #require(quote.allowed)
+  let quoteAllowed = quote.allowed
+  let quoteIssues = quote.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+  try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
   let parent = fixture.save.deletingLastPathComponent()
   let backup = fixture.root.appendingPathComponent("before-acceptance")
   try FileManager.default.moveItem(at: parent, to: backup)
@@ -61,7 +63,9 @@ import Testing
     generated.market[commodity].quantity >= plan.quantity
       && generated.market[unrelated].quantity > 0)
   let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-  try #require(quote.allowed)
+  let quoteAllowed = quote.allowed
+  let quoteIssues = quote.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+  try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(unrelated)
   await runtime.procurementBuy(commodity)
@@ -106,7 +110,9 @@ import Testing
   let board = try #require(generated.commander.contracts.boards[key])
   let offer = board.offers[0]
   let stale = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-  try #require(stale.allowed)
+  let staleAllowed = stale.allowed
+  let staleIssues = stale.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+  try #require(staleAllowed, "Procurement quote: \(staleIssues)")
   try await runtime.save(to: fixture.save)
   try await runtime.load(from: fixture.save, persistMigrations: false)
   await #expect(throws: MissionPackError.self) { try await runtime.confirmContract(stale) }
@@ -114,7 +120,9 @@ import Testing
   #expect(reloaded.commander.contracts.boards[key] == board)
   #expect(reloaded.commander.scriptState.instances.isEmpty)
   let fresh = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-  try #require(fresh.allowed)
+  let freshAllowed = fresh.allowed
+  let freshIssues = fresh.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+  try #require(freshAllowed, "Procurement quote: \(freshIssues)")
   let id = try await runtime.confirmContract(fresh)
   let accepted = await runtime.snapshot()
   #expect(accepted.commander.scriptState.instances[id]?.contract?.offer == offer)
@@ -132,7 +140,9 @@ import Testing
   let commodity = try #require(plan.commodity).rawValue
   try #require(plan.quantity == 5 && generated.market[commodity].quantity > 0)
   let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-  try #require(quote.allowed)
+  let quoteAllowed = quote.allowed
+  let quoteIssues = quote.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+  try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
   try await ScriptProcurementFixture.travel(runtime, path: plan.path)
@@ -187,7 +197,9 @@ import Testing
       && generated.market[unrelated].quantity > 0
       && plan.calendarLowerBoundSeconds * 64 > plan.duration)
   let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
-  try #require(quote.allowed)
+  let quoteAllowed = quote.allowed
+  let quoteIssues = quote.issues.prefix(3).map { String($0.prefix(240)) }.joined(separator: "; ")
+  try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
   await runtime.procurementBuy(unrelated)

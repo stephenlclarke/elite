@@ -7,10 +7,15 @@ import Testing
   let fixture = try ScriptProcurementFixture()
   defer { fixture.clean() }
   var game = try fixture.policyGame()
-  game.commander.name = "LIVE PROCUREMENT PARENT"
+  game.commander.name = "LIVE PROCURE"
+  let validParent = game.commander.valid
+  try #require(validParent)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   try await runtime.save(to: fixture.save)
+  await runtime.key("gallery-open")
   let before = await runtime.snapshot()
+  let galleryOpened = before.screen == .gallery
+  try #require(galleryOpened)
   let files = try ScriptFinanceTestFixture.files(fixture.root.appendingPathComponent("save"))
   try await runtime.startScriptGalleryTrial(packDigest: fixture.pack.digest, seed: 42)
   let namespace = await runtime.gallerySaveDirectory()
