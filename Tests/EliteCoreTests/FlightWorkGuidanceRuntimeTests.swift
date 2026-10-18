@@ -803,25 +803,128 @@ struct ManualResidualFlightTests {
     #expect(abs(ratio - 5 / game.commander.performance.speed) < 1e-8)
   }
 
-  @Test func successfulBoundariesClearResidualAndFailedSnapshotsPreserveIt() throws {
+  @Test func successfulBoundariesClearResidualAndFailedSnapshotsPreserveIt() async throws {
     var game = try releasedResidualGame(.init(20, -10, 50))
     let velocity = game.flightWorldVelocity
     let commander = game.commander
+    try #require(commander.savedEquipmentVersion == 3 && commander.usesModularDriveSaveVersion)
     game.bodies[0].physical?.velocity = .init(.nan, 0, 0)
     game.dock()
     #expect(!game.docked && game.manualResidualFlight && game.flightWorldVelocity == velocity)
+    #expect(game.commander == commander)
     game.arrive()
     #expect(game.manualResidualFlight && game.flightWorldVelocity == velocity)
+    #expect(game.commander == commander)
     game.bodies[0].physical?.velocity = .init(0, 0, 0)
     game.dock()
     #expect(game.docked && !game.manualResidualFlight && game.autoPilot.velocity == .init(0, 0, 0))
+    // Retain the real successful dock, including its nonempty ordinary salvage ledger and bindings.
+    let docked = game
+    try #require(docked.bodies.isEmpty && docked.dockedAtMainStation && docked.screen == .status)
+    try #require(
+      docked.commander.npcPersistence.count == 0 && docked.commander.savedEMPState == nil)
+    try #require(
+      docked.commander.alienStorageState == nil && docked.commander.nativeStations != nil)
+    try #require(
+      docked.commander.scriptState.instances.isEmpty && docked.commander.contracts.boards.isEmpty)
+    try #require(docked.commander.scriptState.calendarLedger != nil)
+    let lots = docked.commander.salvageLedger.pendingLots
+    try #require(!lots.isEmpty)
+    #expect(Set(lots.map(\.identity)) == Set(commander.salvageLedger.pendingLots.map(\.identity)))
+    for lot in lots {
+      #expect(
+        docked.commander.salvageLedger.boundActor(for: lot.identity)
+          == commander.salvageLedger.boundActor(for: lot.identity))
+    }
+    #expect(docked.commander.equipmentInventory == commander.equipmentInventory)
+    #expect(docked.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
+    #expect(
+      docked.commander.credits == commander.credits && docked.commander.cargo == commander.cargo)
+    // With no live actors, only current equipment mirroring and mining-policy storage can normalize.
+    var expectedCommander = docked.commander
+    try expectedCommander.prepareEquipment()
+    expectedCommander.mirrorFittedEquipment()
+    expectedCommander.miningLedger = docked.commander.miningLedger
+    try #require(expectedCommander.salvageLedger == docked.commander.salvageLedger)
+    try #require(expectedCommander.nativeStations == docked.commander.nativeStations)
+    try #require(expectedCommander.scriptState == docked.commander.scriptState)
+    let expectedWorldBytes = try ScriptValueStorage.encoder().encode(docked.scriptWorldSave)
+    let expectedWorldValue = try JSONSerialization.jsonObject(with: expectedWorldBytes)
+    let expectedWorld = try #require(expectedWorldValue as? NSDictionary)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    let file = directory.appendingPathComponent("docked.json")
+    let writer = GameRuntime(game: docked)
+    try await writer.save(to: file)
+    let published = await writer.snapshot()
+    try #require(published.commander == expectedCommander)
+    let bytes = try Data(contentsOf: file)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    try #require(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
+    try #require(pointer.scope == "commander" && pointer.valueCodec == ScriptValueStorage.codec)
+    let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: file)
+    let names = ["commander.json", "missions.json", "world.json", "contracts.json"]
+    try #require(Set(pointer.hashes.keys) == Set(names))
+    let (stored, storedWorld) = try ScriptSaveStore.read(bytes, from: file)
+    try #require(
+      stored == expectedCommander && storedWorld.valid && storedWorld.consistent(with: stored))
+    let storedWorldBytes = try ScriptValueStorage.encoder().encode(storedWorld)
+    let storedWorldValue = try JSONSerialization.jsonObject(with: storedWorldBytes)
+    let storedWorldObject = try #require(storedWorldValue as? NSDictionary)
+    try #require(storedWorldObject.isEqual(expectedWorld))
+    var chunks: [String: Data] = [:]
+    for name in names {
+      let chunk = try Data(contentsOf: generation.appendingPathComponent(name))
+      try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
+      chunks[name] = chunk
+    }
+    let originalGenerations = try FileManager.default.contentsOfDirectory(
+      atPath: file.appendingPathExtension("missions").path)
+    try #require(originalGenerations == [pointer.generation])
+    let originalChunkNames = try FileManager.default.contentsOfDirectory(atPath: generation.path)
+    try #require(Set(originalChunkNames) == Set(names))
     game.launch()
     #expect(
       !game.manualResidualFlight && game.speed == 8 && game.autoPilot.velocity == .init(0, 0, 0))
-    let loaded = game.load(commander)
+    let launchedCommander = game.commander
+    let launchedWorld = try ScriptValueStorage.encoder().encode(game.scriptWorldSave)
+    let launchedVelocity = game.flightWorldVelocity
+    let launchedAutopilot = game.autoPilot.velocity
+    let launchedResidual = game.manualResidualFlight
+    let launchedPaused = game.paused
+    let launchedTool = game.selectedFlightTool
+    let refusedCurrent = game.load(commander)
+    let afterRefusalWorld = try ScriptValueStorage.encoder().encode(game.scriptWorldSave)
     #expect(
-      loaded && game.docked && !game.manualResidualFlight
+      !refusedCurrent && game.commander == launchedCommander && afterRefusalWorld == launchedWorld)
+    #expect(
+      game.manualResidualFlight == launchedResidual && game.autoPilot.velocity == launchedAutopilot)
+    #expect(game.flightWorldVelocity == launchedVelocity)
+    #expect(game.paused == launchedPaused && game.selectedFlightTool == launchedTool)
+    let reader = GameRuntime(game: game)
+    try await reader.load(from: file, persistMigrations: false)
+    game = await reader.snapshot()
+    #expect(game.commander == expectedCommander && game.dockedAtMainStation && !game.paused)
+    #expect(
+      game.docked && !game.manualResidualFlight
         && game.flightWorldVelocity == .init(0, 0, 0))
+    #expect(game.autoPilot.velocity == .init(0, 0, 0))
+    let restoredWorldBytes = try ScriptValueStorage.encoder().encode(game.scriptWorldSave)
+    let restoredWorldValue = try JSONSerialization.jsonObject(with: restoredWorldBytes)
+    let restoredWorld = try #require(restoredWorldValue as? NSDictionary)
+    #expect(restoredWorld.isEqual(expectedWorld))
+    let afterBytes = try Data(contentsOf: file)
+    #expect(afterBytes == bytes)
+    for name in names {
+      let chunk = try Data(contentsOf: generation.appendingPathComponent(name))
+      #expect(chunk == chunks[name])
+    }
+    let afterGenerations = try FileManager.default.contentsOfDirectory(
+      atPath: file.appendingPathExtension("missions").path)
+    let afterChunkNames = try FileManager.default.contentsOfDirectory(atPath: generation.path)
+    #expect(
+      afterGenerations == originalGenerations && Set(afterChunkNames) == Set(originalChunkNames))
     game = try releasedResidualGame(velocity)
     game.arrive()
     #expect(!game.manualResidualFlight && game.autoPilot.velocity == .init(0, 0, 0))
