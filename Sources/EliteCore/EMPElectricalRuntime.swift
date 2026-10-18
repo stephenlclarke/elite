@@ -6,6 +6,13 @@ private struct EMPPulseContact {
   let power: Double
 }
 
+/// A zero-power transition finishes synchronously after application temporaries unwind.
+private enum EMPPulseApplication {
+  case refused
+  case applied
+  case pendingDisable(id: Int, incident: CombatIncident, context: EncounterContext)
+}
+
 extension Game {
   var playerEMPDisabled: Bool { commander.savedPlayerElectrical?.disabledAt != nil }
 
@@ -191,7 +198,17 @@ extension Game {
     else { return false }
     commander.savedPlayerElectrical = reserve
     for hit in contacts {
-      guard applyElectricalPulse(hit, origin: origin, tool: tool) else { return false }
+      switch applyElectricalPulse(hit, origin: origin) {
+      case .refused:
+        return false
+      case .applied:
+        break
+      case .pendingDisable(let id, let incident, let context):
+        // Finish this victim before any next contact, after the pulse-application frame unwinds.
+        guard disableEMPHull(id: id, incident: incident, tool: tool, context: context),
+          commander.valid
+        else { return false }
+      }
     }
     laserHeat += profile.heatCost
     fireCooldown = profile.cooldown
@@ -202,17 +219,16 @@ extension Game {
   }
 
   private mutating func applyElectricalPulse(
-    _ hit: EMPPulseContact, origin: AttackOrigin,
-    tool: OwnedEquipmentItem
-  ) -> Bool {
+    _ hit: EMPPulseContact, origin: AttackOrigin
+  ) -> EMPPulseApplication {
     let now = commander.flightSimulation.physicalTime
     if hit.target == .player {
-      guard var reserve = commander.savedPlayerElectrical else { return false }
+      guard var reserve = commander.savedPlayerElectrical else { return .refused }
       let front = hit.point.z >= 0
       let shield = front ? frontShield : rearShield
       let absorbed = min(shield, hit.power)
       if front { frontShield -= absorbed } else { rearShield -= absorbed }
-      guard reserve.drain(hit.power - absorbed, at: now) else { return false }
+      guard reserve.drain(hit.power - absorbed, at: now) else { return .refused }
       commander.savedPlayerElectrical = reserve
       if reserve.disabledAt != nil {
         let momentum = flightWorldVelocity
@@ -225,12 +241,12 @@ extension Game {
         jumpCountdown = nil
         notify("ELECTRICAL POWER LOST - EMERGENCY BOMB OR ESCAPE POD AVAILABLE")
       }
-      return true
+      return .applied
     }
     guard case .body(let id) = hit.target,
       let index = bodies.firstIndex(where: { $0.id == id }), empPulseEligible(bodies[index]),
       var resources = bodies[index].physical?.npc?.resources
-    else { return false }
+    else { return .refused }
     var legacyCatalogue: String?
     if resources.profile == .legacyEnergyOnly {
       guard
@@ -239,7 +255,7 @@ extension Game {
         let native = ShipCatalogue.ship(catalogue)?.game, native.valid,
         resources.legacyElectricalRecharge == nil
           || resources.legacyElectricalRecharge == native.recharge
-      else { return false }
+      else { return .refused }
       resources.legacyElectricalRecharge = native.recharge
       legacyCatalogue = catalogue
     }
@@ -250,11 +266,11 @@ extension Game {
           recharge: resources.electricalRecharge, at: now),
       reserve.advance(
         to: now, capacity: resources.energyCapacity, recharge: resources.electricalRecharge)
-    else { return false }
+    else { return .refused }
     let facing =
       (hit.point - bodies[index].position).dot(bodies[index].modelVector(.init(0, 0, 1))) >= 0
     let overflow = resources.absorb(hit.power, front: facing)
-    guard reserve.drain(overflow, at: now) else { return false }
+    guard reserve.drain(overflow, at: now) else { return .refused }
     resources.electrical = reserve
     bodies[index].physical?.npc?.resources = resources
     guard
@@ -262,21 +278,18 @@ extension Game {
         origin: origin, kind: .emp, outcome: .hit, target: hit.target,
         worldPosition: commander.flightSimulation.pose.systemPoint(hit.point),
         emissionPosition: commander.flightSimulation.pose.position)
-    else { return false }
+    else { return .refused }
     if reserve.remaining == 0 {
       // A positive partial hit retains its existing native mesh; custody already pins on zero.
       if let legacyCatalogue { bodies[index].physical?.catalogueShipID = legacyCatalogue }
-      guard let context = gameplayContext(),
-        disableEMPHull(id: id, incident: incident, tool: tool, context: context)
-      else { return false }
-      // Validate the same victim before any next contact, after the large helper frame unwinds.
-      return commander.valid
+      guard let context = gameplayContext() else { return .refused }
+      return .pendingDisable(id: id, incident: incident, context: context)
     }
-    return true
+    return .applied
   }
 
   /// Only an actual zero electrical reserve can transfer the live hull and people.
-  /// Only applyElectricalPulse calls this inside emitEMPPulse's atomic candidate.
+  /// Only buildEMPPulseEffects calls this inside emitEMPPulse's atomic candidate.
   /// Any refusal discards that entire candidate, including earlier victims and cost.
   @discardableResult
   private mutating func disableEMPHull(
