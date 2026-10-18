@@ -224,10 +224,10 @@ struct AlienLegacyFixture {
     site: UInt32 = 501, definition: String? = AlienModuleKind.energyCapacity.definitionID,
     roles: Set<SalvageSourceRole> = [.thargoid, .militaryCapital],
     manifest: [CommodityAmount]? = nil, batches: Int = 1,
-    elapsed: Double = 1, tool: SalvageTool = .cutter
+    elapsed: Double = 1, tool: SalvageTool = .cutter, system: Int = 7
   ) throws -> Self {
     let identity = WreckSectionIdentity(
-      wreck: .init(system: .init(galaxy: 0, system: 7), site: site, lineage: 123), section: 1)
+      wreck: .init(system: .init(galaxy: 0, system: system), site: site, lineage: 123), section: 1)
     var source = SalvageLootSource(
       roles: roles, legalValue: 0, economy: 3, technology: 12, ownership: .abandoned)
     source.manifest = manifest
