@@ -201,6 +201,54 @@ struct EMPTravelAndSecurityTests {
     #expect(reloaded.commander.savedEMPState?.records[source]?.cargo == before.cargo)
   }
 
+  @Test func aHealthyAssignedOfficerTakesOneRealShieldFirstPulseWithoutInventedZeroOrCrew() throws {
+    var game = try empNativeFlight()
+    game.advanceGameplayEncounters(delta: 0.1)
+    game.advanceGameplayEncounters(delta: 0.1)
+    let officer = try #require(
+      game.bodies.first {
+        $0.physical?.spawnIdentity?.producer == .security && $0.physical?.npc?.role == .police
+      })
+    let actor = try #require(officer.physical?.identity)
+    let player = try #require(game.commander.flightSimulation.player)
+    let originalResources = try #require(officer.physical?.npc?.resources)
+    try #require(originalResources.energyCapacity == 180 && officer.energy == 180)
+    try #require(originalResources.frontShield == 255 && originalResources.rearShield == 255)
+    try #require(originalResources.electrical == nil)
+    try #require(game.commander.stationSecurity.assignments.contains { $0.actor == actor })
+    let legal = game.commander.legal
+    let cash = game.commander.credits
+    let kills = game.commander.kills
+    let inventory = game.commander.equipmentInventory
+    let pulse = try EMPPulseProfile.resolve(for: game.commander)
+    try #require(pulse.power == 80 && pulse.warmup == 10)
+    try disableNativeEMPActor(actor, game: &game, stopAfterFirstEmission: true)
+    let charge = try #require(game.commander.savedEMPCharge)
+    let endedAt = try #require(charge.endedAt)
+    #expect(charge.phase == .released && charge.player == player && charge.target == actor)
+    #expect(abs(endedAt - charge.startedAt - pulse.warmup) < 1e-8)
+    #expect(game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count == 1)
+    let actual = try #require(game.bodies.first { $0.physical?.identity == actor })
+    let resources = try #require(actual.physical?.npc?.resources)
+    #expect([resources.frontShield, resources.rearShield].sorted() == [175, 255])
+    #expect(resources.electrical?.remaining == 180 && resources.electrical?.disabledAt == nil)
+    #expect(actual.energy == officer.energy && actual.physical?.npc?.role == .police)
+    #expect(actual.physical?.npc?.firstAggressor == player)
+    #expect(actual.physical?.empSource == nil && actual.physical?.salvage == nil)
+    #expect(game.commander.savedEMPState == nil && !game.isEMPDisabled(actual))
+    #expect(game.commander.stationSecurity.assignments.contains { $0.actor == actor })
+    #expect(
+      game.commander.legal > legal && game.commander.credits == cash
+        && game.commander.kills == kills)
+    #expect(game.commander.equipmentInventory == inventory)
+    try #require(game.frontShield > 0 && game.rearShield > 0 && !game.playerEMPDisabled)
+    #expect(
+      game.commander.savedPlayerElectrical?.remaining == game.commander.performance.energy
+        - pulse.energyCost)
+    #expect(game.laserHeat == pulse.heatCost && game.fireCooldown == pulse.cooldown)
+    #expect(!game.docked && game.screen != .gameOver && game.commander.valid)
+  }
+
   @Test(arguments: [false, true])
   func actualAssignedSecurityShipRetainsSourceAndLawThroughEjectionOrDeathAndRoundTrip(
     lethal: Bool
@@ -220,6 +268,23 @@ struct EMPTravelAndSecurityTests {
       game.commander.stationSecurity.assignments.first {
         $0.actor == actor
       })
+    // This custody scenario retains a genuinely admitted officer with existing, nonfatal power damage.
+    let officerIndex = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+    var worn = try #require(game.bodies[officerIndex].physical?.npc?.resources)
+    let frontOverflow = worn.absorb(worn.frontShield, front: true)
+    let rearOverflow = worn.absorb(worn.rearShield, front: false)
+    try #require(frontOverflow == 0 && rearOverflow == 0)
+    let now = game.commander.flightSimulation.physicalTime
+    var reserve = try #require(
+      ElectricalReserve(capacity: worn.energyCapacity, recharge: worn.electricalRecharge, at: now))
+    let drained = reserve.drain(worn.energyCapacity - 1, at: now)
+    try #require(drained && reserve.remaining == 1 && reserve.disabledAt == nil)
+    worn.electrical = reserve
+    game.bodies[officerIndex].physical?.npc?.resources = worn
+    try #require(game.bodies[officerIndex].energy == officer.energy && officer.energy == 180)
+    try #require(
+      game.bodies[officerIndex].physical?.empSource == nil && game.commander.savedEMPState == nil)
+    try #require(game.commander.stationSecurity.assignments.contains { $0.actor == actor })
     let legal = game.commander.legal
     try disableNativeEMPActor(actor, game: &game)
     let source = try #require(
