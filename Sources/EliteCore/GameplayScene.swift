@@ -228,12 +228,8 @@ extension Game {
     }
     var protection = MissionProtection()
     protection.protectedActors = Set(
-      bodies.filter {
-        $0.physical?.empCrewPod != nil || $0.navalTarget || $0.blackjackRole != nil
-          || $0.physical?.npc?.role == .mission
-          || $0.missionInstanceID != nil
-      }
-      .compactMap { $0.physical?.identity })
+      bodies.filter { !$0.gameplayProtectionReasons.isEmpty }
+        .compactMap { $0.physical?.identity })
     protection.blocksNavalEncounter = bodies.contains { $0.physical?.blocksNavalEncounter == true }
     var budget = AdmissionBudget(total: bodies.count)
     for body in bodies where body.id != 0 {
