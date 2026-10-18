@@ -1268,13 +1268,13 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   let destination = game.autoPilot.targetActor
   var sawDefence = false
   var sawMovingAcquisition = false
-  var firstMovingPhase: Double?
-  var minimumMovingPhase = Double.infinity
+  var sawCorrectiveMovingPhase = false
+  let delta = 0.1
   var moved = 0.0
   var freshFinal = false
   for _ in 0..<256 {
     let before = game
-    game.tick(delta: 0.1)
+    game.tick(delta: delta)
     let distance =
       (game.commander.flightSimulation.pose.position
       - before.commander.flightSimulation.pose.position).length
@@ -1283,16 +1283,26 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
     #expect(game.autoPilot.targetActor == destination && game.screen != .gameOver)
     #expect(
       (game.flightWorldVelocity - before.flightWorldVelocity).length
-        <= game.workLimits.acceleration * 0.1 + 1e-8)
+        <= game.workLimits.acceleration * delta + 1e-8)
     #expect(abs(game.autoPilot.rollRate) <= min(1, game.workLimits.rollRate) + 1e-8)
-    #expect(abs(game.autoPilot.rollRate - before.autoPilot.rollRate) <= 0.8 * 0.1 + 1e-8)
+    #expect(abs(game.autoPilot.rollRate - before.autoPilot.rollRate) <= 0.8 * delta + 1e-8)
     if game.autoPilot.stationDefencePhase == .returning && game.autoPilot.positionError > 40 {
       #expect(!game.autoPilot.ready && !game.autoPilot.finalApproach)
       if distance > 0 && abs(game.roll) > 1e-4 {
         sawMovingAcquisition = true
-        let phase = abs(game.autoPilot.phaseError)
-        if firstMovingPhase == nil { firstMovingPhase = phase }
-        minimumMovingPhase = min(minimumMovingPhase, phase)
+        let currentStation = try #require(game.autoTargetBody)
+        let actualUp = currentStation.entranceUp
+        // Native camera rotation applies pitch, then yaw, then roll. Undo only that last
+        // camera roll; actual station spin/world geometry and actual pitch/yaw remain intact.
+        let withoutCameraRoll = actualUp.rotated(pitch: 0, roll: -game.roll * delta, yaw: 0)
+        if hypot(actualUp.x, actualUp.y) > sqrt(Double.ulpOfOne) {
+          let actualPhase = abs(atan2(actualUp.x, actualUp.y))
+          let uncorrectedPhase = abs(atan2(withoutCameraRoll.x, withoutCameraRoll.y))
+          let roundoff = max(actualPhase.ulp, uncorrectedPhase.ulp) * 16
+          sawCorrectiveMovingPhase =
+            sawCorrectiveMovingPhase
+            || actualPhase + roundoff < uncorrectedPhase
+        }
         #expect(
           game.commander.flightSimulation.pose.orientation
             != before.commander.flightSimulation.pose.orientation)
@@ -1316,7 +1326,11 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
       break
     }
   }
-  let initialPhase = try #require(firstMovingPhase)
   #expect(sawDefence && sawMovingAcquisition && moved > 100)
-  #expect(minimumMovingPhase < initialPhase && freshFinal)
+  #expect(sawCorrectiveMovingPhase)
+  #expect(
+    freshFinal,
+    Comment(
+      "Status: \(game.autoPilot.status), goal: \(game.autoPilot.positionError), facing: \(game.autoPilot.facingError), phase: \(game.autoPilot.phaseError), rate: \(game.autoPilot.rateError), velocity: \(game.flightWorldVelocity)"
+    ))
 }
