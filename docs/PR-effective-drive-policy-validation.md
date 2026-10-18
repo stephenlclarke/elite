@@ -11,3 +11,5 @@ One additional existing-policy regression uses an actual fitted Basic drive with
 Source formatting, strict lint, Markdown lint, exact outside-scope reversal and source/hash/case correspondence precede review. No compiler, tests, discovery, native/UI/media or other validation job runs for this leaf before review. It is authored in a separate owned worktree from frozen source `25574f2e1ebfc26c52fa33700eaeac9e48db853b`; canonical run 352 completed and its artifacts were preserved before any possible rebuild. Runtime completion, full quality gates, coverage, sanitizers, leaks, SonarQube and release acceptance remain outstanding. Eventual PRs require completed clean review cycles and protected merge.
 
 [Issue](ISSUE-effective-drive-policy-validation.md).
+
+Compiler-only follow-up after attempt 353: each new helper now binds its unchanged comparison or precondition to a local Boolean before its individual Testing macro. Borrowed Game parameters, all checked values and every gameplay/test boundary remain unchanged; there is no whole-Game macro capture. The failed compile artifacts are preserved separately, and the same affected focused scope still requires execution.

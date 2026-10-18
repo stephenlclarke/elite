@@ -51,40 +51,71 @@ private func effectiveWorldObject(_ world: ScriptWorldSave) throws -> NSDictiona
 
 private func expectEffectiveGamePreserved(_ actual: borrowing Game, _ before: borrowing Game) throws
 {
-  #expect(actual.commander == before.commander)
+  let commanderPreserved = actual.commander == before.commander
+  #expect(commanderPreserved)
   let world = try effectiveWorldObject(actual.scriptWorldSave)
-  #expect(world.isEqual(try effectiveWorldObject(before.scriptWorldSave)))
-  #expect(actual.inventoryContextEpoch == before.inventoryContextEpoch)
-  #expect(actual.nativeStationRuntimeEpoch == before.nativeStationRuntimeEpoch)
-  #expect(actual.paused == before.paused && actual.selectedFlightTool == before.selectedFlightTool)
-  #expect(actual.manualResidualFlight == before.manualResidualFlight)
-  #expect(actual.autoPilot.targetID == before.autoPilot.targetID)
-  #expect(actual.autoPilot.velocity == before.autoPilot.velocity)
-  #expect(actual.dockingComputer == before.dockingComputer)
-  #expect(actual.dischargeAudio.epoch == before.dischargeAudio.epoch)
-  #expect(actual.dischargeAudio.events == before.dischargeAudio.events)
-  #expect(actual.message == before.message && actual.messageTime == before.messageTime)
-  #expect(actual.selection == before.selection && actual.equipmentMount == before.equipmentMount)
-  #expect(actual.equipmentWorkTool == before.equipmentWorkTool)
-  #expect(actual.inventoryActionSelection == before.inventoryActionSelection)
-  #expect(actual.inventoryUpgradeChoice == before.inventoryUpgradeChoice)
-  #expect(actual.scriptDurabilityAvailable == before.scriptDurabilityAvailable)
-  #expect(actual.pendingNewSaveDestination == before.pendingNewSaveDestination)
+  let worldPreserved = world.isEqual(try effectiveWorldObject(before.scriptWorldSave))
+  #expect(worldPreserved)
+  let inventoryEpochPreserved = actual.inventoryContextEpoch == before.inventoryContextEpoch
+  #expect(inventoryEpochPreserved)
+  let stationEpochPreserved = actual.nativeStationRuntimeEpoch == before.nativeStationRuntimeEpoch
+  #expect(stationEpochPreserved)
+  let pauseAndToolPreserved =
+    actual.paused == before.paused && actual.selectedFlightTool == before.selectedFlightTool
+  #expect(pauseAndToolPreserved)
+  let manualFlightPreserved = actual.manualResidualFlight == before.manualResidualFlight
+  #expect(manualFlightPreserved)
+  let targetPreserved = actual.autoPilot.targetID == before.autoPilot.targetID
+  #expect(targetPreserved)
+  let autopilotVelocityPreserved = actual.autoPilot.velocity == before.autoPilot.velocity
+  #expect(autopilotVelocityPreserved)
+  let dockingComputerPreserved = actual.dockingComputer == before.dockingComputer
+  #expect(dockingComputerPreserved)
+  let audioEpochPreserved = actual.dischargeAudio.epoch == before.dischargeAudio.epoch
+  #expect(audioEpochPreserved)
+  let audioEventsPreserved = actual.dischargeAudio.events == before.dischargeAudio.events
+  #expect(audioEventsPreserved)
+  let messagePreserved =
+    actual.message == before.message && actual.messageTime == before.messageTime
+  #expect(messagePreserved)
+  let equipmentSelectionPreserved =
+    actual.selection == before.selection && actual.equipmentMount == before.equipmentMount
+  #expect(equipmentSelectionPreserved)
+  let workToolPreserved = actual.equipmentWorkTool == before.equipmentWorkTool
+  #expect(workToolPreserved)
+  let inventorySelectionPreserved =
+    actual.inventoryActionSelection == before.inventoryActionSelection
+  #expect(inventorySelectionPreserved)
+  let upgradeChoicePreserved = actual.inventoryUpgradeChoice == before.inventoryUpgradeChoice
+  #expect(upgradeChoicePreserved)
+  let durabilityPreserved = actual.scriptDurabilityAvailable == before.scriptDurabilityAvailable
+  #expect(durabilityPreserved)
+  let pendingDestinationPreserved =
+    actual.pendingNewSaveDestination == before.pendingNewSaveDestination
+  #expect(pendingDestinationPreserved)
 }
 
 /// This bodyless owned scene permits only explicit current mining-presence storage at publication.
 private func effectivePublicationExpectation(_ before: borrowing Game) throws -> Commander {
-  try #require(before.docked && before.dockedAtMainStation && before.screen == .status)
-  try #require(before.bodies.isEmpty && before.commander.npcPersistence.count == 0)
-  try #require(before.commander.nativeStations == nil && before.commander.savedEMPState == nil)
-  try #require(before.commander.alienStorageState == nil)
-  try #require(
-    before.commander.scriptState.instances.isEmpty && before.commander.contracts.boards.isEmpty)
-  try #require(before.commander.scriptState.calendarLedger != nil)
+  let isDockedStatus = before.docked && before.dockedAtMainStation && before.screen == .status
+  try #require(isDockedStatus)
+  let hasNoBodyOrNPC = before.bodies.isEmpty && before.commander.npcPersistence.count == 0
+  try #require(hasNoBodyOrNPC)
+  let hasNoStationOrEMP =
+    before.commander.nativeStations == nil && before.commander.savedEMPState == nil
+  try #require(hasNoStationOrEMP)
+  let hasNoAlienStorage = before.commander.alienStorageState == nil
+  try #require(hasNoAlienStorage)
+  let hasNoScriptInstanceOrBoard =
+    before.commander.scriptState.instances.isEmpty && before.commander.contracts.boards.isEmpty
+  try #require(hasNoScriptInstanceOrBoard)
+  let hasCalendar = before.commander.scriptState.calendarLedger != nil
+  try #require(hasCalendar)
   var expected = before.commander
   try expected.prepareEquipment()
   expected.mirrorFittedEquipment()
-  try #require(expected == before.commander)
+  let equipmentPreparationIsNoOp = expected == before.commander
+  try #require(equipmentPreparationIsNoOp)
   var mining = before.commander.miningLedgerForMigration(legacyMissing: false)
   try #require(mining.requiredPresencePinSystems.isEmpty)
   let system = Universe.systemsIncludingPlugh(number: expected.galaxy)[expected.system]
