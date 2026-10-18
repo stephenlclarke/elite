@@ -225,20 +225,29 @@ struct ScriptProcurementFixture {
   }
   static func dock(
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic? = nil,
-    phase: String = "dock", defensivePreflight: Bool = false
+    phase: String = "dock", defensivePreflight: Bool = false,
+    selectionDiagnostic: ScriptProcurementSelectionDiagnostic? = nil
   ) async throws {
     if defensivePreflight {
       try await defendedDock(runtime, diagnostic: diagnostic, phase: phase)
       return
     }
     var steps = 0
+    var tabAttempts = 0
     for _ in 0..<32 {
       let main = await runtime.procurementTargetIsMain()
       if main { break }
       await runtime.key("tab")
+      tabAttempts += 1
     }
     let targeted = await runtime.procurementTargetIsMain()
-    try #require(targeted)
+    if !targeted, let selectionDiagnostic {
+      let detail = await runtime.procurementSelectionFailureDetail(
+        selectionDiagnostic, tabAttempts: tabAttempts)
+      try #require(targeted, "\(detail)")
+    } else {
+      try #require(targeted)
+    }
     while steps < 3000 {
       let facts = await runtime.procurementFlightFacts()
       if facts.docked { break }
@@ -255,10 +264,11 @@ struct ScriptProcurementFixture {
   }
   static func travel(
     _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil,
-    defensivePreflight: Bool = false, verifyDeparture: Bool = false
+    defensivePreflight: Bool = false, verifyDeparture: Bool = false,
+    selectionDiagnostic: ScriptProcurementSelectionDiagnostic? = nil
   ) async throws {
     var origin = path.first
-    for destination in path.dropFirst() {
+    for (legIndex, destination) in path.dropFirst().enumerated() {
       let leg = diagnostic == nil ? "" : "travel-leg-\(path.firstIndex(of: destination) ?? 0)"
       if verifyDeparture {
         let expected = try #require(origin)
@@ -320,7 +330,10 @@ struct ScriptProcurementFixture {
       try #require(steps > 0 && steps < 500 && system == destination)
       try await dock(
         runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : leg + "-dock",
-        defensivePreflight: defensivePreflight)
+        defensivePreflight: defensivePreflight,
+        selectionDiagnostic: selectionDiagnostic.map {
+          .init(label: $0.label + "-leg-\(legIndex + 1)", instance: $0.instance)
+        })
       if destination != path.last { await runtime.procurementRefuel() }
       origin = destination
     }
@@ -539,6 +552,35 @@ struct ScriptProcurementFlightDiagnosticFacts: Sendable {
   let live: Bool
   let paused: Bool
   let scalars: [String: String]
+}
+
+/// Opt-in expiry failure text; fixed scalar ceilings include the assertion's newline budget.
+struct ScriptProcurementSelectionDiagnostic: Sendable {
+  let label: String
+  var instance: UUID? = nil
+
+  static func actor(_ identity: ActorIdentity?) -> String {
+    guard let identity else { return "nil" }
+    return
+      "\(identity.system.galaxy)/\(identity.system.system)/\(identity.visit)/\(identity.entity)"
+  }
+
+  static func message(_ fields: [String: String]) -> String {
+    var bounded: [String: String] = [:]
+    for (key, value) in fields {
+      let limit = key == "message" ? 128 : 64
+      bounded[key] = String(
+        decoding: value.utf8.prefix(limit).map {
+          (32...126).contains($0) && $0 != 34 && $0 != 92 ? $0 : 63
+        }, as: UTF8.self)
+    }
+    guard
+      let data = try? JSONSerialization.data(
+        withJSONObject: bounded, options: [.sortedKeys, .withoutEscapingSlashes]),
+      data.count < 4096
+    else { return "EXPIRY_TARGET_SELECTION_DIAGNOSTIC_REFUSED limit=4096" }
+    return String(decoding: data, as: UTF8.self)
+  }
 }
 
 /// Test-only, opt-in state. It retains no Game, Commander, actor inventory or authority.
@@ -857,6 +899,85 @@ extension GameRuntime {
     }
     return .init(docked: facts.docked, live: facts.live, paused: facts.paused, scalars: scalars)
   }
+  /// At-failure reads only: no actor adoption, key, advance, publication or forced target.
+  func procurementSelectionFailureDetail(
+    _ diagnostic: ScriptProcurementSelectionDiagnostic, tabAttempts: Int
+  ) -> String {
+    let flight = game.commander.flightSimulation
+    let main = game.bodies.first { $0.id == 0 }
+    let mainActor = main?.physical?.identity
+    let selected = game.autoTargetBody
+    let instance = diagnostic.instance.flatMap { game.commander.scriptState.instances[$0] }
+    let deadline = instance?.contract?.deadline
+    var fields: [String: String] = [
+      "fixture": diagnostic.label, "tabAttempts": String(tabAttempts),
+      "live": String(procurementFlightFacts().live), "paused": String(game.paused),
+      "docked": String(game.docked), "screen": String(describing: game.screen),
+      "EMP": String(game.playerEMPDisabled), "message": String(game.message.prefix(128)),
+      "galaxy": String(game.commander.galaxy), "system": String(game.commander.system),
+      "visit": String(flight.visit),
+      "player": ScriptProcurementSelectionDiagnostic.actor(flight.player),
+      "anchor": ScriptProcurementSelectionDiagnostic.actor(flight.anchors?.station.identity),
+      "tier": game.commander.targetingTier.map { String($0.rawValue) } ?? "nil",
+      "filter": game.workTargetFilter.label,
+      "targetID": game.autoPilot.targetID.map { String($0) } ?? "nil",
+      "targetActor": ScriptProcurementSelectionDiagnostic.actor(game.autoPilot.targetActor),
+      "resolvedID": selected.map { String($0.id) } ?? "nil",
+      "resolvedActor": ScriptProcurementSelectionDiagnostic.actor(selected?.physical?.identity),
+      "mainPresent": String(main != nil),
+      "mainHull": main.map { String(describing: $0.hull) } ?? "nil",
+      "mainEnergy": main.map { String($0.energy) } ?? "nil",
+      "mainDistance": main.map { String($0.position.length) } ?? "nil",
+      "mainPoseValid": String(
+        main.map { $0.position.finite && game.modelPose(of: $0).orientation.validRotation } ?? false
+      ),
+      "mainActor": ScriptProcurementSelectionDiagnostic.actor(mainActor),
+      "mainCurrentJoin": String(
+        mainActor.map { $0.system == game.systemIdentity && $0.visit == flight.visit } ?? false),
+      "mainAnchorJoin": String(mainActor != nil && mainActor == flight.anchors?.station.identity),
+      "mainActorBodies": mainActor.map { actor in
+        String(game.bodies.filter { $0.physical?.identity == actor }.count)
+      } ?? "nil",
+      "revision": String(game.gameplayRevision), "physicalTime": String(flight.physicalTime),
+      "missionClock": game.commander.scriptState.missionCalendar.map { String($0.seconds) }
+        ?? "nil",
+      "missionInstance": diagnostic.instance?.uuidString ?? "nil",
+      "missionDeadline": deadline.map { String($0) } ?? "nil",
+      "missionOutcome": instance.map { String(describing: $0.outcome) } ?? "nil",
+      "context": "false", "mainDecision": "no-context", "eligibleCount": "unavailable",
+      "freshMainChoiceRank": "unavailable",
+      "rankBasis": "fresh-WorkTargetSelection-not-visited-TAB-cycle",
+    ]
+    if let context = game.gameplayContext() {
+      fields["context"] = "true"
+      let layout = CockpitLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
+      let frontIDs = Set(
+        game.bodies.filter { Display.visibleInFront($0, game: game, layout: layout) }.map(\.id))
+      let candidates: [WorkTargetCandidate] = game.bodies.compactMap {
+        game.workTargetCandidate(for: $0, context: context, frontVisible: frontIDs.contains($0.id))
+      }
+      let capabilities = game.workTargetCapabilities
+      let choices = WorkTargetSelection.ordered(
+        candidates, filter: game.workTargetFilter, system: context.system, visit: context.visit,
+        capabilities: capabilities)
+      let identities = Set(choices.map { $0.candidate.identity })
+      fields["eligibleCount"] = String(
+        game.bodies.filter { $0.physical.map { identities.contains($0.identity) } == true }.count)
+      if let candidate = candidates.first(where: { $0.identity == mainActor }) {
+        fields["mainDecision"] = String(
+          describing: WorkTargetSelection.evaluate(
+            candidate, system: context.system, visit: context.visit, capabilities: capabilities))
+      } else {
+        fields["mainDecision"] = "no-candidate"
+      }
+      // Fresh policy rank only; TAB also retains its private visited cycle and uses scene-ID ties.
+      if let rank = choices.firstIndex(where: { $0.candidate.identity == mainActor }) {
+        fields["freshMainChoiceRank"] = String(rank + 1)
+      }
+    }
+    return ScriptProcurementSelectionDiagnostic.message(fields)
+  }
+
   func procurementTargetIsMain() -> Bool { game.autoTargetBody?.id == 0 }
   func procurementFlightFacts() -> (docked: Bool, live: Bool, paused: Bool) {
     (game.docked, game.screen != .gameOver && game.energy > 0, game.paused)
