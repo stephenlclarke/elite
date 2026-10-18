@@ -95,13 +95,23 @@ struct ScriptCourierCanonicalReachTests {
       owner: inventory.owner, activeHull: inventory.activeHull, revision: inventory.revision,
       items: inventory.items.map { $0.id == original.id ? replacement : $0 })
     commander.fuel = 0
-    let raw = fixture.root.appendingPathComponent("grandfathered-military.json")
-    try JSONEncoder().encode(commander).write(to: raw)
+    let file = fixture.root.appendingPathComponent("grandfathered-military-current.json")
+    game.commander = commander
     let runtime = GameRuntime(game: game)
-    try await runtime.load(from: raw, persistMigrations: false)
+    let initialized = await runtime.snapshot()
+    try #require(initialized.commander == commander)
+    try #require(initialized.commander.scriptState.calendarLedger == nil)
+    let expected = try BodylessCurrentPublicationFixture.commander(initialized)
+    try await runtime.save(to: file)
+    #expect(await runtime.snapshot().commander == expected)
+    try BodylessCurrentPublicationFixture.read(file, expecting: expected)
+    let files = try ScriptFinanceTestFixture.files(fixture.root)
+    try await runtime.load(from: file, persistMigrations: false)
     let admitted = await runtime.snapshot()
-    let loaded = game.load(admitted.commander)
-    try #require(loaded && game.commander.valid)
+    try #require(admitted.commander == expected && admitted.commander.valid)
+    #expect(try ScriptFinanceTestFixture.files(fixture.root) == files)
+    game = admitted
+    #expect(game.commander.equipmentInventory == commander.equipmentInventory)
     #expect(game.commander.navigationTier == .military && game.commander.jumpFuelMultiplier == 0)
     #expect(game.commander.maximumJumpDistance == game.commander.jumpCap)
     #expect(game.commander.fullTankJumpDistance == game.commander.jumpCap)
