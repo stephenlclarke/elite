@@ -14,6 +14,8 @@ Reserve exact save envelopes 31 without Alien storage and 32 with Alien storage 
 
 ## Acceptance and limits
 
+Qualified G1 run 438 at `297e5384f3a1f6c1507d08762f8f53455e0434a4` passed 14 of the 15 clue methods, including the isolated legacy-loader regression. `clueJournalColdRoundTripUsesExact31Or32AndProductionRejectsFixtureTrust` caught POSIX error 20, "Not a directory"; its record contains no inner syscall or attempted path. The fixture now uses the same checked `realpath`/`free` physical temporary-base construction as the passing Alien save and freight fixtures. Production IO and trust remain unchanged. Both Alien=false/true iterations and every semantic assertion are retained; the corrected cold path still requires G1 execution. The 14 passing clue methods need no immediate rerun.
+
 The ordinary in-memory `Game.load(Commander)` path also explicitly refuses any present clue journal. Its focused regression earns a real protected terminal award using a checked version-two equipment shape, asserts that every earlier loader guard passes, verifies rejection preserves installed state, then removes only the journal and proves the corresponding Commander remains loadable. Current-format store and actor restoration retain their separate checked paths.
 
 Focused regression sources cover the protected terminal transaction, replay, failed publication, name/version distrust, non-success and acceptance exclusions, exact identities, read-only progress, source removal, hull transfer, escape and cold persistence with authenticated malformed-chunk mutations. Internal immutable fixture trust must never authorize ordinary production loading or publication.

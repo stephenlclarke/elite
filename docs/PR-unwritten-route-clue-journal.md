@@ -10,9 +10,11 @@ Nonempty journals use exact envelopes 31/32, joined to Alien presence and existi
 
 ## Validation
 
+Qualified G1 run 438 at `297e5384f3a1f6c1507d08762f8f53455e0434a4` passed 14 of the 15 clue methods, including the isolated legacy-loader regression. `clueJournalColdRoundTripUsesExact31Or32AndProductionRejectsFixtureTrust` caught POSIX error 20, "Not a directory"; its record contains no inner syscall or attempted path. The fixture now uses the same checked `realpath`/`free` physical temporary-base construction as the passing Alien save and freight fixtures. Production IO and trust remain unchanged. Both Alien=false/true iterations and every semantic assertion are retained; the corrected cold path still requires G1 execution. The 14 passing clue methods need no immediate rerun.
+
 The ordinary in-memory `Game.load(Commander)` path also explicitly refuses any present clue journal. Its focused regression earns a real protected terminal award using a checked version-two equipment shape, asserts that every earlier loader guard passes, verifies rejection preserves installed state, then removes only the journal and proves the corresponding Commander remains loadable. Current-format store and actor restoration retain their separate checked paths.
 
-Source-only regressions exercise real guarded contact confirmation and protected Lua settlement, publication rollback, replay, excluded outcomes/acceptance, untrusted name/version claims, exact-ID progress, source removal, hull transfer, escape, cold read/write and rehashed save tampering. Alien coexistence uses the existing checked storage fixture and does not claim native acquisition gameplay.
+Regression sources exercise real guarded contact confirmation and protected Lua settlement, publication rollback, replay, excluded outcomes/acceptance, untrusted name/version claims, exact-ID progress, source removal, hull transfer, escape, cold read/write and rehashed save tampering. Alien coexistence uses the existing checked storage fixture and does not claim native acquisition gameplay.
 
 Swift formatting, Markdown lint and `git diff --check` are the permitted local static checks. Compilation, focused test execution, full `make ci`, coverage, sanitizer/leak gates and final PR checks remain with G1. Before merge, request `@codex review`, resolve every actionable finding and repeat until clean on the final head.
 
