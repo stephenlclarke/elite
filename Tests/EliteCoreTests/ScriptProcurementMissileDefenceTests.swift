@@ -125,6 +125,74 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
   #expect(afterInput.spinSlower == input.spinSlower && afterInput.spinFaster == input.spinFaster)
 }
 
+@Test func procurementMissileActiveNativeECMDefersWithoutSpendingOriginalStock() async throws {
+  let fixture = try ScriptProcurementFixture()
+  defer { fixture.clean() }
+  var game = Game(executive: false)
+  game.screen = .status
+  game.commander.credits = 100000
+  try game.prepareG03FlightEquipment()
+  try ScriptProcurementFixture.requirePaidG03Preparation(game)
+  game.ensureMissionCalendar()
+  game.launch()
+  let station = try #require(game.commander.flightSimulation.anchors?.station)
+  // A controlled unit boundary, not elapsed travel or an observed enemy ECM history.
+  NativePagedSalvageFixture.moveObserver(
+    &game, to: .init(position: station.position + .init(0, 0, -5000)))
+  let bodyID = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: bodyID, hull: .cobra, position: .init(0, 0, 500), hostile: true))
+  let emitterID = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: emitterID, hull: .constrictor, position: .init(0, 0, -1000)))
+  game.ensurePhysicalActors()
+  let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+  game.bodies[index].physical?.catalogueShipID = ShipCatalogue.nativeShip(.cobra)?.id
+  game.bodies[index].physical?.npc?.legal = .init(value: 16)
+  let emitterIndex = try #require(game.bodies.firstIndex { $0.id == emitterID })
+  game.bodies[emitterIndex].physical?.catalogueShipID = ShipCatalogue.nativeShip(.constrictor)?.id
+  try #require(game.bodies[emitterIndex].ecmEnabled)
+  game.laserHeat = 246.4
+  game = try GameRuntime.prepareNativeSaveState(game).game
+  let target = try #require(game.bodies.first { $0.id == bodyID }?.physical?.identity)
+  let emitter = try #require(game.bodies.first { $0.id == emitterID }?.physical?.identity)
+  // Independent value-copy control proves this boundary can actually launch with ECM inactive.
+  let controlSave = fixture.root.appendingPathComponent("control/commander.json")
+  let control = GameRuntime(game: game, saveURL: controlSave)
+  let controlFacts = await control.procurementPreflightFacts()
+  let controlBudget = try await control.procurementMissileFallback(
+    expected: controlFacts, budget: .init())
+  let launched = await control.snapshot()
+  try #require(
+    launched.commander.missiles == 2 && controlBudget.missileDefence.attempted.count == 1)
+  try #require(FileManager.default.fileExists(atPath: controlSave.path))
+  let activated = game.activateOrdnanceECM(emitter: emitter)
+  try #require(activated)
+  game.ecmFrames = 32  // The existing enemy field's native physical-time activation path.
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let before = await runtime.snapshot()
+  let facts = await runtime.procurementPreflightFacts()
+  let otherwiseRequested = ScriptProcurementMissilePolicy.requestsFallback(
+    facts, steps: 0, pulse: before.commander.laser(on: .front) == .pulse,
+    heat: before.laserHeat, cooldown: before.missileCooldown, rounds: before.commander.missiles,
+    unlimited: before.commander.unlimitedMissiles, ownMissile: false)
+  try #require(otherwiseRequested && before.ecmControl.fieldActive && before.commander.valid)
+  try #require(before.commander.missiles == 3 && facts.threat?.identity == target)
+  let budget = try await runtime.procurementMissileFallback(expected: facts, budget: .init())
+  let after = await runtime.snapshot()
+  #expect(after.commander == before.commander && after.bodies == before.bodies)
+  #expect(after.energy == before.energy && after.frontShield == before.frontShield)
+  #expect(after.rearShield == before.rearShield && after.nextBodyID == before.nextBodyID)
+  #expect(after.gameplayRevision == before.gameplayRevision)
+  #expect(after.ecmControl.remainingDuration == before.ecmControl.remainingDuration)
+  #expect(after.activeECMActivation == before.activeECMActivation)
+  #expect(
+    after.missileArmed == before.missileArmed && after.weaponsTargetID == before.weaponsTargetID)
+  #expect(budget.steps == 0 && budget.tabs == 0 && budget.tools == 0)
+  #expect(budget.missileDefence == ScriptProcurementMissileBudget())
+  #expect(!FileManager.default.fileExists(atPath: fixture.save.path))
+}
+
 extension GameRuntime {
   fileprivate func procurementMissileControlsForTest() -> Controls { controls }
 }
