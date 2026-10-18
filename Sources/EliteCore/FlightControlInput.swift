@@ -26,6 +26,17 @@ struct FlightToolActivity: Sendable {
 extension Game {
   var acceptsSharedFlightControls: Bool { !docked && screen.isFlight && !paused }
 
+  /// A stopped work session must publish before clocks, actor restoration or physics can advance.
+  /// Physical Return may remain held after a safety interruption without admitting more work.
+  mutating func admitFlightWorkAdvance(controls: Controls) -> Bool {
+    if !controls.fire || workFireSuspended || paused || !screen.isFlight
+      || selectedFlightTool != .salvageCutter
+    {
+      return flushNativeSalvageWork()
+    }
+    return true
+  }
+
   func flightKeyStopsTool(_ token: String) -> Bool {
     guard acceptsSharedFlightControls else { return false }
     let action = FlightControlInput.action(for: token)

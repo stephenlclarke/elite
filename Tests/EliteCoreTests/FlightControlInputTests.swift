@@ -249,10 +249,14 @@ extension FlightControlInputTests {
     #expect(stopped.workFireSuspended && !stopped.flightTrigger.pressPending)
     #expect(stopped.flightWeaponDisplay == stopped.deriveFlightWeaponDisplay())
     #expect(stopped.flightWeaponDisplay.status != "READY")
-    #expect(stopped.commander == before.commander && stopped.bodies == before.bodies)
+    let stoppedCommanderPreserved = stopped.commander == before.commander
+    let stoppedBodiesPreserved = stopped.bodies == before.bodies
+    #expect(stoppedCommanderPreserved && stoppedBodiesPreserved)
     #expect(stopped.nativeSalvageWork?.cycle == hot.cycle)
     #expect(stopped.nativeSalvageWork?.originalCycle == hot.originalCycle)
-    #expect(stopped.flightWorldVelocity == momentum)
+    // Match existing Q/work-release frame conversion checks across all three components.
+    #expect((stopped.flightWorldVelocity - momentum).length < 1e-9)
+    #expect(stopped.commander.flightSimulation.pose == before.commander.flightSimulation.pose)
     if key == "q" {
       #expect(stopped.workGuidance == nil && stopped.workBraking == nil)
       #expect(stopped.autoPilot.targetActor == nil)
@@ -263,8 +267,15 @@ extension FlightControlInputTests {
       #expect(stopped.workGuidance?.parent == before.workGuidance?.parent)
       #expect(stopped.message == "MISSION SAVE FAILED - ACTION NOT COMMITTED")
     }
+    // The native frame resubmits the still-held level; it is not a fresh Return press.
+    await runtime.setControls(held)
     let advanced = await runtime.advance(delta: 0.1)
-    #expect(advanced.commander == before.commander && advanced.bodies == before.bodies)
+    let advancedCommanderPreserved = advanced.commander == before.commander
+    let advancedBodiesPreserved = advanced.bodies == before.bodies
+    #expect(advancedCommanderPreserved && advancedBodiesPreserved)
+    #expect((advanced.flightWorldVelocity - momentum).length < 1e-9)
+    #expect(advanced.commander.flightSimulation.pose == before.commander.flightSimulation.pose)
+    #expect(advanced.workFireSuspended && !advanced.flightTrigger.pressPending)
     #expect(advanced.dischargeAudio.events == before.dischargeAudio.events)
     #expect(advanced.nativeSalvageWork?.cycle == hot.cycle)
   }
