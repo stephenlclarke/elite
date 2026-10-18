@@ -16,6 +16,9 @@ public struct ScriptChildDefinition: Codable, Sendable, Equatable {
   func matches(_ state: ScriptInstance) -> Bool {
     state.definition == definition && state.version == version && state.digest == digest
   }
+  fileprivate func matches(_ state: CampaignMemberValidationValues) -> Bool {
+    state.definition == definition && state.version == version && state.digest == digest
+  }
 }
 
 /// Native authorization to create this child, retained by both ends of the relationship.
@@ -30,16 +33,17 @@ public struct ScriptChildBinding: Codable, Sendable, Equatable {
   public let causeKind: String
   public let cause: ScriptEventContext
   public let committed: ScriptEventContext
-  func valid(parent state: ScriptInstance, child member: ScriptInstance, engine: ScriptEngineState)
-    -> Bool
-  {
-    let parentDepth = state.campaignParent?.depth ?? 0
+  fileprivate func valid(
+    parent state: CampaignMemberValidationValues, child member: CampaignMemberValidationValues,
+    engine: CampaignEngineValidationValues
+  ) -> Bool {
+    let parentDepth = state.campaignDepth ?? 0
     guard (0...3).contains(parentDepth) else { return false }
     return parent == state.id && child == member.id && parent != child && definition.valid
       && definition.matches(member) && (1...4).contains(depth)
       && depth == parentDepth + 1
-      && root == (state.campaignParent?.root ?? state.id)
-      && engine.instances[root]?.campaignParent == nil && engine.instances[root] != nil
+      && root == (state.campaignRoot ?? state.id)
+      && engine.rootHasNoCampaignParent(root) && engine.containsInstance(root)
       && sequence > 0 && sequence <= engine.nextEvent && state.hasAcknowledged(sequence)
       && revision > 0 && revision <= state.revision && committed.revision == revision
       && ScriptCapabilities.events.contains(causeKind) && cause.valid && committed.valid
@@ -61,21 +65,94 @@ extension ScriptInstance {
   }
 }
 
-extension ScriptEngineState {
-  var campaignsValid: Bool {
-    var childIDs = Set<UUID>()
-    for parent in instances.values {
-      guard Self.campaignReceiptScopesAreValid(parent),
-        campaignChildBindingsAreValid(parent, childIDs: &childIDs),
-        campaignParentBindingIsValid(parent)
-      else { return false }
-    }
+/// Fresh immutable projections, never encoded, cached or accepted as external authority.
+private final class CampaignMemberValidationValues: Sendable {
+  let id: UUID
+  let definition: String
+  let version: String
+  let digest: String
+  let campaignParent: ScriptChildBinding?
+  let campaignDepth: Int?
+  let campaignRoot: UUID?
+  let campaignChildren: [String: ScriptChildBinding]
+  let savedCampaignReceiptScopes: [String: String]?
+  let receiptJoins: [String: [UUID]]?
+  let revision: UInt64
+  let acknowledgedThrough: UInt64?
+  let acknowledgedEvents: Set<UInt64>
+
+  init(_ state: borrowing ScriptInstance) {
+    id = state.id
+    definition = state.definition
+    version = state.version
+    digest = state.digest
+    campaignParent = state.campaignParent
+    campaignDepth = state.campaignParent?.depth
+    campaignRoot = state.campaignParent?.root
+    campaignChildren = state.campaignChildren
+    savedCampaignReceiptScopes = state.savedCampaignReceiptScopes
+    receiptJoins = state.receiptJoins
+    revision = state.revision
+    acknowledgedThrough = state.acknowledgedThrough
+    acknowledgedEvents = state.acknowledgedEvents
+  }
+
+  func hasAcknowledged(_ sequence: UInt64) -> Bool {
+    sequence <= (acknowledgedThrough ?? 0) || acknowledgedEvents.contains(sequence)
+  }
+}
+
+private struct CampaignEngineValidationValues: Sendable {
+  let instances: [UUID: ScriptInstance]
+  let nextEvent: UInt64
+  let localSeconds: Double
+  let flightSeconds: Double
+  let calendarSeconds: Double
+  let transitSeconds: Double
+
+  init(_ state: borrowing ScriptEngineState) {
+    instances = state.instances
+    nextEvent = state.nextEvent
+    localSeconds = state.localSeconds
+    flightSeconds = state.flightSeconds
+    calendarSeconds = state.calendarSeconds
+    transitSeconds = state.transitSeconds
+  }
+
+  @inline(never)
+  func member(at index: [UUID: ScriptInstance].Index) -> CampaignMemberValidationValues {
+    CampaignMemberValidationValues(instances[index].value)
+  }
+
+  @inline(never)
+  private func member(_ id: UUID) -> CampaignMemberValidationValues? {
+    guard let state = instances[id] else { return nil }
+    return CampaignMemberValidationValues(state)
+  }
+
+  @inline(never)
+  func rootHasNoCampaignParent(_ id: UUID) -> Bool {
+    instances[id]?.campaignParent == nil
+  }
+
+  @inline(never)
+  func containsInstance(_ id: UUID) -> Bool {
+    instances[id] != nil
+  }
+
+  func valid(_ parent: CampaignMemberValidationValues, childIDs: inout Set<UUID>) -> Bool {
+    guard Self.campaignReceiptScopesAreValid(parent),
+      campaignChildBindingsAreValid(parent, childIDs: &childIDs),
+      campaignParentBindingIsValid(parent)
+    else { return false }
     return true
   }
 
-  // Scope closure captures finish before child/owner lookup storage becomes active.
+  // The full original scope, child and owner checks share only campaign-specific inputs.
   @inline(never)
-  private static func campaignReceiptScopesAreValid(_ parent: ScriptInstance) -> Bool {
+  private static func campaignReceiptScopesAreValid(_ parent: CampaignMemberValidationValues)
+    -> Bool
+  {
     let scopes = parent.savedCampaignReceiptScopes ?? [:]
     guard parent.campaignChildren.count <= 32, scopes.count <= 32,
       scopes.allSatisfy({ PackValidation.localID($0.key) && PackValidation.localID($0.value) }),
@@ -89,10 +166,10 @@ extension ScriptEngineState {
 
   @inline(never)
   private func campaignChildBindingsAreValid(
-    _ parent: ScriptInstance, childIDs: inout Set<UUID>
+    _ parent: CampaignMemberValidationValues, childIDs: inout Set<UUID>
   ) -> Bool {
     for (alias, binding) in parent.campaignChildren {
-      guard alias == binding.definition.id, let child = instances[binding.child],
+      guard alias == binding.definition.id, let child = member(binding.child),
         child.campaignParent == binding,
         binding.valid(parent: parent, child: child, engine: self),
         childIDs.insert(child.id).inserted
@@ -102,11 +179,24 @@ extension ScriptEngineState {
   }
 
   @inline(never)
-  private func campaignParentBindingIsValid(_ parent: ScriptInstance) -> Bool {
+  private func campaignParentBindingIsValid(_ parent: CampaignMemberValidationValues) -> Bool {
     if let binding = parent.campaignParent {
-      guard let owner = instances[binding.parent],
+      guard let owner = member(binding.parent),
         owner.campaignChildren[binding.definition.id] == binding
       else { return false }
+    }
+    return true
+  }
+}
+
+extension ScriptEngineState {
+  var campaignsValid: Bool {
+    let engine = CampaignEngineValidationValues(self)
+    var childIDs = Set<UUID>()
+    // Dictionary indices and values traverse the same immutable element order.
+    for index in engine.instances.indices {
+      let parent = engine.member(at: index)
+      guard engine.valid(parent, childIDs: &childIDs) else { return false }
     }
     return true
   }
