@@ -405,6 +405,8 @@ struct ScriptProcurementFixture {
       let action = facts.requestedAction(steps: budget.steps)
       if action == .clear { break }
       try #require(action != .refuse, "Preflight refused at total step \(budget.steps).")
+      budget = try await runtime.procurementMissileFallback(expected: facts, budget: budget)
+      facts = await runtime.procurementPreflightFacts()
       let active = await diagnostic?.active ?? false
       let result = await runtime.procurementPilotStep(
         expected: facts, steps: budget.steps, automatic: false, diagnostic: active)
@@ -448,6 +450,7 @@ struct ScriptProcurementPilotBudget: Sendable {
   private(set) var tabs = 0
   private(set) var tools = 0
   private(set) var automaticAdvances = 0
+  var missileDefence = ScriptProcurementMissileBudget()
 
   mutating func reserveTab() -> Bool {
     guard tabs < 32 else { return false }
