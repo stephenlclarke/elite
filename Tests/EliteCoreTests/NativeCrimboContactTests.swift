@@ -375,6 +375,10 @@ struct NativeCrimboContactTests {
     let recovered = try #require(game.commander.savedEMPState?.records[record.source])
     let recoveryJoined = game.observeNativeCrimboEMPTransition(source: record.source)
     try #require(recoveryJoined && recovered.isRecovered)
+    // Mirror the normal encounter resource/persistence owners after this controlled clock step.
+    game.advanceNPCResources(delta: 0.1)
+    let refusedNPCs = game.persistNPCStates()
+    try #require(refusedNPCs.isEmpty)
     game.advancePlayerElectrical()
     #expect(recovered.aboardOrdinals == [0] && recovered.crewTotal == birth.crewCount)
     #expect(game.commander.savedCrimboState?.members[6].originalBirth == birth)
