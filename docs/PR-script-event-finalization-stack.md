@@ -1,0 +1,9 @@
+# Separate event finalization from nested mission admission
+
+`drainScriptEvents` now calls a synchronous static finalizer after all mission commands return. The helper borrows the original Game and mutates the same private candidate, staged ScriptInstance and derived-event array. It keeps the original choice/conversation receipt ordering, revision and acknowledgement, completion receipt, resource adjustment, terminal handling, event/save budget checks and publisher in their original order. The drain publishes `self = candidate` only after success and retains its original catch path.
+
+The moved body is unchanged apart from qualifying the original commander's three resource reads through the borrowed `original` parameter and indentation. No command dispatcher, actor admission guard, persistent representation, test oracle, stack setting, concurrency or capacity policy changes. A whitespace-normalized before/after body comparison records that exact correspondence with the frozen source handoff.
+
+Parsing, strict Swift formatting, Markdown lint and whitespace checks precede source review. The existing `exactContentAndOutcomeReceiptGatesBlockAcceptanceEvenWhenInstalled` test is the actual 328 crash regression. Focused execution must first use the same coverage-enabled debug configuration and unchanged concurrent stack; native admission/currentness, delayed completion, failed publication and choice/conversation behavior provide affected checks. Compiled before/after prologues may substantiate changed reservations, but cannot establish aggregate peak, all-test safety or performance. Full maintained CI remains required afterwards. The independent 328 contract-trial/reset assertion failures remain separately assigned; this refactor does not claim to fix them.
+
+[ISSUE-script-event-finalization-stack.md](ISSUE-script-event-finalization-stack.md).
