@@ -290,7 +290,7 @@ public struct Commander: Sendable, Equatable, Codable {
   public var valid: Bool {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
-      && nativeSalvageOriginalSourcesValid && freightCargoValid
+      && nativeSalvageOriginalSourcesValid && freightCargoValid && navigationTradeStateValid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -586,7 +586,8 @@ public struct Game: Sendable {
       !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
       !value.usesEconomyMiningSaveVersion,
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
-      value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil
+      value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil,
+      !value.scriptState.instances.values.contains(where: { $0.savedNavigationTrade != nil })
     else {
       return false
     }

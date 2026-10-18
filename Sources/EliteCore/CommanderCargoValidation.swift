@@ -27,6 +27,12 @@ extension Commander {
       return nil
     }
     for instance in scriptState.instances.values {
+      // The confirmed practice reserves one slot, then transfers that same slot to actual cargo.
+      if instance.savedNavigationTrade?.stage == .awaitingBuy {
+        let reserved = total.addingReportingOverflow(1)
+        guard !reserved.overflow else { return nil }
+        total = reserved.partialValue
+      }
       guard instance.payloads.count <= 128,
         instance.payloads.values.allSatisfy({ (0...1_000_000).contains($0) })
       else { return nil }

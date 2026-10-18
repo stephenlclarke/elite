@@ -11,8 +11,11 @@ enum ScriptClueVersionedSave {
     guard let journal = commander.scriptState.savedClueJournal else { return true }
     return journal.owner == commander.equipmentOwnerID
       && journal.valid(engine: commander.scriptState)
-      && journal.awards.values.allSatisfy {
-        trust.pin(for: $0.completion)?.sourceID == $0.sourceID
+      && journal.awards.values.allSatisfy { award in
+        trust.pin(for: award.completion)?.sourceID == award.sourceID
+          && (award.sourceID != ScriptNavigationTradeContent.sourceID
+            || commander.scriptState.instances[award.completion.instance]?.savedNavigationTrade?
+              .stage == .received)
       }
   }
 
@@ -69,7 +72,11 @@ enum ScriptClueVersionedSave {
       }
     }
     switch part {
-    case .missions: try missions(root, allow: contains(schema))
+    case .missions:
+      try missions(
+        root,
+        allow: contains(schema)
+          || (ScriptNavigationTradeSave.contains(schema) && root.keys.contains(field)))
     case .commander:
       try reject(root)
       if let state = root["savedScriptState"] as? [String: Any] {
