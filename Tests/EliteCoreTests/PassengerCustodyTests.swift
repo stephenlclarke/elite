@@ -43,6 +43,14 @@ private func passengerGame() throws -> (Game, ScriptPack) {
     Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
   game.purchase()
   #expect(game.commander.accommodation.fitted.count == 2 && game.commander.cargoTonnes == 10)
+  let fit = try #require(game.commander.passengerFit)
+  try #require(game.commander.shipID == "SH023" && game.commander.nativePerformance.cargo == 30)
+  try #require(game.commander.cargo.allSatisfy { $0 == 0 })
+  let hold = game.commander.standardCargoCapacity
+  let footprint = game.commander.accommodation.fittedBerths.count * 5
+  let freeHold = hold - footprint
+  #expect(hold == 30 && footprint == 10 && freeHold == 20)
+  #expect(fit.cabinCargo == footprint && fit.usableCargo == freeHold)
   #expect(EquipmentGroups.itemIndices.contains(game.selection))
   let labels = Display.equipmentScreen(game, width: 1200, height: 900).labels.map(\.text).joined(
     separator: " ")
@@ -50,6 +58,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let fields = game.commander.gameShipProfile.fields
   #expect(fields.first { $0.key == "fitted_passenger_berths" }?.number == 2)
   #expect(fields.first { $0.key == "required_crew_including_commander" }?.number == 1)
+  #expect(fields.first { $0.key == "usable_cargo_after_fit" }?.number == Double(freeHold))
   game.openShowroom()
   let crew = try #require(game.showroomComparison.first { $0.label == "Required crew" })
   let cabins = try #require(game.showroomComparison.first { $0.label == "Fitted passenger berths" })
@@ -67,7 +76,8 @@ private func passengerGame() throws -> (Game, ScriptPack) {
     separator: " ")
   #expect(current.contains("Required crew: 1; reserved crew quarters: 1"))
   #expect(current.contains("Fitted berths: 2; passengers aboard: 0; free places: 2"))
-  #expect(current.contains("Cabin footprint: 10 t") && current.contains("10 t free (physical)"))
+  #expect(current.contains("Cabin footprint: \(footprint) t"))
+  #expect(current.contains("Usable cargo after fit: \(freeHold) t free (physical)"))
   game.screen = .equipment
   game.commander.fuelStorageUnits = 4
   game.commander.equipment.formUnion([
@@ -172,30 +182,67 @@ private func passengerGame() throws -> (Game, ScriptPack) {
 @Test func savedPassengersAndStoredCabinsSurviveMissingPackWithoutReplay() async throws {
   var (game, pack) = try passengerGame()
   try game.confirmPassengerBerth(game.passengerBerthQuote)
-  let empty = game.commander.accommodation.ownedBerths[1].id
+  let berths = game.commander.accommodation.ownedBerths
+  try #require(berths.count == 2)
+  let empty = try #require(berths.last?.id)
   try game.setPassengerBerthFitted(empty, fitted: false)
-  _ = try game.acceptScriptMission(pack)
+  let mission = try game.acceptScriptMission(pack)
   let runtime = GameRuntime(game: game)
-  let commander = await runtime.snapshot().commander
+  let original = await runtime.snapshot().commander
+  try #require(original.accommodation.people.count == 1)
+  let passenger = try #require(original.accommodation.people.values.first)
+  let instance = try #require(original.scriptState.instances[mission])
+  try #require(instance.suspension == nil && passenger.mission == mission)
+  #expect(original.accommodation.storedBerths.map(\.id) == [empty])
   let folder = FileManager.default.temporaryDirectory.appendingPathComponent(
     "passenger-save-" + UUID().uuidString)
   try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
   defer { try? FileManager.default.removeItem(at: folder) }
   let url = folder.appendingPathComponent("commander.json")
   try await runtime.save(to: url)
+  let commander = await runtime.snapshot().commander
+  var expectedSaved = original
+  expectedSaved.miningLedger = original.miningLedger
+  #expect(commander == expectedSaved)
+  #expect(commander.credits == original.credits && commander.cargo == original.cargo)
+  #expect(commander.name == original.name && commander.shipID == original.shipID)
+  #expect(commander.equipmentOwnerID == original.equipmentOwnerID)
+  #expect(commander.equipmentInventory == original.equipmentInventory)
+  #expect(commander.equipmentPurchaseHistory == original.equipmentPurchaseHistory)
+  #expect(
+    commander.equipment == original.equipment && commander.laserMounts == original.laserMounts)
+  #expect(commander.fuel == original.fuel && commander.missiles == original.missiles)
+  #expect(
+    commander.contracts == original.contracts && commander.scriptState == original.scriptState)
+  #expect(commander.accommodation == original.accommodation)
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(stored == commander)
   let restored = GameRuntime(game: Game(executive: false))
   try await restored.load(from: url)
   let loaded = await restored.snapshot()
   var preserved = loaded.commander
   for (id, instance) in commander.scriptState.instances {
-    #expect(loaded.commander.scriptState.instances[id]?.suspension != nil)
+    #expect(
+      loaded.commander.scriptState.instances[id]?.suspension
+        == "Restore the exact saved mission version and its requirements.")
     preserved.scriptState.instances[id]?.suspension = instance.suspension
   }
-  #expect(preserved == commander && loaded.commander.valid)
+  #expect(preserved == commander)
+  #expect(loaded.commander.valid)
   #expect(loaded.commander.accommodation.people.count == 1)
+  #expect(loaded.commander.accommodation.people[passenger.id] == passenger)
+  #expect(loaded.commander.accommodation.ownedBerths == commander.accommodation.ownedBerths)
+  #expect(loaded.commander.accommodation.storedBerths.map(\.id) == [empty])
   await restored.key("b")
   let suspended = await restored.snapshot()
   #expect(suspended.commander.accommodation == commander.accommodation)
+  #expect(
+    suspended.commander.credits == commander.credits && suspended.commander.cargo == commander.cargo
+  )
+  #expect(suspended.commander.scriptState.instances[mission]?.outcome == instance.outcome)
 }
 @Test func duplicateCabinAndPersonLocationsAndBadDeclarationsAreRejected() throws {
   var (game, pack) = try passengerGame()
@@ -245,11 +292,18 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   defer { try? FileManager.default.removeItem(at: folder) }
   let url = folder.appendingPathComponent("save.json")
   try await runtime.save(to: url)
-  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 21)
+  let saved = await runtime.snapshot().commander
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(stored == saved)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander.accommodation == game.commander.accommodation)
+  let loaded = await restored.snapshot().commander
+  #expect(loaded == saved)
+  #expect(loaded.accommodation == game.commander.accommodation)
+  #expect(loaded.credits == cash && loaded.accommodation.fittedBerths.map(\.id) == [id])
 }
 @Test func nativeEquipmentPurchaseCannotOverspendCabinEquipmentCapacity() throws {
   var (game, _) = try passengerGame()

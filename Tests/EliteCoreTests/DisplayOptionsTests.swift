@@ -44,19 +44,29 @@ import Testing
     #expect(game.commander.shipDisplayStyle == expected)
     #expect(!Display.render(game).pixels.isEmpty)
   }
-  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-  defer { try? FileManager.default.removeItem(at: url) }
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  let url = directory.appendingPathComponent("commander.json")
+  defer { try? FileManager.default.removeItem(at: directory) }
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: url)
+  let saved = await runtime.snapshot()
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+  var expectedStored = saved.commander
+  if expectedStored.npcPersistence.count > 0 {
+    expectedStored.npcPersistence.resetPhysicalBindings(system: saved.systemIdentity)
+  }
+  #expect(stored == expectedStored)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: Data(contentsOf: url))
-  #expect(pointer.schemaVersion == 22)
   var expected = game.commander
   var restoredGame = await restored.snapshot()
   let savedWorld = try #require(expected.nativeStations)
   expected.nativeStations = try displayWorldAfterLoad(savedWorld, restored: &restoredGame)
-  #expect(await restored.snapshot().commander == expected)
+  let restoredCommander = await restored.snapshot().commander
+  #expect(restoredCommander == expected)
   game.key("escape")
   game.key("0")
   #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)

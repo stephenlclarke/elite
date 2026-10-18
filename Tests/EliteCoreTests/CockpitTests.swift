@@ -118,14 +118,31 @@ import Testing
   game.tick(delta: 0.01)
   #expect(game.commander.cargo[0] == 1)
   game.commander.unlimitedCargo = false
-  game.commander.cargo[0] = 35
+  let bay = try #require(game.commander.fittedEquipment(at: .utility(.cargoExpansion)))
+  try #require(bay.node.key == "Large Cargo Bay")
+  try #require(game.commander.nativePerformance.cargo == 30)
+  try #require(game.commander.nativePerformance.cargoExpansion == 15)
+  try #require(game.commander.cargo.dropFirst().allSatisfy { $0 == 0 })
+  try #require(game.commander.accommodation.fittedBerths.isEmpty)
+  try #require(game.commander.missionPayloadTonnes == 0)
+  try #require(game.commander.nativePeople?.held.isEmpty ?? true)
+  let finiteCapacity = game.commander.standardCargoCapacity
+  try #require(finiteCapacity == 45 && game.commander.capacity == finiteCapacity)
+  game.commander.cargo[0] = finiteCapacity
+  try #require(game.commander.cargoTonnes == finiteCapacity && game.commander.valid)
+  let fullCargo = game.commander.cargo
+  let fullCash = game.commander.credits
   game.bodies = [.init(id: 2, hull: .cargo, position: .init(0, -20, 40))]
   game.tick(delta: 0.01)
   #expect(game.message == "CARGO HOLD FULL" && game.bodies.count == 1)
+  #expect(game.commander.cargo == fullCargo && game.commander.credits == fullCash)
+  try #require(game.bodies.count == 1)
+  let remaining = try #require(game.bodies.firstIndex { $0.id == 2 && $0.hull == .cargo })
   game.commander.unlimitedCargo = true
-  game.bodies[0].position.y = 20
+  game.bodies[remaining].position.y = 20
   game.tick(delta: 0.01)
-  #expect(game.bodies.count == 1)
+  #expect(game.bodies.count == 1 && game.bodies.first?.id == 2)
+  #expect(game.commander.cargo == fullCargo && game.commander.credits == fullCash)
   game.bodies = [.init(id: 3, hull: .thargon, position: .init(0, -20, 40))]
   game.tick(delta: 0.01)
   #expect(game.commander.cargo[16] == 1 && game.bodies.isEmpty)
