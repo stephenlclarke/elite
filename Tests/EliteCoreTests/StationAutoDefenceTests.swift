@@ -194,7 +194,8 @@ func stationAutoNativeECMRequiresActualEquipmentAndEnergyWithoutXYZZY(condition:
   game.bodies.append(.init(id: id, hull: .missile, position: .init(200, 0, -500)))
   // Missing physical ownership must not be interpreted as a friendly missile.
   let station = try #require(game.autoTargetBody)
-  let guidance = try #require(game.stationAutoGuidance(target: station))
+  let requestedGuidance = game.stationAutoGuidance(target: station)
+  let guidance = try #require(requestedGuidance)
   #expect(
     guidance.aim == nil && guidance.lateralVelocity.finite && guidance.lateralVelocity.length > 0)
   let before = game.commander
