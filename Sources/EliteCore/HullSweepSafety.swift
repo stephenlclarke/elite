@@ -465,7 +465,7 @@ public enum HullSweepSafety {
       }
       if left.children == nil, right.children == nil {
         for first in left.triangles {
-          for second in right.triangles {
+          for (offset, second) in right.triangles.enumerated() {
             try work.triangle()
             let triangle: SweepTriangle
             if let cached = triangleCache[first] {
@@ -482,6 +482,18 @@ public enum HullSweepSafety {
                 a: a, b: b, c: c, conditioned: original.conditioned,
                 unresolvedSupport: original.unresolvedSupport, transformedFrom: original)
               triangleCache[first] = triangle
+            }
+            if offset == 0, best.isFinite {
+              // The first paid pair covers this one bounded row/leaf certificate.
+              // The ordinary gap only decides whether to attempt an outward proof.
+              let rowBounds = triangle.bounds
+              let upper = SweepInterval(best).square.upper
+              if rowBounds.finite, right.bounds.finite, upper.isFinite,
+                rowBounds.distanceSquared(to: right.bounds) > upper
+              {
+                let lower = rowBounds.certifiedLowerSquared(to: right.bounds)
+                if lower.isFinite, lower >= upper { break }
+              }
             }
             best = min(best, sweepTriangleDistance(triangle, obstacle.triangles[second]))
             if best < 1e-9 { return 0 }

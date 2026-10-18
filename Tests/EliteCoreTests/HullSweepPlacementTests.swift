@@ -468,9 +468,11 @@ struct HullSweepPlacementTests {
         let result = HullSweepSafety.validateSceneMotion(
           dualStationaryMotion(player), player: player,
           obstacles: [.init(hull: obstacle, pose: .init())], budget: budget)
-        // The near leaves cost 8*8 pairs per sample. Far leaves have certified gaps >499.
-        // A far-first per-player-triangle loop spends an extra leaf before these 64 pairs.
-        #expect(result.safe && result.distanceQueries == 3 && result.triangleTests == 192)
+        // Near leaves require at most 8*8 paid pairs per sample; certified row pruning
+        // may reduce that work, including when a conditioned lower bound is below exact10.
+        // Far leaves retain certified gaps >499. The original192-pair budget is unchanged.
+        #expect(result.safe && result.distanceQueries == 3)
+        #expect(result.triangleTests > 0 && result.triangleTests <= budget.triangleTests)
         #expect(result.nodeVisits > 0 && result.nodeVisits <= budget.nodeVisits)
         #expect((result.minimumSampledClearance ?? 0) > 9.999999)
         #expect((result.minimumSampledClearance ?? .infinity) <= 10.000001)
@@ -595,6 +597,59 @@ struct HullSweepPlacementTests {
       #expect(!result.safe && result.failure == .clearanceViolation)
       #expect(result.triangleTests > 0 && result.nodeVisits >= 4 && result.distanceQueries == 1)
       #expect(result.minimumSampledClearance == 0)
+    }
+  }
+
+  @Test func dualBVHRowCertificateReducesPaidPairsWhenBothPlayerLeafBoxesOverlapTarget() throws {
+    var vertices: [Vector3] = []
+    var faces: [[Int]] = []
+    var targetVertices: [Vector3] = []
+    var targetFaces: [[Int]] = []
+    for x in [0.0, 1000] {
+      let near = vertices.count
+      vertices += [.init(x, 0, 0), .init(x + 1, 0, 0), .init(x, 1, 0)]
+      faces.append([near, near + 1, near + 2])
+      for row in 0..<7 {
+        let y = Double(row * 2)
+        let far = vertices.count
+        vertices += [.init(x + 2, y, 100), .init(x + 3, y, 100), .init(x + 2, y + 1, 100)]
+        faces.append([far, far + 1, far + 2])
+      }
+      for row in 0..<4 {
+        let y = Double(row * 2)
+        let first = targetVertices.count
+        targetVertices += [.init(x, y, 10), .init(x + 1, y, 10), .init(x, y + 1, 10)]
+        targetFaces.append([first, first + 1, first + 2])
+      }
+    }
+    let target = try PreparedHull(
+      mesh: Mesh(vertices: targetVertices, faces: targetFaces, preserveWinding: true))
+    for reversed in [false, true] {
+      let player = try PreparedHull(
+        mesh: Mesh(
+          vertices: vertices, faces: reversed ? Array(faces.reversed()) : faces,
+          preserveWinding: true))
+      #expect(player.triangleCount == 16 && target.triangleCount == 8)
+      // BVH splits on x into two eight-primitive player leaves. Each leaf spans z=0...100
+      // and intersects the target leaf box x=0...1001,y=0...7,z=10: no node can prune.
+      // In each player leaf, the smaller-x near row is visited first in either source order.
+      // Its eight comparisons establish exact distance10. Each of seven z=100 rows then
+      // pays once for a certified distance>=90 to the whole target leaf, skipping seven pairs.
+      // Three samples therefore cost 3*2*(8+7)=90 paid pairs versus 3*16*8=384 without row proof.
+      let budget = HullSweepBudget(
+        distanceQueries: 3, triangleTests: 90, nodeVisits: 18, subdivisionDepth: 0)
+      let result = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player), player: player,
+        obstacles: [.init(hull: target, pose: .init())], budget: budget)
+      #expect(result.safe && result.distanceQueries == 3)
+      #expect(result.triangleTests == 90 && result.nodeVisits == 18)
+      #expect(abs((result.minimumSampledClearance ?? 0) - 10) < 1e-8)
+      let exhausted = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player), player: player,
+        obstacles: [.init(hull: target, pose: .init())],
+        budget: .init(distanceQueries: 3, triangleTests: 89, nodeVisits: 18, subdivisionDepth: 0))
+      #expect(!exhausted.safe && exhausted.failure == .workBudgetExceeded)
+      #expect(exhausted.triangleTests == 89 && exhausted.distanceQueries == 3)
     }
   }
 }
