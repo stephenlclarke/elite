@@ -231,6 +231,7 @@ extension Game {
       let index = bodies.firstIndex(where: { $0.id == id }), empPulseEligible(bodies[index]),
       var resources = bodies[index].physical?.npc?.resources
     else { return false }
+    var legacyCatalogue: String?
     if resources.profile == .legacyEnergyOnly {
       guard
         let catalogue = bodies[index].physical?.catalogueShipID
@@ -240,8 +241,7 @@ extension Game {
           || resources.legacyElectricalRecharge == native.recharge
       else { return false }
       resources.legacyElectricalRecharge = native.recharge
-      // Pin the validated native alias before either partial persistence or zero-power custody.
-      bodies[index].physical?.catalogueShipID = catalogue
+      legacyCatalogue = catalogue
     }
     guard
       var reserve = resources.electrical
@@ -264,6 +264,8 @@ extension Game {
         emissionPosition: commander.flightSimulation.pose.position)
     else { return false }
     if reserve.remaining == 0 {
+      // A positive partial hit retains its existing native mesh; custody already pins on zero.
+      if let legacyCatalogue { bodies[index].physical?.catalogueShipID = legacyCatalogue }
       guard let context = gameplayContext(),
         disableEMPHull(id: id, incident: incident, tool: tool, context: context)
       else { return false }
