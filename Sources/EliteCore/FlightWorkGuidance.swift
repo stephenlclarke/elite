@@ -28,10 +28,30 @@ struct FlightWorkBraking: Sendable {
 }
 
 extension Game {
-  var flightWorldVelocity: Vector3 {
-    workGuidance?.velocity ?? workBraking?.velocity
-      ?? commander.flightSimulation.pose.orientation.apply(
-        autoPilot.velocity + .init(0, 0, speed * 18))
+  var flightWorldVelocity: Vector3 { Self.currentFlightWorldVelocity(self) }
+
+  // End each optional guidance/braking projection before entering the next fallback.
+  @inline(never)
+  static func currentFlightWorldVelocity(_ game: borrowing Game) -> Vector3 {
+    if let velocity = guidedFlightWorldVelocity(game) { return velocity }
+    if let velocity = brakingFlightWorldVelocity(game) { return velocity }
+    let orientation = unassistedFlightWorldOrientation(game.commander)
+    return orientation.apply(game.autoPilot.velocity + .init(0, 0, game.speed * 18))
+  }
+
+  @inline(never)
+  private static func guidedFlightWorldVelocity(_ game: borrowing Game) -> Vector3? {
+    game.workGuidance?.velocity
+  }
+
+  @inline(never)
+  private static func brakingFlightWorldVelocity(_ game: borrowing Game) -> Vector3? {
+    game.workBraking?.velocity
+  }
+
+  @inline(never)
+  private static func unassistedFlightWorldOrientation(_ commander: borrowing Commander) -> Basis3 {
+    commander.flightSimulation.pose.orientation
   }
 
   var workLimits: RelativeWorkLimits {
