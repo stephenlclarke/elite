@@ -173,6 +173,16 @@ extension EMPHullRecord {
     return true
   }
   var crewCensusValid: Bool {
+    guard crewCensusBoundsAreValid(), let discharged = crewCensusDischarges(),
+      crewCensusEpisodesAreValid(), crewCensusEpisodeOriginsAreValid(),
+      crewCensusEpisodeOrderIsValid(), currentCrewCensusIsValid(), historicalCrewCensusIsValid()
+    else { return false }
+    return crewCensusEmissionsAreValid(ejected: discharged.ejected, captured: discharged.captured)
+  }
+
+  // Preserve the census algorithm while ending each phase's transient values before the next.
+  @inline(never)
+  private func crewCensusBoundsAreValid() -> Bool {
     guard (1...EMPState.maximumPeople).contains(crewTotal), pods.count <= crewTotal,
       crewCaptures.count <= EMPState.maximumPeople,
       disableEpisodes.count <= Self.maximumDisableEpisodes,
@@ -180,22 +190,49 @@ extension EMPHullRecord {
       savedDeceasedOrdinals == nil || !deceasedOrdinals.isEmpty,
       (0...crewTotal).contains(lostCrewCount), deceasedOrdinals.count == lostCrewCount
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func crewCensusDischarges() -> (ejected: [Int], captured: [Int])? {
     let ejected = pods.compactMap { $0.body.physical?.empCrewPod?.ordinal }
     let captured = crewCaptures.flatMap(\.ordinals)
     let discharged = ejected + captured + deceasedOrdinals
     guard discharged.count <= crewTotal, Set(discharged).count == discharged.count,
-      discharged.allSatisfy({ (0..<crewTotal).contains($0) }), ejected.count == pods.count,
-      disableEpisodes.allSatisfy({
-        $0.weaponOwner == weaponOwner && $0.valid(source: source, crewTotal: crewTotal)
-      }),
-      disableEpisodes.first.map({ $0.incident == disableIncident }) ?? true,
-      disableEpisodes.first.map({ $0.weapon == weapon && $0.weaponOwner == weaponOwner }) ?? true,
+      discharged.allSatisfy({ (0..<crewTotal).contains($0) }), ejected.count == pods.count
+    else { return nil }
+    return (ejected, captured)
+  }
+
+  @inline(never)
+  private func crewCensusEpisodesAreValid() -> Bool {
+    return disableEpisodes.allSatisfy({
+      $0.weaponOwner == weaponOwner && $0.valid(source: source, crewTotal: crewTotal)
+    })
+  }
+
+  @inline(never)
+  private func crewCensusEpisodeOriginsAreValid() -> Bool {
+    guard disableEpisodes.first.map({ $0.incident == disableIncident }) ?? true,
+      disableEpisodes.first.map({ $0.weapon == weapon && $0.weaponOwner == weaponOwner }) ?? true
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func crewCensusEpisodeOrderIsValid() -> Bool {
+    guard
       disableEpisodes.enumerated().allSatisfy({ index, episode in
         index == 0
           || (episode.incident.id > disableEpisodes[index - 1].incident.id
             && episode.incident.physicalTime >= disableEpisodes[index - 1].deadline)
       })
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func currentCrewCensusIsValid() -> Bool {
     if let current = disableEpisodes.last {
       guard
         current.legacyTiming
@@ -213,6 +250,11 @@ extension EMPHullRecord {
     }) {
       return false
     }
+    return true
+  }
+
+  @inline(never)
+  private func historicalCrewCensusIsValid() -> Bool {
     // Historical schedules retain discharged IDs, but no later episode can reissue them.
     for (index, episode) in disableEpisodes.enumerated() {
       let members = Set(episode.ejections.map(\.ordinal))
@@ -238,6 +280,11 @@ extension EMPHullRecord {
         return false
       }
     }
+    return true
+  }
+
+  @inline(never)
+  private func crewCensusEmissionsAreValid(ejected: [Int], captured: [Int]) -> Bool {
     let emissions = disableEpisodes.flatMap(\.ejections).filter { $0.emittedAt != nil }
     let legacy =
       disableEpisodes.flatMap(\.legacyPods)
