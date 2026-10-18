@@ -396,3 +396,24 @@ extension MiningWorkToolTests {
     #expect(game.message.contains("ORE STORAGE FULL"))
   }
 }
+
+extension MiningWorkToolTests {
+  @Test func realRockWithoutItsModuleRetainsManualTrackingAndSelectedWeaponWithoutHold() throws {
+    var game = try workToolGame()
+    let module = try #require(game.commander.fittedEquipment(at: .targetingMining))
+    let revision = try #require(game.commander.equipmentInventory?.revision)
+    try game.commander.storeEquipment(module, expectedRevision: revision)
+    let id = try workToolRock(&game)
+    let body = try #require(game.bodies.first { $0.id == id })
+    let selected = game.selectedFlightTool
+    let pose = game.commander.flightSimulation.pose
+    let momentum = game.flightWorldVelocity
+    game.workTargetFilter = .mining
+    game.key("tab")
+    #expect(game.autoPilot.targetActor == body.physical?.identity)
+    #expect(game.workGuidance == nil && game.workBraking == nil && !game.dockingComputer)
+    #expect(game.selectedFlightTool == selected)
+    #expect(game.commander.flightSimulation.pose == pose && game.flightWorldVelocity == momentum)
+    #expect(game.dischargeAudio.events.isEmpty && game.nativeSalvageWork == nil)
+  }
+}

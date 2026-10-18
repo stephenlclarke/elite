@@ -60,12 +60,18 @@ struct WorkTargetSelectionTests {
         #expect(
           workDecision(workCandidate(), caps)
             == (mining
-              ? .eligible(.hold(.mining)) : .refused(.missingModule(.mining))))
+              ? .eligible(.hold(.mining))
+              : (core >= .advanced
+                ? .eligible(.tracking(.mining))
+                : .refused(.frontVisibilityRequired))))
         for category in [SalvageTargetCategory.wreck, .section] {
           #expect(
             workDecision(workCandidate(category: category), caps)
               == (salvage
-                ? .eligible(.hold(.salvage)) : .refused(.missingModule(.salvage))))
+                ? .eligible(.hold(.salvage))
+                : (core >= .advanced
+                  ? .eligible(.tracking(.salvage))
+                  : .refused(.frontVisibilityRequired))))
         }
       }
     }
@@ -112,7 +118,9 @@ struct WorkTargetSelectionTests {
   @Test func custodyAndLiveContextRefusalsCannotBecomeSelectable() {
     let caps = workCaps(.military, mining: true, salvage: true, scoops: true)
     for ownership in [SalvageOwnership.claimed, .occupied, .missionProtected] {
-      #expect(workDecision(workCandidate(ownership: ownership), caps) == .refused(.protectedTarget))
+      #expect(
+        workDecision(workCandidate(category: .cargo, ownership: ownership), caps)
+          == .refused(.protectedTarget))
     }
     let mission = PayloadIdentity.mission(
       instance: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, payload: "protected")
@@ -120,7 +128,9 @@ struct WorkTargetSelectionTests {
       workDecision(workCandidate(category: .cargo, payload: mission, scoop: true), caps)
         == .refused(.protectedTarget))
     let claimant = ActorIdentity(system: workSelectionSystem, visit: 3, entity: 99)
-    #expect(workDecision(workCandidate(claimant: claimant), caps) == .refused(.protectedTarget))
+    #expect(
+      workDecision(workCandidate(category: .cargo, claimant: claimant), caps)
+        == .refused(.protectedTarget))
     #expect(
       workDecision(workCandidate(category: .occupiedPod, scoop: true), caps)
         == .refused(.occupiedPod))
@@ -169,5 +179,54 @@ struct WorkTargetSelectionTests {
     }
     #expect(inputs == original)
     #expect(workDecision(offscreen, caps) == .eligible(.hold(.mining)))
+  }
+}
+
+extension WorkTargetSelectionTests {
+  @Test func capitalHoldAndManualTrackingDoNotGrantExtractionPermission() {
+    for core in TargetingTier.allCases {
+      for front in [false, true] {
+        let candidate = WorkTargetCandidate(
+          identity: .init(system: workSelectionSystem, visit: 3, entity: 50), kind: .capitalShip,
+          isLive: true, frontVisible: front, distance: 5000, singleScoopCompatible: false)
+        #expect(
+          workDecision(candidate, workCaps(core, salvage: true)) == .eligible(.hold(.salvage)))
+        #expect(
+          workDecision(candidate, workCaps(core))
+            == (core >= .advanced || front
+              ? .eligible(.tracking(.salvage))
+              : .refused(.frontVisibilityRequired)))
+        let choices = WorkTargetSelection.ordered(
+          [candidate], filter: .ships,
+          system: workSelectionSystem, visit: 3, capabilities: workCaps(core, salvage: true))
+        #expect(choices.count == 1 && choices.first?.mode == .hold(.salvage))
+      }
+    }
+    let caps = workCaps(.military, mining: true, salvage: true)
+    let claimant = ActorIdentity(system: workSelectionSystem, visit: 3, entity: 99)
+    for category in [SalvageTargetCategory.rock, .wreck, .section] {
+      let mode: WorkTargetMode = category == .rock ? .hold(.mining) : .hold(.salvage)
+      for ownership in [SalvageOwnership.claimed, .occupied, .missionProtected] {
+        #expect(
+          workDecision(
+            workCandidate(
+              category: category, ownership: ownership,
+              claimant: claimant), caps) == .eligible(mode))
+      }
+    }
+  }
+
+  @Test func missingModulesKeepManualSpecialtyTargetsInTheirFilterWithoutApproach() {
+    let rock = workCandidate(front: true)
+    let wreck = workCandidate(2, category: .wreck, front: true)
+    for (filter, expected) in [
+      (WorkTargetFilter.mining, WorkTargetMode.tracking(.mining)),
+      (.salvage, .tracking(.salvage)),
+    ] {
+      let choices = WorkTargetSelection.ordered(
+        [rock, wreck], filter: filter,
+        system: workSelectionSystem, visit: 3, capabilities: workCaps())
+      #expect(choices.count == 1 && choices.first?.mode == expected)
+    }
   }
 }

@@ -7,7 +7,7 @@ public enum WorkTargetSpecialty: Sendable, Equatable {
 }
 
 public enum WorkTargetKind: Sendable, Equatable {
-  case ship, activeStation
+  case ship, capitalShip, activeStation
   case recoverable(SalvageTargetMetadata, payload: PayloadIdentity?)
 }
 
@@ -56,6 +56,7 @@ public struct WorkTargetCapabilities: Sendable, Equatable {
 
 public enum WorkTargetMode: Sendable, Equatable {
   case ship, docking
+  case tracking(WorkTargetSpecialty)
   case hold(WorkTargetSpecialty)
   case autoScoop(WorkTargetSpecialty)
 }
@@ -106,6 +107,9 @@ public enum WorkTargetSelection {
     case .ship:
       return core >= .advanced || candidate.frontVisible
         ? .eligible(.ship) : .refused(.frontVisibilityRequired)
+    case .capitalShip:
+      if capabilities.salvageModule { return .eligible(.hold(.salvage)) }
+      return ordinaryTracking(candidate, core: core, specialty: .salvage)
     case .activeStation:
       return core >= .docking ? .eligible(.docking) : .refused(.dockingCoreRequired)
     case .recoverable(let metadata, let payload):
@@ -117,12 +121,21 @@ public enum WorkTargetSelection {
         guard pod.fits else { return .refused(.fullPeopleHold) }
         return .eligible(.autoScoop(.salvage))
       }
+      // A physical hold does not authorize cutting, capture, transfer or collection.
+      // Loose items still require their complete custody and scoop checks below.
+      if [.rock, .wreck, .section].contains(metadata.category) {
+        let specialty: WorkTargetSpecialty = metadata.category == .rock ? .mining : .salvage
+        let installed =
+          specialty == .mining ? capabilities.miningModule : capabilities.salvageModule
+        return installed
+          ? .eligible(.hold(specialty))
+          : ordinaryTracking(candidate, core: core, specialty: specialty)
+      }
       if candidate.nativeCrewCapture {
         guard capabilities.salvageModule else { return .refused(.missingModule(.salvage)) }
         guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
         return .eligible(.hold(.salvage))
       }
-      // Mission custody never becomes ordinary salvage, even if classification metadata disagrees.
       if case .mission = payload { return .refused(.protectedTarget) }
       guard metadata.ownership == .abandoned, metadata.claimant == nil else {
         return .refused(.protectedTarget)
@@ -136,17 +149,17 @@ public enum WorkTargetSelection {
       }
       let installed = specialty == .mining ? capabilities.miningModule : capabilities.salvageModule
       guard installed else { return .refused(.missingModule(specialty)) }
-      switch metadata.category {
-      case .rock, .wreck, .section:
-        // Hold eligibility does not promise an installed tool or collection capability.
-        // A live depleted parent remains a valid hold; lifecycle decisions belong to runtime.
-        return .eligible(.hold(specialty))
-      default:
-        guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
-        guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
-        return .eligible(.autoScoop(specialty))
-      }
+      guard candidate.singleScoopCompatible else { return .refused(.notScoopCompatible) }
+      guard capabilities.fuelScoops else { return .refused(.missingFuelScoops) }
+      return .eligible(.autoScoop(specialty))
     }
+  }
+
+  private static func ordinaryTracking(
+    _ candidate: WorkTargetCandidate, core: TargetingTier, specialty: WorkTargetSpecialty
+  ) -> WorkTargetDecision {
+    core >= .advanced || candidate.frontVisible
+      ? .eligible(.tracking(specialty)) : .refused(.frontVisibilityRequired)
   }
 
   public static func ordered(
@@ -166,7 +179,7 @@ public enum WorkTargetSelection {
       guard !conflicting.contains(candidate.identity),
         let mode = evaluate(candidate, system: system, visit: visit, capabilities: capabilities)
           .mode,
-        includes(mode, filter: filter)
+        includes(candidate, mode: mode, filter: filter)
       else { return nil }
       return .init(candidate: candidate, mode: mode)
     }.sorted { left, right in
@@ -182,11 +195,15 @@ public enum WorkTargetSelection {
     }
   }
 
-  private static func includes(_ mode: WorkTargetMode, filter: WorkTargetFilter) -> Bool {
+  private static func includes(
+    _ candidate: WorkTargetCandidate, mode: WorkTargetMode, filter: WorkTargetFilter
+  ) -> Bool {
+    if filter == .ships, candidate.kind == .capitalShip { return true }
     switch (filter, mode) {
     case (.all, _), (.ships, .ship), (.ships, .docking),
-      (.mining, .hold(.mining)), (.mining, .autoScoop(.mining)),
-      (.salvage, .hold(.salvage)), (.salvage, .autoScoop(.salvage)):
+      (.mining, .hold(.mining)), (.mining, .autoScoop(.mining)), (.mining, .tracking(.mining)),
+      (.salvage, .hold(.salvage)), (.salvage, .autoScoop(.salvage)),
+      (.salvage, .tracking(.salvage)):
       true
     default:
       false
