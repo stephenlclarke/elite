@@ -25,7 +25,7 @@ private func empTravel(to destination: Int, game: inout Game) throws {
   let station = try #require(game.commander.flightSimulation.anchors?.station)
   let outward = (game.commander.flightSimulation.pose.position - station.position).unit
   try #require(outward.finite && outward.length > 0)
-  for _ in 0..<200 where game.massLocked {
+  for frame in 0..<200 where game.massLocked {
     let direction = game.commander.flightSimulation.pose.shipVector(outward)
     var controls = Controls()
     controls.throttle = 1
@@ -42,7 +42,25 @@ private func empTravel(to destination: Int, game: inout Game) throws {
         atan2(direction.y, hypot(direction.x, direction.z))
           / max(0.001, game.commander.performance.pitch * 0.1)))
     game.tick(delta: 0.1, controls: controls)
-    try #require(game.screen != .gameOver && !game.docked)
+    let continuingFlight = game.screen != .gameOver && !game.docked
+    var failureDetails = ""
+    if !continuingFlight {
+      let flight = game.commander.flightSimulation
+      let emp = game.commander.savedEMPState?.records.values.first
+      failureDetails =
+        "EMP travel stopped: origin=\(origin), destination=\(destination), frame=\(frame), "
+        + "time=\(flight.physicalTime), pose=\(flight.pose), screen=\(game.screen), "
+        + "docked=\(game.docked), energy=\(game.energy), "
+        + "shields=\(game.frontShield)/\(game.rearShield), "
+        + "temperature=\(game.cabinTemperature), altitude=\(game.altitude), "
+        + "message=\(game.message), speed=\(game.speed), outward=\(outward), "
+        + "station=\(station.position), stationRange=\((flight.pose.position - station.position).length), "
+        + "throttle=\(controls.throttle), pitch=\(controls.pitch), yaw=\(controls.yaw), "
+        + "empCrew=\(String(describing: emp?.crewAboard)), "
+        + "empDeadline=\(String(describing: emp?.crewDeadline)), "
+        + "empRecovered=\(String(describing: emp?.isRecovered))"
+    }
+    try #require(continuingFlight, Comment(rawValue: failureDetails))
   }
   let freeToJump = !game.massLocked
   try #require(freeToJump)
@@ -264,6 +282,11 @@ struct EMPTravelAndSecurityTests {
       })
     let actor = try #require(officer.physical?.identity)
     try #require(game.commander.stationSecurity.assignments.contains { $0.actor == actor })
+    let expectedCatalogue = try #require(
+      officer.physical?.catalogueShipID ?? ShipCatalogue.nativeShip(officer.hull)?.id)
+    try #require(expectedCatalogue == "SH136" && officer.hull == .viper)
+    let nativeDefinition = try #require(ShipCatalogue.ship(expectedCatalogue)?.game)
+    try #require(nativeDefinition.valid)
     let assignment = try #require(
       game.commander.stationSecurity.assignments.first {
         $0.actor == actor
@@ -290,6 +313,9 @@ struct EMPTravelAndSecurityTests {
     let source = try #require(
       game.bodies.first { $0.physical?.identity == actor }?.physical?.empSource)
     let proof = try #require(game.commander.savedEMPState?.records[source])
+    let expectedRecoveryDeadline = proof.disableIncident.physicalTime + 30
+    try #require(proof.crewDeadline == expectedRecoveryDeadline)
+    try #require(proof.hull.body.physical?.catalogueShipID == expectedCatalogue)
     #expect(proof.custody.kind == .police && proof.custody.assignment?.actor == assignment.actor)
     #expect(proof.custody.assignment?.actor == actor && proof.custody.valid)
     #expect(proof.custody.traffic != nil)
@@ -330,10 +356,26 @@ struct EMPTravelAndSecurityTests {
     #expect(nativeEMPHulls(game, source: source).count == (lethal ? 0 : 1))
     if !lethal {
       let current = try #require(nativeEMPHulls(game, source: source).first)
-      #expect(current.physical?.catalogueShipID == officer.physical?.catalogueShipID)
-      #expect(after.crewAboard > 0 ? after.isRecovered : game.isEMPDisabled(current))
-      if after.isRecovered {
-        #expect((current.physical?.npc?.resources?.electrical?.remaining ?? 0) > 0)
+      #expect(current.physical?.catalogueShipID == expectedCatalogue)
+      #expect(current.hull == officer.hull && current.physical?.identity == after.hull.binding)
+      try #require(after.crewDeadline == expectedRecoveryDeadline)
+      if after.crewAboard > 0 {
+        let deadlineReached =
+          game.commander.flightSimulation.physicalTime >= expectedRecoveryDeadline
+        #expect(after.isRecovered == deadlineReached)
+        #expect(game.isEMPDisabled(current) == !deadlineReached)
+        #expect(current.physical?.npc?.role == officer.physical?.npc?.role)
+        let electrical = try #require(current.physical?.npc?.resources?.electrical)
+        if deadlineReached {
+          #expect(current.physical?.empSource == nil)
+          #expect(electrical.remaining > 0 && electrical.disabledAt == nil)
+        } else {
+          #expect(current.physical?.empSource == source)
+          #expect(electrical.remaining == 0 && electrical.disabledAt != nil)
+        }
+      } else {
+        #expect(!after.isRecovered && game.isEMPDisabled(current))
+        #expect(current.physical?.empSource == source && current.physical?.npc == nil)
       }
     }
     let livePods = game.bodies.compactMap { $0.physical?.empCrewPod }
