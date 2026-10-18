@@ -65,3 +65,9 @@ Output remains one failure record per recorder with a 4096-byte ceiling includin
 ## References and risks
 
 Authority is the ratified backlog audit and additive money clarification from 2026-10-17. Native stored money is decicredits. Existing sellable cargo reserves firearms and captives, not Food/Textiles/Machinery; this slice preserves that implementation and does not invent supplied-freight protection. The defensive-preflight correction remains uncompiled and unexecuted; flight-fixture feasibility remains unresolved.
+
+## Finite-stock defended pilot fallback
+
+Actual401 showed the aligned defended pilot's last requested pulse was blocked by heat, followed by an authenticated wanted pirate's fatal front pulse. This does not establish earlier hit history or an immortal attacker. The separately authorised test pilot may use the three original physical missiles while its pulse remains heat-inhibited even after the next ordinary frame's cooling. It must retain the current wanted/source/player/zone/ray joins, ordinary TAB/Q/T/M inputs, finite native ammunition and launch/save/law authority. It must never select a station or nil weapons fallback, fabricate a hit, reload or grant ammunition, or count defended flight as unattended AUTO acceptance.
+
+The fallback applies only inside existing defensive preflight. All targeting consumes the same cumulative32 TAB budget; arm and launch attempts each cannot exceed the original three IDs, no original ID is retried, and an admitted refusal aborts the journey. Do not launch another owned live missile at the same actor. Existing3000 physical advances, four tool inputs, pulse steering/throttle/math, routes, seeds, starting fit/cash/health, law/traffic/native damage, clocks and command publication barriers remain. Source-only authoring precedes independent review, combined compilation and the genuine original procurement journey. Survival remains unproved.
