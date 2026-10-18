@@ -95,6 +95,12 @@ func fitEliteEMPTestEnergy(_ game: inout Game) throws {
 @discardableResult
 func disableNativeEMPActor(_ actor: ActorIdentity, game: inout Game) throws -> Int {
   game.selectFlightTool(.empPirateBlaster)
+  var observedStarts = 0
+  var observedReleases = 0
+  var observedCancellations = 0
+  var lastStart: Double?
+  var lastRelease: Double?
+  var lastCancellation: Double?
   for frame in 0..<800 {
     let body = try #require(game.bodies.first { $0.physical?.identity == actor })
     if game.isEMPDisabled(body) { return 800 - frame }
@@ -121,6 +127,21 @@ func disableNativeEMPActor(_ actor: ActorIdentity, game: inout Game) throws -> I
       || (ready && contact?.hit.target == .body(body.id))
     game.tick(delta: 0.1, controls: controls)
     let continuingFlight = game.screen != .gameOver && !game.docked
+    let observedCharge = game.commander.savedEMPCharge
+    if let charge = observedCharge {
+      if charge.startedAt != lastStart {
+        observedStarts += 1
+        lastStart = charge.startedAt
+      }
+      if charge.phase == .released, charge.endedAt != lastRelease {
+        observedReleases += 1
+        lastRelease = charge.endedAt
+      }
+      if charge.phase == .cancelled, charge.endedAt != lastCancellation {
+        observedCancellations += 1
+        lastCancellation = charge.endedAt
+      }
+    }
     var failureDetails = ""
     if !continuingFlight {
       let physicalTime = game.commander.flightSimulation.physicalTime
@@ -129,7 +150,19 @@ func disableNativeEMPActor(_ actor: ActorIdentity, game: inout Game) throws -> I
         + "screen=\(game.screen), docked=\(game.docked), energy=\(game.energy), "
         + "shields=\(game.frontShield)/\(game.rearShield), "
         + "temperature=\(game.cabinTemperature), altitude=\(game.altitude), speed=\(game.speed), "
-        + "message=\(game.message), preTickTargetRange=\(body.position.length)"
+        + "message=\(game.message), preTickTargetRange=\(body.position.length), "
+        + "observedStarts=\(observedStarts), observedReleases=\(observedReleases), "
+        + "observedCancellations=\(observedCancellations), "
+        + "chargePhase=\(String(describing: observedCharge?.phase)), "
+        + "chargeStartedAt=\(String(describing: observedCharge?.startedAt)), "
+        + "chargeEndedAt=\(String(describing: observedCharge?.endedAt)), "
+        + "empAudioCount=\(game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count), "
+        + "preTickContact=\(String(describing: contact?.hit.target)), preTickReady=\(ready), "
+        + "requestedFire=\(controls.fire), requestedPitch=\(controls.pitch), requestedYaw=\(controls.yaw), "
+        + "selectedTool=\(game.selectedFlightTool), firingSuspended=\(game.workFireSuspended), "
+        + "preTickTargetFrontShield=\(String(describing: body.physical?.npc?.resources?.frontShield)), "
+        + "preTickTargetRearShield=\(String(describing: body.physical?.npc?.resources?.rearShield)), "
+        + "preTickTargetElectrical=\(String(describing: body.physical?.npc?.resources?.electrical?.remaining))"
     }
     try #require(continuingFlight, Comment(rawValue: failureDetails))
   }
