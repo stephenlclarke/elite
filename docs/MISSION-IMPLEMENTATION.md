@@ -1,5 +1,7 @@
 # Incremental mission implementation
 
+As of 18 October 2026, the accepted [L337 implementation scope](L337-IMPLEMENTATION.md) supersedes the licensed-story content target below with original campaigns, repeatable mission families and tutorials. This document preserves predecessor research and implementation evidence, including the 89-entry inventory; it is not the final current-content backlog or proof of playable L337 content.
+
 Research readiness, receipt and playable implementation are separate. The three currently playable campaigns are now bundled TOML packs; the [mission-pack framework](MISSION-PACKS.md) also loads validated external content without rebuilding. This does not enable any queued research packet. Apply the [research implementation scope](research/implementation-scope.md) v4 and station-handoff contract. Frontier/First Encounters missions, Elite Dangerous Operations and playable surface stages remain excluded. Preserve all ship and alien research.
 
 ## Current development status
