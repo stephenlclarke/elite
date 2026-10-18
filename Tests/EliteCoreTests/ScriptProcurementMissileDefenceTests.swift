@@ -156,6 +156,16 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
   game = try GameRuntime.prepareNativeSaveState(game).game
   let target = try #require(game.bodies.first { $0.id == bodyID }?.physical?.identity)
   let emitter = try #require(game.bodies.first { $0.id == emitterID }?.physical?.identity)
+  // Independent value-copy control proves this boundary can actually launch with ECM inactive.
+  let controlSave = fixture.root.appendingPathComponent("control/commander.json")
+  let control = GameRuntime(game: game, saveURL: controlSave)
+  let controlFacts = await control.procurementPreflightFacts()
+  let controlBudget = try await control.procurementMissileFallback(
+    expected: controlFacts, budget: .init())
+  let launched = await control.snapshot()
+  try #require(
+    launched.commander.missiles == 2 && controlBudget.missileDefence.attempted.count == 1)
+  try #require(FileManager.default.fileExists(atPath: controlSave.path))
   let activated = game.activateOrdnanceECM(emitter: emitter)
   try #require(activated)
   game.ecmFrames = 32  // The existing enemy field's native physical-time activation path.
