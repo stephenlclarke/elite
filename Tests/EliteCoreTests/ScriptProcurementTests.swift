@@ -151,7 +151,7 @@ import Testing
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
   try await ScriptProcurementFixture.travel(
-    runtime, path: plan.path, diagnostic: diagnostic, defensivePreflight: true)
+    runtime, path: plan.path, diagnostic: diagnostic)
   await ScriptProcurementFixture.contact(runtime)
   let partial = await runtime.snapshot()
   let first = try #require(

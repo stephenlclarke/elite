@@ -1,5 +1,7 @@
 # Player control guide
 
+This guide describes the current development source. Station AUTO defence is not claimed in the published 1.4.0 app, and its integrated native flight, save and quality acceptance is still pending. Check the build identity of the app you are using.
+
 The main pattern is the same everywhere: **numbers open areas, arrows move, Return chooses, Escape goes back one level, K opens contextual help**. Visible buttons and the Mac menu bar expose secondary actions. Search receives ordinary typing until Return or Escape finishes it; letters and numbers typed there never open screens, activate XYZZY or change galaxies.
 
 ## Main screens
@@ -170,3 +172,9 @@ For **schema 2 Lua missions**, copy the whole pack folder into `~/.xyzzy/elite/s
 In the development source, W cycles Combat Laser, Mining Laser, Salvage Cutter and EMP Pirate Blaster. Hold Return to charge the separately fitted forward EMP for ten simulation seconds. An actual ECM activation cancels it. Normal energy grades provide power 32/48/64/80 and occluded mesh reach 3,000/4,500/6,000/7,500 units. At release the whole pulse costs 8 electrical power and 18 heat once, with a 1.5-second cooldown. Its target-centred weaker splash reaches one-third of the primary range and can strike the player. The shop price is 3,000 CR at TL9; XYZZY retains four Naval lasers and grants one EMP fitting.
 
 The struck shield absorbs first, followed by electrical reserve; hull integrity is separate. Zero power disables engines and ordinary weapons while keeping drift and spin. Emergency bombs and an owned escape pod remain available. Actual crew ejections use saved independent schedules and safe actor admission. Occupied pods remain protected people. A fitted cutter, Salvage Module and scoops can capture remaining crew during the original 30-second window; repeated hits never extend it. Surviving crew recover their current craft only after that deadline and positive earned recharge; an unoccupied derelict can be salvaged. Orange disabled/salvage cues and red active threats apply in every display mode, while white hull lines remain white. The composed save format is version 26. Focused core sanitizer checks pass; full custody/native, quality and release acceptance remain pending.
+
+## Station AUTO defence in development
+
+Selecting a station with Docking or better keeps the station as the destination while AUTO uses the ship's fastest safely brakeable approach and limited evasion. It can aim fitted combat lasers independently of travel, without changing the cockpit view, selected tool or weapon lock. The normal law, protection, obstruction, heat, energy and equipment rules still apply; disabled salvageable craft are not automatic targets. Near the station, clearance, doorway attitude and spin matching take priority over defensive steering.
+
+Fitted ECM responds to incoming missiles during station AUTO without changing the separate XYZZY Auto ECM option. With Military return fire enabled, an actual ECM-confirmed source still receives a missile response when its joined forward target and native launch conditions permit; a laser hit does not consume that order. Finite owned ammunition is used unless the existing explicit unlimited mode is enabled. Automatic missiles require successful publication to the bound commander save before they enter flight; a refused save preserves ammunition while docking and other defence can continue. **Q**, manual steering or station throttle cancels guidance as before. No new key or option is added.

@@ -63,6 +63,17 @@ public struct RetaliationControl: Sendable {
     return pending.isEmpty ? nil : pending.removeFirst()
   }
   mutating func report(_ text: String) { status = text }
+  func pendingResponse(time: Double) -> RetaliationOrder? {
+    pending.first { $0.expires >= time }
+  }
+  mutating func reconcileResponse(bodyID: Int, actor: ActorIdentity) {
+    pending.removeAll { $0.source == bodyID && ($0.actor == nil || $0.actor == actor) }
+  }
+  mutating func expire(time: Double) {
+    let before = pending.count
+    pending.removeAll { $0.expires < time }
+    if pending.isEmpty && before > 0 { status = "RETURN FIRE EXPIRED" }
+  }
 }
 
 extension Game {
@@ -79,7 +90,7 @@ extension Game {
     guard !sources.isEmpty else { return }
     ecmControl.emit(.incomingIdentified)
     for source in sources {
-      weaponsTargetID = source.id
+      if !stationAutoDockingActive { weaponsTargetID = source.id }
       ecmControl.emit(.enemyTargeted(source.hull.modelName + " #\(source.id)"))
     }
     retaliation.report("INCOMING SOURCE IDENTIFIED")
@@ -90,6 +101,10 @@ extension Game {
     }
   }
   mutating func advanceRetaliation() {
+    if stationAutoDockingActive {
+      retaliation.expire(time: time)
+      return
+    }
     guard militaryRetaliationEnabled, !docked, screen.isFlight, energy > 0 else {
       retaliation.clear()
       return
