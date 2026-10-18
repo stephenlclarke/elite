@@ -699,9 +699,10 @@ struct NativeSalvageAdmissionRuntimeTests {
       case "protected parent": game.bodies[index].navalTarget = true
       case "wrong wreck":
         let metadata = try #require(game.bodies[index].physical?.salvage)
+        let system = game.systemIdentity
         game.bodies[index].physical?.salvage = .init(
           category: metadata.category, ownership: metadata.ownership, claimant: nil,
-          wreck: .init(system: game.systemIdentity, site: 89, lineage: 99), section: nil,
+          wreck: .init(system: system, site: 89, lineage: 99), section: nil,
           lot: nil, bounds: metadata.bounds, workSurfaces: metadata.workSurfaces)
       case "stale parent", "foreign parent", "unbound parent":
         let physical = try #require(game.bodies[index].physical)
