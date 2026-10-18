@@ -920,13 +920,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   @objc private func installMissionPack() {
     let panel = NSOpenPanel()
-    panel.canChooseDirectories = false
+    panel.canChooseFiles = true
+    panel.canChooseDirectories = true
     panel.allowsMultipleSelection = false
-    panel.allowedContentTypes = [UTType(filenameExtension: "toml") ?? .plainText]
+    panel.allowedContentTypes = [.folder, UTType(filenameExtension: "toml") ?? .plainText]
+    panel.message = "Choose a mission file or the complete mission folder."
     guard panel.runModal() == .OK, let url = panel.url else { return }
     Task { [weak self] in
       guard let self else { return }
-      do { try await runtime.installMissionPack(from: url) } catch { show(error) }
+      do { try await runtime.installMissionPackInput(from: url) } catch { show(error) }
     }
   }
   @objc private func loadCommander() {
@@ -983,10 +985,9 @@ struct EliteApp {
       guard CommandLine.arguments.indices.contains(index + 1) else {
         throw MissionPackErrorCLI.missingPath
       }
-      let entry = try MissionPackLibrary.read(
-        URL(fileURLWithPath: CommandLine.arguments[index + 1]))
-      _ = try MissionPackLibrary.checked(MissionPackLibrary.bundled.entries + [entry])
-      print("Valid mission pack: \(entry.pack.stateID) @ \(entry.pack.version)")
+      let input = try MissionPackInput(at: URL(fileURLWithPath: CommandLine.arguments[index + 1]))
+      let lines = try input.validationLines()
+      for line in lines { print(line) }
       return
     }
     if let index = CommandLine.arguments.firstIndex(of: "--ship-media") {

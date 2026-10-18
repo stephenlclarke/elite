@@ -30,9 +30,15 @@ The persistence definition is `pack.id/mission.id`. Each accepted assignment als
 
 ## Install and inspect
 
-Place the complete pack folder directly inside `~/.xyzzy/elite/script-packs/` and restart the app. Keep each content version in a separate folder, with `manifest.toml` at that folder's root. Up to 128 external library entries can be loaded. The app also loads the bundled [generated courier provider](../Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml); the other example folders linked here are authoring examples, not automatically installed packs.
+Choose **Commander > Install Mission Pack...** and select the complete folder, with `manifest.toml` at its root. The same picker accepts legacy TOML files. The schema 2 installer retains immutable content versions in `~/.xyzzy/elite/script-packs/`, separate from the legacy file library. Manual copying of a complete folder into that directory is also supported after restarting; keep each content version separate. Up to 128 external library entries can be loaded. The app also loads the bundled [generated courier provider](../Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml); the other example folders linked here are authoring examples, not automatically installed packs.
 
-The current **Commander > Install Mission Pack...** file picker, `--validate-mission-pack` option and `make mission-packs-check` handle legacy schema 1 TOMLs. They do not validate or install schema 2 folders. Folder discovery parses the manifest, checks resource declarations and Lua handler exports, and reports errors. A well-formed pack requesting an unimplemented capability may appear as an unavailable Gallery reference; that is not permission to run unsupported mechanics.
+Validate either a legacy file or a schema 2 folder with the same command:
+
+```sh
+swift run Elite --validate-mission-pack path/to/pack-folder
+```
+
+Folder validation reuses the protected reader: it checks the manifest, declared modules/assets and Lua handler exports, then reports the version and content digest. It does not install anything or establish runtime availability. Unsupported capabilities are reported, and dependency requirements are listed as declared `id@version` pairs rather than claimed installed. A well-formed unavailable pack can still be installed as a Gallery reference; existing dependency, capability, commander-save and acceptance gates remain authoritative. Selecting `manifest.toml` itself does not substitute for selecting its folder. `make mission-packs-check` continues to check the legacy example.
 
 Choose a commander save before running a pack that declares `durable-commands-v2`. Read its Gallery availability and objectives, then use Mission Contacts or Station Contracts as appropriate. Install content in the main game before starting a trial. A pack with `gallery-basic-v2` and a valid `[trial]` can declare a test ship, location, credits, cabins and whether it starts in flight; board trials may select a declared offer. Trials use separate state and save storage. Restart repeats the trial setup; Return restores the live session.
 
