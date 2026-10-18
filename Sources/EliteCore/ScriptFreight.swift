@@ -1,0 +1,232 @@
+import Foundation
+
+/// Unencoded acceptance authority travels through the existing private prepared candidate.
+struct ScriptFreightIssueAdmission: Sendable {
+  fileprivate let job: ScriptContractJob
+  fileprivate let instance: UUID
+  fileprivate let epoch: UUID
+  fileprivate let stationEpoch: UUID
+  fileprivate let proof: ScriptFreightIssueReceipt
+
+  func issue(into state: inout ScriptInstance, game: Game) throws {
+    var acceptedOffer = job.offer
+    acceptedOffer.status = .accepted(instance)
+    guard state.id == instance, state.contract == job, let plan = job.offer.freightPlan,
+      state.savedOwnedCargo == nil, state.payloads.isEmpty,
+      game.ecmControl.epoch == epoch, game.nativeStationRuntimeEpoch == stationEpoch,
+      game.nativeMainStationDockEvidenceIsCurrent,
+      proof.context.nativeMainDock == game.commander.nativeStations?.currentMainDock,
+      game.commander.equipmentOwnerID == plan.owner,
+      game.commander.contracts.boards[job.boardKey]?.offers.first(where: { $0.id == job.offer.id })
+        == acceptedOffer,
+      proof.sequence == game.commander.scriptState.nextEvent + 1,
+      proof.clock == game.commander.scriptState.clock(.missionCalendar),
+      let definition = plan.collection, plan.capacityFits(game.commander)
+    else { throw MissionPackError("Review and confirm this job at its issuing station.") }
+    let consignment = ScriptOwnedCargoState.consignmentID(owner: plan.owner, instance: instance)
+    let units = ScriptOwnedCargoState.unitIDs(consignment: consignment, quantity: plan.quantity)
+    state.savedOwnedCargo = .init(
+      schema: 1, owner: plan.owner, instance: instance, issuer: plan.origin,
+      commodity: definition.items[0].commodity, consignment: consignment, issued: units,
+      issue: proof, held: units)
+    state.payloads[ScriptOwnedCargoState.payloadKey] = units.count
+    state.collections[definition.id] = .init(definition: definition)
+  }
+}
+
+extension Game {
+  mutating func prepareFreightTrial(_ pack: ScriptPack) throws {
+    try ScriptPackLibrary.validateFreight(pack.manifest)
+    guard isMissionTrial, trialDigest == pack.digest, pack.manifest.trial?.flight == true,
+      docked, !paused
+    else {
+      throw MissionPackError("Freight trials require their declared ordinary flight scene.")
+    }
+    let previousVisit = commander.flightSimulation.visit
+    let owner = commander.equipmentOwnerID
+    let credits = commander.credits
+    let cargo = commander.cargo
+    launch()
+    guard !docked, !paused, screen.isFlight, commander.equipmentOwnerID == owner,
+      commander.credits == credits, commander.cargo == cargo,
+      commander.flightSimulation.visit == previousVisit + 1,
+      commander.flightSimulation.system == systemIdentity,
+      commander.flightSimulation.player != nil,
+      bodies.contains(where: {
+        $0.id == 0 && $0.hull == .station
+          && $0.physical?.identity == commander.flightSimulation.anchors?.station.identity
+      }),
+      commander.nativeStations?.mainStations.contains(where: { $0.system == systemIdentity })
+        == true,
+      commander.scriptState.instances.isEmpty
+    else { throw MissionPackError("The native freight trial launch did not complete.") }
+    // The player must actually fly, dock, review and Confirm; no trial acceptance is fabricated.
+  }
+
+  func requireFreightResources(_ plan: ScriptFreightPlan) throws {
+    guard plan.valid, plan.owner == commander.equipmentOwnerID,
+      nativeMainStationDockEvidenceIsCurrent, contractStation == plan.origin, !paused,
+      commander.scriptState.missionCalendar != nil,
+      commander.scriptState.clock(.missionCalendar) <= 1e12 - plan.duration,
+      plan.calendarLowerBoundSeconds < plan.duration, plan.capacityFits(commander)
+    else {
+      throw MissionPackError(
+        "Review freight at its actual issuer with room for every supplied tonne.")
+    }
+    let systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
+    for (index, edge) in zip(plan.path, plan.path.dropFirst()).enumerated() {
+      let cap = index == 0 ? commander.maximumJumpDistance : commander.fullTankJumpDistance
+      guard systems[edge.0].distance(to: systems[edge.1]) <= cap else {
+        throw MissionPackError("Refuel or refit for the frozen freight route.")
+      }
+    }
+  }
+
+  func prepareFreightIssue(job: ScriptContractJob, instance: UUID) throws
+    -> ScriptFreightIssueAdmission
+  {
+    guard let plan = job.offer.freightPlan, ScriptFreightGeneration.valid(job),
+      instance == Self.contractJobIdentity(job.offer.id),
+      commander.contracts.boards[job.boardKey]?.offers.first(where: { $0.id == job.offer.id })
+        == job.offer,
+      commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+    else { throw SaveError.invalidCommander }
+    try requireFreightResources(plan)
+    let state = ScriptInstance(
+      id: instance, definition: plan.content.stateID, version: plan.content.version,
+      digest: plan.content.digest)
+    return .init(
+      job: job, instance: instance, epoch: ecmControl.epoch,
+      stationEpoch: nativeStationRuntimeEpoch,
+      proof: .init(
+        sequence: commander.scriptState.nextEvent + 1, clock: job.acceptedAt,
+        context: scriptEventContext(state)))
+  }
+
+  func freightContentIssue(_ state: ScriptInstance, pack: ScriptPack) -> String? {
+    guard let plan = state.contract?.offer.freightPlan else {
+      return pack.manifest.freight == nil ? nil : "Freight requires its native accepted job."
+    }
+    guard plan.matches(pack), state.savedOwnedCargo != nil,
+      state.collections[plan.template.id]?.definition == plan.collection
+    else { return "Restore the exact freight issuer and collection terms." }
+    return nil
+  }
+
+  func freightDialogueToken(_ token: String) -> String {
+    token + ":freight:" + ecmControl.epoch.uuidString + ":" + nativeStationRuntimeEpoch.uuidString
+  }
+
+  mutating func markFreightFatalLoss() {
+    for id in orderedScriptInstances {
+      guard var state = commander.scriptState.instances[id], state.outcome == .active,
+        var cargo = state.savedOwnedCargo, cargo.terminal == nil, cargo.pendingLoss == nil,
+        !cargo.held.isEmpty
+      else { continue }
+      cargo.pendingLoss = .init(
+        id: ScriptIdentity.uuid("freight-fatal-v1:" + cargo.consignment.uuidString),
+        units: cargo.held, clock: commander.scriptState.clock(.missionCalendar),
+        context: scriptEventContext(state))
+      state.savedOwnedCargo = cargo
+      commander.scriptState.instances[id] = state
+    }
+  }
+
+  mutating func loseFreightOnEscape() -> Bool {
+    resolveFreightTerminals(escape: true)
+    return !commander.scriptState.instances.values.contains {
+      $0.outcome == .active && $0.savedOwnedCargo != nil
+    }
+  }
+
+  /// No route replay or history decoding on the common no-due frame path.
+  mutating func resolveFreightTerminals(escape: Bool = false, publish: ScriptPublisher? = nil) {
+    let now = commander.scriptState.clock(.missionCalendar)
+    let due = commander.scriptState.instances.compactMap { id, state -> UUID? in
+      guard state.outcome == .active, let cargo = state.savedOwnedCargo,
+        cargo.terminal == nil, let deadline = state.contract?.deadline,
+        cargo.pendingLoss != nil || escape || now > deadline
+      else { return nil }
+      return id
+    }.sorted { $0.uuidString < $1.uuidString }
+    for id in due {
+      do {
+        var candidate = self
+        guard var state = candidate.commander.scriptState.instances[id],
+          let cargo = state.savedOwnedCargo, candidate.commander.freightStateValid(state),
+          candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+        else { throw SaveError.invalidCommander }
+        let cause: ScriptFreightTerminalCause
+        if cargo.pendingLoss != nil {
+          cause = .shipDestroyed
+        } else if escape {
+          cause = .escapePod
+        } else {
+          cause = .expired
+        }
+        let context = cargo.pendingLoss?.context ?? candidate.scriptEventContext(state)
+        let sequence = candidate.commander.scriptState.nextEvent + 1
+        candidate.commander.scriptState.nextEvent = sequence
+        try candidate.finishFreight(
+          cause, state: &state, sequence: sequence, context: context,
+          candidate: &candidate.commander)
+        candidate.commander.scriptState.instances[id] = state
+        candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
+        if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
+        guard candidate.commander.valid else { throw SaveError.invalidCommander }
+        try publish?(&candidate)
+        self = candidate
+      } catch { notify("FREIGHT OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE") }
+    }
+  }
+
+  /// Only native issue/contact/physical-terminal factories in this feature call settlement.
+  func finishFreight(
+    _ cause: ScriptFreightTerminalCause, state: inout ScriptInstance, sequence: UInt64,
+    context: ScriptEventContext, candidate: inout Commander
+  ) throws {
+    guard var cargo = state.savedOwnedCargo, cargo.terminal == nil,
+      let job = state.contract, let plan = job.offer.freightPlan, let due = job.deadline,
+      state.outcome == .active, state.revision < UInt64.max
+    else { throw SaveError.invalidCommander }
+    let now = candidate.scriptState.clock(.missionCalendar)
+    guard cause != .delivered || (cargo.held.isEmpty && now <= due),
+      cause != .expired || now > due
+    else { throw SaveError.invalidCommander }
+    cargo.terminal = .init(cause: cause, sequence: sequence, clock: now, removed: cargo.held)
+    cargo.held = []
+    cargo.pendingLoss = nil
+    state.savedOwnedCargo = cargo
+    state.payloads[ScriptOwnedCargoState.payloadKey] = 0
+    try settleContract(cause.outcome, state: &state, candidate: &candidate)
+    // Settlement receives the same live candidate commander as ordinary contract settlement.
+    // The caller installs this state only after every native confirmation has succeeded.
+    state.outcome = cause.outcome
+    state.dialogue = nil
+    state.timers = [:]
+    if cause == .delivered { state.milestones.insert(0) }
+    state.revision += 1
+    state.acknowledge(sequence)
+    state.completionReceipt = .init(
+      instance: state.id, definition: state.definition, version: state.version,
+      digest: state.digest,
+      outcome: cause.outcome, sequence: sequence,
+      causeKind: cause == .delivered || cause == .abandoned
+        ? "dialogue.confirmed" : "freight.terminated",
+      cause: context, committed: scriptEventContext(state), revision: state.revision,
+      milestones: state.milestones.sorted(), destroyedEncounters: [], deliveredParties: [],
+      returnedEquipment: [], settlementAmount: cause == .delivered ? plan.reward : 0,
+      choices: nil)
+  }
+
+  var freightPageFacts: [String] {
+    commander.scriptState.instances.values.filter { $0.savedOwnedCargo != nil }
+      .sorted { $0.id.uuidString < $1.id.uuidString }.flatMap { state in
+        guard let cargo = state.savedOwnedCargo else { return [] }
+        return [
+          state.id.uuidString, String(state.revision), cargo.consignment.uuidString,
+          cargo.held.map(\.uuidString).joined(separator: ","), String(describing: cargo.terminal),
+        ]
+      }
+  }
+}

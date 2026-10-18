@@ -51,6 +51,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let pledge: ScriptPledgeDefinition?
   public let courier: ScriptCourierDefinition?
   var procurement: ScriptProcurementDefinition? = nil
+  var freight: ScriptFreightDefinition? = nil
   public let npcs: [ScriptNPCDefinition]?
   public let models: [ScriptNPCModel]?
   public let modules: [ScriptModuleDefinition]?
@@ -101,7 +102,7 @@ public enum ScriptCapabilities {
     "completion-receipts-v2", "exclusive-choices-v2", "dialogue-choices-v2", "compound-receipts-v2",
     "library-books-basic-v2", "partial-collections-v2", "scoped-campaigns-basic-v2",
     "station-pledges-basic-v2", "courier-contracts-basic-v2", "mission-calendar-v2",
-    "finance-obligations-basic-v2", "procurement-contracts-basic-v2",
+    "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
   ]
   static func playerFeatureName(_ capability: String) -> String {
     let names = [
@@ -126,7 +127,7 @@ public enum ScriptCapabilities {
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
     "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen", "book.unlocked",
     "collection.delivered", "campaign.child.started", "courier.terminated",
-    "provider.transition", "provider.closed", "procurement.terminated",
+    "provider.transition", "provider.closed", "procurement.terminated", "freight.terminated",
   ]
 }
 
@@ -140,7 +141,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -168,6 +169,13 @@ public enum ScriptPackLibrary {
     }
     if root.contains(key: "procurement") {
       let declaration = try root.table(forKey: "procurement")
+      try keys(
+        declaration,
+        "profile generatorRevision variant deliveryContact abandonContact collectionTemplate")
+      try keys(declaration.table(forKey: "collectionTemplate"), "id title")
+    }
+    if root.contains(key: "freight") {
+      let declaration = try root.table(forKey: "freight")
       try keys(
         declaration,
         "profile generatorRevision variant deliveryContact abandonContact collectionTemplate")
@@ -369,6 +377,7 @@ public enum ScriptPackLibrary {
     try validateAnswers(manifest)
     try validateBooks(manifest)
     try validateProcurement(manifest)
+    try validateFreight(manifest)
     try validateCollections(manifest)
     try validateFinance(manifest)
     try validatePledge(manifest)
@@ -415,7 +424,7 @@ public enum ScriptPackLibrary {
         board.clock == .local || board.clock == .flight
           || board.clock == .calendar && manifest.capabilities.contains("calendar-clocks-v2")
           || board.clock == .missionCalendar
-            && (manifest.courier != nil || manifest.procurement != nil)
+            && (manifest.courier != nil || manifest.procurement != nil || manifest.freight != nil)
           || manifest.capabilities.contains("world-clocks-v1")
       else {
         throw MissionPackError("Invalid contract board or missing clock/contract capability.")

@@ -183,6 +183,10 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
 extension ScriptPackLibrary {
   static func validateCourier(_ manifest: ScriptManifest) throws {
     guard let courier = manifest.courier else {
+      if manifest.freight != nil {
+        try validateFreight(manifest)
+        return
+      }
       if manifest.procurement != nil {
         try validateProcurement(manifest)
         return

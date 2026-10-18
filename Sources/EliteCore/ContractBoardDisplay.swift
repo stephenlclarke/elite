@@ -41,7 +41,17 @@ extension Display {
       let destination = Universe.systemsIncludingPlugh(number: offer.destinationGalaxy)[
         offer.destinationSystem
       ].name
-      if let courier = game.contractBoard.quote?.courier {
+      if let plan = offer.freightPlan {
+        rows = [
+          row.title, offer.briefing,
+          "Issuer supplies \(plan.quantity)t of \(plan.commodity?.name ?? "freight"). Ordinary goods cannot substitute.",
+          "Destination: Galaxy \(offer.destinationGalaxy + 1), \(destination) main orbital station.",
+          String(format: "Final payment: %.1f CR; no acceptance fee.", Double(offer.reward) / 10),
+          "Time allowed: \(Int(plan.duration / 86400)) mission days; \(plan.path.count - 1) required hops.",
+          "Deliver 1t or all remaining owned freight. Payment only after the final tonne.",
+          "Actual hold space required even in XYZzy. Failure or abandonment pays 0 CR.",
+        ]
+      } else if let courier = game.contractBoard.quote?.courier {
         rows = [row.title, offer.briefing] + courier.review
       } else if let pledge = game.contractBoard.quote?.pledge {
         rows = [row.title, offer.briefing] + pledge.terms

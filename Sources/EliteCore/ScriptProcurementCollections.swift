@@ -63,6 +63,12 @@ extension Game {
     _ id: String, pack: ScriptPack, state: ScriptInstance, commander candidate: Commander? = nil
   ) -> ScriptCollectionDefinition? {
     let owner = (candidate ?? commander).equipmentOwnerID
+    if pack.manifest.freight != nil || state.contract?.offer.freightPlan != nil {
+      guard let plan = state.contract?.offer.freightPlan, plan.matches(pack), plan.owner == owner,
+        id == plan.template.id
+      else { return nil }
+      return plan.collection
+    }
     guard pack.manifest.procurement != nil else {
       guard state.contract.map({ !ScriptProcurementPlan.isMarked($0.offer.parameters) }) ?? true
       else { return nil }

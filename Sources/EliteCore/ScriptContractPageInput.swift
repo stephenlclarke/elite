@@ -41,6 +41,7 @@ extension Game {
     fields += financePageFacts
     fields += nativePeoplePageFacts
     fields += providerContractPageFacts
+    fields += freightPageFacts
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []
@@ -59,6 +60,15 @@ extension Game {
       }
       if let offer = row.offer {
         fields += [offer.briefing, String(describing: offer.status)]
+        if let plan = offer.freightPlan {
+          let encoder = JSONEncoder()
+          encoder.outputFormatting = [.sortedKeys]
+          let bytes = try? encoder.encode(plan)
+          fields += [
+            bytes?.base64EncodedString() ?? "invalid-freight-plan",
+            String(commander.contracts.boards[row.board]?.freightGeneration?.holdCapacity ?? -1),
+          ]
+        }
         if let terms = offer.courier {
           fields += ScriptCourierPreview(terms: terms).review
         }

@@ -223,7 +223,8 @@ extension ScriptPackLibrary {
       manifest.trial == nil ? [] : ["gallery-basic-v2"])
     guard definition.valid, Set(manifest.capabilities) == expected,
       manifest.trial == nil || manifest.trial?.flight == true,
-      manifest.courier == nil, manifest.pledge == nil, manifest.providerContract == nil,
+      manifest.courier == nil, manifest.freight == nil, manifest.pledge == nil,
+      manifest.providerContract == nil,
       manifest.board?.clock == .missionCalendar, manifest.board?.period == 3600,
       manifest.board?.exclusiveGroup == ScriptProcurementPlan.group,
       manifest.mission.parentOnly != true, manifest.mission.milestones.count == 1,

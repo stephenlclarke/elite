@@ -20,6 +20,7 @@ extension Commander {
     guard ShipCatalogue.ship(shipID)?.game != nil else { throw EquipmentRuntimeError.unavailable }
     var candidate = self
     candidate.shipID = shipID
+    guard candidate.freightCargoValid else { throw EquipmentRuntimeError.incompatibleFit }
     guard let inventory = equipmentInventory else {
       self = candidate
       return
