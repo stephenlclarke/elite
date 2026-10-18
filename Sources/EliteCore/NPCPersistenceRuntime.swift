@@ -129,11 +129,19 @@ extension Game {
   mutating func admitPersistentNPCs() {
     guard let context = gameplayContext() else { return }
     let prior = commander.npcPersistence.unboundSnapshots
-    let requests = commander.npcPersistence.pendingSpawnRequests(context: context)
+    let provider = nativeCrimboPersistenceSelection(context: context)
+    let providerRequests = commander.npcPersistence.pendingProviderSpawnRequests(
+      context: context, originals: provider.originals)
+    let requests = commander.npcPersistence.pendingSpawnRequests(
+      context: context, excludedLogicalKeys: provider.logicalKeys)
+    var batches = [SpawnBatch(requests: requests, atomic: false)]
+    if !providerRequests.isEmpty {
+      batches.insert(.init(requests: providerRequests, atomic: true), at: 0)
+    }
     let receipts = admitEncounterPlan(
       .init(
         system: context.system, visit: context.visit, revision: context.revision,
-        batches: [.init(requests: requests, atomic: false)], intents: []))
+        batches: batches, intents: []))
     let rebindings = commander.npcPersistence.acknowledge(receipts: receipts)
     var identities: [ActorIdentity: ActorIdentity] = [:]
     for rebind in rebindings {

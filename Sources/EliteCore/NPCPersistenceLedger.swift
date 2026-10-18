@@ -535,7 +535,70 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     return true
   }
 
-  public mutating func pendingSpawnRequests(context: EncounterContext) -> [SpawnRequest] {
+  /// A checked native owner may restore its exact eligible originals as one ordinary cohort.
+  /// Offers remain in this ledger; no original keys or reference bindings are removed.
+  mutating func pendingProviderSpawnRequests(
+    context: EncounterContext, originals: [NPCLogicalIdentity: NPCPersistenceSnapshot]
+  ) -> [SpawnRequest] {
+    guard !originals.isEmpty else { return [] }
+    guard valid, context.system == system, context.system == NativeCrimboRegistry.system,
+      context.visit > 0, context.visit < UInt64.max,
+      context.physicalTime.isFinite, context.physicalTime >= 0,
+      context.player.identity.system == context.system,
+      context.player.identity.visit == context.visit,
+      context.player.position.finite, !context.protection.suppressAmbientShips,
+      originals.count <= 7,
+      Set(originals.values.map(\.actor)).count == originals.count
+    else { return [] }
+    var candidate = self
+    var budget = context.budget
+    var requests: [SpawnRequest] = []
+    for logical in originals.keys.sorted(by: { $0.firstActor.entity < $1.firstActor.entity }) {
+      guard let snapshot = originals[logical], var entry = candidate.entries[logical.firstActor],
+        entry.snapshot == snapshot, entry.binding == nil, entry.terminal == nil,
+        Self.validProviderOriginal(logical, snapshot: snapshot, protection: context.protection),
+        snapshot.actor.visit <= context.visit, context.physicalTime >= snapshot.physicalTime,
+        snapshot.npc.resources?.electrical?.disabledAt == nil,
+        !context.actors.contains(where: { $0.identity == snapshot.actor }),
+        !SpaceBody(
+          id: -1, hull: snapshot.hull,
+          position: snapshot.position - context.player.position
+        ).leavesLocalBubble,
+        canOffer(snapshot.population, budget: budget)
+      else { return [] }
+      if entry.offer?.visit != context.visit { entry.offer = nil }
+      if let offer = entry.offer {
+        guard offer.system == context.system, offer.producer == .persistence,
+          offer.member == 0, offer.sequence > 0, offer.sequence < candidate.nextOffer
+        else { return [] }
+      } else {
+        guard candidate.nextOffer < UInt64.max - 1 else { return [] }
+        entry.offer = .init(
+          system: context.system, visit: context.visit, sequence: candidate.nextOffer,
+          member: 0, producer: .persistence)
+        candidate.nextOffer += 1
+      }
+      guard let offer = entry.offer else { return [] }
+      candidate.entries[logical.firstActor] = entry
+      requests.append(
+        .init(
+          identity: offer, population: snapshot.population, hull: snapshot.hull,
+          position: snapshot.position, orientation: snapshot.orientation,
+          velocity: snapshot.velocity,
+          npc: snapshot.npc, rock: nil, payload: nil, priority: .ordinary,
+          catalogueShipID: snapshot.catalogueShipID, energy: snapshot.energy,
+          angularVelocity: snapshot.angularVelocity))
+      budget.total += 1
+      budget.active[snapshot.population, default: 0] += 1
+    }
+    guard candidate.valid else { return [] }
+    self = candidate
+    return requests
+  }
+
+  public mutating func pendingSpawnRequests(
+    context: EncounterContext, excludedLogicalKeys: Set<ActorIdentity> = []
+  ) -> [SpawnRequest] {
     guard valid, context.system == system, context.physicalTime.isFinite,
       context.perceptionRadius.isFinite, context.perceptionRadius > 0,
       context.player.position.finite
@@ -543,7 +606,9 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     var budget = context.budget
     var requests: [SpawnRequest] = []
     for logical in entries.keys.sorted(by: { $0.entity < $1.entity }) {
-      guard var entry = entries[logical], entry.terminal == nil, entry.binding == nil else {
+      guard !excludedLogicalKeys.contains(logical), var entry = entries[logical],
+        entry.terminal == nil, entry.binding == nil
+      else {
         continue
       }
       if entry.offer?.visit != context.visit { entry.offer = nil }

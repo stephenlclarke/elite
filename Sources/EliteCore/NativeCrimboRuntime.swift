@@ -619,3 +619,49 @@ extension Game {
       && sample.startTime == sample.endTime - admittedDelta
   }
 }
+
+struct NativeCrimboPersistenceSelection: Sendable {
+  let logicalKeys: Set<ActorIdentity>
+  let originals: [NPCLogicalIdentity: NPCPersistenceSnapshot]
+  static let none = NativeCrimboPersistenceSelection(logicalKeys: [], originals: [:])
+}
+
+extension Game {
+  /// Provider simulation scope is the existing native bubble; unrelated traffic keeps its perception scope.
+  func nativeCrimboPersistenceSelection(context: EncounterContext)
+    -> NativeCrimboPersistenceSelection
+  {
+    guard nativeCrimboLifecycleAvailable, !docked,
+      let registry = commander.savedCrimboState, registry.world == commander.equipmentOwnerID,
+      registry.spawnSequence < commander.flightSimulation.nextSpawn,
+      (try? registry.validate()) != nil,
+      context.system == NativeCrimboRegistry.system,
+      commander.flightSimulation.system == context.system,
+      commander.flightSimulation.visit == context.visit,
+      context.anchors.planet.position == registry.orbit.anchor.center,
+      context.anchors.planet.radius == registry.orbit.anchor.planetRadius
+    else { return .none }
+    let logicalKeys = Set(
+      registry.members.compactMap { member -> ActorIdentity? in
+        guard case .live(let logical) = member.ownership else { return nil }
+        return logical.firstActor
+      })
+    let unbound = commander.npcPersistence.unboundSnapshots
+    var originals: [NPCLogicalIdentity: NPCPersistenceSnapshot] = [:]
+    for member in registry.members {
+      guard case .live(let logical) = member.ownership else { continue }
+      guard let snapshot = commander.npcPersistence.snapshot(for: logical.firstActor),
+        NativeCrimboRegistry.matches(snapshot, member: member)
+      else { return .init(logicalKeys: logicalKeys, originals: [:]) }
+      if commander.npcPersistence.binding(for: logical) != nil { continue }
+      guard unbound[logical.firstActor] == snapshot else {
+        return .init(logicalKeys: logicalKeys, originals: [:])
+      }
+      let position = commander.flightSimulation.pose.shipPoint(snapshot.position)
+      guard position.finite, position.length.isFinite else { continue }
+      if SpaceBody(id: -1, hull: member.hull, position: position).leavesLocalBubble { continue }
+      originals[logical] = snapshot
+    }
+    return .init(logicalKeys: logicalKeys, originals: originals)
+  }
+}
