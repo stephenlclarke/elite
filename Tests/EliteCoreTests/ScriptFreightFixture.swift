@@ -124,6 +124,153 @@ struct ScriptFreightFixture {
     if !shown.scriptConfirmSelected { await runtime.key("left") }
     await runtime.key("return")
   }
+  func blockWrites(_ label: String, destination: URL? = nil) throws -> URL {
+    let parent = (destination ?? save).deletingLastPathComponent()
+    let preserved = root.appendingPathComponent("preserved-" + label)
+    try FileManager.default.moveItem(at: parent, to: preserved)
+    try Data([1]).write(to: parent)
+    return preserved
+  }
+  func restoreWrites(_ preserved: URL, files: [String: Data], destination: URL? = nil) throws {
+    let parent = (destination ?? save).deletingLastPathComponent()
+    let blocker = try Data(contentsOf: parent)
+    let retained = try ScriptFinanceTestFixture.files(preserved)
+    #expect(blocker == Data([1]) && retained == files)
+    try FileManager.default.removeItem(at: parent)
+    try FileManager.default.moveItem(at: preserved, to: parent)
+  }
+  /// Controlled calendar semantics on a genuine partial snapshot, not elapsed-flight evidence.
+  func checkDeadlineAndExpiryBoundaries(_ partial: Game, id: UUID) throws {
+    let state = try #require(partial.commander.scriptState.instances[id])
+    let due = try #require(state.contract?.deadline)
+    let plan = try #require(state.contract?.offer.freightPlan)
+    let cargo = try #require(state.savedOwnedCargo)
+    let dialogue = try #require(partial.scriptPresentedDialogue)
+    try #require(!cargo.transfers.isEmpty && !cargo.held.isEmpty)
+    var boundary = partial
+    boundary.commander.scriptState.missionCalendar?.seconds = due
+    boundary.commander.scriptState.calendarSeconds = max(
+      boundary.commander.scriptState.calendarSeconds, due)
+    try #require(boundary.commander.valid)
+    let atDeadline = boundary.commander
+    boundary.resolveFreightTerminals()
+    #expect(boundary.commander == atDeadline)
+    boundary.key("down")
+    try #require(boundary.selectedScriptChoice?.id == "freight-all")
+    try boundary.confirmFreightDialogue(id, dialogue: dialogue, choice: "freight-all")
+    let delivered = try #require(boundary.commander.scriptState.instances[id])
+    #expect(delivered.outcome == .complete && delivered.contract?.settledAt == due)
+    #expect(
+      delivered.savedOwnedCargo?.terminal?.clock == due && boundary.commander.freightCargoValid)
+    #expect(boundary.commander.credits == partial.commander.credits + plan.reward)
+    // Expiry publishes a separate copy so the genuine runtime and its travel clocks stay intact.
+    var expired = partial
+    expired.commander.scriptState.missionCalendar?.seconds = due + 1
+    expired.commander.scriptState.calendarSeconds = max(
+      expired.commander.scriptState.calendarSeconds, due + 1)
+    try #require(
+      expired.commander.valid && expired.scriptWorldSave.consistent(with: expired.commander))
+    let before = expired.commander
+    var control = expired
+    control.resolveFreightTerminals()
+    let terminal = try #require(control.commander.scriptState.instances[id])
+    try #require(terminal.savedOwnedCargo?.terminal?.cause == .expired && control.commander.valid)
+    let destination = root.appendingPathComponent("expiry-boundary/commander.json")
+    _ = try ScriptSaveStore.write(
+      commander: before, world: expired.scriptWorldSave, to: destination)
+    let files = try ScriptFinanceTestFixture.files(destination.deletingLastPathComponent())
+    let preserved = try blockWrites("expiry", destination: destination)
+    let publish: ScriptPublisher = { candidate in
+      _ = try ScriptSaveStore.write(
+        commander: candidate.commander, world: candidate.scriptWorldSave, to: destination)
+    }
+    expired.resolveFreightTerminals(publish: publish)
+    #expect(expired.commander == before)
+    try restoreWrites(preserved, files: files, destination: destination)
+    expired.resolveFreightTerminals(publish: publish)
+    let retried = try #require(expired.commander.scriptState.instances[id])
+    #expect(retried == terminal && retried.savedOwnedCargo?.terminal?.removed == cargo.held)
+    #expect(retried.collections == state.collections && expired.commander.credits == before.credits)
+    let bytes = try Data(contentsOf: destination)
+    let (cold, world) = try ScriptSaveStore.read(bytes, from: destination)
+    #expect(cold.scriptState.instances[id] == retried && world.consistent(with: cold))
+  }
+  func rejectContactChanges(_ genuine: Game, id: UUID) throws {
+    let dialogue = try #require(genuine.scriptPresentedDialogue)
+    let state = try #require(genuine.commander.scriptState.instances[id])
+    let plan = try #require(state.contract?.offer.freightPlan)
+    let files = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
+    for field in ["stale", "destination", "source", "owner", "choice", "missing-pack"] {
+      var changed = genuine
+      var choice = "freight-one"
+      switch field {
+      case "stale": changed.commander.scriptState.instances[id]?.revision += 1
+      case "destination": changed.commander.system = plan.origin.system
+      case "source": changed.commander.nativeStations?.currentMainDock = nil
+      case "owner":
+        changed.commander = try Self.forgedCargo(genuine, id: id) {
+          $0["owner"] = UUID().uuidString
+        }
+      case "choice": choice = "freight-all"
+      default: changed.scriptPacks = []
+      }
+      let before = changed.commander
+      #expect(throws: MissionPackError.self) {
+        try changed.confirmFreightDialogue(id, dialogue: dialogue, choice: choice)
+      }
+      let afterFiles = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
+      #expect(changed.commander == before && afterFiles == files, "Contact guard: \(field)")
+    }
+  }
+  static func forgedState(_ game: Game, id: UUID, change: (inout [String: Any]) -> Void) throws
+    -> Commander
+  {
+    let state = try #require(game.commander.scriptState.instances[id])
+    let encoded = try ScriptValueStorage.encoder().encode(state)
+    let decoded = try JSONSerialization.jsonObject(with: encoded)
+    var object = try #require(decoded as? [String: Any])
+    change(&object)
+    let bytes = try JSONSerialization.data(withJSONObject: object)
+    var changed = game.commander
+    changed.scriptState.instances[id] = try ScriptValueStorage.decoder(typed: true).decode(
+      ScriptInstance.self, from: bytes)
+    return changed
+  }
+  func rejectForgedState(_ changed: Commander, genuine game: Game, runtime: GameRuntime)
+    async throws
+  {
+    #expect(!changed.freightCargoValid && !changed.valid)
+    let originalFiles = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
+    #expect(throws: SaveError.self) {
+      _ = try ScriptSaveStore.write(commander: changed, world: game.scriptWorldSave, to: save)
+    }
+    let unchangedFiles = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
+    #expect(unchangedFiles == originalFiles)
+    // Resign the genuine generation: rejection must authenticate history, not just its checksum.
+    let pointerBytes = try Data(contentsOf: save)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
+    let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: save)
+    let missions = try ScriptValueStorage.encoder().encode(changed.scriptState)
+    try missions.write(to: directory.appendingPathComponent("missions.json"))
+    var hashes = pointer.hashes
+    hashes["missions.json"] = ScriptPackLibrary.hash(missions)
+    let forgedPointer = ScriptSavePointer(
+      format: pointer.format, schemaVersion: pointer.schemaVersion,
+      generation: pointer.generation, hashes: hashes, scope: pointer.scope,
+      valueCodec: pointer.valueCodec)
+    let forgedBytes = try JSONEncoder().encode(forgedPointer)
+    #expect(throws: (any Error).self) {
+      _ = try ScriptSaveStore.read(forgedBytes, from: save)
+    }
+    try forgedBytes.write(to: save)
+    let badFiles = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
+    await #expect(throws: (any Error).self) {
+      try await runtime.load(from: save, persistMigrations: false)
+    }
+    let afterReadFiles = try ScriptFinanceTestFixture.files(save.deletingLastPathComponent())
+    let retained = await runtime.snapshot()
+    #expect(badFiles == afterReadFiles && retained.commander == game.commander)
+  }
   static func forgedCargo(_ game: Game, id: UUID, change: (inout [String: Any]) -> Void) throws
     -> Commander
   {

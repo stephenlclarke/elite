@@ -16,14 +16,12 @@ func freightRealIssuerSuppliesExactUnitsForFreeAndBackPreservesFiles(row: Int) a
   let allowed = quote.allowed
   try #require(allowed)
   let parent = fixture.save.deletingLastPathComponent()
-  let preserved = fixture.root.appendingPathComponent("preserved-issue")
-  try FileManager.default.moveItem(at: parent, to: preserved)
-  try Data([1]).write(to: parent)
+  let issueFiles = try ScriptFinanceTestFixture.files(parent)
+  let preserved = try fixture.blockWrites("issue")
   await #expect(throws: (any Error).self) { try await runtime.confirmContract(quote) }
   let refused = await runtime.snapshot()
   #expect(refused.commander == before.commander)
-  try FileManager.default.removeItem(at: parent)
-  try FileManager.default.moveItem(at: preserved, to: parent)
+  try fixture.restoreWrites(preserved, files: issueFiles)
   let id = try await runtime.confirmContract(quote)
   let accepted = await runtime.snapshot()
   let state = try #require(accepted.commander.scriptState.instances[id])
@@ -48,7 +46,14 @@ func freightRealIssuerSuppliesExactUnitsForFreeAndBackPreservesFiles(row: Int) a
   let afterFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
   #expect(backed.commander == shown.commander && files == afterFiles)
   await runtime.key("contacts-open")
+  let abandonment = await runtime.snapshot()
+  let abandonFiles = try ScriptFinanceTestFixture.files(parent)
+  let abandonPreserved = try fixture.blockWrites("abandon")
   try await ScriptFreightFixture.confirm(runtime)
+  let abandonRefused = await runtime.snapshot()
+  #expect(abandonRefused.commander == abandonment.commander)
+  try fixture.restoreWrites(abandonPreserved, files: abandonFiles)
+  await runtime.key("return")
   let terminal = await runtime.snapshot()
   let abandoned = try #require(terminal.commander.scriptState.instances[id])
   #expect(abandoned.outcome == .abandoned && abandoned.contract?.settlementAmount == 0)
@@ -96,7 +101,15 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let browsedFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
   #expect(browsed.commander == shown.commander && files == browsedFiles)
   await runtime.key("up")
+  let oneShown = await runtime.snapshot()
+  try fixture.rejectContactChanges(oneShown, id: id)
+  let oneFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  let onePreserved = try fixture.blockWrites("partial")
   try await ScriptFreightFixture.confirm(runtime)
+  let oneRefused = await runtime.snapshot()
+  #expect(oneRefused.commander == oneShown.commander)
+  try fixture.restoreWrites(onePreserved, files: oneFiles)
+  await runtime.key("return")
   let partial = await runtime.snapshot()
   let first = try #require(partial.commander.scriptState.instances[id])
   #expect(
@@ -105,15 +118,30 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
     partial.commander.credits == bought.commander.credits
       && partial.commander.cargo == bought.commander.cargo)
   let priorLots = try #require(first.collections[plan.template.id]?.lots)
+  let issued = try #require(first.savedOwnedCargo?.issued)
+  #expect(first.savedOwnedCargo?.held == Array(issued.dropFirst()))
+  try await runtime.save(to: fixture.save)
+  let savedPartial = await runtime.snapshot()
+  let partialFiles = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  let bytes = try Data(contentsOf: fixture.save)
+  let (cold, world) = try ScriptSaveStore.read(bytes, from: fixture.save)
+  #expect(cold.scriptState.instances[id] == first && world.consistent(with: cold))
+  try await runtime.load(from: fixture.save, persistMigrations: false)
+  let reloadedPartial = await runtime.snapshot()
+  let afterReload = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  #expect(reloadedPartial.commander == savedPartial.commander && partialFiles == afterReload)
+  #expect(reloadedPartial.commander.scriptState.instances[id] == first)
+  #expect(first.savedOwnedCargo?.issuer == plan.origin && first.conversationReceipts.count == 1)
+  #expect(first.savedOwnedCargo?.transfers.values.first?.units == Array(issued.prefix(1)))
+  await runtime.key("contacts-open")
+  let finalShown = await runtime.snapshot()
   let parent = fixture.save.deletingLastPathComponent()
-  let preserved = fixture.root.appendingPathComponent("preserved-final")
-  try FileManager.default.moveItem(at: parent, to: preserved)
-  try Data([1]).write(to: parent)
+  let finalFiles = try ScriptFinanceTestFixture.files(parent)
+  let preserved = try fixture.blockWrites("final")
   try await ScriptFreightFixture.confirm(runtime, all: true)
   let refused = await runtime.snapshot()
-  #expect(refused.commander == partial.commander)
-  try FileManager.default.removeItem(at: parent)
-  try FileManager.default.moveItem(at: preserved, to: parent)
+  #expect(refused.commander == finalShown.commander)
+  try fixture.restoreWrites(preserved, files: finalFiles)
   // Selection is presentation-only; restore the actual declared all-remaining choice.
   let retryShown = await runtime.snapshot()
   if retryShown.selectedScriptChoice?.id != "freight-all" { await runtime.key("down") }
@@ -152,6 +180,8 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   try await ScriptProcurementFixture.travel(runtime, path: plan.path)
   await runtime.key("contacts-open")
   try await ScriptFreightFixture.confirm(runtime)
+  let boundarySource = await runtime.snapshot()
+  try fixture.checkDeadlineAndExpiryBoundaries(boundarySource, id: id)
   await runtime.key("return")  // Genuine default Back closes the repeat contact.
   let partial = await runtime.snapshot()
   let earlier = try #require(
@@ -171,4 +201,39 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   #expect(
     state.collections[plan.template.id]?.lots == earlier
       && expired.commander.cargo == partial.commander.cargo)
+}
+
+@Test func freightNativeConfirmationRefusesHoldFilledAfterReview() async throws {
+  let fixture = try ScriptFreightFixture()
+  defer { fixture.clean() }
+  let runtime = try await fixture.nativeRuntime()
+  let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
+  let board = await runtime.snapshot()
+  let offer = try #require(board.commander.contracts.boards[key]?.offers[2])
+  let plan = try #require(offer.freightPlan)
+  let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
+  let allowed = quote.allowed
+  try #require(allowed)
+  // Fill real hold through paid market purchases, without changing the original fixture budget.
+  for _ in 0..<board.commander.standardCargoCapacity {
+    let current = await runtime.snapshot()
+    if current.commander.standardCargoCapacity - current.commander.cargoTonnes < plan.quantity {
+      break
+    }
+    let index = try #require(
+      current.market.indices.first {
+        current.market[$0].quantity > 0 && current.market[$0].price <= current.commander.credits
+          && Commodity.all[$0].unit == "t"
+      })
+    await runtime.procurementBuy(index)
+  }
+  let filled = await runtime.snapshot()
+  try #require(
+    filled.commander.standardCargoCapacity - filled.commander.cargoTonnes < plan.quantity)
+  let files = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  await #expect(throws: (any Error).self) { try await runtime.confirmContract(quote) }
+  let refused = await runtime.snapshot()
+  let after = try ScriptFinanceTestFixture.files(fixture.save.deletingLastPathComponent())
+  #expect(refused.commander == filled.commander && files == after)
+  #expect(refused.commander.scriptState.instances.isEmpty)
 }
