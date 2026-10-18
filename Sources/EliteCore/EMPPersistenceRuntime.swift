@@ -294,62 +294,77 @@ extension Game {
   /// Save/departure/culling capture the same physical objects. Missing actors become unbound, never replenished.
   @discardableResult
   mutating func persistEMPState() -> Bool {
+    // Keep the absent-archive path outside the value-heavy capture frame.
+    guard commander.savedEMPState != nil else {
+      return !bodies.contains {
+        $0.physical?.empSource != nil || $0.physical?.empCrewPod != nil
+          || $0.physical?.spawnIdentity?.producer == .emp
+      }
+    }
     guard captureEMPArchiveState() else { return false }
+    return validateCapturedEMPScene()
+  }
+
+  @inline(never)
+  private mutating func validateCapturedEMPScene() -> Bool {
     guard let state = commander.savedEMPState else { return true }
     return state.sceneIsConsistent(
       bodies, flight: commander.flightSimulation, people: commander.nativePeople)
   }
 
   /// Capture keeps its original initial/final state guards and publication point.
+  @inline(never)
   private mutating func captureEMPArchiveState() -> Bool {
-    guard var state = commander.savedEMPState else {
-      return !bodies.contains {
-        $0.physical?.empSource != nil || $0.physical?.empCrewPod != nil
-          || $0.physical?.spawnIdentity?.producer == .emp
-      }
-    }
+    guard var state = commander.savedEMPState else { return false }
     guard state.valid else { return false }
-    let pose = commander.flightSimulation.pose
-    let now = commander.flightSimulation.physicalTime
     for source in state.records.keys {
       guard var record = state.records[source] else { return false }
-      if record.isRecovered {
-        guard updateRecoveredEMPArchive(&record, pose: pose, now: now) else { return false }
-      } else if let binding = record.hull.binding {
-        if let body = bodies.first(where: { $0.physical?.identity == binding }) {
-          record.hull = .init(body: body, pose: pose, time: now)
-          if body.energy <= 0, !record.terminal, !record.disableEpisodes.isEmpty {
-            record.savedDeceasedOrdinals =
-              record.aboardOrdinals.isEmpty ? nil : record.aboardOrdinals
-          }
-          record.terminal = body.energy <= 0
-          if record.terminal {
-            record.hull.binding = nil
-            record.lostCrewCount = record.crewTotal - record.pods.count - record.capturedCrewCount
-          }
-        } else {
-          record.hull.binding = nil
-        }
-      }
-      for i in record.pods.indices {
-        guard let person = record.pods[i].body.physical?.empCrewPod else { return false }
-        guard commander.worldOwnedPod(person) else {
-          guard record.pods[i].binding == nil else { return false }
-          continue
-        }
-        if let binding = record.pods[i].binding {
-          if let body = bodies.first(where: { $0.physical?.identity == binding }) {
-            guard body.energy > 0 else { return false }
-            record.pods[i] = .init(body: body, pose: pose, time: now)
-          } else {
-            record.pods[i].binding = nil
-          }
-        }
-      }
+      guard captureEMPArchiveRecord(&record) else { return false }
       state.records[source] = record
     }
     guard state.valid else { return false }
     commander.savedEMPState = state
+    return true
+  }
+
+  /// Record temporaries finish before the archive's final validation and publication.
+  @inline(never)
+  private mutating func captureEMPArchiveRecord(_ record: inout EMPHullRecord) -> Bool {
+    let pose = commander.flightSimulation.pose
+    let now = commander.flightSimulation.physicalTime
+    if record.isRecovered {
+      guard updateRecoveredEMPArchive(&record, pose: pose, now: now) else { return false }
+    } else if let binding = record.hull.binding {
+      if let body = bodies.first(where: { $0.physical?.identity == binding }) {
+        record.hull = .init(body: body, pose: pose, time: now)
+        if body.energy <= 0, !record.terminal, !record.disableEpisodes.isEmpty {
+          record.savedDeceasedOrdinals =
+            record.aboardOrdinals.isEmpty ? nil : record.aboardOrdinals
+        }
+        record.terminal = body.energy <= 0
+        if record.terminal {
+          record.hull.binding = nil
+          record.lostCrewCount = record.crewTotal - record.pods.count - record.capturedCrewCount
+        }
+      } else {
+        record.hull.binding = nil
+      }
+    }
+    for i in record.pods.indices {
+      guard let person = record.pods[i].body.physical?.empCrewPod else { return false }
+      guard commander.worldOwnedPod(person) else {
+        guard record.pods[i].binding == nil else { return false }
+        continue
+      }
+      if let binding = record.pods[i].binding {
+        if let body = bodies.first(where: { $0.physical?.identity == binding }) {
+          guard body.energy > 0 else { return false }
+          record.pods[i] = .init(body: body, pose: pose, time: now)
+        } else {
+          record.pods[i].binding = nil
+        }
+      }
+    }
     return true
   }
 }
