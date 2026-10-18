@@ -1,5 +1,18 @@
 import Foundation
 
+/// Fresh current-member values for equipment validation; never stored, encoded or trusted externally.
+private struct EquipmentIssueValidationMember: Sendable {
+  let id: UUID
+  let digest: String
+  let gearIssues: [String: ScriptGearIssue]
+
+  init(_ instance: borrowing ScriptInstance) {
+    id = instance.id
+    digest = instance.digest
+    gearIssues = instance.gearIssues
+  }
+}
+
 extension OwnedEquipmentItem {
   /// Every actual physical consumption emits these values, including personal devices with no issue delta.
   public var scriptConsumptionValues: [String: ScriptValue] {
@@ -59,11 +72,13 @@ extension Commander {
   /// Includes suspended/missing-content issues. Neither getters nor content presence create rights.
   public func equipmentIssueObligations() throws -> [EquipmentIssueObligationSnapshot] {
     var result: [EquipmentIssueObligationSnapshot] = []
-    for (id, instance) in scriptState.instances.sorted(by: { $0.key.uuidString < $1.key.uuidString }
-    ) {
-      guard id == instance.id else { throw EquipmentMigrationError.obligationMismatch }
-      for (key, record) in instance.gearIssues.sorted(by: { $0.key < $1.key }) {
-        guard key == record.resource, record.valid(for: instance),
+    for id in scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+      guard let member = equipmentIssueMember(id), id == member.id else {
+        throw EquipmentMigrationError.obligationMismatch
+      }
+      for key in member.gearIssues.keys.sorted() {
+        guard let record = member.gearIssues[key],
+          key == record.resource, record.valid(forMission: member.id, packDigest: member.digest),
           let obligation = record.obligation
         else {
           throw EquipmentMigrationError.obligationMismatch
@@ -77,6 +92,13 @@ extension Commander {
 
   var issuedEquipmentValid: Bool {
     (try? equipmentIssueObligations()) != nil
+  }
+
+  /// End the actual dictionary-member read before sorting or validating issue records.
+  @inline(never)
+  private func equipmentIssueMember(_ id: UUID) -> EquipmentIssueValidationMember? {
+    guard let index = scriptState.instances.index(forKey: id) else { return nil }
+    return EquipmentIssueValidationMember(scriptState.instances[index].value)
   }
 
   private func validateIssueObligations(_ obligations: [EquipmentIssueObligationSnapshot]) throws {
@@ -113,9 +135,10 @@ extension Commander {
     for item in inventory.items {
       guard case .missionIssue(let mission, let resource, let index, let digest) = item.provenance
       else { continue }
-      guard let instance = scriptState.instances[mission],
-        let record = instance.gearIssues[resource],
-        record.savedGearVersion == 2, record.valid(for: instance),
+      guard let member = equipmentIssueMember(mission),
+        let record = member.gearIssues[resource],
+        record.savedGearVersion == 2,
+        record.valid(forMission: member.id, packDigest: member.digest),
         record.source?.packDigest == digest, record.node == item.node,
         item.retainedLegacyState?.originalEquipmentName
           == (record.kind.name == Equipment.legacyDockingComputer ? record.kind.name : nil),

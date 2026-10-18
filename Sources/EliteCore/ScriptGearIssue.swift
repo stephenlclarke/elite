@@ -61,12 +61,16 @@ public struct ScriptGearIssue: Codable, Sendable, Equatable {
     }
   }
 
-  func valid(for instance: ScriptInstance) -> Bool {
+  func valid(for instance: borrowing ScriptInstance) -> Bool {
+    valid(forMission: instance.id, packDigest: instance.digest)
+  }
+
+  func valid(forMission mission: UUID, packDigest: String) -> Bool {
     valid
       && (savedGearVersion != 2
         || source
           == EquipmentIssueSource(
-            mission: instance.id, resource: resource, packDigest: instance.digest))
+            mission: mission, resource: resource, packDigest: packDigest))
   }
 
   var obligation: EquipmentIssueObligationSnapshot? {
