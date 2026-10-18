@@ -56,6 +56,7 @@ private func empTravel(to destination: Int, game: inout Game) throws {
         + "message=\(game.message), speed=\(game.speed), outward=\(outward), "
         + "station=\(station.position), stationRange=\((flight.pose.position - station.position).length), "
         + "throttle=\(controls.throttle), pitch=\(controls.pitch), yaw=\(controls.yaw), "
+        + "sampledEMPRecord=\(String(describing: emp?.source)), "
         + "empCrew=\(String(describing: emp?.crewAboard)), "
         + "empDeadline=\(String(describing: emp?.crewDeadline)), "
         + "empRecovered=\(String(describing: emp?.isRecovered))"
