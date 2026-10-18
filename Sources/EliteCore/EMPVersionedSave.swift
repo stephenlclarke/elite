@@ -62,6 +62,13 @@ extension EMPState {
     people: NativePeopleCustodyState? = nil
   ) -> Bool {
     guard valid else { return false }
+    return validatedEMPSceneBindings(bodies, flight: flight, people: people)
+  }
+
+  /// The complete state check finishes before full-body comparison temporaries are live.
+  private func validatedEMPSceneBindings(
+    _ bodies: [SpaceBody], flight: FlightSimulationState, people: NativePeopleCustodyState?
+  ) -> Bool {
     let objects = records.values.flatMap { record in
       (record.savedOrdinaryTerminal == nil ? [record.hull] : [])
         + record.pods.compactMap { pod in

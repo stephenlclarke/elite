@@ -153,8 +153,21 @@ extension Game {
 
   /// Cost, all actual victims, law and any zero-power custody admission publish together.
   private mutating func emitEMPPulse(_ charge: EMPChargeState) -> Bool {
-    guard !docked, !playerEMPDisabled, screen == .front, commander.valid,
-      commander.flightSimulation.player == charge.player,
+    guard !docked, !playerEMPDisabled, screen == .front, commander.valid else { return false }
+    var candidate = self
+    guard candidate.buildEMPPulseEffects(charge),
+      candidate.persistEMPState(), candidate.persistNPCStates().isEmpty,
+      candidate.commander.valid
+    else { return false }
+    candidate.notify("EMP PULSE RELEASED")
+    self = candidate
+    return true
+  }
+
+  /// Preflight and all discharge effects finish before full archive/scene validation starts.
+  /// Only the caller's private candidate is changed; refusal discards every staged effect.
+  private mutating func buildEMPPulseEffects(_ charge: EMPChargeState) -> Bool {
+    guard commander.flightSimulation.player == charge.player,
       commander.equipmentOwnerID == charge.owner, commander.hullInstanceID == charge.hull,
       let tool = commander.fittedEquipment(at: .utility(.empPirateBlaster)),
       tool.id == charge.weapon,
@@ -171,26 +184,20 @@ extension Game {
     else { return false }
     let contacts = pulseContacts(primary: contact.hit, profile: profile)
     guard !contacts.isEmpty else { return false }
-    var candidate = self
     let now = commander.flightSimulation.physicalTime
     guard reserve.drain(profile.energyCost, at: now),
-      let origin = candidate.makeAttackOrigin(
+      let origin = makeAttackOrigin(
         owner: charge.player, sourcePart: "emp:" + tool.id.uuidString)
     else { return false }
-    candidate.commander.savedPlayerElectrical = reserve
+    commander.savedPlayerElectrical = reserve
     for hit in contacts {
-      guard candidate.applyElectricalPulse(hit, origin: origin, tool: tool) else { return false }
+      guard applyElectricalPulse(hit, origin: origin, tool: tool) else { return false }
     }
-    candidate.laserHeat += profile.heatCost
-    candidate.fireCooldown = profile.cooldown
-    candidate.laserFlash = 0.08
-    candidate.dischargeAudio.record(.empPirateBlaster)
-    candidate.commander.crimeLedger.finishEmission(origin.emissionID)
-    guard candidate.persistEMPState(), candidate.persistNPCStates().isEmpty,
-      candidate.commander.valid
-    else { return false }
-    candidate.notify("EMP PULSE RELEASED")
-    self = candidate
+    laserHeat += profile.heatCost
+    fireCooldown = profile.cooldown
+    laserFlash = 0.08
+    dischargeAudio.record(.empPirateBlaster)
+    commander.crimeLedger.finishEmission(origin.emissionID)
     return true
   }
 
