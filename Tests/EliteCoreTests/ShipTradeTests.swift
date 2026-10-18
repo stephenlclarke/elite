@@ -16,9 +16,22 @@ import Testing
   game.commander.missionStage = .huntingConstrictor
   game.commander.installLaser(.beam, on: .rear)
   game.commander.navigationPlan = nil
+  let unprepared = game.commander
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  #expect(game.commander.credits == unprepared.credits && game.commander.cargo == unprepared.cargo)
+  #expect(game.commander.fuel == unprepared.fuel && game.commander.missiles == unprepared.missiles)
+  #expect(game.commander.laserMounts == unprepared.laserMounts)
+  #expect(game.commander.blackjack == unprepared.blackjack)
+  #expect(game.commander.missionStage == unprepared.missionStage)
   game.key("6")
   game.showroom.selection = "SH013"
   let old = game.commander
+  let inventory = try #require(old.equipmentInventory)
+  let drive = try #require(old.fittedEquipment(at: .drive))
+  #expect(drive.node == HyperspaceDriveDefinition.node(for: .basic))
+  #expect(drive.provenance == .standard)
+  #expect(drive.component?.origin == HyperspaceDriveDefinition.template(for: .basic))
   let quote = try #require(game.shipTradeQuote)
   #expect(quote.allowed && quote.purchase == game.showroomShip!.game!.price * 10)
   #expect(quote.allowance == old.performance.price * 10 * 3 / 4)
@@ -34,6 +47,23 @@ import Testing
   #expect(
     game.commander.blackjack == old.blackjack && game.commander.missionStage == old.missionStage)
   #expect(game.energy == game.commander.performance.energy && game.commander.valid)
+  let transferred = try #require(game.commander.equipmentInventory)
+  #expect(transferred.owner == inventory.owner && transferred.activeHull != inventory.activeHull)
+  #expect(Set(transferred.items.map(\.id)) == Set(inventory.items.map(\.id)))
+  for original in inventory.items {
+    let item = try #require(transferred.items.first { $0.id == original.id })
+    let expected = OwnedEquipmentItem(
+      id: original.id, node: original.node, provenance: original.provenance,
+      component: original.component,
+      location: original.location.map {
+        .init(hullInstanceID: transferred.activeHull, slot: $0.slot)
+      }, boundHull: original.boundHull, preferredSlot: original.preferredSlot,
+      retainedLegacyState: original.retainedLegacyState)
+    #expect(item == expected)
+  }
+  #expect(game.commander.laserMounts == old.laserMounts)
+  #expect(game.commander.fittedEquipment(at: .drive)?.id == drive.id)
+  #expect(game.commander.equipmentPurchaseHistory == old.equipmentPurchaseHistory)
   game.showroom.selection = "SH023"
   let second = try #require(game.shipTradeQuote)
   #expect(second.allowed && second.allowance == game.commander.performance.price * 10 * 3 / 4)

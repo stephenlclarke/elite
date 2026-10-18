@@ -332,7 +332,8 @@ private struct WorldJobFixture {
   #expect(deployed.commander.scriptState.worldJobs.values.first?.status == .complete)
   #expect(deployed.commander.scriptState.instances[origin.id]?.outcome == .complete)
   #expect(deployed.commander.credits == 1000 && deployed.commander.kills == 0)
-  #expect(deployed.missionCatalogue.last?.briefing.contains("Ongoing services:") == true)
+  let service = try #require(deployed.missionCatalogue.first { $0.savedInstance == origin.id })
+  #expect(service.briefing.contains("Ongoing services:"))
   #expect(parent.commander == parentCommander)
   #expect(deployed.commander.valid)
 }

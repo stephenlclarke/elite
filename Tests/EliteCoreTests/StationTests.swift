@@ -74,8 +74,16 @@ import Testing
   let decoded = try JSONDecoder().decode(Commander.self, from: data)
   #expect(decoded.laser(on: .front) == .military && decoded.laser(on: .left) == nil)
   var game = Game(executive: false)
-  #expect(game.load(decoded) == true)
-  #expect(game.commander.equipment == ["Military Laser", "Fuel Scoops"])
+  let loadedLegacy = game.load(decoded)
+  try #require(loadedLegacy)
+  #expect(
+    game.commander.equipment == ["Military Laser", "Fuel Scoops", HyperspaceDriveTier.basic.label])
+  let drive = try #require(game.commander.fittedEquipment(at: .drive))
+  #expect(drive.node == HyperspaceDriveDefinition.node(for: .basic))
+  #expect(drive.provenance == .standard)
+  #expect(drive.component?.origin == HyperspaceDriveDefinition.template(for: .basic))
+  #expect(
+    game.commander.equipmentInventory?.items.filter { $0.location?.slot == .drive }.count == 1)
   let migrated = try #require(game.commander.equipmentInventory)
   let oldPulse = try #require(migrated.items.first { $0.node.key == "Pulse Laser" })
   #expect(oldPulse.location == nil && oldPulse.provenance == .legacyUnknown)
@@ -84,23 +92,31 @@ import Testing
     "Beam Laser", at: .laser(.rear), provenance: .grant("mount save fixture"))
   try game.commander.grantEquipment(
     "Mining Laser", at: .laser(.front), provenance: .grant("mount save fixture"))
-  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-  defer { try? FileManager.default.removeItem(at: url) }
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  let url = directory.appendingPathComponent("commander.json")
+  defer { try? FileManager.default.removeItem(at: directory) }
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: url)
+  let saved = await runtime.snapshot()
+  let bytes = try Data(contentsOf: url)
   try await runtime.load(from: url)
-  #expect(await runtime.snapshot().commander.laserMounts == game.commander.laserMounts)
   let restored = await runtime.snapshot()
+  let reloadedBytes = try Data(contentsOf: url)
+  #expect(restored.commander == saved.commander && reloadedBytes == bytes)
+  #expect(restored.commander.laserMounts == game.commander.laserMounts)
+  #expect(restored.commander.fittedEquipment(at: .drive) == drive)
   #expect(restored.commander.equipmentInventory == game.commander.equipmentInventory)
   #expect(restored.commander.equipmentPurchaseHistory == game.commander.equipmentPurchaseHistory)
   #expect(restored.commander.equipmentInventory?.items.contains(oldPulse) == true)
   #expect(game.commander.laser(on: .rear) == .beam && game.commander.laser(on: .front) == .mining)
   #expect(game.commander.laser(on: .right) == nil)
   legacy.xyzzyActive = true
-  #expect(game.load(legacy) == true)
+  let loadedXYZzy = game.load(legacy)
+  try #require(loadedXYZzy)
   #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
-  var corrupt = try #require(
-    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
+  let encoded = try JSONEncoder().encode(game.commander)
+  let object = try JSONSerialization.jsonObject(with: encoded)
+  var corrupt = try #require(object as? [String: Any])
   corrupt["mountedLasers"] = ["front": "invalid"]
   #expect(throws: DecodingError.self) {
     try JSONDecoder().decode(Commander.self, from: JSONSerialization.data(withJSONObject: corrupt))

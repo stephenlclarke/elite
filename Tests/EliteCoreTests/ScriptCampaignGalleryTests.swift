@@ -223,12 +223,24 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   #expect(game.commander.scriptState == unprepared.scriptState)
   #expect(game.commander.contracts == unprepared.contracts)
   #expect(game.commander.accommodation == unprepared.accommodation)
-  let before = game.commander
+  let prepared = game.commander
   let epoch = game.ecmControl.epoch
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
-  #expect(await runtime.snapshot().commander == before)
+  let initial = await runtime.snapshot()
+  #expect(initial.commander == prepared)
   try await runtime.save(to: fixture.save)
-  #expect(await runtime.snapshot().commander == before)
+  let before = await runtime.snapshot().commander
+  var expectedSaved = prepared
+  expectedSaved.miningLedger = prepared.miningLedger
+  #expect(before == expectedSaved)
+  #expect(before.credits == prepared.credits && before.cargo == prepared.cargo)
+  #expect(before.name == "LIVE OWNER" && before.shipID == prepared.shipID)
+  #expect(before.fuel == prepared.fuel && before.missiles == prepared.missiles)
+  #expect(before.equipmentInventory == prepared.equipmentInventory)
+  #expect(before.equipmentPurchaseHistory == prepared.equipmentPurchaseHistory)
+  #expect(before.laserMounts == prepared.laserMounts && before.equipment == prepared.equipment)
+  #expect(before.scriptState == prepared.scriptState && before.contracts == prepared.contracts)
+  #expect(before.accommodation == prepared.accommodation)
   let bytes = try Data(contentsOf: fixture.save)
   await runtime.key("t")
   await runtime.key("return")
@@ -236,15 +248,16 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   #expect(links.gallery.campaignLinks)
   let layout = GalleryLayout(width: game.viewportWidth, height: game.viewportHeight)
   await runtime.campaignGalleryClick(x: 20, y: layout.listTop + layout.linkHeight + 1)
-  #expect(await runtime.snapshot().gallery.campaignReview == nil)
-  #expect(await runtime.gallerySaveDirectory() == nil)
-  #expect(await runtime.snapshot().ecmControl.epoch == epoch)
-  #expect(await runtime.snapshot().commander == before)
+  let refused = await runtime.snapshot()
+  let refusedNamespace = await runtime.gallerySaveDirectory()
+  #expect(refused.gallery.campaignReview == nil && refusedNamespace == nil)
+  #expect(refused.ecmControl.epoch == epoch && refused.commander == before)
   await runtime.key("up")
   await runtime.key("return")
-  #expect(
-    await runtime.snapshot().selectedGalleryMission?.savedInstance == game.campaignImmediateOwner)
-  #expect(try Data(contentsOf: fixture.save) == bytes)
+  let owner = await runtime.snapshot()
+  let ownerBytes = try Data(contentsOf: fixture.save)
+  #expect(owner.selectedGalleryMission?.savedInstance == game.campaignImmediateOwner)
+  #expect(ownerBytes == bytes)
 
   var provider = await runtime.snapshot()
   provider.gallery.campaignHistory = []
@@ -259,7 +272,8 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   let providerSelection = provider
   await runtime.nativeCommand { @Sendable candidate in candidate = providerSelection }
   await runtime.key("t")
-  let namespace = try #require(await runtime.gallerySaveDirectory())
+  let trialNamespace = await runtime.gallerySaveDirectory()
+  let namespace = try #require(trialNamespace)
   defer { try? FileManager.default.removeItem(at: namespace) }
   let trial = await runtime.snapshot()
   #expect(trial.isMissionTrial && trial.trialDigest == campaign.provider.digest)
@@ -268,10 +282,13 @@ func campaignGallerySavedContractRootRefusesChildTrialAndPreservesProviderTrial(
   #expect(trial.commander.name != before.name && trial.commander != before)
   #expect(trial.ecmControl.epoch != epoch)
   #expect(trial.commander.scriptState.instances.values.contains { $0.contract != nil })
-  #expect(try Data(contentsOf: fixture.save) == bytes)
+  let trialLiveBytes = try Data(contentsOf: fixture.save)
+  #expect(trialLiveBytes == bytes)
   await runtime.key("trial-return")
-  #expect(await runtime.snapshot().commander == before)
-  #expect(try Data(contentsOf: fixture.save) == bytes)
+  let returned = await runtime.snapshot()
+  let returnedBytes = try Data(contentsOf: fixture.save)
+  #expect(returned.commander == before)
+  #expect(returnedBytes == bytes)
 }
 
 @Test func campaignGalleryNavigatesTwoActualParentsByInstanceAndRestoresReadingPosition() throws {

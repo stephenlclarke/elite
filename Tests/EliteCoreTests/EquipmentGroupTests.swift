@@ -100,7 +100,43 @@ import Testing
   }
 }
 
-@Test func xyzzyCashStartsOnceAccountsNormallyAndMigratesOnlyLegacyXYZzy() throws {
+@Test func xyzzyCashStartsOnceAccountsNormallyAndMigratesOnlyLegacyXYZzy() async throws {
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  func roundTrip(_ value: Game, name: String) async throws -> Game {
+    let url = directory.appendingPathComponent(name)
+    let writer = GameRuntime(game: value)
+    try await writer.save(to: url)
+    let saved = await writer.snapshot()
+    #expect(saved.commander.credits == value.commander.credits)
+    #expect(saved.commander.cargo == value.commander.cargo)
+    #expect(saved.commander.shipID == value.commander.shipID)
+    #expect(saved.commander.name == value.commander.name)
+    #expect(saved.commander.fuel == value.commander.fuel)
+    #expect(saved.commander.missiles == value.commander.missiles)
+    #expect(saved.commander.equipmentInventory == value.commander.equipmentInventory)
+    #expect(saved.commander.equipmentPurchaseHistory == value.commander.equipmentPurchaseHistory)
+    #expect(saved.commander.laserMounts == value.commander.laserMounts)
+    #expect(saved.commander.contracts == value.commander.contracts)
+    #expect(saved.commander.accommodation == value.commander.accommodation)
+    let bytes = try Data(contentsOf: url)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+    let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+    var expectedStored = saved.commander
+    if expectedStored.npcPersistence.count > 0 {
+      expectedStored.npcPersistence.resetPhysicalBindings(system: saved.systemIdentity)
+    }
+    #expect(stored == expectedStored)
+    let reader = GameRuntime(game: Game(executive: false))
+    // Binding restoration is transient; retain the actual writer bytes for this current save.
+    try await reader.load(from: url, persistMigrations: false)
+    let loaded = await reader.snapshot()
+    let reloadedBytes = try Data(contentsOf: url)
+    #expect(loaded.commander == saved.commander)
+    #expect(reloadedBytes == bytes)
+    return loaded
+  }
   var game = Game(executive: false)
   game.launch()
   for key in "xyzzy" { game.key(String(key)) }
@@ -116,38 +152,54 @@ import Testing
     game.commander.credits == 1234 && !game.commander.unlimitedCash
       && !game.commander.unlimitedJumps)
   game.key("return")
-  var restored = Game(executive: false)
-  #expect(restored.load(game.commander) == true)
+  var rawProbe = Game(executive: false)
+  let rawBefore = rawProbe.commander
+  let rawLoaded = rawProbe.load(game.commander)
+  #expect(!rawLoaded && rawProbe.commander == rawBefore)
+  var restored = try await roundTrip(game, name: "current.json")
   #expect(restored.commander.credits == 1234)
   var old = Commander()
   old.name = "CLARKE"
   old.unlimitedCash = true
   old.unlimitedCargo = true
   old.unlimitedJumps = true
-  #expect(restored.load(old) == true)
+  let loadedOld = restored.load(old)
+  try #require(loadedOld)
   #expect(
     restored.commander.credits == 10_000_000 && !restored.commander.unlimitedCash
-      && !restored.commander.unlimitedJumps)
+      && !restored.commander.unlimitedJumps && restored.commander.xyzzyCashGranted)
   restored.commander.credits = 25
-  #expect(restored.load(restored.commander) == true)
+  restored = try await roundTrip(restored, name: "accounted.json")
   #expect(restored.commander.credits == 25)
+  restored.commander.startXYZzyCash()
+  #expect(restored.commander.credits == 25 && restored.commander.xyzzyCashGranted)
   old.unlimitedCash = false
   old.credits = 456
-  #expect(restored.load(old) == true)
+  let loadedFiniteOld = restored.load(old)
+  try #require(loadedFiniteOld)
   #expect(restored.commander.credits == 456)
   old.name = "JAMESON"
   old.unlimitedCash = true
   old.credits = 789
-  #expect(
-    restored.load(old) && restored.commander.credits == 789 && restored.commander.unlimitedCash)
-  var data = try #require(
-    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
+  let loadedOrdinary = restored.load(old)
+  try #require(loadedOrdinary)
+  #expect(restored.commander.credits == 789 && restored.commander.unlimitedCash)
+  var finiteSeed = Commander()
+  finiteSeed.name = "CLARKE"
+  finiteSeed.unlimitedCargo = true
+  finiteSeed.unlimitedJumps = true
+  finiteSeed.unlimitedCash = false
+  finiteSeed.credits = 1234
+  let encoded = try JSONEncoder().encode(finiteSeed)
+  let object = try JSONSerialization.jsonObject(with: encoded)
+  var data = try #require(object as? [String: Any])
   data.removeValue(forKey: "finiteXYZzyCash")
-  data["unlimitedCash"] = false
-  let finiteLegacy = try JSONDecoder().decode(
-    Commander.self, from: JSONSerialization.data(withJSONObject: data))
-  #expect(restored.load(finiteLegacy) == true)
-  #expect(restored.commander.credits == 1234)
+  let finiteBytes = try JSONSerialization.data(withJSONObject: data)
+  let finiteLegacy = try JSONDecoder().decode(Commander.self, from: finiteBytes)
+  #expect(finiteLegacy.equipmentInventory == nil && finiteLegacy.savedEquipmentVersion == nil)
+  let loadedFiniteLegacy = restored.load(finiteLegacy)
+  try #require(loadedFiniteLegacy)
+  #expect(restored.commander.credits == 1234 && restored.commander.xyzzyCashGranted)
 }
 
 @Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {

@@ -494,46 +494,78 @@ func pledgeMalformedReceiptsRefuseBeforeArithmeticOrStandingUse(field: String) t
   defer { fixture.clean() }
   var plain = fixture.game()
   plain.ensureScriptCalendar(origin: .newCommander)
-  // An actual native board selects the existing chunked writer; no pledge has been accepted.
+  // Preserve a genuine pre-owned-equipment header, separately from canonical publication.
   _ = try plain.ensureContractBoard(fixture.pack)
-  try GameRuntime.writeCommander(&plain, to: fixture.save)
-  for version in 2...19 {
+  let legacy = plain
+  #expect(legacy.commander.equipmentInventory == nil)
+  #expect(legacy.commander.savedEquipmentVersion == nil)
+  #expect(!legacy.commander.usesEconomyMiningSaveVersion)
+  func oldEnvelope(version: Int, missions: ScriptEngineState, contracts: ScriptContractState)
+    throws -> ScriptSavePointer
+  {
     let encoder = version >= 13 ? ScriptValueStorage.encoder() : JSONEncoder()
-    var header = plain.commander
+    var header = legacy.commander
     header.scriptState = ScriptEngineState()
     header.contracts = ScriptContractState()
     var chunks = [
       "commander.json": try encoder.encode(header),
-      "missions.json": try encoder.encode(plain.commander.scriptState),
-      "world.json": try encoder.encode(plain.scriptWorldSave),
+      "missions.json": try encoder.encode(missions),
+      "world.json": try encoder.encode(legacy.scriptWorldSave),
     ]
-    if version >= 8 { chunks["contracts.json"] = try encoder.encode(plain.commander.contracts) }
+    if version >= 8 { chunks["contracts.json"] = try encoder.encode(contracts) }
     let generation = UUID().uuidString
     let directory = fixture.save.appendingPathExtension("missions").appendingPathComponent(
       generation)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     for (name, bytes) in chunks { try bytes.write(to: directory.appendingPathComponent(name)) }
-    let old = ScriptSavePointer(
+    return ScriptSavePointer(
       format: "elite-script-save", schemaVersion: version,
       generation: generation, hashes: chunks.mapValues(ScriptPackLibrary.hash), scope: "commander",
       valueCodec: version >= 13 ? ScriptValueStorage.codec : nil)
-    let (loaded, _) = try ScriptSaveStore.read(JSONEncoder().encode(old), from: fixture.save)
-    #expect(loaded.scriptState.pledgeLedger == nil)
   }
+  var compatibleHeaderHash: String?
+  for version in 2...19 {
+    let old = try oldEnvelope(
+      version: version, missions: legacy.commander.scriptState,
+      contracts: legacy.commander.contracts)
+    let pointerBytes = try JSONEncoder().encode(old)
+    let (loaded, _) = try ScriptSaveStore.read(pointerBytes, from: fixture.save)
+    #expect(loaded.scriptState.pledgeLedger == nil)
+    #expect(loaded.credits == legacy.commander.credits && loaded.cargo == legacy.commander.cargo)
+    #expect(loaded.name == legacy.commander.name && loaded.shipID == legacy.commander.shipID)
+    #expect(loaded.scriptState == legacy.commander.scriptState)
+    #expect(loaded.contracts == (version >= 8 ? legacy.commander.contracts : ScriptContractState()))
+    if version == 19 { compatibleHeaderHash = old.hashes["commander.json"] }
+  }
+  let acceptedHeaderHash = try #require(compatibleHeaderHash)
+  try GameRuntime.writeCommander(&plain, to: fixture.save)
   let (key, offer) = try fixture.offer(&plain)
   _ = try plain.confirmContract(plain.contractAcceptanceQuote(board: key, offer: offer.id))
   try GameRuntime.writeCommander(&plain, to: fixture.save)
-  let donated = try JSONDecoder().decode(
-    ScriptSavePointer.self, from: Data(contentsOf: fixture.save))
-  #expect(donated.schemaVersion == 21)
-  // Genuine new chunk hashes cannot authorize a ledger under an older claimed format.
+  let donatedBytes = try Data(contentsOf: fixture.save)
+  let donated = try JSONDecoder().decode(ScriptSavePointer.self, from: donatedBytes)
+  #expect(donated.schemaVersion == 26 && donated.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(donatedBytes, from: fixture.save)
+  #expect(stored == plain.commander)
+  let ledger = try #require(stored.scriptState.pledgeLedger)
+  try #require(!ledger.receipts.isEmpty)
+  // Modern native fields remain forbidden under an older claimed format.
   let hidden = ScriptSavePointer(
     format: donated.format, schemaVersion: 19,
     generation: donated.generation, hashes: donated.hashes, scope: donated.scope,
     valueCodec: donated.valueCodec)
-  #expect(throws: SaveError.self) {
-    try ScriptSaveStore.read(JSONEncoder().encode(hidden), from: fixture.save)
-  }
+  let hiddenBytes = try JSONEncoder().encode(hidden)
+  #expect(throws: SaveError.self) { try ScriptSaveStore.read(hiddenBytes, from: fixture.save) }
+  // The exact accepted legacy header cannot conceal the actual newer pledge ledger either.
+  let concealed = try oldEnvelope(
+    version: 19, missions: stored.scriptState, contracts: stored.contracts)
+  #expect(concealed.hashes["commander.json"] == acceptedHeaderHash)
+  #expect(concealed.hashes["missions.json"] == donated.hashes["missions.json"])
+  #expect(concealed.hashes["contracts.json"] == donated.hashes["contracts.json"])
+  let concealedBytes = try JSONEncoder().encode(concealed)
+  #expect(throws: SaveError.self) { try ScriptSaveStore.read(concealedBytes, from: fixture.save) }
+  let unchanged = try Data(contentsOf: fixture.save)
+  #expect(unchanged == donatedBytes)
 }
 
 @Test func pledgeRealMarketFoodTrialSaveLoadRestartAndReturnKeepLiveCommander() async throws {
