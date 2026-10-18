@@ -3,10 +3,34 @@ import Testing
 
 @testable import EliteCore
 
+/// Shares genuine setup only; every scenario receives its own Game value.
+private actor NativeSalvageReleaseSnapshot {
+  static let shared = NativeSalvageReleaseSnapshot()
+  private var setup: Task<Game, Error>?
+
+  func game() async throws -> Game {
+    let task: Task<Game, Error>
+    if let setup {
+      task = setup
+    } else {
+      // Inherit the first caller's Testing context. Install before suspension so
+      // concurrent callers share the same success or failure, with no retry/reset.
+      let created = Task { try await NativeSalvageAdmissionTestFixture.makeReleased() }
+      setup = created
+      task = created
+    }
+    return try await task.value
+  }
+}
+
 enum NativeSalvageAdmissionTestFixture {
   /// Original generated source, real Tab target and the actor's actual saved writer.
   /// The first release remains inside the original finite cutting-frame budget.
   static func released() async throws -> Game {
+    try await NativeSalvageReleaseSnapshot.shared.game()
+  }
+
+  fileprivate static func makeReleased() async throws -> Game {
     var (game, site) = try NativePagedSalvageFixture.game()
     let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
     let metadata = try #require(body.physical?.salvage)
@@ -39,6 +63,16 @@ enum NativeSalvageAdmissionTestFixture {
       #expect(disk.pending[pending.lot.identity]?.lot.loot == pending.lot.loot)
       #expect(disk.pending[pending.lot.identity]?.lot.content == pending.lot.content)
     }
+    // Existing nonthrowing assertions remain visible in the first caller's context.
+    // Refuse a successful shared result if any publication comparison failed.
+    guard published.savedAlienStorageReference == released.commander.savedAlienStorageReference,
+      Set(disk.pending.keys) == Set(native.pending.keys),
+      native.pending.values.allSatisfy({ pending in
+        disk.pending[pending.lot.identity]?.lot.loot == pending.lot.loot
+          && disk.pending[pending.lot.identity]?.lot.content == pending.lot.content
+      }),
+      released.pendingNewSaveDestination == nil, released.newCommanderSaveReceipt == nil
+    else { throw SaveError.invalidCommander }
     return released
   }
 
@@ -782,6 +816,8 @@ struct NativeSalvageAdmissionRuntimeTests {
     let retained = try #require(
       game.commander.alienStorageState?.current.salvage.pending[pending.lot.identity])
     #expect(retained.lot == pending.lot && retained.binding == nil && retained.offer == nil)
+    let fresh = try await NativeSalvageAdmissionTestFixture.released()
+    #expect(fresh.commander == released.commander && fresh.bodies == released.bodies)
   }
 
   @Test func fullActualCargoPopulationLeavesOriginalNativeCustodyAndAllocatorUntouched()
