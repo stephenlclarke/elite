@@ -15,7 +15,7 @@ This verified handoff supersedes historical private/no-handoff labels. Checked d
 
 ## Delivered slices and remaining acceptance
 
-Station AUTO defence is source-integrated. Focused run 433 passed 46 of 50 methods, but procurement and unattended freight row 2 fail during defensive approach; the earlier freight passes remain historical evidence. Mission-folder routing passed its three methods/eight cases, and independent CLI run 434 passed four actual validation cases. Native-picker acceptance remains pending. The shared-controls generator and generated-byte check pass nine Python tests; native input, help and HUD wiring remain pending.
+Station AUTO defence and the geometric docking handover from reviewed source `5914532e` are integrated. Focused run 438 passed 30 of 33 methods: both original unattended freight rows pass, while procurement still dies during final approach and the mixed-invalid handover test remains failed. Fourteen of the 15 clue-foundation methods pass, including the isolated legacy-Commander loader guard; the cold round-trip method failed with POSIX error 20. The physical temporary-base fixture correction from `e3f0c63a` is integrated and awaits that method's rerun with both Alien iterations. G2 is preparing the outer final-approach speed envelope and mixed-invalid fixture corrections. Full CI, release and playable replacement content remain pending. Mission-folder routing passed its three methods/eight cases, and independent CLI run 434 passed four actual validation cases. Native-picker acceptance remains pending. The shared-controls generator and generated-byte check pass nine Python tests; native input, help and HUD wiring remain pending.
 
 Repository/path/content renaming, playable replacement missions and overall game completion remain pending. The fresh L337 product and current save/content formats supersede predecessor-import obligations. Preserve historical releases, notices, repository protections and user working changes.
 
@@ -26,7 +26,7 @@ The original 12 priorities and their engine/native-gameplay acceptance requireme
 | Owner | Current responsibility |
 | --- | --- |
 | G1 | Central integration, native acceptance, validation and release |
-| G2 | Bounded station-defence phase work |
+| G2 | Bounded outer final-approach speed envelope and mixed-invalid station fixture corrections |
 | MC1 | Mission engine and content |
 | MBA | Shared generator and lightweight independent work |
 
