@@ -520,3 +520,25 @@ func hullSweepEveryCatalogueDefinitionPreparesOriginalPrimitivesWithoutFiltering
     }
   }
 }
+
+@Test func hullSweepDualBVHPreservesConcaveEmptyNotchAndSolidArm() throws {
+  let player = try PreparedHull(mesh: hsBox(.init(2, 2, 2)))
+  let obstacle = try PreparedHull(mesh: hsConcaveHull())
+  #expect(player.triangleCount == 12 && obstacle.isClosed)
+  for x in [50.0, 10] {
+    let pose = ShipPose(position: .init(x, 0, 50))
+    let motion = HullSceneMotion(
+      start: pose, end: pose, initialVelocity: .init(0, 0, 0),
+      acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0),
+      duration: 0.1, playerRadius: player.radius)
+    let result = HullSweepSafety.validateSceneMotion(
+      motion, player: player, obstacles: [.init(hull: obstacle, pose: .init())])
+    if x == 50 {
+      #expect(result.safe && result.triangleTests > 0)
+      #expect((result.minimumSampledClearance ?? 0) > 27.999999)
+      #expect((result.minimumSampledClearance ?? .infinity) <= 28.000001)
+    } else {
+      #expect(!result.safe && result.failure == .insideHull)
+    }
+  }
+}

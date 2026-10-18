@@ -419,6 +419,9 @@ public enum HullSweepSafety {
       let point = ship.shipPoint(target.systemPoint(component.representative))
       if try contains(point, hull: player, work: &work) { throw HullSweepFailure.insideHull }
     }
+    if player.nodes[0].children != nil {
+      return try dualMeshDistance(player, pose: ship, obstacle: obstacle, pose: target, work: &work)
+    }
     var best = Double.infinity
     for original in player.triangles {
       let triangle = SweepTriangle(
@@ -428,6 +431,85 @@ public enum HullSweepSafety {
         unresolvedSupport: original.unresolvedSupport, transformedFrom: original)
       best = try triangleDistance(triangle, hull: obstacle, startingBest: best, work: &work)
       if best < 1e-9 { return 0 }
+    }
+    return best
+  }
+
+  /// Large-player path: every popped pair pays for both node examinations. Bounds and
+  /// transformed primitives are cached only within this charged distance query.
+  private static func dualMeshDistance(
+    _ player: PreparedHull, pose ship: ShipPose, obstacle: PreparedHull, pose target: ShipPose,
+    work: inout SweepWork
+  ) throws -> Double {
+    var best = Double.infinity
+    var pending = [(0, 0)]
+    var boundsCache: [Int: SweepBounds] = [:]
+    var triangleCache: [Int: SweepTriangle] = [:]
+    while let (playerIndex, targetIndex) = pending.popLast() {
+      try work.node()
+      try work.node()
+      let left = player.nodes[playerIndex]
+      let right = obstacle.nodes[targetIndex]
+      let bounds: SweepBounds
+      if let cached = boundsCache[playerIndex] {
+        bounds = cached
+      } else {
+        bounds = sweepTransformedBounds(left.bounds, pose: ship, target: target)
+        boundsCache[playerIndex] = bounds
+      }
+      if best.isFinite, bounds.finite, right.bounds.finite {
+        let lower = bounds.certifiedLowerSquared(to: right.bounds)
+        let upper = SweepInterval(best).square.upper
+        // Infinity/unknown is never a pruning certificate, including infinity >= infinity.
+        if lower.isFinite, upper.isFinite, lower >= upper { continue }
+      }
+      if left.children == nil, right.children == nil {
+        for first in left.triangles {
+          for second in right.triangles {
+            try work.triangle()
+            let triangle: SweepTriangle
+            if let cached = triangleCache[first] {
+              triangle = cached
+            } else {
+              let original = player.triangles[first]
+              let a = target.shipPoint(ship.systemPoint(original.a))
+              let b = target.shipPoint(ship.systemPoint(original.b))
+              let c = target.shipPoint(ship.systemPoint(original.c))
+              guard sweepFinite(a), sweepFinite(b), sweepFinite(c) else {
+                throw HullSweepFailure.unproven
+              }
+              triangle = SweepTriangle(
+                a: a, b: b, c: c, conditioned: original.conditioned,
+                unresolvedSupport: original.unresolvedSupport, transformedFrom: original)
+              triangleCache[first] = triangle
+            }
+            best = min(best, sweepTriangleDistance(triangle, obstacle.triangles[second]))
+            if best < 1e-9 { return 0 }
+          }
+        }
+      } else if let (a, b) = left.children,
+        right.children == nil
+          || (left.bounds.upper - left.bounds.lower).length
+            >= (right.bounds.upper - right.bounds.lower).length
+      {
+        // Approximate center gaps choose visitation only; certificates above alone prune.
+        let first = right.bounds.distanceSquared(
+          to: target.shipPoint(ship.systemPoint(player.nodes[a].bounds.center)))
+        let second = right.bounds.distanceSquared(
+          to: target.shipPoint(ship.systemPoint(player.nodes[b].bounds.center)))
+        pending +=
+          second < first
+          ? [(a, targetIndex), (b, targetIndex)]
+          : [(b, targetIndex), (a, targetIndex)]
+      } else if let (a, b) = right.children {
+        let center = target.shipPoint(ship.systemPoint(left.bounds.center))
+        let first = obstacle.nodes[a].bounds.distanceSquared(to: center)
+        let second = obstacle.nodes[b].bounds.distanceSquared(to: center)
+        pending +=
+          second < first
+          ? [(playerIndex, a), (playerIndex, b)]
+          : [(playerIndex, b), (playerIndex, a)]
+      }
     }
     return best
   }
@@ -590,6 +672,10 @@ private struct SweepEdge: Hashable {
 private struct SweepBounds: Sendable {
   let lower: Vector3
   let upper: Vector3
+  static let whole = Self(
+    lower: .init(-.infinity, -.infinity, -.infinity),
+    upper: .init(.infinity, .infinity, .infinity))
+  var finite: Bool { sweepFinite(lower) && sweepFinite(upper) }
   var center: Vector3 { lower * 0.5 + upper * 0.5 }
   func union(_ other: Self) -> Self {
     .init(
@@ -638,6 +724,31 @@ private struct SweepBounds: Sendable {
     return max(
       0, (SweepInterval(x).square + SweepInterval(y).square + SweepInterval(z).square).lower)
   }
+}
+
+/// Enclose the actual two-stage pose operations, including each rounded intermediate.
+/// Do not compose an ideal affine transform: represented vertices may collapse or overflow.
+private func sweepTransformedBounds(
+  _ bounds: SweepBounds, pose ship: ShipPose, target: ShipPose
+) -> SweepBounds {
+  let local = SweepIntervalVector(
+    x: .init(lower: bounds.lower.x, upper: bounds.upper.x),
+    y: .init(lower: bounds.lower.y, upper: bounds.upper.y),
+    z: .init(lower: bounds.lower.z, upper: bounds.upper.z))
+  // Basis3.apply is (x*v.x + y*v.y) + z*v.z, then ShipPose adds position.
+  let world =
+    SweepIntervalVector(ship.position)
+    + (SweepIntervalVector(ship.orientation.x) * local.x
+      + SweepIntervalVector(ship.orientation.y) * local.y
+      + SweepIntervalVector(ship.orientation.z) * local.z)
+  let relative = world - SweepIntervalVector(target.position)
+  // shipVector uses left-associated coordinate products/sums in each dot product.
+  let x = relative.dot(SweepIntervalVector(target.orientation.x))
+  let y = relative.dot(SweepIntervalVector(target.orientation.y))
+  let z = relative.dot(SweepIntervalVector(target.orientation.z))
+  guard x.finite, y.finite, z.finite else { return .whole }
+  return .init(
+    lower: .init(x.lower, y.lower, z.lower), upper: .init(x.upper, y.upper, z.upper))
 }
 
 /// The scalar normal chooses a component only. Outward interval arithmetic encloses its

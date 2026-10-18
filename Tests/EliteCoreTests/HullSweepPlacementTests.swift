@@ -20,6 +20,38 @@ private func mixedSourceSupport(_ support: [Vector3]) -> Mesh {
     faces: [[0, 1, 2], [3, 4, 5]], preserveWinding: true)
 }
 
+private func dualClusterMesh(
+  near: Double = 0, far: Double, z: Double = 0, reversed: Bool = false,
+  conditioned: Bool = false
+) -> Mesh {
+  var vertices: [Vector3] = []
+  var faces: [[Int]] = []
+  // Deliberately retain far-first source order; the immutable BVH groups spatially.
+  for x in [far, near] {
+    for row in 0..<8 {
+      let y = Double(row * 2)
+      let index = vertices.count
+      let zero = conditioned && x == far && row == 7
+      let sliver = conditioned && x == near && row == 7
+      vertices += [
+        .init(x, y, z), .init(x + 1, y, z),
+        .init(x + (zero ? 0.5 : 0), y + (zero ? 0 : sliver ? 1e-9 : 1), z),
+      ]
+      faces.append([index, index + 1, index + 2])
+    }
+  }
+  return Mesh(
+    vertices: vertices, faces: reversed ? Array(faces.reversed()) : faces, preserveWinding: true)
+}
+
+private func dualStationaryMotion(_ player: PreparedHull, pose: ShipPose = .init())
+  -> HullSceneMotion
+{
+  .init(
+    start: pose, end: pose, initialVelocity: .init(0, 0, 0), acceleration: .init(0, 0, 0),
+    worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: player.radius)
+}
+
 struct HullSweepPlacementTests {
   @Test func separationRequiresStrictGapAndNumericalHeadroomAndRejectsInterior() throws {
     let hull = try PreparedHull(mesh: placementBox())
@@ -422,5 +454,111 @@ struct HullSweepPlacementTests {
     // unresolved after the endpoint/midpoint checks and attempts further subdivision.
     #expect(result.distanceQueries > 3 && result.triangleTests > 0)
     #expect((result.minimumSampledClearance ?? 0) > 99999)
+  }
+
+  @Test func dualBVHProvesNearFarClustersWithinSamePrimitiveBudgetRegardlessOfSourceOrder() throws {
+    let budget = HullSweepBudget(
+      distanceQueries: 3, triangleTests: 192, nodeVisits: 96, subdivisionDepth: 0)
+    for reversed in [false, true] {
+      for conditioned in [false, true] {
+        let player = try PreparedHull(
+          mesh: dualClusterMesh(far: 500, reversed: reversed, conditioned: conditioned))
+        let obstacle = try PreparedHull(mesh: dualClusterMesh(far: 2000, z: 10))
+        #expect(player.triangleCount == 16 && obstacle.triangleCount == 16)
+        let result = HullSweepSafety.validateSceneMotion(
+          dualStationaryMotion(player), player: player,
+          obstacles: [.init(hull: obstacle, pose: .init())], budget: budget)
+        // The near leaves cost 8*8 pairs per sample. Far leaves have certified gaps >499.
+        // A far-first per-player-triangle loop spends an extra leaf before these 64 pairs.
+        #expect(result.safe && result.distanceQueries == 3 && result.triangleTests == 192)
+        #expect(result.nodeVisits > 0 && result.nodeVisits <= budget.nodeVisits)
+        #expect((result.minimumSampledClearance ?? 0) > 9.999999)
+        #expect((result.minimumSampledClearance ?? .infinity) <= 10.000001)
+      }
+    }
+  }
+
+  @Test func dualBVHReportsActualPrimitiveAndTwoNodeChargeExhaustion() throws {
+    let player = try PreparedHull(mesh: dualClusterMesh(far: 500))
+    let obstacle = try PreparedHull(mesh: dualClusterMesh(far: 2000, z: 10))
+    for budget in [
+      HullSweepBudget(distanceQueries: 3, triangleTests: 191, nodeVisits: 96, subdivisionDepth: 0),
+      .init(distanceQueries: 3, triangleTests: 192, nodeVisits: 1, subdivisionDepth: 0),
+    ] {
+      let result = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player), player: player,
+        obstacles: [.init(hull: obstacle, pose: .init())], budget: budget)
+      #expect(!result.safe && result.failure == .workBudgetExceeded)
+      if budget.nodeVisits == 1 {
+        #expect(result.nodeVisits == 1 && result.triangleTests == 0)
+      } else {
+        #expect(result.distanceQueries == 3 && result.triangleTests == 191)
+      }
+    }
+  }
+
+  @Test func dualBVHRetainsOverlapAndContinuousCrossingRefusal() throws {
+    let player = try PreparedHull(mesh: dualClusterMesh(far: 500, conditioned: true))
+    let obstacle = try PreparedHull(mesh: dualClusterMesh(far: 2000, z: 10))
+    let overlap = HullSweepSafety.validateSceneMotion(
+      dualStationaryMotion(player, pose: .init(position: .init(0, 0, 10))), player: player,
+      obstacles: [.init(hull: obstacle, pose: .init())])
+    #expect(!overlap.safe)
+    let crossing = HullSceneMotion(
+      start: .init(), end: .init(position: .init(0, 0, 20)),
+      initialVelocity: .init(0, 0, 200), acceleration: .init(0, 0, 0),
+      worldAngularVelocity: .init(0, 0, 0), duration: 0.1, playerRadius: player.radius)
+    let result = HullSweepSafety.validateSceneMotion(
+      crossing, player: player, obstacles: [.init(hull: obstacle, pose: .init())])
+    #expect(!result.safe && result.distanceQueries >= 3)
+  }
+
+  @Test func dualBVHOutwardBoundsRetainRotatedTranslatedUsefulClearance() throws {
+    let player = try PreparedHull(mesh: dualClusterMesh(far: 500, conditioned: true))
+    let obstacle = try PreparedHull(mesh: dualClusterMesh(far: 2000, z: 10))
+    for sharedRotation in [false, true] {
+      var ship = ShipPose(position: .init(1000, -2000, 3000))
+      ship.orientation.x = .init(0, 1, 0)
+      ship.orientation.y = .init(-1, 0, 0)
+      let target = sharedRotation ? ship : ShipPose(position: ship.position)
+      let result = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player, pose: ship), player: player,
+        obstacles: [.init(hull: obstacle, pose: target)])
+      #expect(result.safe && result.distanceQueries == 3 && result.triangleTests > 0)
+      #expect((result.minimumSampledClearance ?? 0) > 9.999999)
+      #expect((result.minimumSampledClearance ?? .infinity) <= 10.000001)
+    }
+  }
+
+  @Test func dualBVHCollapsedBoundsCannotOverrideActualNumericalUnknown() throws {
+    let mesh = dualClusterMesh(far: 500, conditioned: true)
+    let player = try PreparedHull(mesh: mesh)
+    let obstacle = try PreparedHull(mesh: dualClusterMesh(far: 2000, z: 100000))
+    let pose = ShipPose(position: .init(1e20, 1e20, 1e20))
+    let represented = mesh.vertices.map { pose.shipPoint(pose.systemPoint($0)) }
+    try #require(represented.allSatisfy { $0 == .init(0, 0, 0) })
+    let result = HullSweepSafety.validateSceneMotion(
+      dualStationaryMotion(player, pose: pose), player: player,
+      obstacles: [.init(hull: obstacle, pose: pose)])
+    #expect(!result.safe && result.failure == .unproven)
+    #expect(result.distanceQueries > 3 && result.triangleTests > 0 && result.nodeVisits > 0)
+    #expect((result.minimumSampledClearance ?? 0) > 99999)
+  }
+
+  @Test func dualBVHOverflowEnclosureCannotPruneAnInfiniteBestIntoClearance() throws {
+    let player = try PreparedHull(mesh: dualClusterMesh(far: 500))
+    let obstacle = try PreparedHull(mesh: dualClusterMesh(far: 2000, z: 10))
+    let huge = 1e154
+    let pose = ShipPose(position: .init(huge, 0, 0))
+    let target = ShipPose(position: .init(-huge, 0, 0))
+    let represented = target.shipPoint(pose.systemPoint(.init(0, 0, 0)))
+    try #require(pose.position.length.isFinite && target.position.length.isFinite)
+    try #require(represented.x.isFinite && !represented.length.isFinite)
+    let result = HullSweepSafety.validateSceneMotion(
+      dualStationaryMotion(player, pose: pose), player: player,
+      obstacles: [.init(hull: obstacle, pose: target)])
+    #expect(!result.safe && result.failure == .unproven)
+    #expect(result.distanceQueries == 1 && result.triangleTests == 1 && result.nodeVisits >= 2)
+    #expect(result.minimumSampledClearance == nil)
   }
 }
