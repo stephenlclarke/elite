@@ -78,26 +78,18 @@ extension Game {
     return missing.isEmpty ? nil : "Requires: " + missing.sorted().joined(separator: ", ")
   }
   var scriptSnapshot: ScriptValue {
-    .object([
-      "galaxy": .integer(Int64(commander.galaxy)), "system": .integer(Int64(commander.system)),
-      "docked": .bool(docked), "main_station": .bool(docked && dockedAtMainStation),
-      "station_id": docked && dockedAtMainStation ? .string(contractStation.key) : .null,
-      "durable_commands": .bool(scriptDurabilityAvailable),
-      "jump_range_ly": .number(commander.maximumJumpDistance),
-      "fitted_equipment": commander.ownedGearCounts(fitted: true),
-      "stored_equipment": commander.ownedGearCounts(fitted: false),
-      "free_equipment_units": .integer(Int64(commander.passengerFit?.freeEquipmentUnits ?? 0)),
-      "credits": .integer(Int64(commander.credits)),
-      "commander": scriptCommanderQuery,
-      "library": .array(referenceBooks.map(\.header)),
-      "free_tonnes": .integer(Int64(commander.tradeCargoCapacity - commander.cargoTonnes)),
-      "flight_seconds": .number(commander.scriptState.flightSeconds),
-      "local_seconds": .number(commander.scriptState.localSeconds),
-      "calendar_seconds": .number(commander.scriptState.calendarSeconds),
-      "calendar_day": .integer(calendarDay),
-      "calendar_profile": commander.scriptState.calendarLedger.map { .string($0.profile) } ?? .null,
-      "transit_seconds": .number(commander.scriptState.transitSeconds),
-    ])
+    // Read commander fields in their own borrowed-self frame. Expanding every
+    // expression through Game.commander keeps many complete Commander temporaries
+    // alive in this synchronous mission-dispatch stack under debug sanitizers.
+    var fields = commander.scriptBaseSnapshotFields
+    fields["docked"] = .bool(docked)
+    fields["main_station"] = .bool(docked && dockedAtMainStation)
+    fields["station_id"] = docked && dockedAtMainStation ? .string(contractStation.key) : .null
+    fields["durable_commands"] = .bool(scriptDurabilityAvailable)
+    fields["commander"] = scriptCommanderQuery
+    fields["library"] = .array(referenceBooks.map(\.header))
+    fields["calendar_day"] = .integer(calendarDay)
+    return .object(fields)
   }
   func scopedScriptSnapshot(_ instance: ScriptInstance) -> ScriptValue {
     var fields = scriptSnapshot.object ?? [:]
@@ -819,5 +811,25 @@ extension Game {
       )
     }
     return entries
+  }
+}
+
+extension Commander {
+  /// Same public query fields; this helper introduces no owner, cache or callback.
+  fileprivate var scriptBaseSnapshotFields: [String: ScriptValue] {
+    [
+      "galaxy": .integer(Int64(galaxy)), "system": .integer(Int64(system)),
+      "jump_range_ly": .number(maximumJumpDistance),
+      "fitted_equipment": ownedGearCounts(fitted: true),
+      "stored_equipment": ownedGearCounts(fitted: false),
+      "free_equipment_units": .integer(Int64(passengerFit?.freeEquipmentUnits ?? 0)),
+      "credits": .integer(Int64(credits)),
+      "free_tonnes": .integer(Int64(tradeCargoCapacity - cargoTonnes)),
+      "flight_seconds": .number(scriptState.flightSeconds),
+      "local_seconds": .number(scriptState.localSeconds),
+      "calendar_seconds": .number(scriptState.calendarSeconds),
+      "calendar_profile": scriptState.calendarLedger.map { .string($0.profile) } ?? .null,
+      "transit_seconds": .number(scriptState.transitSeconds),
+    ]
   }
 }

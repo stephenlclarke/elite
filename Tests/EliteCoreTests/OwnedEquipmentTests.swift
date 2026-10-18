@@ -209,7 +209,12 @@ private struct OwnedEquipmentObserverFixture {
     "Large Cargo Bay", at: .utility(.cargoExpansion), provenance: .grant("stowage-fixture"))
   try game.commander.grantEquipment(
     FuelStorage.equipmentName, at: .fuelStorage(0), provenance: .grant("stowage-fixture"))
-  game.commander.cargo[0] = 30
+  // The retained SH023 catalogue has a 30t native hold plus a 15t expansion.
+  // Put one actual tonne beyond the unexpanded hold before testing refusal.
+  #expect(game.commander.nativePerformance.cargo == 30)
+  game.commander.cargo[0] = game.commander.nativePerformance.cargo + 1
+  #expect(game.commander.cargoTonnes > game.commander.nativePerformance.cargo)
+  #expect(game.commander.cargoTonnes <= game.commander.standardCargoCapacity)
   game.commander.fuel = 140
   let before = game.commander
   for slot in [ComponentFittingSlot.utility(.cargoExpansion), .fuelStorage(0)] {
@@ -217,6 +222,19 @@ private struct OwnedEquipmentObserverFixture {
     #expect(game.inventoryActionPreview(for: .equipment(item)).command == nil)
     #expect(game.commander == before)
   }
+  game.commander.cargo[0] = game.commander.nativePerformance.cargo
+  let bay = try #require(game.commander.fittedEquipment(at: .utility(.cargoExpansion)))
+  let boundary = game.commander
+  try missionStorePhysical(bay, in: &game)
+  #expect(game.commander.cargo == boundary.cargo && game.commander.fuel == boundary.fuel)
+  #expect(game.commander.credits == boundary.credits)
+  let heldBay = try #require(game.commander.equipmentInventory?.items.first { $0.id == bay.id })
+  let refitBay = try #require(game.inventoryActionPreview(for: .equipment(heldBay)).command)
+  let bayRefitted = game.performInventoryCommand(refitBay)
+  #expect(
+    bayRefitted && game.commander.fittedEquipment(at: .utility(.cargoExpansion))?.id == bay.id)
+  #expect(game.commander.cargo == boundary.cargo && game.commander.fuel == boundary.fuel)
+  #expect(game.commander.credits == boundary.credits)
   game.commander.cargo[0] = 0
   game.commander.fuel = 70
   let tank = try #require(game.commander.fittedEquipment(at: .fuelStorage(0)))
