@@ -123,30 +123,94 @@ struct MissionCatalogueReplacementTests {
     let selected = try MissionPackLibrary.decode(cataloguePack("review.selected", priority: 40))
     let earlier = try MissionPackLibrary.decode(cataloguePack("review.earlier", priority: 20))
     var game = Game(executive: false)
+    let commander = game.commander
+    let nativeName = "Native crew capture and escape-pod rescue"
     game.replaceMissionPacks(try .checked([first, selected]))
+    let initial = game.missionCatalogue
+    try #require(initial.count == 3)
+    #expect(
+      game.missionPacks.entries.map { $0.pack.stateID } == [
+        first.pack.stateID, selected.pack.stateID,
+      ])
+    #expect(
+      initial.map(\.name) == [first.pack.mission.title, selected.pack.mission.title, nativeName])
     game.screen = .gallery
     game.gallery.selection = 1
     game.gallery.detail = true
     game.replaceMissionPacks(try .checked([earlier, first, selected]))
+    let inserted = game.missionCatalogue
+    try #require(inserted.count == 4)
+    #expect(
+      game.missionPacks.entries.map { $0.pack.stateID } == [
+        earlier.pack.stateID, first.pack.stateID, selected.pack.stateID,
+      ])
+    #expect(
+      inserted.map(\.name) == [
+        earlier.pack.mission.title, first.pack.mission.title, selected.pack.mission.title,
+        nativeName,
+      ])
     #expect(game.gallery.selection == 2 && game.gallery.detail)
     #expect(game.missionPacks.entries[game.gallery.selection].pack.stateID == selected.pack.stateID)
     game.gallery.scroll = 8
     game.replaceMissionPacks(try .checked([first]))
-    #expect(game.gallery.selection == 0 && game.gallery.scroll == 0)
+    let removed = game.missionCatalogue
+    try #require(removed.count == 2)
+    #expect(game.missionPacks.entries.map { $0.pack.stateID } == [first.pack.stateID])
+    #expect(removed.map(\.name) == [first.pack.mission.title, nativeName])
+    #expect(game.gallery.selection == 1 && game.gallery.scroll == 0 && game.gallery.detail)
+    #expect(game.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
     #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
+    // Both surviving rows remain reachable through ordinary Gallery controls.
+    game.galleryKey("tab")
+    game.galleryKey("up")
+    #expect(game.gallery.selection == 0 && !game.gallery.detail)
+    #expect(game.selectedGalleryMission?.name == first.pack.mission.title)
+    #expect(game.selectedGalleryMission?.trialDigest == nil)
+    game.galleryKey("down")
+    game.galleryKey("return")
+    #expect(game.gallery.selection == 1 && game.gallery.detail)
+    #expect(game.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
     game.gallery.selection = 99
     #expect(game.selectedGalleryMission == nil)
     #expect(game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
     game.galleryKey("pagedown")
-    #expect(game.gallery.selection == 0)
-    #expect(game.selectedGalleryMission?.name == first.pack.mission.title)
+    #expect(game.gallery.selection == 1)
+    #expect(game.selectedGalleryMission?.name == nativeName)
+    #expect(game.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
     #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
+    let nativeScroll = game.gallery.scroll
     game.replaceMissionPacks(try .checked([]))
+    let emptyPacks = game.missionCatalogue
+    try #require(emptyPacks.count == 1 && game.missionPacks.entries.isEmpty)
     #expect(game.gallery.selection == 0)
-    #expect(game.missionCatalogue.isEmpty && game.selectedGalleryMission == nil)
-    #expect(game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
+    #expect(game.gallery.scroll == nativeScroll && game.gallery.detail)
+    #expect(emptyPacks.map(\.name) == [nativeName])
+    #expect(game.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
+    #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
     game.galleryKey("return")
-    #expect(game.gallery.selection == 0 && game.selectedGalleryMission == nil)
+    #expect(game.gallery.selection == 0 && game.gallery.detail && game.gallery.scroll == 0)
+    #expect(game.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
+    #expect(!game.galleryDetailLines(width: 480, font: GameTypography.scale).isEmpty)
+    for catalogue in [initial, inserted, removed, emptyPacks] {
+      for entry in catalogue.dropLast() {
+        #expect(entry.status == .locked && entry.completed == 0)
+        #expect(entry.trialDigest == nil && entry.savedInstance == nil)
+        #expect(entry.milestones.map(\.title) == ["Finish"])
+        #expect(entry.milestones.map(\.state) == ["Locked"])
+      }
+      let native = try #require(catalogue.last)
+      #expect(native.trialDigest == NativePeopleGallery.digest && native.savedInstance == nil)
+      #expect(native.name == nativeName && native.status == .available && native.completed == 0)
+      #expect(
+        native.milestones.map(\.title) == [
+          "Actually disable an admitted ordinary crewed craft",
+          "Track and collect a real occupied capsule",
+          "Capture original crew still aboard before recovery",
+          "Confirm care or an original-person sale",
+        ])
+      #expect(native.milestones.map(\.state) == Array(repeating: "Trial", count: 4))
+    }
+    #expect(game.commander == commander)
   }
 
   @Test func nativeInstallationAfterDiskShrinkReconcilesAnOpenGallery() async throws {

@@ -254,6 +254,7 @@ private func sortedWorld(_ game: Game) throws -> Data {
     at: galleryExamples.appendingPathComponent("scripted-courier"), to: directory)
   let module = directory.appendingPathComponent("scripts/main.lua")
   var source = try String(contentsOf: module, encoding: .utf8)
+  try #require(source.components(separatedBy: "  local commands = {}\n  if data.phase").count == 3)
   source = source.replacingOccurrences(
     of: "  local commands = {}\n  if data.phase",
     with:
@@ -266,42 +267,112 @@ private func sortedWorld(_ game: Game) throws -> Data {
   game.scriptPacks = [pack]
   let id = try game.acceptScriptMission(pack)
   game.commander.system = 129
-  game.commander.cargo[0] = 19
+  let accepted = try #require(game.commander.scriptState.instances[id])
+  try #require(accepted.payloads == ["supplies": 1] && accepted.digest == pack.digest)
+  let capacity = game.commander.tradeCargoCapacity
+  let reserved = game.commander.cargoTonnes
+  try #require(!game.commander.unlimitedCargo && capacity == game.commander.standardCargoCapacity)
+  try #require(capacity > reserved && reserved == 1 && game.commander.cargo.allSatisfy { $0 == 0 })
+  try #require(Commodity.all[0].name == "Food" && Commodity.all[0].unit == "t")
+  let food = capacity - reserved
+  game.commander.cargo[0] = food
+  #expect(game.commander.cargoTonnes == capacity)
+  #expect(game.scriptSnapshot.object?["free_tonnes"] == .integer(0))
   let file = folder.appendingPathComponent("live.json")
   let runtime = GameRuntime(game: game, saveURL: file)
+  let beforeContact = await runtime.snapshot()
+  try #require(beforeContact.commander.tradeCargoCapacity == capacity)
+  try #require(beforeContact.commander.cargoTonnes == capacity)
+  #expect(beforeContact.scriptSnapshot.object?["free_tonnes"] == .integer(0))
+  #expect(beforeContact.commander.scriptState.instances[id]?.payloads == accepted.payloads)
   await runtime.key("contacts-open")
   let fault = await runtime.snapshot()
   #expect(fault.commander.scriptState.instances[id]?.suspension?.contains("Make room") == true)
+  let pendingContact = try #require(
+    fault.commander.scriptState.pendingEvents.first {
+      $0.instance == id && $0.kind == "contact.requested"
+    })
+  let suspended = try #require(fault.commander.scriptState.instances[id])
+  #expect(!suspended.hasAcknowledged(pendingContact.sequence))
+  #expect(fault.commander.cargoTonnes == capacity && fault.commander.cargo[0] == food)
+  #expect(fault.commander.scriptState.instances[id]?.payloads == accepted.payloads)
+  let liveNamespace = await runtime.gallerySaveDirectory()
+  #expect(!fault.isMissionTrial && liveNamespace == nil)
+  let faultBytes = try Data(contentsOf: file)
+  let faultPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: faultBytes)
+  #expect(faultPointer.schemaVersion == 26 && faultPointer.scope == "commander")
+  #expect(faultPointer.valueCodec == ScriptValueStorage.codec)
+  let (faultStored, faultWorld) = try ScriptSaveStore.read(faultBytes, from: file)
+  #expect(
+    faultStored == fault.commander && faultWorld.valid && faultWorld.consistent(with: faultStored))
   let loaded = GameRuntime(game: game)
   try await loaded.load(from: file)
   _ = await loaded.advance(delta: 0.1)
-  #expect(await loaded.snapshot().commander.scriptState.instances[id]?.suspension != nil)
+  let reloaded = await loaded.snapshot()
+  #expect(reloaded.commander.scriptState.instances[id]?.suspension != nil)
+  #expect(reloaded.commander.scriptState.instances[id] == fault.commander.scriptState.instances[id])
   #expect(
-    await loaded.snapshot().commander.scriptState.pendingEvents
+    reloaded.commander.scriptState.pendingEvents
       == fault.commander.scriptState.pendingEvents)
+  let loadedNamespace = await loaded.gallerySaveDirectory()
+  #expect(!reloaded.isMissionTrial && loadedNamespace == nil)
+  #expect(reloaded.commander.cargoTonnes == capacity)
   await loaded.key("screen:7")
   let market = await loaded.snapshot()
   try #require(market.screen == .buy && market.selection == 0)
   let layout = MarketLayout(
     game: market, width: market.viewportWidth, height: market.viewportHeight)
   await loaded.marketClick(x: layout.sell.x + 1, y: layout.sell.y + 1)
-  try #require(await loaded.snapshot().screen == .sell)
+  let selling = await loaded.snapshot()
+  try #require(selling.screen == .sell)
   await loaded.marketClick(x: layout.trade.x + 1, y: layout.trade.y + 1)
   let sold = await loaded.snapshot()
-  #expect(sold.commander.cargo[0] == 18)
+  #expect(sold.commander.cargo[0] == food - 1)
   #expect(sold.commander.credits == market.commander.credits + market.market[0].price)
   #expect(sold.market[0].quantity == market.market[0].quantity + 1)
   #expect(sold.commander.scriptState.payloadTonnes == market.commander.scriptState.payloadTonnes)
   #expect(sold.commander.scriptState.instances[id] == market.commander.scriptState.instances[id])
-  #expect(await loaded.snapshot().commander.cargoTonnes == 19)
+  #expect(sold.commander.cargoTonnes == capacity - 1)
+  #expect(sold.commander.tradeCargoCapacity == capacity)
+  #expect(sold.scriptSnapshot.object?["free_tonnes"] == .integer(1))
+  #expect(sold.commander.scriptState.pendingEvents == fault.commander.scriptState.pendingEvents)
+  #expect(sold.commander.scriptState.instances[id] == reloaded.commander.scriptState.instances[id])
   await loaded.key("gallery-open")
-  for _ in 0..<3 { await loaded.key("down") }
-  #expect(await loaded.snapshot().canRetrySelectedMission)
+  let opened = await loaded.snapshot()
+  try #require(opened.screen == .gallery && !opened.gallery.detail)
+  let matches = opened.missionCatalogue.indices.filter {
+    opened.missionCatalogue[$0].savedInstance == id
+  }
+  try #require(matches.count == 1)
+  let selected = try #require(matches.first)
+  try #require(opened.gallery.selection <= selected)
+  for _ in opened.gallery.selection..<selected { await loaded.key("down") }
+  let ready = await loaded.snapshot()
+  #expect(ready.selectedGalleryMission?.savedInstance == id)
+  #expect(ready.selectedGalleryMission?.trialDigest == pack.digest)
+  #expect(ready.canRetrySelectedMission)
+  #expect(ready.commander.scriptState.instances[id] == sold.commander.scriptState.instances[id])
+  #expect(ready.commander.scriptState.pendingEvents == fault.commander.scriptState.pendingEvents)
   await loaded.key("r")
   let resumed = await loaded.snapshot()
   #expect(resumed.commander.scriptState.instances[id]?.suspension == nil)
   #expect(resumed.commander.scriptState.instances[id]?.dialogue?.id == "delivery")
-  let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: file), from: file)
+  let resumedInstance = try #require(resumed.commander.scriptState.instances[id])
+  #expect(resumedInstance.id == id && resumedInstance.digest == pack.digest)
+  #expect(resumedInstance.payloads == accepted.payloads)
+  #expect(resumedInstance.hasAcknowledged(pendingContact.sequence))
+  #expect(
+    !resumed.commander.scriptState.pendingEvents.contains { $0.sequence == pendingContact.sequence }
+  )
+  #expect(
+    resumed.commander.cargo[0] == food - 1 && resumed.commander.credits == sold.commander.credits)
+  #expect(resumed.commander.cargoTonnes == capacity - 1 && !resumed.isMissionTrial)
+  let savedBytes = try Data(contentsOf: file)
+  let savedPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: savedBytes)
+  #expect(savedPointer.schemaVersion == 26 && savedPointer.scope == "commander")
+  #expect(savedPointer.valueCodec == ScriptValueStorage.codec)
+  let (saved, savedWorld) = try ScriptSaveStore.read(savedBytes, from: file)
+  #expect(saved == resumed.commander && savedWorld.valid && savedWorld.consistent(with: saved))
   #expect(saved.scriptState.instances[id]?.suspension == nil)
   #expect(
     saved.credits == resumed.commander.credits
