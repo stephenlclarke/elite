@@ -573,3 +573,49 @@ extension Game {
     }
   }
 }
+
+extension Game {
+  /// Observe only the completed actor-owned physical step. Failure discards evidence, never physics.
+  mutating func observeNativeCrimboAttainedMotion(
+    delta: Double, flightWasActive: Bool, startTime: Double, startPlayer: ActorIdentity?,
+    stationEntryAttempted: Bool
+  ) {
+    nativeCrimboAttainedMotion = nil
+    defer { nativeCrimboMotionSample = nil }
+    let admitted = nativeCrimboAdvanceIsContinuous(
+      delta: delta, flightWasActive: flightWasActive, startTime: startTime,
+      startPlayer: startPlayer, stationEntryAttempted: stationEntryAttempted)
+    do {
+      nativeCrimboAttainedMotion = try finishNativeCrimboMotion(admitted: admitted)
+    } catch {
+      // A later observer refusal cannot roll back a committed translation, collision or native entry.
+      nativeCrimboAttainedMotion = nil
+    }
+  }
+
+  private func nativeCrimboAdvanceIsContinuous(
+    delta: Double, flightWasActive: Bool, startTime: Double, startPlayer: ActorIdentity?,
+    stationEntryAttempted: Bool
+  ) -> Bool {
+    let flight = commander.flightSimulation
+    guard nativeCrimboLifecycleAvailable, flightWasActive, !stationEntryAttempted,
+      !paused, !docked, screen != .gameOver,
+      delta.isFinite, delta > 0, startTime.isFinite, startTime >= 0,
+      let startPlayer, flight.player == startPlayer,
+      flight.system == startPlayer.system, flight.visit == startPlayer.visit,
+      flight.physicalTime.isFinite, flight.physicalTime > startTime,
+      let sample = nativeCrimboMotionSample, sample.actor.system == startPlayer.system,
+      sample.actor.visit == startPlayer.visit, sample.runtimeEpoch == nativeStationRuntimeEpoch,
+      sample.frame == gameplayRevision, sample.endTime == flight.physicalTime,
+      sample.stationImpactRevision == stationImpactRevision,
+      stationImpactRevision != gameplayRevision
+    else { return false }
+    // Game.tick clamps the real physical step; the requested advance may be much larger.
+    let admittedDelta = min(delta, 0.1)
+    let elapsed = flight.physicalTime - startTime
+    let clockTolerance = min(1e-8, 2 * max(flight.physicalTime.ulp, startTime.ulp))
+    return abs(elapsed - admittedDelta) <= clockTolerance
+      && abs(sample.startTime - startTime) <= clockTolerance
+      && sample.startTime == sample.endTime - admittedDelta
+  }
+}
