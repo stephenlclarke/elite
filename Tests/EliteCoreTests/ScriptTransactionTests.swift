@@ -213,6 +213,12 @@ extension GameRuntime {
   }
 }
 
+private func freshNativeResetScriptState() -> ScriptEngineState {
+  var state = ScriptEngineState()
+  state.calendarLedger = .init(origin: .newCommander)
+  return state
+}
+
 @Test func gameOverReturnReplacesBoundDurableSaveWithClearedNativeCommander() async throws {
   let fixture = try DurableFixture()
   defer { fixture.clean() }
@@ -220,21 +226,29 @@ extension GameRuntime {
   let priorBytes = try Data(contentsOf: fixture.url)
   let prior = try JSONDecoder().decode(ScriptSavePointer.self, from: priorBytes)
   #expect(prior.format == "elite-script-save")
+  let beforeReset = await runtime.snapshot()
   await runtime.key("return")
   let reset = await runtime.snapshot()
-  #expect(reset.screen == .status && reset.docked && !reset.requiresScriptDurability)
-  #expect(reset.commander.scriptState == ScriptEngineState())
-  #expect(reset.commander.scriptState.calendarLedger == nil)
+  let expected = freshNativeResetScriptState()
+  #expect(reset.screen == .status && reset.docked && reset.requiresScriptDurability)
+  #expect(reset.commander.scriptState == expected)
+  #expect(reset.commander.scriptState.calendarLedger == expected.calendarLedger)
+  #expect(reset.commander.name == "JAMESON" && reset.commander.credits == 1000)
+  #expect(reset.commander.cargo.allSatisfy { $0 == 0 })
+  #expect(reset.commander.equipmentOwnerID != beforeReset.commander.equipmentOwnerID)
   #expect(reset.commander.valid)
   let bytes = try Data(contentsOf: fixture.url)
   #expect(bytes != priorBytes)
-  let saved = try JSONDecoder().decode(Commander.self, from: bytes)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
+  #expect(pointer.scope == "commander" && pointer.generation != prior.generation)
+  let (saved, _) = try ScriptSaveStore.read(bytes, from: fixture.url)
   #expect(saved == reset.commander)
-  #expect(saved.scriptState.instances.isEmpty && saved.scriptState.calendarLedger == nil)
+  #expect(saved.scriptState.instances.isEmpty && saved.scriptState == expected)
   let restored = GameRuntime()
   try await restored.load(from: fixture.url)
   let loaded = await restored.snapshot()
-  #expect(loaded.commander == saved && !loaded.requiresScriptDurability)
+  #expect(loaded.commander == saved && loaded.requiresScriptDurability)
 }
 
 @Test func failedGameOverResetRestoresNativeStateControlsAndOriginalSaveBytes() async throws {
@@ -249,6 +263,7 @@ extension GameRuntime {
   let before = await runtime.snapshot()
   let held = await runtime.resetTestControls()
   let priorBytes = try Data(contentsOf: fixture.url)
+  let priorPointer = try JSONDecoder().decode(ScriptSavePointer.self, from: priorBytes)
   // Persisted commanders omit transient NPC bindings retained by the live rollback snapshot.
   let (priorSaved, _) = try ScriptSaveStore.read(priorBytes, from: fixture.url)
   try fixture.breakWriter()
@@ -271,9 +286,27 @@ extension GameRuntime {
   #expect(saved == priorSaved)
   await runtime.key("return")
   let reset = await runtime.snapshot()
+  let resetControls = await runtime.resetTestControls()
+  #expect(resetControls.allSatisfy { $0 == 0 })
   let retriedBytes = try Data(contentsOf: fixture.url)
-  let retried = try JSONDecoder().decode(Commander.self, from: retriedBytes)
-  #expect(retried == reset.commander && !reset.requiresScriptDurability)
+  #expect(retriedBytes != priorBytes)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: retriedBytes)
+  #expect(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
+  #expect(pointer.scope == "commander" && pointer.generation != priorPointer.generation)
+  let (retried, _) = try ScriptSaveStore.read(retriedBytes, from: fixture.url)
+  let expected = freshNativeResetScriptState()
+  #expect(reset.screen == .status && reset.docked && reset.requiresScriptDurability)
+  #expect(retried == reset.commander && retried.valid && retried.scriptState == expected)
+  #expect(
+    retried.scriptState.instances.isEmpty
+      && retried.scriptState.calendarLedger == expected.calendarLedger)
+  #expect(retried.name == "JAMESON" && retried.credits == 1000)
+  #expect(retried.cargo.allSatisfy { $0 == 0 })
+  #expect(retried.equipmentOwnerID != before.commander.equipmentOwnerID)
+  let restored = GameRuntime()
+  try await restored.load(from: fixture.url)
+  let loaded = await restored.snapshot()
+  #expect(loaded.commander == retried && loaded.requiresScriptDurability)
 }
 
 private let durableTimers = """
