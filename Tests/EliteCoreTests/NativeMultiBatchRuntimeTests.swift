@@ -111,10 +111,34 @@ struct NativeMultiBatchRuntimeTests {
     #expect(loaded.nativeSalvageWork == nil && (observedFileBytes) == bytes)
     #expect(loaded.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
     let retainedBody = try #require(
-      loaded.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+      loaded.bodies.first {
+        $0.physical?.salvage?.wreck == site.identity && $0.physical?.payload == nil
+      })
+    let retainedModel = loaded.modelPose(of: retainedBody)
+    let retainedTime = loaded.commander.flightSimulation.physicalTime
+    let retainedCustody = loaded.commander.alienStorageState?.current.snapshot
+    let retainedPhysical = loaded.bodies.map(\.physical)
+    var retainedModels: [ShipPose] = []
+    for body in loaded.bodies { retainedModels.append(loaded.modelPose(of: body)) }
+    // Equality and no-write reload checks above precede this unit observer setup.
+    NativePagedSalvageFixture.moveObserver(
+      &loaded, to: NativePagedSalvageFixture.cargoObserverPose(retainedModel, section: section))
+    #expect(loaded.commander.flightSimulation.physicalTime == retainedTime)
+    #expect(loaded.commander.alienStorageState?.current.snapshot == retainedCustody)
+    #expect(loaded.bodies.map(\.physical) == retainedPhysical)
+    for (body, model) in zip(loaded.bodies, retainedModels) {
+      let current = loaded.modelPose(of: body)
+      #expect((current.position - model.position).length < 1e-8)
+      #expect((current.orientation.x - model.orientation.x).length < 1e-8)
+      #expect((current.orientation.y - model.orientation.y).length < 1e-8)
+      #expect((current.orientation.z - model.orientation.z).length < 1e-8)
+    }
+    let reacquiredBody = try #require(
+      loaded.bodies.first { $0.physical?.identity == retainedBody.physical?.identity })
     loaded.selectFlightTool(.salvageCutter)
     loaded.beginWorkGuidance(
-      body: retainedBody, mode: .hold(.salvage), velocity: retainedBody.physical!.velocity)
+      body: reacquiredBody, mode: .hold(.salvage), velocity: reacquiredBody.physical!.velocity)
+    try #require(loaded.workGuidance?.surface.section == identity)
     let resumed = GameRuntime(game: loaded)
     try await resumed.save(to: file)
     await resumed.setControls(NativePagedSalvageFixture.firingControls)

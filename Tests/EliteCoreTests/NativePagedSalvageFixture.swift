@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import Testing
 
@@ -166,7 +167,14 @@ enum NativePagedSalvageFixture {
         let up = abs(basis.z.y) < 0.8 ? Vector3(0, 1, 0) : .init(1, 0, 0)
         basis.x = up.cross(basis.z).unit
         basis.y = basis.z.cross(basis.x).unit
-        moveObserver(&game, to: .init(position: surface + normal * 200, orientation: basis))
+        if humanCargo {
+          moveObserver(
+            &game,
+            to: cargoObserverPose(
+              .init(position: site.position, orientation: site.orientation), section: section))
+        } else {
+          moveObserver(&game, to: .init(position: surface + normal * 200, orientation: basis))
+        }
         game.activateNearbySalvageSites()
         guard let body = game.bodies.first(where: { $0.physical?.salvage?.wreck == site.identity }),
           let hit = try game.nearestMissionCollision(
@@ -216,9 +224,24 @@ enum NativePagedSalvageFixture {
     game.commander.flightSimulation.pose = pose
   }
 
+  /// Unit observer setup for the unchanged Cargo 1 face, along local -Y toward +Y.
+  /// The parent and independent fragments keep their actual canonical world motion.
+  static func cargoObserverPose(_ model: ShipPose, section: SalvageSectionProfile) -> ShipPose {
+    var basis = Basis3()
+    basis.x = model.orientation.x
+    basis.y = model.orientation.z * -1
+    basis.z = model.orientation.y
+    return .init(
+      position: model.systemPoint(section.localPosition) - basis.z * 200, orientation: basis)
+  }
+
   static func folder() throws -> URL {
-    let url = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
-      .appendingPathComponent(UUID().uuidString)
+    let path = FileManager.default.temporaryDirectory.path
+    let resolved = path.withCString { realpath($0, nil) }
+    let physical = try #require(resolved)
+    defer { free(physical) }
+    let url = URL(fileURLWithPath: String(cString: physical), isDirectory: true)
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
     try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
     return url
   }

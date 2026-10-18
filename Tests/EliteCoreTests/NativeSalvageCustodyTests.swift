@@ -8,11 +8,32 @@ struct NativeSalvageCustodyTests {
   func completeSnapshotCensusRejectsAParentSharingAnotherCurrentCustodyActor(kind: String) throws {
     let actor = ActorIdentity(system: .init(galaxy: 0, system: 7), visit: 1, entity: 200)
     let distinct = ActorIdentity(system: actor.system, visit: actor.visit, entity: actor.entity + 1)
-    let fixture = try AlienLegacyFixture.make(
+    let needsCurrentPlan = kind == "reserved" || kind == "companion"
+    var fixture = try AlienLegacyFixture.make(
       definition: kind == "reserved" ? AlienModuleKind.energyCapacity.definitionID : nil,
       roles: kind == "reserved" ? [.thargoid, .militaryCapital] : [.militaryCapital],
-      manifest: kind == "reserved" ? nil : [.init(commodity: .food, quantity: 2)])
+      manifest: kind == "reserved" ? nil : [.init(commodity: .food, quantity: 2)],
+      elapsed: needsCurrentPlan ? 0.5 : 1)
+    if needsCurrentPlan {
+      #expect(fixture.ledger.progress(fixture.plan.section) == 0.5)
+      // Complete the original producer budget with an actual positive operation.
+      let section = SalvageSectionProfile(
+        index: 1, kind: .computer, localPosition: .init(10, 0, 0), normal: .init(0, 0, 1),
+        radius: 10, workSeconds: 1, structural: true, technologyDefinitionIDs: [],
+        sourceFaceIndex: 0)
+      let result = fixture.ledger.advance(
+        wreck: fixture.plan.section.wreck, section: section, pose: .init(),
+        velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
+        elapsed: 0.5, operation: 1, conditions: NativePagedSalvageFixture.permitted,
+        source: fixture.plan.source)
+      guard case .released(let lots) = result, !lots.isEmpty else {
+        throw SaveError.invalidCommander
+      }
+    }
     let exported = try fixture.ledger.exportNativeSection(fixture.plan.section)
+    if needsCurrentPlan {
+      #expect(exported.lastOperation == 1 && exported.partialWork == nil)
+    }
     let owner = AlienLegacyFixture.owner
     var world: [AlienStorageWorldRecord]
     if kind == "legacy-current" {
