@@ -194,3 +194,55 @@ private func alteredClueSave(
     try ScriptSaveStore.read(upgraded, from: fixture.save, clueTrust: fixture.trust)
   }
 }
+
+@Test func ordinaryCommanderLoadRejectsOnlyTheClueClaimWithoutIncidentalVersionFlags() throws {
+  let fixture = try ScriptClueFixture()
+  defer { fixture.clean() }
+  var source = try fixture.game()
+  // Use the existing checked version-two equipment shape before the real settlement.
+  // This preserves an equipment owner without activating the modular-drive refusal.
+  let modern = try #require(source.commander.equipmentInventory)
+  source.commander.savedEquipmentInventory = try .init(
+    owner: modern.owner, activeHull: modern.activeHull, revision: modern.revision,
+    items: modern.items.filter { $0.node.family != HyperspaceDriveDefinition.purchaseFamily })
+  source.commander.savedEquipmentVersion = 2
+  source.commander.mirrorFittedEquipment()
+  try source.commander.validateEquipmentState()
+  let id = try fixture.queueSettlement(&source)
+  source.drainScriptEvents(clueTrust: fixture.trust)
+  let claim = source.commander
+  let journal = try #require(claim.scriptState.savedClueJournal)
+  try #require(journal.awards.count == 1)
+  try #require(claim.scriptState.instances[id]?.outcome == .complete)
+  try #require(ScriptClueVersionedSave.validateClaims(claim, trust: fixture.trust))
+  // Every pre-existing loadCommander guard must pass for this incoming value.
+  try #require(claim.valid)
+  try #require(!claim.usesAlienStorageSaveVersion && !claim.usesEMPSaveVersion)
+  try #require(!claim.usesModularDriveSaveVersion && !claim.usesEconomyMiningSaveVersion)
+  try #require(!claim.usesFreightNativeSaveVersion && !claim.usesProviderContractSaveVersion)
+  try #require(claim.scriptState.financeLedger == nil && claim.savedEquipmentVersion == 2)
+
+  var installed = try fixture.game()
+  let before = installed.commander
+  let beforeWorld = installed.scriptWorldSave
+  let beforeRevision = installed.gameplayRevision
+  let beforePacks = installed.scriptPacks.map(\.digest)
+  let acceptedClaim = installed.load(claim)
+  #expect(!acceptedClaim)
+  #expect(installed.commander == before && installed.gameplayRevision == beforeRevision)
+  #expect(installed.bodies == beforeWorld.bodies && installed.screen == beforeWorld.screen)
+  #expect(installed.scriptPacks.map(\.digest) == beforePacks)
+
+  // Remove only the journal; keep the same real completion and all other input state.
+  var ordinary = claim
+  ordinary.scriptState.savedClueJournal = nil
+  try #require(ordinary.valid)
+  let acceptedOrdinary = installed.load(ordinary)
+  #expect(acceptedOrdinary)
+  #expect(installed.commander.scriptState.savedClueJournal == nil)
+  #expect(
+    installed.commander.scriptState.instances[id]?.completionReceipt
+      == claim.scriptState.instances[id]?.completionReceipt)
+  #expect(installed.commander.equipmentOwnerID == ordinary.equipmentOwnerID)
+  #expect(installed.commander.credits == ordinary.credits && installed.commander.valid)
+}

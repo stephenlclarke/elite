@@ -586,7 +586,7 @@ public struct Game: Sendable {
       !value.usesEMPSaveVersion, !value.usesModularDriveSaveVersion,
       !value.usesEconomyMiningSaveVersion,
       !value.usesFreightNativeSaveVersion, !value.usesProviderContractSaveVersion,
-      value.scriptState.financeLedger == nil
+      value.scriptState.financeLedger == nil, value.scriptState.savedClueJournal == nil
     else {
       return false
     }
