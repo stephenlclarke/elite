@@ -619,7 +619,32 @@ func stationAutoColdMissileRequiresActualAttackAndClearExplicitSourcePath(condit
         from: actor, against: player, context: context))
     if condition == "station-occluded" {
       let station = try #require(game.autoTargetBody)
-      let hidden = station.position + .init(250, 250, 500)
+      let overrides = game.gameplayMeshOverrides
+      let stationMesh = overrides[station.id] ?? Mesh.hull(station.hull)
+      let targetMesh = overrides[id] ?? Mesh.hull(game.bodies[index].hull)
+      let stationRadius = try #require(stationMesh.vertices.map(\.length).max())
+      let targetRadius = try #require(targetMesh.vertices.map(\.length).max())
+      let muzzle = Vector3(0, 0, 24)
+      var hiddenPosition: Vector3?
+      // Search the bounded actual face set without excluding any scene body.
+      for face in stationMesh.faces where face.count >= 3 {
+        let center =
+          (stationMesh.vertices[face[0]] + stationMesh.vertices[face[1]]
+            + stationMesh.vertices[face[2]]) * (1.0 / 3.0)
+        let offset = station.position + station.modelVector(center) - muzzle
+        guard offset.length > 0,
+          let contact = try game.nearestMissionCollision(
+            from: muzzle, direction: offset.unit, range: offset.length + stationRadius,
+            radius: 0, excludingBodyIDs: [], includePlayer: false),
+          case .body(let first) = contact.hit.target, first == station.id
+        else { continue }
+        let beyondBounds =
+          (station.position - muzzle).dot(offset.unit)
+          + stationRadius + targetRadius + 1
+        hiddenPosition = muzzle + offset.unit * beyondBounds
+        break
+      }
+      let hidden = try #require(hiddenPosition)
       game.bodies[index].position = hidden
       game.bodies[index].physical?.npc?.intention = .flee(player)
       let offset = hidden - Vector3(0, 0, 24)
