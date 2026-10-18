@@ -108,7 +108,7 @@ struct ScriptProcurementFixture {
       ScriptContractOffer.self, from: JSONSerialization.data(withJSONObject: object))
   }
 
-  /// Buy the canonical docking equipment, then use real launch/controls/station entry.
+  /// Buy the fixed docking and defensive fit, then use real launch/controls/station entry.
   func nativeRuntime(diagnostic: ScriptProcurementFlightDiagnostic? = nil) async throws
     -> GameRuntime
   {
@@ -119,50 +119,109 @@ struct ScriptProcurementFixture {
     game.commander.credits = 100000
     game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
     game.scriptPacks = [pack]
-    let budget = game.commander.credits
-    var paid = 0
-    for tier in [TargetingTier.basic, .advanced, .docking] {
-      let index = try #require(Equipment.all.firstIndex { $0.name == tier.equipmentName })
-      let price = game.shopPrice(Equipment.all[index])
-      let creditsBefore = game.commander.credits
-      let previousReceipts = game.commander.equipmentPurchaseHistory?.paid ?? []
-      let previousLegacy = game.commander.equipmentPurchaseHistory?.legacy
-      let previousItems = game.commander.equipmentInventory?.items ?? []
-      game.selection = index
-      game.purchase()
-      let inventory = try #require(game.commander.equipmentInventory)
-      let history = try #require(game.commander.equipmentPurchaseHistory)
-      let receipt = try #require(history.paid.last)
-      let fitted = try #require(game.commander.fittedEquipment(at: .targetingCore))
-      try #require(price > 0 && game.commander.credits == creditsBefore - price)
-      try #require(game.commander.targetingTier == tier && game.commander.equipmentStateValid)
-      try #require(history.paid.count == previousReceipts.count + 1)
-      try #require(Array(history.paid.prefix(previousReceipts.count)) == previousReceipts)
-      if let previousLegacy { try #require(history.legacy == previousLegacy) }
-      try #require(
-        history.legacy.allSatisfy {
-          !$0.lineage.contains { $0.family == EquipmentPurchaseCatalog.targeting }
-        })
-      try #require(
-        receipt.owner == inventory.owner && receipt.node.key == tier.equipmentName
-          && receipt.node.family == EquipmentPurchaseCatalog.targeting
-          && receipt.node == fitted.node
-          && receipt.price == price && receipt.binding.request.newItem == fitted.id
-          && fitted.provenance == .paid(owner: inventory.owner, transaction: receipt.transaction)
-          && fitted.location?.hullInstanceID == inventory.activeHull)
-      for item in previousItems {
-        let retained = item.location?.slot == .targetingCore ? item.moved(to: nil) : item
-        try #require(inventory.items.contains(retained))
-      }
-      paid += price
-    }
-    try #require(game.commander.credits == budget - paid)
-    try #require(game.commander.targetingTier == .docking)
+    let cargo = game.commander.cargo
+    try game.prepareG03FlightEquipment()
+    try Self.requirePaidG03Preparation(game)
+    try #require(game.commander.cargo == cargo)
     let runtime = GameRuntime(game: game, saveURL: save)
     try await runtime.save(to: save)
     await runtime.key("0")
     try await Self.dock(runtime, diagnostic: diagnostic, phase: "initial-dock")
     return runtime
+  }
+  /// Independently fixed paid chain: assert quotes, predecessor custody and all retained items.
+  static func requirePaidG03Preparation(_ game: Game, escapeReady: Bool = false) throws {
+    let inventory = try #require(game.commander.equipmentInventory)
+    let history = try #require(game.commander.equipmentPurchaseHistory)
+    var rows: [(String, Int, ComponentFittingSlot, EquipmentFamilyID, String?)] = [
+      ("Targeting: Basic", 8000, .targetingCore, EquipmentPurchaseCatalog.targeting, nil),
+      (
+        "Targeting: Advanced", 20000, .targetingCore, EquipmentPurchaseCatalog.targeting,
+        "Targeting: Basic"
+      ),
+      (
+        "Targeting: Docking", 40000, .targetingCore, EquipmentPurchaseCatalog.targeting,
+        "Targeting: Advanced"
+      ),
+      ("Pulse Shield Booster", 3000, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
+      ("Extra Energy Unit", 15000, .energy, EquipmentPurchaseCatalog.energy, "Basic Energy System"),
+    ]
+    if escapeReady {
+      rows.append(("Escape Pod", 10000, .utility(.escapePod), .init("utility-escapePod"), nil))
+    }
+    try #require(history.paid.count == rows.count && history.legacy.isEmpty)
+    try #require(history.owner == inventory.owner && history.revision == UInt64(rows.count))
+    try #require(Set(history.paid.map(\.transaction)).count == rows.count)
+    let first = try #require(history.paid.first)
+    var expectedItems = first.binding.snapshot.items
+    let foundation = expectedItems
+    var funds = 100000
+    for (index, row) in rows.enumerated() {
+      let (name, price, slot, family, predecessor) = row
+      let receipt = history.paid[index]
+      let node = EquipmentNodeID(family: family, key: name)
+      let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
+      let purchaseLocation = EquipmentRuntimeCatalog.purchaseLocation(location)
+      let policy = try #require(receipt.binding.lineage.first { $0.id == node })
+      let required = predecessor.map { EquipmentNodeID(family: family, key: $0) }
+      try #require(
+        receipt.owner == inventory.owner && receipt.node == node && receipt.price == price)
+      try #require(
+        receipt.binding.snapshot.owner == inventory.owner
+          && receipt.binding.snapshot.activeHull == inventory.activeHull
+          && receipt.binding.snapshot.funds == funds
+          && receipt.binding.historyRevision == UInt64(index))
+      try #require(receipt.binding.snapshot.items == expectedItems)
+      try #require(receipt.binding.request.location == purchaseLocation)
+      try #require(
+        receipt.binding.request.offer.shop == "galaxy:0/system:0"
+          && receipt.binding.request.offer.node == node
+          && receipt.binding.request.offer.revision == 1)
+      let prerequisites = required.map { [$0] } ?? []
+      try #require(policy.prerequisites == prerequisites)
+      if let required {
+        let prior = try #require(expectedItems.first { $0.node == required })
+        try #require(prior.location == purchaseLocation)
+        if index < 3 {
+          try #require(history.paid.prefix(index).contains { $0.node == required })
+        } else {
+          try #require(prior.provenance == .standard)
+        }
+      }
+      expectedItems = expectedItems.map {
+        .init(
+          id: $0.id, node: $0.node, location: $0.location == purchaseLocation ? nil : $0.location,
+          provenance: $0.provenance)
+      }
+      expectedItems.append(
+        .init(
+          id: receipt.binding.request.newItem, node: node, location: purchaseLocation,
+          provenance: .paid(owner: inventory.owner, transaction: receipt.transaction)))
+      funds -= price
+    }
+    let actual = try game.commander.purchaseSnapshot()
+    try #require(actual.items == expectedItems && game.commander.credits == funds)
+    try #require(funds == (escapeReady ? 4000 : 14000))
+    for old in foundation {
+      let retained = try #require(inventory.items.first { $0.id == old.id })
+      try #require(retained.node == old.node && retained.provenance == old.provenance)
+    }
+    for (name, _, slot, _, _) in rows.suffix(escapeReady ? 4 : 3) {
+      let fitted = try #require(game.commander.fittedEquipment(at: slot))
+      try #require(
+        fitted.node.key == name && fitted.location?.hullInstanceID == inventory.activeHull)
+    }
+    try #require(game.commander.targetingTier == .docking && game.commander.equipmentStateValid)
+    try #require(
+      game.commander.fittedComponent(at: .shield)?.grade
+        == EquipmentModuleTemplates.shield.grades[1].identity)
+    try #require(
+      game.commander.fittedComponent(at: .energy)?.grade
+        == EquipmentModuleTemplates.energy.grades[1].identity)
+    try #require(game.commander.shieldCapacity == game.commander.nativePerformance.shield * 1.5)
+    try #require(game.commander.rearShieldCapacity == game.commander.nativePerformance.shield * 1.5)
+    try #require(game.commander.energyRechargeMultiplier == 2)
+    try #require(game.commander.performance.energy == game.commander.nativePerformance.energy)
   }
   static func dock(
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic? = nil,

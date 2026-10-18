@@ -8,6 +8,7 @@ extension Game {
     else {
       throw MissionPackError("Procurement trials require their declared ordinary flight scene.")
     }
+    try prepareG03FlightEquipment()
     let previousVisit = commander.flightSimulation.visit
     let owner = commander.equipmentOwnerID
     let credits = commander.credits
