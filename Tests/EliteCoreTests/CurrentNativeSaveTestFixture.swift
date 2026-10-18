@@ -87,8 +87,9 @@ enum CurrentNativeSaveTestFixture {
         physicalTime: original.commander.flightSimulation.physicalTime,
         nextActor: original.commander.flightSimulation.nextActor, protection: context.protection)
     }
-    var value = try #require(object(world) as? [String: Any])
-    if !world.screen.isFlight { value["screen"] = try object(Screen.status) }
+    var loadedWorld = world
+    if !loadedWorld.screen.isFlight { loadedWorld.screen = .status }
+    var value = try #require(object(loadedWorld) as? [String: Any])
     var bodies = try #require(value["bodies"] as? [[String: Any]])
     let stations = original.bodies.indices.filter {
       original.bodies[$0].nativeStationIdentity != nil
