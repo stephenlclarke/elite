@@ -28,6 +28,16 @@ extension Commander {
   }
 
   mutating func prepareEquipment(legacy: Bool = true) throws {
+    if legacyOwnedEquipment == nil, savedEquipmentVersion == 3 {
+      try validateEquipmentState()
+      return
+    }
+    try prepareEquipmentMigration(legacy: legacy)
+  }
+
+  /// Current commanders never enter this owned candidate frame; migrations still publish atomically.
+  @inline(never)
+  private mutating func prepareEquipmentMigration(legacy: Bool) throws {
     var candidate = self
     try candidate.prepareEquipmentCandidate(legacy: legacy)
     self = candidate
