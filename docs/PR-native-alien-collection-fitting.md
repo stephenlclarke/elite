@@ -13,3 +13,7 @@ Seven new actor regressions cover actual recovery and schema-27 reload, writer f
 Fresh uncapped wreck/cutter generation, imported incomplete-section continuation, companion technology consumption and complete native alien feature acceptance remain outstanding. These limitations must stay visible until actual integration and validation. The separately fixed script-snapshot regression passed validation 321; that result does not validate this packet.
 
 [ISSUE-native-alien-collection-fitting.md](ISSUE-native-alien-collection-fitting.md).
+
+## Independent review corrections
+
+The follow-up [custody joins](PR-native-alien-custody-joins.md) adds exclusive physical/backend ownership, a global cold collection/terminal audit census, stable same-hull previews and meaningful live coverage for all stat axes, multiple physical energy modules, repeated upgrades and actual hull exchange. The initial seven-method source selection is superseded by the final frozen selection. Both packets remain uncompiled until the substantive review is complete; storage-only or source inspection results do not establish native acceptance.

@@ -309,3 +309,210 @@ struct AlienStorageLegacyTransitionTests {
     return (.init(ledger: ledger, seed: 0, plan: first), proposal, last)
   }
 }
+
+extension AlienStorageLegacyTransitionTests {
+  @Test func independentLegacyCollectionCannotReuseRetirementSettlementOrImportOperations() throws {
+    let (original, proposal, _) = try settledFixture(count: 2)
+    var owned = AlienStorageTestFixture()
+    let module = try owned.acquire(kind: .energyCapacity)
+    try owned.retire(module)
+    let retirement = try #require(owned.commands.last?.id)
+    let imported = try NativeSalvageImport(
+      ledger: original.ledger,
+      section: original.plan.section, owner: AlienStorageTestFixture.owner, at: 100,
+      previous: owned.snapshot)
+    let section = try #require(
+      imported.snapshot.world.compactMap { record -> AlienStorageLegacySection? in
+        if case .legacySection(let value) = record { return value }
+        return nil
+      }.first)
+    let pending = try #require(
+      imported.snapshot.world.compactMap { record -> AlienStorageLegacyCurrent? in
+        guard case .legacyCurrent(let value) = record,
+          case .pending(let lot, _, _, _) = value.state, case .commodity = lot.content
+        else { return nil }
+        return value
+      }.first)
+    guard case .pending(let lot, _, _, _) = pending.state, case .commodity(let amount) = lot.content
+    else { throw AlienStorageError.invalidJoin }
+    func candidate(_ operation: UUID) -> AlienStorageSnapshot {
+      let collected = AlienStorageLegacyCurrent(
+        id: pending.id, owner: pending.owner, claim: pending.claim,
+        state: .collected(
+          .init(
+            operation: operation, hull: AlienStorageTestFixture.hull,
+            at: 101, effect: .cargo(amount: amount, before: 0, after: amount.quantity))))
+      let old = imported.snapshot
+      return .init(
+        owner: old.owner, revision: old.revision, worldRevision: old.worldRevision + 1,
+        world: old.world.map { $0.id == pending.id ? .legacyCurrent(collected) : $0 },
+        sources: old.sources, attachments: old.attachments, upgrades: old.upgrades,
+        receipts: old.receipts, commands: old.commands)
+    }
+    try candidate(UUID()).validateTransition(from: imported.snapshot)
+    for operation in [retirement, proposal.command, section.importOperation] {
+      #expect(throws: (any Error).self) { try candidate(operation).validate() }
+    }
+    try imported.snapshot.validate()
+  }
+}
+
+private func genuineReservedCrossSectionSale() throws -> (
+  SalvageLedger, SalvageLootPlan, SalvageLootPlan, SalvageSettlementProposal
+) {
+  var ledger = SalvageLedger(seed: 0)
+  let source = SalvageLootSource(
+    roles: [.thargoid], legalValue: 0, economy: 3,
+    technology: 12, ownership: .abandoned)
+  let profile = SalvageSectionProfile(
+    index: 1, kind: .computer, localPosition: .init(10, 0, 0),
+    normal: .init(0, 0, 1), radius: 10, workSeconds: 1, structural: true,
+    technologyDefinitionIDs: [], sourceFaceIndex: 0)
+  var plans: [SalvageLootPlan] = []
+  for site in UInt32(21000)..<23000 where plans.count < 2 {
+    let section = WreckSectionIdentity(
+      wreck: .init(
+        system: .init(galaxy: 0, system: 7),
+        site: site, lineage: 123), section: 1)
+    let possible = SalvageLootProfiles.plan(section: section, seed: 0, source: source)
+    guard
+      possible.items.contains(where: { item in
+        if case .technology(let id, _, _, _) = item.content {
+          return AlienModuleKind.allCases.contains { $0.definitionID == id }
+        }
+        return false
+      })
+    else { continue }
+    let inspected = ledger.inspectLoot(wreck: section.wreck, section: profile, source: source)
+    let plan = try #require(inspected)
+    let emitted = ledger.advance(
+      wreck: section.wreck, section: profile, pose: .init(),
+      velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
+      elapsed: 1, operation: UInt64(plans.count + 1),
+      conditions: .init(
+        toolInstalled: true, inRange: true, aligned: true, lineOfSight: true,
+        resourcesAvailable: true, ownershipAuthorized: true), source: source)
+    guard case .released(let lots) = emitted else { throw AlienStorageError.invalidJoin }
+    let technology = try #require(
+      lots.first { lot in
+        if case .technology(let id, _, _) = lot.content {
+          return AlienModuleKind.allCases.contains { $0.definitionID == id }
+        }
+        return false
+      })
+    var original = AlienLegacyFixture(ledger: ledger, seed: 0, plan: plan)
+    try original.collect(technology)
+    ledger = original.ledger
+    plans.append(plan)
+  }
+  try #require(plans.count == 2)
+  let prepared = ledger.prepareSettlement(
+    command: UUID(), items: ledger.inventory.map(\.identity), action: .sell)
+  let proposal = try #require(prepared)
+  let committed = ledger.commitSettlement(proposal)
+  try #require(committed == .committed(proposal))
+  return (ledger, plans[0], plans[1], proposal)
+}
+
+extension AlienStorageLegacyTransitionTests {
+  @Test(arguments: [false, true])
+  func fullOriginalCrossSectionAuditRefusesFreshPendingAndAcquiredNativeProperty(acquired: Bool)
+    throws
+  {
+    let (ledger, a, b, proposal) = try genuineReservedCrossSectionSale()
+    let owner = AlienLegacyFixture.owner
+    let importedA = try NativeSalvageImport(
+      ledger: ledger, section: a.section, owner: owner,
+      at: 100, previous: nil)
+    let exportedB = try ledger.exportNativeSection(b.section)
+    let nativePlan = AlienStorageWorldPlan(
+      id: UUID(), owner: owner, seed: 0, plan: b,
+      inspectedAt: 0, requiredWorkSeconds: 1, workSeconds: 1, damagedTechnology: false,
+      depleted: true, destroyed: false, lastOperation: 2, progress: exportedB.progress)
+    let item = try #require(proposal.items.first { $0.identity.section == b.section })
+    let operation = UUID()
+    let property = UUID()
+    var world: [AlienStorageWorldRecord] = [.plan(nativePlan)]
+    let source: [AlienStorageSource]
+    let attachments: [AlienStorageAttachment]
+    let commands: [AlienStorageCommand]
+    if acquired {
+      source = [.init(id: operation, owner: owner, lot: item, acquisition: operation)]
+      attachments = [
+        .init(
+          id: property, owner: owner, kind: try AlienModuleDefinition.kind(for: item),
+          source: operation, disposition: .stored, contributionBasisPoints: 1000)
+      ]
+      commands = [
+        .init(
+          id: operation, owner: owner, revision: 1,
+          action: .acquireAttachment(attachment: property, source: operation))
+      ]
+    } else {
+      source = []
+      attachments = []
+      commands = []
+    }
+    world.append(
+      .lot(
+        .init(
+          id: UUID(), owner: owner, plan: nativePlan.id, itemIndex: 0, issuedAt: 1,
+          state: acquired
+            ? .acquired(source: operation, at: 2)
+            : .pending(lot: item, physicalTime: 2, offer: nil, binding: nil))))
+    let emissions = try nativePlan.progress.emissions(plan: nativePlan)
+    for original in exportedB.evidence.pending {
+      let origin = try #require(emissions.first { $0.value.identity == original.identity }?.key)
+      world.append(
+        .companion(
+          .init(
+            id: UUID(), owner: owner, plan: nativePlan.id, origin: origin,
+            issuedAt: 1, state: .pending(lot: original, physicalTime: 2, offer: nil, binding: nil)))
+      )
+    }
+    let standalone = AlienStorageSnapshot(
+      owner: owner, revision: UInt64(commands.count),
+      worldRevision: 1, world: world, sources: source, attachments: attachments,
+      upgrades: [], receipts: [], commands: commands)
+    // This forged ownership is otherwise structurally valid without the old terminal audit.
+    try standalone.validate()
+    let combined = AlienStorageSnapshot(
+      owner: owner, revision: standalone.revision,
+      worldRevision: importedA.snapshot.worldRevision + 1,
+      world: importedA.snapshot.world + world, sources: source, attachments: attachments,
+      upgrades: [], receipts: [], commands: commands)
+    #expect(throws: (any Error).self) { try combined.validateTransition(from: importedA.snapshot) }
+    try importedA.snapshot.validate()
+  }
+
+  @Test func laterHonestLegacyImportReusesCompleteCrossSectionSettlementWithoutGrantingProperty()
+    throws
+  {
+    let (ledger, a, b, proposal) = try genuineReservedCrossSectionSale()
+    let owner = AlienLegacyFixture.owner
+    let importedA = try NativeSalvageImport(
+      ledger: ledger, section: a.section, owner: owner,
+      at: 100, previous: nil)
+    let importedB = try NativeSalvageImport(
+      ledger: importedA.ledger, section: b.section,
+      owner: owner, at: 101, previous: importedA.snapshot)
+    try importedB.snapshot.validateTransition(from: importedA.snapshot)
+    let headers = importedB.snapshot.world.compactMap { record -> AlienStorageLegacySettlement? in
+      if case .legacySettlement(let header) = record { return header }
+      return nil
+    }
+    let items = importedB.snapshot.world.compactMap { record -> AlienStorageLegacySettlementItem? in
+      if case .legacySettlementItem(let item) = record { return item }
+      return nil
+    }
+    #expect(headers.count == 1 && items.count == 2)
+    let header = try #require(headers.first)
+    let audit = AlienStorageLegacySettlements(headers: headers, items: items)
+    #expect(try audit.proposal(for: header) == proposal)
+    #expect(importedB.snapshot.sources.isEmpty && importedB.snapshot.attachments.isEmpty)
+    #expect(importedB.snapshot.upgrades.isEmpty && importedB.snapshot.commands.isEmpty)
+    #expect(
+      importedB.ledger.isNativeTransferred(a.section)
+        && importedB.ledger.isNativeTransferred(b.section))
+  }
+}

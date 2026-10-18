@@ -307,3 +307,47 @@ struct AlienStorageCompanionTests {
     return .init(plan: plan, lots: lots, records: records)
   }
 }
+
+extension AlienStorageCompanionTests {
+  @Test func independentNativeCollectionCannotReuseRelocationOrUpgradeCommandIDs() throws {
+    let original = try fixture()
+    var owned = AlienStorageTestFixture()
+    let module = try owned.acquire(kind: .energyCapacity)
+    try owned.fit(module)
+    let relocation = try #require(owned.commands.last?.id)
+    let upgrade = try owned.acquire(kind: .energyCapacity, upgrade: true)
+    try owned.apply(upgrade, to: module)
+    let application = try #require(owned.commands.last?.id)
+    let companion = try #require(
+      original.records.compactMap { record -> AlienStorageCompanion? in
+        guard case .companion(let value) = record,
+          case .pending(let lot, _, _, _) = value.state, case .commodity = lot.content
+        else { return nil }
+        return value
+      }.first)
+    guard case .pending(let lot, _, _, _) = companion.state,
+      case .commodity(let amount) = lot.content
+    else { throw AlienStorageError.invalidJoin }
+    func candidate(_ operation: UUID) -> AlienStorageSnapshot {
+      let next = replacing(
+        companion,
+        state: .collected(
+          .init(
+            operation: operation,
+            hull: AlienStorageTestFixture.hull, at: 2,
+            effect: .cargo(amount: amount, before: 0, after: amount.quantity))))
+      return .init(
+        owner: owned.snapshot.owner, revision: owned.snapshot.revision,
+        worldRevision: 2,
+        world: owned.world + original.records.map { $0.id == companion.id ? .companion(next) : $0 },
+        sources: owned.sources, attachments: owned.attachments, upgrades: owned.upgrades,
+        receipts: owned.receipts, commands: owned.commands)
+    }
+    try candidate(UUID()).validate()
+    for operation in [relocation, application] {
+      #expect(throws: (any Error).self) { try candidate(operation).validate() }
+    }
+    // The actual acquisition and upgrade command's associated receipt remain legitimate.
+    try owned.snapshot.validate()
+  }
+}

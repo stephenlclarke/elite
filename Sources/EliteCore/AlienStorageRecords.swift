@@ -134,6 +134,7 @@ struct AlienStorageSnapshot: Sendable, Equatable {
         }
       }
     }
+    try AlienStorageGlobalCustodyValidation.validate(self)
     try AlienStorageWorldValidation.validate(
       world, owner: owner, sources: sources, commands: commands)
     let receiptsByCommand = Dictionary(grouping: receipts, by: \.operation)
