@@ -327,7 +327,7 @@ extension Game {
   }
 
   @inline(never)
-  private static func gameplayProtectionAndBudget(_ bodies: borrowing [SpaceBody])
+  private static func gameplayProtectionAndBudget(_ bodies: [SpaceBody])
     -> (protection: MissionProtection, budget: AdmissionBudget)
   {
     var protection = MissionProtection()
