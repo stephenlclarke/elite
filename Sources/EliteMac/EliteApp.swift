@@ -521,11 +521,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       }
       if self?.frameProfile != nil { _ = await PlanetRenderer.prepareGPU() }
       var previousTick = ContinuousClock.now
+      var cadence = FrameCadence(start: previousTick, maximumFPS: 60)
       while !Task.isCancelled {
         guard let view else { return }
         let frameStart = ContinuousClock.now
-        let framesPerSecond = max(1, min(60, view.window?.screen?.maximumFramesPerSecond ?? 60))
-        let deadline = frameStart.advanced(by: .seconds(1.0 / Double(framesPerSecond)))
+        let maximumFPS = view.window?.screen?.maximumFramesPerSecond ?? 60
+        let deadline = cadence.nextDeadline(after: frameStart, maximumFPS: maximumFPS)
         if let self {
           self.frameProfile?.beginFrame(in: view)
           guard !Task.isCancelled else { return }
@@ -539,12 +540,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
           return
         }
         self?.frameProfile?.endFrame(in: view, started: frameStart, deadline: deadline)
-        // Account for work inside the interval; overdue frames yield without a catch-up burst.
-        if ContinuousClock.now < deadline {
-          do { try await Task.sleep(until: deadline, clock: .continuous) } catch { return }
-        } else {
-          await Task.yield()
-        }
+        guard !Task.isCancelled else { return }
+        // Keep the cadence phase after late wakes and sleep past slots missed by actual work.
+        let wakeDeadline = cadence.nextDeadline(after: ContinuousClock.now, maximumFPS: maximumFPS)
+        do {
+          try await Task.sleep(
+            until: wakeDeadline, tolerance: FrameCadence.sleepTolerance, clock: .continuous)
+        } catch { return }
       }
     }
   }
