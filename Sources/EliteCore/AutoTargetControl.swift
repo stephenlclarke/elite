@@ -265,8 +265,11 @@ public struct AutoTargetControl: Sendable {
       finalApproach = false
       stationStaged = true
     }
-    let command =
+    let acquiringSpin =
       stationStaged || finalApproach
+      || (stationDefencePhase == .returning && canStage && spinFeasible)
+    let command =
+      acquiringSpin
       ? max(-maximumRoll, min(maximumRoll, matchRate + phaseError * 1.8)) : 0
     rollRate += max(-0.8 * delta, min(0.8 * delta, command - rollRate))
     rateError = abs(rollRate - matchRate)
