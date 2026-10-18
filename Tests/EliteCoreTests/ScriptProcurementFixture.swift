@@ -227,10 +227,11 @@ struct ScriptProcurementFixture {
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic? = nil,
     phase: String = "dock", defensivePreflight: Bool = false
   ) async throws {
-    var steps = 0
     if defensivePreflight {
-      try await preflight(runtime, steps: &steps, diagnostic: diagnostic, phase: phase)
+      try await defendedDock(runtime, diagnostic: diagnostic, phase: phase)
+      return
     }
+    var steps = 0
     for _ in 0..<32 {
       let main = await runtime.procurementTargetIsMain()
       if main { break }
@@ -238,7 +239,6 @@ struct ScriptProcurementFixture {
     }
     let targeted = await runtime.procurementTargetIsMain()
     try #require(targeted)
-    let automaticStart = steps
     while steps < 3000 {
       let facts = await runtime.procurementFlightFacts()
       if facts.docked { break }
@@ -252,7 +252,6 @@ struct ScriptProcurementFixture {
     }
     let docked = await runtime.procurementNativeDockIsCurrent()
     try #require(steps > 0 && steps < 3000 && docked)
-    if defensivePreflight { try #require(steps > automaticStart) }
   }
   static func travel(
     _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil,
@@ -303,47 +302,90 @@ struct ScriptProcurementFixture {
       if destination != path.last { await runtime.procurementRefuel() }
     }
   }
+  private static func defendedDock(
+    _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic?, phase: String
+  ) async throws {
+    var budget = ScriptProcurementPilotBudget()
+    let initial = await runtime.procurementPreflightFacts()
+    try #require(initial.valid && initial.live && !initial.docked && !initial.paused)
+    try #require(initial.legal == 0, "The defended fixture requires its actual clean commander.")
+    while budget.steps < 3000 {
+      var facts = await runtime.procurementPreflightFacts()
+      let action = facts.requestedDockAction(defensive: true, steps: budget.steps)
+      try #require(action != .refuse, "Defended docking facts or total advance budget refused.")
+      if action == .react {
+        let cancelled = await runtime.procurementCancelForThreat(
+          expected: facts, steps: budget.steps)
+        try #require(cancelled, "Fresh threat or genuine AUTO cancellation could not be rejoined.")
+        try await preflight(runtime, budget: &budget, diagnostic: diagnostic, phase: phase)
+      }
+      while true {
+        let main = await runtime.procurementDefensiveMainTargetIsCurrent()
+        if main { break }
+        let available = budget.reserveTab()
+        try #require(available, "Defended docking exhausted the shared 32 TAB inputs.")
+        await runtime.key("tab")
+      }
+      facts = await runtime.procurementPreflightFacts()
+      let active = await diagnostic?.active ?? false
+      let result = await runtime.procurementPilotStep(
+        expected: facts, steps: budget.steps, automatic: true, diagnostic: active)
+      if result.status == .react { continue }
+      if let diagnostic, let before = result.before, let after = result.after {
+        await diagnostic.record(before: before, after: after, phase: phase, step: budget.steps)
+      }
+      try #require(result.status == .automatic, "Fresh main-station AUTO step refused.")
+      let recorded = budget.recordAdvance(automatic: true)
+      try #require(recorded)
+      try #require(
+        result.legal == initial.legal, "Actual native flight recorded unlawful player fire.")
+      if result.docked {
+        try #require(budget.automaticAdvances > 0 && budget.steps < 3000)
+        try #require(
+          result.nativeDockIsCurrent && (result.dockSequence ?? 0) > 0,
+          "The actual AUTO arrival receipt is not current.")
+        return
+      }
+    }
+    try #require(false, "Defended docking exhausted the original 3000 total advances.")
+  }
   private static func preflight(
-    _ runtime: GameRuntime, steps: inout Int,
+    _ runtime: GameRuntime, budget: inout ScriptProcurementPilotBudget,
     diagnostic: ScriptProcurementFlightDiagnostic?, phase: String
   ) async throws {
     var facts = await runtime.procurementPreflightFacts()
-    // No threat means no additional input or physical advance before the original AUTO path.
-    if facts.requestedAction(steps: steps) == .clear { return }
-    for _ in 0..<4 {
-      if facts.combatLaser { break }
-      let viable = facts.requestedAction(steps: steps) != .refuse
+    // A clear native scene consumes no tool input, control change or physical advance.
+    if facts.requestedAction(steps: budget.steps) == .clear { return }
+    while !facts.combatLaser {
+      if facts.requestedAction(steps: budget.steps) == .clear { return }
+      let viable = facts.requestedAction(steps: budget.steps) != .refuse
       try #require(viable, "Preflight unavailable before tool selection")
+      let available = budget.reserveTool()
+      try #require(available, "Defended docking exhausted the shared four tool-selection inputs.")
       await runtime.key("w")
       facts = await runtime.procurementPreflightFacts()
     }
-    while steps < 3000 {
-      let action = facts.requestedAction(steps: steps)
+    while budget.steps < 3000 {
+      let action = facts.requestedAction(steps: budget.steps)
       if action == .clear { break }
-      let viable = action != .refuse
-      try #require(viable, "Preflight refused at step \(steps); no AUTO engagement")
-      var controls = Controls()
-      controls.throttle = facts.speed > 0 ? -1 : 0
-      if let threat = facts.threat {
-        let p = threat.position
-        controls.pitch = max(-1, min(1, atan2(p.y, hypot(p.x, p.z)) * 1.8 / facts.pitchRate))
-        controls.yaw = max(-1, min(1, atan2(p.x, p.z) * 1.8 / facts.yawRate))
+      try #require(action != .refuse, "Preflight refused at total step \(budget.steps).")
+      let active = await diagnostic?.active ?? false
+      let result = await runtime.procurementPilotStep(
+        expected: facts, steps: budget.steps, automatic: false, diagnostic: active)
+      if let diagnostic, let before = result.before, let after = result.after {
+        await diagnostic.record(
+          before: before, after: after, phase: phase + "-preflight", step: budget.steps)
       }
-      controls.fire = action == .requestFire
-      await runtime.setControls(controls)
-      if let diagnostic {
-        await diagnosticAdvance(
-          runtime, diagnostic: diagnostic, phase: phase + "-preflight", step: steps)
-      } else {
-        _ = await runtime.advance(delta: 0.1)
-      }
-      steps += 1
+      try #require(result.status == .defensive, "Defensive step lost its fresh player/threat join.")
+      let recorded = budget.recordAdvance(automatic: false)
+      try #require(recorded)
+      try #require(result.legal == 0, "Actual native defence recorded unlawful player fire.")
+      try #require(!result.docked, "Manual defence cannot count as an AUTO arrival.")
       facts = await runtime.procurementPreflightFacts()
     }
-    let cleared = facts.requestedAction(steps: steps) == .clear
-    try #require(cleared, "Preflight exhausted original dock budget at step \(steps)")
-    // All manual input ends before the bounded Tab selection and desired main-station lock.
-    await runtime.setControls(Controls())
+    let cleared = facts.requestedAction(steps: budget.steps) == .clear
+    try #require(cleared, "Preflight exhausted original total dock budget at \(budget.steps).")
+    // The actor-owned step clears manual controls immediately after every admitted advance.
   }
   private static func diagnosticAdvance(
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic, phase: String, step: Int
@@ -364,18 +406,70 @@ struct ScriptProcurementFixture {
   }
 }
 
+/// One budget is retained through every initial/manual/AUTO/reaction cycle of a dock.
+struct ScriptProcurementPilotBudget: Sendable {
+  private(set) var steps = 0
+  private(set) var tabs = 0
+  private(set) var tools = 0
+  private(set) var automaticAdvances = 0
+
+  mutating func reserveTab() -> Bool {
+    guard tabs < 32 else { return false }
+    tabs += 1
+    return true
+  }
+  mutating func reserveTool() -> Bool {
+    guard tools < 4 else { return false }
+    tools += 1
+    return true
+  }
+  mutating func recordAdvance(automatic: Bool) -> Bool {
+    guard steps < 3000 else { return false }
+    steps += 1
+    if automatic { automaticAdvances += 1 }
+    return true
+  }
+}
+
+enum ScriptProcurementDockAction: Equatable { case refuse, react, acquire, automatic }
+enum ScriptProcurementPilotStepStatus: Equatable, Sendable {
+  case refused, react, defensive, automatic
+}
+
+struct ScriptProcurementPreflightIdentity: Equatable, Sendable {
+  let player: ActorIdentity
+  let epoch: UUID
+  let stationEpoch: UUID
+  let owner: UUID
+  let revision: UInt64
+  let physicalTime: Double
+}
+
+struct ScriptProcurementPilotStepResult: Sendable {
+  let status: ScriptProcurementPilotStepStatus
+  var legal = 0
+  var docked = false
+  var nativeDockIsCurrent = false
+  var dockSequence: UInt64?
+  var before: ScriptProcurementFlightDiagnosticFacts?
+  var after: ScriptProcurementFlightDiagnosticFacts?
+}
+
 enum ScriptProcurementPreflightAction: Equatable {
   case refuse, clear, track, requestFire
 }
 
-struct ScriptProcurementPreflightThreat: Sendable {
+struct ScriptProcurementPreflightThreat: Sendable, Equatable {
   let identity: ActorIdentity
   let position: Vector3
   let wanted: Bool
 }
 
 /// Test policy values are never accepted by a native hit, law, source or receipt producer.
-struct ScriptProcurementPreflightFacts: Sendable {
+struct ScriptProcurementPreflightFacts: Sendable, Equatable {
+  var identity: ScriptProcurementPreflightIdentity?
+  var legal = 0
+  var mainTargetCurrent = false
   var valid = false
   var docked = false
   var live = false
@@ -393,6 +487,16 @@ struct ScriptProcurementPreflightFacts: Sendable {
 
   static func clearsEveryNoFireZone(_ ranges: [Double]) -> Bool {
     !ranges.isEmpty && ranges.allSatisfy { $0.isFinite && $0 > 1200 }
+  }
+
+  func requestedDockAction(defensive: Bool, steps: Int) -> ScriptProcurementDockAction {
+    guard valid, live, !docked, !paused, steps >= 0, steps < 3000 else { return .refuse }
+    if defensive, threat != nil || incoming { return .react }
+    return mainTargetCurrent ? .automatic : .acquire
+  }
+
+  func rejoins(_ expected: Self) -> Bool {
+    identity != nil && self == expected
   }
 
   func requestedAction(steps: Int) -> ScriptProcurementPreflightAction {
@@ -462,18 +566,28 @@ extension GameRuntime {
     var facts = ScriptProcurementPreflightFacts()
     guard let context = game.gameplayContext(),
       let player = game.commander.flightSimulation.player,
+      let owner = game.commander.equipmentOwnerID,
       context.player.identity == player, player.system == context.system,
       player.visit == context.visit, context.revision == game.gameplayRevision,
+      context.system == game.systemIdentity, context.visit == game.commander.flightSimulation.visit,
+      context.physicalTime.isFinite, context.physicalTime >= 0,
+      context.physicalTime == game.commander.flightSimulation.physicalTime,
       game.energy.isFinite, game.speed.isFinite,
       game.commander.performance.pitch.isFinite, game.commander.performance.pitch > 0,
       game.commander.performance.yaw.isFinite, game.commander.performance.yaw > 0
     else { return facts }
+    facts.identity = .init(
+      player: player, epoch: game.ecmControl.epoch, stationEpoch: game.nativeStationRuntimeEpoch,
+      owner: owner, revision: game.gameplayRevision, physicalTime: context.physicalTime)
+    facts.legal = game.commander.legal
+    facts.mainTargetCurrent = procurementDefensiveMainTargetIsCurrent()
     facts.docked = game.docked
     facts.live = game.screen.isFlight && game.energy > 0
     facts.paused = game.paused
-    facts.automaticEngaged = game.autoTargetBody?.hull == .station
+    facts.automaticEngaged =
+      game.autoPilot.targetID != nil || game.workGuidance != nil || game.workBraking != nil
     facts.combatLaser = game.selectedFlightTool == .combatLaser
-    facts.frontLaser = game.commander.laser(on: .front) != nil
+    facts.frontLaser = game.screen == .front && game.commander.laser(on: .front) != nil
     facts.speed = game.speed
     facts.pitchRate = game.commander.performance.pitch
     facts.yawRate = game.commander.performance.yaw
@@ -545,6 +659,72 @@ extension GameRuntime {
     facts.valid = true
     return facts
   }
+  func procurementDefensiveMainTargetIsCurrent() -> Bool {
+    guard let target = game.autoTargetBody, target.id == 0, target.hull == .station,
+      let actor = target.physical?.identity,
+      let flightPlayer = game.commander.flightSimulation.player,
+      actor == game.commander.flightSimulation.anchors?.station.identity,
+      actor.system == flightPlayer.system, actor.visit == flightPlayer.visit,
+      game.autoPilot.targetActor == actor
+    else { return false }
+    return true
+  }
+
+  /// Recheck raw current facts and cancel through the genuine key path in this actor turn.
+  func procurementCancelForThreat(expected: ScriptProcurementPreflightFacts, steps: Int) -> Bool {
+    let current = procurementPreflightFacts()
+    guard current.rejoins(expected),
+      current.requestedDockAction(defensive: true, steps: steps) == .react
+    else { return false }
+    key("q")
+    setControls(Controls())
+    let cancelled = procurementPreflightFacts()
+    return cancelled.valid && cancelled.live && !cancelled.paused && !cancelled.docked
+      && !cancelled.automaticEngaged && cancelled.identity?.player == current.identity?.player
+  }
+
+  /// A policy request is not native emission permission. Rejoin immediately before normal advance.
+  /// No await, source/hit factory or observer callback occurs between controls and that advance.
+  func procurementPilotStep(
+    expected: ScriptProcurementPreflightFacts, steps: Int, automatic: Bool, diagnostic: Bool
+  ) -> ScriptProcurementPilotStepResult {
+    let facts = procurementPreflightFacts()
+    guard facts.rejoins(expected) else { return .init(status: .refused) }
+    if automatic {
+      let action = facts.requestedDockAction(defensive: true, steps: steps)
+      if action == .react { return .init(status: .react) }
+      guard action == .automatic, facts.automaticEngaged,
+        !controls.fire, controls.pitch == 0, controls.yaw == 0, controls.roll == 0,
+        controls.throttle == 0
+      else { return .init(status: .refused) }
+    } else {
+      let action = facts.requestedAction(steps: steps)
+      guard action == .track || action == .requestFire else { return .init(status: .refused) }
+      var input = Controls()
+      input.throttle = facts.speed > 0 ? -1 : 0
+      if let threat = facts.threat {
+        let p = threat.position
+        input.pitch = max(-1, min(1, atan2(p.y, hypot(p.x, p.z)) * 1.8 / facts.pitchRate))
+        input.yaw = max(-1, min(1, atan2(p.x, p.z) * 1.8 / facts.yawRate))
+      }
+      input.fire = action == .requestFire
+      setControls(input)
+    }
+    let before = diagnostic ? procurementFlightDiagnosticFacts() : nil
+    let startTime = game.commander.flightSimulation.physicalTime
+    _ = advance(delta: 0.1)
+    if !automatic { setControls(Controls()) }
+    let endTime = game.commander.flightSimulation.physicalTime
+    let tolerance = min(1e-8, 2 * max(startTime.ulp, endTime.ulp))
+    let advanced = endTime > startTime && abs(endTime - startTime - 0.1) <= tolerance
+    return .init(
+      status: advanced ? (automatic ? .automatic : .defensive) : .refused,
+      legal: game.commander.legal, docked: game.docked,
+      nativeDockIsCurrent: game.nativeMainStationDockEvidenceIsCurrent,
+      dockSequence: game.commander.nativeStations?.currentMainDock?.sequence,
+      before: before, after: diagnostic ? procurementFlightDiagnosticFacts() : nil)
+  }
+
   /// Scalar reads only; numeric strings preserve nonfinite values without JSON NaN failures.
   func procurementFlightDiagnosticFacts() -> ScriptProcurementFlightDiagnosticFacts {
     let facts = procurementFlightFacts()
@@ -566,6 +746,7 @@ extension GameRuntime {
         "missionSeconds": game.commander.scriptState.missionCalendar.map { String($0.seconds) }
           ?? "unavailable",
         "fuel": String(game.commander.fuel), "credits": String(game.commander.credits),
+        "legal": String(game.commander.legal),
         "cargoTonnes": String(game.commander.cargoTonnes),
         "speed": String(game.speed), "roll": String(game.roll),
         "autoPilotStatus": String(game.autoPilot.status.prefix(80)),
