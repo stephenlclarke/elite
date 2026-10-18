@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import Testing
 
@@ -17,8 +18,12 @@ struct ScriptClueFixture {
   )
     throws
   {
-    root = FileManager.default.temporaryDirectory.appendingPathComponent(
-      "native-clue-" + UUID().uuidString)
+    let path = FileManager.default.temporaryDirectory.path
+    let resolved = path.withCString { realpath($0, nil) }
+    let physical = try #require(resolved)
+    defer { free(physical) }
+    root = URL(fileURLWithPath: String(cString: physical), isDirectory: true)
+      .appendingPathComponent("native-clue-" + UUID().uuidString, isDirectory: true)
     let folder = root.appendingPathComponent("pack")
     try FileManager.default.createDirectory(
       at: folder.appendingPathComponent("scripts"), withIntermediateDirectories: true)
