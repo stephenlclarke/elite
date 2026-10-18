@@ -296,20 +296,31 @@ struct NativeSalvageOldParentAdmissionTests {
   {
     let fixture = try await NativeSalvageOldParentFixture.loaded(format: format)
     defer { try? FileManager.default.removeItem(at: fixture.folder) }
-    let first = try #require(fixture.lots.first)
     let body = try #require(fixture.game.bodies.first { $0.id == fixture.parent.id })
     let metadata = try #require(body.physical?.salvage)
     let profile = try #require(
       SalvageCatalogue.profile(catalogueShipID: fixture.site.catalogueShipID))
     let hull = try PreparedHull(mesh: profile.mesh)
     let pose = fixture.game.modelPose(of: body)
+    // Original emission order is fixed; its first row need not clear every hull component.
+    let first = try #require(
+      fixture.lots.first { lot in
+        let overlapsParent =
+          (lot.position - pose.position).length < metadata.bounds.radius
+          + metadata.bounds.center.length + lot.halfExtents.length + 8
+        guard overlapsParent else { return false }
+        let clearance = HullSweepSafety.validatePlacement(
+          center: lot.position, radius: lot.halfExtents.length, hull: hull, pose: pose,
+          requiredClearance: 8)
+        return clearance.safe && (clearance.minimumSampledClearance ?? -.infinity) > 8
+      }, "No original released lot proves mesh clearance and broad-parent overlap")
     #expect(
       (first.position - pose.position).length < metadata.bounds.radius
         + metadata.bounds.center.length + first.halfExtents.length + 8)
     let clear = HullSweepSafety.validatePlacement(
       center: first.position, radius: first.halfExtents.length, hull: hull, pose: pose,
       requiredClearance: 8)
-    try #require(clear.safe)
+    try #require(clear.safe && (clear.minimumSampledClearance ?? -.infinity) > 8)
     // No cutter, guidance acquisition or added work frame creates the missing record.
     let admitted = await fixture.runtime.advance(delta: 0.02)
     let native = try #require(admitted.commander.alienStorageState?.current.salvage)
