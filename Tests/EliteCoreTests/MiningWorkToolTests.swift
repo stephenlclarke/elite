@@ -40,6 +40,31 @@ private func verifyWorkToolFixtureHardware(_ game: inout Game) throws {
 }
 
 struct MiningWorkToolTests {
+  @Test func shieldedIncomingDamageStopsManualMiningUntilTheTriggerIsReleased() throws {
+    var game = try workToolGame()
+    let id = try workToolRock(&game)
+    game.selectFlightTool(.miningLaser)
+    var controls = Controls()
+    controls.fire = true
+    game.tick(delta: 0.02, controls: controls)
+    let cut = try #require(game.bodies.first { $0.id == id }?.energy)
+    let shield = game.frontShield
+    let hullEnergy = game.energy
+    try #require(shield > 1 && game.dischargeAudio.events.count == 1)
+    game.applyDamage(1, front: true)
+    #expect(game.frontShield == shield - 1 && game.energy == hullEnergy)
+    for _ in 0..<100 { game.tick(delta: 0.02, controls: controls) }
+    #expect(game.workFireSuspended && game.dischargeAudio.events.count == 1)
+    #expect(game.bodies.first { $0.id == id }?.energy == cut)
+    controls.fire = false
+    game.tick(delta: 0.02, controls: controls)
+    #expect(!game.workFireSuspended)
+    controls.fire = true
+    game.tick(delta: 0.02, controls: controls)
+    #expect(game.dischargeAudio.events.count == 2)
+    #expect(game.bodies.first { $0.id == id }?.energy == cut - LaserKind.mining.damage)
+  }
+
   @Test func flightToolSelectionDoesNotFireAndReturnUsesMiningInsteadOfTheNavalLaser() throws {
     var game = try workToolGame()
     let id = try workToolRock(&game)
