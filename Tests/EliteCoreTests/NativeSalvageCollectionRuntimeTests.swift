@@ -431,7 +431,8 @@ private func admitLegacyAlienOutcome(_ definition: String, in game: inout Game) 
     index: 1, kind: .computer,
     localPosition: .init(10, 0, 0), normal: .init(0, 0, 1), radius: 10,
     workSeconds: 1, structural: true, technologyDefinitionIDs: [], sourceFaceIndex: 0)
-  let operation = try #require(game.commander.flightSimulation.allocateIncident())
+  let allocatedOperation = game.commander.flightSimulation.allocateIncident()
+  let operation = try #require(allocatedOperation)
   let result = game.commander.salvageLedger.advance(
     wreck: identity.wreck, section: profile,
     pose: ShipPose(), velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0),
@@ -687,7 +688,8 @@ private func poisonNativeFragment(_ reason: String, game: inout Game, lot: Salva
     }
     throw AlienStorageError.invalidJoin
   case "cargo-owner":
-    let dead = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedSource = game.commander.flightSimulation.allocateActor()
+    let dead = try #require(allocatedSource)
     let source = ActorSnapshot(
       identity: dead, hull: .cobra, position: .init(1000, 0, 0),
       orientation: .init(), velocity: .init(0, 0, 0), energy: 0, maximumEnergy: 100,
