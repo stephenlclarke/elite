@@ -123,15 +123,17 @@ struct NativeSalvageCycleProofTests {
     let source = SalvageLootSource(
       roles: [], legalValue: 0, economy: 3, technology: 10, ownership: .abandoned)
     var ledger = SalvageLedger(seed: 9)
-    let plan = try #require(
-      ledger.inspectLoot(wreck: identity, section: emptySection, source: source))
+    let observedInspection = ledger.inspectLoot(
+      wreck: identity, section: emptySection, source: source)
+    let plan = try #require(observedInspection)
     let baseline = try ledger.exportNativeSection(plan.section)
     #expect(plan.emptyReason == .unsupportedSource && plan.items.isEmpty)
+    let observedWorkResult = ledger.advance(
+      wreck: identity, section: emptySection, pose: .init(),
+      velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
+      elapsed: 1, operation: 1, conditions: NativePagedSalvageFixture.permitted, source: source)
     #expect(
-      ledger.advance(
-        wreck: identity, section: emptySection, pose: .init(),
-        velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
-        elapsed: 1, operation: 1, conditions: NativePagedSalvageFixture.permitted, source: source)
+      observedWorkResult
         == .destroyed)
     let terminal = try ledger.exportNativeSection(plan.section)
     let complete = try initial(baseline).observing(
@@ -175,12 +177,13 @@ struct NativeSalvageCycleProofTests {
     ).releasing(
       at: 1, progress: firstProgress,
       operation: 1, requiredWorkSeconds: 1, depleted: false)
+    let observedWorkResult2 = ledger.advance(
+      wreck: baseline.section.wreck, section: cargo, pose: .init(),
+      velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .miningLaser,
+      elapsed: 0.25, operation: 2, conditions: NativePagedSalvageFixture.permitted,
+      source: baseline.plan.source)
     #expect(
-      ledger.advance(
-        wreck: baseline.section.wreck, section: cargo, pose: .init(),
-        velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .miningLaser,
-        elapsed: 0.25, operation: 2, conditions: NativePagedSalvageFixture.permitted,
-        source: baseline.plan.source) == .progress(seconds: 0.25, required: 1))
+      observedWorkResult2 == .progress(seconds: 0.25, required: 1))
     let damagedProgress = try ledger.exportNativeSection(baseline.section).progress
     let partial = first.observing(
       at: 2, progress: damagedProgress, seconds: 0.25, damaged: true, operation: 2)
@@ -201,12 +204,13 @@ struct NativeSalvageCycleProofTests {
       baselineDamage: false, baselineDepleted: false, baselineOperation: nil)
     try death.preserve(partial, plan: baseline.plan, section: cargo)
     #expect(death.releases == 1 && death.progress.nextLot == 8)
+    let observedWorkResult3 = ledger.advance(
+      wreck: baseline.section.wreck, section: cargo, pose: .init(),
+      velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
+      elapsed: 0.75, operation: 3, conditions: NativePagedSalvageFixture.permitted,
+      source: baseline.plan.source)
     #expect(
-      ledger.advance(
-        wreck: baseline.section.wreck, section: cargo, pose: .init(),
-        velocity: .init(0, 0, 0), angularVelocity: .init(0, 0, 0), tool: .cutter,
-        elapsed: 0.75, operation: 3, conditions: NativePagedSalvageFixture.permitted,
-        source: baseline.plan.source) == .destroyed)
+      observedWorkResult3 == .destroyed)
     let zeroFinal = try partial.observing(
       at: 3, progress: partial.progress, seconds: 1,
       damaged: true, operation: 3

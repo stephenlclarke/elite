@@ -20,7 +20,8 @@ struct NativeMultiBatchRuntimeTests {
       roles: profile.sourceRoles, legalValue: 0, economy: game.currentSystem.economy,
       technology: game.currentSystem.technology, ownership: .abandoned,
       manifest: [.init(commodity: .food, quantity: 120)])
-    let operation = try #require(game.commander.flightSimulation.allocateIncident())
+    let allocatedIncident = game.commander.flightSimulation.allocateIncident()
+    let operation = try #require(allocatedIncident)
     guard
       case .progress = game.commander.salvageLedger.advance(
         wreck: site.identity, section: section, pose: game.modelPose(of: body),
@@ -51,7 +52,14 @@ struct NativeMultiBatchRuntimeTests {
     await runtime.setControls(NativePagedSalvageFixture.firingControls)
     var first = await runtime.snapshot()
     for _ in 0..<2500 {
+      let prior = observeWork(
+        first, reference: imported.section,
+        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
       first = await runtime.advance(delta: 0.02)
+      let currentWork = observeWork(
+        first, reference: imported.section,
+        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
+      checkEarnedWork(before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
       if first.commander.alienStorageState?.current.salvage.native.works[imported.section]?.releases
         == 1
       {
@@ -76,7 +84,14 @@ struct NativeMultiBatchRuntimeTests {
 
     var partial = first
     for _ in 0..<2500 {
+      let prior = observeWork(
+        partial, reference: imported.section,
+        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
       partial = await runtime.advance(delta: 0.02)
+      let currentWork = observeWork(
+        partial, reference: imported.section,
+        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
+      checkEarnedWork(before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
       if (partial.nativeSalvageWork?.cycle.currentWorkSeconds ?? 0) > 0 { break }
     }
     let hot = try #require(partial.nativeSalvageWork)
@@ -92,7 +107,8 @@ struct NativeMultiBatchRuntimeTests {
     try await runtime.load(from: file, persistMigrations: false)
     var loaded = await runtime.snapshot()
     #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
-    #expect(loaded.nativeSalvageWork == nil && (try Data(contentsOf: file)) == bytes)
+    let observedFileBytes = try Data(contentsOf: file)
+    #expect(loaded.nativeSalvageWork == nil && (observedFileBytes) == bytes)
     #expect(loaded.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
     let retainedBody = try #require(
       loaded.bodies.first { $0.physical?.salvage?.wreck == site.identity })
@@ -104,7 +120,14 @@ struct NativeMultiBatchRuntimeTests {
     await resumed.setControls(NativePagedSalvageFixture.firingControls)
     var second = await resumed.snapshot()
     for _ in 0..<2500 {
+      let prior = observeWork(
+        second, reference: imported.section,
+        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
       second = await resumed.advance(delta: 0.02)
+      let currentWork = observeWork(
+        second, reference: imported.section,
+        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
+      checkEarnedWork(before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
       let current = second.commander.alienStorageState?.current.salvage.native.works[
         imported.section]
       if current?.releases == 2 { break }
@@ -129,5 +152,50 @@ struct NativeMultiBatchRuntimeTests {
     #expect(second.commander.cargo == cargo && second.commander.equipmentInventory == property)
     #expect(second.commander.credits == credits)
     #expect(second.commander.salvageLedger.pendingLots.isEmpty)
+  }
+
+  private struct WorkObservation: Sendable {
+    let seconds: Double
+    let releases: UInt64
+    let serial: UInt32
+    let pending: Int
+    let damaged: Bool
+    let credited: Double?
+  }
+
+  private func observeWork(
+    _ game: Game, reference: UUID, baselineWork: Double, baselineSerial: UInt32
+  ) -> WorkObservation {
+    let cycle: NativeSalvageWorkCycle?
+    if let hot = game.nativeSalvageWork, hot.cycle.inspection.id == reference {
+      cycle = hot.cycle
+    } else {
+      cycle = game.commander.alienStorageState?.current.salvage.native.works[reference]
+    }
+    return .init(
+      seconds: cycle?.currentWorkSeconds ?? baselineWork, releases: cycle?.releases ?? 0,
+      serial: cycle?.progress.nextLot ?? baselineSerial,
+      pending: game.commander.alienStorageState?.current.salvage.pending.count ?? 0,
+      damaged: cycle?.damagedTechnology ?? false, credited: cycle?.lastRelease?.creditedWorkSeconds)
+  }
+
+  private func checkEarnedWork(
+    before: WorkObservation, after: WorkObservation, required: Double, delta: Double
+  ) {
+    let epsilon = 1e-9
+    if after.releases == before.releases {
+      // Guidance can pause or cold-flush the session; elapsed flight is not earned work.
+      #expect(
+        after.seconds >= before.seconds - epsilon
+          && after.seconds - before.seconds <= delta + epsilon)
+      #expect(after.serial == before.serial && after.pending == before.pending)
+    } else {
+      // A fabricated full creditedWorkSeconds cannot stand in for actual earlier work.
+      #expect(after.releases == before.releases + 1)
+      #expect(before.seconds + delta + epsilon >= required)
+      #expect(after.seconds == 0 && !after.damaged)
+      #expect(after.serial == before.serial + 8 && after.pending == before.pending + 8)
+      #expect(after.credited == required)
+    }
   }
 }

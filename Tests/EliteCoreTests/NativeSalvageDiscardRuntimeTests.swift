@@ -12,13 +12,15 @@ struct NativeSalvageDiscardRuntimeTests {
     let profile = try #require(SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID))
     let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
     for section in profile.sections {
-      let operation = try #require(game.commander.flightSimulation.allocateIncident())
+      let allocatedIncident = game.commander.flightSimulation.allocateIncident()
+      let operation = try #require(allocatedIncident)
+      let observedWorkResult = game.commander.salvageLedger.advance(
+        wreck: site.identity, section: section, pose: game.modelPose(of: body),
+        velocity: body.physical!.velocity, angularVelocity: body.physical!.angularVelocity,
+        tool: .miningLaser, elapsed: 0.25, operation: operation,
+        conditions: NativePagedSalvageFixture.permitted)
       #expect(
-        game.commander.salvageLedger.advance(
-          wreck: site.identity, section: section, pose: game.modelPose(of: body),
-          velocity: body.physical!.velocity, angularVelocity: body.physical!.angularVelocity,
-          tool: .miningLaser, elapsed: 0.25, operation: operation,
-          conditions: NativePagedSalvageFixture.permitted)
+        observedWorkResult
           == .progress(seconds: 0.25, required: section.workSeconds))
     }
     let originalLedger = game.commander.salvageLedger
@@ -36,18 +38,24 @@ struct NativeSalvageDiscardRuntimeTests {
     #expect(hot.cycle.damagedTechnology && hot.cycle.progress.discarded.contains(true))
     #expect(hot.cycle.releases == 0 && hot.cycle.progress.nextLot == 0)
     switch boundary {
-    case "work-flush": #expect(game.flushNativeSalvageWork())
+    case "work-flush":
+      let observedWorkFlush = game.flushNativeSalvageWork()
+      #expect(observedWorkFlush)
     case "wreck-flush":
       let actual = try #require(game.bodies.first { $0.physical?.identity == hot.actor })
-      #expect(game.observeNativeSalvageWreck(actual) && game.flushNativeSalvageWrecks())
+      let observedWreck = game.observeNativeSalvageWreck(actual)
+      let observedWreckFlush = game.flushNativeSalvageWrecks()
+      #expect(observedWreck && observedWreckFlush)
     case "actual-death":
       let actual = try #require(game.bodies.first { $0.physical?.identity == hot.actor })
       let player = try #require(game.commander.flightSimulation.player)
-      let origin = try #require(game.makeAttackOrigin(owner: player))
+      let allocatedAttackOrigin = game.makeAttackOrigin(owner: player)
+      let origin = try #require(allocatedAttackOrigin)
+      let observedCombatResult = game.applyCombatHit(
+        .init(target: .body(actual.id), distance: actual.position.length, point: actual.position),
+        origin: origin, kind: .laser, damage: actual.energy + 1, laser: .pulse)
       #expect(
-        game.applyCombatHit(
-          .init(target: .body(actual.id), distance: actual.position.length, point: actual.position),
-          origin: origin, kind: .laser, damage: actual.energy + 1, laser: .pulse) != nil)
+        observedCombatResult != nil)
       game.commander.crimeLedger.finishEmission(origin.emissionID)
       game.resolveDestroyed()
       #expect(!game.bodies.contains { $0.physical?.identity == hot.actor })
@@ -93,6 +101,7 @@ struct NativeSalvageDiscardRuntimeTests {
     try await runtime.load(from: file, persistMigrations: false)
     let loaded = await runtime.snapshot()
     #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
-    #expect(try Data(contentsOf: file) == bytes)
+    let observedFileBytes = try Data(contentsOf: file)
+    #expect(observedFileBytes == bytes)
   }
 }

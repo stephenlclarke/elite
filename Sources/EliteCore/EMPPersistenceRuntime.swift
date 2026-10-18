@@ -370,6 +370,50 @@ extension Game {
     return wreck
   }
 
+  /// Stage only an exactly joined native EMP hull's parking. Both custody records
+  /// become unbound in the same cold publication before the caller removes its body.
+  func stagedNativeEMPParking(
+    _ world: [AlienStorageWorldRecord], parking actors: Set<ActorIdentity>,
+    parkingSystem: SystemIdentity?
+  ) throws -> EMPState? {
+    var staged = commander.savedEMPState
+    for case .nativeWreck(let parked) in world {
+      guard case .emp(let logical, let sequence) = parked.source,
+        let old = commander.alienStorageState?.current.salvage.native.wrecks[parked.identity],
+        let binding = old.binding,
+        actors.contains(binding) || binding.system == parkingSystem,
+        parked.destroyedAt == nil
+      else { continue }
+      guard parked.binding == nil, let record = staged?.records[logical], record.valid,
+        record.source == logical, record.sequence == sequence,
+        record.weaponOwner == commander.equipmentOwnerID,
+        try joinedNativeEMPWreck(record) == old,
+        record.hull.binding == binding, record.hull.physicalTime == parked.observedAt,
+        binding.system == systemIdentity, binding.visit == commander.flightSimulation.visit,
+        let body = bodies.first(where: { $0.physical?.identity == binding }),
+        body.physical?.empSource == logical, body.physical?.salvage?.wreck == parked.identity,
+        body.physical?.catalogueShipID == parked.catalogueShipID,
+        body.physical?.npc == nil, body.physical?.payload == nil
+      else { throw AlienStorageError.invalidJoin }
+      try parked.preserve(old)
+      var archive = record.hull
+      archive.binding = nil
+      var observed = EMPStoredObject(
+        body: body, pose: commander.flightSimulation.pose,
+        time: commander.flightSimulation.physicalTime)
+      observed.binding = nil
+      guard nativeEMPArchiveMatches(archive, wreck: parked),
+        nativeEMPArchiveMatches(observed, wreck: parked),
+        observed.physicalTime == parked.observedAt
+      else { throw AlienStorageError.invalidJoin }
+      staged?.records[logical]?.hull = archive
+    }
+    guard staged == commander.savedEMPState || staged?.valid == true else {
+      throw AlienStorageError.invalidJoin
+    }
+    return staged
+  }
+
   private func nativeEMPArchiveMatches(_ object: EMPStoredObject, wreck: NativeSalvageWreck) -> Bool
   {
     guard let physical = object.body.physical else { return false }

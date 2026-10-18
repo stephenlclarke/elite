@@ -183,9 +183,13 @@ extension Game {
           }
         }
       }
+      let parkedEMP = try stagedNativeEMPParking(
+        world, parking: actors, parkingSystem: parkingSystem)
       if world != previous.world {
         try commander.replaceAlienStorage(with: previous.replacingNativeWorld(world))
       }
+      // No fallible operation or suspension separates these two custody assignments.
+      commander.savedEMPState = parkedEMP
       nativeSalvageWork = nil
       nativeSalvageWreckMotion.removeAll(keepingCapacity: true)
       return true

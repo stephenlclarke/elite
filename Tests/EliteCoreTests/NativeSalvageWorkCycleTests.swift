@@ -12,9 +12,10 @@ struct NativeSalvageWorkCycleTests {
       index: 1, kind: .cargo, localPosition: .init(10, 0, 0), normal: .init(0, 0, 1),
       radius: 10, workSeconds: 1, structural: true, technologyDefinitionIDs: [], sourceFaceIndex: 0)
     var ledger = SalvageLedger(seed: fixture.seed)
+    let observedInspection = ledger.inspectLoot(
+      wreck: fixture.plan.section.wreck, section: section, source: fixture.plan.source)
     #expect(
-      ledger.inspectLoot(
-        wreck: fixture.plan.section.wreck, section: section, source: fixture.plan.source)
+      observedInspection
         == fixture.plan)
     guard
       case .released(let originalLots) = ledger.advance(
@@ -100,7 +101,8 @@ struct NativeSalvageWorkCycleTests {
 
   @Test func aWorkCycleCannotAdvanceIssuedSerialsWithoutAReleaseOrReuseACompletedBudget() throws {
     var (game, _) = try NativePagedSalvageFixture.game()
-    #expect(game.fireSalvageCutter(delta: 0.1))
+    let observedCutterResult = game.fireSalvageCutter(delta: 0.1)
+    #expect(observedCutterResult)
     let hot = try #require(game.nativeSalvageWork)
     let malformed = NativeSalvageWorkCycle(
       id: hot.cycle.id, owner: hot.cycle.owner, version: 1, inspection: hot.cycle.inspection,

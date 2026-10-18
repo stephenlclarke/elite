@@ -19,7 +19,8 @@ struct NativeOldV27CompatibilityTests {
       technology: game.currentSystem.technology, ownership: .abandoned,
       manifest: [.init(commodity: .food, quantity: 120)])
     var originalProducer = game.commander.salvageLedger
-    let operation = try #require(game.commander.flightSimulation.allocateIncident())
+    let allocatedIncident = game.commander.flightSimulation.allocateIncident()
+    let operation = try #require(allocatedIncident)
     guard
       case .progress = originalProducer.advance(
         wreck: site.identity, section: section, pose: game.modelPose(of: body),
@@ -75,25 +76,32 @@ struct NativeOldV27CompatibilityTests {
     #expect(pointer.schemaVersion == 27)
     let pointerEncoder = JSONEncoder()
     pointerEncoder.outputFormatting = [.sortedKeys]
+    let observedEncoding = try pointerEncoder.encode(
+      FrozenV27SavePointer(
+        generation: pointer.generation, hashes: pointer.hashes))
     #expect(
-      try pointerEncoder.encode(
-        FrozenV27SavePointer(
-          generation: pointer.generation, hashes: pointer.hashes)) == pointerBytes)
+      observedEncoding == pointerBytes)
     let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: file)
     let store = try AlienStoragePageStore(directory: directory)
-    #expect(try store.readGenerationRoot() == oldRoot)
+    let observedRoot = try store.readGenerationRoot()
+    #expect(observedRoot == oldRoot)
     #expect(pointer.hashes["alien-root.json"] == ScriptPackLibrary.hash(oldRoot))
     #expect(saved.commander.savedAlienStorageReference?.rootHash == ScriptPackLibrary.hash(oldRoot))
-    for (hash, bytes) in oldPages { #expect(try store.readPage(hash: hash) == bytes) }
+    for (hash, bytes) in oldPages {
+      let observedPage = try store.readPage(hash: hash)
+      #expect(observedPage == bytes)
+    }
     let beforeLoad = try files(in: folder)
     try await runtime.load(from: file, persistMigrations: false)
     var loaded = await runtime.snapshot()
     #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
     #expect(loaded.commander.alienStorageState?.current.snapshot == oldSnapshot)
-    #expect(try files(in: folder) == beforeLoad)
+    let observedFiles = try files(in: folder)
+    #expect(observedFiles == beforeLoad)
     #expect(loaded.nativeSalvageWork == nil)
     let oldOrdinary = loaded.commander.salvageLedger
-    #expect(loaded.fireSalvageCutter(delta: 0.1))
+    let observedCutterResult = loaded.fireSalvageCutter(delta: 0.1)
+    #expect(observedCutterResult)
     if let reference {
       let hot = try #require(loaded.nativeSalvageWork)
       #expect(hot.cycle.inspection.id == reference)
@@ -101,10 +109,11 @@ struct NativeOldV27CompatibilityTests {
       #expect(hot.cycle.releases == 0 && hot.cycle.progress.nextLot == export.progress.nextLot)
       #expect(hot.plan == export.plan && hot.seed == export.seed)
       #expect(loaded.commander.salvageLedger == oldOrdinary)
+      let originalRecord = try #require(oldSnapshot.world.first)
       #expect(
-        loaded.commander.alienStorageState?.current.snapshot.world.contains(
-          try #require(oldSnapshot.world.first)) == true)
-      #expect(loaded.flushNativeSalvageWork())
+        loaded.commander.alienStorageState?.current.snapshot.world.contains(originalRecord) == true)
+      let observedWorkFlush = loaded.flushNativeSalvageWork()
+      #expect(observedWorkFlush)
       let continuation = GameRuntime(game: loaded)
       try await continuation.save(to: file)
       let continued = await continuation.snapshot()
@@ -116,7 +125,8 @@ struct NativeOldV27CompatibilityTests {
       // The authenticated old generation stays byte-identical after a new generation is saved.
       for (relative, bytes) in beforeLoad
       where relative.hasPrefix(file.lastPathComponent + ".missions/" + pointer.generation + "/") {
-        #expect(try Data(contentsOf: folder.appendingPathComponent(relative)) == bytes)
+        let observedFileBytes = try Data(contentsOf: folder.appendingPathComponent(relative))
+        #expect(observedFileBytes == bytes)
       }
     } else {
       #expect(loaded.nativeSalvageWork == nil)

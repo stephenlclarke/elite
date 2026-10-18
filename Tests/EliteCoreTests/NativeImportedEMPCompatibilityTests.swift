@@ -10,7 +10,8 @@ struct NativeImportedEMPCompatibilityTests {
     // The existing controlled release boundary proves custody compatibility only.
     // It is not the native Gallery's flight, acquisition or 800-frame acceptance proof.
     var game = try empFixture()
-    #expect(try releaseDamagedEMPBoundary(&game))
+    let observedEMPRelease = try releaseDamagedEMPBoundary(&game)
+    #expect(observedEMPRelease)
     let source = try #require(game.bodies.first?.physical?.empSource)
     try ejectScheduledEMPCrewBoundary(&game, source: source)
     let before = try #require(game.commander.savedEMPState?.records[source])
@@ -46,10 +47,33 @@ struct NativeImportedEMPCompatibilityTests {
       at: game.commander.flightSimulation.physicalTime,
       previous: game.commander.alienStorageState?.current.snapshot)
     try imported.apply(to: &game.commander)
-    #expect(game.fireSalvageCutter(delta: 0.1))
+    let observedCutterResult = game.fireSalvageCutter(delta: 0.1)
+    #expect(observedCutterResult)
     let hot = try #require(game.nativeSalvageWork)
     #expect(hot.cycle.inspection == .legacy(imported.section))
     #expect(hot.cycle.currentWorkSeconds == 0.2 && hot.cycle.releases == 0)
+    // A mismatched, still-bound archive must not publish either half of parking
+    // or remove the actual body. The original state continues through the real cull.
+    let capturedArchive = game.persistEMPState()
+    #expect(capturedArchive)
+    var mismatched = game
+    let originalArchivePosition = try #require(
+      mismatched.commander.savedEMPState?.records[source]?.hull.body.position)
+    mismatched.commander.savedEMPState?.records[source]?.hull.body.position =
+      originalArchivePosition + .init(1, 0, 0)
+    #expect(mismatched.commander.valid)
+    let mismatchedCommander = mismatched.commander
+    let mismatchedBodies = mismatched.bodies
+    let observedBody = try #require(mismatched.bodies.first { $0.physical?.identity == hot.actor })
+    let observedMismatch = mismatched.observeNativeSalvageWreck(observedBody)
+    let refusedPark = mismatched.flushNativeSalvageWrecks(parking: [hot.actor])
+    #expect(observedMismatch && !refusedPark)
+    #expect(mismatched.commander == mismatchedCommander && mismatched.bodies == mismatchedBodies)
+    #expect(mismatched.nativeSalvageWork?.cycle == hot.cycle)
+    #expect(mismatched.commander.savedEMPState?.records[source]?.hull.binding == hot.actor)
+    #expect(
+      mismatched.commander.alienStorageState?.current.salvage.native.wrecks[before.wreck]?.binding
+        == hot.actor)
     let oldCrew = Set(before.pods.compactMap { $0.body.physical?.empCrewPod })
     let observer = game.commander.flightSimulation.pose
     NativePagedSalvageFixture.moveObserver(
@@ -103,6 +127,7 @@ struct NativeImportedEMPCompatibilityTests {
     let loaded = await runtime.snapshot()
     #expect(loaded.commander == saved.commander && loaded.bodies == saved.bodies)
     #expect(nativeEMPHulls(loaded, source: source).count == 1)
-    #expect(try Data(contentsOf: file) == bytes)
+    let observedFileBytes = try Data(contentsOf: file)
+    #expect(observedFileBytes == bytes)
   }
 }
