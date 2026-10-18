@@ -26,6 +26,7 @@ struct NativeCrimboMember: Equatable, Codable, Sendable {
   let identity: UUID
   let slot: Int
   var ownership: NativeCrimboOwnership
+  var originalBirth: NativeCrimboOriginalBirth? = nil
   var catalogueShipID: String { slot == 6 ? "SH150" : "SH151" }
   var role: NPCRole { slot == 6 ? .trader : .escort }
   var hull: Hull { slot == 6 ? .cobra : .viper }
@@ -106,6 +107,11 @@ struct NativeCrimboRegistry: Equatable, Codable, Sendable {
       })
     else { throw NativeCrimboError.invalidRegistry }
     for member in members {
+      if let birth = member.originalBirth {
+        guard birth.valid(member: member, registry: self) else {
+          throw NativeCrimboError.invalidRegistry
+        }
+      }
       if let logical = member.ownership.logical {
         guard logical.firstActor.system == Self.system, logical.firstActor.entity >= 2,
           logical.firstActor.entity < UInt64.max, logical.firstActor.visit > 0,

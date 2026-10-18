@@ -23,6 +23,7 @@ struct NativeCrimboAttainedMotion: Equatable, Sendable {
   /// Absent unless the actual native integrator and retained endpoint agree.
   var playerTrajectory: NativeCrimboPlayerTrajectory? = nil
   var observationIdentity: NativeCrimboObservationIdentity? = nil
+  var contactMotion: NativeCrimboContactMotionFrame? = nil
 }
 
 struct NativeCrimboMotionSample: Sendable {
@@ -41,6 +42,8 @@ struct NativeCrimboMotionSample: Sendable {
   let tangent: Vector3
   var normalPlayerStep: NativeCrimboNormalPlayerStep? = nil
   var observationIdentity: NativeCrimboObservationIdentity? = nil
+  var contactMotion: NativeCrimboContactMotionFrame? = nil
+  var formationReference: NativeCrimboContactMotionFrame.Formation? = nil
 }
 
 /// Bounded geometry checks use actual native displacement (new velocity * dt), not a goal pose.
@@ -206,6 +209,12 @@ extension Game {
         throw NativeCrimboError.invalidTransfer
       }
       if parked[logical] != nil { admitted[logical] = current }
+      if case .pending = member.ownership {
+        let birth = try NativeCrimboOriginalBirth.admitted(
+          member: member, logical: logical, spawn: receipt.request, registry: registry,
+          time: context.physicalTime)
+        registry.members[member.slot].originalBirth = birth
+      }
       registry.members[member.slot].ownership = .live(logical)
     }
     if !parked.isEmpty {
@@ -261,6 +270,7 @@ extension Game {
       nativeCrimboSweepSafe(
         members: members, velocities: velocities, context: context, delta: delta)
     else { throw NativeCrimboError.invalidMotion }
+    let previousOrbit = registry.orbit
     registry.orbit = step.state
     for directive in step.directives {
       guard let steering = directive.steering,
@@ -277,7 +287,7 @@ extension Game {
         to: commander.flightSimulation.pose.orientation)
       bodies[index].physical?.velocity = velocity
       // Actual translation belongs to moveBodies/FlightWorkScene later in this same frame.
-      if record.slot == 6, steering.tracking == .tracking {
+      if record.slot == 6 {
         var subject = ShipPose()
         subject.position = actor.position
         subject.orientation = orientation
@@ -298,7 +308,10 @@ extension Game {
               world: registry.world, manifest: registry.manifest,
               player: context.player.identity, sceneGeneration: registry.orbit.anchor.identity,
               logical: $0)
-          })
+          },
+          formationReference: .init(
+            previous: previousOrbit, next: step.state, slot: record.slot,
+            hullRadius: member.hullRadius, trackingAtStart: steering.tracking == .tracking))
       }
     }
     commander.savedCrimboState = registry
@@ -404,7 +417,7 @@ extension Game {
       playerStartVelocity: sample.playerVelocity, playerEndVelocity: context.player.velocity,
       tangentialDisplacementWorldUnits: displacement.dot(sample.tangent),
       playerTrajectory: nativeCrimboPlayerTrajectory(sample: sample),
-      observationIdentity: sample.observationIdentity)
+      observationIdentity: sample.observationIdentity, contactMotion: sample.contactMotion)
   }
 
   /// G1 must clear the departed world in this SAME candidate before publishing the parked ownership.
