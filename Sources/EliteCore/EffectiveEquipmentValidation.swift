@@ -5,7 +5,8 @@ extension Commander {
   /// Stronger finite grandfathered components remain physical property unchanged.
   func validateEffectiveEquipmentStatistics() throws {
     guard let native = ShipCatalogue.ship(shipID)?.game,
-      (0...FuelStorage.maximumCount).contains(fuelStorageUnits)
+      (0...FuelStorage.maximumCount).contains(fuelStorageUnits),
+      hyperspaceDrivePolicy != nil
     else {
       throw CommanderEquipmentError.invalidRuntimeStatistics
     }
