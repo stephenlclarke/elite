@@ -305,7 +305,7 @@ extension Game {
     else { return false }
     return metadata.workSurfaces.contains {
       $0.section == section && $0.position == state.surface.point
-        && $0.normal == state.surface.normal
+        && $0.normal == state.surface.normal && $0.radius == state.surface.radius
     }
   }
 

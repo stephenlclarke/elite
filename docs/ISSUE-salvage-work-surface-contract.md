@@ -6,4 +6,6 @@ The unchanged SH023 raw profile illustrates the conditional problem: its cargo s
 
 Carry the authentic radius into the transient work surface and validate the actual nearest hypothetical impact against the cutter's same section-distance and outward-side predicates. Keep every first-hit, occlusion, current mesh and actor guard. A named surface without a finite positive radius must refuse. Preserve sectionless pickup/mining behavior and the existing 40-or-zero offset choice; do not enlarge the patch, alter the ship, weaken the cutter or invent a collection policy.
 
+The retained named radius must also remain equal to current metadata alongside its section, point and normal. A changed patch must not borrow an older hold's authorization.
+
 [PR handoff](PR-salvage-work-surface-contract.md).
