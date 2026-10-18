@@ -46,6 +46,37 @@ struct EMPElectricalRuntimeTests {
     #expect(game.dischargeAudio.events.last?.tool == .empPirateBlaster)
   }
 
+  @Test func shieldedIncomingFireDoesNotLatchTheNextManualEMPCharge() throws {
+    var game = try electricalGame()
+    let target = try #require(game.bodies[0].physical?.identity)
+    var controls = Controls()
+    controls.fire = true
+    game.tick(delta: 0.1, controls: controls)
+    let first = try #require(game.commander.savedEMPCharge)
+    try #require(first.phase == .charging && first.target == target)
+    for _ in 0..<100 { game.tick(delta: 0.1, controls: controls) }
+    try #require(game.commander.savedEMPCharge?.phase == .released)
+    try #require(game.dischargeAudio.events.count == 1)
+    controls.fire = false
+    for _ in 0..<17 { game.tick(delta: 0.1, controls: controls) }
+    try #require(game.commander.savedEMPCharge == nil && game.fireCooldown == 0)
+    try #require(game.workGuidance == nil && game.workBraking == nil && game.frontShield > 1)
+    let shield = game.frontShield
+    let hullEnergy = game.energy
+    game.applyDamage(1, front: true)
+    #expect(game.frontShield == shield - 1 && game.energy == hullEnergy)
+    #expect(!game.workFireSuspended)
+    controls.fire = true
+    game.tick(delta: 0.1, controls: controls)
+    let second = try #require(game.commander.savedEMPCharge)
+    #expect(second.phase == .charging && second.target == target)
+    #expect(
+      second.weapon == first.weapon && second.owner == first.owner && second.hull == first.hull)
+    #expect(second.startedAt >= first.startedAt + 10)
+    #expect(game.dischargeAudio.events.count == 1 && !game.workFireSuspended)
+    #expect(!game.docked && game.screen != .gameOver)
+  }
+
   @Test func realAttributedECMPreventsReleaseAfterItsTransientFieldExpires() throws {
     var game = try electricalGame()
     let began = game.fireEMPPirateBlaster()

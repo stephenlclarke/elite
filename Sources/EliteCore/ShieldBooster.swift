@@ -75,7 +75,8 @@ extension Commander {
 extension Game {
   mutating func applyDamage(_ damage: Double, front: Bool, energyMultiplier: Double = 1) {
     if damage.isFinite, damage > 0,
-      workGuidance != nil || workBraking != nil || selectedFlightTool != .combatLaser
+      workGuidance != nil || workBraking != nil || selectedFlightTool == .miningLaser
+        || selectedFlightTool == .salvageCutter
     {
       cancelAutoTarget()
       workFireSuspended = true
