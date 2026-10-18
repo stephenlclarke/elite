@@ -171,8 +171,8 @@ extension Game {
       lateral = lateral - route * lateral.dot(route)
       if lateral.length < 1e-8 { lateral = route.cross(.init(0, 1, 0)) }
       if lateral.length < 1e-8 { lateral = route.cross(.init(1, 0, 0)) }
-      stationAutoDefence?.evasionWorld = commander.flightSimulation.pose.orientation.apply(
-        lateral.unit)
+      let worldLateral = commander.flightSimulation.pose.orientation.apply(lateral.unit)
+      stationAutoDefence?.evasionWorld = worldLateral
     }
     let side = commander.flightSimulation.pose.shipVector(
       stationAutoDefence?.evasionWorld ?? .init(0, 0, 0))
