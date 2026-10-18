@@ -17,13 +17,15 @@ func scriptAnchorPreservesLivePreferenceAndExactSavedFrameFallback(selection: St
   if selection != "live" && selection != "dead-live" {
     game.bodies.removeAll { $0.id == 0 && $0.hull == .station }
   }
+  let galaxy = game.commander.galaxy
+  let system = game.commander.system
   switch selection {
   case "dead-live":
     let index = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
     game.bodies[index].energy = 0
   case "dead-saved": game.scriptReferenceFrame?.station.energy = 0
-  case "other-galaxy": game.scriptReferenceFrame?.galaxy = (game.commander.galaxy + 1) % 8
-  case "other-system": game.scriptReferenceFrame?.system = (game.commander.system + 1) % 256
+  case "other-galaxy": game.scriptReferenceFrame?.galaxy = (galaxy + 1) % 8
+  case "other-system": game.scriptReferenceFrame?.system = (system + 1) % 256
   case "absent": game.scriptReferenceFrame = nil
   default: break
   }
