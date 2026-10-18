@@ -126,8 +126,25 @@ private func solarWorldAfterRelaunch(
   #expect(game.celestials[0].position.z == prior[0].position.z - 3000)
 }
 
-@Test func dockingLoadingAndArrivalUseExistingDockedSaveSemantics() throws {
+@Test func dockingLoadingAndArrivalUseExistingDockedSaveSemantics() async throws {
   var game = solarGame()
+  do {
+    // The legacy loader has no saved flight world; use a genuinely pre-launch Commander.
+    var legacy = Commander()
+    legacy.equipment.insert("Fuel Scoops")
+    legacy.fuel = 0
+    try #require(legacy.equipmentInventory == nil && !legacy.usesModularDriveSaveVersion)
+    try #require(!legacy.usesEconomyMiningSaveVersion && legacy.nativeStations == nil)
+    let bytes = try JSONEncoder().encode(legacy)
+    let decoded = try JSONDecoder().decode(Commander.self, from: bytes)
+    game.cabinTemperature = 0.6
+    try #require(!game.docked && !game.celestials.isEmpty)
+    let loaded = game.load(decoded)
+    #expect(loaded)
+    #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
+    #expect(decoded == legacy && game.commander.valid)
+  }
+  game = solarGame()
   game.cabinTemperature = 0.9
   game.dock()
   #expect(game.celestials.isEmpty && game.cabinTemperature == 0)
@@ -137,10 +154,34 @@ private func solarWorldAfterRelaunch(
   game.cabinTemperature = 0.6
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
-  let commander = try JSONDecoder().decode(
-    Commander.self, from: JSONEncoder().encode(game.commander))
-  let loaded = game.load(commander)
-  #expect(loaded)
+  // A current world restores its saved flight state, so actually dock before saving it.
+  game.dock()
+  try #require(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
+  var expectedCommander = game.commander
+  let mining = expectedCommander.miningLedgerForMigration(legacyMissing: false)
+  try #require(mining.usesEconomyWeightedPresence)
+  expectedCommander.miningLedger = mining
+  try #require(expectedCommander.scriptState.calendarLedger != nil)
+  try #require(expectedCommander.npcPersistence.count == 0 && game.bodies.isEmpty)
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let file = directory.appendingPathComponent("commander.json")
+  let runtime = GameRuntime(game: game)
+  try #require(await runtime.snapshot().commander == game.commander)
+  try await runtime.save(to: file)
+  let commander = await runtime.snapshot().commander
+  #expect(commander == expectedCommander)
+  let bytes = try Data(contentsOf: file)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  try #require(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
+  #expect(
+    stored == expectedCommander && world.docked && world.valid && world.consistent(with: stored))
+  let files = try ScriptFinanceTestFixture.files(directory)
+  try await runtime.load(from: file, persistMigrations: false)
+  game = await runtime.snapshot()
+  #expect(game.commander == commander)
+  #expect(try ScriptFinanceTestFixture.files(directory) == files)
   #expect(game.docked && game.celestials.isEmpty && game.cabinTemperature == 0)
   game.launch()
   #expect(game.celestials == scene)

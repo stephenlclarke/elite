@@ -36,8 +36,27 @@ struct NativeCrewCaptureTests {
     let storage = try NativeStationTestStorage()
     defer { storage.clean() }
     var game = try NativePeopleTestFixture.withinWindow()
-    if reason == "late" { for _ in 0..<301 { game.tick(delta: 0.1) } }
     try NativePeopleTestFixture.aimCutter(&game)
+    if reason == "late" {
+      for _ in 0..<301 { game.tick(delta: 0.1) }
+      let source = try NativePeopleTestFixture.source(game)
+      let record = try #require(game.commander.savedEMPState?.records[source])
+      let deadline = try #require(record.crewDeadline)
+      try #require(game.commander.flightSimulation.physicalTime >= deadline && record.isRecovered)
+      let recovered = try #require(nativeEMPHulls(game, source: source).first)
+      try #require(record.crewAboard > 0 && game.freeNativePeopleTonnes > 0)
+      try #require(
+        game.hasNativeRescueTools
+          && game.commander.fittedEquipment(at: .utility(.salvageCutter)) != nil)
+      try #require(!game.isEMPDisabled(recovered) && recovered.physical?.empSource == nil)
+      let contact = try game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 300, radius: 0, includePlayer: false
+      )
+      try #require(contact?.hit.target == .body(recovered.id))
+      let context = try #require(game.gameplayContext())
+      try #require(!game.nativeCrewCaptureAvailable(recovered, context: context))
+      expectOriginalEMPCrewConserved(record)
+    }
     if reason == "full" { game.commander.cargo[0] = game.commander.standardCargoCapacity }
     if reason == "ray" {
       let index = try #require(game.bodies.firstIndex { $0.physical?.empSource != nil })
