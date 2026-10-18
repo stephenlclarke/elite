@@ -15,7 +15,9 @@ extension Game {
   mutating func activateNearbySalvageSites() {
     guard !docked else { return }
     for site in salvageSites where site.identity.system == systemIdentity {
-      guard !commander.salvageLedger.isWreckDestroyed(site.identity),
+      let native = commander.alienStorageState?.current.salvage.native.wrecks[site.identity]
+      guard native?.destroyedAt == nil, native?.binding == nil,
+        !commander.salvageLedger.isWreckDestroyed(site.identity),
         !bodies.contains(where: {
           $0.physical?.salvage?.wreck == site.identity && $0.physical?.payload == nil
         }),
@@ -23,7 +25,7 @@ extension Game {
         let metadata = site.metadata
       else { continue }
       let motion =
-        commander.salvageLedger.wreckMotion(for: site.identity)
+        native?.motion ?? commander.salvageLedger.wreckMotion(for: site.identity)
         ?? .init(
           pose: .init(position: site.position, orientation: site.orientation),
           velocity: site.velocity, angularVelocity: site.angularVelocity)
@@ -33,7 +35,10 @@ extension Game {
         let context = gameplayContext()
       else { continue }
       var candidate = self
-      guard candidate.commander.salvageLedger.updateWreck(identity: site.identity, motion: motion)
+      let nativeSource = profile.sourceRoles.contains(.thargoid) || native != nil
+      guard
+        nativeSource
+          || candidate.commander.salvageLedger.updateWreck(identity: site.identity, motion: motion)
       else {
         let message = "SALVAGE RECORD CAPACITY FULL"
         if self.message != message || messageTime <= 0 { notify(message) }
@@ -55,6 +60,12 @@ extension Game {
       guard receipts.count == 1, receipts[0].actor != nil, receipts[0].refusal == nil else {
         continue
       }
+      if nativeSource {
+        guard let actor = receipts[0].actor,
+          let body = candidate.bodies.first(where: { $0.physical?.identity == actor }),
+          candidate.retainNativeSalvageWreck(body)
+        else { continue }
+      }
       self = candidate
     }
   }
@@ -68,6 +79,14 @@ extension Game {
         let metadata = physical.salvage, [.wreck, .section].contains(metadata.category),
         let wreck = metadata.wreck
       else { continue }
+      if commander.alienStorageState?.current.salvage.native.wrecks[wreck] != nil {
+        guard observeNativeSalvageWreck(body), flushNativeSalvageWrecks() else {
+          deferred.insert(body.id)
+          notify("WRECK SETTLEMENT DEFERRED")
+          continue
+        }
+        continue
+      }
       guard physical.identity.system == systemIdentity,
         physical.identity.visit == commander.flightSimulation.visit,
         wreck.system == systemIdentity,
@@ -98,9 +117,12 @@ extension Game {
   public var salvageHUDLines: [String] {
     guard !docked else { return [] }
     let candidates = salvageSites.compactMap { site -> (SalvageSite, Vector3)? in
-      guard !commander.salvageLedger.isWreckDestroyed(site.identity) else { return nil }
+      let native = commander.alienStorageState?.current.salvage.native.wrecks[site.identity]
+      guard native?.destroyedAt == nil, !commander.salvageLedger.isWreckDestroyed(site.identity)
+      else { return nil }
       let world =
-        commander.salvageLedger.wreckMotion(for: site.identity)?.pose.position ?? site.position
+        native?.motion.pose.position ?? commander.salvageLedger.wreckMotion(for: site.identity)?
+        .pose.position ?? site.position
       return (site, commander.flightSimulation.pose.shipPoint(world))
     }
     guard let nearest = candidates.min(by: { $0.1.length < $1.1.length }) else { return [] }

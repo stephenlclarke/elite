@@ -13,6 +13,25 @@ public struct SalvageWreckMotion: Equatable, Codable, Sendable {
   }
 }
 
+/// The original uncapped roll and allocator inputs, without actor or publication authority.
+/// Only this file's read-only factory can construct a fresh inspection value.
+struct SalvageNativeInspectionFacts: Sendable {
+  let seed: UInt64
+  let plan: SalvageLootPlan
+  let progress: AlienStorageWorldProgress
+  let requiredWorkSeconds: Double
+
+  fileprivate init(
+    seed: UInt64, plan: SalvageLootPlan, progress: AlienStorageWorldProgress,
+    requiredWorkSeconds: Double
+  ) {
+    self.seed = seed
+    self.plan = plan
+    self.progress = progress
+    self.requiredWorkSeconds = requiredWorkSeconds
+  }
+}
+
 public enum SalvageTool: String, Codable, Sendable { case cutter, miningLaser }
 
 public struct SalvageWorkConditions: Equatable, Codable, Sendable {
@@ -948,6 +967,29 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
     }
   }
 
+  /// Native callers authenticate the actual source and mesh separately. This reader
+  /// neither changes ordinary custody nor consults its lifetime pool capacities.
+  func freshNativeInspection(
+    wreck: WreckIdentity, section: SalvageSectionProfile, source: SalvageLootSource
+  ) -> SalvageNativeInspectionFacts? {
+    let identity = WreckSectionIdentity(wreck: wreck, section: section.index)
+    guard Self.validWreck(wreck), section.index < 64, !isWreckDestroyed(wreck),
+      !isDepleted(identity), !nativeTransferredSections.contains(identity),
+      plans[identity] == nil, validSource(source), section.workSeconds.isFinite,
+      section.workSeconds > 0
+    else { return nil }
+    let plan = SalvageLootProfiles.plan(section: identity, seed: seed, source: source)
+    guard validPlan(plan), estimatedLots(plan) <= 65535 else { return nil }
+    let structural = section.structural && plan.profile != .asteroid ? structuralUnits(identity) : 0
+    return .init(
+      seed: seed, plan: plan,
+      progress: .init(
+        issued: Array(repeating: 0, count: plan.items.count),
+        discarded: Array(repeating: false, count: plan.items.count),
+        structuralUnits: structural, issuedStructural: 0, materialKind: nil, nextLot: 0),
+      requiredWorkSeconds: section.workSeconds)
+  }
+
   /// Persist the original roll even when it is empty; changing source data cannot reroll it.
   public mutating func inspectLoot(
     wreck: WreckIdentity, section: SalvageSectionProfile,
@@ -1341,4 +1383,9 @@ struct SalvageNativeSectionExport: Sendable {
   }
 
   func matches(_ ledger: SalvageLedger) -> Bool { original == ledger }
+}
+
+extension SalvageLedger {
+  var nativeInspectionSeed: UInt64 { seed }
+  func hasInspectedSection(_ section: WreckSectionIdentity) -> Bool { plans[section] != nil }
 }

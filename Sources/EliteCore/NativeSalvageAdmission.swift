@@ -5,7 +5,7 @@ extension Game {
   /// allocator, cargo budget, protection, geometry, and actual spawn receipts.
   mutating func admitPendingNativeSalvage() {
     guard !docked, let native = commander.alienStorageState?.current.salvage else { return }
-    let available = native.pending.values.filter {
+    let available = (native.pendingBySystem[systemIdentity] ?? []).filter {
       $0.binding == nil && $0.offer == nil && $0.lot.identity.section.wreck.system == systemIdentity
     }.sorted {
       let a = $0.lot.identity

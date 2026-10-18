@@ -290,6 +290,7 @@ public struct Commander: Sendable, Equatable, Codable {
   public var valid: Bool {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
+      && nativeSalvageOriginalSourcesValid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -437,6 +438,8 @@ public struct Game: Sendable {
   // Enabled only by G1 after supported native save/world/durability validation. Never saved.
   var nativeCrimboLifecycleAvailable = false
   var nativeSalvageMotion: [SalvageLotIdentity: NativeSalvageMotion] = [:]
+  var nativeSalvageWreckMotion: [WreckIdentity: NativeSalvageWreckObservation] = [:]
+  var nativeSalvageWork: NativeSalvageHotWork?
   var pendingNativeSalvageCollections: [NativeSalvageCollectionObservation] = []
   var pendingNativeStationDock: NativeStationEntryProof?
   var nativeStationDockEvidence: NativeStationDockEvidence?
@@ -588,6 +591,8 @@ public struct Game: Sendable {
     consumedMissionLaserEmission = 0
     legacySimulationSpawnClock = nil
     nativeSalvageMotion.removeAll(keepingCapacity: true)
+    nativeSalvageWreckMotion.removeAll(keepingCapacity: true)
+    nativeSalvageWork = nil
     pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     bodies = []
     scriptReferenceFrame = nil
@@ -659,6 +664,10 @@ public struct Game: Sendable {
     return true
   }
   public mutating func key(_ raw: String) {
+    guard flushNativeSalvageWork() else {
+      notify("SALVAGE STATE UNAVAILABLE")
+      return
+    }
     let key = raw.lowercased()
     if interfaceKey(key) { return }
     keyAfterInterface(key)
@@ -1526,6 +1535,13 @@ public struct Game: Sendable {
     return Int((randomState >> 32) & 255)
   }
   public mutating func tick(delta: Double, controls: Controls = Controls()) {
+    tick(delta: delta, controls: controls, nativeSalvagePublish: nil)
+  }
+
+  mutating func tick(delta: Double, controls: Controls, nativeSalvagePublish: ScriptPublisher?) {
+    if !controls.fire || paused || !screen.isFlight || selectedFlightTool != .salvageCutter {
+      guard flushNativeSalvageWork() else { return }
+    }
     pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
     guard delta.isFinite, delta > 0 else { return }
     let dt = min(delta, 0.1)
@@ -1587,7 +1603,9 @@ public struct Game: Sendable {
     energy = min(craft.energy, energy + dt * craft.recharge * commander.energyRechargeMultiplier)
     frontShield = min(commander.shieldCapacity, frontShield + dt * commander.frontShieldRecharge)
     rearShield = min(commander.rearShieldCapacity, rearShield + dt * commander.rearShieldRecharge)
-    if controls.fire && screen.isFlight { fireSelectedFlightTool(delta: dt) }
+    if controls.fire && screen.isFlight {
+      fireSelectedFlightTool(delta: dt, nativeSalvagePublish: nativeSalvagePublish)
+    }
     if let remaining = jumpCountdown {
       jumpCountdown = remaining - dt
       if remaining <= dt { arrive() }
@@ -1730,6 +1748,21 @@ public struct Game: Sendable {
         else { return nil }
         return physical.identity
       })
+    let nativeWreckDeparting = Set(
+      departing.compactMap { body -> ActorIdentity? in
+        guard let physical = body.physical, physical.payload == nil,
+          let wreck = physical.salvage?.wreck,
+          commander.alienStorageState?.current.salvage.native.wrecks[wreck]?.binding
+            == physical.identity
+        else { return nil }
+        return physical.identity
+      })
+    if !nativeWreckDeparting.isEmpty {
+      guard flushNativeSalvageWrecks(parking: nativeWreckDeparting) else {
+        notify("SALVAGE STATE UNAVAILABLE")
+        return
+      }
+    }
     if !nativeDeparting.isEmpty {
       guard flushNativeSalvageMotion(parking: nativeDeparting) else {
         notify("SALVAGE STATE UNAVAILABLE")
@@ -2018,7 +2051,9 @@ public actor GameRuntime {
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return game }
-    game.tick(delta: delta, controls: controls)
+    game.tick(
+      delta: delta, controls: controls,
+      nativeSalvagePublish: scriptPublisher(requireNativeSalvage: true))
     commitNativeSalvageCollections()
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()

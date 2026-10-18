@@ -48,6 +48,7 @@ extension Commander {
       guard record.weaponOwner == equipmentOwnerID,
         record.crewEpisodeTimelineValid(flight: flightSimulation),
         salvageLedger.empSourceIsConsistent(record),
+        nativeEMPSourceIsConsistent(record),
         record.source.entity < flightSimulation.nextActor,
         record.source.visit <= flightSimulation.visit,
         incident.id < flightSimulation.nextIncident,
@@ -72,6 +73,27 @@ extension Commander {
           && npcPersistence.terminalReason(for: record.source) == .empTransferred
       }
       return true
+    }
+  }
+}
+
+extension Commander {
+  private func nativeEMPSourceIsConsistent(_ record: EMPHullRecord) -> Bool {
+    guard let plans = alienStorageState?.current.salvage.native.plansByWreck[record.wreck] else {
+      return true
+    }
+    guard record.pods.count + record.capturedCrewCount == record.crewTotal,
+      record.lostCrewCount == 0,
+      let catalogue = record.hull.body.physical?.catalogueShipID,
+      let profile = SalvageCatalogue.empProfile(catalogueShipID: catalogue)
+    else { return false }
+    return plans.allSatisfy { value in
+      let source = value.plan.source
+      return profile.sections.contains { $0.index == value.plan.section.section }
+        && source.roles == profile.sourceRoles && source.manifest == record.salvageCargo
+        && source.legalValue == record.salvageLegal.value && source.ownership == .abandoned
+        && source.stolenProvenance == (record.salvageLegal.value == 0)
+        && source.manifestSection == 1 && !source.manifestAlreadySettled
     }
   }
 }
