@@ -255,16 +255,27 @@ struct ScriptProcurementFixture {
   }
   static func travel(
     _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil,
-    defensivePreflight: Bool = false
+    defensivePreflight: Bool = false, verifyDeparture: Bool = false
   ) async throws {
+    var origin = path.first
     for destination in path.dropFirst() {
       let leg = diagnostic == nil ? "" : "travel-leg-\(path.firstIndex(of: destination) ?? 0)"
+      if verifyDeparture {
+        let expected = try #require(origin)
+        let ready = await runtime.procurementDepartureReadiness(
+          origin: expected, destination: destination, atDock: true)
+        try #require(ready.allowed, ready.detail)
+      }
       await runtime.key("0")
       var controls = Controls()
       controls.throttle = 1
       await runtime.setControls(controls)
       var departure = 0
       while departure < 300 {
+        if verifyDeparture {
+          let flight = await runtime.procurementFlightFacts()
+          try #require(flight.live && !flight.paused && !flight.docked)
+        }
         let locked = await runtime.procurementMassLocked()
         if !locked { break }
         if let diagnostic {
@@ -279,9 +290,20 @@ struct ScriptProcurementFixture {
       try #require(departure < 300)
       let coordinate = await runtime.procurementSystemCoordinate(destination)
       await runtime.selectSystem(x: coordinate.0, y: coordinate.1)
+      if verifyDeparture {
+        let expected = try #require(origin)
+        let ready = await runtime.procurementDepartureReadiness(
+          origin: expected, destination: destination, atDock: false)
+        try #require(ready.allowed, ready.detail)
+      }
       await runtime.key("h")
       let started = await runtime.procurementJumping()
-      try #require(started)
+      if verifyDeparture {
+        let detail = await runtime.procurementJumpRefusalDetail(destination: destination)
+        try #require(started, detail)
+      } else {
+        try #require(started)
+      }
       var steps = 0
       while steps < 500 {
         let jumping = await runtime.procurementJumping()
@@ -300,6 +322,7 @@ struct ScriptProcurementFixture {
         runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : leg + "-dock",
         defensivePreflight: defensivePreflight)
       if destination != path.last { await runtime.procurementRefuel() }
+      origin = destination
     }
   }
   private static func defendedDock(
@@ -520,9 +543,46 @@ struct ScriptProcurementFlightDiagnosticFacts: Sendable {
 
 /// Test-only, opt-in state. It retains no Game, Commander, actor inventory or authority.
 actor ScriptProcurementFlightDiagnostic {
+  private let label: String
   private var emitted = false
   private var lastLive: [String: String]?
   var active: Bool { !emitted }
+
+  init(label: String = "procurement-partial") {
+    self.label = Self.ascii(label, limit: 48)
+  }
+
+  private static func ascii(_ value: String, limit: Int) -> String {
+    String(
+      decoding: value.utf8.prefix(limit).map {
+        (48...57).contains($0) || (65...90).contains($0) || (97...122).contains($0)
+          || [43, 44, 45, 46, 47, 58, 63, 95].contains($0) ? $0 : 63
+      }, as: UTF8.self)
+  }
+
+  // Fixed ASCII ceilings retain causal manual facts even if verbose before/after text grows.
+  private static let compactLimits: [String: Int] = [
+    "docked": 32, "live": 32, "paused": 32, "screen": 32, "energy": 32,
+    "energyFinite": 32, "frontShield": 32, "rearShield": 32,
+    "altitude": 32, "cabinTemperature": 32, "mainStationContainsPlayer": 32,
+    "finalApproach": 32, "system": 32, "visit": 32, "physicalTime": 32,
+    "missionSeconds": 32, "fuel": 32, "credits": 32, "legal": 32, "speed": 32,
+    "gameplayRevisionFrameStamp": 32, "stationImpactRevisionFrameStamp": 32,
+    "targetID": 32, "phase": 64, "step": 32,
+    "pilotAction": 32, "pilotThreat": 96, "pilotPosition": 96, "pilotWanted": 32,
+    "pilotIncoming": 32, "pilotZoneClear": 32, "pilotExactRay": 32,
+    "pilotCombatTool": 32, "pilotFrontLaser": 32, "pilotPitch": 32, "pilotYaw": 32,
+    "pilotFire": 32, "pilotCooldown": 32, "pilotHeat": 32, "pilotEMPDisabled": 32,
+    "pilotWorkSuspended": 32,
+  ]
+
+  private static func compact(_ fields: [String: String]) -> [String: String] {
+    var result: [String: String] = [:]
+    for (key, limit) in compactLimits {
+      if let value = fields[key] { result[key] = ascii(value, limit: limit) }
+    }
+    return result
+  }
 
   func record(
     before: ScriptProcurementFlightDiagnosticFacts,
@@ -540,14 +600,22 @@ actor ScriptProcurementFlightDiagnostic {
     var failure = after.scalars
     failure["phase"] = phase
     failure["step"] = String(step + 1)
-    let payload: [String: Any] = [
-      "kind": "procurement-flight-first-failure",
+    var payload: [String: Any] = [
+      "kind": "procurement-flight-first-failure", "fixture": label,
       "lastLivePreAdvance": lastLive ?? [:],
       "firstFailurePostAdvance": failure,
       "immediatePreAdvanceWasLive": before.live && !before.paused,
     ]
     do {
-      let data = try JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys])
+      var data = try JSONSerialization.data(
+        withJSONObject: payload, options: [.sortedKeys, .withoutEscapingSlashes])
+      if data.count >= 4096 {
+        payload["lastLivePreAdvance"] = Self.compact(lastLive ?? [:])
+        payload["firstFailurePostAdvance"] = Self.compact(failure)
+        payload["compact"] = true
+        data = try JSONSerialization.data(
+          withJSONObject: payload, options: [.sortedKeys, .withoutEscapingSlashes])
+      }
       // The budget includes print's single trailing newline. Refusal never dumps the payload.
       guard data.count < 4096, let text = String(data: data, encoding: .utf8) else {
         print("PROCUREMENT_FLIGHT_DIAGNOSTIC_REFUSED limit=4096")
@@ -710,7 +778,9 @@ extension GameRuntime {
       input.fire = action == .requestFire
       setControls(input)
     }
-    let before = diagnostic ? procurementFlightDiagnosticFacts() : nil
+    let before =
+      diagnostic
+      ? procurementFlightDiagnosticFacts(manual: automatic ? nil : facts, steps: steps) : nil
     let startTime = game.commander.flightSimulation.physicalTime
     _ = advance(delta: 0.1)
     if !automatic { setControls(Controls()) }
@@ -726,40 +796,65 @@ extension GameRuntime {
   }
 
   /// Scalar reads only; numeric strings preserve nonfinite values without JSON NaN failures.
-  func procurementFlightDiagnosticFacts() -> ScriptProcurementFlightDiagnosticFacts {
+  func procurementFlightDiagnosticFacts(
+    manual: ScriptProcurementPreflightFacts? = nil, steps: Int = 0
+  ) -> ScriptProcurementFlightDiagnosticFacts {
     let facts = procurementFlightFacts()
     let stationContainsPlayer =
       game.bodies.first { $0.id == 0 && $0.hull == .station }
       .map { String($0.containsPlayer) } ?? "unavailable"
-    return .init(
-      docked: facts.docked, live: facts.live, paused: facts.paused,
-      scalars: [
-        "docked": String(facts.docked), "live": String(facts.live),
-        "paused": String(facts.paused), "screen": String(describing: game.screen),
-        "energy": String(game.energy), "energyFinite": String(game.energy.isFinite),
-        "frontShield": String(game.frontShield), "rearShield": String(game.rearShield),
-        "cabinTemperature": String(game.cabinTemperature), "altitude": String(game.altitude),
-        "system": String(game.commander.system),
-        "visit": String(game.commander.flightSimulation.visit),
-        "physicalTime": String(game.commander.flightSimulation.physicalTime),
-        "calendarSeconds": String(game.commander.scriptState.calendarSeconds),
-        "missionSeconds": game.commander.scriptState.missionCalendar.map { String($0.seconds) }
-          ?? "unavailable",
-        "fuel": String(game.commander.fuel), "credits": String(game.commander.credits),
-        "legal": String(game.commander.legal),
-        "cargoTonnes": String(game.commander.cargoTonnes),
-        "speed": String(game.speed), "roll": String(game.roll),
-        "autoPilotStatus": String(game.autoPilot.status.prefix(80)),
-        "finalApproach": String(game.autoPilot.finalApproach),
-        "positionError": String(game.autoPilot.positionError),
-        "phaseError": String(game.autoPilot.phaseError),
-        "rateError": String(game.autoPilot.rateError),
-        "targetID": game.autoPilot.targetID.map { String($0) } ?? "nil",
-        "mainStationContainsPlayer": stationContainsPlayer,
-        "gameplayRevisionFrameStamp": String(game.gameplayRevision),
-        "stationImpactRevisionFrameStamp": game.stationImpactRevision.map { String($0) } ?? "nil",
-        "message": String(game.message.prefix(160)),
-      ])
+    var scalars = [
+      "docked": String(facts.docked), "live": String(facts.live),
+      "paused": String(facts.paused), "screen": String(describing: game.screen),
+      "energy": String(game.energy), "energyFinite": String(game.energy.isFinite),
+      "frontShield": String(game.frontShield), "rearShield": String(game.rearShield),
+      "cabinTemperature": String(game.cabinTemperature), "altitude": String(game.altitude),
+      "system": String(game.commander.system),
+      "visit": String(game.commander.flightSimulation.visit),
+      "physicalTime": String(game.commander.flightSimulation.physicalTime),
+      "calendarSeconds": String(game.commander.scriptState.calendarSeconds),
+      "missionSeconds": game.commander.scriptState.missionCalendar.map { String($0.seconds) }
+        ?? "unavailable",
+      "fuel": String(game.commander.fuel), "credits": String(game.commander.credits),
+      "legal": String(game.commander.legal),
+      "cargoTonnes": String(game.commander.cargoTonnes),
+      "speed": String(game.speed), "roll": String(game.roll),
+      "autoPilotStatus": String(game.autoPilot.status.prefix(80)),
+      "finalApproach": String(game.autoPilot.finalApproach),
+      "positionError": String(game.autoPilot.positionError),
+      "phaseError": String(game.autoPilot.phaseError),
+      "rateError": String(game.autoPilot.rateError),
+      "targetID": game.autoPilot.targetID.map { String($0) } ?? "nil",
+      "mainStationContainsPlayer": stationContainsPlayer,
+      "gameplayRevisionFrameStamp": String(game.gameplayRevision),
+      "stationImpactRevisionFrameStamp": game.stationImpactRevision.map { String($0) } ?? "nil",
+      "message": String(game.message.prefix(160)),
+    ]
+    if let manual {
+      let threat =
+        manual.threat.map {
+          "\($0.identity.system.galaxy)/\($0.identity.system.system)/\($0.identity.visit)/\($0.identity.entity)"
+        } ?? "nil"
+      let position =
+        manual.threat.map {
+          "\($0.position.x),\($0.position.y),\($0.position.z)"
+        } ?? "nil"
+      scalars.merge([
+        "pilotAction": String(describing: manual.requestedAction(steps: steps)),
+        "pilotThreat": threat, "pilotPosition": position,
+        "pilotWanted": manual.threat.map { String($0.wanted) } ?? "nil",
+        "pilotIncoming": String(manual.incoming),
+        "pilotZoneClear": String(manual.outsideNoFireZones),
+        "pilotExactRay": String(manual.exactForwardHit),
+        "pilotCombatTool": String(manual.combatLaser),
+        "pilotFrontLaser": String(manual.frontLaser), "pilotPitch": String(controls.pitch),
+        "pilotYaw": String(controls.yaw), "pilotFire": String(controls.fire),
+        "pilotCooldown": String(game.fireCooldown), "pilotHeat": String(game.laserHeat),
+        "pilotEMPDisabled": String(game.playerEMPDisabled),
+        "pilotWorkSuspended": String(game.workFireSuspended),
+      ]) { _, new in new }
+    }
+    return .init(docked: facts.docked, live: facts.live, paused: facts.paused, scalars: scalars)
   }
   func procurementTargetIsMain() -> Bool { game.autoTargetBody?.id == 0 }
   func procurementFlightFacts() -> (docked: Bool, live: Bool, paused: Bool) {
@@ -772,6 +867,76 @@ extension GameRuntime {
   func procurementSystemCoordinate(_ id: Int) -> (Int, Int) {
     (game.systems[id].x, game.systems[id].y)
   }
+  /// Actual paid Fuel transaction at the repeated-trip caller's genuine turnaround dock.
+  func procurementRefuelForTurnaround(expectedSystem: Int) throws {
+    guard game.commander.system == expectedSystem, game.docked, !game.paused,
+      game.nativeMainStationDockEvidenceIsCurrent, game.commander.valid,
+      let index = Equipment.all.firstIndex(where: { $0.name == "Fuel" })
+    else { throw SaveError.invalidCommander }
+    let item = Equipment.all[index]
+    let price = game.shopPrice(item)
+    let before = game.commander
+    guard game.equipmentAvailable(item), !before.unlimitedCash, !before.unlimitedFuel,
+      price >= 0, before.availableCredits >= price,
+      before.fuel == before.fuelCapacity || price > 0
+    else { throw EquipmentRuntimeError.unavailable }
+    try scriptCommand { candidate in
+      candidate.selection = index
+      let result = candidate.purchaseImmediately()
+      guard result == .applied(.purchase(item: "Fuel", physicalItem: nil, fitted: true)),
+        candidate.commander.fuel == before.fuelCapacity,
+        candidate.commander.credits == before.credits - price,
+        candidate.commander.cargo == before.cargo,
+        candidate.commander.scriptState == before.scriptState,
+        candidate.commander.contracts == before.contracts,
+        candidate.commander.nativePeople == before.nativePeople,
+        candidate.commander.equipmentInventory == before.equipmentInventory,
+        candidate.commander.equipmentPurchaseHistory == before.equipmentPurchaseHistory,
+        candidate.nativeMainStationDockEvidenceIsCurrent, candidate.commander.valid
+      else { throw SaveError.invalidCommander }
+    }
+    guard game.commander.fuel == before.fuelCapacity,
+      game.commander.credits == before.credits - price,
+      game.commander.cargo == before.cargo, game.commander.scriptState == before.scriptState,
+      game.nativeMainStationDockEvidenceIsCurrent
+    else { throw SaveError.invalidCommander }
+  }
+
+  func procurementDepartureReadiness(origin: Int, destination: Int, atDock: Bool)
+    -> (allowed: Bool, detail: String)
+  {
+    guard game.systems.indices.contains(destination) else {
+      return (false, "Expiry travel destination is outside the actual galaxy.")
+    }
+    let distance = game.currentSystem.distance(to: game.systems[destination])
+    let flight = procurementFlightFacts()
+    let allowed =
+      flight.live && !flight.paused && game.commander.system == origin
+      && distance <= game.commander.maximumJumpDistance && game.jumpCountdown == nil
+      && !game.playerEMPDisabled
+      && (atDock
+        ? game.docked && game.nativeMainStationDockEvidenceIsCurrent
+        : !game.docked && game.screen.isFlight && game.selectedSystem == destination
+          && !game.hyperspaceMassLocked)
+    return (allowed, procurementJumpRefusalDetail(destination: destination))
+  }
+
+  /// A bounded observation of the actual guard inputs/message, never a guessed refusal cause.
+  func procurementJumpRefusalDetail(destination: Int) -> String {
+    let distance =
+      game.systems.indices.contains(destination)
+      ? String(game.currentSystem.distance(to: game.systems[destination])) : "invalid"
+    let detail =
+      "Expiry jump: sys=\(game.commander.system) selected=\(game.selectedSystem)"
+      + " wanted=\(destination) fuel=\(game.commander.fuel) distance=\(distance)"
+      + " reach=\(game.commander.maximumJumpDistance) docked=\(game.docked)"
+      + " live=\(procurementFlightFacts().live) paused=\(game.paused)"
+      + " EMP=\(game.playerEMPDisabled) lock=\(game.hyperspaceMassLocked)"
+      + " message=\(game.message.prefix(120))"
+    return String(
+      decoding: detail.utf8.prefix(1024).map { (32...126).contains($0) ? $0 : 63 }, as: UTF8.self)
+  }
+
   func procurementRefuel() {
     nativeCommand { game in
       guard let index = Equipment.all.firstIndex(where: { $0.name == "Fuel" }) else { return }

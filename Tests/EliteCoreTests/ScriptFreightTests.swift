@@ -67,9 +67,12 @@ func freightRealIssuerSuppliesExactUnitsForFreeAndBackPreservesFiles(row: Int) a
 func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let fixture = try ScriptFreightFixture()
   defer { fixture.clean() }
-  let (runtime, id, plan) = try await fixture.accepted(row: row)
+  let diagnostic =
+    row == 2
+    ? ScriptProcurementFlightDiagnostic(label: "freight-all-remaining-row-2") : nil
+  let (runtime, id, plan) = try await fixture.accepted(row: row, diagnostic: diagnostic)
   let accepted = await runtime.snapshot()
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path)
+  try await ScriptProcurementFixture.travel(runtime, path: plan.path, diagnostic: diagnostic)
   await runtime.key("contacts-open")
   try await ScriptFreightFixture.confirm(runtime, all: true)
   let delivered = await runtime.snapshot()
@@ -114,9 +117,8 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let first = try #require(partial.commander.scriptState.instances[id])
   #expect(
     first.savedOwnedCargo?.held.count == 4 && first.collections[plan.template.id]?.lots.count == 1)
-  #expect(
-    partial.commander.credits == bought.commander.credits
-      && partial.commander.cargo == bought.commander.cargo)
+  #expect(partial.commander.credits == oneShown.commander.credits)
+  #expect(partial.commander.cargo == bought.commander.cargo)
   let priorLots = try #require(first.collections[plan.template.id]?.lots)
   let issued = try #require(first.savedOwnedCargo?.issued)
   #expect(first.savedOwnedCargo?.held == Array(issued.dropFirst()))
@@ -177,7 +179,7 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let commodity = try #require(plan.commodity)
   try #require(accepted.market[commodity.rawValue].quantity > 0)
   await runtime.procurementBuy(commodity.rawValue)
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path)
+  try await ScriptProcurementFixture.travel(runtime, path: plan.path, verifyDeparture: true)
   await runtime.key("contacts-open")
   try await ScriptFreightFixture.confirm(runtime)
   let boundarySource = await runtime.snapshot()
@@ -190,7 +192,9 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   for _ in 0..<6 {
     let current = await runtime.snapshot()
     if current.commander.scriptState.instances[id]?.outcome != .active { break }
-    try await ScriptProcurementFixture.travel(runtime, path: path)
+    let origin = try #require(path.first)
+    try await runtime.procurementRefuelForTurnaround(expectedSystem: origin)
+    try await ScriptProcurementFixture.travel(runtime, path: path, verifyDeparture: true)
     path.reverse()
   }
   let expired = await runtime.snapshot()

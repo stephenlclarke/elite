@@ -48,7 +48,9 @@ struct ScriptFreightFixture {
       pack: pack, commander: game.commander,
       origin: game.contractStation, revision: 0, seed: seed)
   }
-  func nativeRuntime(escapeReady: Bool = false) async throws
+  func nativeRuntime(
+    escapeReady: Bool = false, diagnostic: ScriptProcurementFlightDiagnostic? = nil
+  ) async throws
     -> GameRuntime
   {
     var game = Game(executive: false)
@@ -73,13 +75,16 @@ struct ScriptFreightFixture {
     let runtime = GameRuntime(game: game, saveURL: save)
     try await runtime.save(to: save)
     await runtime.key("0")
-    try await ScriptProcurementFixture.dock(runtime)
+    try await ScriptProcurementFixture.dock(
+      runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : "freight-initial-dock")
     return runtime
   }
-  func accepted(row: Int = 0, escapeReady: Bool = false) async throws -> (
+  func accepted(
+    row: Int = 0, escapeReady: Bool = false, diagnostic: ScriptProcurementFlightDiagnostic? = nil
+  ) async throws -> (
     GameRuntime, UUID, ScriptFreightPlan
   ) {
-    let runtime = try await nativeRuntime(escapeReady: escapeReady)
+    let runtime = try await nativeRuntime(escapeReady: escapeReady, diagnostic: diagnostic)
     let key = try await runtime.generateContractBoard(packDigest: pack.digest)
     let before = await runtime.snapshot()
     let offer = try #require(before.commander.contracts.boards[key]?.offers[row])
