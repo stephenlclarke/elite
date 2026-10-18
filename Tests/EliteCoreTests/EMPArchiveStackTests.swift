@@ -32,8 +32,10 @@ private struct EMPArchiveTimerFixture {
   func game(accepted: Bool = true, destination: Bool = true, archive: Bool = false) throws -> Game {
     var game = archive ? try empFixture() : Game(executive: false)
     if archive {
-      try #require(releaseDamagedEMPBoundary(&game))
-      try #require(game.persistEMPState())
+      let released = try releaseDamagedEMPBoundary(&game)
+      try #require(released)
+      let captured = game.persistEMPState()
+      try #require(captured)
     }
     game.screen = .status
     game.scriptPacks = [pack]
@@ -124,19 +126,23 @@ func empArchiveNestedTimerWriterFailureRetainsArchiveAndRetries(archive: Bool) a
 
 @Test func empArchiveNilGuardRejectsRetainedEMPActors() throws {
   var game = try empFixture()
-  try #require(releaseDamagedEMPBoundary(&game))
+  let released = try releaseDamagedEMPBoundary(&game)
+  try #require(released)
   try #require(game.commander.savedEMPState != nil)
   game.commander.savedEMPState = nil
-  #expect(!game.persistEMPState())
+  let captured = game.persistEMPState()
+  #expect(!captured)
   #expect(game.commander.savedEMPState == nil)
 }
 
 @Test func empArchiveInvalidCandidateDoesNotPublish() throws {
   var game = try empFixture()
-  try #require(releaseDamagedEMPBoundary(&game))
+  let released = try releaseDamagedEMPBoundary(&game)
+  try #require(released)
   let source = try #require(game.commander.savedEMPState?.records.keys.first)
   game.commander.savedEMPState?.records[source]?.lostCrewCount = -1
   let before = game.commander.savedEMPState
-  #expect(!game.persistEMPState())
+  let captured = game.persistEMPState()
+  #expect(!captured)
   #expect(game.commander.savedEMPState == before)
 }
