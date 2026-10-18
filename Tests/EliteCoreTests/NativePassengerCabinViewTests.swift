@@ -204,7 +204,7 @@ extension NativeViewTests {
     let cash = fixture.view.game.commander.credits
     let beforeBuy = fixture.view.game.commander
     let price = fixture.view.game.passengerBerthQuote.price
-    try #require(!beforeBuy.unlimitedCash && price.isFinite && price == PassengerCabin.price)
+    try #require(!beforeBuy.unlimitedCash && price > 0 && price == PassengerCabin.price)
     let beforeGenerations = try fixture.generations()
     let beforeBytes = try Data(contentsOf: fixture.save)
     let beforePointer = try JSONDecoder().decode(ScriptSavePointer.self, from: beforeBytes)
@@ -217,14 +217,17 @@ extension NativeViewTests {
     let generationRoot = fixture.save.appendingPathExtension("missions")
     let originalGenerations = try FileManager.default.contentsOfDirectory(
       atPath: generationRoot.path)
-    let enumeration = FileManager.default.enumerator(
-      at: generationRoot, includingPropertiesForKeys: [.isRegularFileKey])
-    let entries = try #require(enumeration)
-    var originalFiles: [URL: Data] = [:]
-    for case let url as URL in entries {
-      let values = try url.resourceValues(forKeys: [.isRegularFileKey])
-      if values.isRegularFile == true { originalFiles[url] = try Data(contentsOf: url) }
-    }
+    let originalFiles: [URL: Data] = try {
+      let enumeration = FileManager.default.enumerator(
+        at: generationRoot, includingPropertiesForKeys: [.isRegularFileKey])
+      let entries = try #require(enumeration)
+      var originalFiles: [URL: Data] = [:]
+      for case let url as URL in entries {
+        let values = try url.resourceValues(forKeys: [.isRegularFileKey])
+        if values.isRegularFile == true { originalFiles[url] = try Data(contentsOf: url) }
+      }
+      return originalFiles
+    }()
     try #require(!originalFiles.isEmpty)
     try fixture.queue(36, text: "\r")
     #expect(fixture.view.pending == ["equipment-purchase"])
