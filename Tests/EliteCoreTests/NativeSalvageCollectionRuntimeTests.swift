@@ -14,7 +14,6 @@ private func nativeSalvageScoopFixture(
   game.commander.mirrorFittedEquipment()
   game.launch()
   game.speed = 0
-  game.bodies = []
   game.celestials = []
   var original = try AlienLegacyFixture.make(definition: definition)
   let target = try #require(
@@ -78,8 +77,12 @@ struct NativeSalvageCollectionRuntimeTests {
     let bytes = try Data(contentsOf: file)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
     #expect(pointer.schemaVersion == 27)
+    // The file deliberately parks NPC bindings; the retained flight world rebinds
+    // those original logical actors on load. Keep all source/resources in the oracle.
+    var expectedDisk = after.commander
+    expectedDisk.npcPersistence.resetPhysicalBindings(system: after.systemIdentity)
     let published = try NativeSaveTestFixture.readVersionedCommander(from: file)
-    #expect(published == after.commander)
+    #expect(published == expectedDisk)
     try await runtime.load(from: file, persistMigrations: false)
     #expect(await runtime.snapshot().commander == after.commander)
     #expect(try Data(contentsOf: file) == bytes)
@@ -124,8 +127,10 @@ struct NativeSalvageCollectionRuntimeTests {
     let retry = await runtime.advance(delta: 0.1)
     #expect(retry.commander.alienStorageState?.current.snapshot.sources.count == 1)
     #expect(!retry.bodies.contains { $0.physical?.payload == .salvage(lot.identity) })
+    var expectedDisk = retry.commander
+    expectedDisk.npcPersistence.resetPhysicalBindings(system: retry.systemIdentity)
     let saved = try NativeSaveTestFixture.readVersionedCommander(from: file)
-    #expect(saved == retry.commander)
+    #expect(saved == expectedDisk)
   }
 
   @Test func directTickAndUnboundActorCannotPublishACollectionOrRemoveTheActualFragment()
@@ -350,6 +355,13 @@ extension NativeSalvageCollectionRuntimeTests {
       at: game.commander.flightSimulation.physicalTime, previous: nil)
     // Controlled supported imported state; genuine collection is covered separately.
     try imported.apply(to: &game.commander)
+    // A genuine unrelated allocated body departs in the same physical frame.
+    let allocation = game.commander.flightSimulation.allocateActor()
+    let unrelatedActor = try #require(allocation)
+    var unrelated = SpaceBody(id: game.nextBodyID, hull: .cargo, position: .init(0, 0, 90000))
+    game.nextBodyID += 1
+    unrelated.physical = .init(identity: unrelatedActor, population: .cargo)
+    game.bodies.append(unrelated)
     let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: folder) }
     let file = folder.appendingPathComponent("commander.json")
@@ -362,6 +374,7 @@ extension NativeSalvageCollectionRuntimeTests {
     let moved = await runtime.advance(delta: 0.1)
     let held = try #require(moved.commander.alienStorageState?.current)
     #expect(held === oldState)
+    #expect(!moved.bodies.contains { $0.physical?.identity == unrelatedActor })
     #expect(moved.nativeSalvageMotion[original.identity] != nil)
     let body = try #require(moved.bodies.first { $0.physical?.identity == oldActor })
     #expect(

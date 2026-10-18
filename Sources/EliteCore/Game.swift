@@ -1720,9 +1720,18 @@ public struct Game: Sendable {
     let departing = bodies.filter {
       $0.energy > 0 && $0.leavesLocalBubble && $0.id != 0 && !retainedNPCs.contains($0.id)
     }
-    if !departing.isEmpty {
-      guard flushNativeSalvageMotion(parking: Set(departing.compactMap { $0.physical?.identity }))
-      else {
+    // Ordinary traffic/projectile culls must not replay native lifetime history.
+    let nativePending = commander.alienStorageState?.current.salvage.pending
+    let nativeDeparting = Set(
+      departing.compactMap { body -> ActorIdentity? in
+        guard let physical = body.physical, let payload = physical.payload,
+          case .salvage(let identity) = payload,
+          nativePending?[identity]?.binding == physical.identity
+        else { return nil }
+        return physical.identity
+      })
+    if !nativeDeparting.isEmpty {
+      guard flushNativeSalvageMotion(parking: nativeDeparting) else {
         notify("SALVAGE STATE UNAVAILABLE")
         return
       }
