@@ -3,10 +3,21 @@ import Foundation
 extension Game {
   /// Resolves real retained ownership. A caller-built descriptor alone has no mission authority.
   func currentMissionActorDescriptor(bodyID: Int) -> MissionActorDescriptor? {
-    Self.retainedMissionActorDescriptor(
-      bodyID: bodyID, bodies: bodies, instances: commander.scriptState.instances,
-      packs: scriptPacks, galaxy: commander.galaxy, system: commander.system,
-      geometry: commander.scriptState.geometry)
+    // Ordinary craft cannot pass the retained factory's existing ownership guard.
+    // Keep that rejection outside its Commander and actor-validation stack frames.
+    guard let body = bodies.first(where: { $0.id == bodyID }),
+      body.missionInstanceID != nil, body.missionActorID != nil
+    else { return nil }
+    return retainedCurrentMissionActorDescriptor(bodyID: bodyID)
+  }
+
+  /// Only actual mission-tagged bodies enter the unchanged full retained-owner census.
+  private func retainedCurrentMissionActorDescriptor(bodyID: Int) -> MissionActorDescriptor? {
+    let source = commander.missionActorSourceValues()
+    return Self.retainedMissionActorDescriptor(
+      bodyID: bodyID, bodies: bodies, instances: source.instances,
+      packs: scriptPacks, galaxy: source.galaxy, system: source.system,
+      geometry: source.geometry)
   }
 
   /// Resolve the same immutable authority facts without retaining another complete Game frame.
@@ -155,5 +166,16 @@ extension ScriptEngineState {
     return
       (try? MissionNativeBridge.validateArchive(
         shot.nativeAttribution, shot: descriptor, packDigest: instance.digest)) != nil
+  }
+}
+
+extension Commander {
+  /// Read the same immutable fields through borrowed self before the factory starts.
+  /// This tuple is transient data, with no body, authority, cache or state owner.
+  fileprivate func missionActorSourceValues() -> (
+    instances: [UUID: ScriptInstance], galaxy: Int, system: Int, geometry: [String: ShipDesign]
+  ) {
+    let state = scriptState
+    return (state.instances, galaxy, system, state.geometry)
   }
 }
