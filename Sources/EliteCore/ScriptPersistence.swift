@@ -428,7 +428,7 @@ enum ScriptSaveStore {
 
   @inline(never)
   private static func validateSemanticPublicationSizes(
-    commander: borrowing Commander, diagnostics: ScriptRefusalDiagnostic?,
+    commander: Commander, diagnostics: ScriptRefusalDiagnostic?,
     diagnosticBoundary: ScriptRefusalBoundary
   ) throws {
     let semantic = JSONEncoder()
@@ -513,7 +513,7 @@ enum ScriptSaveStore {
 
   @inline(never)
   private static func publishEncodedChunks(
-    commander: borrowing Commander, chunks encoded: [String: Data], encoder: JSONEncoder,
+    commander: Commander, chunks encoded: [String: Data], encoder: JSONEncoder,
     alienPublication: AlienStoragePublication?, directory: URL, generation: String,
     to url: URL, scope: String, exclusive: Bool,
     diagnostics: ScriptRefusalDiagnostic?, diagnosticBoundary: ScriptRefusalBoundary
