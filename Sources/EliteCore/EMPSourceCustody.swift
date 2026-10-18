@@ -9,7 +9,14 @@ struct EMPSourceCustody: Equatable, Codable, Sendable {
   let assignment: PoliceAssignment?
 
   var valid: Bool {
-    guard original.valid, original.body.energy > 0,
+    guard original.valid else { return false }
+    return sourceDetailsAreValid()
+  }
+
+  // The original object's full validation precedes physical/NPC/traffic temporaries.
+  @inline(never)
+  private func sourceDetailsAreValid() -> Bool {
+    guard original.body.energy > 0,
       let physical = original.body.physical, let npc = physical.npc,
       physical.empSource == nil, physical.empCrewPod == nil, physical.salvage == nil,
       physical.identity.system == logical.system, physical.identity.visit >= logical.visit,

@@ -13,16 +13,28 @@ struct EMPStoredObject: Equatable, Codable, Sendable {
 
   var valid: Bool {
     guard let physical = body.physical else { return false }
-    return body.position.finite && body.orientation.validRotation
-      && physical.velocity.finite && physical.angularVelocity.finite
-      && body.rotation.isFinite && body.rotationRate.isFinite
-      && body.energy.isFinite && (0...1e12).contains(body.energy) && body.missiles >= 0
-      && physicalTime.isFinite && physicalTime >= 0
-      && (physical.npc?.resources?.valid ?? true)
+    guard
+      body.position.finite && body.orientation.validRotation
+        && physical.velocity.finite && physical.angularVelocity.finite
+        && body.rotation.isFinite && body.rotationRate.isFinite
+        && body.energy.isFinite && (0...1e12).contains(body.energy) && body.missiles >= 0
+        && physicalTime.isFinite && physicalTime >= 0
+    else { return false }
+    guard resourcesAreValid(physical) else { return false }
+    return identityAndBindingAreValid(physical)
+  }
+
+  @inline(never)
+  private func resourcesAreValid(_ physical: borrowing PhysicalActorState) -> Bool {
+    return (physical.npc?.resources?.valid ?? true)
       && (physical.npc?.resources?.legacyElectricalRecharge.map {
         $0 == physical.catalogueShipID.flatMap { ShipCatalogue.ship($0)?.game?.recharge }
       } ?? true)
-      && body.missionActorID == nil && body.missionInstanceID == nil
+  }
+
+  @inline(never)
+  private func identityAndBindingAreValid(_ physical: borrowing PhysicalActorState) -> Bool {
+    return body.missionActorID == nil && body.missionInstanceID == nil
       && body.scriptNPC == nil && body.scriptShot == nil && !body.navalTarget
       && !body.enemyMissile && body.playerMissileTarget == nil && body.missileSourceID == nil
       && body.nativeStationIdentity == nil && physical.npc?.role != .mission
@@ -117,7 +129,19 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
   var valid: Bool {
     guard source.visit > 0, source.entity > 1, source.entity < UInt64.max,
       (0..<8).contains(source.system.galaxy), (0...256).contains(source.system.system),
-      custody.valid, custody.logical == source, custody.original.body.id == originalBodyID,
+      custody.valid
+    else { return false }
+    guard sourceAndCrewAreValid(), hull.valid,
+      let catalogue = hullCatalogueAndCondition(),
+      recoveryOrDisabledHullIsValid(catalogue: catalogue), currentCustodyIsValid()
+    else { return false }
+    return podsAreValid()
+  }
+
+  // Each phase returns before the next full nested validator reserves its temporaries.
+  @inline(never)
+  private func sourceAndCrewAreValid() -> Bool {
+    guard custody.logical == source, custody.original.body.id == originalBodyID,
       custody.original.body.physical?.spawnIdentity == originalSpawn,
       custody.original.body.physical?.npc?.ordinaryCargo == cargo,
       custody.original.body.physical?.npc?.legal == legal,
@@ -147,8 +171,14 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
       crewCaptures.allSatisfy({ $0.valid(record: self) }),
       crewCaptures.enumerated().allSatisfy({ index, receipt in
         index == 0 || receipt.physicalTime >= crewCaptures[index - 1].physicalTime
-      }),
-      hull.valid, hull.body.physical?.empCrewPod == nil,
+      })
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func hullCatalogueAndCondition() -> String? {
+    guard hull.body.physical?.empCrewPod == nil,
       [.cobra, .viper, .sidewinder].contains(hull.body.hull),
       let catalogue = hull.body.physical?.catalogueShipID,
       let ship = ShipCatalogue.ship(catalogue), EMPState.hasSupportedCrew(ship),
@@ -163,7 +193,12 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
       nextEjectionAt.isFinite, nextEjectionAt >= 0,
       terminal == (hull.body.energy <= 0),
       lostCrewCount == (terminal ? crewTotal - pods.count - capturedCrewCount : 0)
-    else { return false }
+    else { return nil }
+    return catalogue
+  }
+
+  @inline(never)
+  private func recoveryOrDisabledHullIsValid(catalogue: String) -> Bool {
     if isRecovered {
       guard let recoveredAt = savedRecoveredAt, let deadline = crewDeadline,
         recoveredAt.isFinite, recoveredAt >= deadline, recoveredAt <= hull.physicalTime,
@@ -188,6 +223,11 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
         metadata.workSurfaces == profile.surfaces(wreck: wreck)
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func currentCustodyIsValid() -> Bool {
     guard (savedCurrentCargo != nil) == (disableEpisodes.count > 1),
       (savedCurrentLegal != nil) == (disableEpisodes.count > 1),
       salvageCargo.count <= 17, salvageCargo.allSatisfy(\.valid),
@@ -210,6 +250,11 @@ struct EMPHullRecord: Equatable, Codable, Sendable {
         crewAboard == 0 || hull.body.physical?.npc?.ordinaryCargo == salvageCargo
       else { return false }
     }
+    return true
+  }
+
+  @inline(never)
+  private func podsAreValid() -> Bool {
     return pods.allSatisfy { pod in
       guard let person = pod.body.physical?.empCrewPod,
         person.source == source, (0..<crewTotal).contains(person.ordinal)

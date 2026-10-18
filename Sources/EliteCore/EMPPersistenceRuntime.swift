@@ -268,6 +268,15 @@ extension Game {
   /// Capture irreversible death before scene removal so a saved hull cannot be re-admitted alive.
   mutating func registerEMPHullDeaths() -> Bool {
     guard var state = commander.savedEMPState else { return true }
+    guard captureEMPHullDeaths(in: &state) else { return false }
+    guard state.valid else { return false }
+    commander.savedEMPState = state
+    return true
+  }
+
+  // Body and record mutation temporaries must finish before full archive validation.
+  @inline(never)
+  private mutating func captureEMPHullDeaths(in state: inout EMPState) -> Bool {
     for body in bodies where body.energy <= 0 {
       if body.physical?.empCrewPod != nil { return false }
       guard let source = body.physical?.empSource else { continue }
@@ -286,8 +295,6 @@ extension Game {
       record.lostCrewCount = record.crewTotal - record.pods.count - record.capturedCrewCount
       state.records[source] = record
     }
-    guard state.valid else { return false }
-    commander.savedEMPState = state
     return true
   }
 
