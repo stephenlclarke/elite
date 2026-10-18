@@ -264,7 +264,7 @@ struct ScriptProcurementFixture {
         let expected = try #require(origin)
         let ready = await runtime.procurementDepartureReadiness(
           origin: expected, destination: destination, atDock: true)
-        try #require(ready.allowed, ready.detail)
+        try #require(ready.allowed, "\(ready.detail)")
       }
       await runtime.key("0")
       var controls = Controls()
@@ -294,13 +294,13 @@ struct ScriptProcurementFixture {
         let expected = try #require(origin)
         let ready = await runtime.procurementDepartureReadiness(
           origin: expected, destination: destination, atDock: false)
-        try #require(ready.allowed, ready.detail)
+        try #require(ready.allowed, "\(ready.detail)")
       }
       await runtime.key("h")
       let started = await runtime.procurementJumping()
       if verifyDeparture {
         let detail = await runtime.procurementJumpRefusalDetail(destination: destination)
-        try #require(started, detail)
+        try #require(started, "\(detail)")
       } else {
         try #require(started)
       }
@@ -803,7 +803,7 @@ extension GameRuntime {
     let stationContainsPlayer =
       game.bodies.first { $0.id == 0 && $0.hull == .station }
       .map { String($0.containsPlayer) } ?? "unavailable"
-    var scalars = [
+    var scalars: [String: String] = [
       "docked": String(facts.docked), "live": String(facts.live),
       "paused": String(facts.paused), "screen": String(describing: game.screen),
       "energy": String(game.energy), "energyFinite": String(game.energy.isFinite),
@@ -839,7 +839,7 @@ extension GameRuntime {
         manual.threat.map {
           "\($0.position.x),\($0.position.y),\($0.position.z)"
         } ?? "nil"
-      scalars.merge([
+      let pilotScalars: [String: String] = [
         "pilotAction": String(describing: manual.requestedAction(steps: steps)),
         "pilotThreat": threat, "pilotPosition": position,
         "pilotWanted": manual.threat.map { String($0.wanted) } ?? "nil",
@@ -852,7 +852,8 @@ extension GameRuntime {
         "pilotCooldown": String(game.fireCooldown), "pilotHeat": String(game.laserHeat),
         "pilotEMPDisabled": String(game.playerEMPDisabled),
         "pilotWorkSuspended": String(game.workFireSuspended),
-      ]) { _, new in new }
+      ]
+      scalars.merge(pilotScalars) { _, new in new }
     }
     return .init(docked: facts.docked, live: facts.live, paused: facts.paused, scalars: scalars)
   }
