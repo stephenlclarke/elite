@@ -166,8 +166,12 @@ struct ScriptProcurementFixture {
   }
   static func dock(
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic? = nil,
-    phase: String = "dock"
+    phase: String = "dock", defensivePreflight: Bool = false
   ) async throws {
+    var steps = 0
+    if defensivePreflight {
+      try await preflight(runtime, steps: &steps, diagnostic: diagnostic, phase: phase)
+    }
     for _ in 0..<32 {
       let main = await runtime.procurementTargetIsMain()
       if main { break }
@@ -175,7 +179,7 @@ struct ScriptProcurementFixture {
     }
     let targeted = await runtime.procurementTargetIsMain()
     try #require(targeted)
-    var steps = 0
+    let automaticStart = steps
     while steps < 3000 {
       let facts = await runtime.procurementFlightFacts()
       if facts.docked { break }
@@ -189,9 +193,11 @@ struct ScriptProcurementFixture {
     }
     let docked = await runtime.procurementNativeDockIsCurrent()
     try #require(steps > 0 && steps < 3000 && docked)
+    if defensivePreflight { try #require(steps > automaticStart) }
   }
   static func travel(
-    _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil
+    _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil,
+    defensivePreflight: Bool = false
   ) async throws {
     for destination in path.dropFirst() {
       let leg = diagnostic == nil ? "" : "travel-leg-\(path.firstIndex(of: destination) ?? 0)"
@@ -232,9 +238,53 @@ struct ScriptProcurementFixture {
       }
       let system = await runtime.procurementCurrentSystem()
       try #require(steps > 0 && steps < 500 && system == destination)
-      try await dock(runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : leg + "-dock")
+      try await dock(
+        runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : leg + "-dock",
+        defensivePreflight: defensivePreflight)
       if destination != path.last { await runtime.procurementRefuel() }
     }
+  }
+  private static func preflight(
+    _ runtime: GameRuntime, steps: inout Int,
+    diagnostic: ScriptProcurementFlightDiagnostic?, phase: String
+  ) async throws {
+    var facts = await runtime.procurementPreflightFacts()
+    // No threat means no additional input or physical advance before the original AUTO path.
+    if facts.requestedAction(steps: steps) == .clear { return }
+    for _ in 0..<4 {
+      if facts.combatLaser { break }
+      let viable = facts.requestedAction(steps: steps) != .refuse
+      try #require(viable, "Preflight unavailable before tool selection")
+      await runtime.key("w")
+      facts = await runtime.procurementPreflightFacts()
+    }
+    while steps < 3000 {
+      let action = facts.requestedAction(steps: steps)
+      if action == .clear { break }
+      let viable = action != .refuse
+      try #require(viable, "Preflight refused at step \(steps); no AUTO engagement")
+      var controls = Controls()
+      controls.throttle = facts.speed > 0 ? -1 : 0
+      if let threat = facts.threat {
+        let p = threat.position
+        controls.pitch = max(-1, min(1, atan2(p.y, hypot(p.x, p.z)) * 1.8 / facts.pitchRate))
+        controls.yaw = max(-1, min(1, atan2(p.x, p.z) * 1.8 / facts.yawRate))
+      }
+      controls.fire = action == .requestFire
+      await runtime.setControls(controls)
+      if let diagnostic {
+        await diagnosticAdvance(
+          runtime, diagnostic: diagnostic, phase: phase + "-preflight", step: steps)
+      } else {
+        _ = await runtime.advance(delta: 0.1)
+      }
+      steps += 1
+      facts = await runtime.procurementPreflightFacts()
+    }
+    let cleared = facts.requestedAction(steps: steps) == .clear
+    try #require(cleared, "Preflight exhausted original dock budget at step \(steps)")
+    // All manual input ends before the bounded Tab selection and desired main-station lock.
+    await runtime.setControls(Controls())
   }
   private static func diagnosticAdvance(
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic, phase: String, step: Int
@@ -252,6 +302,49 @@ struct ScriptProcurementFixture {
     await runtime.key("contacts-open")
     await runtime.key("left")
     await runtime.key("return")
+  }
+}
+
+enum ScriptProcurementPreflightAction: Equatable {
+  case refuse, clear, track, requestFire
+}
+
+struct ScriptProcurementPreflightThreat: Sendable {
+  let identity: ActorIdentity
+  let position: Vector3
+  let wanted: Bool
+}
+
+/// Test policy values are never accepted by a native hit, law, source or receipt producer.
+struct ScriptProcurementPreflightFacts: Sendable {
+  var valid = false
+  var docked = false
+  var live = false
+  var paused = false
+  var automaticEngaged = false
+  var threat: ScriptProcurementPreflightThreat?
+  var incoming = false
+  var outsideNoFireZones = false
+  var exactForwardHit = false
+  var combatLaser = false
+  var frontLaser = false
+  var speed = 0.0
+  var pitchRate = 0.0
+  var yawRate = 0.0
+
+  static func clearsEveryNoFireZone(_ ranges: [Double]) -> Bool {
+    !ranges.isEmpty && ranges.allSatisfy { $0.isFinite && $0 > 1200 }
+  }
+
+  func requestedAction(steps: Int) -> ScriptProcurementPreflightAction {
+    guard valid, live, !docked, !paused, !automaticEngaged,
+      steps >= 0, steps < 3000
+    else { return .refuse }
+    guard threat != nil || incoming else { return .clear }
+    guard threat?.wanted == true, outsideNoFireZones, exactForwardHit,
+      combatLaser, frontLaser
+    else { return .track }
+    return .requestFire
   }
 }
 
@@ -305,6 +398,94 @@ actor ScriptProcurementFlightDiagnostic {
 }
 
 extension GameRuntime {
+  /// Rejoin living current actors on every step; neither intent nor this query grants law authority.
+  func procurementPreflightFacts() -> ScriptProcurementPreflightFacts {
+    var facts = ScriptProcurementPreflightFacts()
+    guard let context = game.gameplayContext(),
+      let player = game.commander.flightSimulation.player,
+      context.player.identity == player, player.system == context.system,
+      player.visit == context.visit, context.revision == game.gameplayRevision,
+      game.energy.isFinite, game.speed.isFinite,
+      game.commander.performance.pitch.isFinite, game.commander.performance.pitch > 0,
+      game.commander.performance.yaw.isFinite, game.commander.performance.yaw > 0
+    else { return facts }
+    facts.docked = game.docked
+    facts.live = game.screen.isFlight && game.energy > 0
+    facts.paused = game.paused
+    facts.automaticEngaged = game.autoTargetBody?.hull == .station
+    facts.combatLaser = game.selectedFlightTool == .combatLaser
+    facts.frontLaser = game.commander.laser(on: .front) != nil
+    facts.speed = game.speed
+    facts.pitchRate = game.commander.performance.pitch
+    facts.yawRate = game.commander.performance.yaw
+    var threats: [ScriptProcurementPreflightThreat] = []
+    for body in game.bodies where body.energy > 0 && body.hull.isTargetShip {
+      guard let physical = body.physical,
+        physical.npc?.intention == .engage(player),
+        !context.protection.protectedActors.contains(physical.identity)
+      else { continue }
+      guard physical.identity != player, physical.identity.system == context.system,
+        physical.identity.visit == context.visit, body.energy.isFinite,
+        body.position.finite, body.position.length.isFinite,
+        game.bodies.filter({ $0.physical?.identity == physical.identity }).count == 1,
+        context.actors.contains(where: { $0.identity == physical.identity && $0.energy > 0 })
+      else { return facts }
+      threats.append(
+        .init(
+          identity: physical.identity, position: body.position,
+          wanted: physical.npc?.legal.wanted == true))
+    }
+    facts.threat = threats.min {
+      $0.position.length == $1.position.length
+        ? $0.identity.entity < $1.identity.entity : $0.position.length < $1.position.length
+    }
+    for body in game.bodies where body.energy > 0 {
+      guard let physical = body.physical, let ordnance = physical.ordnance,
+        ordnance.target == player, ordnance.termination == nil
+      else { continue }
+      guard ordnance.valid, physical.identity == ordnance.origin.ordnance,
+        physical.identity.system == context.system, physical.identity.visit == context.visit,
+        physical.attackOrigin == ordnance.origin,
+        ordnance.origin.emittedAt <= context.physicalTime
+      else { return facts }
+      facts.incoming = true
+    }
+    if facts.threat == nil && !facts.incoming {
+      facts.valid = true
+      return facts
+    }
+    // CrimeLedger's current 1200-unit rule, conservatively applied to every current station.
+    let anchorRange = (context.player.position - context.anchors.station.position).length
+    guard anchorRange.isFinite else { return facts }
+    var stationRanges = [anchorRange]
+    for body in game.bodies where body.hull == .station && body.energy > 0 {
+      guard let physical = body.physical,
+        physical.identity.system == context.system, physical.identity.visit == context.visit,
+        body.position.finite, body.position.length.isFinite
+      else { return facts }
+      if body.nativeStationIdentity != nil {
+        guard game.nativeStationBodyIsCurrent(body) else { return facts }
+      } else {
+        guard body.id == 0, physical.identity == context.anchors.station.identity else {
+          return facts
+        }
+      }
+      stationRanges.append(body.position.length)
+    }
+    facts.outsideNoFireZones = ScriptProcurementPreflightFacts.clearsEveryNoFireZone(stationRanges)
+    if let threat = facts.threat, threat.wanted, facts.outsideNoFireZones,
+      facts.combatLaser, facts.frontLaser,
+      let contact = try? game.nearestMissionCollision(
+        from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+        excludingBodyIDs: [], includePlayer: false),
+      case .body(let id) = contact.hit.target,
+      let body = game.bodies.first(where: { $0.id == id })
+    {
+      facts.exactForwardHit = body.physical?.identity == threat.identity
+    }
+    facts.valid = true
+    return facts
+  }
   /// Scalar reads only; numeric strings preserve nonfinite values without JSON NaN failures.
   func procurementFlightDiagnosticFacts() -> ScriptProcurementFlightDiagnosticFacts {
     let facts = procurementFlightFacts()

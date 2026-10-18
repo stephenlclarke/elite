@@ -150,7 +150,8 @@ import Testing
   try #require(quoteAllowed, "Procurement quote: \(quoteIssues)")
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path, diagnostic: diagnostic)
+  try await ScriptProcurementFixture.travel(
+    runtime, path: plan.path, diagnostic: diagnostic, defensivePreflight: true)
   await ScriptProcurementFixture.contact(runtime)
   let partial = await runtime.snapshot()
   let first = try #require(
@@ -243,4 +244,78 @@ import Testing
   try await runtime.load(from: fixture.save, persistMigrations: false)
   let restored = await runtime.snapshot()
   #expect(restored.commander.scriptState.instances[id] == terminal)
+}
+
+@Test(arguments: [
+  "clear", "wanted", "clean", "zone", "obstructed", "tool", "laser", "invalid",
+  "paused", "docked", "auto", "last-step", "budget", "negative", "ordnance",
+])
+func procurementPreflightPolicyRequestsNeverGrantNativeAuthority(condition: String) {
+  // Constructed values exercise only the test policy. No Game or native producer consumes them.
+  let identity = ActorIdentity(system: .init(galaxy: 0, system: 0), visit: 1, entity: 2)
+  let threat = ScriptProcurementPreflightThreat(
+    identity: identity, position: .init(0, 0, 500), wanted: true)
+  var facts = ScriptProcurementPreflightFacts()
+  facts.valid = true
+  facts.live = true
+  facts.threat = threat
+  facts.outsideNoFireZones = true
+  facts.exactForwardHit = true
+  facts.combatLaser = true
+  facts.frontLaser = true
+  var steps = 0
+  var expected = ScriptProcurementPreflightAction.track
+  switch condition {
+  case "clear":
+    facts.threat = nil
+    expected = .clear
+  case "wanted": expected = .requestFire
+  case "clean":
+    facts.threat = .init(identity: identity, position: threat.position, wanted: false)
+  case "zone": facts.outsideNoFireZones = false
+  case "obstructed": facts.exactForwardHit = false
+  case "tool": facts.combatLaser = false
+  case "laser": facts.frontLaser = false
+  case "invalid":
+    facts.valid = false
+    expected = .refuse
+  case "paused":
+    facts.paused = true
+    expected = .refuse
+  case "docked":
+    facts.docked = true
+    expected = .refuse
+  case "auto":
+    facts.automaticEngaged = true
+    expected = .refuse
+  case "last-step":
+    steps = 2999
+    expected = .requestFire
+  case "budget":
+    steps = 3000
+    expected = .refuse
+  case "negative":
+    steps = -1
+    expected = .refuse
+  case "ordnance":
+    facts.threat = nil
+    facts.incoming = true
+  default:
+    Issue.record("Unknown preflight policy condition")
+  }
+  let action = facts.requestedAction(steps: steps)
+  #expect(action == expected)
+}
+
+@Test(arguments: [-0.1, 0.0, 0.1])
+func procurementPreflightRequiresEveryStationNoFireZoneStrictlyClear(offset: Double) {
+  let clear = ScriptProcurementPreflightFacts.clearsEveryNoFireZone([16000, 1200 + offset])
+  #expect(clear == (offset > 0))
+}
+
+@Test func procurementPreflightUnknownNoFireGeometryCannotPermitFire() {
+  for ranges in [[Double](), [16000, .nan], [16000, .infinity], [16000, -.infinity]] {
+    let clear = ScriptProcurementPreflightFacts.clearsEveryNoFireZone(ranges)
+    #expect(!clear)
+  }
 }
