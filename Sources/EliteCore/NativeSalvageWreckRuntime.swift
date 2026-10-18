@@ -288,7 +288,7 @@ extension Commander {
           let seed =
             UInt64(system.seed.a) << 32 | UInt64(system.seed.b) << 16 | UInt64(system.seed.c)
           sites[identity] = SalvageSites.generate(
-            anchors: NativeStationAdmission.canonicalAnchors(system: identity), seed: seed)
+            anchors: NativeStationSource.canonicalAnchors(system: identity), seed: seed)
         }
         guard sites[identity]?.contains(original) == true else { return false }
       case .emp(let actor, let sequence):
