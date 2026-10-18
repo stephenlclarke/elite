@@ -226,3 +226,28 @@ func procurementHeatBreakoffUsesActualNextFrameCooling(offset: Double) async thr
   #expect(stale.status == .refused && unchanged.commander == after.commander)
   #expect(unchanged.bodies == after.bodies && unchanged.gameplayRevision == after.gameplayRevision)
 }
+
+@Test func procurementHostileNavalMissilesWithNonEngageIntentCannotDisappearFromAssessment()
+  async throws
+{
+  var game = try rangePolicyGame()
+  let index = game.bodies.count - 1
+  game.bodies[index].hull = .constrictor
+  game.bodies[index].navalTarget = true
+  game.bodies[index].missiles = 1
+  game.bodies[index].position = .init(0, 0, 6000)
+  game.bodies[index].physical?.catalogueShipID = ShipCatalogue.nativeShip(.constrictor)?.id
+  game.bodies[index].physical?.npc?.intention = .navigate(
+    position: .init(10000, 0, 0), speedUnitsPerSecond: 100)
+  let runtime = GameRuntime(game: game)
+  let before = await runtime.snapshot()
+  let facts = await runtime.procurementPreflightFacts()
+  #expect(!facts.valid)
+  #expect(facts.requestedDockAction(defensive: true, steps: 0) == .refuse)
+  let result = await runtime.procurementPilotStep(
+    expected: facts, steps: 0, automatic: true, diagnostic: false)
+  let after = await runtime.snapshot()
+  #expect(result.status == .refused)
+  #expect(after.commander == before.commander && after.bodies == before.bodies)
+  #expect(after.gameplayRevision == before.gameplayRevision)
+}

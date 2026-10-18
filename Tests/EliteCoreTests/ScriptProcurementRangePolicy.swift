@@ -35,6 +35,7 @@ enum ScriptProcurementRangePolicy {
       let catalogue = ShipCatalogue.nativeShip(body.hull), physical.catalogueShipID == catalogue.id,
       let resources = physical.npc?.resources, resources.valid,
       body.missiles == 0, body.energy.isFinite, body.energy > 0, body.position.finite,
+      body.position.length.isFinite,
       !context.protection.protectedActors.contains(physical.identity),
       body.scriptNPC == nil, body.scriptShot == nil, body.missionActorID == nil,
       body.missionInstanceID == nil, body.blackjackRole == nil, body.blackjackIdentity == nil,
