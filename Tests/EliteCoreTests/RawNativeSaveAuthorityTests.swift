@@ -141,27 +141,40 @@ private func verifyVersionedDockRestore(
 private func verifyLegacyWithoutStations(
   _ game: inout Game, explicitNull: Bool, storage: NativeStationTestStorage
 ) async throws {
-  try game.commander.prepareEquipment()
   let commander = game.commander
-  var object = try #require(
-    JSONSerialization.jsonObject(with: JSONEncoder().encode(commander)) as? [String: Any])
+  let seedBytes = try legacyStationRawSeedBytes(commander)
+  let seedObject = try JSONSerialization.jsonObject(with: seedBytes)
+  var object = try #require(seedObject as? [String: Any])
   if explicitNull {
     object["nativeStations"] = NSNull()
     object["savedContracts"] = ["boards": [:], "rrs": NSNull()] as [String: Any]
   }
   let raw = storage.root.appendingPathComponent("legacy.json")
   let bytes = try JSONSerialization.data(withJSONObject: object)
+  // Preserve the independently constructed raw input's explicit-null contract representation.
+  let rawCommander = try JSONDecoder().decode(Commander.self, from: bytes)
+  #expect(rawCommander.contracts == commander.contracts)
+  if explicitNull {
+    #expect(object["nativeStations"] is NSNull)
+    let contracts = try #require(object["savedContracts"] as? [String: Any])
+    #expect(contracts["rrs"] is NSNull)
+  } else {
+    #expect(object["nativeStations"] == nil && object["savedContracts"] == nil)
+  }
   try bytes.write(to: raw)
+  let beforeFiles = try legacyStationSourceFiles(storage.root)
   let runtime = GameRuntime(game: game)
   try await runtime.load(from: raw, persistMigrations: false)
   game = await runtime.snapshot()
   #expect(game.commander.nativeStations == nil && game.commander.contracts.rrs == nil)
   #expect(game.docked && game.dockedAtMainStation)
   #expect(game.commander.credits == commander.credits && game.commander.cargo == commander.cargo)
-  #expect(game.commander.equipmentInventory == commander.equipmentInventory)
+  try expectLegacyStationStockMigration(from: rawCommander, to: game.commander)
   #expect(game.nativeStationBoardContext == nil)
   #expect(!game.nativeStationDockEvidenceIsCurrent && !game.nativeMainStationDockEvidenceIsCurrent)
-  #expect(try Data(contentsOf: raw) == bytes)
+  let afterBytes = try Data(contentsOf: raw)
+  let afterFiles = try legacyStationSourceFiles(storage.root)
+  #expect(afterBytes == bytes && afterFiles == beforeFiles)
 }
 
 private func rawAuthorityWorldBytes(_ game: borrowing Game) throws -> Data {
@@ -182,4 +195,111 @@ private func rawAuthorityFiles(_ root: URL) throws -> [String: Data] {
     result[key] = try Data(contentsOf: url)
   }
   return result
+}
+
+// Shared only by the two genuine raw legacy station-absence cases; never prepares or strips a seed.
+func legacyStationRawSeedBytes(_ legacy: Commander) throws -> Data {
+  try #require(legacy.valid && legacy.equipmentInventory == nil)
+  try #require(legacy.equipmentPurchaseHistory == nil && legacy.savedEquipmentVersion == nil)
+  try #require(legacy.equipment == Set(["Pulse Laser"]))
+  try #require(legacy.laserMounts == LaserMounts(front: .pulse) && legacy.fuelStorageUnits == 0)
+  try #require(legacy.nativeStations == nil && legacy.scriptState == ScriptEngineState())
+  let bytes = try JSONEncoder().encode(legacy)
+  let value = try JSONSerialization.jsonObject(with: bytes)
+  let fields = try #require(value as? [String: Any])
+  let modern: Set<String> = [
+    "savedEquipmentInventory", "savedEquipmentPurchaseHistory", "savedEquipmentVersion",
+    "legacyOwnedEquipment", "savedMiningLedger", "savedPlayerElectrical", "savedEMPCharge",
+    "savedEMPState", "savedAlienStorageReference", "alienStorageState", "alienStorageCache",
+    "savedAlienStorageState", "format", "schemaVersion",
+  ]
+  try #require(modern.isDisjoint(with: Set(fields.keys)))
+  return bytes
+}
+
+func expectLegacyStationStockMigration(from legacy: Commander, to migrated: Commander) throws {
+  try #require(legacy.equipmentInventory == nil && legacy.savedEquipmentVersion == nil)
+  let inventory = try #require(migrated.equipmentInventory)
+  try #require(inventory.owner != inventory.activeHull)
+  // Only allocated IDs are observed; nodes, slots, origins, statistics and provenance are independent.
+  let foundations: [(ComponentFittingSlot, String, ComponentTemplate?)] = [
+    (.shield, "Basic Shield", EquipmentModuleTemplates.shield.grades[0]),
+    (
+      .navigation, NavigationTier.basic.equipmentName, EquipmentModuleTemplates.navigation.grades[0]
+    ),
+    (.energy, "Basic Energy System", EquipmentModuleTemplates.energy.grades[0]),
+    (.drive, HyperspaceDriveTier.basic.label, HyperspaceDriveDefinition.template(for: .basic)),
+    (.laser(.front), LaserKind.pulse.equipmentName, nil),
+  ]
+  var items: [OwnedEquipmentItem] = []
+  for (slot, key, template) in foundations {
+    let node = try #require(EquipmentRuntimeCatalog.node(for: key))
+    let location = ComponentFittingLocation(hullInstanceID: inventory.activeHull, slot: slot)
+    let allocated = try #require(inventory.items.first { $0.location == location })
+    let component = template.map {
+      ComponentInstance(id: allocated.id, origin: $0, statistics: $0.statistics, grade: $0.identity)
+    }
+    items.append(
+      .init(
+        id: allocated.id, node: node, provenance: .standard, component: component,
+        location: location))
+  }
+  var entitlements: [EquipmentLegacyEntitlement] = []
+  for pylon in 0..<legacy.missiles {
+    let location = ComponentFittingLocation(
+      hullInstanceID: inventory.activeHull, slot: .missilePylon(pylon))
+    let allocated = try #require(inventory.items.first { $0.location == location })
+    let item = OwnedEquipmentItem(
+      id: allocated.id, node: EquipmentRuntimeCatalog.standardMissile, provenance: .legacyUnknown,
+      location: location)
+    items.append(item)
+    let entitlement = try EquipmentPurchaseProgression.legacyEntitlement(
+      for: .init(
+        id: item.id, node: EquipmentRuntimeCatalog.standardMissile, provenance: .legacyUnknown),
+      owner: inventory.owner, graph: EquipmentRuntimeCatalog.graph)
+    entitlements.append(entitlement)
+  }
+  let ids = Set(items.map(\.id))
+  try #require(ids.count == legacy.missiles + 5)
+  try #require(!ids.contains(inventory.owner) && !ids.contains(inventory.activeHull))
+  let expectedInventory = try OwnedEquipmentInventory(
+    owner: inventory.owner, activeHull: inventory.activeHull, revision: 0, items: items)
+  let expectedHistory = EquipmentPurchaseHistory(
+    owner: inventory.owner, revision: 0, paid: [], legacy: entitlements)
+  try #require(inventory == expectedInventory)
+  try #require(migrated.equipmentPurchaseHistory == expectedHistory)
+  try #require(inventory.items.filter(\.isReservedStockDrive).count == 1)
+  try #require(inventory.ordinaryItemCount == legacy.missiles + 4)
+  let drive = try #require(inventory.items.first { $0.isReservedStockDrive })
+  try #require(drive.node == HyperspaceDriveDefinition.node(for: .basic))
+  try #require(drive.component?.origin == HyperspaceDriveDefinition.template(for: .basic))
+  try #require(migrated.valid && migrated.savedEquipmentVersion == 3)
+  try #require(migrated.missiles == legacy.missiles)
+  var mining = MiningLedger.legacyUnworked()
+  let system = try #require(
+    Universe.systemsIncludingPlugh(number: legacy.galaxy).first { $0.id == legacy.system })
+  try mining.migratePresence(current: .init(system: system, galaxy: legacy.galaxy), historical: [])
+  var expected = legacy
+  expected.savedEquipmentInventory = expectedInventory
+  expected.savedEquipmentPurchaseHistory = expectedHistory
+  expected.savedEquipmentVersion = 3
+  expected.equipment.insert(HyperspaceDriveTier.basic.label)
+  expected.laserMounts = LaserMounts(front: .pulse)
+  expected.fuelStorageUnits = 0
+  expected.miningLedger = mining
+  // Complete scalar/state equality permits only these independently reconstructed migration fields.
+  try #require(migrated == expected)
+}
+
+func legacyStationSourceFiles(_ root: URL) throws -> [String: Data] {
+  let entries = try #require(
+    FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey]))
+  var files: [String: Data] = [:]
+  for case let url as URL in entries {
+    let values = try url.resourceValues(forKeys: [.isRegularFileKey])
+    guard values.isRegularFile == true else { continue }
+    let relative = String(url.path.dropFirst(root.path.count))
+    files[relative] = try Data(contentsOf: url)
+  }
+  return files
 }

@@ -226,10 +226,11 @@ private func verifyMalformedStationSave(
 private func verifyLegacyStationAbsence(
   _ game: inout Game, storage: NativeStationTestStorage
 ) async throws {
-  try game.commander.prepareEquipment()
   let commander = game.commander
   let legacy = storage.root.appendingPathComponent("legacy.json")
-  try JSONEncoder().encode(commander).write(to: legacy)
+  let bytes = try legacyStationRawSeedBytes(commander)
+  try bytes.write(to: legacy)
+  let beforeFiles = try legacyStationSourceFiles(storage.root)
   let runtime = GameRuntime(game: game)
   try await runtime.load(from: legacy, persistMigrations: false)
   game = await runtime.snapshot()
@@ -238,7 +239,10 @@ private func verifyLegacyStationAbsence(
   #expect(game.nativeStationBoardContext == nil && game.nativeStationEventFacts == nil)
   #expect(!game.nativeStationDockEvidenceIsCurrent && !game.nativeMainStationDockEvidenceIsCurrent)
   #expect(game.commander.credits == commander.credits && game.commander.cargo == commander.cargo)
-  #expect(game.commander.equipmentInventory == commander.equipmentInventory)
+  try expectLegacyStationStockMigration(from: commander, to: game.commander)
+  let afterBytes = try Data(contentsOf: legacy)
+  let afterFiles = try legacyStationSourceFiles(storage.root)
+  #expect(afterBytes == bytes && afterFiles == beforeFiles)
 }
 
 private func verifyUnprovedStationSaveRefusal(
