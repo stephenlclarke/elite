@@ -156,6 +156,36 @@ extension NativeViewTests {
     baseline.bodies[0].position = .init(0, 0, 1000)
     baseline.bodies[0].physical?.velocity = .init(0, 0, 0)
     baseline.bodies[0].physical?.angularVelocity = .init(0, 0, 0)
+    // This controlled UI scene begins with an ordinary, already depleted craft, still powered.
+    var resources = try #require(baseline.bodies[0].physical?.npc?.resources)
+    let frontOverflow = resources.absorb(resources.frontShield, front: true)
+    let rearOverflow = resources.absorb(resources.rearShield, front: false)
+    try #require(frontOverflow == 0 && rearOverflow == 0)
+    let initialTime = baseline.commander.flightSimulation.physicalTime
+    var reserve = try #require(
+      ElectricalReserve(
+        capacity: resources.energyCapacity, recharge: resources.electricalRecharge, at: initialTime)
+    )
+    let drained = reserve.drain(resources.energyCapacity - 1, at: initialTime)
+    try #require(drained && reserve.remaining == 1 && reserve.disabledAt == nil)
+    resources.electrical = reserve
+    baseline.bodies[0].physical?.npc?.resources = resources
+    let pulse = try EMPPulseProfile.resolve(for: baseline.commander)
+    try #require(pulse.power == 32 && pulse.warmup == 10)
+    try #require(
+      1 + (resources.electricalRecharge + resources.shieldRecharge) * (pulse.warmup + 0.1)
+        < pulse.power)
+    let accommodation = try ShipAccommodationProfile(ship: baseline.commander.ship)
+    try #require(accommodation.operatingCrew == 1)
+    try #require(
+      baseline.commander.savedEMPState == nil && baseline.commander.savedEMPCharge == nil)
+    try #require(baseline.bodies[0].physical?.empSource == nil && baseline.bodies[0].energy == 77)
+    // The saved simulation input supplies the first genuine sampled ejection, never a late reseed.
+    baseline.seedScriptTrial(0)
+    try #require(baseline.scriptSimulationSave.randomState == 0 && baseline.missionLoopCounter == 0)
+    try #require(baseline.commander.missionStage == .notStarted)
+    try #require(!baseline.bodies[0].ecmEnabled && baseline.bodies[0].missiles == 0)
+    try #require(baseline.bodies[0].hull.navalEnergy == nil)
     let original = baseline.bodies[0]
     let writer = GameRuntime(game: baseline)
     try await writer.save(to: file)
@@ -179,6 +209,14 @@ extension NativeViewTests {
     await loop.value
     try await delegate.runtime.load(from: file, persistMigrations: false)
     view.game = await delegate.runtime.snapshot()
+    try #require(
+      view.game.scriptSimulationSave.randomState == 0 && view.game.missionLoopCounter == 0)
+    try #require(
+      view.game.commander.savedEMPState == nil && view.game.commander.savedEMPCharge == nil)
+    let loadedTarget = try #require(view.game.bodies.first { $0.id == original.id })
+    try #require(loadedTarget.physical?.identity == original.physical?.identity)
+    try #require(loadedTarget.physical?.npc?.resources?.electrical?.remaining == 1)
+    try #require(loadedTarget.physical?.npc?.resources?.electrical?.disabledAt == nil)
     view.pending.removeAll()
     func event(_ code: UInt16, _ text: String, down: Bool) throws -> NSEvent {
       try #require(
@@ -194,22 +232,69 @@ extension NativeViewTests {
     }
     try #require(view.game.selectedFlightTool == .empPirateBlaster)
     try verifyNativeEMPPixels(view, bodyID: original.id, ink: .red, stage: "armed")
+    let audioBefore = view.game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count
+    var expectedEnergy = original.energy
     view.keyDown(with: try event(36, "\r", down: true))
     await delegate.processFrame(in: view, delta: { 0.1 })
+    if resources.profile == .nativeHull {
+      expectedEnergy = min(
+        resources.energyCapacity, expectedEnergy + 0.1 * resources.energyRecharge)
+    }
+    let charge = try #require(view.game.commander.savedEMPCharge)
+    try #require(charge.phase == .charging && charge.target == original.physical?.identity)
+    #expect(view.game.commander.savedEMPState == nil)
+    #expect(
+      view.game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count == audioBefore)
+    var heldFrames = 0
+    for _ in 0..<120 where view.game.commander.savedEMPCharge?.phase == .charging {
+      try #require(view.game.scriptSimulationSave.randomState == 0)
+      try #require(view.game.ecmFrames == 0 && view.game.screen != .gameOver && !view.game.docked)
+      try #require(
+        view.game.bodies.allSatisfy {
+          $0.missiles == 0 && !$0.ecmEnabled && !$0.enemyMissile && $0.playerMissileTarget == nil
+            && $0.physical?.ordnance == nil && $0.blackjackRole == nil
+        })
+      await delegate.processFrame(in: view, delta: { 0.1 })
+      heldFrames += 1
+      if resources.profile == .nativeHull {
+        expectedEnergy = min(
+          resources.energyCapacity, expectedEnergy + 0.1 * resources.energyRecharge)
+      }
+      if view.game.commander.flightSimulation.physicalTime + 1e-9 < charge.startedAt + pulse.warmup
+      {
+        #expect(view.game.commander.savedEMPState == nil)
+        #expect(
+          view.game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count
+            == audioBefore)
+      }
+    }
     view.keyUp(with: try event(36, "\r", down: false))
-    let source = try #require(view.game.commander.savedEMPState?.records.keys.first)
+    let released = try #require(view.game.commander.savedEMPCharge)
+    let endedAt = try #require(released.endedAt)
+    try #require(released.phase == .released && heldFrames == 100)
+    #expect(abs(endedAt - charge.startedAt - pulse.warmup) < 1e-8)
+    #expect(
+      view.game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count == audioBefore
+        + 1)
+    let source = try #require(view.game.bodies.first { $0.id == original.id }?.physical?.empSource)
     let disabled = try #require(view.game.bodies.first { $0.physical?.empSource == source })
-    let resources = try #require(original.physical?.npc?.resources)
-    let expectedEnergy =
-      resources.profile == .nativeHull
-      ? min(resources.energyCapacity, original.energy + 0.1 * resources.energyRecharge)
-      : original.energy
     #expect(disabled.id == original.id)
     #expect(disabled.energy == expectedEnergy)
     #expect(view.game.targetColourCue(for: disabled) == .recoverable)
     #expect(view.game.empTargetStatus(disabled)?.contains("CREW ABOARD") == true)
     try verifyNativeEMPPixels(view, bodyID: disabled.id, ink: .orange, stage: "disabled-occupied")
-    for _ in 0..<40 { await delegate.processFrame(in: view, delta: { 0.1 }) }
+    let occupied = try #require(view.game.commander.savedEMPState?.records[source])
+    let episode = try #require(occupied.disableEpisodes.last)
+    try #require(occupied.crewTotal == 1 && occupied.crewAboard == 1)
+    try #require(episode.ejections == [.init(ordinal: 0, delay: 0.5)])
+    #expect(view.game.scriptSimulationSave.randomState == 1)
+    for _ in 0..<300 where view.game.commander.savedEMPState?.records[source]?.crewAboard != 0 {
+      try #require(
+        view.game.commander.flightSimulation.physicalTime < episode.deadline
+          && view.game.screen != .gameOver && !view.game.docked)
+      await delegate.processFrame(in: view, delta: { 0.1 })
+    }
+    try #require(view.game.commander.flightSimulation.physicalTime < episode.deadline)
     let record = try #require(view.game.commander.savedEMPState?.records[source])
     try #require(record.crewAboard == 0 && record.pods.count == record.crewTotal)
     let salvage = try #require(view.game.bodies.first { $0.physical?.empSource == source })
