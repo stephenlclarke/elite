@@ -1795,6 +1795,14 @@ public struct Game: Sendable {
       advanceBlackjackNPC(index: index, delta: dt)
       return
     }
+    // The legacy hostile projection alone cannot authorize pursuit of the current player.
+    let flight = commander.flightSimulation
+    guard let player = flight.player, player.system == systemIdentity,
+      let physical = bodies[index].physical,
+      physical.identity.system == player.system, physical.identity.visit == player.visit,
+      physical.identity.entity >= 2, physical.identity.entity < flight.nextActor,
+      physical.npc?.intention == .engage(player)
+    else { return }
     if let maximumSpeed = bodies[index].hull.navalSpeed {
       let distance = bodies[index].position.length
       if distance > 0 {
