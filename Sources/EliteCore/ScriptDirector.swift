@@ -397,80 +397,92 @@ extension Game {
             candidate.notify(text)
           }
         }
-        for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
-          let choice = next.choiceReceipts[group]!
-          derivedEvents.append(
-            (
-              "dialogue.chosen",
-              [
-                "group": .string(group), "choice_id": .string(choice.choice),
-                "dialogue_id": .string(choice.dialogue),
-              ]
-            ))
-        }
-        for sequence in next.conversationReceipts.keys.sorted()
-        where instance.conversationReceipts[sequence] == nil {
-          let answer = next.conversationReceipts[sequence]!
-          derivedEvents.append(
-            (
-              "dialogue.chosen",
-              [
-                "group": .null, "choice_id": .string(answer.choice),
-                "dialogue_id": .string(answer.dialogue),
-                "answer_sequence": .integer(Int64(sequence)),
-              ]
-            ))
-        }
-        next.revision += 1
-        next.acknowledge(event.sequence)
-        if next.outcome != .active {
-          next.completionReceipt = candidate.completionReceipt(next, event: event, pack: pack)
-        }
-        candidate.commander.scriptState.instances[next.id] = next
-        let oldEnergy = commander.performance.energy
-        let newEnergy = candidate.commander.performance.energy
-        if oldEnergy != newEnergy {
-          candidate.energy = Self.equipmentResourceLevel(
-            candidate.energy, from: oldEnergy, to: newEnergy)
-        }
-        let oldFront = commander.shieldCapacity
-        let newFront = candidate.commander.shieldCapacity
-        if oldFront != newFront {
-          candidate.frontShield = Self.equipmentResourceLevel(
-            candidate.frontShield, from: oldFront, to: newFront)
-        }
-        let oldRear = commander.rearShieldCapacity
-        let newRear = candidate.commander.rearShieldCapacity
-        if oldRear != newRear {
-          candidate.rearShield = Self.equipmentResourceLevel(
-            candidate.rearShield, from: oldRear, to: newRear)
-        }
-        candidate.suspendTerminalCampaignChildren(next)
-        candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
-        if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
-        guard candidate.commander.valid else {
-          throw MissionPackError(
-            candidate.commander.passengerFit?.issues.first
-              ?? "Mission transfer cannot fit the commander or saved state.")
-        }
-        guard candidate.commander.scriptState.pendingEvents.count + derivedEvents.count <= 4096,
-          candidate.commander.scriptState.nextEvent <= UInt64(Int64.max) - 1
-            - UInt64(derivedEvents.count)
-        else { throw MissionPackError("The native result queue cannot fit this whole proposal.") }
-        // Admission/result envelopes belong to the same durable generation as their cause.
-        for (kind, values) in derivedEvents {
-          candidate.emitScriptEvent(kind, values: values, only: next.id, drain: false)
-        }
-        let savedBytes = try JSONEncoder().encode(candidate.commander.scriptState)
-        guard savedBytes.count <= 33_554_432 else {
-          throw MissionPackError("Mission save budget exceeded; proposal was not committed.")
-        }
-        try publish?(&candidate)
+        try Self.finishScriptEventCandidate(
+          original: self, candidate: &candidate, instance: instance, next: &next,
+          event: event, pack: pack, derivedEvents: &derivedEvents, publish: publish)
         self = candidate
       } catch {
         recordScriptFailure(event.instance, error: error, publish: publish)
       }
     }
+  }
+  /// Finalization runs after command admission returns, so its resource/save temporaries
+  /// do not share the nested actor-admission stack. Publication stays in this actor turn.
+  private static func finishScriptEventCandidate(
+    original: borrowing Game, candidate: inout Game,
+    instance: ScriptInstance, next: inout ScriptInstance,
+    event: ScriptEvent, pack: ScriptPack,
+    derivedEvents: inout [(String, [String: ScriptValue])], publish: ScriptPublisher?
+  ) throws {
+    for group in next.choiceReceipts.keys.sorted() where instance.choiceReceipts[group] == nil {
+      let choice = next.choiceReceipts[group]!
+      derivedEvents.append(
+        (
+          "dialogue.chosen",
+          [
+            "group": .string(group), "choice_id": .string(choice.choice),
+            "dialogue_id": .string(choice.dialogue),
+          ]
+        ))
+    }
+    for sequence in next.conversationReceipts.keys.sorted()
+    where instance.conversationReceipts[sequence] == nil {
+      let answer = next.conversationReceipts[sequence]!
+      derivedEvents.append(
+        (
+          "dialogue.chosen",
+          [
+            "group": .null, "choice_id": .string(answer.choice),
+            "dialogue_id": .string(answer.dialogue),
+            "answer_sequence": .integer(Int64(sequence)),
+          ]
+        ))
+    }
+    next.revision += 1
+    next.acknowledge(event.sequence)
+    if next.outcome != .active {
+      next.completionReceipt = candidate.completionReceipt(next, event: event, pack: pack)
+    }
+    candidate.commander.scriptState.instances[next.id] = next
+    let oldEnergy = original.commander.performance.energy
+    let newEnergy = candidate.commander.performance.energy
+    if oldEnergy != newEnergy {
+      candidate.energy = Self.equipmentResourceLevel(
+        candidate.energy, from: oldEnergy, to: newEnergy)
+    }
+    let oldFront = original.commander.shieldCapacity
+    let newFront = candidate.commander.shieldCapacity
+    if oldFront != newFront {
+      candidate.frontShield = Self.equipmentResourceLevel(
+        candidate.frontShield, from: oldFront, to: newFront)
+    }
+    let oldRear = original.commander.rearShieldCapacity
+    let newRear = candidate.commander.rearShieldCapacity
+    if oldRear != newRear {
+      candidate.rearShield = Self.equipmentResourceLevel(
+        candidate.rearShield, from: oldRear, to: newRear)
+    }
+    candidate.suspendTerminalCampaignChildren(next)
+    candidate.commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
+    if let receipt = next.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
+    guard candidate.commander.valid else {
+      throw MissionPackError(
+        candidate.commander.passengerFit?.issues.first
+          ?? "Mission transfer cannot fit the commander or saved state.")
+    }
+    guard candidate.commander.scriptState.pendingEvents.count + derivedEvents.count <= 4096,
+      candidate.commander.scriptState.nextEvent <= UInt64(Int64.max) - 1
+        - UInt64(derivedEvents.count)
+    else { throw MissionPackError("The native result queue cannot fit this whole proposal.") }
+    // Admission/result envelopes belong to the same durable generation as their cause.
+    for (kind, values) in derivedEvents {
+      candidate.emitScriptEvent(kind, values: values, only: next.id, drain: false)
+    }
+    let savedBytes = try JSONEncoder().encode(candidate.commander.scriptState)
+    guard savedBytes.count <= 33_554_432 else {
+      throw MissionPackError("Mission save budget exceeded; proposal was not committed.")
+    }
+    try publish?(&candidate)
   }
   // Separate branch frames keep commander-borrow receiver copies out of encounter admission.
   private static func dispatchCourierCommand(
