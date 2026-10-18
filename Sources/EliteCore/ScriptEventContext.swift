@@ -67,18 +67,69 @@ extension ScriptInstance {
   }
 }
 
+private struct ScriptEventContextScalars: Sendable {
+  let galaxy: Int
+  let system: Int
+  let docked: Bool
+  let mainStation: Bool
+  let revision: UInt64
+  let frameSeconds: Double
+  let localSeconds: Double
+  let flightSeconds: Double
+  let calendarSeconds: Double
+  let transitSeconds: Double
+}
+
 extension Game {
-  func scriptEventContext(_ instance: ScriptInstance) -> ScriptEventContext {
-    .init(
-      galaxy: commander.galaxy, system: commander.system, docked: docked,
-      mainStation: docked && dockedAtMainStation, revision: instance.revision,
-      frameSeconds: scriptStartupTime ?? time, localSeconds: commander.scriptState.localSeconds,
-      flightSeconds: commander.scriptState.flightSeconds,
-      calendarSeconds: commander.scriptState.calendarSeconds,
-      transitSeconds: commander.scriptState.transitSeconds,
-      playerPosition: scriptAnchor.map { $0.orientation.inverse($0.position * -1) },
-      nativeStation: nativeStationEventFacts,
-      nativeMainDock: docked && dockedAtMainStation
-        ? commander.nativeStations?.currentMainDock : nil)
+  func scriptEventContext(_ instance: borrowing ScriptInstance) -> ScriptEventContext {
+    Self.scriptEventContext(in: self, revision: instance.revision)
+  }
+
+  @inline(never)
+  static func scriptEventContext(in game: borrowing Game, revision: UInt64) -> ScriptEventContext {
+    let scalars = scriptEventContextScalars(game, revision: revision)
+    let playerPosition = scriptEventPlayerPosition(game)
+    return finishScriptEventContext(game, scalars: scalars, playerPosition: playerPosition)
+  }
+
+  /// Computed Commander read storage returns before anchor selection starts.
+  @inline(never)
+  private static func scriptEventContextScalars(
+    _ game: borrowing Game, revision: UInt64
+  ) -> ScriptEventContextScalars {
+    let mainStation = game.dockedAtMainStation
+    let frameTime = game.time
+    return .init(
+      galaxy: game.commander.galaxy, system: game.commander.system, docked: game.docked,
+      mainStation: game.docked && mainStation, revision: revision,
+      frameSeconds: game.scriptStartupTime ?? frameTime,
+      localSeconds: game.commander.scriptState.localSeconds,
+      flightSeconds: game.commander.scriptState.flightSeconds,
+      calendarSeconds: game.commander.scriptState.calendarSeconds,
+      transitSeconds: game.commander.scriptState.transitSeconds)
+  }
+
+  @inline(never)
+  private static func scriptEventPlayerPosition(_ game: borrowing Game) -> Vector3? {
+    game.scriptAnchor.map { $0.orientation.inverse($0.position * -1) }
+  }
+
+  /// Later native receipt buffers start only after the exact anchor transform returns.
+  @inline(never)
+  private static func finishScriptEventContext(
+    _ game: borrowing Game, scalars: ScriptEventContextScalars, playerPosition: Vector3?
+  ) -> ScriptEventContext {
+    let nativeStation = game.nativeStationEventFacts
+    let docked = game.docked
+    let mainStation = game.dockedAtMainStation
+    return .init(
+      galaxy: scalars.galaxy, system: scalars.system, docked: scalars.docked,
+      mainStation: scalars.mainStation, revision: scalars.revision,
+      frameSeconds: scalars.frameSeconds, localSeconds: scalars.localSeconds,
+      flightSeconds: scalars.flightSeconds, calendarSeconds: scalars.calendarSeconds,
+      transitSeconds: scalars.transitSeconds, playerPosition: playerPosition,
+      nativeStation: nativeStation,
+      nativeMainDock: docked && mainStation
+        ? game.commander.nativeStations?.currentMainDock : nil)
   }
 }
