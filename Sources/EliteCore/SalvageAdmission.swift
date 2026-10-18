@@ -6,14 +6,28 @@ struct PreparedSalvageAdmissionHull: Sendable {
 }
 
 extension Game {
-  /// The broad sphere stays authoritative for unrelated actors. Only a ledger-offered
+  /// The broad sphere stays authoritative for unrelated actors. Only an exactly offered
   /// fragment may replace its own live parent's sphere with an actual-mesh proof.
   mutating func releasedFragmentClearsParent(
     _ request: SpawnRequest, parent: ActorSnapshot, context: EncounterContext
   ) -> Bool {
+    let nativeClaim: Bool
+    if let payload = request.payload, case .salvage(let identity) = payload {
+      nativeClaim =
+        commander.alienStorageState?.current.salvage.sections.contains(identity.section) == true
+        || commander.salvageLedger.nativeTransferredSectionIdentities.contains(identity.section)
+    } else {
+      nativeClaim = false
+    }
+    // Once native custody owns the section, a retired ordinary offer cannot regain
+    // authority. Both paths still pass the identical live-parent and mesh checks.
+    let offered =
+      nativeClaim
+      ? nativeOfferedSalvageLot(for: request, context: context)
+      : commander.salvageLedger.offeredLot(for: request.identity)
     guard request.identity.producer == .salvage,
       request.identity.system == context.system, request.identity.visit == context.visit,
-      let lot = commander.salvageLedger.offeredLot(for: request.identity),
+      let lot = offered,
       lot.identity.section.wreck.system == context.system,
       commander.salvageLedger.boundActor(for: lot.identity) == nil,
       !context.protection.protectedPayloads.contains(.salvage(lot.identity)),
@@ -32,7 +46,8 @@ extension Game {
       let catalogue = physical.catalogueShipID,
       let profile = salvageProfile(for: body),
       profile.sections.contains(where: { $0.index == lot.identity.section.section }),
-      salvageCuttingIsAllowed(body, metadata: metadata, context: context)
+      salvageCuttingIsAllowed(body, metadata: metadata, context: context),
+      !nativeClaim || nativeSalvageOfferParentMatches(body, lot: lot)
     else { return false }
     let fragmentMetadata = SalvageTargetMetadata(
       category: lot.category, ownership: lot.loot?.legality.ownership ?? .abandoned,

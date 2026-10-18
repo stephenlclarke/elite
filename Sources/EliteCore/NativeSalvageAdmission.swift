@@ -30,17 +30,10 @@ extension Game {
       var candidate = self
       guard
         let spawn = candidate.commander.salvageLedger.reserveNativeSpawnIdentity(
-          system: context.system, visit: context.visit)
+          system: context.system, visit: context.visit),
+        candidate.stageNativeSalvageOffer(pending, spawn: spawn, context: context)
       else { return }
-      let request = SpawnRequest(
-        identity: spawn, population: .cargo, hull: .cargo,
-        position: lot.position, orientation: .init(), velocity: lot.velocity, npc: nil,
-        rock: nil, payload: .salvage(lot.identity), priority: .ordinary,
-        salvage: .init(
-          category: lot.category, ownership: lot.loot?.legality.ownership ?? .abandoned,
-          claimant: nil, wreck: lot.identity.section.wreck, section: lot.identity.section,
-          lot: lot.identity, bounds: .init(center: .init(0, 0, 0), radius: lot.halfExtents.length),
-          workSurfaces: []))
+      let request = NativeSalvageOffer.request(lot: lot, spawn: spawn)
       let receipts = candidate.admitEncounterPlan(
         .init(
           system: context.system, visit: context.visit,
@@ -48,6 +41,10 @@ extension Game {
           intents: []))
       guard receipts.count == 1, receipts[0].request == spawn, receipts[0].refusal == nil,
         let actor = receipts[0].actor,
+        let offered = candidate.commander.alienStorageState?.current.salvage.pending[lot.identity],
+        offered.record == pending.record, offered.lot == lot,
+        offered.physicalTime == pending.physicalTime,
+        offered.offer == spawn, offered.binding == nil,
         let previous = candidate.commander.alienStorageState?.current.snapshot
       else { continue }
       do {
