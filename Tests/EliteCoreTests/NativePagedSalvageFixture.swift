@@ -235,6 +235,22 @@ enum NativePagedSalvageFixture {
       position: model.systemPoint(section.localPosition) - basis.z * 200, orientation: basis)
   }
 
+  /// Enter through the same Tab selection path that seals the real autopilot target.
+  /// Approach and cutting time remain in each caller's original finite frame loops.
+  static func engageSalvageTarget(
+    _ game: inout Game, body: SpaceBody, section: WreckSectionIdentity
+  ) throws {
+    let actor = try #require(body.physical?.identity)
+    game.workTargetFilter = .salvage
+    game.key("tab")
+    try #require(game.autoPilot.targetID == body.id && game.autoPilot.targetActor == actor)
+    try #require(game.autoTargetBody?.physical?.identity == actor)
+    try #require(game.workGuidance?.parent == actor)
+    try #require(game.workGuidance?.mode == .hold(.salvage))
+    try #require(game.workGuidance?.surface.section == section)
+    try #require(!game.workFireSuspended)
+  }
+
   static func folder() throws -> URL {
     let path = FileManager.default.temporaryDirectory.path
     let resolved = path.withCString { realpath($0, nil) }
