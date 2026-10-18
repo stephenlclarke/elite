@@ -63,6 +63,8 @@ extension Game {
     else { return }
     guard let owner = commander.equipmentOwnerID, receipt.cause != nil,
       receipt.valid(for: next, engine: commander.scriptState),
+      pin.sourceID != ScriptNavigationTradeContent.sourceID
+        || next.savedNavigationTrade?.stage == .received,
       let source = ScriptBaseClueCatalog.bySource[pin.sourceID]
     else { throw SaveError.invalidCommander }
     var journal = commander.scriptState.savedClueJournal ?? .init(owner: owner)
@@ -75,7 +77,9 @@ extension Game {
 extension GameRuntime {
   /// A snapshot only: never scans old completions or creates awards.
   public func baseClueProgress() -> ScriptClueProgress {
-    guard ScriptClueVersionedSave.validateClaims(game.commander, trust: .production) else {
+    guard ScriptClueVersionedSave.validateClaims(game.commander, trust: .production),
+      ScriptNavigationTradeSave.validateClaims(game.commander, binding: nil)
+    else {
       return .empty
     }
     return game.commander.scriptState.savedClueJournal?.progress ?? .empty

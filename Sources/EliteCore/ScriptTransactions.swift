@@ -6,7 +6,8 @@ extension GameRuntime {
   /// Captures value paths and a bounded Sendable, non-authoritative observation reference.
   /// No writer, actor or interpreter callback escapes this turn.
   func scriptPublisher(
-    requireNativeSalvage: Bool = false, diagnosticBoundary: ScriptRefusalBoundary = .publication
+    requireNativeSalvage: Bool = false, diagnosticBoundary: ScriptRefusalBoundary = .publication,
+    navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> ScriptPublisher? {
     guard game.requiresScriptDurability || requireNativeSalvage, let url = scriptSaveURL else {
       return nil
@@ -34,7 +35,7 @@ extension GameRuntime {
           commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
           scope: namespace == nil ? "commander" : "gallery",
           exclusive: candidate.pendingNewSaveDestination == url, diagnostics: diagnostics,
-          diagnosticBoundary: diagnosticBoundary)
+          diagnosticBoundary: diagnosticBoundary, navigationBinding: navigationBinding)
       } catch {
         diagnostics?.record(
           diagnosticBoundary, .init(stage: .storeWrite, error: error, game: prepared.game))
@@ -47,7 +48,9 @@ extension GameRuntime {
   }
   /// User commands are staged before a frame is published. Disk failure publishes no
   /// command effects; autonomous physics uses a separate proposal-only barrier.
-  func commitScriptCommand(from before: Game) throws {
+  func commitScriptCommand(
+    from before: Game, navigationBinding: ScriptNavigationTradeBinding? = nil
+  ) throws {
     var stage = ScriptRefusalStage.commandFlush
     do {
       guard game.flushNativeSalvageWork() else { throw SaveError.invalidCommander }
@@ -59,7 +62,7 @@ extension GameRuntime {
       guard ownsPersistentState, changed else { return }
       var candidate = game
       stage = .commandPublish
-      if let publish = scriptPublisher() {
+      if let publish = scriptPublisher(navigationBinding: navigationBinding) {
         try publish(&candidate)
       } else if before.requiresScriptDurability, !game.requiresScriptDurability,
         let url = scriptSaveURL
@@ -78,11 +81,13 @@ extension GameRuntime {
       throw error
     }
   }
-  func scriptCommand<T>(_ action: (inout Game) throws -> T) throws -> T {
+  func scriptCommand<T>(
+    navigationBinding: ScriptNavigationTradeBinding? = nil, _ action: (inout Game) throws -> T
+  ) throws -> T {
     let before = game
     do {
       let value = try action(&game)
-      try commitScriptCommand(from: before)
+      try commitScriptCommand(from: before, navigationBinding: navigationBinding)
       return value
     } catch {
       game = before
@@ -94,7 +99,9 @@ extension GameRuntime {
       game.notify("MISSION SAVE FAILED - ACTION NOT COMMITTED")
     }
   }
-  static func writeCommander(_ candidate: inout Game, to url: URL) throws {
+  static func writeCommander(
+    _ candidate: inout Game, to url: URL, navigationBinding: ScriptNavigationTradeBinding? = nil
+  ) throws {
     try candidate.commander.prepareEquipment()
     try candidate.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
     if (candidate.requiresScriptDurability || candidate.commander.usesEconomyMiningSaveVersion
@@ -114,7 +121,7 @@ extension GameRuntime {
       alienPublication = try ScriptSaveStore.write(
         commander: prepared.commander, world: prepared.game.scriptWorldSave, to: url,
         scope: prepared.game.isMissionTrial ? "gallery" : "commander",
-        exclusive: candidate.pendingNewSaveDestination == url)
+        exclusive: candidate.pendingNewSaveDestination == url, navigationBinding: navigationBinding)
     } else {
       let data = try JSONEncoder().encode(prepared.commander)
       guard data.count <= 4_194_304 else { throw SaveError.invalidCommander }

@@ -995,16 +995,27 @@ public struct Game: Sendable {
     manuallySelectSystem(selected)
   }
   public mutating func trade(buy: Bool) {
+    var candidate = self
+    do {
+      try candidate.performMarketTrade(buy: buy, before: self)
+      self = candidate
+    } catch {
+      notify(String(error.localizedDescription.prefix(512)))
+    }
+  }
+  private mutating func performMarketTrade(buy: Bool, before: borrowing Game) throws {
     guard stationAllowsMarketServices, market.indices.contains(selection) else {
       if docked { notify("MARKET UNAVAILABLE AT THIS STATION") }
       return
     }
     let index = selection
     let item = market[index]
+    let practice = try navigationTradeMarketAdmission(buying: buy, index: index)
     if buy {
       guard item.quantity > 0, commander.availableCredits >= item.price,
         commander.cargo[index] < Int.max / 17,
         Commodity.all[index].unit != "t" || commander.cargoTonnes < commander.tradeCargoCapacity
+          || (practice != nil && commander.cargoTonnes == commander.tradeCargoCapacity)
       else {
         notify("CANNOT BUY")
         return
@@ -1017,7 +1028,7 @@ public struct Game: Sendable {
         _ = reviewNativeCaptiveSale()
         return
       }
-      guard commander.sellableCargo(index) > 0 else {
+      guard commander.sellableCargo(index) > 0 || practice != nil else {
         notify(
           index == 10 && commander.markedFirearms > 0 ? "MISSION FIREARM RESERVED" : "NO CARGO")
         return
@@ -1025,6 +1036,9 @@ public struct Game: Sendable {
       commander.credits = min(4_294_967_295, commander.credits + item.price)
       commander.cargo[index] -= 1
       market[index].quantity += 1
+    }
+    if let practice {
+      try recordNavigationTradeMarket(instance: practice, buying: buy, before: before, index: index)
     }
   }
   public mutating func purchase() {
@@ -1034,6 +1048,10 @@ public struct Game: Sendable {
   /// Sells the hold, then buys the most profitable exports for a destination.
   /// Government changes route risk, while commodity prices follow Elite's economy rules.
   public mutating func autoTrade() {
+    guard !commander.hasActiveNavigationTrade else {
+      notify("TRADE PRACTICE - USE SINGLE-TONNE MARKET CONTROLS")
+      return
+    }
     guard stationAllowsMarketServices else {
       if docked { notify("AUTO TRADE UNAVAILABLE AT THIS STATION") }
       return
@@ -1353,6 +1371,7 @@ public struct Game: Sendable {
     cancelAutoTarget()
     clearManualResidualFlight()
     speed = arrivalSpeed
+    let fuelBeforeArrival = commander.fuel
     let cost =
       journey?.nativeFuelDebit
       ?? commander.jumpFuelCost(distance: currentSystem.distance(to: targetSystem))
@@ -1386,6 +1405,7 @@ public struct Game: Sendable {
     applyScriptStationResources()
     try registerOriginalNativeMainStation()
     try restoreScriptActors()
+    try recordNavigationTradeJourney(journey, fuelBefore: fuelBeforeArrival)
     return true
   }
   public mutating func galacticJump() {
@@ -1529,6 +1549,7 @@ public struct Game: Sendable {
     // a pending charge and its disabled electrical reserve cannot follow it.
     candidate.commander.savedEMPCharge = nil
     candidate.commander.savedPlayerElectrical = nil
+    candidate.loseNavigationTradeOnEscape()
     candidate.commander.cargo = Array(repeating: 0, count: 17)
     candidate.commander.cargo[10] = candidate.commander.markedFirearms
     candidate.commander.legal = 0
@@ -2305,6 +2326,11 @@ public actor GameRuntime {
     game.time = 0
   }
   public func load(from url: URL, persistMigrations: Bool = true) throws {
+    try loadNativeCommander(from: url, persistMigrations: persistMigrations, navigationBinding: nil)
+  }
+  func loadNativeCommander(
+    from url: URL, persistMigrations: Bool, navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
     try requireGalleryFileAccess(url)
     let data = try CommanderSaveInput.read(from: url)
     try ScriptSaveJSONPreflight.validate(data)
@@ -2317,7 +2343,8 @@ public actor GameRuntime {
       }
       let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: url)
       try Self.requireGalleryPathAccess(generation, namespace: galleryNamespace)
-      let (commander, world) = try ScriptSaveStore.read(data, from: url)
+      let (commander, world) = try ScriptSaveStore.read(
+        data, from: url, navigationBinding: navigationBinding)
       // v2 is already migrated/validated; ordinary docking/load callbacks must not replay here.
       var candidate = Game(executive: false)
       candidate.commander = commander
@@ -2344,10 +2371,10 @@ public actor GameRuntime {
       try candidate.validateInstalledCourierContent()
       candidate.resolveCourierTerminals()
       candidate.resolveFreightTerminals()
-      candidate.suspendUnavailableScriptContent()
+      candidate.suspendUnavailableScriptContent(navigationBinding: navigationBinding)
       guard candidate.commander.valid else { throw SaveError.invalidCommander }
       if persistMigrations && candidate.commander != commander {
-        try Self.writeCommander(&candidate, to: url)
+        try Self.writeCommander(&candidate, to: url, navigationBinding: navigationBinding)
       }
       game = candidate
       controls = Controls()
@@ -2380,10 +2407,10 @@ public actor GameRuntime {
     candidate.newCommanderSaveReceipt = nil
     try candidate.rebindNativeStationsAfterLoad()
     if candidate.requiresScriptDurability { migrateScriptCalendar(&candidate) }
-    candidate.suspendUnavailableScriptContent()
+    candidate.suspendUnavailableScriptContent(navigationBinding: navigationBinding)
     guard candidate.commander.valid else { throw SaveError.invalidCommander }
     if persistMigrations && candidate.commander != original {
-      try Self.writeCommander(&candidate, to: url)
+      try Self.writeCommander(&candidate, to: url, navigationBinding: navigationBinding)
     }
     game = candidate
     controls = Controls()

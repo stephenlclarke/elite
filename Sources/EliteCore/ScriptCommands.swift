@@ -216,6 +216,19 @@ extension Game {
     state: inout ScriptInstance, candidate: inout Commander,
     procurementAdmission: ScriptProcurementAdmission? = nil
   ) throws {
+    if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
+      || state.savedNavigationTrade != nil
+    {
+      let stage = state.savedNavigationTrade?.stage
+      guard
+        (outcome == .complete && stage == .received)
+          || (outcome == .abandoned && stage == .cancelled)
+          || (outcome == .failed && stage == .lost)
+      else {
+        throw MissionPackError(
+          "Training completion requires its actual native trade and reception receipts.")
+      }
+    }
     guard pack.manifest.freight == nil, state.contract?.offer.freightPlan == nil,
       state.savedOwnedCargo == nil
     else {

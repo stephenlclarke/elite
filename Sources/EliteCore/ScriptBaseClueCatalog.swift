@@ -107,11 +107,13 @@ struct ScriptClueExecutionPin: Sendable, Equatable {
   }
 }
 
-/// Native value-scoped trust. Production has no approved translated runtime sources yet.
+/// Native value-scoped trust. Only exact translated runtime content is approved.
 /// Test fixtures can supply an isolated catalog to internal transactions without changing this one.
 struct ScriptClueTrustCatalog: Sendable {
   private let pins: [ScriptClueExecutionPin]
-  static let production = ScriptClueTrustCatalog(approvedPins: [])
+  static let production = ScriptClueTrustCatalog(approvedPins: [
+    ScriptNavigationTradeContent.cluePin
+  ])
 
   private init(approvedPins: [ScriptClueExecutionPin]) { pins = approvedPins }
   init(pins: [ScriptClueExecutionPin]) throws {

@@ -4,7 +4,7 @@
 
 A verified active-to-complete transition can now record its first source clue inside the existing protected terminal candidate, before validation and publication. The journal is owner-bound, has zero cargo mass and retains the exact successful completion receipt. Its immutable progress query uses the 64 approved distinct clue identities and never grants from historical completions.
 
-Executable authority is a separate immutable native catalog of exact definition/version/digest/event pins. Production pins are empty pending separately approved runtime translations and provider bindings. The tests pass a value-scoped fixture catalog only to internal transaction/store calls; ordinary production entrypoints reject fixture-authorized saves.
+Executable authority is a separate immutable native catalog of exact definition/version/digest/event pins. The foundation began with empty production pins. Only Navigation and trade practice now has an exact translated-runtime pin, and its independent original-world binding remains unavailable. The tests pass a value-scoped fixture catalog only to internal transaction/store calls; ordinary production entrypoints reject fixture-authorized saves.
 
 Nonempty journals use exact envelopes 31/32, joined to Alien presence and existing freight/provider checks. Older and raw load paths reject journal fields; current paths reject null, empty, missing, malformed and wrongly placed claims. Empty progress retains existing save selection.
 
