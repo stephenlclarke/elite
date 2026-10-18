@@ -51,12 +51,15 @@ extension Game {
       body.hull == .cargo, body.energy.isFinite, body.energy > 0,
       physical.catalogueShipID == "SH040", physical.npc == nil, physical.payload == nil,
       physical.empSource == nil, body.missionActorID == nil, body.scriptNPC == nil,
+      body.blackjackIdentity == nil,
       physical.spawnIdentity?.producer == .emp,
       physical.spawnIdentity?.sequence == record.sequence,
       physical.spawnIdentity?.member == UInt16(person.ordinal + 1),
       physical.salvage?.category == .occupiedPod, physical.salvage?.ownership == .occupied,
       physical.salvage?.claimant == person.source,
-      !context.protection.protectedActors.contains(physical.identity)
+      // Protection from harm is required; an independent mission claim still forbids rescue.
+      body.gameplayProtectionReasons == .empCrewPod,
+      context.protection.protectedActors.contains(physical.identity)
     else { return nil }
     return .init(person: person, fits: freeNativePeopleTonnes > 0)
   }
