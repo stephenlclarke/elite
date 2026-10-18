@@ -35,6 +35,7 @@ private final class NativeCommanderFileFixture {
     var commander = Commander()
     commander.name = name
     commander.credits = credits
+    commander.scriptState.calendarLedger = .init(origin: .inactiveLegacyMigration)
     let url = directory.appendingPathComponent(name + ".json")
     try JSONEncoder().encode(commander).write(to: url)
     return url
@@ -117,8 +118,8 @@ extension NativeViewTests {
     #expect(fixture.view.pending == Array(repeating: "commander-file", count: 3))
     #expect(fixture.delegate.saves.activeURL == a)
     await fixture.delegate.processPendingCommands(in: fixture.view)
-    let savedA = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: a))
-    let savedB = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: b))
+    let savedA = try NativeSaveTestFixture.readVersionedCommander(from: a)
+    let savedB = try NativeSaveTestFixture.readVersionedCommander(from: b)
     let after = await fixture.delegate.runtime.snapshot()
     #expect(savedA == before.commander && savedA.name == "A" && savedA.credits == 1234)
     #expect(savedB == after.commander && savedB.name == "B" && savedB.credits == 5678)
@@ -143,7 +144,7 @@ extension NativeViewTests {
     fixture.delegate.queueCommanderFile(.saveAs(c))
     fixture.delegate.queueCommanderFile(.open(b))
     await fixture.delegate.processPendingCommands(in: fixture.view)
-    let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: c))
+    let saved = try NativeSaveTestFixture.readVersionedCommander(from: c)
     #expect(saved == before.commander)
     #expect(try Data(contentsOf: a) == originalA)
     #expect(try Data(contentsOf: b) == originalB)
@@ -176,7 +177,7 @@ extension NativeViewTests {
     #expect(fixture.errors.count == 2)
     fixture.delegate.queueCommanderFile(.saveActive)
     await fixture.delegate.processPendingCommands(in: fixture.view)
-    #expect(try JSONDecoder().decode(Commander.self, from: Data(contentsOf: a)) == before.commander)
+    #expect(try NativeSaveTestFixture.readVersionedCommander(from: a) == before.commander)
     #expect(fixture.errors.count == 2)
   }
 }

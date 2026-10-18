@@ -229,7 +229,8 @@ private func showroomGame() -> Game {
 }
 
 @Test func showroomActorSavingAndConcurrentBrowsingKeepCommanderUnchanged() async throws {
-  let game = showroomGame()
+  var game = showroomGame()
+  try NativeSaveTestFixture.prepareCurrentPolicy(&game)
   let runtime = GameRuntime(game: game)
   let ready = await runtime.snapshot()
   #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
@@ -243,7 +244,7 @@ private func showroomGame() -> Game {
     for _ in 0..<10 { tasks.addTask { _ = await runtime.advance(delta: 0.02) } }
   }
   try await runtime.save(to: url)
-  let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+  let saved = try NativeSaveTestFixture.readVersionedCommander(from: url)
   #expect(saved == ready.commander)
   #expect(await runtime.snapshot().commander == ready.commander)
   #expect(await runtime.snapshot().time == game.time)

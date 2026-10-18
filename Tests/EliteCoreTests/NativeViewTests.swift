@@ -112,7 +112,7 @@ struct NativeViewTests {
     #expect(view.pendingCommanderFiles.last == .saveActive)
     await delegate.processPendingCommands(in: view)
     #expect(view.pending.isEmpty)
-    let persisted = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
+    let persisted = try NativeSaveTestFixture.readVersionedCommander(from: url)
     #expect(persisted.shipID == "SH023" && persisted.credits == 12345)
     #expect(persisted.name == "CLARKE" && saves.startupURL == url)
   }
