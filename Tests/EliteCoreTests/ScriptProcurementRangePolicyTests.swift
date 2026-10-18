@@ -26,9 +26,10 @@ private func rangePolicyGame() throws -> Game {
   game.bodies[index].missiles = 0
   game.bodies[index].physical?.catalogueShipID = ShipCatalogue.nativeShip(.cobra)?.id
   game.bodies[index].physical?.npc?.legal = .init(value: 16)
-  game.bodies[index].physical?.spawnIdentity = .init(
+  let spawn = SpawnIdentity(
     system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
     sequence: 900, member: 0, producer: .ambient)
+  game.bodies[index].physical?.spawnIdentity = spawn
   game.selectFlightTool(.combatLaser)
   return game
 }
@@ -45,9 +46,10 @@ func procurementFarExemptionRequiresJoinedOrdinaryPulseOnlyActor(condition: Stri
   case "missiles": game.bodies[index].missiles = 1
   case "script-source": game.bodies[index].physical?.spawnIdentity?.producer = .mission
   case "foreign-spawn":
-    game.bodies[index].physical?.spawnIdentity = .init(
+    let foreignSpawn = SpawnIdentity(
       system: game.systemIdentity, visit: game.commander.flightSimulation.visit + 1,
       sequence: 900, member: 0)
+    game.bodies[index].physical?.spawnIdentity = foreignSpawn
   case "missing-spawn": game.bodies[index].physical?.spawnIdentity = nil
   case "naval": game.bodies[index].navalTarget = true
   case "mission": game.bodies[index].missionInstanceID = UUID()
