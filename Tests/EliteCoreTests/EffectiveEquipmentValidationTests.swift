@@ -119,8 +119,6 @@ private func effectivePublicationExpectation(_ before: borrowing Game) throws ->
   let hasNoBoards = before.commander.contracts.boards.isEmpty
   let hasNoScriptInstanceOrBoard = hasNoInstances && hasNoBoards
   try #require(hasNoScriptInstanceOrBoard)
-  let hasCalendar = before.commander.scriptState.calendarLedger != nil
-  try #require(hasCalendar)
   var expected = before.commander
   try expected.prepareEquipment()
   expected.mirrorFittedEquipment()
@@ -132,6 +130,20 @@ private func effectivePublicationExpectation(_ before: borrowing Game) throws ->
   try mining.migratePresence(
     current: .init(system: system, galaxy: expected.galaxy), historical: [])
   expected.miningLedger = mining
+  // The native writer also initializes a current equipment save's calendar, even when init did not.
+  let retainedFeaturesRequireDurability = before.requiresScriptDurability
+  let hasUntrackedJump = before.jumpCountdown != nil
+  if (retainedFeaturesRequireDurability || expected.usesEconomyMiningSaveVersion
+    || expected.usesModularDriveSaveVersion)
+    && expected.scriptState.calendarLedger == nil
+  {
+    let legacy = expected.legacyOwnedEquipment != nil || hasUntrackedJump
+    expected.scriptState.calendarLedger = .init(
+      origin: legacy ? .inactiveLegacyMigration : .newCommander)
+    if hasUntrackedJump {
+      expected.scriptState.calendarLedger?.legacyUntrackedJourney = true
+    }
+  }
   return expected
 }
 
