@@ -423,7 +423,7 @@ private func hsConcaveThinBridge(scale: Double, translation: Vector3, reversed: 
   let vertices = [-1.0, 1.0].flatMap { v in
     outline.map { point in
       let (s, u) = point
-      Vector3(s, 0.371 * s + u, 0.529 * s + v) * scale + translation
+      return Vector3(s, 0.371 * s + u, 0.529 * s + v) * scale + translation
     }
   }
   var faces = caps.map { Array($0.reversed()) } + caps.map { $0.map { $0 + 8 } }

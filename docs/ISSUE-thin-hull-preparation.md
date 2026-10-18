@@ -26,6 +26,8 @@ Independent source review also found that conditioning only hit triangles is ins
 
 The integrator must compile and run focused geometry tests and the unchanged actual SH127 human eight/eight regression. Numerical conservatism can refuse a genuinely close or unresolved query; runtime success, performance and coverage remain unproven. The required final `make ci` coverage, sanitizers and leaks remain outstanding. Because the ship-media fingerprint includes every Core Swift source, `make ships` and `make ships-check` are required after the combined source freeze even though ship definitions remain byte-identical. Generated media/hashes must not be patched manually.
 
+The integrator's supervised combined compile 377 failed before test execution because the new concave-bridge helper omitted `return` after a local tuple binding inside `outline.map`. The source follow-up inserts that word without changing geometry, cases, budgets or production code. Static formatting did not catch this type error. A fresh combined compile and all runtime validation remain pending; no parity or native outcome is inferred from the compile failure.
+
 ## References
 
 Source authority is the bounded phase-one geometry allocation on commit `709e6ed23f47f459a6abaaf255a35e8afe54bce3`. The full 171-hull goal and remaining backlog retain their original scope. See [the implementation review](PR-thin-hull-preparation.md).
