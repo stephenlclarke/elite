@@ -11,11 +11,11 @@ This verified handoff supersedes historical private/no-handoff labels. Checked d
 - Deliver eight galaxies with 2,048 original worlds, their economy and the new Avenor commander.
 - Replace superseded stories with 39 original campaigns, 21 repeatable mission families, four tutorials and 758 artwork assets. This records scope without publishing quest solutions or private artwork bundles.
 - Preserve 64 distinct first-success clues and the ordered PLUGH/SH171 progression: Medusa defeat, reconstruction, then paid fabrication. XYZZY must not bypass this gate.
-- Use the authoritative W / Return / E / Q bindings and the latest hold and salvage rules. Main-laser asteroid shattering must leave strictly less than 5% collectible yield; physical dust behavior remains an explicit open decision below.
+- Use the authoritative W / Return / E / Q bindings and the latest hold and salvage rules. Main-laser asteroid shattering must conserve physical mass and momentum while leaving strictly less than 5% of the original intact mass collectible; the resolved accounting rule is recorded below.
 
 ## Delivered slices and remaining acceptance
 
-Station AUTO defence is source-integrated, but the original procurement journey still fails during final approach. Both unattended freight cases have passed focused validation. Mission-folder routing is source-integrated; its runtime, CLI and native-picker acceptance are pending. The shared-controls generator and generated-byte check pass nine Python tests; native input, help and HUD wiring remain pending.
+Station AUTO defence is source-integrated. Focused run 433 passed 46 of 50 methods, but procurement and unattended freight row 2 fail during defensive approach; the earlier freight passes remain historical evidence. Mission-folder routing passed its three methods/eight cases, and independent CLI run 434 passed four actual validation cases. Native-picker acceptance remains pending. The shared-controls generator and generated-byte check pass nine Python tests; native input, help and HUD wiring remain pending.
 
 Repository/path/content renaming, playable replacement missions and overall game completion remain pending. The fresh L337 product and current save/content formats supersede predecessor-import obligations. Preserve historical releases, notices, repository protections and user working changes.
 
@@ -30,6 +30,6 @@ The original 12 priorities and their engine/native-gameplay acceptance requireme
 | MC1 | Mission engine and content |
 | MBA | Shared generator and lightweight independent work |
 
-## Unresolved gameplay decision
+## Resolved asteroid debris decision
 
-Shattered Wake: the relationship between physical dust impacts and collectible asteroid yield is unresolved. The strict under-5% collectible limit is fixed; whether noncollectible dust has physical impact behavior must be confirmed before implementation. No dust behavior is selected by this record.
+Human decision confirmed on 18 October 2026: conserve all physical mass and momentum of laser-shattered asteroids. Debris remains an impact hazard, while strictly less than 5% of the original intact mass can be collected. Keep physical hazard accounting separate from the finite commodity-yield pool, preserving original creation mass, already extracted amounts and descendants across save/reload. This resolves the Shattered Wake dust question; physics implementation and validation remain pending.
