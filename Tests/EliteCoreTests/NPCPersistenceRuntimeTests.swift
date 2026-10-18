@@ -146,6 +146,17 @@ struct NPCPersistenceRuntimeTests {
     let onDisk = try NativeSaveTestFixture.readVersionedCommander(from: url)
     #expect(onDisk.npcPersistence.binding(for: source) == nil)
     try await runtime.load(from: url)
+    let retained = await runtime.snapshot()
+    #expect(!retained.docked && retained.commander.flightSimulation.visit == source.visit)
+    #expect(retained.commander.npcPersistence.binding(for: source) == source)
+    let retainedBody = try #require(retained.bodies.first { $0.physical?.identity == source })
+    #expect(retainedBody.energy == game.bodies[0].energy)
+    #expect(retainedBody.missiles == game.bodies[0].missiles)
+    #expect(retainedBody.physical?.npc?.resources == game.bodies[0].physical?.npc?.resources)
+    // The versioned save retains active flight. Exercise the actual actor command
+    // boundary before testing a later launch; this is not a swept doorway claim.
+    await runtime.nativeCommand { $0.dock() }
+    #expect(await runtime.snapshot().docked)
     await runtime.key("0")
     let loaded = await runtime.snapshot()
     let rebound = try #require(loaded.commander.npcPersistence.binding(for: source))

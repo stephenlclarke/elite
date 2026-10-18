@@ -15,8 +15,14 @@ func missionGearGame(missiles: Int? = nil) throws -> Game {
   if let missiles { commander.missiles = missiles }
   try commander.prepareEquipment(legacy: false)
   var game = Game(executive: false)
-  let loaded = game.load(commander)
-  try #require(loaded && game.commander.valid)
+  // This is a freshly constructed current typed fixture, not a legacy file load.
+  game.commander = commander
+  game.commander.mirrorFittedEquipment()
+  try game.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(game.commander.valid)
   game.screen = .inventory
   return game
 }
