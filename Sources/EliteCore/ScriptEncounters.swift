@@ -511,18 +511,57 @@ extension Game {
       preserveWinding: true)
   }
 
+  /// Private to this invocation's declaration validation and subsequent construction.
+  private enum MissionActorAdmissionFit {
+    case npc(ScriptNPCState, ScriptNPCDefinition)
+    case classic(Hull)
+  }
+
+  @inline(never)
   private static func missionActorAdmissionTemplate(
     _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
     npcDefinitions: [ScriptNPCDefinition], installedModels: [String: ShipDesign],
     geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?
   ) throws -> MissionActorAdmissionTemplate {
-    var parts: [MissionActorAdmissionPart] = []
-    let maximumEnergy: Double
+    let fit = try validateMissionActorAdmissionFit(
+      actor, specification: specification, npcDefinitions: npcDefinitions)
+    return try constructMissionActorAdmissionTemplate(
+      actor, specification: specification, fit: fit, installedModels: installedModels,
+      geometry: geometry, legacy: legacy)
+  }
+
+  /// Full structural equality finishes before any mesh, bounds or canonical-body frame starts.
+  @inline(never)
+  private static func validateMissionActorAdmissionFit(
+    _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
+    npcDefinitions: [ScriptNPCDefinition]
+  ) throws -> MissionActorAdmissionFit {
     if let npcID = specification.npc {
       guard actor.body.hull == .cobra, let npc = actor.body.scriptNPC,
         let definition = npcDefinitions.first(where: { $0.id == npcID }),
         definition == npc.fit.definition
       else { throw MissionPackError("Retained NPC fit differs from its actual declaration.") }
+      return .npc(npc, definition)
+    } else {
+      guard let hull = specification.hull, actor.body.hull == hull, actor.body.scriptNPC == nil
+      else {
+        throw MissionPackError("Retained classic hull differs from its actual declaration.")
+      }
+      return .classic(hull)
+    }
+  }
+
+  /// Uses only the exact selected fit returned by the immediately preceding validation phase.
+  @inline(never)
+  private static func constructMissionActorAdmissionTemplate(
+    _ actor: ScriptOwnedActor, specification: ScriptActorDefinition,
+    fit: MissionActorAdmissionFit, installedModels: [String: ShipDesign],
+    geometry: [String: ShipDesign], legacy: LegacyMissionActorProvenance?
+  ) throws -> MissionActorAdmissionTemplate {
+    var parts: [MissionActorAdmissionPart] = []
+    let maximumEnergy: Double
+    switch fit {
+    case .npc(let npc, let definition):
       maximumEnergy = definition.energy
       parts.append(
         .init(
@@ -546,11 +585,7 @@ extension Game {
               geometry: geometry, scale: spec.scale * definition.scale,
               offset: spec.position * definition.scale, pose: spec.orientation)))
       }
-    } else {
-      guard let hull = specification.hull, actor.body.hull == hull, actor.body.scriptNPC == nil
-      else {
-        throw MissionPackError("Retained classic hull differs from its actual declaration.")
-      }
+    case .classic(let hull):
       maximumEnergy = hull.navalEnergy ?? 100
       parts.append(
         .init(
