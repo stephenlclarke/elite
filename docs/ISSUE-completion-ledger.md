@@ -61,3 +61,7 @@ Existing760 binary evidence points to cumulative ancestor stack pressure and seq
 ## Frozen F01 independent source review
 
 Frozen F01 source changes an optional decoded ship-ID fallback, which could change an existing current-format saved hull on Continue. Track that P1 and the pending one-revision owner fix; reviewed source/asset checks do not establish runtime or startup frame performance.
+
+## Corrected F01 source and conditional owner execution
+
+The F01 implicit current-save identity finding is resolved in a corrected frozen revision, but source-clean alone is not ready for integration. Owner units must wait for the actual priority fresh MC1 run closure rather than mistake the old released762 lease for permission to start.

@@ -80,3 +80,7 @@ Attach the bounded760 inspection report and Root assignment for fresha9fd7e60 Di
 ## Frozen F01 independent source review
 
 Record exact7f F01 freeze, proposed9-case plan and completed independent source review with one P1 current-save identity finding. Owned original geometry/specification checks pass; owner correction/re-freeze/re-review and actual units remain pending. Document per-frame100k-face rendering measurement as a playable gate, with MC1 priority and no new executor/media claim. Three Markdown files checked only.
+
+## Corrected F01 source and conditional owner execution
+
+Record corrected a71a13e1 freeze, clean independent source re-review and exact10-case plan. Preserve stable decodedSH023/freshSH025 separation and the real omitted-ID Continue regression. Record conditional765/766 owner grant after actual fresh MC1 closure; no current execution, integration or frame-performance claim. Changed Markdown/whitespace checks only.
