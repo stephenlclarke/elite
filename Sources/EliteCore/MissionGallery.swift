@@ -51,13 +51,7 @@ public struct MissionGalleryState: Sendable {
 }
 
 extension Game {
-  var galleryListWindow: ScrollWindow {
-    let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
-    let visible = max(1, Int((viewportHeight - layout.listTop - 48) / layout.itemHeight))
-    return .init(
-      count: missionCatalogue.count, visible: visible,
-      offset: max(0, resolvedGallerySelection - visible + 1))
-  }
+  var galleryListWindow: ScrollWindow { galleryReadQuery().window }
   public var missionCatalogue: [GalleryMission] {
     missionPacks.entries.map { packGallery($0) } + missingPackGallery + scriptGallery
       + rrsCourierGallery + [nativePeopleGalleryEntry]

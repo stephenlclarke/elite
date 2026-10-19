@@ -75,6 +75,26 @@ private final class ScriptAcceptanceAttemptScratch {
   }
 }
 
+private struct ScriptGalleryEntryValues {
+  let id: UUID
+  let suspension: String?
+  let outcome: ScriptOutcome
+  let contract: ScriptContractJob?
+  let journalLast: String?
+  let milestones: Set<Int>
+  let hasCampaignParent: Bool
+
+  init(_ state: borrowing ScriptInstance) {
+    id = state.id
+    suspension = state.suspension
+    outcome = state.outcome
+    contract = state.contract
+    journalLast = state.journal.last
+    milestones = state.milestones
+    hasCampaignParent = state.campaignParent != nil
+  }
+}
+
 extension Game {
   var orderedScriptInstances: [UUID] {
     let priorities = Dictionary(
@@ -1177,14 +1197,12 @@ extension Game {
         + (navigationTradeContactText(instance).map { "\n\n" + $0 } ?? "")
     }
   }
-  private func scriptGalleryEntry(_ pack: ScriptPack, state: ScriptInstance?) -> GalleryMission {
-    if pack.manifest.providerContract != nil { return providerGalleryEntry(pack, state: state) }
-    let reason =
-      scriptUnavailable(pack)
-      ?? (state == nil && pack.manifest.mission.parentOnly == true
-        ? "Start this child through its owning campaign." : nil)
-      ?? (state == nil ? scriptAcceptanceIssue(pack) : nil)
-      ?? state.flatMap { campaignExecutionIssue($0) }
+  private func scriptGalleryEntry(_ pack: ScriptPack, stateID: UUID?) -> GalleryMission {
+    if pack.manifest.providerContract != nil {
+      return providerScriptGalleryEntry(pack, stateID: stateID)
+    }
+    let state = scriptGalleryEntryValues(stateID)
+    let reason = scriptGalleryEntryReason(pack, stateID: stateID)
     let suspension = state?.suspension ?? reason
     let status: GalleryStatus =
       suspension != nil
@@ -1206,10 +1224,9 @@ extension Game {
       } ?? pack.manifest.mission.destination
     return GalleryMission(
       name: job?.offer.title ?? pack.manifest.mission.title, status: status,
-      objective: suspension ?? state?.journal.last ?? pack.manifest.mission.briefing,
+      objective: suspension ?? state?.journalLast ?? pack.manifest.mission.briefing,
       briefing: (job?.offer.briefing ?? pack.manifest.mission.briefing)
-        + worldJobGallerySummary(origin: state?.id) + campaignGallerySummary(state)
-        + pledgeGallerySummary(state) + courierGallerySummary(state),
+        + scriptGalleryEntrySummary(stateID),
       destination: destination,
       reward: job.map { String(format: "%.1f CR", Double($0.offer.reward) / 10) }
         ?? pack.manifest.mission.reward,
@@ -1217,8 +1234,37 @@ extension Game {
       milestones: pack.manifest.mission.milestones.enumerated().map { i, title in
         MissionMilestone(
           title: title, state: state?.milestones.contains(i) == true ? "Complete" : "Upcoming")
-      }, trialDigest: job == nil && state?.campaignParent == nil ? pack.digest : nil,
+      }, trialDigest: job == nil && state?.hasCampaignParent != true ? pack.digest : nil,
       savedInstance: state?.id)
+  }
+
+  @inline(never)
+  private func scriptGalleryEntryValues(_ id: UUID?) -> ScriptGalleryEntryValues? {
+    guard let id, let state = commander.scriptState.instances[id] else { return nil }
+    return ScriptGalleryEntryValues(state)
+  }
+
+  @inline(never)
+  private func scriptGalleryEntryReason(_ pack: ScriptPack, stateID: UUID?) -> String? {
+    if let reason = scriptUnavailable(pack) { return reason }
+    if stateID == nil && pack.manifest.mission.parentOnly == true {
+      return "Start this child through its owning campaign."
+    }
+    if stateID == nil { return scriptAcceptanceIssue(pack) }
+    guard let id = stateID, let state = commander.scriptState.instances[id] else { return nil }
+    return campaignExecutionIssue(state)
+  }
+
+  @inline(never)
+  private func scriptGalleryEntrySummary(_ id: UUID?) -> String {
+    let state = id.flatMap { commander.scriptState.instances[$0] }
+    return worldJobGallerySummary(origin: state?.id) + campaignGallerySummary(state)
+      + pledgeGallerySummary(state) + courierGallerySummary(state)
+  }
+
+  @inline(never)
+  private func providerScriptGalleryEntry(_ pack: ScriptPack, stateID: UUID?) -> GalleryMission {
+    providerGalleryEntry(pack, state: stateID.flatMap { commander.scriptState.instances[$0] })
   }
 
   var scriptGallery: [GalleryMission] {
@@ -1228,41 +1274,49 @@ extension Game {
         $1.manifest.priority, $1.manifest.id, $1.digest
       )
     }) {
-      let instances = commander.scriptState.instances.values.filter {
-        $0.definition == pack.manifest.stateID && $0.digest == pack.digest
+      let instances = commander.scriptState.instances.compactMap {
+        key, state -> (key: UUID, id: UUID)? in
+        state.definition == pack.manifest.stateID && state.digest == pack.digest
+          ? (key, state.id) : nil
       }.sorted { $0.id.uuidString < $1.id.uuidString }
       if pack.manifest.board != nil {
-        entries.append(scriptGalleryEntry(pack, state: nil))
-        entries += instances.map { scriptGalleryEntry(pack, state: $0) }
+        entries.append(scriptGalleryEntry(pack, stateID: nil))
+        entries += instances.map { scriptGalleryEntry(pack, stateID: $0.key) }
       } else if instances.isEmpty {
-        entries.append(scriptGalleryEntry(pack, state: nil))
+        entries.append(scriptGalleryEntry(pack, stateID: nil))
       } else {
-        entries += instances.map { scriptGalleryEntry(pack, state: $0) }
+        entries += instances.map { scriptGalleryEntry(pack, stateID: $0.key) }
       }
     }
-    for state in commander.scriptState.instances.values.sorted(by: {
-      $0.id.uuidString < $1.id.uuidString
-    }) where scriptPack(for: state) == nil {
-      let pledged = commander.scriptState.pledgeLedger?.receipt(instance: state.id) != nil
-      let courierTerminal = state.courier?.terminal
-      entries.append(
-        GalleryMission(
-          name: state.contract?.offer.title ?? state.definition,
-          status: pledged
-            ? .complete
-            : courierTerminal.map { $0.cause == .delivered ? .complete : .failed } ?? .locked,
-          objective: pledged
-            ? "Donation complete. Restore exact content for new offers."
-            : "Restore the exact saved mission pack.",
-          briefing: "Saved state and cargo remain intact." + campaignGallerySummary(state)
-            + pledgeGallerySummary(state) + courierGallerySummary(state),
-          destination: "Pack missing",
-          reward: pledged ? "Local standing recorded once" : "Suspended", prerequisites: [],
-          completed: state.milestones.count, milestones: [],
-          savedInstance: state.id)
-      )
+    let saved = commander.scriptState.instances.map { key, state in (key: key, id: state.id) }
+      .sorted { $0.id.uuidString < $1.id.uuidString }
+    for entry in saved {
+      if let mission = missingScriptGalleryEntry(entry.key) { entries.append(mission) }
     }
     return entries
+  }
+
+  @inline(never)
+  private func missingScriptGalleryEntry(_ id: UUID) -> GalleryMission? {
+    guard let state = commander.scriptState.instances[id], scriptPack(for: state) == nil else {
+      return nil
+    }
+    let pledged = commander.scriptState.pledgeLedger?.receipt(instance: state.id) != nil
+    let courierTerminal = state.courier?.terminal
+    return GalleryMission(
+      name: state.contract?.offer.title ?? state.definition,
+      status: pledged
+        ? .complete
+        : courierTerminal.map { $0.cause == .delivered ? .complete : .failed } ?? .locked,
+      objective: pledged
+        ? "Donation complete. Restore exact content for new offers."
+        : "Restore the exact saved mission pack.",
+      briefing: "Saved state and cargo remain intact." + campaignGallerySummary(state)
+        + pledgeGallerySummary(state) + courierGallerySummary(state),
+      destination: "Pack missing",
+      reward: pledged ? "Local standing recorded once" : "Suspended", prerequisites: [],
+      completed: state.milestones.count, milestones: [],
+      savedInstance: state.id)
   }
 }
 

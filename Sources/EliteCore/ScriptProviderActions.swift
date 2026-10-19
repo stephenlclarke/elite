@@ -143,12 +143,29 @@ extension Game {
 
   @discardableResult
   mutating func stageProviderGalleryIntent(_ key: String) -> Bool {
-    guard screen == .gallery, gallery.detail, scriptGalleryPageIdentity.mode == .detail,
-      let instance = selectedGalleryMission?.savedInstance,
-      let saved = commander.scriptState.instances[instance],
+    guard screen == .gallery, gallery.detail, let intent = providerGalleryIntent(key) else {
+      return false
+    }
+    gallery.providerIntent = intent
+    return true
+  }
+
+  // Complete page construction before reading the full saved provider instance.
+  private func providerGalleryIntent(_ key: String) -> ProviderMissionIntent? {
+    let query = galleryReadQuery()
+    let page = scriptGalleryPageIdentity(query)
+    guard page.mode == .detail, let instance = query.selected?.savedInstance else { return nil }
+    return providerGalleryIntent(key, instance: instance, page: page)
+  }
+
+  @inline(never)
+  private func providerGalleryIntent(
+    _ key: String, instance: UUID, page: ScriptGalleryPageIdentity
+  ) -> ProviderMissionIntent? {
+    guard let saved = commander.scriptState.instances[instance],
       let state = saved.savedProviderContract,
       !state.stage.terminal
-    else { return false }
+    else { return nil }
     let action: ProviderMissionAction?
     switch key {
     case "m": action = .requestManifest
@@ -158,14 +175,13 @@ extension Game {
     case "d": action = .deliver
     case "x": action = .returnRelay
     case "b": action = .back
-    default: return false
+    default: return nil
     }
-    guard let action else { return false }
-    gallery.providerIntent = .init(
+    guard let action else { return nil }
+    return .init(
       presentationEpoch: ecmControl.epoch, digest: saved.digest, instance: instance,
       request: .action(action), reviewToken: state.pending?.token,
-      page: .gallery(scriptGalleryPageIdentity))
-    return true
+      page: .gallery(page))
   }
 
   func acceptsProviderIntent(_ intent: ProviderMissionIntent) -> Bool {
