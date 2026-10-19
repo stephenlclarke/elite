@@ -147,3 +147,52 @@ extension AsteroidDebrisContactTests {
     }
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test(arguments: [Vector3(0, 0, 0), .init(13, -7, -30)])
+  func tangentSideFacesUseTheActualMaterialEntryFace(commonVelocity: Vector3) throws {
+    let small = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let long = try PreparedHull(mesh: contactBox(2, 0.01, 10))
+    let start = Vector3(0, 0, -20)
+    let a = contactMotion(
+      start, start + (Vector3(0, 0, 400) + commonVelocity) * 0.1,
+      radius: small.radius)
+    let b = contactMotion(.init(0, 0, 0), commonVelocity * 0.1, radius: long.radius)
+    // At the midpoint the intersecting side faces have X/Y normals and zero
+    // closing speed. Source edge midpoints entered through the actual Z face.
+    for reversed in [false, true] {
+      let source = reversed ? b : a
+      let target = reversed ? a : b
+      let result = HullSweepSafety.firstNativeContact(
+        source: source, hull: reversed ? long : small,
+        target: target, targetHull: reversed ? small : long)
+      guard case .contact(let contact) = result else {
+        Issue.record("Actual entry face was not resolved: \(String(describing: result))")
+        continue
+      }
+      let firstEntry = 9.5 / 400.0
+      #expect(contact.lowerTime <= firstEntry && contact.upperTime >= firstEntry)
+      #expect(contact.upperTime - contact.lowerTime <= 0.1 / 4096)
+      #expect(reversed ? contact.normal.z < -0.99 : contact.normal.z > 0.99)
+      let response = try #require(
+        AsteroidImpactPolicy.impulse(
+          sourceMass: 25_000, targetMass: 100_000,
+          sourceVelocity: source.initialVelocity, targetVelocity: target.initialVelocity,
+          normal: contact.normal))
+      #expect(response.damage > 0)
+    }
+  }
+
+  @Test func closedHullContainmentWithUnresolvedEntryDoesNotInventANormal() throws {
+    let small = try PreparedHull(mesh: contactBox(0.5, 0.5, 0.5))
+    let large = try PreparedHull(mesh: contactBox(2, 2, 2))
+    let a = contactMotion(.init(0, 0, 0), .init(4, 0, 0), radius: small.radius)
+    let b = contactMotion(.init(0, 0, 0), .init(0, 0, 0), radius: large.radius)
+    let result = HullSweepSafety.firstNativeContact(
+      source: a, hull: small, target: b, targetHull: large)
+    guard case .refused = result else {
+      Issue.record("Pre-existing containment must not invent an entry contact")
+      return
+    }
+  }
+}
