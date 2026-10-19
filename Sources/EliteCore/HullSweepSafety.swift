@@ -495,7 +495,24 @@ public enum HullSweepSafety {
                 if lower.isFinite, lower >= upper { break }
               }
             }
-            best = min(best, sweepTriangleDistance(triangle, obstacle.triangles[second]))
+            let candidate = obstacle.triangles[second]
+            if best.isFinite, triangle.hasResolvedArea, candidate.hasResolvedArea,
+              !triangle.conditioned, !candidate.conditioned,
+              !triangle.unresolvedSupport, !candidate.unresolvedSupport
+            {
+              // This pair is already paid. Only an outward certificate can replace
+              // its feature kernel; uncertain and conditioned pairs keep that kernel.
+              let pairBounds = triangle.bounds
+              let candidateBounds = candidate.bounds
+              let upper = SweepInterval(best).square.upper
+              if pairBounds.finite, candidateBounds.finite, upper.isFinite,
+                pairBounds.distanceSquared(to: candidateBounds) > upper
+              {
+                let lower = pairBounds.certifiedLowerSquared(to: candidateBounds)
+                if lower.isFinite, lower >= upper { continue }
+              }
+            }
+            best = min(best, sweepTriangleDistance(triangle, candidate))
             if best < 1e-9 { return 0 }
           }
         }
