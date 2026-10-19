@@ -151,10 +151,15 @@ extension Game {
   func scriptUnavailable(
     _ pack: ScriptPack, navigationBinding: ScriptNavigationTradeBinding? = nil
   ) -> String? {
-    if let reason = navigationTradeUnavailable(
-      pack, binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
+    // Unrelated missions do not use a navigation binding; decide that before resolving one.
+    if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
+      || pack.manifest.stateID == ScriptNavigationTradeContent.sourceID
     {
-      return reason
+      if let reason = navigationTradeUnavailable(
+        pack, binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
+      {
+        return reason
+      }
     }
     if !pack.missingCapabilities.isEmpty {
       return "Not available in this build: "
