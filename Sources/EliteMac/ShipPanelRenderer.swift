@@ -43,13 +43,16 @@ struct CompiledShipPanelPipeline: @unchecked Sendable {
 /// Startup presentation only. No animation frame or projected geometry is cached.
 @MainActor
 final class ShipPanelRenderer {
-  private let compiler: @Sendable () async -> CompiledShipPanelPipeline?
+  private let compiler: @Sendable () async throws -> CompiledShipPanelPipeline?
   private var preparation: Task<Void, Never>?
   private var gpu: ShipPanelGPU?
   private(set) var failed = false
+  private(set) var failureReason: String?
 
-  init(compiler: @escaping @Sendable () async -> CompiledShipPanelPipeline? = ShipPanelGPU.compile)
-  {
+  init(
+    compiler: @escaping @Sendable () async throws -> CompiledShipPanelPipeline? = ShipPanelGPU
+      .compile
+  ) {
     self.compiler = compiler
   }
 
@@ -63,12 +66,18 @@ final class ShipPanelRenderer {
     guard preparation == nil, !failed else { return }
     let compiler = compiler
     preparation = Task { [weak self] in
-      let compiled = await compiler()
-      guard let self else { return }
-      if let compiled, let renderer = ShipPanelGPU(compiled: compiled) {
-        gpu = renderer
-      } else {
-        failed = true
+      do {
+        let compiled = try await compiler()
+        guard let self else { return }
+        if let compiled, let renderer = ShipPanelGPU(compiled: compiled) {
+          gpu = renderer
+        } else {
+          failed = true
+          failureReason = "Metal device, eight-sample rendering or queue unavailable"
+        }
+      } catch {
+        self?.failed = true
+        self?.failureReason = String(describing: error)
       }
     }
   }
@@ -224,22 +233,20 @@ private final class ShipPanelGPU {
     samplePositions = positions.map { SIMD2($0.x, $0.y) }
   }
 
-  nonisolated static func compile() async -> CompiledShipPanelPipeline? {
-    await Task.detached(priority: .utility) {
+  nonisolated static func compile() async throws -> CompiledShipPanelPipeline? {
+    try await Task.detached(priority: .utility) { () throws -> CompiledShipPanelPipeline? in
       guard let device = MTLCreateSystemDefaultDevice(), device.supportsTextureSampleCount(8)
       else { return nil }
-      do {
-        let options = MTLCompileOptions()
-        options.fastMathEnabled = false
-        let library = try device.makeLibrary(source: shader, options: options)
-        let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.vertexFunction = library.makeFunction(name: "shipPanelVertex")
-        descriptor.fragmentFunction = library.makeFunction(name: "shipPanelFragment")
-        descriptor.rasterSampleCount = 8
-        descriptor.colorAttachments[0].pixelFormat = .rgba8Unorm
-        return .init(
-          device: device, pipeline: try device.makeRenderPipelineState(descriptor: descriptor))
-      } catch { return nil }
+      let options = MTLCompileOptions()
+      options.fastMathEnabled = false
+      let library = try device.makeLibrary(source: shader, options: options)
+      let descriptor = MTLRenderPipelineDescriptor()
+      descriptor.vertexFunction = library.makeFunction(name: "shipPanelVertex")
+      descriptor.fragmentFunction = library.makeFunction(name: "shipPanelFragment")
+      descriptor.rasterSampleCount = 8
+      descriptor.colorAttachments[0].pixelFormat = .rgba8Unorm
+      return .init(
+        device: device, pipeline: try device.makeRenderPipelineState(descriptor: descriptor))
     }.value
   }
 
@@ -334,14 +341,14 @@ private final class ShipPanelGPU {
     struct Panel { float2 a; float2 b; float2 c; uint colour; uint padding; };
     struct Vertex { float4 position [[position]]; uint panel [[flat]]; };
     struct Fragment { float4 colour [[color(0)]]; uint mask [[sample_mask]]; };
-    vertex Vertex shipPanelVertex(uint vertex [[vertex_id]], uint instance [[instance_id]],
+    vertex Vertex shipPanelVertex(uint vertexIndex [[vertex_id]], uint instance [[instance_id]],
       device const Panel *panels [[buffer(0)]], constant float4 &size [[buffer(1)]]) {
       const float2 corners[6] = {float2(0,0),float2(1,0),float2(0,1),
                                 float2(0,1),float2(1,0),float2(1,1)};
       Panel p = panels[instance];
       float2 lo = min(p.a,min(p.b,p.c))*size.zw - 0.125f*size.zw - 1.0f;
       float2 hi = max(p.a,max(p.b,p.c))*size.zw + 0.125f*size.zw + 1.0f;
-      float2 pixel = mix(lo,hi,corners[vertex]);
+      float2 pixel = mix(lo,hi,corners[vertexIndex]);
       Vertex result;
       result.position = float4(pixel.x*2.0f/size.x-1.0f,1.0f-pixel.y*2.0f/size.y,0,1);
       result.panel = instance;

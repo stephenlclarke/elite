@@ -87,7 +87,8 @@ struct ShipPanelRendererTests {
     async throws
   {
     let renderer = ShipPanelRenderer()
-    try #require(await renderer.prepareGPU() != nil)
+    let device = await renderer.prepareGPU()
+    try #require(device != nil, Comment(rawValue: renderer.failureReason ?? "Metal unavailable"))
     let frame = composition()
     let edges = frame.shipPanels.flatMap { panel in
       panel.vertices.indices.map {
@@ -176,6 +177,15 @@ struct ShipPanelRendererTests {
       #expect(result.cpuPanels == 0 && result.metalPanels == 0)
       #expect(try bytes(cpu) == bytes(candidate))
     }
+    let compilationError = NSError(domain: "ShipPanelRendererTests", code: 1)
+    let rejected = ShipPanelRenderer(compiler: { throw compilationError })
+    #expect(await rejected.prepareGPU() == nil && rejected.failed)
+    #expect(rejected.failureReason?.contains("ShipPanelRendererTests") == true)
+    let errorFallback = try context(64)
+    let errorExecution = drawFrame(
+      frame, context: errorFallback, rect: rect, panelRenderer: rejected)
+    #expect(errorExecution.metalPanels == 0 && errorExecution.cpuPanels == 6)
+    #expect(try bytes(errorFallback) == bytes(reference))
     var budget = ShipPanelBudget(runs: 0, pixels: 0)
     let untouched = try context(64)
     let before = try bytes(untouched)
@@ -187,7 +197,9 @@ struct ShipPanelRendererTests {
     async throws
   {
     let view = GameView(frame: CGRect(x: 0, y: 0, width: 768, height: 768))
-    try #require(await view.shipPanelRenderer.prepareGPU() != nil)
+    let device = await view.shipPanelRenderer.prepareGPU()
+    try #require(
+      device != nil, Comment(rawValue: view.shipPanelRenderer.failureReason ?? "Metal unavailable"))
     #expect(view.isFlipped)
     #expect(L337Branding.shipID == "SH123" && L337Branding.titleMesh.faces.count == 99648)
     #expect(L337Branding.titleMesh.vertices.count == 49834)
