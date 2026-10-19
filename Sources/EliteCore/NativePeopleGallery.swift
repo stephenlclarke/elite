@@ -49,7 +49,6 @@ extension Game {
     trial.selectedSystem = system.id
     trial.market = MarketItem.generate(economy: trial.currentSystem.economy, fluctuation: 0)
     trial.commander.credits = 100_000
-    trial.commander.cargo[0] = 15
     try trial.commander.prepareEquipment(legacy: false)
     for (name, slot) in [
       (Equipment.empPirateBlaster, ComponentFittingSlot.utility(.empPirateBlaster)),
@@ -62,6 +61,11 @@ extension Game {
         name, at: slot, provenance: .grant("Original native people Gallery trial"))
     }
     trial.commander.mirrorFittedEquipment()
+    let capacity = trial.commander.standardCargoCapacity
+    guard capacity >= 5 else {
+      throw MissionPackError("The native crew trial needs five tonnes of free hold.")
+    }
+    trial.commander.cargo[0] = capacity - 5
     trial.ensureScriptCalendar(origin: .newCommander)
     trial.seedScriptTrial(seed)
     trial.launch()
