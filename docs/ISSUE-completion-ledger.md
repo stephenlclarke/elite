@@ -73,3 +73,7 @@ Fresh minimal crash source now has clean independent review, but its actual defa
 ## Actual764 and queued F01 owner handoff
 
 Actual764 still stack-crashes during native salvage persistence after five acceptance-case passes. Keep the four unfinished method terminals UNKNOWN and all crash source unintegrated; causal comparison is bounded to existing artifacts before another proposal. Its actual terminal closure releases queued F01 work without implying crash acceptance.
+
+## Integrated F01 source and optimized renderer gate
+
+F01 source now meets its focused owner unit/review gates and is integrated, but the debug+coverage startup-rendering unit exposes a concrete frame-cost risk. Distinguish source delivery from optimized/native performance and a usable updated app; retain open native-save crash and actual private742 limits.

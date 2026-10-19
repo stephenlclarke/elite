@@ -92,3 +92,7 @@ Record a2335379 minimal Director freeze/source proof/clean independent review, s
 ## Actual764 and queued F01 owner handoff
 
 Attach verified764 partial-failure and full process-closure receipt, retain exact acceptance five-case PASS and record Root-only bounded760-vs764 static comparison. Release existing corrected F01 owner765/766 exact10-case grant after that actual closure; source review is clean but F01 execution result pending. Changed Markdown checks only; no G1 compiler/native/profiler/media job or integration claim.
+
+## Integrated F01 source and optimized renderer gate
+
+Record startup source integration720c199d with exact fifteen-file hash match, clean review and actual765/766 ten-case PASS/closure evidence. F01 remains in development pending bounded optimized actual title/credits renderer/native visual verification and usable app delivery. Root authorizes that narrow existing-renderer checkpoint, with exact plan to be reported before activation; no broad profiler/framework/media/geometry change. Changed docs checked; no integration-time runtime job.
