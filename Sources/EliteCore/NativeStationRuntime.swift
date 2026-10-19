@@ -538,6 +538,53 @@ extension Game {
     }
   }
 
+  /// Reuse native source, aperture and corridor checks for a proposed approach.
+  /// The relative frame at the door is geometry only and is never installed or minted as entry.
+  func nativeStationAutoEntryCourseIsClear(
+    _ station: SpaceBody, advance: Vector3, terminalSpeed: Double
+  ) -> Bool {
+    guard commander.nativeStationStateValid, let world = commander.nativeStations,
+      let physical = station.physical, advance.finite,
+      (physical.velocity - nativeStationVelocity(station)).length < 1e-7,
+      bodies.filter({ $0.id == station.id }).count == 1,
+      bodies.first(where: { $0.id == station.id }) == station
+    else { return false }
+    let flight = commander.flightSimulation
+    let player = commander.playerMesh
+    if let identity = station.nativeStationIdentity {
+      guard nativeStationBodyIsCurrent(station),
+        world.bodyRigidPoseIsConsistent(station, flight: flight),
+        let source = NativeStationSource.binding(for: identity),
+        let position = world.currentPosition(for: .rrs(identity), at: flight.physicalTime),
+        let orientation = world.currentOrientation(for: identity, at: flight.physicalTime),
+        source.geometry.docking.fits(player),
+        nativeStationHullFits(
+          player, ship: flight.pose, station: position, orientation: orientation,
+          port: source.geometry.docking, margin: 0)
+      else { return false }
+    } else {
+      guard station.id == 0, physical.identity == flight.anchors?.station.identity,
+        let anchor = currentNativeMainStationAnchor(at: flight.physicalTime),
+        (flight.pose.systemPoint(station.position) - anchor.position).length < 1e-5,
+        [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy({
+          (flight.pose.orientation.apply(station.orientation.apply($0))
+            - anchor.orientation.apply($0)).length < 1e-5
+        }),
+        let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
+        let resource = commander.scriptState.stationResources[identity.key],
+        resource.identity == identity.resource, !resource.destroyed, resource.energy > 0
+      else { return false }
+      var atDoor = station
+      atDoor.position = atDoor.position - advance
+      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed) else { return false }
+    }
+    let radius = nativeStationRadius(player)
+    return radius.isFinite
+      && nativeStationApproachClear(
+        from: flight.pose.position, to: flight.pose.systemPoint(advance),
+        excluding: station.id, radius: radius)
+  }
+
   private func nativeStationApproachClear(
     from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double
   ) -> Bool {

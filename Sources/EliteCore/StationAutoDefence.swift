@@ -8,6 +8,7 @@ struct StationAutoGuidance: Sendable {
   var interruptionAllowed = false
   var clearanceRadius = 0.0
   var handoverAllowed = false
+  var movingEntryAllowed = false
   var joinedIncoming = false
   var transitGoal: Vector3? = nil
   var protectFrontShield = false
@@ -161,7 +162,7 @@ extension Game {
 
   /// Current observations only; scan all sources even after finding an authentic attacker.
   private func stationAutoHazards(_ assessment: StationAutoAssessment) -> (
-    hazard: StationAutoHazard, handoverKnown: Bool, joinedIncoming: Bool
+    hazard: StationAutoHazard, handoverKnown: Bool, joinedIncoming: Bool, courseKnown: Bool
   ) {
     let context = assessment.context
     var uncertain = false
@@ -243,7 +244,10 @@ extension Game {
       active ? .active : (uncertain ? .unknown : (closing ? .closing : .clear))
     // An authenticated beam without real station cover is still active pressure.
     // Knowing its source does not make stationary docking alignment safe.
-    return (hazard, !active && !uncertain && assessment.incoming.isEmpty, joinedIncoming)
+    return (
+      hazard, !active && !uncertain && assessment.incoming.isEmpty, joinedIncoming,
+      !uncertain && assessment.incoming.isEmpty
+    )
   }
 
   mutating func stationAutoGuidance(target station: SpaceBody) -> StationAutoGuidance? {
@@ -269,6 +273,9 @@ extension Game {
     {
       stationAutoDefence = .init(station: stationActor, player: context.player.identity)
     }
+    let movingEntryAllowed =
+      hazard == .active && observations.courseKnown
+      && stationAutoMovingEntryAllowed(station)
     let nearby = assessment.threats.filter { stationAutoImmediate($0, context: context) }
     let response = militaryRetaliationEnabled ? retaliation.pendingResponse(time: time) : nil
     let confirmed = assessment.threats.first { body in
@@ -313,7 +320,7 @@ extension Game {
         aim: nil, lateralVelocity: .init(0, 0, 0), hazard: hazard,
         interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
         handoverAllowed: observations.handoverKnown && interruptionAllowed,
-        joinedIncoming: observations.joinedIncoming)
+        movingEntryAllowed: movingEntryAllowed, joinedIncoming: observations.joinedIncoming)
     }
     let goal = station.entrancePosition + station.entranceNormal * station.stationApproachDistance
     let route = goal.unit
@@ -360,8 +367,45 @@ extension Game {
       aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure),
       hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
       handoverAllowed: observations.handoverKnown && interruptionAllowed,
+      movingEntryAllowed: movingEntryAllowed,
       joinedIncoming: observations.joinedIncoming, transitGoal: transitGoal,
       protectFrontShield: protectFrontShield)
+  }
+
+  /// A current motion proposal, never native docking or attack authority.
+  private func stationAutoMovingEntryAllowed(_ station: SpaceBody) -> Bool {
+    guard pendingNativeStationDock == nil, !station.containsPlayer,
+      station.entranceNormal.finite, station.entranceUp.finite,
+      workLimits.acceleration.isFinite, workLimits.acceleration > 0,
+      workLimits.speed.isFinite, workLimits.speed > 0
+    else { return false }
+    let normal = station.entranceNormal
+    let door = station.entrancePosition
+    let depth = -door.dot(normal)
+    let lateral = door - normal * door.dot(normal)
+    let facing = hypot(atan2(-normal.y, hypot(normal.x, normal.z)), atan2(-normal.x, -normal.z))
+    let phase = abs(atan2(station.entranceUp.x, station.entranceUp.y))
+    let rate = abs(autoPilot.rollRate + station.rotationRate * station.orientation.z.z)
+    let relative = commander.flightSimulation.pose.shipVector(
+      flightWorldVelocity - nativeStationVelocity(station))
+    let outward = relative.dot(normal)
+    let lateralVelocity = relative - normal * outward
+    let speed = relative.length
+    guard depth.isFinite, depth > 0,
+      depth <= station.stationApproachDistance + AutoTargetControl.stationStagingTolerance,
+      facing < 0.02, phase < 0.03, rate < 0.02, lateral.length < 15,
+      relative.finite, speed.isFinite, outward <= 0, lateralVelocity.length < 1,
+      speed <= workLimits.speed + max(speed.ulp, workLimits.speed.ulp) * 16
+    else { return false }
+    // The existing final controller targets 48 before the actual <144 native crossing gate.
+    // Zero inward speed is allowed only on this already aligned, immediately usable course.
+    let terminal = min(48, workLimits.speed)
+    let braking =
+      speed > terminal
+      ? (speed * speed - terminal * terminal) / (2 * workLimits.acceleration) + speed * 0.1 : 0
+    guard braking.isFinite, braking <= depth else { return false }
+    let advance = normal * -(depth - min(0.5, depth * 0.5))
+    return nativeStationAutoEntryCourseIsClear(station, advance: advance, terminalSpeed: terminal)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {
