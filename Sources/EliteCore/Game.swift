@@ -1259,6 +1259,7 @@ public struct Game: Sendable {
     restoreBlackjackEncounter()
     applyScriptStationResources()
     try registerOriginalNativeMainStation()
+    if stationReceipt == nil { try offsetMovingMainStationDeparture() }
     try restoreScriptActors()
     if let stationReceipt { try launchFromNativeStation(stationReceipt) }
     commander.nativeStations?.currentMainDock = nil
@@ -1814,7 +1815,7 @@ public struct Game: Sendable {
     }
   }
   private mutating func moveBodies(dt: Double) {
-    let asteroidContactFrame = beginAsteroidContactStep()
+    let asteroidContactFrame = beginAsteroidContactStep(delta: dt)
     let before = commander.flightSimulation.pose
     if !moveWorkFrame(delta: dt) {
       autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
@@ -1858,8 +1859,8 @@ public struct Game: Sendable {
     if let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
       station.containsPlayer
     {
-      if station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)) {
-        dockAtOriginalNativeMainStation(station, from: before)
+      if station.canEnter(roll: roll, speed: nativeStationRelativeEntrySpeed(station)) {
+        dockAtOriginalNativeMainStation(station, from: before, delta: dt)
         return
       }
       stopAtStationImpact(at: before)

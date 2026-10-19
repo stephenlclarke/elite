@@ -44,6 +44,9 @@ extension Commander {
     let resources = scriptState.stationResources
     let currentSystem = SystemIdentity(galaxy: galaxy, system: system)
     guard world.valid, equipmentOwnerID == world.ledger.world,
+      world.stationInertia.allSatisfy({ $0.physicalTime <= flightSimulation.physicalTime }),
+      !world.stationInertia.contains(where: { $0.station.system == currentSystem })
+        || flightSimulation.anchors?.station.position == Vector3(0, 0, 0),
       let calendar = scriptState.calendarLedger, calendar.valid
     else { return false }
     guard
@@ -138,24 +141,29 @@ extension Game {
       guard let source = NativeStationSource.binding(for: record.identity),
         let saved = world.pose(for: record.identity),
         source.geometry.position(in: anchors) == saved.position,
-        saved.orientation(at: flightBefore.physicalTime) != nil
+        saved.orientation(at: flightBefore.physicalTime) != nil,
+        let position = world.currentPosition(
+          for: .rrs(record.identity), at: flightBefore.physicalTime)
       else { throw NativeStationRuntimeError.invalidSource }
       let radius = nativeStationRadius(source.geometry.mesh)
       for celestial in [anchors.planet, anchors.sun] {
-        guard (saved.position - celestial.position).length > radius + celestial.radius + 8 else {
+        guard (position - celestial.position).length > radius + celestial.radius + 8 else {
           throw NativeStationRuntimeError.unsafePlacement
         }
       }
       for body in bodies where body.energy > 0 {
         let point = flightBefore.pose.systemPoint(body.position)
         guard
-          (saved.position - point).length > radius + nativeStationRadius(gameplayMesh(for: body))
+          (position - point).length > radius + nativeStationRadius(gameplayMesh(for: body))
             + 8
         else { throw NativeStationRuntimeError.unsafePlacement }
       }
       for (_, other, otherSource) in selected {
         guard
-          (saved.position - other.position).length > radius
+          (position
+            - (world.currentPosition(for: .rrs(other.station), at: flightBefore.physicalTime)
+              ?? other.position))
+            .length > radius
             + nativeStationRadius(otherSource.geometry.mesh) + 8
         else { throw NativeStationRuntimeError.unsafePlacement }
       }
@@ -168,7 +176,11 @@ extension Game {
       let (record, saved, source) = entry
       guard let actor = flight.allocateActor() else { throw NativeStationRuntimeError.capacity }
       let id = nextBodyID + member
-      var body = SpaceBody(id: id, hull: .station, position: flight.pose.shipPoint(saved.position))
+      guard
+        let currentPosition = world.currentPosition(
+          for: .rrs(record.identity), at: flight.physicalTime)
+      else { throw NativeStationRuntimeError.invalidState }
+      var body = SpaceBody(id: id, hull: .station, position: flight.pose.shipPoint(currentPosition))
       body.nativeStationIdentity = record.identity
       body.orientation = saved.orientation.relative(to: flight.pose.orientation)
       body.rotation = (flight.physicalTime * source.rotationRate).truncatingRemainder(
@@ -182,6 +194,8 @@ extension Game {
         spawnIdentity: .init(
           system: systemIdentity, visit: flight.visit, sequence: sequence,
           member: UInt16(member), producer: .mission))
+      body.physical?.velocity =
+        world.inertia(for: .rrs(record.identity))?.velocity ?? .init(0, 0, 0)
       try world.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: id))
       admitted.append(body)
     }
@@ -350,12 +364,15 @@ extension Game {
 
   /// Register only an actually loaded original body, after existing main-resource restoration.
   mutating func registerOriginalNativeMainStation() throws {
+    try projectRegisteredMainStationForScene()
     guard var world = commander.nativeStations, let anchors = commander.flightSimulation.anchors,
+      let currentAnchor = currentNativeMainStationAnchor(
+        at: commander.flightSimulation.physicalTime),
       let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }), station.energy > 0,
       station.physical?.identity == anchors.station.identity,
       bodies.filter({ $0.physical?.identity == anchors.station.identity }).count == 1,
       anchors.station.identity.entity == 1, anchors.system == systemIdentity,
-      (commander.flightSimulation.pose.systemPoint(station.position) - anchors.station.position)
+      (commander.flightSimulation.pose.systemPoint(station.position) - currentAnchor.position)
         .length < 1e-5
     else { return }
     let key = contractStation.key
@@ -397,7 +414,9 @@ extension Game {
   }
 
   /// The legacy Boolean dock API issues no arrival. Only actual native doorway entry calls this.
-  mutating func dockAtOriginalNativeMainStation(_ station: SpaceBody, from before: ShipPose) {
+  mutating func dockAtOriginalNativeMainStation(
+    _ station: SpaceBody, from before: ShipPose, delta: Double? = nil
+  ) {
     let system = systemIdentity
     guard let world = commander.nativeStations else {
       dock()
@@ -406,12 +425,29 @@ extension Game {
     let pose = commander.flightSimulation.pose
     let normal = pose.orientation.apply(station.entranceNormal)
     let entrance = pose.systemPoint(station.entrancePosition)
+    let oldEntrance: Vector3
+    if let id = world.mainStations.first(where: { $0.system == system }),
+      world.inertia(for: .main(id)) != nil
+    {
+      guard let delta, delta.isFinite, delta > 0, delta <= 0.1,
+        let previous = world.currentPosition(
+          for: .main(id), at: max(0, commander.flightSimulation.physicalTime - delta)),
+        let current = world.currentPosition(
+          for: .main(id), at: commander.flightSimulation.physicalTime)
+      else {
+        dock()
+        return
+      }
+      oldEntrance = entrance + previous - current
+    } else {
+      oldEntrance = entrance
+    }
     guard let actor = station.physical?.identity,
       bodies.first(where: { $0.id == 0 }) == station,
       bodies.filter({ $0.id == 0 }).count == 1,
       station.containsPlayer,
-      station.canEnter(roll: roll, speed: max(speed * 18, autoPilot.velocity.length)),
-      (before.position - entrance).dot(normal) >= 0,
+      station.canEnter(roll: roll, speed: nativeStationRelativeEntrySpeed(station)),
+      (before.position - oldEntrance).dot(normal) >= 0,
       (pose.position - entrance).dot(normal) < 0,
       let identity = world.mainStations.first(where: { $0.system == system }),
       actor == commander.flightSimulation.anchors?.station.identity,
@@ -449,15 +485,18 @@ extension Game {
         let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
         let orientation = saved.orientation(at: flight.physicalTime),
-        let oldOrientation = saved.orientation(at: max(0, flight.physicalTime - delta))
+        let oldOrientation = saved.orientation(at: max(0, flight.physicalTime - delta)),
+        let oldPosition = world.currentPosition(
+          for: .rrs(identity), at: max(0, flight.physicalTime - delta)),
+        let currentPosition = world.currentPosition(for: .rrs(identity), at: flight.physicalTime)
       else { continue }
       let port = source.geometry.docking
-      let start = oldOrientation.inverse(before.position - saved.position) - port.center
-      let end = orientation.inverse(flight.pose.position - saved.position) - port.center
+      let start = oldOrientation.inverse(before.position - oldPosition) - port.center
+      let end = orientation.inverse(flight.pose.position - currentPosition) - port.center
       let oldDepth = start.dot(port.outward)
       let depth = end.dot(port.outward)
       guard oldDepth > 0, depth <= 0, depth > -port.tunnelDepth,
-        max(speed * 18, autoPilot.velocity.length) < 144,
+        nativeStationRelativeEntrySpeed(body) < 144,
         flight.pose.orientation.z.dot(orientation.apply(port.outward)) < -0.995,
         flight.pose.orientation.y.dot(orientation.apply(port.up)) > 0.995,
         abs(roll + source.rotationRate * body.orientation.z.z) < 0.1
@@ -465,18 +504,22 @@ extension Game {
       let player = commander.playerMesh
       let radius = nativeStationRadius(player)
       let angularSweep = (abs(pitch) + abs(roll) + abs(yaw) + source.rotationRate) * delta
-      let margin = (radius + max(start.length, end.length)) * angularSweep
+      let margin =
+        (radius + max(start.length, end.length)) * angularSweep
+        + world.stationSweepMargin(
+          .rrs(identity), from: max(0, flight.physicalTime - delta),
+          to: flight.physicalTime)
       guard margin.isFinite, port.fits(player, margin: margin),
         nativeStationHullFits(
-          player, ship: before, station: saved.position, orientation: oldOrientation, port: port,
+          player, ship: before, station: oldPosition, orientation: oldOrientation, port: port,
           margin: margin),
         nativeStationHullFits(
-          player, ship: flight.pose, station: saved.position, orientation: orientation, port: port,
+          player, ship: flight.pose, station: currentPosition, orientation: orientation, port: port,
           margin: margin),
         nativeStationHullSweepClear(
           player, from: before, to: flight.pose, saved: saved,
           fromOrientation: oldOrientation, toOrientation: orientation, margin: margin,
-          mesh: source.geometry.mesh),
+          mesh: source.geometry.mesh, fromPosition: oldPosition, toPosition: currentPosition),
         nativeStationApproachClear(
           from: before.position, to: flight.pose.position,
           excluding: body.id, radius: radius + margin)
@@ -514,21 +557,25 @@ extension Game {
   /// expands by the angular-motion bound. Triangle clipping detects face/edge contacts too.
   func nativeStationHullSweepClear(
     _ player: Mesh, from start: ShipPose, to end: ShipPose, saved: NativeStationSavedPose,
-    fromOrientation: Basis3, toOrientation: Basis3, margin: Double, mesh: Mesh
+    fromOrientation: Basis3, toOrientation: Basis3, margin: Double, mesh: Mesh,
+    fromPosition: Vector3? = nil, toPosition: Vector3? = nil
   ) -> Bool {
     nativeStructureHullSweepClear(
-      player, from: start, to: end, position: saved.position,
+      player, from: start, to: end,
+      position: fromPosition ?? saved.position,
+      endPosition: toPosition ?? fromPosition ?? saved.position,
       fromOrientation: fromOrientation, toOrientation: toOrientation, margin: margin, mesh: mesh)
   }
 
   private func nativeStructureHullSweepClear(
     _ player: Mesh, from start: ShipPose, to end: ShipPose, position: Vector3,
+    endPosition: Vector3? = nil,
     fromOrientation: Basis3, toOrientation: Basis3, margin: Double, mesh: Mesh
   ) -> Bool {
     let points = player.vertices.flatMap { vertex in
       [
         fromOrientation.inverse(start.systemPoint(vertex) - position),
-        toOrientation.inverse(end.systemPoint(vertex) - position),
+        toOrientation.inverse(end.systemPoint(vertex) - (endPosition ?? position)),
       ]
     }
     guard !points.isEmpty, points.allSatisfy({ $0.finite }), margin.isFinite, margin >= 0 else {
@@ -595,22 +642,33 @@ extension Game {
       guard let identity = body.nativeStationIdentity, let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
         let end = saved.orientation(at: flight.physicalTime),
-        let start = saved.orientation(at: max(0, flight.physicalTime - delta))
+        let start = saved.orientation(at: max(0, flight.physicalTime - delta)),
+        let oldPosition = world.currentPosition(
+          for: .rrs(identity), at: max(0, flight.physicalTime - delta)),
+        let currentPosition = world.currentPosition(for: .rrs(identity), at: flight.physicalTime)
       else { continue }
-      let displacement = (flight.pose.position - before.position).length
+      let translationMargin = world.stationSweepMargin(
+        .rrs(identity), from: max(0, flight.physicalTime - delta), to: flight.physicalTime)
+      let displacement =
+        (flight.pose.position - before.position).length
+        + (currentPosition - oldPosition).length + translationMargin
       let radius = nativeStationRadius(source.geometry.mesh)
-      guard (saved.position - flight.pose.position).length <= radius + playerRadius + displacement
+      guard (currentPosition - flight.pose.position).length <= radius + playerRadius + displacement
       else { continue }
       let angle = (abs(pitch) + abs(roll) + abs(yaw) + source.rotationRate) * delta
-      let margin = (radius + playerRadius + displacement) * angle
+      let margin =
+        (radius + playerRadius + displacement) * angle
+        + translationMargin
       if !nativeStationHullSweepClear(
         player, from: before, to: flight.pose, saved: saved,
-        fromOrientation: start, toOrientation: end, margin: margin, mesh: source.geometry.mesh)
+        fromOrientation: start, toOrientation: end, margin: margin, mesh: source.geometry.mesh,
+        fromPosition: oldPosition, toPosition: currentPosition)
       {
         guard
           let retained = nativeStationImpactPose(
             before: before, body: body, saved: saved, from: start, to: end,
-            delta: delta, player: player, source: source)
+            delta: delta, player: player, source: source,
+            oldPosition: oldPosition, currentPosition: currentPosition)
         else {
           stopAtStationImpact(at: before)
           applyDamage(delta * 100, front: true)
@@ -632,31 +690,35 @@ extension Game {
   private mutating func nativeStationImpactPose(
     before: ShipPose, body: SpaceBody, saved: NativeStationSavedPose,
     from start: Basis3, to end: Basis3, delta: Double, player: Mesh,
-    source: NativeStationSourceBinding
+    source: NativeStationSourceBinding, oldPosition: Vector3, currentPosition: Vector3
   ) -> ShipPose? {
     let mesh = source.geometry.mesh
     if nativeStationHullSweepClear(
       player, from: before, to: before, saved: saved,
-      fromOrientation: end, toOrientation: end, margin: 0, mesh: mesh)
+      fromOrientation: end, toOrientation: end, margin: 0, mesh: mesh,
+      fromPosition: currentPosition, toPosition: currentPosition)
     {
       return before
     }
     guard
       nativeStationHullSweepClear(
         player, from: before, to: before, saved: saved,
-        fromOrientation: start, toOrientation: start, margin: 0, mesh: mesh)
+        fromOrientation: start, toOrientation: start, margin: 0, mesh: mesh,
+        fromPosition: oldPosition, toPosition: oldPosition)
     else { return nil }
     let rotation = end.composed(with: start.transposed)
     let retained = ShipPose(
-      position: saved.position + end.apply(start.inverse(before.position - saved.position)),
+      position: currentPosition + end.apply(start.inverse(before.position - oldPosition)),
       orientation: rotation.composed(with: before.orientation))
     let angle = source.rotationRate * delta
     let displacement = (retained.position - before.position).length
     guard retained.position.finite, retained.orientation.validRotation,
-      displacement <= (before.position - saved.position).length * angle + 1e-7,
+      displacement <= (before.position - oldPosition).length * angle
+        + (currentPosition - oldPosition).length + 1e-7,
       nativeStationHullSweepClear(
         player, from: retained, to: retained, saved: saved,
-        fromOrientation: end, toOrientation: end, margin: 0, mesh: mesh),
+        fromOrientation: end, toOrientation: end, margin: 0, mesh: mesh,
+        fromPosition: currentPosition, toPosition: currentPosition),
       nativeStationPushClearsScene(
         player, from: before, to: retained, excluding: body.id, angle: angle)
     else { return nil }
@@ -782,7 +844,12 @@ extension Game {
       let orientation = saved.orientation(at: commander.flightSimulation.physicalTime),
       let exit = source.geometry.exit(for: commander.playerMesh)
     else { throw NativeStationRuntimeError.unsafeExit }
-    let center = saved.position + orientation.apply(exit.center)
+    guard
+      let stationPosition = world.currentPosition(
+        for: .rrs(receipt.station),
+        at: commander.flightSimulation.physicalTime)
+    else { throw NativeStationRuntimeError.unsafeExit }
+    let center = stationPosition + orientation.apply(exit.center)
     let direction = orientation.apply(exit.direction)
     let end = center + direction * exit.clearance
     let radius = nativeStationRadius(commander.playerMesh)
@@ -822,6 +889,13 @@ extension Game {
   mutating func launchFromNativeStation(_ receipt: NativeStationDockReceipt) throws {
     let old = commander.flightSimulation.pose
     let pose = try prepareNativeStationExit(receipt)
+    let velocity =
+      commander.nativeStations?.inertia(for: .rrs(receipt.station))?.velocity
+      ?? .init(0, 0, 0)
+    let combined = pose.orientation.apply(.init(0, 0, speed * 18)) + velocity
+    guard combined.finite, combined.length <= AsteroidImpactPolicy.maximumSpeed else {
+      throw NativeStationRuntimeError.unsafeExit
+    }
     for index in bodies.indices {
       let position = old.systemPoint(bodies[index].position)
       let orientation = bodies[index].orientation.transformed(by: old.orientation)
@@ -832,6 +906,10 @@ extension Game {
       celestials[index].position = pose.shipPoint(old.systemPoint(celestials[index].position))
     }
     commander.flightSimulation.pose = pose
+    if velocity != .init(0, 0, 0) {
+      autoPilot.setApproachVelocity(pose.shipVector(velocity))
+      manualResidualFlight = true
+    }
     commander.nativeStations?.ledger.depart()
     commander.nativeStations?.currentMainDock = nil
     invalidateNativeStationAuthority()
@@ -846,10 +924,13 @@ extension NativeStationWorld {
     guard let identity = body.nativeStationIdentity, let saved = pose(for: identity),
       let source = NativeStationSource.binding(for: identity), body.hull == .station,
       let physical = body.physical, physical.population == .mission, physical.npc == nil,
-      physical.velocity == Vector3(0, 0, 0), physical.canonicalSpin != true,
+      (physical.velocity - (inertia(for: .rrs(identity))?.velocity ?? .init(0, 0, 0))).length
+        < 1e-7,
+      physical.canonicalSpin != true,
       physical.angularVelocity == Vector3(0, 0, 0),
       body.rotationRate == source.rotationRate,
-      (flight.pose.systemPoint(body.position) - saved.position).length < 1e-5,
+      let currentPosition = currentPosition(for: .rrs(identity), at: flight.physicalTime),
+      (flight.pose.systemPoint(body.position) - currentPosition).length < 1e-5,
       let orientation = saved.orientation(at: flight.physicalTime)
     else { return false }
     return [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy {
@@ -864,6 +945,16 @@ extension NativeStationWorld {
     guard valid, flight.pose.position.finite, flight.pose.position.length.isFinite,
       flight.pose.orientation.validRotation
     else { return false }
+    if let id = mainStations.first(where: { $0.system == system }),
+      let motion = inertia(for: .main(id)), let body = bodies.first(where: { $0.id == 0 })
+    {
+      guard let source = flight.anchors?.station, source.position == .init(0, 0, 0),
+        body.hull == .station, body.physical?.identity == source.identity,
+        let current = currentPosition(for: .main(id), at: flight.physicalTime),
+        (flight.pose.systemPoint(body.position) - current).length < 1e-5,
+        let velocity = body.physical?.velocity, (velocity - motion.velocity).length < 1e-7
+      else { return false }
+    }
     if let receipt = ledger.currentDock {
       guard docked, !mainStation, receipt.station.system == system else { return false }
     }
