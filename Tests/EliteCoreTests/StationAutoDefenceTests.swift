@@ -789,10 +789,10 @@ private func stationAutoPressureFailureFacts(_ game: borrowing Game, attacker id
 @inline(never)
 private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attacker id: Int) throws {
   let body = try #require(game.bodies.first(where: { $0.id == id }))
-  let contact = try #require(
-    game.nearestMissionCollision(
-      from: body.position, direction: body.orientation.z.unit, range: 1500, radius: 0,
-      excludingBodyIDs: [id], includePlayer: true))
+  let measuredContact = try game.nearestMissionCollision(
+    from: body.position, direction: body.orientation.z.unit, range: 1500, radius: 0,
+    excludingBodyIDs: [id], includePlayer: true)
+  let contact = try #require(measuredContact)
   try #require(
     contact.hit.target == .player,
     Comment(
