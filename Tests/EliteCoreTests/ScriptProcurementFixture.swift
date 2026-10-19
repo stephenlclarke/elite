@@ -407,7 +407,11 @@ struct ScriptProcurementFixture {
         budget.retreat = nil
         break
       }
-      try #require(action != .refuse, "Preflight refused at total step \(budget.steps).")
+      try #require(
+        action != .refuse,
+        "Preflight refused at total step \(budget.steps). phase=\(phase)"
+          + " valid=\(facts.valid) live=\(facts.live) docked=\(facts.docked)"
+          + " paused=\(facts.paused) automatic=\(facts.automaticEngaged)")
       // A re-engaging pilot may use the existing native fallback before heat starts a new turn.
       let wasReengaging = budget.updateRetreat(facts)
       if budget.retreat == nil || wasReengaging {
