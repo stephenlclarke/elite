@@ -176,7 +176,7 @@ struct ScriptCourierCanonicalReachTests {
     #expect(game.commander == before)
   }
 
-  @Test func v1GoldenBoardAndAcceptedPackageSurviveCanonicalLoadRefitAndReload() async throws {
+  @Test func v1BBCWorldGoldenCannotRebindCurrentOriginalWorlds() throws {
     let fixture = try CourierFixture()
     defer { fixture.clean() }
     struct Golden: Decodable {
@@ -195,7 +195,7 @@ struct ScriptCourierCanonicalReachTests {
     let key = golden.board.cacheKey
     let id = golden.instance.id
     let job = try #require(golden.instance.contract)
-    try #require(golden.board.valid && job.valid)
+    try #require(!golden.board.valid && !job.valid)
     #expect(golden.board.seed == 5_318_087_094_851_105_804)
     #expect(
       golden.board.courierGeneration?.draws
@@ -207,38 +207,25 @@ struct ScriptCourierCanonicalReachTests {
     #expect(golden.instance.receipts == ["issue-consignment"])
     #expect(golden.instance.payloads == ["courier-consignment": 1])
     #expect(golden.instance.courier?.terminal == nil && golden.instance.completionReceipt == nil)
-    let prepared = try canonicalCourierGame(fixture, axis: .jumpReach)
-    var game = prepared.0
-    game.commander.system = golden.board.station.system
+    // The approved original-world migration does not reinterpret saved BBC coordinates or routes.
+    // Retain the historical bytes and all old identity/custody assertions above as provenance.
+    var game = fixture.game(system: golden.board.station.system)
     game.commander.contracts.boards[key] = golden.board
     game.commander.scriptState.instances[id] = golden.instance
     game.commander.scriptState.calendarSeconds = golden.calendarSeconds
     game.commander.scriptState.missionCalendar?.seconds = golden.calendarSeconds
     game.commander.scriptState.nextEvent = golden.nextEvent
-    try #require(game.commander.valid)
-    #expect(game.commander.jumpCap > golden.board.courierGeneration!.reach.jumpCap)
-    try GameRuntime.writeCommander(&game, to: fixture.save)
-    let runtime = GameRuntime(game: game, saveURL: fixture.save)
-    try await runtime.load(from: fixture.save)
-    let admitted = await runtime.snapshot()
-    #expect(admitted.commander.valid && admitted.commander.contracts.boards[key] == golden.board)
-    #expect(admitted.commander.scriptState.instances[id] == golden.instance)
-    game = admitted
-    let stock = try #require(game.commander.equipmentInventory?.items.first { $0.id == prepared.1 })
-    try game.fitEquipment(
-      stock, at: .navigation, expectedRevision: game.commander.equipmentInventory!.revision)
-    #expect(game.commander.fittedEquipment(at: .navigation)?.id == stock.id)
-    #expect(game.commander.contracts.boards[key] == golden.board)
-    #expect(game.commander.scriptState.instances[id] == golden.instance)
-    try GameRuntime.writeCommander(&game, to: fixture.save)
-    let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
-    #expect(saved.valid && saved.contracts.boards[key] == golden.board)
-    #expect(saved.scriptState.instances[id] == golden.instance)
-    #expect(saved.scriptState.instances[id]?.courier?.issue == golden.instance.courier?.issue)
-    #expect(saved.scriptState.instances[id]?.contract?.deadline == 172_812.5)
-    #expect(try game.ensureContractBoard(fixture.pack) == key)
-    #expect(game.commander.contracts.boards[key] == golden.board)
-    #expect(game.commander.scriptState.instances.count == 1)
+    #expect(!game.commander.valid)
+    let files = try ScriptFinanceTestFixture.files(fixture.root)
+    var rejected = false
+    do {
+      _ = try ScriptSaveStore.write(
+        commander: game.commander, world: game.scriptWorldSave, to: fixture.save)
+    } catch {
+      rejected = true
+    }
+    #expect(rejected)
+    #expect(try ScriptFinanceTestFixture.files(fixture.root) == files)
   }
 
   @Test func reachVersionsRefuseMissingMixedUnknownAndIncoherentFacts() throws {

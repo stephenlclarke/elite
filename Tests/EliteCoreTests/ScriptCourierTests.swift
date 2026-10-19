@@ -300,6 +300,29 @@ func courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row: Int
   #expect(await restored.snapshot().commander == delivered.commander)
 }
 
+@Test(arguments: CourierNativeFixture.priorUnavailableRows)
+func courierPriorInputsKeepTheirDrawsAndRefuseInfeasibleCurrentWorldRoutes(
+  pinned: CourierNativeFixture
+) async throws {
+  let fixture = try CourierFixture()
+  defer { fixture.clean() }
+  var game = fixture.game(system: pinned.origin)
+  let (key, offer) = try fixture.offer(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
+  let terms = try #require(offer.courier)
+  try #require(terms.calendarLowerBoundSeconds >= terms.duration)
+  let runtime = GameRuntime(game: game, saveURL: fixture.save)
+  let quote = await runtime.contractAcceptanceQuote(board: key, offer: offer.id)
+  #expect(!quote.allowed)
+  let before = await runtime.snapshot()
+  let files = try ScriptFinanceTestFixture.files(fixture.root)
+  await #expect(throws: MissionPackError.self) { try await runtime.confirmContract(quote) }
+  let rejected = await runtime.snapshot()
+  #expect(rejected.commander == before.commander)
+  #expect(rejected.commander.scriptState.instances.isEmpty)
+  #expect(try ScriptFinanceTestFixture.files(fixture.root) == files)
+}
+
 @Test func courierOriginalEventCannotBorrowLaterConfirmationOrOutliveDrainBudget() throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
