@@ -556,10 +556,27 @@ extension Game {
   /// The encounter and every actor/NPC were validated above on this same immutable value.
   private func constructMissionActorAdmissionSource(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
-    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
-    definition: ScriptEncounterDefinition
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance,
+    encounter: borrowing ScriptOwnedEncounter, definition: borrowing ScriptEncounterDefinition
   ) throws -> MissionActorAdmissionSource {
     let currentInputs = currentMissionActorAdmissionSourceValues()
+    return try Self.constructMissionActorAdmissionSource(
+      original: self, mode: mode, authority: authority, pack: pack, state: state,
+      encounter: encounter, definition: definition, currentInputs: currentInputs)
+  }
+
+  /// Reserve template-construction values only after the actual Game facts have been read.
+  @inline(never)
+  private static func constructMissionActorAdmissionSource(
+    original: borrowing Game, mode: MissionActorAdmissionMode,
+    authority: MissionActorAdmissionAuthority, pack: borrowing ScriptPack,
+    state: borrowing ScriptInstance, encounter: borrowing ScriptOwnedEncounter,
+    definition: borrowing ScriptEncounterDefinition,
+    currentInputs:
+      borrowing (
+        instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
+      )
+  ) throws -> MissionActorAdmissionSource {
     let legacy = encounter.legacyProvenance
     try Self.validateMissionActorAdmissionLegacy(
       state: state, encounter: encounter, instances: currentInputs.instances, legacy: legacy)
@@ -567,11 +584,12 @@ extension Game {
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       let actor = try Self.validatedMissionActorAdmissionActor(
         spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy)
-      if mode == .retained
-        && (actor.location(in: encounter) != systemIdentity
-          || [.inTransit, .arrivalPending].contains(actor.presence))
-      {
-        continue
+      if mode == .retained {
+        if actor.location(in: encounter) != original.systemIdentity
+          || [.inTransit, .arrivalPending].contains(actor.presence)
+        {
+          continue
+        }
       }
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
