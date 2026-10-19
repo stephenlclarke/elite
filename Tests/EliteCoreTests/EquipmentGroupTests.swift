@@ -224,6 +224,15 @@ private func selectActualMainStationWithTab(_ game: inout Game, stage: String) t
   try #require(matchesAnchor)
   let validOrientation = game.modelPose(of: station).orientation.validRotation
   try #require(validOrientation)
+  let finiteEnergy = station.energy.isFinite
+  try #require(finiteEnergy, "\(stage): main station energy must be finite")
+  let finitePosition = station.position.finite && station.position.length.isFinite
+  try #require(finitePosition, "\(stage): main station position and distance must be finite")
+  let currentActor =
+    actor.system == game.systemIdentity && actor.visit == game.commander.flightSimulation.visit
+  try #require(currentActor, "\(stage): main station actor must belong to the current visit")
+  let matchingActors = game.bodies.filter { $0.physical?.identity == actor }.map(\.id)
+  try #require(matchingActors == [0], "\(stage): main station actor must be unique")
   var selections: [Int?] = []
   // Each real candidate can be visited once before wrapping; no traffic is removed.
   let limit = game.bodies.count
@@ -234,8 +243,34 @@ private func selectActualMainStationWithTab(_ game: inout Game, stage: String) t
   }
   let selectedMainStation = game.autoPilot.targetID == 0
   let dockingEngaged = game.dockingComputer
-  let selectionFailure =
+  var selectionFailure =
     "\(stage): selections \(selections), screen \(game.screen), paused \(game.paused), message \(game.message)"
+  if !selectedMainStation || !dockingEngaged {
+    if let context = game.gameplayContext() {
+      let layout = CockpitLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
+      let candidates = game.bodies.compactMap { body -> WorkTargetCandidate? in
+        let front = Display.visibleInFront(body, game: game, layout: layout)
+        return game.workTargetCandidate(for: body, context: context, frontVisible: front)
+      }
+      let choices = WorkTargetSelection.ordered(
+        candidates, filter: game.workTargetFilter, system: context.system, visit: context.visit,
+        capabilities: game.workTargetCapabilities)
+      let mainCandidates = candidates.filter { $0.identity == actor }
+      let mainDecisions = mainCandidates.map {
+        WorkTargetSelection.evaluate(
+          $0, system: context.system, visit: context.visit,
+          capabilities: game.workTargetCapabilities)
+      }
+      let choiceActors = Set(choices.map { $0.candidate.identity })
+      let eligibleIDs = game.bodies.filter {
+        $0.physical.map { choiceActors.contains($0.identity) } == true
+      }.map(\.id)
+      selectionFailure +=
+        "; context \(context.system)/\(context.visit), player \(context.player.identity), eligible IDs \(eligibleIDs), main candidates \(mainCandidates), main decisions \(mainDecisions)"
+    } else {
+      selectionFailure += "; no gameplay context"
+    }
+  }
   try #require(selectedMainStation && dockingEngaged, Comment(rawValue: selectionFailure))
 }
 

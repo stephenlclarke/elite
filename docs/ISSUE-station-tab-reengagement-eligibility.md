@@ -1,0 +1,5 @@
+# Main station eligibility after a real flight tick remains unresolved
+
+Qualification 690 at fe69b9bf56cecab817309e146e02adf81b051fc3 passed initial real Tab engagement, removed-C behavior, one-frame movement/HUD and P cancellation. Reengagement selected [11, 12, 10, 11, 1, 12] within the unchanged six-body bound. The helper confirmed unpaused front flight, ships filter, military core, living main station, canonical actor binding and valid model orientation.
+
+P intentionally preserves same-visit cycle history. For stable eligible membership, the cycle source reaches every eligible target within the body count from any current position. The observed repeats can represent the tail of an earlier cycle followed by a new cycle excluding zero; they do not establish a cycle-history defect. Main-station candidate eligibility also requires finite energy/position/distance, current system/visit and absence of a conflicting candidate identity. The existing log does not establish these remaining facts or actual eligible membership. Source inspection found no justified product correction.

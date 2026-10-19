@@ -1,0 +1,7 @@
+# test: expose main station reengagement eligibility
+
+Keep the existing EquipmentGroup test and exact station-zero plus docking oracle. Independently require finite main-station energy/position/distance, a current-system/current-visit actor and its unique scene binding. On selection failure only, report the actual gameplay context/player, current eligible body IDs, main-station candidate records and selection decisions using the ordinary front-visibility and selection paths. These outputs are diagnostics only; they never determine the expected target or bypass policy.
+
+No production correction is claimed. The original body-count scan, genuine traffic/stations, installed military core, ships/salvage filters, cancellation behavior, real docking and 2,500-step budget remain unchanged. Game-derived assertions/comments use prebound values. See ISSUE-station-tab-reengagement-eligibility.md.
+
+Strict Swift formatting, Markdown lint and git diff --check are the only author validation. ZERO compiler, test, native, GUI, CI or probe jobs run. Root should review this unresolved diagnostic packet for a later materially changed cohort only; no standalone rerun or canonical integration while qualification groups remain open.
