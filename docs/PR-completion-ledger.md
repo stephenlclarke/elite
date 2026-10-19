@@ -160,3 +160,7 @@ Record exact73174 four-path freeze, Root independent CLEAN review and one-case p
 ## Supporting colour integration and corrected MBA runtime route
 
 Record exact four-file import81b3b0b0 after Root CLEAN review, owner790 matching build and791 one-case bitmap parity PASS, immutable handoff/process/artifact closure and released registry. No standalone timing or smoothness claim. Release existing MC1 788/789 grant on exact Root-clean65614041 five-method/six-case plan without another ACK. Record MBA mean-expression compile PASS, initial loader failure before discovery, then complete inventory finding the matching installed library and actual same20-case local retry pending; cancel the premature main fallback. Scoped Markdown/whitespace checks only, no G1 compiler/native job.
+
+## MBA partial runtime and routine projectile compiler fix
+
+Record Root/owner-reported actual MBA20 closure16 PASS/four FAIL/four issues/no crash, retain16 unaffected passes and require owned four-failure fixes/affected rerun plus changed-hunk review before integration. Keep that outcome distinct from the locally retained earlier zero-discovery loader proof. Record MC1 borrowed-autoclosure compile refusal/zero runtime and Root-clean routine child4e3c86aa continuing788attempt02/789 under the existing grant. No guard waiver, new feature, duplicate audit or extra prebuild ACK. Scoped Markdown/whitespace checks only.
