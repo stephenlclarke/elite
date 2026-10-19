@@ -551,6 +551,8 @@ extension Game {
     else { return false }
     let flight = commander.flightSimulation
     let player = commander.playerMesh
+    var endpoint = flight.pose
+    endpoint.position = flight.pose.systemPoint(advance)
     if let identity = station.nativeStationIdentity {
       guard nativeStationBodyIsCurrent(station),
         world.bodyRigidPoseIsConsistent(station, flight: flight),
@@ -560,7 +562,14 @@ extension Game {
         source.geometry.docking.fits(player),
         nativeStationHullFits(
           player, ship: flight.pose, station: position, orientation: orientation,
-          port: source.geometry.docking, margin: 0)
+          port: source.geometry.docking, margin: 0),
+        nativeStationHullFits(
+          player, ship: endpoint, station: position, orientation: orientation,
+          port: source.geometry.docking, margin: 0),
+        nativeStructureHullSweepClear(
+          player, from: flight.pose, to: endpoint, position: position,
+          fromOrientation: orientation, toOrientation: orientation, margin: 0,
+          mesh: source.geometry.mesh)
       else { return false }
     } else {
       guard station.id == 0, physical.identity == flight.anchors?.station.identity,

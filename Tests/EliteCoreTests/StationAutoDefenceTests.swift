@@ -1170,6 +1170,56 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
   return game
 }
 
+// Keep actual station actors, source geometry and ledger poses; only move the observer.
+@Test(arguments: ["clear-port", "aperture-edge", "through-structure"])
+func stationAutoNativeRRSCourseChecksActualTargetHull(condition: String) throws {
+  var game = Game(executive: false)
+  game.commander.system = 237
+  game.screen = .status
+  game.launch()
+  let initial = try #require(
+    game.bodies.first {
+      $0.nativeStationIdentity?.definition
+        == NativeStationGeometry.Kind.headquarters.sourceDefinition
+    })
+  let identity = try #require(initial.nativeStationIdentity)
+  let source = try #require(NativeStationSource.binding(for: identity))
+  let world = try #require(game.commander.nativeStations)
+  let time = game.commander.flightSimulation.physicalTime
+  let position = try #require(world.currentPosition(for: .rrs(identity), at: time))
+  let orientation = try #require(world.currentOrientation(for: identity, at: time))
+  let port = source.geometry.docking
+  var pose = ShipPose()
+  let offset = condition == "aperture-edge" ? Vector3(124, 0, 0) : .init(0, 0, 0)
+  pose.position = position + orientation.apply(port.center + port.outward * 500 + offset)
+  pose.orientation.y = orientation.apply(port.up)
+  pose.orientation.z = orientation.apply(port.outward) * -1
+  pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
+  NativeStationTestFixture.reframe(&game, to: pose)
+  let station = try #require(game.bodies.first { $0.id == initial.id })
+  let bodyCurrent = game.nativeStationBodyIsCurrent(station)
+  let rigidCurrent = world.bodyRigidPoseIsConsistent(
+    station, flight: game.commander.flightSimulation)
+  try #require(bodyCurrent && rigidCurrent)
+  let advance = Vector3(0, 0, condition == "through-structure" ? 10000 : 499.5)
+  if condition != "aperture-edge" {
+    let saved = try #require(world.pose(for: identity))
+    var endpoint = pose
+    endpoint.position = pose.systemPoint(advance)
+    let apertureFits = port.fits(game.commander.playerMesh)
+    let targetSweepClear = game.nativeStationHullSweepClear(
+      game.commander.playerMesh, from: pose, to: endpoint, saved: saved,
+      fromOrientation: orientation, toOrientation: orientation, margin: 0,
+      mesh: source.geometry.mesh, fromPosition: position, toPosition: position)
+    try #require(apertureFits)
+    #expect(targetSweepClear == (condition == "clear-port"))
+  }
+  let allowed = game.nativeStationAutoEntryCourseIsClear(
+    station, advance: advance, terminalSpeed: 48)
+  #expect(allowed == (condition == "clear-port"))
+  #expect(!game.docked && game.pendingNativeStationDock == nil)
+}
+
 @Test(arguments: [0.0, 80.0])
 func stationAutoKnownPressureUsesRealAlignedCourseAndReachesNativeEntry(inwardSpeed: Double)
   async throws
