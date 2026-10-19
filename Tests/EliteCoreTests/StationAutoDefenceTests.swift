@@ -1374,7 +1374,8 @@ private func stationAutoTrackingPair() throws -> (game: Game, retained: Int, con
   game.bodies[first].position = .init(0, 0, 1100)
   game.bodies[second].position = .init(100, 0, 600)
   let station = try #require(game.autoTargetBody)
-  let guidance = try #require(game.stationAutoGuidance(target: station))
+  let guidanceValue = game.stationAutoGuidance(target: station)
+  let guidance = try #require(guidanceValue)
   #expect(game.stationAutoDefence?.combatActor == retained)
   #expect(guidance.aim == game.bodies[first].position)
   #expect(game.autoPilot.targetActor == destination && game.commander.legal == 0)
@@ -1388,10 +1389,12 @@ func stationAutoResponseReplacesCurrentActorAndResetsMotion(condition: String) t
   let second = try #require(game.bodies.firstIndex { $0.id == pair.contender })
   let station = try #require(game.autoTargetBody)
   let limits = game.workLimits
-  let initial = try #require(game.stationAutoGuidance(target: station))
+  let initialValue = game.stationAutoGuidance(target: station)
+  let initial = try #require(initialValue)
   _ = game.autoPilot.steer(target: station, delta: 0.1, limits: limits, defence: initial)
   game.bodies[first].position = .init(50, 0, 1000)
-  let moving = try #require(game.stationAutoGuidance(target: station))
+  let movingValue = game.stationAutoGuidance(target: station)
+  let moving = try #require(movingValue)
   _ = game.autoPilot.steer(target: station, delta: 0.1, limits: limits, defence: moving)
   if condition == "dead" {
     game.bodies[first].energy = 0
@@ -1399,7 +1402,8 @@ func stationAutoResponseReplacesCurrentActorAndResetsMotion(condition: String) t
     game.bodies[first].position = .init(0, 0, 9000)
   }
   game.bodies[second].position = .init(-25, 0, 1000)
-  let replacement = try #require(game.stationAutoGuidance(target: station))
+  let replacementValue = game.stationAutoGuidance(target: station)
+  let replacement = try #require(replacementValue)
   #expect(game.stationAutoDefence?.combatActor == game.bodies[second].physical?.identity)
   #expect(replacement.aim == game.bodies[second].position)
   let actual = game.autoPilot.steer(
@@ -1429,7 +1433,8 @@ func stationAutoResponseReplacesCurrentActorAndResetsMotion(condition: String) t
   try #require(game.retaliation.pendingResponse(time: game.time)?.actor == actor)
   let station = try #require(game.autoTargetBody)
   let destination = game.autoPilot.targetActor
-  let guidance = try #require(game.stationAutoGuidance(target: station))
+  let guidanceValue = game.stationAutoGuidance(target: station)
+  let guidance = try #require(guidanceValue)
   #expect(game.stationAutoDefence?.combatActor == actor)
   #expect(guidance.aim == game.bodies[second].position)
   #expect(game.retaliation.pendingResponse(time: game.time)?.actor == actor)
