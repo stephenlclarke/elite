@@ -44,11 +44,14 @@ private func priceAdmissionTOML(policy: ShipCataloguePurchasePolicy, price: Int)
     original.range(of: "[design]", range: gameStart.upperBound..<original.endIndex))
   var catalogue = String(original[catalogueStart.lowerBound..<gameStart.lowerBound])
   if policy == .never {
-    catalogue = catalogue
+    catalogue =
+      catalogue
       .replacingOccurrences(
-        of: "purchasePolicy = \"blueprintFabrication\"", with: "purchasePolicy = \"never\"")
+        of: "purchasePolicy = \"blueprintFabrication\"", with: "purchasePolicy = \"never\""
+      )
       .replacingOccurrences(
-        of: "normalPurchaseEligible = true", with: "normalPurchaseEligible = false")
+        of: "normalPurchaseEligible = true", with: "normalPurchaseEligible = false"
+      )
       .replacingOccurrences(of: "discoveryEligible = true", with: "discoveryEligible = false")
       .replacingOccurrences(
         of: "collectionMilestone = \"blueprintAndFabrication\"",
