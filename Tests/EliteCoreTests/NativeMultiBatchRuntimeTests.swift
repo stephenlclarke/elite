@@ -7,6 +7,9 @@ struct NativeMultiBatchRuntimeTests {
   @Test func originalHumanManifestImportRequiresAFullSecondBudgetAcrossActualSaveAndReload()
     async throws
   {
+    let traceStarted =
+      ProcessInfo.processInfo.environment["ELITE_NATIVE_WORK_TRACE"] == "1"
+      ? ProcessInfo.processInfo.systemUptime : nil
     var (game, site) = try NativePagedSalvageFixture.game(humanCargo: true)
     let profile = try #require(SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID))
     let section = try #require(profile.sections.first { $0.index == 1 })
@@ -51,7 +54,7 @@ struct NativeMultiBatchRuntimeTests {
     try await runtime.save(to: file)
     await runtime.setControls(NativePagedSalvageFixture.firingControls)
     var first = await runtime.snapshot()
-    for _ in 0..<2500 {
+    for iteration in 0..<2500 {
       let prior = observeWork(
         first, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
@@ -60,6 +63,9 @@ struct NativeMultiBatchRuntimeTests {
         first, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
       checkEarnedWork(before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
+      traceWork(
+        phase: "first-release", iteration: iteration, started: traceStarted,
+        before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
       if first.commander.alienStorageState?.current.salvage.native.works[imported.section]?.releases
         == 1
       {
@@ -83,7 +89,7 @@ struct NativeMultiBatchRuntimeTests {
     #expect(first.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
 
     var partial = first
-    for _ in 0..<2500 {
+    for iteration in 0..<2500 {
       let prior = observeWork(
         partial, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
@@ -92,6 +98,9 @@ struct NativeMultiBatchRuntimeTests {
         partial, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
       checkEarnedWork(before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
+      traceWork(
+        phase: "second-cycle-start", iteration: iteration, started: traceStarted,
+        before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
       if (partial.nativeSalvageWork?.cycle.currentWorkSeconds ?? 0) > 0 { break }
     }
     let hot = try #require(partial.nativeSalvageWork)
@@ -143,7 +152,7 @@ struct NativeMultiBatchRuntimeTests {
     try await resumed.save(to: file)
     await resumed.setControls(NativePagedSalvageFixture.firingControls)
     var second = await resumed.snapshot()
-    for _ in 0..<2500 {
+    for iteration in 0..<2500 {
       let prior = observeWork(
         second, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
@@ -152,6 +161,9 @@ struct NativeMultiBatchRuntimeTests {
         second, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
       checkEarnedWork(before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
+      traceWork(
+        phase: "resumed-release", iteration: iteration, started: traceStarted,
+        before: prior, after: currentWork, required: section.workSeconds, delta: 0.02)
       let current = second.commander.alienStorageState?.current.salvage.native.works[
         imported.section]
       if current?.releases == 2 { break }
@@ -178,13 +190,44 @@ struct NativeMultiBatchRuntimeTests {
     #expect(second.commander.salvageLedger.pendingLots.isEmpty)
   }
 
-  private struct WorkObservation: Sendable {
+  private struct WorkObservation: Sendable, Encodable {
     let seconds: Double
     let releases: UInt64
     let serial: UInt32
     let pending: Int
     let damaged: Bool
     let credited: Double?
+  }
+
+  private struct WorkTrace: Encodable {
+    let phase: String
+    let iteration: Int
+    let monotonicElapsedSeconds: Double
+    let before: WorkObservation
+    let after: WorkObservation
+    let required: Double
+    let delta: Double
+  }
+
+  private func traceWork(
+    phase: String, iteration: Int, started: Double?,
+    before: WorkObservation, after: WorkObservation, required: Double, delta: Double
+  ) {
+    guard let started, iteration == 9 || iteration == 109 else { return }
+    let trace = WorkTrace(
+      phase: phase, iteration: iteration,
+      monotonicElapsedSeconds: ProcessInfo.processInfo.systemUptime - started,
+      before: before, after: after, required: required, delta: delta)
+    do {
+      let encoded = try JSONEncoder().encode(trace)
+      var line = Data("ELITE_NATIVE_WORK_TRACE ".utf8)
+      line.append(encoded)
+      line.append(0x0A)
+      FileHandle.standardError.write(line)
+    } catch {
+      FileHandle.standardError.write(
+        Data("ELITE_NATIVE_WORK_TRACE_ERROR phase=\(phase) iteration=\(iteration)\n".utf8))
+    }
   }
 
   private func observeWork(
