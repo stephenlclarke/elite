@@ -542,8 +542,6 @@ extension Game {
     }
   }
 
-  /// Reuse native source, aperture and corridor checks for a proposed approach.
-  /// The relative frame at the door is geometry only and is never installed or minted as entry.
   /// Real effective-hull clearance against the same main-port mesh used by rendering and rays.
   /// The optional elapsed step uses the station's actual prior translation and spin.
   func nativeMainStationHullCourseIsClear(
@@ -596,6 +594,8 @@ extension Game {
       margin: margin, mesh: geometry)
   }
 
+  /// Reuse native source, aperture and corridor checks for a proposed approach.
+  /// The relative frame at the door is geometry only and is never installed or minted as entry.
   func nativeStationAutoEntryCourseIsClear(
     _ station: SpaceBody, advance: Vector3, terminalSpeed: Double
   ) -> Bool {
