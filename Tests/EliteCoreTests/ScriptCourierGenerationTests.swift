@@ -94,59 +94,118 @@ import Testing
   #expect(game.commander.scriptState.instances[id]?.courier?.terminal == nil)
 }
 
-/// Immutable native fixture provenance discovered on 51615ee, origins 0...63, epoch zero.
+/// Current original-world witnesses independently expanded from authenticated catalogue bytes.
+/// Epoch zero, board-seed derivation and all six draws are frozen; no runtime discovery or reroll.
 struct CourierNativeFixture: Sendable {
   let origin: Int
   let row: Int
   let seed: UInt64
   let initialState: UInt32
+  let draws: [UInt32]
   let path: [Int]
   let lowerBound: Double
   let offer: String
   static let digest = "65ff79fef1171fa0c0af8808754c075e93c0302a33fb3e0b04fa59f59585b369"
   func verify(_ board: ScriptContractBoard, _ actual: ScriptContractOffer) throws {
+    #expect(Universe.originalWorlds.version == "l337-world-1")
     #expect(board.digest == Self.digest && board.revision == 0 && board.station.system == origin)
     #expect(board.seed == seed && board.courierGeneration?.initialState == initialState)
+    #expect(board.courierGeneration?.draws == draws)
     #expect(actual.id.uuidString == offer && actual.courier?.row == row)
-    #expect(actual.courier?.path == path && actual.courier?.calendarLowerBoundSeconds == lowerBound)
+    let terms = try #require(actual.courier)
+    #expect(board.valid && terms.valid && terms.path == path)
+    // Independent Python and native libm may round the final Double differently.
+    // Native proof validation still requires its own exact cost and unchanged deadline comparisons.
+    #expect(abs(terms.calendarLowerBoundSeconds - lowerBound) < 0.000001)
   }
   static let rows: [Self] = [
     .init(
-      origin: 3, row: 0, seed: 13_798_607_238_306_431_818, initialState: 3_529_737_034,
-      path: [3, 228], lowerBound: 47256, offer: "8B296B28-BDE6-98B4-C9DA-E9C3B640F74C"),
+      origin: 4, row: 0, seed: 7_416_280_517_231_489_484, initialState: 1_480_307_148,
+      draws: [3_997_630_317, 79_933_624, 675_656_594, 1_488_989_609, 4_090_577_267, 2_752_961_804],
+      path: [4, 84, 241], lowerBound: 171049.27346400009,
+      offer: "C75EA5D5-5C1F-2C60-20B3-87A44E547A0A"),
     .init(
       origin: 0, row: 1, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
-      path: [0, 71], lowerBound: 9816.000000000002, offer: "70307AE4-B576-E769-C614-CD429B7D7D2F"),
+      draws: [
+        898_330_452, 1_415_163_876, 1_426_520_566, 3_442_991_530, 290_823_243, 4_182_313_349,
+      ],
+      path: [0, 91], lowerBound: 35798.30051999994,
+      offer: "70307AE4-B576-E769-C614-CD429B7D7D2F"),
     .init(
       origin: 0, row: 2, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
-      path: [0, 71], lowerBound: 9816.000000000002, offer: "3A038D95-1A17-D856-E13A-2BAEBD2A4DC7"),
+      draws: [
+        898_330_452, 1_415_163_876, 1_426_520_566, 3_442_991_530, 290_823_243, 4_182_313_349,
+      ],
+      path: [0, 91], lowerBound: 35798.30051999994,
+      offer: "3A038D95-1A17-D856-E13A-2BAEBD2A4DC7"),
     .init(
-      origin: 10, row: 3, seed: 9_731_030_265_297_135_835, initialState: 362_571_995,
-      path: [10, 177], lowerBound: 130200, offer: "65FD4594-5F50-2D23-F44B-3A2EFEBA63E6"),
+      origin: 3, row: 3, seed: 13_798_607_238_306_431_818, initialState: 3_529_737_034,
+      draws: [
+        3_814_251_439, 4_253_397_145, 960_503_570, 1_860_831_779, 3_663_840_116, 2_749_987_859,
+      ],
+      path: [3, 122], lowerBound: 38304.34242000006,
+      offer: "F626B1F8-E32F-A55C-30DD-55068196C52B"),
     .init(
       origin: 0, row: 4, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
-      path: [0, 75, 95, 24], lowerBound: 258696.00000000006,
+      draws: [
+        898_330_452, 1_415_163_876, 1_426_520_566, 3_442_991_530, 290_823_243, 4_182_313_349,
+      ],
+      path: [0, 20], lowerBound: 79423.07427599988,
       offer: "F0BFD021-444E-D681-20F3-98143485BA6C"),
     .init(
-      origin: 1, row: 5, seed: 6_630_146_343_182_819_093, initialState: 2_588_172_053,
-      path: [1, 40, 181], lowerBound: 181488.00000000006,
-      offer: "3D6AA0E8-DE5D-5B5C-D86F-C9DACF601E1D"),
+      origin: 7, row: 5, seed: 16_713_386_715_846_582_478, initialState: 2_948_899_022,
+      draws: [
+        1_081_268_512, 1_905_018_347, 3_743_053_587, 2_935_202_319, 2_365_048_214, 4_242_721_076,
+      ],
+      path: [7, 185, 0, 198], lowerBound: 242732.15521199995,
+      offer: "03F43AD7-B027-A298-4660-E9DBB048673C"),
   ]
   static let boundary48Above: Self = .init(
-    origin: 37, row: 3, seed: 5_834_218_365_605_885_184, initialState: 1_207_940_352,
-    path: [37, 43, 226], lowerBound: 176880.00000000003,
-    offer: "CD068A12-7667-3772-DD1A-591EE1D1E5E6")
+    origin: 98, row: 1, seed: 237_134_580_724_460_434, initialState: 269_151_122,
+    draws: [3_798_542_574, 702_931_412, 775_572_571, 2_442_325_987, 1_102_304_084, 1_089_509_816],
+    path: [98, 57, 39], lowerBound: 173758.9431360001,
+    offer: "5FF8F384-9D08-D0EB-ECCE-B2D196B38DCE")
   static let boundary48Below: Self = .init(
-    origin: 56, row: 1, seed: 18_070_191_319_121_658_612, initialState: 3_348_628_212,
-    path: [56, 36, 150], lowerBound: 171696.00000000003,
-    offer: "AEB492B1-E40D-0630-F52E-A7A2DE55D5FA")
+    origin: 44, row: 3, seed: 9_069_973_204_358_578_451, initialState: 404_406_547,
+    draws: [1_193_844_975, 899_172_309, 2_436_748_772, 1_537_819_812, 344_087_162, 2_792_064_540],
+    path: [44, 189, 77], lowerBound: 171549.466824,
+    offer: "086D072A-E898-54E6-54E8-CF83810E1069")
   static let boundary72Above: Self = .init(
-    origin: 13, row: 4, seed: 2_402_018_277_323_895_990, initialState: 2_481_124_534,
-    path: [13, 222, 29], lowerBound: 260400, offer: "FF5F1C70-F4D7-1931-66AD-10C59CE82CED")
+    origin: 226, row: 5, seed: 2_856_789_962_849_034_778, initialState: 3_582_239_258,
+    draws: [
+      2_034_212_313, 3_659_262_971, 1_275_056_489, 2_340_919_680, 1_849_892_539, 3_206_248_017,
+    ],
+    path: [226, 95, 214], lowerBound: 259780.52636399996,
+    offer: "C63A7880-4653-5B02-1512-391F624E58A8")
   static let boundary72Below: Self = .init(
-    origin: 0, row: 4, seed: 5_318_087_094_851_105_804, initialState: 1_295_021_068,
-    path: [0, 75, 95, 24], lowerBound: 258696.00000000006,
-    offer: "F0BFD021-444E-D681-20F3-98143485BA6C")
+    origin: 92, row: 5, seed: 13_811_688_890_081_468_573, initialState: 964_944_029,
+    draws: [4_154_206_453, 584_353_588, 4_101_610_381, 637_753_641, 3_924_666_618, 3_265_926_883],
+    path: [92, 56, 35, 172], lowerBound: 258384.766932,
+    offer: "310DD44B-00E5-15F3-0557-E10401388FE9")
+  // Preserve old origin/seed/draw inputs as refused current-world offers, without rerolls.
+  static let priorUnavailableRows: [Self] = [
+    .init(
+      origin: 3, row: 0, seed: 13_798_607_238_306_431_818, initialState: 3_529_737_034,
+      draws: [
+        3_814_251_439, 4_253_397_145, 960_503_570, 1_860_831_779, 3_663_840_116, 2_749_987_859,
+      ],
+      path: [3, 4, 84, 224], lowerBound: 318247.5776399999,
+      offer: "8B296B28-BDE6-98B4-C9DA-E9C3B640F74C"),
+    .init(
+      origin: 10, row: 3, seed: 9_731_030_265_297_135_835, initialState: 362_571_995,
+      draws: [
+        2_289_031_064, 553_726_998, 4_160_556_343, 2_636_318_042, 1_284_458_590, 354_388_252,
+      ],
+      path: [10, 170, 87, 163], lowerBound: 386136.44604,
+      offer: "65FD4594-5F50-2D23-F44B-3A2EFEBA63E6"),
+    .init(
+      origin: 1, row: 5, seed: 6_630_146_343_182_819_093, initialState: 2_588_172_053,
+      draws: [
+        628_625_158, 3_078_845_450, 4_182_329_835, 3_741_088_753, 1_640_764_720, 2_384_917_541,
+      ],
+      path: [1, 147, 54, 150], lowerBound: 400434.73549199983,
+      offer: "3D6AA0E8-DE5D-5B5C-D86F-C9DACF601E1D"),
+  ]
 }
 
 @Test func courierSortedBreadthFirstRoutesChooseLowestStableTieWithoutWeightedDistance() throws {
