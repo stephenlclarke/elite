@@ -438,7 +438,7 @@ extension WantedBoardTests {
     loop.cancel()
     await loop.value
     try await delegate.runtime.load(from: file, persistMigrations: false)
-    await delegate.runtime.key("3")
+    await delegate.runtime.key("8")
     view.game = await delegate.runtime.snapshot()
     view.pending.removeAll()
     let originalCommander = view.game.commander
