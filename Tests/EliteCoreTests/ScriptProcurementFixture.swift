@@ -923,9 +923,11 @@ actor ScriptProcurementFlightDiagnostic {
   }
 }
 
-extension GameRuntime {
-  /// Rejoin living current actors on every step; neither intent nor this query grants law authority.
-  func procurementPreflightFacts() -> ScriptProcurementPreflightFacts {
+/// Read-only borrowed access keeps actor field materialization out of the deep
+/// exact native geometry/validation query. This owner retains no Game or authority.
+private enum ScriptProcurementPreflightObservation {
+  @inline(never)
+  static func facts(_ game: borrowing Game) -> ScriptProcurementPreflightFacts {
     var facts = ScriptProcurementPreflightFacts()
     guard let context = game.gameplayContext(),
       let player = game.commander.flightSimulation.player,
@@ -943,7 +945,7 @@ extension GameRuntime {
       player: player, epoch: game.ecmControl.epoch, stationEpoch: game.nativeStationRuntimeEpoch,
       owner: owner, revision: game.gameplayRevision, physicalTime: context.physicalTime)
     facts.legal = game.commander.legal
-    facts.mainTargetCurrent = procurementDefensiveMainTargetIsCurrent()
+    facts.mainTargetCurrent = mainTargetIsCurrent(game)
     facts.docked = game.docked
     facts.live = game.screen.isFlight && game.energy > 0
     facts.paused = game.paused
@@ -1055,7 +1057,8 @@ extension GameRuntime {
     facts.valid = true
     return facts
   }
-  func procurementDefensiveMainTargetIsCurrent() -> Bool {
+  @inline(never)
+  static func mainTargetIsCurrent(_ game: borrowing Game) -> Bool {
     guard let target = game.autoTargetBody, target.id == 0, target.hull == .station,
       let actor = target.physical?.identity,
       let flightPlayer = game.commander.flightSimulation.player,
@@ -1064,6 +1067,19 @@ extension GameRuntime {
       game.autoPilot.targetActor == actor
     else { return false }
     return true
+  }
+}
+
+extension GameRuntime {
+  /// Rejoin living current actors on every step; observations grant no law authority.
+  @inline(never)
+  func procurementPreflightFacts() -> ScriptProcurementPreflightFacts {
+    ScriptProcurementPreflightObservation.facts(game)
+  }
+
+  @inline(never)
+  func procurementDefensiveMainTargetIsCurrent() -> Bool {
+    ScriptProcurementPreflightObservation.mainTargetIsCurrent(game)
   }
 
   /// Recheck raw current facts and cancel through the genuine key path in this actor turn.
