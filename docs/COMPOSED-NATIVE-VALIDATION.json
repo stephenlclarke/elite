@@ -321,5 +321,62 @@
     "proofSHA256": "729dc06ab056e25490155d7d847d72628b7368f95be6bd84217f3cedfc915f2d",
     "literalGuardValuesSHA256": "b92f5f11292d642a4a044ed73a9dbc4771a7a0eb1b64b370a31894c88d34983d",
     "limits": "Energy/screen/death cause unrecorded. Completed guard capture is not fix acceptance or individual argument verdict. No automatic retry/fullCI/percentage/sanitizer/leak/release claim."
+  },
+  "nativeLawFixtureAlignmentQualification": {
+    "sourceCommit": "40125180233b04384b4599e11b85ef226405db90",
+    "independentReview": "CLEAN finaldelta; explicit missile zone consumer preservation included",
+    "compile587ProofSHA256": "21d991905705365cbeedebd2210aabcba15e2f5251b024fbe7970f22487be848",
+    "law589": {
+      "status": "PASS focused execution",
+      "methods": 23,
+      "cases": 80,
+      "groupsDerivedFromActualTerminals": {
+        "new": {
+          "methods": 4,
+          "cases": 7,
+          "status": "PASS"
+        },
+        "existingAffected": {
+          "methods": 19,
+          "cases": 73,
+          "status": "PASS"
+        }
+      },
+      "issues": 0,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "commandSeconds": 12.198701167013496,
+      "supervisedSeconds": 13.452127082971856,
+      "proofSHA256": "e7720f11d6a9ceac9442fff851924201f2aa2858f624fe4742b6f29bf25b3717",
+      "groupedQualificationSHA256": "e91f631c6175f2ba8935c5496fcd8f9f545efe1e5b6fa893657580f199e60ca1"
+    },
+    "history588": {
+      "methodVerdict": "FAILED",
+      "originalArguments": 12,
+      "issues": 8,
+      "stagesDerivedFromActualHeaders": {
+        "abandoned": 4,
+        "partial": 4
+      },
+      "guardValuesAllEight": {
+        "valid": true,
+        "live": false,
+        "docked": false,
+        "paused": false,
+        "automaticEngaged": false
+      },
+      "steps": {
+        "partial": 87,
+        "abandoned": 285
+      },
+      "commandSeconds": 44.72415037499741,
+      "supervisedSeconds": 46.21896862518042,
+      "proofSHA256": "4f80c25ce98b363810e9983d2b587201f32ebe07b165b2ce48a9953ef8c61e64",
+      "literalGuardValuesSHA256": "01d82c0008f7f5de4e038e434d226b4a0ce9f8fe20bd17fcdcb62e7955bf21f5"
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "limits": "Focused native-law correction passes; history journey remains failed. No current damage cause, individual history argument verdict, full CI, coverage percentage, sanitizer/leak or release claim."
   }
 }
