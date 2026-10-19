@@ -248,8 +248,12 @@ final class AsteroidContactFrame {
       else { continue }
       let mass = game.asteroidDebrisMassKg(body)
       let station = game.stationInertialIdentity(for: body)
-      let movingStation =
-        station.map { game.commander.nativeStations?.inertia(for: $0) != nil } ?? false
+      let movingStation: Bool
+      if let station {
+        movingStation = game.commander.nativeStations?.inertia(for: station) != nil
+      } else {
+        movingStation = false
+      }
       snapshots.append(
         .init(
           identity: physical.identity, bodyID: body.id,
