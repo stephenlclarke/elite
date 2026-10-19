@@ -87,7 +87,8 @@ extension Game {
       return breakup.aggregateMassKg
         + Double(reserved) * AsteroidBreakup.kilogramsPerUnit(breakup.commodity)
     }
-    if let payload = physical.payload, commander.miningLedger.isRubble(payload),
+    if let payload = physical.payload, case .ore(let root, _) = payload,
+      commander.miningLedger.breakups[root] != nil,
       commander.miningLedger.boundActor(for: payload) == physical.identity,
       let item = commander.miningLedger.pendingPayloads.first(where: { $0.identity == payload })
     {

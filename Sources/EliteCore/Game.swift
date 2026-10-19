@@ -1777,6 +1777,7 @@ public struct Game: Sendable {
     }
   }
   private mutating func moveBodies(dt: Double) {
+    let asteroidContactFrame = beginAsteroidContactStep()
     let before = commander.flightSimulation.pose
     if !moveWorkFrame(delta: dt) {
       autoPilot.rotateVelocity(pitch: pitch * dt, roll: roll * dt, yaw: yaw * dt)
@@ -1809,6 +1810,7 @@ public struct Game: Sendable {
         }
       }
     }
+    guard completeAsteroidContactStep(asteroidContactFrame, delta: dt).admitted else { return }
     advanceNativeStationRecharge(delta: dt)
     detectNativeStationEntry(from: before, delta: dt)
     if pendingNativeStationDock != nil {
