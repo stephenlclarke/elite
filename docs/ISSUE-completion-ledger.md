@@ -89,3 +89,7 @@ The measured wreck boundary still does not close the native regression: actual77
 ## Observer correction and MBA05 frozen review queue
 
 The observer unit-only missing-try compiler failure must remain recorded separately from the unchanged product source; no native measurement is available yet. MBA05 is now frozen with a local committed execution source, but its fifteen authored units and independent review remain pending, so it is not integration-ready or playable content.
+
+## Integrated observer source and native checkpoint gate
+
+The bounded startup observer now meets its focused source/unit gates, so integrate it and move to actual optimized app observation. Keep source integration distinct from native frame/pixel/playability acceptance and retain the earlier optimized-test timeout evidence.

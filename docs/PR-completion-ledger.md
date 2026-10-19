@@ -108,3 +108,7 @@ Attach actual771 failure/terminal/signature closure evidence, exact startup-obse
 ## Observer correction and MBA05 frozen review queue
 
 Record actual772 compile failure/closure, exact932 one-call correction/clean targeted review and existing772attempt02/773 three-case grant. Attach MBA05 frozen patch/handoff, localbc4d execution commit, eleven-file ownership and15-case plan metadata, with G3 owner-PASS and G2 review still required. Preserve current F01 Game hunks and defer production W01 pack/clue consumer. Changed docs lint/whitespace only; no new G1 compiler/native job.
+
+## Integrated observer source and native checkpoint gate
+
+Record e640c36c startup-observer integration with exact five-file hashes, clean reviews and actual772attempt02/773 three-case PASS/closure. Update paired source note with actual evidence. Next Root-granted checkpoint is product-only optimized app plus finite native title/credits and bounded visual verification; no Release test-target retry or runtime result is inferred. Changed Markdown/whitespace checks only.
