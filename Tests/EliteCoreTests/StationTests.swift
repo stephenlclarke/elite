@@ -53,11 +53,14 @@ import Testing
     case .rear: position = .init(0, 0, -1000)
     }
     game.bodies = [.init(id: 1, hull: .cobra, position: position)]
-    var controls = Controls()
-    controls.fire = true
+    // Exercise fitted-mount damage/cadence directly. Return routes the selected
+    // flight tool and deliberately excludes a mining mount from combat fire.
+    let controls = Controls()
     game.tick(delta: 0.01, controls: controls)
+    game.fireLaser()
     #expect(game.bodies[0].energy == 100 - (kinds[index]?.damage ?? 0))
     game.tick(delta: 0.1, controls: controls)
+    game.fireLaser()
     let shots = (kinds[index]?.firingInterval ?? 1) <= 0.1 ? 2.0 : 1.0
     #expect(game.bodies[0].energy == 100 - (kinds[index]?.damage ?? 0) * shots)
     #expect((game.laserHeat > 0) == (kinds[index] != nil))
@@ -65,6 +68,27 @@ import Testing
       game.commander.laserDamage(against: .cobra, mount: mount) == (kinds[index]?.damage ?? 0))
   }
 }
+@Test func heldCombatReturnCannotDischargeAFittedSideMiningLaser() {
+  var game = Game(executive: false)
+  game.commander.laserMounts = LaserMounts(front: .pulse, left: .mining, right: .beam)
+  game.launch()
+  game.speed = 0
+  game.screen = .left
+  game.bodies = [.init(id: 1, hull: .cobra, position: .init(-1000, 0, 0))]
+  #expect(game.commander.laser(on: .left) == .mining)
+  #expect(game.commander.fittedEquipment(at: .laser(.left))?.node.key == "Mining Laser")
+  #expect(game.selectedFlightTool == .combatLaser)
+  let energy = game.energy
+  let audio = game.dischargeAudio.events
+  var held = Controls()
+  held.fire = true
+  for delta in [0.01, 0.1] { game.tick(delta: delta, controls: held) }
+  #expect(game.bodies[0].energy == 100)
+  #expect(game.laserHeat == 0 && game.fireCooldown == 0)
+  #expect(game.energy == energy && game.dischargeAudio.events == audio)
+  #expect(game.selectedFlightTool == .combatLaser)
+}
+
 @Test func explicitAndLegacyMountSavesPreserveSingleFrontLaserWithoutInventingSideWeapons()
   async throws
 {
