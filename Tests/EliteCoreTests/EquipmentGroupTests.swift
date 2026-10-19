@@ -203,19 +203,27 @@ import Testing
 }
 
 private func selectActualMainStationWithTab(_ game: inout Game, stage: String) throws {
-  try #require(!game.docked, "\(stage): selection requires flight")
-  try #require(!game.paused, "\(stage): paused; \(game.message)")
-  try #require(game.screen.isFlight, "\(stage): screen \(game.screen)")
-  try #require(game.workTargetFilter == .ships, "\(stage): filter \(game.workTargetFilter)")
-  try #require(
-    game.commander.targetingTier == .military, "\(stage): military core must remain fitted")
+  let inFlight = !game.docked
+  try #require(inFlight, "\(stage): selection requires flight")
+  let unpaused = !game.paused
+  let pauseFailure = "\(stage): paused; \(game.message)"
+  try #require(unpaused, Comment(rawValue: pauseFailure))
+  let flightScreen = game.screen.isFlight
+  let screenFailure = "\(stage): screen \(game.screen)"
+  try #require(flightScreen, Comment(rawValue: screenFailure))
+  let shipsFilter = game.workTargetFilter == .ships
+  let filterFailure = "\(stage): filter \(game.workTargetFilter)"
+  try #require(shipsFilter, Comment(rawValue: filterFailure))
+  let militaryCore = game.commander.targetingTier == .military
+  try #require(militaryCore, "\(stage): military core must remain fitted")
   game.ensurePhysicalActors()
-  let station = try #require(
-    game.bodies.first { $0.id == 0 && $0.hull == .station && $0.energy > 0 },
-    "\(stage): actual main station must remain present")
+  let mainStation = game.bodies.first { $0.id == 0 && $0.hull == .station && $0.energy > 0 }
+  let station = try #require(mainStation, "\(stage): actual main station must remain present")
   let actor = try #require(station.physical?.identity, "\(stage): main station must be adopted")
-  try #require(actor == game.commander.flightSimulation.anchors?.station.identity)
-  try #require(game.modelPose(of: station).orientation.validRotation)
+  let matchesAnchor = actor == game.commander.flightSimulation.anchors?.station.identity
+  try #require(matchesAnchor)
+  let validOrientation = game.modelPose(of: station).orientation.validRotation
+  try #require(validOrientation)
   var selections: [Int?] = []
   // Each real candidate can be visited once before wrapping; no traffic is removed.
   let limit = game.bodies.count
@@ -224,10 +232,11 @@ private func selectActualMainStationWithTab(_ game: inout Game, stage: String) t
     selections.append(game.autoPilot.targetID)
     if game.autoPilot.targetID == 0 { break }
   }
-  try #require(
-    game.autoPilot.targetID == 0 && game.dockingComputer,
+  let selectedMainStation = game.autoPilot.targetID == 0
+  let dockingEngaged = game.dockingComputer
+  let selectionFailure =
     "\(stage): selections \(selections), screen \(game.screen), paused \(game.paused), message \(game.message)"
-  )
+  try #require(selectedMainStation && dockingEngaged, Comment(rawValue: selectionFailure))
 }
 
 @Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
