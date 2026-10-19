@@ -5,6 +5,12 @@ public struct MiningRock: Equatable, Codable, Sendable {
   public let position: Vector3
   public let radius: Double
   public let energy: Double
+
+  /// Birth mass uses native commodity units, not collision-space metres or volume.
+  public var birthMassKg: Double? {
+    guard let chunk = AsteroidBeltDefinition.chunk(for: identity) else { return nil }
+    return Double(chunk.units) * AsteroidBreakup.kilogramsPerUnit(chunk.content.commodity)
+  }
 }
 
 public struct MiningField: Equatable, Codable, Sendable {

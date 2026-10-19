@@ -77,6 +77,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     generation != nil || ringTerminal != nil || partial.keys.contains { $0.field >= 4 }
       || pending.keys.contains { if case .ore(let rock, _) = $0 { rock.field >= 4 } else { false } }
   }
+  var breakups: [RockIdentity: AsteroidBreakup] = [:]
   private var partial: [RockIdentity: Double] = [:]
   private var pending: [PayloadIdentity: TypedCargoPayload] = [:]
   private var offers: [SpawnIdentity: PayloadIdentity] = [:]
@@ -97,7 +98,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   private enum CodingKeys: String, CodingKey {
     case seed, terminal, ringTerminal, generation, legacyClusters, presenceOverrides, partial,
       pending, offers, bindings, lastIncident,
-      sequence
+      sequence, breakups
   }
 
   public init(from decoder: Decoder) throws {
@@ -146,6 +147,9 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     bindings = try Self.decodeBounded(
       PayloadIdentity.self, ActorIdentity.self,
       from: values, key: .bindings, maximum: Self.maximumPending)
+    breakups = try Self.decodeBounded(
+      RockIdentity.self, AsteroidBreakup.self, from: values, key: .breakups,
+      maximum: Self.maximumPartial, keyAllowed: Self.validRock)
     lastIncident = try values.decodeIfPresent(UInt64.self, forKey: .lastIncident)
     sequence = try values.decode(UInt64.self, forKey: .sequence)
     guard valid else {
@@ -187,6 +191,29 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       ringTerminal?.allSatisfy({ Self.validSystem($0.key) && $0.value > 0 && $0.value & ~mask == 0 }
       ) ?? true,
       terminal.count <= 8 * 257, partial.count <= Self.maximumPartial,
+      breakups.count <= Self.maximumPartial,
+      Set(breakups.values.compactMap(\.binding)).count
+        == breakups.values.compactMap(\.binding).count,
+      Set(breakups.values.compactMap(\.binding)).isDisjoint(with: Set(bindings.values)),
+      breakups.allSatisfy({ identity, breakup in
+        guard breakup.valid && breakup.rock == identity && isDepleted(identity) else {
+          return false
+        }
+        let retained = pending.values.filter {
+          if case .ore(let root, let fragment) = $0.identity {
+            return root == identity && Int(fragment) < breakup.issuedUnits
+          }
+          return false
+        }
+        let retainedFragments = Set(
+          retained.compactMap { item -> UInt16? in
+            if case .ore(_, let fragment) = item.identity { return fragment }
+            return nil
+          })
+        return retained.count == breakup.issuedUnits - breakup.collectedUnits
+          && Set(breakup.payloadTimes.keys) == retainedFragments
+          && breakup.rubble.allSatisfy { pending[.ore(identity, fragment: $0)] != nil }
+      }),
       pending.count <= Self.maximumPending, offers.count <= Self.maximumPending,
       bindings.count <= Self.maximumPending,
       terminal.allSatisfy({ Self.validSystem($0.key) && $0.value > 0 && $0.value & ~mask == 0 }),
@@ -198,7 +225,9 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       pending.allSatisfy({ identity, item in
         guard identity == item.identity, case .ore(let rock, let fragment) = identity,
           bit(rock) != nil, isDepleted(rock),
-          Int(fragment) < (AsteroidBeltDefinition.chunk(for: rock)?.units ?? 7),
+          Int(fragment)
+            < (breakups[rock]?.issuedUnits
+              ?? AsteroidBeltDefinition.chunk(for: rock)?.units ?? 7),
           item.amount.quantity == 1,
           [.minerals, .alloys, .gold, .platinum].contains(item.amount.commodity)
         else { return false }
@@ -273,11 +302,19 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   }
 
   public func remainingEnergy(for rock: MiningRock) -> Double {
-    isDepleted(rock.identity) ? 0 : partial[rock.identity, default: rock.energy]
+    breakups[rock.identity] != nil
+      ? rock.energy
+      : isDepleted(rock.identity) ? 0 : partial[rock.identity, default: rock.energy]
   }
 
   /// Resource admission is checked before the emitter allocates an attack or spends power.
   func canAdmitMiningHit(rock: MiningRock, damage: Double) -> Bool {
+    if let breakup = breakups[rock.identity] {
+      return valid && damage.isFinite && damage > 0
+        && (damage < breakup.workEnergy
+          || pending.count + breakup.maximumCollectibleUnits - breakup.issuedUnits
+            <= Self.maximumPending)
+    }
     guard valid, damage.isFinite, damage > 0, rock.energy.isFinite, rock.energy > 0,
       Self.validMotion(rock.position), bit(rock.identity) != nil, !isDepleted(rock.identity)
     else { return false }
@@ -307,6 +344,17 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       mining: incident.kind == .laser && incident.laser == .mining)
   }
 
+  mutating func hit(
+    rock: MiningRock, incident: CombatIncident, damage: Double, motion: AsteroidMotion
+  ) -> MiningHitResult {
+    guard incident.victimPart == nil,
+      incident.outcome == .hit || incident.outcome == .destruction
+    else { return .ignored }
+    return physicalHit(
+      rock: rock, eventID: incident.id, damage: damage,
+      mining: incident.kind == .laser && incident.laser == .mining, motion: motion)
+  }
+
   /// Only an actual sealed plasma contact may enter without an ordinary combat incident.
   mutating func hit(
     rock: MiningRock, proof: MissionNativeImpactProof, eventID: UInt64,
@@ -323,17 +371,26 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       body.id == id, body.physical?.rock == rock.identity,
       rock.identity.system == context.system,
       let identity = body.physical?.identity, identity == proof.currentVictim,
-      context.actors.filter({
+      let actor = context.actors.first(where: {
         $0.identity == identity && $0.rock == rock.identity && $0.hull == body.hull
           && $0.energy == body.energy
-      }).count == 1
+      }), context.actors.filter({ $0.identity == identity }).count == 1
     else { return .ignored }
-    return physicalHit(rock: rock, eventID: eventID, damage: proof.damage, mining: false)
+    return physicalHit(
+      rock: rock, eventID: eventID, damage: proof.damage, mining: false,
+      motion: .init(
+        position: actor.position, velocity: actor.velocity,
+        physicalTime: context.physicalTime))
   }
 
   private mutating func physicalHit(
-    rock: MiningRock, eventID: UInt64, damage: Double, mining: Bool
+    rock: MiningRock, eventID: UInt64, damage: Double, mining: Bool,
+    motion: AsteroidMotion? = nil
   ) -> MiningHitResult {
+    if breakups[rock.identity] != nil {
+      return workBreakup(
+        rock: rock, eventID: eventID, damage: damage, mining: mining, motion: motion)
+    }
     guard damage.isFinite, damage > 0, rock.energy.isFinite,
       rock.energy > 0, Self.validMotion(rock.position),
       bit(rock.identity) != nil, !isDepleted(rock.identity),
@@ -349,6 +406,12 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     let payloads = remaining == 0 && mining ? yield(for: rock) : []
     guard hitStorageFits(rock: rock, remaining: remaining, mining: mining)
     else { return .capacityRefused }
+    if remaining == 0, !mining, AsteroidBeltDefinition.chunk(for: rock.identity) != nil {
+      guard breakups.count < Self.maximumPartial, let motion,
+        let breakup = AsteroidBreakup(rock: rock, motion: motion)
+      else { return .capacityRefused }
+      breakups[rock.identity] = breakup
+    }
     if rock.identity.field >= 4, ringTerminal == nil { ringTerminal = [:] }
     lastIncident = eventID
     if remaining > 0 {
@@ -365,6 +428,7 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     }
     partial.removeValue(forKey: rock.identity)
     for payload in payloads { pending[payload.identity] = payload }
+    if breakups[rock.identity] != nil { return .damaged(rock.energy) }
     return mining ? .extracted(payloads) : .destroyed
   }
 
@@ -391,10 +455,25 @@ public struct MiningLedger: Equatable, Codable, Sendable {
         system: context.system, visit: context.visit, sequence: sequence,
         member: 0, producer: .mining)
       offers[identity] = payload.identity
+      var position = payload.position
+      if case .ore(let root, let fragment) = payload.identity,
+        let time = breakups[root]?.payloadTimes[fragment], context.physicalTime >= time
+      {
+        position = position + payload.velocity * (context.physicalTime - time)
+        guard Self.validMotion(position) else {
+          offers.removeValue(forKey: identity)
+          continue
+        }
+        pending[payload.identity] = .init(
+          identity: payload.identity, amount: payload.amount,
+          position: position, velocity: payload.velocity)
+        breakups[root]?.payloadTimes[fragment] = context.physicalTime
+      }
       requests.append(
         SpawnRequest(
-          identity: identity, population: .cargo, hull: .cargo,
-          position: payload.position, orientation: Basis3(), velocity: payload.velocity,
+          identity: identity, population: isRubble(payload.identity) ? .asteroid : .cargo,
+          hull: isRubble(payload.identity) ? .asteroid : .cargo,
+          position: position, orientation: Basis3(), velocity: payload.velocity,
           npc: nil, rock: nil, payload: payload.identity, priority: .ordinary))
     }
     return requests
@@ -409,9 +488,12 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       if let actor = receipt.actor, receipt.refusal == nil,
         actor.system == receipt.request.system, actor.visit == receipt.request.visit,
         actor.entity >= 2, actor.entity < UInt64.max, actor.visit > 0, actor.visit < UInt64.max,
-        !bindings.values.contains(actor)
+        !bindings.values.contains(actor), !breakups.values.contains(where: { $0.binding == actor })
       {
         bindings[payload] = actor
+        if case .ore(let root, let fragment) = payload, breakups[root] != nil {
+          breakups[root]?.materialized.insert(fragment)
+        }
       }
     }
   }
@@ -420,13 +502,21 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   /// The caller supplies its latest live snapshot before releasing the binding.
   @discardableResult
   public mutating func updateOreMotion(
-    payload: PayloadIdentity, actor: ActorIdentity, position: Vector3, velocity: Vector3
+    payload: PayloadIdentity, actor: ActorIdentity, position: Vector3, velocity: Vector3,
+    physicalTime: Double? = nil
   ) -> Bool {
-    guard case .ore(let rock, _) = payload, rock.system == actor.system,
+    guard case .ore(let rock, let fragment) = payload, rock.system == actor.system,
       let item = pending[payload], item.identity == payload, bindings[payload] == actor,
       position.finite, velocity.finite, position.length.isFinite, velocity.length.isFinite,
       item.position != position || item.velocity != velocity
+        || (breakups[rock] != nil && physicalTime != nil
+          && physicalTime != breakups[rock]?.payloadTimes[fragment])
     else { return false }
+    if case .ore(let root, let fragment) = payload, breakups[root] != nil, let physicalTime {
+      guard physicalTime.isFinite, physicalTime >= (breakups[root]?.payloadTimes[fragment] ?? 0)
+      else { return false }
+      breakups[root]?.payloadTimes[fragment] = physicalTime
+    }
     pending[payload] = TypedCargoPayload(
       identity: item.identity, amount: item.amount, position: position, velocity: velocity)
     return true
@@ -436,11 +526,19 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     payload: PayloadIdentity, into cargo: inout [Int], freeTonnes: Int,
     hasScoops: Bool, approachAllowed: Bool, protection: MissionProtection
   ) -> CargoCollectionReceipt {
-    guard let item = pending[payload] else { return .refused(.unavailable) }
+    guard let item = pending[payload], !isRubble(payload) else { return .refused(.unavailable) }
     let receipt = item.collect(
       into: &cargo, freeTonnes: freeTonnes, hasScoops: hasScoops,
       approachAllowed: approachAllowed, protection: protection)
     if case .collected = receipt {
+      if case .ore(let rock, _) = payload, var breakup = breakups[rock] {
+        breakup.collectedUnits += item.amount.quantity
+        if case .ore(_, let fragment) = payload {
+          breakup.payloadTimes.removeValue(forKey: fragment)
+          breakup.materialized.insert(fragment)
+        }
+        breakups[rock] = breakup
+      }
       pending.removeValue(forKey: payload)
       bindings.removeValue(forKey: payload)
       offers = offers.filter { $0.value != payload }
@@ -451,6 +549,9 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   /// Culling releases a physical binding, never the collectible or depletion record.
   public mutating func cull(actor: ActorIdentity) {
     bindings = bindings.filter { $0.value != actor }
+    for rock in Array(breakups.keys) where breakups[rock]?.binding == actor {
+      breakups[rock]?.binding = nil
+    }
   }
 
   /// Physical destruction settles a pod without credit; culling merely hides it.
@@ -458,9 +559,16 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   public mutating func destroy(
     payload: PayloadIdentity, protection: MissionProtection? = nil
   ) -> Bool {
-    guard case .ore = payload, protection?.protectedPayloads.contains(payload) != true,
-      pending.removeValue(forKey: payload) != nil
+    guard case .ore(let rock, let fragment) = payload,
+      protection?.protectedPayloads.contains(payload) != true, pending[payload] != nil
     else { return false }
+    if var breakup = breakups[rock] {
+      guard !breakup.rubble.contains(fragment) else { return false }
+      breakup.rubble.insert(fragment)
+      breakups[rock] = breakup
+    } else {
+      pending.removeValue(forKey: payload)
+    }
     bindings.removeValue(forKey: payload)
     offers = offers.filter { $0.value != payload }
     return true
@@ -469,16 +577,21 @@ public struct MiningLedger: Equatable, Codable, Sendable {
   /// Use after rebuilding a scene from a save; old physical actors no longer exist.
   /// Pending cargo keeps its identity and amount and can be admitted again once.
   public mutating func resetPhysicalBindings(system: SystemIdentity) {
+    for rock in Array(breakups.keys) where rock.system == system { breakups[rock]?.binding = nil }
     offers = offers.filter { $0.key.system != system }
     bindings = bindings.filter { $0.value.system != system }
   }
 
-  /// Explicitly expire abandoned ore on departure; depleted rocks never regenerate.
+  /// Ordinary mined ore expires on departure. Breakup descendants retain mass custody;
+  /// depleted intact rocks never regenerate.
   public mutating func depart(system: SystemIdentity) {
     pending = pending.filter {
-      if case .ore(let rock, _) = $0.key { return rock.system != system }
+      if case .ore(let rock, _) = $0.key {
+        return rock.system != system || breakups[rock] != nil
+      }
       return true
     }
+    for rock in Array(breakups.keys) where rock.system == system { breakups[rock]?.binding = nil }
     offers = offers.filter { $0.key.system != system }
     bindings = bindings.filter { $0.value.system != system }
   }
@@ -529,5 +642,74 @@ public struct MiningLedger: Equatable, Codable, Sendable {
         identity: .ore(rock.identity, fragment: UInt16(index)), amount: amount,
         position: rock.position + offset, velocity: Vector3(Double(index + 1), 2, 3))
     }
+  }
+}
+
+extension MiningLedger {
+  func isRubble(_ payload: PayloadIdentity) -> Bool {
+    guard case .ore(let rock, let fragment) = payload else { return false }
+    return breakups[rock]?.rubble.contains(fragment) == true
+  }
+
+  private mutating func workBreakup(
+    rock: MiningRock, eventID: UInt64, damage: Double, mining: Bool, motion: AsteroidMotion?
+  ) -> MiningHitResult {
+    guard var breakup = breakups[rock.identity],
+      let chunk = AsteroidBeltDefinition.chunk(for: rock.identity),
+      rock.energy == chunk.energy, rock.radius == chunk.radius,
+      damage.isFinite, damage > 0,
+      eventID > 0, eventID < UInt64.max,
+      lastIncident.map({ eventID > $0 }) ?? true
+    else { return .ignored }
+    if let motion {
+      guard motion.valid, motion.physicalTime >= breakup.motion.physicalTime else {
+        return .ignored
+      }
+      breakup.motion = motion
+    }
+    let available = breakup.maximumCollectibleUnits - breakup.issuedUnits
+    let workRemaining = mining ? max(0, breakup.workEnergy - damage) : breakup.workEnergy
+    guard !mining || workRemaining > 0 || pending.count + available <= Self.maximumPending else {
+      return .capacityRefused
+    }
+    if mining { breakup.workEnergy = workRemaining }
+    if mining, workRemaining == 0, available > 0 {
+      let unit = AsteroidBreakup.kilogramsPerUnit(breakup.commodity)
+      for fragment in breakup.issuedUnits..<breakup.maximumCollectibleUnits {
+        breakup.payloadTimes[UInt16(fragment)] = breakup.motion.physicalTime
+        let identity = PayloadIdentity.ore(rock.identity, fragment: UInt16(fragment))
+        pending[identity] = .init(
+          identity: identity, amount: .init(commodity: breakup.commodity, quantity: 1),
+          position: breakup.motion.position
+            + Vector3(0, 0, rock.radius + 100 + Double(fragment) * 80),
+          velocity: breakup.motion.velocity)
+      }
+      breakup.aggregateMassKg -= Double(available) * unit
+      breakup.issuedUnits += available
+    }
+    breakups[rock.identity] = breakup
+    lastIncident = eventID
+    return .damaged(rock.energy)
+  }
+}
+
+extension MiningLedger {
+  mutating func bindBreakup(rock: RockIdentity, actor: ActorIdentity) {
+    guard actor.system == rock.system, actor.entity >= 2, actor.entity < UInt64.max,
+      actor.visit > 0, actor.visit < UInt64.max,
+      breakups[rock]?.binding == nil || breakups[rock]?.binding == actor,
+      !breakups.contains(where: { $0.key != rock && $0.value.binding == actor }),
+      !bindings.values.contains(actor)
+    else { return }
+    breakups[rock]?.binding = actor
+  }
+
+  mutating func bindRubble(payload: PayloadIdentity, actor: ActorIdentity) {
+    guard case .ore(let rock, _) = payload, isRubble(payload), pending[payload] != nil,
+      actor.system == rock.system, actor.entity >= 2, actor.entity < UInt64.max,
+      actor.visit > 0, actor.visit < UInt64.max, !bindings.values.contains(actor),
+      !breakups.values.contains(where: { $0.binding == actor })
+    else { return }
+    bindings[payload] = actor
   }
 }

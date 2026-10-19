@@ -76,6 +76,7 @@ extension Game {
 
   /// Actor isolation makes this the current canonical snapshot, before any binding is culled.
   mutating func persistOrePoses() {
+    persistAsteroidBreakupMotion()
     let pose = commander.flightSimulation.pose
     for body in bodies where body.energy > 0 {
       guard let physical = body.physical, let payload = physical.payload,
@@ -85,7 +86,8 @@ extension Game {
       else { continue }
       _ = commander.miningLedger.updateOreMotion(
         payload: payload, actor: physical.identity,
-        position: pose.systemPoint(body.position), velocity: physical.velocity)
+        position: pose.systemPoint(body.position), velocity: physical.velocity,
+        physicalTime: commander.flightSimulation.physicalTime)
     }
   }
 
