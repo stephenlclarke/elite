@@ -96,12 +96,39 @@ func empArchiveNestedTimerSavePublishesAndReplaysOnce(archive: Bool) async throw
   #expect(await restored.snapshot().commander.credits == 1025)
 }
 
+// Observe only after this regression's actual first save fails. Preparation is replayed on an
+// isolated value to identify its existing refusal; it writes no file or runtime state.
+@inline(never)
+private func empArchiveFirstSaveRefusal(_ failed: Game, archive: Bool) -> String {
+  let diagnostics = ScriptRefusalDiagnostic()
+  do {
+    let prepared = try GameRuntime.prepareNativeSaveState(
+      failed, diagnostics: diagnostics, diagnosticBoundary: .resolver)
+    let world = prepared.game.scriptWorldSave
+    let scene = world.consistent(with: prepared.commander, diagnostics: diagnostics)
+    let checks = ScriptRefusalObservation.storeChecks(
+      prepared.commander, world: world, scope: "commander")
+    return "EMP first save refused: archive=\(archive),nativePreparation=passed,"
+      + "worldValid=\(world.valid),scene=\(scene),storeChecks=\(checks),"
+      + (diagnostics.detail() ?? "no observed native or scene refusal")
+  } catch {
+    return "EMP first save refused: archive=\(archive),nativePreparation=refused,"
+      + (diagnostics.detail() ?? "no observed native refusal")
+  }
+}
+
 @Test(arguments: [false, true])
 func empArchiveNestedTimerWriterFailureRetainsArchiveAndRetries(archive: Bool) async throws {
   let fixture = try empArchiveTimerFixture()
   defer { fixture.clean() }
   let runtime = GameRuntime(game: try fixture.game(archive: archive), saveURL: fixture.url)
-  try await runtime.save(to: fixture.url)
+  do {
+    try await runtime.save(to: fixture.url)
+  } catch {
+    let failed = await runtime.snapshot()
+    Issue.record(Comment(rawValue: empArchiveFirstSaveRefusal(failed, archive: archive)))
+    throw error
+  }
   let bytes = try Data(contentsOf: fixture.url)
   try fixture.breakWriter()
   let denied = await runtime.advance(delta: 0.05)
