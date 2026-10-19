@@ -43,6 +43,36 @@ private struct TrialEquipmentQuoteFixture {
   func clean() { try? FileManager.default.removeItem(at: directory) }
 }
 
+private func reviewPinnedCourierEquipmentTrial(_ runtime: GameRuntime) async throws {
+  let initial = await runtime.snapshot()
+  let declined = try #require(initial.contractBoard.quote)
+  #expect(!declined.allowed)
+  #expect(
+    declined.issues == [
+      "Frozen itinerary has no deadline headroom. This listing cannot be accepted."
+    ])
+  await #expect(throws: MissionPackError.self) { try await runtime.confirmContract(declined) }
+  let afterRefusal = await runtime.snapshot().commander
+  #expect(afterRefusal == initial.commander)
+  let board = try #require(initial.commander.contracts.boards[declined.board])
+  let pinned = try #require(board.offers.indices.contains(4) ? board.offers[4] : nil)
+  let terms = try #require(pinned.courier)
+  try #require(terms.row == 4 && terms.calendarLowerBoundSeconds < terms.duration)
+  // Navigate the same published board. No refresh, reroll, altered pack or deadline extension.
+  await runtime.key("escape")
+  for _ in 0..<initial.contractBoard.rows.count {
+    let selected = await runtime.snapshot().contractBoard.selected?.offer?.id
+    if selected == pinned.id { break }
+    await runtime.key("down")
+  }
+  let selected = await runtime.snapshot().contractBoard.selected?.offer?.id
+  try #require(selected == pinned.id)
+  await runtime.key("return")
+  let reviewed = await runtime.snapshot()
+  #expect(reviewed.contractBoard.quote?.offer == pinned.id)
+  #expect(reviewed.commander.contracts.boards[declined.board] == board)
+}
+
 private func usePublishedTrialQuote(
   _ runtime: GameRuntime, quote: ContractAcceptanceQuote, pledge: Bool
 ) async throws -> Commander {
@@ -92,6 +122,7 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
   try await runtime.startScriptGalleryTrial(packDigest: fixture.pack.digest, seed: 42)
   let namespace = try #require(await runtime.gallerySaveDirectory())
   defer { try? FileManager.default.removeItem(at: namespace) }
+  if scenario.scene && !scenario.pledge { try await reviewPinnedCourierEquipmentTrial(runtime) }
   let published = await runtime.snapshot()
   let quote = try #require(published.contractBoard.quote)
   let inventory = try #require(published.commander.equipmentInventory)
@@ -137,6 +168,7 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
   #expect(try Data(contentsOf: fixture.save) == bytes)
 
   try await runtime.restartScriptGalleryTrial()
+  if scenario.scene && !scenario.pledge { try await reviewPinnedCourierEquipmentTrial(runtime) }
   let restarted = await runtime.snapshot()
   let restartQuote = try #require(restarted.contractBoard.quote)
   let nextInventory = try #require(restarted.commander.equipmentInventory)

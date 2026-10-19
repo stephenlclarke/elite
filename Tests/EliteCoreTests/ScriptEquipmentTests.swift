@@ -70,7 +70,13 @@ struct GearScriptFixture {
   var game = Game(executive: false)
   game.screen = .status
   game.commander.installTargetingComputer(.docking)
+  // Controlled origin initialization, before acceptance; the authored destination stays 129.
+  game.commander.system = 167
+  game.market = MarketItem.at(game.currentSystem)
   game.selectedSystem = 129
+  try game.commander.prepareEquipment()
+  let distance = game.currentSystem.distance(to: game.systems[129])
+  try #require(distance > 0 && distance <= game.commander.maximumJumpDistance)
   game.scriptPacks = [pack]
   let folder = FileManager.default.temporaryDirectory.appendingPathComponent(
     "loan-voyage-" + UUID().uuidString)
@@ -90,7 +96,8 @@ struct GearScriptFixture {
   for _ in 0..<200 where scene.massLocked { scene = await runtime.advance(delta: 0.1) }
   await runtime.setControls(Controls())
   await runtime.key("h")
-  #expect(await runtime.snapshot().jumpCountdown != nil)
+  let departing = await runtime.snapshot()
+  try #require(departing.jumpCountdown != nil, Comment(rawValue: departing.message))
   for _ in 0..<200 {
     scene = await runtime.advance(delta: 0.1)
     if scene.commander.system == 129 { break }

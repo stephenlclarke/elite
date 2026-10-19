@@ -419,14 +419,20 @@ private struct WorldJobFixture {
   try FileManager.default.removeItem(at: blocked)
   try FileManager.default.createDirectory(at: blocked, withIntermediateDirectories: true)
   try await runtime.resumeScriptMission(origin)
-  let repaired = await runtime.snapshot()
+  var repaired = await runtime.snapshot()
   #expect(repaired.bodies.first { $0.missionActorID == resource }?.energy == nativeEnergy + 20)
   #expect(repaired.commander.scriptState.worldJobs[id]?.status == .complete)
   #expect(repaired.commander.scriptState.worldJobs[id]?.acknowledgedThrough == pending.sequence)
   let restored = GameRuntime(game: game)
   try await restored.load(from: target)
-  #expect(await restored.snapshot().commander == repaired.commander)
-  #expect(await restored.snapshot().bodies == repaired.bodies)
+  // Loading intentionally allocates fresh runtime bindings for the same registered RRS stations.
+  // Apply only that existing scene-binding boundary to the expected live snapshot.
+  try repaired.rebindNativeStationsAfterLoad()
+  let loaded = await restored.snapshot()
+  #expect(loaded.commander == repaired.commander)
+  #expect(loaded.bodies == repaired.bodies)
+  #expect(loaded.commander.scriptState.worldJobs[id]?.acknowledgedThrough == pending.sequence)
+  #expect(loaded.bodies.first { $0.missionActorID == resource }?.energy == nativeEnergy + 20)
 }
 
 @Test func worldJobCounterEnableAndResetFollowActualCallbacksRatherThanElapsedSeconds() throws {
