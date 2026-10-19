@@ -328,7 +328,7 @@ private func sortedWorld(_ game: Game) throws -> Data {
   await loaded.marketClick(x: layout.trade.x + 1, y: layout.trade.y + 1)
   let sold = await loaded.snapshot()
   #expect(sold.commander.cargo[0] == food - 1)
-  #expect(sold.commander.credits == market.commander.credits + market.market[0].price)
+  #expect(sold.commander.credits == market.commander.credits + market.market[0].bidPrice)
   #expect(sold.market[0].quantity == market.market[0].quantity + 1)
   #expect(sold.commander.scriptState.payloadTonnes == market.commander.scriptState.payloadTonnes)
   #expect(sold.commander.scriptState.instances[id] == market.commander.scriptState.instances[id])
