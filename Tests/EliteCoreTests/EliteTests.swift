@@ -828,7 +828,17 @@ private func reboundJumpLimitWorldAfterLoad(
   game.commander.credits = 100000
   game.selectedSystem = 129
   game.market = MarketItem.at(game.currentSystem)
+  // Seeded stock need not exceed the fitted hold; supply one real profitable tonne export.
+  let bulkExport = try #require(
+    game.profitableExports(to: game.targetSystem).first { Commodity.all[$0.index].unit == "t" })
+  let bulkQuantity = game.commander.standardCargoCapacity + 1
+  try #require(
+    bulkQuantity * game.market[bulkExport.index].price <= game.commander.credits - game.refillCost)
+  for index in game.market.indices { game.market[index].quantity = 0 }
+  game.market[bulkExport.index].quantity = bulkQuantity
+  try #require(game.commander.valid)
   game.autoTrade()
+  #expect(game.commander.cargo[bulkExport.index] == bulkQuantity)
   #expect(
     game.commander.credits < 100000
       && game.commander.cargoTonnes > game.commander.standardCargoCapacity)
