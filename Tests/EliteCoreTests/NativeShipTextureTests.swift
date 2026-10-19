@@ -116,4 +116,40 @@ struct NativeShipTextureTests {
       }
     }
   }
+  @MainActor @Test func originalPaletteMatchesNativeBitmapAndRetina() throws {
+    let texture = try #require(ShipTextureAssets.pixels(for: "l337-patrol-diffuse"))
+    let sample = texture.pixels[345 * texture.width + 123]
+    let mean = Double(((sample >> 24) & 255) + ((sample >> 16) & 255) + ((sample >> 8) & 255)) / 3
+    let relief = min(1.10, max(0.27, mean / 86))
+    let litMaterial: UInt32 = 0xC828_14FF
+    let expected =
+      UInt32((200 * relief).rounded()) << 24
+      | UInt32((40 * relief).rounded()) << 16 | UInt32((20 * relief).rounded()) << 8 | 255
+    let u = 123.5 / Double(texture.width)
+    let v = 345.5 / Double(texture.height)
+    let triangle = ShipTexturedTriangle(
+      vertices: [(20.0, 20.0), (60.0, 20.0), (20.0, 60.0)].map {
+        .init(point: .init($0.0, $0.1), reciprocalDepth: 1, uOverDepth: u, vOverDepth: v)
+      }, texture: "l337-patrol-diffuse", brightness: 0.5,
+      clip: .init(x: 21, y: 21, width: 38, height: 38),
+      appearance: .originalSurface(litMaterial: litMaterial))
+    var bitmap = Frame()
+    bitmap.textured(triangle)
+    #expect(bitmap.pixels[25 * 256 + 25] == expected)
+    var native = Frame()
+    native.rasterizeGraphics = false
+    native.textured(triangle)
+    for size in [256, 512] {
+      let image = try #require(imageFor(native, pixelSize: size))
+      let data = try #require(image.dataProvider?.data)
+      let bytes = try #require(CFDataGetBytePtr(data))
+      let position = size == 256 ? 25 : 51
+      let offset = position * image.bytesPerRow + position * 4
+      #expect(bytes[offset] == UInt8((expected >> 24) & 255))
+      #expect(bytes[offset + 1] == UInt8((expected >> 16) & 255))
+      #expect(bytes[offset + 2] == UInt8((expected >> 8) & 255))
+      #expect(bytes[offset + 3] == 255)
+    }
+  }
+
 }

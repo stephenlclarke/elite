@@ -356,9 +356,18 @@ public enum Display {
               ShipProjection.shade(
                 0xffff_ffff, normal: normal,
                 emissive: material?.emissive ?? false) >> 24) / 255
+          let appearance: ShipTextureAppearance
+          if OriginalShipTextureAssets.allowedIDs.contains(texture.asset), let material {
+            appearance = .originalSurface(
+              litMaterial: ShipProjection.shade(
+                material.colour, normal: normal, emissive: material.emissive))
+          } else {
+            appearance = .sourceRGB
+          }
           let triangles = ShipTextureProjection.triangles(
             vertices: face.map { vertices[$0] }, uv: texture.uv, projection: projection,
-            texture: texture.asset, brightness: brightness, clip: frame.flightClip)
+            texture: texture.asset, brightness: brightness, clip: frame.flightClip,
+            appearance: appearance)
           if !triangles.isEmpty {
             for triangle in triangles { frame.textured(triangle) }
             continue
