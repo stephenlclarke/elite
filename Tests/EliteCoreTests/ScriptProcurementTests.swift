@@ -209,7 +209,7 @@ import Testing
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
   await runtime.procurementBuy(unrelated)
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path)
+  try await ScriptProcurementFixture.travel(runtime, path: plan.path, verifyDeparture: true)
   await ScriptProcurementFixture.contact(runtime)
   let partial = await runtime.snapshot()
   let first = try #require(
@@ -223,7 +223,7 @@ import Testing
     if before.commander.scriptState.instances[id]?.outcome != .active { break }
     await runtime.procurementRefuel()
     let path = journeys.isMultiple(of: 2) ? Array(plan.path.reversed()) : plan.path
-    try await ScriptProcurementFixture.travel(runtime, path: path)
+    try await ScriptProcurementFixture.travel(runtime, path: path, verifyDeparture: true)
     journeys += 1
   }
   let expired = await runtime.snapshot()

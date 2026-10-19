@@ -204,6 +204,66 @@ private func selectCompletionPatrolTarget(_ game: inout Game, child: UUID) throw
     Comment(rawValue: campaignPatrolDiagnostic(game, child: child)))
 }
 
+/// Receipt composition keeps real mission combat and police; only unrelated traffic is configured.
+private func prepareCompletionReceiptTraffic(_ game: inout Game) throws {
+  try #require(!game.docked && game.screen.isFlight && game.energy > 0 && !game.paused)
+  try deferCompletionReceiptTraffic(&game)
+  let observed = game.gameplayContext()
+  let context = try #require(observed)
+  try #require(Set(context.actors.map(\.identity)).count == context.actors.count)
+  try #require(!context.actors.contains { $0.identity == context.player.identity })
+  for index in game.bodies.indices {
+    let body = game.bodies[index]
+    guard body.hull.isTargetShip else { continue }
+    let physical = try #require(body.physical)
+    var npc = try #require(physical.npc)
+    // Every assigned/protected craft retains its authored driver and actual combat state.
+    if npc.role == .police || npc.role == .mission
+      || body.missionInstanceID != nil || body.missionActorID != nil
+      || body.scriptNPC != nil || body.scriptShot != nil || body.navalTarget
+      || body.blackjackRole != nil || body.blackjackIdentity != nil
+      || physical.spawnIdentity?.producer == .provider
+      || physical.empSource != nil || physical.empCrewPod != nil || physical.salvage != nil
+      || context.protection.protectedActors.contains(physical.identity)
+    {
+      continue
+    }
+    try #require(
+      [.trader, .miner, .pirate].contains(npc.role)
+        && [.civilian, .pirate].contains(physical.population) && !game.isEMPDisabled(body)
+        && physical.identity.system == context.system && physical.identity.visit == context.visit
+        && physical.identity != context.player.identity
+        && game.bodies.filter({ $0.physical?.identity == physical.identity }).count == 1)
+    let actor = try #require(context.actors.first { $0.identity == physical.identity })
+    try #require(
+      actor.npc == physical.npc && actor.hull == body.hull && actor.energy == body.energy
+        && body.energy.isFinite && body.energy > 0 && body.position.finite
+        && (npc.resources?.valid ?? true))
+    npc.role = .trader
+    npc.intention = .dock(context.anchors.station.identity)
+    game.bodies[index].hostile = false
+    game.bodies[index].physical?.population = .civilian
+    game.bodies[index].physical?.npc = npc
+  }
+}
+
+private func deferCompletionReceiptTraffic(_ game: inout Game) throws {
+  let observed = game.gameplayContext()
+  let context = try #require(observed)
+  let player = try #require(game.commander.flightSimulation.player)
+  let director = try #require(game.commander.encounterDirector)
+  try #require(
+    context.player.identity == player && context.system == game.systemIdentity
+      && context.visit == game.commander.flightSimulation.visit
+      && context.revision == game.gameplayRevision
+      && context.physicalTime == game.commander.flightSimulation.physicalTime
+      && director.system == context.system && director.visit == context.visit
+      && director.decisionCount == 0 && director.admittedCount == 0
+      && director.pendingRequests.isEmpty)
+  // Maintained history/NPC-resource pattern: the first unconsumed proposal is 8-12 seconds away.
+  game.commander.encounterDirector = EncounterDirector(context: context)
+}
+
 private struct CompletionFixture {
   let root: URL
   let child: ScriptPack
@@ -312,13 +372,15 @@ private struct CompletionFixture {
     game.scriptPacks = [child, parent]
     return game
   }
-  func completePatrol(_ game: inout Game, report: Bool = true, expected: ScriptOutcome = .complete)
-    throws -> UUID
-  {
+  func completePatrol(
+    _ game: inout Game, report: Bool = true, expected: ScriptOutcome = .complete,
+    isolateOrdinaryTraffic: Bool = false
+  ) throws -> UUID {
     try fitCompletionPatrolTargeting(&game)
     let id = try game.acceptScriptMission(child)
     game.launch()
     game.emitScriptEvent("station.undocked")
+    if isolateOrdinaryTraffic { try prepareCompletionReceiptTraffic(&game) }
     let legalBefore = game.commander.legal
     try #require(legalBefore == 0)
     let beforeFire = campaignPatrolDiagnostic(game, child: id)
@@ -330,6 +392,7 @@ private struct CompletionFixture {
         try selectCompletionPatrolTarget(&game, child: id)
         firing.fire = try campaignPatrolHasActualLaserContact(game, child: id)
       }
+      if isolateOrdinaryTraffic { try deferCompletionReceiptTraffic(&game) }
       game.tick(delta: 0.1, controls: firing)
       if game.commander.scriptState.instances[id]?.ownedEncounters["raiders"]?.destroyed == true {
         break
@@ -364,7 +427,10 @@ private struct CompletionFixture {
           + "; afterSelection=" + actualStationGuidanceDiagnostic(game)))
     let beforeDock =
       campaignPatrolDiagnostic(game, child: id) + "; " + actualStationGuidanceDiagnostic(game)
-    for _ in 0..<5000 where !game.docked { game.tick(delta: 0.02, controls: firing) }
+    for _ in 0..<5000 where !game.docked {
+      if isolateOrdinaryTraffic { try deferCompletionReceiptTraffic(&game) }
+      game.tick(delta: 0.02, controls: firing)
+    }
     #expect(
       game.docked && game.dockedAtMainStation,
       Comment(
@@ -730,7 +796,8 @@ private struct CompletionFixture {
   var children: [UUID] = []
   for index in 0..<4 {
     children.append(
-      try fixtures[index].completePatrol(&game, expected: index == 3 ? .failed : .complete))
+      try fixtures[index].completePatrol(
+        &game, expected: index == 3 ? .failed : .complete, isolateOrdinaryTraffic: true))
     #expect(game.commander.scriptState.instances[parentID]?.outcome == .active)
   }
   game.drainScriptEvents()
