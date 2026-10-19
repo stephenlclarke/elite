@@ -1337,3 +1337,170 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
       "Status: \(game.autoPilot.status), goal: \(game.autoPilot.positionError), facing: \(game.autoPilot.facingError), phase: \(game.autoPilot.phaseError), rate: \(game.autoPilot.rateError), velocity: \(game.flightWorldVelocity)"
     ))
 }
+
+/// Controlled native selection boundary, using real emitted beams for both attack joins.
+/// The original history flights, loadout, traffic and assertions remain unchanged.
+private func stationAutoTrackingPair() throws -> (game: Game, retained: Int, contender: Int) {
+  var game = try stationAutoGame()
+  let first = try #require(game.bodies.firstIndex { $0.hostile })
+  let retained = game.bodies[first].id
+  let contender = try stationAutoAddNativeAttacker(
+    &game, position: .init(300, 0, 1150), sequence: 940)
+  let second = try #require(game.bodies.firstIndex { $0.id == contender })
+  game.bodies[first].missiles = 0
+  game.bodies[second].missiles = 0
+  game.emitLegacyNPCBeam(bodyID: retained, damage: LaserKind.pulse.damage)
+  game.emitLegacyNPCBeam(bodyID: contender, damage: LaserKind.pulse.damage)
+  let context = try #require(game.gameplayContext())
+  for id in [retained, contender] {
+    let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
+    try #require(
+      game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: actor, against: context.player.identity, context: context))
+  }
+  let station = try #require(game.autoTargetBody)
+  _ = game.stationAutoGuidance(target: station)
+  try #require(game.stationAutoDefence?.combatActor == game.bodies[first].physical?.identity)
+  return (game, retained, contender)
+}
+
+@Test func stationAutoResponseKeepsCurrentActorWhenNearestDistancesCross() throws {
+  let pair = try stationAutoTrackingPair()
+  var game = pair.game
+  let first = try #require(game.bodies.firstIndex { $0.id == pair.retained })
+  let second = try #require(game.bodies.firstIndex { $0.id == pair.contender })
+  let retained = try #require(game.bodies[first].physical?.identity)
+  let destination = game.autoPilot.targetActor
+  game.bodies[first].position = .init(0, 0, 1100)
+  game.bodies[second].position = .init(100, 0, 600)
+  let station = try #require(game.autoTargetBody)
+  let guidance = try #require(game.stationAutoGuidance(target: station))
+  #expect(game.stationAutoDefence?.combatActor == retained)
+  #expect(guidance.aim == game.bodies[first].position)
+  #expect(game.autoPilot.targetActor == destination && game.commander.legal == 0)
+}
+
+@Test(arguments: ["dead", "outside-current-range"])
+func stationAutoResponseReplacesCurrentActorAndResetsMotion(condition: String) throws {
+  let pair = try stationAutoTrackingPair()
+  var game = pair.game
+  let first = try #require(game.bodies.firstIndex { $0.id == pair.retained })
+  let second = try #require(game.bodies.firstIndex { $0.id == pair.contender })
+  let station = try #require(game.autoTargetBody)
+  let limits = game.workLimits
+  let initial = try #require(game.stationAutoGuidance(target: station))
+  _ = game.autoPilot.steer(target: station, delta: 0.1, limits: limits, defence: initial)
+  game.bodies[first].position = .init(50, 0, 1000)
+  let moving = try #require(game.stationAutoGuidance(target: station))
+  _ = game.autoPilot.steer(target: station, delta: 0.1, limits: limits, defence: moving)
+  if condition == "dead" {
+    game.bodies[first].energy = 0
+  } else {
+    game.bodies[first].position = .init(0, 0, 9000)
+  }
+  game.bodies[second].position = .init(-25, 0, 1000)
+  let replacement = try #require(game.stationAutoGuidance(target: station))
+  #expect(game.stationAutoDefence?.combatActor == game.bodies[second].physical?.identity)
+  #expect(replacement.aim == game.bodies[second].position)
+  let actual = game.autoPilot.steer(
+    target: station, delta: 0.1, limits: limits, defence: replacement)
+  var fresh = AutoTargetControl()
+  let expected = fresh.steer(target: station, delta: 0.1, limits: limits, defence: replacement)
+  // A new actor starts from its own bearing, without the previous actor's measured motion.
+  #expect(actual.pitch == expected.pitch && actual.yaw == expected.yaw)
+}
+
+@Test func stationAutoConfirmedMilitaryResponsePreemptsRetainedActor() throws {
+  let pair = try stationAutoTrackingPair()
+  var game = pair.game
+  // Same controlled military/ECM unit fit used by the existing native confirmation tests.
+  try game.commander.grantEquipment(
+    TargetingTier.military.equipmentName, at: .targetingCore,
+    provenance: .grant("station AUTO unit"))
+  try game.commander.grantEquipment(
+    "E.C.M. System", at: .utility(.ecm), provenance: .grant("station AUTO unit"))
+  game.commander.retaliationEnabled = true
+  let second = try #require(game.bodies.firstIndex { $0.id == pair.contender })
+  game.bodies[second].missiles = 1
+  let actor = try #require(game.bodies[second].physical?.identity)
+  let launched = game.launchGameplayNPCMissile(bodyID: pair.contender)
+  try #require(launched)
+  game.detectIncomingMissiles()
+  try #require(game.retaliation.pendingResponse(time: game.time)?.actor == actor)
+  let station = try #require(game.autoTargetBody)
+  let destination = game.autoPilot.targetActor
+  let guidance = try #require(game.stationAutoGuidance(target: station))
+  #expect(game.stationAutoDefence?.combatActor == actor)
+  #expect(guidance.aim == game.bodies[second].position)
+  #expect(game.retaliation.pendingResponse(time: game.time)?.actor == actor)
+  #expect(game.autoPilot.targetActor == destination && game.commander.legal == 0)
+}
+
+@Test(arguments: ["pitch", "yaw"])
+func stationAutoDefensiveTrackerAcquiresMovingBearingWithinTurnAndThrustLimits(axis: String) {
+  var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 5000))
+  station.rotationRate = 0
+  var control = AutoTargetControl()
+  var bearing = Vector3(0, 0, 1000)
+  let limits = AutoTargetControl.policyLimits
+  let delta = 0.05
+  let angularRate = 0.25
+  var peakSettledError = 0.0
+  for step in 0..<160 {
+    // A prescribed moving line of sight plus the actual returned camera rotation closes the loop.
+    bearing = bearing.rotated(
+      pitch: axis == "pitch" ? -angularRate * delta : 0, roll: 0,
+      yaw: axis == "yaw" ? -angularRate * delta : 0)
+    if step >= 80 {
+      peakSettledError = max(
+        peakSettledError,
+        hypot(
+          atan2(bearing.y, hypot(bearing.x, bearing.z)),
+          atan2(bearing.x, bearing.z)))
+    }
+    let pressure = StationAutoGuidance(
+      aim: bearing, lateralVelocity: .init(0, 0, 0), hazard: .active,
+      interruptionAllowed: true, clearanceRadius: 400)
+    let before = control.velocity
+    let steering = control.steer(target: station, delta: delta, limits: limits, defence: pressure)
+    #expect(abs(steering.pitch) <= limits.pitchRate && abs(steering.yaw) <= limits.yawRate)
+    #expect((control.velocity - before).length <= limits.acceleration * delta + 1e-8)
+    #expect(control.velocity.length <= limits.speed + 1e-8)
+    #expect(!control.finalApproach && !control.ready)
+    let pitch = steering.pitch * delta
+    let yaw = steering.yaw * delta
+    bearing = bearing.rotated(pitch: pitch, roll: 0, yaw: yaw)
+    station.position = station.position.rotated(pitch: pitch, roll: 0, yaw: yaw)
+    station.orientation.rotate(pitch: pitch, roll: 0, yaw: yaw)
+    control.rotateVelocity(pitch: pitch, roll: 0, yaw: yaw)
+  }
+  // A proportional chase leaves a persistent lag outside this small firing bearing.
+  #expect(peakSettledError < 0.02)
+}
+
+@Test func stationAutoDefensiveTrackerDropsPredictionAcrossApproachMode() {
+  var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 5000))
+  station.rotationRate = 0
+  var control = AutoTargetControl()
+  let initial = StationAutoGuidance(
+    aim: .init(0, 0, 1000), lateralVelocity: .init(0, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400)
+  _ = control.steer(target: station, delta: 0.1, defence: initial)
+  let moving = StationAutoGuidance(
+    aim: .init(50, 0, 1000), lateralVelocity: .init(0, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400)
+  _ = control.steer(target: station, delta: 0.1, defence: moving)
+  let clear = StationAutoGuidance(
+    aim: nil, lateralVelocity: .init(0, 0, 0), hazard: .clear,
+    interruptionAllowed: true, clearanceRadius: 400)
+  _ = control.steer(target: station, delta: 0.1, defence: clear)
+  #expect(control.stationDefencePhase == .returning)
+  let renewed = StationAutoGuidance(
+    aim: .init(-50, 0, 1000), lateralVelocity: .init(0, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400, joinedIncoming: true)
+  let actual = control.steer(target: station, delta: 0.1, defence: renewed)
+  var fresh = AutoTargetControl()
+  let expected = fresh.steer(target: station, delta: 0.1, defence: renewed)
+  #expect(control.stationDefencePhase == .defending && !control.finalApproach)
+  #expect(actual.pitch == expected.pitch && actual.yaw == expected.yaw)
+}

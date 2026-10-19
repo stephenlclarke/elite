@@ -278,13 +278,26 @@ extension Game {
       return stationAutoKnownTarget(body, context: context)
         && commander.crimeLedger.hasCurrentUnlawfulAttack(
           from: actor, against: context.player.identity, context: context)
-    }.min { $0.position.length < $1.position.length }
-    let combat =
-      confirmed ?? authenticated
-      ?? nearby.filter { stationAutoKnownTarget($0, context: context) }.min {
-        $0.position.length == $1.position.length
-          ? $0.id < $1.id : $0.position.length < $1.position.length
-      }
+    }
+    let previous = stationAutoDefence?.combatActor
+    let combat: SpaceBody?
+    if let confirmed {
+      combat = confirmed
+    } else if let retained = authenticated.first(where: { $0.physical?.identity == previous }) {
+      combat = retained
+    } else if let nearest = authenticated.min(by: { $0.position.length < $1.position.length }) {
+      combat = nearest
+    } else {
+      let eligible = nearby.filter { stationAutoKnownTarget($0, context: context) }
+      combat =
+        eligible.first(where: { $0.physical?.identity == previous })
+        ?? eligible.min {
+          $0.position.length == $1.position.length
+            ? $0.id < $1.id : $0.position.length < $1.position.length
+        }
+    }
+    // Retention chooses only among fresh policy results, never cached attack authority.
+    if previous != combat?.physical?.identity { autoPilot.resetTargetMotion() }
     stationAutoDefence?.combatActor = combat?.physical?.identity
     let dangers = nearby + assessment.incoming + (confirmed.map { [$0] } ?? [])
     guard
