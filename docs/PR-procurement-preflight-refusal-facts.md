@@ -1,0 +1,7 @@
+# Include already-held refusal premises in the existing failure message
+
+The existing preflight `#require(action != .refuse)` now includes phase, total step and `facts.valid`, `live`, `docked`, `paused` and `automaticEngaged` in its failure text. These values are already held at the failing guard. No local, query, predicate, call order, control flow, recorder, API, state or Game copy is added or changed. All other helper assertions and operations, production code, twelve original history arguments and thirty-nine history assertions remain exact.
+
+Static validation reverses only this message/formatting to reproduce the original shared fixture byte-for-byte, checks the exact changed-file scope and unchanged history file, and runs strict Swift formatting, Markdown lint and whitespace checks. No author compiler, runtime, native app, debugger, profiler or ABI job runs. G1 performs one independent source review, integration/incremental coherent compile and one at-most-90-second original twelve-argument execution with diagnostic flags off. Expected evidence is the existing failure with its exact guard values, not a fix/pass claim; no automatic retry, broad trace, resource grant or pilot tuning is authorized. Prior station-579 acceptance remains in its qualified scope.
+
+Use the actual failed premise to decide the next repair. Full CI, completed clean `@codex review` and required final-head checks remain merge requirements. See the [issue](ISSUE-procurement-preflight-refusal-facts.md).
