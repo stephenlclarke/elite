@@ -1,5 +1,17 @@
 import Foundation
 
+// Synchronous per-terminal ownership only; no actor hop, persisted cache or new authority.
+private final class ScriptFreightTerminalAttempt {
+  var candidate: Game
+  var stage: ScriptRefusalStage
+
+  @inline(never)
+  init(original: borrowing Game) {
+    candidate = copy original
+    stage = .freightGuard
+  }
+}
+
 /// Unencoded acceptance authority travels through the existing private prepared candidate.
 struct ScriptFreightIssueAdmission: Sendable {
   fileprivate let job: ScriptContractJob
@@ -154,54 +166,114 @@ extension Game {
       return id
     }.sorted { $0.uuidString < $1.uuidString }
     for id in due {
-      var candidate = self
-      var stage = ScriptRefusalStage.freightGuard
-      do {
-        guard var state = candidate.commander.scriptState.instances[id],
-          let cargo = state.savedOwnedCargo, candidate.commander.freightStateValid(state),
-          candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
-        else { throw SaveError.invalidCommander }
-        let cause: ScriptFreightTerminalCause
-        if cargo.pendingLoss != nil {
-          cause = .shipDestroyed
-        } else if escape {
-          cause = .escapePod
-        } else {
-          cause = .expired
-        }
-        let context = cargo.pendingLoss?.context ?? candidate.scriptEventContext(state)
-        let sequence = candidate.commander.scriptState.nextEvent + 1
-        candidate.commander.scriptState.nextEvent = sequence
-        stage = .freightFinish
-        try candidate.finishFreight(
-          cause, state: &state, sequence: sequence, context: context,
-          candidate: &candidate.commander)
-        candidate.commander.scriptState.instances[id] = state
-        candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
-        stage = .completionEnqueue
-        if let receipt = state.completionReceipt { try candidate.enqueueScriptCompletion(receipt) }
-        stage = .freightCommander
-        guard candidate.commander.valid else { throw SaveError.invalidCommander }
-        stage = .freightPublish
-        try publish?(&candidate)
-        self = candidate
-      } catch {
-        if let diagnostics, !diagnostics.contains(.resolver) {
-          // Bits 1/2/4: retained freight proof, engine, whole commander; observations only.
-          let freight =
-            candidate.commander.scriptState.instances[id].map {
-              candidate.commander.freightStateValid($0)
-            } ?? false
-          let checks: UInt16 =
-            (freight ? 1 : 0)
-            | (candidate.commander.scriptState.valid ? 2 : 0)
-            | (candidate.commander.valid ? 4 : 0)
-          diagnostics.record(
-            .resolver, .init(stage: stage, error: error, game: candidate, checks: checks))
-        }
-        notify("FREIGHT OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE")
-      }
+      resolveFreightTerminal(id, escape: escape, publish: publish, diagnostics: diagnostics)
     }
+  }
+
+  @inline(never)
+  private mutating func resolveFreightTerminal(
+    _ id: UUID, escape: Bool, publish: ScriptPublisher?, diagnostics: ScriptRefusalDiagnostic?
+  ) {
+    let attempt = ScriptFreightTerminalAttempt(original: self)
+    do {
+      try Self.prepareFreightTerminal(attempt, id: id, escape: escape)
+      try Self.validateFreightTerminal(attempt)
+      try Self.writeFreightTerminal(attempt, publish: publish)
+      publishFreightTerminalValue(attempt)
+    } catch {
+      Self.recordFreightTerminalFailure(attempt, id: id, error: error, diagnostics: diagnostics)
+      notify("FREIGHT OUTCOME NOT SAVED - CONSIGNMENT NOT DELIVERABLE")
+    }
+  }
+
+  // The full mutable mission and completion receipt return before cold validation/publication.
+  @inline(never)
+  private static func prepareFreightTerminal(
+    _ attempt: ScriptFreightTerminalAttempt, id: UUID, escape: Bool
+  ) throws {
+    guard var state = attempt.candidate.commander.scriptState.instances[id],
+      let cargo = state.savedOwnedCargo, attempt.candidate.commander.freightStateValid(state),
+      attempt.candidate.commander.scriptState.nextEvent < UInt64(Int64.max) - 1
+    else { throw SaveError.invalidCommander }
+    let cause: ScriptFreightTerminalCause
+    if cargo.pendingLoss != nil {
+      cause = .shipDestroyed
+    } else if escape {
+      cause = .escapePod
+    } else {
+      cause = .expired
+    }
+    let context = cargo.pendingLoss?.context ?? attempt.candidate.scriptEventContext(state)
+    let sequence = attempt.candidate.commander.scriptState.nextEvent + 1
+    attempt.candidate.commander.scriptState.nextEvent = sequence
+    attempt.stage = .freightFinish
+    try attempt.candidate.finishFreight(
+      cause, state: &state, sequence: sequence, context: context,
+      candidate: &attempt.candidate.commander)
+    attempt.candidate.commander.scriptState.instances[id] = state
+    attempt.candidate.commander.scriptState.pendingEvents.removeAll { $0.instance == id }
+    attempt.stage = .completionEnqueue
+    if let receipt = state.completionReceipt {
+      try attempt.candidate.enqueueScriptCompletion(receipt)
+    }
+  }
+
+  @inline(never)
+  private static func validateFreightTerminal(_ attempt: ScriptFreightTerminalAttempt) throws {
+    attempt.stage = .freightCommander
+    guard attempt.candidate.commander.valid else { throw SaveError.invalidCommander }
+  }
+
+  @inline(never)
+  private static func writeFreightTerminal(
+    _ attempt: ScriptFreightTerminalAttempt, publish: ScriptPublisher?
+  ) throws {
+    attempt.stage = .freightPublish
+    try publish?(&attempt.candidate)
+  }
+
+  @inline(never)
+  private mutating func publishFreightTerminalValue(_ attempt: ScriptFreightTerminalAttempt) {
+    self = attempt.candidate
+  }
+
+  @inline(never)
+  private static func recordFreightTerminalFailure(
+    _ attempt: ScriptFreightTerminalAttempt, id: UUID, error: any Error,
+    diagnostics: ScriptRefusalDiagnostic?
+  ) {
+    guard let diagnostics, !diagnostics.contains(.resolver) else { return }
+    let checks = freightTerminalFailureChecks(attempt, id: id)
+    recordFreightTerminalFailureSnapshot(
+      attempt, error: error, diagnostics: diagnostics, checks: checks)
+  }
+
+  // Finish the original cold checks before constructing the error observation's Game value.
+  @inline(never)
+  private static func freightTerminalFailureChecks(
+    _ attempt: ScriptFreightTerminalAttempt, id: UUID
+  )
+    -> UInt16
+  {
+    // Bits 1/2/4: retained freight proof, engine, whole commander; observations only.
+    let freight =
+      attempt.candidate.commander.scriptState.instances[id].map {
+        attempt.candidate.commander.freightStateValid($0)
+      } ?? false
+    let checks: UInt16 =
+      (freight ? 1 : 0)
+      | (attempt.candidate.commander.scriptState.valid ? 2 : 0)
+      | (attempt.candidate.commander.valid ? 4 : 0)
+    return checks
+  }
+
+  @inline(never)
+  private static func recordFreightTerminalFailureSnapshot(
+    _ attempt: ScriptFreightTerminalAttempt, error: any Error, diagnostics: ScriptRefusalDiagnostic,
+    checks: UInt16
+  ) {
+    diagnostics.record(
+      .resolver, .init(stage: attempt.stage, error: error, game: attempt.candidate, checks: checks))
   }
 
   /// Only native issue/contact/physical-terminal factories in this feature call settlement.
