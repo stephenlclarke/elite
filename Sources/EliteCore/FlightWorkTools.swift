@@ -206,11 +206,19 @@ extension Game {
   /// Salvage observation temporaries are entered only after EMP persistence has returned.
   @inline(never)
   private mutating func persistSalvagePosesAfterEMP(cold: Bool) -> Bool {
+    guard observeSalvagePosesForPersistence() else { return false }
+    return !cold
+      || (flushNativeSalvageWork() && flushNativeSalvageWrecks() && flushNativeSalvageMotion())
+  }
+
+  /// Retire scene observations and the ledger copy before entering the cold flushes.
+  @inline(never)
+  private mutating func observeSalvagePosesForPersistence() -> Bool {
     var ledger = commander.salvageLedger
     for body in bodies {
       guard let physical = body.physical else { continue }
       if let payload = physical.payload, case .salvage(let lot) = payload {
-        if commander.alienStorageState?.current.salvage.sections.contains(lot.section) == true {
+        if salvageSectionIsNativeForPersistence(lot.section) {
           guard observeNativeSalvageMotion(body) else { return false }
           continue
         }
@@ -228,7 +236,7 @@ extension Game {
       if let metadata = physical.salvage, let wreck = metadata.wreck,
         [.wreck, .section].contains(metadata.category)
       {
-        if commander.alienStorageState?.current.salvage.native.wrecks[wreck] != nil {
+        if salvageWreckIsNativeForPersistence(wreck) {
           guard observeNativeSalvageWreck(body) else { return false }
           continue
         }
@@ -245,7 +253,19 @@ extension Game {
       }
     }
     if ledger != commander.salvageLedger { commander.salvageLedger = ledger }
-    return !cold
-      || (flushNativeSalvageWork() && flushNativeSalvageWrecks() && flushNativeSalvageMotion())
+    return true
+  }
+
+  /// Native-storage projections must not share the observation loop's frame.
+  @inline(never)
+  private mutating func salvageSectionIsNativeForPersistence(_ section: WreckSectionIdentity)
+    -> Bool
+  {
+    commander.alienStorageState?.current.salvage.sections.contains(section) == true
+  }
+
+  @inline(never)
+  private mutating func salvageWreckIsNativeForPersistence(_ wreck: WreckIdentity) -> Bool {
+    commander.alienStorageState?.current.salvage.native.wrecks[wreck] != nil
   }
 }
