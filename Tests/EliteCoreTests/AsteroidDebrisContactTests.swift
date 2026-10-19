@@ -196,3 +196,51 @@ extension AsteroidDebrisContactTests {
     }
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test(arguments: [Vector3(0, 0, 0), .init(13, -7, -30)])
+  func thinFirstFeatureCannotBeLostBetweenBoundedLeafSamples(commonVelocity: Vector3) throws {
+    let source = try PreparedHull(mesh: contactBox(0.05, 0.05, 0.00001))
+    let small = contactBox(0.2, 0.2, 0.00001)
+    let body = contactBox(2, 2, 0.5)
+    let featureZ = -10.249943
+    let target = try PreparedHull(
+      mesh: .init(
+        vertices: small.vertices.map { $0 + .init(0, 0, featureZ) } + body.vertices,
+        faces: small.faces + body.faces.map { $0.map { $0 + small.vertices.count } },
+        preserveWinding: true))
+    // The first feature is much thinner in time than a standard depth-12 leaf.
+    // Its entry and exit both precede the later large-body midpoint witness.
+    let worldOffset = Vector3(100000, -200000, 300000)
+    let from = worldOffset + .init(0, 0, -20)
+    let a = contactMotion(
+      from, from + (.init(0, 0, 400) + commonVelocity) * 0.1, radius: source.radius)
+    let b = contactMotion(worldOffset, worldOffset + commonVelocity * 0.1, radius: target.radius)
+    let firstEntry = (featureZ - 0.00002 + 20) / 400
+    for reversed in [false, true] {
+      let result = HullSweepSafety.firstNativeContact(
+        source: reversed ? b : a, hull: reversed ? target : source,
+        target: reversed ? a : b, targetHull: reversed ? source : target)
+      guard case .contact(let contact) = result else {
+        Issue.record("Thin native entry was not certified: \(String(describing: result))")
+        continue
+      }
+      #expect(contact.lowerTime <= firstEntry && contact.upperTime >= firstEntry)
+      #expect(contact.upperTime < 0.025)
+      #expect(contact.upperTime - contact.lowerTime <= 0.1 / 4096)
+      #expect(reversed ? contact.normal.z < -0.99 : contact.normal.z > 0.99)
+      #expect(
+        abs(contact.point.z - worldOffset.z - commonVelocity.z * contact.upperTime - featureZ)
+          < 0.00002)
+    }
+    let missStart = worldOffset + .init(3, 0, -20)
+    let miss = contactMotion(
+      missStart, missStart + (.init(0, 0, 400) + commonVelocity) * 0.1, radius: source.radius)
+    let clear = HullSweepSafety.firstNativeContact(
+      source: miss, hull: source, target: b, targetHull: target)
+    guard case .clear = clear else {
+      Issue.record("Disjoint thin feature did not remain clear: \(String(describing: clear))")
+      return
+    }
+  }
+}

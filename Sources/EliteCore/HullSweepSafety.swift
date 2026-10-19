@@ -1518,8 +1518,9 @@ private func sweepFindEar(
   return nil
 }
 
-/// A continuous proof covers every interval before this bracket. The upper endpoint
-/// contains a certified native triangle/closed-hull intersection, never just a sphere hit.
+/// A continuous proof covers every interval before this bracket. It contains a
+/// certified native intersection, sampled directly or enclosed by a conditioned
+/// material-vertex/face crossing. A sphere overlap is never a contact certificate.
 struct NativeHullContact: Sendable {
   let lowerTime: Double
   let upperTime: Double
@@ -1611,6 +1612,13 @@ extension HullSweepSafety {
     // A bounded time bracket is allowed only when it contains a proved intersection.
     // Otherwise a tiny/thin/ill-conditioned crossing refuses movement; it is not a miss.
     if depth >= work.budget.subdivisionDepth {
+      if let entry = try translatedVertexEntry(
+        source, hull: hull, target: target, targetHull: targetHull,
+        start: start, end: end, work: &work),
+        witness == nil || entry.upperTime < witness!.upperTime
+      {
+        witness = entry
+      }
       if witness == nil || witness!.upperTime > end {
         try work.query()
         if let found = try nativeContactWitness(
@@ -1684,6 +1692,98 @@ extension HullSweepSafety {
       64 * Double.ulpOfOne
       * max(1, hull.radius + targetHull.radius + a.position.length + b.position.length)
     return gap.isFinite && envelope.isFinite && gap - envelope - numerical > 0
+  }
+
+  /// Sampling a bounded leaf can miss a thin native feature completely. For fixed
+  /// orientations and equal acceleration, a material vertex has an exact straight
+  /// relative path. A conditioned ray encloses its real face-crossing time even
+  /// when neither the midpoint nor the endpoint intersects. Edge-only or rotating
+  /// contacts without another certificate still refuse at the original bound.
+  private static func translatedVertexEntry(
+    _ source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
+    targetHull: PreparedHull, start: Double, end: Double, work: inout SweepWork
+  ) throws -> NativeHullContact? {
+    guard source.worldAngularVelocity.length == 0, target.worldAngularVelocity.length == 0,
+      (source.acceleration - target.acceleration).length == 0,
+      !hull.hasUnresolvedSupport, !targetHull.hasUnresolvedSupport
+    else { return nil }
+    try work.query()
+    var earliest: NativeHullContact?
+    for reversed in [false, true] {
+      let owner = reversed ? target : source
+      let container = reversed ? source : target
+      let ownerHull = reversed ? targetHull : hull
+      let containerHull = reversed ? hull : targetHull
+      var seen = Set<SweepVertexKey>()
+      let relativeVelocity =
+        SweepIntervalVector(owner.initialVelocity)
+        - SweepIntervalVector(container.initialVelocity)
+      let span = SweepInterval(end) - SweepInterval(start)
+      for triangle in ownerHull.triangles {
+        try work.triangle()
+        for index in 0..<3 {
+          let local = triangle.vertex(at: index)
+          guard seen.insert(.init(x: local.x, y: local.y, z: local.z)).inserted else { continue }
+          // Remove the common world origin before transforming local vertices.
+          // This retains an outward certificate without injecting world-offset
+          // cancellation into an otherwise well-conditioned small feature.
+          let origin =
+            SweepIntervalVector(owner.start.position)
+            - SweepIntervalVector(container.start.position)
+            + SweepIntervalVector(owner.start.orientation.x) * SweepInterval(local.x)
+            + SweepIntervalVector(owner.start.orientation.y) * SweepInterval(local.y)
+            + SweepIntervalVector(owner.start.orientation.z) * SweepInterval(local.z)
+            + relativeVelocity * SweepInterval(start)
+          let direction = relativeVelocity * span
+          for face in containerHull.triangles {
+            try work.triangle()
+            guard
+              let fraction = translatedFaceCrossing(
+                origin, direction: direction, face: face, orientation: container.start.orientation)
+            else { continue }
+            let time = SweepInterval(start) + span * fraction
+            guard time.finite, time.lower >= start, time.upper <= end,
+              earliest == nil || time.upper < earliest!.upperTime,
+              let normal = contactEntryNormal(
+                point: local, owner: owner, face: face, container: container,
+                time: time.upper, ownerIsSource: !reversed)
+            else { continue }
+            let point = shipPose(owner, at: time.upper).systemPoint(local)
+            guard point.finite else { throw HullSweepFailure.unproven }
+            earliest = .init(lowerTime: start, upperTime: time.upper, point: point, normal: normal)
+          }
+        }
+      }
+    }
+    return earliest
+  }
+
+  /// Outward transforms include the actual relative trajectory, avoiding a rounded
+  /// endpoint chord. Strict barycentrics and a resolved determinant certify a real
+  /// native face crossing; uncertain boundaries remain unknown, never a hit.
+  private static func translatedFaceCrossing(
+    _ origin: SweepIntervalVector, direction: SweepIntervalVector,
+    face: SweepTriangle, orientation: Basis3
+  ) -> SweepInterval? {
+    let pose = ShipPose(position: .init(0, 0, 0), orientation: orientation)
+    let a = contactWorldPoint(face.a, pose: pose)
+    let edge = contactWorldPoint(face.b, pose: pose) - a
+    let other = contactWorldPoint(face.c, pose: pose) - a
+    let cross = direction.cross(other)
+    let determinant = edge.dot(cross)
+    guard determinant.finite, determinant.lower > 0 || determinant.upper < 0 else { return nil }
+    let offset = origin - a
+    let u = offset.dot(cross) / determinant
+    let perpendicular = offset.cross(edge)
+    let v = direction.dot(perpendicular) / determinant
+    let fraction = other.dot(perpendicular) / determinant
+    let sum = u + v
+    guard u.finite, v.finite, fraction.finite,
+      u.lower >= 1e-10, v.lower >= 1e-10, sum.upper <= 1 - 1e-10,
+      fraction.lower >= 0, fraction.upper <= 1,
+      fraction.upper - fraction.lower <= 1e-10 * max(1, abs(fraction.lower))
+    else { return nil }
+    return fraction
   }
 
   private static func contactWorldPoint(_ local: Vector3, pose: ShipPose) -> SweepIntervalVector {
