@@ -6,6 +6,8 @@ This is the persistent record of new user requests and decisions. A request is n
 
 The complete game-completion backlog remains in the user's companion request catalogue and the repository's [delivery backlog](DELIVERY-BACKLOG.md) and [mission-engine completion ledger](MISSION-ENGINE-COMPLETION.md). This log supplements those requirements; it does not replace or reduce them.
 
+Delivery scope decision, 19 October 2026: the user states that the game is not being played, existing saves do not need preservation, and backward compatibility can be ignored. This supersedes predecessor-save, content-format, internal-API and namespace compatibility obligations in older entries. No migrations, aliases, adapters, compatibility defaults or historical-format tests are required solely for old versions. Work toward the clean current L337 model; retain genuine current-format save/load, validity, durable transaction and native gameplay correctness. Protect source/WIP, preferences, credentials and unrelated files. Remove obsolete compatibility code/tests within actual assigned work, rather than starting another broad audit or validation cycle for the policy itself. Existing CI 612 finished its exact invocation unchanged.
+
 ## Requests and decisions
 
 | ID | Date | User request or confirmed decision | Owner | Current status |

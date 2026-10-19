@@ -29,6 +29,8 @@
 
 A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, shaded ship panels by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
 
+This development line targets the current model. Existing saves are disposable; backward compatibility with earlier saves, content formats, internal APIs and namespaces is not a delivery requirement. Current-format save/load and transaction correctness remain required.
+
 ![Elite gameplay](docs/elite.png)
 
 <!-- markdownlint-disable MD033 -->
