@@ -17,6 +17,11 @@ func releaseDamagedEMPBoundary(
   let charge = try #require(game.commander.savedEMPCharge)
   #expect(charge.phase == .charging && game.commander.savedEMPState == nil)
   game.commander.flightSimulation.advancePhysicalTime(10)
+  // This unit boundary advances the clock directly; project already-loaded native
+  // station spin from that same clock before collision or save consistency is queried.
+  for index in game.bodies.indices where game.bodies[index].nativeStationIdentity != nil {
+    game.advanceBodyModelRotation(at: index, delta: 0)
+  }
   let contact = try game.nearestMissionCollision(
     from: .init(0, 0, 0), direction: .init(0, 0, 1),
     range: try EMPPulseProfile.resolve(for: game.commander).range,
