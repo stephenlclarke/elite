@@ -118,10 +118,17 @@ extension Game {
       + context.actors.filter { $0.npc?.role == .miner && $0.energy > 0 }.map(\.position)
     for field in miningFields
     where observers.contains(where: {
-      ($0 - field.position).length < 2500
+      let observer = $0
+      return (observer - field.position).length < 2500
+        || field.rocks.contains { rock in
+          guard let breakup = commander.miningLedger.breakups[rock.identity] else { return false }
+          return (observer - breakup.position(at: context.physicalTime)).length < 2500
+        }
     }) {
       let requests = field.rocks.compactMap { rock -> SpawnRequest? in
-        guard !commander.miningLedger.isDepleted(rock.identity),
+        guard
+          !commander.miningLedger.isDepleted(rock.identity)
+            || commander.miningLedger.breakups[rock.identity] != nil,
           !bodies.contains(where: { $0.physical?.rock == rock.identity })
         else { return nil }
         return .init(
@@ -129,14 +136,27 @@ extension Game {
             system: context.system, visit: context.visit,
             sequence: UInt64(rock.identity.field) * 12 + UInt64(rock.identity.rock) + 1,
             member: 0, producer: .asteroids),
-          population: .asteroid, hull: .asteroid, position: rock.position,
-          orientation: Basis3(), velocity: .init(0, 0, 0), npc: nil, rock: rock.identity,
+          population: .asteroid, hull: .asteroid,
+          position: commander.miningLedger.breakups[rock.identity]?.position(
+            at: context.physicalTime)
+            ?? rock.position,
+          orientation: Basis3(),
+          velocity: commander.miningLedger.breakups[rock.identity]?.motion.velocity
+            ?? .init(0, 0, 0),
+          npc: nil, rock: rock.identity,
           payload: nil, priority: .ordinary)
       }
-      _ = admitEncounterPlan(
+      let receipts = admitEncounterPlan(
         .init(
           system: context.system, visit: context.visit, revision: context.revision,
           batches: [.init(requests: requests, atomic: false)], intents: []))
+      for receipt in receipts where receipt.refusal == nil {
+        guard let actor = receipt.actor,
+          let request = requests.first(where: { $0.identity == receipt.request }),
+          let rock = request.rock, commander.miningLedger.breakups[rock] != nil
+        else { continue }
+        commander.miningLedger.bindBreakup(rock: rock, actor: actor)
+      }
     }
   }
 

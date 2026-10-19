@@ -432,6 +432,8 @@ The README screenshot and animated tape are generated from deterministic scenes 
 
 The [design index](docs/DESIGN-INDEX.json) records the current gameplay, equipment, salvage and graphics implementation contracts. Those designs and dated audits describe remaining work; they are not claims that every feature is in this release.
 
+[Asteroid breakup phase one](docs/PR-physical-asteroid-fragments.md) adds current-format mass custody, finite salvage and native aggregate bodies. Native swept impacts against players, ships and stations remain required follow-up work; ray occlusion and this source implementation do not establish completed impact hazards or The Shattered Wake campaign.
+
 The independently maintained local `docs/research/` reference contains separate deduplicated mission, ship and alien catalogues, version mappings, source provenance and mission replication specifications. It distinguishes documented historical behaviour from implementation recommendations and explicitly lists unresolved fidelity requirements.
 
 This is an independent implementation, and exact historical parity has not yet been established. The procedural galaxy and economy have reference fixtures, and the two Executive naval mission rules follow the pinned Second Processor source. Most ship meshes, raster font, physics, AI, docking sequence, demo text and audio remain independent approximations. All original ship blueprints, original goat-soup descriptions, witchspace encounters and binary commander-file interoperability remain outside the currently implemented parity boundary. See [COMPATIBILITY.md](COMPATIBILITY.md) for the explicit comparison checklist.

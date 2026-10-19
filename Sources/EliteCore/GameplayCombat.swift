@@ -210,6 +210,7 @@ extension Game {
     {
       return
     }
+    if damagePhysicalAsteroid(index: index, incident: incident, damage: damage) { return }
     if let rockID = bodies[index].physical?.rock,
       let rock = miningFields.lazy.flatMap(\.rocks).first(where: { $0.identity == rockID })
     {
