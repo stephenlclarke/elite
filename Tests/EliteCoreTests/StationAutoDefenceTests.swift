@@ -793,11 +793,9 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
     from: body.position, direction: body.orientation.z.unit, range: 1500, radius: 0,
     excludingBodyIDs: [id], includePlayer: true)
   let contact = try #require(measuredContact)
-  try #require(
-    contact.hit.target == .player,
-    Comment(
-      rawValue: contact.hit.target == .player
-        ? "" : stationAutoPressureFailureFacts(game, attacker: id)))
+  let reachesPlayer = contact.hit.target == .player
+  let detail = reachesPlayer ? "" : stationAutoPressureFailureFacts(game, attacker: id)
+  try #require(reachesPlayer, Comment(rawValue: detail))
 }
 
 @Test func stationAutoCurrentNativeFleeAssessesEveryAttackerAndUnknownOrdnanceStaysConservative()
