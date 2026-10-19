@@ -45,7 +45,9 @@ struct ScriptNavigationTradeBinding: Sendable, Equatable {
       let destination = endpoint(galaxy: game.commander.galaxy, system: game.selectedSystem)
     else { return nil }
     let result = Self(training: training, destination: destination)
-    return result.valid && result.matches(game) ? result : nil
+    guard result.valid else { return nil }
+    guard result.matches(game) else { return nil }
+    return result
   }
   static func production(for record: borrowing ScriptNavigationTradeState) -> Self? {
     guard

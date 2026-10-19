@@ -15,3 +15,7 @@ Production endpoint selection considers only active instances. Closed actual los
 ## Changed remote-market review finding
 
 NavigationGraph.trade now reads commander-owned current stock for remote nodes as well as the current market. A focused original-data case pays for all seven stocked kilograms of platinum at the real G01-S000 market through ordinary native buy transactions, then explicitly changes the fixture's inspection location. The depleted remote estimate is zero; a pristine-market comparison with identical cargo, credits and capacity remains positive. No journey receipt, stock refill or new pricing/IO path is invented. The regression is authored and unrun.
+
+## Compiler ownership correction
+
+The first central build stopped before test linking because the selected-route short-circuit expression captured a borrowed Game in an implicit autoclosure. Sequential explicit validity and native-match guards preserve the same endpoint policy without consuming or copying the borrowed simulation. Failed-build artifacts remain qualified as mixed historical output; no test execution or runtime acceptance is claimed. The corrected source requires a fresh coherent build.
