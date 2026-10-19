@@ -100,3 +100,7 @@ Record startup source integration720c199d with exact fifteen-file hash match, cl
 ## Closed renderer checkpoint and bounded handoffs
 
 Attach exact767 attempt01/02 failure/timeout/closure proofs and incomplete checkpoint release, mark768/769 unrun/unstarted, and retain766 debug10PASS. Record Root immediate770/771 dispatch of reviewed0ef wreck boundary/source inverse/5-method6-case plan, plus G2 bounded existing startup-observer CLI/scenario/test/notes assignment. No full optimized-test retry, new framework/profiler, source geometry change, native CPU/FPS or usable delivery claim. Changed Markdown checks only after actual compiler closure.
+
+## Actual771 and startup-observer focused handoff
+
+Attach actual771 failure/terminal/signature closure evidence, exact startup-observer780f freeze and clean independent source review, and direct772/773 DEBUG-only3-case owner grant. Record finite real draw/scene checks and timing qualifications, with source integration/native product-only observation still pending. Three changed Markdown files checked; no G1 compiler/native/profiler/media job or completion claim.

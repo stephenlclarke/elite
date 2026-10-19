@@ -81,3 +81,7 @@ F01 source now meets its focused owner unit/review gates and is integrated, but 
 ## Closed renderer checkpoint and bounded handoffs
 
 The optimized full-test build first failed testability setup, then hit its unchanged600-second compile bound before any rendering test. Track explicit incomplete checkpoint/process closure and release the executor rather than imply rendering failure or hold it for authoring. Existing title telemetry needs only a small reuse of the native observer; the measured wreck no-op boundary is the next priority runtime candidate.
+
+## Actual771 and startup-observer focused handoff
+
+The measured wreck boundary still does not close the native regression: actual771 has two case passes and four unknown method terminals after SIGBUS. Preserve that evidence and route only the already-reviewed bounded startup-observer unit handoff through the now-released executor; no crash or performance acceptance is inferred.
