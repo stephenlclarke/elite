@@ -31,9 +31,11 @@ private struct CalendarFixture {
     pack = try ScriptPackLibrary.read(directory)
   }
   func clean() { try? FileManager.default.removeItem(at: root) }
-  func game() throws -> (Game, UUID) {
+  func game(system: Int = 7) throws -> (Game, UUID) {
     var game = Game(executive: false)
     game.screen = .status
+    game.commander.system = system
+    game.selectedSystem = system
     game.scriptPacks = [pack]
     let id = try game.acceptScriptMission(pack)
     return (game, id)
@@ -384,7 +386,10 @@ func
     """
   let fixture = try CalendarFixture(source: source)
   defer { fixture.clean() }
-  var (game, id) = try fixture.game()
+  // Avenor has only a 3.365-LY neighbor. Use the first authenticated catalogue
+  // origin with a 5...7-LY edge, selected before mission admission, for this day timer.
+  var (game, id) = try fixture.game(system: 0)
+  try #require(game.currentSystem.original?.key == "G01-S000")
   game.launch()
   clearTravelArea(&game)
   let destination = try #require(
@@ -393,6 +398,7 @@ func
       return $0.id != game.commander.system && distance <= 7
         && game.currentSystem.scriptCalendarDistance(to: $0) > 5
     })
+  try #require(destination.original?.key == "G01-S069")
   game.selectedSystem = destination.id
   game.beginHyperspace()
   let runtime = GameRuntime(game: game)
