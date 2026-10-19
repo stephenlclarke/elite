@@ -41,3 +41,7 @@ Current assignment and source-review status must retain actual760 stack failure 
 ## Grouped fixture integration and complete M01 scope
 
 The grouped fixture now has actual owner PASS and must be recorded as integrated without turning scoped method evidence into whole CI acceptance. F01-F03 still need to distinguish delivered transitional742 evidence from the complete original L337 startup identity/defaults requirement; crash-only success cannot close M01.
+
+## F01 source-reconciliation handoff
+
+F01 source reconciliation identifies real startup/display gaps and dormant original SH025 data; an ID-only substitution must not be counted as the approved ship. Exact native hull/units/clearance authority and startup hunks await Root before edits.
