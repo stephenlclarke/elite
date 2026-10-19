@@ -473,6 +473,17 @@ public struct Game: Sendable {
   ) -> [UUID: ScriptInstance] {
     commander.scriptState.instances
   }
+  var contractStation: ContractStationIdentity {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.contractStation(from: storage.baseAddress!.pointee)
+    }
+  }
+
+  private static func contractStation(
+    from commander: borrowing Commander
+  ) -> ContractStationIdentity {
+    .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
+  }
   public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false
