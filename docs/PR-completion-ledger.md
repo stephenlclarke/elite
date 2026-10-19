@@ -56,3 +56,7 @@ G1 composition updates the designer delta with later actual evidence: G2 r2 sour
 ## Current760 result and bounded owner handoffs
 
 Update the current ledger summary and append verified760 terminal/closure evidence, grouped2410863 independent CLEAN source review plus761/762 owner grant, and MBA05 ten-path scope with globally reserved35/36. Every earlier64-character evidence hash is preserved. Three Markdown files only; scoped Markdown/whitespace checks, no game compiler/runtime/media or new release. Grouped runtime is UNRUN at this documentation snapshot, crash source remains unintegrated, and preview742 remains the existing player build.
+
+## Grouped fixture integration and complete M01 scope
+
+Record reviewed focused-PASS grouped fixture integration9ec89554, qualify only its two distinct740 locations/three assertion events and preserve all raw counts/evidence. Current inventory has seven scoped-qualified locations and159 unresolved across40 historical file groups. Reconcile F01-F03 to actual private742 delivery while retaining original L337 title/SH123/truthful identity and Rowan Calder720CR/Avenor/SH025/full fuel/zero quests as OPEN. Root assigned only bounded F01 source reconciliation before edits. Three Markdown files checked; no runtime/build/media or public-delivery claim.
