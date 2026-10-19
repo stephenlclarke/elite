@@ -7,8 +7,45 @@ import Foundation
 @MainActor
 final class PlanetFrameProfiler {
   enum WindowMode: String { case compact, fullscreen }
+  enum StartupScene: String {
+    case title, credits
+    var screen: Screen { self == .title ? .title : .demo }
+  }
+
+  struct StartupRequest: Equatable {
+    let directory: URL
+    let sourceSHA: String
+    let scene: StartupScene
+    let frames: Int
+
+    func game() -> Game {
+      var game = Game(executive: false)
+      game.screen = scene.screen
+      return game
+    }
+
+    func completed(distinctDrawnFrames: Int, screen: Screen) -> Bool {
+      distinctDrawnFrames >= frames && screen == scene.screen
+    }
+  }
+
+  /// One explicit opt-in; ordinary launches and the existing planet command remain separate.
+  static func startupRequest(arguments: [String]) throws -> StartupRequest? {
+    guard let index = arguments.firstIndex(of: "--profile-startup-frames") else { return nil }
+    guard arguments.count == index + 5,
+      !arguments.contains("--profile-planet-frames"),
+      arguments[index + 1].hasPrefix("/"),
+      arguments[index + 2].count == 40,
+      arguments[index + 2].allSatisfy({ "0123456789abcdef".contains($0) }),
+      let scene = StartupScene(rawValue: arguments[index + 3]),
+      let frames = Int(arguments[index + 4]), (2...120).contains(frames)
+    else { throw CocoaError(.fileWriteInvalidFileName) }
+    return .init(
+      directory: URL(fileURLWithPath: arguments[index + 1], isDirectory: true),
+      sourceSHA: arguments[index + 2], scene: scene, frames: frames)
+  }
   private enum Phase: String {
-    case fullscreenTransition, warmWindow, launching, warmFlight, flyby, settle, finished
+    case fullscreenTransition, warmWindow, launching, warmFlight, flyby, settle, startup, finished
   }
   private struct Sample: Codable {
     let id: UInt64
@@ -106,6 +143,7 @@ final class PlanetFrameProfiler {
   }
   private struct Report: Codable {
     let scenario: String
+    let requestedStartupFrames: Int?
     let windowMode: String
     let declaredSourceSHA: String
     let executableSHA256: String
@@ -127,6 +165,7 @@ final class PlanetFrameProfiler {
 
   let directory: URL
   let sourceSHA: String
+  let startupRequest: StartupRequest?
   private let mode: WindowMode
   private let systemDescription: String
   private let clockOrigin = ContinuousClock.now
@@ -157,7 +196,7 @@ final class PlanetFrameProfiler {
 
   init(
     directory: URL, sourceSHA: String, system: StarSystem, mode: WindowMode,
-    diagnosticCaptures: Bool = false
+    diagnosticCaptures: Bool = false, startupRequest: StartupRequest? = nil
   ) throws {
     guard directory.path.hasPrefix("/"), !FileManager.default.fileExists(atPath: directory.path),
       sourceSHA.count == 40, sourceSHA.allSatisfy({ "0123456789abcdef".contains($0) })
@@ -165,8 +204,16 @@ final class PlanetFrameProfiler {
     self.directory = directory
     self.sourceSHA = sourceSHA
     self.mode = mode
+    guard
+      startupRequest == nil
+        || (mode == .compact && !diagnosticCaptures
+          && startupRequest?.directory == directory && startupRequest?.sourceSHA == sourceSHA
+          && startupRequest.map({ (2...120).contains($0.frames) }) == true)
+    else { throw CocoaError(.fileWriteInvalidFileName) }
     self.diagnosticCaptures = diagnosticCaptures
-    phase = mode == .compact ? .warmWindow : .fullscreenTransition
+    self.startupRequest = startupRequest
+    phase =
+      startupRequest == nil ? (mode == .compact ? .warmWindow : .fullscreenTransition) : .startup
     currentPhase = phase
     systemDescription =
       "G0 / \(system.id) \(system.name) / economy \(system.economy) / government \(system.government) / technology \(system.technology)"
@@ -182,6 +229,10 @@ final class PlanetFrameProfiler {
   func beginFrame(in view: GameView) {
     guard !finished else { return }
     let now = ContinuousClock.now
+    if startupRequest != nil, Self.elapsed(clockOrigin, now) > 120 {
+      fail("The bounded native startup observation exceeded 120 seconds.")
+      return
+    }
     if phase == .fullscreenTransition {
       if transitionStarted == nil {
         transitionStarted = now
@@ -378,6 +429,22 @@ final class PlanetFrameProfiler {
       samples[id] = sample
     }
     guard phase == currentPhase else { return }
+    if let request = startupRequest {
+      guard view.game.screen == request.scene.screen,
+        view.game.docked, !view.game.paused,
+        view.window?.isKeyWindow == true, view.window?.isVisible == true
+      else {
+        fail("The requested native startup scene or visible key window changed before completion.")
+        return
+      }
+      let distinct = samples.values.filter {
+        $0.phase == Phase.startup.rawValue && $0.drawMilliseconds != nil
+      }.count
+      if request.completed(distinctDrawnFrames: distinct, screen: view.game.screen) {
+        finish(error: nil)
+      }
+      return
+    }
     if diagnosticCaptures, phase == .flyby {
       do { try captureStationViews(in: view) } catch {
         fail(error.localizedDescription)
@@ -471,7 +538,8 @@ final class PlanetFrameProfiler {
     finished = true
     phase = .finished
     let values = samples.values.sorted { $0.id < $1.id }
-    let measured = values.filter { $0.phase == Phase.flyby.rawValue }
+    let measuredPhase = startupRequest == nil ? Phase.flyby : .startup
+    let measured = values.filter { $0.phase == measuredPhase.rawValue }
     let intervals = measured.compactMap(\.drawIntervalMilliseconds)
     let drawn = measured.filter { $0.drawMilliseconds != nil }
     let summary = Summary(
@@ -507,29 +575,51 @@ final class PlanetFrameProfiler {
     let normalHeadingInputs = measured.allSatisfy {
       abs($0.pitch ?? 0) < 1e-6 && abs($0.yaw ?? 0) < 1e-6 && abs($0.roll ?? 0) < 1e-6
     }
-    let valid =
+    let flightValid =
       error == nil && initial?.xyzzy == false && initial?.assistsEnabled == false && geometryValid
       && passedWorldPlane && normalHeadingInputs
       && fullscreenEntered == (mode == .fullscreen) && summary.submittedFrames >= 120
       && summary.planetFrames >= 20 && summary.largestPlanetPixels >= 256
       && drawn.allSatisfy { $0.fullscreen == (mode == .fullscreen) }
       && measured.contains { ($0.throttle ?? 0) > 0.99 && $0.fingerCount == 3 }
+    let valid: Bool
+    if let request = startupRequest {
+      valid =
+        error == nil && summary.distinctDrawnFrames >= request.frames
+        && !drawn.isEmpty
+        && drawn.allSatisfy {
+          $0.camera == String(describing: request.scene.screen)
+            && $0.keyWindow == true && $0.windowVisible == true
+            && $0.docked == true && $0.paused == false
+            && $0.widthPixels.map { $0 > 0 } == true && $0.heightPixels.map { $0 > 0 } == true
+        }
+    } else {
+      valid = flightValid
+    }
     do {
       let binary = try Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[0]))
       let hash = SHA256.hash(data: binary).map { String(format: "%02x", $0) }.joined()
       let report = Report(
-        scenario:
-          "native-industrial-straight-flyby-v2; fresh normal commander; default native seed; one-second launch coast then held three-finger throttle on the original +Z heading",
+        scenario: startupRequest.map {
+          "native-startup-" + $0.scene.rawValue
+            + "-v1; actual visible compact AppKit window; ordinary application loop; no launch or input"
+        }
+          ?? "native-industrial-straight-flyby-v2; fresh normal commander; default native seed; one-second launch coast then held three-finger throttle on the original +Z heading",
+        requestedStartupFrames: startupRequest?.frames,
         windowMode: mode.rawValue, declaredSourceSHA: sourceSHA, executableSHA256: hash,
         success: valid,
         error: error
           ?? (valid
             ? nil
-            : "Required safe close passes, distinct visible planet draws or window/control evidence are missing."),
+            : (startupRequest == nil
+              ? "Required safe close passes, distinct visible planet draws or window/control evidence are missing."
+              : "Required distinct native startup draws and visible key-window scene evidence are missing.")),
         timingInterpretation:
           "Monotonic elapsed spans include actor queue and GPU wait, not CPU-only time, physical scanout or input latency. Distinct-submission first draws determine intervals; repeated draws and undrawn/coalesced submissions are explicit. Missed 60-Hz intervals are rounded estimates.",
         comparison:
-          "Candidate measurement only. Each window case starts a fresh normal launch. A before/after claim requires a named baseline with identical instrumentation, scene and input protocol, verified against the raw trajectory.",
+          startupRequest == nil
+          ? "Candidate measurement only. Each window case starts a fresh normal launch. A before/after claim requires a named baseline with identical instrumentation, scene and input protocol, verified against the raw trajectory."
+          : "Candidate startup observation only; no frame-rate acceptance or before/after claim. Title and credits are separate finite runs. First distinct AppKit draws and coalesced submissions remain explicit; startup clock and renderer are unchanged.",
         missionPackIsolation:
           "Bundled mission library with a fresh absent legacy TOML directory; default external Lua loading disabled.",
         system: systemDescription, fullscreenEntered: fullscreenEntered,

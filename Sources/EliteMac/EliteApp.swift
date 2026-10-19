@@ -524,7 +524,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       if let self, self.restoreOnLaunch {
         await self.prepareNewCommanderSaveIfNeeded(afterFailedRestore: failedRestore)
       }
-      if self?.frameProfile != nil { _ = await PlanetRenderer.prepareGPU() }
+      if let profile = self?.frameProfile, profile.startupRequest == nil {
+        _ = await PlanetRenderer.prepareGPU()
+      }
       var previousTick = ContinuousClock.now
       var cadence = FrameCadence(start: previousTick, maximumFPS: 60)
       while !Task.isCancelled {
@@ -1042,6 +1044,25 @@ struct EliteApp {
       return
     }
     let app = NSApplication.shared
+    if let request = try PlanetFrameProfiler.startupRequest(arguments: CommandLine.arguments) {
+      let game = request.game()
+      let profile = try PlanetFrameProfiler(
+        directory: request.directory, sourceSHA: request.sourceSHA, system: game.currentSystem,
+        mode: .compact, startupRequest: request)
+      let saves = CommanderSaveSession(
+        preferences: nil, defaultURL: request.directory.appendingPathComponent("commander.json"))
+      let delegate = AppDelegate(
+        restoreOnLaunch: false, saves: saves, windowSize: .init(width: 768, height: 768),
+        runtime: GameRuntime(game: game), frameProfile: profile,
+        commanderFileFailure: { profile.fail($0.localizedDescription) })
+      app.setActivationPolicy(.regular)
+      app.delegate = delegate
+      withExtendedLifetime(delegate) { app.run() }
+      delegate.loop?.cancel()
+      delegate.window?.orderOut(nil)
+      guard profile.completedSuccessfully else { throw CocoaError(.coderInvalidValue) }
+      return
+    }
     if let index = CommandLine.arguments.firstIndex(of: "--profile-planet-frames") {
       guard CommandLine.arguments.indices.contains(index + 3),
         CommandLine.arguments[index + 1].hasPrefix("/"),
