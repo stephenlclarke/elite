@@ -2,9 +2,13 @@
 
 Human workflow decision recorded on 18 October 2026. Integration takes priority over documentation and coordination overhead.
 
+On 19 October, delivery is split into one stabilization/integration track and parallel isolated feature and asset work. Coder 1 owns current blockers, integration and the single validation lease. Coder 2 implements the complete player-facing FR-035 Top 10 Wanted board on `feat/most-wanted-board`, without overlapping the mission bridge or people trial. The MacBook Air stages the original-fleet asset compiler and catalogue inputs without editing Core or running native game validation. Complete reviewed features are integrated when ready; unrelated content completion does not block their integration.
+
 Each author freezes a bounded change. One integrator independently reviews it and immediately integrates a clean change as a separate commit. An active validation snapshot stays frozen until its execution closes. Root handles risk and scope decisions; routine work within an assigned scope needs no additional approval round trip or duplicate complete review.
 
 Batch reviewed changes into one coherent build of a clean committed head. Reuse that exact executable for focused tests. Select failed or changed paths and directly affected safety or persistence boundaries from the actual diff. Retain qualified earlier results for unchanged paths, clearly identifying their source. Avoid blanket repeats of unrelated passing suites, CLI checks or generator tests.
+
+The current EMP-emission ownership repair receives one build and the exact original people-gallery method. If another stack site appears, stop isolated getter-by-getter changes and propose one bounded ownership repair across the EMP transaction chain. Do not add instrumentation, repeated source audits or metadata-only validation cycles without a concrete need.
 
 Run one full `make ci` per coherent integration milestone after every selected focused case passes. Coverage, thread and address sanitizers, leak checks and mandatory final-head GitHub, review and release gates remain required. A failure stays recorded and drives a bounded repair rather than a blind rerun. Preserve source and artifact fingerprints, protected user files and owned-process closure throughout validation.
 
