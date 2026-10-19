@@ -62,6 +62,7 @@ public struct AutoTargetControl: Sendable {
   private var previousAim: Vector3?
   private var previousDelta = 0.0
   private var stationStaged = false
+  private(set) var validatedMovingEntry = false
   private var visited: Set<Int> = []
   private var membership: Set<Int> = []
   private var cycleSignature = ""
@@ -76,6 +77,7 @@ public struct AutoTargetControl: Sendable {
     ready = false
     finalApproach = false
     stationStaged = false
+    validatedMovingEntry = false
     stationDefencePhase = .approach
     velocity = .init(0, 0, 0)
     rollRate = 0
@@ -129,12 +131,14 @@ public struct AutoTargetControl: Sendable {
     ready = false
     finalApproach = false
     stationStaged = false
+    validatedMovingEntry = false
     stationDefencePhase = .approach
     velocity = .init(0, 0, 0)
     status = "FACING TARGET"
   }
 
   static let stationStagingTolerance = 40.0
+  static let stationEntryStepReserve = 0.1
 
   /// Standalone callers retain the original controller policy. Runtime supplies actual hull limits.
   static let policyLimits = RelativeWorkLimits(
@@ -162,16 +166,26 @@ public struct AutoTargetControl: Sendable {
     let movingEntry =
       station && defence?.movingEntryAllowed == true
       && defence?.hazard == .active && defence?.joinedIncoming != true
-    if movingEntry {
+    let brakingEntry =
+      !movingEntry && validatedMovingEntry && delta <= Self.stationEntryStepReserve
+      && station && defence?.entryBrakingAllowed == true
+      && defence?.hazard == .active && defence?.joinedIncoming != true
+      && canInterrupt && velocity.dot(target.entranceNormal) < 0
+    if movingEntry || brakingEntry {
       // Fresh source/geometry/kinematics permit immediate finite final-course motion.
       // Native movement still owns the swept crossing and any docking receipt.
       stationDefencePhase = .returning
       stationStaged = true
-      finalApproach = true
+      finalApproach = movingEntry
       ready = false
     }
+    if movingEntry {
+      validatedMovingEntry = true
+    } else if !brakingEntry {
+      validatedMovingEntry = false
+    }
     let shouldInterrupt =
-      station && defence?.hazard == .active && canInterrupt && !movingEntry
+      station && defence?.hazard == .active && canInterrupt && !movingEntry && !brakingEntry
       && stationDefencePhase != .defending
     if shouldInterrupt {
       ready = false
@@ -190,7 +204,7 @@ public struct AutoTargetControl: Sendable {
       if defence?.hazard == .clear || handover { stationDefencePhase = .returning }
     }
     let canStage =
-      movingEntry
+      movingEntry || brakingEntry
       || (stationDefencePhase != .defending
         && (defence == nil || defence?.hazard == .clear
           || (stationDefencePhase == .returning && defence?.handoverAllowed == true)))
@@ -264,7 +278,7 @@ public struct AutoTargetControl: Sendable {
     alignStation(
       target, delta: delta, limits: limits, defence: guidance,
       transitGoal: stationDefencePhase == .defending && canInterrupt ? guidance?.transitGoal : nil,
-      canStage: canStage, clearance: clearance)
+      canStage: canStage, clearance: clearance, brakingEntry: brakingEntry)
     return (pitch, yaw, (previousRate + rollRate) / 2)
   }
 
@@ -292,7 +306,7 @@ public struct AutoTargetControl: Sendable {
 
   private mutating func alignStation(
     _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits, defence: StationAutoGuidance?,
-    transitGoal: Vector3?, canStage: Bool, clearance: Double
+    transitGoal: Vector3?, canStage: Bool, clearance: Double, brakingEntry: Bool = false
   ) {
     let acceleration = limits.acceleration
     let maximumRoll = min(Self.policyLimits.rollRate, limits.rollRate)
@@ -314,7 +328,8 @@ public struct AutoTargetControl: Sendable {
     let goal = target.entrancePosition + target.entranceNormal * target.stationApproachDistance
     positionError = goal.length
     ready =
-      canStage && spinFeasible && stationStaged && positionError < Self.stationStagingTolerance
+      !brakingEntry && canStage && spinFeasible && stationStaged
+      && positionError < Self.stationStagingTolerance
       && facingError < 0.02
       && abs(phaseError) < 0.03
       && rateError < 0.02 && velocity.length < 1
@@ -328,9 +343,13 @@ public struct AutoTargetControl: Sendable {
     } else if stationStaged {
       // Hold at the safe external goal while facing the doorway and matching spin.
       desired = .init(0, 0, 0)
-      status =
-        !spinFeasible
-        ? "STATION SPIN EXCEEDS HULL LIMIT" : (facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN")
+      if brakingEntry {
+        status = "BRAKING FOR CLEAR DOCKING COURSE"
+      } else if !spinFeasible {
+        status = "STATION SPIN EXCEEDS HULL LIMIT"
+      } else {
+        status = facingError > 0.02 ? "ALIGNING" : "MATCHING SPIN"
+      }
     } else {
       // Existing cruise momentum brakes under the acceleration limit. Once the
       // waypoint is ahead, thrust follows the same bearing as the forward view.
