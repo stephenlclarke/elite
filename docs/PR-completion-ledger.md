@@ -140,3 +140,7 @@ Record Root's bounded product-only784/title30-native785 gain checkpoint for the 
 ## Integrated panel actual native result and priority release
 
 Record exact7398 source, actual784 product-only optimized build PASS and785 same-protocol title30 PASS with all actual native/supervisor signatures gone. Attach immutable proofs/comparison/closure: presentation p95 improves about50%, draw interval p95 about11%, drawing remains about67ms and processing p95 increases roughly13-fold. Preserve the unresolved spike and elapsed-time limits; rendering stays blocked. No credits/visual rerun/media/new tooling/fullCI. Directly release Root-clean64b contractStation leaf to786/787 four remaining cases after actual closure, retaining10 prior passes. Record MBA actual cd9 build failure and corrected mean-colour test-only authorization. Scoped Markdown/whitespace checks only after frozen native checkpoint closed.
+
+## Residual native drawing source proposal
+
+Record Root's G2 source-only assignment and delivered smallest panel-colour reuse proposal, with exact non-authoring/no-job bounds and preserved geometry/material/order/modes. The proposal remains pending Root's implementation choice; no source, focused PASS, runtime gain or readiness is inferred. Current owner786/787 crash validation retains priority. Scoped Markdown/whitespace checks only in the unfrozen canonical checkout.
