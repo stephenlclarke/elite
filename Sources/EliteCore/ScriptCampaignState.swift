@@ -202,24 +202,71 @@ extension ScriptEngineState {
   }
 }
 
+/// Fresh scalar/relationship projection for synchronous ancestor walks.
+struct CampaignReadMember {
+  let key: UUID
+  let id: UUID
+  let definition: String
+  let version: String
+  let digest: String
+  let campaignParent: ScriptChildBinding?
+
+  init(_ state: borrowing ScriptInstance, key: UUID? = nil) {
+    let id = state.id
+    self.id = id
+    self.key = key ?? id
+    definition = state.definition
+    version = state.version
+    digest = state.digest
+    campaignParent = state.campaignParent
+  }
+}
+
+extension ScriptChildDefinition {
+  func matches(_ state: CampaignReadMember) -> Bool {
+    state.definition == definition && state.version == version && state.digest == digest
+  }
+}
+
+private struct CampaignExecutionParent {
+  let member: CampaignReadMember
+  let pack: ScriptPack?
+  let outcome: ScriptOutcome
+}
+
 extension Game {
-  func campaignExecutionIssue(_ state: ScriptInstance) -> String? {
-    var member = state
+  func campaignExecutionIssue(_ state: borrowing ScriptInstance) -> String? {
+    var member = CampaignReadMember(state)
     var visited = Set<UUID>()
     while let binding = member.campaignParent {
       guard visited.insert(member.id).inserted, visited.count <= 4,
-        let parent = commander.scriptState.instances[binding.parent],
-        parent.campaignChildren[binding.definition.id] == binding
+        let parent = campaignExecutionParent(binding)
       else { return "Restore the original parent campaign relationship." }
-      guard let pack = scriptPack(for: parent), scriptUnavailable(pack) == nil else {
+      guard let pack = parent.pack, scriptUnavailable(pack) == nil else {
         return "Restore the exact owning campaign content and its requirements."
       }
       if binding.definition.terminalPolicy == .suspend && parent.outcome != .active {
         return "An owning campaign has ended; this child's actual property remains protected."
       }
-      member = parent
+      member = parent.member
     }
     return nil
+  }
+  @inline(never)
+  func campaignReadMember(_ id: UUID) -> CampaignReadMember? {
+    guard let state = commander.scriptState.instances[id] else { return nil }
+    return CampaignReadMember(state, key: id)
+  }
+
+  // Release the full parent read before checking pack availability or walking the next ancestor.
+  @inline(never)
+  private func campaignExecutionParent(_ binding: ScriptChildBinding) -> CampaignExecutionParent? {
+    guard let parent = commander.scriptState.instances[binding.parent],
+      parent.campaignChildren[binding.definition.id] == binding
+    else { return nil }
+    return .init(
+      member: CampaignReadMember(parent, key: binding.parent), pack: scriptPack(for: parent),
+      outcome: parent.outcome)
   }
   func campaignContentIssue(_ state: ScriptInstance, pack: ScriptPack) -> String? {
     let scopes = Dictionary(

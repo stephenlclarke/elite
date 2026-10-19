@@ -42,12 +42,16 @@ private struct ScriptGalleryRestart: Sendable {
 extension Game {
   var selectedGalleryMission: GalleryMission? {
     if let preview = gallery.campaignPreview { return preview }
-    let missions = missionCatalogue
-    if let pinned = gallery.campaignSelection { return missions.first { pinned.matches($0) } }
-    return missions.indices.contains(gallery.selection) ? missions[gallery.selection] : nil
+    return galleryReadQuery().selected
   }
+
   public var canTrialSelectedMission: Bool {
-    guard !isMissionTrial, let digest = selectedGalleryMission?.trialDigest else { return false }
+    guard !isMissionTrial else { return false }
+    return canTrialSelectedMission(galleryReadQuery())
+  }
+
+  func canTrialSelectedMission(_ query: GalleryReadQuery) -> Bool {
+    guard !isMissionTrial, let digest = query.selected?.trialDigest else { return false }
     if digest == NativePeopleGallery.digest { return true }
     guard let pack = scriptPacks.first(where: { $0.digest == digest })
     else { return false }
@@ -62,8 +66,10 @@ extension Game {
       && isolatedAvailability.scriptUnavailable(pack) == nil
       && isolatedAvailability.scriptAcceptanceIssue(pack) == nil
   }
-  public var canRetrySelectedMission: Bool {
-    guard let id = selectedGalleryMission?.savedInstance,
+  public var canRetrySelectedMission: Bool { canRetrySelectedMission(galleryReadQuery()) }
+
+  func canRetrySelectedMission(_ query: GalleryReadQuery) -> Bool {
+    guard let id = query.selected?.savedInstance,
       let state = commander.scriptState.instances[id],
       state.outcome == .active && state.suspension != nil || hasSuspendedWorldJobs(origin: id),
       let pack = scriptPack(for: state)

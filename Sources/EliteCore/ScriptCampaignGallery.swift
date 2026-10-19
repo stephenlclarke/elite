@@ -125,7 +125,56 @@ struct CampaignGalleryLink: Sendable {
   let action: CampaignGalleryAction
 }
 
+private struct CampaignAssignmentRead {
+  let declarations: [ScriptChildDefinition]
+  let children: [String: ScriptChildBinding]
+}
+
+/// One synchronous read only. The catalogue finishes before any selected-state query begins.
+/// This value is never stored in Game, serialized, or carried across a mutation or actor hop.
+final class GalleryReadQuery {
+  let missions: [GalleryMission]
+  let selected: GalleryMission?
+  let selection: Int
+  let window: ScrollWindow
+
+  init(
+    missions: consuming [GalleryMission], gallery: MissionGalleryState, width: Double,
+    height: Double
+  ) {
+    let selection: Int
+    let selected: GalleryMission?
+    if let pinned = gallery.campaignSelection {
+      selection = missions.firstIndex(where: { pinned.matches($0) }) ?? gallery.selection
+    } else {
+      selection = gallery.selection
+    }
+    if let preview = gallery.campaignPreview {
+      selected = preview
+    } else if let pinned = gallery.campaignSelection {
+      selected = missions.first { pinned.matches($0) }
+    } else {
+      selected =
+        missions.indices.contains(gallery.selection)
+        ? missions[gallery.selection] : nil
+    }
+    let layout = GalleryLayout(width: width, height: height)
+    let visible = max(1, Int((height - layout.listTop - 48) / layout.itemHeight))
+    window = .init(
+      count: missions.count, visible: visible, offset: max(0, selection - visible + 1))
+    self.missions = consume missions
+    self.selected = selected
+    self.selection = selection
+  }
+}
+
 extension Game {
+  @inline(never)
+  func galleryReadQuery() -> GalleryReadQuery {
+    .init(
+      missions: missionCatalogue, gallery: gallery, width: viewportWidth, height: viewportHeight)
+  }
+
   func galleryIdentityDigest(_ fields: [String]) -> String {
     // Length prefixes avoid ambiguous identities even when authored text contains separators.
     ScriptPackLibrary.hash(Data(fields.map { "\($0.utf8.count):\($0)" }.joined().utf8))
@@ -152,21 +201,27 @@ extension Game {
     ])
   }
 
-  var gallerySelectedEntryIdentity: String {
+  var gallerySelectedEntryIdentity: String { gallerySelectedEntryIdentity(galleryReadQuery()) }
+
+  func gallerySelectedEntryIdentity(_ query: GalleryReadQuery) -> String {
     if let preview = gallery.campaignPreviewIdentity { return preview }
-    guard let mission = selectedGalleryMission else {
+    guard let mission = query.selected else {
       return galleryIdentityDigest(["unavailable"])
     }
-    return galleryEntryIdentity(mission, index: resolvedGallerySelection)
+    return galleryEntryIdentity(mission, index: query.selection)
   }
 
   var scriptGalleryPageIdentity: ScriptGalleryPageIdentity {
+    scriptGalleryPageIdentity(galleryReadQuery())
+  }
+
+  func scriptGalleryPageIdentity(_ query: GalleryReadQuery) -> ScriptGalleryPageIdentity {
     let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
     let mode: ScriptGalleryPageKind =
       gallery.campaignReview != nil
       ? .review
       : gallery.campaignLinks ? .links : gallery.detail ? .detail : .list
-    let listFirst = galleryListWindow.offset
+    let listFirst = query.window.offset
     let linkFirst = max(0, gallery.campaignLinkSelection - layout.visibleLinks + 1)
     let geometry = galleryIdentityDigest([
       String(viewportWidth), String(viewportHeight), String(gallery.scroll), String(listFirst),
@@ -174,37 +229,35 @@ extension Game {
       String(layout.linkHeight), String(layout.itemHeight), String(layout.row),
     ])
     return .init(
-      generation: gallery.presentationGeneration, mode: mode, entry: gallerySelectedEntryIdentity,
-      targets: galleryControlTargets(mode: mode, listFirst: listFirst, linkFirst: linkFirst),
+      generation: gallery.presentationGeneration, mode: mode,
+      entry: gallerySelectedEntryIdentity(query),
+      targets: galleryControlTargets(query, mode: mode, listFirst: listFirst, linkFirst: linkFirst),
       layout: geometry)
   }
 
-  private func galleryControlTargets(mode: ScriptGalleryPageKind, listFirst: Int, linkFirst: Int)
+  private func galleryControlTargets(
+    _ query: GalleryReadQuery, mode: ScriptGalleryPageKind, listFirst: Int, linkFirst: Int
+  )
     -> String
   {
-    let state = selectedCampaignState
     var fields = [
-      String(canTrialSelectedMission), String(campaignTrialReview != nil),
-      campaignTrialUnavailableReason ?? "", String(canRetrySelectedMission),
-      state.map { String($0.revision) } ?? "", state?.outcome.rawValue ?? "",
-      state?.suspension ?? "", state.map { worldJobGallerySummary(origin: $0.id) } ?? "",
-      courierGallerySummary(state),
-      campaignImmediateOwner?.uuidString ?? "", gallery.campaignPreviewIdentity ?? "",
+      String(canTrialSelectedMission(query)), String(campaignTrialReview(query) != nil),
+      campaignTrialUnavailableReason(query) ?? "", String(canRetrySelectedMission(query)),
     ]
-    fields += providerGalleryPageFacts(state)
+    fields += gallerySelectedControlFacts(query)
     if let review = gallery.campaignReview {
       fields += [review.source.uuidString, review.root.uuidString, review.digest]
     }
     let layout = GalleryLayout(width: viewportWidth, height: viewportHeight)
     if mode == .list || layout.wide {
-      let visible = galleryListWindow.visible
-      for (index, mission) in missionCatalogue.enumerated().dropFirst(listFirst).prefix(visible) {
+      let visible = query.window.visible
+      for (index, mission) in query.missions.enumerated().dropFirst(listFirst).prefix(visible) {
         fields += [
           galleryEntryIdentity(mission, index: index), mission.status.rawValue, mission.objective,
         ]
       }
     }
-    let links = campaignGalleryLinks
+    let links = campaignGalleryLinks(query)
     let visibleLinks =
       mode == .links
       ? Array(links.dropFirst(linkFirst).prefix(layout.visibleLinks)) : links
@@ -224,14 +277,29 @@ extension Game {
     return galleryIdentityDigest(fields)
   }
 
+  // The full selected instance belongs only to this leaf, after catalogue construction.
+  @inline(never)
+  private func gallerySelectedControlFacts(_ query: GalleryReadQuery) -> [String] {
+    let state = query.selected?.savedInstance.flatMap { commander.scriptState.instances[$0] }
+    var fields = [
+      state.map { String($0.revision) } ?? "", state?.outcome.rawValue ?? "",
+      state?.suspension ?? "", state.map { worldJobGallerySummary(origin: $0.id) } ?? "",
+      courierGallerySummary(state),
+      (gallery.campaignPreviewOwner ?? state?.campaignParent?.parent)?.uuidString ?? "",
+      gallery.campaignPreviewIdentity ?? "",
+    ]
+    fields += providerGalleryPageFacts(state)
+    return fields
+  }
+
   mutating func finishGalleryNavigation(from previous: ScriptGalleryPageIdentity) {
     pinGallerySelection()
     if previous != scriptGalleryPageIdentity { gallery.presentationGeneration = UUID() }
   }
 
   var resolvedGallerySelection: Int {
-    guard let pinned = gallery.campaignSelection else { return gallery.selection }
-    return missionCatalogue.firstIndex(where: { pinned.matches($0) }) ?? gallery.selection
+    guard gallery.campaignSelection != nil else { return gallery.selection }
+    return galleryReadQuery().selection
   }
 
   mutating func pinGallerySelection() {
@@ -255,57 +323,81 @@ extension Game {
 
   /// Declarations and inverse bindings are queried without accepting or ensuring a child.
   public var selectedCampaignAssignments: [CampaignGalleryAssignment] {
-    let state = selectedCampaignState
-    let pack =
-      state.flatMap { scriptPack(for: $0) }
-      ?? selectedGalleryMission?.trialDigest.flatMap { digest in
-        scriptPacks.first { $0.digest == digest }
-      }
-    let declarations = pack?.manifest.children ?? []
-    let aliases = Set(declarations.map(\.id)).union(state?.campaignChildren.keys.map { $0 } ?? [])
+    selectedCampaignAssignments(galleryReadQuery())
+  }
+
+  func selectedCampaignAssignments(_ query: GalleryReadQuery) -> [CampaignGalleryAssignment] {
+    let source = campaignAssignmentRead(query)
+    let aliases = Set(source.declarations.map(\.id)).union(source.children.keys.map { $0 })
     return aliases.sorted().compactMap { alias in
       guard
-        let definition = declarations.first(where: { $0.id == alias })
-          ?? state?.campaignChildren[alias]?.definition
+        let definition = source.declarations.first(where: { $0.id == alias })
+          ?? source.children[alias]?.definition
       else { return nil }
-      let binding = state?.campaignChildren[alias]
-      let child = binding.flatMap { commander.scriptState.instances[$0.child] }
-      let content = scriptPacks.first {
-        $0.manifest.stateID == definition.definition && $0.manifest.version == definition.version
-          && $0.digest == definition.digest
-      }
-      let reason: String?
-      if content == nil {
-        reason = "Restore the exact assignment content."
-      } else if let child {
-        reason =
-          child.suspension ?? campaignExecutionIssue(child)
-          ?? content.flatMap { scriptUnavailable($0) }
-      } else {
-        reason = "This assignment starts through its campaign."
-      }
-      let status: String
-      if let child {
-        // Terminal outcomes remain truthful even when their content is unavailable.
-        status =
-          child.outcome == .active && reason != nil
-          ? "Suspended" : child.outcome.rawValue.capitalized
-      } else {
-        status = "Not started"
-      }
-      return CampaignGalleryAssignment(
-        alias: alias,
-        title: content?.manifest.mission.title
-          ?? alias.replacingOccurrences(of: "-", with: " ").capitalized + " (content unavailable)",
-        status: status,
-        objective: child?.journal.last ?? content?.manifest.mission.briefing
-          ?? "Saved assignment content is unavailable; its state remains intact.",
-        unavailableReason: reason, instance: child?.id, definition: definition)
+      return campaignGalleryAssignment(
+        alias, definition: definition, binding: source.children[alias])
     }
   }
 
+  @inline(never)
+  private func campaignAssignmentRead(_ query: GalleryReadQuery) -> CampaignAssignmentRead {
+    let state = query.selected?.savedInstance.flatMap { commander.scriptState.instances[$0] }
+    let pack =
+      state.flatMap { scriptPack(for: $0) }
+      ?? query.selected?.trialDigest.flatMap { digest in
+        scriptPacks.first { $0.digest == digest }
+      }
+    return .init(
+      declarations: pack?.manifest.children ?? [], children: state?.campaignChildren ?? [:])
+  }
+
+  @inline(never)
+  private func campaignGalleryAssignment(
+    _ alias: String, definition: ScriptChildDefinition, binding: ScriptChildBinding?
+  ) -> CampaignGalleryAssignment {
+    let child = binding.flatMap { commander.scriptState.instances[$0.child] }
+    let content = scriptPacks.first {
+      $0.manifest.stateID == definition.definition && $0.manifest.version == definition.version
+        && $0.digest == definition.digest
+    }
+    let reason: String?
+    if content == nil {
+      reason = "Restore the exact assignment content."
+    } else if let child {
+      reason =
+        child.suspension ?? campaignExecutionIssue(child)
+        ?? content.flatMap { scriptUnavailable($0) }
+    } else {
+      reason = "This assignment starts through its campaign."
+    }
+    let status: String
+    if let child {
+      // Terminal outcomes remain truthful even when their content is unavailable.
+      status =
+        child.outcome == .active && reason != nil
+        ? "Suspended" : child.outcome.rawValue.capitalized
+    } else {
+      status = "Not started"
+    }
+    return CampaignGalleryAssignment(
+      alias: alias,
+      title: content?.manifest.mission.title
+        ?? alias.replacingOccurrences(of: "-", with: " ").capitalized + " (content unavailable)",
+      status: status,
+      objective: child?.journal.last ?? content?.manifest.mission.briefing
+        ?? "Saved assignment content is unavailable; its state remains intact.",
+      unavailableReason: reason, instance: child?.id, definition: definition)
+  }
+
   var campaignImmediateOwner: UUID? {
-    gallery.campaignPreviewOwner ?? selectedCampaignState?.campaignParent?.parent
+    if let owner = gallery.campaignPreviewOwner { return owner }
+    return campaignImmediateOwner(galleryReadQuery())
+  }
+
+  func campaignImmediateOwner(_ query: GalleryReadQuery) -> UUID? {
+    if let owner = gallery.campaignPreviewOwner { return owner }
+    guard let id = query.selected?.savedInstance else { return nil }
+    return campaignReadMember(id)?.campaignParent?.parent
   }
 
   func campaignTitle(_ id: UUID) -> String {
@@ -313,14 +405,17 @@ extension Game {
       ?? "Saved campaign (content unavailable)"
   }
 
-  var campaignRelationshipLines: [String] {
+  var campaignRelationshipLines: [String] { campaignRelationshipLines(galleryReadQuery()) }
+
+  private func campaignRelationshipLines(_ query: GalleryReadQuery) -> [String] {
     var lines: [String] = []
     if gallery.campaignPreview != nil { lines += ["Assignment status: Not started", ""] }
-    if let owner = campaignImmediateOwner {
+    if let owner = campaignImmediateOwner(query) {
       lines += [
         "Part of " + campaignTitle(owner), "This assignment starts through its campaign.", "",
       ]
-      if let state = selectedCampaignState {
+      if let state = query.selected?.savedInstance.flatMap({ commander.scriptState.instances[$0] })
+      {
         let reason = state.suspension ?? campaignExecutionIssue(state)
         let status =
           state.outcome == .active && reason != nil
@@ -330,7 +425,7 @@ extension Game {
         lines.append("")
       }
     }
-    let assignments = selectedCampaignAssignments
+    let assignments = selectedCampaignAssignments(query)
     if !assignments.isEmpty {
       lines += ["Assignments"]
       for assignment in assignments {
@@ -339,26 +434,28 @@ extension Game {
         lines.append("")
       }
     }
-    if campaignImmediateOwner != nil, let reason = campaignTrialUnavailableReason {
+    if campaignImmediateOwner(query) != nil, let reason = campaignTrialUnavailableReason(query) {
       lines += ["Try campaign unavailable: " + reason, ""]
     }
     return lines
   }
 
-  var campaignGalleryLinks: [CampaignGalleryLink] {
+  var campaignGalleryLinks: [CampaignGalleryLink] { campaignGalleryLinks(galleryReadQuery()) }
+
+  func campaignGalleryLinks(_ query: GalleryReadQuery) -> [CampaignGalleryLink] {
     var links: [CampaignGalleryLink] = []
-    if let owner = campaignImmediateOwner {
+    if let owner = campaignImmediateOwner(query) {
       links.append(
         .init(title: "View campaign", detail: campaignTitle(owner), action: .owner(owner)))
     }
-    links += selectedCampaignAssignments.map {
+    links += selectedCampaignAssignments(query).map {
       .init(title: $0.title + " - " + $0.status, detail: $0.objective, action: .assignment($0))
     }
-    if campaignImmediateOwner != nil {
+    if campaignImmediateOwner(query) != nil {
       links.append(
         .init(
           title: "Try campaign",
-          detail: campaignTrialUnavailableReason
+          detail: campaignTrialUnavailableReason(query)
             ?? "Review the owning root campaign's isolated trial.",
           action: .trial))
     }
@@ -366,38 +463,71 @@ extension Game {
   }
 
   var campaignTrialRoot: ScriptInstance? {
-    guard
-      var member = gallery.campaignPreviewOwner.flatMap({ commander.scriptState.instances[$0] })
-        ?? selectedCampaignState
-    else { return nil }
+    campaignTrialRootMember(galleryReadQuery()).flatMap { commander.scriptState.instances[$0.key] }
+  }
+
+  private func campaignTrialRootMember(_ query: GalleryReadQuery) -> CampaignReadMember? {
+    guard var member = campaignTrialStart(query) else { return nil }
     let expectedRoot = member.campaignParent?.root ?? member.id
     var visited = Set<UUID>()
     while let binding = member.campaignParent {
       guard visited.insert(member.id).inserted, visited.count <= 4,
-        let parent = commander.scriptState.instances[binding.parent],
-        parent.campaignChildren[binding.definition.id] == binding,
-        binding.child == member.id, binding.definition.matches(member)
+        let parent = campaignTrialParent(member, binding: binding)
       else { return nil }
       member = parent
     }
     return member.id == expectedRoot ? member : nil
   }
 
+  private func campaignTrialStart(_ query: GalleryReadQuery) -> CampaignReadMember? {
+    if let id = gallery.campaignPreviewOwner, let member = campaignReadMember(id) { return member }
+    guard let id = query.selected?.savedInstance else { return nil }
+    return campaignReadMember(id)
+  }
+
+  @inline(never)
+  private func campaignTrialParent(_ member: CampaignReadMember, binding: ScriptChildBinding)
+    -> CampaignReadMember?
+  {
+    guard let parent = commander.scriptState.instances[binding.parent],
+      parent.campaignChildren[binding.definition.id] == binding,
+      binding.child == member.id, binding.definition.matches(member)
+    else { return nil }
+    return CampaignReadMember(parent, key: binding.parent)
+  }
+
   var campaignTrialUnavailableReason: String? {
     if isMissionTrial { return "Return to your commander before starting another trial." }
-    guard let root = campaignTrialRoot else {
+    return campaignTrialUnavailableReason(galleryReadQuery())
+  }
+
+  private func campaignTrialUnavailableReason(_ query: GalleryReadQuery) -> String? {
+    if isMissionTrial { return "Return to your commander before starting another trial." }
+    guard let root = campaignTrialRootMember(query) else {
       return "Restore the original owning campaign relationship."
     }
+    let content = campaignTrialRootContent(root.key)
+    if let reason = content.reason { return reason }
+    guard let pack = content.pack else { return "Restore the exact root campaign content." }
+    return isolatedCampaignTrialUnavailableReason(pack)
+  }
+
+  // This read completes before allocating an isolated Game for trial availability.
+  @inline(never)
+  private func campaignTrialRootContent(_ id: UUID) -> (pack: ScriptPack?, reason: String?) {
+    guard let root = commander.scriptState.instances[id] else {
+      return (nil, "Restore the original owning campaign relationship.")
+    }
     guard root.contract == nil else {
-      return "Trials of saved contract assignments are not supported."
+      return (nil, "Trials of saved contract assignments are not supported.")
     }
     guard let pack = scriptPack(for: root) else {
-      return "Restore the exact root campaign content."
+      return (nil, "Restore the exact root campaign content.")
     }
     guard pack.manifest.mission.parentOnly != true else {
-      return "This content can only start through its owning campaign."
+      return (nil, "This content can only start through its owning campaign.")
     }
-    return isolatedCampaignTrialUnavailableReason(pack)
+    return (pack, nil)
   }
 
   // Finish the owning-root/catalogue lookup before reserving the isolated trial value.
@@ -432,12 +562,26 @@ extension Game {
     return nil
   }
 
-  var campaignTrialReview: CampaignGalleryTrialReview? {
-    guard campaignImmediateOwner != nil, campaignTrialUnavailableReason == nil,
-      let source = gallery.campaignPreviewOwner ?? selectedCampaignState?.id,
-      let root = campaignTrialRoot, let pack = scriptPack(for: root)
+  var campaignTrialReview: CampaignGalleryTrialReview? { campaignTrialReview(galleryReadQuery()) }
+
+  private func campaignTrialReview(_ query: GalleryReadQuery) -> CampaignGalleryTrialReview? {
+    guard campaignImmediateOwner(query) != nil, campaignTrialUnavailableReason(query) == nil,
+      let source = campaignTrialSource(query),
+      let root = campaignTrialRootMember(query), let pack = galleryInstancePack(root.key)
     else { return nil }
     return .init(source: source, root: root.id, digest: pack.digest, epoch: ecmControl.epoch)
+  }
+
+  private func campaignTrialSource(_ query: GalleryReadQuery) -> UUID? {
+    if let owner = gallery.campaignPreviewOwner { return owner }
+    guard let id = query.selected?.savedInstance else { return nil }
+    return campaignReadMember(id)?.id
+  }
+
+  @inline(never)
+  func galleryInstancePack(_ id: UUID) -> ScriptPack? {
+    guard let state = commander.scriptState.instances[id] else { return nil }
+    return scriptPack(for: state)
   }
 
   public var canReviewSelectedCampaignTrial: Bool {
