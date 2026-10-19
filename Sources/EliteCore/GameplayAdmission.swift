@@ -148,6 +148,10 @@ extension Game {
       Set(requests.map(\.identity)).count == requests.count
     else { return .staleContext }
     var budget = context.budget
+    let registeredStationBodies = Set(
+      commander.nativeStations?.ledger.records.compactMap { record in
+        record.identity.system == context.system ? record.binding?.bodyID : nil
+      } ?? [])
     let playerRadius = commander.playerMesh.vertices.map(\.length).max() ?? 80
     for (request, template) in zip(requests, templates) {
       let resourceCapacityMatches: Bool
@@ -179,6 +183,13 @@ extension Game {
         guard let body = bodies.first(where: { $0.physical?.identity == actor.identity }) else {
           return .staleContext
         }
+        if body.nativeStationIdentity != nil || registeredStationBodies.contains(body.id) {
+          guard
+            missionActorClearsNativeStation(
+              center: request.position, radius: radius, body: body)
+          else { return .unsafePosition }
+          continue
+        }
         let otherRadius: Double
         if let bounds = actor.salvage?.bounds {
           otherRadius = bounds.radius + bounds.center.length
@@ -208,6 +219,39 @@ extension Game {
       }
     }
     return nil
+  }
+
+  /// Static admission only: a sphere outside the complete rigid source box clears every
+  /// station triangle. All authority and pose checks precede either geometric fast path.
+  func missionActorClearsNativeStation(center: Vector3, radius: Double, body: SpaceBody) -> Bool {
+    guard center.finite, center.length.isFinite, radius.isFinite, radius > 0,
+      let identity = body.nativeStationIdentity, nativeStationBodyIsCurrent(body),
+      let world = commander.nativeStations, let saved = world.pose(for: identity),
+      let source = NativeStationSource.binding(for: identity), body.energy == saved.energy,
+      world.bodyRigidPoseIsConsistent(body, flight: commander.flightSimulation)
+    else { return false }
+    let geometry = source.geometry
+    let minimum = geometry.bounds.minimum
+    let maximum = geometry.bounds.maximum
+    let pose = modelPose(of: body)
+    guard minimum.finite, maximum.finite,
+      minimum.x < maximum.x, minimum.y < maximum.y, minimum.z < maximum.z,
+      pose.position.finite, pose.orientation.validRotation,
+      let otherRadius = geometry.mesh.vertices.map(\.length).max(),
+      otherRadius.isFinite, otherRadius > 0
+    else { return false }
+    let distance = (center - pose.position).length
+    guard distance.isFinite else { return false }
+    if distance >= radius + otherRadius + 64 { return true }
+    let local = pose.shipPoint(center)
+    guard local.finite, local.length.isFinite else { return false }
+    let closest = Vector3(
+      max(minimum.x, min(maximum.x, local.x)),
+      max(minimum.y, min(maximum.y, local.y)),
+      max(minimum.z, min(maximum.z, local.z)))
+    let clearance = (local - closest).length - radius
+    let numerical = 1e-8 * max(1, otherRadius + radius + center.length + pose.position.length)
+    return clearance.isFinite && numerical.isFinite && clearance - 64 > numerical
   }
 
   private func admissionCapacityRefusal(
