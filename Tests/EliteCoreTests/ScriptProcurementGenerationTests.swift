@@ -227,7 +227,10 @@ func procurementV2SelectsFromStableFeasibleCandidatesBeforeItsFrozenDraw(row: In
     }
     return cost < plan.duration
   }
-  try #require(!eligible.isEmpty && eligible.count < routes.count)
+  try #require(!eligible.isEmpty)
+  // This actual basic-reach pool is entirely feasible in the original catalogue.
+  // The paid extended-reach case below separately requires a strict filtered subset.
+  #expect(eligible == routes)
   let index = Int(floor(Double(plan.draws[row * 2]) / 4294967296.0 * Double(eligible.count)))
   #expect(plan.generatorRevision == 2 && plan.valid && plans == repeated)
   #expect(plan.routeIndex == index && plan.path == eligible[index])
@@ -241,6 +244,63 @@ func procurementV2SelectsFromStableFeasibleCandidatesBeforeItsFrozenDraw(row: In
     plan.draws == [
       3_904_980_207, 3_418_643_681, 1_263_781_229, 1_278_340_818, 1_285_116_615, 3_203_511_623,
     ] && plan.finalState == 3_203_511_623)
+}
+
+@Test(arguments: [0, 1, 2])
+func procurementV2FiltersOverDeadlineRoutesFromPaidExtendedReachBeforeDrawing(row: Int) throws {
+  let fixture = try ScriptProcurementFixture()
+  defer { fixture.clean() }
+  // Controlled fresh shop initialization, not a travelled route or awarded fit.
+  var game = try ScriptProcurementFixture.freshG03FlightGame()
+  game.commander.credits = 1_000_000
+  try game.commander.prepareEquipment(legacy: false)
+  game.scriptPacks = [fixture.pack]
+  game.scriptDurabilityAvailable = true
+  game.ensureMissionCalendar()
+  let owner = game.commander.equipmentOwnerID
+  let hull = game.commander.hullInstanceID
+  let fuel = game.commander.fuel
+  let cash = game.commander.credits
+  let purchases = [
+    NavigationTier.advanced.equipmentName, NavigationTier.military.equipmentName,
+    FuelStorage.equipmentName, FuelStorage.equipmentName,
+  ]
+  for name in purchases {
+    game.selection = try #require(Equipment.all.firstIndex { $0.name == name })
+    let item = Equipment.all[game.selection]
+    let before = game.commander.credits
+    let receipts = game.commander.equipmentPurchaseHistory?.paid.count ?? 0
+    try #require(game.equipmentAvailable(item))
+    game.purchase()
+    try #require(game.commander.credits == before - item.price)
+    try #require(game.commander.equipmentPurchaseHistory?.paid.count == receipts + 1)
+    try #require(game.commander.equipmentPurchaseHistory?.paid.last?.node.key == name)
+  }
+  try #require(game.commander.credits == cash - 160000)
+  try #require(game.commander.equipmentPurchaseHistory?.paid.count == purchases.count)
+  try #require(game.commander.navigationTier == .military && game.commander.fuelStorageUnits == 2)
+  try #require(game.commander.fuel == fuel && game.commander.fuelCapacity == 210)
+  try #require(game.commander.maximumJumpDistance == 7 && game.commander.fullTankJumpDistance == 21)
+  try #require(game.commander.equipmentOwnerID == owner && game.commander.hullInstanceID == hull)
+  try #require(game.commander.valid && game.commander.cargo.allSatisfy { $0 == 0 })
+  let plans = try fixture.plans(game)
+  let repeated = try fixture.plans(game)
+  let plan = plans[row]
+  let routes = ScriptCourierGeneration.routes(origin: plan.origin, reach: plan.reach)
+  let systems = Universe.systemsIncludingPlugh(number: plan.origin.galaxy)
+  // Independent sum over actual native BFS paths, before any route draw is applied.
+  let eligible = routes.filter { path in
+    let cost = zip(path, path.dropFirst()).reduce(0.0) { value, edge in
+      let distance = systems[edge.0].scriptCalendarDistance(to: systems[edge.1])
+      return value + 600 + distance * distance * 3600
+    }
+    return cost < plan.duration
+  }
+  try #require(!eligible.isEmpty && eligible.count < routes.count)
+  let index = Int(floor(Double(plan.draws[row * 2]) / 4294967296.0 * Double(eligible.count)))
+  #expect(plan.generatorRevision == 2 && plan.valid && plans == repeated)
+  #expect(plan.routeIndex == index && plan.path == eligible[index])
+  #expect(plan.calendarLowerBoundSeconds < plan.duration)
 }
 
 /// Numeric feasibility is strict; actual handoff at the deadline remains inclusive.
