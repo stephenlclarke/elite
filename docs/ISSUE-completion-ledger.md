@@ -17,3 +17,7 @@ Docs-only work based on canonical50fa57ee in an isolated worktree, with later Ro
 ## Tracking
 
 No new GitHub issue number was assigned. Task slug: completion-ledger. See the [handoff](PR-completion-ledger.md) for final files, validation and remaining limits.
+
+## Maintained-row correction: existing contract deposits
+
+G3's later bounded source read confirms deposit debit, generic completion/failure refund, once-only settlement and saved reward-plus-deposit validation already exist in ScriptContractCore/ScriptContractState. R06's older escrow-gap wording cannot establish that these paths are absent. Root paused MBA-01 new-model authoring pending a narrow custody/receipt/writer/reload comparison with G03. The ledger must preserve that dependency and select the genuine consumer/pack gap if existing semantics suffice, without rewriting the original frozen ledger or commissioning another money authority.
