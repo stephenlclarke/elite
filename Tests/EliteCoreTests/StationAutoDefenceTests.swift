@@ -1005,6 +1005,14 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 909)
   let index = try #require(game.bodies.firstIndex { $0.id == id })
+  // This sustained-pressure scene starts with the actual native hull's full stock
+  // resources, rather than the helper's legacy 100-energy adoption profile.
+  let native = ShipCatalogue.nativeShip(game.bodies[index].hull)?.game
+  let performance = try #require(native)
+  let stock = NPCResources.stock(performance)
+  let resources = try #require(stock)
+  game.bodies[index].energy = performance.energy
+  game.bodies[index].physical?.npc?.resources = resources
   // Author an actually aligned fixed mount, rather than seed pressure through the
   // separate legacy emitter's target-centre ray. Subsequent turning remains native.
   let forward = (game.bodies[index].position * -1).unit
@@ -1019,6 +1027,8 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   let destination = game.autoPilot.targetActor
   let shields = game.frontShield + game.rearShield
   let attackContext = try #require(game.gameplayContext())
+  let source = try #require(attackContext.actors.first { $0.identity == actor })
+  try #require(source.energy == source.maximumEnergy && source.maximumEnergy == performance.energy)
   let ray = try game.nearestMissionCollision(
     from: game.bodies[index].position, direction: orientation.z.unit, range: 1500,
     radius: 0, excludingBodyIDs: [id], includePlayer: true)
