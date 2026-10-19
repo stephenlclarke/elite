@@ -26,7 +26,13 @@ private func longRoute(_ game: Game) -> [Int] {
   var game = Game(executive: false)
   game.screen = .chart
   game.commander.credits = 500_000
-  game.commander.system = try #require(game.systems.firstIndex { $0.technology >= 10 })
+  let basicItem = try #require(
+    Equipment.all.first { $0.name == NavigationTier.basic.equipmentName })
+  game.commander.system = try #require(
+    game.systems.first {
+      $0.technology == basicItem.requiredTechnologyLevel
+    }
+  ).id
   try game.commander.prepareEquipment(legacy: false)
   let basic = try #require(game.commander.fittedEquipment(at: .navigation))
   #expect(basic.provenance == .standard && game.commander.navigationTier == .basic)
@@ -46,6 +52,22 @@ private func longRoute(_ game: Game) -> [Int] {
     })
   for (tier, reach) in [(NavigationTier.advanced, 14.0), (.military, 21.0)] {
     game.selection = try #require(Equipment.all.firstIndex { $0.name == tier.equipmentName })
+    let item = Equipment.all[game.selection]
+    game.commander.system = try #require(
+      game.systems.first {
+        $0.technology == item.requiredTechnologyLevel - 1
+      }
+    ).id
+    #expect(!game.equipmentAvailable(item))
+    #expect(game.equipmentPurchaseRequirement(item) == "Requires TL\(item.requiredTechnologyLevel)")
+    let below = game.commander
+    game.purchase()
+    #expect(game.commander == below && game.message == "NOT AVAILABLE")
+    game.commander.system = try #require(
+      game.systems.first {
+        $0.technology == item.requiredTechnologyLevel
+      }
+    ).id
     let cash = game.commander.credits
     game.purchase()
     #expect(game.commander.credits == cash - tier.price && game.commander.navigationTier == tier)
@@ -93,6 +115,7 @@ private func longRoute(_ game: Game) -> [Int] {
   game.commander.autoTrade = true
   for stop in 0..<(path.count - 1) {
     game.launch()
+    try #require(!game.docked && game.commander.valid, "Native launch refused: \(game.message)")
     #expect(game.selectedSystem == path[stop + 1] && game.jumpCountdown == nil)
     game.bodies = []
     game.arrive()

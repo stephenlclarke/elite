@@ -3,19 +3,27 @@ import Testing
 
 @testable import EliteCore
 
-private func plughGame(galaxy: Int = 0) -> Game {
+private func plughGame(galaxy: Int = 0) throws -> Game {
   var game = Game(executive: false)
   game.commander.galaxy = galaxy
   game.systems = Universe.systemsIncludingPlugh(number: galaxy)
-  game.commander.system = 7
-  game.selectedSystem = 7
+  game.commander.system = Plugh.rumourStation
+  game.selectedSystem = Plugh.rumourStation
   game.screen = .status
   game.key("u")
   game.key("return")
-  game.docked = false
+  game.launch()
+  try #require(!game.docked && game.commander.valid, "Native launch refused: \(game.message)")
+  game.bodies = []
   game.selectedSystem = Plugh.systemID
   game.arrive()
+  try #require(
+    game.commander.system == Plugh.systemID && !game.docked && game.commander.valid,
+    "PLUGH arrival refused: \(game.message)")
   game.dock()
+  try #require(
+    game.docked && game.atPlugh && game.commander.valid,
+    "PLUGH docking refused: \(game.message)")
   return game
 }
 
@@ -53,7 +61,11 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
     #expect(original.count == 256 && all.count == 257 && Array(all.prefix(256)) == original)
     #expect(all[256] == secret && secret.name == "PLUGH")
     #expect(!original.contains { $0.x == secret.x && $0.y == secret.y })
-    #expect(original[7].distance(to: secret) <= 3)
+    // The source offset is four Cartesian LY from the authored rumour world.
+    let anchor = original[Plugh.rumourStation]
+    #expect(secret.x == anchor.x + 4 && secret.y == anchor.y)
+    #expect(abs(anchor.distance(to: secret) - 4) < 1e-9)
+    #expect(anchor.distance(to: secret) <= Commander().fullTankJumpDistance)
     #expect(secret.economyName == "Rich Industrial" && secret.governmentName == "Corporate State")
     identities.insert("\(galaxy):\(secret.id)")
   }
@@ -75,7 +87,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   game.commander.system = 129
   game.key("u")
   #expect(game.screen == .rumour && !game.commander.hasDiscoveredPlugh(in: 0))
-  #expect(game.stationRumour.contains("LAVE"))
+  #expect(game.stationRumour.contains(Universe.galaxy(number: 0)[Plugh.rumourStation].name))
   game.key("k")
   game.key("k")
   game.key("escape")
@@ -97,7 +109,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   #expect(game.commander.plughDiscoveryMask == discovery && game.screen == .front)
 }
 
-@Test func plughCanBeReachedByOrdinaryFuelLimitedHyperspaceAndDocked() {
+@Test func plughCanBeReachedByOrdinaryFuelLimitedHyperspaceAndDocked() throws {
   for galaxy in 0..<8 {
     var game = Game(executive: false)
     game.commander.galaxy = galaxy
@@ -106,10 +118,13 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
     game.key("u")
     game.key("return")
     game.launch()
+    try #require(!game.docked && game.commander.valid, "Native launch refused: \(game.message)")
     game.bodies = []
-    game.selectedSystem = 256
+    game.selectedSystem = Plugh.systemID
     let fuel = game.commander.fuel
-    let cost = Int(game.currentSystem.distance(to: game.targetSystem) * 10)
+    let distance = game.currentSystem.distance(to: game.targetSystem)
+    let cost = game.commander.jumpFuelCost(distance: distance)
+    #expect(distance > 0 && distance <= game.commander.maximumJumpDistance && cost <= fuel)
     game.beginHyperspace()
     #expect(game.jumpCountdown != nil)
     for _ in 0..<160 { game.tick(delta: 0.1) }
@@ -124,7 +139,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 @Test func plughDiscoverySaveValidationAndGalacticDeparturePreserveIdentityAndEquipment()
   async throws
 {
-  var game = plughGame(galaxy: 2)
+  var game = try plughGame(galaxy: 2)
   try NativeSaveTestFixture.prepareCurrentPolicy(&game)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
@@ -167,7 +182,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 @Test func plughShopSellsEverySupportedItemAtOneDiscountAndKeepsRewardsRestrictedElsewhere() throws
 {
   for (index, item) in Equipment.all.enumerated() {
-    var game = plughGame()
+    var game = try plughGame()
     game.commander.credits = 10_000_000
     game.commander.fuel = 0
     try game.commander.prepareEquipment(legacy: false)
@@ -209,7 +224,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
       #expect(normal.commander.credits == 10_000_000 && normal.message.hasSuffix("NOT FOR SALE"))
     }
   }
-  var game = plughGame()
+  var game = try plughGame()
   game.commander.credits = 1_000_000
   let naval = try #require(EquipmentRuntimeCatalog.node(for: Equipment.navalEnergyUnit))
   try buyPlughPrerequisites(naval, game: &game)
@@ -224,7 +239,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 }
 
 @Test func plughShopRespectsCashStorageMissileMountAndTierLimitsWithoutRefillsOrCashReset() throws {
-  var game = plughGame()
+  var game = try plughGame()
   game.commander.credits = 10_000_000
   game.commander.xyzzyActive = true
   game.commander.xyzzyCashGranted = true
@@ -272,7 +287,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 }
 
 @Test func plughFuelAndAllCommodityPricesMatchDisplaysAndCannotCreateInstantTradeProfit() throws {
-  var game = plughGame()
+  var game = try plughGame()
   game.commander.credits = 1_000_000
   let ordinary = MarketItem.at(Universe.galaxy(number: game.commander.galaxy)[Plugh.rumourStation])
   #expect(
