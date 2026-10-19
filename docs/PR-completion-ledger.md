@@ -176,3 +176,7 @@ Record exact a09ea0cb clean independent review/five-method-six-case plan and act
 ## Reviewed cold-chain absence-pattern fix
 
 Record exact fb89585f seven-line owned save-validator correction and Root independent CLEAN review. All16 cold-chain cases are affected and require corrected-source qualification; retain only four unaffected mining/palette passes. If the two receiver cases are already running, complete them then execute the remaining14 once. No cancellation/duplicate work, automatic18-pass carryover, broader CI or integration claim. Scoped Markdown/whitespace checks only.
+
+## Postlaunch admission failure and grouped fact repair
+
+Record actual793 reaching native launch return then failing in postlaunch admission drain, with zero completed/five UNKNOWN methods and exact terminal/all-owned closure; intermediate progress is not a journey PASS. Assign Root's three adjacent readonly admission-fact projections as one Game/ScriptEncounters group,794/795 owner validation after child/plan freeze, existing unresolved set plus at most one existing world-job authority method, retaining ten prior passes. No general getter refactor/new diagnostics/prebuild ACK; review may overlap build but precedes integration. Confirm MBA16-case scope was selected before receiver reruns, with four unaffected passes retained. Scoped Markdown/whitespace checks only.
