@@ -102,6 +102,18 @@ struct NativeWormholeTransitFixture {
     _ game: inout Game, instance id: UUID, alias: String = "lead", retry: Bool = false,
     destinationWorld: String? = nil
   ) throws -> UUID {
+    let actor = try prepareRequest(
+      &game, instance: id, alias: alias, retry: retry, destinationWorld: destinationWorld)
+    try GameRuntime.writeCommander(&game, to: storage.url)
+    return NativeWormholeLeg.identity(instance: id, actor: actor, request: "journey")
+  }
+
+  // Retained mission/actor values and destination-search captures end before native save validation.
+  @inline(never)
+  private func prepareRequest(
+    _ game: inout Game, instance id: UUID, alias: String, retry: Bool,
+    destinationWorld: String?
+  ) throws -> UUID {
     let state = try #require(game.commander.scriptState.instances[id])
     let actor = try #require(state.ownedEncounters["opponents"]?.actors[alias])
     let destination: String
@@ -120,8 +132,7 @@ struct NativeWormholeTransitFixture {
         "encounter": .string("opponents"), "actor": .string(alias),
         "destination": .string(destination),
       ]), pack: pack, state: state)
-    try GameRuntime.writeCommander(&game, to: storage.url)
-    return NativeWormholeLeg.identity(instance: id, actor: actor.identity, request: "journey")
+    return actor.identity
   }
   func physicalStep(_ game: inout Game) throws -> NativeWormholeMotionSample {
     let context = try #require(game.gameplayContext())
