@@ -2457,6 +2457,14 @@ public actor GameRuntime {
       }
       throw SaveError.invalidCommander
     }
+    return makeNativeSavePreparation(candidate)
+  }
+
+  /// Enter final ownership copies only after all native save validation has returned.
+  @inline(never)
+  private static func makeNativeSavePreparation(_ candidate: borrowing Game)
+    -> NativeSavePreparation
+  {
     var persistedCommander = candidate.commander
     clearNativeSaveBindings(&persistedCommander, system: candidate.systemIdentity)
     return NativeSavePreparation(game: copy candidate, commander: consume persistedCommander)

@@ -204,14 +204,26 @@ extension Commander {
   }
 
   var freightCargoValid: Bool {
-    for state in scriptState.instances.values {
-      guard freightStateValid(state) else { return false }
+    guard Self.freightInstancesAreValid(self) else { return false }
+    return Self.freightCargoFitsHold(self)
+  }
+
+  /// Release instance-iteration values before entering cargo aggregation.
+  @inline(never)
+  private static func freightInstancesAreValid(_ commander: borrowing Commander) -> Bool {
+    for state in commander.scriptState.instances.values {
+      guard commander.freightStateValid(state) else { return false }
     }
-    let cargo = scriptState.instances.values.compactMap(\.savedOwnedCargo)
+    return true
+  }
+
+  @inline(never)
+  private static func freightCargoFitsHold(_ commander: borrowing Commander) -> Bool {
+    let cargo = commander.scriptState.instances.values.compactMap(\.savedOwnedCargo)
     let units = cargo.flatMap(\.issued)
     guard Set(units).count == units.count else { return false }
     guard cargo.contains(where: { !$0.held.isEmpty }) else { return true }
-    guard let tonnes = checkedCargoTonnes else { return false }
-    return tonnes <= standardCargoCapacity
+    guard let tonnes = commander.checkedCargoTonnes else { return false }
+    return tonnes <= commander.standardCargoCapacity
   }
 }
