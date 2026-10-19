@@ -153,4 +153,52 @@ struct ShipTextureRasterTests {
         projection: .legacy, texture: "test", brightness: 1, clip: clip
       ).isEmpty)
   }
+  @Test func originalReliefPreservesPaletteAndDoesNotLightItTwice() throws {
+    let neutral = try #require(ShipTexturePixels(width: 1, height: 1, pixels: [0x5656_5600]))
+    let base = triangle(u: -0.25, v: 3.5, brightness: 0.5)
+    for colour: UInt32 in [0xC828_14FF, 0x1428_C8FF] {
+      let original = ShipTexturedTriangle(
+        vertices: base.vertices, texture: "l337-patrol-diffuse", brightness: base.brightness,
+        clip: base.clip, appearance: .originalSurface(litMaterial: colour))
+      let tile = try #require(ShipTextureRaster.tile(triangle: original, pixels: neutral))
+      #expect(tile.rgba[0] == colour)
+      #expect(tile.rgba.last == 0)
+    }
+    let raw = try #require(ShipTextureRaster.tile(triangle: base, pixels: neutral))
+    #expect(raw.rgba[0] == 0x2B2B_2BFF)
+  }
+
+  @Test func originalReliefHasAuthoredBoundsAndRefusesUnrelatedAssets() throws {
+    let base = triangle(u: 0, v: 0)
+    let original = ShipTexturedTriangle(
+      vertices: base.vertices, texture: "l337-service-details", brightness: 1,
+      clip: base.clip, appearance: .originalSurface(litMaterial: 0xC864_32FF))
+    for (sample, expected): (UInt32, UInt32) in [
+      (0x0000_0000, 0x361B_0EFF), (0xFFFF_FF00, 0xDC6E_37FF),
+    ] {
+      let pixels = try #require(ShipTexturePixels(width: 1, height: 1, pixels: [sample]))
+      let tile = try #require(ShipTextureRaster.tile(triangle: original, pixels: pixels))
+      #expect(tile.rgba[0] == expected)
+    }
+    let pixels = try #require(ShipTexturePixels(width: 1, height: 1, pixels: [0x5656_56FF]))
+    let archival = ShipTexturedTriangle(
+      vertices: base.vertices, texture: "sunray-diffuse", brightness: 1, clip: base.clip,
+      appearance: original.appearance)
+    #expect(ShipTextureRaster.tile(triangle: archival, pixels: pixels) == nil)
+    let translucent = ShipTexturedTriangle(
+      vertices: base.vertices, texture: original.texture, brightness: 1, clip: base.clip,
+      appearance: .originalSurface(litMaterial: 0xC864_3280))
+    #expect(ShipTextureRaster.tile(triangle: translucent, pixels: pixels) == nil)
+  }
+
+  @Test func originalMaterialSurvivesNearPlaneClipping() {
+    let appearance = ShipTextureAppearance.originalSurface(litMaterial: 0x1234_56FF)
+    let projected = ShipTextureProjection.triangles(
+      vertices: [.init(-1, 0, 0), .init(1, 0, 2), .init(0, 1, 2)],
+      uv: [[-1, 0], [1, 0], [0, 1]], projection: .init(center: .init(2, 2), focal: 1),
+      texture: "l337-patrol-diffuse", brightness: 1, clip: clip, appearance: appearance)
+    #expect(projected.count == 2)
+    #expect(projected.allSatisfy { $0.appearance == appearance })
+  }
+
 }

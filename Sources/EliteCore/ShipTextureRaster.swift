@@ -30,17 +30,28 @@ public struct ShipTextureVertex: Sendable, Equatable {
   }
 }
 
+/// Original surface maps provide relief over an already lit authored palette.
+/// Archival textures retain their own RGB and the existing scalar lighting contract.
+public enum ShipTextureAppearance: Sendable, Equatable {
+  case sourceRGB
+  case originalSurface(litMaterial: UInt32)
+}
+
 public struct ShipTexturedTriangle: Sendable, Equatable {
   public let vertices: [ShipTextureVertex]
   public let texture: String
   public let brightness: Double
+  public let appearance: ShipTextureAppearance
   public let clip: CanvasRect
 
-  public init(vertices: [ShipTextureVertex], texture: String, brightness: Double, clip: CanvasRect)
-  {
+  public init(
+    vertices: [ShipTextureVertex], texture: String, brightness: Double, clip: CanvasRect,
+    appearance: ShipTextureAppearance = .sourceRGB
+  ) {
     self.vertices = vertices
     self.texture = texture
     self.brightness = brightness
+    self.appearance = appearance
     self.clip = clip
   }
 }
@@ -69,7 +80,8 @@ public enum ShipTextureProjection {
   /// Clip in camera space, before dividing position and UV by depth.
   public static func triangles(
     vertices: [Vector3], uv: [[Double]], projection: FlightProjection,
-    texture: String, brightness: Double, clip: CanvasRect
+    texture: String, brightness: Double, clip: CanvasRect,
+    appearance: ShipTextureAppearance = .sourceRGB
   ) -> [ShipTexturedTriangle] {
     guard (3...64).contains(vertices.count), uv.count == vertices.count,
       vertices.allSatisfy({ valid($0.x) && valid($0.y) && valid($0.z) }),
@@ -102,7 +114,7 @@ public enum ShipTextureProjection {
     return (1..<(projected.count - 1)).map {
       .init(
         vertices: [projected[0], projected[$0], projected[$0 + 1]],
-        texture: texture, brightness: brightness, clip: clip)
+        texture: texture, brightness: brightness, clip: clip, appearance: appearance)
     }
   }
 
@@ -133,6 +145,11 @@ public enum ShipTextureRaster {
       validClip(triangle.clip), scale.isFinite, scale >= 1 / 8192, scale <= 4,
       triangle.brightness.isFinite, (0...1).contains(triangle.brightness)
     else { return nil }
+    if case .originalSurface(let colour) = triangle.appearance {
+      guard colour & 255 == 255,
+        OriginalShipTextureAssets.allowedIDs.contains(triangle.texture)
+      else { return nil }
+    }
     let points = triangle.vertices.map(\.point)
     let left = max(points.map(\.x).min()!, triangle.clip.x)
     let top = max(points.map(\.y).min()!, triangle.clip.y)
@@ -177,7 +194,8 @@ public enum ShipTextureRaster {
           (a * vertices[0].vOverDepth + b * vertices[1].vOverDepth
             + c * vertices[2].vOverDepth) / depth
         guard u.isFinite, v.isFinite else { continue }
-        rgba[y * width + x] = sample(pixels, u: u, v: v, brightness: triangle.brightness)
+        rgba[y * width + x] = sample(
+          pixels, u: u, v: v, brightness: triangle.brightness, appearance: triangle.appearance)
       }
     }
     let origin = ScreenPoint(x0 / effectiveScale, y0 / effectiveScale)
@@ -192,9 +210,10 @@ public enum ShipTextureRaster {
   }
 
   /// Normalized repeat UVs, with v=0 at the top PNG row and texel-center filtering.
-  private static func sample(_ pixels: ShipTexturePixels, u: Double, v: Double, brightness: Double)
-    -> UInt32
-  {
+  private static func sample(
+    _ pixels: ShipTexturePixels, u: Double, v: Double, brightness: Double,
+    appearance: ShipTextureAppearance
+  ) -> UInt32 {
     let wrappedU = u - floor(u)
     let wrappedV = v - floor(v)
     let x = wrappedU * Double(pixels.width) - 0.5
@@ -212,16 +231,31 @@ public enum ShipTextureRaster {
     let topRight = texel(ix + 1, iy)
     let bottomLeft = texel(ix, iy + 1)
     let bottomRight = texel(ix + 1, iy + 1)
-    func channel(_ shift: Int) -> UInt32 {
+    func channel(_ shift: Int) -> Double {
       let top =
         Double((topLeft >> shift) & 255) * (1 - fx)
         + Double((topRight >> shift) & 255) * fx
       let bottom =
         Double((bottomLeft >> shift) & 255) * (1 - fx)
         + Double((bottomRight >> shift) & 255) * fx
-      return UInt32(min(255, max(0, ((top * (1 - fy) + bottom * fy) * brightness).rounded())))
+      return top * (1 - fy) + bottom * fy
     }
-    let colour = channel(24) << 24 | channel(16) << 16 | channel(8) << 8 | 255
-    return colour
+    func opaqueChannel(_ value: Double) -> UInt32 {
+      UInt32(min(255, max(0, value.rounded())))
+    }
+    switch appearance {
+    case .sourceRGB:
+      return opaqueChannel(channel(24) * brightness) << 24
+        | opaqueChannel(channel(16) * brightness) << 16
+        | opaqueChannel(channel(8) * brightness) << 8 | 255
+    case .originalSurface(let litMaterial):
+      // Match the original authoring renderer's neutral surface-relief convention.
+      // Lighting (including emissivity) is already in litMaterial; do not apply it twice.
+      let luminance = (channel(24) + channel(16) + channel(8)) / 3
+      let relief = min(1.10, max(0.27, luminance / 86))
+      return opaqueChannel(Double((litMaterial >> 24) & 255) * relief) << 24
+        | opaqueChannel(Double((litMaterial >> 16) & 255) * relief) << 16
+        | opaqueChannel(Double((litMaterial >> 8) & 255) * relief) << 8 | 255
+    }
   }
 }

@@ -133,7 +133,8 @@ extension Frame {
     let bounded = ShipTexturedTriangle(
       vertices: triangle.vertices, texture: triangle.texture, brightness: triangle.brightness,
       clip: .init(
-        x: leftEdge, y: topEdge, width: rightEdge - leftEdge, height: bottomEdge - topEdge))
+        x: leftEdge, y: topEdge, width: rightEdge - leftEdge, height: bottomEdge - topEdge),
+      appearance: triangle.appearance)
     guard let tile = ShipTextureRaster.tile(triangle: bounded, pixels: texture)
     else { return }
     let left = Int(tile.origin.x.rounded())
