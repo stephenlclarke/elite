@@ -887,15 +887,104 @@ private func profiledPatrolHasLawfulHullContact(_ game: Game, mission: UUID, act
   #expect(await loaded.snapshot().commander.scriptState.instances[id]?.outcome == .complete)
 }
 
+// Keep the large Commander proof on the heap while real native station validation runs.
+private final class NPCReplayNamespaceProof {
+  var commander: Commander
+  var bodies: [SpaceBody]
+  let nextBodyID: Int
+  let revision: UInt64
+  let epoch: UUID
+  init(_ game: borrowing Game) {
+    commander = game.commander
+    bodies = game.bodies
+    nextBodyID = game.nextBodyID
+    revision = game.gameplayRevision
+    epoch = game.nativeStationRuntimeEpoch
+  }
+}
+
+private func npcReplayExpectedReboundBody(
+  _ original: SpaceBody, id: Int, actor: ActorIdentity, spawn: SpawnIdentity
+) throws -> SpaceBody {
+  // Preserve every encoded field; only the three explicitly allocated addresses change.
+  let encoded = try JSONEncoder().encode(original)
+  let measuredObject = try JSONSerialization.jsonObject(with: encoded)
+  var object = try #require(measuredObject as? [String: Any])
+  var physical = try #require(object["physical"] as? [String: Any])
+  object["id"] = id
+  physical["identity"] = try JSONSerialization.jsonObject(with: JSONEncoder().encode(actor))
+  physical["spawnIdentity"] = try JSONSerialization.jsonObject(with: JSONEncoder().encode(spawn))
+  object["physical"] = physical
+  return try JSONDecoder().decode(
+    SpaceBody.self, from: JSONSerialization.data(withJSONObject: object, options: [.sortedKeys]))
+}
+
+@inline(never)
+private func alignNPCReplayNativeStationNamespace(_ game: inout Game) throws {
+  let proof = NPCReplayNamespaceProof(game)
+  let indices = proof.bodies.indices.filter { proof.bodies[$0].nativeStationIdentity != nil }
+  try #require(!indices.isEmpty)
+  for index in indices {
+    let body = proof.bodies[index]
+    let identity = try #require(body.nativeStationIdentity)
+    let current =
+      game.nativeStationBodyIsCurrent(body)
+      && NativeStationSource.binding(for: identity) != nil
+    try #require(current)
+  }
+  // Public load performs this mandatory fresh-binding transition on the restored branch.
+  // Apply that same real authority transition to the unserialized continuation, not a
+  // post-replay normalization of shots, resources or mission state.
+  try game.rebindNativeStationsAfterLoad()
+  let freshEpoch = game.nativeStationRuntimeEpoch != proof.epoch
+  let sameBodyCount = game.bodies.count == proof.bodies.count
+  try #require(freshEpoch && sameBodyCount)
+  let scriptStateUnchanged = game.commander.scriptState == proof.commander.scriptState
+  let nonStationsUnchanged =
+    game.bodies.filter { $0.nativeStationIdentity == nil }
+    == proof.bodies.filter { $0.nativeStationIdentity == nil }
+  try #require(scriptStateUnchanged && nonStationsUnchanged)
+  let allocatedSequence = proof.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocatedSequence)
+  var world = try #require(proof.commander.nativeStations)
+  for (member, index) in indices.enumerated() {
+    let original = proof.bodies[index]
+    let identity = try #require(original.nativeStationIdentity)
+    let allocatedActor = proof.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocatedActor)
+    let spawn = SpawnIdentity(
+      system: identity.system, visit: actor.visit, sequence: sequence,
+      member: UInt16(member), producer: .mission)
+    let id = proof.nextBodyID + member
+    proof.bodies[index] = try npcReplayExpectedReboundBody(
+      original, id: id, actor: actor, spawn: spawn)
+    try world.ledger.rebind(identity, to: .init(actor: actor, bodyID: id))
+    let current = game.nativeStationBodyIsCurrent(game.bodies[index])
+    try #require(current)
+  }
+  proof.commander.nativeStations = world
+  // Full comparisons prove all non-address fields, sources, conditions, stocks,
+  // script state and all other flight fields survive the boundary unchanged.
+  let bodiesMatch = game.bodies == proof.bodies
+  let commanderMatches = game.commander == proof.commander
+  let countersMatch =
+    game.nextBodyID == proof.nextBodyID + indices.count
+    && game.gameplayRevision == proof.revision + 1
+  try #require(bodiesMatch && commanderMatches && countersMatch)
+}
+
 @Test func physicalNpcReplayAfterSavePreservesShotIdentitiesStocksAndWeaponResults() async throws {
   let fixture = try NPCFixture()
   defer { fixture.clean() }
   var (game, id) = try fixture.game()
   _ = try aimNPCAtPlayer(&game, id: id)
   game.speed = 0
-  let runtime = GameRuntime(game: game)
+  var runtime = GameRuntime(game: game)
   _ = await runtime.advance(delta: 0.1)
   try await runtime.save(to: fixture.save)
+  game = await runtime.snapshot()
+  try alignNPCReplayNativeStationNamespace(&game)
+  runtime = GameRuntime(game: game)
   let resumed = GameRuntime(game: game)
   try await resumed.load(from: fixture.save)
   for _ in 0..<12 {
