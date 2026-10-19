@@ -108,43 +108,18 @@ struct NavigationGraph {
     }
   }
   func path(from origin: Int, to destination: Int, fuel: Int, scoring: Int) -> [Int]? {
-    let count = game.systems.count
-    var costs = [Double](repeating: .infinity, count: count)
-    costs[origin] = 0
-    var previous = [Int?](repeating: nil, count: count)
-    var visited: Set<Int> = []
-    for _ in 0..<count {
-      guard
-        let node = costs.indices.filter({ !visited.contains($0) && costs[$0].isFinite }).min(by: {
-          costs[$0] == costs[$1] ? $0 < $1 : costs[$0] < costs[$1]
-        })
-      else { break }
-      if node == destination { break }
-      visited.insert(node)
-      for next in edges[node] where !visited.contains(next) {
-        let distance = game.systems[node].distance(to: game.systems[next])
-        if node == origin && distance > game.commander.fuelDistance(for: fuel) { continue }
-        let risk = Double(7 - game.systems[next].government) * 0.15
-        let weight: Double
-        switch scoring {
-        case 1: weight = 1 + risk
-        case 2: weight = max(0.25, 1 + risk * 0.2 - trade(node, next) / 10000)
-        default: weight = 1 + distance * 0.0001
-        }
-        let cost = costs[node] + weight
-        if cost < costs[next] {
-          costs[next] = cost
-          previous[next] = node
-        }
+    guard edges.count == game.systems.count else { return nil }
+    return NavigationRouteSearch.path(adjacency: edges, from: origin, to: destination) {
+      node, next, firstLeg in
+      let distance = game.systems[node].distance(to: game.systems[next])
+      if firstLeg && distance > game.commander.fuelDistance(for: fuel) { return nil }
+      let risk = Double(7 - game.systems[next].government) * 0.15
+      switch scoring {
+      case 1: return 1 + risk
+      case 2: return max(0.25, 1 + risk * 0.2 - trade(node, next) / 10000)
+      default: return 1 + distance * 0.0001
       }
     }
-    guard costs[destination].isFinite else { return nil }
-    var path = [destination]
-    while path.last != origin {
-      guard let parent = previous[path.last!], path.count <= count else { return nil }
-      path.append(parent)
-    }
-    return path.reversed()
   }
   func alternatives(destination: Int, tier: NavigationTier) -> [RouteAlternative] {
     let origin = game.commander.system
