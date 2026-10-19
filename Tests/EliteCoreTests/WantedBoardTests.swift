@@ -5,7 +5,7 @@ import Testing
 @testable import EliteCore
 @testable import EliteMac
 
-private func wantedGame(count: Int = 12) throws -> Game {
+private func wantedGame(count: Int = 12, spacing: Double = 120) throws -> Game {
   var game = Game(executive: false)
   game.launch()
   try #require(!game.docked)
@@ -23,7 +23,8 @@ private func wantedGame(count: Int = 12) throws -> Game {
     npc.resources = .legacyEnergyOnly(maximumEnergy: 100)
     npc.intention = .engage(try #require(game.commander.flightSimulation.player))
     var body = SpaceBody(
-      id: 100 + index, hull: .cobra, position: .init(Double(index * 120), 0, 1000), hostile: true)
+      id: 100 + index, hull: .cobra, position: .init(Double(index) * spacing, 0, 1000),
+      hostile: true)
     body.physical = .init(identity: actor, population: .pirate, npc: npc, catalogueShipID: "SH023")
     game.bodies.append(body)
   }
@@ -90,7 +91,11 @@ struct WantedBoardTests {
   }
 
   @Test func tiedCareersKeepIdentityAcrossCullRebindAndCrossSystemParking() throws {
-    var game = try wantedGame(count: 2)
+    // Initial geometry must satisfy ordinary re-admission, not just direct unit adoption.
+    // Native Cobra envelopes have radius69, requiring separation greater than146.
+    var game = try wantedGame(count: 2, spacing: 200)
+    let radius = try #require(Mesh.hull(.cobra).vertices.map(\.length).max())
+    try #require((game.bodies[1].position - game.bodies[0].position).length > 2 * radius + 8)
     let first = try #require(game.bodies.first?.physical?.identity)
     let logical = try #require(game.commander.npcPersistence.logicalIdentity(for: first))
     let career = try #require(game.commander.wantedCareers.careers[logical])
