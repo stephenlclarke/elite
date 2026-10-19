@@ -165,6 +165,13 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
     ScriptIdentity.uuid("native-npc-transit-v1:\(instance):\(actor):\(request)")
   }
   var valid: Bool {
+    guard requestFieldsValid() else { return false }
+    return receiptsAndPhaseValid()
+  }
+
+  // Early identifiers must not share a frame with later full departure-body validation values.
+  @inline(never)
+  private func requestFieldsValid() -> Bool {
     guard id == Self.identity(instance: instance, actor: actor, request: request),
       PackValidation.localID(request), PackValidation.localID(encounter),
       PackValidation.localID(alias),
@@ -176,6 +183,11 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
       spooledAt.map({ $0.isFinite && (requestedAt...1e12).contains($0) }) ?? true,
       spoolPhysicalTime.map({ $0.isFinite && (0...1e12).contains($0) }) ?? true
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func receiptsAndPhaseValid() -> Bool {
     if let opening {
       guard opening.valid, opening.leg == id, opening.route == route,
         let spooledAt, opening.openedAt >= spooledAt,
@@ -285,6 +297,12 @@ extension Commander {
 extension ScriptEngineState {
   var nativeWormholeStateValid: Bool {
     guard wormholeTransit?.valid ?? true else { return false }
+    return nativeWormholeOwnerAndHistoryValid()
+  }
+
+  // Validate the typed ledger before retaining the later owned-actor/history traversal values.
+  @inline(never)
+  private func nativeWormholeOwnerAndHistoryValid() -> Bool {
     guard
       (wormholeTransit?.commanderPassages ?? [:]).values.allSatisfy({
         $0.calendarOperation <= (calendarLedger?.operation ?? 0) && $0.seconds <= transitSeconds
