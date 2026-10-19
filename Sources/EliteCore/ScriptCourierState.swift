@@ -193,9 +193,12 @@ extension ScriptPackLibrary {
       }
       let interestCalendar = (manifest.loans ?? []).contains { $0.interest != nil }
       if interestCalendar { try validateFinance(manifest) }
+      let transitCalendar = (manifest.npcs ?? []).contains { $0.drive != nil }
+      if transitCalendar { try validateNPCTransit(manifest) }
       guard manifest.board?.clock != .missionCalendar,
         !manifest.capabilities.contains("courier-contracts-basic-v2"),
-        !manifest.capabilities.contains("mission-calendar-v2") || interestCalendar,
+        !manifest.capabilities.contains("mission-calendar-v2") || interestCalendar
+          || transitCalendar,
         !manifest.handlers.contains(where: { $0.event == "courier.terminated" })
       else {
         throw MissionPackError("Mission calendar requires a closed native provider declaration.")

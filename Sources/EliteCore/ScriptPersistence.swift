@@ -242,7 +242,8 @@ struct ScriptWorldSave: Codable, Sendable {
               .sceneActorDuplicate, commander: commander, boundary: diagnosticBoundary)
             return nil
           }
-          records[actor.identity] = (instance.id, encounter.galaxy, encounter.system, actor)
+          let location = actor.location(in: encounter)
+          records[actor.identity] = (instance.id, location.galaxy, location.system, actor)
         }
       }
     }

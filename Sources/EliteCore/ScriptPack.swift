@@ -104,6 +104,7 @@ public enum ScriptCapabilities {
     "station-pledges-basic-v2", "courier-contracts-basic-v2", "mission-calendar-v2",
     "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
     ScriptFinanceInterest.capability,
+    "npc-wormhole-transit-v2",
     ScriptNavigationTradeContent.capability,
   ]
   static func playerFeatureName(_ capability: String) -> String {
@@ -127,6 +128,8 @@ public enum ScriptCapabilities {
     "ship.changed", "equipment.changed", "gear.consumed",
     "equipment.issued", "equipment.returned", "equipment.released",
     "actor.intent.accepted", "actor.arrived", "actor.target.lost", "actor.damaged",
+    "actor.transit.requested", "actor.transit.opened", "actor.transit.departed",
+    "actor.transit.arrived",
     "component.destroyed", "weapon.fired", "mission.receipted", "dialogue.chosen", "book.unlocked",
     "collection.delivered", "campaign.child.started", "courier.terminated",
     "provider.transition", "provider.closed", "procurement.terminated", "freight.terminated",

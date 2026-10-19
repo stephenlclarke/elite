@@ -347,7 +347,8 @@ public struct Commander: Sendable, Equatable, Codable {
       && (0...fuelCapacity).contains(fuel)
       && (0...missileCapacity).contains(missiles) && (0...65535).contains(kills) && legal >= 0
       && missionProgress.count <= 128 && missionProgress.values.allSatisfy(\.valid)
-      && scriptState.valid && financeStateValid && nativePeopleStateValid && accommodationValid
+      && scriptState.valid && financeStateValid && nativeWormholeHistoryValid
+      && nativePeopleStateValid && accommodationValid
       && contractsValid
       && (legacyOwnedEquipment != nil ? legacyIssueStateValid : issuedEquipmentValid)
       && (checkedCargoTonnes.map { $0 <= capacity } ?? false)
@@ -1417,7 +1418,16 @@ public struct Game: Sendable {
     }
     self = candidate
   }
-  private mutating func performNativeArrival() throws -> Bool {
+  mutating func arriveThroughNativeWormhole(_ passage: NativeCommanderWormholePassage) throws
+    -> Bool
+  {
+    guard passage.matches(self) else { throw NativeWormholeRefusal.stale }
+    try preflightActiveMissionProjectiles()
+    return try performNativeArrival(wormhole: passage)
+  }
+  private mutating func performNativeArrival(wormhole: NativeCommanderWormholePassage? = nil) throws
+    -> Bool
+  {
     try activateNativeStationWorld()
     try persistNativeStationConditions()
     resolveDestroyed()
@@ -1432,7 +1442,13 @@ public struct Game: Sendable {
       return false
     }
     persistOrePoses()
-    let journey = requiresScriptDurability ? completeCalendarJourney() : nil
+    let journey: ScriptCalendarJourney?
+    if let wormhole {
+      guard let admitted = completeWormholeCalendarJourney(wormhole) else { return false }
+      journey = admitted
+    } else {
+      journey = requiresScriptDurability ? completeCalendarJourney() : nil
+    }
     let destination = journey?.destination ?? selectedSystem
     guard flushNativeSalvageMotion(parkingSystem: systemIdentity) else { return false }
     persistScriptActors(unloading: true)
@@ -1454,6 +1470,7 @@ public struct Game: Sendable {
       commander.fuel = max(0, commander.fuel - cost)
     }
     commander.system = destination
+    if wormhole != nil { selectedSystem = destination }
     if let plan = commander.navigationPlan, plan.nextSystem != commander.system {
       commander.navigationPlan = nil
       notify("ROUTE CANCELLED - OFF ROUTE")
@@ -1472,6 +1489,16 @@ public struct Game: Sendable {
     resetCelestialFlight()
     guard beginGameplayVisit(arriving: true, freshLaunchTrafficID: 1) else {
       throw SaveError.invalidCommander
+    }
+    if let wormhole, let journey, let player = commander.flightSimulation.player {
+      // The adapter must have registered this actual native exit, never a guessed GPS pose.
+      guard commander.flightSimulation.pose == wormhole.opening.route.exit else {
+        throw NativeWormholeRefusal.worldUnavailable
+      }
+      commander.scriptState.wormholeTransit?.commanderPassages[wormhole.opening.id] = .init(
+        opening: wormhole.opening.id, source: wormhole.player, arrival: player,
+        calendarOperation: journey.operation, seconds: journey.seconds,
+        fuelBefore: wormhole.fuelBefore, fuelAfter: commander.fuel, fuelDebit: wormhole.fuelDebit)
     }
     altitude = 1
     notify(currentSystem.name)
@@ -2214,7 +2241,8 @@ public actor GameRuntime {
   private typealias AdvanceContext = (
     wasDocked: Bool, wasLive: Bool, location: (Int, Int), localActive: Bool, flightActive: Bool,
     calendarActive: Bool, clockAdvanced: Bool, startPhysicalTime: Double,
-    startPlayer: ActorIdentity?
+    startPlayer: ActorIdentity?, transitSample: NativeWormholeMotionSample?,
+    startTransitSeconds: Double
   )
   // Release preflight/read buffers before entering the deeper physical simulation.
   private func prepareAdvance(delta: Double) -> AdvanceContext? {
@@ -2251,14 +2279,17 @@ public actor GameRuntime {
         missionCalendar: game.missionCalendarActive)
     return (
       wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced,
-      startPhysicalTime, startPlayer
+      startPhysicalTime, startPlayer,
+      flightActive && game.hasNativeWormholeMotionObservers
+        ? NativeWormholeMotionSample(game) : nil,
+      game.commander.scriptState.transitSeconds
     )
   }
   // Reserve later event/restoration buffers only after the physical tick and native entry.
   private func finishAdvance(delta: Double, context: AdvanceContext, stationEntryAttempted: Bool) {
     let (
       wasDocked, wasLive, location, localActive, flightActive, calendarActive, clockAdvanced,
-      startPhysicalTime, startPlayer
+      startPhysicalTime, startPlayer, transitSample, startTransitSeconds
     ) =
       context
     if wasLive && game.screen == .gameOver {
@@ -2291,10 +2322,16 @@ public actor GameRuntime {
         return
       }
     }
-    if localActive { game.drainScriptEvents(publish: scriptPublisher()) }
+    if localActive {
+      game.advanceNativeNPCTransit(from: transitSample, publish: scriptPublisher())
+      game.advanceNativeCommanderWakeEntry(from: transitSample, publish: scriptPublisher())
+      game.advanceNativeNPCTransit(from: nil, publish: scriptPublisher())
+      game.drainScriptEvents(publish: scriptPublisher())
+    }
     if clockAdvanced {
       game.fireDueScriptTimers(
         flight: flightActive, local: localActive, calendar: calendarActive,
+        transit: game.commander.scriptState.transitSeconds > startTransitSeconds,
         publish: scriptPublisher())
     }
     game.advanceScriptWorldJobs(delta: delta, publish: scriptPublisher())

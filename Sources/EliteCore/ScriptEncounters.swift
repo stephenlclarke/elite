@@ -36,7 +36,7 @@ public struct ScriptEncounterDefinition: Codable, Sendable {
   public let actors: [ScriptActorDefinition]
 }
 public enum ScriptActorPresence: String, Codable, Sendable {
-  case prepared, present, outside, unloaded, destroyed
+  case prepared, present, outside, unloaded, destroyed, inTransit, arrivalPending
 }
 public struct ScriptOwnedActor: Codable, Sendable, Equatable {
   public let identity: UUID
@@ -45,6 +45,11 @@ public struct ScriptOwnedActor: Codable, Sendable, Equatable {
   public var body: SpaceBody
   public var presence: ScriptActorPresence
   public var destroyedByPlayer: Bool?
+  /// Relocation requires a retained successful native transit arrival; nil is the declared origin.
+  var transitLocation: SystemIdentity?
+  func location(in encounter: ScriptOwnedEncounter) -> SystemIdentity {
+    transitLocation ?? .init(galaxy: encounter.galaxy, system: encounter.system)
+  }
   var valid: Bool {
     PackValidation.localID(alias) && body.missionActorID == identity
       && body.position.finite && body.position.length <= 1e9 && body.orientation.validRotation
@@ -76,7 +81,7 @@ public struct ScriptOwnedEncounter: Codable, Sendable, Equatable {
       && actors.allSatisfy { $0.key == $0.value.alias && $0.value.valid }
       && (admitted
         ? actors.values.allSatisfy { $0.presence != .prepared && $0.body.id >= 0 }
-        : actors.values.allSatisfy { $0.presence == .prepared })
+        : actors.values.allSatisfy { $0.presence == .prepared && $0.transitLocation == nil })
   }
 }
 
@@ -87,6 +92,7 @@ enum MissionActorAdmissionAuthority: Sendable, Equatable {
   case missionHandler
   case worldJob(identity: UUID, pulse: UInt64)
   case retained
+  case transit(UUID)
 }
 
 struct MissionActorAdmissionPart: Sendable {
@@ -166,12 +172,14 @@ struct MissionActorAdmissionSource: Sendable {
   let retention: ScriptOwnedEncounter
   let actors: [MissionActorAdmissionTemplate]
   fileprivate let installedBaseEncounter: ScriptOwnedEncounter?
+  fileprivate let transitContext: OriginalWorldJourneyContext?
 
   fileprivate init(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
     instance: ScriptInstance, pack: ScriptPack, encounter: ScriptOwnedEncounter,
     definition: ScriptEncounterDefinition, actors: [MissionActorAdmissionTemplate],
-    installedBaseEncounter: ScriptOwnedEncounter?
+    installedBaseEncounter: ScriptOwnedEncounter?,
+    transitContext: OriginalWorldJourneyContext? = nil
   ) {
     self.mode = mode
     self.authority = authority
@@ -181,11 +189,15 @@ struct MissionActorAdmissionSource: Sendable {
     self.definition = instance.definition
     version = instance.version
     encounterID = encounter.id
-    system = .init(galaxy: encounter.galaxy, system: encounter.system)
+    system =
+      transitContext?.route.destination.location ?? actors.first.flatMap { template in
+        encounter.actors[template.alias]?.transitLocation
+      } ?? .init(galaxy: encounter.galaxy, system: encounter.system)
     profile = definition.profile
     retention = encounter
     self.actors = actors
     self.installedBaseEncounter = installedBaseEncounter
+    self.transitContext = transitContext
   }
 }
 
@@ -248,6 +260,10 @@ extension MissionActorAdmissionSource {
       guard var actor = updated.actors[template.alias], actor.identity == template.actorID else {
         throw MissionPackError("Actor retention mapping changed before native admission.")
       }
+      if case .transit = authority {
+        actor.body = template.canonicalBody
+        actor.transitLocation = system
+      }
       actor.body.id = bodyID
       actor.presence = .present
       updated.actors[template.alias] = actor
@@ -291,6 +307,10 @@ extension Game {
     let refreshed: MissionActorAdmissionSource
     switch source.mode {
     case .retained:
+      if case .transit(let leg) = source.authority, let context = source.transitContext {
+        refreshed = try transitMissionActorAdmissionSource(leg, context: context)
+        break
+      }
       guard source.authority == .retained,
         owner.ownedEncounters[source.encounterID] == source.retention,
         source.system == .init(galaxy: currentInputs.galaxy, system: currentInputs.system)
@@ -307,7 +327,7 @@ extension Game {
         refreshed = try preparedMissionActorAdmissionSource(
           pack: pack, state: owner, encounter: source.retention,
           worldJob: identity, pulse: pulse)
-      case .retained:
+      case .retained, .transit:
         throw MissionPackError("A prepared cohort cannot substitute retained admission authority.")
       }
     }
@@ -328,7 +348,10 @@ extension Game {
       pack.digest == source.packDigest,
       owner.ownedEncounters[source.encounterID] == source.installedBaseEncounter,
       source.retention.id == source.encounterID,
-      source.system == .init(galaxy: source.retention.galaxy, system: source.retention.system)
+      source.transitContext != nil
+        || source.actors.allSatisfy({
+          source.retention.actors[$0.alias]?.location(in: source.retention) == source.system
+        })
     else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
     return (owner, pack)
   }
@@ -344,7 +367,10 @@ extension Game {
       }
       for key in instance.ownedEncounters.keys.sorted() {
         guard let encounter = instance.ownedEncounters[key], encounter.admitted,
-          encounter.galaxy == commander.galaxy, encounter.system == commander.system
+          encounter.actors.values.contains(where: {
+            $0.location(in: encounter) == systemIdentity
+              && ![.inTransit, .arrivalPending].contains($0.presence)
+          })
         else { continue }
         guard encounter.id == key else {
           throw MissionPackError("Retained encounter key mismatch.")
@@ -356,6 +382,52 @@ extension Game {
       }
     }
     return sources
+  }
+
+  /// The destination adapter reuses the whole native admission transaction. Its input is an
+  /// installed due journey, never a caller-built body, synthetic arrival or source-system restore.
+  func transitMissionActorAdmissionSource(_ legID: UUID, context: OriginalWorldJourneyContext)
+    throws
+    -> MissionActorAdmissionSource
+  {
+    guard let leg = commander.scriptState.wormholeTransit?.legs[legID], leg.valid,
+      [.inTransit, .arrivalPending].contains(leg.phase), let departure = leg.departure,
+      let due = leg.dueAt, commander.scriptState.calendarSeconds >= due,
+      context.route == leg.route, context.matches(self, at: systemIdentity),
+      systemIdentity == context.route.destination.location, !docked,
+      let owner = commander.scriptState.instances[leg.instance],
+      let pack = scriptPack(for: owner),
+      let encounter = owner.ownedEncounters[leg.encounter],
+      var actor = encounter.actors[leg.alias], actor.identity == leg.actor,
+      [.inTransit, .arrivalPending].contains(actor.presence), actor.body == departure.body,
+      !bodies.contains(where: { $0.missionActorID == leg.actor }),
+      let anchor = scriptAnchor
+    else {
+      throw MissionPackError(
+        "Native transit arrival requires its exact due retained actor and destination world.")
+    }
+    let definition = try validateMissionActorAdmissionEncounter(
+      mode: .retained, pack: pack, state: owner, encounter: encounter)
+    guard let spec = definition.actors.first(where: { $0.id == leg.alias }) else {
+      throw MissionPackError("The transit actor is no longer declared.")
+    }
+    let pose = commander.flightSimulation.pose
+    actor.body.position = anchor.orientation.inverse(
+      pose.shipPoint(context.route.exit.position) - anchor.position)
+    actor.body.orientation = context.route.exit.orientation.relative(to: pose.orientation).relative(
+      to: anchor.orientation)
+    // The source-frame transit steering ends here. No local approach/escort arrival is emitted.
+    actor.body.scriptNPC?.intent = nil
+    if let velocity = departure.body.physical?.velocity {
+      actor.body.scriptNPC?.velocity = anchor.orientation.inverse(pose.shipVector(velocity))
+    }
+    let template = try Self.missionActorAdmissionTemplate(
+      actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
+      installedModels: pack.models, geometry: commander.scriptState.geometry, legacy: nil)
+    return .init(
+      mode: .retained, authority: .transit(legID), instance: owner, pack: pack,
+      encounter: encounter, definition: definition, actors: [template],
+      installedBaseEncounter: encounter, transitContext: context)
   }
 
   /// Called only by this file's validated prepared-encounter handler when native admission is wired.
@@ -452,6 +524,12 @@ extension Game {
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       let actor = try Self.validatedMissionActorAdmissionActor(
         spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy)
+      if mode == .retained
+        && (actor.location(in: encounter) != systemIdentity
+          || [.inTransit, .arrivalPending].contains(actor.presence))
+      {
+        continue
+      }
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
         installedModels: pack.models, geometry: currentInputs.geometry,
@@ -882,10 +960,12 @@ extension Game {
                 "identity": .string(actor.identity.uuidString),
                 "presence": .string(actor.presence.rawValue),
                 "energy": .number(actor.body.energy),
-                "position": .array([
-                  .number(actor.body.position.x), .number(actor.body.position.y),
-                  .number(actor.body.position.z),
-                ]),
+                "position": [.inTransit, .arrivalPending].contains(actor.presence)
+                  ? .null
+                  : .array([
+                    .number(actor.body.position.x), .number(actor.body.position.y),
+                    .number(actor.body.position.z),
+                  ]),
                 "npc": scriptNPCSnapshot(actor.body.scriptNPC),
                 "missiles": .integer(Int64(actor.body.missiles)),
               ])
@@ -1107,11 +1187,12 @@ extension Game {
     for instanceID in commander.scriptState.instances.keys {
       guard var instance = commander.scriptState.instances[instanceID] else { continue }
       for encounterID in instance.ownedEncounters.keys {
-        guard var encounter = instance.ownedEncounters[encounterID], encounter.admitted,
-          encounter.galaxy == commander.galaxy, encounter.system == commander.system
+        guard var encounter = instance.ownedEncounters[encounterID], encounter.admitted
         else { continue }
         for alias in encounter.actors.keys {
-          guard var saved = encounter.actors[alias], saved.presence != .destroyed,
+          guard var saved = encounter.actors[alias],
+            ![.destroyed, .inTransit, .arrivalPending].contains(saved.presence),
+            saved.location(in: encounter) == systemIdentity,
             let body = actual[saved.identity], body.missionInstanceID == instanceID
           else { continue }
           saved.body = body

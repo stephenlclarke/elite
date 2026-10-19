@@ -52,6 +52,14 @@ public struct HyperspaceDrivePolicy: Equatable, Sendable {
   /// salvaged owned alien drive fitted with authenticated PLUGH docking evidence.
   public static let alienFoundation = Self(activation: .immediate, massLockScale: 0)
 
+  /// Pure declared NPC policy. NativeNPCDriveSource must authenticate the live fitted component;
+  /// these values alone never authorize an actor, opening, fuel debit or journey.
+  static func authoredNPC(_ drive: ScriptNPCDriveDefinition) throws -> Self {
+    guard drive.valid else { throw HyperspaceDrivePolicyError.invalidActivationSeconds }
+    return .init(
+      activation: .timed(seconds: drive.activationSeconds), massLockScale: drive.massLockScale)
+  }
+
   public func massLockDistance(base: Double) throws -> Double {
     guard base.isFinite, base >= 0 else {
       throw HyperspaceDrivePolicyError.invalidMassLockDistance

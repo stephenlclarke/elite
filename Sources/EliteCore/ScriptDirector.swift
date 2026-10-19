@@ -190,6 +190,7 @@ extension Game {
     fields["children"] = campaignChildrenQuery(instance)
     fields["collections"] = collectionQuery(instance)
     fields["finance"] = financeQuery(instance)
+    fields["transit"] = nativeTransitQuery(instance)
     fields["encounters"] = scriptEncounterSnapshot(instance)
     fields["passengers"] = scriptPassengerSnapshot(instance)
     fields["issued_equipment"] = scriptEquipmentSnapshot(instance)
@@ -590,6 +591,12 @@ extension Game {
       try dispatchEncounterCommand(command, attempt: attempt)
     } else if command["op"]?.string == "actor.intent" {
       try dispatchActorIntentCommand(command, attempt: attempt)
+    } else if ["actor.transit", "actor.transit.retry"].contains(command["op"]?.string ?? "") {
+      if let event = try attempt.candidate.requestScriptNPCTransit(
+        command, pack: attempt.selected.pack, state: attempt.next)
+      {
+        attempt.derivedEvents.append(event)
+      }
     } else if ["gear.issue", "gear.return", "gear.release", "gear.store", "gear.refit"]
       .contains(command["op"]?.string ?? "")
     {
@@ -1004,10 +1011,10 @@ extension Game {
     return true
   }
   mutating func fireDueScriptTimers(
-    flight: Bool, local: Bool, calendar: Bool, publish: ScriptPublisher? = nil
+    flight: Bool, local: Bool, calendar: Bool, transit: Bool = false,
+    publish: ScriptPublisher? = nil
   ) {
-    guard !paused, flight || local || calendar else { return }
-    // Transit still requires a real admitted native wormhole journey.
+    guard !paused, flight || local || calendar || transit else { return }
     for id in orderedScriptInstances {
       guard let instance = commander.scriptState.instances[id], instance.outcome == .active,
         instance.suspension == nil, campaignExecutionIssue(instance) == nil
@@ -1016,7 +1023,7 @@ extension Game {
         guard commander.scriptState.instances[id]?.suspension == nil,
           var timer = commander.scriptState.instances[id]?.timers[key],
           (timer.domain == .flight && flight) || (timer.domain == .local && local)
-            || (timer.domain == .calendar && calendar),
+            || (timer.domain == .calendar && calendar) || (timer.domain == .transit && transit),
           timer.clockExhausted != true, timer.due <= commander.scriptState.clock(timer.domain)
         else { continue }
         let firedAt = commander.scriptState.clock(timer.domain)

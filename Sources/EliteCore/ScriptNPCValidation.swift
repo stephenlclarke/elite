@@ -15,8 +15,13 @@ extension ScriptPackLibrary {
       let npc = try npcs.table(atIndex: index)
       try keys(
         npc,
-        "id name source basis model scale energy recharge speed acceleration pitch yaw roll missiles fuel ecm bounty lasers components"
+        "id name source basis model scale energy recharge speed acceleration pitch yaw roll missiles fuel drive ecm bounty lasers components"
       )
+      if npc.contains(key: "drive") {
+        try keys(
+          npc.table(forKey: "drive"),
+          "component rangeLightYears activationSeconds massLockScale fuelUnit")
+      }
       try validateNPCWeapons(npc, key: "lasers")
       guard npc.contains(key: "components") else { continue }
       let components = try npc.array(forKey: "components")
@@ -45,6 +50,7 @@ extension ScriptPackLibrary {
     }
   }
   static func validateNPCDeclarations(_ manifest: ScriptManifest) throws {
+    try validateNPCTransit(manifest)
     let npcs = manifest.npcs ?? []
     let models = manifest.models ?? []
     let profileEvents: Set<String> = [
@@ -53,6 +59,9 @@ extension ScriptPackLibrary {
     ]
     guard npcs.count <= 64, Set(npcs.map(\.id)).count == npcs.count,
       npcs.allSatisfy(\.valid), models.count <= 32,
+      npcs.allSatisfy({
+        $0.drive == nil || manifest.capabilities.contains("npc-wormhole-transit-v2")
+      }),
       Set(models.map(\.id)).count == models.count, models.allSatisfy(\.valid),
       Set(models.map(\.path)).count == models.count,
       models.allSatisfy({ $0.path != manifest.module && $0.path != "manifest.toml" }),

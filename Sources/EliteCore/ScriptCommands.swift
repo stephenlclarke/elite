@@ -162,7 +162,8 @@ extension Game {
       if state.timers[id] != nil { return }
       guard let domain = ScriptClockDomain(rawValue: try text("domain")),
         [.flight, .local].contains(domain)
-          || domain == .calendar && pack.manifest.capabilities.contains("calendar-clocks-v2"),
+          || domain == .calendar && pack.manifest.capabilities.contains("calendar-clocks-v2")
+          || domain == .transit && pack.manifest.capabilities.contains("npc-wormhole-transit-v2"),
         let policy = ScriptTimerPolicy(rawValue: try text("policy")),
         let after = fields["after"]?.double, (0...1e9).contains(after),
         let interval = fields["interval"]?.double, (0...1e9).contains(interval),
