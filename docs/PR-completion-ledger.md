@@ -200,3 +200,7 @@ Record Root's independent actual app/source/version/binary/Developer ID/arm64/46
 Root confirmed the actual artifact verification and posted the limited local usable-feature notification once in the existing Slack thread. Record the notification link without duplicating it, retain all immutable receipts and keep only the external delivery manifest/sidecar current. No signed-bundle change or additional validation job.
 
 Record Root's actual-candidate-based correction for only the two preacceptance receiver fixtures: independently native-validated7→185→7 roundtrip, allowed by unchanged definition/quote rules, preserving terms/custody/native arrivals/fuel and the other14 cases. Owner two-case qualification and Root changed-hunk review remain pending; no production routing, combat or hostile-docking fix is introduced.
+
+## Actual799 failure and analysis-only next scope
+
+Record actual799 zero completed/six UNKNOWN stack failure with exact proof/process/input/artifact closure and released registry, retaining ten prior qualified cases and no crash integration. Current MC1 scope is only existing-binary/source three-function retained-owner frame analysis plus one attempt-local validated owner/pack snapshot proposal; no next implementation/runtime/metadata-emulator/full-scan/probe/authority grant or G1 duplicate investigation. Limited preview797 stays delivered with its known limits and once-only notification; MBA roundtrip fixture scope remains test-only/pending qualification. Scoped Markdown/whitespace checks only.
