@@ -184,3 +184,7 @@ Record actual793 reaching native launch return then failing in postlaunch admiss
 ## Updated limited preview preparation
 
 Record Root's source-only external staging/manifest assignment for current integrated F01/panel work: planned796 product build/797 one native Start New→launch/jump/Save/relaunch/Continue journey, existing facilities/private profile and Developer ID verification, exact source freeze only after current ready MC1 batch closure. This is not a delivered app or M01/release acceptance; known crash/performance/full-quality limits remain explicit, and Root verifies any actual ready app before announcement. Bind f1ac MC1 clean review/six-method-seven-case plan without another audit/ACK; record MBA14 affected passes/two receiver failures and bounded reviewed receiver fixture retry. Scoped Markdown/whitespace checks only; no G1 build/native job.
+
+## Limited preview activation after actual795 closure
+
+Record actual795 zero completed/six UNKNOWN stack failure with exact source/proof/terminal/all-owned closure and released registry. No qualified MC1 leaf is integrated. Proceed with Root's finite796 product/797 native limited preview on the current integrated F01/panel source and fixed external manifest, preserving known mission/performance/full-quality limitations and Root's pre-announcement verification. No competing native/compiler job or additional benchmark/media/full suite/notarization scope. Scoped Markdown/whitespace checks before source freeze.
