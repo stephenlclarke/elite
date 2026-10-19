@@ -84,7 +84,7 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
   #expect(game.information(for: body)?.status == "Hostile")
 }
 
-@Test func computerTiersGateAcquisitionAndShipGroupsStayAheadOfStations() {
+@Test func computerTiersGateAcquisitionAndShipGroupsStayAheadOfStations() throws {
   for tier in TargetingTier.allCases {
     var game = computerGame(tier)
     game.screen = .left
@@ -96,11 +96,27 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
       .init(id: 4, hull: .cargo, position: .init(0, 0, 50)),
       .init(id: 5, hull: .asteroid, position: .init(0, 0, 50)),
     ]
-    let expected = [2, 1] + (tier >= .advanced ? [3] : []) + (tier >= .docking ? [0] : [])
+    game.ensurePhysicalActors()
+    let stations = game.bodies.filter { $0.hull == .station && $0.energy > 0 }.sorted {
+      $0.position.length == $1.position.length
+        ? $0.id < $1.id : $0.position.length < $1.position.length
+    }
+    try #require(stations.contains { $0.id == 0 })
+    try #require(stations.contains { $0.nativeStationIdentity != nil })
+    for station in stations where station.nativeStationIdentity != nil {
+      try #require(game.nativeStationBodyIsCurrent(station))
+    }
+    try #require(game.commander.targetingTier == tier)
+    let expected =
+      [2, 1] + (tier >= .advanced ? [3] : [])
+      + (tier >= .docking ? stations.map(\.id) : [])
+    var visited: [Int] = []
     for id in expected {
       game.key("tab")
       #expect(game.autoPilot.targetID == id)
+      if let target = game.autoPilot.targetID { visited.append(target) }
     }
+    #expect(visited == expected && Set(visited).count == expected.count)
     game.key("tab")
     #expect(game.autoPilot.targetID == 2)
   }
