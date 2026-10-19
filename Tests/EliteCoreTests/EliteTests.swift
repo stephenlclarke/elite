@@ -754,7 +754,8 @@ private func reboundJumpLimitWorldAfterLoad(
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.commander.cargo[0] = 100
   game.selection = 1
-  game.market[1] = MarketItem(price: 30, quantity: 10)
+  // Current markets own immutable authored bid/ask quotes; only stock is mutable.
+  game.market[1].quantity = 10
   game.trade(buy: true)
   #expect(game.commander.cargo[1] == 0 && game.commander.credits == 0)
   game.selection = 2
@@ -832,7 +833,10 @@ private func reboundJumpLimitWorldAfterLoad(
     game.commander.credits < 100000
       && game.commander.cargoTonnes > game.commander.standardCargoCapacity)
   game.commander.cargo[0] = Int.max / 17
-  game.market[0].price = 1020
+  // The real authored bid still exercises finite cash overflow without changing prices.
+  let saleQuantity = min(game.commander.cargo[0], Int.max / 17 - game.market[0].quantity)
+  let cashOverflow = saleQuantity.multipliedReportingOverflow(by: game.market[0].bidPrice).overflow
+  #expect(cashOverflow)
   game.autoTrade()
   #expect(
     game.commander.credits <= 4_294_967_295 && game.commander.credits > 4_294_000_000
