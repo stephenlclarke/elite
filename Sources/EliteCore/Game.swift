@@ -1496,10 +1496,11 @@ public struct Game: Sendable {
       guard commander.flightSimulation.pose == wormhole.opening.route.exit else {
         throw NativeWormholeRefusal.worldUnavailable
       }
+      let fuelAfter = commander.fuel
       commander.scriptState.wormholeTransit?.commanderPassages[wormhole.opening.id] = .init(
         opening: wormhole.opening.id, source: wormhole.player, arrival: player,
         calendarOperation: journey.operation, seconds: journey.seconds,
-        fuelBefore: wormhole.fuelBefore, fuelAfter: commander.fuel, fuelDebit: wormhole.fuelDebit)
+        fuelBefore: wormhole.fuelBefore, fuelAfter: fuelAfter, fuelDebit: wormhole.fuelDebit)
     }
     altitude = 1
     notify(currentSystem.name)
