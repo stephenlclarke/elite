@@ -1,5 +1,24 @@
 import Foundation
 
+// Attempt-local scratch only: never Sendable, stored simulation state or admission authority.
+private final class ScriptEncounterAttemptScratch {
+  let definition: ScriptEncounterDefinition
+  let previousGeometry: [String: ShipDesign]
+  var publishesGeometry = false
+  var alreadyAdmitted = false
+  var encounter: ScriptOwnedEncounter?
+  var source: MissionActorAdmissionSource?
+  var preparation: NativeMissionActorAdmissionPreparation?
+  var nativePlan: NativeMissionActorAdmissionPlan?
+  var selected: ScriptInstance?
+  var staged: ScriptInstance?
+  var count = 0
+  init(definition: consuming ScriptEncounterDefinition, previousGeometry: [String: ShipDesign]) {
+    self.definition = consume definition
+    self.previousGeometry = previousGeometry
+  }
+}
+
 public struct ScriptActorDefinition: Codable, Sendable {
   public let id: String
   public let hull: Hull?
@@ -882,6 +901,25 @@ extension Game {
   )
     throws -> (String, [String: ScriptValue])
   {
+    let attempt = try makeScriptEncounterAttempt(
+      id, pack: pack, state: state, worldJobID: worldJobID, worldJobPulse: worldJobPulse)
+    defer { restoreScriptEncounterGeometry(attempt) }
+    try prepareScriptEncounterPlan(attempt, id: id, pack: pack, state: state)
+    if attempt.alreadyAdmitted {
+      return ("encounter.admitted", ["encounter_id": .string(id), "existing": .bool(true)])
+    }
+    try Self.prepareScriptEncounterAdmissionSource(
+      self, attempt: attempt, pack: pack, state: state,
+      worldJobID: worldJobID, worldJobPulse: worldJobPulse)
+    try Self.prepareScriptEncounterNativeAdmission(self, attempt: attempt)
+    return try publishScriptEncounterAdmission(attempt, id: id, state: &state)
+  }
+
+  @inline(never)
+  private mutating func makeScriptEncounterAttempt(
+    _ id: String, pack: ScriptPack, state: borrowing ScriptInstance,
+    worldJobID: UUID?, worldJobPulse: UInt64?
+  ) throws -> ScriptEncounterAttemptScratch {
     guard state.outcome == .active || worldJobID != nil,
       pack.manifest.capabilities.contains("classic-encounters-v2")
         || pack.manifest.capabilities.contains("profiled-encounters-v2"),
@@ -894,28 +932,18 @@ extension Game {
       self, id: id, pack: pack, state: state, definition: definition,
       worldJobID: worldJobID, worldJobPulse: worldJobPulse)
     let previousGeometry = commander.scriptState.geometry
-    var publishesGeometry = false
-    defer {
-      if !publishesGeometry { commander.scriptState.geometry = previousGeometry }
-    }
-    let encounter = try prepareScriptEncounterPlan(
-      id, pack: pack, state: state, definition: definition)
-    if encounter.admitted {
-      return ("encounter.admitted", ["encounter_id": .string(id), "existing": .bool(true)])
-    }
-    let source = try Self.prepareScriptEncounterAdmissionSource(
-      self, pack: pack, state: state, encounter: encounter,
-      worldJobID: worldJobID, worldJobPulse: worldJobPulse)
-    let preparation = try Self.prepareScriptEncounterNativeAdmission(self, source: source)
-    return try publishScriptEncounterAdmission(
-      preparation, id: id, encounter: encounter, state: &state,
-      publishesGeometry: &publishesGeometry)
+    return .init(definition: consume definition, previousGeometry: previousGeometry)
+  }
+
+  @inline(never)
+  private mutating func restoreScriptEncounterGeometry(_ attempt: ScriptEncounterAttemptScratch) {
+    if !attempt.publishesGeometry { commander.scriptState.geometry = attempt.previousGeometry }
   }
 
   /// Each borrowed Game read ends before the next admission phase starts.
   @inline(never)
   private static func validateScriptEncounterAdmissionAuthority(
-    _ game: borrowing Game, id: String, pack: ScriptPack, state: ScriptInstance,
+    _ game: borrowing Game, id: String, pack: ScriptPack, state: borrowing ScriptInstance,
     definition: ScriptEncounterDefinition, worldJobID: UUID?, worldJobPulse: UInt64?
   ) throws {
     _ = try game.missionActorAdmissionAuthority(
@@ -925,25 +953,28 @@ extension Game {
 
   @inline(never)
   private static func prepareScriptEncounterAdmissionSource(
-    _ game: borrowing Game, pack: ScriptPack, state: ScriptInstance,
-    encounter: ScriptOwnedEncounter, worldJobID: UUID?, worldJobPulse: UInt64?
-  ) throws -> MissionActorAdmissionSource {
-    try game.preparedMissionActorAdmissionSource(
-      pack: pack, state: state, encounter: encounter, worldJob: worldJobID, pulse: worldJobPulse)
+    _ game: borrowing Game, attempt: ScriptEncounterAttemptScratch,
+    pack: ScriptPack, state: borrowing ScriptInstance, worldJobID: UUID?, worldJobPulse: UInt64?
+  ) throws {
+    attempt.source = try game.preparedMissionActorAdmissionSource(
+      pack: pack, state: state, encounter: attempt.encounter!,
+      worldJob: worldJobID, pulse: worldJobPulse)
   }
 
   @inline(never)
   private static func prepareScriptEncounterNativeAdmission(
-    _ game: borrowing Game, source: MissionActorAdmissionSource
-  ) throws -> NativeMissionActorAdmissionPreparation {
-    try game.prepareMissionActorAdmission(source)
+    _ game: borrowing Game, attempt: ScriptEncounterAttemptScratch
+  ) throws {
+    attempt.preparation = try game.prepareMissionActorAdmission(attempt.source!)
   }
 
   /// Actor/body construction storage returns before source/native validation starts.
   @inline(never)
   private mutating func prepareScriptEncounterPlan(
-    _ id: String, pack: ScriptPack, state: ScriptInstance, definition: ScriptEncounterDefinition
-  ) throws -> ScriptOwnedEncounter {
+    _ attempt: ScriptEncounterAttemptScratch, id: String, pack: ScriptPack,
+    state: borrowing ScriptInstance
+  ) throws {
+    let definition = attempt.definition
     var plan = state.ownedEncounters[id]
     if plan == nil {
       var actors: [String: ScriptOwnedActor] = [:]
@@ -971,22 +1002,21 @@ extension Game {
         id: id, galaxy: definition.galaxy, system: definition.system, actors: actors)
     }
     guard let encounter = plan else { throw MissionPackError("Encounter plan was not prepared.") }
-    return encounter
+    attempt.encounter = consume encounter
+    attempt.alreadyAdmitted = attempt.encounter!.admitted
   }
 
   /// Native preparation returns before selected-instance staging and commit storage starts.
   @inline(never)
   private mutating func publishScriptEncounterAdmission(
-    _ preparation: NativeMissionActorAdmissionPreparation, id: String,
-    encounter: ScriptOwnedEncounter, state: inout ScriptInstance, publishesGeometry: inout Bool
+    _ attempt: ScriptEncounterAttemptScratch, id: String, state: inout ScriptInstance
   ) throws -> (String, [String: ScriptValue]) {
     func pending(_ reason: String) -> (String, [String: ScriptValue]) {
       ("encounter.pending", ["encounter_id": .string(id), "reason": .string(reason)])
     }
-    switch preparation {
+    switch attempt.preparation! {
     case .pending(let reason):
-      state.ownedEncounters[id] = encounter
-      publishesGeometry = true
+      Self.publishPendingScriptEncounter(attempt, id: id, state: &state)
       switch reason {
       case .unavailableArrival:
         return pending("Enter the declared system in flight with its main station available.")
@@ -1000,18 +1030,44 @@ extension Game {
     case .unchanged:
       throw MissionPackError("A fresh prepared cohort requires complete native admission.")
     case .ready(let plan):
-      var selected = state
-      selected.ownedEncounters[id] = encounter
-      let staged = try plan.retentionPatch.preparingInstance(selected)
-      let count = plan.sceneBodyIDs.count
+      attempt.nativePlan = plan
+      try Self.stageScriptEncounterRetention(attempt, id: id, state: state)
       _ = try commitMissionActorAdmission(plan)
-      state = staged
-      publishesGeometry = true
+      Self.publishStagedScriptEncounter(attempt, state: &state)
       return (
         "encounter.admitted",
-        ["encounter_id": .string(id), "count": .integer(Int64(count)), "existing": .bool(false)]
+        [
+          "encounter_id": .string(id), "count": .integer(Int64(attempt.count)),
+          "existing": .bool(false),
+        ]
       )
     }
+  }
+
+  @inline(never)
+  private static func publishPendingScriptEncounter(
+    _ attempt: ScriptEncounterAttemptScratch, id: String, state: inout ScriptInstance
+  ) {
+    state.ownedEncounters[id] = attempt.encounter!
+    attempt.publishesGeometry = true
+  }
+
+  @inline(never)
+  private static func stageScriptEncounterRetention(
+    _ attempt: ScriptEncounterAttemptScratch, id: String, state: borrowing ScriptInstance
+  ) throws {
+    attempt.selected = copy state
+    attempt.selected!.ownedEncounters[id] = attempt.encounter!
+    attempt.staged = try attempt.nativePlan!.retentionPatch.preparingInstance(attempt.selected!)
+    attempt.count = attempt.nativePlan!.sceneBodyIDs.count
+  }
+
+  @inline(never)
+  private static func publishStagedScriptEncounter(
+    _ attempt: ScriptEncounterAttemptScratch, state: inout ScriptInstance
+  ) {
+    state = attempt.staged!
+    attempt.publishesGeometry = true
   }
   /// Native facts retain canonical location/condition and never infer death from disappearance.
   mutating func persistScriptActors(unloading: Bool = false) {

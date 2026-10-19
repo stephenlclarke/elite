@@ -17,6 +17,64 @@ struct ScriptEvent: Codable, Sendable, Equatable {
   }
 }
 
+// Synchronous attempt-local owners. These intentionally are not Sendable, stored state,
+// validation authority or callback captures; only their original value fields enter publication.
+private final class ScriptEventBatchScratch {
+  let events: ArraySlice<ScriptEvent>
+  init(_ events: consuming ArraySlice<ScriptEvent>) { self.events = consume events }
+}
+
+private final class ScriptEventSelectionScratch {
+  let event: ScriptEvent
+  let instance: ScriptInstance
+  let pack: ScriptPack
+  let function: String
+  init(
+    event: consuming ScriptEvent, instance: consuming ScriptInstance,
+    pack: consuming ScriptPack, function: String
+  ) {
+    self.event = consume event
+    self.instance = consume instance
+    self.pack = consume pack
+    self.function = function
+  }
+}
+
+private final class ScriptEventAttemptScratch {
+  let selected: ScriptEventSelectionScratch
+  let commands: [ScriptValue]
+  var candidate: Game
+  var derivedEvents: [(String, [String: ScriptValue])]
+  var next: ScriptInstance
+  init(selected: ScriptEventSelectionScratch, result: ScriptEvaluation, original: borrowing Game) {
+    self.selected = selected
+    commands = result.commands
+    candidate = copy original
+    derivedEvents = []
+    next = selected.instance
+    next.data = result.data
+  }
+}
+
+private final class ScriptAcceptanceInstanceScratch {
+  let id: UUID
+  let instance: ScriptInstance
+  init(_ instance: consuming ScriptInstance) {
+    id = instance.id
+    self.instance = consume instance
+  }
+}
+
+private final class ScriptAcceptanceAttemptScratch {
+  let prepared: ScriptAcceptanceInstanceScratch
+  var candidate: Game
+  @inline(never)
+  init(_ prepared: ScriptAcceptanceInstanceScratch, original: borrowing Game) {
+    self.prepared = prepared
+    candidate = copy original
+  }
+}
+
 extension Game {
   var orderedScriptInstances: [UUID] {
     let priorities = Dictionary(
@@ -179,20 +237,28 @@ extension Game {
     _ pack: ScriptPack, facts: NativeProviderMissionFacts,
     instanceID: UUID = UUID()
   ) throws -> UUID {
-    let state = try providerContractAcceptanceState(pack, facts: facts, instance: instanceID)
-    let instance = try prepareScriptMissionAcceptance(
-      pack, instanceID: instanceID,
-      randomSeed: 0x45_4c49_5445, contract: nil, campaignParent: nil, providerState: state)
+    let instance = try prepareProviderMissionAcceptance(pack, facts: facts, instanceID: instanceID)
     return try installScriptMissionAcceptance(pack, instance: instance, drainAccepted: true)
   }
+
+  @inline(never)
+  private mutating func prepareProviderMissionAcceptance(
+    _ pack: ScriptPack, facts: NativeProviderMissionFacts, instanceID: UUID
+  ) throws -> ScriptAcceptanceInstanceScratch {
+    let state = try providerContractAcceptanceState(pack, facts: facts, instance: instanceID)
+    return try prepareScriptMissionAcceptance(
+      pack, instanceID: instanceID,
+      randomSeed: 0x45_4c49_5445, contract: nil, campaignParent: nil, providerState: state)
+  }
   // Preparation borrows self through a mutating receiver but does not change the game.
+  @inline(never)
   private mutating func prepareScriptMissionAcceptance(
     _ pack: ScriptPack, instanceID: UUID, randomSeed: UInt64,
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
     providerState: ScriptProviderContractState? = nil,
     freightAdmission: ScriptFreightIssueAdmission? = nil,
     navigationBinding: ScriptNavigationTradeBinding? = nil
-  ) throws -> ScriptInstance {
+  ) throws -> ScriptAcceptanceInstanceScratch {
     guard scriptUnavailable(pack, navigationBinding: navigationBinding) == nil,
       commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
@@ -266,26 +332,50 @@ extension Game {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
-    return instance
+    return ScriptAcceptanceInstanceScratch(consume instance)
   }
   private mutating func installScriptMissionAcceptance(
-    _ pack: ScriptPack, instance: ScriptInstance, drainAccepted: Bool
+    _ pack: ScriptPack, instance: ScriptAcceptanceInstanceScratch, drainAccepted: Bool
   ) throws -> UUID {
-    var candidate = self
-    candidate.ensureScriptCalendar(origin: .newCommander)
-    if pack.manifest.capabilities.contains("owned-equipment-v2") {
-      try candidate.commander.prepareEquipment()
-    }
-    candidate.commander.scriptState.instances[instance.id] = instance
-    candidate.emitScriptEvent("mission.accepted", only: instance.id, drain: drainAccepted)
-    if let reason = candidate.commander.scriptState.instances[instance.id]?.suspension {
-      throw MissionPackError(reason)
-    }
-    publishScriptMissionAcceptance(&candidate)
+    let attempt = ScriptAcceptanceAttemptScratch(instance, original: self)
+    try Self.prepareScriptAcceptanceCandidate(attempt, pack: pack)
+    Self.emitScriptAcceptance(attempt, drainAccepted: drainAccepted)
+    try Self.validateScriptAcceptance(attempt)
+    publishScriptMissionAcceptance(attempt)
     return instance.id
   }
-  private mutating func publishScriptMissionAcceptance(_ candidate: inout Game) {
-    self = candidate
+
+  @inline(never)
+  private static func prepareScriptAcceptanceCandidate(
+    _ attempt: ScriptAcceptanceAttemptScratch, pack: ScriptPack
+  ) throws {
+    attempt.candidate.ensureScriptCalendar(origin: .newCommander)
+    if pack.manifest.capabilities.contains("owned-equipment-v2") {
+      try attempt.candidate.commander.prepareEquipment()
+    }
+    attempt.candidate.commander.scriptState.instances[attempt.prepared.id] =
+      attempt.prepared.instance
+  }
+
+  @inline(never)
+  private static func emitScriptAcceptance(
+    _ attempt: ScriptAcceptanceAttemptScratch, drainAccepted: Bool
+  ) {
+    attempt.candidate.emitScriptEvent(
+      "mission.accepted", only: attempt.prepared.id, drain: drainAccepted)
+  }
+
+  @inline(never)
+  private static func validateScriptAcceptance(_ attempt: ScriptAcceptanceAttemptScratch) throws {
+    if let reason = attempt.candidate.commander.scriptState.instances[attempt.prepared.id]?
+      .suspension
+    {
+      throw MissionPackError(reason)
+    }
+  }
+  @inline(never)
+  private mutating func publishScriptMissionAcceptance(_ attempt: ScriptAcceptanceAttemptScratch) {
+    self = attempt.candidate
   }
   mutating func emitScriptEvent(
     _ kind: String, values: [String: ScriptValue] = [:], only: UUID? = nil, drain: Bool = true
@@ -322,179 +412,324 @@ extension Game {
     guard !scriptDispatching, !scriptEventsDeferred else { return }
     scriptDispatching = true
     defer { scriptDispatching = false }
-    // Work is bounded per actor turn; suspended facts remain saved for explicit recovery.
-    let events = commander.scriptState.pendingEvents.prefix(64)
-    for event in events {
-      guard let instance = commander.scriptState.instances[event.instance],
-        instance.suspension == nil
-      else { continue }
-      guard let pack = scriptPack(for: instance),
-        scriptUnavailable(pack, navigationBinding: navigationBinding) == nil
-      else {
-        commander.scriptState.instances[event.instance]?.suspension =
-          "Restore the exact saved mission version and its requirements."
-        continue
-      }
-      if instance.outcome != .active || instance.hasAcknowledged(event.sequence) {
-        commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
-        continue
-      }
-      if let reason = campaignExecutionIssue(instance) ?? campaignContentIssue(instance, pack: pack)
-        ?? procurementContentIssue(instance, pack: pack)
-        ?? freightContentIssue(instance, pack: pack)
-      {
-        commander.scriptState.instances[event.instance]?.suspension = reason
-        continue
-      }
-      guard let handler = pack.manifest.handlers.first(where: { $0.event == event.kind }) else {
-        commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
-        continue
-      }
-      do {
-        let result = try ScriptEvaluator.evaluate(
-          source: pack.source, handler: handler.function,
-          event: event.value, snapshot: scopedScriptSnapshot(instance), state: instance.data)
-        var candidate = self
-        var derivedEvents: [(String, [String: ScriptValue])] = []
-        var next = instance
-        next.data = result.data
-        for command in result.commands {
-          if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability) {
-            let allowed: Set<String> = [
-              "journal.append", "dialogue.offer", "dialogue.commit",
-              "milestone.ensure", "mission.finish", "training.trade.begin",
-              "training.trade.receive",
-              "training.trade.cancel", "training.trade.acknowledge-loss",
-            ]
-            guard allowed.contains(command["op"]?.string ?? "") else {
-              throw MissionPackError("Training scripts cannot invent cargo or economic settlement.")
-            }
-          }
-          if command["op"]?.string?.hasPrefix("training.trade.") == true {
-            try applyNavigationTradeCommand(
-              command, event: event, pack: pack, state: &next,
-              binding: navigationBinding ?? ScriptNavigationTradeBinding.production(in: self))
-            continue
-          }
-          if pack.manifest.freight != nil,
-            !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
-          {
-            throw MissionPackError("Freight scripts may present native contacts only.")
-          }
-          if pack.manifest.procurement != nil,
-            !["journal.append", "dialogue.offer", "collection.ensure", "collection.deliver"]
-              .contains(command["op"]?.string ?? "")
-          {
-            throw MissionPackError(
-              "Procurement scripts may present contacts and request real material lots only.")
-          }
-          if pack.manifest.providerContract != nil,
-            !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
-          {
-            throw MissionPackError("Provider scripts may present finite native transitions only.")
-          }
-          if pack.manifest.courier != nil,
-            ![
-              "milestone.ensure", "journal.append", "dialogue.offer", "courier.issue",
-              "courier.deliver", "courier.abandon",
-            ].contains(command["op"]?.string ?? "")
-          {
-            throw MissionPackError("Courier handlers require closed native custody commands.")
-          }
-          if pack.manifest.pledge != nil,
-            !["milestone.ensure", "journal.append", "pledge.commit"].contains(
-              command["op"]?.string ?? "")
-          {
-            throw MissionPackError(
-              "A pledge handler may only record its objective and commit the native donation.")
-          }
-          if pack.manifest.pledge != nil, next.outcome != .active {
-            throw MissionPackError("A completed pledge cannot issue another command.")
-          }
-          if ["courier.issue", "courier.deliver", "courier.abandon"].contains(
-            command["op"]?.string ?? "")
-          {
-            try Self.dispatchCourierCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate)
-          } else if command["op"]?.string == "pledge.commit" {
-            try Self.dispatchPledgeCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate)
-          } else if command["op"]?.string == "child.ensure" {
-            if let result = try candidate.ensureCampaignChild(
-              command, pack: pack, state: &next, event: event)
-            {
-              derivedEvents.append(result)
-            }
-          } else if command["op"]?.string == "finance.offer" {
-            try candidate.registerFinanceOffer(command, event: event, pack: pack, state: next)
-          } else if ["collection.ensure", "collection.deliver"].contains(
-            command["op"]?.string ?? "")
-          {
-            if let result = try Self.dispatchCollectionCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate)
-            {
-              derivedEvents.append(result)
-            }
-          } else if command["op"]?.string == "book.unlock" {
-            if let result = try candidate.unlockScriptBook(
-              command, pack: pack, state: next, event: event)
-            {
-              derivedEvents.append(result)
-            }
-          } else if command["op"]?.string == "world.job.ensure" {
-            try candidate.ensureScriptWorldJob(command, pack: pack, state: next)
-          } else if command["op"]?.string == "encounter.ensure" {
-            guard let fields = command.object, Set(fields.keys) == ["op", "id"],
-              let id = command["id"]?.string
-            else {
-              throw MissionPackError("Encounter request requires only op and declared id.")
-            }
-            derivedEvents.append(try candidate.ensureScriptEncounter(id, pack: pack, state: &next))
-            // Later native commands must join bodies to their already staged private owner.
-            candidate.commander.scriptState.instances[next.id] = next
-          } else if command["op"]?.string == "actor.intent" {
-            if let result = try candidate.applyScriptNPCIntent(command, pack: pack, state: &next) {
-              derivedEvents.append(result)
-            }
-          } else if ["gear.issue", "gear.return", "gear.release", "gear.store", "gear.refit"]
-            .contains(command["op"]?.string ?? "")
-          {
-            if let result = try Self.dispatchGearCommand(
-              command, event: event, pack: pack, state: &next, candidate: &candidate)
-            {
-              derivedEvents.append(result)
-            }
-          } else if ["passengers.board", "passengers.deliver"].contains(command["op"]?.string ?? "")
-          {
-            try Self.dispatchPassengerCommand(
-              command, pack: pack, state: &next, candidate: &candidate)
-          } else {
-            try Self.dispatchStandardCommand(
-              command, event: event, pack: pack, state: &next,
-              original: self, candidate: &candidate)
-          }
-          if pack.manifest.providerContract != nil, command["op"]?.string == "journal.append",
-            let text = command["text"]?.string
-          {
-            candidate.notify(text)
-          }
-        }
-        try Self.finishScriptEventCandidate(
-          original: self, candidate: &candidate, instance: instance, next: &next,
-          event: event, pack: pack, derivedEvents: &derivedEvents, publish: publish,
-          clueTrust: clueTrust)
-        self = candidate
-      } catch let refusal as ScriptNavigationTradeRefusal {
-        // A refused user confirmation commits no proposal effects and cannot replay later.
-        commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
-        commander.scriptState.instances[event.instance]?.acknowledge(event.sequence)
-        commander.scriptState.instances[event.instance]?.dialogue = nil
-        notify(refusal.message)
-      } catch {
-        recordScriptFailure(event.instance, error: error, publish: publish)
-      }
+    // The same bounded prefix is retained independently of removals and derived emissions.
+    let batch = scriptEventBatch()
+    for index in batch.events.indices {
+      drainScriptEvent(
+        batch, index: index, publish: publish, clueTrust: clueTrust,
+        navigationBinding: navigationBinding)
     }
   }
+
+  @inline(never)
+  private mutating func scriptEventBatch() -> ScriptEventBatchScratch {
+    .init(commander.scriptState.pendingEvents.prefix(64))
+  }
+
+  @inline(never)
+  private mutating func selectScriptEvent(
+    _ batch: ScriptEventBatchScratch, index: Int,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) -> ScriptEventSelectionScratch? {
+    let event = batch.events[index]
+    guard let instance = commander.scriptState.instances[event.instance],
+      instance.suspension == nil
+    else { return nil }
+    guard let pack = scriptPack(for: instance),
+      scriptUnavailable(pack, navigationBinding: navigationBinding) == nil
+    else {
+      commander.scriptState.instances[event.instance]?.suspension =
+        "Restore the exact saved mission version and its requirements."
+      return nil
+    }
+    if instance.outcome != .active || instance.hasAcknowledged(event.sequence) {
+      commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
+      return nil
+    }
+    if let reason = campaignExecutionIssue(instance) ?? campaignContentIssue(instance, pack: pack)
+      ?? procurementContentIssue(instance, pack: pack)
+      ?? freightContentIssue(instance, pack: pack)
+    {
+      commander.scriptState.instances[event.instance]?.suspension = reason
+      return nil
+    }
+    guard let handler = pack.manifest.handlers.first(where: { $0.event == event.kind }) else {
+      commander.scriptState.pendingEvents.removeAll { $0.sequence == event.sequence }
+      return nil
+    }
+    return .init(
+      event: consume event, instance: consume instance, pack: consume pack,
+      function: handler.function)
+  }
+
+  @inline(never)
+  private mutating func drainScriptEvent(
+    _ batch: ScriptEventBatchScratch, index: Int, publish: ScriptPublisher?,
+    clueTrust: ScriptClueTrustCatalog, navigationBinding: ScriptNavigationTradeBinding?
+  ) {
+    guard
+      let selected = selectScriptEvent(batch, index: index, navigationBinding: navigationBinding)
+    else { return }
+    do {
+      let attempt = try Self.makeScriptEventAttempt(original: self, selected: selected)
+      try Self.runScriptEventAttempt(
+        original: self, attempt: attempt, navigationBinding: navigationBinding)
+      try Self.finishScriptEventAttempt(
+        original: self, attempt: attempt, publish: publish, clueTrust: clueTrust)
+      commitScriptEventAttempt(attempt)
+    } catch let refusal as ScriptNavigationTradeRefusal {
+      refuseScriptEvent(selected, refusal: refusal)
+    } catch {
+      failScriptEvent(selected, error: error, publish: publish)
+    }
+  }
+
+  @inline(never)
+  private static func makeScriptEventAttempt(
+    original: borrowing Game, selected: ScriptEventSelectionScratch
+  ) throws -> ScriptEventAttemptScratch {
+    let result = try ScriptEvaluator.evaluate(
+      source: selected.pack.source, handler: selected.function,
+      event: selected.event.value, snapshot: original.scopedScriptSnapshot(selected.instance),
+      state: selected.instance.data)
+    return .init(selected: selected, result: result, original: original)
+  }
+
+  @inline(never)
+  private static func runScriptEventAttempt(
+    original: borrowing Game, attempt: ScriptEventAttemptScratch,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
+    for index in attempt.commands.indices {
+      try dispatchScriptEventCommand(
+        original: original, attempt: attempt, index: index, navigationBinding: navigationBinding)
+    }
+  }
+
+  @inline(never)
+  private static func finishScriptEventAttempt(
+    original: borrowing Game, attempt: ScriptEventAttemptScratch,
+    publish: ScriptPublisher?, clueTrust: ScriptClueTrustCatalog
+  ) throws {
+    try finishScriptEventCandidate(
+      original: original, candidate: &attempt.candidate, instance: attempt.selected.instance,
+      next: &attempt.next, event: attempt.selected.event, pack: attempt.selected.pack,
+      derivedEvents: &attempt.derivedEvents, publish: publish, clueTrust: clueTrust)
+  }
+
+  @inline(never)
+  private mutating func commitScriptEventAttempt(_ attempt: ScriptEventAttemptScratch) {
+    self = attempt.candidate
+  }
+
+  @inline(never)
+  private mutating func refuseScriptEvent(
+    _ selected: ScriptEventSelectionScratch, refusal: ScriptNavigationTradeRefusal
+  ) {
+    // A refused user confirmation commits no proposal effects and cannot replay later.
+    commander.scriptState.pendingEvents.removeAll { $0.sequence == selected.event.sequence }
+    commander.scriptState.instances[selected.event.instance]?.acknowledge(selected.event.sequence)
+    commander.scriptState.instances[selected.event.instance]?.dialogue = nil
+    notify(refusal.message)
+  }
+
+  @inline(never)
+  private mutating func failScriptEvent(
+    _ selected: ScriptEventSelectionScratch, error: any Error, publish: ScriptPublisher?
+  ) {
+    recordScriptFailure(selected.event.instance, error: error, publish: publish)
+  }
+
+  @inline(never)
+  private static func dispatchScriptEventCommand(
+    original: borrowing Game, attempt: ScriptEventAttemptScratch, index: Int,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
+    let command = attempt.commands[index]
+    if try scriptCommandIsTraining(command, attempt: attempt) {
+      try dispatchTrainingCommand(
+        command, original: original, attempt: attempt, navigationBinding: navigationBinding)
+      return
+    }
+    if ["courier.issue", "courier.deliver", "courier.abandon"].contains(command["op"]?.string ?? "")
+    {
+      try dispatchCourierCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "pledge.commit" {
+      try dispatchPledgeCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "child.ensure" {
+      try dispatchCampaignChildCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "finance.offer" {
+      try dispatchFinanceCommand(command, attempt: attempt)
+    } else if ["collection.ensure", "collection.deliver"].contains(command["op"]?.string ?? "") {
+      try dispatchCollectionCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "book.unlock" {
+      try dispatchBookCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "world.job.ensure" {
+      try dispatchWorldJobCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "encounter.ensure" {
+      try dispatchEncounterCommand(command, attempt: attempt)
+    } else if command["op"]?.string == "actor.intent" {
+      try dispatchActorIntentCommand(command, attempt: attempt)
+    } else if ["gear.issue", "gear.return", "gear.release", "gear.store", "gear.refit"]
+      .contains(command["op"]?.string ?? "")
+    {
+      try dispatchGearCommand(command, attempt: attempt)
+    } else if ["passengers.board", "passengers.deliver"].contains(command["op"]?.string ?? "") {
+      try dispatchPassengerCommand(command, attempt: attempt)
+    } else {
+      try dispatchStandardCommand(command, original: original, attempt: attempt)
+    }
+    notifyScriptProviderCommand(command, attempt: attempt)
+  }
+
+  @inline(never)
+  private static func scriptCommandIsTraining(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws -> Bool {
+    if attempt.selected.pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
+    {
+      let allowed: Set<String> = [
+        "journal.append", "dialogue.offer", "dialogue.commit",
+        "milestone.ensure", "mission.finish", "training.trade.begin",
+        "training.trade.receive",
+        "training.trade.cancel", "training.trade.acknowledge-loss",
+      ]
+      guard allowed.contains(command["op"]?.string ?? "") else {
+        throw MissionPackError("Training scripts cannot invent cargo or economic settlement.")
+      }
+    }
+    if command["op"]?.string?.hasPrefix("training.trade.") == true { return true }
+    if attempt.selected.pack.manifest.freight != nil,
+      !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
+    {
+      throw MissionPackError("Freight scripts may present native contacts only.")
+    }
+    if attempt.selected.pack.manifest.procurement != nil,
+      !["journal.append", "dialogue.offer", "collection.ensure", "collection.deliver"]
+        .contains(command["op"]?.string ?? "")
+    {
+      throw MissionPackError(
+        "Procurement scripts may present contacts and request real material lots only.")
+    }
+    if attempt.selected.pack.manifest.providerContract != nil,
+      !["journal.append", "dialogue.offer"].contains(command["op"]?.string ?? "")
+    {
+      throw MissionPackError("Provider scripts may present finite native transitions only.")
+    }
+    if attempt.selected.pack.manifest.courier != nil,
+      ![
+        "milestone.ensure", "journal.append", "dialogue.offer", "courier.issue",
+        "courier.deliver", "courier.abandon",
+      ].contains(command["op"]?.string ?? "")
+    {
+      throw MissionPackError("Courier handlers require closed native custody commands.")
+    }
+    if attempt.selected.pack.manifest.pledge != nil,
+      !["milestone.ensure", "journal.append", "pledge.commit"].contains(
+        command["op"]?.string ?? "")
+    {
+      throw MissionPackError(
+        "A pledge handler may only record its objective and commit the native donation.")
+    }
+    if attempt.selected.pack.manifest.pledge != nil, attempt.next.outcome != .active {
+      throw MissionPackError("A completed pledge cannot issue another command.")
+    }
+    return false
+  }
+
+  @inline(never)
+  private static func dispatchTrainingCommand(
+    _ command: ScriptValue, original: borrowing Game, attempt: ScriptEventAttemptScratch,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
+    let binding: ScriptNavigationTradeBinding?
+    if let navigationBinding {
+      binding = navigationBinding
+    } else {
+      binding = ScriptNavigationTradeBinding.production(in: original)
+    }
+    try original.applyNavigationTradeCommand(
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,
+      binding: binding)
+  }
+
+  @inline(never)
+  private static func dispatchCampaignChildCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    if let result = try attempt.candidate.ensureCampaignChild(
+      command, pack: attempt.selected.pack, state: &attempt.next, event: attempt.selected.event)
+    {
+      attempt.derivedEvents.append(result)
+    }
+  }
+
+  @inline(never)
+  private static func dispatchFinanceCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    try attempt.candidate.registerFinanceOffer(
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: attempt.next)
+  }
+
+  @inline(never)
+  private static func dispatchBookCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    if let result = try attempt.candidate.unlockScriptBook(
+      command, pack: attempt.selected.pack, state: attempt.next, event: attempt.selected.event)
+    {
+      attempt.derivedEvents.append(result)
+    }
+  }
+
+  @inline(never)
+  private static func dispatchWorldJobCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    try attempt.candidate.ensureScriptWorldJob(
+      command, pack: attempt.selected.pack, state: attempt.next)
+  }
+
+  @inline(never)
+  private static func dispatchEncounterCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    guard let fields = command.object, Set(fields.keys) == ["op", "id"],
+      let id = command["id"]?.string
+    else {
+      throw MissionPackError("Encounter request requires only op and declared id.")
+    }
+    attempt.derivedEvents.append(
+      try attempt.candidate.ensureScriptEncounter(
+        id, pack: attempt.selected.pack, state: &attempt.next))
+    // Later native commands must join bodies to their already staged private owner.
+    candidate.commander.scriptState.instances[attempt.next.id] = attempt.next
+  }
+
+  @inline(never)
+  private static func dispatchActorIntentCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    if let result = try attempt.candidate.applyScriptNPCIntent(
+      command, pack: attempt.selected.pack, state: &attempt.next)
+    {
+      attempt.derivedEvents.append(result)
+    }
+  }
+
+  @inline(never)
+  private static func notifyScriptProviderCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) {
+    if attempt.selected.pack.manifest.providerContract != nil,
+      command["op"]?.string == "journal.append",
+      let text = command["text"]?.string
+    {
+      attempt.candidate.notify(text)
+    }
+  }
+
   /// Finalization and native publication stay synchronous in the same actor turn.
   private static func finishScriptEventCandidate(
     original: borrowing Game, candidate: inout Game,
@@ -650,47 +885,60 @@ extension Game {
     }
   }
   // Separate branch frames keep commander-borrow receiver copies out of encounter admission.
+  @inline(never)
   private static func dispatchCourierCommand(
-    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
-    state: inout ScriptInstance, candidate: inout Game
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
   ) throws {
-    try candidate.applyCourierCommand(
-      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+    try attempt.candidate.applyCourierCommand(
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,
+      candidate: &attempt.candidate.commander)
   }
+  @inline(never)
   private static func dispatchPledgeCommand(
-    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
-    state: inout ScriptInstance, candidate: inout Game
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
   ) throws {
-    try candidate.applyPledgeCommand(
-      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+    try attempt.candidate.applyPledgeCommand(
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,
+      candidate: &attempt.candidate.commander)
   }
+  @inline(never)
   private static func dispatchCollectionCommand(
-    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
-    state: inout ScriptInstance, candidate: inout Game
-  ) throws -> (String, [String: ScriptValue])? {
-    try candidate.applyCollectionCommand(
-      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
-  }
-  private static func dispatchGearCommand(
-    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
-    state: inout ScriptInstance, candidate: inout Game
-  ) throws -> (String, [String: ScriptValue])? {
-    try candidate.applyScriptGearCommand(
-      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
-  }
-  private static func dispatchPassengerCommand(
-    _ command: ScriptValue, pack: ScriptPack, state: inout ScriptInstance, candidate: inout Game
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
   ) throws {
-    try candidate.applyPassengerCommand(
-      command, pack: pack, state: &state, candidate: &candidate.commander)
+    if let result = try attempt.candidate.applyCollectionCommand(
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,
+      candidate: &attempt.candidate.commander)
+    {
+      attempt.derivedEvents.append(result)
+    }
   }
+  @inline(never)
+  private static func dispatchGearCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    if let result = try attempt.candidate.applyScriptGearCommand(
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,
+      candidate: &attempt.candidate.commander)
+    {
+      attempt.derivedEvents.append(result)
+    }
+  }
+  @inline(never)
+  private static func dispatchPassengerCommand(
+    _ command: ScriptValue, attempt: ScriptEventAttemptScratch
+  ) throws {
+    try attempt.candidate.applyPassengerCommand(
+      command, pack: attempt.selected.pack, state: &attempt.next,
+      candidate: &attempt.candidate.commander)
+  }
+  @inline(never)
   private static func dispatchStandardCommand(
-    _ command: ScriptValue, event: ScriptEvent, pack: ScriptPack,
-    state: inout ScriptInstance, original: Game, candidate: inout Game
+    _ command: ScriptValue, original: borrowing Game, attempt: ScriptEventAttemptScratch
   ) throws {
     // Standard commands intentionally query the original event transaction snapshot.
     try original.applyScriptCommand(
-      command, event: event, pack: pack, state: &state, candidate: &candidate.commander)
+      command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,
+      candidate: &attempt.candidate.commander)
   }
   mutating func advanceScriptClocks(
     delta: Double, flight: Bool, local: Bool, calendar: Bool = false,
