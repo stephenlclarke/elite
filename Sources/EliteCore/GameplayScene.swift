@@ -15,7 +15,7 @@ extension Commander {
 
 extension Game {
   var systemIdentity: SystemIdentity {
-    .init(galaxy: commander.galaxy, system: commander.system)
+    Self.gameplaySystemIdentity(commander)
   }
 
   var gameplaySeed: UInt64 {
