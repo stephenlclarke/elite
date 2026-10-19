@@ -122,3 +122,7 @@ Before freezing this documentation checkpoint, record Root's corrected837d borro
 ## Actual779 closure and independent panel progression
 
 Record corrected778 compile PASS and actual779 stack failure with five UNKNOWN methods/zero completed cases, exact terminal/all-owned closure and retained earlier focused passes. Update Root's narrow two-hunk projection assignment without claiming implementation or runtime success. Record independent panel780 compile PASS/781 three-case run pending, and local MBA test compilation with existing framework setup resolved/19 cases pending. Actual774–777 visual/timing evidence remains qualified with the rendering blocker. No source or G1 executor job changed; scoped Markdown/whitespace validation only.
+
+## Qualified panel integration and next crash run
+
+Record actual781 three-case PASS/terminal and all-owned closure, immutable reviewed handoff, and hash-exact four-path import47ee1b8d. Native gain remains unmeasured. Record Root-clean db67 projection and direct782/783 six-method/seven-case owner grant after actual781 release. Source/focused evidence is kept separate from remaining startup/M01/native/fullCI/release gates. Changed Markdown checks only; no duplicate source audit or new G1 executor job.
