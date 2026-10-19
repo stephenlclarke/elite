@@ -10,6 +10,7 @@ struct StationAutoGuidance: Sendable {
   var handoverAllowed = false
   var joinedIncoming = false
   var transitGoal: Vector3? = nil
+  var protectFrontShield = false
 
   var hasManeuver: Bool { aim != nil || lateralVelocity.length > 0 || transitGoal != nil }
 }
@@ -352,11 +353,15 @@ extension Game {
       let goal = station.position + away.unit * radius
       if away.length.isFinite, away.length > 0, radius.isFinite, goal.finite { transitGoal = goal }
     }
+    let protectFrontShield =
+      transitGoal != nil && frontShield.isFinite && rearShield.isFinite
+      && frontShield < rearShield * 0.75
     return .init(
       aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure),
       hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
       handoverAllowed: observations.handoverKnown && interruptionAllowed,
-      joinedIncoming: observations.joinedIncoming, transitGoal: transitGoal)
+      joinedIncoming: observations.joinedIncoming, transitGoal: transitGoal,
+      protectFrontShield: protectFrontShield)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {

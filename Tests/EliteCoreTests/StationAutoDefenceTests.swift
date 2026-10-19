@@ -1566,3 +1566,69 @@ func stationAutoDefensiveTrackerAcquiresMovingBearingWithinTurnAndThrustLimits(a
   _ = control.steer(target: station, delta: delta, limits: limits, defence: clear)
   #expect(control.stationDefencePhase == .returning && control.status == "RETURNING TO APPROACH")
 }
+
+@Test func stationAutoCoverTransitDoesNotBrakeAtItsIntermediateAvoidanceWaypoint() {
+  var station = SpaceBody(id: 0, hull: .station, position: .init(-427, 0, 440))
+  station.rotationRate = 0
+  let limits = RelativeWorkLimits(
+    acceleration: 240, speed: 400, pitchRate: 0.8, yawRate: 0.8, rollRate: 1)
+  var control = AutoTargetControl()
+  control.setApproachVelocity(.init(200, 0, 320))
+  let before = control.velocity
+  let incoming = max(0, before.dot(station.position.unit))
+  let stopping = incoming * incoming / (2 * limits.acceleration) + incoming * 0.1
+  // Exterior transit boundary: stopping distance is available, the final cover
+  // point is far away, and an intervening station requires a nearby detour.
+  #expect(station.position.length > 400 + stopping)
+  let guidance = StationAutoGuidance(
+    aim: .init(0, 0, 600), lateralVelocity: .init(50, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400,
+    transitGoal: station.position + Vector3(0, 0, 440))
+  _ = control.steer(target: station, delta: 0.1, limits: limits, defence: guidance)
+  #expect(control.stationDefencePhase == .defending && !control.ready && !control.finalApproach)
+  #expect(control.velocity.length > before.length)
+  #expect(control.velocity.length <= limits.speed + 1e-8)
+  #expect((control.velocity - before).length <= limits.acceleration * 0.1 + 1e-8)
+  #expect((station.position - control.velocity * 0.1).length > 400)
+}
+
+@Test func stationAutoWeakFrontShieldFacesCoverWithoutChangingItsTranslationBudget() {
+  var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+  station.rotationRate = 0
+  let pressure = StationAutoGuidance(
+    aim: .init(-600, 0, 0), lateralVelocity: .init(50, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400,
+    transitGoal: station.position + Vector3(0, 0, 440))
+  var fighting = AutoTargetControl()
+  let towardAttacker = fighting.steer(target: station, delta: 0.1, defence: pressure)
+  var escape = pressure
+  escape.protectFrontShield = true
+  var covering = AutoTargetControl()
+  let towardCover = covering.steer(target: station, delta: 0.1, defence: escape)
+  #expect(towardAttacker.yaw < 0 && towardCover.yaw > 0)
+  #expect(covering.velocity == fighting.velocity)
+  #expect(covering.velocity.length <= AutoTargetControl.policyLimits.acceleration * 0.1 + 1e-8)
+  #expect(covering.stationDefencePhase == .defending && !covering.ready && !covering.finalApproach)
+  #expect(abs(towardCover.pitch) <= 0.8 && abs(towardCover.yaw) <= 0.8)
+}
+
+@Test(arguments: [true, false])
+func stationAutoCurrentShieldBanksChooseCoverOnlyForTheWeakerFront(frontWeaker: Bool) async throws {
+  var game = try await stationAutoEntryBoundary()
+  let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 920)
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  // Controlled initial damage boundary; this does not replenish any real journey.
+  if frontWeaker { game.frontShield *= 0.25 } else { game.rearShield *= 0.25 }
+  let station = try #require(game.autoTargetBody)
+  let commander = game.commander
+  let front = game.frontShield
+  let rear = game.rearShield
+  let bodies = game.bodies
+  let observation = game.stationAutoGuidance(target: station)
+  let guidance = try #require(observation)
+  #expect(guidance.hazard == .active && guidance.transitGoal != nil)
+  #expect(guidance.protectFrontShield == frontWeaker)
+  #expect(game.commander == commander && game.bodies == bodies)
+  #expect(game.frontShield == front && game.rearShield == rear)
+  #expect(game.commander.unlimitedMissiles == false && !game.commander.unlimitedCash)
+}
