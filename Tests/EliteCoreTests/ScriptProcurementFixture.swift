@@ -3,6 +3,8 @@ import Testing
 
 @testable import EliteCore
 
+typealias ScriptProcurementScenePreparation = @Sendable (GameRuntime) async throws -> Void
+
 struct ScriptProcurementFixture {
   let root: URL
   let pack: ScriptPack
@@ -109,7 +111,10 @@ struct ScriptProcurementFixture {
   }
 
   /// Buy the fixed docking and defensive fit, then use real launch/controls/station entry.
-  func nativeRuntime(diagnostic: ScriptProcurementFlightDiagnostic? = nil) async throws
+  func nativeRuntime(
+    diagnostic: ScriptProcurementFlightDiagnostic? = nil,
+    prepareScene: ScriptProcurementScenePreparation? = nil
+  ) async throws
     -> GameRuntime
   {
     var game = Game(executive: false)
@@ -126,7 +131,8 @@ struct ScriptProcurementFixture {
     let runtime = GameRuntime(game: game, saveURL: save)
     try await runtime.save(to: save)
     await runtime.key("0")
-    try await Self.dock(runtime, diagnostic: diagnostic, phase: "initial-dock")
+    try await Self.dock(
+      runtime, diagnostic: diagnostic, phase: "initial-dock", prepareScene: prepareScene)
     return runtime
   }
   /// Independently fixed paid chain: assert quotes, predecessor custody and all retained items.
@@ -226,8 +232,10 @@ struct ScriptProcurementFixture {
   static func dock(
     _ runtime: GameRuntime, diagnostic: ScriptProcurementFlightDiagnostic? = nil,
     phase: String = "dock", defensivePreflight: Bool = false,
-    selectionDiagnostic: ScriptProcurementSelectionDiagnostic? = nil
+    selectionDiagnostic: ScriptProcurementSelectionDiagnostic? = nil,
+    prepareScene: ScriptProcurementScenePreparation? = nil
   ) async throws {
+    if let prepareScene { try await prepareScene(runtime) }
     if defensivePreflight {
       try await defendedDock(runtime, diagnostic: diagnostic, phase: phase)
       return
@@ -252,6 +260,7 @@ struct ScriptProcurementFixture {
       let facts = await runtime.procurementFlightFacts()
       if facts.docked { break }
       try #require(facts.live && !facts.paused)
+      if let prepareScene { try await prepareScene(runtime) }
       if let diagnostic {
         await diagnosticAdvance(runtime, diagnostic: diagnostic, phase: phase, step: steps)
       } else {
@@ -265,7 +274,8 @@ struct ScriptProcurementFixture {
   static func travel(
     _ runtime: GameRuntime, path: [Int], diagnostic: ScriptProcurementFlightDiagnostic? = nil,
     defensivePreflight: Bool = false, verifyDeparture: Bool = false,
-    selectionDiagnostic: ScriptProcurementSelectionDiagnostic? = nil
+    selectionDiagnostic: ScriptProcurementSelectionDiagnostic? = nil,
+    prepareScene: ScriptProcurementScenePreparation? = nil
   ) async throws {
     var origin = path.first
     for (legIndex, destination) in path.dropFirst().enumerated() {
@@ -288,6 +298,7 @@ struct ScriptProcurementFixture {
         }
         let locked = await runtime.procurementMassLocked()
         if !locked { break }
+        if let prepareScene { try await prepareScene(runtime) }
         if let diagnostic {
           await diagnosticAdvance(
             runtime, diagnostic: diagnostic, phase: leg + "-departure", step: departure)
@@ -318,6 +329,7 @@ struct ScriptProcurementFixture {
       while steps < 500 {
         let jumping = await runtime.procurementJumping()
         if !jumping { break }
+        if let prepareScene { try await prepareScene(runtime) }
         if let diagnostic {
           await diagnosticAdvance(
             runtime, diagnostic: diagnostic, phase: leg + "-jump", step: steps)
@@ -333,7 +345,7 @@ struct ScriptProcurementFixture {
         defensivePreflight: defensivePreflight,
         selectionDiagnostic: selectionDiagnostic.map {
           .init(label: $0.label + "-leg-\(legIndex + 1)", instance: $0.instance)
-        })
+        }, prepareScene: prepareScene)
       if destination != path.last { await runtime.procurementRefuel() }
       origin = destination
     }

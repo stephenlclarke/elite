@@ -110,7 +110,11 @@ extension ScriptProcurementFixture {
   fileprivate func genuineProcurementHistory(
     stage: String, diagnostic: ScriptProcurementFlightDiagnostic? = nil
   ) async throws -> (GameRuntime, UUID) {
-    let runtime = try await nativeRuntime(diagnostic: diagnostic)
+    let scene = ProcurementHistoricalAuthScene()
+    let prepareScene: ScriptProcurementScenePreparation = { runtime in
+      try await scene.prepare(runtime)
+    }
+    let runtime = try await nativeRuntime(diagnostic: diagnostic, prepareScene: prepareScene)
     let key = try await runtime.generateContractBoard(packDigest: pack.digest)
     let generated = await runtime.snapshot()
     let row = stage == "partial" ? 1 : 0
@@ -125,7 +129,8 @@ extension ScriptProcurementFixture {
       let commodity = try #require(plan.commodity).rawValue
       try #require(generated.market[commodity].quantity > 0)
       await runtime.procurementBuy(commodity)
-      try await Self.travel(runtime, path: plan.path, diagnostic: diagnostic)
+      try await Self.travel(
+        runtime, path: plan.path, diagnostic: diagnostic, prepareScene: prepareScene)
     }
     await Self.contact(runtime)
     let delivered = await runtime.snapshot()
@@ -144,9 +149,80 @@ extension ScriptProcurementFixture {
     await runtime.key("0")
     try await Self.dock(
       runtime, diagnostic: diagnostic, phase: "history-" + stage + "-redock",
-      defensivePreflight: true)
+      prepareScene: prepareScene)
     try await runtime.save(to: save)
     return (runtime, id)
+  }
+}
+
+/// The security fixture owns scene configuration only; no Game, Commander or proof is retained.
+private actor ProcurementHistoricalAuthScene {
+  private var configured: Set<ActorIdentity> = []
+
+  func prepare(_ runtime: GameRuntime) async throws {
+    let player = try await runtime.prepareHistoricalAuthScene(configured: configured)
+    configured.insert(player)
+  }
+}
+
+extension GameRuntime {
+  fileprivate func prepareHistoricalAuthScene(configured: Set<ActorIdentity>) throws
+    -> ActorIdentity
+  {
+    let observed = game.gameplayContext()
+    let context = try #require(observed)
+    let player = try #require(game.commander.flightSimulation.player)
+    try #require(
+      context.player.identity == player && context.system == game.systemIdentity
+        && context.visit == game.commander.flightSimulation.visit
+        && context.revision == game.gameplayRevision
+        && context.physicalTime == game.commander.flightSimulation.physicalTime)
+    try #require(!context.actors.contains { $0.identity == player })
+    try #require(Set(context.actors.map(\.identity)).count == context.actors.count)
+    let director = try #require(game.commander.encounterDirector)
+    try #require(
+      director.system == context.system && director.visit == context.visit
+        && director.decisionCount == 0 && director.admittedCount == 0
+        && director.pendingRequests.isEmpty)
+    var preparedContext = context
+    if !configured.contains(player) {
+      for index in game.bodies.indices {
+        let body = game.bodies[index]
+        guard let physical = body.physical, var npc = physical.npc else { continue }
+        // Native police keep their own station-security behavior.
+        if npc.role == .police { continue }
+        try #require(
+          [.trader, .miner, .pirate].contains(npc.role)
+            && [.civilian, .pirate].contains(physical.population)
+            && body.missionInstanceID == nil && body.scriptNPC == nil && body.scriptShot == nil
+            && !body.navalTarget && body.blackjackRole == nil && body.blackjackIdentity == nil
+            && physical.empSource == nil && physical.empCrewPod == nil && physical.salvage == nil
+            && !game.isEMPDisabled(body)
+            && !context.protection.protectedActors.contains(physical.identity))
+        try #require(
+          physical.identity.system == context.system && physical.identity.visit == context.visit
+            && physical.identity != player
+            && context.actors.filter({ $0.identity == physical.identity }).count == 1
+            && game.bodies.filter({ $0.physical?.identity == physical.identity }).count == 1)
+        let observedActor = context.actors.first { $0.identity == physical.identity }
+        let actor = try #require(observedActor)
+        try #require(
+          actor.npc == physical.npc && actor.hull == body.hull && actor.energy == body.energy
+            && body.energy.isFinite && body.energy > 0 && body.position.finite
+            && (npc.resources?.valid ?? true))
+        npc.role = .trader
+        npc.intention = .dock(context.anchors.station.identity)
+        game.bodies[index].hostile = false
+        game.bodies[index].physical?.population = .civilian
+        game.bodies[index].physical?.npc = npc
+      }
+      let updated = game.gameplayContext()
+      preparedContext = try #require(updated)
+    }
+    // Maintained NPCResourceTests pattern: defer unconsumed ambient proposals from actual context.
+    // Each genuine advance is 0.1 seconds; a fresh director's first decision is 8-12 seconds later.
+    game.commander.encounterDirector = EncounterDirector(context: preparedContext)
+    return player
   }
 }
 

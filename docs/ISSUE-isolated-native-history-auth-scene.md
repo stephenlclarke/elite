@@ -1,0 +1,7 @@
+# Isolate native historical proof from unrelated ambient combat
+
+The original twelve-argument procurement history method still fails while generating its genuine history, before forged validation. Run 588 retained eight liveness failures after pilot-law alignment; the separately allocated station-579 and pilot-law-589 regressions qualified their own mechanisms. Requiring this security fixture to repeatedly win unrelated ambient combat is an unnecessary premise for its actual acceptance: native historical/current arrival joins, four paired forgeries, save/load rejection and full-state/file rollback.
+
+Root explicitly permits deterministic test-scene isolation for this fixture. Use the maintained `NPCResourceTests.nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling` pattern to defer unconsumed ambient proposals from actual current context, and the controlled docking-traffic pattern in the native station tests at actual visit entry. Do not remove bodies, clear emitted attacks, invent receipts, move the player, skip physics or change production encounter behavior.
+
+The exact parent is `5261ac5f43d036bf36740a7e5190229b893837c8`. This changes security-test setup, not product flight behavior or gameplay-defence acceptance. [PR-isolated-native-history-auth-scene.md](PR-isolated-native-history-auth-scene.md) describes how real launch, hyperspace, AUTO arrival and all thirty-nine original assertions remain intact. Actual focused qualification is still required.
