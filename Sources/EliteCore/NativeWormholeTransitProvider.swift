@@ -398,8 +398,8 @@ extension Game {
     var retained = bodies[index]
     retained.position = anchor.orientation.inverse(retained.position - anchor.position)
     retained.orientation = retained.orientation.relative(to: anchor.orientation)
-    retained.scriptNPC?.velocity = anchor.orientation.inverse(
-      retained.scriptNPC?.velocity ?? .init(0, 0, 0))
+    let retainedVelocity = retained.scriptNPC?.velocity ?? .init(0, 0, 0)
+    retained.scriptNPC?.velocity = anchor.orientation.inverse(retainedVelocity)
     let departure = NativeWormholeDeparture(
       hole: opening.id, nativeActor: source.actor,
       calendarSeconds: commander.scriptState.calendarSeconds,
