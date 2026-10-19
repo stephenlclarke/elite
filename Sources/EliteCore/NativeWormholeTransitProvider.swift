@@ -3,6 +3,7 @@ import Foundation
 // One turn-local value owner, not a ship actor or persistent authority.
 private final class NativeWormholeAttempt {
   var game: Game
+  @inline(never)
   init(_ game: borrowing Game) { self.game = copy game }
 }
 
@@ -56,7 +57,7 @@ extension Game {
         wasDocked: false, galaxy: sample.system.galaxy,
         system: sample.system.system)
       try publish(&attempt.game)
-      self = attempt.game
+      commitNativeWormholeAttempt(attempt)
     } catch { return }
   }
 
@@ -210,10 +211,8 @@ extension Game {
         else {
           continue
         }
-        attempt.game.persistScriptActors()
-        guard attempt.game.commander.valid else { throw SaveError.invalidCommander }
-        try publish(&attempt.game)
-        self = attempt.game
+        try Self.publishNativeNPCTransitAttempt(attempt, publish: publish)
+        commitNativeWormholeAttempt(attempt)
         cohort?.didPublishDeparture(id, in: self)
       } catch let refusal as NativeWormholeRefusal {
         if commander.scriptState.wormholeTransit?.legs[id]?.refusal != refusal.rawValue {
@@ -221,7 +220,7 @@ extension Game {
           refused.game.commander.scriptState.wormholeTransit?.legs[id]?.refusal = refusal.rawValue
           do {
             try publish(&refused.game)
-            self = refused.game
+            commitNativeWormholeAttempt(refused)
           } catch { continue }
         }
       } catch {
@@ -229,6 +228,21 @@ extension Game {
         continue
       }
     }
+  }
+
+  // Source/fit resolution returns before these later Commander and Game value operations.
+  @inline(never)
+  private static func publishNativeNPCTransitAttempt(
+    _ attempt: NativeWormholeAttempt, publish: ScriptPublisher
+  ) throws {
+    attempt.game.persistScriptActors()
+    guard attempt.game.commander.valid else { throw SaveError.invalidCommander }
+    try publish(&attempt.game)
+  }
+
+  @inline(never)
+  private mutating func commitNativeWormholeAttempt(_ attempt: NativeWormholeAttempt) {
+    self = attempt.game
   }
 
   private mutating func advanceNativeNPCTransitLeg(
