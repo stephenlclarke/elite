@@ -77,3 +77,7 @@ Actual764 still stack-crashes during native salvage persistence after five accep
 ## Integrated F01 source and optimized renderer gate
 
 F01 source now meets its focused owner unit/review gates and is integrated, but the debug+coverage startup-rendering unit exposes a concrete frame-cost risk. Distinguish source delivery from optimized/native performance and a usable updated app; retain open native-save crash and actual private742 limits.
+
+## Closed renderer checkpoint and bounded handoffs
+
+The optimized full-test build first failed testability setup, then hit its unchanged600-second compile bound before any rendering test. Track explicit incomplete checkpoint/process closure and release the executor rather than imply rendering failure or hold it for authoring. Existing title telemetry needs only a small reuse of the native observer; the measured wreck no-op boundary is the next priority runtime candidate.

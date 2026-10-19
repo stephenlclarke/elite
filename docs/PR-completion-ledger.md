@@ -96,3 +96,7 @@ Attach verified764 partial-failure and full process-closure receipt, retain exac
 ## Integrated F01 source and optimized renderer gate
 
 Record startup source integration720c199d with exact fifteen-file hash match, clean review and actual765/766 ten-case PASS/closure evidence. F01 remains in development pending bounded optimized actual title/credits renderer/native visual verification and usable app delivery. Root authorizes that narrow existing-renderer checkpoint, with exact plan to be reported before activation; no broad profiler/framework/media/geometry change. Changed docs checked; no integration-time runtime job.
+
+## Closed renderer checkpoint and bounded handoffs
+
+Attach exact767 attempt01/02 failure/timeout/closure proofs and incomplete checkpoint release, mark768/769 unrun/unstarted, and retain766 debug10PASS. Record Root immediate770/771 dispatch of reviewed0ef wreck boundary/source inverse/5-method6-case plan, plus G2 bounded existing startup-observer CLI/scenario/test/notes assignment. No full optimized-test retry, new framework/profiler, source geometry change, native CPU/FPS or usable delivery claim. Changed Markdown checks only after actual compiler closure.
