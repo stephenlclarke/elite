@@ -11,3 +11,5 @@ Actual667 recorded the mismatched credit assertion during the full coverage phas
 ## Scope and risk
 
 One expectation in ScriptGalleryTrialTests changes. No old-format compatibility, price override, artificial reward or fixture cargo grant is introduced. Base is f5e3421e029b6f2fffbbd91f5ed91c3f43335e72. No GitHub issue or PR was created. See [the source issue](ISSUE-gallery-market-sell-bid.md).
+
+Actual focused run 669 passed the real saved-fault gallery retry regression, including the actual one-tonne sale, bid credit, stock/cargo/payload and mission-state assertions. Source `bf144145f48ee7869b42a26c9e5e710a96b6321a`; the whole run still failed for separate station/EMP cases.
