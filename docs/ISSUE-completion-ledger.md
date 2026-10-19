@@ -65,3 +65,7 @@ Frozen F01 source changes an optional decoded ship-ID fallback, which could chan
 ## Corrected F01 source and conditional owner execution
 
 The F01 implicit current-save identity finding is resolved in a corrected frozen revision, but source-clean alone is not ready for integration. Owner units must wait for the actual priority fresh MC1 run closure rather than mistake the old released762 lease for permission to start.
+
+## Minimal Director review and priority execution grant
+
+Fresh minimal crash source now has clean independent review, but its actual default-stack run remains required. Track that763/764 priority grant and prevent the already released old762 lease from starting queued F01 work prematurely.
