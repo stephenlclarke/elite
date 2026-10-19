@@ -323,6 +323,26 @@ func navigationPracticeRefusesUnconfirmedFittingStockOrIllegalCommodity(reason: 
     failed.commander.credits == beforeReport.commander.credits
       && failed.commander.cargo == beforeReport.commander.cargo)
   #expect(failed.commander.scriptState.savedClueJournal == nil)
+  // Closed actual loss history must not bind a new galaxy's practice endpoint selection.
+  // This is explicit selection-policy setup, not a claim of another native journey.
+  var elsewhere = failed
+  elsewhere.commander.galaxy = 1
+  elsewhere.systems = Universe.systemsIncludingPlugh(number: 1)
+  elsewhere.commander.system = 7
+  elsewhere.selectedSystem = 8
+  let fresh = try #require(ScriptNavigationTradeBinding.production(in: elsewhere))
+  #expect(fresh.valid && fresh.matches(elsewhere))
+  #expect(fresh.training.galaxy == 1 && fresh.destination.galaxy == 1)
+  #expect(
+    fresh.training.system == elsewhere.currentSystem
+      && fresh.destination.system == elsewhere.targetSystem)
+  #expect(elsewhere.navigationTradeUnavailable(fixture.pack, binding: fresh) == nil)
+  #expect(
+    elsewhere.commander.scriptState.instances[retry]
+      == failed.commander.scriptState.instances[retry])
+  #expect(
+    elsewhere.commander.scriptState.instances[retry]?.savedNavigationTrade?.loss
+      == lost.commander.scriptState.instances[retry]?.savedNavigationTrade?.loss)
 }
 
 @Test func navigationPracticeWrongActualDestinationAndInventedEventCannotSupplyTheSelectedSale()

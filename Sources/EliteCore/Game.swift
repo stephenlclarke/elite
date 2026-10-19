@@ -363,6 +363,8 @@ public struct Commander: Sendable, Equatable, Codable {
 }
 
 public struct Equipment: Sendable {
+  /// Equipment definitions store zero-based requirements; original worlds expose one-based TL.
+  public var requiredTechnologyLevel: Int { technology + 1 }
   public static let legacyDockingComputer = "Docking Computers"
   public static let navalEnergyUnit = "Naval Energy Unit"
   public static let eliteEnergyUnit = "Elite Energy Unit"

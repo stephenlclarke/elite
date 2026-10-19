@@ -79,7 +79,7 @@ public enum Universe {
       id: world.system, name: world.name, x: world.xLY, y: world.yLY,
       economy: world.economyID, government: world.governmentID, technology: world.technology,
       population: Int((world.populationBillions * 10).rounded()),
-      productivity: Int((world.productivityBillionCR * 10).rounded()), radius: world.radiusKM,
+      productivity: Int((world.productivityBillionCR * 1000).rounded()), radius: world.radiusKM,
       seed: .init(
         a: UInt16(truncatingIfNeeded: hash),
         b: UInt16(truncatingIfNeeded: hash >> 16), c: UInt16(truncatingIfNeeded: hash >> 32)),

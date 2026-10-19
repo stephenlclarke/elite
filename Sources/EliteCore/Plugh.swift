@@ -62,7 +62,8 @@ extension Game {
   public func equipmentAvailable(_ item: Equipment) -> Bool {
     stationAllowsEquipmentServices
       && (atPlugh
-        || (item.technology <= currentSystem.technology && !Equipment.isReward(item.name)))
+        || (item.requiredTechnologyLevel <= currentSystem.technology
+          && !Equipment.isReward(item.name)))
   }
   public func shopPrice(_ item: Equipment) -> Int {
     let price = Plugh.rewardPrices[item.name] ?? item.price
