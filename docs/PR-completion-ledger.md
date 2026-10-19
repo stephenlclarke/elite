@@ -64,3 +64,7 @@ Record reviewed focused-PASS grouped fixture integration9ec89554, qualify only i
 ## F01 source-reconciliation handoff
 
 Attach hash-verified G2 F01 source-reconciliation report on1d953549 and mark that inspection complete while functionality remains OPEN. Record existing Avenor/emptyquests/Continue/build identity separately from actual default/title and SH025/SH123 asset gaps; Root reserves bounded implementation next. No source/runtime/media job or completion claim.
+
+## Bounded F01 implementation assignment
+
+Record Root grant to G2 for exact fresh Game/default factory/title/icon/native entry hunks, focused tests/notes, single SH025 native admission and current approved SH123 display asset pins. Preserve authored dimensions/explicit calibration, collision guards, saved Continue identity and truthful build labels. Additional generated path requires exact reservation. Owner authoring only, no executor/PASS/integration/playable result; three Markdown files checked, no source/build/GUI/media job.

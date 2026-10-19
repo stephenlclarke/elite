@@ -45,3 +45,7 @@ The grouped fixture now has actual owner PASS and must be recorded as integrated
 ## F01 source-reconciliation handoff
 
 F01 source reconciliation identifies real startup/display gaps and dormant original SH025 data; an ID-only substitution must not be counted as the approved ship. Exact native hull/units/clearance authority and startup hunks await Root before edits.
+
+## Bounded F01 implementation assignment
+
+Root now grants bounded F01 implementation after source reconciliation. Track startup/title and the actual single original SH025 prerequisite together without expanding into full-fleet, distribution rename or MC1 save repair; pending implementation must not become a completion claim.
