@@ -1254,7 +1254,7 @@ public struct Game: Sendable {
     guard beginGameplayVisit(arriving: false, freshLaunchTrafficID: freshLaunchTrafficID) else {
       throw SaveError.invalidCommander
     }
-    notify("LAUNCHING FROM " + currentSystem.name)
+    notifyNativeLaunch()
     preloadNavigation()
     restoreBlackjackEncounter()
     applyScriptStationResources()
@@ -1264,6 +1264,13 @@ public struct Game: Sendable {
     if let stationReceipt { try launchFromNativeStation(stationReceipt) }
     commander.nativeStations?.currentMainDock = nil
   }
+
+  /// Retire the system-name snapshot before entering retained-actor restoration.
+  @inline(never)
+  private mutating func notifyNativeLaunch() {
+    notify("LAUNCHING FROM " + currentSystem.name)
+  }
+
   public mutating func dock(atMainStation: Bool = true) {
     stationAutoDefence = nil
     do { try persistNativeStationConditions() } catch {

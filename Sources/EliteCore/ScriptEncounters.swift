@@ -1214,8 +1214,16 @@ extension Game {
   @discardableResult
   func validateRetainedMissionActorRestoration() throws -> [MissionActorAdmissionSource] {
     let sources = try retainedMissionActorAdmissionSources()
-    for source in sources { _ = try prepareMissionActorAdmission(source) }
+    try validateRetainedMissionActorSources(sources)
     return sources
+  }
+
+  /// Source collection returns before the later admission-validation loop reserves its values.
+  @inline(never)
+  private func validateRetainedMissionActorSources(
+    _ sources: borrowing [MissionActorAdmissionSource]
+  ) throws {
+    for source in sources { _ = try prepareMissionActorAdmission(source) }
   }
 
   /// Reprojects the same world actor after genuine native launch/arrival/camera travel.
