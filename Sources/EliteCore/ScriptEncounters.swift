@@ -288,8 +288,12 @@ extension Game {
   }
 
   @inline(never)
-  private func currentMissionActorAdmissionOwner(_ id: UUID) -> ScriptInstance? {
-    retainedMissionActorInstances[id]
+  private func currentMissionActorAdmissionOwner(_ id: UUID) -> (
+    id: UUID, definition: String, version: String, digest: String, revision: UInt64,
+    outcome: ScriptOutcome
+  )? {
+    guard let owner = retainedMissionActorInstances[id] else { return nil }
+    return (owner.id, owner.definition, owner.version, owner.digest, owner.revision, owner.outcome)
   }
 
   @inline(never)
@@ -458,7 +462,11 @@ extension Game {
       stored.digest == state.digest, stored.revision == state.revision
     else { throw MissionPackError("Prepared actors require the actual command candidate owner.") }
     guard state.definition == pack.manifest.stateID, state.version == pack.manifest.version,
-      state.digest == pack.digest, scriptPack(for: stored)?.digest == pack.digest
+      state.digest == pack.digest,
+      scriptPacks.contains(where: {
+        $0.manifest.stateID == stored.definition && $0.manifest.version == stored.version
+          && $0.digest == stored.digest
+      })
     else { throw MissionPackError("Prepared authority requires its exact installed content.") }
     let authority: MissionActorAdmissionAuthority
     if let worldJob, let pulse {
