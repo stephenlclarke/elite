@@ -242,3 +242,7 @@ Record Root's additional existing BundledScriptPackTests reservation for changed
 ## Reviewed lexical child and exact focused plan
 
 Bind Root-clean c93b7cd7 and exact ten-method/twelve-case plan to existing804/805. Record Root-reported matching build PASS/runtime starting without implying actual stack success or case outcomes. No duplicate audit/ACK, new scope or G1 execution job. Scoped Markdown/whitespace checks only.
+
+## Actual805 closure and accelerator validation handoff
+
+Record three lexical PASS then stack failure/seven actor UNKNOWN with exact805 process/resource closure; no mission integration or next crash runtime grant. Freeze G2 exact50ee seven-path accelerator/4-case plan, verify hashes and route independent review to Root concurrently. Grant806/807 matching build/four owner GPU/parity cases after actual805 release, actual GPU required/no skip acceptance, routine scoped fixes only after failure closure and reviewed before integration. No duplicate source audit, extra benchmark/GUI/test loop or gain claim. Scoped Markdown/whitespace checks only.
