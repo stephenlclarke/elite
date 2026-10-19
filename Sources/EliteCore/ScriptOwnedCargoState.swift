@@ -204,7 +204,9 @@ extension Commander {
   }
 
   var freightCargoValid: Bool {
-    guard scriptState.instances.values.allSatisfy({ freightStateValid($0) }) else { return false }
+    for state in scriptState.instances.values {
+      guard freightStateValid(state) else { return false }
+    }
     let cargo = scriptState.instances.values.compactMap(\.savedOwnedCargo)
     let units = cargo.flatMap(\.issued)
     guard Set(units).count == units.count else { return false }
