@@ -475,7 +475,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       backing: .buffered, defer: false)
     // ARC retains this window through AppDelegate; AppKit must not release it again on close.
     window.isReleasedWhenClosed = false
-    window.title = "XYZZY Elite - Right-On Commander"
+    window.title = NewCommanderDefaults.title
     window.contentView = view
     window.minSize = NSSize(width: 512, height: 540)
     window.delegate = self
@@ -983,7 +983,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     let alert = NSAlert()
     alert.messageText = "Your last commander could not be restored"
     alert.informativeText =
-      "The saved file at \(url.path) is missing, inaccessible or invalid. It has not been changed. Choose another save or start a new Commander Jameson. \(error.localizedDescription)"
+      "The saved file at \(url.path) is missing, inaccessible or invalid. It has not been changed. Choose another save or start a new Commander \(NewCommanderDefaults.name). \(error.localizedDescription)"
     alert.addButton(withTitle: "Choose Save")
     alert.addButton(withTitle: "Start New")
     if alert.runModal() == .alertFirstButtonReturn { openChosenCommander() }
