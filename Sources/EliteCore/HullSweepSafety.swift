@@ -799,6 +799,8 @@ private struct SweepTriangle: Sendable {
   // Arithmetic reuse for the existing fast query, never an area or separation certificate.
   let fastNormal: Vector3
   let fastNormalSquared: Double
+  let fastNormalLength: Double
+  let fastRayDeterminantScale: Double
   let conditioned: Bool
   let hasResolvedArea: Bool
   let unresolvedSupport: Bool
@@ -812,13 +814,17 @@ private struct SweepTriangle: Sendable {
     self.c = c
     let first = b - a
     let second = c - a
-    let scale = max(first.length, max(second.length, (c - b).length))
+    let firstLength = first.length
+    let secondLength = second.length
+    let scale = max(firstLength, max(secondLength, (c - b).length))
     // These are only the boundaries of the pre-existing fast query path, never
     // acceptance. Newly resolved small triangles need conservative queries as well.
     let approximateNormal = first.cross(second)
     fastNormal = approximateNormal
     fastNormalSquared = approximateNormal.dot(approximateNormal)
     let area = approximateNormal.length
+    fastNormalLength = area
+    fastRayDeterminantScale = 1e-12 * firstLength * secondLength
     let resolved: Bool
     if let original, original.hasResolvedArea, !original.conditioned,
       !original.unresolvedSupport, sweepFinite(a), sweepFinite(b), sweepFinite(c),
@@ -1272,7 +1278,8 @@ private func sweepPointTriangle(
   if conditioned || triangle.conditioned { return sweepConditionedPointTriangle(point, triangle) }
   let normal = triangle.fastNormal
   let square = triangle.fastNormalSquared
-  let projected = point - normal * ((point - triangle.a).dot(normal) / square)
+  let normalOffset = (point - triangle.a).dot(normal)
+  let projected = point - normal * (normalOffset / square)
   var inside = true
   for index in 0..<3 {
     let edge = triangle.edge(at: index)
@@ -1281,7 +1288,7 @@ private func sweepPointTriangle(
       break
     }
   }
-  if inside { return abs((point - triangle.a).dot(normal)) / sqrt(square) }
+  if inside { return abs(normalOffset) / triangle.fastNormalLength }
   var distance = sweepPointSegment(point, triangle.a, triangle.b)
   for index in 1..<3 {
     let edge = triangle.edge(at: index)
@@ -1302,7 +1309,7 @@ private func sweepRay(
   let other = triangle.c - triangle.a
   let cross = direction.cross(other)
   let determinant = edge.dot(cross)
-  guard abs(determinant) > 1e-12 * edge.length * other.length * direction.length else { return nil }
+  guard abs(determinant) > triangle.fastRayDeterminantScale * direction.length else { return nil }
   let offset = origin - triangle.a
   let u = offset.dot(cross) / determinant
   let perpendicular = offset.cross(edge)
