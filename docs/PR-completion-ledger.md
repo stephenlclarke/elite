@@ -104,3 +104,7 @@ Attach exact767 attempt01/02 failure/timeout/closure proofs and incomplete check
 ## Actual771 and startup-observer focused handoff
 
 Attach actual771 failure/terminal/signature closure evidence, exact startup-observer780f freeze and clean independent source review, and direct772/773 DEBUG-only3-case owner grant. Record finite real draw/scene checks and timing qualifications, with source integration/native product-only observation still pending. Three changed Markdown files checked; no G1 compiler/native/profiler/media job or completion claim.
+
+## Observer correction and MBA05 frozen review queue
+
+Record actual772 compile failure/closure, exact932 one-call correction/clean targeted review and existing772attempt02/773 three-case grant. Attach MBA05 frozen patch/handoff, localbc4d execution commit, eleven-file ownership and15-case plan metadata, with G3 owner-PASS and G2 review still required. Preserve current F01 Game hunks and defer production W01 pack/clue consumer. Changed docs lint/whitespace only; no new G1 compiler/native job.

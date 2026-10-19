@@ -85,3 +85,7 @@ The optimized full-test build first failed testability setup, then hit its uncha
 ## Actual771 and startup-observer focused handoff
 
 The measured wreck boundary still does not close the native regression: actual771 has two case passes and four unknown method terminals after SIGBUS. Preserve that evidence and route only the already-reviewed bounded startup-observer unit handoff through the now-released executor; no crash or performance acceptance is inferred.
+
+## Observer correction and MBA05 frozen review queue
+
+The observer unit-only missing-try compiler failure must remain recorded separately from the unchanged product source; no native measurement is available yet. MBA05 is now frozen with a local committed execution source, but its fifteen authored units and independent review remain pending, so it is not integration-ready or playable content.
