@@ -1763,6 +1763,27 @@ func stationAutoWeakFrontFacesAwayFromAttackerWhileItsCoverRouteKeepsMoving(atta
   #expect(states[1].pose.position.z > 100)
 }
 
+@Test func stationAutoWeakFrontInvalidAimRetainsTheExistingCoverFallback() {
+  var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+  station.rotationRate = 0
+  var guidance = StationAutoGuidance(
+    aim: nil, lateralVelocity: .init(50, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400,
+    transitGoal: station.position + Vector3(0, 0, 440))
+  guidance.protectFrontShield = true
+  var baseline = AutoTargetControl()
+  let expected = baseline.steer(target: station, delta: 0.1, defence: guidance)
+  #expect(expected.pitch.isFinite && expected.yaw.isFinite)
+  for invalid in [Vector3(0, 0, 0), .init(.nan, 0, 0), .init(0, .infinity, 0)] {
+    guidance.aim = invalid
+    var control = AutoTargetControl()
+    let actual = control.steer(target: station, delta: 0.1, defence: guidance)
+    #expect(
+      actual.pitch == expected.pitch && actual.yaw == expected.yaw && actual.roll == expected.roll)
+    #expect(control.velocity == baseline.velocity)
+  }
+}
+
 @Test(arguments: [true, false])
 func stationAutoCurrentShieldBanksChooseCoverOnlyForTheWeakerFront(frontWeaker: Bool) async throws {
   var game = try await stationAutoEntryBoundary()

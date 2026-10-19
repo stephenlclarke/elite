@@ -212,7 +212,7 @@ public struct AutoTargetControl: Sendable {
       ? defence : nil
     let shieldAim =
       guidance?.protectFrontShield == true
-      ? (guidance?.aim.map { $0 * -1 }
+      ? (guidance?.aim.flatMap { $0.finite && $0.length > 0 ? $0 * -1 : nil }
         ?? guidance?.transitGoal.map { approachWaypoint(target, goal: $0, clearance: clearance) })
       : nil
     let trackingResponse =
