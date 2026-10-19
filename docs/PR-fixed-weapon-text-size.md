@@ -13,3 +13,7 @@ Reversing the three substitutions restores the entire parent `CockpitDisplay.swi
 G1 owns one independent review and batched build. Existing direct regressions are `nativeTextUsesOneFixedLogicalSizeAcrossEveryScreenAndWindowSize`, `FlightControlInputTests.weaponRowIsReservedAboveScannerAcrossViewsStylesAndSizes` and `FlightWeaponSnapshotTests` (weapon display wrapping and immutable snapshot rendering). The existing typography test checks exact scale and viewport bounds on every screen at512,768,1512 and2560 widths, including the concrete unavailable-snapshot case. The weapon-row test covers real prepared weapon text, all four views and display styles at320 through2560 widths, and scanner separation. The other two `TypographyTests.swift` tests retain equipment click/reflow and compact page coverage.
 
 This leaf does not claim to fix the separately reported helper SIGBUS, complete full CI or change the retained fresh salvage acceptance. Root/G1 own subsequent official gate allocation.
+
+## Integrated validation
+
+The combined coverage-enabled build passed. Run 564 passed the original fixed-logical-text, equipment reflow, compact-page, reserved weapon-row and three FlightWeaponSnapshot methods, together with the directly affected gallery checks (35 methods / 39 cases total, zero issues or crashes). Existing tests and assertions were unchanged. The full coverage, sanitizer and leak gates remain separately required.

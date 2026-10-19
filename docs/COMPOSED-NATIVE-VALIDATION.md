@@ -13,16 +13,24 @@ The work controller retains an acquired visible approach instead of steering aro
 | Orientation transfer, 1000 production frame moves, canonical spin and strict observer precision | 5 methods / 5 cases passed | Run 544 |
 | Visible approach, actual hold, equipment selection and native save/reload | 11 methods / 11 cases passed | Run 541 |
 | Historical saved second-cycle continuation | 1 method / 1 case passed | Run 555; second release at iteration 975, serial 16, pending 16, reset work zero, no damage and 16 credited seconds |
-| Maintained ship renderer refresh and freshness check | 171 ships / 4104 frames verified | Run 559; output images and reference documents byte-identical, generated input fingerprints refreshed |
+| Maintained ship renderer refresh and freshness check | 171 ships / 4104 frames verified | Run 565; output images and reference documents byte-identical, generated input fingerprints refreshed |
 
 The retained acceptance ledger contains 82 methods / 157 cases in the original matrix and 63 methods / 78 cases in additional affected scopes, all passed. Rows retain their tested source and proof; unaffected results are source-qualified retained evidence. The historical continuation is kept separately and does not replace the fresh original result.
 
 All exercised job-owned processes were closed. The player's commander and preferences remained byte-identical. Temporary save evidence was copied read-only before the original test's cleanup; private commander data is not committed or shipped. [Machine-readable evidence](COMPOSED-NATIVE-VALIDATION.json) records the source, test-binary and proof digests.
 
+## Subsequent CI repairs
+
+The first full `make ci` attempt (run 560) stopped during coverage tests with 45 fixed-font assertions and a qualified campaign-gallery stack exhaustion. Coverage export did not complete; Thread Sanitizer, Address Sanitizer and leaks had not started. That attempt is a failure, and supplies no current coverage percentage.
+
+The weapon status now uses the shared logical font size. Gallery queries finish catalogue construction before selected-state work, carry narrow relationship facts through ancestor walks and reuse one synchronous presentation context. Original authority checks, row ordering, trial copies, fresh page identities and existing tests are preserved. At source `f3cd08dda43cbc59501d19d06e61bf109aaf63ed`, the unchanged original crash reproducer passed (run 563), followed by 35 methods / 39 cases of direct gallery, trial, provider, stale-control, native-view, typography and weapon regressions (run 564), with zero issues or crashes. These runs used coverage-enabled binaries with default stack and concurrency settings.
+
+Run 565 refreshed all 171 ship input fingerprints through `make ships` and passed `make ships-check`; independent decoding verified all 4104 frames. Image bytes and reference documents remained identical. The packaging verifier also passed its four resource-layout tests after a meaningful failing regression showed that copied OriginalWorlds files were incorrectly sought at the bundle root. These focused repairs require another full CI result; they do not establish sanitizer, leak, coverage or release acceptance.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.
 
-Full `make ci` supplies separate coverage, Thread Sanitizer, serial Address Sanitizer and leak-gate evidence. The required overall coverage threshold is 80%. PR review, final-head checks and independent approval remain required before merging. Authoritative SonarQube analysis uses clean committed `main`, its exact lowercase 40-character SHA as `projectVersion`, and the Previous version new-code definition.
+Full `make ci` supplies separate coverage, Thread Sanitizer, serial Address Sanitizer and leak-gate evidence. The required overall coverage threshold is 80%; maintained and substantially changed code aim for 90%, assessed from actual coverage output. PR review, final-head checks and independent approval remain required before merging. Authoritative SonarQube analysis uses clean committed `main`, its exact lowercase 40-character SHA as `projectVersion`, and the Previous version new-code definition.
 
 Signed/notarized packaging and release provenance require their own verified artifacts. This report covers composed native acceptance; the remaining L337, world and content backlog is not declared complete. Published-release behavior is described by its release notes and source commit.

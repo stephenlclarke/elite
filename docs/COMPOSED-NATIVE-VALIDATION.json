@@ -69,7 +69,9 @@
     "decodedFrames": 4104,
     "changedImageBytes": 0,
     "changedInputFingerprints": 171,
-    "proofSHA256": "c90165759e0921ff9cba18a1c8fe3094af8b54dfefda4f32c97ee58b2b455dd9"
+    "proofSHA256": "3fd014cb59f314377696d8d44e0dd2ac21448a3a2d1e1fa0014e3b6bbb4d5ebc",
+    "sourceCommit": "f3cd08dda43cbc59501d19d06e61bf109aaf63ed",
+    "run": 565
   },
   "fullGatePolicy": {
     "command": "make ci",
@@ -80,12 +82,54 @@
       "serial address sanitizer",
       "leaks"
     ],
-    "resultSource": "Captured full-gate run and required final-head CI checks"
+    "resultSource": "Captured full-gate run and required final-head CI checks",
+    "coverageAimPercent": 90
   },
   "releasePolicy": {
     "review": "@codex review completed clean; final-head required checks and independent approval; no admin bypass",
     "sonar": "clean committed main, exact SHA projectVersion, Previous version",
     "distribution": "verified signed/notarized artifact and source provenance"
   },
-  "qualification": "Focused composed-native results only; no full CI, Sonar, release or remaining L337/world/content completion claim."
+  "qualification": "Focused composed-native results only; no full CI, Sonar, release or remaining L337/world/content completion claim.",
+  "followupCIRepairs": {
+    "sourceCommit": "f3cd08dda43cbc59501d19d06e61bf109aaf63ed",
+    "firstFullCI": {
+      "run": 560,
+      "result": "FAILED during coverage tests",
+      "fixedFontIssues": 45,
+      "crash": "Qualified campaign-gallery stack exhaustion",
+      "coveragePercent": null,
+      "notStarted": [
+        "thread sanitizer",
+        "address sanitizer",
+        "leaks"
+      ]
+    },
+    "originalCrashReproducer": {
+      "run": 563,
+      "methods": 1,
+      "cases": 1,
+      "passed": true,
+      "issues": 0,
+      "crashes": 0,
+      "proofSHA256": "f6d23b9975ea4314976c328f0e86649fdb1e779c38bf702f2e7f2f072af77015"
+    },
+    "directRegressions": {
+      "run": 564,
+      "methods": 35,
+      "cases": 39,
+      "passed": true,
+      "issues": 0,
+      "crashes": 0,
+      "proofSHA256": "0db9d79ea625bdbaf4a5e68b811e1f6239268207175dcd5ef7ef8e5ac95024cd"
+    },
+    "runtimePolicy": "Unchanged tests; coverage-enabled binary; default stack and concurrency. Original and direct regressions are distinct scopes.",
+    "packagingResourceRegression": {
+      "run": 561,
+      "methods": 4,
+      "passed": true,
+      "meaningfulRedLayoutFailures": 2,
+      "proofSHA256": "2e9a991fb396379fa013ca262127e49dc60de6f2819a9ade904a71f30c6e2cb9"
+    }
+  }
 }
