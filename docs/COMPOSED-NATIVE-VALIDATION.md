@@ -13,7 +13,7 @@ The work controller retains an acquired visible approach instead of steering aro
 | Orientation transfer, 1000 production frame moves, canonical spin and strict observer precision | 5 methods / 5 cases passed | Run 544 |
 | Visible approach, actual hold, equipment selection and native save/reload | 11 methods / 11 cases passed | Run 541 |
 | Historical saved second-cycle continuation | 1 method / 1 case passed | Run 555; second release at iteration 975, serial 16, pending 16, reset work zero, no damage and 16 credited seconds |
-| Maintained ship renderer refresh and freshness check | 171 ships / 4104 frames verified | Run 565; output images and reference documents byte-identical, generated input fingerprints refreshed |
+| Maintained ship renderer refresh and freshness check | 171 ships / 4104 frames verified | Run 592; output images and reference documents byte-identical, generated input fingerprints refreshed |
 
 The retained acceptance ledger contains 82 methods / 157 cases in the original matrix and 63 methods / 78 cases in additional affected scopes, all passed. Rows retain their tested source and proof; unaffected results are source-qualified retained evidence. The historical continuation is kept separately and does not replace the fresh original result.
 
@@ -80,6 +80,10 @@ The history fixture now opts into a private deterministic native scene. Ordinary
 At source `5943d0715bd45ffd3d0ec1a30dc9e2b3f9206f75`, run 591 passed the original history method with all 12 cases and zero issues, crashes, timeouts or unknown method outcomes. All source argument sets and aggregate ends matched the successful method summary. The 39 original authentication assertions remain unchanged: real launch/hyperspace visits and physical AUTO arrivals establish distinct historical/current receipts, followed by paired forgery refusal, complete state equality and file rollback. Diagnostics were off; default coverage, stack and concurrency were preserved. The command completed in 33.390 seconds, all owned processes closed, and tracked inputs, compiled artifacts and player data remained unchanged.
 
 This resolves the history authentication acceptance failure at the new source. Earlier failed runs retain their own sources and verdicts. Ambient combat is deliberately excluded from this security fixture; this pass is not product-flight or unattended-combat survival evidence. Station run 579 and fixture-law run 589 retain their separately qualified scopes. Full CI, percentage coverage, sanitizer/leak, review and release gates still require their own completed results.
+
+## Final renderer freshness before full CI
+
+Run 592 executed the maintained `make ships` and `make ships-check` successfully after focused authentication acceptance. Independent decoding verified all 171 GIFs / 4,104 nonblank frames and their renderer manifest hashes. The generator refreshed all 171 input fingerprints; only `docs/ships/manifest.json` changed. Images, reference documents, runtime TOMLs, sources, rights notices and player data remained byte-identical. All owned processes closed. Actual completion logs and decoded outputs establish the rendering result; the process observer captured an owned Swift process during an exec transition and does not supply a final renderer executable or argument-vector identity. No renderer rerun or manually edited fingerprint was used. This freshness result precedes a separately qualified full `make ci` run.
 
 ## Timing and limits
 

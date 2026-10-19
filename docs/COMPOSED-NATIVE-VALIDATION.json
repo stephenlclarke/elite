@@ -410,5 +410,27 @@
     "allOwnedProcessesClosed": true,
     "nilCallerSmoke": "No genuine nil-path operation/order risk found; retained original operations and prior evidence.",
     "limits": "History authentication passed at newsource; historical failures remain. Isolatedsecurityscene excludes ambientcombat; no productflight/unattendedcombatsurvival/fullCI/coveragepercentage/sanitizer/leak/release claim."
+  },
+  "finalShipRendererRefresh": {
+    "sourceCommit": "fd6fa2bea5eca2dbcb5868e3948e774b9a13bbbc",
+    "status": "PASS actual maintained make ships + ships-check + independent4104frame qualification",
+    "makeShipsExitCode": 0,
+    "shipsCheckExitCode": 0,
+    "shipCount": 171,
+    "decodedFrames": 4104,
+    "changedGeneratedPaths": [
+      "docs/ships/manifest.json"
+    ],
+    "outputBytesChanged": 0,
+    "referenceDocumentsChanged": false,
+    "commandSeconds": 65.19740862492472,
+    "supervisedSeconds": 65.46329891704954,
+    "allOwnedProcessesClosed": true,
+    "protectedInputsUnchanged": true,
+    "generatedManifestSHA256": "1dc4ce9ddd9f82569778a761fba954f56ce6672190e458cc13cf0d1e8072b2d4",
+    "proofSHA256": "3fbea731a217cb4bd686c3ca464eeb59904fb0cbd30d95ab8f1d7cad4d853244",
+    "qualificationSHA256": "9495456c1cf16409cc6cdffd0b3267fc54c38dd5656926745b444d1b90ef9775",
+    "processObservationLimit": "Owned Swift process initially observed during exec transition; final renderer executable/argv not captured. No inferred renderer PID or argument count. Actual make ships completion log and 171 generator outputs independently qualify renderer execution.",
+    "limits": "Maintainedgenuine renderer result only; finalfullCI/percentage/sanitizer/leak/release acceptance separate."
   }
 }
