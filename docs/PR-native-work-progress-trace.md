@@ -20,4 +20,4 @@ The physical-time pair distinguishes a clock that advanced from a refused or ina
 
 The executor may close its one allocated diagnostic as soon as both first-release markers are retained, using its verified owned-process supervisor and a maximum of 150 seconds. The test never short-circuits its original loops, assertions or save/reload sequence. Such supervisor termination remains partial diagnostic evidence without a test terminal or pass. No additional runtime/compiler job was performed by this author.
 
-A separate temporary debug-only [existing-result sweep diagnostic](PR-native-work-sweep-result-trace.md) uses the same opt-in flag during the next allocated investigation. Its first-completion marker is the supervisor stop condition; it adds bounded per-step failure records without changing this test's checkpoint count or behavior.
+The temporary debug-only [existing-result sweep diagnostic](PR-native-work-sweep-result-trace.md) was removed by the [visible-approach repair](PR-work-visible-approach.md) after run 539 retained the actual failure. The opt-in test checkpoint trace remains available; it does not evaluate or log additional production sweeps.

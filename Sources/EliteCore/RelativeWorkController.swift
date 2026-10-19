@@ -156,13 +156,18 @@ public struct RelativeWorkController: Sendable {
   private var stableDuration = 0.0
   private var toolSelected = false
   private var completionAnnounced = false
+  private let approachDirection: Vector3?
 
+  /// An acquired visible ray can differ from an oblique face's geometric normal.
+  /// This target-local direction is steering intent; every motion still needs validation.
   public init(
-    parent: ActorIdentity, wreck: WreckIdentity? = nil, category: SalvageTargetCategory
+    parent: ActorIdentity, wreck: WreckIdentity? = nil, category: SalvageTargetCategory,
+    approachDirection: Vector3? = nil
   ) {
     self.parent = parent
     self.wreck = wreck
     self.category = category
+    self.approachDirection = approachDirection
   }
 
   public mutating func step(
@@ -181,7 +186,12 @@ public struct RelativeWorkController: Sendable {
       return inactive(.blocked(.invalidInput), input: input)
     }
     let clearance = max(120, 2 * input.playerRadius)
-    let normal = target.pose.orientation.apply(target.surfaceNormal.unit)
+    let localNormal = target.surfaceNormal.unit
+    let approach = approachDirection?.unit ?? localNormal
+    guard Self.finite(approach), approach.length > 1e-9, approach.dot(localNormal) > 0 else {
+      return inactive(.blocked(.invalidInput), input: input)
+    }
+    let normal = target.pose.orientation.apply(approach)
     let surface = target.pose.systemPoint(target.surfacePoint)
     let desired = Self.facing(normal: normal, target: target.pose.orientation)
     var offset =
