@@ -76,3 +76,7 @@ Record Root-declared single-Peregrine120m maximum-extent project estimate under 
 ## Fresh causal repair and bounded native loss hooks
 
 Attach the bounded760 inspection report and Root assignment for fresha9fd7e60 Director-only acceptance/pipeline repair, with failed helper chains excluded and default-stack owner PASS/independent review still required. Update MBA05 to eleven files solely for two existing Game escape/fatal loss hooks, same candidate/writer, real proof/tombstone/payload clearing/no payment or restock, focused rollback units. Changed Markdown/whitespace checks only; no G1 source/build/diagnostic/runtime job or readiness claim.
+
+## Frozen F01 independent source review
+
+Record exact7f F01 freeze, proposed9-case plan and completed independent source review with one P1 current-save identity finding. Owned original geometry/specification checks pass; owner correction/re-freeze/re-review and actual units remain pending. Document per-frame100k-face rendering measurement as a playable gate, with MC1 priority and no new executor/media claim. Three Markdown files checked only.

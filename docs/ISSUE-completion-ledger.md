@@ -57,3 +57,7 @@ SH025 has no authored physical dimensions/coordinate units. The bounded startup 
 ## Fresh causal repair and bounded native loss hooks
 
 Existing760 binary evidence points to cumulative ancestor stack pressure and sequential Game buffers in the event wrapper, rather than proving the freight callee itself is the cause. Preserve failed branches and track only the newly granted minimal Director repair. MBA05 also needs its two real native loss hooks to avoid persistent sample custody after escape/death.
+
+## Frozen F01 independent source review
+
+Frozen F01 source changes an optional decoded ship-ID fallback, which could change an existing current-format saved hull on Continue. Track that P1 and the pending one-revision owner fix; reviewed source/asset checks do not establish runtime or startup frame performance.
