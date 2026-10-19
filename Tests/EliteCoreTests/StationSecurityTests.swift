@@ -254,3 +254,87 @@ struct StationSecurityTests {
     #expect(!security.dockingPermission(for: context.player.identity, context: context).allowed)
   }
 }
+
+extension StationSecurityTests {
+  @Test(arguments: [
+    "current", "wanted-player", "outside-zone", "report-outside-zone", "foreign-source",
+    "unjoined", "stale-visit", "dead-source", "old-report", "unreported",
+  ])
+  func anarchyStationDefendsOnlyAnActuallyReportedCurrentCleanVisitor(condition: String) {
+    let player = crimeTestActor(
+      1, position: .init(0, 0, condition == "outside-zone" ? 1201 : 500), role: nil,
+      legal: .init(value: condition == "wanted-player" ? 1 : 0))
+    let offender = crimeTestActor(
+      2, position: .init(300, 0, 800), legal: .init(value: 8),
+      visit: condition == "stale-visit" ? 2 : 1,
+      intention: .engage(player.identity), energy: condition == "dead-source" ? 0 : 100)
+    var security = StationSecurity()
+    if condition != "unreported" {
+      security.receive(
+        .init(
+          incidentID: 1,
+          offender: condition == "foreign-source"
+            ? ActorIdentity(system: .init(galaxy: 0, system: 8), visit: 1, entity: 2)
+            : offender.identity,
+          victim: player.identity, kind: .assault, physicalTime: 0,
+          position: condition == "report-outside-zone" ? .init(0, 0, 1201) : player.position))
+    }
+    let context = crimeTestContext(
+      condition == "old-report" ? 30 : 0.1, player: player,
+      actors: condition == "unjoined" ? [] : [offender], government: 0)
+    let plan = security.advance(context: context)
+    let requests = plan.encounters.batches.flatMap(\.requests)
+    #expect(requests.count == (condition == "current" ? 2 : 0))
+    #expect(requests.allSatisfy { $0.population == .police && $0.priority == .police })
+    #expect(!plan.encounters.intents.contains { $0.action == .engage(player.identity) })
+    // A refused wave keeps exactly its queued identities; reads cannot mint reinforcements.
+    let repeated = security.advance(context: context)
+    #expect(
+      repeated.encounters.batches.flatMap(\.requests).map(\.identity) == requests.map(\.identity))
+  }
+}
+
+extension StationSecurityTests {
+  @Test func actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource() throws {
+    var game = Game(executive: false)
+    game.commander.system = 27
+    game.selectedSystem = 27
+    game.screen = .status
+    try #require(game.currentSystem.government == 0 && game.commander.legal == 0)
+    game.launch()
+    game.speed = 0
+    let station = try #require(game.commander.flightSimulation.anchors?.station)
+    NativePagedSalvageFixture.moveObserver(
+      &game, to: .init(position: station.position + .init(0, 0, -1000)))
+    let id = game.nextBodyID
+    game.nextBodyID += 1
+    game.bodies.append(.init(id: id, hull: .cobra, position: .init(100, 0, -500), hostile: true))
+    game.ensurePhysicalActors()
+    let source = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
+    let player = try #require(game.commander.flightSimulation.player)
+    let shields = game.frontShield + game.rearShield
+    game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+    try #require(game.frontShield + game.rearShield < shields)
+    let observed = try #require(game.gameplayContext())
+    try #require(
+      game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: source, against: player, context: observed))
+    let response = game.commander.stationSecurity.advance(context: observed)
+    try #require(response.encounters.batches.flatMap(\.requests).count == 2)
+    let receipts = game.admitEncounterPlan(response.encounters)
+    let officers = Set(receipts.compactMap(\.actor))
+    try #require(officers.count == 2 && receipts.allSatisfy { $0.refusal == nil })
+    game.commander.stationSecurity.acknowledge(receipts: receipts)
+    let current = try #require(game.gameplayContext())
+    let pursuit = game.commander.stationSecurity.advance(context: current)
+    for actor in officers {
+      let body = try #require(game.bodies.first { $0.physical?.identity == actor })
+      #expect(body.hull == .viper && body.physical?.npc?.role == .police)
+      #expect(body.energy > 0 && body.physical?.npc?.resources?.valid == true)
+      #expect(
+        pursuit.encounters.intents.contains { $0.actor == actor && $0.action == .engage(source) })
+    }
+    #expect(game.commander.legal == 0 && !game.docked)
+    #expect(!pursuit.encounters.intents.contains { $0.action == .engage(player) })
+  }
+}
