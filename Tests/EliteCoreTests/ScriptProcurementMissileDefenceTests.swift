@@ -157,15 +157,20 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
   try #require(game.bodies[emitterIndex].ecmEnabled)
   game.laserHeat = 246.4
   game = try GameRuntime.prepareNativeSaveState(game).game
+  StationDefenceRefusalObservation.enable(&game)
   let target = try #require(game.bodies.first { $0.id == bodyID }?.physical?.identity)
   let emitter = try #require(game.bodies.first { $0.id == emitterID }?.physical?.identity)
   // Independent value-copy control proves this boundary can actually launch with ECM inactive.
   let controlSave = fixture.root.appendingPathComponent("control/commander.json")
   let control = GameRuntime(game: game, saveURL: controlSave)
   let controlFacts = await control.procurementPreflightFacts()
+  StationDefenceRefusalObservation.emit(
+    game, phase: "procurement-control-before", facts: controlFacts)
   let controlBudget = try await control.procurementMissileFallback(
     expected: controlFacts, budget: .init())
   let launched = await control.snapshot()
+  StationDefenceRefusalObservation.emit(
+    launched, phase: "procurement-control-after", facts: controlFacts, budget: controlBudget)
   try #require(
     launched.commander.missiles == 2 && controlBudget.missileDefence.attempted.count == 1)
   try #require(FileManager.default.fileExists(atPath: controlSave.path))
@@ -175,6 +180,7 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)
   let before = await runtime.snapshot()
   let facts = await runtime.procurementPreflightFacts()
+  StationDefenceRefusalObservation.emit(before, phase: "procurement-active-before", facts: facts)
   let otherwiseRequested = ScriptProcurementMissilePolicy.requestsFallback(
     facts, steps: 0, pulse: before.commander.laser(on: .front) == .pulse,
     heat: before.laserHeat, cooldown: before.missileCooldown, rounds: before.commander.missiles,
@@ -183,6 +189,8 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
   try #require(before.commander.missiles == 3 && facts.threat?.identity == target)
   let budget = try await runtime.procurementMissileFallback(expected: facts, budget: .init())
   let after = await runtime.snapshot()
+  StationDefenceRefusalObservation.emit(
+    after, phase: "procurement-active-after", facts: facts, budget: budget)
   #expect(after.commander == before.commander && after.bodies == before.bodies)
   #expect(after.energy == before.energy && after.frontShield == before.frontShield)
   #expect(after.rearShield == before.rearShield && after.nextBodyID == before.nextBodyID)
