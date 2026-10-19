@@ -384,10 +384,12 @@ final class PreparedStationTransfers {
   @inline(never)
   fileprivate init?(game: borrowing Game, proofs: [StationContactTransfer]) {
     guard !proofs.isEmpty, proofs.count <= 2,
-      Set(proofs.map(\.station)).count == proofs.count,
-      proofs.allSatisfy({ game.stationTransferCanCommit($0) }),
-      var staged = game.commander.nativeStations
+      Set(proofs.map(\.station)).count == proofs.count
     else { return nil }
+    for proof in proofs {
+      guard game.stationTransferCanCommit(proof) else { return nil }
+    }
+    guard var staged = game.commander.nativeStations else { return nil }
     var bodyEffects: [(index: Int, energy: Double, velocity: Vector3)] = []
     var originalResource: ScriptStationResource?
     for proof in proofs {
