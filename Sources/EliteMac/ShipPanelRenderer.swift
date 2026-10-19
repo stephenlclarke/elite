@@ -220,7 +220,7 @@ private final class ShipPanelGPU {
     self.compiled = compiled
     self.queue = queue
     self.colourSpace = colourSpace
-    let positions = compiled.device.getDefaultSamplePositions(8)
+    let positions = compiled.device.getDefaultSamplePositions(sampleCount: 8)
     samplePositions = positions.map { SIMD2($0.x, $0.y) }
   }
 
