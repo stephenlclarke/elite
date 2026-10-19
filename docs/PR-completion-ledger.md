@@ -148,3 +148,7 @@ Record Root's G2 source-only assignment and delivered smallest panel-colour reus
 ## Approved supporting panel-colour optimization
 
 Advance G2's exact one-local panelColour reuse from source proposal to authorized in-development authoring, limited to one product hunk, one focused parity test and paired notes. Owner focused PASS/independent review remain prerequisites; compiler follows MC1. No standalone optimized/native comparison, general cache/backend/new harness or smoothness claim; timing belongs with the next usable candidate. Scoped Markdown and whitespace checks only.
+
+## Actual787 failure and coherent projectile read repair
+
+Record actual787 zero completed/four UNKNOWN stack-failure result with exact proof/process/resource closure, retaining10 prior passed cases and no crash integration. Assign Root's bounded projectile validator plus adjacent restoration enumeration/fresh refetch borrowing fix to MC1 with788/789 validation after exact owner source/plan freeze. Routine compiler fixes stay owner-scoped, and Root review can overlap the build but precedes integration; no further preauthor/prebuild ACK or new diagnostic scope. G2 supporting compile remains after the MC1 batch. Scoped Markdown/whitespace checks only.
