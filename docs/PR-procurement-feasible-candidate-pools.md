@@ -1,0 +1,7 @@
+# test: separate full and filtered procurement candidate pools
+
+The original three-row fixture now explicitly checks that its original-world basic-reach BFS pool is entirely feasible, while retaining every current-content digest, frozen seed, draw, replay, selection and deadline assertion. A separate three-row case initializes a fresh controlled Avenor shop and buys Intermediate then Advanced navigation plus two fuel-storage units through the real public purchase path. It checks the exact 160,000-tenths debit, four paid receipts, unchanged owner/hull/current fuel/cargo, first reach 7 LY and later full-tank reach 21 LY. No equipment is granted and no journey is claimed.
+
+The broader actual native BFS pool must contain both feasible and over-deadline paths for each row. An independent distance/calendar sum builds its stable filtered pool before the frozen draw is mapped to a route. Generator revision, validity, deterministic replay, selected index/path and strict deadline remain checked. No seed or favourable route is searched for; the existing empty-pool refusal and deadline-boundary regressions remain unchanged.
+
+Only strict Swift formatting, Markdown lint and whitespace checks run on this author branch. ZERO compiler, tests, native/UI, profiler or CI jobs run. The broader-pool preconditions and corrected runtime acceptance are authored expectations pending G1's coherent execution with the separate material crash repair. No production or mission-manifest source changes. See ISSUE-procurement-feasible-candidate-pools.md.
