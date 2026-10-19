@@ -853,7 +853,7 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
 {
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(
-    &game, position: .init(0, -20, 600), sequence: 908, facingPlayer: true)
+    &game, position: .init(0, 0, 180), sequence: 908, facingPlayer: true)
   let shield = game.frontShield
   let attackContext = try #require(game.gameplayContext())
   let playerActor = try #require(game.commander.flightSimulation.player)
@@ -864,6 +864,12 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
     Comment(
       rawValue: game.frontShield < shield
         ? "" : "beforeShield=\(shield) " + stationAutoPressureFailureFacts(game, attacker: id)))
+  // AUTO fires before this frame rotates the view: prove its current fixed return ray too.
+  let returnContact = try game.nearestMissionCollision(
+    from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
+    excludingBodyIDs: [], includePlayer: false)
+  let returnTarget = returnContact?.hit.target
+  try #require(returnTarget == .body(id))
   let before = game
   let victim = try #require(before.bodies.first { $0.id == id })
   let runtime = GameRuntime(game: game)
