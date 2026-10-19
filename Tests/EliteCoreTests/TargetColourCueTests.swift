@@ -67,9 +67,22 @@ struct TargetColourCueTests {
       let lines = glowLines(cueFrame(game))
       #expect(!lines.isEmpty && lines.allSatisfy { $0.ink == .orange })
     }
-    for pod in game.bodies where pod.physical?.empCrewPod != nil {
-      #expect(game.targetColourCue(for: pod) == .ordinary)
-      #expect(game.empTargetStatus(pod) == "OCCUPIED ESCAPE POD - PROTECTED")
+    let context = try #require(game.gameplayContext())
+    try #require(game.hasNativeRescueTools)
+    let pods = game.bodies.filter { $0.physical?.empCrewPod != nil }
+    try #require(!pods.isEmpty)
+    for pod in pods {
+      let person = try #require(pod.physical?.empCrewPod)
+      let actor = try #require(pod.physical?.identity)
+      let facts = try #require(game.nativePodFacts(pod, context: context))
+      #expect(person.source == source && facts.person == person && facts.fits)
+      #expect(pod.gameplayProtectionReasons == .empCrewPod)
+      #expect(context.protection.protectedActors.contains(actor))
+      for style in ShipDisplayStyle.allCases {
+        game.commander.shipDisplayStyle = style
+        #expect(game.targetColourCue(for: pod) == .recoverable)
+        #expect(game.empTargetStatus(pod) == "OCCUPIED POD - SINGLE 1T RESCUE UNIT")
+      }
     }
   }
 
