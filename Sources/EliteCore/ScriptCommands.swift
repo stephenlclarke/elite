@@ -217,6 +217,21 @@ extension Game {
     state: inout ScriptInstance, candidate: inout Commander,
     procurementAdmission: ScriptProcurementAdmission? = nil
   ) throws {
+    try validateScriptMissionNavigationFinish(outcome, pack: pack, state: &state)
+    try validateScriptMissionFreightFinish(pack: pack, state: &state)
+    try validateScriptMissionProcurementFinish(
+      outcome, pack: pack, state: &state, candidate: &candidate,
+      procurementAdmission: procurementAdmission)
+    try validateScriptMissionFinishRequirements(
+      outcome, pack: pack, state: &state, candidate: &candidate)
+    try settleScriptMissionFinish(outcome, pack: pack, state: &state, candidate: &candidate)
+  }
+
+  // Keep branch-specific full receipts and objective captures out of the shared finish frame.
+  @inline(never)
+  private func validateScriptMissionNavigationFinish(
+    _ outcome: ScriptOutcome, pack: ScriptPack, state: inout ScriptInstance
+  ) throws {
     if pack.manifest.capabilities.contains(ScriptNavigationTradeContent.capability)
       || state.savedNavigationTrade != nil
     {
@@ -230,11 +245,25 @@ extension Game {
           "Training completion requires its actual native trade and reception receipts.")
       }
     }
+  }
+
+  @inline(never)
+  private func validateScriptMissionFreightFinish(
+    pack: ScriptPack, state: inout ScriptInstance
+  ) throws {
     guard pack.manifest.freight == nil, state.contract?.offer.freightPlan == nil,
       state.savedOwnedCargo == nil
     else {
       throw MissionPackError("Supplied freight finishes only through native custody transitions.")
     }
+  }
+
+  @inline(never)
+  private func validateScriptMissionProcurementFinish(
+    _ outcome: ScriptOutcome, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander,
+    procurementAdmission: ScriptProcurementAdmission?
+  ) throws {
     if pack.manifest.procurement != nil
       || state.contract.map({ ScriptProcurementPlan.isMarked($0.offer.parameters) }) == true
     {
@@ -246,6 +275,13 @@ extension Game {
           "Procurement completion requires a current native lot or abandon confirmation.")
       }
     }
+  }
+
+  @inline(never)
+  private func validateScriptMissionFinishRequirements(
+    _ outcome: ScriptOutcome, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
     guard pack.manifest.capabilities.contains("story-v2") else {
       throw MissionPackError("Command requires declared story-v2")
     }
@@ -304,6 +340,13 @@ extension Game {
       throw MissionPackError(
         "This contract's deadline has passed; use its declared failure handoff.")
     }
+  }
+
+  @inline(never)
+  private func settleScriptMissionFinish(
+    _ outcome: ScriptOutcome, pack: ScriptPack,
+    state: inout ScriptInstance, candidate: inout Commander
+  ) throws {
     if outcome == .complete {
       state.receiptJoins = try scriptReceiptJoins(
         pack, stage: .acceptance, existing: state.receiptJoins ?? [:], parent: state)
