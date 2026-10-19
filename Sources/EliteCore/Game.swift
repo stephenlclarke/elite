@@ -1,5 +1,29 @@
 import Foundation
 
+/// Synchronous dock preparation owns its rollback values off the active call stack.
+private final class DockPersistenceSnapshot {
+  private let commander: Commander
+  private let work: NativeSalvageHotWork?
+  private let wreckMotion: [WreckIdentity: NativeSalvageWreckObservation]
+  private let lotMotion: [SalvageLotIdentity: NativeSalvageMotion]
+
+  @inline(never)
+  init(_ game: borrowing Game) {
+    commander = game.commander
+    work = game.nativeSalvageWork
+    wreckMotion = game.nativeSalvageWreckMotion
+    lotMotion = game.nativeSalvageMotion
+  }
+
+  @inline(never)
+  func restore(to game: inout Game) {
+    game.commander = commander
+    game.nativeSalvageWork = work
+    game.nativeSalvageWreckMotion = wreckMotion
+    game.nativeSalvageMotion = lotMotion
+  }
+}
+
 public enum Screen: String, Codable, Sendable, CaseIterable {
   case demo, title, front, rear, left, right, chart, shortChart, system, market, status, inventory,
     equipment, buy, sell, secret, help, mission, handoff, gallery, navigation, showroom, rumour,
@@ -1292,18 +1316,10 @@ public struct Game: Sendable {
   /// Scene snapshots commit together; settled physical deaths precede this boundary.
   @inline(never)
   private mutating func prepareDockPersistence() -> Bool {
-    let original = commander
-    let work = nativeSalvageWork
-    let wreckMotion = nativeSalvageWreckMotion
-    let lotMotion = nativeSalvageMotion
+    let snapshot = DockPersistenceSnapshot(self)
     var committed = false
     defer {
-      if !committed {
-        commander = original
-        nativeSalvageWork = work
-        nativeSalvageWreckMotion = wreckMotion
-        nativeSalvageMotion = lotMotion
-      }
+      if !committed { snapshot.restore(to: &self) }
     }
     guard persistNPCStates().isEmpty else {
       notify("DOCKING DEFERRED: NPC STATE UNAVAILABLE")
