@@ -221,8 +221,8 @@ extension Game {
     return nil
   }
 
-  /// Static admission only: a sphere outside the complete rigid source box clears every
-  /// station triangle. All authority and pose checks precede either geometric fast path.
+  /// Static admission only: transform every source-box corner with the actual accepted
+  /// model basis. The resulting world box encloses the full station even for tolerated scale.
   func missionActorClearsNativeStation(center: Vector3, radius: Double, body: SpaceBody) -> Bool {
     guard center.finite, center.length.isFinite, radius.isFinite, radius > 0,
       let identity = body.nativeStationIdentity, nativeStationBodyIsCurrent(body),
@@ -230,27 +230,37 @@ extension Game {
       let source = NativeStationSource.binding(for: identity), body.energy == saved.energy,
       world.bodyRigidPoseIsConsistent(body, flight: commander.flightSimulation)
     else { return false }
-    let geometry = source.geometry
-    let minimum = geometry.bounds.minimum
-    let maximum = geometry.bounds.maximum
+    let bounds = source.geometry.bounds
+    let minimum = bounds.minimum
+    let maximum = bounds.maximum
     let pose = modelPose(of: body)
     guard minimum.finite, maximum.finite,
       minimum.x < maximum.x, minimum.y < maximum.y, minimum.z < maximum.z,
-      pose.position.finite, pose.orientation.validRotation,
-      let otherRadius = geometry.mesh.vertices.map(\.length).max(),
-      otherRadius.isFinite, otherRadius > 0
+      pose.position.finite, pose.orientation.validRotation
     else { return false }
-    let distance = (center - pose.position).length
-    guard distance.isFinite else { return false }
-    if distance >= radius + otherRadius + 64 { return true }
-    let local = pose.shipPoint(center)
-    guard local.finite, local.length.isFinite else { return false }
+    var worldMinimum = pose.systemPoint(minimum)
+    var worldMaximum = worldMinimum
+    for x in [minimum.x, maximum.x] {
+      for y in [minimum.y, maximum.y] {
+        for z in [minimum.z, maximum.z] {
+          let point = pose.systemPoint(.init(x, y, z))
+          guard point.finite, point.length.isFinite else { return false }
+          worldMinimum = .init(
+            min(worldMinimum.x, point.x), min(worldMinimum.y, point.y), min(worldMinimum.z, point.z)
+          )
+          worldMaximum = .init(
+            max(worldMaximum.x, point.x), max(worldMaximum.y, point.y), max(worldMaximum.z, point.z)
+          )
+        }
+      }
+    }
     let closest = Vector3(
-      max(minimum.x, min(maximum.x, local.x)),
-      max(minimum.y, min(maximum.y, local.y)),
-      max(minimum.z, min(maximum.z, local.z)))
-    let clearance = (local - closest).length - radius
-    let numerical = 1e-8 * max(1, otherRadius + radius + center.length + pose.position.length)
+      max(worldMinimum.x, min(worldMaximum.x, center.x)),
+      max(worldMinimum.y, min(worldMaximum.y, center.y)),
+      max(worldMinimum.z, min(worldMaximum.z, center.z)))
+    let clearance = (center - closest).length - radius
+    let numerical =
+      1e-8 * max(1, radius + center.length + worldMinimum.length + worldMaximum.length)
     return clearance.isFinite && numerical.isFinite && clearance - 64 > numerical
   }
 
