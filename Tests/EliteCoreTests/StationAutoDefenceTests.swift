@@ -753,6 +753,38 @@ func stationAutoInterruptionRetainsNativeEntrySafetyWithoutStoppingClearance(con
       && response.roll == baseline.roll)
 }
 
+// Observe the exact fixed-mount query only when an existing pressure prerequisite fails.
+// Keep ambient traffic and all production admission and obstruction rules intact.
+@inline(never)
+private func stationAutoPressureFailureFacts(_ game: borrowing Game, attacker id: Int) -> String {
+  guard let body = game.bodies.first(where: { $0.id == id }) else {
+    return "attacker=\(id) missing"
+  }
+  let direction = body.orientation.z.unit
+  let query: String
+  do {
+    if let contact = try game.nearestMissionCollision(
+      from: body.position, direction: direction, range: 1500, radius: 0,
+      excludingBodyIDs: [id], includePlayer: true)
+    {
+      let selected = contact.selectedTargetBody
+      query =
+        "target=\(contact.hit.target) point=\(contact.hit.point)"
+        + " selectedHull=\(String(describing: selected?.hull))"
+        + " selectedPosition=\(String(describing: selected?.position))"
+    } else {
+      query = "no native contact"
+    }
+  } catch {
+    query = "native query refused: \(error)"
+  }
+  return "attacker=\(id) position=\(body.position) front=\(direction)"
+    + " distance=\(body.position.length) acquisitionDot=\(direction.dot((body.position * -1).unit))"
+    + " energy=\(body.energy) cooldown=\(String(describing: body.physical?.laserCooldown))"
+    + " canFire=\(body.physical?.npc?.resources?.canFire ?? true) EMP=\(game.isEMPDisabled(body))"
+    + " frontShield=\(game.frontShield) nativeRay=[\(query)]"
+}
+
 @Test func stationAutoCurrentNativeFleeAssessesEveryAttackerAndUnknownOrdnanceStaysConservative()
   async throws
 {
@@ -770,9 +802,11 @@ func stationAutoInterruptionRetainsNativeEntrySafetyWithoutStoppingClearance(con
   let context = try #require(game.gameplayContext())
   for id in [first, second] {
     let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
+    let accepted = game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: actor, against: playerActor, context: context)
     try #require(
-      game.commander.crimeLedger.hasCurrentUnlawfulAttack(
-        from: actor, against: playerActor, context: context))
+      accepted,
+      Comment(rawValue: accepted ? "" : stationAutoPressureFailureFacts(game, attacker: id)))
   }
   var guidance = game.stationAutoGuidance(target: station)
   #expect(guidance?.hazard == .active)
@@ -810,7 +844,11 @@ func stationAutoInterruptionRetainsNativeEntrySafetyWithoutStoppingClearance(con
   let attackContext = try #require(game.gameplayContext())
   let playerActor = try #require(game.commander.flightSimulation.player)
   game.emitGameplayNPCBeam(bodyID: id, target: playerActor, context: attackContext)
-  try #require(game.frontShield < shield)
+  try #require(
+    game.frontShield < shield,
+    Comment(
+      rawValue: game.frontShield < shield
+        ? "" : "beforeShield=\(shield) " + stationAutoPressureFailureFacts(game, attacker: id)))
   let before = game
   let victim = try #require(before.bodies.first { $0.id == id })
   let runtime = GameRuntime(game: game)
