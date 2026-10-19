@@ -1223,7 +1223,7 @@ extension Game {
   private func validateRetainedMissionActorSources(
     _ sources: borrowing [MissionActorAdmissionSource]
   ) throws {
-    for source in sources { _ = try prepareMissionActorAdmission(source) }
+    for index in sources.indices { _ = try prepareMissionActorAdmission(sources[index]) }
   }
 
   /// Reprojects the same world actor after genuine native launch/arrival/camera travel.
