@@ -117,8 +117,13 @@ public struct ScriptNPCModel: Codable, Sendable {
   static func referenceValid(_ model: String) -> Bool {
     if model.hasPrefix("catalogue:") {
       let id = String(model.dropFirst(10))
-      return id.range(of: "^SH[0-9]{3}$", options: .regularExpression) != nil
-        && ShipCatalogue.ship(id) != nil
+      var bytes = id.utf8.makeIterator()
+      guard bytes.next() == 0x53, bytes.next() == 0x48,
+        let first = bytes.next(), let second = bytes.next(), let third = bytes.next(),
+        (48...57).contains(first), (48...57).contains(second), (48...57).contains(third),
+        bytes.next() == nil
+      else { return false }
+      return ShipCatalogue.ship(id) != nil
     }
     return model.hasPrefix("asset:") && PackValidation.localID(String(model.dropFirst(6)))
   }
