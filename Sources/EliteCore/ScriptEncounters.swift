@@ -284,17 +284,17 @@ extension Game {
   private func currentMissionActorAdmissionSourceValues() -> (
     instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
   ) {
-    commander.missionActorAdmissionSourceValues()
+    retainedMissionActorAdmissionSourceValues()
   }
 
   @inline(never)
   private func currentMissionActorAdmissionOwner(_ id: UUID) -> ScriptInstance? {
-    commander.scriptState.instances[id]
+    retainedMissionActorInstances[id]
   }
 
   @inline(never)
   private func currentMissionActorAdmissionWorldJob(_ id: UUID) -> ScriptWorldJob? {
-    commander.scriptState.worldJobs[id]
+    retainedMissionActorAdmissionWorldJob(id)
   }
 
   /// Rechecks a sealed source against actual installed authority without a caller snapshot.

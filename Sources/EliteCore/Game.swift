@@ -473,6 +473,34 @@ public struct Game: Sendable {
   ) -> [UUID: ScriptInstance] {
     commander.scriptState.instances
   }
+  func retainedMissionActorAdmissionSourceValues() -> (
+    instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
+  ) {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.retainedMissionActorAdmissionSourceValues(from: storage.baseAddress!.pointee)
+    }
+  }
+
+  private static func retainedMissionActorAdmissionSourceValues(
+    from commander: borrowing Commander
+  ) -> (
+    instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
+  ) {
+    let state = commander.scriptState
+    return (state.instances, state.geometry, commander.galaxy, commander.system)
+  }
+
+  func retainedMissionActorAdmissionWorldJob(_ id: UUID) -> ScriptWorldJob? {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.retainedMissionActorAdmissionWorldJob(id, from: storage.baseAddress!.pointee)
+    }
+  }
+
+  private static func retainedMissionActorAdmissionWorldJob(
+    _ id: UUID, from commander: borrowing Commander
+  ) -> ScriptWorldJob? {
+    commander.scriptState.worldJobs[id]
+  }
   var contractStation: ContractStationIdentity {
     commanderStorage.withUnsafeBufferPointer { storage in
       Self.contractStation(from: storage.baseAddress!.pointee)
