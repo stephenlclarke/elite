@@ -234,12 +234,13 @@ func procurementV2SelectsFromStableFeasibleCandidatesBeforeItsFrozenDraw(row: In
   #expect(plan.calendarLowerBoundSeconds < plan.duration)
   #expect(
     fixture.pack.manifest.version == "1.1.0"
-      && fixture.pack.digest == "bc8362634b96ee8b5326e29980a8dbac0920fecee9df3114c0be1b8061074a0b")
-  #expect(plan.seedHex == "9d9cc806d16f18be" && plan.initialState == 3_513_718_974)
+      && fixture.pack.digest == "fde9bcab8eaec8c08076220ec921c8ea0b862e939b0e137e5d521b93d402b6b3")
+  // Exact current content includes the Avenor trial declaration; this policy origin stays zero.
+  #expect(plan.seedHex == "6db0d6917fabc6b1" && plan.initialState == 2_141_963_953)
   #expect(
     plan.draws == [
-      2_103_505_346, 138_972_590, 643_132_240, 3_973_773_103, 4_124_477_488, 3_200_504_152,
-    ] && plan.finalState == 3_200_504_152)
+      3_904_980_207, 3_418_643_681, 1_263_781_229, 1_278_340_818, 1_285_116_615, 3_203_511_623,
+    ] && plan.finalState == 3_203_511_623)
 }
 
 /// Numeric feasibility is strict; actual handoff at the deadline remains inclusive.

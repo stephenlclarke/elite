@@ -128,12 +128,7 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
 @Test func procurementMissileActiveNativeECMDefersWithoutSpendingOriginalStock() async throws {
   let fixture = try ScriptProcurementFixture()
   defer { fixture.clean() }
-  var game = Game(executive: false)
-  game.screen = .status
-  game.commander.system = 0
-  game.selectedSystem = 0
-  game.market = MarketItem.at(game.currentSystem)
-  game.commander.credits = 100000
+  var game = try ScriptProcurementFixture.freshG03FlightGame()
   try game.prepareG03FlightEquipment()
   try ScriptProcurementFixture.requirePaidG03Preparation(game)
   game.ensureMissionCalendar()

@@ -66,6 +66,8 @@ import Testing
   let trial = await runtime.snapshot()
   #expect(trial.isMissionTrial && !trial.docked && trial.screen.isFlight)
   #expect(trial.trialSeed == 42 && fixture.pack.manifest.trial?.credits == 100000)
+  #expect(trial.currentSystem.original?.key == "G01-S007")
+  #expect(trial.commander.galaxy == 0 && trial.commander.system == 7)
   try ScriptProcurementFixture.requirePaidG03Preparation(trial)
   #expect(trial.commander.cargo == before.commander.cargo)
   #expect(trial.commander.scriptState.instances.isEmpty && trial.commander.contracts.boards.isEmpty)
