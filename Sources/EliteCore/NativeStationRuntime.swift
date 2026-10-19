@@ -73,8 +73,12 @@ extension Game {
     if let identity = bodies[index].nativeStationIdentity,
       let source = NativeStationSource.binding(for: identity)
     {
+      guard
+        let time = commander.nativeStations?.motionTime(
+          for: .rrs(identity), at: commander.flightSimulation.physicalTime)
+      else { return }
       bodies[index].rotation =
-        (commander.flightSimulation.physicalTime * source.rotationRate)
+        (time * source.rotationRate)
         .truncatingRemainder(dividingBy: 2 * .pi)
     } else {
       bodies[index].rotation += delta * bodies[index].rotationRate
@@ -141,7 +145,7 @@ extension Game {
       guard let source = NativeStationSource.binding(for: record.identity),
         let saved = world.pose(for: record.identity),
         source.geometry.position(in: anchors) == saved.position,
-        saved.orientation(at: flightBefore.physicalTime) != nil,
+        world.currentOrientation(for: saved.station, at: flightBefore.physicalTime) != nil,
         let position = world.currentPosition(
           for: .rrs(record.identity), at: flightBefore.physicalTime)
       else { throw NativeStationRuntimeError.invalidSource }
@@ -183,8 +187,10 @@ extension Game {
       var body = SpaceBody(id: id, hull: .station, position: flight.pose.shipPoint(currentPosition))
       body.nativeStationIdentity = record.identity
       body.orientation = saved.orientation.relative(to: flight.pose.orientation)
-      body.rotation = (flight.physicalTime * source.rotationRate).truncatingRemainder(
-        dividingBy: 2 * .pi)
+      guard let phase = world.motionTime(for: .rrs(record.identity), at: flight.physicalTime) else {
+        throw NativeStationRuntimeError.invalidState
+      }
+      body.rotation = (phase * source.rotationRate).truncatingRemainder(dividingBy: 2 * .pi)
       body.rotationRate = source.rotationRate
       body.energy = saved.energy
       body.missiles = 0
@@ -484,8 +490,9 @@ extension Game {
         let identity = body.nativeStationIdentity, let physical = body.physical,
         let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
-        let orientation = saved.orientation(at: flight.physicalTime),
-        let oldOrientation = saved.orientation(at: max(0, flight.physicalTime - delta)),
+        let orientation = world.currentOrientation(for: saved.station, at: flight.physicalTime),
+        let oldOrientation = world.currentOrientation(
+          for: saved.station, at: max(0, flight.physicalTime - delta)),
         let oldPosition = world.currentPosition(
           for: .rrs(identity), at: max(0, flight.physicalTime - delta)),
         let currentPosition = world.currentPosition(for: .rrs(identity), at: flight.physicalTime)
@@ -641,8 +648,9 @@ extension Game {
     for body in bodies where body.nativeStationIdentity != nil && nativeStationBodyIsCurrent(body) {
       guard let identity = body.nativeStationIdentity, let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
-        let end = saved.orientation(at: flight.physicalTime),
-        let start = saved.orientation(at: max(0, flight.physicalTime - delta)),
+        let end = world.currentOrientation(for: saved.station, at: flight.physicalTime),
+        let start = world.currentOrientation(
+          for: saved.station, at: max(0, flight.physicalTime - delta)),
         let oldPosition = world.currentPosition(
           for: .rrs(identity), at: max(0, flight.physicalTime - delta)),
         let currentPosition = world.currentPosition(for: .rrs(identity), at: flight.physicalTime)
@@ -841,7 +849,8 @@ extension Game {
       record.tombstone == nil, record.revision == receipt.lifecycleRevision,
       receipt.commanderOwner == commander.equipmentOwnerID,
       let source = NativeStationSource.binding(for: receipt.station),
-      let orientation = saved.orientation(at: commander.flightSimulation.physicalTime),
+      let orientation = world.currentOrientation(
+        for: saved.station, at: commander.flightSimulation.physicalTime),
       let exit = source.geometry.exit(for: commander.playerMesh)
     else { throw NativeStationRuntimeError.unsafeExit }
     guard
@@ -931,7 +940,7 @@ extension NativeStationWorld {
       body.rotationRate == source.rotationRate,
       let currentPosition = currentPosition(for: .rrs(identity), at: flight.physicalTime),
       (flight.pose.systemPoint(body.position) - currentPosition).length < 1e-5,
-      let orientation = saved.orientation(at: flight.physicalTime)
+      let orientation = currentOrientation(for: saved.station, at: flight.physicalTime)
     else { return false }
     return [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy {
       (flight.pose.orientation.apply(body.modelVector($0)) - orientation.apply($0)).length < 1e-5

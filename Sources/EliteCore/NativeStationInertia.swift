@@ -15,6 +15,13 @@ enum StationInertialIdentity: Hashable, Codable, Sendable {
 /// Separate from immutable source anchors. Only the live contact authority below writes
 /// displacement/momentum; coast projection never rewrites authored station geometry.
 struct NativeStationInertia: Equatable, Codable, Sendable {
+  private enum Segment: String, Codable, Sendable {
+    case impact, refusedStep
+  }
+  private let segment: Segment
+  private let refusedStepDuration: Double
+  let refusedMotionTime: Double
+  let refusedSteps: UInt64
   let station: StationInertialIdentity
   private(set) var displacement: Vector3
   private(set) var momentum: Vector3
@@ -41,24 +48,75 @@ struct NativeStationInertia: Equatable, Codable, Sendable {
       previousVelocity.length <= AsteroidImpactPolicy.maximumSpeed,
       physicalTime.isFinite, (0...1e12).contains(physicalTime),
       priorTime.isFinite, (0...physicalTime).contains(priorTime),
-      impactTime.isFinite, (priorTime...physicalTime).contains(impactTime),
-      contacts > 0, contacts < UInt64(Int64.max),
-      contacts != 1
-        || (priorDisplacement == .init(0, 0, 0)
-          && priorMomentum == .init(0, 0, 0) && priorTime == 0)
+      impactTime.isFinite, (0...physicalTime).contains(impactTime),
+      contacts < UInt64(Int64.max),
+      refusedMotionTime.isFinite, (0...physicalTime).contains(refusedMotionTime),
+      refusedSteps < UInt64(Int64.max),
+      (refusedSteps == 0) == (refusedMotionTime == 0)
     else { return false }
-    let expected = impactOffset + velocity * (physicalTime - impactTime)
-    return expected.finite && expected.length.isFinite && (displacement - expected).length < 1e-5
+    switch segment {
+    case .impact:
+      guard contacts > 0, refusedStepDuration == 0, impactTime >= priorTime,
+        refusedMotionTime <= priorTime,
+        contacts != 1
+          || (priorDisplacement == .init(0, 0, 0)
+            && priorMomentum == .init(0, 0, 0) && (priorTime == 0 || refusedSteps > 0))
+      else { return false }
+      let expected = impactOffset + velocity * (physicalTime - impactTime)
+      return expected.finite && expected.length.isFinite && (displacement - expected).length < 1e-5
+    case .refusedStep:
+      if contacts == 0 {
+        guard impactTime == 0, momentum == .init(0, 0, 0),
+          priorMomentum == .init(0, 0, 0), displacement == .init(0, 0, 0),
+          priorDisplacement == .init(0, 0, 0)
+        else { return false }
+      }
+      // A refused integration retains motion, not elapsed displacement. The
+      // physical event clock still advances; no impulse or contact is invented.
+      return impactTime <= priorTime && physicalTime > priorTime
+        && refusedStepDuration.isFinite && refusedStepDuration > 0 && refusedStepDuration <= 0.1
+        && priorTime == physicalTime - refusedStepDuration
+        && refusedSteps > 0 && refusedMotionTime >= physicalTime - priorTime
+        && momentum == priorMomentum && displacement == priorDisplacement
+    }
   }
 
   /// Retain one actual pre-impact segment for this step's doorway and collision consumers.
   func offset(at time: Double) -> Vector3? {
     guard valid, time.isFinite, time >= priorTime else { return nil }
-    let value =
-      time >= impactTime
-      ? impactOffset + velocity * (time - impactTime)
-      : priorDisplacement + previousVelocity * (time - priorTime)
+    let value: Vector3
+    switch segment {
+    case .impact:
+      value =
+        time >= impactTime
+        ? impactOffset + velocity * (time - impactTime)
+        : priorDisplacement + previousVelocity * (time - priorTime)
+    case .refusedStep:
+      value = displacement + velocity * max(0, time - physicalTime)
+    }
     return value.finite && value.length.isFinite ? value : nil
+  }
+
+  /// RRS spin follows admitted movement time as well. A refused interval must
+  /// not rotate an unproved surface merely because the event clock advanced.
+  fileprivate func motionTime(at time: Double) -> Double? {
+    guard valid, time.isFinite, time >= priorTime else { return nil }
+    let value: Double
+    switch segment {
+    case .impact:
+      value = time - refusedMotionTime
+    case .refusedStep:
+      let previousRefusals = refusedMotionTime - (physicalTime - priorTime)
+      value = priorTime - previousRefusals + max(0, time - physicalTime)
+    }
+    return value.isFinite && value >= 0 ? value : nil
+  }
+
+  fileprivate func sweepMargin(from start: Double, to end: Double) -> Double {
+    let transition = segment == .impact ? impactTime : physicalTime
+    guard end > start, transition > start, transition < end else { return 0 }
+    let change = segment == .impact ? (velocity - previousVelocity).length : velocity.length
+    return change * (transition - start) * (end - transition) / (end - start)
   }
 
   fileprivate init?(
@@ -75,6 +133,10 @@ struct NativeStationInertia: Equatable, Codable, Sendable {
       proof.finalPosition.finite, sourcePosition.finite,
       (previous?.contacts ?? 0) < UInt64(Int64.max) - 1
     else { return nil }
+    segment = .impact
+    refusedStepDuration = 0
+    refusedMotionTime = previous?.refusedMotionTime ?? 0
+    refusedSteps = previous?.refusedSteps ?? 0
     station = proof.station
     priorDisplacement = previous?.displacement ?? .init(0, 0, 0)
     priorMomentum = oldMomentum
@@ -91,6 +153,47 @@ struct NativeStationInertia: Equatable, Codable, Sendable {
     else { return nil }
   }
 
+  fileprivate init?(
+    refusal: StationMotionRefusal, previous: NativeStationInertia?,
+    sourcePosition: Vector3
+  ) {
+    if previous == nil {
+      guard case .rrs = refusal.station else { return nil }
+    }
+    guard previous == nil || (previous?.valid == true && previous?.station == refusal.station),
+      refusal.fromTime.isFinite, refusal.toTime.isFinite,
+      refusal.fromTime >= (previous?.physicalTime ?? 0),
+      refusal.toTime > refusal.fromTime,
+      refusal.duration.isFinite, refusal.duration > 0, refusal.duration <= 0.1,
+      refusal.fromTime == refusal.toTime - refusal.duration,
+      (previous?.refusedSteps ?? 0) < UInt64(Int64.max) - 1
+    else { return nil }
+    let offset: Vector3
+    if let previous {
+      guard let retained = previous.offset(at: refusal.fromTime) else { return nil }
+      offset = retained
+    } else {
+      offset = .init(0, 0, 0)
+    }
+    let oldVelocity = previous?.velocity ?? .init(0, 0, 0)
+    guard (sourcePosition + offset - refusal.position).length < 1e-5,
+      (oldVelocity - refusal.velocity).length < 1e-7
+    else { return nil }
+    segment = .refusedStep
+    refusedStepDuration = refusal.duration
+    refusedMotionTime = (previous?.refusedMotionTime ?? 0) + (refusal.toTime - refusal.fromTime)
+    refusedSteps = (previous?.refusedSteps ?? 0) + 1
+    station = refusal.station
+    displacement = offset
+    momentum = previous?.momentum ?? .init(0, 0, 0)
+    physicalTime = refusal.toTime
+    contacts = previous?.contacts ?? 0
+    priorDisplacement = offset
+    priorMomentum = momentum
+    priorTime = refusal.fromTime
+    impactTime = previous?.impactTime ?? 0
+    guard valid else { return nil }
+  }
 }
 
 extension NativeStationWorld {
@@ -100,6 +203,20 @@ extension NativeStationWorld {
 
   func inertia(for station: StationInertialIdentity) -> NativeStationInertia? {
     stationInertia.first { $0.station == station }
+  }
+
+  func motionTime(for station: StationInertialIdentity, at time: Double) -> Double? {
+    guard time.isFinite, time >= 0 else { return nil }
+    guard let motion = inertia(for: station) else { return time }
+    return motion.motionTime(at: time)
+  }
+
+  func currentOrientation(for station: NativeStationIdentity, at time: Double) -> Basis3? {
+    guard let saved = pose(for: station), let phase = motionTime(for: .rrs(station), at: time)
+    else {
+      return nil
+    }
+    return saved.orientation(at: phase)
   }
 
   func sourcePosition(for station: StationInertialIdentity) -> Vector3? {
@@ -122,11 +239,8 @@ extension NativeStationWorld {
   func stationSweepMargin(_ station: StationInertialIdentity, from start: Double, to end: Double)
     -> Double
   {
-    guard let motion = inertia(for: station), end > start,
-      motion.impactTime > start, motion.impactTime < end
-    else { return 0 }
-    return (motion.velocity - motion.previousVelocity).length
-      * (motion.impactTime - start) * (end - motion.impactTime) / (end - start)
+    guard let motion = inertia(for: station), end > start else { return 0 }
+    return motion.sweepMargin(from: start, to: end)
   }
 
   var inertiaIsValid: Bool {
@@ -201,6 +315,39 @@ extension Game {
       bodies[change.index].position = change.position
       bodies[change.index].physical?.velocity = change.velocity
     }
+    return true
+  }
+
+  /// The same once-consumed native frame that rejects movement owns this rebase.
+  /// Every restored station is checked before publishing any new coast origin.
+  mutating func retainNativeStationRefusal(_ proofs: [StationMotionRefusal]) -> Bool {
+    guard !proofs.isEmpty else { return true }
+    guard proofs.count <= 3, Set(proofs.map(\.station)).count == proofs.count,
+      var world = commander.nativeStations, world.valid
+    else { return false }
+    for proof in proofs {
+      guard proof.system == systemIdentity, proof.visit == commander.flightSimulation.visit,
+        proof.toTime == commander.flightSimulation.physicalTime,
+        let body = bodies.first(where: { $0.id == proof.bodyID }),
+        body.physical?.identity == proof.actor,
+        stationInertialIdentity(for: body) == proof.station,
+        (commander.flightSimulation.pose.systemPoint(body.position) - proof.position).length < 1e-5,
+        let velocity = body.physical?.velocity, (velocity - proof.velocity).length < 1e-7,
+        let source = world.sourcePosition(for: proof.station),
+        let retained = NativeStationInertia(
+          refusal: proof, previous: world.inertia(for: proof.station), sourcePosition: source)
+      else { return false }
+      if let index = world.stationInertia.firstIndex(where: { $0.station == proof.station }) {
+        world.stationInertia[index] = retained
+      } else {
+        guard world.stationInertia.count < NativeStationWorld.maximumInertialStations else {
+          return false
+        }
+        world.stationInertia.append(retained)
+      }
+    }
+    guard world.valid else { return false }
+    commander.nativeStations = world
     return true
   }
 

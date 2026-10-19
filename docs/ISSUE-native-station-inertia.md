@@ -17,3 +17,9 @@ Acceptance requires central execution of genuine generated-debris contacts again
 ## Related work
 
 See ISSUE-asteroid-swept-impacts.md, PR-asteroid-swept-impacts.md and PR-native-station-inertia.md. No GitHub issue or PR has been created for this leaf.
+
+## Changed finding: refusal and advanced event time
+
+Incremental review of 97c1dcb6 plus 60705093 found that refusal restored pre-step station poses while retaining the advanced physical event clock. Persisted inertia then projected a different position; source-clock RRS rotation could disagree as well. The next step could repeatedly refuse, and the current scene/save join could fail. Forcing the station along an unproved path or rewinding unrelated committed event time is not an acceptable repair.
+
+The changed-finding follow-up must explicitly account for rejected, not-simulated motion time, preserve actual momentum/contact history, keep restored scene and current-format saves coherent, and prove a safe subsequent native station step. No actual impulse, damage or successful contact may be minted by a refusal.

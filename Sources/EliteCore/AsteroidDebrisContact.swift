@@ -122,6 +122,36 @@ struct StationContactTransfer: Sendable {
   }
 }
 
+/// Refused movement is a clock-bound rollback, never an admitted impact.
+struct StationMotionRefusal: Sendable {
+  let station: StationInertialIdentity
+  let actor: ActorIdentity
+  let bodyID: Int
+  let system: SystemIdentity
+  let visit: UInt64
+  let fromTime: Double
+  let toTime: Double
+  let duration: Double
+  let position: Vector3
+  let velocity: Vector3
+  fileprivate init(
+    station: StationInertialIdentity, actor: ActorIdentity, bodyID: Int,
+    system: SystemIdentity, visit: UInt64, fromTime: Double, toTime: Double, duration: Double,
+    position: Vector3, velocity: Vector3
+  ) {
+    self.station = station
+    self.actor = actor
+    self.bodyID = bodyID
+    self.system = system
+    self.visit = visit
+    self.fromTime = fromTime
+    self.toTime = toTime
+    self.duration = duration
+    self.position = position
+    self.velocity = velocity
+  }
+}
+
 private struct DebrisActorFrame {
   let identity: ActorIdentity
   let bodyID: Int?
@@ -167,6 +197,7 @@ final class AsteroidContactFrame {
   fileprivate let recovery: RockIdentity?
   fileprivate let speed: Double
   fileprivate let startTime: Double
+  fileprivate let stepDuration: Double
   fileprivate let stationReady: Bool
   private var consumed = false
   fileprivate func take() -> Bool {
@@ -175,8 +206,11 @@ final class AsteroidContactFrame {
     return true
   }
   @inline(never)
-  fileprivate init(game: borrowing Game, startTime: Double, stationReady: Bool) {
+  fileprivate init(
+    game: borrowing Game, startTime: Double, stepDuration: Double, stationReady: Bool
+  ) {
     self.startTime = startTime
+    self.stepDuration = stepDuration
     self.stationReady = stationReady
     system = game.systemIdentity
     visit = game.commander.flightSimulation.visit
@@ -250,7 +284,8 @@ extension Game {
     guard moving || !ready || bodies.contains(where: { asteroidDebrisMassKg($0) != nil }) else {
       return nil
     }
-    return AsteroidContactFrame(game: self, startTime: start, stationReady: ready)
+    return AsteroidContactFrame(
+      game: self, startTime: start, stepDuration: delta, stationReady: ready)
   }
 
   /// Planning is pure with respect to resources and motion. Unsupported or unproven
@@ -550,8 +585,24 @@ extension Game {
     workRecoveryRock = frame.recovery
     speed = frame.speed
     celestials = frame.celestials
+    var stationRefusals: [StationMotionRefusal] = []
+    if frame.stationReady, frame.startTime < frame.time {
+      for actor in frame.actors {
+        guard let station = actor.station, let bodyID = actor.bodyID else { continue }
+        if case .main = station, commander.nativeStations?.inertia(for: station) == nil { continue }
+        stationRefusals.append(
+          .init(
+            station: station, actor: actor.identity, bodyID: bodyID,
+            system: frame.system, visit: frame.visit,
+            fromTime: frame.startTime, toTime: frame.time, duration: frame.stepDuration,
+            position: actor.pose.position, velocity: actor.velocity))
+      }
+    }
+    let retained = retainNativeStationRefusal(stationRefusals)
     paused = true
-    notify("DEBRIS CONTACT DEFERRED: " + reason, voiced: false)
+    notify(
+      "DEBRIS CONTACT DEFERRED: " + reason
+        + (retained ? "" : " / STATION ROLLBACK UNPROVEN"), voiced: false)
     return .refused(reason)
   }
 

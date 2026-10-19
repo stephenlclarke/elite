@@ -35,7 +35,7 @@ extension Game {
       guard let identity = body.nativeStationIdentity, let actor = body.physical?.identity,
         nativeStationBodyIsCurrent(body), let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
-        let end = saved.orientation(at: flight.physicalTime),
+        let end = world.currentOrientation(for: saved.station, at: flight.physicalTime),
         let currentPosition = world.currentPosition(for: .rrs(identity), at: flight.physicalTime)
       else { return nil }
       let geometry = source.geometry
@@ -43,7 +43,8 @@ extension Game {
       let distance = (currentPosition - flight.pose.position).length
       let clear: Bool?
       if let before, let delta, delta.isFinite, delta > 0, delta <= 0.1,
-        let start = saved.orientation(at: max(0, flight.physicalTime - delta)),
+        let start = world.currentOrientation(
+          for: saved.station, at: max(0, flight.physicalTime - delta)),
         let oldPosition = world.currentPosition(
           for: .rrs(identity), at: max(0, flight.physicalTime - delta))
       {
