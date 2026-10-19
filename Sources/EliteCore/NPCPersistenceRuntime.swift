@@ -48,6 +48,10 @@ extension Game {
       physicalTime: flight.physicalTime,
       nextActor: flight.nextActor, protection: context.protection)
     commander.npcPersistence = ledger
+    // Only the authenticated native scene can re-establish current craft bindings.
+    var careers = commander.wantedCareers
+    careers.reconcile(ledger, system: systemIdentity)
+    if careers != commander.wantedCareers { commander.wantedCareers = careers }
   }
 
   /// Capture in allocation order so retired physical identities cannot be registered anew.

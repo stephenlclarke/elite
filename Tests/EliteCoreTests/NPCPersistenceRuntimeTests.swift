@@ -252,13 +252,23 @@ struct NPCPersistenceRuntimeTests {
 private func verifyDockedNPCPersistence(_ game: inout Game) async throws {
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
+  try NativeSaveTestFixture.prepareCurrentPolicy(&game)
   try #require(game.persistNPCStates().isEmpty)
   let before = game.commander
   let actor = try #require(game.bodies[0].physical?.identity)
   try #require(before.npcPersistence.binding(for: actor) == actor)
   var expected = before
   expected.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  expected.resetWantedCareerBindings(system: game.systemIdentity)
+  let career = try #require(before.wantedCareers.careers[actor])
+  try #require(career.binding == actor)
   game.dock()
+  let parkedCareer = try #require(game.commander.wantedCareers.careers[actor])
+  #expect(parkedCareer.binding == nil)
+  #expect(parkedCareer.identity == career.identity && parkedCareer.callsign == career.callsign)
+  #expect(parkedCareer.parked == career.parked && parkedCareer.sighting == career.sighting)
+  #expect(parkedCareer.legal == career.legal && parkedCareer.recordedKills == career.recordedKills)
+  #expect(parkedCareer.retired == career.retired)
   #expect(game.docked && game.bodies.isEmpty)
   #expect(game.commander.npcPersistence == expected.npcPersistence)
   #expect(game.commander.npcPersistence.livingCount == 1)

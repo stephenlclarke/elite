@@ -164,11 +164,12 @@ func campaignExpectedDiskCommander(
 ) throws -> Commander {
   let savePreservedWholeCommander = saved == before
   #expect(savePreservedWholeCommander)
-  // Native save publication keeps live NPC bindings; the disk copy clears only those bindings/offers.
+  // Native publication keeps live bindings; the disk copy clears native and career scene bindings.
   var expectedDisk = saved
   if expectedDisk.npcPersistence.count > 0 {
     expectedDisk.npcPersistence.resetPhysicalBindings(system: system)
   }
+  expectedDisk.resetWantedCareerBindings(system: system)
   let (written, _) = try ScriptSaveStore.read(Data(contentsOf: url), from: url)
   let diskMatchesWholeExpectedCommander = written == expectedDisk
   #expect(diskMatchesWholeExpectedCommander)

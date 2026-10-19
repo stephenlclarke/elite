@@ -208,13 +208,13 @@ private func solarWorldAfterRelaunch(
   var alreadyParked = parked
   alreadyParked.resetPhysicalBindings(system: game.systemIdentity)
   try #require(alreadyParked == parked)
-  var expectedCommander = game.commander
-  let mining = expectedCommander.miningLedgerForMigration(legacyMissing: false)
-  try #require(mining.usesEconomyWeightedPresence)
-  expectedCommander.miningLedger = mining
+  try NativeSaveTestFixture.prepareCurrentPolicy(&game)
+  let expectedCommander = game.commander
+  try #require(expectedCommander.miningLedger.usesEconomyWeightedPresence)
   try #require(expectedCommander.scriptState.calendarLedger != nil)
   var expectedDisk = expectedCommander
   expectedDisk.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  expectedDisk.resetWantedCareerBindings(system: game.systemIdentity)
   try #require(expectedDisk == expectedCommander && expectedDisk.npcPersistence == parked)
   let expectedWorld = game.scriptWorldSave
   let worldEncoder = ScriptValueStorage.encoder()
@@ -279,9 +279,24 @@ private func solarWorldAfterRelaunch(
   #expect(game.commander.scriptState.calendarLedger == ledger)
   expected["savedScriptState"] = try JSONSerialization.jsonObject(
     with: JSONEncoder().encode(expectedState))
+  // Re-launch can observe newly rebound actual actors. Derive only those allowed
+  // changes from the accepted native ledger, never from the wanted writer output.
+  var expectedWanted = commander.wantedCareers
+  let context = try #require(game.gameplayContext())
+  for body in game.bodies where game.wantedCareerIsOrdinary(body) {
+    guard let actor = body.physical?.identity,
+      let logical = game.commander.npcPersistence.logicalIdentity(for: actor),
+      let snapshot = game.commander.npcPersistence.snapshot(for: logical)
+    else { continue }
+    expectedWanted.observe(
+      snapshot, logical: logical,
+      visible: body.position.length <= context.perceptionRadius)
+  }
+  expectedWanted.reconcile(game.commander.npcPersistence, system: game.systemIdentity)
+  #expect(game.commander.wantedCareers == expectedWanted)
   for key in [
     "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity", "savedMiningLedger",
-    "encounterDirector", "savedNPCPersistence",
+    "encounterDirector", "savedNPCPersistence", "savedWantedCareers",
   ] {
     actual.removeValue(forKey: key)
     expected.removeValue(forKey: key)
