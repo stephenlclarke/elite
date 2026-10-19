@@ -25,3 +25,11 @@ The repair must derive approach direction from actual material-point/face geomet
 After actual launch acceptance, the native player impact reached REMAINING CONTACT and the fast player bank case reached REMAINING SWEEP UNPROVEN. Moving-NPC -3000 and ore readmission still reached initial SWEEP UNPROVEN. These exact stages are retained in the closed 642 artifact; the four native expectations are not obsolete fixture assumptions and must not be weakened.
 
 A remaining source gap is temporal sampling inside the original bounded leaf. A genuine thin native feature can be entered and left between both the midpoint and endpoint samples, while a later larger intersection prevents the chronological prefix from being proved clear. The repair must certify the actual earlier material feature, keep all original finite geometry/query/depth limits, and retain refusal for unsupported or uncertain paths. The repeated-contact stages may additionally require actual contact-manifold response work; this leaf cannot claim all four runtime outcomes corrected.
+
+## Actual qualification 655: aligned native ore tips
+
+The partial 655 run crashed in another cohort. Its only observed debris failure was collisionDefersOreHullGrowthUntilActualSafeReadmission, still at initial SWEEP UNPROVEN. The other three native contact methods are UNKNOWN from that artifact; they cannot be described as four failures.
+
+The unchanged ore fixture uses the same native eight-triangle octahedron for asteroid and cargo, with the asteroid scaled to its actual rock radius, identity native admission axes, aligned centers and straight relative translation. First contact is vertex-to-vertex. Every incident face has boundary barycentrics at that event, and the contained leading vertex also enters through a target vertex. Strict face-interior ray certificates correctly refuse these boundaries; accepting an uncertain boundary ray is not a repair. Conservative plane-distance bounds and a later face-normal hint can also leave an earlier separated leaf unproved.
+
+A separate exact native vertex/support certificate is required for this specific geometric class. It must establish actual transverse identity and full-hull support, rather than substitute body centers, weaken barycentric gates or skip the selected pair's remaining path. All native fixtures and geometry/work limits remain unchanged.
