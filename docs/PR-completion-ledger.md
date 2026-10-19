@@ -132,3 +132,7 @@ Record actual781 three-case PASS/terminal and all-owned closure, immutable revie
 Record the resolved Testing framework setup and subsequent CLT6.3 type-check failure in the existing packed-colour test expression. Root authorizes only an independently reviewed typed-local test rewrite preserving all values/assertions, followed by matching incremental validation with the existing palette oracle as20th case. Failed-job closure/child review/runtime remain pending; no product texture or toolchain scope is added. Scoped Markdown and whitespace checks only.
 
 Actual782 matching compile passed;783 closed with two methods/three cases PASS then matched stack overflow and four methods UNKNOWN. Record the two named pass methods, exact proof/terminal/all-owned closure and released registry, preserving earlier evidence. Crash source stays unintegrated; no next job is inferred. Panel integration remains independently qualified.
+
+## Assigned panel native comparison
+
+Record Root's bounded product-only784/title30-native785 gain checkpoint for the integrated panel change. Existing774 scratch/flags and775 protocol are reused; exact source identity, elapsed timing qualifications and actual resource closure remain required. No duplicate credits/visual, new tooling, media, full CI or performance acceptance is authorized.
