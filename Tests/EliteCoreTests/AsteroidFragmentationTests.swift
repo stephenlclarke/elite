@@ -776,7 +776,7 @@ private func stationFractureGame(main: Bool) throws -> (Game, MiningRock, Int, I
           .first(where: { $0.id == binding.system.system }),
         AsteroidBeltDefinition.isPresent(system: system, galaxy: binding.system.galaxy)
       else { return false }
-      for field in UInt16(4)..<8 {
+      for field in UInt16(4)..<7 {
         for index in UInt16(0)..<4 {
           let id = RockIdentity(system: binding.system, field: field, rock: index)
           if let chunk = AsteroidBeltDefinition.chunk(for: id), chunk.units > 20,
