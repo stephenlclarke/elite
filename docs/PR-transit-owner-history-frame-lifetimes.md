@@ -1,0 +1,19 @@
+# Separate transit leg owners, actor traversal and per-actor history
+
+## Change
+
+Base is exact run-683 canonical source `1f9098a910aefa17655f3aeadbb59df03257b64e`. Only the transit-state implementation, one focused test file and these paired notes change. The existing typed-ledger-before-owner boundary remains. The owner/history coordinator still checks commander passages first and captures the same legs array, then completes the original leg-owner loop before beginning the original instance/encounter/actor traversal. It enters the full leg-owner phase only for a nonempty legs array; the original loop has no checks to perform when empty. Actor traversal always follows, including that empty case.
+
+Each actual owned actor invokes a private non-inlined history helper with instance UUID, actor UUID, presence, location and the same legs array. It does not capture another full ScriptInstance or owned actor/body for filtering. History, arrivals, duplicate calendar dates and latest-leg values now belong to that per-actor helper. The leg-owner and traversal phases are also non-inlined. No new persistent state, cache, Game/Commander ownership or native authority is introduced.
+
+All original checks and their order remain exact: passage clock/operation bounds; leg-to-instance/encounter/alias/identity and requested clock; departure clock, matching transit presence and exact retained body; arrival clock; per-actor instance/identity history; unfinished-leg proof for transit presence; duplicate arrival-time rejection; and current location equal to the latest successful arrival destination. The original traversal always runs after leg-owner validation, including when the ledger is absent or empty. There is no empty-ledger success shortcut that could hide an orphan actor. The same mutable state is never changed by validation.
+
+## Evidence and validation
+
+Inverse phase extraction and substitution of the four explicit scalar projections reproduce the entire base `NativeWormholeTransitState.swift` byte-for-byte. Proof is `/tmp/elite-ci683-transit-owner-history-source-proof.json`. The complete original `OwnedEquipmentTests.swift`, `NativeWormholeTransitTests.swift` and `NativeWormholeCohortTests.swift` remain byte-identical, preserving the actual crashed method and existing current-format creator/relocation corruption regressions.
+
+One focused method has two authored cases: a genuine admitted actor baseline with a missing ledger or an empty ledger. Each refuses orphan `inTransit`, orphan `arrivalPending` and a relocation without arrival history, then accepts the restored original actor. These are explicitly labelled current-format corruption copies, never installed in Game, written or used as admission authority. Execution is pending.
+
+Strict Swift formatting/lint, scoped Markdown lint and whitespace checks pass. The exact old crash/binary hashes and static frame-reservation identity/order are verified; retained single-function disassembly is `/tmp/elite-ci683-transit-owner-history-existing-disassembly.txt`. The old fixed frame is 5888 bytes. Dynamic large-type byte sizes remain unestablished because static value-witness layout entries are incomplete. No new compiler, build, native test, GUI, debugger, profiler or executable probe runs, and no stack/concurrency/schema/validation waiver or test skip is added.
+
+Root reviews this bounded source change; G1 remains the sole integrator, executor and app publisher. The unchanged actual equipment-observer method, new orphan cases and affected transit/current-format corruption checks need central execution before required gates on the coherent final head. No measured new-frame reduction, stack margin, runtime fix, usable-app or release acceptance is claimed. See the [issue](ISSUE-transit-owner-history-frame-lifetimes.md).

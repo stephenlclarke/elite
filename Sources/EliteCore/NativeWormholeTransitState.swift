@@ -309,6 +309,14 @@ extension ScriptEngineState {
       })
     else { return false }
     let legs = Array((wormholeTransit?.legs ?? [:]).values)
+    if !legs.isEmpty {
+      guard nativeWormholeLegOwnersValid(legs) else { return false }
+    }
+    return nativeWormholeOwnedActorHistoriesValid(legs)
+  }
+
+  @inline(never)
+  private func nativeWormholeLegOwnersValid(_ legs: [NativeWormholeLeg]) -> Bool {
     for leg in legs {
       guard let instance = instances[leg.instance],
         let encounter = instance.ownedEncounters[leg.encounter],
@@ -327,26 +335,46 @@ extension ScriptEngineState {
         guard arrival.calendarSeconds <= calendarSeconds else { return false }
       }
     }
+    return true
+  }
+
+  // Even with no ledger, every owned actor must prove any transit presence or relocation.
+  @inline(never)
+  private func nativeWormholeOwnedActorHistoriesValid(_ legs: [NativeWormholeLeg]) -> Bool {
     for instance in instances.values {
       for encounter in instance.ownedEncounters.values {
         for actor in encounter.actors.values {
-          let history = legs.filter { $0.instance == instance.id && $0.actor == actor.identity }
-          if [.inTransit, .arrivalPending].contains(actor.presence) {
-            guard history.contains(where: { $0.departure != nil && $0.arrival == nil }) else {
-              return false
-            }
-          }
-          let arrivals = history.filter { $0.arrival != nil }
-          let dates = arrivals.compactMap { $0.arrival?.calendarSeconds }
-          guard Set(dates).count == dates.count else { return false }
-          let latest = arrivals.max {
-            ($0.arrival?.calendarSeconds ?? -.infinity)
-              < ($1.arrival?.calendarSeconds ?? -.infinity)
-          }
-          guard actor.transitLocation == latest?.route?.destination.location else { return false }
+          guard
+            Self.nativeWormholeActorHistoryValid(
+              instance: instance.id, actor: actor.identity, presence: actor.presence,
+              location: actor.transitLocation, legs: legs)
+          else { return false }
         }
       }
     }
+    return true
+  }
+
+  // History selection needs only these scalar owner facts, not another full actor/body capture.
+  @inline(never)
+  private static func nativeWormholeActorHistoryValid(
+    instance: UUID, actor: UUID, presence: ScriptActorPresence,
+    location: SystemIdentity?, legs: [NativeWormholeLeg]
+  ) -> Bool {
+    let history = legs.filter { $0.instance == instance && $0.actor == actor }
+    if [.inTransit, .arrivalPending].contains(presence) {
+      guard history.contains(where: { $0.departure != nil && $0.arrival == nil }) else {
+        return false
+      }
+    }
+    let arrivals = history.filter { $0.arrival != nil }
+    let dates = arrivals.compactMap { $0.arrival?.calendarSeconds }
+    guard Set(dates).count == dates.count else { return false }
+    let latest = arrivals.max {
+      ($0.arrival?.calendarSeconds ?? -.infinity)
+        < ($1.arrival?.calendarSeconds ?? -.infinity)
+    }
+    guard location == latest?.route?.destination.location else { return false }
     return true
   }
 }
