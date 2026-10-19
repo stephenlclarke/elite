@@ -24,9 +24,14 @@ func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGIm
   return context.makeImage()
 }
 
-/// The window and exported media share the same drawing path at any pixel size.
+/// Logical drawing and the Quartz fallback are shared with exported media.
+@discardableResult
 @MainActor
-func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
+func drawFrame(
+  _ frame: Frame, context: CGContext, rect: CGRect, panelRenderer: ShipPanelRenderer? = nil
+) -> ShipPanelExecution {
+  var execution = ShipPanelExecution()
+  var budget = ShipPanelBudget()
   context.saveGState()
   context.translateBy(x: rect.minX, y: rect.minY)
   context.scaleBy(x: rect.width / frame.canvas.width, y: rect.height / frame.canvas.height)
@@ -40,12 +45,14 @@ func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
       context.saveGState()
       let clip = frame.flightClip
       context.clip(to: CGRect(x: clip.x, y: clip.y, width: clip.width, height: clip.height))
-      for graphic in frame.worldGraphics { drawGraphic(graphic, context: context, lineWidth: 0.85) }
+      drawGraphics(
+        frame.worldGraphics, context: context, lineWidth: 0.85, panelRenderer: panelRenderer,
+        budget: &budget, execution: &execution)
       context.restoreGState()
     }
-    for graphic in frame.graphics {
-      drawGraphic(graphic, context: context, lineWidth: frame.responsive ? 0.85 : 0.5)
-    }
+    drawGraphics(
+      frame.graphics, context: context, lineWidth: frame.responsive ? 0.85 : 0.5,
+      panelRenderer: panelRenderer, budget: &budget, execution: &execution)
   }
   if frame.responsive {
     context.setShouldAntialias(false)
@@ -70,6 +77,7 @@ func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
     context.draw(bitmap, in: CGRect(x: 0, y: 0, width: 256, height: 256))
   }
   context.restoreGState()
+  return execution
 }
 
 @MainActor
@@ -101,6 +109,39 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
     space: CGColorSpaceCreateDeviceRGB(),
     bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
     provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+}
+
+@MainActor
+private func drawGraphics(
+  _ graphics: [Graphic], context: CGContext, lineWidth: Double,
+  panelRenderer: ShipPanelRenderer?, budget: inout ShipPanelBudget,
+  execution: inout ShipPanelExecution
+) {
+  var index = graphics.startIndex
+  while index < graphics.endIndex {
+    if let panelRenderer, case .panel(let panel) = graphics[index],
+      ShipPanelRenderer.eligible(panel)
+    {
+      var end = index + 1
+      while end < graphics.endIndex, case .panel(let next) = graphics[end],
+        ShipPanelRenderer.eligible(next)
+      { end += 1 }
+      if let device = panelRenderer.draw(graphics[index..<end], context: context, budget: &budget) {
+        execution.metalPanels += end - index
+        execution.device = device
+      } else {
+        for graphic in graphics[index..<end] {
+          drawGraphic(graphic, context: context, lineWidth: lineWidth)
+        }
+        execution.cpuPanels += end - index
+      }
+      index = end
+    } else {
+      drawGraphic(graphics[index], context: context, lineWidth: lineWidth)
+      if case .panel = graphics[index] { execution.cpuPanels += 1 }
+      index += 1
+    }
+  }
 }
 
 @MainActor

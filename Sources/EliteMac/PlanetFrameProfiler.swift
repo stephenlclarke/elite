@@ -366,7 +366,7 @@ final class PlanetFrameProfiler {
 
   func drew(
     in view: GameView, id: UInt64?, frame: Frame, presentation: Double, drawing: Double,
-    at now: ContinuousClock.Instant
+    at now: ContinuousClock.Instant, panelBackend: String? = nil
   ) {
     let previous = id.flatMap { samples[$0] }
     let repeated = previous?.drawMilliseconds != nil
@@ -393,7 +393,11 @@ final class PlanetFrameProfiler {
     sample.widthPixels = Int(backing.width.rounded())
     sample.heightPixels = Int(backing.height.rounded())
     sample.fullscreen = view.window?.styleMask.contains(.fullScreen) == true
-    sample.backend = PlanetRenderer.backendDescription
+    if startupRequest != nil {
+      sample.backend = panelBackend ?? "CPU ship panels"
+    } else {
+      sample.backend = PlanetRenderer.backendDescription
+    }
     let planets = (frame.graphics + frame.worldGraphics).compactMap { graphic -> PlanetPreview? in
       if case .planet(let planet) = graphic { return planet }
       return nil
