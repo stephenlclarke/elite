@@ -246,32 +246,40 @@ private func selectActualMainStationWithTab(_ game: inout Game, stage: String) t
   var selectionFailure =
     "\(stage): selections \(selections), screen \(game.screen), paused \(game.paused), message \(game.message)"
   if !selectedMainStation || !dockingEngaged {
-    if let context = game.gameplayContext() {
-      let layout = CockpitLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
-      let candidates = game.bodies.compactMap { body -> WorkTargetCandidate? in
-        let front = Display.visibleInFront(body, game: game, layout: layout)
-        return game.workTargetCandidate(for: body, context: context, frontVisible: front)
-      }
-      let choices = WorkTargetSelection.ordered(
-        candidates, filter: game.workTargetFilter, system: context.system, visit: context.visit,
-        capabilities: game.workTargetCapabilities)
-      let mainCandidates = candidates.filter { $0.identity == actor }
-      let mainDecisions = mainCandidates.map {
-        WorkTargetSelection.evaluate(
-          $0, system: context.system, visit: context.visit,
-          capabilities: game.workTargetCapabilities)
-      }
-      let choiceActors = Set(choices.map { $0.candidate.identity })
-      let eligibleIDs = game.bodies.filter {
-        $0.physical.map { choiceActors.contains($0.identity) } == true
-      }.map(\.id)
-      selectionFailure +=
-        "; context \(context.system)/\(context.visit), player \(context.player.identity), eligible IDs \(eligibleIDs), main candidates \(mainCandidates), main decisions \(mainDecisions)"
-    } else {
-      selectionFailure += "; no gameplay context"
-    }
+    selectionFailure += stationTabEligibilityFailureFacts(game, mainActor: actor)
   }
   try #require(selectedMainStation && dockingEngaged, Comment(rawValue: selectionFailure))
+}
+
+// Keep large eligibility observations out of the successful Tab helper's frame.
+@inline(never)
+private func stationTabEligibilityFailureFacts(_ game: borrowing Game, mainActor: ActorIdentity)
+  -> String
+{
+  guard let context = game.gameplayContext() else { return "; no gameplay context" }
+  let layout = CockpitLayout(game: game, width: game.viewportWidth, height: game.viewportHeight)
+  var candidates: [WorkTargetCandidate] = []
+  for body in game.bodies {
+    let front = Display.visibleInFront(body, game: game, layout: layout)
+    if let candidate = game.workTargetCandidate(for: body, context: context, frontVisible: front) {
+      candidates.append(candidate)
+    }
+  }
+  let capabilities = game.workTargetCapabilities
+  let choices = WorkTargetSelection.ordered(
+    candidates, filter: game.workTargetFilter, system: context.system, visit: context.visit,
+    capabilities: capabilities)
+  let mainCandidates = candidates.filter { $0.identity == mainActor }
+  let mainDecisions = mainCandidates.map {
+    WorkTargetSelection.evaluate(
+      $0, system: context.system, visit: context.visit, capabilities: capabilities)
+  }
+  let choiceActors = Set(choices.map { $0.candidate.identity })
+  let eligibleIDs = game.bodies.filter {
+    $0.physical.map { choiceActors.contains($0.identity) } == true
+  }.map(\.id)
+  return
+    "; context \(context.system)/\(context.visit), player \(context.player.identity), eligible IDs \(eligibleIDs), main candidates \(mainCandidates), main decisions \(mainDecisions)"
 }
 
 @Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
