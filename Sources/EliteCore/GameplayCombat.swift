@@ -264,11 +264,11 @@ extension Game {
       var careers = commander.wantedCareers
       if let ownerBody = bodies.first(where: { $0.physical?.identity == death.owner }),
         wantedCareerIsOrdinary(ownerBody),
+        let logical = commander.npcPersistence.logicalIdentity(for: death.owner),
         let observed = NPCPersistenceSnapshot.capture(
           body: ownerBody, pose: commander.flightSimulation.pose,
           physicalTime: context.physicalTime, protection: context.protection)
       {
-        let logical = commander.npcPersistence.logicalIdentity(for: death.owner) ?? death.owner
         careers.observe(
           observed, logical: logical, visible: ownerBody.position.length <= context.perceptionRadius
         )

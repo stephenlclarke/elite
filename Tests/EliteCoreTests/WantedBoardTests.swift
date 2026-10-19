@@ -1,7 +1,9 @@
+import AppKit
 import Foundation
 import Testing
 
 @testable import EliteCore
+@testable import EliteMac
 
 private func wantedGame(count: Int = 12) throws -> Game {
   var game = Game(executive: false)
@@ -280,6 +282,67 @@ struct WantedBoardTests {
     #expect(game.screen == .status)
   }
 
+  @Test func nativeCapacityRefusedKillerCannotCreateAParkedCareerOrRevisitAdmission() throws {
+    var game = try wantedGame(count: 2)
+    let context = try #require(game.gameplayContext())
+    let template = try #require(game.commander.wantedCareers.careers.values.first?.parked)
+    // Fill the real finite native ledger with independently allocated, valid snapshots.
+    // This unit capacity setup does not add a second scene or fictional board dossiers.
+    while game.commander.npcPersistence.count < NPCPersistenceLedger.maximumEntries {
+      var snapshot = template
+      snapshot.actor = try #require(game.commander.flightSimulation.allocateActor())
+      snapshot.position = .init(20000 + Double(snapshot.actor.entity), 0, 0)
+      snapshot.firstAggressorBinding = nil
+      snapshot.intentionTargetBinding = nil
+      let captured = game.commander.npcPersistence.capture(snapshot, protection: context.protection)
+      try #require(captured == .registered(snapshot.actor))
+    }
+    let refusedActor = try #require(game.commander.flightSimulation.allocateActor())
+    var npc = NPCState(role: .pirate, origin: game.systemIdentity, destination: game.systemIdentity)
+    npc.legal = .init(value: 16, bountyTenths: 50)
+    npc.resources = .legacyEnergyOnly(maximumEnergy: 100)
+    npc.intention = .engage(try #require(game.commander.flightSimulation.player))
+    var refusedBody = SpaceBody(
+      id: game.nextBodyID, hull: .cobra, position: .init(0, 0, 2000), hostile: true)
+    game.nextBodyID += 1
+    refusedBody.physical = .init(
+      identity: refusedActor, population: .pirate, npc: npc, catalogueShipID: "SH023")
+    game.bodies.append(refusedBody)
+    let refusedSnapshot = try #require(
+      NPCPersistenceSnapshot.capture(
+        body: refusedBody, pose: game.commander.flightSimulation.pose,
+        physicalTime: context.physicalTime, protection: context.protection))
+    let refused = game.commander.npcPersistence.capture(
+      refusedSnapshot, protection: context.protection)
+    try #require(refused == .refused(.capacity))
+    try #require(game.commander.npcPersistence.logicalIdentity(for: refusedActor) == nil)
+    let victim = game.bodies[0]
+    let origin = try #require(game.makeAttackOrigin(owner: refusedActor))
+    let direction = (victim.position - refusedBody.position).unit
+    let contact = try #require(
+      try game.nearestMissionCollision(
+        from: refusedBody.position, direction: direction, range: 1200, radius: 0,
+        excludingBodyIDs: [refusedBody.id], includePlayer: false))
+    try #require(contact.selectedTargetBody?.id == victim.id)
+    let hit = game.applyCombatHit(
+      contact.hit, origin: origin, kind: .laser, damage: 100,
+      emissionPosition: game.commander.flightSimulation.pose.systemPoint(refusedBody.position))
+    try #require(hit != nil && game.bodies.first(where: { $0.id == victim.id })?.energy == 0)
+    #expect(game.commander.wantedCareers.careers[refusedActor] == nil)
+    #expect(
+      !game.commander.wantedCareers.careers.values.contains {
+        $0.binding == refusedActor || $0.parked?.actor == refusedActor
+      })
+    #expect(game.commander.wantedCareers.playerRecordedKills == 0)
+    let saved = game.commander.wantedCareers
+    var revisit = game.commander.npcPersistence
+    revisit.depart(system: game.systemIdentity)
+    revisit.restoreWantedCareers(saved, system: game.systemIdentity)
+    #expect(revisit.valid)
+    #expect(revisit.snapshot(for: refusedActor) == nil)
+    #expect(!revisit.unboundSnapshots.values.contains { $0.actor == refusedActor })
+  }
+
   @Test func onlyAcceptedShipDeathsCountNeverSelfProjectilesOrDuplicateSettlements() throws {
     var game = try wantedGame(count: 2)
     let player = try #require(game.commander.flightSimulation.player)
@@ -305,10 +368,172 @@ struct WantedBoardTests {
     #expect(ledger.playerRecordedKills == 0)
     let key = try #require(game.commander.npcPersistence.logicalIdentity(for: npc))
     #expect(ledger.careers[key]?.recordedKills == 1)
+    ledger.retire(key)
+    let laterVictim = try #require(game.commander.flightSimulation.allocateActor())
+    // Accepted historical alias attribution survives the source leaving the scene.
+    #expect(
+      ledger.record(
+        .init(victim: laterVictim, owner: npc, lawful: true, bountyTenths: 10),
+        player: player, shipDeath: true))
+    #expect(ledger.careers[key]?.binding == nil && ledger.careers[key]?.parked == nil)
+    #expect(ledger.careers[key]?.recordedKills == 2 && ledger.playerRecordedKills == 0)
     game.commander.wantedCareers = ledger
     #expect(
       !game.wantedBoard.contains {
         $0.identity == game.commander.npcPersistence.logicalIdentity(for: victim)
       })
+  }
+}
+
+extension WantedBoardTests {
+  @MainActor @Test func nativeWantedBoardPointerDetailsBackAndHistoricalRouteUsePrivatePreferences()
+    async throws
+  {
+    _ = NSApplication.shared
+    let originalMenu = NSApp.mainMenu
+    let identifier = "elite-native-wanted-" + UUID().uuidString
+    let preferences = try #require(UserDefaults(suiteName: identifier))
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(identifier)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    defer {
+      NSApp.mainMenu = originalMenu
+      preferences.removePersistentDomain(forName: identifier)
+      try? FileManager.default.removeItem(at: directory)
+    }
+    let file = directory.appendingPathComponent("commander.json")
+    // Controlled presentation seed: actual captured careers from a previous system,
+    // not a claim that this UI test flew or docked the intervening journey.
+    var source = try wantedGame(count: 2)
+    let reported = source.commander.system
+    let origin = source.currentSystem
+    let neighbour = try #require(
+      source.systems.first {
+        $0.id != reported && origin.distance(to: $0) > 0 && origin.distance(to: $0) < 6
+      })
+    try source.departOrdinarySimulation()
+    source.commander.system = neighbour.id
+    source.selectedSystem = neighbour.id
+    source.commander.flightSimulation.enter(source.systemIdentity, arriving: false)
+    source.bodies = []
+    source.celestials = []
+    source.docked = true
+    source.screen = .status
+    let seed = GameRuntime(game: source, saveURL: file)
+    try await seed.save(to: file)
+    let saves = CommanderSaveSession(preferences: preferences, defaultURL: file)
+    let delegate = AppDelegate(
+      restoreOnLaunch: false, saves: saves,
+      windowSize: .init(width: 768, height: 768))
+    defer {
+      delegate.windowWillClose(Notification(name: NSWindow.willCloseNotification))
+      delegate.window?.orderOut(nil)
+      delegate.window?.delegate = nil
+      delegate.window?.close()
+    }
+    delegate.applicationDidFinishLaunching(
+      Notification(name: NSApplication.didFinishLaunchingNotification))
+    let window = try #require(delegate.window)
+    let view = try #require(window.contentView as? GameView)
+    let loop = try #require(delegate.loop)
+    loop.cancel()
+    await loop.value
+    try await delegate.runtime.load(from: file, persistMigrations: false)
+    await delegate.runtime.key("3")
+    view.game = await delegate.runtime.snapshot()
+    view.pending.removeAll()
+    let originalCommander = view.game.commander
+
+    func press(_ code: UInt16, _ text: String) async throws {
+      for type in [NSEvent.EventType.keyDown, .keyUp] {
+        let event = try #require(
+          NSEvent.keyEvent(
+            with: type, location: .zero,
+            modifierFlags: [], timestamp: 0, windowNumber: window.windowNumber, context: nil,
+            characters: text, charactersIgnoringModifiers: text, isARepeat: false, keyCode: code))
+        if type == .keyDown { view.keyDown(with: event) } else { view.keyUp(with: event) }
+      }
+      await delegate.processPendingCommands(in: view)
+    }
+    func click(_ point: NSPoint) async throws {
+      let location = view.convert(point, to: nil)
+      let event = try #require(
+        NSEvent.mouseEvent(
+          with: .leftMouseDown, location: location,
+          modifierFlags: [], timestamp: 0, windowNumber: window.windowNumber, context: nil,
+          eventNumber: 1, clickCount: 1, pressure: 1))
+      view.mouseDown(with: event)
+      await delegate.processPendingCommands(in: view)
+    }
+    func paint(_ stage: String) throws {
+      let width = Int(view.bounds.width)
+      let height = Int(view.bounds.height)
+      let frame = Display.presentation(view.game, width: Double(width), height: Double(height))
+      #expect(
+        frame.labels.allSatisfy {
+          $0.scale == GameTypography.scale && $0.bounds.x >= 0 && $0.bounds.y >= 0
+            && $0.bounds.maxX <= Double(width) && $0.bounds.maxY <= Double(height)
+        })
+      let context = try #require(
+        CGContext(
+          data: nil, width: width, height: height,
+          bitsPerComponent: 8, bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
+          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+      context.translateBy(x: 0, y: Double(height))
+      context.scaleBy(x: 1, y: -1)
+      NSGraphicsContext.saveGraphicsState()
+      defer { NSGraphicsContext.restoreGraphicsState() }
+      NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+      view.draw(view.bounds)
+      let image = try #require(context.makeImage())
+      if let path = ProcessInfo.processInfo.environment["ELITE_UI_EVIDENCE_DIRECTORY"] {
+        let output = URL(fileURLWithPath: path, isDirectory: true)
+        try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+        let data = try #require(
+          NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:]))
+        let name = "wanted-\(stage)-\(width)x\(height)"
+        try data.write(to: output.appendingPathComponent(name + ".png"))
+        let receipt: [String: Any] = [
+          "source": ProcessInfo.processInfo.environment["ELITE_VALIDATION_SOURCE_SHA"] ?? "local",
+          "stage": stage, "width": width, "height": height,
+          "logicalFontScale": GameTypography.scale, "screen": view.game.screen.rawValue,
+          "pngSHA256": ScriptPackLibrary.hash(data),
+        ]
+        try JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys])
+          .write(to: output.appendingPathComponent(name + ".json"))
+      }
+    }
+    for (width, height) in [(512.0, 518.0), (1512, 982)] {
+      // Real window/view resizing at compact and full-screen logical dimensions;
+      // no macOS Space switch or human window/default preference is changed.
+      window.setContentSize(.init(width: width, height: height))
+      view.setFrameSize(.init(width: width, height: height))
+      await delegate.runtime.setViewport(width: width, height: height)
+      view.game = await delegate.runtime.snapshot()
+      try await press(32, "u")
+      #expect(view.game.screen == .rumour && view.game.wantedBoard.count >= 2)
+      try paint("board")
+      let layout = WantedBoardLayout(width: width, height: height)
+      try await click(.init(x: layout.cell(0).x + 8, y: layout.cell(0).y + 8))
+      #expect(view.game.selectedWantedEntry != nil)
+      try await press(36, "\r")
+      #expect(view.game.wantedDetail && view.game.screen == .rumour)
+      try paint("detail")
+      try await press(53, "\u{1b}")
+      #expect(!view.game.wantedDetail && view.game.screen == .rumour)
+      try await click(.init(x: layout.details.x + 8, y: layout.details.y + 8))
+      #expect(view.game.wantedDetail)
+      try await press(35, "p")
+      #expect(view.game.screen == .navigation && view.game.selectedSystem == reported)
+      #expect(view.game.commander.navigationPlan == originalCommander.navigationPlan)
+      try paint("route-preview")
+      try await press(53, "\u{1b}")
+      #expect(view.game.screen == .rumour)
+      try await press(53, "\u{1b}")
+      #expect(!view.game.wantedDetail && view.game.screen == .rumour)
+      try await press(53, "\u{1b}")
+      #expect(view.game.screen == .status)
+      #expect(view.game.commander == originalCommander)
+      #expect(view.pending.isEmpty)
+    }
   }
 }
