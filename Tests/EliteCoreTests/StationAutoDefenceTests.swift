@@ -529,14 +529,24 @@ private func stationAutoEntryBoundary() async throws -> Game {
   return game
 }
 
-private func stationAutoAddNativeAttacker(_ game: inout Game, position: Vector3, sequence: UInt64)
-  throws -> Int
-{
+private func stationAutoAddNativeAttacker(
+  _ game: inout Game, position: Vector3, sequence: UInt64, facingPlayer: Bool = false
+) throws -> Int {
   let id = game.nextBodyID
   game.nextBodyID += 1
   game.bodies.append(.init(id: id, hull: .cobra, position: position, hostile: true))
   game.ensurePhysicalActors()
   let index = try #require(game.bodies.firstIndex { $0.id == id })
+  if facingPlayer {
+    let forward = (position * -1).unit
+    let up = abs(forward.y) > 0.95 ? Vector3(1, 0, 0) : Vector3(0, 1, 0)
+    var orientation = Basis3()
+    orientation.z = forward
+    orientation.x = up.cross(forward).unit
+    orientation.y = forward.cross(orientation.x).unit
+    try #require(orientation.validRotation)
+    game.bodies[index].orientation = orientation
+  }
   let spawn = SpawnIdentity(
     system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
     sequence: sequence, member: 0, producer: .ambient)
@@ -747,13 +757,17 @@ func stationAutoInterruptionRetainsNativeEntrySafetyWithoutStoppingClearance(con
   async throws
 {
   var game = try await stationAutoEntryBoundary()
-  let first = try stationAutoAddNativeAttacker(&game, position: .init(0, 0, 600), sequence: 906)
-  let second = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, 800), sequence: 907)
-  game.emitLegacyNPCBeam(bodyID: first, damage: LaserKind.pulse.damage)
-  game.emitLegacyNPCBeam(bodyID: second, damage: LaserKind.pulse.damage)
+  let first = try stationAutoAddNativeAttacker(
+    &game, position: .init(0, 0, 600), sequence: 906, facingPlayer: true)
+  let second = try stationAutoAddNativeAttacker(
+    &game, position: .init(300, 0, 800), sequence: 907, facingPlayer: true)
+  let playerActor = try #require(game.commander.flightSimulation.player)
+  for id in [first, second] {
+    let attackContext = try #require(game.gameplayContext())
+    game.emitGameplayNPCBeam(bodyID: id, target: playerActor, context: attackContext)
+  }
   let station = try #require(game.autoTargetBody)
   let context = try #require(game.gameplayContext())
-  let playerActor = try #require(game.commander.flightSimulation.player)
   for id in [first, second] {
     let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
     try #require(
@@ -790,9 +804,12 @@ func stationAutoInterruptionRetainsNativeEntrySafetyWithoutStoppingClearance(con
   async throws
 {
   var game = try await stationAutoEntryBoundary()
-  let id = try stationAutoAddNativeAttacker(&game, position: .init(0, 0, 600), sequence: 908)
+  let id = try stationAutoAddNativeAttacker(
+    &game, position: .init(0, 0, 600), sequence: 908, facingPlayer: true)
   let shield = game.frontShield
-  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  let attackContext = try #require(game.gameplayContext())
+  let playerActor = try #require(game.commander.flightSimulation.player)
+  game.emitGameplayNPCBeam(bodyID: id, target: playerActor, context: attackContext)
   try #require(game.frontShield < shield)
   let before = game
   let victim = try #require(before.bodies.first { $0.id == id })
