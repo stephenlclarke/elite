@@ -107,7 +107,7 @@ import Testing
     let url = directory.appendingPathComponent(name)
     let writer = GameRuntime(game: value)
     try await writer.save(to: url)
-    let saved = await writer.snapshot()
+    var saved = await writer.snapshot()
     #expect(saved.commander.credits == value.commander.credits)
     #expect(saved.commander.cargo == value.commander.cargo)
     #expect(saved.commander.shipID == value.commander.shipID)
@@ -127,12 +127,16 @@ import Testing
     if expectedStored.npcPersistence.count > 0 {
       expectedStored.npcPersistence.resetPhysicalBindings(system: saved.systemIdentity)
     }
+    expectedStored.resetWantedCareerBindings(system: saved.systemIdentity)
     #expect(stored == expectedStored)
     let reader = GameRuntime(game: Game(executive: false))
     // Binding restoration is transient; retain the actual writer bytes for this current save.
     try await reader.load(from: url, persistMigrations: false)
     let loaded = await reader.snapshot()
     let reloadedBytes = try Data(contentsOf: url)
+    // Loading gives registered RRS stations fresh runtime bindings and allocation counters.
+    // Apply only that existing boundary to the expected snapshot; retain full identity checks.
+    try saved.rebindNativeStationsAfterLoad()
     #expect(loaded.commander == saved.commander)
     #expect(reloadedBytes == bytes)
     return loaded
