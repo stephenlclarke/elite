@@ -109,8 +109,9 @@ func rewriteNavigationTradeChunk(
   let after = await reader.snapshot()
   #expect(after.commander == before.commander)
   let saved = await runtime.snapshot()
-  // Missing content suspends the genuine active mission without discarding its paid receipt.
-  try await reader.load(from: fixture.save)
+  // Inspect missing-content suspension without publishing it over the valid source save.
+  try await reader.load(from: fixture.save, persistMigrations: false)
+  #expect(try Data(contentsOf: fixture.save) == originalPointerBytes)
   let unavailable = await reader.snapshot()
   #expect(unavailable.commander.scriptState.instances[id]?.suspension != nil)
   #expect(
