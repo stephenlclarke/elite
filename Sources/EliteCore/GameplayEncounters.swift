@@ -292,10 +292,12 @@ extension Game {
     let destination = commander.flightSimulation.pose.shipPoint(target.position)
     let direction = destination - position
     let range = mining ? 500.0 : 1500.0
+    // Acquisition permits a near-forward target; the fixed front mount still fires forward.
+    let beamDirection = bodies[index].orientation.z.unit
     guard direction.length <= range,
       bodies[index].orientation.z.dot(direction.unit) > 0.98,
       let contact = try? nearestMissionCollision(
-        from: position, direction: direction.unit, range: range, radius: 0,
+        from: position, direction: beamDirection, range: range, radius: 0,
         excludingBodyIDs: [bodyID], includePlayer: true)
     else { return nil }
     let hit = contact.hit

@@ -39,12 +39,95 @@ private func combatPlayerOrigin(_ game: inout Game) throws -> AttackOrigin {
   return try combatRequire(game.makeAttackOrigin(owner: player))
 }
 
+private func mountedNPCBeamGame(targetOffset: Double = 0) throws -> Game {
+  var game = combatGame()
+  game.bodies = []
+  game.celestials = []
+  try combatBody(
+    &game, id: 10, hull: .sidewinder, role: .pirate,
+    position: .init(0, 0, 500), energy: 100)
+  try combatBody(
+    &game, id: 11, hull: .cargo, role: nil,
+    position: .init(targetOffset, 0, 1400), energy: 100)
+  let resources = NPCResources.stock(game.commander.performance)
+  game.bodies[0].physical?.npc?.resources = try #require(resources)
+  game.gameplayCombatTrace = .init()
+  return game
+}
+
 private func combatBodyHit(_ game: Game, id: Int = 10) throws -> GameplayHit {
   let body = try combatRequire(game.bodies.first { $0.id == id })
   return .init(target: .body(id), distance: body.position.length, point: body.position)
 }
 
 struct GameplayCombatTests {
+  @Test func alignedNPCFrontBeamUsesNativeHitAttributionAndChargesResourcesOnce() throws {
+    var game = try mountedNPCBeamGame()
+    let context = try #require(game.gameplayContext())
+    let owner = try #require(game.bodies[0].physical?.identity)
+    let target = try #require(game.bodies[1].physical?.identity)
+    let heat = try #require(game.bodies[0].physical?.npc?.resources?.laserHeat)
+    let credits = game.commander.credits
+    let kills = game.commander.kills
+    game.emitGameplayNPCBeam(bodyID: 10, target: target, context: context)
+    #expect(game.bodies[1].energy == 100 - LaserKind.pulse.damage)
+    #expect(game.bodies[0].energy == 99)
+    #expect(game.bodies[0].physical?.laserCooldown == LaserKind.pulse.firingInterval)
+    #expect(game.bodies[0].physical?.npc?.resources?.laserHeat == heat + 10)
+    let incident = try #require(game.gameplayCombatTrace?.incidents.first)
+    #expect(incident.origin.owner == owner && incident.victim == target)
+    #expect(incident.kind == .laser && incident.laser == .pulse && incident.mount == .front)
+    #expect(incident.outcome == .hit && incident.origin.emittedAt == context.physicalTime)
+    #expect(game.commander.credits == credits && game.commander.kills == kills)
+    #expect(game.commander.legal == 0)
+    let bodies = game.bodies
+    let flight = game.commander.flightSimulation
+    game.emitGameplayNPCBeam(bodyID: 10, target: target, context: context)
+    #expect(game.bodies == bodies && game.commander.flightSimulation == flight)
+    #expect(game.gameplayCombatTrace?.incidents.count == 1)
+  }
+
+  @Test func npcFrontBeamMissesOffAxisHullInsideItsAcquisitionCone() throws {
+    var game = try mountedNPCBeamGame(targetOffset: 140)
+    let context = try #require(game.gameplayContext())
+    let source = game.bodies[0]
+    let target = try #require(game.bodies[1].physical?.identity)
+    let direction = (game.bodies[1].position - source.position).unit
+    #expect(source.orientation.z.dot(direction) > 0.98)
+    let aimed = try game.nearestMissionCollision(
+      from: source.position, direction: direction, range: 1500, radius: 0,
+      excludingBodyIDs: [source.id], includePlayer: true)
+    let centreContact = try #require(aimed)
+    #expect(centreContact.hit.target == .body(11))
+    let forward = try game.nearestMissionCollision(
+      from: source.position, direction: source.orientation.z.unit, range: 1500, radius: 0,
+      excludingBodyIDs: [source.id], includePlayer: true)
+    #expect(forward == nil)
+    let commander = game.commander
+    let bodies = game.bodies
+    game.emitGameplayNPCBeam(bodyID: source.id, target: target, context: context)
+    #expect(game.bodies == bodies && game.commander == commander)
+    #expect(game.gameplayCombatTrace?.incidents.isEmpty == true)
+  }
+
+  @Test func npcFrontBeamRetainsNearestObstructionAndIntendedTargetAdmission() throws {
+    var game = try mountedNPCBeamGame()
+    try combatBody(
+      &game, id: 12, hull: .cargo, role: nil, position: .init(0, 0, 950), energy: 100)
+    let context = try #require(game.gameplayContext())
+    let target = try #require(game.bodies[1].physical?.identity)
+    let nearest = try game.nearestMissionCollision(
+      from: game.bodies[0].position, direction: game.bodies[0].orientation.z.unit,
+      range: 1500, radius: 0, excludingBodyIDs: [10], includePlayer: true)
+    let contact = try #require(nearest)
+    #expect(contact.hit.target == .body(12))
+    let commander = game.commander
+    let bodies = game.bodies
+    game.emitGameplayNPCBeam(bodyID: 10, target: target, context: context)
+    #expect(game.bodies == bodies && game.commander == commander)
+    #expect(game.gameplayCombatTrace?.incidents.isEmpty == true)
+  }
+
   @Test(arguments: [250, Int.max])
   func legalPenaltiesSaturateWithoutOverflowOrWeakeningLegacyRecords(_ initial: Int) throws {
     var game = combatGame()
