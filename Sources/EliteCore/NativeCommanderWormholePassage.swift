@@ -22,14 +22,16 @@ struct NativeCommanderWormholePassage {
   private let revision: UInt64
   private let epoch: UUID
   func matches(_ game: borrowing Game) -> Bool {
-    !game.docked && game.jumpCountdown == nil && !game.playerEMPDisabled
-      && game.commander.flightSimulation.player == player
-      && game.commander.flightSimulation.pose == pose && game.gameplayRevision == revision
-      && game.nativeStationRuntimeEpoch == epoch && game.commander.fuel == fuelBefore
-      && game.commander.scriptState.wormholeTransit?.commanderPassages[opening.id] == nil
-      && game.commander.scriptState.wormholeTransit?.legs[opening.leg]?.opening == opening
-      && opening.route.origin.location == game.systemIdentity
-      && game.commander.scriptState.calendarSeconds <= opening.expiresAt
+    guard !game.docked, game.jumpCountdown == nil, !game.playerEMPDisabled,
+      game.commander.flightSimulation.player == player,
+      game.commander.flightSimulation.pose == pose, game.gameplayRevision == revision,
+      game.nativeStationRuntimeEpoch == epoch, game.commander.fuel == fuelBefore,
+      game.commander.scriptState.wormholeTransit?.commanderPassages[opening.id] == nil,
+      game.commander.scriptState.wormholeTransit?.legs[opening.leg]?.opening == opening,
+      opening.route.origin.location == game.systemIdentity,
+      game.commander.scriptState.calendarSeconds <= opening.expiresAt
+    else { return false }
+    return true
   }
   static func prepare(
     in game: borrowing Game, opening: NativeWormholeOpening,
