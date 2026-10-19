@@ -5,7 +5,7 @@ enum MainStationGeometry {
   static let docking = NativeStationGeometry.Port(
     center: .init(0, 0, -90), outward: .init(0, 0, -1), up: .init(0, 1, 0),
     tunnelDepth: 25,
-    aperture: [.init(-70, -32, 0), .init(70, -32, 0), .init(70, 32, 0), .init(-70, 32, 0)])
+    aperture: [.init(-80, -32, 0), .init(80, -32, 0), .init(80, 32, 0), .init(-80, 32, 0)])
 
   /// Four front rim panels surround a real opening; all other cube walls remain solid.
   static let mesh = Mesh(
