@@ -947,26 +947,47 @@ private enum ScriptProcurementPreflightObservation {
     facts.legal = game.commander.legal
     facts.mainTargetCurrent = mainTargetIsCurrent(game)
     facts.docked = game.docked
-    facts.live = game.screen.isFlight && game.energy > 0
+    if game.screen.isFlight {
+      facts.live = game.energy > 0
+    } else {
+      facts.live = false
+    }
     facts.paused = game.paused
-    facts.automaticEngaged =
-      game.autoPilot.targetID != nil || game.workGuidance != nil || game.workBraking != nil
+    if game.autoPilot.targetID != nil {
+      facts.automaticEngaged = true
+    } else if game.workGuidance != nil {
+      facts.automaticEngaged = true
+    } else {
+      facts.automaticEngaged = game.workBraking != nil
+    }
     facts.combatLaser = game.selectedFlightTool == .combatLaser
-    facts.frontLaser = game.screen == .front && game.commander.laser(on: .front) != nil
+    if game.screen == .front {
+      facts.frontLaser = game.commander.laser(on: .front) != nil
+    } else {
+      facts.frontLaser = false
+    }
     facts.speed = game.speed
     facts.pitchRate = game.commander.performance.pitch
     facts.yawRate = game.commander.performance.yaw
-    facts.frontShieldLow =
-      game.frontShield.isFinite && game.commander.shieldCapacity.isFinite
-      && game.commander.shieldCapacity > 0
-      && game.frontShield <= game.commander.shieldCapacity * 0.5
-    facts.rearShieldLow =
-      game.rearShield.isFinite && game.commander.rearShieldCapacity.isFinite
-      && game.commander.rearShieldCapacity > 0
-      && game.rearShield <= game.commander.rearShieldCapacity * 0.5
-    facts.pulseHeatBlocked =
-      game.commander.laser(on: .front) == .pulse
-      && game.laserHeat.isFinite && max(0, game.laserHeat - 0.1 * 12) >= 240
+    if game.frontShield.isFinite, game.commander.shieldCapacity.isFinite,
+      game.commander.shieldCapacity > 0
+    {
+      facts.frontShieldLow = game.frontShield <= game.commander.shieldCapacity * 0.5
+    } else {
+      facts.frontShieldLow = false
+    }
+    if game.rearShield.isFinite, game.commander.rearShieldCapacity.isFinite,
+      game.commander.rearShieldCapacity > 0
+    {
+      facts.rearShieldLow = game.rearShield <= game.commander.rearShieldCapacity * 0.5
+    } else {
+      facts.rearShieldLow = false
+    }
+    if game.commander.laser(on: .front) == .pulse, game.laserHeat.isFinite {
+      facts.pulseHeatBlocked = max(0, game.laserHeat - 0.1 * 12) >= 240
+    } else {
+      facts.pulseHeatBlocked = false
+    }
     var threats: [ScriptProcurementPreflightThreat] = []
     for body in game.bodies where body.hull.isTargetShip {
       if !body.energy.isFinite && body.hostile { return facts }
@@ -1047,11 +1068,14 @@ private enum ScriptProcurementPreflightObservation {
     {
       facts.exactForwardHit = body.physical?.identity == threat.identity
       if facts.exactForwardHit {
-        facts.lawfulForwardDefence =
-          game.commander.crimeLedger.hasCurrentUnlawfulAttack(
-            from: threat.identity, against: player, context: context)
-          && game.commander.crimeLedger.permitsAutonomousDefence(
+        if game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+          from: threat.identity, against: player, context: context)
+        {
+          facts.lawfulForwardDefence = game.commander.crimeLedger.permitsAutonomousDefence(
             owner: player, victim: threat.identity, context: context)
+        } else {
+          facts.lawfulForwardDefence = false
+        }
       }
     }
     facts.valid = true
