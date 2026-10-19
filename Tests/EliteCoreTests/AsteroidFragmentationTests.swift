@@ -994,3 +994,133 @@ extension AsteroidFragmentationTests {
     #expect(!refused && game.bodies == retained)
   }
 }
+
+extension AsteroidFragmentationTests {
+  @Test func movingStationRefusalRetainsCurrentSceneSaveAndSafeResume() async throws {
+    var (game, _, sourceID, stationID) = try stationFractureGame(main: false)
+    try armStationFractureImpact(&game, sourceID: sourceID, stationID: stationID)
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let firstCapture = game.beginAsteroidContactStep(delta: 0.1)
+    let firstFrame = try #require(firstCapture)
+    moveStationContactEndpoints(&game, delta: 0.1)
+    let impact = game.completeAsteroidContactStep(firstFrame, delta: 0.1)
+    guard case .advanced(let receipt?) = impact else {
+      Issue.record("Actual station impact prerequisite refused: \(String(describing: impact))")
+      return
+    }
+    let station = try #require(game.bodies.first { $0.id == stationID })
+    let identity = try #require(game.stationInertialIdentity(for: station))
+    let original = try #require(game.commander.nativeStations?.inertia(for: identity))
+    #expect(original.contacts == 1 && original.refusedSteps == 0 && receipt.damage > 0)
+    let sourceActor = try #require(game.bodies.first { $0.id == sourceID }?.physical?.identity)
+    game.commander.miningLedger.cull(actor: sourceActor)
+    game.bodies.removeAll { $0.id == sourceID }
+    let resources = game.commander.scriptState.stationResources
+    let sourcePoses = game.commander.nativeStations?.poses
+    let position = game.commander.flightSimulation.pose.systemPoint(station.position)
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let failedTime = game.commander.flightSimulation.physicalTime
+    let captured = game.beginAsteroidContactStep(delta: 0.1)
+    let frame = try #require(captured)
+    moveStationContactEndpoints(&game, delta: 0.1)
+    let index = try #require(game.bodies.firstIndex { $0.id == stationID })
+    // An actual malformed endpoint rejects this once-consumed movement frame.
+    game.bodies[index].position = .init(.infinity, 0, 0)
+    let failed = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .refused = failed else {
+      Issue.record("Malformed station endpoint was admitted")
+      return
+    }
+    #expect(game.paused && game.commander.flightSimulation.physicalTime == failedTime)
+    let world = try #require(game.commander.nativeStations)
+    let retained = try #require(world.inertia(for: identity))
+    #expect(retained.valid && retained.contacts == original.contacts)
+    #expect(retained.momentum == original.momentum && retained.impactTime == original.impactTime)
+    #expect(retained.refusedSteps == 1 && abs(retained.refusedMotionTime - 0.1) < 1e-12)
+    #expect(game.commander.scriptState.stationResources == resources && world.poses == sourcePoses)
+    let restoredBody = try #require(game.bodies.first { $0.id == stationID })
+    #expect(
+      (game.commander.flightSimulation.pose.systemPoint(restoredBody.position) - position).length
+        < 1e-5)
+    #expect(
+      world.currentPosition(for: identity, at: failedTime).map { ($0 - position).length < 1e-5 }
+        == true)
+    #expect(
+      world.sceneIsConsistent(
+        bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
+        system: game.systemIdentity, flight: game.commander.flightSimulation))
+    let stationObservation = try #require(
+      game.nativeStationFlightObservations(from: nil, delta: nil).first { $0.bodyID == stationID })
+    #expect(stationObservation.rigidPoseConsistent)
+    let storage = try NativeStationTestStorage()
+    defer { storage.clean() }
+    try NativeSaveTestFixture.prepareCurrentPolicy(&game)
+    let runtime = GameRuntime(game: game, saveURL: storage.url)
+    try await runtime.save(to: storage.url)
+    let (disk, _) = try ScriptSaveStore.read(Data(contentsOf: storage.url), from: storage.url)
+    #expect(disk.nativeStations?.inertia(for: identity) == retained && disk.nativeStationStateValid)
+    let reloaded = GameRuntime(game: Game(executive: false))
+    try await reloaded.load(from: storage.url, persistMigrations: false)
+    game = await reloaded.snapshot()
+    #expect(game.commander.nativeStations?.inertia(for: identity) == retained)
+    #expect(
+      game.commander.nativeStations?.sceneIsConsistent(
+        bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
+        system: game.systemIdentity, flight: game.commander.flightSimulation) == true)
+    game.paused = false
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let resumedCapture = game.beginAsteroidContactStep(delta: 0.1)
+    let resumedFrame = try #require(resumedCapture)
+    moveStationContactEndpoints(&game, delta: 0.1)
+    let resumed = game.completeAsteroidContactStep(resumedFrame, delta: 0.1)
+    guard case .advanced(nil) = resumed else {
+      Issue.record("Safe station resume refused: \(String(describing: resumed))")
+      return
+    }
+    let current = try #require(
+      game.bodies.first { game.stationInertialIdentity(for: $0) == identity })
+    let now = game.commander.flightSimulation.pose.systemPoint(current.position)
+    #expect((now - position - original.velocity * 0.1).length < 1e-5)
+    #expect(game.commander.nativeStations?.inertia(for: identity)?.momentum == original.momentum)
+    #expect(game.commander.nativeStations?.inertia(for: identity)?.contacts == 1)
+    #expect(game.commander.nativeStations?.inertia(for: identity)?.refusedSteps == 1)
+    #expect(
+      game.commander.nativeStations?.sceneIsConsistent(
+        bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
+        system: game.systemIdentity, flight: game.commander.flightSimulation) == true)
+  }
+}
+
+extension AsteroidFragmentationTests {
+  @Test func firstRefusedStationStepRecordsNoInventedImpulseOrContact() throws {
+    var (game, _, sourceID, _) = try stationFractureGame(main: false)
+    let original = try #require(game.commander.nativeStations)
+    #expect(original.stationInertia.isEmpty)
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let captured = game.beginAsteroidContactStep(delta: 0.1)
+    let frame = try #require(captured)
+    moveStationContactEndpoints(&game, delta: 0.1)
+    let index = try #require(game.bodies.firstIndex { $0.id == sourceID })
+    game.bodies[index].position = .init(.infinity, 0, 0)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .refused = result else {
+      Issue.record("Malformed debris endpoint was admitted")
+      return
+    }
+    let world = try #require(game.commander.nativeStations)
+    let stations = game.bodies.filter { $0.nativeStationIdentity != nil }
+    try #require(!stations.isEmpty)
+    for station in stations {
+      let identity = try #require(station.nativeStationIdentity)
+      let motion = try #require(world.inertia(for: .rrs(identity)))
+      #expect(motion.valid && motion.contacts == 0 && motion.impactTime == 0)
+      #expect(motion.momentum == Vector3(0, 0, 0) && motion.displacement == Vector3(0, 0, 0))
+      #expect(motion.refusedSteps == 1 && motion.refusedMotionTime == 0.1)
+    }
+    #expect(world.poses == original.poses && world.ledger == original.ledger)
+    #expect(
+      world.sceneIsConsistent(
+        bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
+        system: game.systemIdentity, flight: game.commander.flightSimulation))
+  }
+}
