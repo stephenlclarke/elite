@@ -320,13 +320,25 @@ struct ScriptProcurementFixture {
       await runtime.key("h")
       let started = await runtime.procurementJumping()
       if verifyDeparture {
+        let flight = await runtime.procurementFlightFacts()
         let detail = await runtime.procurementJumpRefusalDetail(destination: destination)
-        try #require(started, "\(detail)")
+        try #require(
+          started && flight.live && !flight.paused && !flight.docked,
+          "Countdown start, steps=0: \(detail)")
       } else {
         try #require(started)
       }
       var steps = 0
       while steps < 500 {
+        if verifyDeparture {
+          let flight = await runtime.procurementFlightFacts()
+          if !flight.live || flight.paused || flight.docked {
+            let detail = await runtime.procurementJumpRefusalDetail(destination: destination)
+            try #require(
+              flight.live && !flight.paused && !flight.docked,
+              "Countdown stopped, steps=\(steps): \(detail)")
+          }
+        }
         let jumping = await runtime.procurementJumping()
         if !jumping { break }
         if let prepareScene { try await prepareScene(runtime) }
@@ -339,7 +351,14 @@ struct ScriptProcurementFixture {
         steps += 1
       }
       let system = await runtime.procurementCurrentSystem()
-      try #require(steps > 0 && steps < 500 && system == destination)
+      if verifyDeparture {
+        let detail = await runtime.procurementJumpRefusalDetail(destination: destination)
+        try #require(
+          steps > 0 && steps < 500 && system == destination,
+          "Countdown arrival, steps=\(steps): \(detail)")
+      } else {
+        try #require(steps > 0 && steps < 500 && system == destination)
+      }
       try await dock(
         runtime, diagnostic: diagnostic, phase: diagnostic == nil ? "" : leg + "-dock",
         defensivePreflight: defensivePreflight,
@@ -1331,6 +1350,8 @@ extension GameRuntime {
       + " wanted=\(destination) fuel=\(game.commander.fuel) distance=\(distance)"
       + " reach=\(game.commander.maximumJumpDistance) docked=\(game.docked)"
       + " live=\(procurementFlightFacts().live) paused=\(game.paused)"
+      + " screen=\(game.screen) energy=\(game.energy) countdown=\(String(describing: game.jumpCountdown))"
+      + " physicalTime=\(game.commander.flightSimulation.physicalTime)"
       + " EMP=\(game.playerEMPDisabled) lock=\(game.hyperspaceMassLocked)"
       + " message=\(game.message.prefix(120))"
     return String(
