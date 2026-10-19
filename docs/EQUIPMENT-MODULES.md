@@ -1,6 +1,6 @@
 # Equipment modules and accumulated upgrades
 
-Current development equipment uses three navigation/energy grades and seven shield grades. The shop translates preserved save keys into module names and shows the actual fitted grade. New commanders receive Basic shield, navigation and energy foundations. Buying, recovering, storing, fitting and recorded paid prerequisites remain distinct. Use Equipment (3) at a main orbital station and Inventory (9) for owned items and painted fitting reviews; RRS docks have no general equipment shop.
+Current development equipment uses three navigation grades, four energy grades and seven shield grades. The shop translates preserved save keys into module names and shows the actual fitted grade. New commanders receive Basic shield, navigation and energy foundations. Buying, recovering, storing, fitting and recorded paid prerequisites remain distinct. Use Equipment (3) at a main orbital station and Inventory (9) for owned items and painted fitting reviews; RRS docks have no general equipment shop.
 
 ## Stock grades
 
@@ -16,7 +16,8 @@ Actual jumps use the fitted reach, current fuel and effective fuel cost. Compati
 | --- | ---: | ---: | --- |
 | Basic | 1 | 1 | Included foundation |
 | Intermediate | 1 | 2 | 1,500 CR; legacy Extra Energy Unit |
-| Advanced | 1 | 3 | Naval mission reward, XYZZY or PLUGH; legacy Naval Energy Unit |
+| Advanced | 1 | 3 | 4,500 CR at displayed TL12; also Naval mission reward or PLUGH |
+| Elite | 1 | 4 | 13,500 CR at displayed TL14; also XYZZY or PLUGH |
 
 | Shield | Stock front/rear capacity versus hull base | Stock recharge versus hull base | Acquisition |
 | --- | ---: | ---: | --- |
@@ -28,7 +29,7 @@ Actual jumps use the fitted reach, current fuel and effective fuel cost. Compati
 | Advanced II | 6.9 | 1 | Elite-rank Capital reward, XYZZY or PLUGH |
 | Elite | 9.2 | 1 | Compatible recovered-upgrade progression; no ordinary shop row |
 
-Prices are base stock prices before station discounts and availability rules. Actual capacities and recharge multiply the hull's native values. The Elite combat-rank reward supplies the preserved Capital item, now stock Advanced II; the Elite component grade is a separate threshold. Current XYZZY supplies that Advanced II stock shield, the Advanced navigation module and Advanced energy module. It does not manufacture recovered-upgrade history.
+Prices are base stock prices before station discounts and availability rules. Actual capacities and recharge multiply the hull's native values. The Elite combat-rank reward supplies the preserved Capital item, now stock Advanced II; the Elite component grade is a separate threshold. Current XYZZY supplies the Elite stock shield, Advanced navigation module and Elite energy module. It does not manufacture recovered-upgrade history.
 
 ## Applying upgrades
 
@@ -36,7 +37,13 @@ A compatible recovered upgrade changes the selected physical component and is co
 
 The component retains its identity, origin, accumulated improvements, features and receipts. Meeting every required threshold promotes its grade automatically, retaining excess progress; one application may cross multiple grades. An improvement to another axis can remain useful without completing the next grade. A new stock purchase is a separate owned item; a weaker purchase is stored rather than replacing stronger fitted statistics. One component occupies each shield/navigation/energy slot, while applied upgrades accumulate on that component.
 
-New improvements stop at family terminal envelopes: shield capacity ratios 11.96 and recharge 1.3; navigation reach 27.3 LY with spool/fuel-cost ratios no lower than 0.7; energy capacity ratio 1.3 and recharge 3.9. Valid grandfathered statistics are preserved rather than clipped to these bounds. Fitting, capacity and custody rules still apply. A successful fit/promotion preserves current resource fractions and does not refill energy, shields, fuel or missiles.
+New improvements stop at family terminal envelopes: shield capacity ratios 11.96 and recharge 1.3; navigation reach 27.3 LY with spool/fuel-cost ratios no lower than 0.7; energy capacity ratio 1.3 and recharge 5.2. Valid grandfathered statistics are preserved rather than clipped to these bounds. Fitting, capacity and custody rules still apply. A successful fit/promotion preserves current resource fractions and does not refill energy, shields, fuel or missiles.
+
+## Alien attachments
+
+Recovered alien attachments are separate physical items with four independent types: energy capacity, energy recharge, shield capacity and shield recharge. A stock attachment contributes +10% to its type. Contributions of the same type add together and multiply the resolved normal component statistics once; two stock capacity attachments give +20%, independently of recharge attachments. These attachments have no gameplay count limit and are separate from the ordinary component terminal envelopes.
+
+Inventory offers Fit, Store and matching recovered upgrades only at an authenticated PLUGH main-station dock. Refitting costs 0 CR, grants no charge, and clamps charge to the resulting capacity. Applying a compatible recovered upgrade permanently increases that physical attachment's contribution; storing and refitting it does not reset the improvement or permit replaying its source. Current ship summaries retain fitted counts and stacked percentages for each type. The native alien fitting source exists; complete acceptance and publication remain separately tracked.
 
 ## Legacy compatibility and validation
 
