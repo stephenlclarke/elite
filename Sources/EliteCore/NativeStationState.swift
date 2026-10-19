@@ -130,7 +130,9 @@ struct NativeStationServiceContext: Equatable, Sendable {
 enum NativeStationStateError: Error { case invalidState, unavailable }
 
 struct NativeStationLedger: Equatable, Codable, Sendable {
-  static let recordLimit = 372
+  /// At most one source waystation per ordinary world plus one HQ per galaxy.
+  static let maximumSourceRecords = 8 * (256 + 1)
+  static var recordLimit: Int { NativeStationSource.bindings.count }
   let world: UUID
   private(set) var records: [NativeStationRecord]
   private(set) var nextDockSequence: UInt64
@@ -146,7 +148,8 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
   }
 
   var valid: Bool {
-    guard records.count <= Self.recordLimit, nextDockSequence > 0,
+    guard Self.recordLimit <= Self.maximumSourceRecords,
+      records.count <= Self.recordLimit, nextDockSequence > 0,
       nextDockSequence < UInt64(Int64.max),
       records.allSatisfy({ $0.valid && $0.identity.world == world }),
       Set(records.map(\.identity)).count == records.count,
@@ -246,7 +249,9 @@ struct NativeStationLedger: Equatable, Codable, Sendable {
     let values = try decoder.container(keyedBy: CodingKeys.self)
     world = try values.decode(UUID.self, forKey: .world)
     var entries = try values.nestedUnkeyedContainer(forKey: .records)
-    guard entries.count.map({ $0 <= Self.recordLimit }) ?? true else {
+    guard Self.recordLimit <= Self.maximumSourceRecords,
+      entries.count.map({ $0 <= Self.recordLimit }) ?? true
+    else {
       throw DecodingError.dataCorruptedError(
         forKey: .records, in: values, debugDescription: "Native station record limit exceeded.")
     }

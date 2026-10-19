@@ -211,7 +211,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   var currentMainDock: NativeMainStationDockReceipt?
 
   init(owner: UUID) throws {
-    guard NativeStationSource.bindings.count == NativeStationLedger.recordLimit else {
+    guard NativeStationSource.bindings.count <= NativeStationLedger.maximumSourceRecords else {
       throw NativeStationRuntimeError.invalidSource
     }
     adapterRevision = NativeStationSource.adapterRevision

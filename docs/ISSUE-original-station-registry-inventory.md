@@ -1,0 +1,3 @@
+# Original worlds cannot launch with the predecessor station count
+
+The first live-world native run refused initial launch before mission or debris work. NativeStationWorld requires its complete source registry, while NativeStationLedger hard-codes 372 entries from the predecessor government distribution. The unchanged signed-int32 station producer over the installed original governments yields 382 entries. Every world initialization therefore rejects valid source state before launch. Derive the exact expected count from that installed source, retain an independent finite source-slot bound, and keep full membership, pose, identity and current-save checks. See the [repair](PR-original-station-registry-inventory.md).
