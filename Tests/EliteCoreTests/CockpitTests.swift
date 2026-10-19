@@ -103,18 +103,35 @@ import Testing
   #expect(!game.commander.unlimitedCargo && !game.commander.unlimitedMissiles)
 }
 
+private func addControlledScoopBody(_ game: inout Game, hull: Hull) -> Int {
+  let id = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: id, hull: hull, position: .init(0, -20, 40)))
+  game.ensurePhysicalActors()
+  return id
+}
+
 @Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() throws {
   var game = Game(executive: false)
   game.launch()
+  try #require(!game.docked && game.commander.valid)
   game.speed = 0
-  game.bodies = [.init(id: 1, hull: .cargo, position: .init(0, -20, 40))]
+  let stations = Dictionary(
+    uniqueKeysWithValues: game.bodies.compactMap { body -> (Int, ActorIdentity)? in
+      guard body.hull == .station, let actor = body.physical?.identity else { return nil }
+      return (body.id, actor)
+    })
+  try #require(!stations.isEmpty)
+  let cargoID = addControlledScoopBody(&game, hull: .cargo)
+  let cargoActor = try #require(game.bodies.first { $0.id == cargoID }?.physical?.identity)
   game.tick(delta: 0.01)
-  #expect(game.commander.cargo[0] == 0 && game.bodies.count == 1)
+  #expect(game.commander.cargo[0] == 0)
+  #expect(game.bodies.first { $0.id == cargoID }?.physical?.identity == cargoActor)
   for key in "xyzzy" { game.key(String(key)) }
   game.key("return")
   #expect(game.commander.equipment.contains("Fuel Scoops"))
   game.tick(delta: 0.01)
-  #expect(game.commander.cargo[0] == 1 && game.bodies.isEmpty)
+  #expect(game.commander.cargo[0] == 1 && !game.bodies.contains { $0.id == cargoID })
   game.tick(delta: 0.01)
   #expect(game.commander.cargo[0] == 1)
   game.commander.unlimitedCargo = false
@@ -132,20 +149,27 @@ import Testing
   try #require(game.commander.cargoTonnes == finiteCapacity && game.commander.valid)
   let fullCargo = game.commander.cargo
   let fullCash = game.commander.credits
-  game.bodies = [.init(id: 2, hull: .cargo, position: .init(0, -20, 40))]
+  let fullID = addControlledScoopBody(&game, hull: .cargo)
+  let fullActor = try #require(game.bodies.first { $0.id == fullID }?.physical?.identity)
   game.tick(delta: 0.01)
-  #expect(game.message == "CARGO HOLD FULL" && game.bodies.count == 1)
+  #expect(game.message == "CARGO HOLD FULL")
+  #expect(game.bodies.first { $0.id == fullID }?.physical?.identity == fullActor)
   #expect(game.commander.cargo == fullCargo && game.commander.credits == fullCash)
-  try #require(game.bodies.count == 1)
-  let remaining = try #require(game.bodies.firstIndex { $0.id == 2 && $0.hull == .cargo })
+  let remaining = try #require(game.bodies.firstIndex { $0.id == fullID && $0.hull == .cargo })
   game.commander.unlimitedCargo = true
   game.bodies[remaining].position.y = 20
   game.tick(delta: 0.01)
-  #expect(game.bodies.count == 1 && game.bodies.first?.id == 2)
+  #expect(game.bodies.first { $0.id == fullID }?.physical?.identity == fullActor)
   #expect(game.commander.cargo == fullCargo && game.commander.credits == fullCash)
-  game.bodies = [.init(id: 3, hull: .thargon, position: .init(0, -20, 40))]
+  let alienID = addControlledScoopBody(&game, hull: .thargon)
   game.tick(delta: 0.01)
-  #expect(game.commander.cargo[16] == 1 && game.bodies.isEmpty)
+  var alienCargo = fullCargo
+  alienCargo[16] += 1
+  #expect(game.commander.cargo == alienCargo && !game.bodies.contains { $0.id == alienID })
+  #expect(game.bodies.first { $0.id == fullID }?.physical?.identity == fullActor)
+  for (id, actor) in stations {
+    #expect(game.bodies.first { $0.id == id }?.physical?.identity == actor)
+  }
   for key in "xyzzy" { game.key(String(key)) }
   let scoops = try #require(game.commander.fittedEquipment(at: .utility(.fuelScoops)))
   let revision = try #require(game.commander.equipmentInventory?.revision)

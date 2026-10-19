@@ -202,9 +202,22 @@ import Testing
   #expect(restored.commander.credits == 1234 && restored.commander.xyzzyCashGranted)
 }
 
+private func selectActualMainStationWithTab(_ game: inout Game) throws {
+  game.ensurePhysicalActors()
+  try #require(game.bodies.contains { $0.id == 0 && $0.hull == .station && $0.energy > 0 })
+  // Each real candidate can be visited once before wrapping; no traffic is removed.
+  let limit = game.bodies.count
+  for _ in 0..<limit {
+    game.key("tab")
+    if game.autoPilot.targetID == 0 { break }
+  }
+  try #require(game.autoPilot.targetID == 0 && game.dockingComputer)
+}
+
 @Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
   var game = Game(executive: false)
   game.launch()
+  try #require(!game.docked && game.commander.valid)
   game.key("tab")
   #expect(game.message == "FIT A TARGETING COMPUTER" && !game.dockingComputer)
   try game.commander.grantEquipment(
@@ -213,14 +226,26 @@ import Testing
   #expect(game.commander.targetingTier == .military)
   game.commander.xyzzyActive = true
   game.commander.autoTarget = false
-  game.bodies = []
+  // The fresh scene has no salvage targets. Ordinary ships, intact rocks and
+  // authentic stations remain present but cannot satisfy the salvage filter.
+  try #require(
+    game.bodies.allSatisfy { body in
+      [Hull.cobra, .viper, .sidewinder, .station, .asteroid, .missile].contains(body.hull)
+        && body.physical?.salvage == nil && body.physical?.payload == nil
+        && body.physical?.empCrewPod == nil
+    })
+  game.workTargetFilter = .salvage
   game.key("tab")
-  #expect(game.message == "NO ELIGIBLE TARGETS")
-  game.bodies = [.init(id: 0, hull: .station, position: .init(300, 0, 1500))]
+  #expect(game.message == "NO ELIGIBLE TARGETS" && game.autoPilot.targetID == nil)
+  #expect(!game.dockingComputer)
+  game.workTargetFilter = .ships
+  let anchor = try #require(game.commander.flightSimulation.anchors?.station)
+  NativePagedSalvageFixture.moveObserver(
+    &game, to: .init(position: anchor.position + .init(-300, 0, -1500)))
   game.screen = .rear
   game.key("c")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("tab")
+  try selectActualMainStationWithTab(&game)
   #expect(game.screen == .front && game.dockingComputer && game.autoPilot.targetID == 0)
   #expect(game.message == "AUTO DOCKING ENGAGED")
   game.tick(delta: 0.1)
@@ -228,14 +253,14 @@ import Testing
   #expect(game.autoHUDLines.contains { $0.contains("AUTO:") })
   game.key("p")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("tab")
+  try selectActualMainStationWithTab(&game)
   game.key("q")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  game.key("tab")
+  try selectActualMainStationWithTab(&game)
   game.key("5")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
   game.key("0")
-  game.key("tab")
+  try selectActualMainStationWithTab(&game)
   for _ in 0..<2500 where !game.docked { game.tick(delta: 0.1) }
   #expect(game.docked && !game.dockingComputer && game.screen == .status)
 }
