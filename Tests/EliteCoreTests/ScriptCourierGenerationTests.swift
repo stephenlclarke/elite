@@ -160,6 +160,14 @@ struct CourierNativeFixture: Sendable {
       path: [7, 185, 0, 198], lowerBound: 242732.15521199995,
       offer: "03F43AD7-B027-A298-4660-E9DBB048673C"),
   ]
+  // Dedicated one-hop input for the native-painted helper; runtime rows retain their routes.
+  static let paintedRow0OneHop: Self = .init(
+    origin: 13, row: 0, seed: 2_402_018_277_323_895_990, initialState: 2_481_124_534,
+    draws: [
+      1_677_595_532, 2_423_761_451, 3_278_761_714, 2_831_262_923, 390_714_887, 2_628_597_923,
+    ],
+    path: [13, 105], lowerBound: 17392.822800000024,
+    offer: "BC3CB061-BDC3-256E-3F74-789A175FE350")
   static let boundary48Above: Self = .init(
     origin: 98, row: 1, seed: 237_134_580_724_460_434, initialState: 269_151_122,
     draws: [3_798_542_574, 702_931_412, 775_572_571, 2_442_325_987, 1_102_304_084, 1_089_509_816],

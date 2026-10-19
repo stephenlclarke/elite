@@ -523,5 +523,31 @@
         "G01-S023"
       ]
     }
-  ]
+  ],
+  "paintedRow0Selection": "Dedicated native-painted helper witness only: first catalogue-ordered origin whose unchanged epoch-zero row0 is feasible AND one-hop, retaining the actual physicallyDeliverCourier precondition. No runtime/traffic/combat search; existing six runtime rows and all boundaries/refusals unchanged.",
+  "paintedRow0OneHop": {
+    "origin": 13,
+    "row": 0,
+    "seed": 2402018277323895990,
+    "initialState": 2481124534,
+    "draws": [
+      1677595532,
+      2423761451,
+      3278761714,
+      2831262923,
+      390714887,
+      2628597923
+    ],
+    "path": [
+      13,
+      105
+    ],
+    "lowerBound": 17392.822800000024,
+    "offer": "BC3CB061-BDC3-256E-3F74-789A175FE350",
+    "duration": 172800,
+    "worldKeys": [
+      "G01-S013",
+      "G01-S105"
+    ]
+  }
 }

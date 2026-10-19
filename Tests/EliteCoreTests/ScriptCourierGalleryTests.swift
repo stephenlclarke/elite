@@ -396,7 +396,8 @@ private func captureCourierApproachFailure(
 extension NativeViewTests {
   @MainActor @Test func nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce() async throws {
     for row in 0..<6 {
-      let pinned = CourierNativeFixture.rows[row]
+      let pinned =
+        row == 0 ? CourierNativeFixture.paintedRow0OneHop : CourierNativeFixture.rows[row]
       let harness = try await CourierInputHarness(origin: pinned.origin, physicalDocking: row < 2)
       defer { harness.clean() }
       try await harness.review(row: row)
