@@ -47,6 +47,12 @@ The original history method in run 578 still failed: all 12 argument starts and 
 
 The production change retains a response actor only within the current authorized candidate tier and uses the existing camera-corrected moving-bearing tracker within unchanged turn limits. Both new behaviour and affected safety regressions have focused evidence, while the remaining partial-history failure requires further causal work. Prior freight, input and pod results retain their tested sources. No broad CI, coverage percentage, sanitizer/leak, release or completion claim follows from this focused run.
 
+## Current partial-history observation
+
+Run 581 used the unchanged `ac287a88f18a1a6f78037088b5ffb707e36c807f` coverage binary after a documentation-only commit. One explicitly authorized, bounded run enabled the existing history recorder; other diagnostics remained off. The original method completed all 12 argument starts and aggregate ends and failed with four assertions, exclusively in `partial`. It had no unknown method outcomes, crash or timeout. The command took 52.455 seconds; all owned processes closed, and tracked inputs, compiled artifacts and player data remained unchanged.
+
+The partial scenario emitted valid first-failure and combat records. During redocking, step 62 to 63, the ship's energy fell from 13.2 to zero and the screen changed to game over. The trace retained the same response actor during defence and recorded eight player laser discharges and eight accepted player laser hits. Hostile pulse hits still destroyed the player. This supplies current causal evidence for the remaining repair; it is not another station regression pass or full CI acceptance. Retention limits are explicit: 14 samples and 128 incidents were retained, with 277 older samples and 24 recorder incidents dropped. No output truncation or JSON parse error occurred. No abandoned-scenario diagnostic was emitted, and no individual argument verdict is inferred.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.

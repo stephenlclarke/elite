@@ -207,5 +207,51 @@
     "groupedQualificationSHA256": "34c2b5ef7e673bafe7fb0d99f2b0ba00c64cf9c9ca16a449365e2555dccaa03d",
     "allDiagnosticsOff": true,
     "fullCIPass": false
+  },
+  "currentPartialHistoryObservation": {
+    "sourceCommit": "b11b48132665dbd6fd7c6e4d5f73ddd576a0b5f5",
+    "compiledSourceCommit": "ac287a88f18a1a6f78037088b5ffb707e36c807f",
+    "sourceDifference": "Three validation documents only; compiler/test inputs unchanged.",
+    "methodVerdict": "FAILED",
+    "originalArguments": 12,
+    "issueCount": 4,
+    "issueStagesDerivedFromActualHeaders": {
+      "partial": 4
+    },
+    "historyRecorderEnabled": true,
+    "otherDiagnosticsOff": true,
+    "partialFirstFailureAndTraceValid": true,
+    "partialPhase": "history-partial-redock",
+    "partialFailureStep": "63",
+    "playerLaserDischarges": 8,
+    "acceptedCounts": {
+      "playerOwned/laser/hit": 8,
+      "playerVictim/laser/destruction": 1,
+      "playerVictim/laser/hit": 49
+    },
+    "retention": {
+      "sampleCapacity": 64,
+      "incidentCapacity": 128,
+      "samplesDropped": 277,
+      "sampleIntervalSkipped": 1142,
+      "valuesTruncated": 0,
+      "recorderIncidentsDropped": 24,
+      "audioEventsDropped": 0,
+      "outputSamplesDropped": 0,
+      "outputIncidentsDropped": 0
+    },
+    "retainedSamples": 14,
+    "retainedIncidents": 128,
+    "commandSeconds": 52.45461037498899,
+    "supervisedSeconds": 54.45356058399193,
+    "unknownMethods": 0,
+    "matchedCrashes": [],
+    "timedOut": false,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "proofSHA256": "0d60eae0d45970c9bd2c8cb0ed1d1e28a87163152c619bd5a57b12ecdeb2d425",
+    "actualIssueHeadersSHA256": "ce368c646da32655d6ae5bf10b77148e0912751a70bcb87615207513e47cfa6f",
+    "currentPartialEvidenceSHA256": "4d3ff933135bea9fca73b6b9aea653c0e9c24937d29115bdcf8acd4c00d10e1d",
+    "limits": "No abandoned diagnostic emitted or individual argument verdict inferred. Full CI, coverage percentage, sanitizer/leak and release acceptance remain pending."
   }
 }
