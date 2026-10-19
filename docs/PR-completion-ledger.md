@@ -144,3 +144,7 @@ Record exact7398 source, actual784 product-only optimized build PASS and785 same
 ## Residual native drawing source proposal
 
 Record Root's G2 source-only assignment and delivered smallest panel-colour reuse proposal, with exact non-authoring/no-job bounds and preserved geometry/material/order/modes. The proposal remains pending Root's implementation choice; no source, focused PASS, runtime gain or readiness is inferred. Current owner786/787 crash validation retains priority. Scoped Markdown/whitespace checks only in the unfrozen canonical checkout.
+
+## Approved supporting panel-colour optimization
+
+Advance G2's exact one-local panelColour reuse from source proposal to authorized in-development authoring, limited to one product hunk, one focused parity test and paired notes. Owner focused PASS/independent review remain prerequisites; compiler follows MC1. No standalone optimized/native comparison, general cache/backend/new harness or smoothness claim; timing belongs with the next usable candidate. Scoped Markdown and whitespace checks only.
