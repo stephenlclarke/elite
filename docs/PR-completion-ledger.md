@@ -52,3 +52,7 @@ G1 composition uses the corrected net delta from1c49b369 through48d4267753cff14b
 Based on canonical9659e17bc586220f981c69ae26f9824dd65e46f4, update only MBA01 revision2 current packet/assignment/queue and paired notes. Pin new patch/handoff hashes, nine scoped files, eight authored UNRUN methods and G2 re-review pending; local focused executor remains queued after M01, not active. Preserve G1's current742/744/all740166-location evidence and all earlier frozen packet hashes. No whole-ledger replay, code change, runtime job or docs-only game test.
 
 G1 composition updates the designer delta with later actual evidence: G2 r2 source review is CLEAN (review SHA92d1e649...), actual746 selected methods are all UNKNOWN after an owned stack crash, and Root authorizes prepared local747/748 owner execution now. No focused Swift PASS, canonical product integration or new runtime job is claimed by this documentation commit. All740 failure groups and742 local delivery remain retained.
+
+## Current760 result and bounded owner handoffs
+
+Update the current ledger summary and append verified760 terminal/closure evidence, grouped2410863 independent CLEAN source review plus761/762 owner grant, and MBA05 ten-path scope with globally reserved35/36. Every earlier64-character evidence hash is preserved. Three Markdown files only; scoped Markdown/whitespace checks, no game compiler/runtime/media or new release. Grouped runtime is UNRUN at this documentation snapshot, crash source remains unintegrated, and preview742 remains the existing player build.

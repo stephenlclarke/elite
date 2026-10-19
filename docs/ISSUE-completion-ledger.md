@@ -33,3 +33,7 @@ Current maintained assignment transition:04 source-frozen/UNRUN is pending indep
 Superseding human policy: each owner implements, writes focused units, ensures PASS and obtains bugs/performance/style review before integration handoff. Both frozen MBA01/04 packets and MC1's457ee6a UNRUN leaf remain in development/validation-review pending, not ready. Preserve packets and740 evidence; Root's focused execution lease/G2 independent review are supporting acceptance, with new MBA features held until closure.
 
 MBA01 revision2 is now the current nine-file source packet on exactba47/commitNONE: author addresses2P1 findings, G2 re-review pending, eight Swift methods AUTHORED UNRUN and local executor queued after M01, not active. Preserve earlier packet evidence and do not call the revision clean, passing or integration-ready.
+
+## Current M01 review/execution tracking
+
+Current assignment and source-review status must retain actual760 stack failure rather than imply a crash fix. Record the grouped fixture one-case owner grant and the exact MBA05 additional predicate/save-format reservation, while preserving historical evidence and the still-delivered742 private app. Mac unlock confirmation does not start a competing GUI/performance job.
