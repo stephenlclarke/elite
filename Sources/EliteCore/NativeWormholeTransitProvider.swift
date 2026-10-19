@@ -7,6 +7,11 @@ private final class NativeWormholeAttempt {
   init(_ game: borrowing Game) { self.game = copy game }
 }
 
+// Turn-local eligibility only; contains no retained actor/body or publication authority.
+private struct NativeWormholeAdvanceSelection {
+  let context: OriginalWorldJourneyContext?
+}
+
 extension Game {
   /// Capture the complete attained scene before any source detaches. Admission/spool changes
   /// run afterwards, so they cannot rewrite this physical frame while entries are consumed.
@@ -174,34 +179,10 @@ extension Game {
       let ledger = commander.scriptState.wormholeTransit, ledger.valid
     else { return }
     for id in ledger.legs.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
-      guard let leg = commander.scriptState.wormholeTransit?.legs[id],
-        ![.arrived, .cancelled].contains(leg.phase)
-      else { continue }
-      if entriesOnly && leg.phase != .open { continue }
-      let now = commander.scriptState.calendarSeconds
-      if let due = leg.dueAt, now < due { continue }
-      if leg.phase == .spooling, let start = leg.spoolPhysicalTime, let drive = leg.driveTerms,
-        commander.flightSimulation.physicalTime - start < drive.activationSeconds
-      {
+      guard let selection = prepareNativeWormholeAdvance(id, entriesOnly: entriesOnly) else {
         continue
       }
-      if leg.departure == nil && leg.opening == nil
-        && (now < leg.nextAttemptAt || leg.attempts >= 128)
-      {
-        continue
-      }
-      let context: OriginalWorldJourneyContext?
-      if let route = leg.opening?.route {
-        context = OriginalWorldJourneyContext.production(for: route, in: self)
-      } else {
-        context = OriginalWorldJourneyContext.production(
-          in: self, destinationWorld: leg.destinationWorld)
-      }
-      if context == nil && leg.phase == .arrivalPending
-        && leg.refusal == "Destination scene unavailable"
-      {
-        continue
-      }
+      let context = selection.context
       let attempt = NativeWormholeAttempt(self)
       do {
         guard
@@ -230,6 +211,42 @@ extension Game {
     }
   }
 
+  // Retire full selected-leg values before the candidate enters source resolution.
+  @inline(never)
+  private func prepareNativeWormholeAdvance(
+    _ id: UUID, entriesOnly: Bool
+  ) -> NativeWormholeAdvanceSelection? {
+    guard let leg = commander.scriptState.wormholeTransit?.legs[id],
+      ![.arrived, .cancelled].contains(leg.phase)
+    else { return nil }
+    if entriesOnly && leg.phase != .open { return nil }
+    let now = commander.scriptState.calendarSeconds
+    if let due = leg.dueAt, now < due { return nil }
+    if leg.phase == .spooling, let start = leg.spoolPhysicalTime, let drive = leg.driveTerms,
+      commander.flightSimulation.physicalTime - start < drive.activationSeconds
+    {
+      return nil
+    }
+    if leg.departure == nil && leg.opening == nil
+      && (now < leg.nextAttemptAt || leg.attempts >= 128)
+    {
+      return nil
+    }
+    let context: OriginalWorldJourneyContext?
+    if let route = leg.opening?.route {
+      context = OriginalWorldJourneyContext.production(for: route, in: self)
+    } else {
+      context = OriginalWorldJourneyContext.production(
+        in: self, destinationWorld: leg.destinationWorld)
+    }
+    if context == nil && leg.phase == .arrivalPending
+      && leg.refusal == "Destination scene unavailable"
+    {
+      return nil
+    }
+    return .init(context: context)
+  }
+
   // Source/fit resolution returns before these later Commander and Game value operations.
   @inline(never)
   private static func publishNativeNPCTransitAttempt(
@@ -255,44 +272,70 @@ extension Game {
     }
     let now = commander.scriptState.calendarSeconds
     if let due = leg.dueAt {
-      guard now >= due else { return false }
-      leg.phase = .arrivalPending
-      commander.scriptState.wormholeTransit?.legs[id] = leg
-      guard let context, context.route == leg.route,
-        context.matches(self, at: systemIdentity),
-        systemIdentity == context.route.destination.location,
-        !docked
-      else {
-        return leg.refusal == "Destination scene unavailable"
-          ? false : setTransitRefusal(id, "Destination scene unavailable")
-      }
-      if leg.arrivalAttemptVisit != commander.flightSimulation.visit {
-        leg.attempts = 0
-        leg.nextAttemptAt = now
-        leg.arrivalAttemptVisit = commander.flightSimulation.visit
-      }
-      guard now >= leg.nextAttemptAt, leg.attempts < 128 else { return false }
-      leg.attempts += 1
-      leg.nextAttemptAt = min(1e12, now + 2)
-      commander.scriptState.wormholeTransit?.legs[id] = leg
-      return try admitNativeTransitArrival(id, context: context)
+      return try advanceNativeTransitArrival(id, leg: &leg, now: now, due: due, context: context)
     }
     if let opening = leg.opening {
-      if now > opening.expiresAt {
-        leg.phase = .cancelled
-        leg.refusal = NativeWormholeRefusal.expired.rawValue
-        commander.scriptState.wormholeTransit?.legs[id] = leg
-        return true
-      }
-      guard let context, context.route == opening.route else { return false }
-      // Open/intent is never departure. Only this frame's attained physical crossing can enter.
-      guard let sample else { return false }
-      let source = try NativeNPCDriveSource.resolve(in: self, leg: leg, context: context)
-      guard source.component == leg.driveComponent, source.terms == leg.driveTerms else {
-        throw NativeWormholeRefusal.driveUnavailable
-      }
-      return try enterNativeTransit(id, source: source, sample: sample, cohort: cohort)
+      return try advanceNativeTransitEntry(
+        id, leg: &leg, now: now, opening: opening, sample: sample, context: context, cohort: cohort)
     }
+    return try advanceNativeTransitSpool(id, leg: &leg, now: now, context: context)
+  }
+
+  @inline(never)
+  private mutating func advanceNativeTransitArrival(
+    _ id: UUID, leg: inout NativeWormholeLeg, now: Double, due: Double,
+    context: OriginalWorldJourneyContext?
+  ) throws -> Bool {
+    guard now >= due else { return false }
+    leg.phase = .arrivalPending
+    commander.scriptState.wormholeTransit?.legs[id] = leg
+    guard let context, context.route == leg.route,
+      context.matches(self, at: systemIdentity),
+      systemIdentity == context.route.destination.location,
+      !docked
+    else {
+      return leg.refusal == "Destination scene unavailable"
+        ? false : setTransitRefusal(id, "Destination scene unavailable")
+    }
+    if leg.arrivalAttemptVisit != commander.flightSimulation.visit {
+      leg.attempts = 0
+      leg.nextAttemptAt = now
+      leg.arrivalAttemptVisit = commander.flightSimulation.visit
+    }
+    guard now >= leg.nextAttemptAt, leg.attempts < 128 else { return false }
+    leg.attempts += 1
+    leg.nextAttemptAt = min(1e12, now + 2)
+    commander.scriptState.wormholeTransit?.legs[id] = leg
+    return try admitNativeTransitArrival(id, context: context)
+  }
+
+  @inline(never)
+  private mutating func advanceNativeTransitEntry(
+    _ id: UUID, leg: inout NativeWormholeLeg, now: Double, opening: NativeWormholeOpening,
+    sample: NativeWormholeMotionSample?, context: OriginalWorldJourneyContext?,
+    cohort: NativeWormholeAttainedCohort?
+  ) throws -> Bool {
+    if now > opening.expiresAt {
+      leg.phase = .cancelled
+      leg.refusal = NativeWormholeRefusal.expired.rawValue
+      commander.scriptState.wormholeTransit?.legs[id] = leg
+      return true
+    }
+    guard let context, context.route == opening.route else { return false }
+    // Open/intent is never departure. Only this frame's attained physical crossing can enter.
+    guard let sample else { return false }
+    let source = try NativeNPCDriveSource.resolve(in: self, leg: leg, context: context)
+    guard source.component == leg.driveComponent, source.terms == leg.driveTerms else {
+      throw NativeWormholeRefusal.driveUnavailable
+    }
+    return try enterNativeTransit(id, source: source, sample: sample, cohort: cohort)
+  }
+
+  @inline(never)
+  private mutating func advanceNativeTransitSpool(
+    _ id: UUID, leg: inout NativeWormholeLeg, now: Double,
+    context: OriginalWorldJourneyContext?
+  ) throws -> Bool {
     guard now >= leg.nextAttemptAt, leg.attempts < 128 else { return false }
     leg.nextAttemptAt = min(1e12, now + 2)
     commander.scriptState.wormholeTransit?.legs[id] = leg

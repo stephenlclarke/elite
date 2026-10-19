@@ -71,8 +71,15 @@ struct OriginalWorldJourneyContext: Sendable, Equatable {
   func matches(_ game: borrowing Game, at location: SystemIdentity) -> Bool {
     guard route.valid, location == game.systemIdentity,
       location == route.origin.location || location == route.destination.location,
-      game.commander.galaxy == route.origin.galaxy
+      location.galaxy == route.origin.galaxy
     else { return false }
+    guard matchesCatalogue() else { return false }
+    return matchesNativeScene(game)
+  }
+
+  // Current location was joined to Game above; catalogue values retire before native-scene work.
+  @inline(never)
+  private func matchesCatalogue() -> Bool {
     let catalogue = Universe.originalWorlds
     guard route.catalogueRevision == OriginalWorldCatalogue.approvedFingerprints["catalogue.json"],
       let source = try? catalogue.world(key: route.origin.worldID),
@@ -83,6 +90,11 @@ struct OriginalWorldJourneyContext: Sendable, Equatable {
       let distance = try? catalogue.distanceLY(from: source.key, to: destination.key),
       distance == route.distanceLightYears
     else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func matchesNativeScene(_ game: borrowing Game) -> Bool {
     let systems = game.systems
     var nativeExit = FlightSimulationState()
     nativeExit.enter(route.destination.location, arriving: true)
