@@ -148,7 +148,10 @@ struct TargetColourCueTests {
             == (ownership == .abandoned
               ? .recoverable : .ordinary))
         game.bodies[0].hostile = true
-        #expect(game.targetColourCue(for: game.bodies[0]) == .hostile)
+        #expect(game.wantedRank(for: game.bodies[0]) == nil)
+        #expect(
+          game.targetColourCue(for: game.bodies[0])
+            == (ownership == .abandoned ? .recoverable : .hostile))
       }
     }
     let profile = try #require(SalvageCatalogue.all.first)

@@ -10,7 +10,9 @@ struct FlightWeaponSnapshotTests {
     let runtime = GameRuntime(game: game)
     let initial = await runtime.snapshot()
     #expect(initial.flightWeaponDisplay == initial.deriveFlightWeaponDisplay())
-    #expect(initial.flightWeaponDisplay.status == "BLOCKED: FRESH RETURN")
+    try #require(!initial.flightTrigger.held && !initial.flightTrigger.pressPending)
+    try #require(!initial.workFireSuspended && initial.selectedFlightTool == .empPirateBlaster)
+    #expect(initial.flightWeaponDisplay.status == "READY")
     var held = Controls()
     held.fire = true
     await runtime.setControls(held)

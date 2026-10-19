@@ -712,7 +712,7 @@ struct ManualResidualFlightTests {
   func actualQKeepsAllMomentumThroughNeutralSteering(velocity: Vector3) throws {
     var game = try releasedResidualGame(velocity)
     #expect(game.manualResidualFlight && game.speed == 0 && game.autoPilot.targetID == nil)
-    #expect(game.message == "MANUAL CONTROL")
+    #expect(game.message == "MANUAL CONTROL - RELEASE HOLD")
     #expect((game.flightWorldVelocity - velocity).length < 1e-9)
     let start = game.commander.flightSimulation.pose
     var controls = Controls()
