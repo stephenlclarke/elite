@@ -984,7 +984,7 @@ private func alignNPCReplayNativeStationNamespace(_ game: inout Game) throws {
   try await runtime.save(to: fixture.save)
   game = await runtime.snapshot()
   try alignNPCReplayNativeStationNamespace(&game)
-  runtime = GameRuntime(game: game)
+  runtime = GameRuntime(game: game, saveURL: fixture.save)
   let resumed = GameRuntime(game: game)
   try await resumed.load(from: fixture.save)
   for _ in 0..<12 {
