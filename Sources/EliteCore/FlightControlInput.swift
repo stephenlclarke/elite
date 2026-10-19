@@ -46,7 +46,9 @@ extension Game {
 
   /// This transient stop may precede a refused native command; it grants no persistent action.
   mutating func interruptFlightTool() {
-    workFireSuspended = true
+    // Only a held trigger needs a release/repress latch. Idle selection and launch
+    // must not invent a stop, and an existing damage/impact stop must survive.
+    if flightTrigger.held { workFireSuspended = true }
     flightTrigger.pressPending = false
     selectedToolActivity = nil
   }

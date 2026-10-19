@@ -6,6 +6,29 @@ import Testing
 @testable import EliteMac
 
 struct FlightControlInputTests {
+  @Test(arguments: ["w", "tab", "f", "q"])
+  func releasedTriggerControlChangesDoNotRequireAnInventedFreshPress(key: String) throws {
+    var game = try empFixture()
+    game.observeFlightFire(held: false)
+    let audio = game.dischargeAudio.events
+    let heat = game.laserHeat
+    let energy = game.energy
+    game.key(key)
+    #expect(!game.flightTrigger.held && !game.flightTrigger.pressPending)
+    #expect(!game.workFireSuspended)
+    #expect(game.dischargeAudio.events == audio)
+    #expect(game.laserHeat == heat && game.energy == energy)
+    // A real damage stop is distinct from an idle selection: subsequent idle
+    // control changes must preserve it until the existing release observation.
+    game.selectFlightTool(.salvageCutter)
+    game.applyDamage(1, front: true)
+    try #require(game.workFireSuspended)
+    game.key(key)
+    #expect(game.workFireSuspended && !game.flightTrigger.held)
+    game.observeFlightFire(held: false)
+    #expect(!game.workFireSuspended)
+  }
+
   @Test func changingWeaponStopsHeldFireUntilANewPressAndSkipsUnfittedTools() throws {
     var game = try empFixture()
     game.bodies = []
