@@ -548,7 +548,18 @@ extension Game {
     _ station: SpaceBody, from start: ShipPose, to end: ShipPose,
     delta: Double = 0, requireAperture: Bool = true
   ) -> Bool {
+    var observation: [String: String]?
+    return nativeMainStationHullCourseIsClear(
+      station, from: start, to: end, delta: delta, requireAperture: requireAperture,
+      observation: &observation)
+  }
+
+  private func nativeMainStationHullCourseIsClear(
+    _ station: SpaceBody, from start: ShipPose, to end: ShipPose,
+    delta: Double = 0, requireAperture: Bool = true, observation: inout [String: String]?
+  ) -> Bool {
     let flight = commander.flightSimulation
+    observation?["refusal"] = "main.current-source"
     guard delta.isFinite, delta >= 0, delta <= 0.1,
       station.id == 0, station.hull == .station, station.nativeStationIdentity == nil,
       let world = commander.nativeStations,
@@ -577,17 +588,27 @@ extension Game {
     let margin =
       (nativeStationRadius(player) + nativeStationRadius(geometry)) * angularBound
       + translationMargin
+    observation?["refusal"] = "main.margin"
+    observation?["geometryMargin"] = String(margin)
+    observation?["geometryDelta"] = String(delta)
     guard margin.isFinite else { return false }
     if requireAperture {
-      guard port.fits(player, margin: margin),
+      observation?["refusal"] = "main.aperture-shape"
+      guard port.fits(player, margin: margin) else { return false }
+      observation?["refusal"] = "main.aperture-start"
+      guard
         nativeStationHullFits(
           player, ship: start, station: previous.position, orientation: startOrientation,
-          port: port, margin: margin),
+          port: port, margin: margin)
+      else { return false }
+      observation?["refusal"] = "main.aperture-end"
+      guard
         nativeStationHullFits(
           player, ship: end, station: current.position, orientation: endOrientation,
           port: port, margin: margin)
       else { return false }
     }
+    observation?["refusal"] = "main.structure"
     return nativeStructureHullSweepClear(
       player, from: start, to: end, position: previous.position, endPosition: current.position,
       fromOrientation: startOrientation, toOrientation: endOrientation,
@@ -599,75 +620,145 @@ extension Game {
   func nativeStationAutoEntryCourseIsClear(
     _ station: SpaceBody, advance: Vector3, terminalSpeed: Double
   ) -> Bool {
-    guard commander.nativeStationStateValid, let world = commander.nativeStations,
-      let physical = station.physical, advance.finite,
-      (physical.velocity - nativeStationVelocity(station)).length < 1e-7,
+    var observation: [String: String]?
+    return nativeStationAutoEntryCourseIsClear(
+      station, advance: advance, terminalSpeed: terminalSpeed, observation: &observation)
+  }
+
+  func nativeStationAutoEntryCourseIsClear(
+    _ station: SpaceBody, advance: Vector3, terminalSpeed: Double,
+    observation: inout [String: String]?
+  ) -> Bool {
+    observation?["refusal"] = "native.state"
+    let stateValid = commander.nativeStationStateValid
+    observation?["nativeStateValid"] = String(stateValid)
+    guard stateValid, let world = commander.nativeStations, let physical = station.physical
+    else { return false }
+    observation?["refusal"] = "native.advance"
+    guard advance.finite else { return false }
+    observation?["refusal"] = "native.motion-binding"
+    let velocityError = (physical.velocity - nativeStationVelocity(station)).length
+    observation?["stationVelocityError"] = String(velocityError)
+    guard velocityError < 1e-7,
       bodies.filter({ $0.id == station.id }).count == 1,
       bodies.first(where: { $0.id == station.id }) == station
     else { return false }
     let flight = commander.flightSimulation
     let player = commander.playerMesh
+    observation?["playerShip"] = commander.shipID
     var endpoint = flight.pose
     endpoint.position = flight.pose.systemPoint(advance)
     if let identity = station.nativeStationIdentity {
+      observation?["refusal"] = "rrs.current-source"
       guard nativeStationBodyIsCurrent(station),
         world.bodyRigidPoseIsConsistent(station, flight: flight),
         let source = NativeStationSource.binding(for: identity),
         let position = world.currentPosition(for: .rrs(identity), at: flight.physicalTime),
-        let orientation = world.currentOrientation(for: identity, at: flight.physicalTime),
-        source.geometry.docking.fits(player),
+        let orientation = world.currentOrientation(for: identity, at: flight.physicalTime)
+      else { return false }
+      observation?["refusal"] = "rrs.aperture-shape"
+      guard source.geometry.docking.fits(player) else { return false }
+      observation?["refusal"] = "rrs.aperture-start"
+      guard
         nativeStationHullFits(
           player, ship: flight.pose, station: position, orientation: orientation,
-          port: source.geometry.docking, margin: 0),
+          port: source.geometry.docking, margin: 0)
+      else { return false }
+      observation?["refusal"] = "rrs.aperture-end"
+      guard
         nativeStationHullFits(
           player, ship: endpoint, station: position, orientation: orientation,
-          port: source.geometry.docking, margin: 0),
+          port: source.geometry.docking, margin: 0)
+      else { return false }
+      observation?["refusal"] = "rrs.structure"
+      guard
         nativeStructureHullSweepClear(
           player, from: flight.pose, to: endpoint, position: position,
           fromOrientation: orientation, toOrientation: orientation, margin: 0,
           mesh: source.geometry.mesh)
       else { return false }
     } else {
+      observation?["refusal"] = "main.actor-source"
       guard station.id == 0, physical.identity == flight.anchors?.station.identity,
-        let anchor = currentNativeMainStationAnchor(at: flight.physicalTime),
-        (flight.pose.systemPoint(station.position) - anchor.position).length < 1e-5,
+        let anchor = currentNativeMainStationAnchor(at: flight.physicalTime)
+      else { return false }
+      observation?["refusal"] = "main.position-source"
+      let positionError = (flight.pose.systemPoint(station.position) - anchor.position).length
+      observation?["stationPositionError"] = String(positionError)
+      guard positionError < 1e-5 else { return false }
+      observation?["refusal"] = "main.basis-source"
+      guard
         [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy({
-          (flight.pose.orientation.apply(station.orientation.apply($0))
-            - anchor.orientation.apply($0)).length < 1e-5
-        }),
-        let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
+          let error =
+            (flight.pose.orientation.apply(station.orientation.apply($0))
+            - anchor.orientation.apply($0)).length
+          observation?["stationBasisError"] = String(error)
+          return error < 1e-5
+        })
+      else { return false }
+      observation?["refusal"] = "main.resource-source"
+      guard let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
         let resource = commander.scriptState.stationResources[identity.key],
         resource.identity == identity.resource, !resource.destroyed, resource.energy > 0
       else { return false }
       var atDoor = station
       atDoor.position = atDoor.position - advance
-      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed),
-        nativeMainStationHullCourseIsClear(station, from: flight.pose, to: endpoint)
+      observation?["refusal"] = "main.centre-entry"
+      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed) else { return false }
+      guard
+        nativeMainStationHullCourseIsClear(
+          station, from: flight.pose, to: endpoint, observation: &observation)
       else { return false }
     }
     let radius = nativeStationRadius(player)
-    return radius.isFinite
-      && nativeStationApproachClear(
-        from: flight.pose.position, to: flight.pose.systemPoint(advance),
-        excluding: station.id, radius: radius)
+    observation?["playerRadius"] = String(radius)
+    observation?["refusal"] = "corridor.player-radius"
+    guard radius.isFinite else { return false }
+    let clear = nativeStationApproachClear(
+      from: flight.pose.position, to: flight.pose.systemPoint(advance),
+      excluding: station.id, radius: radius, observation: &observation)
+    if clear { observation?["refusal"] = "none" }
+    return clear
   }
 
   private func nativeStationApproachClear(
     from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double
   ) -> Bool {
+    var observation: [String: String]?
+    return nativeStationApproachClear(
+      from: start, to: end, excluding: stationID, radius: radius, observation: &observation)
+  }
+
+  private func nativeStationApproachClear(
+    from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double,
+    observation: inout [String: String]?
+  ) -> Bool {
+    observation?["refusal"] = "corridor.context"
     guard let anchors = commander.flightSimulation.anchors, radius.isFinite else { return false }
-    for celestial in [anchors.planet, anchors.sun] {
-      if distanceFromNativeSegment(celestial.position, start: start, end: end) <= radius
-        + celestial.radius
-      {
+    for (index, celestial) in [anchors.planet, anchors.sun].enumerated() {
+      let distance = distanceFromNativeSegment(celestial.position, start: start, end: end)
+      let bound = radius + celestial.radius
+      if distance <= bound {
+        observation?["refusal"] = "corridor.celestial"
+        observation?["blocker"] = index == 0 ? "planet" : "sun"
+        observation?["blockerDistance"] = String(distance)
+        observation?["blockerBound"] = String(bound)
         return false
       }
     }
     for body in bodies where body.energy > 0 && body.id != stationID {
       let point = commander.flightSimulation.pose.systemPoint(body.position)
-      if distanceFromNativeSegment(point, start: start, end: end) <= radius
-        + nativeStationRadius(gameplayMesh(for: body))
-      {
+      let distance = distanceFromNativeSegment(point, start: start, end: end)
+      let bound = radius + nativeStationRadius(gameplayMesh(for: body))
+      if distance <= bound {
+        observation?["refusal"] = "corridor.body"
+        observation?["blocker"] = String(body.id)
+        observation?["blockerActor"] = body.physical.map { String($0.identity.entity) } ?? "nil"
+        observation?["blockerHull"] = body.hull.rawValue
+        observation?["blockerCatalogue"] = body.physical?.catalogueShipID ?? "nil"
+        observation?["blockerPosition"] = "\(point.x),\(point.y),\(point.z)"
+        observation?["blockerDistance"] = String(distance)
+        observation?["blockerBound"] = String(bound)
         return false
       }
     }
