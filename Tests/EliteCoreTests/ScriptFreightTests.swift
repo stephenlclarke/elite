@@ -67,9 +67,7 @@ func freightRealIssuerSuppliesExactUnitsForFreeAndBackPreservesFiles(row: Int) a
 func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   let fixture = try ScriptFreightFixture()
   defer { fixture.clean() }
-  let diagnostic =
-    row == 2
-    ? ScriptProcurementFlightDiagnostic(label: "freight-all-remaining-row-2") : nil
+  let diagnostic = ScriptProcurementFlightDiagnostic(label: "freight-all-remaining-row-\(row)")
   let (runtime, id, plan) = try await fixture.accepted(row: row, diagnostic: diagnostic)
   let accepted = await runtime.snapshot()
   try await ScriptProcurementFixture.travel(runtime, path: plan.path, diagnostic: diagnostic)

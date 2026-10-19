@@ -1,0 +1,5 @@
+# test: retain bounded first-failure facts for both freight rows
+
+The single existing diagnostic selection in `ScriptFreightTests.swift` now supplies `ScriptProcurementFlightDiagnostic` for both existing parameter rows, with the actual row in its label. It reuses the existing observer, scalar ceilings and first-failure output; no new framework or shared fixture change is introduced. Successful executions remain silent.
+
+All native acceptance, travel, contact, physical cargo, payment and completion assertions remain unchanged, as do traffic, equipment, finite resources, simulation steps and limits. Root owns this file for the packet. G1 remains sole executor and should include the same two cases in the coherent affected cohort with the material 683 stack repair, rather than launch a standalone diagnostic run. Strict formatting, scoped Markdown lint and whitespace checks are author checks only; no compiler, executable test, native UI, profiler or CI job is run here. The actual freight death remains unresolved until relevant execution establishes its cause and a reviewed repair passes. See [the issue](ISSUE-freight-first-failure-observation.md).
