@@ -103,6 +103,7 @@ public enum ScriptCapabilities {
     "library-books-basic-v2", "partial-collections-v2", "scoped-campaigns-basic-v2",
     "station-pledges-basic-v2", "courier-contracts-basic-v2", "mission-calendar-v2",
     "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
+    ScriptFinanceInterest.capability,
     ScriptNavigationTradeContent.capability,
   ]
   static func playerFeatureName(_ capability: String) -> String {
@@ -188,7 +189,7 @@ public enum ScriptPackLibrary {
     for (name, allowed) in [
       "answerRequirements": "dialogue choice minimumCount",
       "children": "id definition version digest terminalPolicy",
-      "loans": "id profile creditor title principal galaxy system",
+      "loans": "id profile creditor title principal galaxy system interest",
       "handlers": "event function", "dialogs": "id text choices collection",
       "receiptRequirements":
         "id stage definition version digest outcome outcomes minimumCount choiceGroup choice child",
@@ -199,6 +200,17 @@ public enum ScriptPackLibrary {
     where root.contains(key: name) {
       let array = try root.array(forKey: name)
       for i in 0..<array.count { try keys(array.table(atIndex: i), allowed) }
+    }
+    if root.contains(key: "loans") {
+      let loans = try root.array(forKey: "loans")
+      for index in 0..<loans.count {
+        let loan = try loans.table(atIndex: index)
+        if loan.contains(key: "interest") {
+          try keys(
+            loan.table(forKey: "interest"),
+            "rateBasisPoints periodSeconds rounding maximumInterest")
+        }
+      }
     }
     if root.contains(key: "dialogs") {
       let dialogs = try root.array(forKey: "dialogs")

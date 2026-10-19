@@ -9,8 +9,24 @@ public struct ScriptFinanceDefinition: Codable, Sendable, Equatable {
   public let principal: Int
   public let galaxy: Int
   public let system: Int
+  public let interest: ScriptFinanceInterest?
+  init(
+    id: String, profile: String, creditor: String, title: String, principal: Int,
+    galaxy: Int, system: Int, interest: ScriptFinanceInterest? = nil
+  ) {
+    self.id = id
+    self.profile = profile
+    self.creditor = creditor
+    self.title = title
+    self.principal = principal
+    self.galaxy = galaxy
+    self.system = system
+    self.interest = interest
+  }
   var valid: Bool {
-    PackValidation.localID(id) && profile == "fixed-principal-v1"
+    PackValidation.localID(id)
+      && ((profile == "fixed-principal-v1" && interest == nil)
+        || (profile == "simple-interest-v1" && interest?.valid(principal: principal) == true))
       && PackValidation.identifier(creditor) && (1...96).contains(title.utf8.count)
       && (1...4_294_967_295).contains(principal)
       && (0..<8).contains(galaxy) && (0...256).contains(system)
@@ -61,6 +77,11 @@ struct ScriptFinanceReceipt: Codable, Sendable, Equatable {
   let afterCash: Int
   let beforePrincipal: Int
   let afterPrincipal: Int
+  let beforeInterest: Int
+  let afterInterest: Int
+  let interestAdded: Int
+  let assessedInterest: Int
+  let completedPeriods: Int
   let amount: Int
   let dock: NativeMainStationDockReceipt
   let calendarSeconds: Double
@@ -76,7 +97,7 @@ struct ScriptFinanceRecord: Codable, Sendable, Equatable {
   let source: ScriptFinanceSource
   let createdRevision: UInt64
   var receipts: [ScriptFinanceReceipt] = []
-  var remaining: Int { receipts.last?.afterPrincipal ?? 0 }
+  var remaining: Int { receipts.last?.balanceAfter.total ?? 0 }
   var status: ScriptFinanceStatus {
     guard let first = receipts.first else { return .offered }
     if first.operation == .decline { return .declined }
@@ -95,7 +116,8 @@ struct ScriptFinanceRecord: Codable, Sendable, Equatable {
     var previousRevision = createdRevision
     var previousTime = source.cause.calendarSeconds
     var previousDock = source.cause.nativeMainDock?.sequence ?? 0
-    var remaining = 0
+    var balance = ScriptFinanceBalance.zero
+    var borrowedAt: Double?
     for (index, receipt) in receipts.enumerated() {
       guard receipt.id == ScriptFinanceReceipt.identity(id, revision: receipt.revision),
         receipt.obligation == id, receipt.revision > previousRevision, receipt.revision <= revision,
@@ -103,29 +125,45 @@ struct ScriptFinanceRecord: Codable, Sendable, Equatable {
         receipt.dock.sequence >= previousDock,
         receipt.calendarSeconds.isFinite, (previousTime...1e12).contains(receipt.calendarSeconds),
         receipt.dock.calendarSeconds <= receipt.calendarSeconds,
-        [receipt.beforeCash, receipt.afterCash, receipt.beforePrincipal, receipt.afterPrincipal]
-          .allSatisfy({ (0...4_294_967_295).contains($0) }),
-        receipt.beforePrincipal == remaining
+        [
+          receipt.beforeCash, receipt.afterCash, receipt.beforePrincipal, receipt.afterPrincipal,
+          receipt.beforeInterest, receipt.afterInterest, receipt.interestAdded,
+          receipt.assessedInterest,
+        ]
+        .allSatisfy({ (0...4_294_967_295).contains($0) }),
+        (0...1_000_000_000_000).contains(receipt.completedPeriods)
       else { return false }
       switch receipt.operation {
       case .borrow:
         guard index == 0, receipt.amount == terms.principal,
+          receipt.beforePrincipal == 0, receipt.beforeInterest == 0, receipt.afterInterest == 0,
+          receipt.interestAdded == 0, receipt.assessedInterest == 0, receipt.completedPeriods == 0,
           receipt.beforeCash <= 4_294_967_295 - terms.principal,
           receipt.afterCash == receipt.beforeCash + terms.principal,
           receipt.afterPrincipal == terms.principal
         else { return false }
+        borrowedAt = receipt.calendarSeconds
       case .decline:
         guard index == 0, receipts.count == 1, receipt.amount == 0,
+          receipt.beforePrincipal == 0, receipt.beforeInterest == 0, receipt.afterInterest == 0,
+          receipt.interestAdded == 0, receipt.assessedInterest == 0, receipt.completedPeriods == 0,
           receipt.afterCash == receipt.beforeCash, receipt.afterPrincipal == 0
         else { return false }
       case .repay:
-        guard index > 0, remaining > 0, receipt.beforeCash > 0,
-          receipt.amount == min(receipt.beforeCash, remaining),
+        guard index > 0, let borrowedAt, balance.total > 0, receipt.beforeCash > 0,
+          let due = balance.accruing(
+            terms: terms, borrowedAt: borrowedAt, at: receipt.calendarSeconds),
+          receipt.beforePrincipal == due.principal, receipt.beforeInterest == due.interest,
+          receipt.interestAdded == due.assessedInterest - balance.assessedInterest,
+          receipt.assessedInterest == due.assessedInterest,
+          receipt.completedPeriods == due.completedPeriods,
+          receipt.amount == min(receipt.beforeCash, due.total),
           receipt.afterCash == receipt.beforeCash - receipt.amount,
-          receipt.afterPrincipal == remaining - receipt.amount
+          receipt.afterInterest == due.interest - min(receipt.amount, due.interest),
+          receipt.afterPrincipal == due.principal - max(0, receipt.amount - due.interest)
         else { return false }
       }
-      remaining = receipt.afterPrincipal
+      balance = receipt.balanceAfter
       previousRevision = receipt.revision
       previousTime = receipt.calendarSeconds
       previousDock = receipt.dock.sequence

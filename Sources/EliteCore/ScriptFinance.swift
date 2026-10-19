@@ -31,6 +31,7 @@ struct ScriptFinanceQuote: Sendable {
   private let capturedResources: CommanderSnapshot
   var resources: Commander { capturedResources.value }
   let ledgerRevision: UInt64
+  let balance: ScriptFinanceBalance?
   let context: NativeMainStationArrivalContext?
   let epoch: UUID
   let reviewToken = UUID()
@@ -51,6 +52,8 @@ struct ScriptFinanceQuote: Sendable {
     self.row = row
     capturedResources = CommanderSnapshot(commander.contractQuoteResources)
     ledgerRevision = commander.scriptState.financeLedger?.revision ?? 0
+    balance = commander.scriptState.financeLedger?.records.first { $0.id == row.id }?
+      .balance(at: commander.scriptState.calendarSeconds)
     self.context = context
     self.epoch = epoch
     self.issues = issues
@@ -72,9 +75,13 @@ extension ScriptFinanceLedger {
       calendarSeconds.isFinite, (0...1e12).contains(calendarSeconds)
     else { throw MissionPackError("The financial obligation or confirmation is invalid.") }
     let record = records[index]
+    guard let due = record.balance(at: calendarSeconds) else {
+      throw MissionPackError("The loan calendar or accrued balance is invalid.")
+    }
     let amount: Int
     let afterCash: Int
-    let remaining: Int
+    let principalAfter: Int
+    let interestAfter: Int
     switch operation {
     case .borrow:
       guard record.status == .offered, cash <= 4_294_967_295 - record.terms.principal else {
@@ -82,29 +89,35 @@ extension ScriptFinanceLedger {
       }
       amount = record.terms.principal
       afterCash = cash + amount
-      remaining = amount
+      principalAfter = amount
+      interestAfter = 0
     case .decline:
       guard record.status == .offered else {
         throw MissionPackError("Only an undecided loan offer can be declined.")
       }
       amount = 0
       afterCash = cash
-      remaining = 0
+      principalAfter = 0
+      interestAfter = 0
     case .repay:
       guard record.status == .outstanding, cash > 0 else {
-        throw MissionPackError("Repayment requires an outstanding principal and real credits.")
+        throw MissionPackError("Repayment requires an outstanding balance and real credits.")
       }
-      amount = min(cash, record.remaining)
+      amount = min(cash, due.total)
       afterCash = cash - amount
-      remaining = record.remaining - amount
+      interestAfter = due.interest - min(amount, due.interest)
+      principalAfter = due.principal - max(0, amount - due.interest)
     }
     var candidate = self
     candidate.revision += 1
     let receipt = ScriptFinanceReceipt(
       id: ScriptFinanceReceipt.identity(id, revision: candidate.revision), token: token,
       obligation: id, operation: operation, revision: candidate.revision,
-      beforeCash: cash, afterCash: afterCash, beforePrincipal: record.remaining,
-      afterPrincipal: remaining, amount: amount, dock: dock,
+      beforeCash: cash, afterCash: afterCash, beforePrincipal: due.principal,
+      afterPrincipal: principalAfter, beforeInterest: due.interest, afterInterest: interestAfter,
+      interestAdded: due.assessedInterest - (record.receipts.last?.assessedInterest ?? 0),
+      assessedInterest: due.assessedInterest, completedPeriods: due.completedPeriods,
+      amount: amount, dock: dock,
       calendarSeconds: calendarSeconds, epoch: epoch)
     candidate.records[index].receipts.append(receipt)
     guard candidate.valid else { throw SaveError.invalidCommander }
@@ -187,6 +200,9 @@ extension Game {
         canDecline: false)
     }
     if let ledger, let record = ledger.records.first(where: { $0.id == row.id }) {
+      if record.balance(at: commander.scriptState.calendarSeconds) == nil {
+        issues.append("The loan calendar or accrued balance is invalid.")
+      }
       if row.operation != nil {
         context = nativeMainStationArrivalContext(for: record.terms.station(owner: ledger.owner))
         if context == nil {
@@ -203,7 +219,7 @@ extension Game {
           borrowIssues.append("The full principal would exceed the native credit limit.")
         }
       case .repay:
-        if record.status != .outstanding { issues.append("This principal is already closed.") }
+        if record.status != .outstanding { issues.append("This balance is already closed.") }
         if commander.credits == 0 {
           issues.append("No real credits are available; the principal remains outstanding.")
         }
@@ -237,6 +253,8 @@ extension Game {
       quote.epoch == nativeStationRuntimeEpoch,
       quote.resources == commander.contractQuoteResources,
       let ledger = commander.scriptState.financeLedger, ledger.revision == quote.ledgerRevision,
+      let due = ledger.records.first(where: { $0.id == quote.row.id })?
+        .balance(at: commander.scriptState.calendarSeconds), quote.balance == due,
       let context = quote.context, acceptsNativeMainStationArrivalContext(context),
       declining ? financeQuote(for: quote.row).canDecline : financeQuote(for: quote.row).allowed,
       let operation = declining ? ScriptFinanceOperation.decline : quote.row.operation,
@@ -261,12 +279,25 @@ extension Game {
     return .object(
       Dictionary(
         uniqueKeysWithValues: records.map { record in
-          (
+          guard let due = record.balance(at: commander.scriptState.calendarSeconds) else {
+            return (record.terms.id, ScriptValue.object(["status": .string("unavailable")]))
+          }
+          return (
             record.terms.id,
             ScriptValue.object([
               "status": .string(record.status.rawValue),
               "principal": .integer(Int64(record.terms.principal)),
-              "remaining": .integer(Int64(record.remaining)),
+              "remaining": .integer(Int64(due.total)),
+              "remaining_principal": .integer(Int64(due.principal)),
+              "accrued_interest": .integer(Int64(due.interest)),
+              "assessed_interest": .integer(Int64(due.assessedInterest)),
+              "completed_periods": .integer(Int64(due.completedPeriods)),
+              "calendar_seconds": .number(commander.scriptState.calendarSeconds),
+              "interest_profile": .string(record.terms.profile),
+              "rate_basis_points": .integer(Int64(record.terms.interest?.rateBasisPoints ?? 0)),
+              "period_seconds": .integer(Int64(record.terms.interest?.periodSeconds ?? 0)),
+              "rounding": .string(record.terms.interest?.rounding.rawValue ?? "none"),
+              "maximum_interest": .integer(Int64(record.terms.interest?.maximumInterest ?? 0)),
               "receipts": .integer(Int64(record.receipts.count)),
             ])
           )
@@ -277,20 +308,37 @@ extension Game {
     guard commander.financeStateValid, (0...4_294_967_295).contains(commander.credits),
       let row = contractBoard.selected?.finance,
       let ledger = commander.scriptState.financeLedger,
-      let record = ledger.records.first(where: { $0.id == row.id })
+      let record = ledger.records.first(where: { $0.id == row.id }),
+      let due = record.balance(at: commander.scriptState.calendarSeconds)
     else { return ["Financial record unavailable."] }
     let amount =
-      row.operation == .borrow ? record.terms.principal : min(commander.credits, record.remaining)
+      row.operation == .borrow ? record.terms.principal : min(commander.credits, due.total)
     let after = row.operation == .borrow ? commander.credits + amount : commander.credits - amount
     let place = Universe.systemsIncludingPlugh(number: record.terms.galaxy)[record.terms.system]
       .name
     var rows = [
-      record.terms.title, "Fixed-principal loan; no interest or deadline.",
-      "Principal: \(Self.financeMoney(record.terms.principal)). Remaining: \(Self.financeMoney(record.remaining)).",
+      record.terms.title,
+      "Principal: \(Self.financeMoney(record.terms.principal)). Remaining: \(Self.financeMoney(due.total)).",
       "Real balance: \(Self.financeMoney(commander.credits)).",
       "Manual service: Galaxy \(record.terms.galaxy + 1), \(place) original main orbital station.",
       "The obligation survives campaign completion, abandonment and missing content.",
     ]
+    if let interest = record.terms.interest {
+      rows += [
+        "Simple interest: \(String(format: "%.2f", Double(interest.rateBasisPoints) / 100))% per \(interest.periodSeconds) calendar seconds.",
+        "Round \(interest.rounding.rawValue) per period to 0.1 CR; lifetime interest cap \(Self.financeMoney(interest.maximumInterest)).",
+        "Principal owed: \(Self.financeMoney(due.principal)); interest owed: \(Self.financeMoney(due.interest)).",
+        "Interest assessed so far: \(Self.financeMoney(due.assessedInterest)).",
+        "Period-end remaining principal only; interest never compounds. Payments clear interest first.",
+        "Periods start at Borrow, never reset on partial payment. No interest before Borrow or after payoff.",
+        "Only completed periods accrue; reading does not charge cash or create receipts. No deadline.",
+      ]
+      if let quoted = contractBoard.financeQuote?.balance, quoted != due {
+        rows.append("Accrued balance changed. Refresh this review before Confirm.")
+      }
+    } else {
+      rows.insert("Fixed-principal loan; no interest or deadline.", at: 1)
+    }
     if row.operation == .borrow {
       rows += [
         "Borrow \(Self.financeMoney(amount)); resulting balance \(Self.financeMoney(after)).",
@@ -299,7 +347,7 @@ extension Game {
     } else if row.operation == .repay {
       rows += [
         "Pay \(Self.financeMoney(amount)); resulting balance \(Self.financeMoney(after)).",
-        "Remaining principal after payment: \(Self.financeMoney(record.remaining - amount)).",
+        "Remaining debt after payment: \(Self.financeMoney(due.total - amount)).",
         "A short payment carries the remaining debt.",
       ]
     } else {
@@ -324,7 +372,13 @@ extension Game {
     if let row = contractBoard.selected?.finance,
       let record = ledger.records.first(where: { $0.id == row.id })
     {
-      facts += [record.id.uuidString, record.status.rawValue, String(record.remaining)]
+      facts += [record.id.uuidString, record.status.rawValue]
+      if let due = record.balance(at: commander.scriptState.calendarSeconds) {
+        facts += [
+          String(due.principal), String(due.interest), String(due.assessedInterest),
+          String(due.completedPeriods),
+        ]
+      }
       let quote = financeQuote(for: row)
       facts += quote.issues
       if let context = quote.context {
@@ -343,9 +397,14 @@ extension ScriptPackLibrary {
     let loans = manifest.loans ?? []
     guard loans.count <= 16, Set(loans.map(\.id)).count == loans.count,
       loans.allSatisfy(\.valid),
+      loans.allSatisfy({
+        $0.interest == nil
+          || [ScriptFinanceInterest.capability, "mission-calendar-v2"]
+            .allSatisfy(manifest.capabilities.contains)
+      }),
       loans.isEmpty
         || ["story-v2", "durable-commands-v2", "finance-obligations-basic-v2"]
           .allSatisfy(manifest.capabilities.contains)
-    else { throw MissionPackError("Invalid or unsupported fixed-principal loan declarations.") }
+    else { throw MissionPackError("Invalid or unsupported loan declarations.") }
   }
 }

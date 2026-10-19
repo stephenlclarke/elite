@@ -147,7 +147,9 @@ struct ScriptFinancePersistenceTests {
         id: ScriptFinanceReceipt.identity(identity, revision: 2), token: UUID(),
         obligation: identity,
         operation: .borrow, revision: 2, beforeCash: cash, afterCash: cash + terms.principal,
-        beforePrincipal: 0, afterPrincipal: terms.principal, amount: terms.principal,
+        beforePrincipal: 0, afterPrincipal: terms.principal,
+        beforeInterest: 0, afterInterest: 0, interestAdded: 0, assessedInterest: 0,
+        completedPeriods: 0, amount: terms.principal,
         dock: dock, calendarSeconds: 0, epoch: UUID())
     ]
     if paid {
@@ -156,7 +158,9 @@ struct ScriptFinancePersistenceTests {
           id: ScriptFinanceReceipt.identity(identity, revision: 3), token: UUID(),
           obligation: identity,
           operation: .repay, revision: 3, beforeCash: cash + terms.principal, afterCash: cash,
-          beforePrincipal: terms.principal, afterPrincipal: 0, amount: terms.principal,
+          beforePrincipal: terms.principal, afterPrincipal: 0,
+          beforeInterest: 0, afterInterest: 0, interestAdded: 0, assessedInterest: 0,
+          completedPeriods: 0, amount: terms.principal,
           dock: dock, calendarSeconds: 0, epoch: UUID()))
     }
     var ledger = ScriptFinanceLedger(owner: owner)
