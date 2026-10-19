@@ -34,9 +34,61 @@ enum ScriptProcurementMissilePolicy {
   }
 }
 
+/// The existing one-commander preservation oracle lives off the active helper
+/// stack. Construction, native actions and pure comparison use separate frames.
+private final class ScriptProcurementMissileLaunchBaseline {
+  private let commander: Commander
+
+  @inline(never)
+  init(game: borrowing Game) throws {
+    guard game.commander.equipmentInventory != nil else {
+      throw ScriptProcurementMissileRefusal.stock
+    }
+    commander = game.commander
+  }
+
+  @inline(never)
+  func accepts(_ game: borrowing Game, round: UUID, player: ActorIdentity, target: ActorIdentity)
+    -> Bool
+  {
+    guard let beforeInventory = commander.equipmentInventory else { return false }
+    let emittedAt = commander.flightSimulation.physicalTime
+    let missiles = game.bodies.compactMap { body -> OrdnanceState? in
+      guard body.energy > 0, let state = body.physical?.ordnance,
+        state.profile == .standardMissile, state.origin.owner == player,
+        state.target == target,
+        state.origin.playerAmmunition == .physical(item: round), state.termination == nil,
+        body.physical?.identity == state.origin.ordnance,
+        state.origin.emittedAt == emittedAt
+      else { return nil }
+      return state
+    }
+    guard let inventory = game.commander.equipmentInventory,
+      inventory.owner == beforeInventory.owner, inventory.activeHull == beforeInventory.activeHull,
+      inventory.items == beforeInventory.items.filter({ $0.id != round }),
+      missiles.count == 1, !game.missileArmed,
+      game.commander.missiles == commander.missiles - 1,
+      game.commander.equipmentInventory?.items.contains(where: { $0.id == round }) == false,
+      game.commander.credits == commander.credits, game.commander.cargo == commander.cargo,
+      game.commander.contracts == commander.contracts,
+      game.commander.scriptState.instances == commander.scriptState.instances,
+      game.commander.scriptState.missionCalendar == commander.scriptState.missionCalendar,
+      game.commander.scriptState.calendarLedger == commander.scriptState.calendarLedger,
+      game.commander.scriptState.calendarSeconds == commander.scriptState.calendarSeconds,
+      game.commander.scriptState.localSeconds == commander.scriptState.localSeconds,
+      game.commander.scriptState.flightSeconds == commander.scriptState.flightSeconds,
+      game.commander.flightSimulation.physicalTime == emittedAt,
+      game.commander.equipmentPurchaseHistory == commander.equipmentPurchaseHistory,
+      game.commander.valid
+    else { return false }
+    return true
+  }
+}
+
 extension GameRuntime {
   /// No suspension occurs between fresh checks and ordinary keys, including each save barrier.
   /// Any admitted refusal throws out of the defended journey; it is never retried.
+  @inline(never)
   func procurementMissileFallback(
     expected: ScriptProcurementPreflightFacts, budget originalBudget: ScriptProcurementPilotBudget
   ) throws -> ScriptProcurementPilotBudget {
@@ -70,10 +122,7 @@ extension GameRuntime {
       try procurementOriginalMissileStock().next == round
     else { throw ScriptProcurementMissileRefusal.target }
 
-    let before = game.commander
-    guard let beforeInventory = before.equipmentInventory else {
-      throw ScriptProcurementMissileRefusal.stock
-    }
+    let baseline = try ScriptProcurementMissileLaunchBaseline(game: game)
     key("t")
     facts = procurementPreflightFacts()
     guard game.commander.legal == 0 else { throw ScriptProcurementMissileRefusal.law }
@@ -83,37 +132,22 @@ extension GameRuntime {
       procurementMissileTargetJoined(threat.identity, player: player),
       try procurementOriginalMissileStock().next == round
     else { throw ScriptProcurementMissileRefusal.arm }
+    try procurementPublishReservedMissile(
+      baseline: baseline, round: round, player: player, target: threat.identity)
+    return budget
+  }
+
+  /// Native keys and durable publication retire before the pure post-launch join.
+  @inline(never)
+  private func procurementPublishReservedMissile(
+    baseline: ScriptProcurementMissileLaunchBaseline, round: UUID,
+    player: ActorIdentity, target: ActorIdentity
+  ) throws {
     key("m")
     guard game.commander.legal == 0 else { throw ScriptProcurementMissileRefusal.law }
-    let missiles = game.bodies.compactMap { body -> OrdnanceState? in
-      guard body.energy > 0, let state = body.physical?.ordnance,
-        state.profile == .standardMissile, state.origin.owner == player,
-        state.target == threat.identity,
-        state.origin.playerAmmunition == .physical(item: round), state.termination == nil,
-        body.physical?.identity == state.origin.ordnance,
-        state.origin.emittedAt == before.flightSimulation.physicalTime
-      else { return nil }
-      return state
+    guard baseline.accepts(game, round: round, player: player, target: target) else {
+      throw ScriptProcurementMissileRefusal.launch
     }
-    guard let inventory = game.commander.equipmentInventory,
-      inventory.owner == beforeInventory.owner, inventory.activeHull == beforeInventory.activeHull,
-      inventory.items == beforeInventory.items.filter({ $0.id != round }),
-      missiles.count == 1, !game.missileArmed,
-      game.commander.missiles == before.missiles - 1,
-      game.commander.equipmentInventory?.items.contains(where: { $0.id == round }) == false,
-      game.commander.credits == before.credits, game.commander.cargo == before.cargo,
-      game.commander.contracts == before.contracts,
-      game.commander.scriptState.instances == before.scriptState.instances,
-      game.commander.scriptState.missionCalendar == before.scriptState.missionCalendar,
-      game.commander.scriptState.calendarLedger == before.scriptState.calendarLedger,
-      game.commander.scriptState.calendarSeconds == before.scriptState.calendarSeconds,
-      game.commander.scriptState.localSeconds == before.scriptState.localSeconds,
-      game.commander.scriptState.flightSeconds == before.scriptState.flightSeconds,
-      game.commander.flightSimulation.physicalTime == before.flightSimulation.physicalTime,
-      game.commander.equipmentPurchaseHistory == before.equipmentPurchaseHistory,
-      game.commander.valid
-    else { throw ScriptProcurementMissileRefusal.launch }
-    return budget
   }
 
   private func procurementMissileRequested(
