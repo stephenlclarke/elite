@@ -63,6 +63,7 @@ extension Game {
   @discardableResult
   mutating func persistNPCStates(context: EncounterContext, pose: ShipPose) -> Set<Int> {
     var refused = Set<Int>()
+    var careers = commander.wantedCareers
     for body in bodies.sorted(by: {
       ($0.physical?.identity.entity ?? 0) < ($1.physical?.identity.entity ?? 0)
     }) where body.energy > 0 && body.physical?.npc != nil {
@@ -82,8 +83,16 @@ extension Game {
       if case .refused = commander.npcPersistence.capture(snapshot, protection: context.protection)
       {
         refused.insert(body.id)
+      } else if wantedCareerIsOrdinary(body),
+        let logical = commander.npcPersistence.logicalIdentity(for: snapshot.actor)
+      {
+        careers.observe(
+          snapshot, logical: logical,
+          visible: body.position.length <= context.perceptionRadius)
       }
     }
+    careers.reconcile(commander.npcPersistence, system: context.system)
+    if careers != commander.wantedCareers { commander.wantedCareers = careers }
     return refused
   }
 

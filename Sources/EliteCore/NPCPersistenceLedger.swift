@@ -668,6 +668,29 @@ public struct NPCPersistenceLedger: Equatable, Codable, Sendable {
     return rebindings
   }
 
+  /// Re-enter only actually parked wanted careers, through the ordinary bounded admission path.
+  @discardableResult
+  mutating func restoreWantedCareers(_ careers: WantedCareerLedger, system current: SystemIdentity)
+    -> Bool
+  {
+    guard valid, careers.valid, system == nil || system == current else { return false }
+    var restored = false
+    for career in careers.careers.values.sorted(by: { $0.identity.entity < $1.identity.entity }) {
+      guard career.eligible, career.identity.system == current, entries[career.identity] == nil,
+        var snapshot = career.parked, snapshot.valid, count < Self.maximumEntries
+      else { continue }
+      system = current
+      highestActor = max(highestActor, snapshot.actor.entity)
+      // The old reference bindings belong to the departed system-local ledger.
+      // The ordinary rebind path resolves surviving player/station/actor references.
+      snapshot.firstAggressorBinding = nil
+      snapshot.intentionTargetBinding = nil
+      entries[career.identity] = .init(snapshot: snapshot, binding: nil)
+      restored = true
+    }
+    return restored
+  }
+
   /// Save/load and docking preserve the craft; scene-local bindings do not survive.
   public mutating func resetPhysicalBindings(system: SystemIdentity) {
     guard self.system == system else { return }

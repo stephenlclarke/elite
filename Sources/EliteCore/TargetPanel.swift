@@ -20,8 +20,13 @@ struct TargetPanelLayout {
     let columns = max(1, Int((width - 8) / (6 * GameTypography.scale)))
     headings = ShowroomText.wrap(info.identifier, width: columns)
     let expanded = game.targetPanelExpanded ?? (cockpit.width >= 1100)
+    var wanted = ""
+    if let body = game.informationTargetBody, let notice = game.wantedNotice(for: body) {
+      wanted = notice + " / "
+    }
     statuses = ShowroomText.wrap(
-      (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail"), width: columns)
+      wanted + (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail"), width: columns
+    )
     fields = info.fields.flatMap { ShowroomText.wrap($0.text, width: columns) }
     fieldY = y + row * Double(headings.count + statuses.count) + previewHeight + 8
     bottom = min(fieldY + row * Double(fields.count) + 8, cockpit.flightClip.maxY)
@@ -54,7 +59,11 @@ extension Display {
     let y = panel.y
     guard let tier = game.commander.targetingTier, tier >= .identification else {
       frame.label("LOCK: " + info.identifier, x, y, scale: font, ink: cueInk)
-      if let status = info.status {
+      var status = info.status
+      if let body = game.informationTargetBody, let notice = game.wantedNotice(for: body) {
+        status = notice + (status.map { " / " + $0 } ?? "")
+      }
+      if let status {
         for (index, line) in ShowroomText.wrap(status, width: Int((width - 8) / (6 * font))).prefix(
           3
         ).enumerated() {

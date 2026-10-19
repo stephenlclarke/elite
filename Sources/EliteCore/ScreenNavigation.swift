@@ -159,7 +159,7 @@ extension Game {
     }
     switch screen {
     case .rumour:
-      if ["return", "escape", "u"].contains(key) { screen = rumourReturn }
+      wantedKey(key)
       return true
     case .showroom:
       showroomKey(key)

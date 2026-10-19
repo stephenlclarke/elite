@@ -12,6 +12,7 @@ public enum Ink: UInt32, Sendable {
   case gold = 0xffcc_22ff
   case lime = 0xccee_22ff
   case leaf = 0x66ee_44ff
+  case purple = 0xbb77_ffff
   case orange = 0xffaa_44ff
 }
 

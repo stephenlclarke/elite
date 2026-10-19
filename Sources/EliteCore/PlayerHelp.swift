@@ -355,6 +355,13 @@ public enum PlayerHelp {
       .init(
         title: "STATION RUMOURS",
         rows: [
+          "MOST WANTED: CURRENT GALAXY TOP TEN",
+          "ARROWS / CLICK - SELECT A CAREER",
+          "RETURN - DETAILS; ESC - BACK",
+          "G - READ COMPLETE STATION GOSSIP",
+          "P - PREVIEW ROUTE TO LAST SIGHTING",
+          "REPORTS ARE NOT LIVE TARGET POSITIONS",
+          "PURPLE WANTED; ORANGE RECOVERABLE",
           "ASK AT THE LOCAL MAIN STATION",
           "ESC - BACK TO PREVIOUS SCREEN",
           "DISCOVERIES ARE SAVED PER GALAXY",

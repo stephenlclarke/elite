@@ -66,7 +66,13 @@ extension Game {
     if let freshLaunchTrafficID { initializeNativeLaunchDisposition(bodyID: freshLaunchTrafficID) }
     _ = persistNPCStates()
     do { try prepareNativeCrimboVisit() } catch { return false }
+    if commander.npcPersistence.restoreWantedCareers(
+      commander.wantedCareers, system: systemIdentity)
+    {
+      advanceUnboundNPCs()
+    }
     admitPersistentNPCs()
+    _ = persistNPCStates()
     if let context = gameplayContext() {
       commander.encounterDirector = EncounterDirector(context: context)
     }
@@ -354,7 +360,10 @@ extension Game {
       velocity: Self.currentFlightWorldVelocity(game),
       energy: game.energy, maximumEnergy: Self.gameplayPlayerMaximumEnergy(game.commander),
       maximumSpeedUnitsPerSecond: Self.gameplayPlayerMaximumSpeed(game.commander),
-      legal: .init(value: Self.gameplayPlayerLegal(game.commander)), npc: nil, rock: nil,
+      legal: .init(
+        value: Self.gameplayPlayerLegal(game.commander),
+        bountyTenths: WantedCareerLedger.playerReward(
+          legal: Self.gameplayPlayerLegal(game.commander))), npc: nil, rock: nil,
       payload: nil,
       ordinaryCargo: Self.gameplayPlayerCargo(game.commander),
       catalogueShipID: Self.gameplayPlayerShipID(game.commander)
