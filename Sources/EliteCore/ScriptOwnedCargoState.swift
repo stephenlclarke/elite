@@ -61,7 +61,7 @@ struct ScriptOwnedCargoState: Codable, Sendable, Equatable {
       ScriptIdentity.uuid("freight-unit-v1:" + consignment.uuidString + ":" + String($0))
     }
   }
-  func valid(state: ScriptInstance, engine: ScriptEngineState) -> Bool {
+  func valid(state: borrowing ScriptInstance, engine: borrowing ScriptEngineState) -> Bool {
     guard schema == 1, let job = state.contract, let plan = job.offer.freightPlan,
       ScriptFreightGeneration.valid(job), owner == plan.owner, instance == state.id,
       issuer == plan.origin, commodity == plan.commodity?.rawValue,
@@ -158,7 +158,7 @@ extension Commander {
       && dock.calendarSeconds <= context.calendarSeconds
   }
 
-  func freightStateValid(_ state: ScriptInstance) -> Bool {
+  func freightStateValid(_ state: borrowing ScriptInstance) -> Bool {
     guard let plan = state.contract?.offer.freightPlan else {
       return state.savedOwnedCargo == nil
         && !ScriptFreightPlan.isMarked(state.contract?.offer.parameters ?? .null)
