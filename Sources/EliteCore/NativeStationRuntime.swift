@@ -631,6 +631,7 @@ extension Game {
     _ station: SpaceBody, advance: Vector3, terminalSpeed: Double,
     observation: inout [String: String]?, bodyBlocked: inout Bool
   ) -> Bool {
+    bodyBlocked = false
     observation?["refusal"] = "native.state"
     let stateValid = commander.nativeStationStateValid
     observation?["nativeStateValid"] = String(stateValid)
@@ -738,11 +739,20 @@ extension Game {
     from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double,
     observation: inout [String: String]?, refineCourse: Bool, bodyBlocked: inout Bool
   ) -> Bool {
+    bodyBlocked = false
     observation?["refusal"] = "corridor.context"
     guard let anchors = commander.flightSimulation.anchors, radius.isFinite else { return false }
     for (index, celestial) in [anchors.planet, anchors.sun].enumerated() {
       let distance = distanceFromNativeSegment(celestial.position, start: start, end: end)
       let bound = radius + celestial.radius
+      if refineCourse {
+        guard celestial.position.finite, celestial.radius.isFinite, celestial.radius > 0,
+          distance.isFinite, bound.isFinite
+        else {
+          observation?["refusal"] = "corridor.unproven-celestial"
+          return false
+        }
+      }
       if distance <= bound {
         observation?["refusal"] = "corridor.celestial"
         observation?["blocker"] = index == 0 ? "planet" : "sun"
@@ -751,15 +761,38 @@ extension Game {
         return false
       }
     }
-    for body in bodies where body.energy > 0 && body.id != stationID {
+    for body in bodies
+    where (body.energy > 0 || (refineCourse && !body.energy.isFinite)) && body.id != stationID {
       let point = commander.flightSimulation.pose.systemPoint(body.position)
       let distance = distanceFromNativeSegment(point, start: start, end: end)
-      let bound = radius + nativeStationRadius(gameplayMesh(for: body))
+      let mesh: Mesh
+      if refineCourse, body.scriptNPC != nil {
+        guard let source = scriptNPCMesh(body) else { return false }
+        mesh = source
+      } else {
+        mesh = gameplayMesh(for: body)
+      }
+      let bodyRadius = nativeStationRadius(mesh)
+      if refineCourse {
+        guard body.energy.isFinite, point.finite, distance.isFinite,
+          bodyRadius.isFinite, bodyRadius > 0,
+          mesh.vertices.count >= 4, mesh.faces.count >= 4,
+          mesh.vertices.allSatisfy({ $0.finite }),
+          mesh.faces.allSatisfy({
+            $0.count >= 3 && $0.allSatisfy { mesh.vertices.indices.contains($0) }
+          })
+        else {
+          observation?["refusal"] = "corridor.unproven-body"
+          observation?["blocker"] = String(body.id)
+          return false
+        }
+      }
+      let bound = radius + bodyRadius
       if distance <= bound {
         if refineCourse {
           guard
             let clear = nativeStationCourseObstacleHullIsClear(
-              body, from: start, to: end, radius: radius)
+              body, from: start, to: end, radius: radius, mesh: mesh)
           else {
             observation?["refusal"] = "corridor.unproven-body"
             observation?["blocker"] = String(body.id)
@@ -794,6 +827,7 @@ extension Game {
       physical.identity.system == systemIdentity, physical.identity.visit == flight.visit,
       physical.velocity.finite, body.rotation.isFinite, body.rotationRate.isFinite,
       bodies.filter({ $0.id == body.id }).count == 1,
+      bodies.first(where: { $0.id == body.id }) == body,
       bodies.filter({ $0.physical?.identity == physical.identity }).count == 1
     else { return nil }
     if let id = physical.catalogueShipID, ShipCatalogue.ship(id) == nil { return nil }

@@ -1175,7 +1175,7 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
 }
 
 // Controlled source-derived geometry from actual 717, not a replay or arrival receipt.
-@Test(arguments: ["near-miss", "obstructing", "unjoined", "unknown-source"])
+@Test(arguments: ["near-miss", "obstructing", "unjoined", "unknown-source", "stale-body"])
 func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
   var game = Game(executive: false)
   game.screen = .status
@@ -1220,7 +1220,7 @@ func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
   let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
   if condition == "unjoined" { game.bodies[index].physical = nil }
   if condition == "unknown-source" { game.bodies[index].physical?.catalogueShipID = "missing" }
-  let body = game.bodies[index]
+  let body = condition == "stale-body" ? initial : game.bodies[index]
   let model = game.modelPose(of: body)
   let bodyRadius = game.gameplayMesh(for: body).vertices.map(\.length).max() ?? .infinity
   let separation = hypot(model.position.x - start.x, model.position.y - start.y)
@@ -1236,6 +1236,33 @@ func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
     #expect(clear == nil)
   }
   #expect(!game.docked && game.pendingNativeStationDock == nil)
+}
+
+@Test(arguments: ["nan-position", "nan-energy", "missing-mesh"])
+func stationAutoCourseRefusesUnknownBroadPhaseFacts(condition: String) async throws {
+  var game = try await stationAutoAlignedActiveEntryScene()
+  let station = try #require(game.autoTargetBody)
+  let id = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: id, hull: .cargo, position: .init(300, 0, 100)))
+  game.ensurePhysicalActors()
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  if condition == "nan-position" { game.bodies[index].position.x = .nan }
+  if condition == "nan-energy" { game.bodies[index].energy = .nan }
+  if condition == "missing-mesh" {
+    let source = try #require(game.bodies.first { $0.nativeStationIdentity != nil })
+    game.bodies[index].nativeStationIdentity = source.nativeStationIdentity
+  }
+  let depth = -station.entrancePosition.dot(station.entranceNormal)
+  let advance = station.entranceNormal * -(depth - 0.5)
+  var observation: [String: String]? = [:]
+  var bodyBlocked = false
+  let clear = game.nativeStationAutoEntryCourseIsClear(
+    station, advance: advance, terminalSpeed: 48, observation: &observation,
+    bodyBlocked: &bodyBlocked)
+  #expect(!clear && !bodyBlocked)
+  #expect(observation?["refusal"] == "corridor.unproven-body")
+  #expect(observation?["blocker"] == String(id))
 }
 
 @Test(arguments: ["clear-port", "rim", "back-wall", "oversize-hull"])
