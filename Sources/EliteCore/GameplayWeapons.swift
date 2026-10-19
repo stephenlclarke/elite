@@ -1,5 +1,36 @@
 import Foundation
 
+/// Synchronous query facts; no Game copy or authority beyond the original physical contact.
+private final class NPCBeamPreparation {
+  let owner: ActorIdentity
+  let launch: Vector3
+  let contact: MissionCollisionContact?
+
+  @inline(never)
+  init(owner: ActorIdentity, launch: Vector3, contact: consuming MissionCollisionContact?) {
+    self.owner = owner
+    self.launch = launch
+    self.contact = consume contact
+  }
+}
+
+/// Only the original flight snapshot can roll back a refused native mission impact.
+private final class NPCBeamEmission {
+  let preparation: NPCBeamPreparation
+  let flightBeforeEmission: FlightSimulationState
+  let origin: AttackOrigin
+
+  @inline(never)
+  init(
+    preparation: NPCBeamPreparation, flightBeforeEmission: consuming FlightSimulationState,
+    origin: AttackOrigin
+  ) {
+    self.preparation = preparation
+    self.flightBeforeEmission = consume flightBeforeEmission
+    self.origin = origin
+  }
+}
+
 extension Game {
   static let combatLaserEnergyCost = 1.0
   /// Mount direction, hull intersections and legal attribution share the same
@@ -84,15 +115,25 @@ extension Game {
     dischargeAudio.record(.combatLaser)
   }
 
-  /// A legacy scripted beam still obeys occlusion and records its real emitter.
-  /// Script-specific cadence/damage remains with the original encounter.
+  /// NPC beams obey occlusion and record their real emitter; the encounter owns cadence/damage.
+  /// Cold phases mutate the same live Game, without reserving their query values in this frame.
+  @inline(never)
   mutating func emitLegacyNPCBeam(bodyID: Int, damage: Double, energyMultiplier: Double = 1) {
     ensurePhysicalActors()
+    guard let preparation = prepareNPCBeam(bodyID: bodyID, damage: damage),
+      let emission = prepareNPCBeamEmission(preparation),
+      applyNPCBeamImpact(emission, damage: damage, energyMultiplier: energyMultiplier)
+    else { return }
+    finishNPCBeam(emission, bodyID: bodyID, damage: damage)
+  }
+
+  @inline(never)
+  private mutating func prepareNPCBeam(bodyID: Int, damage: Double) -> NPCBeamPreparation? {
     guard let body = bodies.first(where: { $0.id == bodyID && $0.energy > 0 }),
       !isEMPDisabled(body),
       let owner = body.physical?.identity,
       body.position.length > 0
-    else { return }
+    else { return nil }
     let launch = commander.flightSimulation.pose.systemPoint(body.position)
     let contact: MissionCollisionContact?
     do {
@@ -100,40 +141,61 @@ extension Game {
         from: body.position, direction: body.position.unit * -1,
         range: body.position.length + 1, radius: 0,
         excludingBodyIDs: [bodyID], includePlayer: true)
-    } catch { return }
+    } catch { return nil }
     if let contact, contact.selectedTargetBody?.scriptNPC != nil {
       do {
         _ = try preflightNativeMissionContact(
           contact, owner: owner, damage: damage, laser: nil, mount: nil)
-      } catch { return }
+      } catch { return nil }
     }
+    return .init(owner: owner, launch: launch, contact: contact)
+  }
+
+  @inline(never)
+  private mutating func prepareNPCBeamEmission(_ preparation: NPCBeamPreparation)
+    -> NPCBeamEmission?
+  {
     let flightBeforeEmission = commander.flightSimulation
-    guard let origin = makeAttackOrigin(owner: owner) else { return }
-    if let contact {
+    guard let origin = makeAttackOrigin(owner: preparation.owner) else { return nil }
+    return .init(
+      preparation: preparation, flightBeforeEmission: flightBeforeEmission, origin: origin)
+  }
+
+  @inline(never)
+  private mutating func applyNPCBeamImpact(
+    _ emission: NPCBeamEmission, damage: Double, energyMultiplier: Double
+  ) -> Bool {
+    if let contact = emission.preparation.contact {
       if contact.selectedTargetBody?.scriptNPC != nil {
         guard
           let receipt = try? applyNativeMissionContact(
-            contact, origin: origin, damage: damage, laser: nil, mount: nil,
-            emissionPosition: launch)
+            contact, origin: emission.origin, damage: damage, laser: nil, mount: nil,
+            emissionPosition: emission.preparation.launch)
         else {
-          commander.flightSimulation = flightBeforeEmission
-          return
+          commander.flightSimulation = emission.flightBeforeEmission
+          return false
         }
         projectScriptMissionImpact(receipt)
       } else {
         applyCombatHit(
-          contact.hit, origin: origin, kind: .laser, damage: damage, emissionPosition: launch,
+          contact.hit, origin: emission.origin, kind: .laser, damage: damage,
+          emissionPosition: emission.preparation.launch,
           energyMultiplier: energyMultiplier)
       }
     } else {
       recordCombat(
-        origin: origin, kind: .laser, outcome: .discharge, target: nil,
-        worldPosition: launch, emissionPosition: launch)
+        origin: emission.origin, kind: .laser, outcome: .discharge, target: nil,
+        worldPosition: emission.preparation.launch, emissionPosition: emission.preparation.launch)
     }
+    return true
+  }
+
+  @inline(never)
+  private mutating func finishNPCBeam(_ emission: NPCBeamEmission, bodyID: Int, damage: Double) {
     if let index = bodies.firstIndex(where: { $0.id == bodyID }) {
       bodies[index].physical?.npc?.resources?.recordBeam(heat: min(10, damage * 10 / 15))
     }
-    commander.crimeLedger.finishEmission(origin.emissionID)
+    commander.crimeLedger.finishEmission(emission.origin.emissionID)
   }
 
   @discardableResult mutating func applyAttributedEnergyBomb() -> Bool {
