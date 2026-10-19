@@ -105,7 +105,9 @@ def verify_resources(app):
         target = (
             bundle / relative
             if relative.parts[0]
-            in ["Ships", "MissionPacks", "ScriptPacks", "ShipTextures"]
+            in [
+                "Ships", "MissionPacks", "ScriptPacks", "ShipTextures", "OriginalWorlds"
+            ]
             else bundle / source.name
         )
         if not target.is_file() or source.read_bytes() != target.read_bytes():

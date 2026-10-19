@@ -25,6 +25,8 @@ class PackagedResourceTests(unittest.TestCase):
             "ScriptPacks/another-pack/main.lua": b"different script",
             "ShipTextures/RayDetails/texture.png": b"ray texture",
             "ShipTextures/Stingray/texture.png": b"stingray texture",
+            "OriginalWorlds/catalogue.json": b"original worlds",
+            "OriginalWorlds/PROVENANCE.json": b"world provenance",
             "Legal/NOTICE.txt": b"legal notice",
             "ModelLicenses/model.txt": b"model licence",
             "ASSET-NOTICE.txt": b"asset notice",
@@ -84,12 +86,13 @@ class PackagedResourceTests(unittest.TestCase):
                     ):
                         package_macos.verify_resources(self.app)
 
-    def test_flattened_script_or_texture_alias_cannot_replace_the_nested_resource(self):
+    def test_flattened_copied_alias_cannot_replace_the_nested_resource(self):
         for nested in (False, True):
             for relative in (
                 "ScriptPacks/generated-couriers/manifest.toml",
                 "ScriptPacks/generated-couriers/main.lua",
                 "ShipTextures/RayDetails/texture.png",
+                "OriginalWorlds/catalogue.json",
             ):
                 with self.subTest(nested=nested, relative=relative):
                     destination = self.populate_bundle(nested)
