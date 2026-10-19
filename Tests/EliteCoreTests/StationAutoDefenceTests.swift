@@ -1459,6 +1459,11 @@ func stationAutoMovingEntryRefusesUnsafeOrUnjoinedCurrentCourses(condition: Stri
 func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: String) async throws
 {
   var game = try await stationAutoEntryBoundary()
+  // This initial stationary course is genuinely unsafe: the port phase is mismatched.
+  var unsafePose = game.commander.flightSimulation.pose
+  unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
+  NativePagedSalvageFixture.moveObserver(&game, to: unsafePose)
+  game.autoPilot.setApproachVelocity(.init(0, 0, 0))
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -600), sequence: 910)
   game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
   let source = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
@@ -1489,6 +1494,7 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   let expected: StationAutoHazard =
     condition == "malformed-threat" || condition == "ambiguous-threat" ? .unknown : .active
   #expect(guidance.hazard == expected && !guidance.handoverAllowed && !guidance.joinedIncoming)
+  #expect(!guidance.movingEntryAllowed)
   for _ in 0..<8 {
     let before = game.flightWorldVelocity
     game.applyAutoTarget(delta: 0.1, controls: Controls())
@@ -1500,6 +1506,11 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
 
 @Test func stationAutoNewJoinedOrdnanceInterruptsBeamHandoverWithStoppingClearance() async throws {
   var game = try await stationAutoEntryBoundary()
+  // This initial stationary course is genuinely unsafe: the port phase is mismatched.
+  var unsafePose = game.commander.flightSimulation.pose
+  unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
+  NativePagedSalvageFixture.moveObserver(&game, to: unsafePose)
+  game.autoPilot.setApproachVelocity(.init(0, 0, 0))
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -600), sequence: 912)
   game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
   let destination = game.autoPilot.targetActor
@@ -1523,6 +1534,7 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   let requested = game.stationAutoGuidance(target: station)
   let guidance = try #require(requested)
   #expect(guidance.hazard == .active && guidance.joinedIncoming && !guidance.handoverAllowed)
+  #expect(!guidance.movingEntryAllowed)
   let before = game.flightWorldVelocity
   game.applyAutoTarget(delta: 0.1, controls: Controls())
   #expect(
