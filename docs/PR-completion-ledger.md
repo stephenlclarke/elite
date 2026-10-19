@@ -72,3 +72,7 @@ Record Root grant to G2 for exact fresh Game/default factory/title/icon/native e
 ## Explicit single-Peregrine unit estimate
 
 Record Root-declared single-Peregrine120m maximum-extent project estimate under human missing-spec best-effort authority. Uniform original-mesh scaling preserves axes/proportions and derives XYZ/collision bounds; provenance is required in resource/notes/tests, fuel130/cargo92 remain exact. No implementation, runtime readiness or broader fleet authority is claimed. Changed Markdown/whitespace checks only.
+
+## Fresh causal repair and bounded native loss hooks
+
+Attach the bounded760 inspection report and Root assignment for fresha9fd7e60 Director-only acceptance/pipeline repair, with failed helper chains excluded and default-stack owner PASS/independent review still required. Update MBA05 to eleven files solely for two existing Game escape/fatal loss hooks, same candidate/writer, real proof/tombstone/payload clearing/no payment or restock, focused rollback units. Changed Markdown/whitespace checks only; no G1 source/build/diagnostic/runtime job or readiness claim.

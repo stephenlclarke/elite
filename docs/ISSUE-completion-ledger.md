@@ -53,3 +53,7 @@ Root now grants bounded F01 implementation after source reconciliation. Track st
 ## Explicit single-Peregrine unit estimate
 
 SH025 has no authored physical dimensions/coordinate units. The bounded startup dependency requires an explicitly labelled project estimate rather than silently borrowing predecessor dimensions or display scale; real geometry/clearance/mount checks still gate flight acceptance.
+
+## Fresh causal repair and bounded native loss hooks
+
+Existing760 binary evidence points to cumulative ancestor stack pressure and sequential Game buffers in the event wrapper, rather than proving the freight callee itself is the cause. Preserve failed branches and track only the newly granted minimal Director repair. MBA05 also needs its two real native loss hooks to avoid persistent sample custody after escape/death.
