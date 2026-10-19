@@ -641,7 +641,12 @@ public enum Display {
     frame.line(180, 192, 180, 255, .yellow)
     let left: [(String, Double, Ink)] = [
       ("FS", game.frontShield / 255, .green), ("AS", game.rearShield / 255, .green),
-      ("FU", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
+      (
+        "FU",
+        Game.equipmentResourceLevel(
+          Double(game.commander.fuel), from: Double(game.commander.fuelCapacity), to: 1),
+        .green
+      ),
       ("CT", game.cabinTemperature, .red),
       ("LT", game.laserHeat / 255, .red), ("AL", game.altitude, .yellow),
     ]
@@ -682,7 +687,7 @@ public enum Display {
       game.missileArmed ? .red : .green)
     frame.ellipse(166, 201, 6, 6, .yellow)
   }
-  private static func bar(
+  static func bar(
     _ frame: inout Frame, _ x: Int, _ y: Int, _ value: Double, _ ink: Ink, _ width: Int
   ) {
     let count = Int(max(0, min(1, value)) * Double(width))

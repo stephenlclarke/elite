@@ -193,7 +193,12 @@ extension Display {
     let gauges: [(String, Double, Ink)] = [
       ("Front shield", game.frontShield / game.commander.shieldCapacity, .green),
       ("Rear shield", game.rearShield / game.commander.rearShieldCapacity, .green),
-      ("Fuel", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
+      (
+        "Fuel",
+        Game.equipmentResourceLevel(
+          Double(game.commander.fuel), from: Double(game.commander.fuelCapacity), to: 1),
+        .green
+      ),
       ("Cabin temp", game.cabinTemperature, .red), ("Laser heat", game.laserHeat / 255, .red),
       ("Altitude", game.altitude, .yellow),
     ]
