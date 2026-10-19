@@ -31,6 +31,8 @@ A native Swift macOS space trading game presented by XYZZY as the Right-On Comma
 
 This development line targets the current model. Existing saves are disposable; backward compatibility with earlier saves, content formats, internal APIs and namespaces is not a delivery requirement. Current-format save/load and transaction correctness remain required.
 
+The [completion ledger](docs/COMPLETION-LEDGER.md) is the current player-facing milestone roadmap, complete mission inventory and owned work queue. It separates prepared source, usable local builds and published delivery, and uses focused unit tests with broader checks batched after several deliveries.
+
 ![Elite gameplay](docs/elite.png)
 
 <!-- markdownlint-disable MD033 -->

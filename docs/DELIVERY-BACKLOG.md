@@ -1,5 +1,7 @@
 # Requested game changes and delivery evidence
 
+Use the [current completion ledger](COMPLETION-LEDGER.md) for L337 player-facing milestones, all current missions and next-work selection. The historical evidence below is retained unchanged and does not establish current L337 completion.
+
 As of 18 October 2026, the accepted [L337 implementation scope](L337-IMPLEMENTATION.md) supersedes the predecessor preservation and content targets recorded below. This document retains historical v1.x delivery and validation evidence; its rows do not establish current L337 acceptance.
 
 New user suggestions and superseding decisions are recorded in the [persistent feature request log](FEATURE-REQUEST-LOG.md), with implementation, verification and release status kept separate.
