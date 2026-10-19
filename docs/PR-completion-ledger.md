@@ -112,3 +112,9 @@ Record actual772 compile failure/closure, exact932 one-call correction/clean tar
 ## Integrated observer source and native checkpoint gate
 
 Record e640c36c startup-observer integration with exact five-file hashes, clean reviews and actual772attempt02/773 three-case PASS/closure. Update paired source note with actual evidence. Next Root-granted checkpoint is product-only optimized app plus finite native title/credits and bounded visual verification; no Release test-target retry or runtime result is inferred. Changed Markdown/whitespace checks only.
+
+## Native startup outcome and bounded priority handoffs
+
+Attach optimized product774 and actual title775/credits776/visual777 qualified reports, raw-path reader correction without rerun, source/binary/elapsed timing limits and all-process checkpoint closure. Record direct MC1778/779 dispatch and compiler-only correction pending, reviewed G2 panel fast path/conditional3-case grant, and clean MBA05 r2/compiler fixes with19 local tests unrun/missing Testing. Current private742 remains delivered, no smoothness/fullscreen/flight/release claim. Changed Markdown checks only after native closure; no new G1 compiler/native job.
+
+Before freezing this documentation checkpoint, record Root's corrected837d borrowed traversal clean targeted review and existing778attempt02/779 owner run pending. Local CLT inventory found Testing/framework macros; the authorized process-local SDK/framework smoke and conditional same19-case run remain pending, without installs or a main executor. Earlier failures remain historical evidence.

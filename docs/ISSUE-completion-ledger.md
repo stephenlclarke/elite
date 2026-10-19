@@ -93,3 +93,7 @@ The observer unit-only missing-try compiler failure must remain recorded separat
 ## Integrated observer source and native checkpoint gate
 
 The bounded startup observer now meets its focused source/unit gates, so integrate it and move to actual optimized app observation. Keep source integration distinct from native frame/pixel/playability acceptance and retain the earlier optimized-test timeout evidence.
+
+## Native startup outcome and bounded priority handoffs
+
+Native774-777 now provides concrete slow startup evidence and actual compact appearance/menu/Quit checks, but it does not close F01 playability. Release the verified executor for the reviewed MC1 phases; keep its new compiler ownership refusal distinct from runtime acceptance. MBA05 source P1 is fixed/reviewed while its local tests remain blocked by missing Testing.
