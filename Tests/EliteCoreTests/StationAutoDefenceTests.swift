@@ -49,9 +49,12 @@ private func stationAutoGame() throws -> Game {
   var game = try stationAutoGame()
   game.screen = .rear
   game.selectFlightTool(.miningLaser)
+  StationDefenceRefusalObservation.enable(&game)
+  StationDefenceRefusalObservation.emit(game, phase: "station-before")
   let before = game
   let attacker = try #require(game.bodies.first { $0.hostile })
   game.fireStationAutoLaser()
+  StationDefenceRefusalObservation.emit(game, phase: "station-after")
   let hit = try #require(game.bodies.first { $0.id == attacker.id })
   #expect(hit.energy < attacker.energy && game.laserHeat > before.laserHeat)
   #expect(game.commander.crimeLedger != before.commander.crimeLedger && game.commander.legal == 0)
