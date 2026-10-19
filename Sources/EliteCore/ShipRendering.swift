@@ -156,10 +156,17 @@ extension Frame {
       return
     }
     var clipped = vertices
-    clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.x, above: true)
-    clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.maxX - 1, above: false)
-    clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.y, above: true)
-    clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.maxY - 1, above: false)
+    // The rotating startup ship is wholly framed inside this exact inclusive clip.
+    // Retain its vertices directly; crossing polygons use the original clipping path.
+    if !vertices.allSatisfy({
+      $0.x >= flightClip.x && $0.x <= flightClip.maxX - 1
+        && $0.y >= flightClip.y && $0.y <= flightClip.maxY - 1
+    }) {
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.x, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.maxX - 1, above: false)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.y, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.maxY - 1, above: false)
+    }
     guard clipped.count >= 3 else { return }
     graphics.append(.panel(ShipPanel(vertices: clipped, colour: colour)))
     if rasterizeGraphics { fillPanel(clipped, colour: colour) }
