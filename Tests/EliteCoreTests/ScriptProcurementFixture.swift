@@ -259,7 +259,14 @@ struct ScriptProcurementFixture {
     while steps < 3000 {
       let facts = await runtime.procurementFlightFacts()
       if facts.docked { break }
-      try #require(facts.live && !facts.paused)
+      var failureDetails = ""
+      if !facts.live || facts.paused {
+        let system = await runtime.procurementCurrentSystem()
+        let detail = await runtime.procurementJumpRefusalDetail(destination: system)
+        let label = String((selectionDiagnostic?.label ?? phase).prefix(80))
+        failureDetails = "Dock stopped, phase=\(label), steps=\(steps): \(detail)"
+      }
+      try #require(facts.live && !facts.paused, Comment(rawValue: failureDetails))
       if let prepareScene { try await prepareScene(runtime) }
       if let diagnostic {
         await diagnosticAdvance(runtime, diagnostic: diagnostic, phase: phase, step: steps)
