@@ -62,3 +62,7 @@ The added XYZZY Naval Laser is grant-only and deals a prototype 64 damage, reduc
 ## Mission-pack implementation
 
 Campaign content and progression are maintained in `Sources/EliteCore/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.
+
+## Current original-world location bindings
+
+The historical source locations above describe the BBC universe. The installed human-approved `l337-world-1` catalogue replaces its names and coordinates without aliases. Thargoid Plans retains the same zero-based mission system identities: collection is G03-S083, Nerith (50.0099, 8.1737 LY), and delivery is G03-S036, Veyara (63.0828, 31.2786 LY). Its existing stage transitions now check galaxy and system identity instead of obsolete BBC byte coordinates. The current briefing, status and player guide use the authenticated destination names. All score gates, one-transition-per-dock ordering, cargo-free plan custody, wrong-galaxy refusal, rewards and duplicate-payment checks remain. Saved pack digest checks remain strict; this repair supplies no predecessor content migration. Native validation is pending.

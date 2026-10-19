@@ -45,7 +45,8 @@ private func finishMessage(_ game: inout Game) {
   var game = navalGame(galaxy: 2, score: 1280, stage: .constrictorComplete)
   moveCommander(&game, galaxy: 2, system: 83)
   #expect(
-    game.currentSystem.name == "CEERDI" && game.currentSystem.x == 215 && game.currentSystem.y == 84
+    game.currentSystem.original?.key == "G03-S083" && game.currentSystem.name == "Nerith"
+      && game.currentSystem.x == 50.0099 && game.currentSystem.y == 8.1737
   )
   game.dock()
   #expect(game.commander.missionStage == .reportToCeerdi)
@@ -114,7 +115,8 @@ private func finishMessage(_ game: inout Game) {
   game.commander.cargo[0] = hold
   moveCommander(&game, galaxy: 2, system: 36)
   #expect(
-    game.currentSystem.name == "BIRERA" && game.currentSystem.x == 63 && game.currentSystem.y == 72)
+    game.currentSystem.original?.key == "G03-S036" && game.currentSystem.name == "Veyara"
+      && game.currentSystem.x == 63.0828 && game.currentSystem.y == 31.2786)
   game.dock()
   #expect(game.commander.missionStage == .reportToCeerdi)
   moveCommander(&game, galaxy: 2, system: 83)
@@ -223,7 +225,8 @@ private func finishMessage(_ game: inout Game) {
   var game = navalGame(galaxy: 1, stage: .huntingConstrictor)
   moveCommander(&game, galaxy: 1, system: 193)
   #expect(
-    game.currentSystem.name == "ORARRA" && game.currentSystem.x == 144 && game.currentSystem.y == 33
+    game.currentSystem.original?.key == "G02-S193" && game.currentSystem.name == "Drevan"
+      && game.currentSystem.x == 29.3124 && game.currentSystem.y == 38.922
   )
   for _ in 0..<128 { game.spawnNavalEncounter() }
   let target = game.bodies.filter { $0.hull == .constrictor }
