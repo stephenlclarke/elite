@@ -6,7 +6,7 @@ Use Swift 6 actor isolation. GameRuntime owns simulation state; AppKit stays on 
 
 ## Completion ledger
 
-Before choosing work, consult `docs/COMPLETION-LEDGER.md` and route the next player-facing batch through Root. Update the ledger after authoring, integration, verification or release and before selecting the next work: record exact source/build/evidence, functional status, delivery location and blockers. Keep the owned MBA pipeline supplied with useful bounded tasks; only Root dispatches them, with one MBA task active at a time.
+Before choosing work, consult `docs/COMPLETION-LEDGER.md` and route the next player-facing batch through Root. Update the ledger when work is assigned, when a frozen delivery completes, and after integration, verification or release, before selecting next work. At assignment record milestone/item ID, owner/session, bounded files/scope, dependencies, status and next handoff. At completion record the frozen commit and focused evidence; at integration record the actual candidate/main commit. Keep functional status, playable build/release location and blockers separate. Keep the owned MBA pipeline supplied with useful bounded tasks; only Root dispatches them, with one MBA task active at a time.
 
 Changed code requires focused unit tests. Deliver useful batches; run broad integration/system/performance checks after several delivered batches and at formal release checkpoints, rather than repeatedly checking unaffected features or making testing a delivery workstream. Preserve the final required CI, review, checks and release gates. Prepared assets/source and test counts alone never establish playable completion.
 
