@@ -156,3 +156,7 @@ Record actual787 zero completed/four UNKNOWN stack-failure result with exact pro
 ## Reviewed colour leaf owner validation slot
 
 Record exact73174 four-path freeze, Root independent CLEAN review and one-case parity plan. Grant bounded790/791 matching build/one unit while MC1 source is still authoring, using registry CAS and preserving ready MC1 priority; MC1's788/789 follows actual whole-batch closure unless already active. Owner PASS/process closure remains required before prompt integration. No duplicate audit or standalone timing job. Scoped Markdown/whitespace checks only.
+
+## Supporting colour integration and corrected MBA runtime route
+
+Record exact four-file import81b3b0b0 after Root CLEAN review, owner790 matching build and791 one-case bitmap parity PASS, immutable handoff/process/artifact closure and released registry. No standalone timing or smoothness claim. Release existing MC1 788/789 grant on exact Root-clean65614041 five-method/six-case plan without another ACK. Record MBA mean-expression compile PASS, initial loader failure before discovery, then complete inventory finding the matching installed library and actual same20-case local retry pending; cancel the premature main fallback. Scoped Markdown/whitespace checks only, no G1 compiler/native job.
