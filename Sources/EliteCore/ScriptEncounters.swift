@@ -1231,12 +1231,22 @@ extension Game {
   mutating func restoreScriptActors() throws {
     try validateRetainedMissionProjectileRestoration()
     let sources = try validateRetainedMissionActorRestoration()
-    guard !commander.scriptState.instances.isEmpty, !docked, let anchor = scriptAnchor else {
+    guard !retainedMissionActorInstances.isEmpty, !docked, let anchor = scriptAnchor else {
       return
     }
     // All hard source/current-binding checks finished before even the station can reappear.
     restoreNativeMissionStationIfEligible()
-    for source in sources {
+    try restoreRetainedMissionActors(sources)
+    try restoreScriptShots(anchor: anchor)
+  }
+
+  /// Retire actor admission temporaries before the subsequent projectile restoration phase.
+  @inline(never)
+  private mutating func restoreRetainedMissionActors(
+    _ sources: borrowing [MissionActorAdmissionSource]
+  ) throws {
+    for index in sources.indices {
+      let source = sources[index]
       switch try prepareMissionActorAdmission(source) {
       case .pending, .unchanged: continue
       case .ready(let plan):
@@ -1249,7 +1259,6 @@ extension Game {
         commander.scriptState.instances[instanceID] = staged
       }
     }
-    try restoreScriptShots(anchor: anchor)
   }
   mutating func recordScriptActorRemoval(_ body: SpaceBody, destroyed: Bool) {
     if destroyed { recordScriptWorldResourceLoss(body) }
