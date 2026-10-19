@@ -1716,6 +1716,7 @@ public struct Game: Sendable {
     let workCameraStart = commander.flightSimulation.pose
     let usedWorkCamera = workGuidance != nil || workBraking != nil
     moveBodies(dt: dt)
+    if paused { return }
     if docked {
       stationAutoDefence = nil
       reconcileEliteReward()
