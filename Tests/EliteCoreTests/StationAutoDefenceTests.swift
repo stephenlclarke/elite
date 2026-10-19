@@ -1373,7 +1373,18 @@ func stationAutoKnownPressureUsesRealAlignedCourseAndReachesNativeEntry(inwardSp
   #expect(admitted && game.docked && game.dockedAtMainStation)
   #expect(game.nativeMainStationDockEvidenceIsCurrent)
   #expect(game.commander.legal == 0)
+  let receipt = try #require(game.commander.nativeStations?.currentMainDock)
+  let nextSequence = game.commander.nativeStations?.nextMainDockSequence
+  // Original-main docking records the real arrival; Save is a separate public operation.
+  try await runtime.save(to: storage.url)
   #expect(FileManager.default.fileExists(atPath: storage.url.path))
+  try await runtime.load(from: storage.url, persistMigrations: false)
+  let reloaded = await runtime.snapshot()
+  #expect(reloaded.docked && reloaded.dockedAtMainStation)
+  #expect(reloaded.nativeMainStationDockEvidenceIsCurrent)
+  #expect(reloaded.commander.nativeStations?.currentMainDock == receipt)
+  #expect(reloaded.commander.nativeStations?.nextMainDockSequence == nextSequence)
+  #expect(reloaded.commander.legal == 0)
 }
 
 @Test(arguments: [
