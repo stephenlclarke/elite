@@ -654,7 +654,7 @@ func stationAutoColdMissileRequiresActualAttackAndClearExplicitSourcePath(condit
       }
       let hidden = try #require(hiddenPosition)
       game.bodies[index].position = hidden
-      game.bodies[index].physical?.npc?.intention = .flee(player)
+      game.bodies[index].physical?.npc?.intention = .engage(player)
       let offset = hidden - Vector3(0, 0, 24)
       let occlusion = try #require(
         try game.nearestMissionCollision(
@@ -667,7 +667,10 @@ func stationAutoColdMissileRequiresActualAttackAndClearExplicitSourcePath(condit
           radius: 0, excludingBodyIDs: [id], includePlayer: true))
       try #require(cover.selectedTargetBody?.id == station.id)
       let guidance = game.stationAutoGuidance(target: station)
-      #expect(guidance?.hazard == .clear)
+      #expect(guidance?.hazard == .clear && guidance?.handoverAllowed == true)
+      game.applyAutoTarget(delta: 0.1, controls: Controls())
+      #expect(
+        game.autoPilot.finalApproach && game.autoPilot.targetActor == station.physical?.identity)
     } else {
       let blocker = game.nextBodyID
       game.nextBodyID += 1
@@ -997,53 +1000,47 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   #expect(loaded.commander.missiles == initial.commander.missiles)
 }
 
-@Test func stationAutoSustainedNativeBeamHandsBackToFreshDockingAndPhysicalProgress() async throws {
+@Test func stationAutoUncoveredNativeBeamCannotHandOverToStationaryAlignment() async throws {
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 909)
   let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
   let player = try #require(game.commander.flightSimulation.player)
   let destination = game.autoPilot.targetActor
-  let initialRange = try #require(game.autoTargetBody?.position.length)
-  var defending = false
-  var returningUnderPressure = false
-  var freshFinalUnderPressure = false
-  var progressed = false
-  for step in 0..<128 {
-    if step.isMultiple(of: 10) {
-      // The real emitter owns its origin, mesh contact and law window; no incident is fabricated.
-      game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
-    }
+  let shields = game.frontShield + game.rearShield
+  // The actual emitter and native ray establish damage and the current law window.
+  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  try #require(game.frontShield + game.rearShield < shields)
+  let context = try #require(game.gameplayContext())
+  try #require(
+    game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+      from: actor, against: player, context: context))
+  let initialPosition = game.commander.flightSimulation.pose.position
+  for _ in 0..<8 {
+    let station = try #require(game.autoTargetBody)
+    let observation = game.stationAutoGuidance(target: station)
+    let guidance = try #require(observation)
+    #expect(guidance.hazard == .active && !guidance.joinedIncoming && !guidance.handoverAllowed)
     let before = game.flightWorldVelocity
     game.tick(delta: 0.1)
-    let station = try #require(game.autoTargetBody)
-    let context = try #require(game.gameplayContext())
-    let authentic = game.commander.crimeLedger.hasCurrentUnlawfulAttack(
-      from: actor, against: player, context: context)
-    defending = defending || game.autoPilot.stationDefencePhase == .defending
-    if game.autoPilot.stationDefencePhase == .returning && authentic {
-      returningUnderPressure = true
-      #expect(game.bodies.contains { $0.id == id && $0.energy > 0 })
-      if game.autoPilot.finalApproach { freshFinalUnderPressure = true }
-    }
+    #expect(game.autoPilot.stationDefencePhase == .defending)
+    #expect(!game.autoPilot.ready && !game.autoPilot.finalApproach)
     #expect(game.autoPilot.targetActor == destination && game.screen != .gameOver)
     #expect((game.flightWorldVelocity - before).length <= game.workLimits.acceleration * 0.1 + 1e-8)
     #expect(station.position.length > station.stationClearanceRadius)
-    progressed = initialRange - station.position.length > 300
-    if progressed && freshFinalUnderPressure { break }
   }
-  #expect(defending && returningUnderPressure && freshFinalUnderPressure && progressed)
-  #expect(game.autoPilot.stationDefencePhase == .returning && game.autoPilot.finalApproach)
+  #expect((game.commander.flightSimulation.pose.position - initialPosition).length > 0)
 }
 
-@Test func stationAutoHandoverUsesActualBrakingBoundaryAndKeepsOneThrustBudget() {
+@Test func stationAutoClosingHandoverUsesActualBrakingBoundaryAndKeepsOneThrustBudget() {
   var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 2000))
   station.rotationRate = 0
   var control = AutoTargetControl()
   control.setApproachVelocity(.init(0, 0, 600))
-  let pressure = StationAutoGuidance(
+  var pressure = StationAutoGuidance(
     aim: .init(1000, 0, 0), lateralVelocity: .init(150, 0, 0),
     hazard: .active, interruptionAllowed: true, clearanceRadius: 400, handoverAllowed: true)
   _ = control.steer(target: station, delta: 0.1, defence: pressure)
+  pressure.hazard = .closing
   let outside = control.velocity
   _ = control.steer(target: station, delta: 0.1, defence: pressure)
   #expect(control.stationDefencePhase == .defending)
@@ -1057,17 +1054,18 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   #expect(control.velocity.length > AutoTargetControl.policyLimits.speed)
 }
 
-@Test func stationAutoBeamHandoverKeepsReturningThroughFreshReadinessAndSpin() {
+@Test func stationAutoClosingHandoverKeepsReturningThroughFreshReadinessAndSpin() {
   var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
   station.rotationRate = 0
   var control = AutoTargetControl()
   _ = control.steer(target: station, delta: 0.1)
   #expect(control.finalApproach)
-  let pressure = StationAutoGuidance(
+  var pressure = StationAutoGuidance(
     aim: .init(600, 0, 0), lateralVelocity: .init(150, 0, 0),
     hazard: .active, interruptionAllowed: true, clearanceRadius: 400, handoverAllowed: true)
   _ = control.steer(target: station, delta: 0.1, defence: pressure)
   #expect(control.stationDefencePhase == .defending && !control.finalApproach && !control.ready)
+  pressure.hazard = .closing
   station.rotation = 0.6
   for _ in 0..<8 {
     let before = control.velocity
@@ -1156,9 +1154,17 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   let destination = game.autoPilot.targetActor
   game.applyAutoTarget(delta: 0.1, controls: Controls())
   #expect(game.autoPilot.stationDefencePhase == .defending)
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  let player = try #require(game.commander.flightSimulation.player)
+  game.bodies[index].hostile = false
+  game.bodies[index].physical?.npc?.intention = .flee(player)
+  let returningStation = try #require(game.autoTargetBody)
+  let clear = game.stationAutoGuidance(target: returningStation)
+  try #require(clear?.hazard == .clear)
   game.applyAutoTarget(delta: 0.1, controls: Controls())
   #expect(game.autoPilot.stationDefencePhase == .returning)
-  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  game.bodies[index].hostile = true
+  game.bodies[index].physical?.npc?.intention = .engage(player)
   game.bodies[index].missiles = 1
   let launched = game.launchGameplayNPCMissile(bodyID: id)
   try #require(launched)
@@ -1185,17 +1191,20 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
     aim: .init(600, 0, 0), lateralVelocity: .init(150, 0, 0),
     hazard: .active, interruptionAllowed: true, clearanceRadius: 400, handoverAllowed: true)
   _ = control.steer(target: station, delta: 0.1, defence: observations)
+  observations.hazard = .closing
   for _ in 0..<16 {
     if control.finalApproach { break }
     _ = control.steer(target: station, delta: 0.1, defence: observations)
   }
   #expect(control.stationDefencePhase == .returning && control.finalApproach && control.ready)
-  // Aggregate active pressure can coexist with an unknown; it is not handover permission.
+  // Unknown observations revoke the prior safe closing-pressure handover.
+  observations.hazard = .unknown
   observations.handoverAllowed = false
   let before = control.velocity
   _ = control.steer(target: station, delta: 0.1, defence: observations)
   #expect(control.stationDefencePhase == .returning && !control.finalApproach && !control.ready)
   #expect((control.velocity - before).length <= 24 + 1e-8)
+  observations.hazard = .closing
   observations.handoverAllowed = true
   for _ in 0..<16 {
     if control.finalApproach { break }
@@ -1483,7 +1492,7 @@ func stationAutoDefensiveTrackerAcquiresMovingBearingWithinTurnAndThrustLimits(a
   #expect(peakSettledError < 0.02)
 }
 
-@Test func stationAutoDefensiveTrackerDropsPredictionAcrossApproachMode() {
+@Test func stationAutoReturningReentersDefenceForBeamWithoutIncomingOrdnance() {
   var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 5000))
   station.rotationRate = 0
   var control = AutoTargetControl()
@@ -1502,10 +1511,12 @@ func stationAutoDefensiveTrackerAcquiresMovingBearingWithinTurnAndThrustLimits(a
   #expect(control.stationDefencePhase == .returning)
   let renewed = StationAutoGuidance(
     aim: .init(-50, 0, 1000), lateralVelocity: .init(0, 0, 0), hazard: .active,
-    interruptionAllowed: true, clearanceRadius: 400, joinedIncoming: true)
+    interruptionAllowed: true, clearanceRadius: 400)
+  let before = control.velocity
   let actual = control.steer(target: station, delta: 0.1, defence: renewed)
   var fresh = AutoTargetControl()
   let expected = fresh.steer(target: station, delta: 0.1, defence: renewed)
-  #expect(control.stationDefencePhase == .defending && !control.finalApproach)
+  #expect(control.stationDefencePhase == .defending && !control.finalApproach && !control.ready)
+  #expect((control.velocity - before).length <= 24 + 1e-8)
   #expect(actual.pitch == expected.pitch && actual.yaw == expected.yaw)
 }

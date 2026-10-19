@@ -239,7 +239,9 @@ extension Game {
     }
     let hazard: StationAutoHazard =
       active ? .active : (uncertain ? .unknown : (closing ? .closing : .clear))
-    return (hazard, !uncertain && assessment.incoming.isEmpty, joinedIncoming)
+    // An authenticated beam without real station cover is still active pressure.
+    // Knowing its source does not make stationary docking alignment safe.
+    return (hazard, !active && !uncertain && assessment.incoming.isEmpty, joinedIncoming)
   }
 
   mutating func stationAutoGuidance(target station: SpaceBody) -> StationAutoGuidance? {
