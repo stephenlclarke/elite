@@ -22,6 +22,8 @@ struct StationDefenceDiagnosticSnapshot: Sendable {
   let combat: GameplayCombatTrace
   let audioEpoch: UUID
   let audio: [DischargeAudioEvent]
+  let firstEntryCourse: [String: String]?
+  let firstEntryCourseRefusal: [String: String]?
 }
 
 extension GameRuntime {
@@ -123,6 +125,8 @@ extension Game {
     }
     return .init(
       physicalTime: flight.physicalTime, scalars: values, combat: trace,
-      audioEpoch: dischargeAudio.epoch, audio: dischargeAudio.events)
+      audioEpoch: dischargeAudio.epoch, audio: dischargeAudio.events,
+      firstEntryCourse: stationAutoDefence?.firstEntryCourseObservation,
+      firstEntryCourseRefusal: stationAutoDefence?.firstEntryCourseRefusalObservation)
   }
 }

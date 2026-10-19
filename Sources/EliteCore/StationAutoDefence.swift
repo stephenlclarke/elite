@@ -28,6 +28,9 @@ struct StationAutoDefenceState: Sendable {
   var evasionWorld: Vector3?
   var missilePublicationRefused = false
   var saveBinding: URL?
+  /// First opted-in active decision near staging; never entry or attack authority.
+  var firstEntryCourseObservation: [String: String]?
+  var firstEntryCourseRefusalObservation: [String: String]?
 }
 
 private struct StationAutoAssessment {
@@ -161,7 +164,9 @@ extension Game {
   }
 
   /// Current observations only; scan all sources even after finding an authentic attacker.
-  private func stationAutoHazards(_ assessment: StationAutoAssessment) -> (
+  private func stationAutoHazards(
+    _ assessment: StationAutoAssessment, observation: inout [String: String]?
+  ) -> (
     hazard: StationAutoHazard, handoverKnown: Bool, joinedIncoming: Bool, courseKnown: Bool
   ) {
     let context = assessment.context
@@ -187,6 +192,9 @@ extension Game {
         active = true
         joinedIncoming = true
       } else {
+        if observation?["uncertainBody"] == nil {
+          observation?["uncertainBody"] = String(body.id)
+        }
         uncertain = true
       }
     }
@@ -194,6 +202,9 @@ extension Game {
       guard stationAutoThreatObserved(body, context: context), let physical = body.physical,
         let npc = physical.npc
       else {
+        if observation?["uncertainBody"] == nil {
+          observation?["uncertainBody"] = String(body.id)
+        }
         uncertain = true
         continue
       }
@@ -230,6 +241,10 @@ extension Game {
             continue
           }
         } catch {
+          observation?["coverQueryError"] = String(String(describing: error).prefix(128))
+          if observation?["uncertainBody"] == nil {
+            observation?["uncertainBody"] = String(body.id)
+          }
           uncertain = true
           continue
         }
@@ -258,7 +273,8 @@ extension Game {
       return .init(aim: nil, lateralVelocity: .init(0, 0, 0), hazard: .unknown)
     }
     let context = assessment.context
-    let observations = stationAutoHazards(assessment)
+    var courseObservation: [String: String]? = gameplayCombatTrace == nil ? nil : [:]
+    let observations = stationAutoHazards(assessment, observation: &courseObservation)
     let hazard = observations.hazard
     let stationMesh = gameplayMeshOverrides[station.id] ?? Mesh.hull(station.hull)
     let structureRadius =
@@ -275,7 +291,43 @@ extension Game {
     }
     let movingEntryAllowed =
       hazard == .active && observations.courseKnown
-      && stationAutoMovingEntryAllowed(station)
+      && stationAutoMovingEntryAllowed(station, observation: &courseObservation)
+    if courseObservation != nil, hazard == .active,
+      stationAutoDefence?.firstEntryCourseObservation == nil
+        || (!movingEntryAllowed && stationAutoDefence?.firstEntryCourseRefusalObservation == nil)
+    {
+      // This observation-only radius includes the entire existing staging neighbourhood.
+      // It changes no permission and does not re-evaluate any failed course predicate.
+      let range = station.position.length
+      let portOffset = (station.entrancePosition - station.position).length
+      let nearRange =
+        station.stationApproachDistance + portOffset + AutoTargetControl.stationStagingTolerance
+      if range.isFinite, range <= nearRange {
+        courseObservation?["time"] = String(context.physicalTime)
+        courseObservation?["revision"] = String(gameplayRevision)
+        courseObservation?["targetBody"] = String(station.id)
+        courseObservation?["target"] =
+          "\(stationActor.system.galaxy)/\(stationActor.system.system)/\(stationActor.visit)/\(stationActor.entity)"
+        courseObservation?["player"] =
+          "\(context.player.identity.system.galaxy)/\(context.player.identity.system.system)/\(context.player.identity.visit)/\(context.player.identity.entity)"
+        courseObservation?["courseKnown"] = String(observations.courseKnown)
+        courseObservation?["joinedIncoming"] = String(observations.joinedIncoming)
+        courseObservation?["incomingCount"] = String(assessment.incoming.count)
+        courseObservation?["movingEntryAllowed"] = String(movingEntryAllowed)
+        courseObservation?["controllerPhase"] = String(describing: autoPilot.stationDefencePhase)
+        courseObservation?["controllerFinal"] = String(autoPilot.finalApproach)
+        courseObservation?["position"] =
+          "\(context.player.position.x),\(context.player.position.y),\(context.player.position.z)"
+        courseObservation?["targetRange"] = String(range)
+        if !observations.courseKnown { courseObservation?["refusal"] = "hazard.observations" }
+        if stationAutoDefence?.firstEntryCourseObservation == nil {
+          stationAutoDefence?.firstEntryCourseObservation = courseObservation
+        }
+        if !movingEntryAllowed && stationAutoDefence?.firstEntryCourseRefusalObservation == nil {
+          stationAutoDefence?.firstEntryCourseRefusalObservation = courseObservation
+        }
+      }
+    }
     let nearby = assessment.threats.filter { stationAutoImmediate($0, context: context) }
     let response = militaryRetaliationEnabled ? retaliation.pendingResponse(time: time) : nil
     let confirmed = assessment.threats.first { body in
@@ -373,7 +425,10 @@ extension Game {
   }
 
   /// A current motion proposal, never native docking or attack authority.
-  private func stationAutoMovingEntryAllowed(_ station: SpaceBody) -> Bool {
+  private func stationAutoMovingEntryAllowed(
+    _ station: SpaceBody, observation: inout [String: String]?
+  ) -> Bool {
+    observation?["refusal"] = "motion.context"
     guard pendingNativeStationDock == nil, !station.containsPlayer,
       station.entranceNormal.finite, station.entranceUp.finite,
       workLimits.acceleration.isFinite, workLimits.acceleration > 0,
@@ -391,21 +446,58 @@ extension Game {
     let outward = relative.dot(normal)
     let lateralVelocity = relative - normal * outward
     let speed = relative.length
-    guard depth.isFinite, depth > 0,
-      depth <= station.stationApproachDistance + AutoTargetControl.stationStagingTolerance,
-      facing < 0.02, phase < 0.03, rate < 0.02, lateral.length < 15,
-      relative.finite, speed.isFinite, outward <= 0, lateralVelocity.length < 1,
-      speed <= workLimits.speed + max(speed.ulp, workLimits.speed.ulp) * 16
-    else { return false }
+    observation?["refusal"] = "motion.depth"
+    observation?["depth"] = String(depth)
+    guard depth.isFinite, depth > 0 else { return false }
+    let maximumDepth = station.stationApproachDistance + AutoTargetControl.stationStagingTolerance
+    observation?["refusal"] = "motion.approach-range"
+    observation?["maximumDepth"] = String(maximumDepth)
+    guard depth <= maximumDepth else { return false }
+    observation?["refusal"] = "motion.heading"
+    observation?["facing"] = String(facing)
+    guard facing < 0.02 else { return false }
+    observation?["refusal"] = "motion.phase"
+    observation?["phase"] = String(phase)
+    guard phase < 0.03 else { return false }
+    observation?["refusal"] = "motion.rate"
+    observation?["rate"] = String(rate)
+    guard rate < 0.02 else { return false }
+    let lateralDistance = lateral.length
+    observation?["refusal"] = "motion.lateral"
+    observation?["lateral"] = String(lateralDistance)
+    guard lateralDistance < 15 else { return false }
+    observation?["refusal"] = "motion.relative-velocity"
+    guard relative.finite, speed.isFinite else { return false }
+    observation?["refusal"] = "motion.outward"
+    observation?["outward"] = String(outward)
+    observation?["relativeVelocity"] = "\(relative.x),\(relative.y),\(relative.z)"
+    guard outward <= 0 else { return false }
+    let lateralSpeed = lateralVelocity.length
+    observation?["refusal"] = "motion.lateral-speed"
+    observation?["lateralSpeed"] = String(lateralSpeed)
+    guard lateralSpeed < 1 else { return false }
+    // Preserve both original limit reads, after all preceding predicates pass.
+    let speedLimit = workLimits.speed
+    let speedUlp = speed.ulp
+    let limitUlp = workLimits.speed.ulp
+    let speedBound = speedLimit + max(speedUlp, limitUlp) * 16
+    observation?["refusal"] = "motion.speed"
+    observation?["relativeSpeed"] = String(speed)
+    observation?["speedLimit"] = String(speedLimit)
+    observation?["speedBound"] = String(speedBound)
+    guard speed <= speedBound else { return false }
     // The existing final controller targets 48 before the actual <144 native crossing gate.
     // Zero inward speed is allowed only on this already aligned, immediately usable course.
     let terminal = min(48, workLimits.speed)
     let braking =
       speed > terminal
       ? (speed * speed - terminal * terminal) / (2 * workLimits.acceleration) + speed * 0.1 : 0
+    observation?["refusal"] = "motion.braking"
+    observation?["braking"] = String(braking)
     guard braking.isFinite, braking <= depth else { return false }
     let advance = normal * -(depth - min(0.5, depth * 0.5))
-    return nativeStationAutoEntryCourseIsClear(station, advance: advance, terminalSpeed: terminal)
+    return nativeStationAutoEntryCourseIsClear(
+      station, advance: advance, terminalSpeed: terminal, observation: &observation)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {

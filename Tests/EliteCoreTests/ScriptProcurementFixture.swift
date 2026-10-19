@@ -683,6 +683,12 @@ actor ScriptProcurementFlightDiagnostic {
   private var defencePhaseChanges = 0
   private var defenceActorChanges = 0
   private var latestCombatTrace: GameplayCombatTrace?
+  private var firstEntryCourse: [String: String]?
+  private var firstEntryCourseFieldsDropped = 0
+  private var firstEntryCourseValuesTruncated = 0
+  private var firstEntryCourseRefusal: [String: String]?
+  private var firstEntryCourseRefusalFieldsDropped = 0
+  private var firstEntryCourseRefusalValuesTruncated = 0
   private var combatEpoch: UUID?
   private var lastCombatIncident: UInt64 = 0
   private var acceptedCounts: [String: Int] = [:]
@@ -794,6 +800,37 @@ actor ScriptProcurementFlightDiagnostic {
       laserDischarges = 0
       audioEventsDropped = 0
       lastDefencePlayer = player
+      firstEntryCourse = nil
+      firstEntryCourseFieldsDropped = 0
+      firstEntryCourseValuesTruncated = 0
+      firstEntryCourseRefusal = nil
+      firstEntryCourseRefusalFieldsDropped = 0
+      firstEntryCourseRefusalValuesTruncated = 0
+    }
+    // Retain this actual first decision before sample interval or output-budget removal.
+    if let first = snapshot.firstEntryCourse, firstEntryCourse?["target"] != first["target"] {
+      var bounded: [String: String] = [:]
+      firstEntryCourseFieldsDropped = max(0, first.count - 48)
+      firstEntryCourseValuesTruncated = 0
+      for (key, value) in first.sorted(by: { $0.key < $1.key }).prefix(48) {
+        if value.utf8.count > 256 { firstEntryCourseValuesTruncated += 1 }
+        bounded[key] = String(
+          decoding: value.utf8.prefix(256).map { (32...126).contains($0) ? $0 : 63 }, as: UTF8.self)
+      }
+      firstEntryCourse = bounded
+    }
+    if let first = snapshot.firstEntryCourseRefusal,
+      firstEntryCourseRefusal?["target"] != first["target"]
+    {
+      var bounded: [String: String] = [:]
+      firstEntryCourseRefusalFieldsDropped = max(0, first.count - 48)
+      firstEntryCourseRefusalValuesTruncated = 0
+      for (key, value) in first.sorted(by: { $0.key < $1.key }).prefix(48) {
+        if value.utf8.count > 256 { firstEntryCourseRefusalValuesTruncated += 1 }
+        bounded[key] = String(
+          decoding: value.utf8.prefix(256).map { (32...126).contains($0) ? $0 : 63 }, as: UTF8.self)
+      }
+      firstEntryCourseRefusal = bounded
     }
     if combatEpoch != snapshot.combat.epoch {
       combatEpoch = snapshot.combat.epoch
@@ -886,6 +923,12 @@ actor ScriptProcurementFlightDiagnostic {
         "coverage":
           "common GameplayCombat accepted incidents only; mount/law and current combat-position/bearing observations are prospective, not accepted shots, hits or cached steering aim",
         "combatEpoch": trace.epoch.uuidString, "player": lastDefencePlayer ?? "nil",
+        "firstEntryCourse": firstEntryCourse ?? [:],
+        "firstEntryCourseFieldsDropped": firstEntryCourseFieldsDropped,
+        "firstEntryCourseValuesTruncated": firstEntryCourseValuesTruncated,
+        "firstEntryCourseRefusal": firstEntryCourseRefusal ?? [:],
+        "firstEntryCourseRefusalFieldsDropped": firstEntryCourseRefusalFieldsDropped,
+        "firstEntryCourseRefusalValuesTruncated": firstEntryCourseRefusalValuesTruncated,
         "columns": columns, "samples": samples, "incidentColumns": incidentColumns,
         "acceptedIncidents": incidents, "acceptedCountsObservedCurrentPlayerVisit": acceptedCounts,
         "nativeLaserDischargesCurrentPlayerVisit": laserDischarges,
