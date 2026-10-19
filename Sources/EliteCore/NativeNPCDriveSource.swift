@@ -34,17 +34,34 @@ struct NativeNPCDriveSource {
     in game: borrowing Game, leg: NativeWormholeLeg,
     context: OriginalWorldJourneyContext
   ) throws -> Self {
+    try validateWorld(in: game, destinationWorld: leg.destinationWorld, context: context)
+    return try resolveCurrentActor(in: game, leg: leg, context: context)
+  }
+
+  @inline(never)
+  private static func validateWorld(
+    in game: borrowing Game, destinationWorld: String, context: OriginalWorldJourneyContext
+  ) throws {
     guard context.matches(game, at: game.systemIdentity),
       context.route.origin.location == game.systemIdentity,
-      context.route.destination.worldID == leg.destinationWorld
+      context.route.destination.worldID == destinationWorld
     else { throw NativeWormholeRefusal.worldUnavailable }
+  }
+
+  // Retained actor, physical condition and geometry values begin only after world validation.
+  @inline(never)
+  private static func resolveCurrentActor(
+    in game: borrowing Game, leg: NativeWormholeLeg,
+    context: OriginalWorldJourneyContext
+  ) throws -> Self {
+    let actorID = leg.actor
     guard !game.docked, game.commander.scriptState.wormholeTransit?.legs[leg.id] == leg,
       let instance = game.commander.scriptState.instances[leg.instance],
       instance.outcome == .active, instance.suspension == nil,
       let encounter = instance.ownedEncounters[leg.encounter],
       let retained = encounter.actors[leg.alias], retained.identity == leg.actor,
       retained.presence == .present, retained.location(in: encounter) == game.systemIdentity,
-      let body = game.bodies.first(where: { $0.missionActorID == leg.actor }),
+      let body = game.bodies.first(where: { $0.missionActorID == actorID }),
       body.missionInstanceID == leg.instance, body.energy > 0,
       let descriptor = game.currentMissionActorDescriptor(bodyID: body.id),
       let actualContext = game.gameplayContext(),
