@@ -332,7 +332,7 @@ extension Game {
       instance.timers["contract-deadline"] = .init(
         id: "contract-deadline", domain: contract.clock, due: due, interval: 0, policy: .once)
     }
-    return ScriptAcceptanceInstanceScratch(consume instance)
+    return ScriptAcceptanceInstanceScratch(instance)
   }
   private mutating func installScriptMissionAcceptance(
     _ pack: ScriptPack, instance: ScriptAcceptanceInstanceScratch, drainAccepted: Bool
