@@ -378,5 +378,37 @@
     "protectedInputsUnchanged": true,
     "allOwnedProcessesClosed": true,
     "limits": "Focused native-law correction passes; history journey remains failed. No current damage cause, individual history argument verdict, full CI, coverage percentage, sanitizer/leak or release claim."
+  },
+  "historicalAuthenticationAcceptance": {
+    "sourceCommit": "5943d0715bd45ffd3d0ec1a30dc9e2b3f9206f75",
+    "reviewedAuthorCommits": [
+      "f4113af689b1bbf5624e3d4d27c8ea89a084de6e",
+      "c2721841e35b555e5111756356f32e8058906bf9"
+    ],
+    "independentReview": "CLEAN after missingtargetshipjoin P2 correction before execution",
+    "sourceScope": "Private deterministicnativeAUTHscene via opt-in testcallback; ordinary oncepervisit scenery/unconsumed director. Production/playerresources/routes/physics/nativeproof/authassertions unchanged.",
+    "compile590ProofSHA256": "dd8c2ca67f13006b2f385430e67480545f52705b9e851cd3e71a27706af7fcb9",
+    "history591": {
+      "status": "PASS focused execution",
+      "methods": 1,
+      "cases": 12,
+      "originalAuthenticationAssertions": 39,
+      "sourceArgumentSetsMatched": true,
+      "parameterizedStarts": 12,
+      "aggregateCaseEnds": 12,
+      "issues": 0,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "timedOut": false,
+      "commandSeconds": 33.390464917058125,
+      "supervisedSeconds": 34.95954545796849,
+      "proofSHA256": "19d786dcd2f6f17075a6365e50c279dfa37a7e5f927ae5af41e9bf13974623b1",
+      "qualificationSHA256": "ed8fc04971e0cf108a6ea46b297f70e0e85fea28cef734ca10e456f1dcb1e4b0"
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "nilCallerSmoke": "No genuine nil-path operation/order risk found; retained original operations and prior evidence.",
+    "limits": "History authentication passed at newsource; historical failures remain. Isolatedsecurityscene excludes ambientcombat; no productflight/unattendedcombatsurvival/fullCI/coveragepercentage/sanitizer/leak/release claim."
   }
 }
