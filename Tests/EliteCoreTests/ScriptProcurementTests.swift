@@ -190,7 +190,11 @@ import Testing
 @Test func procurementActualTravelExpiryKeepsPartialReceiptsAndOrdinaryProperty() async throws {
   let fixture = try ScriptProcurementFixture()
   defer { fixture.clean() }
-  let runtime = try await fixture.nativeRuntime()
+  let scene = ProcurementHistoricalAuthScene()
+  let prepareScene: ScriptProcurementScenePreparation = { runtime in
+    try await scene.prepare(runtime)
+  }
+  let runtime = try await fixture.nativeRuntime(prepareScene: prepareScene)
   let key = try await runtime.generateContractBoard(packDigest: fixture.pack.digest)
   let generated = await runtime.snapshot()
   let offer = try #require(generated.commander.contracts.boards[key]?.offers[1])
@@ -209,7 +213,8 @@ import Testing
   let id = try await runtime.confirmContract(quote)
   await runtime.procurementBuy(commodity)
   await runtime.procurementBuy(unrelated)
-  try await ScriptProcurementFixture.travel(runtime, path: plan.path, verifyDeparture: true)
+  try await ScriptProcurementFixture.travel(
+    runtime, path: plan.path, verifyDeparture: true, prepareScene: prepareScene)
   await ScriptProcurementFixture.contact(runtime)
   let partial = await runtime.snapshot()
   let first = try #require(
@@ -223,7 +228,8 @@ import Testing
     if before.commander.scriptState.instances[id]?.outcome != .active { break }
     await runtime.procurementRefuel()
     let path = journeys.isMultiple(of: 2) ? Array(plan.path.reversed()) : plan.path
-    try await ScriptProcurementFixture.travel(runtime, path: path, verifyDeparture: true)
+    try await ScriptProcurementFixture.travel(
+      runtime, path: path, verifyDeparture: true, prepareScene: prepareScene)
     journeys += 1
   }
   let expired = await runtime.snapshot()

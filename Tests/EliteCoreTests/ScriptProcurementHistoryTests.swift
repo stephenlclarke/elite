@@ -155,8 +155,8 @@ extension ScriptProcurementFixture {
   }
 }
 
-/// The security fixture owns scene configuration only; no Game, Commander or proof is retained.
-private actor ProcurementHistoricalAuthScene {
+/// Receipt fixtures own scene configuration only; no Game, Commander or proof is retained.
+actor ProcurementHistoricalAuthScene {
   private var configured: Set<ActorIdentity> = []
 
   func prepare(_ runtime: GameRuntime) async throws {
