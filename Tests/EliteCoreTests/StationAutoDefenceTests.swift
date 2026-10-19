@@ -785,17 +785,33 @@ private func stationAutoPressureFailureFacts(_ game: borrowing Game, attacker id
     + " frontShield=\(game.frontShield) nativeRay=[\(query)]"
 }
 
+// The controlled attacker needs a real unobstructed mount, not a target-centre promise.
+@inline(never)
+private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attacker id: Int) throws {
+  let body = try #require(game.bodies.first(where: { $0.id == id }))
+  let contact = try #require(
+    game.nearestMissionCollision(
+      from: body.position, direction: body.orientation.z.unit, range: 1500, radius: 0,
+      excludingBodyIDs: [id], includePlayer: true))
+  try #require(
+    contact.hit.target == .player,
+    Comment(
+      rawValue: contact.hit.target == .player
+        ? "" : stationAutoPressureFailureFacts(game, attacker: id)))
+}
+
 @Test func stationAutoCurrentNativeFleeAssessesEveryAttackerAndUnknownOrdnanceStaysConservative()
   async throws
 {
   var game = try await stationAutoEntryBoundary()
   let first = try stationAutoAddNativeAttacker(
-    &game, position: .init(0, 0, 600), sequence: 906, facingPlayer: true)
+    &game, position: .init(0, -20, 600), sequence: 906, facingPlayer: true)
   let second = try stationAutoAddNativeAttacker(
     &game, position: .init(300, 0, 800), sequence: 907, facingPlayer: true)
   let playerActor = try #require(game.commander.flightSimulation.player)
   for id in [first, second] {
     let attackContext = try #require(game.gameplayContext())
+    try stationAutoRequireNativePressureLane(game, attacker: id)
     game.emitGameplayNPCBeam(bodyID: id, target: playerActor, context: attackContext)
   }
   let station = try #require(game.autoTargetBody)
@@ -839,10 +855,11 @@ private func stationAutoPressureFailureFacts(_ game: borrowing Game, attacker id
 {
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(
-    &game, position: .init(0, 0, 600), sequence: 908, facingPlayer: true)
+    &game, position: .init(0, -20, 600), sequence: 908, facingPlayer: true)
   let shield = game.frontShield
   let attackContext = try #require(game.gameplayContext())
   let playerActor = try #require(game.commander.flightSimulation.player)
+  try stationAutoRequireNativePressureLane(game, attacker: id)
   game.emitGameplayNPCBeam(bodyID: id, target: playerActor, context: attackContext)
   try #require(
     game.frontShield < shield,
