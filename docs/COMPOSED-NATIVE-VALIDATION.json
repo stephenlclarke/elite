@@ -578,5 +578,50 @@
     "protectedInputsUnchanged": true,
     "allOwnedProcessesClosed": true,
     "limits": "Laser/launch oracles qualified. Originalgallery failedordinaryflightguard; priorSIGBUSnotobserved but no complete reproducerPASS or measuredstackmargin claim. No unrecordedflightlosscause/fullCI/media/release acceptance."
+  },
+  "authoredPeopleSceneQualification": {
+    "sourceCommit": "350841a9d795acde0dea79e177a510eeab5dcacd",
+    "independentReview": "CLEAN authoredscene+privatederivedbudget source scope",
+    "compile597ProofSHA256": "88e5c0022456a190e5169027283b6bd404c50816f73eae7bb63c972ca1f68e7e",
+    "runtime598": {
+      "commandStatus": "FAILED or partial focused execution",
+      "methodVerdict": "UNKNOWN no terminal result",
+      "passed": 0,
+      "failedMethodTerminals": 0,
+      "unknown": 1,
+      "recordedIssues": 0,
+      "matchedCrashCount": 1,
+      "timedOut": false,
+      "commandSeconds": 13.287838916992769,
+      "supervisedSeconds": 14.595407291781157,
+      "proofSHA256": "346c7023e1e173857110ea31d96bc63c41f35e853bc7bbe9525be1a1b43c6356",
+      "matchedCrashQualificationSHA256": "614963ea59eae65177683ee0a26c73f61a5004dbd99462c876bd6d69c960a8b9",
+      "exception": {
+        "codes": "0x0000000000000002, 0x000000016afbbff8",
+        "message": "Thread stack size exceeded",
+        "rawCodes": [
+          2,
+          6089850872
+        ],
+        "type": "EXC_BAD_ACCESS",
+        "signal": "SIGBUS",
+        "subtype": "KERN_PROTECTION_FAILURE at 0x000000016afbbff8"
+      },
+      "crashSHA256": "e7f16451e1beb8336601119c56ba98c15a74f21bbe83e770511918f0da3bff21",
+      "capturedTestImageUUID": "fc35e4eb-36d5-3e3a-bbba-3f3f846e5dea",
+      "capturedBinarySHA256": "85ff406196b62de96d279ffff186c7d3dcbadb1607aa11af641c5b3be38b01d4",
+      "stackPath": [
+        "Sequence.first(where:)",
+        "Game.currentMissionActorDescriptor",
+        "combatMissionEntitlement/recordCombat",
+        "applyElectricalPulse/buildEMPPulseEffects/emitEMPPulse/advanceEMPCharge",
+        "tick/disableNativePeopleTrialActor",
+        "originalNativePeopleGallerytest"
+      ]
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "limits": "Authoredscene notruntimequalified; no terminal method outcome/recordedassertions beforequalifiedSIGBUS. No newcapture/profiling or inferredgameplaycause. No rendererrefresh/fullCI/release acceptance."
   }
 }
