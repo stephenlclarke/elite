@@ -11,7 +11,7 @@ struct StartupFrameObservationTests {
   @Test func startupArgumentsSelectTheExactSceneAndFiniteDistinctDrawCount() throws {
     for (name, expected, frames) in [("title", Screen.title, 2), ("credits", .demo, 120)] {
       let request = try #require(
-        PlanetFrameProfiler.startupRequest(
+        try PlanetFrameProfiler.startupRequest(
           arguments: [
             "Elite", "--profile-startup-frames", "/tmp/startup-observation", source, name,
             String(frames),
