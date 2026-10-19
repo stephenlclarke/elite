@@ -88,7 +88,7 @@ struct NavigationGraph {
   func trade(_ a: Int, _ b: Int) -> Double {
     let market =
       a == game.commander.system
-      ? game.market : MarketItem.at(game.systems[a], fluctuation: 0)
+      ? game.market : MarketItem.at(game.systems[a])
     let sale = MarketItem.minimumPrices(at: game.systems[b])
     let sellableTonnes = Commodity.all.indices.reduce(0.0) { total, index in
       total + (Commodity.all[index].unit == "t" ? Double(game.commander.sellableCargo(index)) : 0)
@@ -113,7 +113,7 @@ struct NavigationGraph {
       node, next, firstLeg in
       let distance = game.systems[node].distance(to: game.systems[next])
       if firstLeg && distance > game.commander.fuelDistance(for: fuel) { return nil }
-      let risk = Double(7 - game.systems[next].government) * 0.15
+      let risk = game.systems[next].hostileFraction
       switch scoring {
       case 1: return 1 + risk
       case 2: return max(0.25, 1 + risk * 0.2 - trade(node, next) / 10000)
@@ -177,7 +177,7 @@ struct NavigationGraph {
         + game.commander.jumpFuelCost(distance: game.systems[$1.0].distance(to: game.systems[$1.1]))
     }
     let risk = remaining.dropFirst().reduce(0.0) {
-      $0 + Double(7 - game.systems[$1].government) * 0.15
+      $0 + game.systems[$1].hostileFraction
     }
     return .init(
       labels: labels, plan: plan, distance: distance, fuelUnits: units, risk: risk,

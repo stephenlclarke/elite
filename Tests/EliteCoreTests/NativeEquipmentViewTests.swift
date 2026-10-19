@@ -68,7 +68,7 @@ private struct NativeEquipmentFixture {
       bootstrap.screen = .status
       bootstrap.systems = Universe.systemsIncludingPlugh(number: commander.galaxy)
       bootstrap.selectedSystem = commander.system
-      bootstrap.market = MarketItem.at(bootstrap.currentSystem, fluctuation: 0)
+      bootstrap.market = MarketItem.at(bootstrap.currentSystem)
       bootstrap.docked = true
       bootstrap.dockedAtMainStation = true
       bootstrap.energy = commander.performance.energy

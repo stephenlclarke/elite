@@ -237,7 +237,10 @@ extension Display {
       frame.label(
         item.name, layout.left, y, scale: layout.font, ink: CommodityCategory.at(index).ink)
       let values = [
-        String(format: "%.1f", Double(game.market[index].price) / 10),
+        String(
+          format: "%.1f",
+          Double(game.screen == .sell ? game.market[index].bidPrice : game.market[index].price) / 10
+        ),
         "\(game.market[index].quantity)\(item.unit)", "\(game.commander.cargo[index])\(item.unit)",
         game.marketAvailability(index),
       ]

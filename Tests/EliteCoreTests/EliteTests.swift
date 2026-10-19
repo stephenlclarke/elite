@@ -3,37 +3,42 @@ import Testing
 
 @testable import EliteCore
 
-@Test func originalGalaxyFixtures() {
-  let galaxy = Universe.galaxy()
-  #expect(galaxy.count == 256)
-  #expect(galaxy[7].name == "LAVE")
-  #expect(galaxy[7].x == 20 && galaxy[7].y == 173)
-  #expect(galaxy[7].economy == 5 && galaxy[7].government == 3)
-  #expect(galaxy[7].technology == 4)
-  #expect(galaxy[129].name == "ZAONCE")
-  #expect(galaxy[147].name == "DISo".uppercased())
-  #expect(galaxy[7].distance(to: galaxy[7]) == 0)
-  #expect(galaxy[7].distance(to: galaxy[129]) == 5.6)
-  #expect(galaxy[7].economyName == "Rich Agricultural")
-  #expect(galaxy[7].governmentName == "Dictatorship")
+@Test func originalGalaxyFixtures() throws {
+  let catalogue = try OriginalWorldCatalogue.loadBundled()
   for index in 0..<8 {
     let systems = Universe.galaxy(number: index)
-    #expect(systems.allSatisfy { !$0.name.isEmpty && (0..<8).contains($0.economy) })
-    #expect(Set(systems.map(\.id)).count == 256)
-    #expect(systems == Universe.galaxy(number: index + 8))
+    #expect(systems.count == 256 && Set(systems.map(\.id)).count == 256)
+    for system in systems {
+      let world = try catalogue.world(galaxy: index, system: system.id)
+      #expect(system.original == world)
+      #expect(system.name == world.name && system.x == world.xLY && system.y == world.yLY)
+      #expect(
+        system.technology == world.technology && system.hostileFraction == world.hostileFraction)
+      #expect(system.economyName == world.economy && system.governmentName == world.government)
+    }
   }
-  #expect(Universe.galaxy(number: 1) != galaxy)
+  let galaxy = Universe.galaxy()
+  #expect(galaxy.contains { $0.x < 0 || $0.y < 0 })
+  #expect(
+    galaxy[7].distance(to: galaxy[129])
+      == hypot(galaxy[7].x - galaxy[129].x, galaxy[7].y - galaxy[129].y))
+  #expect(!galaxy[7].distance(to: Universe.galaxy(number: 1)[7]).isFinite)
 }
 
-@Test func marketFixturesAndBounds() {
-  let market = MarketItem.generate(economy: 5, fluctuation: 0)
-  #expect(market[0] == MarketItem(price: 36, quantity: 16))
-  #expect(market[7] == MarketItem(price: 896, quantity: 0))
-  for economy in 0..<8 {
-    for fluctuation in 0..<256 {
-      let items = MarketItem.generate(economy: economy, fluctuation: fluctuation)
-      #expect(items.allSatisfy { (0...1020).contains($0.price) && (0...63).contains($0.quantity) })
-      #expect(items[16].quantity == 0)
+@Test func marketFixturesAndBounds() throws {
+  let catalogue = try OriginalMarketCatalogue.loadBundled()
+  for galaxy in 0..<8 {
+    for system in Universe.galaxy(number: galaxy) {
+      let seed = try catalogue.initialState(galaxy: galaxy, system: system.id)
+      let market = MarketItem.at(system)
+      #expect(market.count == 17)
+      for quote in seed.quotes {
+        #expect(
+          market[quote.index]
+            == MarketItem(
+              price: quote.askTenthsCR, quantity: quote.stock, bidPrice: quote.bidTenthsCR))
+        #expect(market[quote.index].bidPrice <= market[quote.index].price)
+      }
     }
   }
 }
@@ -228,7 +233,7 @@ import Testing
   game.jumpCountdown = 0.01
   game.tick(delta: 0.02)
   #expect(game.commander.system == 129 && game.commander.fuel == 14 && game.jumpCountdown == nil)
-  #expect(game.market == MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 218))
+  #expect(game.market == MarketItem.at(game.currentSystem))
 }
 
 @Test func jumpTravelDockingAndGalacticDrive() throws {
@@ -792,7 +797,7 @@ private func reboundJumpLimitWorldAfterLoad(
   game.commander.unlimitedCash = false
   game.commander.credits = 100000
   game.selectedSystem = 129
-  game.market = MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 0)
+  game.market = MarketItem.at(game.currentSystem)
   game.autoTrade()
   #expect(
     game.commander.credits < 100000

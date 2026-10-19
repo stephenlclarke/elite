@@ -11,7 +11,7 @@ public enum OriginalWorldCatalogueError: Error, Sendable, Equatable {
   case crossGalaxy(source: Int, destination: Int)
 }
 
-/// Checked original data foundation only; Universe and live gameplay do not consult this adapter.
+/// The single authenticated authority for ordinary live worlds and their complete authored data.
 public struct OriginalWorldCatalogue: Sendable {
   public let version: String
   public let worlds: [OriginalWorldRecord]
@@ -26,9 +26,11 @@ public struct OriginalWorldCatalogue: Sendable {
     "PROVENANCE.json": "544f77f4b7c285fadbbbcefd9fdefa258272fe1097a6658909ac2793e6c2de6d",
   ]
 
-  public static func loadBundled() throws -> Self {
+  private static let bundled: Result<Self, Error> = Result {
     try load(from: resourceDirectory())
   }
+
+  public static func loadBundled() throws -> Self { try bundled.get() }
 
   static func resourceDirectory() throws -> URL {
     guard let root = resources.resourceURL else {

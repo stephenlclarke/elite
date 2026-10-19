@@ -45,7 +45,8 @@ extension Game {
     // Clamp only the final presentation value so signed terms can cancel and ranking stays exact.
     // Compare carried cargo with selling it here, excluding reserved mission payloads.
     var profit = Commodity.all.indices.reduce(Decimal(0)) {
-      $0 + Decimal(commander.sellableCargo($1)) * (Decimal(prices[$1]) - Decimal(market[$1].price))
+      $0 + Decimal(commander.sellableCargo($1))
+        * (Decimal(prices[$1]) - Decimal(market[$1].bidPrice))
     }
     var room = max(0, commander.capacity - commander.cargoTonnes)
     var cash = commander.availableCredits

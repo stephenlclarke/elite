@@ -59,7 +59,7 @@ struct ScriptFreightFixture {
     game.commander.system = 0
     game.selectedSystem = 0
     game.commander.credits = 100000
-    game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+    game.market = MarketItem.at(game.currentSystem)
     game.scriptPacks = [pack]
     let cargo = game.commander.cargo
     try game.prepareG03FlightEquipment()

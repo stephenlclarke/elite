@@ -39,7 +39,7 @@ extension Display {
     let current = layout.point(game.currentSystem, current: game.currentSystem)
     let reach = game.jumpReach
     func append(_ radius: Double, ink: Ink, style: StrokePattern) {
-      let pixels = radius / 0.4 * layout.scale
+      let pixels = radius * layout.scale
       frame.graphics.append(
         .ring(center: current, radiusX: pixels, radiusY: pixels, ink: ink, style: style))
     }

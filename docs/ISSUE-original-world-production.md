@@ -1,0 +1,3 @@
+# Install original worlds in native gameplay and station trading
+
+The approved world and initial-market catalogues were bundled but inactive. Native flight, charts, distance, stock regeneration and production navigation/trade bindings still used predecessor behavior. Install the existing original authority across those actual consumers, preserve exact coordinates and all world fields, distinguish ask from bid, and retain commander-owned changed stock. No second world registry, alias conversion or old-save migration is permitted. See the [implementation](PR-original-world-production.md) and [runtime scope](ORIGINAL-WORLD-RUNTIME.md).

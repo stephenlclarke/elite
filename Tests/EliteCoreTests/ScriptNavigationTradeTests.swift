@@ -139,7 +139,9 @@ func navigationTradeActualLossColdRestoreAndReceptionRetainExactAccounting(alien
   }
   try originalMissions.write(to: missions)
   let ordinary = GameRuntime(game: Game(executive: false))
-  await #expect(throws: SaveError.self) { try await ordinary.load(from: fixture.save) }
+  try await ordinary.load(from: fixture.save)
+  let productionReload = await ordinary.snapshot()
+  #expect(productionReload.commander.scriptState == complete.commander.scriptState)
   // A new real instance may coexist with the retained first-success journal, without re-awarding it.
 
   try await fixture.refuel(restored)

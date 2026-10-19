@@ -9,7 +9,7 @@ private func rangePolicyGame() throws -> Game {
   game.screen = .status
   game.commander.system = 0
   game.selectedSystem = 0
-  game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+  game.market = MarketItem.at(game.currentSystem)
   game.commander.credits = 100000
   try game.prepareG03FlightEquipment()
   try ScriptProcurementFixture.requirePaidG03Preparation(game)

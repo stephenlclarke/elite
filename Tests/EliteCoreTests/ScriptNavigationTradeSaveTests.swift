@@ -108,8 +108,10 @@ func rewriteNavigationTradeChunk(
   try originalPointerBytes.write(to: fixture.save)
   let after = await reader.snapshot()
   #expect(after.commander == before.commander)
-  // Even a valid fixture-bound file supplies no authority to the ordinary production loader.
-  await #expect(throws: SaveError.self) { try await reader.load(from: fixture.save) }
+  // Actual original endpoints are re-authenticated by the production loader without a fixture binding.
+  try await reader.load(from: fixture.save)
+  let production = await reader.snapshot()
+  #expect(production.commander.scriptState == before.commander.scriptState)
 }
 
 @Test func navigationTradeRawCommanderFieldsCannotDisappearThroughNullDecoding() async throws {

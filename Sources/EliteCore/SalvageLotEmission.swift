@@ -54,7 +54,7 @@ enum SalvageLotEmission {
     let mass = mass(amount)
     let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
     let source = plan.source
-    let price = MarketItem.generate(economy: source.economy, fluctuation: 0)[
+    let price = MarketItem.authoredManifest[
       amount.commodity.rawValue
     ].price
     return .init(

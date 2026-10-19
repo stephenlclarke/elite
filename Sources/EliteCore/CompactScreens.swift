@@ -109,7 +109,7 @@ extension Display {
     var rows: [(String, Ink)] = [
       ("Economy: " + star.economyName, .white),
       ("Government: " + star.governmentName, .white),
-      ("Tech level: \(star.technology + 1)", .white),
+      ("Tech level: \(star.technology)", .white),
       (String(format: "Population: %.1f billion", Double(star.population) / 10), .white),
       ("Gross productivity: \(star.productivity) MCR", .white),
       ("Average radius: \(star.radius) km", .white),

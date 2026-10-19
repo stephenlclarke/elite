@@ -450,9 +450,19 @@ public enum Display {
     let local = game.screen == .shortChart
     header(local ? "SHORT RANGE CHART" : "GALACTIC CHART \(game.commander.galaxy+1)", into: &frame)
     let current = game.currentSystem
-    for star in game.systems {
-      let x = local ? 128 + (star.x - current.x) * 4 : star.x
-      let y = local ? 90 + (star.y - current.y) * 2 : 30 + star.y / 2
+    let bounds = Universe.originalWorlds.provenance.statistics.coordinateBoundsByGalaxy[
+      game.commander.galaxy]
+    let scale =
+      local
+      ? 6.0
+      : min(
+        250 / max(1, bounds.maximumXLY - bounds.minimumXLY),
+        130 / max(1, bounds.maximumYLY - bounds.minimumYLY))
+    let centreX = local ? current.x : (bounds.minimumXLY + bounds.maximumXLY) / 2
+    let centreY = local ? current.y : (bounds.minimumYLY + bounds.maximumYLY) / 2
+    for star in game.knownSystems {
+      let x = Int((128 + (star.x - centreX) * scale).rounded())
+      let y = Int((90 + (star.y - centreY) * scale).rounded())
       guard (22..<160).contains(y), (1..<255).contains(x) else { continue }
       frame.point(Double(x), Double(y))
       if local { frame.text(star.name, x + 3, y - 7) }
@@ -461,10 +471,10 @@ public enum Display {
         frame.line(x, y - 4, x, y + 4)
       }
     }
-    let x = local ? 128 : current.x
-    let y = local ? 90 : 30 + current.y / 2
-    let radius = local ? game.commander.fuel : game.commander.fuel / 4
-    frame.ellipse(Double(x), Double(y), Double(radius), Double(max(1, radius / 2)))
+    let x = 128 + (current.x - centreX) * scale
+    let y = 90 + (current.y - centreY) * scale
+    let radius = game.commander.maximumJumpDistance * scale
+    frame.ellipse(x, y, radius, radius)
     frame.text(game.targetSystem.name, 4, 162)
     frame.text(
       String(format: "DISTANCE %.1f LIGHT YEARS", current.distance(to: game.targetSystem)), 4, 172)
@@ -473,7 +483,7 @@ public enum Display {
     let star = game.targetSystem
     header("DATA ON " + star.name, into: &frame)
     let lines = [
-      star.economyName, star.governmentName, "TECH.LEVEL \(star.technology+1)",
+      star.economyName, star.governmentName, "TECH.LEVEL \(star.technology)",
       String(format: "POPULATION %.1f BILLION", Double(star.population) / 10),
       "GROSS PRODUCTIVITY \(star.productivity) MCR", "AVERAGE RADIUS \(star.radius) KM",
     ]
@@ -497,7 +507,11 @@ public enum Display {
       let y = 34 + i * 8
       if i == game.selection { frame.text(">", 0, y) }
       frame.text(item.name, 8, y, CommodityCategory.at(i).ink)
-      frame.text(String(format: "%5.1f", Double(game.market[i].price) / 10), 100, y)
+      frame.text(
+        String(
+          format: "%5.1f",
+          Double(game.screen == .sell ? game.market[i].bidPrice : game.market[i].price) / 10), 100,
+        y)
       frame.text("\(game.market[i].quantity)\(item.unit)", 154, y)
       frame.text("\(game.commander.cargo[i])\(item.unit)", 205, y)
     }
