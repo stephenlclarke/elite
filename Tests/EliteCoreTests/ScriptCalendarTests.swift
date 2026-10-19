@@ -93,7 +93,7 @@ private func clearTravelArea(_ game: inout Game) {
 }
 
 @Test
-func activatedMissionRealLaunchChargesOnceAndCalendarDistanceRetainsSelectedO08IntegerTruncation()
+func activatedMissionRealLaunchChargesOnceAndCalendarDistanceUsesOriginalCartesianLightYears()
   throws
 {
   let fixture = try CalendarFixture()
@@ -108,13 +108,22 @@ func activatedMissionRealLaunchChargesOnceAndCalendarDistanceRetainsSelectedO08I
   game.dock()
   game.launch()
   #expect(game.commander.scriptState.calendarSeconds == 1200)
-  let examples = game.systems.flatMap { a in game.systems.map { (a, $0) } }
-  let pair = try #require(
-    examples.first { abs($0.0.distance(to: $0.1) - $0.0.scriptCalendarDistance(to: $0.1)) > 0.1 })
-  let dx = pair.0.x - pair.1.x
-  let dy = (pair.0.y - pair.1.y) / 2
-  let expected = 0.4 * Double(Int(sqrt(Double(dx * dx + dy * dy))))
-  #expect(pair.0.scriptCalendarDistance(to: pair.1) == expected)
+  // Independent l337-world-1 catalogue coordinates, not values supplied by the calendar helper.
+  let origin = try Universe.originalWorld(galaxy: 0, system: 0)
+  let destination = try Universe.originalWorld(galaxy: 0, system: 91)
+  try #require(origin.key == "G01-S000" && origin.xLY == 55.3596 && origin.yLY == 42.7637)
+  try #require(destination.key == "G01-S091")
+  let source = game.systems[origin.system]
+  let target = game.systems[destination.system]
+  let expectedSquaredDistance =
+    pow(origin.xLY - destination.xLY, 2)
+    + pow(origin.yLY - destination.yLY, 2)
+  let actualDistance = source.scriptCalendarDistance(to: target)
+  #expect(abs(actualDistance * actualDistance - expectedSquaredDistance) < 1e-10)
+  #expect(actualDistance == source.distance(to: target))
+  #expect(source.scriptCalendarDistance(to: source) == 0)
+  let foreign = Universe.galaxy(number: 1)[destination.system]
+  #expect(source.scriptCalendarDistance(to: foreign) == .infinity)
 }
 
 @Test

@@ -1,0 +1,7 @@
+# fix: use native light-year coordinates for mission calendar distance
+
+`StarSystem.scriptCalendarDistance` now uses the same Cartesian light-year distance as the installed original-world native navigation. The existing calendar still charges 600 seconds per actual launch and `distance² * 3600` seconds per admitted completed jump. No fuel, spool, deadline, reward, seed, random draw, route ordering, saved proof or publication rule changes.
+
+The existing real-launch regression retains its exact once-only 600/1200-second assertions. Its obsolete BBC conversion assertion is replaced by independent arithmetic from the authenticated G01-S000 and G01-S091 records, plus zero-distance and cross-galaxy refusal checks. Historical courier and procurement fixture data remain unchanged and require an explicit separate provenance decision; this leaf does not claim those failures resolved.
+
+Base: `1f9098a910aefa17655f3aeadbb59df03257b64e`. Authored only in the isolated `test/original-world-fixture-provenance` checkout. Strict Swift formatting, Markdown lint and whitespace checks are author validation only. ZERO compiler, native, GUI, test, media, CI or profiler jobs were run. Root review and coherent central execution after the separately owned material crash repair are required. Full CI 683 remains a retained failure, with no accepted coverage, sanitizer or leak result. See [the issue](ISSUE-original-world-calendar-units.md).
