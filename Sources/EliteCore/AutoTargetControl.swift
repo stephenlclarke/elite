@@ -157,8 +157,19 @@ public struct AutoTargetControl: Sendable {
     let canInterrupt =
       station && defence?.interruptionAllowed == true
       && target.position.length > clearance + stopping
+    let movingEntry =
+      station && defence?.movingEntryAllowed == true
+      && defence?.hazard == .active && defence?.joinedIncoming != true
+    if movingEntry {
+      // Fresh source/geometry/kinematics permit immediate finite final-course motion.
+      // Native movement still owns the swept crossing and any docking receipt.
+      stationDefencePhase = .returning
+      stationStaged = true
+      finalApproach = true
+      ready = false
+    }
     let shouldInterrupt =
-      station && defence?.hazard == .active && canInterrupt
+      station && defence?.hazard == .active && canInterrupt && !movingEntry
       && stationDefencePhase != .defending
     if shouldInterrupt {
       ready = false
@@ -177,9 +188,10 @@ public struct AutoTargetControl: Sendable {
       if defence?.hazard == .clear || handover { stationDefencePhase = .returning }
     }
     let canStage =
-      stationDefencePhase != .defending
-      && (defence == nil || defence?.hazard == .clear
-        || (stationDefencePhase == .returning && defence?.handoverAllowed == true))
+      movingEntry
+      || (stationDefencePhase != .defending
+        && (defence == nil || defence?.hazard == .clear
+          || (stationDefencePhase == .returning && defence?.handoverAllowed == true)))
     if stationDefencePhase == .returning && !canStage && canInterrupt {
       // Unknown exterior observations revoke acquisition, not the native doorway safety rules.
       ready = false

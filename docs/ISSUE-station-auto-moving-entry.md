@@ -1,0 +1,9 @@
+# Active beam pressure can trap AUTO on a cover route instead of completing docking
+
+Actual freight qualification 704 on c56f5c9742916552ad0965887bbd692707072242 still loses row 0 to accepted pirate laser damage during travel-leg-2-dock. The preceding weak-front fix uses the rear bank, and its twelve defence methods/sixteen cases pass in 702, but survival remains unresolved. The 704 trace is bounded: 20 recorder incidents and 211 samples were dropped; observed counts are not exhaustive combat totals.
+
+At physical time 124.9 the ship is only 36.2388 metres from its true external docking goal, moving inward at 57.9233 world units/second with negligible heading/spin errors. New pressure interrupts that approach. By 131.4 its error from the docking goal has grown to 1857.26 metres on the cover route. Thirty-nine shared 692/704 samples have world-position differences of at most 2.2400923279790313e-12: the heading correction did not change that route.
+
+The source always replaces entry progress with a far-side cover goal during authenticated pressure, and the defending phase categorically disallows staging/final motion until active pressure clears. The conservative exterior clearance then prevents reaching the doorway. Fixing only shield orientation or adding lateral evasion cannot remove that rule. AUTO needs a freshly proved, usable native approach course which can immediately continue finite final motion under known pressure, without granting native docking authority or treating unknown observations as safe.
+
+See [the bounded course handover](PR-station-auto-moving-entry.md). The actual freight fixture, its traffic and finite equipment must remain unchanged.

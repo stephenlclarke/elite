@@ -1074,6 +1074,12 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
 
 @Test func stationAutoUncoveredNativeBeamCannotHandOverToStationaryAlignment() async throws {
   var game = try await stationAutoEntryBoundary()
+  // Unsafe stationary acquisition is still refused; a proved aligned moving
+  // corridor now has its own positive case below.
+  var unsafePose = game.commander.flightSimulation.pose
+  unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
+  NativePagedSalvageFixture.moveObserver(&game, to: unsafePose)
+  game.autoPilot.setApproachVelocity(.init(0, 0, 0))
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 909)
   let index = try #require(game.bodies.firstIndex { $0.id == id })
   // This sustained-pressure scene starts with the actual native hull's full stock
@@ -1139,6 +1145,110 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
     #expect(station.position.length > station.stationClearanceRadius)
   }
   #expect((game.commander.flightSimulation.pose.position - initialPosition).length > 0)
+}
+
+private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async throws -> Game {
+  var game = try await stationAutoEntryBoundary()
+  let station = try #require(game.autoTargetBody)
+  let old = game.commander.flightSimulation.pose
+  var pose = ShipPose()
+  pose.position = old.systemPoint(station.entrancePosition + station.entranceNormal * 500)
+  pose.orientation.z = old.orientation.apply(station.entranceNormal * -1).unit
+  pose.orientation.y = old.orientation.apply(station.entranceUp).unit
+  pose.orientation.x = pose.orientation.y.cross(pose.orientation.z).unit
+  NativePagedSalvageFixture.moveObserver(&game, to: pose)
+  game.speed = 0
+  game.autoPilot.setApproachVelocity(.init(0, 0, inwardSpeed))
+  let id = try stationAutoAddNativeAttacker(
+    &game, position: .init(300, 0, -600), sequence: 921, facingPlayer: true)
+  let context = try #require(game.gameplayContext())
+  let player = try #require(game.commander.flightSimulation.player)
+  try stationAutoRequireNativePressureLane(game, attacker: id)
+  let shield = game.frontShield + game.rearShield
+  game.emitGameplayNPCBeam(bodyID: id, target: player, context: context)
+  try #require(game.frontShield + game.rearShield < shield)
+  return game
+}
+
+@Test(arguments: [0.0, 80.0])
+func stationAutoKnownPressureUsesRealAlignedCourseAndReachesNativeEntry(inwardSpeed: Double)
+  async throws
+{
+  let storage = try NativeStationTestStorage()
+  defer { storage.clean() }
+  var game = try await stationAutoAlignedActiveEntryScene(inwardSpeed: inwardSpeed)
+  let target = game.autoPilot.targetActor
+  let stock = game.commander.missiles
+  let runtime = GameRuntime(game: game, saveURL: storage.url)
+  var admitted = false
+  for _ in 0..<180 where !game.docked {
+    let station = try #require(game.autoTargetBody)
+    let observation = game.stationAutoGuidance(target: station)
+    let guidance = try #require(observation)
+    if guidance.movingEntryAllowed {
+      admitted = true
+      #expect(guidance.hazard == .active && !guidance.handoverAllowed && !guidance.joinedIncoming)
+    }
+    let before = game.flightWorldVelocity
+    game = await runtime.advance(delta: 0.1)
+    if !game.docked {
+      #expect(
+        (game.flightWorldVelocity - before).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+      #expect(game.autoPilot.targetActor == target)
+    }
+    try #require(game.screen != .gameOver)
+    #expect(game.commander.missiles <= stock && !game.commander.unlimitedMissiles)
+  }
+  #expect(admitted && game.docked && game.dockedAtMainStation)
+  #expect(game.nativeMainStationDockEvidenceIsCurrent)
+  #expect(game.commander.legal == 0)
+  #expect(FileManager.default.fileExists(atPath: storage.url.path))
+}
+
+@Test(arguments: [
+  "unsafe-stationary", "heading", "phase", "lateral", "lateral-velocity", "outward",
+  "braking", "unknown-ordnance", "ambiguous-actor", "stale-station", "stale-motion",
+  "blocked-course",
+])
+func stationAutoMovingEntryRefusesUnsafeOrUnjoinedCurrentCourses(condition: String) async throws {
+  var game = try await stationAutoAlignedActiveEntryScene()
+  let stationIndex = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+  if ["unsafe-stationary", "heading", "phase", "lateral"].contains(condition) {
+    var pose = game.commander.flightSimulation.pose
+    if condition == "heading" { pose.orientation.rotate(pitch: 0, roll: 0, yaw: 0.1) }
+    if condition == "phase" || condition == "unsafe-stationary" {
+      pose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
+    }
+    if condition == "lateral" { pose.position = pose.position + pose.orientation.x * 30 }
+    NativePagedSalvageFixture.moveObserver(&game, to: pose)
+    if condition == "unsafe-stationary" { game.autoPilot.setApproachVelocity(.init(0, 0, 0)) }
+  } else if condition == "lateral-velocity" {
+    game.autoPilot.setApproachVelocity(.init(5, 0, 80))
+  } else if condition == "outward" {
+    game.autoPilot.setApproachVelocity(.init(0, 0, -80))
+  } else if condition == "braking" {
+    game.autoPilot.setApproachVelocity(.init(0, 0, game.workLimits.speed))
+  } else if condition == "stale-station" {
+    game.bodies[stationIndex].position.x += 1
+  } else if condition == "stale-motion" {
+    game.bodies[stationIndex].physical?.velocity.x += 1
+  } else if condition == "ambiguous-actor" {
+    let attacker = try #require(game.bodies.first { $0.physical?.spawnIdentity?.sequence == 921 })
+    game.bodies.append(attacker)
+  } else {
+    let id = game.nextBodyID
+    game.nextBodyID += 1
+    var body = SpaceBody(
+      id: id, hull: condition == "blocked-course" ? .cargo : .missile,
+      position: .init(0, 0, 150))
+    body.enemyMissile = condition == "unknown-ordnance"
+    game.bodies.append(body)
+    if condition == "blocked-course" { game.ensurePhysicalActors() }
+  }
+  let station = game.bodies[stationIndex]
+  let observation = game.stationAutoGuidance(target: station)
+  let guidance = try #require(observation)
+  #expect(!guidance.movingEntryAllowed)
 }
 
 @Test func stationAutoClosingHandoverUsesActualBrakingBoundaryAndKeepsOneThrustBudget() {
