@@ -22,8 +22,18 @@ enum WayfarerColdChainError: Error {
 
 /// W01 integrity only; has no authority to move cargo, settle cash or complete a mission.
 struct WayfarerColdChain: Codable, Sendable, Equatable {
+  /// Closed projection of the admitted native event; numeric types survive ordinary Codable.
+  struct TimerReceipt: Codable, Sendable, Equatable {
+    let sequence: UInt64
+    let instance: UUID
+    let timerID: String
+    let due: Double
+    let firedAt: Double
+    let context: ScriptEventContext
+  }
+
   enum Terminal: Codable, Sendable, Equatable {
-    case spoiled(ScriptEvent)
+    case spoiled(TimerReceipt)
     case received(ScriptCourierTerminalReceipt)
   }
 
@@ -84,7 +94,10 @@ struct WayfarerColdChain: Codable, Sendable, Equatable {
     try checkContext(context)
     var next = self
     next.record.lastContext = context
-    next.record.terminal = .spoiled(event)
+    next.record.terminal = .spoiled(
+      .init(
+        sequence: event.sequence, instance: event.instance, timerID: binding.timerID,
+        due: record.timer.due, firedAt: context.flightSeconds, context: context))
     return next
   }
 
@@ -143,8 +156,12 @@ struct WayfarerColdChain: Codable, Sendable, Equatable {
     else { return false }
     switch terminal {
     case nil: return true
-    case .some(.spoiled(let event)):
-      return validExpiry(event) && event.context == record.lastContext
+    case .some(.spoiled(let receipt)):
+      return receipt.sequence > record.issueSequence && receipt.sequence < UInt64(Int64.max)
+        && receipt.instance == binding.instance && receipt.timerID == binding.timerID
+        && receipt.due == record.timer.due && receipt.firedAt >= receipt.due
+        && receipt.context == record.lastContext
+        && receipt.firedAt == receipt.context.flightSeconds
     case .some(.received(let receipt)):
       return validReception(receipt) && remaining > 0
     }

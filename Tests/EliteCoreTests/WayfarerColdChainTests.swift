@@ -55,7 +55,8 @@ struct WayfarerColdChainTests {
       item: binding.consignment, cause: .delivered,
       proof: ScriptCourierActionProof(
         sequence: sequence, token: "reception", revision: 1, epoch: receiver,
-        clock: 5000, station: ContractStationIdentity(
+        clock: 5000,
+        station: ContractStationIdentity(
           galaxy: 0, system: 7, stationClass: "main-orbital")),
       amount: 0)
   }
@@ -98,11 +99,13 @@ struct WayfarerColdChainTests {
   }
 
   @Test func delayedTimerDispatchUsesExistingAbsoluteClock() throws {
-    let expired = try issued().spoiling(binding: binding, event: expiry(132))
-    #expect(expired.remaining == 0)
-    let decoded = try JSONDecoder().decode(
-      WayfarerColdChain.self, from: JSONEncoder().encode(expired))
-    #expect(decoded == expired)
+    for firedAt in [132.0, 132.25] {
+      let expired = try issued().spoiling(binding: binding, event: expiry(firedAt))
+      #expect(expired.remaining == 0)
+      let decoded = try JSONDecoder().decode(
+        WayfarerColdChain.self, from: JSONEncoder().encode(expired))
+      #expect(decoded == expired)
+    }
   }
 
   @Test func receptionUsesSnapshotFlightTimeNotCourierCalendarTime() throws {
@@ -121,15 +124,20 @@ struct WayfarerColdChainTests {
     let original = binding
     let other = UUID(uuidString: "00000000-0000-0000-0000-000000000004")!
     let foreign = [
-      WayfarerColdChainBinding(owner: other, instance: original.instance,
+      WayfarerColdChainBinding(
+        owner: other, instance: original.instance,
         consignment: original.consignment, receiver: receiver, timerID: original.timerID),
-      WayfarerColdChainBinding(owner: owner, instance: other,
+      WayfarerColdChainBinding(
+        owner: owner, instance: other,
         consignment: original.consignment, receiver: receiver, timerID: original.timerID),
-      WayfarerColdChainBinding(owner: owner, instance: original.instance,
+      WayfarerColdChainBinding(
+        owner: owner, instance: original.instance,
         consignment: other, receiver: receiver, timerID: original.timerID),
-      WayfarerColdChainBinding(owner: owner, instance: original.instance,
+      WayfarerColdChainBinding(
+        owner: owner, instance: original.instance,
         consignment: original.consignment, receiver: other, timerID: original.timerID),
-      WayfarerColdChainBinding(owner: owner, instance: original.instance,
+      WayfarerColdChainBinding(
+        owner: owner, instance: original.instance,
         consignment: original.consignment, receiver: receiver, timerID: "foreign"),
     ]
     for value in foreign {
@@ -204,6 +212,26 @@ struct WayfarerColdChainTests {
       let changed = try JSONSerialization.data(withJSONObject: corrupt)
       #expect(throws: DecodingError.self) {
         try JSONDecoder().decode(WayfarerColdChain.self, from: changed)
+      }
+    }
+    let expired = try issued().spoiling(binding: binding, event: expiry(132))
+    let expiredData = try JSONEncoder().encode(expired)
+    let saved = try #require(JSONSerialization.jsonObject(with: expiredData) as? [String: Any])
+    let terminal = try #require(saved["terminal"] as? [String: Any])
+    let spoiled = try #require(terminal["spoiled"] as? [String: Any])
+    let receipt = try #require(spoiled["_0"] as? [String: Any])
+    let replacements: [String: Any] = [
+      "sequence": 0, "instance": receiver.uuidString, "timerID": "foreign",
+      "due": 131, "firedAt": 133,
+    ]
+    for (field, value) in replacements {
+      var changedReceipt = receipt
+      changedReceipt[field] = value
+      var corrupt = saved
+      corrupt["terminal"] = ["spoiled": ["_0": changedReceipt]]
+      let bytes = try JSONSerialization.data(withJSONObject: corrupt)
+      #expect(throws: DecodingError.self) {
+        try JSONDecoder().decode(WayfarerColdChain.self, from: bytes)
       }
     }
   }

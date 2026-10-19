@@ -246,20 +246,34 @@ private struct BondedFreightFixture {
   #expect(!hidden.valid)
 }
 
-
 @Test func bondedRealLoaderRejectsMissingInvalidLegacyAndUnknownHazards() throws {
   let edits: [(String) -> String] = [
     { $0.replacingOccurrences(of: "bondedHazardTiers = [0, 1, 2]", with: "") },
-    { $0.replacingOccurrences(of: "bondedHazardTiers = [0, 1, 2]",
-        with: "bondedHazardTiers = [0, -1, 2]") },
-    { $0.replacingOccurrences(of: "bondedHazardTiers = [0, 1, 2]",
-        with: "bondedHazardTiers = [0, 1]") },
-    { $0.replacingOccurrences(of: "bondedHazardTiers = [0, 1, 2]",
-        with: "bondedHazardTiers = [0, 1, 2]\nbondedUnknown = 1") },
-    { $0.replacingOccurrences(of: "l337.contract/bonded-freight",
-        with: "PROJECT-SPACE-G03-1") },
-    { $0.replacingOccurrences(of: "bondedHazardTiers = [0, 1, 2]",
-        with: "bondedHazardTiers = \"null\"") },
+    {
+      $0.replacingOccurrences(
+        of: "bondedHazardTiers = [0, 1, 2]",
+        with: "bondedHazardTiers = [0, -1, 2]")
+    },
+    {
+      $0.replacingOccurrences(
+        of: "bondedHazardTiers = [0, 1, 2]",
+        with: "bondedHazardTiers = [0, 1]")
+    },
+    {
+      $0.replacingOccurrences(
+        of: "bondedHazardTiers = [0, 1, 2]",
+        with: "bondedHazardTiers = [0, 1, 2]\nbondedUnknown = 1")
+    },
+    {
+      $0.replacingOccurrences(
+        of: "l337.contract/bonded-freight",
+        with: "PROJECT-SPACE-G03-1")
+    },
+    {
+      $0.replacingOccurrences(
+        of: "bondedHazardTiers = [0, 1, 2]",
+        with: "bondedHazardTiers = \"null\"")
+    },
   ]
   for edit in edits {
     #expect(throws: (any Error).self) { try BondedFreightFixture(manifestEdit: edit) }

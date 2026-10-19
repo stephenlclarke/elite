@@ -19,3 +19,7 @@ Current-format schema 1 only; no legacy save migration is provided. No existing 
 ## Remaining risk and completion boundary
 
 MBA-05 must derive snapshots from actual live native clock/timer state, validate owner and active instance, current custody, exact consignment and receiver resource, and the admitted native reception/timer event. It must verify saved bindings against those authorities on load, preserve the original timer, and atomically publish the terminal result with existing durable custody/reception authority. These structs and serialized receipts describe facts; they are not action capabilities. This source-only model is not a playable W01 completion.
+
+## Focused execution correction
+
+Local lease 748 executed all 19 selected methods: 18 passed, including all eight bonded-freight methods, and delayedTimerDispatchUsesExistingAbsoluteClock failed on integer-valued timer-event JSON roundtrip equality. Timer expiry now persists a closed typed projection of the already admitted native event (sequence, instance, timer identity, due, fired-at and context), retaining the original native-event admission and binding checks. This avoids ScriptValue number/integer normalization changing saved descriptive equality. Whole-number and fractional dispatch times and corrupted saved receipt identity/due/time/sequence are covered in the existing focused methods. No new clock, schema version or action authority is added. G2 semantic re-review and focused rerun remain pending. Swift formatting and Markdownlint pass on the owned source and notes.

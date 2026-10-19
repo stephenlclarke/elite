@@ -23,3 +23,7 @@ Decode requires schema 1 and validates bounded native timer/context shapes and t
 ## Links
 
 Issue note: ISSUE-wayfarer-cold-chain.md. UX ledger MBA-04; W01 l337.wayfarer-service/cold-chain; milestone M09; F33/K08/K09. MBA-05 owns live integration. No GitHub PR has been opened.
+
+## Focused execution correction
+
+Local lease 748 executed all 19 selected methods: 18 passed, including all eight bonded-freight methods, and delayedTimerDispatchUsesExistingAbsoluteClock failed on integer-valued timer-event JSON roundtrip equality. Timer expiry now persists a closed typed projection of the already admitted native event (sequence, instance, timer identity, due, fired-at and context), retaining the original native-event admission and binding checks. This avoids ScriptValue number/integer normalization changing saved descriptive equality. Whole-number and fractional dispatch times and corrupted saved receipt identity/due/time/sequence are covered in the existing focused methods. No new clock, schema version or action authority is added. G2 semantic re-review and focused rerun remain pending. Swift formatting and Markdownlint pass on the owned source and notes.

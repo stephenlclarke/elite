@@ -133,7 +133,8 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
   var declaration: ScriptFreightDefinition {
     .init(
       profile: profile, generatorRevision: generatorRevision, variant: variant,
-      deliveryContact: deliveryContact, abandonContact: abandonContact, collectionTemplate: template,
+      deliveryContact: deliveryContact, abandonContact: abandonContact,
+      collectionTemplate: template,
       bondedHazardTiers: bondedHazardTiers
     )
   }
@@ -231,7 +232,8 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
       row: row, generatorRevision: generatorRevision, untimed: isBonded)
     guard state == finalState, routes.indices.contains(routeIndex),
       routeIndex == Self.index(draws[row * 2], count: routes.count), path == routes[routeIndex],
-      commodityIndex == (isBonded ? 2 : Self.index(draws[row * 2 + 1], count: Self.commodities.count)),
+      commodityIndex
+        == (isBonded ? 2 : Self.index(draws[row * 2 + 1], count: Self.commodities.count)),
       calendarLowerBoundSeconds == Self.calendarCost(path, galaxy: origin.galaxy)
     else { return false }
     return true
@@ -310,7 +312,8 @@ struct ScriptFreightGeneration: Codable, Sendable, Equatable {
         capabilities: pack.manifest.capabilities.sorted(),
         bondedHazardTiers: declaration.bondedHazardTiers,
         bondedQuote: declaration.profile == ScriptFreightPlan.bondedProfileID
-          ? .init(routeLegs: paths[index].count - 1, hazardTier: declaration.bondedHazardTiers![row])
+          ? .init(
+            routeLegs: paths[index].count - 1, hazardTier: declaration.bondedHazardTiers![row])
           : nil)
     }
   }

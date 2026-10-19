@@ -24,9 +24,12 @@ Base ba47c87435df08fd29f3ee980af66b106f293a5d. No canonical edits, push, merge, 
 
 ISSUE-g03-bonded-freight-profile.md; UX ledger MBA-01; M05/G03. Content authority original-missions/original-families.md:71 and original-families.json l337.contract/bonded-freight row. No GitHub PR has been created.
 
-
 ## Revision 2 independent review fixes
 
 G2 found that the original packet could not load its actual TOML declaration and could not pass the actual versioned save preflight. Root reserved ScriptPack.swift and ScriptFreightVersionedSave.swift in addition to the original four production paths. The loader now admits the declaration field and existing closed-profile validation still rejects it on the legacy profile. Versioned preflight permits exactly the bonded 23-key plan shape only for the exact profile, requires a three-element hazard array and exact two-field non-null quote, and preserves the legacy 21-key shape. Existing typed decode and cold/native validation remain mandatory.
 
 Two additional test functions exercise six actual pack-loader refusals and a real native board/issued-job ScriptSaveStore roundtrip with deposit debit-once and 18 rehashed chunk corruptions across contracts and missions. These supplement the original six methods. Revision 2 is REVIEW PENDING and EXECUTION PENDING, not ready for integration. MBA test execution was attempted once and stopped before compilation with Xcode license exit 69, zero executed tests, 0.40 seconds. Root/G1 reserved a local isolated focused executor after the M01 lease closes; the author retains test and fix ownership. No license acceptance or unchanged retry occurred. The original packet and hashes remain unchanged.
+
+## Executed focused result
+
+Local lease 748 on commit 53e6c10f21a0d1f5c9296f7839cd43650af8c0ac executed and passed all eight MBA-01 methods, including actual loader and native versioned board/job save roundtrip plus rehashed corruption refusals. The combined 19-method run failed only the separate MBA-04 timer-event JSON equality regression. Subsequent MBA-01 Swift changes are mechanically verified formatting only; all owned source and notes pass Swift formatting and Markdownlint. MBA-01 playable content, full project gates and native-consumer completion remain separate.

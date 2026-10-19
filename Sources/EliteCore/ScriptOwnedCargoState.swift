@@ -126,7 +126,8 @@ struct ScriptOwnedCargoState: Codable, Sendable, Equatable {
       guard terminal.removed == remaining, !remaining.isEmpty, job.settlementAmount == 0 else {
         return false
       }
-      return (terminal.cause != .expired
+      return
+        (terminal.cause != .expired
         || plan.permitsExpiry(at: terminal.clock, deadline: job.deadline))
         && (terminal.cause != .abandoned
           || plan.permitsDelivery(at: terminal.clock, deadline: job.deadline))
