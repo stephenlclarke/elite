@@ -32,11 +32,10 @@ struct ScriptNavigationTradeBinding: Sendable, Equatable {
   let training: ScriptNavigationTradeEndpoint
   let destination: ScriptNavigationTradeEndpoint
   static func production(in game: borrowing Game) -> Self? {
-    if let record = game.commander.scriptState.instances.values.compactMap(\.savedNavigationTrade)
-      .first(where: {
-        $0.stage == .awaitingBuy || $0.held || $0.stage == .sold || $0.stage == .lost
-      })
-    {
+    let active = game.commander.scriptState.instances.values.filter { $0.outcome == .active }
+    if let record = active.compactMap(\.savedNavigationTrade).first(where: {
+      $0.stage == .awaitingBuy || $0.held || $0.stage == .sold || $0.stage == .lost
+    }) {
       return production(for: record)
     }
     return selectedRoute(in: game)

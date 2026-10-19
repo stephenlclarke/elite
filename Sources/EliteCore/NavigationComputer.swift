@@ -88,7 +88,8 @@ struct NavigationGraph {
   func trade(_ a: Int, _ b: Int) -> Double {
     let market =
       a == game.commander.system
-      ? game.market : MarketItem.at(game.systems[a])
+      ? game.market
+      : game.commander.originalMarkets.items(galaxy: game.commander.galaxy, system: game.systems[a])
     let sale = MarketItem.minimumPrices(at: game.systems[b])
     let sellableTonnes = Commodity.all.indices.reduce(0.0) { total, index in
       total + (Commodity.all[index].unit == "t" ? Double(game.commander.sellableCargo(index)) : 0)

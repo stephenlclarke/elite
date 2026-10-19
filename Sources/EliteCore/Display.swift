@@ -527,7 +527,7 @@ public enum Display {
       let item = Equipment.all[i]
       let y = 30 + (i - start) * 10
       if i == game.selection { frame.text(">", 0, y) }
-      let available = item.technology <= game.currentSystem.technology
+      let available = game.equipmentAvailable(item)
       frame.text(item.name, 8, y, available ? .white : .red)
       let fitted =
         game.commander.equipment.contains(item.name)

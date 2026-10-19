@@ -161,7 +161,7 @@ extension Game {
     if item.name == PassengerCabin.equipmentName { return passengerBerthQuote.issues.first }
     guard equipmentAvailable(item) else {
       return Equipment.isReward(item.name)
-        ? Equipment.rewardLabel(item.name) : "Requires TL\(item.technology + 1)"
+        ? Equipment.rewardLabel(item.name) : "Requires TL\(item.requiredTechnologyLevel)"
     }
     guard commander.equipmentInventory != nil, let history = commander.equipmentPurchaseHistory,
       let node = EquipmentRuntimeCatalog.node(for: item.name)

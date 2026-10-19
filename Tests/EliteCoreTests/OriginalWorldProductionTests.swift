@@ -127,4 +127,77 @@ struct OriginalWorldProductionTests {
             - systems[0].distance(to: systems[1])) < 1e-10)
     }
   }
+  @Test func actualOriginalProductivityAndDisplayedMillionCreditUnitAgree() throws {
+    let world = try #require(Universe.originalWorlds.worlds.first { $0.name == "Avenor" })
+    try #require(world.productivityBillionCR == 158.62)
+    var game = Game(executive: false)
+    game.commander.galaxy = world.galaxy
+    game.systems = Universe.systemsIncludingPlugh(number: world.galaxy)
+    game.selectedSystem = world.system
+    game.screen = .system
+    #expect(game.targetSystem.productivity == 158620)
+    #expect(Display.systemRows(game).contains { $0.0 == "Gross productivity: 158620 MCR" })
+    for size in [512.0, 768.0] {
+      #expect(
+        Display.systemScreen(game, width: size, height: 768).labels.contains {
+          $0.text == "Gross productivity: 158620 MCR"
+        })
+    }
+  }
+
+  @Test(arguments: [TargetingTier.basic.equipmentName, Equipment.eliteEnergyUnit])
+  func actualOriginalShopUsesOneBasedWorldLevelsAtTheEquipmentBoundary(name: String) throws {
+    let item = try #require(Equipment.all.first { $0.name == name })
+    var game = Game(executive: false)
+    game.screen = .equipment
+    game.commander.credits = 1_000_000
+    try game.commander.prepareEquipment(legacy: false)
+    let below = try #require(
+      game.systems.first {
+        !$0.isPlugh && $0.technology == item.requiredTechnologyLevel - 1
+      })
+    let at = try #require(
+      game.systems.first {
+        !$0.isPlugh && $0.technology == item.requiredTechnologyLevel
+      })
+    game.commander.system = below.id
+    #expect(!game.equipmentAvailable(item))
+    #expect(game.equipmentPurchaseRequirement(item) == "Requires TL\(item.requiredTechnologyLevel)")
+    #expect(throws: EquipmentRuntimeError.unavailable) { try game.quoteEquipmentPurchase(item) }
+    game.commander.system = at.id
+    #expect(game.equipmentAvailable(item))
+    if name == TargetingTier.basic.equipmentName {
+      let quote = try game.quoteEquipmentPurchase(item)
+      #expect(quote.item.name == name)
+      #expect(try game.applyEquipmentPurchase(quote))
+      #expect(game.commander.fittedEquipment(at: .targetingCore)?.node.key == name)
+    }
+  }
+
+  @Test func actualDepletedRemoteStockCannotReappearInRouteTradeEstimates() throws {
+    var game = Game(executive: false)
+    game.screen = .buy
+    game.commander.system = 0  // Explicit initial market fixture, not an invented flight receipt.
+    game.commander.credits = 100000
+    game.selection = 14
+    let destination = game.systems[12]
+    try #require(game.profitableExports(to: destination).map(\.index) == [14])
+    let quote = game.market[14]
+    try #require(quote.quantity == 7 && Commodity.all[14].unit == "kg")
+    for _ in 0..<quote.quantity { game.trade(buy: true) }
+    try #require(game.market[14].quantity == 0 && game.commander.cargo[14] == quote.quantity)
+    try #require(game.commander.credits == 100000 - quote.quantity * quote.price)
+    game.commander.system = 7  // Inspect the now-remote market without minting journey evidence.
+    let held = game.commander
+    #expect(NavigationGraph(game: game).trade(0, destination.id) == 0)
+    #expect(game.commander == held)
+    var pristine = game
+    pristine.commander.originalMarkets = OriginalLiveMarkets()
+    #expect(
+      pristine.commander.cargo == game.commander.cargo
+        && pristine.commander.credits == game.commander.credits
+        && pristine.commander.capacity == game.commander.capacity)
+    #expect(NavigationGraph(game: pristine).trade(0, destination.id) > 0)
+  }
+
 }
