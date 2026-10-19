@@ -1,0 +1,7 @@
+# A police radius overlap revokes the genuine docking course
+
+The authorized causal qualification 717 records an actual allowed course at physical time 125.2, followed at 125.3 by corridor.body refusal for police Viper body 39, actor 37. All source, motion, aperture and station structure checks pass; there is no unknown or incoming ordnance. The segment distance is 89.98307821095148 while the sum of enclosing radii is 116.16990566028302. AUTO immediately abandons its final course for the far cover route and later dies under pirate fire.
+
+That radius overlap establishes a candidate, not actual material contact. The native Viper hull and normalized player hull must remain unchanged. Admission-aligned wings can genuinely obstruct this lane, whereas native steering can rotate the Viper into a clear world-up pose. Refine actual course geometry and retain true obstruction or unproven-geometry refusal. A separate finite braking continuation must preserve an already validated course through a safely stoppable transient obstruction; this geometry leaf alone does not claim freight completion.
+
+Preserve the real route, police traffic, gear, law, finite motion budgets, unknown/ordnance refusals, and independent native crossing gates. G1 owns independent review and the coherent affected acceptance after the complete material packet is ready. No further causal probe or unchanged freight retry is required.

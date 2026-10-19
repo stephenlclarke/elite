@@ -425,7 +425,7 @@ extension Game {
   }
 
   /// A current motion proposal, never native docking or attack authority.
-  private func stationAutoMovingEntryAllowed(
+  private mutating func stationAutoMovingEntryAllowed(
     _ station: SpaceBody, observation: inout [String: String]?
   ) -> Bool {
     observation?["refusal"] = "motion.context"
@@ -496,8 +496,10 @@ extension Game {
     observation?["braking"] = String(braking)
     guard braking.isFinite, braking <= depth else { return false }
     let advance = normal * -(depth - min(0.5, depth * 0.5))
+    var bodyBlocked = false
     return nativeStationAutoEntryCourseIsClear(
-      station, advance: advance, terminalSpeed: terminal, observation: &observation)
+      station, advance: advance, terminalSpeed: terminal, observation: &observation,
+      bodyBlocked: &bodyBlocked)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {
