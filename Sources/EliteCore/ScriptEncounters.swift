@@ -1,5 +1,24 @@
 import Foundation
 
+/// Immutable values for one admission validation; never a shared simulation owner.
+private final class MissionActorAdmissionOwnerSnapshot: Sendable {
+  private let storedOwner: ScriptInstance
+  private let storedPack: ScriptPack
+
+  var owner: ScriptInstance {
+    _read { yield storedOwner }
+  }
+
+  var pack: ScriptPack {
+    _read { yield storedPack }
+  }
+
+  init(owner: consuming ScriptInstance, pack: consuming ScriptPack) {
+    storedOwner = consume owner
+    storedPack = consume pack
+  }
+}
+
 // Attempt-local scratch only: never Sendable, stored simulation state or admission authority.
 private final class ScriptEncounterAttemptScratch {
   let definition: ScriptEncounterDefinition
@@ -306,37 +325,45 @@ extension Game {
   @inline(never)
   func validateMissionActorAdmissionSource(_ source: MissionActorAdmissionSource) throws {
     let currentInputs = currentMissionActorAdmissionSourceValues()
-    let (owner, pack) = try validatedMissionActorAdmissionOwner(
+    let snapshot = try validatedMissionActorAdmissionOwner(
       source, instances: currentInputs.instances)
-    let refreshed: MissionActorAdmissionSource
+    let refreshed = try Self.refreshMissionActorAdmissionSource(
+      original: self, source: source, owner: snapshot.owner, pack: snapshot.pack,
+      galaxy: currentInputs.galaxy, system: currentInputs.system)
+    guard refreshed.profile == source.profile else {
+      throw MissionPackError("Actor admission profile changed before publication.")
+    }
+  }
+
+  @inline(never)
+  private static func refreshMissionActorAdmissionSource(
+    original: borrowing Game, source: borrowing MissionActorAdmissionSource,
+    owner: borrowing ScriptInstance, pack: borrowing ScriptPack, galaxy: Int, system: Int
+  ) throws -> MissionActorAdmissionSource {
     switch source.mode {
     case .retained:
       if case .transit(let leg) = source.authority, let context = source.transitContext {
-        refreshed = try transitMissionActorAdmissionSource(leg, context: context)
-        break
+        return try original.transitMissionActorAdmissionSource(leg, context: context)
       }
       guard source.authority == .retained,
         owner.ownedEncounters[source.encounterID] == source.retention,
-        source.system == .init(galaxy: currentInputs.galaxy, system: currentInputs.system)
+        source.system == .init(galaxy: galaxy, system: system)
       else { throw MissionPackError("Retained actor admission source changed before publication.") }
-      refreshed = try sealMissionActorAdmissionSource(
+      return try original.sealMissionActorAdmissionSource(
         mode: .retained, authority: .retained, pack: pack, state: owner,
         encounter: source.retention)
     case .prepared:
       switch source.authority {
       case .missionHandler:
-        refreshed = try preparedMissionActorAdmissionSource(
+        return try original.preparedMissionActorAdmissionSource(
           pack: pack, state: owner, encounter: source.retention)
       case .worldJob(let identity, let pulse):
-        refreshed = try preparedMissionActorAdmissionSource(
+        return try original.preparedMissionActorAdmissionSource(
           pack: pack, state: owner, encounter: source.retention,
           worldJob: identity, pulse: pulse)
       case .retained, .transit:
         throw MissionPackError("A prepared cohort cannot substitute retained admission authority.")
       }
-    }
-    guard refreshed.profile == source.profile else {
-      throw MissionPackError("Actor admission profile changed before publication.")
     }
   }
 
@@ -344,7 +371,7 @@ extension Game {
   @inline(never)
   private func validatedMissionActorAdmissionOwner(
     _ source: MissionActorAdmissionSource, instances: [UUID: ScriptInstance]
-  ) throws -> (ScriptInstance, ScriptPack) {
+  ) throws -> MissionActorAdmissionOwnerSnapshot {
     guard let owner = instances[source.instanceID],
       owner.id == source.instanceID, owner.revision == source.instanceRevision,
       owner.digest == source.packDigest, owner.definition == source.definition,
@@ -357,7 +384,7 @@ extension Game {
           source.retention.actors[$0.alias]?.location(in: source.retention) == source.system
         })
     else { throw MissionPackError("Actor admission source no longer matches its installed owner.") }
-    return (owner, pack)
+    return MissionActorAdmissionOwnerSnapshot(owner: consume owner, pack: consume pack)
   }
 
   /// Reads only actual installed retained ownership; there is no caller-supplied state/body path.
@@ -438,7 +465,7 @@ extension Game {
   /// Called only by this file's validated prepared-encounter handler when native admission is wired.
   /// A world job supplies its actual UUID and pending pulse, never a Boolean authorization.
   private func preparedMissionActorAdmissionSource(
-    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter,
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounter: ScriptOwnedEncounter,
     worldJob: UUID? = nil, pulse: UInt64? = nil
   ) throws -> MissionActorAdmissionSource {
     let currentInputs = currentMissionActorAdmissionSourceValues()
@@ -454,7 +481,7 @@ extension Game {
   }
 
   private func missionActorAdmissionAuthority(
-    pack: ScriptPack, state: ScriptInstance, encounterID: String,
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounterID: String,
     galaxy: Int, system: Int, worldJob: UUID?, pulse: UInt64?
   ) throws -> MissionActorAdmissionAuthority {
     guard let stored = currentMissionActorAdmissionOwner(state.id), stored.id == state.id,
@@ -490,7 +517,7 @@ extension Game {
 
   private func sealMissionActorAdmissionSource(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
-    pack: ScriptPack, state: ScriptInstance, encounter: ScriptOwnedEncounter
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounter: ScriptOwnedEncounter
   ) throws -> MissionActorAdmissionSource {
     let definition = try validateMissionActorAdmissionEncounter(
       mode: mode, pack: pack, state: state, encounter: encounter)
