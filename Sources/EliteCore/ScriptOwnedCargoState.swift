@@ -128,8 +128,10 @@ struct ScriptOwnedCargoState: Codable, Sendable, Equatable {
       return (terminal.cause != .expired || terminal.clock > due)
         && (terminal.cause != .abandoned || terminal.clock <= due)
     }
-    return state.outcome == .active && !job.settled && state.completionReceipt == nil
-      && held == remaining && !remaining.isEmpty
+    guard state.outcome == .active, !job.settled, state.completionReceipt == nil else {
+      return false
+    }
+    return held == remaining && !remaining.isEmpty
   }
 }
 
@@ -160,8 +162,8 @@ extension Commander {
 
   func freightStateValid(_ state: borrowing ScriptInstance) -> Bool {
     guard let plan = state.contract?.offer.freightPlan else {
-      return state.savedOwnedCargo == nil
-        && !ScriptFreightPlan.isMarked(state.contract?.offer.parameters ?? .null)
+      guard state.savedOwnedCargo == nil else { return false }
+      return !ScriptFreightPlan.isMarked(state.contract?.offer.parameters ?? .null)
     }
     guard let cargo = state.savedOwnedCargo, cargo.valid(state: state, engine: scriptState),
       cargo.owner == equipmentOwnerID, state.definition == plan.content.stateID,
