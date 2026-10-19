@@ -1,0 +1,7 @@
+# fix: prepare real fitted navigation for route README media
+
+The route renderer now purchases Intermediate then Advanced navigation through the public ordinary shop path at its existing default original world. It requires each exact price debit and fitted tier, two paid receipts, a current inventory and a valid commander. The fixture starts with explicit ordinary funds and retains the original 70 fuel and 70-capacity tank; no equipment grant, routing policy, price or fuel rule changes.
+
+Destinations come from the actual known original systems in ascending numeric-ID order. For each, the fixture sets the real chart selection and invokes the existing `n` input. It accepts only a native navigation view with more than one route, retaining the unchanged multiplicity guard, second-route selection, local-chart input and renderer PNG writer. No synthetic coordinates, hand-authored paths or modified image/manifest bytes are introduced. If the installed original catalogue supplies no qualifying destination, rendering still fails.
+
+Strict Swift formatting, Markdown lint and whitespace checks are the only author validation. ZERO compiler, native, media, GUI, profiler or CI jobs run. G1 must rerun the maintained README media command after source review and reuse the 171 existing exact ship-renderer outputs for the ship check. This is a fixture repair supporting the single current usable-app delivery; successful media generation and app usability remain unverified here. See ISSUE-route-media-native-navigation.md.
