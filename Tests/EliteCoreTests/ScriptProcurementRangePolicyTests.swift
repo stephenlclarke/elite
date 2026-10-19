@@ -498,3 +498,112 @@ func procurementReengagementRetargetsOnlyFreshImmediateKnownSelection(condition:
   let cleared = await runtime.controls
   #expect(cleared.pitch == 0 && cleared.yaw == 0 && cleared.throttle == 0 && !cleared.fire)
 }
+
+private func procurementNearStationDefenceGame(authenticate: Bool) throws -> Game {
+  var game = try rangePolicyGame()
+  let station = try #require(game.commander.flightSimulation.anchors?.station)
+  let index = try #require(game.bodies.firstIndex { $0.hostile })
+  // Controlled unit geometry: station behind the player, selected native attacker ahead.
+  NativePagedSalvageFixture.moveObserver(
+    &game, to: .init(position: station.position + .init(0, 0, 800)))
+  game.bodies[index].position = .init(0, 0, 600)
+  if authenticate {
+    let shield = game.frontShield
+    game.emitLegacyNPCBeam(bodyID: game.bodies[index].id, damage: LaserKind.pulse.damage)
+    try #require(game.frontShield < shield)
+    let context = try #require(game.gameplayContext())
+    let actor = try #require(game.bodies[index].physical?.identity)
+    try #require(
+      game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: actor, against: context.player.identity, context: context))
+  }
+  return game
+}
+
+@Test func procurementNearStationSelfDefenceUsesRealCurrentLawAndNativeHit() async throws {
+  let game = try procurementNearStationDefenceGame(authenticate: true)
+  let runtime = GameRuntime(game: game)
+  // Existing bounded accepted-combat observation is used only to assert the native hit.
+  await runtime.enableStationDefenceDiagnostics()
+  let before = await runtime.snapshot()
+  let facts = await runtime.procurementPreflightFacts()
+  let target = try #require(facts.threat?.identity)
+  let player = try #require(before.commander.flightSimulation.player)
+  try #require(facts.valid && facts.live && !facts.outsideNoFireZones)
+  try #require(facts.lawfulForwardDefence && facts.exactForwardHit)
+  try #require(facts.requestedAction(steps: 0) == .requestFire)
+  let result = await runtime.procurementPilotStep(
+    expected: facts, steps: 0, automatic: false, diagnostic: false)
+  try #require(result.status == .defensive)
+  let after = await runtime.snapshot()
+  #expect(
+    after.gameplayCombatTrace?.incidents.contains {
+      $0.origin.owner == player && $0.victim == target && $0.kind == .laser && $0.outcome == .hit
+    } == true)
+  #expect(after.laserHeat > before.laserHeat && after.commander.legal == 0)
+  #expect(after.commander.credits == before.commander.credits)
+  #expect(after.commander.cargo == before.commander.cargo)
+  #expect(after.commander.missiles == before.commander.missiles)
+  #expect(after.commander.equipmentInventory == before.commander.equipmentInventory)
+  #expect(after.commander.equipmentPurchaseHistory == before.commander.equipmentPurchaseHistory)
+}
+
+@Test(arguments: ["unauthenticated", "expired", "obstructed"])
+func procurementNearStationFireRequiresCurrentDefenceAndExactRay(condition: String) async throws {
+  var game = try procurementNearStationDefenceGame(authenticate: condition != "unauthenticated")
+  let index = try #require(game.bodies.firstIndex { $0.hostile })
+  let actor = try #require(game.bodies[index].physical?.identity)
+  if condition == "expired" {
+    let player = try #require(game.commander.flightSimulation.player)
+    game.bodies[index].hostile = false
+    game.bodies[index].physical?.npc?.intention = .flee(player)
+    game.commander.flightSimulation.advancePhysicalTime(11)
+    let context = try #require(game.gameplayContext())
+    try #require(
+      !game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: actor, against: player, context: context))
+  } else if condition == "obstructed" {
+    let blocker = game.nextBodyID
+    game.nextBodyID += 1
+    game.bodies.append(.init(id: blocker, hull: .asteroid, position: .init(0, 0, 300)))
+    game.ensurePhysicalActors()
+  }
+  let runtime = GameRuntime(game: game)
+  let facts = await runtime.procurementPreflightFacts()
+  try #require(facts.valid && facts.live && !facts.outsideNoFireZones)
+  #expect(!facts.lawfulForwardDefence && facts.requestedAction(steps: 0) != .requestFire)
+  if condition == "unauthenticated" {
+    #expect(facts.exactForwardHit && facts.threat?.identity == actor)
+  } else if condition == "obstructed" {
+    #expect(!facts.exactForwardHit && facts.threat?.identity == actor)
+  } else {
+    #expect(facts.threat == nil)
+  }
+}
+
+@Test(arguments: ["forged-law", "stale-time"])
+func procurementNearStationAtUseRejectsForgedOrStaleDefenceFacts(condition: String) async throws {
+  let game = try procurementNearStationDefenceGame(authenticate: condition == "stale-time")
+  let runtime = GameRuntime(game: game)
+  var expected = await runtime.procurementPreflightFacts()
+  try #require(expected.valid && !expected.outsideNoFireZones && expected.exactForwardHit)
+  if condition == "forged-law" {
+    try #require(!expected.lawfulForwardDefence)
+    expected.lawfulForwardDefence = true
+  } else {
+    try #require(expected.lawfulForwardDefence)
+    _ = await runtime.advance(delta: 0.1)
+  }
+  let before = await runtime.snapshot()
+  let controls = await runtime.controls
+  let result = await runtime.procurementPilotStep(
+    expected: expected, steps: 0, automatic: false, diagnostic: false)
+  let after = await runtime.snapshot()
+  let retainedControls = await runtime.controls
+  #expect(result.status == .refused)
+  #expect(after.commander == before.commander && after.bodies == before.bodies)
+  #expect(after.laserHeat == before.laserHeat && after.fireCooldown == before.fireCooldown)
+  #expect(
+    retainedControls.fire == controls.fire && retainedControls.throttle == controls.throttle
+      && retainedControls.pitch == controls.pitch && retainedControls.yaw == controls.yaw)
+}

@@ -27,7 +27,8 @@ enum ScriptProcurementMissilePolicy {
     cooldown: Double, rounds: Int, unlimited: Bool, ownMissile: Bool
   ) -> Bool {
     // The next ordinary 0.1-second frame cools by 1.2 before the native pulse heat gate.
-    facts.identity != nil && facts.legal == 0 && facts.requestedAction(steps: steps) == .requestFire
+    facts.identity != nil && facts.legal == 0 && facts.outsideNoFireZones
+      && facts.requestedAction(steps: steps) == .requestFire
       && pulse && heat.isFinite && max(0, heat - 0.1 * 12) >= 240
       && cooldown == 0 && rounds > 0 && rounds <= 3 && !unlimited && !ownMissile
   }
