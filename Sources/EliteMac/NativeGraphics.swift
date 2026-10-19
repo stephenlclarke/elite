@@ -148,8 +148,9 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Doub
       in: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
   case .panel(let panel):
     guard let first = panel.vertices.first else { return }
-    context.setFillColor(colour(panel.colour))
-    context.setStrokeColor(colour(panel.colour))
+    let panelColour = colour(panel.colour)
+    context.setFillColor(panelColour)
+    context.setStrokeColor(panelColour)
     // A small overlap prevents antialiasing cracks between adjoining faces.
     context.setLineWidth(0.25)
     context.beginPath()
