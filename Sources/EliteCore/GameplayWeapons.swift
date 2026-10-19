@@ -259,6 +259,7 @@ extension Game {
       else { return .init(vertices: [], faces: []) }
       return source.geometry.mesh
     }
+    if body.hull == .station { return MainStationGeometry.mesh }
     if let payload = body.physical?.payload, case .salvage(let identity) = payload,
       let lot = salvageLotForGeometry(identity)
     {

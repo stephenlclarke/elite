@@ -421,8 +421,12 @@ extension Game {
 
   /// The legacy Boolean dock API issues no arrival. Only actual native doorway entry calls this.
   mutating func dockAtOriginalNativeMainStation(
-    _ station: SpaceBody, from before: ShipPose, delta: Double? = nil
+    _ station: SpaceBody, from before: ShipPose, delta: Double
   ) {
+    guard delta.isFinite, delta > 0, delta <= 0.1,
+      nativeMainStationHullCourseIsClear(
+        station, from: before, to: commander.flightSimulation.pose, delta: delta)
+    else { return }
     let system = systemIdentity
     guard let world = commander.nativeStations else {
       dock()
@@ -435,7 +439,7 @@ extension Game {
     if let id = world.mainStations.first(where: { $0.system == system }),
       world.inertia(for: .main(id)) != nil
     {
-      guard let delta, delta.isFinite, delta > 0, delta <= 0.1,
+      guard
         let previous = world.currentPosition(
           for: .main(id), at: max(0, commander.flightSimulation.physicalTime - delta)),
         let current = world.currentPosition(
@@ -540,6 +544,58 @@ extension Game {
 
   /// Reuse native source, aperture and corridor checks for a proposed approach.
   /// The relative frame at the door is geometry only and is never installed or minted as entry.
+  /// Real effective-hull clearance against the same main-port mesh used by rendering and rays.
+  /// The optional elapsed step uses the station's actual prior translation and spin.
+  func nativeMainStationHullCourseIsClear(
+    _ station: SpaceBody, from start: ShipPose, to end: ShipPose,
+    delta: Double = 0, requireAperture: Bool = true
+  ) -> Bool {
+    let flight = commander.flightSimulation
+    guard delta.isFinite, delta >= 0, delta <= 0.1,
+      station.id == 0, station.hull == .station, station.nativeStationIdentity == nil,
+      let world = commander.nativeStations,
+      let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
+      station.physical?.identity == flight.anchors?.station.identity,
+      bodies.filter({ $0.id == 0 }).count == 1,
+      bodies.first(where: { $0.id == 0 }) == station,
+      let current = currentNativeMainStationAnchor(at: flight.physicalTime),
+      let previous = currentNativeMainStationAnchor(at: max(0, flight.physicalTime - delta)),
+      (flight.pose.systemPoint(station.position) - current.position).length < 1e-5,
+      [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)].allSatisfy({
+        (flight.pose.orientation.apply(station.orientation.apply($0))
+          - current.orientation.apply($0)).length < 1e-5
+      })
+    else { return false }
+    let player = commander.playerMesh
+    let geometry = MainStationGeometry.mesh
+    let port = MainStationGeometry.docking
+    let endOrientation = modelPose(of: station).orientation
+    var unspin = Basis3()
+    unspin.rotate(pitch: 0, roll: -station.rotationRate * delta, yaw: 0)
+    let startOrientation = endOrientation.composed(with: unspin)
+    let angularBound = (abs(pitch) + abs(roll) + abs(yaw) + abs(station.rotationRate)) * delta
+    let translationMargin = world.stationSweepMargin(
+      .main(identity), from: max(0, flight.physicalTime - delta), to: flight.physicalTime)
+    let margin =
+      (nativeStationRadius(player) + nativeStationRadius(geometry)) * angularBound
+      + translationMargin
+    guard margin.isFinite else { return false }
+    if requireAperture {
+      guard port.fits(player, margin: margin),
+        nativeStationHullFits(
+          player, ship: start, station: previous.position, orientation: startOrientation,
+          port: port, margin: margin),
+        nativeStationHullFits(
+          player, ship: end, station: current.position, orientation: endOrientation,
+          port: port, margin: margin)
+      else { return false }
+    }
+    return nativeStructureHullSweepClear(
+      player, from: start, to: end, position: previous.position, endPosition: current.position,
+      fromOrientation: startOrientation, toOrientation: endOrientation,
+      margin: margin, mesh: geometry)
+  }
+
   func nativeStationAutoEntryCourseIsClear(
     _ station: SpaceBody, advance: Vector3, terminalSpeed: Double
   ) -> Bool {
@@ -585,7 +641,9 @@ extension Game {
       else { return false }
       var atDoor = station
       atDoor.position = atDoor.position - advance
-      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed) else { return false }
+      guard atDoor.canEnter(roll: autoPilot.rollRate, speed: terminalSpeed),
+        nativeMainStationHullCourseIsClear(station, from: flight.pose, to: endpoint)
+      else { return false }
     }
     let radius = nativeStationRadius(player)
     return radius.isFinite
@@ -701,6 +759,26 @@ extension Game {
     let flight = commander.flightSimulation
     let player = commander.playerMesh
     let playerRadius = nativeStationRadius(player)
+    if let main = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
+      let identity = world.mainStations.first(where: { $0.system == systemIdentity }),
+      let previous = currentNativeMainStationAnchor(at: max(0, flight.physicalTime - delta)),
+      let current = currentNativeMainStationAnchor(at: flight.physicalTime)
+    {
+      let displacement = (flight.pose.position - before.position).length
+      let translationMargin = world.stationSweepMargin(
+        .main(identity), from: max(0, flight.physicalTime - delta), to: flight.physicalTime)
+      let stationDisplacement = (current.position - previous.position).length + translationMargin
+      let radius = nativeStationRadius(MainStationGeometry.mesh)
+      if main.position.length <= radius + playerRadius + displacement + stationDisplacement,
+        !nativeMainStationHullCourseIsClear(
+          main, from: before, to: flight.pose, delta: delta, requireAperture: false)
+      {
+        stopAtStationImpact(at: before)
+        applyDamage(delta * 100, front: true)
+        notify("DOCKING COLLISION", voiced: false)
+        return
+      }
+    }
     for body in bodies where body.nativeStationIdentity != nil && nativeStationBodyIsCurrent(body) {
       guard let identity = body.nativeStationIdentity, let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),

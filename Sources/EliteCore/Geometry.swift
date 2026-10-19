@@ -89,6 +89,7 @@ public struct Mesh: Sendable {
     self.faceTextures = correctedTextures
   }
   public static func hull(_ kind: Hull) -> Mesh {
+    if kind == .station { return MainStationGeometry.mesh }
     if let mesh = ShipCatalogue.nativeMesh(kind) { return mesh }
     switch kind {
     case .asteroid, .cargo:

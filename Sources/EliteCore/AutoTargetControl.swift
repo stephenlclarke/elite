@@ -26,10 +26,12 @@ extension SpaceBody {
     nativeStationIdentity.flatMap { NativeStationSource.binding(for: $0)?.geometry.docking }
   }
   public var entrancePosition: Vector3 {
-    position + modelVector(nativePort?.center ?? .init(0, 0, -90))
+    position + modelVector(nativePort?.center ?? MainStationGeometry.docking.center)
   }
-  public var entranceNormal: Vector3 { modelVector(nativePort?.outward ?? .init(0, 0, -1)) }
-  public var entranceUp: Vector3 { modelVector(nativePort?.up ?? .init(0, 1, 0)) }
+  public var entranceNormal: Vector3 {
+    modelVector(nativePort?.outward ?? MainStationGeometry.docking.outward)
+  }
+  public var entranceUp: Vector3 { modelVector(nativePort?.up ?? MainStationGeometry.docking.up) }
   var stationClearanceRadius: Double {
     guard let identity = nativeStationIdentity,
       let source = NativeStationSource.binding(for: identity)

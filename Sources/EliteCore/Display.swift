@@ -416,10 +416,9 @@ public enum Display {
       {
         aperture = source.geometry.docking.aperture.map { source.geometry.docking.center + $0 }
       } else {
-        aperture = [
-          Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
-          Vector3(-30, 10, -90),
-        ]
+        aperture = MainStationGeometry.docking.aperture.map {
+          MainStationGeometry.docking.center + $0
+        }
       }
       let hatch = aperture.map { game.viewPosition(body.modelVector($0)) + center }
       let normal = game.viewPosition(body.entranceNormal)

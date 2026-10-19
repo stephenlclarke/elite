@@ -1170,6 +1170,87 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
   return game
 }
 
+@Test(arguments: ["clear-port", "rim", "back-wall", "oversize-hull"])
+func stationAutoMainPortRetainsRealWallsAndRefusesNonfittingHulls(condition: String) throws {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.launch()
+  let initial = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+  if condition == "oversize-hull" {
+    let oversized = ShipCatalogue.all.first { ship in
+      guard ship.game != nil, let mesh = ship.previewMesh else { return false }
+      let effective = Mesh(vertices: mesh.vertices.map { $0 * 0.69 }, faces: mesh.faces)
+      return !MainStationGeometry.docking.fits(effective)
+    }
+    let ship = try #require(oversized)
+    game.commander.shipID = ship.id
+  }
+  let original = game.commander.flightSimulation.pose
+  var pose = ShipPose()
+  pose.position = original.systemPoint(
+    initial.entrancePosition + initial.entranceNormal * 500
+      + initial.modelVector(.init(condition == "rim" ? 80 : 0, 0, 0)))
+  pose.orientation.z = original.orientation.apply(initial.entranceNormal) * -1
+  pose.orientation.y = original.orientation.apply(initial.entranceUp)
+  pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
+  NativeStationTestFixture.reframe(&game, to: pose)
+  let station = try #require(game.bodies.first { $0.id == 0 })
+  let advance = Vector3(0, 0, condition == "back-wall" ? 1000 : 499.5)
+  var endpoint = pose
+  endpoint.position = pose.systemPoint(advance)
+  let apertureFits = MainStationGeometry.docking.fits(game.commander.playerMesh)
+  let structuralClear = game.nativeMainStationHullCourseIsClear(
+    station, from: pose, to: endpoint, requireAperture: false)
+  let allowed = game.nativeMainStationHullCourseIsClear(station, from: pose, to: endpoint)
+  #expect(allowed == (condition == "clear-port"))
+  if condition == "rim" || condition == "back-wall" { #expect(!structuralClear) }
+  #expect(apertureFits == (condition != "oversize-hull"))
+  let gameplay = game.gameplayMesh(for: station)
+  #expect(gameplay.vertices == MainStationGeometry.mesh.vertices)
+  #expect(gameplay.faces == MainStationGeometry.mesh.faces)
+  if condition == "clear-port" || condition == "rim" {
+    let ray = GameplayRaycast.nearest(
+      origin: .init(0, 0, 0), direction: .init(0, 0, 1), maxDistance: 1000,
+      bodies: [station], meshOverrides: [station.id: gameplay])
+    let hit = try #require(ray)
+    // The centre ray passes the actual opening and meets the retained back wall;
+    // the rim ray meets the front wall. Rendering and defence use these same panels.
+    #expect(abs(hit.distance - (condition == "clear-port" ? 680 : 500)) < 1e-7)
+  }
+  // The read-only geometry proposal never installs its endpoint or creates arrival authority.
+  #expect(game.commander.flightSimulation.pose == pose)
+  #expect(!game.docked && game.pendingNativeStationDock == nil)
+}
+
+@Test func stationAutoMainRimStopsTheEffectiveHullBeforeItsCentreEnters() throws {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.launch()
+  let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+  let old = game.commander.flightSimulation.pose
+  var before = ShipPose()
+  before.position = old.systemPoint(
+    station.entrancePosition + station.entranceNormal * 60 + station.modelVector(.init(80, 0, 0)))
+  before.orientation.z = old.orientation.apply(station.entranceNormal) * -1
+  before.orientation.y = old.orientation.apply(station.entranceUp)
+  before.orientation.x = before.orientation.y.cross(before.orientation.z)
+  NativeStationTestFixture.reframe(&game, to: before)
+  var attempted = before
+  attempted.position = before.systemPoint(.init(0, 0, 45))
+  NativeStationTestFixture.reframe(&game, to: attempted)
+  let energy = game.energy
+  let shields = game.frontShield + game.rearShield
+  game.commander.flightSimulation.advancePhysicalTime(0.1)
+  for index in game.bodies.indices where game.bodies[index].hull == .station {
+    game.advanceBodyModelRotation(at: index, delta: 0.1)
+  }
+  game.collideWithNativeStationStructures(from: before, delta: 0.1)
+  #expect(game.commander.flightSimulation.pose == before)
+  #expect(game.message == "DOCKING COLLISION")
+  #expect(game.energy < energy || game.frontShield + game.rearShield < shields)
+  #expect(!game.docked && game.pendingNativeStationDock == nil)
+}
+
 // Keep actual station actors, source geometry and ledger poses; only move the observer.
 @Test(arguments: ["clear-port", "aperture-edge", "through-structure"])
 func stationAutoNativeRRSCourseChecksActualTargetHull(condition: String) throws {

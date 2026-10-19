@@ -1860,7 +1860,10 @@ public struct Game: Sendable {
     if let station = bodies.first(where: { $0.id == 0 && $0.hull == .station }),
       station.containsPlayer
     {
-      if station.canEnter(roll: roll, speed: nativeStationRelativeEntrySpeed(station)) {
+      if station.canEnter(roll: roll, speed: nativeStationRelativeEntrySpeed(station)),
+        nativeMainStationHullCourseIsClear(
+          station, from: before, to: commander.flightSimulation.pose, delta: dt)
+      {
         dockAtOriginalNativeMainStation(station, from: before, delta: dt)
         return
       }
