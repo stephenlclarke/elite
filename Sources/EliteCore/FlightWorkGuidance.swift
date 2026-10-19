@@ -252,9 +252,24 @@ extension Game {
     }
     let pose = commander.flightSimulation.pose
     let targetPose = modelPose(of: body)
+    #if DEBUG
+      let sweepTraceTime =
+        ProcessInfo.processInfo.environment["ELITE_NATIVE_WORK_TRACE"] == "1"
+        ? commander.flightSimulation.physicalTime : nil
+      let sweepTraceCatalogueID = body.physical?.catalogueShipID
+      var sweepTraceWorkFailure = false
+    #endif
     let validate: (RelativeWorkSweep) -> RelativeWorkClearance = {
-      HullSweepSafety.validate($0, target: targetHull, player: playerHull, obstacles: obstacles)
-        .clearance
+      let result = HullSweepSafety.validate(
+        $0, target: targetHull, player: playerHull, obstacles: obstacles)
+      #if DEBUG
+        if let sweepTraceTime {
+          traceNativeWorkSweep(
+            result, sweep: $0, physicalTime: sweepTraceTime,
+            catalogueID: sweepTraceCatalogueID, workFailure: &sweepTraceWorkFailure)
+        }
+      #endif
+      return result.clearance
     }
     let previousStatus = state.status
     switch state.mode {
@@ -479,3 +494,95 @@ extension Basis3 {
     return result
   }
 }
+
+#if DEBUG
+  // Temporary opt-in diagnostic. No sweep is repeated or accepted by this observer.
+  private struct WorkSweepNull<Value: Encodable>: Encodable {
+    let value: Value?
+
+    func encode(to encoder: Encoder) throws {
+      var container = encoder.singleValueContainer()
+      if let value { try container.encode(value) } else { try container.encodeNil() }
+    }
+  }
+
+  private struct WorkSweepTrace: Encodable {
+    let physicalTime: Double
+    let purpose: String
+    let failure: WorkSweepNull<String>
+    let obstacle: WorkSweepNull<ActorIdentity>
+    let minimumSampledClearance: WorkSweepNull<Double>
+    let distanceQueries: Int
+    let triangleTests: Int
+    let nodeVisits: Int
+    let requiredClearance: Double
+    let playerRadius: Double
+    let duration: Double
+    let primaryIdentity: ActorIdentity
+    let catalogueID: WorkSweepNull<String>
+    let start: ShipPose
+    let end: ShipPose
+    let initialVelocity: Vector3
+    let acceleration: Vector3
+    let angularVelocity: Vector3
+    let targetStart: ShipPose
+    let targetEnd: ShipPose
+    let targetVelocity: Vector3
+    let targetAngularVelocity: Vector3
+    let surfacePosition: Vector3
+    let workPosition: Vector3
+  }
+
+  private struct WorkSweepTraceComplete: Encodable {
+    let physicalTime: Double
+    let workFailureCaptured: Bool
+    let brakingCaptured: Bool
+  }
+
+  private func traceNativeWorkSweep(
+    _ result: HullSweepResult, sweep: RelativeWorkSweep, physicalTime: Double,
+    catalogueID: String?, workFailure: inout Bool
+  ) {
+    let afterWorkFailure = workFailure && sweep.purpose == .braking
+    guard result.failure != nil || afterWorkFailure else { return }
+    let trace = WorkSweepTrace(
+      physicalTime: physicalTime, purpose: String(describing: sweep.purpose),
+      failure: .init(value: result.failure.map { String(describing: $0) }),
+      obstacle: .init(value: result.obstacle),
+      minimumSampledClearance: .init(value: result.minimumSampledClearance),
+      distanceQueries: result.distanceQueries, triangleTests: result.triangleTests,
+      nodeVisits: result.nodeVisits, requiredClearance: sweep.requiredClearance,
+      playerRadius: sweep.playerRadius, duration: sweep.duration,
+      primaryIdentity: sweep.target.identity, catalogueID: .init(value: catalogueID),
+      start: sweep.start, end: sweep.end, initialVelocity: sweep.initialVelocity,
+      acceleration: sweep.acceleration, angularVelocity: sweep.angularVelocity,
+      targetStart: sweep.target.pose, targetEnd: sweep.targetEnd,
+      targetVelocity: sweep.target.velocity, targetAngularVelocity: sweep.target.angularVelocity,
+      surfacePosition: sweep.surfacePosition, workPosition: sweep.workPosition)
+    do {
+      try writeNativeWorkSweepTrace(trace, marker: "ELITE_NATIVE_WORK_SWEEP_RESULT")
+      if sweep.purpose == .work {
+        workFailure = true
+      } else {
+        try writeNativeWorkSweepTrace(
+          WorkSweepTraceComplete(
+            physicalTime: physicalTime, workFailureCaptured: afterWorkFailure,
+            brakingCaptured: sweep.purpose == .braking),
+          marker: "ELITE_NATIVE_WORK_SWEEP_FAILURE_COMPLETE")
+      }
+    } catch {
+      FileHandle.standardError.write(
+        Data("ELITE_NATIVE_WORK_SWEEP_TRACE_ERROR purpose=\(sweep.purpose)\n".utf8))
+    }
+  }
+
+  private func writeNativeWorkSweepTrace<Value: Encodable>(
+    _ value: Value, marker: String
+  ) throws {
+    let encoded = try JSONEncoder().encode(value)
+    var line = Data((marker + " ").utf8)
+    line.append(encoded)
+    line.append(0x0A)
+    FileHandle.standardError.write(line)
+  }
+#endif
