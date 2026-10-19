@@ -62,17 +62,23 @@ import Testing
   var game = Game(executive: false)
   game.screen = .equipment
   game.commander.credits = 1_000_000
-  game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Mining Laser" })
+  let miningLaser = Equipment.all[game.selection]
+  game.commander.system = try #require(
+    game.systems.first { $0.technology >= miningLaser.requiredTechnologyLevel }?.id)
+  try #require(!game.atPlugh && game.equipmentAvailable(miningLaser))
+  try #require(game.shopPrice(miningLaser) == 8000 && game.commander.valid)
   game.key("return")
   #expect(game.commander.equipment.contains("Mining Laser") && game.commander.credits == 992_000)
   for name in [
     Equipment.navalLaser, ShieldBooster.capital.equipmentName,
   ] {
     game.selection = try #require(Equipment.all.firstIndex { $0.name == name })
+    let beforeRefusal = game.commander
     game.key("return")
     #expect(!game.commander.equipment.contains(name) && game.commander.credits == 992_000)
     #expect(game.message.hasSuffix("NOT FOR SALE"))
+    #expect(game.commander == beforeRefusal && game.commander.valid)
   }
 }
 
