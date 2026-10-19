@@ -32,7 +32,7 @@ public struct CockpitLayout: Sendable {
     radarWidth = min(560, max(104, width * 0.30))
     sideWidth = (width - radarWidth - 48) / 2
     leftColumns = sideWidth >= 400 ? 2 : 1
-    let textColumns = max(20, Int((width - 24) / (6 * instrumentScale)))
+    let textColumns = max(20, Int((width - 24) / (6 * font)))
     let retaliationLines =
       game.retaliation.status.isEmpty ? [] : ["WEAPONS: " + game.retaliation.status]
     weaponLines = MissionNotice.wrap(game.flightWeaponDisplay.text, width: textColumns)
@@ -113,10 +113,10 @@ extension Display {
         ink: .cyan)
     }
     for (index, line) in layout.weaponLines.enumerated() {
-      let x = max(12, (layout.width - Double(line.count) * 6 * layout.instrumentScale) / 2)
+      let x = max(12, (layout.width - Double(line.count) * 6 * layout.font) / 2)
       frame.label(
         line, x, layout.weaponTop + layout.row * Double(index),
-        scale: layout.instrumentScale, ink: .yellow)
+        scale: layout.font, ink: .yellow)
     }
     cockpitInstruments(game, layout: layout, into: &frame)
     return frame
