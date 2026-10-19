@@ -70,13 +70,19 @@ struct GearScriptFixture {
   var game = Game(executive: false)
   game.screen = .status
   game.commander.installTargetingComputer(.docking)
-  // Controlled origin initialization, before acceptance; the authored destination stays 129.
-  game.commander.system = 167
+  // Controlled initialization on the demonstrator's approved current-world route.
+  let origin = try Universe.originalWorlds.world(key: "G01-S167")
+  let destination = try Universe.originalWorlds.world(key: "G01-S153")
+  try #require(origin.name == "Natanas" && destination.name == "Bevitha")
+  try #require(origin.galaxy == 0 && destination.galaxy == 0 && destination.governmentID == 7)
+  game.commander.system = origin.system
   game.market = MarketItem.at(game.currentSystem)
-  game.selectedSystem = 129
+  game.selectedSystem = destination.system
   try game.commander.prepareEquipment()
-  let distance = game.currentSystem.distance(to: game.systems[129])
-  try #require(distance > 0 && distance <= game.commander.maximumJumpDistance)
+  let distance = game.currentSystem.distance(to: game.systems[destination.system])
+  let stockReach = game.commander.maximumJumpDistance
+  try #require(stockReach == 7 && stockReach == game.commander.nativePerformance.jump)
+  try #require(distance > 0 && distance <= stockReach)
   game.scriptPacks = [pack]
   let folder = FileManager.default.temporaryDirectory.appendingPathComponent(
     "loan-voyage-" + UUID().uuidString)
@@ -100,9 +106,9 @@ struct GearScriptFixture {
   try #require(departing.jumpCountdown != nil, Comment(rawValue: departing.message))
   for _ in 0..<200 {
     scene = await runtime.advance(delta: 0.1)
-    if scene.commander.system == 129 { break }
+    if scene.commander.system == destination.system { break }
   }
-  #expect(scene.commander.system == 129 && scene.commander.fuel < 70)
+  #expect(scene.commander.system == destination.system && scene.commander.fuel < 70)
   #expect(scene.commander.equipmentInventory?.items.contains { $0.id == unit } == true)
   try #require(scene.screen != .gameOver && scene.energy > 0)
   let main = try #require(scene.bodies.first { $0.id == 0 && $0.hull == .station })

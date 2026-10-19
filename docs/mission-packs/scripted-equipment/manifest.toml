@@ -1,7 +1,7 @@
 schemaVersion = 2
 missionAPI = 2
 id = "example.scripted-equipment"
-version = "1.0.0"
+version = "1.0.1"
 minimumEngine = "2.0.0"
 capabilities = ["script-lua-v1", "story-v2", "economy-v2", "owned-equipment-v2", "durable-commands-v2"]
 priority = 500
@@ -13,10 +13,10 @@ module = "scripts/main.lua"
 [mission]
 id = "equipment-loan"
 title = "Loaned equipment demonstration"
-briefing = "Borrow a uniquely identified ECM unit at a main orbital station. Fit space must be available. Return that original unit, fitted or stored, at Zaonce's main orbital station in Galaxy 1. Hull exchanges preserve the loan."
-destination = "Galaxy 1, Zaonce (system 129)"
+briefing = "Borrow a uniquely identified ECM unit at a main orbital station. Fit space must be available. Return that original unit, fitted or stored, at Bevitha's main orbital station in Galaxy 1. Hull exchanges preserve the loan."
+destination = "Galaxy 1, Bevitha (system 153)"
 reward = "50 credits after the original loan is returned."
-milestones = ["Borrow the ECM unit", "Return the original unit at Zaonce orbital station"]
+milestones = ["Borrow the ECM unit", "Return the original unit at Bevitha orbital station"]
 requiredEquipmentReturns = ["ecm-kit"]
 
 [[equipment]]
