@@ -349,3 +349,104 @@ private func rwTick(
   #expect((fine.1.orientation.z - coarse.1.orientation.z).length < 0.01)
   #expect(fine.0.relativeSpeed < 1 && coarse.0.relativeSpeed < 1)
 }
+
+@Test func relativeWorkKeepsVisibleObliqueApproachInsteadOfLosingItsBrakingCorridor() throws {
+  // Run 539 acquired an oblique SH127 cargo face from local -Y, then accelerated
+  // diagonally toward its normal: both work and braking lost the unchanged 138 gap.
+  // This closed wedge retains that grazing visible-face/corner configuration cheaply.
+  let faces = [
+    [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4],
+    [3, 7, 6, 2], [0, 4, 7, 3], [1, 2, 6, 5],
+  ]
+  let hull = try PreparedHull(
+    mesh: Mesh(
+      vertices: [
+        .init(-68, -20, -66), .init(68, -20, -66),
+        .init(68, 20, -66), .init(-68, 20, -66),
+        .init(-68, -20, -16), .init(68, -20, -16),
+        .init(68, 20, -3.7), .init(-68, 20, -3.7),
+      ], faces: faces, preserveWinding: true))
+  let player = try PreparedHull(
+    mesh: Mesh(
+      vertices: [
+        .init(-60, -10, -30), .init(60, -10, -30),
+        .init(60, 10, -30), .init(-60, 10, -30),
+        .init(-60, -10, 30), .init(60, -10, 30),
+        .init(60, 10, 30), .init(-60, 10, 30),
+      ], faces: faces, preserveWinding: true))
+  var target = rwTarget()
+  target.surfacePoint = .init(0, 0, -9.85)
+  target.surfaceNormal = Vector3(0, -12.3, 40).unit
+  target.angularVelocity = .init(0.02, 0, 0)
+  var initial = rwInput(target: target)
+  initial.playerRadius = 69
+  initial.limits = .init(
+    acceleration: 216, speed: 576, pitchRate: 1, yawRate: 1, rollRate: 1)
+  initial.ship.position = target.surfacePoint + Vector3(0, -200, 0)
+  initial.ship.orientation.x = .init(1, 0, 0)
+  initial.ship.orientation.y = .init(0, 0, -1)
+  initial.ship.orientation.z = .init(0, 1, 0)
+
+  // Counterfactual original steering develops real inward momentum, then even its
+  // separately checked brake cannot keep the required gap. No fake validator is used.
+  var normalInput = initial
+  var normalController = RelativeWorkController(parent: rwActor, wreck: rwWreck, category: .wreck)
+  var lostBrakingCorridor = false
+  for _ in 0..<200 {
+    var workRefused = false
+    var brakeRefused = false
+    let output = rwTick(&normalController, &normalInput) { sweep in
+      let result = HullSweepSafety.validate(sweep, target: hull, player: player)
+      if result.failure == .clearanceViolation {
+        if sweep.purpose == .work { workRefused = true }
+        if sweep.purpose == .braking { brakeRefused = true }
+      }
+      return result.clearance
+    }
+    if workRefused && brakeRefused {
+      lostBrakingCorridor = true
+      #expect(!output.motionValidated && output.velocity.y > 0)
+      break
+    }
+  }
+  #expect(lostBrakingCorridor)
+
+  // The acquired ray still sees the same geometric face. Only steering changes;
+  // every accepted endpoint and continuous interval pays the original exact proof.
+  var input = initial
+  var controller = RelativeWorkController(
+    parent: rwActor, wreck: rwWreck, category: .wreck, approachDirection: .init(0, -1, 0))
+  var heldFrames = 0
+  var minimumClearance = Double.infinity
+  for _ in 0..<600 {
+    let output = rwTick(&controller, &input) { sweep in
+      let result = HullSweepSafety.validate(sweep, target: hull, player: player)
+      if let clearance = result.minimumSampledClearance {
+        minimumClearance = min(minimumClearance, clearance)
+      }
+      return result.clearance
+    }
+    #expect(output.requiredClearance == 138)
+    if !output.motionValidated {
+      Issue.record("Acquired visible approach must retain its exact hull clearance")
+      break
+    }
+    if output.status == .holding { heldFrames += 1 }
+    if heldFrames >= 30 { break }
+  }
+  #expect(controller.status == .holding && heldFrames >= 30)
+  #expect(minimumClearance >= 138 && minimumClearance.isFinite)
+  #expect(input.target?.surfaceNormal == target.surfaceNormal)
+}
+
+@Test func relativeWorkRejectsInvalidOrBackFacingAcquiredApproach() {
+  for direction in [Vector3(0, 0, 0), .init(.nan, 0, 0), .init(0, 0, 1)] {
+    var controller = RelativeWorkController(
+      parent: rwActor, category: .wreck, approachDirection: direction)
+    let output = controller.step(rwInput()) { _ in
+      Issue.record("Invalid approach direction must not reach swept motion admission")
+      return .clear
+    }
+    #expect(output.status == .blocked(.invalidInput) && !output.motionValidated)
+  }
+}

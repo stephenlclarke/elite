@@ -1,4 +1,6 @@
-# test(salvage): trace the existing refused work sweep result
+# Historical diagnostic: the existing refused work sweep result
+
+This temporary production tap was removed by the [visible-approach repair](PR-work-visible-approach.md). Run 539 retains its output and cleanup proof; the following describes that historical diagnostic, not an active production logger.
 
 The existing guidance validator still calls `HullSweepSafety.validate` exactly once and returns that same result's original clearance. A `DEBUG`-only observer runs when `ELITE_NATIVE_WORK_TRACE=1`. Release builds contain neither the observer nor its flag lookup. Default debug execution emits nothing. No test, movement, geometry, margin, clearance, budget or authority predicate changes.
 
