@@ -25,3 +25,7 @@ The same fixture checks that required clearance10 fails the existing continuous 
 Author validation is source correspondence, strict Swift formatting, Markdown lint and whitespace checks only. No author compiler, native, runtime, test, ABI, harness or profiling job was run. G1 owns one independent review, coherent build, the existing ten scalar-reuse parity cases and `HullSweepPlacementTests.dualBVHPairCertificateRetainsAnalyticDistanceAndAllPaidExaminations`. Any failure must be investigated without relaxing existing assertions or tolerances.
 
 Retained continuation555 passed its historical second release, while matched scalar-reuse intervals showed no clear performance gain. This leaf claims neither fresh original acceptance nor sufficient600-second headroom. The actual salvage scene's pair exclusion frequency and net timing remain unmeasured, and the extra bounds work may offset avoided feature work. Root allocates any later matched performance execution only after review/build/parity success. No automatic runtime or full-CI allocation is included in this source handoff.
+
+## Subsequent composed validation
+
+The integrator independently reviewed and compiled the composed repairs. Fresh original run 558 passed in 551.180 seconds within its unchanged 600-second ceiling, with zero issues, original assertions and all trace/continuation flags off. Earlier run numbers above remain historical evidence. See the [composed validation report](COMPOSED-NATIVE-VALIDATION.md) for exact scope, digests, focused checks and full-gate/release requirements.

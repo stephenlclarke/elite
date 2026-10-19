@@ -27,3 +27,7 @@ Author checks are strict Swift formatting, scoped Markdown lint, whitespace chec
 The extra authenticated cold load reconstructs transient guidance through real input; it does not preserve an in-memory controller instance or actor epoch. The actual historical basis defect is deliberately retained. The test qualifies this saved later stage and its measured hold/work throughput, not fresh repaired observer rebasing, the first cycle, the full original ordinary-ledger oracle or original end-to-end acceptance. An executor timeout still leaves the exact between-record final state unknown. Existing partial-save tests cover short work/reload or first-budget writer refusal, not this full retained human second-cycle continuation.
 
 Compiler integration keeps the restoration predicates in their original order as sequential comparisons. This avoids capturing borrowed `Game` in short-circuit autoclosures without copying the game or changing which mismatch is reported.
+
+## Subsequent composed validation
+
+The integrator independently reviewed and compiled the composed repairs. Fresh original run 558 passed in 551.180 seconds within its unchanged 600-second ceiling, with zero issues, original assertions and all trace/continuation flags off. Earlier run numbers above remain historical evidence. See the [composed validation report](COMPOSED-NATIVE-VALIDATION.md) for exact scope, digests, focused checks and full-gate/release requirements.

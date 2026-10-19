@@ -17,3 +17,7 @@ The original `NativeMultiBatchRuntimeTests.originalHumanManifestImportRequiresAF
 The temporary production sweep observer introduced for run 539 is removed in full. Its three debug blocks, closure-local diagnostic flag and serialization helpers are gone; the validator closure is again the original single `validate(...).clearance` expression. The separate opt-in test checkpoint trace remains off by default. Historical diagnostic documentation and the README describe the resulting behavior consistently.
 
 Retained source of the causal event is `/tmp/elite-native-journeys-focused-539/observed-trace-stop.json`; the owned-run proof is `/tmp/elite-native-journeys-focused-539/agent-game-test-verification-539.json`, SHA-256 `43538789b7ba3d7c44c026bb622c1820efe0beed6b85fbbaf0989f0e6131d8f6`. Runs 535, 537 and 539 are partial diagnostics, and the original 514 timeout stays unknown until genuine acceptance produces its method terminal. No full CI, coverage, sanitizer, leak, Sonar or release acceptance is claimed.
+
+## Subsequent composed validation
+
+The integrator independently reviewed and compiled the composed repairs. Fresh original run 558 passed in 551.180 seconds within its unchanged 600-second ceiling, with zero issues, original assertions and all trace/continuation flags off. Earlier run numbers above remain historical evidence. See the [composed validation report](COMPOSED-NATIVE-VALIDATION.md) for exact scope, digests, focused checks and full-gate/release requirements.

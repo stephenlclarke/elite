@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "ec61fde3c32dd6d38953cc05ca6dcbe5d722e5d7",
+  "sourcesTree": "6c87780360711614cfe9d05f2ddbbe2c86ae3f4f",
+  "testBinarySHA256": "b47997bea5deb69178f87a3abc5277e2928da530512be1a5d739cc3fbdfd9470",
+  "freshOriginal": {
+    "method": "NativeMultiBatchRuntimeTests.originalHumanManifestImportRequiresAFullSecondBudgetAcrossActualSaveAndReload",
+    "status": "passed",
+    "methods": 1,
+    "cases": 1,
+    "methodSeconds": 551.18,
+    "commandSeconds": 553.9074200410396,
+    "supervisorSeconds": 555.7709174170159,
+    "deadlineSeconds": 600,
+    "issues": 0,
+    "crashes": 0,
+    "allTraceAndContinuationFlagsOff": true,
+    "assertionsAndBudgetsUnchanged": true,
+    "proofSHA256": "e1c0f0ca5e6f847e0004ec5d8a3c31106bb4e34c19d8b2873756922cb801b50a",
+    "qualificationSHA256": "964b8570549cf4394baf423b25684e3ad2c0384b45a663f6c6d284f44046e964"
+  },
+  "retainedOriginalMatrix": {
+    "passed": {
+      "methods": 82,
+      "cases": 157
+    },
+    "failed": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unknown": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unrun": {
+      "methods": 0,
+      "cases": 0
+    }
+  },
+  "retainedAdditionalScopes": {
+    "passed": {
+      "methods": 63,
+      "cases": 78
+    },
+    "failed": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unknown": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unrun": {
+      "methods": 0,
+      "cases": 0
+    }
+  },
+  "retainedScopePolicy": "Per-row tested sources and unaffected-source qualification; separate from a full make ci run. Historical diagnostics excluded from original acceptance.",
+  "geometryParity": {
+    "methods": 11,
+    "cases": 11,
+    "status": "passed",
+    "proofSHA256": "7e1a16eaf585185df03b87c2b248d5db093ccd0a85f60addb516a34aba0ade42"
+  },
+  "shipRenderer": {
+    "command": "make ships",
+    "check": "make ships-check",
+    "ships": 171,
+    "decodedFrames": 4104,
+    "changedImageBytes": 0,
+    "changedInputFingerprints": 171,
+    "proofSHA256": "c90165759e0921ff9cba18a1c8fe3094af8b54dfefda4f32c97ee58b2b455dd9"
+  },
+  "fullGatePolicy": {
+    "command": "make ci",
+    "minimumCoveragePercent": 80,
+    "requires": [
+      "coverage",
+      "thread sanitizer",
+      "serial address sanitizer",
+      "leaks"
+    ],
+    "resultSource": "Captured full-gate run and required final-head CI checks"
+  },
+  "releasePolicy": {
+    "review": "@codex review completed clean; final-head required checks and independent approval; no admin bypass",
+    "sonar": "clean committed main, exact SHA projectVersion, Previous version",
+    "distribution": "verified signed/notarized artifact and source provenance"
+  },
+  "qualification": "Focused composed-native results only; no full CI, Sonar, release or remaining L337/world/content completion claim."
+}

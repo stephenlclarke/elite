@@ -1,0 +1,28 @@
+# Composed native validation
+
+The fresh original human salvage test passed at source `ec61fde3c32dd6d38953cc05ca6dcbe5d722e5d7` on 19 October 2026. It completed in 551.180 seconds within its unchanged 600-second execution ceiling. The original 16-second work budgets, 2500-frame loops, 0.02-second steps, full ordinary-loot oracle, real save/reload, strict `1e-8` observer checks, stack and concurrency settings were preserved. All trace and retained-continuation opt-ins were explicitly off.
+
+The work controller retains an acquired visible approach instead of steering around an oblique face's corner. Orientation transfers use the represented frame's actual inverse without normalizing saved or accepted bases. Exact geometry uses immutable scalar reuse and an outward-certified exclusion of irrelevant triangle feature kernels after their original paid examination. Collision tolerances, continuous-motion authority, traversal and query/node/pair budgets are unchanged.
+
+## Recorded outcomes
+
+| Scope | Result | Evidence |
+| --- | --- | --- |
+| Fresh original human two-cycle salvage, save/reload and ordinary-loot oracle | 1 method / 1 case passed; zero issues or crashes | Run 558; 551.180-second method, 553.907-second command, 555.771-second supervised run |
+| Pair-certificate geometry, analytic distance and paid-work budgets | 11 methods / 11 cases passed | Run 557; exact 384 paid pairs, 42 node charges, 3 queries and refusal at 383 pairs, both source orders |
+| Orientation transfer, 1000 production frame moves, canonical spin and strict observer precision | 5 methods / 5 cases passed | Run 544 |
+| Visible approach, actual hold, equipment selection and native save/reload | 11 methods / 11 cases passed | Run 541 |
+| Historical saved second-cycle continuation | 1 method / 1 case passed | Run 555; second release at iteration 975, serial 16, pending 16, reset work zero, no damage and 16 credited seconds |
+| Maintained ship renderer refresh and freshness check | 171 ships / 4104 frames verified | Run 559; output images and reference documents byte-identical, generated input fingerprints refreshed |
+
+The retained acceptance ledger contains 82 methods / 157 cases in the original matrix and 63 methods / 78 cases in additional affected scopes, all passed. Rows retain their tested source and proof; unaffected results are source-qualified retained evidence. The historical continuation is kept separately and does not replace the fresh original result.
+
+All exercised job-owned processes were closed. The player's commander and preferences remained byte-identical. Temporary save evidence was copied read-only before the original test's cleanup; private commander data is not committed or shipped. [Machine-readable evidence](COMPOSED-NATIVE-VALIDATION.json) records the source, test-binary and proof digests.
+
+## Timing and limits
+
+The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.
+
+Full `make ci` supplies separate coverage, Thread Sanitizer, serial Address Sanitizer and leak-gate evidence. The required overall coverage threshold is 80%. PR review, final-head checks and independent approval remain required before merging. Authoritative SonarQube analysis uses clean committed `main`, its exact lowercase 40-character SHA as `projectVersion`, and the Previous version new-code definition.
+
+Signed/notarized packaging and release provenance require their own verified artifacts. This report covers composed native acceptance; the remaining L337, world and content backlog is not declared complete. Published-release behavior is described by its release notes and source commit.

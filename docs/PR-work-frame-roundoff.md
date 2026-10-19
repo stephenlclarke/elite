@@ -23,3 +23,7 @@ The saved resumed stage is physical time 19.30 with one release and 0.02 seconds
 ## Retained evidence
 
 The run proof is `/tmp/elite-native-journeys-focused-542/agent-game-test-verification-542.json`, SHA-256 `9029d82bf26e57575e449f3220f71e4d986039691b09d12157e08751ace294b8`. The retained save and provenance are under that run's `retained-save` and `retained-save-provenance.json`. Read-only replay, exact matched errors and per-generation bases are in `/tmp/elite-g2-retained542-roundtrip-analysis.json`; stage bounds are in `/tmp/elite-g2-native542-stage-budget.json`. Run 542 remains unknown without a method terminal. Earlier focused 541 passes and the separate visible-approach repair remain retained; no full CI, sanitizer, leak, Sonar or release acceptance is claimed here.
+
+## Subsequent composed validation
+
+The integrator independently reviewed and compiled the composed repairs. Fresh original run 558 passed in 551.180 seconds within its unchanged 600-second ceiling, with zero issues, original assertions and all trace/continuation flags off. Earlier run numbers above remain historical evidence. See the [composed validation report](COMPOSED-NATIVE-VALIDATION.md) for exact scope, digests, focused checks and full-gate/release requirements.
