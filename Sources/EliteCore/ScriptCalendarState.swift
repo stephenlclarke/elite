@@ -75,11 +75,9 @@ public struct ScriptPulseCounter: Codable, Sendable, Equatable {
 }
 
 extension StarSystem {
-  /// O08 uses integer half-Y truncation before integer square-root truncation.
-  /// Keep this selected calendar metric separate from release-pinned player flight/fuel.
+  /// Native coordinates are already Cartesian light-years; calendar charging uses that unit.
+  /// The launch charge and quadratic journey-time policy remain separate from flight fuel.
   func scriptCalendarDistance(to other: StarSystem) -> Double {
-    let dx = x - other.x
-    let dy = (y - other.y) / 2
-    return Double(Int(sqrt(Double(dx * dx + dy * dy)))) * 0.4
+    distance(to: other)
   }
 }

@@ -111,7 +111,7 @@ Hand in or cancel the exact instance's cargo through its actual contact. `missio
 | `missionCalendar` | Native generated courier profile clock; requires the supported courier declarations, not an arbitrary timer domain. |
 | `transit` | Reserved for actual admitted native transit; ordinary mission timers do not advance it. |
 
-No clock here is offline wall time. Calendar launch adds 600 seconds; an admitted completed jump adds its native distance-based journey time. Do not use a fixed number of rendered frames as a deadline. See [clock advancement](../Sources/EliteCore/ScriptDirector.swift) and [calendar policy](../Sources/EliteCore/ScriptCalendar.swift). Generic contract deadlines and the bundled courier's inclusive confirmation deadline have distinct native policies; retain the policy of the example you adapt.
+No clock here is offline wall time. Calendar launch adds 600 seconds; an admitted completed jump adds `distance² * 3600` seconds using the current original-world Cartesian light-year distance, without BBC coordinate conversion. Do not use a fixed number of rendered frames as a deadline. See [clock advancement](../Sources/EliteCore/ScriptDirector.swift) and [calendar policy](../Sources/EliteCore/ScriptCalendar.swift). Generic contract deadlines and the bundled courier's inclusive confirmation deadline have distinct native policies; retain the policy of the example you adapt.
 
 The bundled courier uses a closed native profile, frozen route/reward terms and identified data/package custody. Its handlers use `courier.issue`, `courier.deliver` and `courier.abandon`, not generic payload/payment commands. Its balancing and duration text explicitly labels project estimates; it is not a general promise of recovered server behavior.
 
