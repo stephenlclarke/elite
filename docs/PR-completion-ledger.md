@@ -216,3 +216,7 @@ Record final72d handoff/13-file patch, exact per-case original event verificatio
 ## Frozen read-only snapshot review and existing validation grant
 
 Record exact9913138d clean Root review and seven-method/nine-case plan, binding the existing800/801 grant without duplicate audit/ACK or new scope. Requalify two affected live-binding negatives and retain only eight unaffected earlier passes. Runtime frame effect/PASS/integration remain unproven; no G1 executor job. Scoped Markdown/whitespace checks only.
+
+## Actual801 failure and next bounded scopes
+
+Record actual801 zero completed/seven UNKNOWN stack failure after reaching NPC validation, exact proof/process/resource closure and released registry. Grant only the encounter-validator borrowing/installed-pack Boolean repair for802/803 same seven-method/nine-case owner batch, preserving all guards/order and eight unaffected passes; no NPC/model edits, new diagnostics or duplicate audit/ACK. Assign G2 source-design-only native filled-panel accelerator proposal using existing Metal/AppKit, with narrowly relaxed backend restriction but exact geometry/material/order/clips, CPU fallback/wireframe and no dependency/LOD/physics change. No graphics authoring/runtime until concrete approval. Scoped Markdown/whitespace checks only.
