@@ -1249,20 +1249,7 @@ public struct Game: Sendable {
       notify("DOCKING DEFERRED: CARGO SETTLEMENT PENDING")
       return
     }
-    guard persistNPCStates().isEmpty else {
-      notify("DOCKING DEFERRED: NPC STATE UNAVAILABLE")
-      return
-    }
-    persistCargoPoses()
-    persistOrePoses()
-    guard persistSalvagePoses() else {
-      notify("DOCKING DEFERRED: SALVAGE STATE UNAVAILABLE")
-      return
-    }
-    guard flushNativeSalvageMotion(parkingSystem: systemIdentity) else {
-      notify("SALVAGE STATE UNAVAILABLE")
-      return
-    }
+    guard prepareDockPersistence() else { return }
     persistScriptActors(unloading: true)
     persistBlackjackTargets()
     if commander.npcPersistence.count > 0 {
@@ -1301,6 +1288,39 @@ public struct Game: Sendable {
     reconcileEliteReward()
     if screen != .mission { _ = dispatchMission(.dock) }
     offerBlackjackHandoff()
+  }
+  /// Scene snapshots commit together; settled physical deaths precede this boundary.
+  @inline(never)
+  private mutating func prepareDockPersistence() -> Bool {
+    let original = commander
+    let work = nativeSalvageWork
+    let wreckMotion = nativeSalvageWreckMotion
+    let lotMotion = nativeSalvageMotion
+    var committed = false
+    defer {
+      if !committed {
+        commander = original
+        nativeSalvageWork = work
+        nativeSalvageWreckMotion = wreckMotion
+        nativeSalvageMotion = lotMotion
+      }
+    }
+    guard persistNPCStates().isEmpty else {
+      notify("DOCKING DEFERRED: NPC STATE UNAVAILABLE")
+      return false
+    }
+    persistCargoPoses()
+    persistOrePoses()
+    guard persistSalvagePoses() else {
+      notify("DOCKING DEFERRED: SALVAGE STATE UNAVAILABLE")
+      return false
+    }
+    guard flushNativeSalvageMotion(parkingSystem: systemIdentity) else {
+      notify("SALVAGE STATE UNAVAILABLE")
+      return false
+    }
+    committed = true
+    return true
   }
   public mutating func beginHyperspace() {
     if screen == .chart && !mapIsCurrentGalaxy {

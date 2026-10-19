@@ -21,7 +21,7 @@ private func mainCapacityGame(discoverAllGalaxies: Bool = false) throws -> Game 
     try #require(game.docked && game.commander.valid && game.screen == .status)
     game.openStationRumour()
     try #require(game.screen == .rumour && game.commander.hasDiscoveredPlugh(in: galaxy))
-    game.key("return")
+    game.key("escape")
     try #require(game.screen == .status && game.commander.valid)
   }
   game.commander.galaxy = originalGalaxy
