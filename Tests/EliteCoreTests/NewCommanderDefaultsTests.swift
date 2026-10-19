@@ -104,6 +104,48 @@ struct NewCommanderDefaultsTests {
     #expect(continued.screen == .status && continued.commander == loaded.commander)
   }
 
+  @Test func continuePreservesCurrentImplicitShipIdentityAndOwnedEquipment() async throws {
+    var commander = Commander()
+    commander.name = "Existing Pilot"
+    commander.shipID = "SH023"
+    commander.credits = 45678
+    commander.fuel = 45
+    try commander.prepareEquipment(legacy: false)
+    let encoded = try JSONEncoder().encode(commander)
+    var object = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+    object.removeValue(forKey: "ownedShipID")
+    let implicit = try JSONDecoder().decode(
+      Commander.self, from: JSONSerialization.data(withJSONObject: object))
+    #expect(implicit.shipID == "SH023" && implicit.valid)
+    #expect(implicit.name == commander.name && implicit.credits == commander.credits)
+    #expect(implicit.equipmentInventory == commander.equipmentInventory)
+    #expect(implicit.equipmentPurchaseHistory == commander.equipmentPurchaseHistory)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let url = directory.appendingPathComponent("commander.json")
+    var game = Game(executive: false)
+    game.commander = implicit
+    let writer = GameRuntime(game: game)
+    try await writer.save(to: url)
+    let saved = await writer.snapshot()
+    let bytes = try Data(contentsOf: url)
+    let reader = GameRuntime()
+    try await reader.restoreStartup(from: url)
+    let loaded = await reader.snapshot()
+    #expect(loaded.commander.shipID == "SH023")
+    #expect(loaded.commander.name == "Existing Pilot" && loaded.commander.credits == 45678)
+    #expect(loaded.commander.fuel == 45)
+    #expect(loaded.commander.equipmentInventory == saved.commander.equipmentInventory)
+    #expect(loaded.commander.equipmentPurchaseHistory == saved.commander.equipmentPurchaseHistory)
+    #expect(loaded.commander.equipmentOwnerID == saved.commander.equipmentOwnerID)
+    #expect(loaded.commander.hullInstanceID == saved.commander.hullInstanceID)
+    #expect(loaded.commander.valid && loaded.screen == .title)
+    await reader.key(" ")
+    let continued = await reader.snapshot()
+    #expect(continued.screen == .status && continued.commander == loaded.commander)
+    #expect(try Data(contentsOf: url) == bytes)
+  }
+
   @Test func restartUsesCurrentDefaultsAndTitleRetainsTruthfulBuildIdentity() {
     var game = Game(executive: false)
     game.commander.name = "Previous Pilot"
