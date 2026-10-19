@@ -1,0 +1,5 @@
+# Station AUTO pressure fixture seeds a different beam path
+
+Candidate 630 failed the active-pressure and transit-goal assertions in `stationAutoUncoveredNativeBeamCannotHandOverToStationaryAlignment`. The fixture seeds its attack with `emitLegacyNPCBeam`, whose separate target-centre ray does not establish alignment of the ordinary gameplay front mount. Its Cobra starts at `(300, 0, -1000)` with the default forward axis.
+
+Author a finite initial orientation toward the real player, prove the current forward ray reaches the player, and require damage and owner/victim/front-mount attribution from `emitGameplayNPCBeam`. Preserve the eight 0.1-second steps and every original behavior assertion. The hazard classifier does not directly read beam alignment: a source fleeing, gaining genuine station cover, dying or leaving the immediate range can change its result. The existing failure log does not identify which happened, so retain source-state diagnostics and do not claim this source repair proves a runtime fix.
