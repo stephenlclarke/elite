@@ -275,8 +275,8 @@ extension Game {
         }, faces: base.faces, details: base.details, materials: base.materials,
         faceMaterials: base.faceMaterials, faceTextures: base.faceTextures, preserveWinding: true)
     }
-    if let id = body.physical?.catalogueShipID, let ship = ShipCatalogue.ship(id) {
-      return ship.design.rawMesh
+    if let id = body.physical?.catalogueShipID, let mesh = ShipCatalogue.rawMesh(id) {
+      return mesh
     }
     let base = Mesh.hull(body.hull)
     guard let identity = body.physical?.rock,
