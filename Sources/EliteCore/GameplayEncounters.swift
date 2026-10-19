@@ -1,5 +1,40 @@
 import Foundation
 
+/// Original synchronous beam queries finish before the live damage path opens.
+private final class GameplayNPCBeamPreparation {
+  let index: Int
+  let owner: ActorIdentity
+  let position: Vector3
+  let contact: MissionCollisionContact
+  let flightBeforeEmission: FlightSimulationState
+  let laser: LaserKind
+
+  @inline(never)
+  init(
+    index: Int, owner: ActorIdentity, position: Vector3,
+    contact: consuming MissionCollisionContact,
+    flightBeforeEmission: consuming FlightSimulationState, laser: LaserKind
+  ) {
+    self.index = index
+    self.owner = owner
+    self.position = position
+    self.contact = consume contact
+    self.flightBeforeEmission = consume flightBeforeEmission
+    self.laser = laser
+  }
+}
+
+private final class GameplayNPCBeamEmission {
+  let preparation: GameplayNPCBeamPreparation
+  let origin: AttackOrigin
+
+  @inline(never)
+  init(preparation: GameplayNPCBeamPreparation, origin: AttackOrigin) {
+    self.preparation = preparation
+    self.origin = origin
+  }
+}
+
 extension Game {
   mutating func advanceGameplayEncounters(delta: Double) {
     ensurePhysicalActors()
@@ -230,15 +265,29 @@ extension Game {
     bodies[index].physical?.velocity = physical.velocity + change.unit * impulse
   }
 
+  @inline(never)
   mutating func emitGameplayNPCBeam(
     bodyID: Int, target identity: ActorIdentity, context: EncounterContext, mining: Bool = false
   ) {
+    guard
+      let preparation = prepareGameplayNPCBeam(
+        bodyID: bodyID, target: identity, context: context, mining: mining),
+      let emission = prepareGameplayNPCBeamEmission(preparation),
+      applyGameplayNPCBeamImpact(emission)
+    else { return }
+    finishGameplayNPCBeam(emission)
+  }
+
+  @inline(never)
+  private mutating func prepareGameplayNPCBeam(
+    bodyID: Int, target identity: ActorIdentity, context: borrowing EncounterContext, mining: Bool
+  ) -> GameplayNPCBeamPreparation? {
     guard let index = bodies.firstIndex(where: { $0.id == bodyID }),
       !isEMPDisabled(bodies[index]),
       let actor = bodies[index].physical, actor.laserCooldown <= 0, bodies[index].energy > 1,
       actor.npc?.resources?.canFire ?? true,
       let target = gameplayActor(identity, context: context)
-    else { return }
+    else { return nil }
     let position = bodies[index].position
     let destination = commander.flightSimulation.pose.shipPoint(target.position)
     let direction = destination - position
@@ -248,7 +297,7 @@ extension Game {
       let contact = try? nearestMissionCollision(
         from: position, direction: direction.unit, range: range, radius: 0,
         excludingBodyIDs: [bodyID], includePlayer: true)
-    else { return }
+    else { return nil }
     let hit = contact.hit
     let intended =
       identity == context.player.identity
@@ -257,34 +306,63 @@ extension Game {
         hit.target == .body($0.id)
       } == true
     let flightBeforeEmission = commander.flightSimulation
-    guard intended else { return }
+    guard intended else { return nil }
     let laser: LaserKind = mining ? .mining : .pulse
     if contact.selectedTargetBody?.scriptNPC != nil {
       do {
         _ = try preflightNativeMissionContact(
           contact, owner: actor.identity, damage: laser.damage, laser: laser, mount: .front)
-      } catch { return }
+      } catch { return nil }
     }
-    guard let origin = makeAttackOrigin(owner: actor.identity) else { return }
-    if contact.selectedTargetBody?.scriptNPC != nil {
+    return .init(
+      index: index, owner: actor.identity, position: position, contact: contact,
+      flightBeforeEmission: flightBeforeEmission, laser: laser)
+  }
+
+  @inline(never)
+  private mutating func prepareGameplayNPCBeamEmission(_ preparation: GameplayNPCBeamPreparation)
+    -> GameplayNPCBeamEmission?
+  {
+    guard let origin = makeAttackOrigin(owner: preparation.owner) else { return nil }
+    return .init(preparation: preparation, origin: origin)
+  }
+
+  @inline(never)
+  private mutating func applyGameplayNPCBeamImpact(_ emission: GameplayNPCBeamEmission) -> Bool {
+    let preparation = emission.preparation
+    if preparation.contact.selectedTargetBody?.scriptNPC != nil {
       guard
         let receipt = try? applyNativeMissionContact(
-          contact, origin: origin, damage: laser.damage, laser: laser, mount: .front,
-          emissionPosition: commander.flightSimulation.pose.systemPoint(position))
+          preparation.contact, origin: emission.origin, damage: preparation.laser.damage,
+          laser: preparation.laser, mount: .front,
+          emissionPosition: gameplayNPCBeamWorldPosition(preparation.position))
       else {
-        commander.flightSimulation = flightBeforeEmission
-        return
+        commander.flightSimulation = preparation.flightBeforeEmission
+        return false
       }
       projectScriptMissionImpact(receipt)
     } else {
       applyCombatHit(
-        hit, origin: origin, kind: .laser, damage: laser.damage, laser: laser, mount: .front,
-        emissionPosition: commander.flightSimulation.pose.systemPoint(position))
+        preparation.contact.hit, origin: emission.origin, kind: .laser,
+        damage: preparation.laser.damage, laser: preparation.laser, mount: .front,
+        emissionPosition: gameplayNPCBeamWorldPosition(preparation.position))
     }
-    bodies[index].physical?.laserCooldown = laser.firingInterval
+    return true
+  }
+
+  /// Complete the original pose query before entering the native impact/recording frames.
+  @inline(never)
+  private func gameplayNPCBeamWorldPosition(_ position: Vector3) -> Vector3 {
+    commander.flightSimulation.pose.systemPoint(position)
+  }
+
+  @inline(never)
+  private mutating func finishGameplayNPCBeam(_ emission: GameplayNPCBeamEmission) {
+    let index = emission.preparation.index
+    bodies[index].physical?.laserCooldown = emission.preparation.laser.firingInterval
     bodies[index].energy -= 1
     bodies[index].physical?.npc?.resources?.recordBeam(heat: 10)
-    commander.crimeLedger.finishEmission(origin.emissionID)
+    commander.crimeLedger.finishEmission(emission.origin.emissionID)
   }
 
   private mutating func collectOreForNPC(
