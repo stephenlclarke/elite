@@ -19,7 +19,16 @@ func procurementGenuineHistoricalDockProofRejectsPairedForgeriesWithoutChangingL
 ) async throws {
   let fixture = try ScriptProcurementFixture()
   defer { fixture.clean() }
-  let (runtime, id) = try await fixture.genuineProcurementHistory(stage: forgery.stage)
+  let diagnostic: ScriptProcurementFlightDiagnostic?
+  if ProcessInfo.processInfo.environment["ELITE_PROCUREMENT_HISTORY_DIAGNOSTICS"] == "1",
+    forgery.field == "owner-world", ["partial", "abandoned"].contains(forgery.stage)
+  {
+    diagnostic = .init(label: "procurement-history-" + forgery.stage)
+  } else {
+    diagnostic = nil
+  }
+  let (runtime, id) = try await fixture.genuineProcurementHistory(
+    stage: forgery.stage, diagnostic: diagnostic)
   let live = await runtime.snapshot()
   let state = try #require(live.commander.scriptState.instances[id])
   let historical = try #require(
@@ -98,8 +107,10 @@ func procurementGenuineHistoricalDockProofRejectsPairedForgeriesWithoutChangingL
 extension ScriptProcurementFixture {
   /// Every historical receipt below is produced by the existing actual runtime flow.
   /// Stock, route, fuel, docking and survival premises are checked, never injected.
-  fileprivate func genuineProcurementHistory(stage: String) async throws -> (GameRuntime, UUID) {
-    let runtime = try await nativeRuntime()
+  fileprivate func genuineProcurementHistory(
+    stage: String, diagnostic: ScriptProcurementFlightDiagnostic? = nil
+  ) async throws -> (GameRuntime, UUID) {
+    let runtime = try await nativeRuntime(diagnostic: diagnostic)
     let key = try await runtime.generateContractBoard(packDigest: pack.digest)
     let generated = await runtime.snapshot()
     let row = stage == "partial" ? 1 : 0
@@ -114,7 +125,7 @@ extension ScriptProcurementFixture {
       let commodity = try #require(plan.commodity).rawValue
       try #require(generated.market[commodity].quantity > 0)
       await runtime.procurementBuy(commodity)
-      try await Self.travel(runtime, path: plan.path)
+      try await Self.travel(runtime, path: plan.path, diagnostic: diagnostic)
     }
     await Self.contact(runtime)
     let delivered = await runtime.snapshot()
@@ -131,7 +142,7 @@ extension ScriptProcurementFixture {
       try #require(state.outcome == .abandoned && state.completionReceipt != nil)
     }
     await runtime.key("0")
-    try await Self.dock(runtime)
+    try await Self.dock(runtime, diagnostic: diagnostic, phase: "history-" + stage + "-redock")
     try await runtime.save(to: save)
     return (runtime, id)
   }
