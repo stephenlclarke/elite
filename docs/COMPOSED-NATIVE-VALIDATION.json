@@ -432,5 +432,111 @@
     "qualificationSHA256": "9495456c1cf16409cc6cdffd0b3267fc54c38dd5656926745b444d1b90ef9775",
     "processObservationLimit": "Owned Swift process initially observed during exec transition; final renderer executable/argv not captured. No inferred renderer PID or argument count. Actual make ships completion log and 171 generator outputs independently qualify renderer execution.",
     "limits": "Maintainedgenuine renderer result only; finalfullCI/percentage/sanitizer/leak/release acceptance separate."
+  },
+  "fullCIAfterFocusedAcceptance": {
+    "sourceCommit": "0482eb88a3c549b60bbe382bb21e7d8715ef1bc7",
+    "status": "FAILED or partial maintained make ci",
+    "actualMakeExitCode": 2,
+    "terminalSupervisorExitCode": 125,
+    "cleanupNeeded": true,
+    "commandSeconds": 128.2431303751655,
+    "supervisedSeconds": 134.0578952920623,
+    "phaseObservations": [
+      {
+        "phase": "flight-controls-check",
+        "startedSeconds": 0.005311625078320503,
+        "startMarker": "PYTHONDONTWRITEBYTECODE=1 python3 Tools/generate-flight-controls.py --repo-root . --check",
+        "finishedSeconds": 0.3882087080273777,
+        "observedDurationSeconds": 0.3828970829490572,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "homebrew-cask-check",
+        "startedSeconds": 0.388212958117947,
+        "startMarker": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/distribution -p 'test_*.py'",
+        "finishedSeconds": 4.137634000042453,
+        "observedDurationSeconds": 3.7494210419245064,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "ships-check",
+        "startedSeconds": 4.137637083185837,
+        "startMarker": "python3 Tools/showroom/ship-reference.py --check",
+        "finishedSeconds": 7.793103625066578,
+        "observedDurationSeconds": 3.6554665418807417,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "showroom-check",
+        "startedSeconds": 7.793105750111863,
+        "startMarker": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'",
+        "finishedSeconds": 29.30749254114926,
+        "observedDurationSeconds": 21.514386791037396,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "mission-packs-check",
+        "startedSeconds": 29.307494833134115,
+        "startMarker": "swift run Elite --validate-mission-pack docs/mission-packs/courier.toml",
+        "finishedSeconds": 31.598095416091383,
+        "observedDurationSeconds": 2.2906005829572678,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "coverage",
+        "startedSeconds": 31.598098332993686,
+        "startMarker": "./script/coverage.sh",
+        "finishedSeconds": 127.62684341613203,
+        "observedDurationSeconds": 96.02874508313835,
+        "outcome": "FAILED: maintained make ci stopped"
+      }
+    ],
+    "phasesNotStarted": [
+      "threads",
+      "address",
+      "leaks"
+    ],
+    "issueLocations": {
+      "StationTests.swift:59:5": 1,
+      "StationTests.swift:62:5": 1,
+      "StationTests.swift:63:5": 1,
+      "GameCommanderStorageTests.swift:172:5": 1
+    },
+    "crashes": [
+      {
+        "pathName": "swiftpm-testing-helper-2026-10-19-063959.ips",
+        "sha256": "8adcdcc97e381f6f3cb6c66ff89b6669d350ae43e76aa8432448b76947689d8b",
+        "exception": {
+          "codes": "0x0000000000000002, 0x000000016f75bff8",
+          "message": "Thread stack size exceeded",
+          "rawCodes": [
+            2,
+            6164955128
+          ],
+          "type": "EXC_BAD_ACCESS",
+          "signal": "SIGBUS",
+          "subtype": "KERN_PROTECTION_FAILURE at 0x000000016f75bff8"
+        },
+        "testImageUUID": "b5544690-b8ec-3a45-9fe8-cdbc7d94920e",
+        "testBinarySHA256": "89c927a796e3880176eafa26ab6db6cad060fe67b602bd8c0fa4c83dc032b8e5",
+        "testPath": "NativePeopleGalleryTests.isolatedNativeTrialUsesRealProducerAndRestartReturnProtectLiveFiles",
+        "stackPath": [
+          "disableNativeEMPActor",
+          "tick/moveBodies/enemyAction",
+          "emitLegacyNPCBeam/applyCombatHit/applyPlayerHit/recordCombat",
+          "ensurePhysicalActors/populateNativeStations",
+          "systemIdentity/Game.commander.read/Commander copy"
+        ]
+      }
+    ],
+    "coverage": null,
+    "allOwnedProcessesClosed": true,
+    "ownedProcesses": 111,
+    "protectedInputsUnchanged": true,
+    "trackedInputsUnchanged": 2410,
+    "proofSHA256": "8f8148e8f78985b6618fbf5738b5ec64e5e37a1a941ea2d7f1b21580f12f31b4",
+    "issueHeadersSHA256": "c3b658ccd3a22cb074bab0c0ed06496750d9bf8b616404fae36c5cecde1c869e",
+    "matchedCrashQualificationSHA256": "a3b677285d53dfad1b96882787b7c8a4c634125728fb182b32658984c44e115c",
+    "limits": "Incomplete coverage suite; no current percentage/sanitizer/leak/fullCI/release acceptance. Actual failed assertions and qualified crash require bounded repair; no unchanged retry or inferred cause."
   }
 }

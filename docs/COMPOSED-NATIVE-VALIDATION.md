@@ -85,6 +85,14 @@ This resolves the history authentication acceptance failure at the new source. E
 
 Run 592 executed the maintained `make ships` and `make ships-check` successfully after focused authentication acceptance. Independent decoding verified all 171 GIFs / 4,104 nonblank frames and their renderer manifest hashes. The generator refreshed all 171 input fingerprints; only `docs/ships/manifest.json` changed. Images, reference documents, runtime TOMLs, sources, rights notices and player data remained byte-identical. All owned processes closed. Actual completion logs and decoded outputs establish the rendering result; the process observer captured an owned Swift process during an exec transition and does not supply a final renderer executable or argument-vector identity. No renderer rerun or manually edited fingerprint was used. This freshness result precedes a separately qualified full `make ci` run.
 
+## Full CI after focused acceptance
+
+The subsequent mandatory `make ci`, run 593 at committed source `0482eb88a3c549b60bbe382bb21e7d8715ef1bc7`, failed during coverage testing. All five pre-coverage checks passed. Four assertions were recorded: three laser-mount damage/heat assertions in `StationTests.swift`, and one launch-publication changed-field assertion in `GameCommanderStorageTests.swift`. The latter observed `equipment` changing in addition to the two permitted saved-state fields. These are actual failures, not waived fixture expectations.
+
+A separately matched SIGBUS reported thread stack exhaustion in the native people-gallery trial. The captured test binary and image UUID identify the stack through `disableNativeEMPActor`, native movement and NPC beam admission, `populateNativeStations`, and a Commander copy from `systemIdentity`. The crash identifies an exercised path; no repair or unrecorded causal explanation is inferred. All 111 owned processes and the outer supervisor closed after cleanup. Source inputs, commander data and preferences remained unchanged.
+
+The command lasted 128.243 seconds; supervision and cleanup lasted 134.058 seconds. Coverage export did not complete and no current percentage is available. Thread Sanitizer, Address Sanitizer and leaks did not start. Focused authentication, station and law-policy passes retain their own scopes, while full CI remains failed pending bounded repairs and another authorized run. No unchanged retry, authoritative Sonar analysis, merge or release follows from this attempt.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.
