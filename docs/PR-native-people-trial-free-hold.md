@@ -1,0 +1,7 @@
+# Leave five real tonnes free in the authored people trial
+
+After the isolated demonstration's real equipment grants and mirror finish, read `commander.standardCargoCapacity`, require at least five tonnes, and initialize ordinary cargo to capacity minus five. This replaces the earlier hardcoded fifteen-tonne load before fitting. It uses the same standard capacity as `freeNativePeopleTonnes`; a fresh trial's other cargo and native people holdings are empty. Normal live commanders, capture limits and inventory rules do not change.
+
+Only NativePeopleGallery.swift and this paired issue/PR documentation change. The original five-captive assertion and every other test byte remain unchanged. Real charge/release, electrical disablement, crew production/ejection/recovery deadline, cutter contact, physics/resources, restart/return authorization and live-file equality remain intact. No new fixture framework, expectation increase, stack helper, production API, layout, timeout or concurrency change is included.
+
+Source-delta correspondence, strict Swift formatting, Markdown lint and whitespace are the author checks. No author compiler, build, test, native, debugger, profiler or ABI jobs run. G1 receives the frozen leaf for one independent review before an authorized coherent compile and focused execution. Run 602 establishes the preceding state, not this correction's runtime acceptance. Full `make ci`, clean completed `@codex review` and required final-head checks remain merge gates. See the [issue](ISSUE-native-people-trial-free-hold.md).
