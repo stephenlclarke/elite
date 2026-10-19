@@ -196,3 +196,7 @@ Record actual796 optimized product-only build and new Developer ID signed arm64 
 ## Root artifact verification and actual limited delivery
 
 Record Root's independent actual app/source/version/binary/Developer ID/arm64/462-resource verification PASS, including the receipt-reader correction for SwiftPM processed-resource flattening without changing the app. The new1.4.797 local preview is usable and its external delivery manifest/sidecar is current; the old742 artifact remains historical. Native journey proof and actual private continued Rowan/Peregrine/Renas state are explicit. Known mission/performance/content/full-quality/publication limits remain; no milestone closure, new native run, public release/Homebrew or G1 Slack publication. Scoped Markdown/whitespace checks only.
+
+Root confirmed the actual artifact verification and posted the limited local usable-feature notification once in the existing Slack thread. Record the notification link without duplicating it, retain all immutable receipts and keep only the external delivery manifest/sidecar current. No signed-bundle change or additional validation job.
+
+Record Root's actual-candidate-based correction for only the two preacceptance receiver fixtures: independently native-validated7→185→7 roundtrip, allowed by unchanged definition/quote rules, preserving terms/custody/native arrivals/fuel and the other14 cases. Owner two-case qualification and Root changed-hunk review remain pending; no production routing, combat or hostile-docking fix is introduced.
