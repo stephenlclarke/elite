@@ -318,7 +318,11 @@ extension CourierFixture {
     #expect(!candidate.valid)
   }
   var held = fixture.game()
-  let heldID = try fixture.accept(&held)
+  let (heldKey, heldOffer) = try fixture.usable(&held, row: 4)
+  let heldTerms = try #require(heldOffer.courier)
+  try #require(heldTerms.row == 4 && heldTerms.calendarLowerBoundSeconds < heldTerms.duration)
+  let heldID = try held.confirmContract(
+    held.contractAcceptanceQuote(board: heldKey, offer: heldOffer.id))
   held.commander.scriptState.instances[heldID]?.completionReceipt = original.completionReceipt
   #expect(!held.commander.valid)
 }
