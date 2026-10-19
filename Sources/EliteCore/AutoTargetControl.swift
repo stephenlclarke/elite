@@ -239,6 +239,7 @@ public struct AutoTargetControl: Sendable {
     let previousRate = rollRate
     alignStation(
       target, delta: delta, limits: limits, defence: guidance,
+      transitGoal: stationDefencePhase == .defending && canInterrupt ? guidance?.transitGoal : nil,
       canStage: canStage, clearance: clearance)
     return (pitch, yaw, (previousRate + rollRate) / 2)
   }
@@ -267,7 +268,7 @@ public struct AutoTargetControl: Sendable {
 
   private mutating func alignStation(
     _ target: SpaceBody, delta: Double, limits: RelativeWorkLimits, defence: StationAutoGuidance?,
-    canStage: Bool, clearance: Double
+    transitGoal: Vector3?, canStage: Bool, clearance: Double
   ) {
     let acceleration = limits.acceleration
     let maximumRoll = min(Self.policyLimits.rollRate, limits.rollRate)
@@ -309,7 +310,7 @@ public struct AutoTargetControl: Sendable {
     } else {
       // Existing cruise momentum brakes under the acceleration limit. Once the
       // waypoint is ahead, thrust follows the same bearing as the forward view.
-      let waypoint = approachWaypoint(target, goal: goal, clearance: clearance)
+      let waypoint = approachWaypoint(target, goal: transitGoal ?? goal, clearance: clearance)
       let cruiseSpeed = Self.approachCruiseSpeed(
         distance: waypoint.length, acceleration: acceleration, delta: delta,
         maximumSpeed: limits.speed)
@@ -321,7 +322,11 @@ public struct AutoTargetControl: Sendable {
         ? "RETURNING TO APPROACH"
         : (stationDefencePhase == .defending || defence != nil
           ? "DEFENDING APPROACH" : "APPROACHING")
-      if let evasion = defence?.lateralVelocity, evasion.finite { desired = desired + evasion }
+      // The cover transit already owns an evasive route. Adding the staging-point
+      // correction here would pull it back into the same exposed equilibrium.
+      if transitGoal == nil, let evasion = defence?.lateralVelocity, evasion.finite {
+        desired = desired + evasion
+      }
     }
     let safeDesired =
       finalApproach
@@ -411,7 +416,7 @@ public struct AutoTargetControl: Sendable {
   private func approachWaypoint(_ target: SpaceBody, goal: Vector3, clearance: Double) -> Vector3 {
     let closest =
       target.position - goal * max(0, min(1, target.position.dot(goal) / max(1, goal.dot(goal))))
-    guard closest.length < clearance && positionError > Self.stationStagingTolerance else {
+    guard closest.length < clearance && goal.length > Self.stationStagingTolerance else {
       return goal
     }
     let radial = target.position.unit * -1

@@ -668,6 +668,7 @@ func stationAutoColdMissileRequiresActualAttackAndClearExplicitSourcePath(condit
       try #require(cover.selectedTargetBody?.id == station.id)
       let guidance = game.stationAutoGuidance(target: station)
       #expect(guidance?.hazard == .clear && guidance?.handoverAllowed == true)
+      #expect(guidance?.transitGoal == nil)
       game.applyAutoTarget(delta: 0.1, controls: Controls())
       #expect(
         game.autoPilot.finalApproach && game.autoPilot.targetActor == station.physical?.identity)
@@ -1020,6 +1021,11 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
     let observation = game.stationAutoGuidance(target: station)
     let guidance = try #require(observation)
     #expect(guidance.hazard == .active && !guidance.joinedIncoming && !guidance.handoverAllowed)
+    let transit = try #require(guidance.transitGoal)
+    let attacker = try #require(game.bodies.first { $0.id == id })
+    let away = station.position - attacker.position
+    #expect(transit.finite && (transit - station.position).length > guidance.clearanceRadius)
+    #expect((transit - station.position).dot(away) > 0)
     let before = game.flightWorldVelocity
     game.tick(delta: 0.1)
     #expect(game.autoPilot.stationDefencePhase == .defending)
@@ -1519,4 +1525,44 @@ func stationAutoDefensiveTrackerAcquiresMovingBearingWithinTurnAndThrustLimits(a
   #expect(control.stationDefencePhase == .defending && !control.finalApproach && !control.ready)
   #expect((control.velocity - before).length <= 24 + 1e-8)
   #expect(actual.pitch == expected.pitch && actual.yaw == expected.yaw)
+}
+
+@Test func stationAutoActiveCoverTransitLeavesTheStagingPointThroughTheClearanceDetour() {
+  var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1090))
+  station.rotationRate = 0
+  var control = AutoTargetControl()
+  var travelled = Vector3(0, 0, 0)
+  let limits = AutoTargetControl.policyLimits
+  let delta = 0.1
+  for step in 0..<20 {
+    // Fixed native-unit geometry: the genuine docking goal starts exactly at the
+    // observer, while the requested cover point is beyond the station, not a port.
+    let guidance = StationAutoGuidance(
+      aim: .init(0, 0, 600), lateralVelocity: .init(50, 0, 0), hazard: .active,
+      interruptionAllowed: true, clearanceRadius: 400,
+      transitGoal: station.position + Vector3(0, 0, 440))
+    let before = control.velocity
+    _ = control.steer(target: station, delta: delta, limits: limits, defence: guidance)
+    if step == 0 {
+      // A direct segment crosses the station. Using the ordinary goal's zero
+      // error would bypass the detour and command only inward translation.
+      #expect(control.positionError == 0 && control.velocity.x > 0)
+    }
+    #expect(control.stationDefencePhase == .defending && !control.ready && !control.finalApproach)
+    #expect((control.velocity - before).length <= limits.acceleration * delta + 1e-8)
+    #expect(control.velocity.length <= limits.speed + 1e-8)
+    let movement = control.velocity * delta
+    travelled = travelled + movement
+    station.position = station.position - movement
+    #expect(station.position.length > 400)
+  }
+  #expect(travelled.length > 100 && control.velocity.length > limits.speed * 0.9)
+  // Clearing pressure must recover the original docking route; a stale cover
+  // request cannot keep owning translation after this current observation.
+  let clear = StationAutoGuidance(
+    aim: nil, lateralVelocity: .init(0, 0, 0), hazard: .clear,
+    interruptionAllowed: true, clearanceRadius: 400,
+    transitGoal: station.position + Vector3(0, 0, 440))
+  _ = control.steer(target: station, delta: delta, limits: limits, defence: clear)
+  #expect(control.stationDefencePhase == .returning && control.status == "RETURNING TO APPROACH")
 }

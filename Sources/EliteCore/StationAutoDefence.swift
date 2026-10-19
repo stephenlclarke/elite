@@ -9,8 +9,9 @@ struct StationAutoGuidance: Sendable {
   var clearanceRadius = 0.0
   var handoverAllowed = false
   var joinedIncoming = false
+  var transitGoal: Vector3? = nil
 
-  var hasManeuver: Bool { aim != nil || lateralVelocity.length > 0 }
+  var hasManeuver: Bool { aim != nil || lateralVelocity.length > 0 || transitGoal != nil }
 }
 
 enum StationAutoHazard: Sendable, Equatable {
@@ -339,11 +340,23 @@ extension Game {
       (front != nil && front != .mining)
       || commander.missiles > 0 || commander.unlimitedMissiles
     let aim = canFaceForResponse ? combat?.position : nil
+    var transitGoal: Vector3?
+    if hazard == .active, let combat, let source = combat.physical?.identity,
+      commander.crimeLedger.hasCurrentUnlawfulAttack(
+        from: source, against: context.player.identity, context: context)
+    {
+      // Seek the far side of the real station, rather than brake to rest at its
+      // exposed staging point. This is a route request, never proof of cover.
+      let away = station.position - combat.position
+      let radius = clearanceRadius + AutoTargetControl.stationStagingTolerance
+      let goal = station.position + away.unit * radius
+      if away.length.isFinite, away.length > 0, radius.isFinite, goal.finite { transitGoal = goal }
+    }
     return .init(
       aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure),
       hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
       handoverAllowed: observations.handoverKnown && interruptionAllowed,
-      joinedIncoming: observations.joinedIncoming)
+      joinedIncoming: observations.joinedIncoming, transitGoal: transitGoal)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {
