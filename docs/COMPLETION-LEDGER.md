@@ -392,6 +392,12 @@ The41 historical file groups below retain the original inventory;40 still contai
 
 The authoritative raw location/count mapping remains `/tmp/elite-full-review-ci-740/agent-game-test-verification-740.json`, SHA256 `94ede226aa123ff24ae8b69b69774e5f152e047194a66b7effa2586e73f87470`. Group disposition requires a named owner, exact focused source/evidence and review; no group is silently waived or marked passed here. Coverage export, threading, address and leak gates remain unavailable/not started from this failed run.
 
+### M01 minimal event-pipeline repair after bounded760 inspection
+
+Root assigned MC1 a fresh isolated branch on canonical `a9fd7e60f8a8e77f7a38e5a7b1c501b9f3215918`, retaining only the457 acceptance product hunk/new unit file plus one private borrowed-original make/run/finish pipeline in `ScriptDirector.swift`. Failed helper leaves/worktree through1af6fd7d remain frozen and unintegrated; Game/salvage/save/freight helpers are not carried. Existing760 inspection proves550912ancestor stack bytes and three sequential Game buffers in the wrapper; exact per-type dynamic byte sizes remain unknown. Report `/tmp/elite-M01-stack-budget-760/bounded-inspection-report.json` SHA256 `ebbeeae8c086835d10d7e76bb2ff82f9a11127fbba7a552f1332ee3ce2614731`.
+
+Owner MC1 retains implementation, focused PASS and review/fix responsibility. Status is in development/source frozen next; dependencies are independent G1 bugs/performance/style review and one explicitly leased matching build/focused six-method/ten-case run through Root. The actual760 nine UNKNOWN outcomes and original744 five acceptance passes stay attached to their exact sources. No native-crossing PASS, integration, new app availability or M01 closure follows from this assignment. G3 final freight and other canonical sources remain unchanged; next handoff is the minimal frozen packet/plan to Root.
+
 ## Detailed feature and gap register
 
 Rows describe the complete requested function, so partially delivered implementations stay open. The source and delivery evidence column does not change the primary status. Supporting [designs](DESIGN-INDEX.json), [feature history](FEATURE-REQUEST-LOG.md), [current L337 scope](L337-IMPLEMENTATION.md), [mission capability assessment](MISSION-ENGINE-COMPLETION.md) and [historical reconciliation](WHOLE-APP-REMEDIATION.md) remain linked rather than overwritten.
