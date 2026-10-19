@@ -538,5 +538,45 @@
     "issueHeadersSHA256": "c3b658ccd3a22cb074bab0c0ed06496750d9bf8b616404fae36c5cecde1c869e",
     "matchedCrashQualificationSHA256": "a3b677285d53dfad1b96882787b7c8a4c634125728fb182b32658984c44e115c",
     "limits": "Incomplete coverage suite; no current percentage/sanitizer/leak/fullCI/release acceptance. Actual failed assertions and qualified crash require bounded repair; no unchanged retry or inferred cause."
+  },
+  "ci593RepairBatchQualification": {
+    "sourceCommit": "318d6536d8ccf855e1647b3a8477666ebd35c53d",
+    "independentReviews": "MC1 getter source CLEAN; G1 mounted and launch oracle source CLEAN",
+    "compile594ProofSHA256": "ef88f828f73ffdc48624eac61747684c1ae9d0f7a5474fcbd7324baef07a7469",
+    "oracle596": {
+      "status": "PASS focused execution",
+      "methods": 3,
+      "cases": 3,
+      "scope": [
+        "Originalmountedlaser damage/rate",
+        "NewheldcombatReturnsideMiningnegative",
+        "OriginalfailedactualLaunchpublication/retryrollback"
+      ],
+      "issues": 0,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "timedOut": false,
+      "commandSeconds": 11.672121749958023,
+      "supervisedSeconds": 13.251357750035822,
+      "proofSHA256": "2727a672434517a9e49badb3f3dfe8054eae9daf8ac9265700c90b23a39234c4"
+    },
+    "originalGallery595": {
+      "status": "FAILED or partial focused execution",
+      "passed": 0,
+      "failed": 1,
+      "issues": 1,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "timedOut": false,
+      "literalFailure": "EMPReleaseBoundaryFixture.swift:172 continuingFlight; frame229 t23 screenGameOver energy-6.794203051789434; observedoneEMPrelease/secondchargeactive",
+      "commandSeconds": 13.781600542133674,
+      "supervisedSeconds": 15.081072083907202,
+      "proofSHA256": "b4ea1a1e5c43ffe0712067cc1aa6ffc6d57ad63334b6010c3a91f00936abca6a",
+      "literalIssueContextSHA256": "416ea2cc86d3e552c101573eb4b0a2750d438d6b8a160d3a1945a13fc59261d0"
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "limits": "Laser/launch oracles qualified. Originalgallery failedordinaryflightguard; priorSIGBUSnotobserved but no complete reproducerPASS or measuredstackmargin claim. No unrecordedflightlosscause/fullCI/media/release acceptance."
   }
 }

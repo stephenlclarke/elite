@@ -93,6 +93,14 @@ A separately matched SIGBUS reported thread stack exhaustion in the native peopl
 
 The command lasted 128.243 seconds; supervision and cleanup lasted 134.058 seconds. Coverage export did not complete and no current percentage is available. Thread Sanitizer, Address Sanitizer and leaks did not start. Focused authentication, station and law-policy passes retain their own scopes, while full CI remains failed pending bounded repairs and another authorized run. No unchanged retry, authoritative Sonar analysis, merge or release follows from this attempt.
 
+## Qualification of the next CI repair batch
+
+At composed source `318d6536d8ccf855e1647b3a8477666ebd35c53d`, coherent coverage build 594 passed after three independent source reviews. `systemIdentity` reuses its existing borrowed scalar projection; the mounted-laser test exercises the actual kernel and adds a held-combat-Return mining negative; the launch-save oracle compares equipment Set membership without broadening its field whitelist. Storage layout, native authority, default stack/concurrency and original full-state checks remain unchanged.
+
+Run 596 passed all three allocated methods / three cases: the original mounted damage/rate test, new held-Return negative and original failed-publication/retry/rollback test. There were zero issues, crashes, unknown outcomes or timeouts. No unrelated test groups were repeated.
+
+The exact original people-gallery reproducer in run 595 completed without a crash but failed its existing `continuingFlight` guard. Its literal failure message records frame 229, physical time 23, game-over screen, energy about -6.7942 and one EMP release while the next charge is active. The original guards and budget were unchanged, and no new diagnostic was enabled. The earlier SIGBUS was not observed in this run; this is not a passing full reproducer, measured stack-margin improvement or a conclusion about the unrecorded cause of the flight loss. Both focused runs closed all owned processes with inputs, artifacts and player data unchanged. The gallery failure remains open before further media refresh or full CI.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.
