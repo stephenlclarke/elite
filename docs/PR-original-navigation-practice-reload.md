@@ -1,0 +1,7 @@
+# test(missions): validate original navigation progress and public reload
+
+The actual-loss journey retains its full native buy, flight, sale, refuel, return, reception, filesystem and accounting assertions. Public clue progress must now equal the one earned journal, identify only the navigation clue and remain incomplete; its single award must retain the first actual completion instance despite accepting another mission.
+
+The current-save reader retains every downgrade, null, foreign-owner, altered-price, invented-binding, missing-cargo rejection and unchanged receiver check. A valid public load without installed content must retain the paid trade record and suspend the active instance. A separate reader with the exact approved pack installed must reload the saved script state, unsuspended active instance, cash, cargo and live market through ordinary public load without a fixture binding. Production guards, mission behavior and save schemas are unchanged. The fixture comment now describes its actual original-world inputs.
+
+Author validation is scoped Swift formatting, Markdown and whitespace checks; compiler and native test execution remain pending the next coherent central build. The two affected methods cover three source cases. No coverage, sanitizer, leak or full CI acceptance is claimed. No GitHub issue or PR exists for this leaf. See the [issue](ISSUE-original-navigation-practice-reload.md).

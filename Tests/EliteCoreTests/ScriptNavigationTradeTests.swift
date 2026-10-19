@@ -166,8 +166,12 @@ func navigationTradeActualLossColdRestoreAndReceptionRetainExactAccounting(alien
   #expect(active.commander.scriptState == repeated.commander.scriptState)
   #expect(active.commander.scriptState.savedClueJournal == journal)
   let publicProgress = await activeWithJournal.baseClueProgress()
-  // Internal fixture bindings never certify original-world public progress.
-  #expect(publicProgress == .empty)
+  // The actual original-world journey earns only its one retained, once-awarded clue.
+  #expect(publicProgress == journal.progress)
+  #expect(publicProgress.collectedClueIDs == ["navigation-trade-family-trace"])
+  #expect(!publicProgress.complete)
+  #expect(journal.awards.count == 1)
+  #expect(journal.awards[ScriptNavigationTradeContent.sourceID]?.completion.instance == id)
 }
 
 @Test(arguments: ["buy", "sale", "fuel", "reception"])

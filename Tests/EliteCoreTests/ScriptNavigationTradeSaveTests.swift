@@ -108,10 +108,24 @@ func rewriteNavigationTradeChunk(
   try originalPointerBytes.write(to: fixture.save)
   let after = await reader.snapshot()
   #expect(after.commander == before.commander)
-  // Actual original endpoints are re-authenticated by the production loader without a fixture binding.
+  let saved = await runtime.snapshot()
+  // Missing content suspends the genuine active mission without discarding its paid receipt.
   try await reader.load(from: fixture.save)
-  let production = await reader.snapshot()
-  #expect(production.commander.scriptState == before.commander.scriptState)
+  let unavailable = await reader.snapshot()
+  #expect(unavailable.commander.scriptState.instances[id]?.suspension != nil)
+  #expect(
+    unavailable.commander.scriptState.instances[id]?.savedNavigationTrade
+      == saved.commander.scriptState.instances[id]?.savedNavigationTrade)
+  // Exact installed content and original endpoints reload through the public loader, without binding.
+  var installed = Game(executive: false)
+  installed.scriptPacks = [fixture.pack]
+  let productionReader = GameRuntime(game: installed)
+  try await productionReader.load(from: fixture.save)
+  let production = await productionReader.snapshot()
+  #expect(production.commander.scriptState == saved.commander.scriptState)
+  #expect(production.commander.scriptState.instances[id]?.suspension == nil)
+  #expect(production.commander.credits == saved.commander.credits)
+  #expect(production.commander.cargo == saved.commander.cargo && production.market == saved.market)
 }
 
 @Test func navigationTradeRawCommanderFieldsCannotDisappearThroughNullDecoding() async throws {
