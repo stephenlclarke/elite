@@ -506,8 +506,8 @@ public struct Game: Sendable {
     from commander: borrowing Commander
   ) throws -> [UUID] {
     var eligible: [UUID] = []
-    for (id, record) in commander.scriptState.projectiles
-    where record.galaxy == commander.galaxy && record.system == commander.system {
+    for (id, record) in commander.scriptState.projectiles {
+      guard record.galaxy == commander.galaxy, record.system == commander.system else { continue }
       guard id == record.body.scriptShot?.identity, record.valid,
         commander.scriptState.projectileArchiveValid(record)
       else { throw NativeMissionProjectileAdmissionError.invalidRecord }
