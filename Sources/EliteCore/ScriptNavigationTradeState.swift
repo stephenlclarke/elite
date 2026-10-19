@@ -32,7 +32,7 @@ struct ScriptNavigationTradeBinding: Sendable, Equatable {
   let training: ScriptNavigationTradeEndpoint
   let destination: ScriptNavigationTradeEndpoint
   static func production(in game: borrowing Game) -> Self? {
-    let active = game.commander.scriptState.instances.values.filter { $0.outcome == .active }
+    let active = activeInstances(in: game.commander)
     if let record = active.compactMap(\.savedNavigationTrade).first(where: {
       $0.stage == .awaitingBuy || $0.held || $0.stage == .sold || $0.stage == .lost
     }) {
@@ -40,6 +40,13 @@ struct ScriptNavigationTradeBinding: Sendable, Equatable {
     }
     return selectedRoute(in: game)
   }
+
+  // The eager filter borrows its Commander projection instead of retaining a whole value copy.
+  @inline(never)
+  private static func activeInstances(in commander: borrowing Commander) -> [ScriptInstance] {
+    commander.scriptState.instances.values.filter { $0.outcome == .active }
+  }
+
   static func selectedRoute(in game: borrowing Game) -> Self? {
     guard let training = endpoint(galaxy: game.commander.galaxy, system: game.commander.system),
       let destination = endpoint(galaxy: game.commander.galaxy, system: game.selectedSystem)
