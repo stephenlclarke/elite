@@ -22,7 +22,7 @@ public struct CockpitLayout: Sendable {
       center: .init(width / 2, flightClip.y + flightClip.height / 2),
       focal: flightClip.height * 256 / 164)
   }
-  public init(game: Game, width: Double, height: Double) {
+  public init(game: borrowing Game, width: Double, height: Double) {
     self.width = max(320, width)
     self.height = max(320, height)
     font = GameTypography.scale

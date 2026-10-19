@@ -57,8 +57,9 @@ extension Hull {
 
 extension Display {
   /// Use the identical projection, hidden-face and clipping path as front-view rendering.
-  static func visibleInFront(_ body: SpaceBody, game: Game, layout: CockpitLayout) -> Bool {
-    var front = game
+  static func visibleInFront(_ body: SpaceBody, game: borrowing Game, layout: CockpitLayout) -> Bool
+  {
+    var front = copy game
     front.screen = .front
     var frame = Frame()
     frame.rasterizeGraphics = false
