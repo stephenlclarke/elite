@@ -148,41 +148,53 @@ extension Game {
     else { return nil }
     applyDamage(damage, front: hit.point.z >= 0, energyMultiplier: energyMultiplier)
     if energy <= 0 {
-      let revision = gameplayRevision
-      let owner = incident.origin.owner
-      let loggedLaser: String = incident.laser?.rawValue ?? "none"
-      let loggedMount: String = incident.mount?.rawValue ?? "none"
-      let ownerLegal = incident.origin.ownerLegalAtEmission.value
-      let playerLegal = commander.legal
-      var ownerMatches = 0
-      var role = "unknown"
-      var producer = "unknown"
-      var engagesPlayer = "u"
-      if let player = commander.flightSimulation.player,
-        player.system == owner.system, player.visit == owner.visit
-      {
-        for body in bodies where body.physical?.identity == owner {
-          ownerMatches += 1
-          guard ownerMatches == 1 else {
-            role = "unknown"
-            producer = "unknown"
-            engagesPlayer = "u"
-            break
-          }
-          role = body.physical?.npc?.role.rawValue ?? "none"
-          producer = body.physical?.spawnIdentity?.producer.rawValue ?? "none"
-          engagesPlayer = body.physical?.npc?.intention == .engage(player) ? "1" : "0"
-        }
-      }
-      let ownerContext = (role: role, producer: producer, engagesPlayer: engagesPlayer)
-      gameplayCombatLogger.notice(
-        "PLAYER_COMBAT_FATAL revision=\(revision, privacy: .public) incident=\(incident.id, privacy: .public) time=\(String(incident.physicalTime), privacy: .public) kind=\(incident.kind.rawValue, privacy: .public) ownerGalaxy=\(owner.system.galaxy, privacy: .public) ownerSystem=\(owner.system.system, privacy: .public) ownerVisit=\(owner.visit, privacy: .public) ownerEntity=\(owner.entity, privacy: .public) ordnance=\(incident.origin.ordnance == nil ? 0 : 1, privacy: .public) damage=\(String(damage), privacy: .public) energyMultiplier=\(String(energyMultiplier), privacy: .public) laser=\(loggedLaser, privacy: .public) mount=\(loggedMount, privacy: .public) role=\(ownerContext.role, privacy: .public) oLegal=\(ownerLegal, privacy: .public) pLegal=\(playerLegal, privacy: .public) producer=\(ownerContext.producer, privacy: .public) engagePlayer=\(ownerContext.engagesPlayer, privacy: .public)"
-      )
-      recordCombat(
-        origin: origin, kind: kind, outcome: .destruction, target: .player,
-        worldPosition: world, emissionPosition: emissionPosition, laser: laser, mount: mount)
+      recordFatalPlayerHit(
+        incident, origin: origin, kind: kind, damage: damage, laser: laser, mount: mount,
+        emissionPosition: emissionPosition, energyMultiplier: energyMultiplier, world: world)
     }
     return incident
+  }
+
+  /// Fatal-only queries and logging do not reserve temporaries in the ordinary hit frame.
+  @inline(never)
+  private mutating func recordFatalPlayerHit(
+    _ incident: CombatIncident, origin: AttackOrigin, kind: AttackKind, damage: Double,
+    laser: LaserKind?, mount: LaserMount?, emissionPosition: Vector3?, energyMultiplier: Double,
+    world: Vector3
+  ) {
+    let revision = gameplayRevision
+    let owner = incident.origin.owner
+    let loggedLaser: String = incident.laser?.rawValue ?? "none"
+    let loggedMount: String = incident.mount?.rawValue ?? "none"
+    let ownerLegal = incident.origin.ownerLegalAtEmission.value
+    let playerLegal = commander.legal
+    var ownerMatches = 0
+    var role = "unknown"
+    var producer = "unknown"
+    var engagesPlayer = "u"
+    if let player = commander.flightSimulation.player,
+      player.system == owner.system, player.visit == owner.visit
+    {
+      for body in bodies where body.physical?.identity == owner {
+        ownerMatches += 1
+        guard ownerMatches == 1 else {
+          role = "unknown"
+          producer = "unknown"
+          engagesPlayer = "u"
+          break
+        }
+        role = body.physical?.npc?.role.rawValue ?? "none"
+        producer = body.physical?.spawnIdentity?.producer.rawValue ?? "none"
+        engagesPlayer = body.physical?.npc?.intention == .engage(player) ? "1" : "0"
+      }
+    }
+    let ownerContext = (role: role, producer: producer, engagesPlayer: engagesPlayer)
+    gameplayCombatLogger.notice(
+      "PLAYER_COMBAT_FATAL revision=\(revision, privacy: .public) incident=\(incident.id, privacy: .public) time=\(String(incident.physicalTime), privacy: .public) kind=\(incident.kind.rawValue, privacy: .public) ownerGalaxy=\(owner.system.galaxy, privacy: .public) ownerSystem=\(owner.system.system, privacy: .public) ownerVisit=\(owner.visit, privacy: .public) ownerEntity=\(owner.entity, privacy: .public) ordnance=\(incident.origin.ordnance == nil ? 0 : 1, privacy: .public) damage=\(String(damage), privacy: .public) energyMultiplier=\(String(energyMultiplier), privacy: .public) laser=\(loggedLaser, privacy: .public) mount=\(loggedMount, privacy: .public) role=\(ownerContext.role, privacy: .public) oLegal=\(ownerLegal, privacy: .public) pLegal=\(playerLegal, privacy: .public) producer=\(ownerContext.producer, privacy: .public) engagePlayer=\(ownerContext.engagesPlayer, privacy: .public)"
+    )
+    recordCombat(
+      origin: origin, kind: kind, outcome: .destruction, target: .player,
+      worldPosition: world, emissionPosition: emissionPosition, laser: laser, mount: mount)
   }
 
   private mutating func damageBody(
