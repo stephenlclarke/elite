@@ -40,3 +40,7 @@ Root's final assignment snapshot identifies Elite Coder3 / GPT6.1 Sol Light for 
 ## Assignment transition on current G1 documentation
 
 Based on committed G1 snapshot1c49b369, preserving its newer738/739/740 evidence and raw attachments. Update only current MBA04-source-freeze/01-active and MC1-recorded-crash assignments:04 has commitNONE, exact packet hashes, four files and11 authored UNRUN functions, not independent/native acceptance.01 has fresh workspace/base and exact reserved scope/quote; MC1 owns only actual740 causal crash repair, docking unassigned. Prior designer refs remain intact; an unsubmitted intermediate delta was preserved privately rather than overwriting G1's newer outcomes. No canonical edits or runtime jobs during741 lease; changed-doc checks only.
+
+## Superseding owner unit/review policy
+
+Child of4563da55 on the isolated current-G1-based documentation branch: correct its now-stale01-active/04-pending-integration labels. Both source packets are frozen but UNRUN and unreviewed, therefore in development/validation-review pending; the new01 patch/handoff hashes and commitNONE are recorded. G3 owns focused unit execution/fixes under Root's single MBA-only lease, G2 owns independent bugs/performance/style review, no new feature is active. MC1's457ee6a crash leaf has the same gate. AGENTS/ledger require owner-PASS/clean review before integration handoff while broad integration remains batched; preserve existing740/738 evidence and no M01 expansion. No author runtime job or extra investigation.
