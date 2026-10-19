@@ -1716,6 +1716,53 @@ func stationAutoDefensiveTrackerAcquiresMovingBearingWithinTurnAndThrustLimits(a
   #expect(abs(towardCover.pitch) <= 0.8 && abs(towardCover.yaw) <= 0.8)
 }
 
+@Test(arguments: [1000.0, -1000.0])
+func stationAutoWeakFrontFacesAwayFromAttackerWhileItsCoverRouteKeepsMoving(attackerZ: Double) {
+  let worldStation = Vector3(0, 0, 3000)
+  let worldAttacker = Vector3(0, 0, attackerZ)
+  var states = [
+    (control: AutoTargetControl(), pose: ShipPose()),
+    (control: AutoTargetControl(), pose: ShipPose()),
+  ]
+  let limits = AutoTargetControl.policyLimits
+  for _ in 0..<40 {
+    for index in states.indices {
+      var state = states[index]
+      var station = SpaceBody(id: 0, hull: .station, position: state.pose.shipPoint(worldStation))
+      station.orientation = Basis3().relative(to: state.pose.orientation)
+      station.rotationRate = 0
+      let attacker = state.pose.shipPoint(worldAttacker)
+      var guidance = StationAutoGuidance(
+        aim: attacker, lateralVelocity: .init(0, 0, 0), hazard: .active,
+        interruptionAllowed: true, clearanceRadius: 400,
+        transitGoal: station.position + (station.position - attacker).unit * 440)
+      guidance.protectFrontShield = index == 1
+      let previous = state.control.velocity
+      let response = state.control.steer(
+        target: station, delta: 0.1, limits: limits, defence: guidance)
+      #expect((state.control.velocity - previous).length <= limits.acceleration * 0.1 + 1e-8)
+      #expect(abs(response.pitch) <= limits.pitchRate && abs(response.yaw) <= limits.yawRate)
+      #expect(
+        state.control.stationDefencePhase == .defending
+          && !state.control.ready && !state.control.finalApproach)
+      let roll = response.roll ?? 0
+      state.control.rotateVelocity(
+        pitch: response.pitch * 0.1, roll: roll * 0.1, yaw: response.yaw * 0.1)
+      state.pose.advanceView(
+        pitch: response.pitch * 0.1, roll: roll * 0.1, yaw: response.yaw * 0.1,
+        translation: state.control.velocity * 0.1)
+      states[index] = state
+    }
+    // Changing the shield-facing decision must not consume a second thrust budget
+    // or change progress along the same world-space cover/clearance route.
+    #expect((states[0].pose.position - states[1].pose.position).length < 1e-7)
+    #expect((worldStation - states[1].pose.position).length > 400)
+  }
+  #expect(states[1].pose.shipPoint(worldAttacker).z < 0)
+  #expect(states[0].pose.shipPoint(worldAttacker).z > 0)
+  #expect(states[1].pose.position.z > 100)
+}
+
 @Test(arguments: [true, false])
 func stationAutoCurrentShieldBanksChooseCoverOnlyForTheWeakerFront(frontWeaker: Bool) async throws {
   var game = try await stationAutoEntryBoundary()
