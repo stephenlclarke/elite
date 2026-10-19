@@ -234,8 +234,13 @@ private func selectActualMainStationWithTab(_ game: inout Game, stage: String) t
   let matchingActors = game.bodies.filter { $0.physical?.identity == actor }.map(\.id)
   try #require(matchingActors == [0], "\(stage): main station actor must be unique")
   var selections: [Int?] = []
-  // Each real candidate can be visited once before wrapping; no traffic is removed.
-  let limit = game.bodies.count
+  // Reconciliation preserves visited targets while new traffic can precede them.
+  // If zero was already visited, finish at most N-1 pending targets, then scan
+  // one fresh cycle of at most N. No simulation advances during these Tabs.
+  let candidateUpperBound = game.bodies.count
+  let pendingTailBudget = candidateUpperBound - 1
+  let freshCycleBudget = candidateUpperBound
+  let limit = pendingTailBudget + freshCycleBudget
   for _ in 0..<limit {
     game.key("tab")
     selections.append(game.autoPilot.targetID)
@@ -280,6 +285,46 @@ private func stationTabEligibilityFailureFacts(_ game: borrowing Game, mainActor
   }.map(\.id)
   return
     "; context \(context.system)/\(context.visit), player \(context.player.identity), eligible IDs \(eligibleIDs), main candidates \(mainCandidates), main decisions \(mainDecisions)"
+}
+
+// Direct controller inputs isolate cycle reconciliation; these bodies assert no native custody.
+@Test func stationTabReengagementCompletesThePreservedTailBeforeAFreshCycle() {
+  let origin = ActorIdentity(system: .init(galaxy: 0, system: 7), visit: 1, entity: 0)
+  let signature = "military:ships:station-cycle-fixture"
+  let original: [SpaceBody] = [
+    .init(id: 1, hull: .cobra, position: .init(0, 0, 100)),
+    .init(id: 0, hull: .station, position: .init(0, 0, 200)),
+    .init(id: 10, hull: .station, position: .init(0, 0, 300)),
+  ]
+  var control = AutoTargetControl()
+  for expected in [1, 0] {
+    control.cycle(original, frontIDs: [1], signature: signature, origin: origin)
+    #expect(control.targetID == expected)
+  }
+  control.disengage()
+  #expect(control.targetID == nil)
+
+  // A flight frame admits two ships around the previously visited ship's distance.
+  // Ship-first ordering becomes [11,1,12,0,10]; the visited {1,0} still belongs
+  // to the old cycle, so its reconciled pending tail must be [11,12,10].
+  let current =
+    original + [
+      SpaceBody(id: 11, hull: .viper, position: .init(0, 0, 50)),
+      SpaceBody(id: 12, hull: .sidewinder, position: .init(0, 0, 150)),
+    ]
+  let scene = current + [SpaceBody(id: 2, hull: .asteroid, position: .init(0, 0, 400))]
+  var selections: [Int?] = []
+  for expected in [11, 12, 10, 11, 1, 12, 0] {
+    control.cycle(current, frontIDs: [1, 11, 12], signature: signature, origin: origin)
+    selections.append(control.targetID)
+    #expect(control.targetID == expected)
+  }
+  let oldBoundSelections = Array(selections.prefix(scene.count))
+  #expect(oldBoundSelections == [11, 12, 10, 11, 1, 12])
+  #expect(!oldBoundSelections.contains(0))
+  #expect(control.targetID == 0)
+  #expect(selections.count > scene.count)
+  #expect(selections.count <= (scene.count - 1) + scene.count)
 }
 
 @Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
