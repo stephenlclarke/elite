@@ -59,6 +59,12 @@ The final history redock now selects the fixture's existing defended pilot unifo
 
 Run 583 completed all 12 argument starts and aggregate ends with diagnostics off, but the method failed with eight assertions at the preflight `action != .refuse` guard. Actual issue headers identify four abandoned-stage and four partial-stage assertions; the transcript reports refusal at total steps 285 and 87 respectively. These are below the existing 3,000-step ceiling. Current liveness, energy and the particular refusal predicate were not recorded, so the earlier combat cause is not assumed. No individual argument verdict is inferred. There were no crashes, unknown method outcomes or timeouts; all owned processes closed and protected data remained unchanged. This repair has not passed runtime qualification, and full CI remains pending further causal assessment.
 
+## Exact preflight refusal premise
+
+The existing refusal assertion now includes its already-held guard values in the failure comment. Its predicate, queries and control flow are unchanged. Run 584 stopped before tests because the concatenated message needed Swift Testing's `Comment(rawValue:)` wrapper; the equivalent type correction was recorded separately, and coherent compile 586 passed at `18f40ce477db4fc386e4db79983e4f26f821c4c9`.
+
+Run 585 completed all 12 original argument starts and aggregate ends, with eight failures: abandoned at step 285 and partial at step 87, four assertions each. Every literal failure comment reports `valid=true live=false docked=false paused=false automatic=false`. Lost liveness is therefore the failed refusal premise; invalid facts, pause, docking, AUTO engagement and the step bounds do not explain this guard. Energy, screen and the cause of lost liveness were not recorded. Diagnostics remained off, the command completed in 41.472 seconds without crash, timeout or unknown method outcome, and all owned processes closed with inputs and player data unchanged. This is completed guard-value evidence for a failed original method, not fix acceptance, an individual argument pass or a full CI result.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.

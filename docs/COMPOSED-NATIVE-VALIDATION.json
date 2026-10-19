@@ -283,5 +283,43 @@
     "proofSHA256": "ee6110b2538b0163640d95bf8c288a96487797a4c2572fc3e028a74e9f3eff78",
     "actualIssueHeadersSHA256": "95c03097b89f377ae3c2fcb7d1e66cfd8e0e059ece4bf5152067495d0acb7809",
     "limits": "Current liveness/energy/refusal predicate unrecorded; prior combat cause not inferred. No individual argument verdict. No automatic retry, full CI, coverage percentage, sanitizer/leak or release acceptance."
+  },
+  "preflightGuardCapture": {
+    "sourceCommit": "18f40ce477db4fc386e4db79983e4f26f821c4c9",
+    "scope": "Existing failurecomment values only; Comment(rawValue:) equivalentcompilerconventionrepair; no predicate/queries/control/state changes.",
+    "compile584": "FAILED Commenttype before tests; retained old582binary notexecuted",
+    "compile584ProofSHA256": "5f8bba618aed66cad6d8200af24541c6f63d42bfe9d4577369cc91608383c0b9",
+    "compile586": "PASS coherentcoveragebuild",
+    "compile586ProofSHA256": "a81a10e8582d516755aa31f498c9ef0d1996c901333ff6cb3d07958a17164ab6",
+    "history585MethodVerdict": "FAILED",
+    "originalArguments": 12,
+    "issueCount": 8,
+    "issueStagesDerivedFromActualHeaders": {
+      "abandoned": 4,
+      "partial": 4
+    },
+    "recordedPreflightSteps": {
+      "partial": 87,
+      "abandoned": 285
+    },
+    "literalGuardValuesAllEight": {
+      "valid": true,
+      "live": false,
+      "docked": false,
+      "paused": false,
+      "automaticEngaged": false
+    },
+    "soleFailedRefusalPremise": "live is false",
+    "allDiagnosticsOff": true,
+    "commandSeconds": 41.47233354207128,
+    "supervisedSeconds": 42.92642137501389,
+    "unknownMethods": 0,
+    "matchedCrashes": [],
+    "timedOut": false,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "proofSHA256": "729dc06ab056e25490155d7d847d72628b7368f95be6bd84217f3cedfc915f2d",
+    "literalGuardValuesSHA256": "b92f5f11292d642a4a044ed73a9dbc4771a7a0eb1b64b370a31894c88d34983d",
+    "limits": "Energy/screen/death cause unrecorded. Completed guard capture is not fix acceptance or individual argument verdict. No automatic retry/fullCI/percentage/sanitizer/leak/release claim."
   }
 }
