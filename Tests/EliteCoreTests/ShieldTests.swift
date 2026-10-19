@@ -169,7 +169,12 @@ import Testing
 
 @Test func legacyMiningStrengthSurvivesPaidWeakerPurchasesStoredWithOriginalIdentity() throws {
   var game = Game(executive: false)
-  game.commander.system = try #require(game.systems.firstIndex { $0.technology >= 10 })
+  let militaryItem = try #require(
+    Equipment.all.first { $0.name == ShieldBooster.military.equipmentName })
+  game.commander.system = try #require(
+    game.systems.first { $0.technology >= militaryItem.requiredTechnologyLevel }?.id)
+  game.selectedSystem = game.commander.system
+  try #require(game.equipmentAvailable(militaryItem))
   game.commander.credits = 100_000
   game.commander.installShieldBooster(.mining)
   try game.commander.prepareEquipment()

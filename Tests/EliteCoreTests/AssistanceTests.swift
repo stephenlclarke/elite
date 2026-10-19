@@ -86,7 +86,9 @@ private func assistedGame() -> Game {
   game.bodies.append(.init(id: 4, hull: .cobra, position: .init(0, 0, 600)))
   game.tick(delta: 0.02)
   #expect(game.ecmControl.events.map(\.announcement) == [.missileDetected, .ecmActivated])
-  #expect(game.energy < 256 && game.bodies.count == 1)
+  #expect(game.energy < 256)
+  #expect(!game.bodies.contains { (1...3).contains($0.id) && $0.hull == .missile })
+  #expect(game.bodies.contains { $0.id == 4 && $0.hull == .cobra && $0.energy > 0 })
   let after = game.energy
   game.ecm()
   #expect(game.energy == after)

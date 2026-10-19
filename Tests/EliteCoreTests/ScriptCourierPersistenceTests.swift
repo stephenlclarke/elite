@@ -278,7 +278,11 @@ extension CourierFixture {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
   var game = fixture.game()
-  let id = try fixture.accept(&game)
+  // The pinned epoch-zero data-3 listing has real headroom; data-1 is correctly disabled.
+  let (key, offer) = try fixture.usable(&game, row: 4)
+  let terms = try #require(offer.courier)
+  try #require(terms.row == 4 && terms.calendarLowerBoundSeconds < terms.duration)
+  let id = try game.confirmContract(game.contractAcceptanceQuote(board: key, offer: offer.id))
   let due = try #require(game.commander.scriptState.instances[id]?.contract?.deadline)
   game.commander.scriptState.calendarSeconds = due + 0.1
   game.commander.scriptState.missionCalendar?.seconds = due + 0.1
