@@ -73,6 +73,10 @@ public struct Commander: Sendable, Equatable, Codable {
     get { savedWantedCareers ?? WantedCareerLedger() }
     set { savedWantedCareers = newValue }
   }
+  /// Optional chaining preserves the absent state when no careers have been recorded.
+  mutating func resetWantedCareerBindings(system: SystemIdentity) {
+    savedWantedCareers?.resetPhysicalBindings(system: system)
+  }
   private var savedNPCPersistence: NPCPersistenceLedger?
   public var npcPersistence: NPCPersistenceLedger {
     get { savedNPCPersistence ?? NPCPersistenceLedger() }
@@ -634,6 +638,7 @@ public struct Game: Sendable {
       commander.npcPersistence.resetPhysicalBindings(
         system: .init(galaxy: value.galaxy, system: value.system))
     }
+    commander.resetWantedCareerBindings(system: .init(galaxy: value.galaxy, system: value.system))
     clearCelestialFlight()
     blackjackOffer = nil
     packOffer = nil
@@ -1263,6 +1268,7 @@ public struct Game: Sendable {
     if commander.npcPersistence.count > 0 {
       commander.npcPersistence.resetPhysicalBindings(system: systemIdentity)
     }
+    commander.resetWantedCareerBindings(system: systemIdentity)
     commander.nativeStations?.currentMainDock = nil
     commander.nativeStations?.ledger.depart()
     dockedAtMainStation = atMainStation
@@ -2347,6 +2353,7 @@ public actor GameRuntime {
     if persistedCommander.npcPersistence.count > 0 {
       persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
     }
+    persistedCommander.resetWantedCareerBindings(system: candidate.systemIdentity)
     return NativeSavePreparation(game: copy candidate, commander: consume persistedCommander)
   }
 

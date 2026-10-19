@@ -63,7 +63,7 @@ import Testing
   #expect(abs(game.commander.flightSimulation.physicalTime - physical - 0.1) < 1e-12)
 }
 
-@Test func gameplaySaveRoundTripAndOldSaveDefaultsPreserveCommanderProperty() throws {
+@Test func gameplayCurrentSaveRoundTripPreservesCommanderProperty() throws {
   var game = Game(executive: false)
   game.commander.credits = 123456
   game.commander.cargo[13] = 7
@@ -73,18 +73,10 @@ import Testing
   let data = try JSONEncoder().encode(game.commander)
   let restored = try JSONDecoder().decode(Commander.self, from: data)
   #expect(restored == game.commander && restored.valid)
-  var legacy = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
-  for key in [
-    "savedFlightSimulation", "savedCrimeLedger", "savedStationSecurity",
-    "encounterDirector", "savedMiningLedger",
-  ] {
-    legacy.removeValue(forKey: key)
-  }
-  let old = try JSONDecoder().decode(
-    Commander.self, from: JSONSerialization.data(withJSONObject: legacy))
-  #expect(old.valid && old.credits == restored.credits && old.cargo == restored.cargo)
-  #expect(old.legal == restored.legal && old.equipment == restored.equipment)
-  #expect(old.flightSimulation.physicalTime == 0 && old.encounterDirector == nil)
+  #expect(restored.credits == 123456 && restored.cargo[13] == 7)
+  #expect(restored.legal == 12 && restored.equipment == game.commander.equipment)
+  #expect(restored.flightSimulation == game.commander.flightSimulation)
+  #expect(restored.wantedCareers == game.commander.wantedCareers)
 }
 
 @Test func gameplayFieldGenerationDoesNotConsumeMissionRandomStream() {

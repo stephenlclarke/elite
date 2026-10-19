@@ -124,7 +124,8 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 @Test func plughDiscoverySaveValidationAndGalacticDeparturePreserveIdentityAndEquipment()
   async throws
 {
-  let game = plughGame(galaxy: 2)
+  var game = plughGame(galaxy: 2)
+  try NativeSaveTestFixture.prepareCurrentPolicy(&game)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   let runtime = GameRuntime(game: game)
@@ -135,6 +136,7 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   let saved = await runtime.snapshot()
   var expected = bootstrapped.commander
   expected.npcPersistence.resetPhysicalBindings(system: bootstrapped.systemIdentity)
+  expected.resetWantedCareerBindings(system: bootstrapped.systemIdentity)
   #expect(saved.commander == expected && saved.currentSystem.name == "PLUGH")
   #expect(try Data(contentsOf: url) == bytes)
   var invalid = saved.commander

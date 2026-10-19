@@ -141,6 +141,13 @@ public struct WantedCareerLedger: Codable, Equatable, Sendable {
     careers[logical]?.parked = nil
   }
 
+  /// Scene-local craft bindings end with the native scene; career facts and aliases do not.
+  mutating func resetPhysicalBindings(system: SystemIdentity) {
+    for key in Array(careers.keys) where key.system == system {
+      careers[key]?.binding = nil
+    }
+  }
+
   mutating func reconcile(_ ledger: NPCPersistenceLedger, system: SystemIdentity) {
     for key in Array(careers.keys) where key.system == system {
       if ledger.terminalReason(for: key) != nil {

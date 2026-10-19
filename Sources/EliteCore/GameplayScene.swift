@@ -61,6 +61,7 @@ extension Game {
     commander.cargoDebrisLedger.resetPhysicalBindings(system: systemIdentity)
     commander.salvageLedger.resetPhysicalBindings(system: systemIdentity)
     commander.npcPersistence.resetPhysicalBindings(system: systemIdentity)
+    commander.resetWantedCareerBindings(system: systemIdentity)
     gameplayRevision &+= 1
     ensurePhysicalActors()
     if let freshLaunchTrafficID { initializeNativeLaunchDisposition(bodyID: freshLaunchTrafficID) }
