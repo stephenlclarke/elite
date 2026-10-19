@@ -36,6 +36,11 @@ private struct EMPArchiveTimerFixture {
       try #require(released)
       let captured = game.persistEMPState()
       try #require(captured)
+      let stations = try #require(game.commander.nativeStations)
+      try #require(
+        stations.sceneIsConsistent(
+          bodies: game.bodies, docked: game.docked, mainStation: game.dockedAtMainStation,
+          system: game.systemIdentity, flight: game.commander.flightSimulation))
     }
     game.screen = .status
     game.scriptPacks = [pack]

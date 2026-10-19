@@ -1,0 +1,7 @@
+# Project native station spin after the controlled EMP fixture clock step
+
+After its existing direct ten-second clock step, the unit boundary projects the model rotation of already-loaded native station bodies through the existing `advanceBodyModelRotation(at:delta:)` path. That path reads the station's source motion time at the unchanged current physical clock; zero delta does not increment a second clock or rotate unrelated actors. This aligns only a side effect omitted by the controlled fixture. Production simulation, station pose and binding validators, clocks, EMP charge/release, target damage, custody, crew and timer behavior are unchanged.
+
+The archive timer fixture now requires its entire native station scene to be consistent after actual EMP capture and before mission/save use. Existing first-save, failed-writer, pointer preservation, archive retention and retry assertions remain intact, including the bounded failure diagnostic. The shared helper remains explicitly a controlled unit boundary and supplies no native flight or timing acceptance claim.
+
+Validation: source-only strict Swift lint, Markdown lint and whitespace checks passed. Actual 669 failed-category evidence supports the causal source join. Execute the two changed timer regressions and directly affected retained EMP persistence regressions with the ready station-pressure correction in one coherent build/run; do not replay the 19 already-passing 669 methods or start a diagnostic-only job. No production behavior or save schema changes.
