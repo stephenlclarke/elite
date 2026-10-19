@@ -16,7 +16,8 @@ private func wantedGame(count: Int = 12) throws -> Game {
   game.bodies = []
   game.celestials = []
   for index in 0..<count {
-    let actor = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedActor = game.commander.flightSimulation.allocateActor()
+    let actor = try #require(allocatedActor)
     var npc = NPCState(role: .pirate, origin: game.systemIdentity, destination: game.systemIdentity)
     npc.legal = .init(value: 16, bountyTenths: (index + 1) * 10)
     npc.resources = .legacyEnergyOnly(maximumEnergy: 100)
@@ -62,14 +63,17 @@ struct WantedBoardTests {
     game.commander.kills = 6000  // Rank points are deliberately not observed literal deaths.
     #expect(game.commander.wantedCareers.playerRecordedKills == 0)
     #expect(game.commander.wantedCareers.earlierHistoryUnknown)
-    #expect(!game.wantedBoard.contains(where: \.isPlayer))
+    let cleanHasPlayer = game.wantedBoard.contains { $0.isPlayer }
+    #expect(!cleanHasPlayer)
     game.commander.legal = 255
-    let player = try #require(game.wantedBoard.first(where: \.isPlayer))
+    let wantedPlayer = game.wantedBoard.first { $0.isPlayer }
+    let player = try #require(wantedPlayer)
     #expect(player.legal.bountyTenths == 50 && player.recordedKills == 0)
     #expect(game.wantedBoard.count == 10)
     let history = game.commander.wantedCareers
     game.commander.legal = 0
-    #expect(!game.wantedBoard.contains(where: \.isPlayer))
+    let amnestiedHasPlayer = game.wantedBoard.contains { $0.isPlayer }
+    #expect(!amnestiedHasPlayer)
     #expect(game.commander.wantedCareers == history)
     // The exchange adapter runs at its ordinary docked unit boundary; this is
     // not a claim of a completed flight or physical docking journey.
@@ -139,7 +143,8 @@ struct WantedBoardTests {
     let identity = try #require(victim.physical?.identity)
     let logical = try #require(game.commander.npcPersistence.logicalIdentity(for: identity))
     let player = try #require(game.commander.flightSimulation.player)
-    let origin = try #require(game.makeAttackOrigin(owner: player))
+    let emittedPlayerOrigin = game.makeAttackOrigin(owner: player)
+    let origin = try #require(emittedPlayerOrigin)
     let hit = try #require(
       try game.nearestMissionCollision(
         from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
@@ -290,14 +295,16 @@ struct WantedBoardTests {
     // This unit capacity setup does not add a second scene or fictional board dossiers.
     while game.commander.npcPersistence.count < NPCPersistenceLedger.maximumEntries {
       var snapshot = template
-      snapshot.actor = try #require(game.commander.flightSimulation.allocateActor())
+      let allocatedSnapshotActor = game.commander.flightSimulation.allocateActor()
+      snapshot.actor = try #require(allocatedSnapshotActor)
       snapshot.position = .init(20000 + Double(snapshot.actor.entity), 0, 0)
       snapshot.firstAggressorBinding = nil
       snapshot.intentionTargetBinding = nil
       let captured = game.commander.npcPersistence.capture(snapshot, protection: context.protection)
       try #require(captured == .registered(snapshot.actor))
     }
-    let refusedActor = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedRefusedActor = game.commander.flightSimulation.allocateActor()
+    let refusedActor = try #require(allocatedRefusedActor)
     var npc = NPCState(role: .pirate, origin: game.systemIdentity, destination: game.systemIdentity)
     npc.legal = .init(value: 16, bountyTenths: 50)
     npc.resources = .legacyEnergyOnly(maximumEnergy: 100)
@@ -317,7 +324,8 @@ struct WantedBoardTests {
     try #require(refused == .refused(.capacity))
     try #require(game.commander.npcPersistence.logicalIdentity(for: refusedActor) == nil)
     let victim = game.bodies[0]
-    let origin = try #require(game.makeAttackOrigin(owner: refusedActor))
+    let emittedRefusedOrigin = game.makeAttackOrigin(owner: refusedActor)
+    let origin = try #require(emittedRefusedOrigin)
     let direction = (victim.position - refusedBody.position).unit
     let contact = try #require(
       try game.nearestMissionCollision(
@@ -349,32 +357,33 @@ struct WantedBoardTests {
     let victim = try #require(game.bodies[0].physical?.identity)
     let npc = try #require(game.bodies[1].physical?.identity)
     var ledger = game.commander.wantedCareers
-    #expect(
-      !ledger.record(
-        .init(victim: player, owner: player, lawful: false, bountyTenths: 0), player: player,
-        shipDeath: true))
-    #expect(
-      !ledger.record(
-        .init(victim: victim, owner: player, lawful: true, bountyTenths: 10), player: player,
-        shipDeath: false))
-    #expect(
-      ledger.record(
-        .init(victim: victim, owner: npc, lawful: true, bountyTenths: 10), player: player,
-        shipDeath: true))
-    #expect(
-      !ledger.record(
-        .init(victim: victim, owner: npc, lawful: true, bountyTenths: 10), player: player,
-        shipDeath: true))
+    let selfDeathRecorded = ledger.record(
+      .init(victim: player, owner: player, lawful: false, bountyTenths: 0), player: player,
+      shipDeath: true)
+    #expect(!selfDeathRecorded)
+    let projectileDeathRecorded = ledger.record(
+      .init(victim: victim, owner: player, lawful: true, bountyTenths: 10), player: player,
+      shipDeath: false)
+    #expect(!projectileDeathRecorded)
+    let npcDeathRecorded = ledger.record(
+      .init(victim: victim, owner: npc, lawful: true, bountyTenths: 10), player: player,
+      shipDeath: true)
+    #expect(npcDeathRecorded)
+    let duplicateDeathRecorded = ledger.record(
+      .init(victim: victim, owner: npc, lawful: true, bountyTenths: 10), player: player,
+      shipDeath: true)
+    #expect(!duplicateDeathRecorded)
     #expect(ledger.playerRecordedKills == 0)
     let key = try #require(game.commander.npcPersistence.logicalIdentity(for: npc))
     #expect(ledger.careers[key]?.recordedKills == 1)
     ledger.retire(key)
-    let laterVictim = try #require(game.commander.flightSimulation.allocateActor())
+    let allocatedLaterVictim = game.commander.flightSimulation.allocateActor()
+    let laterVictim = try #require(allocatedLaterVictim)
     // Accepted historical alias attribution survives the source leaving the scene.
-    #expect(
-      ledger.record(
-        .init(victim: laterVictim, owner: npc, lawful: true, bountyTenths: 10),
-        player: player, shipDeath: true))
+    let aliasDeathRecorded = ledger.record(
+      .init(victim: laterVictim, owner: npc, lawful: true, bountyTenths: 10),
+      player: player, shipDeath: true)
+    #expect(aliasDeathRecorded)
     #expect(ledger.careers[key]?.binding == nil && ledger.careers[key]?.parked == nil)
     #expect(ledger.careers[key]?.recordedKills == 2 && ledger.playerRecordedKills == 0)
     game.commander.wantedCareers = ledger
