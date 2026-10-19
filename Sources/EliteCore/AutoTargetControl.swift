@@ -160,7 +160,6 @@ public struct AutoTargetControl: Sendable {
     let shouldInterrupt =
       station && defence?.hazard == .active && canInterrupt
       && stationDefencePhase != .defending
-      && (stationDefencePhase != .returning || defence?.joinedIncoming == true)
     if shouldInterrupt {
       ready = false
       finalApproach = false
@@ -173,7 +172,7 @@ public struct AutoTargetControl: Sendable {
       let speed = velocity.length
       let braking = speed * speed / (2 * limits.acceleration) + speed * delta
       let handover =
-        defence?.handoverAllowed == true && canInterrupt
+        defence?.hazard != .active && defence?.handoverAllowed == true && canInterrupt
         && waypoint == goal && waypoint.length <= braking + Self.stationStagingTolerance
       if defence?.hazard == .clear || handover { stationDefencePhase = .returning }
     }
