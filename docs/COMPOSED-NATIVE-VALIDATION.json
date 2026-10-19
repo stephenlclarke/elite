@@ -253,5 +253,35 @@
     "actualIssueHeadersSHA256": "ce368c646da32655d6ae5bf10b77148e0912751a70bcb87615207513e47cfa6f",
     "currentPartialEvidenceSHA256": "4d3ff933135bea9fca73b6b9aea653c0e9c24937d29115bdcf8acd4c00d10e1d",
     "limits": "No abandoned diagnostic emitted or individual argument verdict inferred. Full CI, coverage percentage, sanitizer/leak and release acceptance remain pending."
+  },
+  "defendedHistorySetupQualification": {
+    "sourceCommit": "93a088862c3596846cd7f08f1c0243d0731342fe",
+    "authorCommit": "472947daf42c7f9e47511ffc64cbda64f1a08701",
+    "independentSourceReview": "CLEAN; runtime acceptance separate",
+    "sourceDelta": "Final existing history Self.dock call selects defensivePreflight:true uniformly. All12args39assertions and1090otherSourceTests unchanged.",
+    "compile582ProofSHA256": "7d0d776c74380c08848c2d01c2419973428c44a8a4b0733ee6cc1b5be20c570c",
+    "history583MethodVerdict": "FAILED",
+    "originalArguments": 12,
+    "issueCount": 8,
+    "issueStagesDerivedFromActualHeaders": {
+      "abandoned": 4,
+      "partial": 4
+    },
+    "failureLocation": "ScriptProcurementFixture.swift:410:11 action != .refuse",
+    "recordedPreflightSteps": {
+      "partial": 87,
+      "abandoned": 285
+    },
+    "allDiagnosticsOff": true,
+    "commandSeconds": 42.57156554190442,
+    "supervisedSeconds": 44.1244710420724,
+    "unknownMethods": 0,
+    "matchedCrashes": [],
+    "timedOut": false,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "proofSHA256": "ee6110b2538b0163640d95bf8c288a96487797a4c2572fc3e028a74e9f3eff78",
+    "actualIssueHeadersSHA256": "95c03097b89f377ae3c2fcb7d1e66cfd8e0e059ece4bf5152067495d0acb7809",
+    "limits": "Current liveness/energy/refusal predicate unrecorded; prior combat cause not inferred. No individual argument verdict. No automatic retry, full CI, coverage percentage, sanitizer/leak or release acceptance."
   }
 }
