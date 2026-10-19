@@ -1,0 +1,11 @@
+# Add bounded snapshot context to the existing loan docking requirement
+
+Precompute the unchanged reached-MAIN-dock Boolean. Only on failure, construct a maximum 4096-character Testing Comment from the already returned Game snapshot, outside the assertion macro. Bound message text to 256 characters. The assertion receives only that Boolean and optional Comment, avoiding a borrowed Game expression or closure in the macro.
+
+The context includes actual screen/message, time/physical time/revision, paused/docked state, energy and shield banks, cached AUTO status/defence phase/ready/final flags and alignment errors, actual target/actor and its arrival binding match, MAIN anchor binding/energy/position/depth/range/spin/axes, scalar/world/AUTO velocity and actual pitch/roll/yaw rates. A previously recorded first-refusal string is included only if already present; otherwise it says unavailable. There is no fresh guidance evaluation, collision query, proof, cache mutation, diagnostic flag, recorder, extra method or observer framework.
+
+The actual origin, authored destination, native jump and fuel checks, issued-unit identity, real Tab selection preconditions, 10000 frames at 0.02 seconds, required native MAIN docking, return contact and exact original reward remain unchanged. No production code or other test method changes. Parent author is 8260451f73831efc9de0471d3294a030e6a2c78f; the exact 736 runtime candidate was ba47c87435df08fd29f3ee980af66b106f293a5d.
+
+Strict Swift formatting, Markdown lint and whitespace checks pass before freezing. The author runs no compiler, native/test execution or probe. G1 owns independent delta review, one coherent compile and the sole authorized existing loan workflow execution (one method/one case). Existing 17 passing methods/26 cases remain retained by unchanged scope. This observation does not claim that a production repair or release gate has passed.
+
+Retained evidence: qualification 736 proof SHA256 4d3f8b77e2f96c0d30b5a77e711e315c7f8d7750014ad460752616541a86b2fa. Existing fatal-log extraction is /tmp/elite-station-qualification-736/retained-profiles/fatal-unified-log.json, SHA256 cab7ae417c3cd4c6aa814269d967560e31b33a7faeb385f99da6da4f48ddfb15. No new game process or instrumentation produced that evidence.

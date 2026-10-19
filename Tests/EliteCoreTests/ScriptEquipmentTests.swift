@@ -118,7 +118,43 @@ struct GearScriptFixture {
   }
   try #require(scene.autoPilot.targetID == 0 && scene.autoPilot.targetActor == mainActor)
   for _ in 0..<10000 where !scene.docked { scene = await runtime.advance(delta: 0.02) }
-  try #require(scene.docked && scene.dockedAtMainStation)
+  let reachedMainDock = scene.docked && scene.dockedAtMainStation
+  var failureContext: Comment?
+  if !reachedMainDock {
+    let currentMain = scene.bodies.first { $0.id == 0 && $0.hull == .station }
+    let currentTarget = scene.autoTargetBody
+    let targetMatchesArrival =
+      scene.autoPilot.targetID == 0
+      && scene.autoPilot.targetActor == mainActor
+      && currentTarget?.physical?.identity == mainActor
+    let mainMatchesAnchor =
+      currentMain != nil
+      && currentMain?.physical?.identity
+        == scene.commander.flightSimulation.anchors?.station.identity
+    let depth = currentMain.map { -$0.entrancePosition.dot($0.entranceNormal) }
+    let fields = [
+      "screen=\(scene.screen) message=\(String(scene.message.prefix(256)))",
+      "time=\(scene.time) physicalTime=\(scene.commander.flightSimulation.physicalTime) revision=\(scene.gameplayRevision)",
+      "docked=\(scene.docked) mainDock=\(scene.dockedAtMainStation) paused=\(scene.paused)",
+      "energy=\(scene.energy) front=\(scene.frontShield) rear=\(scene.rearShield)",
+      "AUTOstatus=\(scene.autoPilot.status) phase=\(scene.autoPilot.stationDefencePhase)",
+      "ready=\(scene.autoPilot.ready) final=\(scene.autoPilot.finalApproach)",
+      "facing=\(scene.autoPilot.facingError) phaseError=\(scene.autoPilot.phaseError)",
+      "rateError=\(scene.autoPilot.rateError) positionError=\(scene.autoPilot.positionError)",
+      "targetID=\(String(describing: scene.autoPilot.targetID))",
+      "targetActor=\(String(describing: scene.autoPilot.targetActor)) arrivalActorMatch=\(targetMatchesArrival)",
+      "MAINanchorMatch=\(mainMatchesAnchor) energy=\(String(describing: currentMain?.energy))",
+      "MAINposition=\(String(describing: currentMain?.position)) depth=\(String(describing: depth))",
+      "MAINrange=\(String(describing: currentMain?.position.length)) rotation=\(String(describing: currentMain?.rotation))",
+      "MAINrotationRate=\(String(describing: currentMain?.rotationRate))",
+      "MAINnormal=\(String(describing: currentMain?.entranceNormal)) up=\(String(describing: currentMain?.entranceUp))",
+      "scalarSpeed=\(scene.speed) worldVelocity=\(scene.flightWorldVelocity)",
+      "AUTOvelocity=\(scene.autoPilot.velocity) pitch=\(scene.pitch) roll=\(scene.roll) yaw=\(scene.yaw)",
+      "cachedFirstRefusal=\(scene.stationAutoDefence?.firstEntryCourseRefusalObservation?["refusal"] ?? "unavailable")",
+    ]
+    failureContext = Comment(rawValue: String(fields.joined(separator: "; ").prefix(4096)))
+  }
+  try #require(reachedMainDock, failureContext)
   let cash = scene.commander.credits
   await runtime.key("contacts-open")
   await runtime.key("return")
