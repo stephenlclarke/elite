@@ -228,7 +228,22 @@ Delivery is a separate field: prepared branch; integrated source; verified local
 | E11 journey child /736 | 8260451f -> canonical `007cc14db6ad110a4a1aca7a99429f159f11fdbd`;736 courier completion-integrity PASS, loan journey FAIL | Retained owned-run/public fatal log identifies ambient pirate laser death at33.04s in G01-S129 before final approach. Authored route hostility versus incidental fixture setup is still under review; not a demonstrated general rim/planner defect. No new probe run. |
 | E10 review/publication | GitHub review service unknown-error unresolved; final checks/main/Sonar/notary/tap not established | Existing required completed clean review and protections remain. A service error is not approval. |
 
-E06-E09/E11,735 and736 are explicit Root handoff evidence, not rerun here; raw artifact paths/hashes were not supplied to this documentation assignment and remain to be attached by the execution owner before promotion. E02 app path is `/Users/sclarke/Applications/Elite Development Previews/2026-10-19-integrated-4f5b1aae/Elite Integrated Preview.app`. Do not restart builds/probes solely to populate this document.
+G1 integrated this documentation-only ledger as `01114c2d7d92a8357bbc4dfd0f3b8b227920b546` after source delta review; the tree was clean and no game/compiler/renderer/native job ran. Functional statuses remain unchanged. The execution owner attached the retained evidence below without rerunning unaffected work. E02 app path is `/Users/sclarke/Applications/Elite Development Previews/2026-10-19-integrated-4f5b1aae/Elite Integrated Preview.app`. Do not restart builds/probes solely to populate this document.
+
+### Retained execution evidence attached by G1
+
+These are local evidence files, not public downloads. Each SHA256 identifies the retained verification JSON. Sources are recorded inside each file; later documentation commits do not change the tested binary.
+
+| Scope | Local verification file | SHA256 / actual outcome |
+| --- | --- | --- |
+| Full728 | `/tmp/elite-full-review-ci-728/agent-game-test-verification-728.json` | `9a87bc866cad72d495eba6113fa255e69b1188e6fff0e1a65ae1f7a7d4b50855`; failed assertions/stack crash; no combined coverage or sanitizer/leak acceptance. |
+| Focused732 | `/tmp/elite-station-qualification-732/agent-game-test-verification-732.json` | `d31edf2d7964277e7ae4b2bea40132a86f364924294ec6ef7565976294062fe3`; retain four passing methods/seven cases; group failed. |
+| Focused733 | `/tmp/elite-station-qualification-733/agent-game-test-verification-733.json` | `0d360ffdd4205c7b2fb629433614b97a01e3ee5815f87765692c45a1fa36f5dd`; P/R/T nine methods/twelve cases passed. |
+| Focused735 | `/tmp/elite-station-qualification-735/agent-game-test-verification-735.json` | `9a1901d2e8b8a452655b44fe7a6ffd4f53bfe4dcadd80f96f8efaaa50791f51e`; applicability/crash three methods/six cases passed at default stack. |
+| Focused736 | `/tmp/elite-station-qualification-736/agent-game-test-verification-736.json` | `4d3f8b77e2f96c0d30b5a77e711e315c7f8d7750014ad460752616541a86b2fa`; courier passed; loan failed native docking, one issue, no crash. |
+| Actual736 fatal event | `/tmp/elite-station-qualification-736/retained-profiles/fatal-unified-log.json` | `cab7ae417c3cd4c6aa814269d967560e31b33a7faeb385f99da6da4f48ddfb15`; existing owned PID56098 log proves ambient pirate pulse laser death at33.04s; coverage records no final approach. |
+
+U07 is resolved for the current retained outcomes above; earlier failed731 is superseded by the directly recorded735 crash qualification, not erased or counted as a pass. The equipment demonstration's route contract is still being checked; no diagnostic-only leaf or frozen docking profile has been integrated or executed.
 
 ## Detailed feature and gap register
 
@@ -542,7 +557,7 @@ Preserve separate module/alien progression designs and actual fitting effects. T
 | U04 | Exact historical89-category and15RRS-profile capability mapping to current original content is not supplied. New64 target source inventory is complete; native feature parity must be reconciled without restoring superseded stories or inventing a one-to-one mapping. | Root/MC1; K02-K12 and original priorities7-9. |
 | U05 | SH163 pendingFabrication/encounter mechanics and exact eligible collection/fabrication denominator after current L337 policies are applied. | G1/Root, M17; do not silently omit it or count nonmembers. |
 | U06 | Final L337 trademark/rights/authorship verification and independent similarity review remain qualified; truthful dependency/source notices must be retained. | Root, M19; no whole-release clearance asserted. |
-| U07 | Raw artifact paths/hashes for Root-reported731/732/733 and final exact source of later completed outcomes. | G1/Root, M01 evidence maintenance; do not rerun unaffected work just to recreate documentation. |
+| U07 | Resolved for the current retained outcomes: G1 attached exact732/733/735/736/full728 verification paths and hashes above. Earlier731 failure remains historical;735 directly qualifies its repair. | G1, M01; retain evidence without rerunning unaffected work. |
 | U08 | Current normal-loop performance/final display appearance across compact/fullscreen/distance and actual activated171 geometry. Source optimisation, generated GIF currentness and display-only resources are not that result. | G1, periodic checkpoint after relevant M04/M06 batches. |
 
 Future iPhone/iPad UX and paid app/mission-pack release were expressed as later product plans; no iOS implementation milestone or date is established by this macOS handoff. Root must obtain/record a concrete approved iOS scope before assigning it. It is not hidden inside M19 or silently declared completed.
