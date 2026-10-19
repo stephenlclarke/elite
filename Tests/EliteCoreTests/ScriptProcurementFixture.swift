@@ -545,6 +545,7 @@ struct ScriptProcurementPreflightFacts: Sendable, Equatable {
   var needsDefence: Bool { incoming || !immediateThreats.isEmpty }
   var incoming = false
   var outsideNoFireZones = false
+  var lawfulForwardDefence = false
   var exactForwardHit = false
   var combatLaser = false
   var frontLaser = false
@@ -571,7 +572,7 @@ struct ScriptProcurementPreflightFacts: Sendable, Equatable {
       steps >= 0, steps < 3000
     else { return .refuse }
     guard needsDefence else { return .clear }
-    guard threat?.wanted == true, outsideNoFireZones, exactForwardHit,
+    guard threat?.wanted == true, outsideNoFireZones || lawfulForwardDefence, exactForwardHit,
       combatLaser, frontLaser
     else { return .track }
     return .requestFire
@@ -984,7 +985,7 @@ extension GameRuntime {
       stationRanges.append(body.position.length)
     }
     facts.outsideNoFireZones = ScriptProcurementPreflightFacts.clearsEveryNoFireZone(stationRanges)
-    if let threat = facts.threat, threat.wanted, facts.outsideNoFireZones,
+    if let threat = facts.threat, threat.wanted,
       facts.combatLaser, facts.frontLaser,
       let contact = try? game.nearestMissionCollision(
         from: .init(0, 0, 0), direction: .init(0, 0, 1), range: 6000, radius: 0,
@@ -993,6 +994,13 @@ extension GameRuntime {
       let body = game.bodies.first(where: { $0.id == id })
     {
       facts.exactForwardHit = body.physical?.identity == threat.identity
+      if facts.exactForwardHit {
+        facts.lawfulForwardDefence =
+          game.commander.crimeLedger.hasCurrentUnlawfulAttack(
+            from: threat.identity, against: player, context: context)
+          && game.commander.crimeLedger.permitsAutonomousDefence(
+            owner: player, victim: threat.identity, context: context)
+      }
     }
     facts.valid = true
     return facts

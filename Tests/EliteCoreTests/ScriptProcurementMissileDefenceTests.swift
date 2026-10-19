@@ -207,3 +207,31 @@ func procurementMissilePolicyCannotGrantNativeLaunchAuthority(condition: String)
 extension GameRuntime {
   fileprivate func procurementMissileControlsForTest() -> Controls { controls }
 }
+
+@Test func procurementLawfulNearStationLaserDefenceCannotRequestMissileFallback() {
+  // Constructed policy values grant no native launch authority, as in the existing policy cases.
+  let player = ActorIdentity(system: .init(galaxy: 0, system: 0), visit: 1, entity: 1)
+  var facts = ScriptProcurementPreflightFacts()
+  facts.identity = .init(
+    player: player, epoch: UUID(), stationEpoch: UUID(), owner: UUID(), revision: 1,
+    physicalTime: 1)
+  facts.valid = true
+  facts.live = true
+  facts.threat = .init(
+    identity: .init(system: player.system, visit: 1, entity: 2), position: .init(0, 0, 500),
+    wanted: true)
+  facts.lawfulForwardDefence = true
+  facts.exactForwardHit = true
+  facts.combatLaser = true
+  facts.frontLaser = true
+  #expect(facts.requestedAction(steps: 0) == .requestFire)
+  let denied = ScriptProcurementMissilePolicy.requestsFallback(
+    facts, steps: 0, pulse: true, heat: 246.4, cooldown: 0, rounds: 3,
+    unlimited: false, ownMissile: false)
+  #expect(!denied)
+  facts.outsideNoFireZones = true
+  let outside = ScriptProcurementMissilePolicy.requestsFallback(
+    facts, steps: 0, pulse: true, heat: 246.4, cooldown: 0, rounds: 3,
+    unlimited: false, ownMissile: false)
+  #expect(outside)
+}
