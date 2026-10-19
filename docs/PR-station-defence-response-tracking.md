@@ -13,3 +13,7 @@ G1 receives one frozen leaf for independent review and one coherent compile. Foc
 ## Compiler qualification
 
 The first combined build stopped before test execution because Swift Testing could not invoke the mutating guidance method inside five newly added `#require` expressions. Each call is now evaluated immediately before the same assertion over its result, preserving call order, predicate and all original test bytes without copying Game or changing production. Reversing those five local pairs recovers the complete reviewed test file byte for byte. A coherent rebuild and actual qualification remain required.
+
+## Focused runtime result
+
+Run 579 passed all five new methods / seven cases and 25 affected existing station tracking and native admission methods / 39 cases, with zero issues or crashes. The unchanged 12-case history method in run 578 still failed with four setup assertions; actual captured issue headers identify all four as `partial`, and no individual argument-end verdict is inferred. Both runs used coverage-enabled binaries, default stack/concurrency and all diagnostics off. Current failure phase/cause is unrecorded. The selected station regressions qualify this source change, while the remaining history failure and full CI remain open.

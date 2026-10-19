@@ -39,6 +39,14 @@ One unchanged historical docking method, containing all 12 original arguments, f
 
 The combat producer now sets the fresh-press stop only for a held trigger and preserves an existing stop. Private attempt owners separate freight preparation from final cold validation and publication. Decoder semantics, security limits, transaction checks and test stack settings remain unchanged. These focused results do not supply a current coverage percentage, sanitizer/leak result or full CI pass. Another full gate run is required after the remaining observed failure is qualified.
 
+## Docking response tracking follow-up
+
+At source `ac287a88f18a1a6f78037088b5ffb707e36c807f`, run 579 passed all 30 selected station methods / 46 cases, with zero issues, unknown outcomes or crashes. This includes five new response retention/moving-bearing/reset methods / seven cases and 25 affected existing military-priority, current-identity/range/unknown, station-path, interruption, thrust, staging, spin, handover, native admission and final-trajectory methods / 39 cases. Existing native ray, law, equipment and publication checks remained intact.
+
+The original history method in run 578 still failed: all 12 argument starts and aggregate ends were observed, with four recorded assertions at `ScriptProcurementFixture.swift:254`. The recorded stages, derived from the captured issue headers, are exclusively `partial`. This is not a pass of the full history method or a claim about individual argument-end verdicts. Diagnostics were explicitly off, so current energy, death phase and cause were not recorded. The earlier eight-issue results remain attached to their earlier sources.
+
+The production change retains a response actor only within the current authorized candidate tier and uses the existing camera-corrected moving-bearing tracker within unchanged turn limits. Both new behaviour and affected safety regressions have focused evidence, while the remaining partial-history failure requires further causal work. Prior freight, input and pod results retain their tested sources. No broad CI, coverage percentage, sanitizer/leak, release or completion claim follows from this focused run.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.
