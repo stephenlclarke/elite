@@ -115,18 +115,21 @@ struct ScriptOwnedCargoState: Codable, Sendable, Equatable {
         terminal.clock <= engine.clock(.missionCalendar),
         held.isEmpty, pendingLoss == nil,
         let receipt = state.completionReceipt, receipt.sequence == terminal.sequence,
-        receipt.outcome == state.outcome, let due = job.deadline
+        receipt.outcome == state.outcome, plan.deadlineMatches(job)
       else { return false }
       if terminal.cause == .delivered {
         return remaining.isEmpty && terminal.removed.isEmpty && collection.complete
-          && transfers[terminal.sequence] != nil && terminal.clock <= due
-          && job.settlementAmount == plan.reward
+          && transfers[terminal.sequence] != nil
+          && plan.permitsDelivery(at: terminal.clock, deadline: job.deadline)
+          && job.settlementAmount == plan.successPayment
       }
       guard terminal.removed == remaining, !remaining.isEmpty, job.settlementAmount == 0 else {
         return false
       }
-      return (terminal.cause != .expired || terminal.clock > due)
-        && (terminal.cause != .abandoned || terminal.clock <= due)
+      return (terminal.cause != .expired
+        || plan.permitsExpiry(at: terminal.clock, deadline: job.deadline))
+        && (terminal.cause != .abandoned
+          || plan.permitsDelivery(at: terminal.clock, deadline: job.deadline))
     }
     guard state.outcome == .active, !job.settled, state.completionReceipt == nil else {
       return false

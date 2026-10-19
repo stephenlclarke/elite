@@ -63,10 +63,19 @@ enum ScriptFreightVersionedSave {
         "route_index", "commodity_index", "path", "calendar_lower_bound_seconds", "template",
         "delivery_contact", "abandon_contact", "capabilities",
       ]
-      guard Set(object.keys) == keys, (object["draws"] as? [Any])?.count == 6,
+      let bonded = object["profile"] as? String == ScriptFreightPlan.bondedProfileID
+      let expected = bonded ? keys.union(["bondedHazardTiers", "bondedQuote"]) : keys
+      guard Set(object.keys) == expected, (object["draws"] as? [Any])?.count == 6,
         let path = object["path"] as? [Any], (2...4).contains(path.count),
         let capabilities = object["capabilities"] as? [Any], capabilities.count <= 10
       else { throw SaveError.invalidCommander }
+      if bonded {
+        guard let hazards = object["bondedHazardTiers"] as? [Any], hazards.count == 3,
+          let quote = object["bondedQuote"] as? [String: Any],
+          Set(quote.keys) == ["routeLegs", "hazardTier"],
+          !(quote["routeLegs"] is NSNull), !(quote["hazardTier"] is NSNull)
+        else { throw SaveError.invalidCommander }
+      }
     }
     func cargo(_ object: [String: Any]) throws {
       let required: Set<String> = [

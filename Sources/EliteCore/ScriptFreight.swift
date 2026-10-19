@@ -81,7 +81,7 @@ extension Game {
       nativeMainStationDockEvidenceIsCurrent, contractStation == plan.origin, !paused,
       commander.scriptState.missionCalendar != nil,
       commander.scriptState.clock(.missionCalendar) <= 1e12 - plan.duration,
-      plan.calendarLowerBoundSeconds < plan.duration, plan.capacityFits(commander)
+      plan.routeFitsDuration, plan.capacityFits(commander)
     else {
       throw MissionPackError(
         "Review freight at its actual issuer with room for every supplied tonne.")
@@ -160,8 +160,8 @@ extension Game {
     let now = commander.scriptState.clock(.missionCalendar)
     let due = commander.scriptState.instances.compactMap { id, state -> UUID? in
       guard state.outcome == .active, let cargo = state.savedOwnedCargo,
-        cargo.terminal == nil, let deadline = state.contract?.deadline,
-        cargo.pendingLoss != nil || escape || now > deadline
+        cargo.terminal == nil, let job = state.contract, let plan = job.offer.freightPlan,
+        cargo.pendingLoss != nil || escape || plan.permitsExpiry(at: now, deadline: job.deadline)
       else { return nil }
       return id
     }.sorted { $0.uuidString < $1.uuidString }
@@ -282,12 +282,14 @@ extension Game {
     context: ScriptEventContext, candidate: inout Commander
   ) throws {
     guard var cargo = state.savedOwnedCargo, cargo.terminal == nil,
-      let job = state.contract, let plan = job.offer.freightPlan, let due = job.deadline,
+      let job = state.contract, let plan = job.offer.freightPlan,
       state.outcome == .active, state.revision < UInt64.max
     else { throw SaveError.invalidCommander }
     let now = candidate.scriptState.clock(.missionCalendar)
-    guard cause != .delivered || (cargo.held.isEmpty && now <= due),
-      cause != .expired || now > due
+    guard plan.deadlineMatches(job),
+      cause != .delivered
+        || (cargo.held.isEmpty && plan.permitsDelivery(at: now, deadline: job.deadline)),
+      cause != .expired || plan.permitsExpiry(at: now, deadline: job.deadline)
     else { throw SaveError.invalidCommander }
     cargo.terminal = .init(cause: cause, sequence: sequence, clock: now, removed: cargo.held)
     cargo.held = []
@@ -311,7 +313,7 @@ extension Game {
         ? "dialogue.confirmed" : "freight.terminated",
       cause: context, committed: scriptEventContext(state), revision: state.revision,
       milestones: state.milestones.sorted(), destroyedEncounters: [], deliveredParties: [],
-      returnedEquipment: [], settlementAmount: cause == .delivered ? plan.reward : 0,
+      returnedEquipment: [], settlementAmount: cause == .delivered ? plan.successPayment : 0,
       choices: nil)
   }
 

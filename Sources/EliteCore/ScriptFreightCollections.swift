@@ -48,7 +48,7 @@ extension Game {
       state.outcome == .active, state.suspension == nil, !job.settled, !paused,
       nativeMainStationDockEvidenceIsCurrent, candidate.equipmentOwnerID == plan.owner,
       candidate.galaxy == plan.origin.galaxy, candidate.system == plan.path.last,
-      let due = job.deadline, candidate.scriptState.clock(.missionCalendar) <= due
+      plan.permitsDelivery(at: candidate.scriptState.clock(.missionCalendar), deadline: job.deadline)
     else { return false }
     return true
   }
@@ -100,7 +100,7 @@ extension Game {
         ":freight:" + ecmControl.epoch.uuidString + ":" + nativeStationRuntimeEpoch.uuidString),
       dialogue.galaxy == commander.galaxy, dialogue.system == commander.system,
       commander.scriptState.nextEvent < UInt64(Int64.max) - 1, old.revision < UInt64.max,
-      let due = job.deadline, commander.scriptState.clock(.missionCalendar) <= due,
+      plan.permitsDelivery(at: commander.scriptState.clock(.missionCalendar), deadline: job.deadline),
       let declared = pack.manifest.dialogs?.first(where: { $0.id == dialogue.id })
     else { throw MissionPackError("Reopen this job's station contact.") }
     let cause = scriptEventContext(old)
