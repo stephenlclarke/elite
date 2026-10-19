@@ -22,6 +22,7 @@ let package = Package(
         .copy("Resources/ScriptPacks"), .copy("Resources/ShipTextures"),
         .copy("Resources/OriginalWorlds"),
         .copy("Resources/OriginalShipTextures"),
+        .copy("Resources/OriginalMarkets"),
         .process("Resources/ModelLicenses"),
         .process("Resources/ASSET-NOTICE.txt"), .process("Resources/Oolite-LICENSE.txt"),
         .process("Resources/RescueStations-LICENSE.txt"), .process("Resources/Vector-MANIFEST.txt"),
