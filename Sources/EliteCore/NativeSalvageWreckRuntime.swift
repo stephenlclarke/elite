@@ -110,14 +110,30 @@ extension Game {
   }
 
   @discardableResult
+  @inline(never)
   mutating func flushNativeSalvageWrecks(
     parking actors: Set<ActorIdentity> = [], parkingSystem: SystemIdentity? = nil
   ) -> Bool {
-    let parking =
-      commander.alienStorageState?.current.salvage.native.wrecks.values.contains {
-        $0.binding.map { actors.contains($0) || $0.system == parkingSystem } == true
-      } == true
+    let parking = nativeSalvageWrecksNeedParking(actors, parkingSystem: parkingSystem)
     guard !nativeSalvageWreckMotion.isEmpty || parking else { return true }
+    return flushObservedNativeSalvageWrecks(parking: actors, parkingSystem: parkingSystem)
+  }
+
+  /// Keep the parking projection separate from both the no-op guard and publication values.
+  @inline(never)
+  private mutating func nativeSalvageWrecksNeedParking(
+    _ actors: Set<ActorIdentity>, parkingSystem: SystemIdentity?
+  ) -> Bool {
+    commander.alienStorageState?.current.salvage.native.wrecks.values.contains {
+      $0.binding.map { actors.contains($0) || $0.system == parkingSystem } == true
+    } == true
+  }
+
+  /// Enter snapshot, reconciliation and publication storage only for pending work or parking.
+  @inline(never)
+  private mutating func flushObservedNativeSalvageWrecks(
+    parking actors: Set<ActorIdentity>, parkingSystem: SystemIdentity?
+  ) -> Bool {
     guard let previous = commander.alienStorageState?.current.snapshot else { return false }
     if let hot = nativeSalvageWork, !nativeSalvageHotWorkIsCurrent(hot) { return false }
     do {

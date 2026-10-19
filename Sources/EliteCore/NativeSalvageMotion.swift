@@ -52,6 +52,7 @@ extension Game {
   }
 
   @discardableResult
+  @inline(never)
   mutating func flushNativeSalvageMotion(
     parking actors: Set<ActorIdentity> = [],
     parkingSystem: SystemIdentity? = nil
@@ -59,6 +60,14 @@ extension Game {
     guard flushNativeSalvageWrecks(parking: actors, parkingSystem: parkingSystem) else {
       return false
     }
+    return flushNativeSalvageMotionAfterWrecks(parking: actors, parkingSystem: parkingSystem)
+  }
+
+  /// Wreck publication completes before motion projection and publication values are entered.
+  @inline(never)
+  private mutating func flushNativeSalvageMotionAfterWrecks(
+    parking actors: Set<ActorIdentity>, parkingSystem: SystemIdentity?
+  ) -> Bool {
     guard let current = commander.alienStorageState?.current else {
       return nativeSalvageMotion.isEmpty
     }
