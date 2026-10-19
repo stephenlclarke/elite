@@ -6,11 +6,11 @@ import Testing
 struct ScriptFinanceTestFixture {
   let storage: NativeStationTestStorage
   let pack: ScriptPack
-  init(edits: [(String, String)] = []) throws {
+  init(edits: [(String, String)] = [], example: String = "finance-obligation") throws {
     storage = try NativeStationTestStorage()
     let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
-      .appendingPathComponent("docs/mission-packs/finance-obligation")
+      .appendingPathComponent("docs/mission-packs/" + example)
     let target = storage.root.appendingPathComponent("pack")
     do {
       try FileManager.default.copyItem(at: source, to: target)

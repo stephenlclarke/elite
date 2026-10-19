@@ -1,0 +1,7 @@
+# Add content-declared interest to the shared finance provider
+
+R06's atomic economy requirement already has native fixed-principal offers, explicit Borrow/Repay, retained liabilities and once-only durable receipts. It lacks declared interest and elapsed-calendar assessment. The approved original finance specification remains guidance: its GSE loan has its own nominal settlement and short-balance/default rules, so an original generic interest profile must not pretend to implement that campaign or add hidden source fees.
+
+Add bounded content terms, pure current-calendar projections, explicit quote disclosures and Confirm-time assessment using the existing finance ledger, actual station authority, native cash and durable transaction. Preserve an actual interest-free product. No accrual before accepted borrowing or after payoff; partial payments must preserve the original period origin and lifetime cap. Parent completion, current-format persistence, stale reviews, writer refusal, numerical limits and real native jump-calendar changes need focused coverage. Missed periods must use analytic catch-up rather than an iteration per period. Escrow, collections, defaults, transit and full retained campaigns remain separate scope.
+
+The exact feature parent is `a0eed392014cb1f4676e463f3221122ece71ba5a`. Source and authored tests do not establish compiled or runtime acceptance. See the [PR note](PR-authored-finance-interest.md).
