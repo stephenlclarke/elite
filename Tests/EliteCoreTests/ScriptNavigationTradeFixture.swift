@@ -4,8 +4,8 @@ import Testing
 
 @testable import EliteCore
 
-/// Native engine acceptance fixture, not certification of predecessor worlds as original content.
-/// Both endpoint identities explicitly remain in the fixture namespace and are never registered.
+/// Native engine acceptance fixture using actual installed original worlds and authored quotes.
+/// Real flight, paid stock mutations and station entry produce the mission evidence.
 struct ScriptNavigationTradeFixture: Sendable {
   let root: URL
   let pack: ScriptPack
