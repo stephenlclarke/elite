@@ -32,8 +32,9 @@ struct NativeCommanderWormholePassage {
       && game.commander.scriptState.calendarSeconds <= opening.expiresAt
   }
   static func prepare(
-    in game: inout Game, opening: NativeWormholeOpening,
-    sample: NativeWormholeMotionSample, context: OriginalWorldJourneyContext
+    in game: borrowing Game, opening: NativeWormholeOpening,
+    sample: NativeWormholeMotionSample, context: OriginalWorldJourneyContext,
+    cohort: NativeWormholeAttainedCohort
   ) throws -> Self {
     guard opening.valid, context.route == opening.route,
       game.commander.scriptState.wormholeTransit?.legs[opening.leg]?.opening == opening,
@@ -56,10 +57,7 @@ struct NativeCommanderWormholePassage {
         to: game.commander.flightSimulation.pose.position, hullRadius: radius)
     else { throw NativeWormholeRefusal.wrongWake }
     let debit = game.commander.jumpFuelCost(distance: opening.route.distanceLightYears)
-    try game.proveNativeWormholeMotion(
-      from: sample.pose.position,
-      to: game.commander.flightSimulation.pose.position, radius: radius,
-      excluding: player, sample: sample, includePlayer: false)
+    try cohort.provePlayer(radius: radius, in: game)
     guard debit > 0, game.commander.fuel >= debit, !game.commander.unlimitedFuel else {
       throw NativeWormholeRefusal.insufficientFuel
     }

@@ -144,9 +144,7 @@ struct NativeWormholeTransitFixture {
     try #require(context.matches(game, at: game.systemIdentity))
     let transit = game.commander.scriptState.transitSeconds
     let sample = try physicalStep(&game)
-    game.advanceNativeNPCTransit(from: sample, publish: publisher)
-    game.advanceNativeCommanderWakeEntry(from: sample, publish: publisher)
-    game.advanceNativeNPCTransit(from: nil, publish: publisher)
+    game.advanceNativeWormholeFrame(from: sample, publish: publisher)
     game.drainScriptEvents(publish: publisher)
     game.fireDueScriptTimers(
       flight: true, local: true, calendar: true,

@@ -1,0 +1,7 @@
+# Preserve simultaneous native wormhole crossings and current location authority
+
+The independent source review of `bb0751841df1f7ac93c0a37f187850a9bf260d88` found three concrete transit defects. Serial successful departure publication removes a real source body before the next source or player proves the same movement frame. The strict native sweep consequently rejects that later real crossing as a missing obstacle. A refused publication must keep its source intact, while another independent actual crossing in that frame must remain eligible.
+
+Current-format validation also joins a departure to its retained body address without requiring the exact opening creator address. After multiple completed journeys, relocation accepts any historical destination, including an obsolete location. These joins must require the opening creator and the latest successful arrival for the same logical actor, including rejection of a missing location after arrival.
+
+Preserve actual complete attained scene endpoints; permit only removals witnessed by successful matching publication. Keep independent current source, owner, leg, fitted drive, fuel and durable-write validation. Do not grant authority to arbitrary missing bodies, prior movement frames, constructed receipt values or save history. This repair is confined to the three reported findings. See the [PR notes](PR-native-transit-attained-cohort.md).
