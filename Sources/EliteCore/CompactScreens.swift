@@ -17,7 +17,8 @@ extension Display {
     case .handoff: blackjackHandoff(game, width: width, height: height)
     case .demo, .title: startupScreen(game, width: width, height: height)
     case .help: helpScreen(game, width: width, height: height)
-    case .secret, .mission, .rumour, .gameOver:
+    case .rumour: wantedBoard(game, width: width, height: height)
+    case .secret, .mission, .gameOver:
       compactScreen(game, width: width, height: height)
     case .front, .rear, .left, .right: cockpit(game, width: width, height: height)
     }
@@ -57,6 +58,7 @@ extension Display {
     return frame
   }
   static func compactScreen(_ game: Game, width: Double, height: Double) -> Frame {
+    if game.screen == .rumour { return wantedBoard(game, width: width, height: height) }
     var frame = cockpit(game, width: width, height: height)
     let layout = CompactLayout(game: game, width: width, height: height)
     switch game.screen {

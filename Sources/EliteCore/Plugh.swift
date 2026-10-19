@@ -82,6 +82,9 @@ extension Game {
         .rumour,
       ].contains(screen)
     else { return }
+    wantedDetail = false
+    wantedRumourDetail = false
+    wantedScroll = 0
     rumourReturn = screen
     if commander.system == Plugh.rumourStation { commander.discoverPlugh(in: commander.galaxy) }
     screen = .rumour

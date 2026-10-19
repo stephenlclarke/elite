@@ -260,6 +260,34 @@ extension Game {
         }
       }
     }
+    if let death = resolution.death {
+      var careers = commander.wantedCareers
+      if let ownerBody = bodies.first(where: { $0.physical?.identity == death.owner }),
+        wantedCareerIsOrdinary(ownerBody),
+        let observed = NPCPersistenceSnapshot.capture(
+          body: ownerBody, pose: commander.flightSimulation.pose,
+          physicalTime: context.physicalTime, protection: context.protection)
+      {
+        let logical = commander.npcPersistence.logicalIdentity(for: death.owner) ?? death.owner
+        careers.observe(
+          observed, logical: logical, visible: ownerBody.position.length <= context.perceptionRadius
+        )
+      }
+      let shipDeath =
+        death.victim == context.player.identity
+        || context.actors.contains { $0.identity == death.victim && $0.hull.isTargetShip }
+      let victimCareer = careers.careers.values.first { $0.binding == death.victim }
+      var listed = false
+      if let career = victimCareer {
+        listed = wantedBoard.contains { $0.identity == career.identity }
+      }
+      let recorded = careers.record(
+        death, player: context.player.identity, shipDeath: shipDeath)
+      if careers != commander.wantedCareers { commander.wantedCareers = careers }
+      if recorded, listed, let name = victimCareer?.callsign {
+        notify("WANTED CAREER CLOSED: " + name)
+      }
+    }
     if let report = resolution.report { commander.stationSecurity.receive(report) }
     for notice in resolution.notices where message != notice.text || messageTime <= 0 {
       notify(notice.text)

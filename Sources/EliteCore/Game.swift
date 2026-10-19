@@ -68,6 +68,11 @@ public struct Commander: Sendable, Equatable, Codable {
     set { savedStationSecurity = newValue }
   }
   public var encounterDirector: EncounterDirector?
+  private var savedWantedCareers: WantedCareerLedger?
+  public var wantedCareers: WantedCareerLedger {
+    get { savedWantedCareers ?? WantedCareerLedger() }
+    set { savedWantedCareers = newValue }
+  }
   private var savedNPCPersistence: NPCPersistenceLedger?
   public var npcPersistence: NPCPersistenceLedger {
     get { savedNPCPersistence ?? NPCPersistenceLedger() }
@@ -239,6 +244,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedStationSecurity
     case encounterDirector
     case savedNPCPersistence
+    case savedWantedCareers
     case savedCargoDebrisLedger
     case savedMiningLedger
     case savedMissionProgress
@@ -318,6 +324,7 @@ public struct Commander: Sendable, Equatable, Codable {
       && (savedFlightSimulation?.valid ?? true)
       && (savedCargoDebrisLedger?.valid ?? true)
       && (savedMiningLedger?.valid ?? true)
+      && (savedWantedCareers?.valid(in: flightSimulation) ?? true)
       && (savedNPCPersistence?.valid ?? true)
       && (!blackjack.carriesFirearm || cargo[10] >= 1)
       && equipment.isSubset(of: Equipment.validNames) && !name.isEmpty && name.count <= 16
@@ -466,6 +473,12 @@ public struct Game: Sendable {
   public var galacticBrowse = GalaxyBrowseState()
   public var systemInspection: SystemInspection?
   public var rumourReturn: Screen = .status
+  var wantedSelection: ActorIdentity?
+  var wantedPlayerSelected = false
+  var wantedDetail = false
+  var wantedRumourDetail = false
+  var wantedScroll = 0
+  var wantedReadContext: WantedReadContext?
   public var blackjackReturn: Screen = .status
   var screenHistory: [Screen] = []
   var flightReturn: Screen = .front

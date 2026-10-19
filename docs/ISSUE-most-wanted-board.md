@@ -1,0 +1,7 @@
+# FR-035: usable Top 10 Wanted in station gossip
+
+Station gossip had PLUGH discovery text but no wanted board, persisted pilot careers, honest literal death history or listed-craft cues. NPCPersistenceLedger is visit/system scoped and deliberately clears ordinary traffic on system departure; combat rank includes gifts and cannot supply historical literal ship kills.
+
+Implement one usable current-galaxy board of up to ten actual eligible careers, including an eligible wanted player. Keep fewer/empty states truthful. Dossiers need craft, native reward, recorded kills, last reported location/heading/destination/time and explicit Unknowns. Reading must not spawn targets, grant rewards or change simulation state. Pointer and keyboard details/back must work at compact and wide sizes; only an explicit validated action may open the existing historical-sighting route preview.
+
+Career identity must survive ordinary cull/rebinding, saves, revisits and hull exchange. Use native bounded admission and the actual once-only death settlement. Never fabricate ten criminals, reinterpret rank gifts, award a board bonus, teleport to a reported destination, or transfer purple to pods/debris. Purple must coexist with native law, hostile danger, orange recovery priority, missile red and existing occlusion.

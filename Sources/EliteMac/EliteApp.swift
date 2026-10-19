@@ -292,6 +292,11 @@ final class GameView: NSView {
       pending.append("secret-click:\(point.x):\(point.y)")
       return
     }
+    if game.screen == .rumour {
+      let point = convert(event.locationInWindow, from: nil)
+      pending.append("wanted-click:\(point.x):\(point.y)")
+      return
+    }
     if game.screen == .showroom {
       let point = convert(event.locationInWindow, from: nil)
       pending.append("showroom-click:\(point.x):\(point.y)")
@@ -674,6 +679,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
       } else if event.hasPrefix("secret-click:") {
         let values = event.dropFirst(13).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.secretClick(x: values[0], y: values[1]) }
+      } else if event.hasPrefix("wanted-click:") {
+        let values = event.dropFirst("wanted-click:".count).split(separator: ":").compactMap {
+          Double($0)
+        }
+        if values.count == 2 { await runtime.wantedBoardClick(x: values[0], y: values[1]) }
       } else if event.hasPrefix("showroom-click:") {
         let values = event.dropFirst(15).split(separator: ":").compactMap { Double($0) }
         if values.count == 2 { await runtime.showroomClick(x: values[0], y: values[1]) }

@@ -69,7 +69,7 @@ extension Game {
   public var flightStatus: String {
     if docked { return "Docked" }
     if energy <= 0 { return "Destroyed" }
-    return bodies.contains { $0.hostile && targetColourCue(for: $0) == .hostile }
+    return bodies.contains { $0.hostile && $0.energy > 0 && !isEMPDisabled($0) }
       ? "Hostile" : "Safe"
   }
   public var missileIconCount: Int { commander.unlimitedMissiles ? 1 : commander.missiles }
