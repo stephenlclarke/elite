@@ -601,12 +601,12 @@ extension NativeMultiBatchRuntimeTests {
 
   private func continuationFiles(in directory: URL) throws -> [String: String] {
     let base = directory.resolvingSymlinksInPath()
-    guard
-      let entries = FileManager.default.enumerator(
-        at: base, includingPropertiesForKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
-    else { throw SaveError.invalidCommander }
+    guard let entries = FileManager.default.enumerator(atPath: base.path) else {
+      throw SaveError.invalidCommander
+    }
     var result: [String: String] = [:]
-    for case let file as URL in entries {
+    for case let relative as String in entries {
+      let file = base.appendingPathComponent(relative)
       let properties = try file.resourceValues(
         forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
       guard properties.isSymbolicLink != true else { throw SaveError.invalidCommander }
@@ -614,7 +614,6 @@ extension NativeMultiBatchRuntimeTests {
       guard result.count < 25, (properties.fileSize ?? Int.max) <= 4_194_304 else {
         throw SaveError.invalidCommander
       }
-      let relative = String(file.path.dropFirst(base.path.count + 1))
       result[relative] = ScriptPackLibrary.hash(try Data(contentsOf: file))
     }
     return result
