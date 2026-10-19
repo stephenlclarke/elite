@@ -142,7 +142,9 @@ extension ScriptProcurementFixture {
       try #require(state.outcome == .abandoned && state.completionReceipt != nil)
     }
     await runtime.key("0")
-    try await Self.dock(runtime, diagnostic: diagnostic, phase: "history-" + stage + "-redock")
+    try await Self.dock(
+      runtime, diagnostic: diagnostic, phase: "history-" + stage + "-redock",
+      defensivePreflight: true)
     try await runtime.save(to: save)
     return (runtime, id)
   }
