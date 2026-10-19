@@ -144,15 +144,20 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   let runtime = GameRuntime(game: game)
-  let bootstrapped = await runtime.snapshot()
   try await runtime.save(to: url)
+  let committed = await runtime.snapshot()
   let bytes = try Data(contentsOf: url)
+  let persisted = try NativeSaveTestFixture.readVersionedCommander(from: url)
   try await runtime.load(from: url)
   let saved = await runtime.snapshot()
-  var expected = bootstrapped.commander
-  expected.npcPersistence.resetPhysicalBindings(system: bootstrapped.systemIdentity)
-  expected.resetWantedCareerBindings(system: bootstrapped.systemIdentity)
-  #expect(saved.commander == expected && saved.currentSystem.name == "PLUGH")
+  // Saving captures actual NPC facts before the disk-only binding projection.
+  var expectedDisk = committed.commander
+  expectedDisk.npcPersistence.resetPhysicalBindings(system: committed.systemIdentity)
+  expectedDisk.resetWantedCareerBindings(system: committed.systemIdentity)
+  #expect(persisted == expectedDisk)
+  // The same native scene restores its real live bindings without republishing a new generation.
+  #expect(saved.commander == committed.commander)
+  #expect(saved.currentSystem.name == "PLUGH")
   #expect(try Data(contentsOf: url) == bytes)
   var invalid = saved.commander
   invalid.plughDiscoveryMask = 0

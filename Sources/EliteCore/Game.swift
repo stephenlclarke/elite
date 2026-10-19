@@ -2396,6 +2396,26 @@ public actor GameRuntime {
     else { throw SaveError.invalidCommander }
   }
 
+  /// Disk commanders omit only current scene bindings; live load candidates restore them.
+  private static func clearNativeSaveBindings(
+    _ commander: inout Commander, system: SystemIdentity
+  ) {
+    if commander.npcPersistence.count > 0 {
+      commander.npcPersistence.resetPhysicalBindings(system: system)
+    }
+    commander.resetWantedCareerBindings(system: system)
+  }
+
+  /// Keep the comparison copy out of the live load frame. All semantic facts still compare.
+  @inline(never)
+  private static func nativeCommanderNeedsRepublishing(
+    _ candidate: borrowing Game, persisted: borrowing Commander
+  ) -> Bool {
+    var projected = candidate.commander
+    clearNativeSaveBindings(&projected, system: candidate.systemIdentity)
+    return projected != persisted
+  }
+
   private static func finishNativeSaveState(
     _ candidate: inout Game, diagnostics: ScriptRefusalDiagnostic? = nil,
     diagnosticBoundary: ScriptRefusalBoundary = .publication
@@ -2435,10 +2455,7 @@ public actor GameRuntime {
       throw SaveError.invalidCommander
     }
     var persistedCommander = candidate.commander
-    if persistedCommander.npcPersistence.count > 0 {
-      persistedCommander.npcPersistence.resetPhysicalBindings(system: candidate.systemIdentity)
-    }
-    persistedCommander.resetWantedCareerBindings(system: candidate.systemIdentity)
+    clearNativeSaveBindings(&persistedCommander, system: candidate.systemIdentity)
     return NativeSavePreparation(game: copy candidate, commander: consume persistedCommander)
   }
 
@@ -2498,7 +2515,8 @@ public actor GameRuntime {
       candidate.resolveFreightTerminals()
       candidate.suspendUnavailableScriptContent(navigationBinding: navigationBinding)
       guard candidate.commander.valid else { throw SaveError.invalidCommander }
-      if persistMigrations && candidate.commander != commander {
+      if persistMigrations && Self.nativeCommanderNeedsRepublishing(candidate, persisted: commander)
+      {
         try Self.writeCommander(&candidate, to: url, navigationBinding: navigationBinding)
       }
       game = candidate
