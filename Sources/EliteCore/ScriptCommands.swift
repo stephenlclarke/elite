@@ -8,6 +8,20 @@ extension Game {
     guard let fields = command.object, let op = fields["op"]?.string else {
       throw MissionPackError("Invalid script command.")
     }
+    if pack.manifest.coldChain != nil || state.savedWayfarerColdChain != nil
+      || state.definition == WayfarerColdChainDefinition.stateID
+    {
+      guard ["journal.append", "cold-chain.expire"].contains(op) else {
+        throw MissionPackError("Use the native protected cold-chain transaction.")
+      }
+      if op == "cold-chain.expire" {
+        guard Set(fields.keys) == ["op"], pack.manifest.coldChain != nil else {
+          throw MissionPackError("Native expiry accepts only its admitted timer event.")
+        }
+        try applyWayfarerColdChainExpiry(event: event, state: &state, candidate: &candidate)
+        return
+      }
+    }
     let fieldsByOp: [String: Set<String>] = [
       "credits": ["op", "id", "amount"], "payload.add": ["op", "id", "key", "amount"],
       "payload.remove": ["op", "id", "key", "amount"], "milestone.ensure": ["op", "index"],

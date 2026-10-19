@@ -623,12 +623,14 @@ public struct MiningLedger: Equatable, Codable, Sendable {
 
   private func yield(for rock: MiningRock) -> [TypedCargoPayload] {
     if let chunk = AsteroidBeltDefinition.chunk(for: rock.identity) {
-      return (0..<chunk.units).map { index in
-        TypedCargoPayload(
+      return (0..<chunk.units).map { (index: Int) -> TypedCargoPayload in
+        let amount = CommodityAmount(commodity: chunk.content.commodity, quantity: 1)
+        let offset = Vector3(Double(index % 5) * 12, Double(index / 5) * 12, 10)
+        let position: Vector3 = rock.position + offset
+        let velocity = Vector3(Double(index % 5), 2, 3)
+        return TypedCargoPayload(
           identity: .ore(rock.identity, fragment: UInt16(index)),
-          amount: .init(commodity: chunk.content.commodity, quantity: 1),
-          position: rock.position + Vector3(Double(index % 5) * 12, Double(index / 5) * 12, 10),
-          velocity: .init(Double(index % 5), 2, 3))
+          amount: amount, position: position, velocity: velocity)
       }
     }
     var state =

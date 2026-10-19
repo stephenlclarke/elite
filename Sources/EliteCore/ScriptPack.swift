@@ -52,6 +52,7 @@ public struct ScriptManifest: Codable, Sendable {
   public let courier: ScriptCourierDefinition?
   var procurement: ScriptProcurementDefinition? = nil
   var freight: ScriptFreightDefinition? = nil
+  var coldChain: WayfarerColdChainDefinition? = nil
   public let npcs: [ScriptNPCDefinition]?
   public let models: [ScriptNPCModel]?
   public let modules: [ScriptModuleDefinition]?
@@ -146,7 +147,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -187,6 +188,16 @@ public enum ScriptPackLibrary {
         "profile generatorRevision variant deliveryContact abandonContact collectionTemplate bondedHazardTiers"
       )
       try keys(declaration.table(forKey: "collectionTemplate"), "id title")
+    }
+    if root.contains(key: "coldChain") {
+      let declaration = try root.table(forKey: "coldChain")
+      try keys(
+        declaration,
+        "source objective receiver batch stockUnits tonnes maximumActive route hazardTier flightAllowance rewardNative"
+      )
+      for name in ["source", "objective", "receiver"] {
+        try keys(declaration.table(forKey: name), "galaxy system resourceKey")
+      }
     }
     if root.contains(key: "pledge") {
       try keys(root.table(forKey: "pledge"), "profile provider title creditAmounts foodTonnes")
@@ -323,6 +334,7 @@ public enum ScriptPackLibrary {
     }
   }
   static func validate(_ manifest: ScriptManifest) throws {
+    try WayfarerColdChainSave.validateDeclaration(manifest)
     guard manifest.schemaVersion == 2, manifest.missionAPI == 2, manifest.minimumEngine == "2.0.0",
       PackValidation.identifier(manifest.id), PackValidation.identifier(manifest.mission.id),
       PackValidation.version(manifest.version), (0...1000).contains(manifest.priority),

@@ -114,6 +114,15 @@ struct WayfarerColdChain: Codable, Sendable, Equatable {
     return next
   }
 
+  func matchesNativeState(
+    timer: ScriptTimer, allowance: Double, issueSequence: UInt64,
+    issuedFlightSeconds: Double, lastContext: ScriptEventContext
+  ) -> Bool {
+    valid && record.timer == timer && record.allowance == allowance
+      && record.issueSequence == issueSequence && record.issuedFlightSeconds == issuedFlightSeconds
+      && record.lastContext == lastContext
+  }
+
   private func checkContext(_ context: ScriptEventContext) throws {
     guard context.valid,
       context.flightSeconds >= record.lastContext.flightSeconds,

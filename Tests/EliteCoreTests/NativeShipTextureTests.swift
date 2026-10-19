@@ -119,12 +119,18 @@ struct NativeShipTextureTests {
   @MainActor @Test func originalPaletteMatchesNativeBitmapAndRetina() throws {
     let texture = try #require(ShipTextureAssets.pixels(for: "l337-patrol-diffuse"))
     let sample = texture.pixels[345 * texture.width + 123]
-    let mean = Double(((sample >> 24) & 255) + ((sample >> 16) & 255) + ((sample >> 8) & 255)) / 3
+    let sampledRed: UInt32 = (sample >> 24) & 255
+    let sampledGreen: UInt32 = (sample >> 16) & 255
+    let sampledBlue: UInt32 = (sample >> 8) & 255
+    let sampledTotal: UInt32 = sampledRed + sampledGreen + sampledBlue
+    let mean: Double = Double(sampledTotal) / 3
     let relief = min(1.10, max(0.27, mean / 86))
     let litMaterial: UInt32 = 0xC828_14FF
-    let expected =
-      UInt32((200 * relief).rounded()) << 24
-      | UInt32((40 * relief).rounded()) << 16 | UInt32((20 * relief).rounded()) << 8 | 255
+    let red: UInt32 = UInt32((200 * relief).rounded()) << 24
+    let green: UInt32 = UInt32((40 * relief).rounded()) << 16
+    let blue: UInt32 = UInt32((20 * relief).rounded()) << 8
+    let alpha: UInt32 = 255
+    let expected: UInt32 = red | green | blue | alpha
     let u = 123.5 / Double(texture.width)
     let v = 345.5 / Double(texture.height)
     let triangle = ShipTexturedTriangle(
