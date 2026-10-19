@@ -104,12 +104,21 @@ struct GearScriptFixture {
   }
   #expect(scene.commander.system == 129 && scene.commander.fuel < 70)
   #expect(scene.commander.equipmentInventory?.items.contains { $0.id == unit } == true)
-  for _ in 0..<8 {
+  try #require(scene.screen != .gameOver && scene.energy > 0)
+  let main = try #require(scene.bodies.first { $0.id == 0 && $0.hull == .station })
+  let mainActor = try #require(main.physical?.identity)
+  try #require(mainActor == scene.commander.flightSimulation.anchors?.station.identity)
+  // Tab visits the actual finite cohort, including registered stations. Eight
+  // attempts need not reach MAIN; selection itself advances no flight time.
+  let selectionCount = scene.bodies.count + 1
+  for _ in 0..<selectionCount {
     await runtime.key("tab")
-    if await runtime.snapshot().autoPilot.targetID == 0 { break }
+    scene = await runtime.snapshot()
+    if scene.autoPilot.targetID == 0 && scene.autoPilot.targetActor == mainActor { break }
   }
+  try #require(scene.autoPilot.targetID == 0 && scene.autoPilot.targetActor == mainActor)
   for _ in 0..<10000 where !scene.docked { scene = await runtime.advance(delta: 0.02) }
-  #expect(scene.docked && scene.dockedAtMainStation)
+  try #require(scene.docked && scene.dockedAtMainStation)
   let cash = scene.commander.credits
   await runtime.key("contacts-open")
   await runtime.key("return")
