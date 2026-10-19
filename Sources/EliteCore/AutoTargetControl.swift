@@ -210,15 +210,17 @@ public struct AutoTargetControl: Sendable {
     let guidance =
       defensiveSteering && stationDefencePhase != .returning && defence?.hasManeuver == true
       ? defence : nil
-    let coverAim =
+    let shieldAim =
       guidance?.protectFrontShield == true
-      ? guidance?.transitGoal.map { approachWaypoint(target, goal: $0, clearance: clearance) } : nil
+      ? (guidance?.aim.map { $0 * -1 }
+        ?? guidance?.transitGoal.map { approachWaypoint(target, goal: $0, clearance: clearance) })
+      : nil
     let trackingResponse =
-      coverAim == nil && guidance?.aim.map { $0.finite && $0.length > 0 } == true
-    if let coverAim {
-      // Keep the weaker forward bank away from the authenticated attacker while
-      // flying the real clearance route; weapons still require their actual rays.
-      aim = coverAim
+      shieldAim == nil && guidance?.aim.map { $0.finite && $0.length > 0 } == true
+    if let shieldAim {
+      // A cover waypoint can still face the attacker. Turn the weak front bank away
+      // from its current source; translation independently keeps the clearance route.
+      aim = shieldAim
     } else if let defensiveAim = guidance?.aim, trackingResponse {
       aim = defensiveAim
     }
