@@ -3,8 +3,39 @@ import Testing
 
 @testable import EliteCore
 
+private func galleryRRSHeadquartersApproach() throws -> Game {
+  var game = Game(executive: false)
+  game.commander.system = NativeStationSource.headquarters[game.commander.galaxy]
+  game.screen = .status
+  game.launch()
+  let launched = !game.docked && game.commander.nativeStationStateValid
+  try #require(launched)
+  let measuredBody = game.bodies.first {
+    $0.nativeStationIdentity?.definition == "rrs_headquarters"
+  }
+  let body = try #require(measuredBody)
+  let identity = try #require(body.nativeStationIdentity)
+  let source = try #require(NativeStationSource.binding(for: identity))
+  let currentSource = source.kind == .headquarters && game.nativeStationBodyIsCurrent(body)
+  try #require(currentSource)
+  let measuredWorld = game.commander.nativeStations
+  let world = try #require(measuredWorld)
+  let time = game.commander.flightSimulation.physicalTime
+  let position = try #require(world.currentPosition(for: .rrs(identity), at: time))
+  let orientation = try #require(world.currentOrientation(for: identity, at: time))
+  let port = source.geometry.docking
+  var pose = ShipPose()
+  pose.position = position + orientation.apply(port.center + port.outward)
+  pose.orientation.y = orientation.apply(port.up)
+  pose.orientation.z = orientation.apply(port.outward) * -1
+  pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
+  NativeStationTestFixture.reframe(&game, to: pose)
+  game.speed = 2
+  return game
+}
+
 private func acceptedGalleryRRS(_ storage: NativeStationTestStorage) async throws -> GameRuntime {
-  var game = try NativeStationTestFixture.approach(kind: .headquarters)
+  var game = try galleryRRSHeadquartersApproach()
   let station = try #require(
     game.bodies.first { $0.nativeStationIdentity?.definition == "rrs_headquarters" }?
       .nativeStationIdentity)
