@@ -118,3 +118,16 @@ public struct PhysicalActorState: Equatable, Codable, Sendable {
   public var empCrewPod: EMPCrewIdentity?
   public var suspendedNPCIntention: NPCAction?
 }
+
+extension FlightSimulationState {
+  /// The source anchor remains immutable; only its current physical projection is displaced.
+  func projectedMainStationAnchor(displacement: Vector3) -> StationAnchor? {
+    guard let source = anchors?.station, displacement.finite, displacement.length.isFinite else {
+      return nil
+    }
+    return .init(
+      identity: source.identity, position: source.position + displacement,
+      orientation: source.orientation, exitPosition: source.exitPosition + displacement,
+      exitDirection: source.exitDirection)
+  }
+}

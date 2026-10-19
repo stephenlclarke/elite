@@ -35,24 +35,34 @@ extension Game {
       guard let identity = body.nativeStationIdentity, let actor = body.physical?.identity,
         nativeStationBodyIsCurrent(body), let saved = world.pose(for: identity),
         let source = NativeStationSource.binding(for: identity),
-        let end = saved.orientation(at: flight.physicalTime)
+        let end = saved.orientation(at: flight.physicalTime),
+        let currentPosition = world.currentPosition(for: .rrs(identity), at: flight.physicalTime)
       else { return nil }
       let geometry = source.geometry
       let radius = geometry.mesh.vertices.map(\.length).max() ?? .infinity
-      let distance = (saved.position - flight.pose.position).length
+      let distance = (currentPosition - flight.pose.position).length
       let clear: Bool?
       if let before, let delta, delta.isFinite, delta > 0, delta <= 0.1,
-        let start = saved.orientation(at: max(0, flight.physicalTime - delta))
+        let start = saved.orientation(at: max(0, flight.physicalTime - delta)),
+        let oldPosition = world.currentPosition(
+          for: .rrs(identity), at: max(0, flight.physicalTime - delta))
       {
-        let displacement = (flight.pose.position - before.position).length
+        let translationMargin = world.stationSweepMargin(
+          .rrs(identity), from: max(0, flight.physicalTime - delta), to: flight.physicalTime)
+        let displacement =
+          (flight.pose.position - before.position).length
+          + (currentPosition - oldPosition).length + translationMargin
         if distance > radius + playerRadius + displacement {
           clear = true
         } else {
           let angle = (abs(pitch) + abs(roll) + abs(yaw) + source.rotationRate) * delta
-          let margin = (radius + playerRadius + displacement) * angle
+          let margin =
+            (radius + playerRadius + displacement) * angle
+            + translationMargin
           clear = nativeStationHullSweepClear(
             player, from: before, to: flight.pose, saved: saved,
-            fromOrientation: start, toOrientation: end, margin: margin, mesh: geometry.mesh)
+            fromOrientation: start, toOrientation: end, margin: margin, mesh: geometry.mesh,
+            fromPosition: oldPosition, toPosition: currentPosition)
         }
       } else {
         clear = nil
@@ -61,7 +71,7 @@ extension Game {
         bodyID: body.id, definition: identity.definition, sourceVersion: identity.version,
         sourceKey: identity.key, actor: actor, world: identity.world,
         renderedPose: modelPose(of: body),
-        canonicalPose: .init(position: saved.position, orientation: end),
+        canonicalPose: .init(position: currentPosition, orientation: end),
         viewPosition: viewPosition(body.position),
         meshVertices: geometry.mesh.vertices.count, meshFaces: geometry.mesh.faces.count,
         meshMinimum: geometry.bounds.minimum, meshMaximum: geometry.bounds.maximum,

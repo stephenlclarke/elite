@@ -489,7 +489,8 @@ extension AsteroidFragmentationTests {
     let cash = game.commander.credits
     let kills = game.commander.kills
     game.commander.flightSimulation.advancePhysicalTime(0.1)
-    let frame = try #require(game.beginAsteroidContactStep())
+    let capturedFrame = game.beginAsteroidContactStep()
+    let frame = try #require(capturedFrame)
     moveNativeContactEndpoints(&game, delta: 0.1)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let actualReceipt) = result, let receipt = actualReceipt else {
@@ -560,7 +561,8 @@ extension AsteroidFragmentationTests {
     let cash = game.commander.credits
     let kills = game.commander.kills
     game.commander.flightSimulation.advancePhysicalTime(0.1)
-    let frame = try #require(game.beginAsteroidContactStep())
+    let capturedFrame = game.beginAsteroidContactStep()
+    let frame = try #require(capturedFrame)
     moveNativeContactEndpoints(&game, delta: 0.1)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let packet) = result, let receipt = packet, receipt.target == targetActor
@@ -598,7 +600,8 @@ extension AsteroidFragmentationTests {
   @Test func staleNativeContactFrameCannotRewindAnotherVisitOrForgeAnEffect() throws {
     var (game, rock, bodyID) = try nativeFractureGame()
     try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
-    let frame = try #require(game.beginAsteroidContactStep())
+    let capturedFrame = game.beginAsteroidContactStep()
+    let frame = try #require(capturedFrame)
     game.commander.flightSimulation.advancePhysicalTime(0.1)
     let before = game.commander
     let bodies = game.bodies
@@ -635,7 +638,8 @@ extension AsteroidFragmentationTests {
     let commander = game.commander
     let bodies = game.bodies
     let pilotVelocity = game.autoPilot.velocity
-    let frame = try #require(game.beginAsteroidContactStep())
+    let capturedFrame = game.beginAsteroidContactStep()
+    let frame = try #require(capturedFrame)
     let moved = game.moveWorkFrame(delta: 0.1)
     try #require(moved)
     #expect(game.workBraking?.velocity == velocity + acceleration * 0.1)
@@ -697,7 +701,8 @@ extension AsteroidFragmentationTests {
     game.persistOrePoses()
     let oldMesh = game.gameplayMesh(for: game.bodies[oreIndex])
     game.commander.flightSimulation.advancePhysicalTime(0.1)
-    let frame = try #require(game.beginAsteroidContactStep())
+    let capturedFrame = game.beginAsteroidContactStep()
+    let frame = try #require(capturedFrame)
     moveNativeContactEndpoints(&game, delta: 0.1)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let receipt) = result, receipt?.target == oreActor else {
@@ -736,7 +741,8 @@ extension AsteroidFragmentationTests {
     let front = game.frontShield
     let rear = game.rearShield
     game.commander.flightSimulation.advancePhysicalTime(0.1)
-    let frame = try #require(game.beginAsteroidContactStep())
+    let capturedFrame = game.beginAsteroidContactStep()
+    let frame = try #require(capturedFrame)
     let moved = game.moveWorkFrame(delta: 0.1)
     try #require(moved)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
@@ -746,5 +752,233 @@ extension AsteroidFragmentationTests {
     }
     #expect(receipt.point.z < end.position.z)
     #expect(game.frontShield < front && game.rearShield == rear)
+  }
+}
+
+private func stationFractureGame(main: Bool) throws -> (Game, MiningRock, Int, Int) {
+  // Select from genuine authored station/belt presence before constructing a game.
+  let binding = try #require(
+    NativeStationSource.bindings.first { binding in
+      guard binding.kind == .waystation,
+        let system = Universe.galaxy(number: binding.system.galaxy)
+          .first(where: { $0.id == binding.system.system }),
+        AsteroidBeltDefinition.isPresent(system: system, galaxy: binding.system.galaxy)
+      else { return false }
+      for field in UInt16(4)..<8 {
+        for index in UInt16(0)..<4 {
+          let id = RockIdentity(system: binding.system, field: field, rock: index)
+          if let chunk = AsteroidBeltDefinition.chunk(for: id), chunk.units > 20,
+            chunk.content == .gold || chunk.content == .platinum
+          {
+            return true
+          }
+        }
+      }
+      return false
+    })
+  var game = Game(executive: false)
+  game.commander.galaxy = binding.system.galaxy
+  game.commander.system = binding.system.system
+  game.systems = Universe.systemsIncludingPlugh(number: binding.system.galaxy)
+  game.screen = .status
+  try game.commander.prepareEquipment(legacy: false)
+  game.launch()
+  try #require(!game.docked && game.commander.nativeStationStateValid)
+  let station = try #require(
+    game.bodies.first {
+      main ? $0.id == 0 : $0.nativeStationIdentity?.definition == binding.kind.sourceDefinition
+    })
+  let rock = try #require(
+    game.miningFields.flatMap(\.rocks).first {
+      guard let chunk = AsteroidBeltDefinition.chunk(for: $0.identity) else { return false }
+      return chunk.units > 20 && (chunk.content == .gold || chunk.content == .platinum)
+    })
+  game.bodies.removeAll { $0.hull != .station }
+  game.commander.npcPersistence = .init()
+  game.commander.resetWantedCareerBindings(system: game.systemIdentity)
+  game.miningFields = [.init(position: rock.position, rocks: [rock])]
+  game.speed = 0
+  moveFractureObserver(&game, to: rock.position - .init(0, 0, 500))
+  game.activateNearbyMiningFields()
+  let source = try #require(game.bodies.first { $0.physical?.rock == rock.identity })
+  try nativeFractureHit(&game, bodyID: source.id, damage: rock.energy + 1)
+  return (game, rock, source.id, station.id)
+}
+
+private func armStationFractureImpact(_ game: inout Game, sourceID: Int, stationID: Int) throws {
+  let station = try #require(game.bodies.first { $0.id == stationID })
+  let center = game.commander.flightSimulation.pose.systemPoint(station.position)
+  moveFractureObserver(&game, to: center + .init(0, 10000, 0))
+  let pose = game.commander.flightSimulation.pose
+  let target = try #require(game.bodies.first { $0.id == stationID })
+  let mesh = game.gameplayMesh(for: target)
+  let reach = (mesh.vertices.map(\.length).max() ?? 0) + 500
+  let wall = try #require(
+    GameplayRaycast.nearest(
+      origin: pose.shipPoint(center + .init(reach, 0, 0)),
+      direction: pose.shipVector(.init(-1, 0, 0)), maxDistance: reach * 2,
+      bodies: [target], meshOverrides: [target.id: mesh]))
+  try #require(wall.target == .body(stationID))
+  let index = try #require(game.bodies.firstIndex { $0.id == sourceID })
+  game.bodies[index].orientation = Basis3().relative(to: pose.orientation)
+  game.bodies[index].rotation = 0
+  game.bodies[index].rotationRate = 0
+  game.bodies[index].physical?.canonicalSpin = false
+  game.bodies[index].physical?.angularVelocity = .init(0, 0, 0)
+  let extent = try #require(game.gameplayMesh(for: game.bodies[index]).vertices.map { -$0.x }.max())
+  game.bodies[index].position = wall.point + pose.shipVector(.init(extent + 10, 0, 0))
+  game.bodies[index].physical?.velocity = .init(-200, 0, 0)
+  game.persistOrePoses()
+}
+
+private func moveStationContactEndpoints(_ game: inout Game, delta: Double) {
+  let pose = game.commander.flightSimulation.pose
+  for index in game.bodies.indices {
+    game.advanceBodyModelRotation(at: index, delta: delta)
+    game.advanceCanonicalModelSpin(at: index, delta: delta)
+    guard let physical = game.bodies[index].physical, physical.spawnIdentity != nil,
+      physical.ordnance == nil, game.bodies[index].scriptNPC == nil
+    else { continue }
+    game.bodies[index].position =
+      game.bodies[index].position + pose.shipVector(physical.velocity) * delta
+  }
+}
+
+extension AsteroidFragmentationTests {
+  @Test(arguments: [false, true])
+  func actualStationImpactRetainsResourcesMomentumAndDerivedCoast(main: Bool) throws {
+    var (game, rock, sourceID, stationID) = try stationFractureGame(main: main)
+    try armStationFractureImpact(&game, sourceID: sourceID, stationID: stationID)
+    let before = try #require(game.bodies.first { $0.id == stationID })
+    let identity = try #require(game.stationInertialIdentity(for: before))
+    let source = try #require(game.bodies.first { $0.id == sourceID })
+    let mass = try #require(game.asteroidDebrisMassKg(source))
+    let sourceAnchor = game.commander.flightSimulation.anchors?.station
+    let authoredPose = before.nativeStationIdentity.flatMap {
+      game.commander.nativeStations?.pose(for: $0)
+    }
+    let credits = game.commander.credits
+    let kills = game.commander.kills
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let captured = game.beginAsteroidContactStep(delta: 0.1)
+    let frame = try #require(captured)
+    moveStationContactEndpoints(&game, delta: 0.1)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .advanced(let actual?) = result else {
+      Issue.record("Native station contact did not commit: \(String(describing: result))")
+      return
+    }
+    #expect(actual.target == before.physical?.identity && actual.damage > 0)
+    let station = try #require(game.bodies.first { $0.id == stationID })
+    let debris = try #require(game.bodies.first { $0.id == sourceID })
+    let velocity = try #require(debris.physical?.velocity)
+    let stationVelocity = try #require(station.physical?.velocity)
+    #expect(stationVelocity.length > 0 && station.energy < before.energy && station.energy > 0)
+    let momentum = velocity * mass + stationVelocity * AsteroidImpactPolicy.massKg(hull: .station)
+    #expect((momentum - Vector3(-200, 0, 0) * mass).length < 1e-6)
+    #expect(game.commander.credits == credits && game.commander.kills == kills)
+    #expect(game.commander.flightSimulation.anchors?.station == sourceAnchor)
+    #expect(game.commander.nativeStations?.ledger.currentDock == nil)
+    #expect(game.commander.nativeStations?.currentMainDock == nil)
+    let world = try #require(game.commander.nativeStations)
+    let motion = try #require(world.inertia(for: identity))
+    #expect(motion.valid && motion.contacts == 1 && motion.velocity == stationVelocity)
+    switch identity {
+    case .main(let id):
+      #expect(game.commander.scriptState.stationResources[id.key]?.energy == station.energy)
+      #expect(sourceAnchor?.position == Vector3(0, 0, 0))
+    case .rrs(let id):
+      let saved = try #require(world.pose(for: id))
+      #expect(
+        saved.position == authoredPose?.position && saved.orientation == authoredPose?.orientation)
+      #expect(saved.energy == station.energy)
+      let observation = try #require(
+        game.nativeStationFlightObservations(from: nil, delta: nil).first { $0.bodyID == stationID }
+      )
+      #expect(observation.rigidPoseConsistent)
+      #expect(
+        (observation.canonicalPose.position - observation.renderedPose.position).length < 1e-5)
+    }
+    let decoded = try JSONDecoder().decode(
+      NativeStationWorld.self, from: JSONEncoder().encode(world))
+    #expect(decoded == world && decoded.valid)
+    let commander = try JSONDecoder().decode(
+      Commander.self, from: JSONEncoder().encode(game.commander))
+    #expect(commander.nativeStations == world && commander.nativeStationStateValid)
+    var malformed = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(world)) as? [String: Any])
+    var entries = try #require(malformed["stationInertia"] as? [[String: Any]])
+    entries[0]["physicalTime"] = -1.0
+    malformed["stationInertia"] = entries
+    let invalid = try JSONSerialization.data(withJSONObject: malformed)
+    #expect(throws: NativeStationRuntimeError.self) {
+      try JSONDecoder().decode(NativeStationWorld.self, from: invalid)
+    }
+    // Relative entry speed includes the full current player velocity.
+    game.manualResidualFlight = true
+    game.autoPilot.setApproachVelocity(
+      game.commander.flightSimulation.pose.shipVector(stationVelocity + .init(100, 0, 0)))
+    #expect(abs(game.nativeStationRelativeEntrySpeed(station) - 100) < 1e-7)
+    game.autoPilot.setApproachVelocity(.init(0, 0, 0))
+    game.manualResidualFlight = false
+    // Unload the actual aggregate into its already-recorded physical custody.
+    let debrisActor = try #require(debris.physical?.identity)
+    game.commander.miningLedger.cull(actor: debrisActor)
+    game.bodies.removeAll { $0.id == sourceID }
+    // A real coast consumes only the owned momentum and physical clock.
+    let initial = game.commander.flightSimulation.pose.systemPoint(station.position)
+    game.commander.flightSimulation.advancePhysicalTime(1000)
+    let time = game.commander.flightSimulation.physicalTime
+    for index in game.bodies.indices {
+      game.advanceBodyModelRotation(at: index, delta: 1000)
+    }
+    let coast = game.synchronizeNativeStationInertia(at: time, advancingFrom: time - 1000)
+    #expect(coast)
+    let moving = try #require(game.bodies.first { $0.id == stationID })
+    let position = game.commander.flightSimulation.pose.systemPoint(moving.position)
+    #expect((position - initial - stationVelocity * 1000).length < 1e-5)
+    #expect(game.commander.flightSimulation.anchors?.station == sourceAnchor)
+    #expect(game.commander.miningLedger.breakups[rock.identity]?.birthMassKg == mass)
+    if case .rrs(let id) = identity {
+      game.bodies.removeAll { $0.id == stationID || $0.id == sourceID }
+      try game.populateNativeStations()
+      let admitted = try #require(game.bodies.first { $0.nativeStationIdentity == id })
+      #expect(admitted.physical?.identity != before.physical?.identity)
+      #expect(admitted.physical?.velocity == stationVelocity && admitted.energy == station.energy)
+      #expect(
+        (game.commander.flightSimulation.pose.systemPoint(admitted.position) - position).length
+          < 1e-5)
+      #expect(game.commander.nativeStations?.pose(for: id)?.position == authoredPose?.position)
+    } else {
+      // The real launch path restores the registered source at its derived current
+      // position and offsets departure without rewriting the immutable anchor.
+      game.dock()
+      game.launch()
+      try #require(!game.docked)
+      let admitted = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+      #expect(admitted.physical?.identity != before.physical?.identity)
+      #expect(admitted.physical?.velocity == stationVelocity && admitted.energy == station.energy)
+      #expect(
+        (game.commander.flightSimulation.pose.systemPoint(admitted.position) - position).length
+          < 1e-5)
+      #expect(game.commander.flightSimulation.anchors?.station.position == Vector3(0, 0, 0))
+      let departure = game.commander.flightSimulation.pose.orientation.apply(
+        .init(0, 0, game.speed * 18))
+      #expect((game.flightWorldVelocity - departure - stationVelocity).length < 1e-7)
+    }
+    // A mismatched velocity is not normalized into a legitimate moving station.
+    let currentIndex = try #require(
+      game.bodies.firstIndex { game.stationInertialIdentity(for: $0) == identity })
+    let current = game.bodies[currentIndex].position
+    let original = try #require(game.commander.nativeStations?.sourcePosition(for: identity))
+    game.bodies[currentIndex].position = game.commander.flightSimulation.pose.shipPoint(original)
+    let misplaced = game.bodies
+    let positionRefused = game.synchronizeNativeStationInertia(at: time)
+    #expect(!positionRefused && game.bodies == misplaced)
+    game.bodies[currentIndex].position = current
+    game.bodies[currentIndex].physical?.velocity = .init(1, 2, 3)
+    let retained = game.bodies
+    let refused = game.synchronizeNativeStationInertia(at: time)
+    #expect(!refused && game.bodies == retained)
   }
 }

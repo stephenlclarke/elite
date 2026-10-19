@@ -209,6 +209,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   var mainObservations: [NativeMainStationObservation]
   var nextMainDockSequence: UInt64
   var currentMainDock: NativeMainStationDockReceipt?
+  var stationInertia: [NativeStationInertia] = []
 
   init(owner: UUID) throws {
     guard NativeStationSource.bindings.count == NativeStationLedger.recordLimit else {
@@ -251,7 +252,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
   /// Decode and every changed semantic world must still pass all of it.
   private var validWithoutMemo: Bool {
     let originals = Set(mainStations)
-    guard adapterRevision == NativeStationSource.adapterRevision,
+    guard inertiaIsValid, adapterRevision == NativeStationSource.adapterRevision,
       geometryRevision == NativeStationGeometry.adapterRevision, clockOrigin == 0,
       mainStations.count <= NativeMainStationIdentity.maximumCount,
       originals.count == mainStations.count,
@@ -293,7 +294,7 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
 
   private enum CodingKeys: String, CodingKey {
     case adapterRevision, geometryRevision, clockOrigin, ledger, poses, mainStations,
-      mainObservations, nextMainDockSequence, currentMainDock
+      mainObservations, nextMainDockSequence, currentMainDock, stationInertia
   }
 
   init(from decoder: Decoder) throws {
@@ -350,6 +351,16 @@ struct NativeStationWorld: Equatable, Codable, Sendable {
       result.append(try entries.decode(NativeStationSavedPose.self))
     }
     poses = result
+    var inertiaEntries = try values.nestedUnkeyedContainer(forKey: .stationInertia)
+    guard inertiaEntries.count.map({ $0 <= Self.maximumInertialStations }) ?? true else {
+      throw NativeStationRuntimeError.invalidState
+    }
+    while !inertiaEntries.isAtEnd {
+      guard stationInertia.count < Self.maximumInertialStations else {
+        throw NativeStationRuntimeError.invalidState
+      }
+      stationInertia.append(try inertiaEntries.decode(NativeStationInertia.self))
+    }
     guard valid else { throw NativeStationRuntimeError.invalidState }
   }
 }
