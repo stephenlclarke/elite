@@ -1,0 +1,5 @@
+# Current market and ECM fixtures assume replaced world behavior
+
+Full CI 683 on `1f9098a910aefa17655f3aeadbb59df03257b64e` recorded a zero legal score after the illegal-export fixture and a failed empty-body ECM assertion. The export fixture overwrites authenticated ask/bid prices with an invented one-tenth-credit quote. `OriginalLiveMarkets.valid` correctly rejects that Commander, so transactional launch cannot commit and cannot assess the cargo's legal consequence. The ECM fixture deletes the whole scene, then mistakes genuine native stations repopulated by physical adoption for surviving missiles.
+
+Use authentic profitable ask/bid quotes and legal mutable stock for trading, preserve exact cargo, stock, cash and launch-law assertions, and require the actual launch. Append a uniquely allocated controlled missile to the real launch scene and require its exact removal while all non-missile bodies remain unchanged. Preserve the existing missing-equipment refusal and ten-unit energy debit. These are bounded test repairs, not authority to weaken native market validity, station admission, law or ECM behavior. See [the repair](PR-current-market-ecm-oracles.md).
