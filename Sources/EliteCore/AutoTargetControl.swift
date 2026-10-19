@@ -210,8 +210,16 @@ public struct AutoTargetControl: Sendable {
     let guidance =
       defensiveSteering && stationDefencePhase != .returning && defence?.hasManeuver == true
       ? defence : nil
-    let trackingResponse = guidance?.aim.map { $0.finite && $0.length > 0 } == true
-    if let defensiveAim = guidance?.aim, trackingResponse {
+    let coverAim =
+      guidance?.protectFrontShield == true
+      ? guidance?.transitGoal.map { approachWaypoint(target, goal: $0, clearance: clearance) } : nil
+    let trackingResponse =
+      coverAim == nil && guidance?.aim.map { $0.finite && $0.length > 0 } == true
+    if let coverAim {
+      // Keep the weaker forward bank away from the authenticated attacker while
+      // flying the real clearance route; weapons still require their actual rays.
+      aim = coverAim
+    } else if let defensiveAim = guidance?.aim, trackingResponse {
       aim = defensiveAim
     }
     let pitchAngle = atan2(aim.y, hypot(aim.x, aim.z))
@@ -310,9 +318,13 @@ public struct AutoTargetControl: Sendable {
     } else {
       // Existing cruise momentum brakes under the acceleration limit. Once the
       // waypoint is ahead, thrust follows the same bearing as the forward view.
-      let waypoint = approachWaypoint(target, goal: transitGoal ?? goal, clearance: clearance)
+      let destination = transitGoal ?? goal
+      let waypoint = approachWaypoint(target, goal: destination, clearance: clearance)
+      // A cover-route detour is a through waypoint, not a place to stop under fire.
+      // Clearance braking still applies below, and the real destination still brakes normally.
+      let brakingDistance = transitGoal != nil ? destination.length : waypoint.length
       let cruiseSpeed = Self.approachCruiseSpeed(
-        distance: waypoint.length, acceleration: acceleration, delta: delta,
+        distance: brakingDistance, acceleration: acceleration, delta: delta,
         maximumSpeed: limits.speed)
       desired =
         facingError < 0.12 || defence != nil || stationDefencePhase == .defending
