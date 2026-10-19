@@ -501,11 +501,11 @@ extension Game {
     observation?["braking"] = String(braking)
     guard braking.isFinite, braking <= depth else { return false }
     let advance = normal * -(depth - min(0.5, depth * 0.5))
-    var bodyBlocked = false
+    var bodyCourseRefused = false
     let clear = nativeStationAutoEntryCourseIsClear(
       station, advance: advance, terminalSpeed: terminal, observation: &observation,
-      bodyBlocked: &bodyBlocked)
-    if !clear, bodyBlocked, outward < 0, speed > 0, autoPilot.validatedMovingEntry {
+      bodyCourseRefused: &bodyCourseRefused)
+    if !clear, bodyCourseRefused, outward < 0, speed > 0, autoPilot.validatedMovingEntry {
       entryBrakingAllowed = stationAutoEntryBrakingIsClear(
         station, relativeVelocity: relative, speed: speed, observation: &observation)
     }

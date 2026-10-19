@@ -1,5 +1,19 @@
 import Foundation
 
+/// Long-course uncertainty denies entry; only a separate finite stop may be proved safe.
+enum StationEntryCourseObstacleAssessment: Equatable {
+  case clear, contact
+  case unresolved(HullSweepFailure)
+  case invalid
+
+  var permitsFiniteStopAssessment: Bool {
+    switch self {
+    case .contact, .unresolved: true
+    case .clear, .invalid: false
+    }
+  }
+}
+
 /// Ephemeral evidence created only by the actual swept entry path, never decoded from a save.
 struct NativeStationEntryProof: Sendable {
   let station: NativeStationIdentity
@@ -621,17 +635,17 @@ extension Game {
     _ station: SpaceBody, advance: Vector3, terminalSpeed: Double
   ) -> Bool {
     var observation: [String: String]?
-    var bodyBlocked = false
+    var bodyCourseRefused = false
     return nativeStationAutoEntryCourseIsClear(
       station, advance: advance, terminalSpeed: terminalSpeed, observation: &observation,
-      bodyBlocked: &bodyBlocked)
+      bodyCourseRefused: &bodyCourseRefused)
   }
 
   mutating func nativeStationAutoEntryCourseIsClear(
     _ station: SpaceBody, advance: Vector3, terminalSpeed: Double,
-    observation: inout [String: String]?, bodyBlocked: inout Bool
+    observation: inout [String: String]?, bodyCourseRefused: inout Bool
   ) -> Bool {
-    bodyBlocked = false
+    bodyCourseRefused = false
     observation?["refusal"] = "native.state"
     let stateValid = commander.nativeStationStateValid
     observation?["nativeStateValid"] = String(stateValid)
@@ -720,7 +734,7 @@ extension Game {
     let clear = nativeStationApproachClear(
       from: flight.pose.position, to: flight.pose.systemPoint(advance),
       excluding: station.id, radius: radius, observation: &observation,
-      refineCourse: true, bodyBlocked: &bodyBlocked)
+      refineCourse: true, bodyCourseRefused: &bodyCourseRefused)
     if clear { observation?["refusal"] = "none" }
     return clear
   }
@@ -729,17 +743,17 @@ extension Game {
     from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double
   ) -> Bool {
     var observation: [String: String]?
-    var bodyBlocked = false
+    var bodyCourseRefused = false
     return nativeStationApproachClear(
       from: start, to: end, excluding: stationID, radius: radius, observation: &observation,
-      refineCourse: false, bodyBlocked: &bodyBlocked)
+      refineCourse: false, bodyCourseRefused: &bodyCourseRefused)
   }
 
   private mutating func nativeStationApproachClear(
     from start: Vector3, to end: Vector3, excluding stationID: Int, radius: Double,
-    observation: inout [String: String]?, refineCourse: Bool, bodyBlocked: inout Bool
+    observation: inout [String: String]?, refineCourse: Bool, bodyCourseRefused: inout Bool
   ) -> Bool {
-    bodyBlocked = false
+    bodyCourseRefused = false
     observation?["refusal"] = "corridor.context"
     guard let anchors = commander.flightSimulation.anchors, radius.isFinite else { return false }
     for (index, celestial) in [anchors.planet, anchors.sun].enumerated() {
@@ -790,16 +804,19 @@ extension Game {
       let bound = radius + bodyRadius
       if distance <= bound {
         if refineCourse {
-          guard
-            let clear = nativeStationCourseObstacleHullIsClear(
-              body, from: start, to: end, radius: radius, mesh: mesh)
-          else {
-            observation?["refusal"] = "corridor.unproven-body"
+          let assessment = nativeStationCourseObstacleAssessment(
+            body, from: start, to: end, radius: radius, mesh: mesh)
+          if assessment == .clear { continue }
+          bodyCourseRefused = assessment.permitsFiniteStopAssessment
+          if assessment != .contact {
+            if case .unresolved(let failure) = assessment {
+              observation?["refusal"] = "corridor.unproven-body.\(failure)"
+            } else {
+              observation?["refusal"] = "corridor.unproven-body"
+            }
             observation?["blocker"] = String(body.id)
             return false
           }
-          if clear { continue }
-          bodyBlocked = true
         }
         observation?["refusal"] = "corridor.body"
         observation?["blocker"] = String(body.id)
@@ -818,10 +835,10 @@ extension Game {
   /// Current-course geometry only. Native entry retains its independent clearance gate.
   /// Exact maintained mesh distance and containment distinguish material contact
   /// from overlapping enclosing spheres. Prepared geometry uses the existing bounded cache.
-  mutating func nativeStationCourseObstacleHullIsClear(
+  mutating func nativeStationCourseObstacleAssessment(
     _ body: SpaceBody, from start: Vector3, to end: Vector3, radius: Double,
     mesh actualMesh: Mesh? = nil
-  ) -> Bool? {
+  ) -> StationEntryCourseObstacleAssessment {
     let flight = commander.flightSimulation
     guard let physical = body.physical,
       physical.identity.system == systemIdentity, physical.identity.visit == flight.visit,
@@ -829,13 +846,13 @@ extension Game {
       bodies.filter({ $0.id == body.id }).count == 1,
       bodies.first(where: { $0.id == body.id }) == body,
       bodies.filter({ $0.physical?.identity == physical.identity }).count == 1
-    else { return nil }
-    if let id = physical.catalogueShipID, ShipCatalogue.ship(id) == nil { return nil }
+    else { return .invalid }
+    if let id = physical.catalogueShipID, ShipCatalogue.ship(id) == nil { return .invalid }
     let mesh: Mesh
     if let actualMesh {
       mesh = actualMesh
     } else if body.scriptNPC != nil {
-      guard let source = scriptNPCMesh(body) else { return nil }
+      guard let source = scriptNPCMesh(body) else { return .invalid }
       mesh = source
     } else {
       mesh = gameplayMesh(for: body)
@@ -845,7 +862,7 @@ extension Game {
       mesh.faces.allSatisfy({
         $0.count >= 3 && $0.allSatisfy { mesh.vertices.indices.contains($0) }
       })
-    else { return nil }
+    else { return .invalid }
     let obstacle = modelPose(of: body)
     let frame = flight.pose.orientation
     let bodyRadius = nativeStationRadius(mesh)
@@ -853,12 +870,12 @@ extension Game {
     let playerRadius = nativeStationRadius(player)
     guard obstacle.position.finite, obstacle.orientation.validRotation, frame.validRotation,
       bodyRadius.isFinite, bodyRadius > 0, playerRadius.isFinite, radius >= playerRadius
-    else { return nil }
+    else { return .invalid }
     guard
       let playerHull = preparedWorkHull(
         mesh: player, key: "station-entry-player:" + commander.shipID),
       let bodyHull = preparedWorkHull(mesh: mesh, key: "station-entry-body:\(body.id)")
-    else { return nil }
+    else { return .invalid }
     // Unit-duration interpolation describes the current geometric corridor only;
     // it predicts no NPC motion and creates no native crossing authority.
     let motion = HullSceneMotion(
@@ -871,9 +888,11 @@ extension Game {
       obstacles: [.init(identity: physical.identity, hull: bodyHull, pose: obstacle)],
       budget: .standard)
     switch result.failure {
-    case nil: return true
-    case .insideHull, .clearanceViolation: return false
-    default: return nil
+    case nil: return .clear
+    case .insideHull, .clearanceViolation: return .contact
+    case .unproven: return .unresolved(.unproven)
+    case .workBudgetExceeded: return .unresolved(.workBudgetExceeded)
+    default: return .invalid
     }
   }
 

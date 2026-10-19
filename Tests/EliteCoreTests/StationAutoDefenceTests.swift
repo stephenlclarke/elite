@@ -1212,9 +1212,13 @@ func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
   let initial = try #require(game.bodies.first { $0.physical?.identity == actor })
   let radius = game.commander.playerMesh.vertices.map(\.length).max() ?? .infinity
   if condition == "near-miss" {
-    let initialClear = game.nativeStationCourseObstacleHullIsClear(
+    let assessment = game.nativeStationCourseObstacleAssessment(
       initial, from: start, to: end, radius: radius)
-    #expect(initialClear == false, "Admission-aligned wings genuinely obstruct the course")
+    #expect(assessment != .clear, "The retained long course must deny entry")
+    #expect(assessment.permitsFiniteStopAssessment, "Current joined prepared geometry is required")
+    if case .unresolved(let failure) = assessment {
+      #expect(failure == .unproven || failure == .workBudgetExceeded)
+    }
   }
   // Real native police steering rebuilds its world-up basis; do not substitute a small sphere.
   game.tick(delta: 0.1, controls: Controls())
@@ -1226,15 +1230,17 @@ func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
   let bodyRadius = game.gameplayMesh(for: body).vertices.map(\.length).max() ?? .infinity
   let separation = hypot(model.position.x - start.x, model.position.y - start.y)
   #expect(separation < radius + bodyRadius, "Retain the actual broad-phase overlap")
-  let clear = game.nativeStationCourseObstacleHullIsClear(
+  let assessment = game.nativeStationCourseObstacleAssessment(
     body, from: start, to: end, radius: radius)
   if condition == "near-miss" {
     #expect(abs(model.orientation.x.y) < 1e-8)
-    #expect(clear == true)
+    #expect(assessment == .clear)
   } else if condition == "obstructing" {
-    #expect(clear == false)
+    #expect(assessment == .contact)
+    #expect(assessment.permitsFiniteStopAssessment)
   } else {
-    #expect(clear == nil)
+    #expect(assessment == .invalid)
+    #expect(!assessment.permitsFiniteStopAssessment)
   }
   #expect(!game.docked && game.pendingNativeStationDock == nil)
 }
@@ -1257,11 +1263,11 @@ func stationAutoCourseRefusesUnknownBroadPhaseFacts(condition: String) async thr
   let depth = -station.entrancePosition.dot(station.entranceNormal)
   let advance = station.entranceNormal * -(depth - 0.5)
   var observation: [String: String]? = [:]
-  var bodyBlocked = false
+  var bodyCourseRefused = false
   let clear = game.nativeStationAutoEntryCourseIsClear(
     station, advance: advance, terminalSpeed: 48, observation: &observation,
-    bodyBlocked: &bodyBlocked)
-  #expect(!clear && !bodyBlocked)
+    bodyCourseRefused: &bodyCourseRefused)
+  #expect(!clear && !bodyCourseRefused)
   #expect(observation?["refusal"] == "corridor.unproven-body")
   #expect(observation?["blocker"] == String(id))
 }
@@ -1396,6 +1402,23 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
   game.autoPilot.setApproachVelocity(.init(0, 0, 21.451299950917527))
   let attacker = try stationAutoAddNativeAttacker(
     &game, position: .init(300, 0, -600), sequence: 923, facingPlayer: true)
+  // The real first police wave has three ships. A lone ambient pirate legitimately
+  // flees immediately; four stock allies sustain this new fixture's native attack.
+  var attackers = [attacker]
+  for member in 0..<3 {
+    let id = try stationAutoAddNativeAttacker(
+      &game, position: .init(Double(500 + member * 200), 0, -600),
+      sequence: UInt64(924 + member), facingPlayer: true)
+    attackers.append(id)
+  }
+  let native = try #require(ShipCatalogue.nativeShip(.cobra)?.game)
+  let stockResources = try #require(NPCResources.stock(native))
+  for id in attackers {
+    let index = try #require(game.bodies.firstIndex { $0.id == id })
+    try #require(game.bodies[index].physical?.npc?.role == .pirate)
+    game.bodies[index].energy = native.energy
+    game.bodies[index].physical?.npc?.resources = stockResources
+  }
   let currentContext = game.gameplayContext()
   let context = try #require(currentContext)
   let player = try #require(game.commander.flightSimulation.player)
@@ -1416,6 +1439,9 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
   }
   try #require(!police.isEmpty, "The real accepted attack must launch actual station police")
   let currentStation = try #require(game.autoTargetBody)
+  let liveAttacker = try #require(game.bodies.first { $0.id == attacker })
+  #expect(liveAttacker.hostile)
+  #expect(liveAttacker.physical?.npc?.intention == .engage(player))
   if condition == "unsafe-stop" {
     let id = game.nextBodyID
     game.nextBodyID += 1
@@ -1424,8 +1450,9 @@ func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition:
   }
   let proposal = game.stationAutoGuidance(target: currentStation)
   let guidance = try #require(proposal)
-  try #require(
-    guidance.hazard == .active && !guidance.movingEntryAllowed && !guidance.joinedIncoming)
+  try #require(guidance.hazard == .active)
+  try #require(!guidance.movingEntryAllowed)
+  try #require(!guidance.joinedIncoming)
   if condition == "unsafe-stop" {
     #expect(!guidance.entryBrakingAllowed)
     let unsafeRuntime = GameRuntime(game: game, saveURL: storage.url)
