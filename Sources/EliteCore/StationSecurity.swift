@@ -187,17 +187,41 @@ public struct StationSecurity: Equatable, Codable, Sendable {
     police: Int, context: EncounterContext, notices: inout [SecurityNotice]
   ) {
     let ordinary = threats.filter { !$0.stationAttacker }
-    guard !ordinary.isEmpty, context.government > 0 else { return }
+    let defendingVisitor = ordinary.contains { protectsCurrentCleanPlayer($0, context: context) }
+    guard !ordinary.isEmpty, context.government > 0 || defendingVisitor else { return }
     if !announcedInvestigation {
       notices.append(.distressReceived)
       announcedInvestigation = true
     }
     let first = ordinary.map(\.firstReportedAt).min() ?? context.physicalTime
     let delay = 8 - Double(max(0, min(7, context.government))) * 4 / 7
-    if !ordinaryWaveSent && context.physicalTime >= first + delay {
+    if !ordinaryWaveSent && (defendingVisitor || context.physicalTime >= first + delay) {
       queueLaunch(count: max(0, 2 - police), context: context, activePolice: police)
       ordinaryWaveSent = true
     }
+  }
+
+  /// A witnessed assault inside station protection is local defence, even in anarchy.
+  /// Routine/deep-space patrol policy and ordinary delayed investigations are unchanged.
+  private func protectsCurrentCleanPlayer(_ threat: SecurityThreat, context: EncounterContext)
+    -> Bool
+  {
+    let report = threat.report
+    let player = context.player
+    guard player.identity.system == context.system, player.identity.visit == context.visit,
+      player.energy.isFinite, player.energy > 0, player.legal.value == 0,
+      report.victim == player.identity, report.offender != player.identity,
+      report.offender.system == context.system, report.offender.visit == context.visit,
+      report.physicalTime <= context.physicalTime,
+      context.physicalTime - report.physicalTime < 30,
+      report.position.finite, player.position.finite,
+      (report.position - context.anchors.station.position).length <= 1200,
+      (player.position - context.anchors.station.position).length <= 1200,
+      !context.protection.protectedActors.contains(report.offender)
+    else { return false }
+    let current = context.actors.filter { $0.identity == report.offender }
+    return current.count == 1 && current[0].energy.isFinite && current[0].energy > 0
+      && current[0].hull.isTargetShip && current[0].npc != nil
   }
 
   private mutating func updateAssignments(police: [ActorSnapshot], context: EncounterContext)

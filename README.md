@@ -291,6 +291,8 @@ Automatic ECM requires active XYZZY mode, its E switch, fitted ECM and enough en
 
 ## Station mission campaign
 
+A main station can dispatch its real police ships when it receives a current unlawful-assault report against a clean commander inside its protection zone, including in anarchy. This does not create routine anarchy patrols or guarantee rescue.
+
 The station mission campaign is now playable alongside the two BBC naval missions. Dock at **Telace in Galaxy 2** for automatic enrolment, with no score prerequisite or deadline. Follow the Gallery objectives through Gerebied, Tegete, Ceinerxe, Edater and Esdi. Bolts' destruction earns 20 kg gold directly; the final Esdi report pays 9,500 CR and clears your bounty once. Any killer counts for the two unique mission targets.
 
 Mission dialogs use **Confirm / Back**: arrows choose, Return selects, Escape backs out, and buttons can be clicked. **Game > Mission Contacts** reopens an eligible contact; **K** shows the handoff keys. Tegete needs one free tonne for a marked firearm. It stays reserved during sales and auto-trade until its Ceinerxe transfer. Saved targets retain identity, damage and finite missiles across visits; repeat contacts cannot repeat rewards.
