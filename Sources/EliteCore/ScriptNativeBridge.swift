@@ -5,10 +5,18 @@ extension Game {
   func currentMissionActorDescriptor(bodyID: Int) -> MissionActorDescriptor? {
     // Ordinary craft cannot pass the retained factory's existing ownership guard.
     // Keep that rejection outside its Commander and actor-validation stack frames.
-    guard let body = bodies.first(where: { $0.id == bodyID }),
-      body.missionInstanceID != nil, body.missionActorID != nil
-    else { return nil }
+    guard Self.firstMissionBodyHasOwnershipTags(bodyID: bodyID, bodies: bodies) else { return nil }
     return retainedCurrentMissionActorDescriptor(bodyID: bodyID)
+  }
+
+  @inline(never)
+  private static func firstMissionBodyHasOwnershipTags(
+    bodyID: Int, bodies: borrowing [SpaceBody]
+  ) -> Bool {
+    for index in bodies.indices where bodies[index].id == bodyID {
+      return bodies[index].missionInstanceID != nil && bodies[index].missionActorID != nil
+    }
+    return false
   }
 
   /// Only actual mission-tagged bodies enter the unchanged full retained-owner census.
