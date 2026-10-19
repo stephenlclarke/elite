@@ -69,3 +69,7 @@ The F01 implicit current-save identity finding is resolved in a corrected frozen
 ## Minimal Director review and priority execution grant
 
 Fresh minimal crash source now has clean independent review, but its actual default-stack run remains required. Track that763/764 priority grant and prevent the already released old762 lease from starting queued F01 work prematurely.
+
+## Actual764 and queued F01 owner handoff
+
+Actual764 still stack-crashes during native salvage persistence after five acceptance-case passes. Keep the four unfinished method terminals UNKNOWN and all crash source unintegrated; causal comparison is bounded to existing artifacts before another proposal. Its actual terminal closure releases queued F01 work without implying crash acceptance.
