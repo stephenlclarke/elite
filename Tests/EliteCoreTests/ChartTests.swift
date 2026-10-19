@@ -60,7 +60,7 @@ import Testing
     }
   }
 }
-@Test func planetSearchBrowsesAllSystemsFiltersCaseInsensitivelyAndIsolatesGameShortcuts() {
+@Test func planetSearchBrowsesAllSystemsFiltersCaseInsensitivelyAndIsolatesGameShortcuts() throws {
   var game = Game(executive: false)
   game.screen = .chart
   game.commander.fuel = 0
@@ -68,12 +68,19 @@ import Testing
   #expect(game.mapSearch.active && game.searchResults.count == 256)
   let sorted = game.knownSystems.sorted { $0.name == $1.name ? $0.id < $1.id : $0.name < $1.name }
   #expect(game.searchResults == sorted)
-  for key in "lAvE" { game.key(String(key)) }
+  let expected = try Universe.originalWorld(
+    galaxy: game.commander.galaxy, system: game.commander.system)
+  let mixedCase = expected.name.enumerated().map {
+    $0.offset.isMultiple(of: 2) ? String($0.element).lowercased() : String($0.element).uppercased()
+  }.joined()
+  for key in mixedCase { game.key(String(key)) }
   #expect(
     game.screen == .chart && game.commander.name == "JAMESON"
-      && game.searchResults.first?.name == "LAVE")
+      && game.searchResults.first?.original?.key == expected.key)
   game.key("return")
-  #expect(!game.mapSearch.active && game.targetSystem.name == "LAVE" && game.jumpCountdown == nil)
+  #expect(
+    !game.mapSearch.active && game.mapTargetSystem.original?.key == expected.key
+      && game.targetSystem.original?.key == expected.key && game.jumpCountdown == nil)
   game.key("/")
   game.key("search-clear")
   for key in "xyzzy" { game.key(String(key)) }

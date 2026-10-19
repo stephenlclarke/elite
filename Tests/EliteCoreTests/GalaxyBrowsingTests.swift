@@ -2,10 +2,18 @@ import Testing
 
 @testable import EliteCore
 
-@Test func galaxySelectorBrowsesEightRealCataloguesWithoutChangingFlightState() {
+@Test func galaxySelectorBrowsesEightRealCataloguesWithoutChangingFlightState() throws {
   var game = Game(executive: false)
   game.commander.installNavigationComputer(.military)
-  game.commander.navigationPlan = .init(galaxy: 0, path: [7, 129], tier: .military, originFuel: 70)
+  let neighbour = try #require(
+    game.knownSystems.first {
+      $0.id != game.commander.system
+        && game.currentSystem.distance(to: $0) <= game.commander.maximumJumpDistance
+    })
+  game.commander.navigationPlan = .init(
+    galaxy: game.commander.galaxy, path: [game.commander.system, neighbour.id],
+    tier: .military, originFuel: game.commander.fuel,
+    originCapacity: game.commander.fuelCapacity)
   game.screen = .chart
   let commander = game.commander
   let market = game.market
@@ -20,7 +28,10 @@ import Testing
     #expect(game.commander == commander && game.market == market && game.systems == universe)
     #expect(game.selectedSystem == destination)
     let frame = Display.presentation(game, width: 1512, height: 982)
-    #expect(frame.labels.contains { $0.text == "Viewing Galaxy \(galaxy + 1)" })
+    #expect(
+      frame.labels.contains {
+        $0.text == "Viewing " + Universe.originalWorlds.authoring.galaxies[galaxy].name
+      })
     #expect(frame.labels.contains { $0.text.contains("Current location: Galaxy 1") })
     let rings = frame.worldGraphics.filter {
       if case .ellipse(_, _, _, .blue) = $0 { return true }
@@ -58,7 +69,8 @@ import Testing
     let expected = game.searchResults[1]
     game.key("return")
     #expect(game.mapTargetSystem == expected)
-    let layout = ChartLayout(width: 768, height: 768, local: false, docked: game.docked)
+    let layout = ChartLayout(
+      width: 768, height: 768, local: false, docked: game.docked, galaxy: galaxy)
     let point = layout.point(expected, current: game.currentSystem)
     let frame = Display.presentation(game, width: 768, height: 768)
     #expect(
@@ -89,38 +101,46 @@ import Testing
   #expect(game.viewedGalaxy == 0 && game.viewedSystemID == 7)
 }
 
-@Test func browsingDuplicateSystemIDsAndNamesDoesNotRebindTheTravelDestination() {
+@Test func browsingRepeatedSystemIDsWithDistinctOriginalNamesDoesNotRebindTheTravelDestination()
+  throws
+{
   var game = Game(executive: false)
   game.screen = .chart
-  let galaxies = (0..<8).map { Universe.galaxy(number: $0) }
-  var names: [String: (Int, Int)] = [:]
-  var foundDuplicate = false
-  for (galaxy, systems) in galaxies.enumerated() {
-    for system in systems {
-      if let previous = names[system.name], previous.0 != galaxy {
-        game.viewGalaxy(previous.0)
-        game.selectChartSystem(previous.1)
-        #expect(game.mapTargetSystem == galaxies[previous.0][previous.1])
-        game.viewGalaxy(galaxy)
-        game.selectChartSystem(system.id)
-        #expect(game.mapTargetSystem == system && game.viewedGalaxy == galaxy)
-        foundDuplicate = true
-      }
-      names[system.name] = (galaxy, system.id)
+  let origin = game.commander
+  let destination = game.selectedSystem
+  let catalogue = Universe.originalWorlds
+  #expect(Set(catalogue.worlds.map(\.name)).count == 2048)
+  for id in [0, 7, 88, 255] {
+    var keys = Set<String>()
+    var names = Set<String>()
+    for galaxy in 0..<8 {
+      let expected = try catalogue.world(galaxy: galaxy, system: id)
+      game.viewGalaxy(galaxy)
+      game.selectChartSystem(id)
+      #expect(game.viewedGalaxy == galaxy && game.mapTargetSystem.id == id)
+      #expect(
+        game.mapTargetSystem.original?.key == expected.key
+          && game.mapTargetSystem.name == expected.name)
+      keys.insert(expected.key)
+      names.insert(expected.name)
+      #expect(game.commander == origin && game.selectedSystem == destination)
     }
+    #expect(keys.count == 8 && names.count == 8)
   }
-  #expect(foundDuplicate && game.selectedSystem == 7 && game.commander.galaxy == 0)
 }
 
-@Test func hyperspaceCommitsACurrentGalaxyPreviewBeforeTestingTheDestination() {
+@Test func hyperspaceCommitsACurrentGalaxyPreviewBeforeTestingTheDestination() throws {
   var game = Game(executive: false)
   game.launch()
+  try #require(!game.docked && game.commander.valid, "Native launch refused: \(game.message)")
   game.bodies = []
   game.selectedSystem = game.commander.system
   game.key("4")
-  let next = game.systems.first {
-    $0.id != game.commander.system && game.currentSystem.distance(to: $0) <= 7
-  }!
+  let next = try #require(
+    game.knownSystems.first {
+      $0.id != game.commander.system
+        && game.currentSystem.distance(to: $0) <= game.commander.maximumJumpDistance
+    })
   game.selectChartSystem(next.id)
   #expect(game.selectedSystem == game.commander.system)
   game.key("h")

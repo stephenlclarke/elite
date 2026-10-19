@@ -79,12 +79,15 @@ import Testing
   let prices = MarketItem.minimumPrices(at: destination)
   for index in game.market.indices {
     game.market[index].price = prices[index] + 100
+    game.market[index].bidPrice = prices[index] + 90
     game.market[index].quantity = 0
   }
   // Two tonne commodities compete for the same cash and hold; higher margin buys first.
   game.market[0].price = 1
+  game.market[0].bidPrice = 1
   game.market[0].quantity = 100
   game.market[1].price = 1
+  game.market[1].bidPrice = 1
   game.market[1].quantity = 100
   game.commander.credits = 3
   let bestMargin = max(prices[0], prices[1]) - 1
@@ -95,7 +98,8 @@ import Testing
   game.market[0].quantity = 0
   game.market[1].quantity = 0
   game.commander.cargo[0] = 2
-  // Carried cargo is compared with its actual local price, including losses.
-  game.market[0].price = prices[0] + 10
+  // Carried cargo competes with selling here at the local bid, never the ask.
+  game.market[0].bidPrice = prices[0] + 10
+  game.market[0].price = game.market[0].bidPrice + 5
   #expect(game.estimatedTradeProfit(to: destination) == -20)
 }
