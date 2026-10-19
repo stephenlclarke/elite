@@ -348,13 +348,23 @@ import Testing
 @Test func ecmEscapeEnemiesAndSimulationBounds() throws {
   var game = Game(executive: false)
   game.launch()
+  try #require(!game.docked && game.commander.valid)
   game.speed = 0
-  game.bodies = [SpaceBody(id: 1, hull: .missile, position: .init(0, 0, 1000))]
+  let missileID = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(SpaceBody(id: missileID, hull: .missile, position: .init(0, 0, 1000)))
+  game.ensurePhysicalActors()
+  let beforeECM = game.bodies
+  let survivors = beforeECM.filter { $0.hull != .missile }
+  try #require(beforeECM.filter { $0.hull == .missile }.map(\.id) == [missileID])
+  try #require(survivors.contains { $0.nativeStationIdentity != nil })
   game.key("e")
-  #expect(game.bodies.count == 1)
-  game.commander.equipment.insert("E.C.M. System")
+  #expect(game.bodies == beforeECM && game.energy == 256)
+  try game.commander.grantEquipment(
+    "E.C.M. System", at: .utility(.ecm), provenance: .grant("ECM simulation fixture"))
+  try #require(game.commander.fittedEquipment(at: .utility(.ecm)) != nil)
   game.key("e")
-  #expect(game.bodies.isEmpty && game.energy == 246)
+  #expect(game.bodies == survivors && game.energy == 246)
   game.bodies = [SpaceBody(id: 2, hull: .viper, position: .init(0, 0, 500), hostile: true)]
   game.frontShield = 0
   game.energy = 0.01
@@ -702,17 +712,36 @@ private func reboundJumpLimitWorldAfterLoad(
   }
 }
 
-@Test func autoTraderIncludesIllegalProfitableExports() {
+@Test func autoTraderIncludesIllegalProfitableExports() throws {
   var game = Game(executive: false)
-  game.selectedSystem = 129
-  game.commander.credits = 20000
+  // The first catalogue-ordered, seven-LY route profitable for all three restricted goods.
+  // Preserve authenticated ask/bid quotes: invented prices make the current Commander invalid.
+  game.commander.system = 12
+  game.selectedSystem = 225
+  game.commander.credits = 200000
+  try #require(game.currentSystem.original?.key == "G01-S012")
+  try #require(game.targetSystem.original?.key == "G01-S225")
+  try #require(game.currentSystem.distance(to: game.targetSystem) <= 7)
+  let destination = MarketItem.at(game.targetSystem)
+  let illegal = [3, 6, 10]
+  for index in illegal {
+    try #require(destination[index].bidPrice > game.market[index].price)
+  }
+  let purchaseCost = illegal.reduce(0) { $0 + 4 * game.market[$1].price }
+  let cashBefore = game.commander.credits
   for index in game.market.indices { game.market[index].quantity = 0 }
-  for index in [3, 6, 10] { game.market[index] = MarketItem(price: 1, quantity: 4) }
+  for index in illegal { game.market[index].quantity = 4 }
+  try #require(game.commander.valid)
   game.autoTrade()
   #expect(
     game.commander.cargo[3] == 4 && game.commander.cargo[6] == 4 && game.commander.cargo[10] == 4)
+  #expect(game.commander.cargoTonnes == 12)
+  #expect(game.commander.credits == cashBefore - purchaseCost)
+  #expect(illegal.allSatisfy { game.market[$0].quantity == 0 })
+  try #require(game.commander.valid)
   game.launch()
-  #expect(game.commander.legal == 16)
+  #expect(!game.docked && game.screen == .front && game.commander.legal == 16)
+  #expect(game.commander.valid)
 }
 
 @Test func finiteXYZzyCashAndUnlimitedCargoKeepTransactionsAndSavesValid() async throws {
