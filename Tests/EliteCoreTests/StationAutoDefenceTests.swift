@@ -1078,7 +1078,7 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
   // corridor now has its own positive case below.
   var unsafePose = game.commander.flightSimulation.pose
   unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
-  NativePagedSalvageFixture.moveObserver(&game, to: unsafePose)
+  NativeStationTestFixture.reframe(&game, to: unsafePose)
   game.autoPilot.setApproachVelocity(.init(0, 0, 0))
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 909)
   let index = try #require(game.bodies.firstIndex { $0.id == id })
@@ -1156,7 +1156,7 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
   pose.orientation.z = old.orientation.apply(station.entranceNormal * -1).unit
   pose.orientation.y = old.orientation.apply(station.entranceUp).unit
   pose.orientation.x = pose.orientation.y.cross(pose.orientation.z).unit
-  NativePagedSalvageFixture.moveObserver(&game, to: pose)
+  NativeStationTestFixture.reframe(&game, to: pose)
   game.speed = 0
   game.autoPilot.setApproachVelocity(.init(0, 0, inwardSpeed))
   let id = try stationAutoAddNativeAttacker(
@@ -1167,6 +1167,10 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
   let shield = game.frontShield + game.rearShield
   game.emitGameplayNPCBeam(bodyID: id, target: player, context: context)
   try #require(game.frontShield + game.rearShield < shield)
+  let currentStation = try #require(game.autoTargetBody)
+  let proposal = game.stationAutoGuidance(target: currentStation)
+  let current = try #require(proposal)
+  try #require(current.hazard == .active && current.movingEntryAllowed)
   return game
 }
 
@@ -1189,7 +1193,7 @@ func stationAutoMainPortRetainsRealWallsAndRefusesNonfittingHulls(condition: Str
   var pose = ShipPose()
   pose.position = original.systemPoint(
     initial.entrancePosition + initial.entranceNormal * 500
-      + initial.modelVector(.init(condition == "rim" ? 80 : 0, 0, 0)))
+      + initial.modelVector(.init(condition == "rim" ? 85 : 0, 0, 0)))
   pose.orientation.z = original.orientation.apply(initial.entranceNormal) * -1
   pose.orientation.y = original.orientation.apply(initial.entranceUp)
   pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
@@ -1219,6 +1223,42 @@ func stationAutoMainPortRetainsRealWallsAndRefusesNonfittingHulls(condition: Str
   }
   // The read-only geometry proposal never installs its endpoint or creates arrival authority.
   #expect(game.commander.flightSimulation.pose == pose)
+  #expect(!game.docked && game.pendingNativeStationDock == nil)
+}
+
+@Test func stationAutoMainPortFitsActualNormalizedCobraAcrossMatchedSpinStep() throws {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.launch()
+  let initial = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+  let old = game.commander.flightSimulation.pose
+  var before = ShipPose()
+  before.position = old.systemPoint(initial.entrancePosition + initial.entranceNormal * 2)
+  before.orientation.z = old.orientation.apply(initial.entranceNormal) * -1
+  before.orientation.y = old.orientation.apply(initial.entranceUp)
+  before.orientation.x = before.orientation.y.cross(before.orientation.z)
+  NativeStationTestFixture.reframe(&game, to: before)
+  game.roll = -initial.rotationRate
+  let delta = 0.1
+  game.commander.flightSimulation.advancePhysicalTime(delta)
+  let index = try #require(game.bodies.firstIndex { $0.id == 0 })
+  game.advanceBodyModelRotation(at: index, delta: delta)
+  var matchedSpin = Basis3()
+  matchedSpin.rotate(pitch: 0, roll: initial.rotationRate * delta, yaw: 0)
+  var endpoint = before
+  endpoint.orientation = before.orientation.composed(with: matchedSpin)
+  endpoint.position = before.systemPoint(.init(0, 0, 4))
+  NativeStationTestFixture.reframe(&game, to: endpoint)
+  let station = game.bodies[index]
+  let player = game.commander.playerMesh
+  let radius = player.vertices.map(\.length).max() ?? .infinity
+  let halfWidth = player.vertices.map { abs($0.x) }.max() ?? .infinity
+  #expect(abs(radius - 69) < 1e-8)
+  #expect(abs(halfWidth - 60.45841816329148) < 1e-8)
+  let necessaryGate = station.canEnter(roll: game.roll, speed: 40)
+  let course = game.nativeMainStationHullCourseIsClear(
+    station, from: before, to: endpoint, delta: delta)
+  #expect(necessaryGate && course)
   #expect(!game.docked && game.pendingNativeStationDock == nil)
 }
 
@@ -1351,7 +1391,7 @@ func stationAutoMovingEntryRefusesUnsafeOrUnjoinedCurrentCourses(condition: Stri
       pose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
     }
     if condition == "lateral" { pose.position = pose.position + pose.orientation.x * 30 }
-    NativePagedSalvageFixture.moveObserver(&game, to: pose)
+    NativeStationTestFixture.reframe(&game, to: pose)
     if condition == "unsafe-stationary" { game.autoPilot.setApproachVelocity(.init(0, 0, 0)) }
   } else if condition == "lateral-velocity" {
     game.autoPilot.setApproachVelocity(.init(5, 0, 80))
@@ -1462,7 +1502,7 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   // This initial stationary course is genuinely unsafe: the port phase is mismatched.
   var unsafePose = game.commander.flightSimulation.pose
   unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
-  NativePagedSalvageFixture.moveObserver(&game, to: unsafePose)
+  NativeStationTestFixture.reframe(&game, to: unsafePose)
   game.autoPilot.setApproachVelocity(.init(0, 0, 0))
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -600), sequence: 910)
   game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
@@ -1509,7 +1549,7 @@ func stationAutoMixedAuthenticBeamAndUnknownFactsCannotGrantHandover(condition: 
   // This initial stationary course is genuinely unsafe: the port phase is mismatched.
   var unsafePose = game.commander.flightSimulation.pose
   unsafePose.orientation.rotate(pitch: 0, roll: 0.2, yaw: 0)
-  NativePagedSalvageFixture.moveObserver(&game, to: unsafePose)
+  NativeStationTestFixture.reframe(&game, to: unsafePose)
   game.autoPilot.setApproachVelocity(.init(0, 0, 0))
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -600), sequence: 912)
   game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
