@@ -38,9 +38,14 @@ enum StationDefenceRefusalObservation {
       context.map {
         "\($0.system),\($0.visit),\($0.revision),\($0.physicalTime)"
       } ?? "nil"
-    values["stationRanges"] = game.bodies.filter { $0.hull == .station }.prefix(8).map {
-      "\($0.id):\($0.position.length):\($0.nativeStationIdentity != nil):\(game.nativeStationBodyIsCurrent($0))"
-    }.joined(separator: ";")
+    var stationRanges: [String] = []
+    for station in game.bodies.filter({ $0.hull == .station }).prefix(8) {
+      let current = game.nativeStationBodyIsCurrent(station)
+      stationRanges.append(
+        "\(station.id):\(station.position.length):\(station.nativeStationIdentity != nil):\(current)"
+      )
+    }
+    values["stationRanges"] = stationRanges.joined(separator: ";")
     if let target = game.bodies.first(where: { $0.hostile }) {
       let muzzle = Vector3(0, 0, 24)
       let offset = target.position - muzzle

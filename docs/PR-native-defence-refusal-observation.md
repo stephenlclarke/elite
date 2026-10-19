@@ -17,3 +17,7 @@ Each scalar is capped at768 characters, body and station summaries at eight rows
 Removing only the inserted observation calls restores both original test files byte for byte. All original requires, expects, fixtures, snapshots and gameplay calls retain their order and content. No production file is modified. Strict Swift formatting, Markdown lint, whitespace checks and exact source inverse are the author checks. No author compiler, native, GUI, runtime, test, profile or debugger job was run.
 
 Root authorized one G1 review, one incremental coherent build (batched with other ready reviewed repairs), then one observation of these exact two methods with the flag enabled and a90-second ceiling. Existing failures are expected and must be qualified literally; no automatic retry or CI allocation follows. The methods are `stationAutoNativeMountedHitPreservesViewToolStationAndWeaponLocks` and `procurementMissileActiveNativeECMDefersWithoutSpendingOriginalStock`. No production repair or diagnosis is claimed by this source leaf.
+
+## Compiler qualification
+
+The first combined test compile rejected the station-range `map` closure because it captured a borrowed Game. The same first-eight station query now uses an ordered loop, preserving row order, one current-station query per row, fields and separator without copying Game or changing authority. Reversing that single block recovers the complete reviewed helper byte for byte. The diagnostic remains unexecuted until a coherent build completes; no original test verdict is changed.
