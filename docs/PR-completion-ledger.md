@@ -164,3 +164,7 @@ Record exact four-file import81b3b0b0 after Root CLEAN review, owner790 matching
 ## MBA partial runtime and routine projectile compiler fix
 
 Record Root/owner-reported actual MBA20 closure16 PASS/four FAIL/four issues/no crash, retain16 unaffected passes and require owned four-failure fixes/affected rerun plus changed-hunk review before integration. Keep that outcome distinct from the locally retained earlier zero-discovery loader proof. Record MC1 borrowed-autoclosure compile refusal/zero runtime and Root-clean routine child4e3c86aa continuing788attempt02/789 under the existing grant. No guard waiver, new feature, duplicate audit or extra prebuild ACK. Scoped Markdown/whitespace checks only.
+
+## Actor-restoration lifetime repair and reviewed MBA fixture child
+
+Record actual789 zero completed/five UNKNOWN stack-failure result with source/proof/actual terminal/all-owned closure, retaining10 earlier passes. Assign only Root's actor-restoration lifetime helper/empty-guard repair with792/793 owner validation after child freeze, no additional preauthor/prebuild ACK or getter-patch expansion; review can overlap build but precedes integration. Record Root-clean c8a8284e four-owned-fixture correction, matching build reported PASS/four-case runtime pending and16 unaffected passes retained. Scoped Markdown/whitespace checks only.
