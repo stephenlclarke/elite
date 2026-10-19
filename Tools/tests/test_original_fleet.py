@@ -253,5 +253,103 @@ class OriginalFleetTests(unittest.TestCase):
         self.assertTrue(link.is_symlink())
 
 
+class IndexedFleetTests(unittest.TestCase):
+    def setUp(self):
+        OriginalFleetTests.setUp(self)
+        self.index_path = Path("delivery-index.json")
+        self.selected = copy.deepcopy(self.geometry)
+        self.selected["nativeDesign"]["vertices"][3][2] = 4.25
+        self.effective = "completion/native-lod/SH001-design.toml"
+        write_toml(self.source / self.effective, self.selected)
+        second = hull(spec("SH002", False))
+        write_toml(self.source / "completion/SH002-design.toml", second)
+        self.index = {"schema": "l337.complete-original-fleet-index/1",
+                      "workspace": "/old/author/machine/not/a/path/authority", "ships": []}
+        for identifier, geometry in (("SH001", self.effective), ("SH002", "completion/SH002-design.toml")):
+            stats = f"fleet-specs/{identifier}.toml"
+            self.index["ships"].append({"id": identifier, "statsFile": stats,
+                                        "statsSHA256": COMPILER.digest((self.source / stats).read_bytes()),
+                                        "geometryFile": geometry,
+                                        "geometrySHA256": COMPILER.digest((self.source / geometry).read_bytes())})
+        self.write_index()
+
+    def write_index(self):
+        (self.source / self.index_path).write_text(json.dumps(self.index))
+
+    def compile(self, output=None):
+        return COMPILER.compile_fleet(self.source, output or self.output, 2, 2, self.index_path)
+
+    def test_effective_lod_exact_source_provenance_and_no_runtime_claim(self):
+        manifest = self.compile()
+        self.assertEqual(manifest["counts"]["missingMeshes"], 0)
+        self.assertEqual(manifest["counts"]["hulls"], 2)
+        self.assertFalse(manifest["runtimeReady"])
+        entry = manifest["ships"][0]
+        self.assertEqual(entry["sources"][1]["path"], self.effective)
+        self.assertEqual(entry["sources"][1]["sha256"], self.index["ships"][0]["geometrySHA256"])
+        self.assertEqual((self.output / entry["hull"]).read_bytes(), (self.source / self.effective).read_bytes())
+        staged = tomllib.loads((self.output / entry["hull"]).read_text())
+        self.assertEqual(staged["nativeDesign"], self.selected["nativeDesign"])
+        self.assertNotEqual(staged["nativeDesign"], self.geometry["nativeDesign"])
+        joined = tomllib.loads((self.output / entry["joined"]).read_text())
+        self.assertEqual(joined["design"], self.selected["design"])
+        self.assertEqual({key: joined[key] for key in self.ship}, self.ship)
+        self.assertEqual(manifest["deliveryIndex"]["sha256"], COMPILER.digest((self.source / self.index_path).read_bytes()))
+
+    def test_stale_spec_or_geometry_fingerprint_refuses(self):
+        for index, field in enumerate(("statsFile", "geometryFile")):
+            path = self.source / self.index["ships"][0][field]
+            original = path.read_bytes()
+            path.write_bytes(original + b"\n# changed since approval\n")
+            with self.assertRaisesRegex(ValueError, "fingerprint mismatch"):
+                self.compile(self.root / f"stale-{index}")
+            path.write_bytes(original)
+
+    def test_missing_duplicate_extra_and_contradictory_identity_refuse(self):
+        original = copy.deepcopy(self.index)
+        variations = []
+        missing = copy.deepcopy(original); missing["ships"].pop(); variations.append(missing)
+        duplicate = copy.deepcopy(original); duplicate["ships"][1] = duplicate["ships"][0]; variations.append(duplicate)
+        extra = copy.deepcopy(original); extra["ships"].append(extra["ships"][0]); variations.append(extra)
+        wrong = copy.deepcopy(original); wrong["ships"][0]["statsFile"] = "fleet-specs/SH002.toml"; variations.append(wrong)
+        unknown = copy.deepcopy(original); unknown["schema"] = "unrecognized"; variations.append(unknown)
+        for number, self.index in enumerate(variations):
+            self.write_index()
+            with self.assertRaises(ValueError):
+                self.compile(self.root / f"identity-{number}")
+        self.index = original
+        self.index["ships"][0]["geometrySHA256"] = "not-a-sha"
+        self.write_index()
+        with self.assertRaisesRegex(ValueError, "fingerprint"):
+            self.compile(self.root / "invalid-sha")
+
+    def test_escaping_and_symlink_indexed_inputs_refuse(self):
+        original = copy.deepcopy(self.index)
+        for number, name in enumerate(("../SH001-design.toml", "/outside/SH001-design.toml")):
+            self.index["ships"][0]["geometryFile"] = name
+            self.write_index()
+            with self.assertRaises(ValueError):
+                self.compile(self.root / f"escape-{number}")
+        self.index = original
+        self.write_index()
+        path = self.source / self.effective
+        destination = self.root / "outside.toml"
+        destination.write_bytes(path.read_bytes())
+        path.unlink()
+        path.symlink_to(destination)
+        with self.assertRaisesRegex(ValueError, "escapes root|Symlink"):
+            self.compile(self.root / "symlink-input")
+        link = self.source / "index-link.json"
+        link.symlink_to(self.source / self.index_path)
+        with self.assertRaisesRegex(ValueError, "Symlink"):
+            COMPILER.compile_fleet(self.source, self.root / "symlink-index", 2, 2, Path("index-link.json"))
+
+    def test_deterministic_indexed_staging_and_frozen_check(self):
+        first = self.compile()
+        second = self.compile(self.root / "second")
+        self.assertEqual(first, second)
+        self.assertEqual(COMPILER.check_staging(self.output), first)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -242,7 +242,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH001.toml",
-      sourceSHA256: "510d7be41315c34f30108c4b07a21e88187db778529deddaa0206124f765d842",
+      sourceSHA256: "3a4220be92fce975a550650409c9d52b39451ef0dfe63e2d3d7a87268073eafc",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -323,14 +323,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH002.toml",
-      sourceSHA256: "995aae5486d05c6815c1dec0cc138796323643839dc6a86a023425b2da10abd4",
+      sourceSHA256: "39cd712ae422c7dc47d16ff5ad7a0fd5b01f18cc6cb2b9e30fa965c1505dd7fb",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -403,14 +404,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH003.toml",
-      sourceSHA256: "e9f6a1614993154546f9b3f9d5a6dbd6266d0400741c940624249d8b1c99fe6b",
+      sourceSHA256: "9d27c7a3cb17e63a44b95a3c2d760e05634407750539d339a31169146b8701b2",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -483,14 +485,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH004.toml",
-      sourceSHA256: "4da646ad6fdf1ad072257ec55bc72dbd5dbf3c7c6f9aaa34ed0813fc1bcd476d",
+      sourceSHA256: "aa14680c9e193b217bc6c72ece2aa63ccb98482880f9425087a7f6322211ba0f",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -563,7 +566,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH005.toml",
-      sourceSHA256: "d59be5b7ee17fc743ae384b82c48db3b6e07bb7136ced0456449be7d2f9d29a8",
+      sourceSHA256: "6d518b0d20a0ca75988bc26165cb7b32397bcbd36864b00ef3a5198c7f025a9d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -644,7 +647,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH006.toml",
-      sourceSHA256: "73e70dd42b5d5cef0608228b8e1b1a7621713fd025f17fbc7beeef229607117c",
+      sourceSHA256: "fee15aa360db2fb006d3cc17266c2c1e03ab7879dc0d9c61e73a38a5df4972fe",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -725,14 +728,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH007.toml",
-      sourceSHA256: "b5560012518198780994d5595a007f85fa73a20dea00287f8a699d7ec15cafb0",
+      sourceSHA256: "a75681f60d15795e2db03b783671fbe3d572bfd75a39f62658a7dca09ac666ea",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -805,7 +809,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH008.toml",
-      sourceSHA256: "ccfdb95f0e0321841ddaab5bbdc7174d32af6e14319e4596441c8c706e7425d9",
+      sourceSHA256: "4bf89495f43ca26ee1a3576b44dec84965e816b959b84b61d1143a46c066d1ec",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -886,7 +890,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH009.toml",
-      sourceSHA256: "6c212f2f16260f3add54067e7f441fd89d476565791ef3e194a6ad0663489b34",
+      sourceSHA256: "91b52f71468d061bac5fa5bbbc4ea3e28f7dbdd6654d373965c9934737ce0d21",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -967,7 +971,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH010.toml",
-      sourceSHA256: "d17640b60c78d640c4ebd782009988dc388f7dca659860c5e9359ea41cf671ca",
+      sourceSHA256: "519ccb50cda22dbe26ddeeab07164755f86871fc2ff0b6c8b1268e1ebf788f92",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1048,7 +1052,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH011.toml",
-      sourceSHA256: "de8b301bd17a2d559b4bc72305c1534137e87fc0f2b465402e2e8860c809536d",
+      sourceSHA256: "422513a962221fdfa9de5679235a27d4179a594ab8eec28256943669e197f7a4",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1129,14 +1133,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH012.toml",
-      sourceSHA256: "fdcf002013da0a024c478a8b9d6196930086e447e557345ba85aeeb424e50886",
+      sourceSHA256: "c297a5eb32c875abd4bd8a54de8f0d66a4be0762bee53f50d124b46969c1de04",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -1209,7 +1214,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH013.toml",
-      sourceSHA256: "7978e6d0282ed28343f371d1d9f237687c726b7cd076f31080619d462d31e3d0",
+      sourceSHA256: "1420a66b542bbe6409e250197577dab01886286b651ddb382558f88a8d8ff098",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1290,7 +1295,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH014.toml",
-      sourceSHA256: "ffcfd14903bbe9198f1b56e7887b8d77b8957e9df8d621b347715ce306926954",
+      sourceSHA256: "43b6141ef124f103dacfa3a55b8ad9b80c6f35272745c751d2fc9a7b3f9e5a77",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1371,7 +1376,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH015.toml",
-      sourceSHA256: "362c79c6710997289128a3e7c2b33d041da82b2f3beed43cba28c2d799f650cf",
+      sourceSHA256: "55d76c9ee802eaa4b8d55c5aaa450abd98f6abf56d4050b3dcca51fcbc69b785",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1452,7 +1457,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH016.toml",
-      sourceSHA256: "361599978c105b998cc38c7ffa990c212d43d9c66097baf9321e3b053a2df31a",
+      sourceSHA256: "65da0b162a5aa3789b9b6cc23669783da3ad4c75909be6d61065ed046aac3562",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1533,7 +1538,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH017.toml",
-      sourceSHA256: "da8194998167607fe670f342c2f321e2d6ce369793c10f3a5b68c8a243abad40",
+      sourceSHA256: "2a972f6d976d4d55004c1aa9587442192dd5d43cd771ad5abfdc8ed518de7cd0",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1614,14 +1619,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH018.toml",
-      sourceSHA256: "831db059ba2a85c66f42aa23e1ff07eb43df50d4ef81671288ea9e18880af08b",
+      sourceSHA256: "19a2b23e90ae2831df5322c33a19d74b1f12e8bf25b76fe06d0a711bc3d00805",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -1694,14 +1700,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH019.toml",
-      sourceSHA256: "582ffc8d9f3345fd061fb8f0a595235bcd5b5391f562229ac78c948e167b4866",
+      sourceSHA256: "b238e019f63d5675f48ddb8e4bcb0339fc9ca5b7b582dc996348e52eac10dc2e",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -1774,7 +1781,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH020.toml",
-      sourceSHA256: "6561fdea84a2ee55a5494f70145526d024e1ae7e6fce578a5bf65c3a86be1e0e",
+      sourceSHA256: "fc3dd424c2a5f1fac545f5d98fdf191aad1b84840e379789b8c12f06de683cf1",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1855,7 +1862,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH021.toml",
-      sourceSHA256: "60304ebb83d7d419e49f6abb4fd06954ebc02250ade5fa02f4b7f50de3a9f06e",
+      sourceSHA256: "03bfe9bab21c923f3bf95a497ec56226bb9265eb3f6a3808d7c45aec8d491fb4",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -1936,7 +1943,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH022.toml",
-      sourceSHA256: "c79603873bdd9d74acca12dfc8601d3af76c9fa2469fd2cba5c50fa378bf1aa9",
+      sourceSHA256: "cbf34a6b3caefc51ae72fcc45d6f4f1c96e18b73e4b7e05999ebf35031e4190e",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2017,7 +2024,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH023.toml",
-      sourceSHA256: "697d6d40afdcbd90ecc036780e2f1460ee5f0769cb22725d15df4c10f2deebd3",
+      sourceSHA256: "9c106ae07b5712bdf89ff665fee5bc32a60735db257f00ab610cbe88f132e379",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2098,7 +2105,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH024.toml",
-      sourceSHA256: "1e3fc20f20bc038f29a121306367076102a39cd073b45060808a4d34cf648725",
+      sourceSHA256: "9c4e91916a61314a572c26198b09ecabdbdd526e711f3f57ba6abbbeec5957ba",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2179,7 +2186,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH025.toml",
-      sourceSHA256: "8c608e9f1a9a325b3c275f64a9428832c4f6890b7465f966c907daa70b4db313",
+      sourceSHA256: "f6e76b3b316c9721624060d7cf55738de32c03e356159a3cb39acdff7475dd78",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2260,7 +2267,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH026.toml",
-      sourceSHA256: "d8c6ad6b67cb7c7bdac765ece55b44f405c3702f70481d6d513910528922b7db",
+      sourceSHA256: "c530d006a904975c708702d74c0317ca4dd7656c18de9b450fb1f58ad645ec7b",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2341,14 +2348,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH027.toml",
-      sourceSHA256: "61589fb3c7c9bc5a9bede2a9bc04f6f38171e18a9896c3be66fb4e13fc45c759",
+      sourceSHA256: "8683efc69a92c85add48be7022fa1a76040b4407413c5c2a349156d47425b2ed",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2380,7 +2388,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH028.toml",
-      sourceSHA256: "71b9d933d3f2c01f7002ee334dc15502716a6865edc37b5cd976fda64b7f2c17",
+      sourceSHA256: "8a3933819a2facf7c614afeae4919e6a50e8ca20cb8183c184e8789403bfff5d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2460,14 +2468,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH029.toml",
-      sourceSHA256: "4eda0abb4d9a294f1a781d0ae917bcec3b6a06252d5edd7179fee3d0401bfab9",
+      sourceSHA256: "8f94df2d92f9cd5a93c2a3eb8ee8c057a1093b922235f0ec8c01a2c8c4b3826f",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2540,14 +2549,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH030.toml",
-      sourceSHA256: "e540dc44721e73a79a86ae4b8d1e09744f426c8105fd5f8001fa24a7d1eb9173",
+      sourceSHA256: "f069a8d048fe7eb978673a2229d420a79eba020505157a7bd941d8beb8007fb1",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2620,14 +2630,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH031.toml",
-      sourceSHA256: "101dfd7831ddc895caf9ede9d8b185c804e23d983c35eb5da3ae330e567b4ee6",
+      sourceSHA256: "a31f939eef99eb861e9a0d3699c6b106872e4d9b824fb6029b830202f058827a",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2700,14 +2711,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH032.toml",
-      sourceSHA256: "2f3cc48778e8341b9589f09af2b4936fcb55a0495568fef2015d3de9022ddd5f",
+      sourceSHA256: "f48b1280e7ab8713c10fa10fe243bcef82973dd9cb9cac35bb1685ecf4ff140c",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2780,14 +2792,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH033.toml",
-      sourceSHA256: "e1f920a431078cc02de5979b206ff4c54b932344c937c0d19e30d3f0f78c63e2",
+      sourceSHA256: "07c577043396160f50098c3d4caf2e224843a057c0a18069347b70ce3381cf38",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2819,7 +2832,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH034.toml",
-      sourceSHA256: "168326281708a377e596ea5d02bf75e9a5676ae8c89147c3d5ae0512a073ce38",
+      sourceSHA256: "661829617657f2178a336cf6874f78fb02070cb951431f5b869d8e1b55c9d208",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -2899,14 +2912,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH035.toml",
-      sourceSHA256: "00bee93a339a423b1d4c4167797c390fbeeed53ea9b81b74e4f36cc336422e52",
+      sourceSHA256: "cebf4ffeceac7b4df4b5fb971a04c08cfc61eb8e45ed5224de99b703bc9ebd59",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -2979,14 +2993,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH036.toml",
-      sourceSHA256: "14ffc1d3b110580e8282a430c36363f1566a2aafd75c2be7ac715b0e047ff454",
+      sourceSHA256: "51120ed809842d4804ea8a2fea0fcf50e9d8ce466c0f44706bbebef54fb6ac24",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3059,7 +3074,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH037.toml",
-      sourceSHA256: "cdc690fd328482530fbe76a8af4936140d66f3a24bd26401df0a95c9ca21768b",
+      sourceSHA256: "d18af04767cba400d80914082d021fab1f8fb88c0ef18237806fc396929ff93e",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -3139,7 +3154,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH038.toml",
-      sourceSHA256: "3aa8a15457d307d363ab92a7383c8686709c49a8b2d6a212f70970b5b061a817",
+      sourceSHA256: "d26d414017907b3ce73c5141379f0f7be762bf292157cea9b3182ed435670a32",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -3219,7 +3234,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH039.toml",
-      sourceSHA256: "c823414f5cdcccfbab04866488b1d8777ff0a615dbd6ff4a3db9b8509e129ed8",
+      sourceSHA256: "64d71e447073b511ed43add15293120658e10fb3b6c86ec174ee987c0bc8ed72",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -3299,7 +3314,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH040.toml",
-      sourceSHA256: "e2cb4afe1fef0f6105cbcf09e809ac048522a7607e3fe3a0706160fba37d8a14",
+      sourceSHA256: "75c4cc44d54261be21ae459f533715b42bb48277e21f8c8c9e3a0be5c689fe9f",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -3386,14 +3401,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH041.toml",
-      sourceSHA256: "56bdcf0c9b2b1a6f2e6fa9ebcaf1e4df1b21a90c7f59a8a31390cb3a96e254d6",
+      sourceSHA256: "eb4fd7cee87979618eac213914f9b764bcd016c7aba19385418fdb1b57406344",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3466,14 +3482,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH042.toml",
-      sourceSHA256: "6023ebd2e908a9ebbf76bc35357208b22de214657cacdc93aea66839a3cc4e5a",
+      sourceSHA256: "6ec7baa6ca072273a2195afaa992512ca59aa9e176daead003112d025eba8c92",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3546,14 +3563,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH043.toml",
-      sourceSHA256: "5df95cf9abae60136592fefddc69d81d24857512f096d6b27c9246e0cd737ed2",
+      sourceSHA256: "eb40037811544aa169c98bbb7246e50472d63e6272a0c65d21b8a16a794b09f1",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
         "game.price: current ShipPerformance requires integer [1, 100000000]",
       ]
     )
@@ -3627,14 +3645,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH044.toml",
-      sourceSHA256: "4a9e38a8ae98258dca2da72e0ba31b1e2f8c8ceaeb07f41bf2a865596e43eedc",
+      sourceSHA256: "573f32a6b6f32e1b6152572725264d4e044d524c423d9ab1b83cc24d4ab3ac69",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3707,14 +3726,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH045.toml",
-      sourceSHA256: "7fa903d36dffbe4ff7f871685526e086eab77e39bd4d550ce911b20d5ca1ea1f",
+      sourceSHA256: "9feca7316dcfb0350e65964177d4d6b7c739fbd08dbdbe7d139ed3b63a5b42bc",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3787,14 +3807,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH046.toml",
-      sourceSHA256: "6189050947fcc6945e1084661c193c8f10d2ffb47dc9d14cce3c8fffc6fd0732",
+      sourceSHA256: "22887ffdc80bcc21897d2a14ca65f7c4db2e3a862208e9050f1a1d32cef93f9d",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3867,14 +3888,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH047.toml",
-      sourceSHA256: "f3b9e067bdc8b932dc22f2b1a5d3295f5609437334859f9d589bbf2b2d873dcb",
+      sourceSHA256: "4186c90ac3c6e695df1f27ff02bc3b37f53ac608d9c323490dd3dc015cdfbca2",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -3947,7 +3969,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH048.toml",
-      sourceSHA256: "7ad3635f5e3cd6412d568d1c759e06a7087d7e0992e6c6afebfd5ea6491c5f28",
+      sourceSHA256: "b95e38a26b285a4daa1d14d0041a8bca46c28e86710a38e56bcf4c78ab379ae6",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4028,7 +4050,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH049.toml",
-      sourceSHA256: "d5d31cc76f6d01990bef42c15574c0adfe293990d6c12c1eb82237442f1107b2",
+      sourceSHA256: "d1a1d35741b3cbdf99c7f5bcb144a8b13ad9292e50e563f76b410fa3381ca46d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4109,7 +4131,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH050.toml",
-      sourceSHA256: "fb9d1fe8178045f5b5f22d908bf8cec400b05c15ea2358d9858f53f66439992c",
+      sourceSHA256: "b61e4c8c1b679b9031d5a1fc92f151035ee89f6382059fa5a7ea9d30ca9506c9",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4190,7 +4212,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH051.toml",
-      sourceSHA256: "6bd84976f9e11f0325410aa970d8eedadce061140d45289288f7cded7776d6aa",
+      sourceSHA256: "434f2d662ff2f4c0dd600718442cfe212942c3c7097caeff028881ef4dd83b29",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4271,7 +4293,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH052.toml",
-      sourceSHA256: "2456ea76f18821d66bf7df0aba4e215df105434f391de74fc016e3c541dcb958",
+      sourceSHA256: "c084418bfd9332df41a353fdfc3a3f89565cc566f5541a1d27e6df99829b9399",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4352,7 +4374,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH053.toml",
-      sourceSHA256: "e8d96b54bc63b15e1288f27bae9371a5233f32d9a461d5a33bad529e7e37aaaa",
+      sourceSHA256: "e96dd03d79a15d66f17cbb2121784426534d9eb0407be6e6a9ff44a605e5d59b",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4433,14 +4455,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH054.toml",
-      sourceSHA256: "554c6d123f3d4cc1cd10cd0db6514e889b18f93749339df5c3456f52d244f4b8",
+      sourceSHA256: "4ef1644733090c261783433886fb7200f79ec64cd3be81f4fb75cd18c84ef114",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -4513,14 +4536,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH055.toml",
-      sourceSHA256: "4affc3d78baf0812c69867443af7c9328786b3806af115b2b1fb018f57309fb9",
+      sourceSHA256: "4042afa6a7081598eb33637ce2a1002776c354d88cc99986ca8fab0d9197a2cc",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -4593,14 +4617,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH056.toml",
-      sourceSHA256: "00519d8765d91bba56a1d0bb33820e25210be01f6868a6e0278c642b552862c4",
+      sourceSHA256: "92bb47688401917bfafd91820264e5f6a20387a5d5a0b44ad7efeaeb939bd786",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -4673,14 +4698,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH057.toml",
-      sourceSHA256: "c05c9f35935da785a93866fc09d98bdcd38a4e6446e21bef907d4285c7dfe6fc",
+      sourceSHA256: "96e8038ebb2a3545c430869bfd9d76acfafe0c772275a89f9e448780d76cf482",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -4753,14 +4779,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH058.toml",
-      sourceSHA256: "5c2803976cc9d4b4df9d142e9500306a5d8fabdc0c4885817d11016c40155dc9",
+      sourceSHA256: "b5a2436e08953bc27f78860fc16de02ba3fe8903d4ba500d78fc92713c14a53c",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -4833,14 +4860,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH059.toml",
-      sourceSHA256: "7f460e9b37fafce40ba2690f456b8d334e75150a0fc95aeba8bb5f063a542451",
+      sourceSHA256: "da1a6cf678ebe36676dcf76706067c36a6c26cf6d869f931b33dc5ab841c1c52",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -4913,7 +4941,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH060.toml",
-      sourceSHA256: "6dbaf52099abbcfa8162859ab5b321ce3fe7808b6b8a8d33c77a9c984e196f25",
+      sourceSHA256: "452cbe728ba2f2af37077db0e798e08a5fdcfd7ca258a8d48204169b9c75c0c8",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -4994,7 +5022,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH061.toml",
-      sourceSHA256: "9607a7ed0bc2b555ae511aacee4845320280ea2d66ebbd1c7133a94ca486fdd0",
+      sourceSHA256: "71000f32ab2cc28cacc3406e49bee33550fb339f89d43a64e04dad3a15ca46db",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -5075,14 +5103,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH062.toml",
-      sourceSHA256: "08e5f904936349a90b2986dfb1e8f3bc992608d06b7e53c756cb2b600f4cf6db",
+      sourceSHA256: "39fc71f28c9597a79b7f06ab1d1e578703bc77ff9cb9e1d2f2b823504e224833",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -5155,7 +5184,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH063.toml",
-      sourceSHA256: "dce2b89b045142f68979182d58bf7564a71be69045c178b68f462e3874ca34eb",
+      sourceSHA256: "48fed9e98aca8b52136219c736f0ddcf7d91754a8e7bf091118327d3e8917258",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -5236,14 +5265,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH064.toml",
-      sourceSHA256: "3c32b4def4e9edf52bc791a96fb9598175b28cde652137bb50780e23c3f5bc81",
+      sourceSHA256: "38d6360e261ce6fa95abdd0a79b8fd284c7ec15b01d0473151f80137be870777",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -5316,14 +5346,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH065.toml",
-      sourceSHA256: "5dd52610f71c266331da80c49a2a647fc32e9967d06591721cc5f9af036d6352",
+      sourceSHA256: "24bd731a4b4e35b11e20b541d6159cc98cdd79658a7cd7c45c290570f5206ff9",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -5396,7 +5427,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH066.toml",
-      sourceSHA256: "dfacee0c1f91661c47a2b9a35abd6a7d62d7ffb94e1e6347d10620ccc32fda5d",
+      sourceSHA256: "768ce6a6e57df0f42b5514c61d75473d895c0f71ffa1fdd1bc93b7669434da4d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -5477,7 +5508,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH067.toml",
-      sourceSHA256: "c5122172115753ddf707c0528dc11bc35d8b2ca984a240d0fa299645a344c1a4",
+      sourceSHA256: "d43b319dde56df3c7ae114eb98545e01d71078b30bae6e8e125270733fe98459",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -5558,14 +5589,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH068.toml",
-      sourceSHA256: "4b764e35643b6f9a605a368a06a6a1c170b12dddae178e812cdc91886cf13b8f",
+      sourceSHA256: "53d9e1b1a354a02f096792d93f576c3ec8a347b4e21d2531383144491f021840",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -5638,14 +5670,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH069.toml",
-      sourceSHA256: "74cd2d4b1f204369473740b91d38efc347c3e068572a23a70f2ee1e8a9697527",
+      sourceSHA256: "25c5ec42383b56910654e79f1f6d07fb219fbd8792dc80724c5e2f74c942d366",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -5718,14 +5751,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH070.toml",
-      sourceSHA256: "260d6f5a956173fda860c54f3b0a17eb305620e87d6399702dd58a5b278aa193",
+      sourceSHA256: "54d7ba9ab091c2c04bf5dcda32ac844dd3d2ce1ffe6c1e99209838de5e577ed6",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -5798,7 +5832,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH071.toml",
-      sourceSHA256: "6ac1a99e4f3cb1e9f6fd3139ffac48a683f1c2321beb7890fa2b926eb4cdc0c5",
+      sourceSHA256: "fa5361e1e5b160addc6a841bf356f38c3981015b55fb06be2b919a31e279c115",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -5879,7 +5913,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH072.toml",
-      sourceSHA256: "600cc15839c29233e9fa99f8082271872f80710a645a9d8f50d5201360d727c4",
+      sourceSHA256: "85b0fde21fb88adaf9b4d4e7e49d59251f58ca80120de19506700703872a8817",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -5960,7 +5994,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH073.toml",
-      sourceSHA256: "74689a6cacaf9060bb20e36ee7954be3e605f2eaaad5d28376216afe779f2450",
+      sourceSHA256: "167d3848887bacf04b18e58c7971227f96de5fddb1b290d0228665f6565337e2",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -6041,14 +6075,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH074.toml",
-      sourceSHA256: "049de494299a561e1cd109d81b04c7a0c0b50dafe6ae97061ae484f591b8d4cf",
+      sourceSHA256: "c33d9fcaf2fbe90dc3bc5e313dde7882b592c3890fa6aa04b95711866adf8ff7",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6121,14 +6156,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH075.toml",
-      sourceSHA256: "cd4f918dc05d50673869c37fdf702226d1ccec11f9195aa683617552125bc2e6",
+      sourceSHA256: "f7bb2a71e6ae22a0c69550951d1cc98fce020d7f5037622b7ce5c907ca935858",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6201,7 +6237,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH076.toml",
-      sourceSHA256: "1f8007fa31373732cec783713f46dd7a42b09223b7e8e20bfce066041cf96bab",
+      sourceSHA256: "24770a26defd3930100972c580cedc6671ced5dbc2b19e7de850d37e1a14f8c7",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -6282,14 +6318,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH077.toml",
-      sourceSHA256: "5d5660c6d28b94c08b80e4e0a4bf5cdb2945c3b6824b0f788a559dd0ccd4c411",
+      sourceSHA256: "b358d2934911dcdad4d3684ec6adc9b370ea19bffa32165fbfcf59c33e4b02bd",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6362,14 +6399,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH078.toml",
-      sourceSHA256: "6ed8371763a00d57b40919e9c7c8a20bb6fdab259def6881369a1332e39b8e98",
+      sourceSHA256: "153f946f4ea7d6693debc9b892ac8457e7a40b2a0e2c68d672f386a4c3b587a4",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6442,14 +6480,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH079.toml",
-      sourceSHA256: "797a2e69ee66d1233b277a2692060455bfc64f78fbf8441c7dda15d1b01b8627",
+      sourceSHA256: "49d022ddd07f1698f106d5524c679cda7ddf93de2e7a4e1dc3480ecb19ad6b6e",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6522,14 +6561,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH080.toml",
-      sourceSHA256: "312eb0fcfce4b241bcf1791f73f942bc61fd83178d894e8dc0a1a8c2c79db9f2",
+      sourceSHA256: "c10e2aeffd4ba7315a5e11aff81662dfaf4a36dc976fb3a2e44a670f5f460ce3",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6602,14 +6642,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH081.toml",
-      sourceSHA256: "4c37edc511bde5ac4fa23421ef7a0f4bae937322f95b7acc3c16d611c0e26dd4",
+      sourceSHA256: "5e326c8f2b7f67e55a3575a3144043de71b7a6c07e3939342a047a02c9efb82e",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
         "game.price: current ShipPerformance requires integer [1, 100000000]",
       ]
     )
@@ -6683,7 +6724,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH082.toml",
-      sourceSHA256: "a74e413c429e11e4c87468e3485885eb2ca49ae3e859ac0fea5b2a3716f2d6f5",
+      sourceSHA256: "080defa284159e985c20d5ce8d3f01e087db5b73e85d18290b6e97fe821ce560",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -6764,14 +6805,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH083.toml",
-      sourceSHA256: "3f22a030ee9300803beba254a61fe460358a765272ac46f6cef09c3d01222436",
+      sourceSHA256: "60807b83beb4d8539b6ceb5f1846a31f842860fdd3036f3cd1b5873562669cc7",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6844,14 +6886,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH084.toml",
-      sourceSHA256: "14e13af9ac977b58ee48622a89d38fb4804469ce5a27f3ff2eac22ac839e908c",
+      sourceSHA256: "edced23c24b68e9c988e528243aa7949bad29df3c5427f0b4a3c7f67912e617a",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -6924,14 +6967,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH085.toml",
-      sourceSHA256: "1093c9563f0d84bc3210192b0eaf4afd921162b73abba2b0f6e59fa7fb9987f3",
+      sourceSHA256: "cd0ffa2da2d0e57449852f3739424f509c9bdf6b529122d215a579652b3d3a77",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -7004,7 +7048,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH086.toml",
-      sourceSHA256: "8180f355bb0f835d5f98a0bca45449765fc603f0db5e8683233d2fb00c63b834",
+      sourceSHA256: "714d39446feefd72d9b47b40d1d1a6fe048a2848ac49b2dc84945edf7673e747",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7085,7 +7129,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH087.toml",
-      sourceSHA256: "78ad489be527fe0898d26b068cf0b0f1249b6bf1e040c95e555289f66bdd60db",
+      sourceSHA256: "1628d131b5e60cf1f678a5c70bf8a3a96fcdb41f1f50f57ae30ab829879c27af",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7166,7 +7210,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH088.toml",
-      sourceSHA256: "bdf75fad62bae4020ca233d0865e24e87dee87ce08e66813629793dad50f4560",
+      sourceSHA256: "7d91e6258022a8a13eab04b06089d4f8f7cacb521d3abd0dca084df8fb7841b6",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7247,7 +7291,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH089.toml",
-      sourceSHA256: "73cbec7290520c58d3c8b7f8b96c97cc1c7e068337a859c030134f887cfabb27",
+      sourceSHA256: "4453b2f2cbec3cdf77784621c43fd5c788a1134e104d20c16b2e0544fed5c0be",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7328,7 +7372,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH090.toml",
-      sourceSHA256: "2c15fae3af5993c5801cebf2eed2511d53fcb2b68832792335a4866470d4be18",
+      sourceSHA256: "e4b53739b1f362f426ff18241be4c607903186ea20a301c9d7f2eef37b7e5cc8",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7409,14 +7453,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH091.toml",
-      sourceSHA256: "78c2ebe71fd05cfab8b40062f22cc2ea3f7fed81092ef4c9eb4e3aa2544e8831",
+      sourceSHA256: "f9cf956f09a9a2e53276609fbfb5d44dc6282c68cbac7f71a00c5f215358bc73",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -7489,7 +7534,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH092.toml",
-      sourceSHA256: "570db4e39937f172f12c914abdb20db53f73cbc4e88c374134936dbbcf91d498",
+      sourceSHA256: "8f620d843c287f1aeff16101ecc9bc093080a562dd0d79efa9ca7b1f70822dd2",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7570,14 +7615,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH093.toml",
-      sourceSHA256: "1300bb8af6dc9c66449f48e0fd96fba048a6aea33675de139f921dbf7353d5e8",
+      sourceSHA256: "fbfe294f2e045cbeb8fe55b7d69b5bfc5cf26a6834ff00489dd084e149463a8d",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -7650,7 +7696,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH094.toml",
-      sourceSHA256: "c20589dedc957c5bd9798cfff14d9ee9cc763459b29ab0bcf4a4cccecf0ef07e",
+      sourceSHA256: "bc8e371a53f2ec1aca827d57bcb0b9d3fba78b46bb78b948843573d18c17b33c",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7731,7 +7777,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH095.toml",
-      sourceSHA256: "ef271876df13aea3baf2d0e29542f02530874bfb93698e8464f6cd1c2c96b31b",
+      sourceSHA256: "4bad180c77ad3b05c48906d50fef157ddcd8d185a59d80dce673195523161e60",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7812,7 +7858,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH096.toml",
-      sourceSHA256: "a1a7971280259b366f2c6f39a499f66cfff87e4af5cf730b71211e08cbafc3d9",
+      sourceSHA256: "bf475cc8c312c6763403d6282e08c53af972380a4dbaed07e0cecd23773137a4",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7893,7 +7939,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH097.toml",
-      sourceSHA256: "517cfa45ca7a8f2011b49dcec9671c4a5eb9d10278b045e7964b6787ac939bfb",
+      sourceSHA256: "36572dfc53c4090d06d912312ea5e5a139d7f46e85507fb71ffa11b3a57feb07",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -7974,7 +8020,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH098.toml",
-      sourceSHA256: "0d8aa7771b84d09bd82ec428d2670fb650e9d66521bc1a308e544b0db04047e2",
+      sourceSHA256: "bdfdfc7f46f36885468d25369d2f03d3e93374ad6fa5d8f50e972c19b98f5ce6",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8055,7 +8101,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH099.toml",
-      sourceSHA256: "914947cb7998289f542274e2a0afc19fa5bdae6753a95d180fd97b3bf99f339d",
+      sourceSHA256: "1111cbe0de0bd4da80bd8c8ec5e2beeb5cf06aa3d2593ff685f12ae61c278963",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8136,7 +8182,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH100.toml",
-      sourceSHA256: "bb7886fb84598681b52e273bf542744625b8ebb936f108b5292233c2c54ce87d",
+      sourceSHA256: "30eb92fccc1f097e8ca3dc2741ef93b9a73b8b561a5252d72c28b8bc17ccc610",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8217,14 +8263,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH101.toml",
-      sourceSHA256: "4eb8c867f5410db44fcbdae87fc8750c7e3e1fd421eff6fc126a7e87bee171a3",
+      sourceSHA256: "a5d9bd1d8480634ed6b4512c339c6048748b41f5bd4e3d292b1cdfc8ad2f3785",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -8256,7 +8303,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH102.toml",
-      sourceSHA256: "4ce2e4e7b69d0806688fef2b57378bdaf6548eed7b8f2a141937c6ae8740323a",
+      sourceSHA256: "8b150a8cadd56e60ca89ee526314d67347738a7845060701de4f9a0b9893132d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8336,14 +8383,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH103.toml",
-      sourceSHA256: "33e20857283d586f5e9112af9a0f2be83a243bf5fbe7c1978581e9d4f12e160d",
+      sourceSHA256: "902ed193390f5fa4dd4fabf3099717b91a67fb1d09ea95a93d80b654822cdf34",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -8416,7 +8464,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH104.toml",
-      sourceSHA256: "a2f32c6ca6dd171117de7545cb5bea6d30fcd0cf17adcb76caf00932add64343",
+      sourceSHA256: "a38b106eb15b58c1c584c1ea4942097de4d202e5ef3919597d0e6aa38b1b682b",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8497,7 +8545,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH105.toml",
-      sourceSHA256: "4d471634fdb69a2699a102f9fe958c922458af752e4e16934972b21b34e95d67",
+      sourceSHA256: "1556337a0e7d1250fc7f74e791c9ca79b02ba80612a68329138c8e39d23c80df",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8578,7 +8626,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH106.toml",
-      sourceSHA256: "a7e8baf52632fc2c0a75862d538988142e62de3a2465c2dbb030becc17f5795b",
+      sourceSHA256: "27a0632c075a64702f74e72a908a167b0c0ba0d9a3b8d024092a589a347743b1",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8659,7 +8707,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH107.toml",
-      sourceSHA256: "eb6c63cfb3cb341ae43a44c88ffd1992775b199e09d8e2f5dc4135537d0dec7d",
+      sourceSHA256: "f9fb6357ffe937bb22d1019867fc3d2422fe6a56b23a602064cfd17ae4aa8633",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -8740,14 +8788,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH108.toml",
-      sourceSHA256: "a0c3ca7d95e9e74568e51c4aa8ac59378b394c547d62153cb4b15ea43c8b275c",
+      sourceSHA256: "6618c94a78caafe83aabe1e2fd5761b0f16849307e4af82f44cb609cd4d420fe",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -8820,14 +8869,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH109.toml",
-      sourceSHA256: "ddda38e7b2467260d6f51fde81dc88aee7d6e3262b4bcc09a0efb89e8d5fa466",
+      sourceSHA256: "bb9e750cbcee57a88dad97017cb576814abc00360b388150df7d1b7244cd7e4c",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -8900,14 +8950,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH110.toml",
-      sourceSHA256: "ec0b141d03d14f68eaa24e9e252952aeb57666bd3fdedf73d4fe8c36ca22bb09",
+      sourceSHA256: "799e7171d9c8099f7e3051818a54049f15ac239b28391a28250358240e930ab7",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -8980,14 +9031,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH111.toml",
-      sourceSHA256: "f6719edce162e4bfa0bf56ca3b6c43f92a54a3987054359fc90d9b50ffff65c1",
+      sourceSHA256: "f9571e32ad645216b8254b5914c5b13e039d6b5e4738c0484ccc6d3760966f90",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9060,14 +9112,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH112.toml",
-      sourceSHA256: "93110d0d26847b833ebfe1a9f496e82a0b618a1ff5216f53bfac09f1e4fee824",
+      sourceSHA256: "30344097ddac05e9f1d7039310ad270bfe5bafc73f9ee947aa785f19c5ce9e1d",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9140,14 +9193,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH113.toml",
-      sourceSHA256: "c55f89d3d7b183a38155e6a6a5f4e2003e2a2f240371d101d2e97db3fdbb3c20",
+      sourceSHA256: "517808b64cfd65a991d7c63286f826cf56fd78385c4be8b8613b076c8043b6aa",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9220,14 +9274,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH114.toml",
-      sourceSHA256: "a398c741c961674b3ee77fd665fe1bed7b1c572a40262bf87d54cbfa6fea6d4f",
+      sourceSHA256: "3f3329f56a2c8ead0843b942cfe5cc4e14034068c876b0f084c48595e208b4d5",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9300,14 +9355,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH115.toml",
-      sourceSHA256: "a3f7f60d82205bd0461ff1816f135eff770101b87c496e96f6946fdb7305cfb5",
+      sourceSHA256: "00c57a5e9ace54e465bf05b2697c9025197a6f5785b4d1e7df705bfee7ebc737",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9380,14 +9436,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH116.toml",
-      sourceSHA256: "0b7d9180e0c37a9e64c0ac54686101ef84da096c98b67af1fc556dea55f0e952",
+      sourceSHA256: "63a57952f1aafded8bc27200c986d37abd950a2fc2390614d3e126d95a9b707b",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9460,14 +9517,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH117.toml",
-      sourceSHA256: "9dda73d322b59e802d665ed01ae53dc2993882836fbf59c609fb84ea105079ab",
+      sourceSHA256: "369fe54f790dc74072eedfec2978db44fe7d5e679cb5c2e3b2dbd69906808a34",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9540,14 +9598,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH118.toml",
-      sourceSHA256: "9da5995152fb6aa4aa24cf32570cb3a750f1cfc0495ad2f706250920b91d8121",
+      sourceSHA256: "f0c889449a077b3aaaf6ef6bdb70b2b925ec487a7ff78918a564a76f03f2d56b",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9620,14 +9679,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH119.toml",
-      sourceSHA256: "cf67aec64b2ae7f49b5d674f9eabf1c148afb9aa50622da5cf2f0e65b523ab5e",
+      sourceSHA256: "1407f3e7b2920479d644b3ce384af55ba44e300597373d036636bd3f3d048c35",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9700,14 +9760,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH120.toml",
-      sourceSHA256: "259cfe78cb4013797c071cb0060fb952c372774bf9cf11fa67936f1fc5bf345b",
+      sourceSHA256: "47e71d35afd56f890ff91949deabcb7e009ad0ecc223126e3876b6f0a7a9b188",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9780,14 +9841,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH121.toml",
-      sourceSHA256: "caa73c7ad6c58b9794f3caac8318638f2b708058e645a4820d222a2ee96c0a35",
+      sourceSHA256: "79b32c2ac2917bb8b462db305bbde50649f8050aedaff31161133f5b35137bd0",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9860,14 +9922,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH122.toml",
-      sourceSHA256: "ae729e19bfe50c764ec5ff9a48a25bf672d6336fd02b595388e9ae624843fb91",
+      sourceSHA256: "f3bb5dd74792d7adb5e8db5ea715903b6f47dd6a55a318e804ac9bc414bf4c0d",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -9940,7 +10003,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH123.toml",
-      sourceSHA256: "2b5cd6061a0d0670e513f2953af04ef2a1d8a0ca3961831133436634538ce177",
+      sourceSHA256: "e01f7ade1ef416578e851086bafa54c2995ec140780719524c87ba5d2c41c9d8",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -10022,7 +10085,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH124.toml",
-      sourceSHA256: "c4b4889f79d088d10418ac50d2ca87e047d8f5cdbd03b8795bc5eb3fba025585",
+      sourceSHA256: "d948548ee4a29578941b030af8372846c1f4e47d6a82852b5a2043f21f906197",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -10103,7 +10166,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH125.toml",
-      sourceSHA256: "af78004040f992fb46d7401d5eddbbc72b34e64ec6988ee498c49fb4030fd7c8",
+      sourceSHA256: "87af8cd8858507ab0fabe38b28bd82f2ceff53e4126e1b815eb2076dccf00742",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -10184,14 +10247,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH126.toml",
-      sourceSHA256: "79e4d8e18b3809c43d6f4f6825259304d283de80c1980fc477d271de8c054005",
+      sourceSHA256: "ee0793b50d1b514faef5c7563c9910401aff5a4a6376e6cbec70a1250e7998b6",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10264,7 +10328,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH127.toml",
-      sourceSHA256: "68ca7a0c3f04673b6226ae0fcd60085e2e432e102799fb48d08f4734f9016589",
+      sourceSHA256: "6856a96c4ee3a4f64cd01b0ee713fcb6a4c1d71e712037da3bf6e1f5afdf17dd",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -10345,7 +10409,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH128.toml",
-      sourceSHA256: "e80538fc8b654b12a50759f223a4d4057f94c70d7daabce88b8120db3713e21d",
+      sourceSHA256: "09d806003f7b01c775c0bd25c1a0a5a90dc112e5cb931cde27aca7a65dd90b73",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -10426,14 +10490,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH129.toml",
-      sourceSHA256: "08d09dafc75b0708ed41b73f61ec51e57039740a92cda86d3a3ed8426767829a",
+      sourceSHA256: "ec386691ed1650099834bd751df130d4369e8af0fcb79cc1272841e77dcd07a6",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10506,14 +10571,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH130.toml",
-      sourceSHA256: "8ce74b6e502953ef22a13d9235a3d41d603e6294de86545a50eb6cb68a328d51",
+      sourceSHA256: "a4ae3329efc18658cfc79644b3acaa9c35b4d15415b2591fe9ede72d5738019e",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10586,14 +10652,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH131.toml",
-      sourceSHA256: "e4d0672957ca7ae71400b9443d859280eeb6a395350ed82a0393d7fc4b3da9df",
+      sourceSHA256: "ba49c481f22c6b8a69eba5548bdf729b233b0aaba9358b9234305230fa2bf9aa",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10666,14 +10733,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH132.toml",
-      sourceSHA256: "3b1e731ab43ffcaa8d84c4ed0cffd4bc5192ce62ad344ca2502f4aed4adeea43",
+      sourceSHA256: "e9b7d3c1a7489c8acfde309fdcee244c16dd6398e2658e67418cf9e2b0829cbc",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10746,14 +10814,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH133.toml",
-      sourceSHA256: "b42705e6580d0e556b000c4f5e2349f47cb8f58d426b5583e7ce54dd6520de1f",
+      sourceSHA256: "79df156c3a743a3d909e4162c3c47bb97ad8e124f6d73781e1fff36f68e01c2d",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10826,14 +10895,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH134.toml",
-      sourceSHA256: "4e7e64faca9b28045ebb9ce0e1e978c3591038154f035962f65ba83268cd01e8",
+      sourceSHA256: "9b63716288d1da3ae5f8032868cef23c0eb2e9ccbd3230292bf2fda5e8060787",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10906,14 +10976,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH135.toml",
-      sourceSHA256: "ea1f51b9bc1795f8caab877ade2c5db0a91ea6ea449bcf3d84445cc202cb1a7c",
+      sourceSHA256: "788699f491fd78434be2e2517a73ae06875ffbf4cfdecc97000aad1c1bf2710b",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -10986,7 +11057,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH136.toml",
-      sourceSHA256: "ac20a0e324c59e4eb423755cb90eef9ea98365b630da7df497ef728400e3c3aa",
+      sourceSHA256: "a293132350f78f173cb9f2f5cf71b2a64f1397030a784007ef2ae135a6fb1450",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11067,7 +11138,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH137.toml",
-      sourceSHA256: "d50c75cc0b37b7ef8c39f516f818576af75cafdbb05e4f74de3ab031248b1220",
+      sourceSHA256: "dd60889563934e567d9fb3ab7b90cce9ddf833c9174ab1d8db4ef845dbd5f028",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11148,7 +11219,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH138.toml",
-      sourceSHA256: "3412b1413e353f77bf2f9ee3cedcd31758bba9dca96f199f53520dd2ad87af3b",
+      sourceSHA256: "574dbf787f7ab71314948440856c1db42dfef8637cd91b07268bcb543d17e7b1",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11229,7 +11300,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH139.toml",
-      sourceSHA256: "69735ecb194eca6f96cb8d9d49dd0ac009335d63c2acbcdd485a28743f8a8969",
+      sourceSHA256: "b2240bc2e9f0c476e83c1e3940ffbdb201a4eca2b8cfe120419c2436175ffa43",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11310,14 +11381,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH140.toml",
-      sourceSHA256: "03d9c9e1b628b26c7d93c130d858372f040700a69bb6e7c56008b17faccc4c6c",
+      sourceSHA256: "8e878446c5700a7260a6ae1955ec93611795d74cb22eca0311799b6f9470bb9c",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -11349,13 +11421,14 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH141.toml",
-      sourceSHA256: "af7d68bdb9cae6df9631c377b798bad86c1b0fbade59b4906eb91a0c08b766e3",
+      sourceSHA256: "32ed98d83fb5622eb5e5fd3c4b3ca93d612e5043499f2de64e548a145fc20d89",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -11428,7 +11501,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH142.toml",
-      sourceSHA256: "ea4d5a8453ac0bfa415c59f526cd6e33a9396eea1582008072aea637ae0035de",
+      sourceSHA256: "1b8f36ccf4d811e5f6daf2707a1ff16386c05b0433e7facd5ce0463c49b37a75",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11509,7 +11582,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH143.toml",
-      sourceSHA256: "06c87bca58327483a6996f1fd11fae0c8204867847fccaa4aaaa222c6549b2ac",
+      sourceSHA256: "0de38fe1ec472dd769aa2e241d3da87d00e5fd4fec293ad600c81e80383a6ed5",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11590,14 +11663,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH144.toml",
-      sourceSHA256: "91f998359db7d648631ceffc109a5d43fe5b08ee9034c70e6f3e736df73ecb9e",
+      sourceSHA256: "0289d994547917faa299e632222c4fb1334e4e845b11d325a826e0fd31c95c13",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -11670,14 +11744,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH145.toml",
-      sourceSHA256: "2c6b5efb05ea6ce80873bd9355044f3389b1115893bc41d9379d99160460e8cd",
+      sourceSHA256: "53dfe139881e154042d87732b7e55eb54b6bed1735036732c0e09e6490d31e0d",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -11750,14 +11825,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH146.toml",
-      sourceSHA256: "6dfbb1dd5cd186521a569f06418a5b7984aac4ec0d1fb22e1bef4c89ebcba2bd",
+      sourceSHA256: "fa7e748a3a1a305e656ba55f6c861f69e5f28d66e15640f4d9d9381f24dbdaad",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -11830,14 +11906,15 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH147.toml",
-      sourceSHA256: "10ea063080b62c95000bd77bb5332ae80b644e05585c5246a38a3727a3c79620",
+      sourceSHA256: "75e9275b9f94415797ea5b921f45f2f35f747fd829e185aad213a79a6c9f7601",
       nativePerformance: performance,
-      approvedMeshAvailable: false,
+      approvedMeshAvailable: true,
       integrationBlockers: [
         "catalogue-metadata",
         "unit-scale-authority",
         "original-cargo-and-accommodation-contract",
-        "approved-original-mesh-missing",
+        "authored-texture-adapter",
+        "approved-original-native-geometry-adapter",
       ]
     )
   }
@@ -11910,7 +11987,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH148.toml",
-      sourceSHA256: "ebd489c910f9038e9209d5be6fc31b1a8ef0fcbc03688138a166aee49ce549d9",
+      sourceSHA256: "9a1337411fd21185b0ae001e37fb8649e166288a9b30236b3cc1122216e7fa38",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -11991,7 +12068,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH149.toml",
-      sourceSHA256: "e52d3ef2327e66a38e999495d523228ba863a812fc109b34e1309f7d4091204f",
+      sourceSHA256: "845736a318c97b4668fa8b734b16e684cac35c368970328523c5dc9df6149b94",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12072,7 +12149,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH150.toml",
-      sourceSHA256: "1de00521b98fc1d4b9e360a9565da0037fac2edcc7505b067ae56939ece5e9b9",
+      sourceSHA256: "e9af1dd50859504b55562cd074ad6ca0127d90b0a2a5e4799d635cd64655743d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12153,7 +12230,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH151.toml",
-      sourceSHA256: "884d0487008caf5f5833878748ca35f13483b8120867af045ba0af235cbe8cee",
+      sourceSHA256: "e89e39b84561d28a486d6365200112f58e118be791936b241b51f9d1d8c8e284",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12234,7 +12311,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH152.toml",
-      sourceSHA256: "f66d26d4f7f9f502d52fc771edf0ccdf8f5120c7e991c53ce2b10105f3d10009",
+      sourceSHA256: "546d478973dd9a90a118c13d802a0e2bdf56c8e4a6089764c73f0c464d5ec8d2",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12315,7 +12392,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH153.toml",
-      sourceSHA256: "41e24258bc2081f97c14637e66c48791a64042a0187a1cae3cec1cb2bf1cb206",
+      sourceSHA256: "32f3d20a190c4633a2fbd1a6c35d878bf1bdc5b25e9c4403ce2ffcb7fdc76d58",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12396,7 +12473,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH154.toml",
-      sourceSHA256: "96ceab69a0a2f990763c89f686baf8a120f82c0e5b3b72dcf87e4de2265f85a9",
+      sourceSHA256: "076a23245e7fbcea8060f26b5baa7f07b557625c44d0165e47ace172ad047671",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12477,7 +12554,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH155.toml",
-      sourceSHA256: "71bad31603d9f279e072003860f51d5014c573ac6d99511d576a1f929ce4e05a",
+      sourceSHA256: "2e3b069b9ac0e05481453124f3b8a91badabebf47646c8ba4550e5c534268675",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12517,7 +12594,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH156.toml",
-      sourceSHA256: "d254026ff1f1fe2defa4e3f2e9cae38d823859ce637d307bc9be922c374612fd",
+      sourceSHA256: "0197d2d781f64c95303e119b85cb4eef85a01415f8e26a9a8e6ff6f56b4ec5f8",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12597,7 +12674,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH157.toml",
-      sourceSHA256: "89eab84d27345d09149fb4ad75fd608ece95fe3d73665eff5c72894a83b698e7",
+      sourceSHA256: "7bb36b85fc08c168216cac235827f18d6c65bd6b5f099a037a09126abfb2d873",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12678,7 +12755,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH158.toml",
-      sourceSHA256: "0a14f0d17d98474b212ff0e32657e1bc05470f84b476a34dc4db3c68c57189e8",
+      sourceSHA256: "0dba771ba75d0a81f4aadf832529e5ec174541d4b6615a2ff95f802cae0e3f63",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12759,7 +12836,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH159.toml",
-      sourceSHA256: "059e9fd94c6dfb686efadc0598cad0f2d39646fa204297668f449e69b8ff9c80",
+      sourceSHA256: "f8fb69d4485fcaccc4976b4cd0f58475443b3aaa0061d72ad5697ee235eb7cc8",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12840,7 +12917,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH160.toml",
-      sourceSHA256: "f80c91f2bc06b003ccd5d7fb492e2f7b2f6ec10d66d2cfb1abf8149c0a67d343",
+      sourceSHA256: "ae719621037540d0677ba62dbb391a9457b789aedb4b553cea7f70dd22ed436b",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12880,7 +12957,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH161.toml",
-      sourceSHA256: "289ac26fa01b66a0801345ffc27426a7b538f054ecb1eeaf6ce0f8c0c24238c8",
+      sourceSHA256: "42edefbb910e80aac8ab8a3390de80c2bb8ec0c99e14cd710cd5c16ce8280439",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12919,7 +12996,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH162.toml",
-      sourceSHA256: "a597ff8c679505e1b474f148a7bd0c7a5bc850312a55c1c95156f4932c1e575a",
+      sourceSHA256: "082956604ae23e276747176bd239acd7cc19dd748634884577a9aabb003f5007",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12958,7 +13035,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "pendingFabrication",
       authored: authored,
       sourcePath: "specs/SH163.toml",
-      sourceSHA256: "a629eb2c13f1b41f7166db267b9e9af9d286827e88a14be22723269d44af11ee",
+      sourceSHA256: "99c96d7b1ca71fe33606eed9c7ff320bf7d15334daca98d39691a3cabee6a8e6",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -12997,7 +13074,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "never",
       authored: authored,
       sourcePath: "specs/SH164.toml",
-      sourceSHA256: "5028093b27c9ce34d4ea5d70dc3e59e0724b15a08291073018cb2e2ae1042b86",
+      sourceSHA256: "d97a99b4b1404d01f1584c519dd0d94d95f585528cfd39fb26945fdc661bf010",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13077,7 +13154,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH165.toml",
-      sourceSHA256: "c65b4bb808b439d7f601833c2152a717e434f14ad2ce853c12ca6a7584df5695",
+      sourceSHA256: "d5045ad97a20c3cea39eb105ebd91ef31c7b74ac9a75b91db7b3ffe06c20cc66",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13158,7 +13235,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH166.toml",
-      sourceSHA256: "f4e204b6a745a985461e5c75353a97c049e4547deb39715e6db3e96220326327",
+      sourceSHA256: "eabb74956453f0a083925b36cf58ad8f5d11cc7e442064dbe3e249d8840eb7fd",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13239,7 +13316,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH167.toml",
-      sourceSHA256: "214cb06eaf0b913bbd7ea18169654fadef81e7be514f14c0fb0dc7c00dcf3e38",
+      sourceSHA256: "0047dd7ba66a6fa9ece1cd4ec0951f95840567af5e455f1028cbb1e99b8a94ad",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13320,7 +13397,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH168.toml",
-      sourceSHA256: "4c447765e1806dd25e805effdedc05eca3b8ed041f981c12d79712d9f841507a",
+      sourceSHA256: "005c3e59dc29c6cd9cadb1f24f88c38b22c3f35a035be71a4e1d1bccc5b5ad8a",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13401,7 +13478,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH169.toml",
-      sourceSHA256: "360ccadf49d8e326388e6a488bfa07406a18ec512a9c5cca38f012b3fee8f30e",
+      sourceSHA256: "d3f5d06b9e86d6fecd8bac655bf4a400c59d6fe7f3e46c254e6e6cf18f066f2d",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13482,7 +13559,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "blueprintFabrication",
       authored: authored,
       sourcePath: "specs/SH170.toml",
-      sourceSHA256: "8dd301d3ea3cd11f67d4851b0c1b8f6dde26b502139cd8801d9aa4c407763305",
+      sourceSHA256: "6b74b89edb40e7ddd506f58c3c6e78f4e2870d920d5bde984c4f4a8d5f9a55ec",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [
@@ -13563,7 +13640,7 @@ public enum OriginalFleetDefinitionData {
       purchasePolicy: "plughQuestFabrication",
       authored: authored,
       sourcePath: "specs/SH171.toml",
-      sourceSHA256: "6481d8b9e9ad906c31e1be5f0ad3deb790af20be490728e970b90e043f8d6b0a",
+      sourceSHA256: "0b1e8d7e11800ee47ccf1767e39a98df8a9f03681cec057d9684b9bae6261bb7",
       nativePerformance: performance,
       approvedMeshAvailable: true,
       integrationBlockers: [

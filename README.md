@@ -378,7 +378,7 @@ In current development builds, **T** or **Game > Try Selected Mission** starts a
 
 ## Architecture
 
-The [original fleet preparation notes](docs/ORIGINAL-FLEET-STAGING.md) describe the staged 171 definitions, raw ship reference and authenticated original texture/UV loader. Fleet activation remains separate from this source integration.
+The [original fleet preparation notes](docs/ORIGINAL-FLEET-STAGING.md) describe the staged 171 definitions and complete indexed hull delivery, raw ship reference and authenticated original texture/UV loader. Fleet activation remains separate from this source integration.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
 

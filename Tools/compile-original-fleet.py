@@ -253,7 +253,8 @@ def joined_chunks(spec_raw: bytes, design: dict):
         yield (toml_string(key) + " = " + toml_value(value) + "\n").encode("utf-8")
 
 
-def compile_record(identifier: str, spec: dict, raw: bytes, hull_path: Path | None, sink: Artifacts) -> dict:
+def compile_record(identifier: str, spec: dict, raw: bytes, hull_path: Path | None, sink: Artifacts,
+                   hull_source: str | None = None, hull_sha256: str | None = None) -> dict:
     spec_path = f"specs/{identifier}.toml"
     sink.emit(spec_path, [raw])
     entry = {
@@ -279,6 +280,8 @@ def compile_record(identifier: str, spec: dict, raw: bytes, hull_path: Path | No
         return entry
     # Local scope keeps only this hull's parsed high/low-detail geometry in memory.
     hull, hull_raw = read_toml(hull_path)
+    if hull_sha256 is not None and digest(hull_raw) != hull_sha256:
+        raise ValueError(f"Hull fingerprint mismatch: {identifier}")
     proposal = hull.get("proposal", {})
     if proposal.get("id") != identifier:
         raise ValueError(f"Hull/spec id mismatch: {identifier}")
@@ -305,7 +308,7 @@ def compile_record(identifier: str, spec: dict, raw: bytes, hull_path: Path | No
         "preservedHullOnlyFields": sorted(hull.keys() - {"design"}),
         "textureAssetsNotSupplied": sorted({t["asset"] for t in hull["design"].get("textures", [])}),
     })
-    entry["sources"].append({"path": f"replacement-hulls/{identifier}-design.toml", "sha256": digest(hull_raw)})
+    entry["sources"].append({"path": hull_source or f"replacement-hulls/{identifier}-design.toml", "sha256": digest(hull_raw)})
     if entry["unsupportedDesignFields"]:
         entry["dependencies"].append("authored-texture-adapter")
     if native_geometry is not None:
@@ -328,14 +331,55 @@ DEPENDENCIES = {
 }
 
 
-def compile_fleet(source: Path, output: Path, expected_specs: int = 171, expected_hulls: int = 94) -> dict:
+def indexed_sources(source: Path, relative: Path, expected_specs: int, expected_hulls: int) -> tuple[dict, str]:
+    """Join the exact delivered effective hulls; workspace metadata is never a path authority."""
+    path = safe_path(source, relative.as_posix())
+    with path.open("rb") as stream:
+        raw = stream.read(8 * 1024 * 1024 + 1)
+    if len(raw) > 8 * 1024 * 1024:
+        raise ValueError("Fleet index exceeds 8 MiB")
+    index = json.loads(raw)
+    if not isinstance(index, dict) or index.get("schema") != "l337.complete-original-fleet-index/1":
+        raise ValueError("Unknown fleet index schema")
+    entries = index.get("ships")
+    if not isinstance(entries, list) or not all(isinstance(entry, dict) for entry in entries):
+        raise ValueError("Invalid fleet index entries")
+    ids = [entry.get("id") for entry in entries]
+    wanted = {f"SH{i:03}" for i in range(1, expected_specs + 1)}
+    if not all(isinstance(identifier, str) for identifier in ids) or len(ids) != len(set(ids)) or set(ids) != wanted:
+        raise ValueError("Duplicate, missing or extra fleet index IDs")
+    if len(entries) != expected_hulls:
+        raise ValueError("Fleet index hull count mismatch")
+    for entry in entries:
+        identifier = entry["id"]
+        if entry.get("statsFile") != f"fleet-specs/{identifier}.toml":
+            raise ValueError("Fleet index spec path/ID mismatch")
+        for field in ("statsSHA256", "geometrySHA256"):
+            if not isinstance(entry.get(field), str) or re.fullmatch(r"[0-9a-f]{64}", entry[field]) is None:
+                raise ValueError("Invalid fleet index source fingerprint")
+        geometry = entry.get("geometryFile")
+        if not isinstance(geometry, str) or Path(geometry).name != f"{identifier}-design.toml":
+            raise ValueError("Fleet index hull path/ID mismatch")
+        safe_path(source, entry["statsFile"])
+        safe_path(source, geometry)
+    return {entry["id"]: entry for entry in entries}, digest(raw)
+
+
+def compile_fleet(source: Path, output: Path, expected_specs: int = 171, expected_hulls: int = 94,
+                  fleet_index: Path | None = None) -> dict:
     source, output = source.resolve(), output_root(output)
     if output.is_relative_to(source) or source.is_relative_to(output):
         raise ValueError("Input and output trees must not overlap")
     if output.exists() and (not output.is_dir() or any(output.iterdir())):
         raise ValueError("Generation requires a fresh/empty staging directory; use --check for existing output")
-    spec_paths = sorted((source / "fleet-specs").glob("*.toml"))
-    hull_paths = sorted((source / "replacement-hulls").glob("*.toml"))
+    indexed, index_sha256 = {}, None
+    if fleet_index is None:
+        spec_paths = sorted((source / "fleet-specs").glob("*.toml"))
+        hull_paths = sorted((source / "replacement-hulls").glob("*.toml"))
+    else:
+        indexed, index_sha256 = indexed_sources(source, fleet_index, expected_specs, expected_hulls)
+        spec_paths = [safe_path(source, indexed[key]["statsFile"]) for key in sorted(indexed)]
+        hull_paths = [safe_path(source, indexed[key]["geometryFile"]) for key in sorted(indexed)]
     if len(spec_paths) != expected_specs or len(hull_paths) != expected_hulls:
         raise ValueError(f"Expected {expected_specs} specs/{expected_hulls} hulls; found {len(spec_paths)}/{len(hull_paths)}")
     specs, hulls = {}, {}
@@ -345,6 +389,8 @@ def compile_fleet(source: Path, output: Path, expected_specs: int = 171, expecte
             raise ValueError(f"Unexpected spec filename: {path.name}")
         spec, raw = read_toml(path)
         validate_spec(spec, path.stem)
+        if indexed and digest(raw) != indexed[spec["id"]]["statsSHA256"]:
+            raise ValueError(f"Spec fingerprint mismatch: {spec['id']}")
         if spec["id"] in specs:
             raise ValueError(f"Duplicate spec ID: {spec['id']}")
         specs[spec["id"]] = (spec, raw)
@@ -356,7 +402,9 @@ def compile_fleet(source: Path, output: Path, expected_specs: int = 171, expecte
         hulls[match[1]] = path
     output.mkdir(parents=True, exist_ok=True)
     sink = Artifacts(output)
-    entries = [compile_record(identifier, spec, raw, hulls.get(identifier), sink)
+    entries = [compile_record(identifier, spec, raw, hulls.get(identifier), sink,
+                              indexed[identifier]["geometryFile"] if indexed else None,
+                              indexed[identifier]["geometrySHA256"] if indexed else None)
                for identifier, (spec, raw) in sorted(specs.items())]
     manifest = {
         "schema": "l337.original-fleet-staging/1",
@@ -371,6 +419,8 @@ def compile_fleet(source: Path, output: Path, expected_specs: int = 171, expecte
         "dependencyCounts": dict(sorted(Counter(code for e in entries for code in e["dependencies"]).items())),
         "ships": entries, "files": list(sink.files), "payloadBytesExcludingManifest": sink.total,
     }
+    if indexed:
+        manifest["deliveryIndex"] = {"path": fleet_index.as_posix(), "sha256": index_sha256}
     data = (json.dumps(manifest, indent=2, ensure_ascii=True, allow_nan=False) + "\n").encode()
     sink.emit("readiness.json", [data])
     return manifest
@@ -416,6 +466,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-root", type=Path, help="Contains fleet-specs/ and replacement-hulls/")
     parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--fleet-index", type=Path, help="Effective delivery index, relative to --input-root; never reads workspace metadata")
     parser.add_argument("--expected-specs", type=int, default=171)
     parser.add_argument("--expected-hulls", type=int, default=94)
     parser.add_argument("--check", action="store_true", help="Read-only staged inventory/hash check; no source reparse")
@@ -426,7 +477,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             if options.input_root is None:
                 raise ValueError("--input-root is required for generation")
-            manifest = compile_fleet(options.input_root, options.output_root, options.expected_specs, options.expected_hulls)
+            manifest = compile_fleet(options.input_root, options.output_root, options.expected_specs, options.expected_hulls, options.fleet_index)
         print(json.dumps({"status": "PASS", "mode": "check" if options.check else "generate", **manifest["counts"]}, sort_keys=True))
         return 0
     except (OSError, ValueError, TypeError, KeyError) as error:
