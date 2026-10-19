@@ -542,30 +542,23 @@ extension NativeMultiBatchRuntimeTests {
   ) -> String? {
     if game.commander.flightSimulation != expected.commander.flightSimulation { return "flight" }
     if game.bodies != expected.world.bodies { return "bodies" }
-    if game.docked != expected.world.docked || game.screen != expected.world.screen
-      || game.speed != expected.world.speed || game.time != expected.world.time
-    {
-      return "world-phase"
-    }
-    if game.commander.fuel != expected.commander.fuel
-      || game.commander.missiles != expected.commander.missiles
-    {
-      return "fuel-ammunition"
-    }
-    if game.energy != expected.world.energy || game.laserHeat != expected.world.laserHeat
-      || game.frontShield != expected.world.frontShield
-      || game.rearShield != expected.world.rearShield
-    {
-      return "resources"
-    }
-    if game.commander.cargo != expected.commander.cargo
-      || game.commander.credits != expected.commander.credits
-      || game.commander.equipmentInventory != expected.commander.equipmentInventory
-      || game.commander.equipmentOwnerID != expected.commander.equipmentOwnerID
-      || game.commander.hullInstanceID != expected.commander.hullInstanceID
-    {
+    if game.docked != expected.world.docked { return "world-phase" }
+    if game.screen != expected.world.screen { return "world-phase" }
+    if game.speed != expected.world.speed { return "world-phase" }
+    if game.time != expected.world.time { return "world-phase" }
+    if game.commander.fuel != expected.commander.fuel { return "fuel-ammunition" }
+    if game.commander.missiles != expected.commander.missiles { return "fuel-ammunition" }
+    if game.energy != expected.world.energy { return "resources" }
+    if game.laserHeat != expected.world.laserHeat { return "resources" }
+    if game.frontShield != expected.world.frontShield { return "resources" }
+    if game.rearShield != expected.world.rearShield { return "resources" }
+    if game.commander.cargo != expected.commander.cargo { return "property" }
+    if game.commander.credits != expected.commander.credits { return "property" }
+    if game.commander.equipmentInventory != expected.commander.equipmentInventory {
       return "property"
     }
+    if game.commander.equipmentOwnerID != expected.commander.equipmentOwnerID { return "property" }
+    if game.commander.hullInstanceID != expected.commander.hullInstanceID { return "property" }
     if game.commander.salvageLedger != expected.commander.salvageLedger { return "old-ledger" }
     if game.commander.alienStorageState?.current.snapshot
       != expected.commander.alienStorageState?.current.snapshot
