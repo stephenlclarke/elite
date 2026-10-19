@@ -110,6 +110,7 @@ extension Game {
   }
 
   @discardableResult
+  @inline(never)
   mutating func flushNativeSalvageWrecks(
     parking actors: Set<ActorIdentity> = [], parkingSystem: SystemIdentity? = nil
   ) -> Bool {
@@ -118,6 +119,14 @@ extension Game {
         $0.binding.map { actors.contains($0) || $0.system == parkingSystem } == true
       } == true
     guard !nativeSalvageWreckMotion.isEmpty || parking else { return true }
+    return flushObservedNativeSalvageWrecks(parking: actors, parkingSystem: parkingSystem)
+  }
+
+  /// Reserve reconciliation and publication values only after the original no-op guard.
+  @inline(never)
+  private mutating func flushObservedNativeSalvageWrecks(
+    parking actors: Set<ActorIdentity>, parkingSystem: SystemIdentity?
+  ) -> Bool {
     guard let previous = commander.alienStorageState?.current.snapshot else { return false }
     if let hot = nativeSalvageWork, !nativeSalvageHotWorkIsCurrent(hot) { return false }
     do {
