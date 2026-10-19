@@ -600,6 +600,65 @@ struct HullSweepPlacementTests {
     }
   }
 
+  @Test func dualBVHPairCertificateRetainsAnalyticDistanceAndAllPaidExaminations() throws {
+    var vertices: [Vector3] = []
+    var faces: [[Int]] = []
+    for x in [0.0, 1000] {
+      for row in 0..<8 {
+        let y = Double(row * 20)
+        let first = vertices.count
+        vertices += [.init(x, y, 0), .init(x + 1, y, 0), .init(x, y + 1, 0)]
+        faces.append([first, first + 1, first + 2])
+      }
+    }
+    let target = try PreparedHull(
+      mesh: Mesh(
+        vertices: vertices.map { .init($0.x, $0.y, 10) }, faces: faces,
+        preserveWinding: true))
+    for reversed in [false, true] {
+      let player = try PreparedHull(
+        mesh: Mesh(
+          vertices: vertices, faces: reversed ? Array(faces.reversed()) : faces,
+          preserveWinding: true))
+      #expect(player.triangleCount == 16 && target.triangleCount == 16)
+      // Each mesh has two x-separated leaves of eight y-separated triangles.
+      // Corresponding filled triangles have distance10. Every other row has an
+      // additional y gap>=19, but the containing leaf overlaps that row in x/y.
+      // Thus neither matching leaf nor row can prune: all 64 pairs remain paid.
+      // Each query pops seven node pairs, including the two excluded cross leaves.
+      let result = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player), player: player,
+        obstacles: [.init(hull: target, pose: .init())],
+        budget: .init(distanceQueries: 3, triangleTests: 384, nodeVisits: 42, subdivisionDepth: 0))
+      #expect(result.safe && result.distanceQueries == 3)
+      #expect(result.triangleTests == 384 && result.nodeVisits == 42)
+      #expect(abs((result.minimumSampledClearance ?? 0) - 10) < 1e-8)
+      let exhausted = HullSweepSafety.validateSceneMotion(
+        dualStationaryMotion(player), player: player,
+        obstacles: [.init(hull: target, pose: .init())],
+        budget: .init(distanceQueries: 3, triangleTests: 383, nodeVisits: 42, subdivisionDepth: 0))
+      #expect(!exhausted.safe && exhausted.failure == .workBudgetExceeded)
+      #expect(exhausted.triangleTests == 383 && exhausted.distanceQueries == 3)
+      // Equality with the required stand-off remains a refusal, even though far
+      // row pairs can be excluded. A genuine positive margin remains admissible.
+      for clearance in [10.0, 9.999] {
+        let stationary = dualStationaryMotion(player)
+        let motion = HullSceneMotion(
+          start: stationary.start, end: stationary.end,
+          initialVelocity: stationary.initialVelocity, acceleration: stationary.acceleration,
+          worldAngularVelocity: stationary.worldAngularVelocity, duration: stationary.duration,
+          playerRadius: stationary.playerRadius, requiredClearance: clearance)
+        let boundary = HullSweepSafety.validateSceneMotion(
+          motion, player: player, obstacles: [.init(hull: target, pose: .init())],
+          budget: .init(distanceQueries: 3, triangleTests: 384, nodeVisits: 42, subdivisionDepth: 0)
+        )
+        #expect(boundary.safe == (clearance < 10))
+        if clearance == 10 { #expect(boundary.failure == .unproven) }
+        #expect(abs((boundary.minimumSampledClearance ?? 0) - 10) < 1e-8)
+      }
+    }
+  }
+
   @Test func dualBVHRowCertificateReducesPaidPairsWhenBothPlayerLeafBoxesOverlapTarget() throws {
     var vertices: [Vector3] = []
     var faces: [[Int]] = []
