@@ -136,3 +136,7 @@ Actual782 matching compile passed;783 closed with two methods/three cases PASS t
 ## Assigned panel native comparison
 
 Record Root's bounded product-only784/title30-native785 gain checkpoint for the integrated panel change. Existing774 scratch/flags and775 protocol are reused; exact source identity, elapsed timing qualifications and actual resource closure remain required. No duplicate credits/visual, new tooling, media, full CI or performance acceptance is authorized.
+
+## Integrated panel actual native result and priority release
+
+Record exact7398 source, actual784 product-only optimized build PASS and785 same-protocol title30 PASS with all actual native/supervisor signatures gone. Attach immutable proofs/comparison/closure: presentation p95 improves about50%, draw interval p95 about11%, drawing remains about67ms and processing p95 increases roughly13-fold. Preserve the unresolved spike and elapsed-time limits; rendering stays blocked. No credits/visual rerun/media/new tooling/fullCI. Directly release Root-clean64b contractStation leaf to786/787 four remaining cases after actual closure, retaining10 prior passes. Record MBA actual cd9 build failure and corrected mean-colour test-only authorization. Scoped Markdown/whitespace checks only after frozen native checkpoint closed.
