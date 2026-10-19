@@ -244,3 +244,78 @@ extension AsteroidDebrisContactTests {
     }
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test(arguments: [0, 2], [Vector3(0, 0, 0), .init(13, -7, -30)])
+  func actualNativeOctahedronTipsHaveASeparateVertexCertificate(axis: Int, commonVelocity: Vector3)
+    throws
+  {
+    let native = Mesh.hull(.cargo)
+    #expect(
+      native.vertices == Mesh.hull(.asteroid).vertices && native.faces == Mesh.hull(.asteroid).faces
+    )
+    let scaled = Mesh(
+      vertices: native.vertices.map { $0 * 1.173 }, faces: native.faces, preserveWinding: true)
+    let source = try PreparedHull(mesh: scaled)
+    let target = try PreparedHull(mesh: native)
+    let direction = axis == 0 ? Vector3(1, 0, 0) : .init(0, 0, 1)
+    let offset = Vector3(100000, -200000, 300000)
+    let from = offset + direction * 500
+    let other = offset + direction * 1500
+    let a = contactMotion(
+      from, from + (direction * 16000 + commonVelocity) * 0.1, radius: source.radius)
+    let b = contactMotion(other, other + commonVelocity * 0.1, radius: target.radius)
+    let leading = try #require(scaled.vertices.map { $0.dot(direction) }.max())
+    let trailing = try #require(native.vertices.map { $0.dot(direction) }.min())
+    let firstEntry =
+      (1000 + trailing - leading) / (a.initialVelocity - b.initialVelocity).dot(direction)
+    for reversed in [false, true] {
+      let result = HullSweepSafety.firstNativeContact(
+        source: reversed ? b : a, hull: reversed ? target : source,
+        target: reversed ? a : b, targetHull: reversed ? source : target)
+      guard case .contact(let contact) = result else {
+        Issue.record("Real native tip meeting was not certified: \(String(describing: result))")
+        continue
+      }
+      #expect(contact.lowerTime <= firstEntry && contact.upperTime >= firstEntry)
+      #expect(contact.upperTime - contact.lowerTime <= 0.1 / 4096)
+      #expect(
+        reversed ? contact.normal.dot(direction) < -0.99 : contact.normal.dot(direction) > 0.99)
+      if reversed { continue }
+      let response = try #require(
+        AsteroidImpactPolicy.impulse(
+          sourceMass: 25000, targetMass: 1000, sourceVelocity: a.initialVelocity,
+          targetVelocity: b.initialVelocity, normal: contact.normal))
+      let duration = 0.1 - contact.lowerTime
+      let aStart = a.start.position + a.initialVelocity * contact.lowerTime
+      let bStart = b.start.position + b.initialVelocity * contact.lowerTime
+      let remainderA = HullSceneMotion(
+        start: .init(position: aStart), end: .init(position: aStart + response.source * duration),
+        initialVelocity: response.source, acceleration: .init(0, 0, 0),
+        worldAngularVelocity: .init(0, 0, 0), duration: duration, playerRadius: source.radius)
+      let remainderB = HullSceneMotion(
+        start: .init(position: bStart), end: .init(position: bStart + response.target * duration),
+        initialVelocity: response.target, acceleration: .init(0, 0, 0),
+        worldAngularVelocity: .init(0, 0, 0), duration: duration, playerRadius: target.radius)
+      let separation = HullSweepSafety.firstNativeContact(
+        source: remainderA, hull: source, target: remainderB, targetHull: target)
+      guard case .clear = separation else {
+        Issue.record(
+          "Actual post-impulse native hulls were not proved clear: \(String(describing: separation))"
+        )
+        continue
+      }
+    }
+    // A nearby transverse offset cannot borrow the exact vertex certificate.
+    let transverse = axis == 0 ? Vector3(0, 0, 0.000001) : .init(0.000001, 0, 0)
+    let shifted = contactMotion(
+      other + transverse, other + transverse + commonVelocity * 0.1, radius: target.radius)
+    let offAxis = HullSweepSafety.firstNativeContact(
+      source: a, hull: source, target: shifted, targetHull: target)
+    switch offAxis {
+    case .contact(let contact): #expect(abs(contact.normal.dot(direction)) < 0.99)
+    case .refused: break  // An uncertain non-axial feature still refuses movement.
+    case .clear: Issue.record("Intersecting off-axis native hulls were incorrectly declared clear")
+    }
+  }
+}

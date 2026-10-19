@@ -1612,6 +1612,21 @@ extension HullSweepSafety {
     // A bounded time bracket is allowed only when it contains a proved intersection.
     // Otherwise a tiny/thin/ill-conditioned crossing refuses movement; it is not a miss.
     if depth >= work.budget.subdivisionDepth {
+      if let axial = try axialVertexInterval(
+        source, hull: hull, target: target, targetHull: targetHull,
+        start: start, end: end, work: &work)
+      {
+        switch axial {
+        case .clear:
+          guard witness == nil || witness!.upperTime > end else {
+            throw HullSweepFailure.unproven
+          }
+          return .clear
+        case .contact(let entry):
+          if witness == nil || entry.upperTime < witness!.upperTime { witness = entry }
+        case .refused(let failure): throw failure
+        }
+      }
       if let entry = try translatedVertexEntry(
         source, hull: hull, target: target, targetHull: targetHull,
         start: start, end: end, work: &work),
@@ -1692,6 +1707,128 @@ extension HullSweepSafety {
       64 * Double.ulpOfOne
       * max(1, hull.radius + targetHull.radius + a.position.length + b.position.length)
     return gap.isFinite && envelope.isFinite && gap - envelope - numerical > 0
+  }
+
+  /// A true tip-to-tip meeting has boundary barycentrics on every incident face.
+  /// Exact transverse identities and unique native support vertices provide a
+  /// separate certificate; no uncertain ray boundary is promoted into a hit.
+  private static func axialVertexInterval(
+    _ source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
+    targetHull: PreparedHull, start: Double, end: Double, work: inout SweepWork
+  ) throws -> NativeHullContactResult? {
+    let zero = Vector3(0, 0, 0)
+    guard source.worldAngularVelocity == zero, target.worldAngularVelocity == zero,
+      source.acceleration == target.acceleration,
+      !hull.hasUnresolvedSupport, !targetHull.hasUnresolvedSupport
+    else { return nil }
+    try work.query()
+    for axis in 0..<3 {
+      let transverse = (0..<3).filter { $0 != axis }
+      guard
+        transverse.allSatisfy({
+          sweepCoordinate(source.start.position, $0) == sweepCoordinate(target.start.position, $0)
+            && sweepCoordinate(source.initialVelocity, $0)
+              == sweepCoordinate(target.initialVelocity, $0)
+        })
+      else { continue }
+      let left = try axialVertices(
+        hull, orientation: source.start.orientation, transverse: transverse, work: &work)
+      let right = try axialVertices(
+        targetHull, orientation: target.start.orientation, transverse: transverse, work: &work)
+      for a in left {
+        for b in right {
+          let direction = sweepSupportAxes[axis]
+          let rawGap =
+            (SweepIntervalVector(target.start.position) - SweepIntervalVector(source.start.position)
+            + contactWorldPoint(
+              b, pose: .init(position: zero, orientation: target.start.orientation))
+            - contactWorldPoint(
+              a, pose: .init(position: zero, orientation: source.start.orientation)))
+            .dot(SweepIntervalVector(direction))
+          guard rawGap.finite, rawGap.lower > 0 || rawGap.upper < 0 else { continue }
+          let normal = rawGap.lower > 0 ? direction : direction * -1
+          guard
+            try uniqueVertexSupport(
+              hull, point: a, orientation: source.start.orientation,
+              normal: normal, maximum: true, work: &work),
+            try uniqueVertexSupport(
+              targetHull, point: b, orientation: target.start.orientation,
+              normal: normal, maximum: false, work: &work)
+          else { continue }
+          let gap = rawGap.lower > 0 ? rawGap : SweepInterval(0) - rawGap
+          let closing =
+            (SweepIntervalVector(source.initialVelocity)
+            - SweepIntervalVector(target.initialVelocity))
+            .dot(SweepIntervalVector(normal))
+          let atStart = gap - closing * SweepInterval(start)
+          let atEnd = gap - closing * SweepInterval(end)
+          let middle = (start + end) * 0.5
+          let numerical =
+            64 * Double.ulpOfOne
+            * max(
+              1,
+              hull.radius + targetHull.radius
+                + shipPose(source, at: middle).position.length
+                + shipPose(target, at: middle).position.length)
+          if atStart.lower > numerical && atEnd.lower > numerical { return .clear }
+          guard closing.finite, closing.lower > 1e-8 else { continue }
+          let time = gap / closing
+          guard time.finite, time.lower >= start, time.upper <= end else { continue }
+          let point = shipPose(source, at: time.upper).systemPoint(a)
+          guard point.finite else { throw HullSweepFailure.unproven }
+          return .contact(
+            .init(lowerTime: start, upperTime: time.upper, point: point, normal: normal))
+        }
+      }
+    }
+    return nil
+  }
+
+  private static func axialVertices(
+    _ hull: PreparedHull, orientation: Basis3, transverse: [Int], work: inout SweepWork
+  ) throws -> [Vector3] {
+    var result: [Vector3] = []
+    var seen = Set<SweepVertexKey>()
+    for triangle in hull.triangles {
+      try work.triangle()
+      for index in 0..<3 {
+        let point = triangle.vertex(at: index)
+        // Every transverse term is exactly zero by its operands. Rounded
+        // cancellation or a small offset cannot stand in for exact collinearity.
+        guard
+          transverse.allSatisfy({ coordinate in
+            (point.x == 0 || sweepCoordinate(orientation.x, coordinate) == 0)
+              && (point.y == 0 || sweepCoordinate(orientation.y, coordinate) == 0)
+              && (point.z == 0 || sweepCoordinate(orientation.z, coordinate) == 0)
+          }), seen.insert(.init(x: point.x, y: point.y, z: point.z)).inserted
+        else { continue }
+        result.append(point)
+      }
+    }
+    return result
+  }
+
+  private static func uniqueVertexSupport(
+    _ hull: PreparedHull, point: Vector3, orientation: Basis3,
+    normal: Vector3, maximum: Bool, work: inout SweepWork
+  ) throws -> Bool {
+    let direction = SweepIntervalVector(normal)
+    for triangle in hull.triangles {
+      try work.triangle()
+      for index in 0..<3 {
+        let vertex = triangle.vertex(at: index)
+        if vertex == point { continue }
+        let delta = SweepIntervalVector(vertex) - SweepIntervalVector(point)
+        let projection =
+          (SweepIntervalVector(orientation.x) * delta.x
+          + SweepIntervalVector(orientation.y) * delta.y
+          + SweepIntervalVector(orientation.z) * delta.z).dot(direction)
+        guard projection.finite, maximum ? projection.upper < 0 : projection.lower > 0 else {
+          return false
+        }
+      }
+    }
+    return true
   }
 
   /// Sampling a bounded leaf can miss a thin native feature completely. For fixed
