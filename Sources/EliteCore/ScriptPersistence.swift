@@ -838,7 +838,8 @@ extension Game {
     restoreScriptSimulation(world.simulation)
     scriptReferenceFrame = world.referenceFrame
     bodies = world.bodies
-    market = world.market
+    // An unchanged snapshot must not materialize a pristine market in owned state.
+    if world.market != market { market = world.market }
     docked = world.docked
     dockedAtMainStation = world.mainStation
     // Pending contacts restore through Contacts, not a stale UI selection token.
