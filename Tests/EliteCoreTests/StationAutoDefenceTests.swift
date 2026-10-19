@@ -1193,7 +1193,8 @@ func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
   admissionBasis.rotate(pitch: 0, roll: admissionPhase, yaw: 0)
   let allocated = game.commander.flightSimulation.allocateSpawn()
   let sequence = try #require(allocated)
-  let context = try #require(game.gameplayContext())
+  let currentContext = game.gameplayContext()
+  let context = try #require(currentContext)
   let position = condition == "obstructing" ? Vector3(start.x, 0, lane.z) : lane
   let request = SpawnRequest(
     identity: .init(
@@ -1263,6 +1264,212 @@ func stationAutoCourseRefusesUnknownBroadPhaseFacts(condition: String) async thr
   #expect(!clear && !bodyBlocked)
   #expect(observation?["refusal"] == "corridor.unproven-body")
   #expect(observation?["blocker"] == String(id))
+}
+
+@Test func stationAutoBrakingAllowanceContainsActualDiscreteNPCUpdates() throws {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.launch()
+  game.speed = 0
+  let currentContext = game.gameplayContext()
+  let context = try #require(currentContext)
+  let allocated = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocated)
+  let request = SpawnRequest(
+    identity: .init(
+      system: context.system, visit: context.visit, sequence: sequence, member: 0,
+      producer: .security),
+    population: .police, hull: .viper, position: .init(0, 0, 3000), orientation: .init(),
+    velocity: .init(0, 0, 0),
+    npc: .init(role: .police, origin: context.system, destination: context.system),
+    rock: nil, payload: nil, priority: .police)
+  let admitted = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit, revision: context.revision,
+      batches: [.init(requests: [request], atomic: true)], intents: []))
+  let identity = try #require(admitted.first?.actor)
+  let initial = try #require(game.bodies.first { $0.physical?.identity == identity })
+  let start = game.commander.flightSimulation.pose.systemPoint(initial.position)
+  try #require(initial.physical?.velocity == Vector3(0, 0, 0))
+  for _ in 0..<2 { game.tick(delta: 0.1, controls: Controls()) }
+  let final = try #require(game.bodies.first { $0.physical?.identity == identity })
+  let displacement = (game.commander.flightSimulation.pose.systemPoint(final.position) - start)
+    .length
+  let source = try #require(ShipCatalogue.nativeShip(.viper)?.game)
+  let acceleration = max(1, source.acceleration * 18)
+  let continuousOnly = 0.5 * acceleration * 0.2 * 0.2
+  let actualModelBound = Game.stationAutoNPCMotionAllowance(
+    acceleration: acceleration, horizon: 0.2)
+  #expect(displacement > continuousOnly + 0.1)
+  #expect(displacement <= actualModelBound + 1e-8)
+}
+
+@Test(arguments: [
+  "resume", "unvalidated", "stopped", "outward", "unknown", "ordnance", "proof-loss",
+  "stop-at-zero", "large-step",
+])
+func stationAutoFiniteBrakingPreservesOnlyAValidatedCourse(condition: String) {
+  let limits = RelativeWorkLimits(
+    acceleration: 216, speed: 576, pitchRate: 0.8, yawRate: 0.8, rollRate: 1)
+  var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1110.3638355679848))
+  station.rotationRate = 0
+  var control = AutoTargetControl()
+  control.setApproachVelocity(.init(0, 0, 21.451299950917527))
+  var pressure = StationAutoGuidance(
+    aim: .init(300, -800, -600), lateralVelocity: .init(0, 0, 0), hazard: .active,
+    interruptionAllowed: true, clearanceRadius: 400, movingEntryAllowed: true)
+  if condition != "unvalidated" {
+    _ = control.steer(target: station, delta: 0.1, limits: limits, defence: pressure)
+    #expect(control.validatedMovingEntry && control.finalApproach)
+  }
+  pressure.movingEntryAllowed = false
+  pressure.entryBrakingAllowed = true
+  if condition == "stopped" { control.setApproachVelocity(.init(0, 0, 0)) }
+  if condition == "outward" { control.setApproachVelocity(.init(0, 0, -40)) }
+  if condition == "unknown" { pressure.hazard = .unknown }
+  if condition == "ordnance" { pressure.joinedIncoming = true }
+  if condition == "proof-loss" { pressure.entryBrakingAllowed = false }
+  let delta = condition == "large-step" ? 0.2 : 0.1
+  let before = control.velocity
+  let response = control.steer(target: station, delta: delta, limits: limits, defence: pressure)
+  #expect((control.velocity - before).length <= limits.acceleration * delta + 1e-8)
+  #expect(!control.ready && !control.finalApproach)
+  if condition == "resume" || condition == "stop-at-zero" {
+    #expect(control.validatedMovingEntry && control.stationDefencePhase == .returning)
+    #expect(control.status == "BRAKING FOR CLEAR DOCKING COURSE")
+    #expect(control.velocity.length < before.length && response.pitch == 0 && response.yaw == 0)
+    if condition == "resume" {
+      pressure.movingEntryAllowed = true
+      pressure.entryBrakingAllowed = false
+      let brakingVelocity = control.velocity
+      _ = control.steer(target: station, delta: 0.1, limits: limits, defence: pressure)
+      #expect(control.finalApproach && control.stationDefencePhase == .returning)
+      #expect((control.velocity - brakingVelocity).length <= limits.acceleration * 0.1 + 1e-8)
+    } else {
+      for _ in 0..<8 {
+        let previous = control.velocity
+        _ = control.steer(target: station, delta: 0.1, limits: limits, defence: pressure)
+        #expect((control.velocity - previous).length <= limits.acceleration * 0.1 + 1e-8)
+        #expect(!control.ready && !control.finalApproach)
+      }
+      #expect(!control.validatedMovingEntry && control.stationDefencePhase == .defending)
+    }
+  } else {
+    #expect(!control.validatedMovingEntry)
+    #expect(control.status != "BRAKING FOR CLEAR DOCKING COURSE")
+    if condition == "proof-loss" {
+      pressure.entryBrakingAllowed = true
+      _ = control.steer(target: station, delta: 0.1, limits: limits, defence: pressure)
+      #expect(control.stationDefencePhase == .defending && !control.validatedMovingEntry)
+    }
+  }
+}
+
+@Test(arguments: ["resume", "unsafe-stop"])
+func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition: String)
+  async throws
+{
+  let storage = try NativeStationTestStorage()
+  defer { storage.clean() }
+  var game = try await stationAutoEntryBoundary()
+  let lane = Vector3(-42.03981364135889, 79.57797477317199, -928)
+  let admissionPhase = atan2(lane.y, lane.x)
+  let phaseRuntime = GameRuntime(game: game, saveURL: storage.url)
+  for _ in 0..<80 {
+    let current = try #require(game.autoTargetBody)
+    let remaining = admissionPhase - current.rotation
+    if remaining <= 1e-9 { break }
+    game = await phaseRuntime.advance(delta: min(0.1, remaining / current.rotationRate))
+    try #require(!game.docked && game.screen != .gameOver)
+  }
+  let station = try #require(game.autoTargetBody)
+  try #require(abs(station.rotation - admissionPhase) < 1e-8)
+  let old = game.commander.flightSimulation.pose
+  var pose = ShipPose()
+  pose.position = old.systemPoint(
+    station.entrancePosition + station.entranceNormal * 1024.668962759613)
+  pose.orientation.z = old.orientation.apply(station.entranceNormal) * -1
+  pose.orientation.y = old.orientation.apply(station.entranceUp)
+  pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
+  NativeStationTestFixture.reframe(&game, to: pose)
+  game.speed = 0
+  game.autoPilot.setApproachVelocity(.init(0, 0, 21.451299950917527))
+  let attacker = try stationAutoAddNativeAttacker(
+    &game, position: .init(300, 0, -600), sequence: 923, facingPlayer: true)
+  let currentContext = game.gameplayContext()
+  let context = try #require(currentContext)
+  let player = try #require(game.commander.flightSimulation.player)
+  try stationAutoRequireNativePressureLane(game, attacker: attacker)
+  let shields = game.frontShield + game.rearShield
+  game.emitGameplayNPCBeam(bodyID: attacker, target: player, context: context)
+  try #require(game.frontShield + game.rearShield < shields)
+  let target = game.autoPilot.targetActor
+  let stock = game.commander.missiles
+  let runtime = GameRuntime(game: game, saveURL: storage.url)
+  let beforeEntry = game.flightWorldVelocity
+  game = await runtime.advance(delta: 0.1)
+  try #require(game.autoPilot.validatedMovingEntry && game.autoPilot.finalApproach)
+  #expect(
+    (game.flightWorldVelocity - beforeEntry).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+  let police = game.bodies.filter {
+    $0.physical?.spawnIdentity?.producer == .security && $0.hull == .viper
+  }
+  try #require(!police.isEmpty, "The real accepted attack must launch actual station police")
+  let currentStation = try #require(game.autoTargetBody)
+  if condition == "unsafe-stop" {
+    let id = game.nextBodyID
+    game.nextBodyID += 1
+    game.bodies.append(.init(id: id, hull: .cargo, position: .init(0, 0, 100)))
+    game.ensurePhysicalActors()
+  }
+  let proposal = game.stationAutoGuidance(target: currentStation)
+  let guidance = try #require(proposal)
+  try #require(
+    guidance.hazard == .active && !guidance.movingEntryAllowed && !guidance.joinedIncoming)
+  if condition == "unsafe-stop" {
+    #expect(!guidance.entryBrakingAllowed)
+    let unsafeRuntime = GameRuntime(game: game, saveURL: storage.url)
+    let before = game.flightWorldVelocity
+    game = await unsafeRuntime.advance(delta: 0.1)
+    #expect(!game.autoPilot.finalApproach && !game.autoPilot.ready)
+    #expect(game.autoPilot.stationDefencePhase == .defending)
+    #expect((game.flightWorldVelocity - before).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+    return
+  }
+  try #require(guidance.entryBrakingAllowed)
+  let beforeBraking = game.flightWorldVelocity
+  game = await runtime.advance(delta: 0.1)
+  #expect(game.autoPilot.stationDefencePhase == .returning)
+  #expect(
+    !game.autoPilot.ready && !game.autoPilot.finalApproach && game.autoPilot.validatedMovingEntry)
+  #expect(game.autoPilot.status == "BRAKING FOR CLEAR DOCKING COURSE")
+  #expect(game.flightWorldVelocity.length < beforeBraking.length)
+  #expect(
+    (game.flightWorldVelocity - beforeBraking).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+  #expect(game.autoPilot.facingError < 0.02 && game.autoPilot.rateError < 0.02)
+  let clearStation = try #require(game.autoTargetBody)
+  let depth = -clearStation.entrancePosition.dot(clearStation.entranceNormal)
+  let geometryClear = game.nativeStationAutoEntryCourseIsClear(
+    clearStation, advance: clearStation.entranceNormal * -(depth - 0.5), terminalSpeed: 48)
+  try #require(geometryClear, "Real native police steering must clear actual hull material")
+  let afterBraking = game.flightWorldVelocity
+  game = await runtime.advance(delta: 0.1)
+  #expect(game.autoPilot.finalApproach && game.autoPilot.stationDefencePhase == .returning)
+  #expect(
+    (game.flightWorldVelocity - afterBraking).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+  for _ in 0..<180 where !game.docked {
+    let before = game.flightWorldVelocity
+    game = await runtime.advance(delta: 0.1)
+    if !game.docked {
+      #expect(
+        (game.flightWorldVelocity - before).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+      #expect(game.autoPilot.targetActor == target)
+    }
+    try #require(game.screen != .gameOver)
+    #expect(game.commander.missiles <= stock && !game.commander.unlimitedMissiles)
+  }
+  #expect(game.docked && game.dockedAtMainStation && game.nativeMainStationDockEvidenceIsCurrent)
+  #expect(game.commander.legal == 0)
 }
 
 @Test(arguments: ["clear-port", "rim", "back-wall", "oversize-hull"])

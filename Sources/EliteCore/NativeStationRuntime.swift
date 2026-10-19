@@ -1224,7 +1224,7 @@ extension Game {
     return pose
   }
 
-  private func distanceFromNativeSegment(_ point: Vector3, start: Vector3, end: Vector3) -> Double {
+  func distanceFromNativeSegment(_ point: Vector3, start: Vector3, end: Vector3) -> Double {
     let segment = end - start
     let denominator = segment.dot(segment)
     guard denominator > 0 else { return (point - start).length }

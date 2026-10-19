@@ -9,6 +9,7 @@ struct StationAutoGuidance: Sendable {
   var clearanceRadius = 0.0
   var handoverAllowed = false
   var movingEntryAllowed = false
+  var entryBrakingAllowed = false
   var joinedIncoming = false
   var transitGoal: Vector3? = nil
   var protectFrontShield = false
@@ -289,9 +290,11 @@ extension Game {
     {
       stationAutoDefence = .init(station: stationActor, player: context.player.identity)
     }
+    var entryBrakingAllowed = false
     let movingEntryAllowed =
       hazard == .active && observations.courseKnown
-      && stationAutoMovingEntryAllowed(station, observation: &courseObservation)
+      && stationAutoMovingEntryAllowed(
+        station, observation: &courseObservation, entryBrakingAllowed: &entryBrakingAllowed)
     if courseObservation != nil, hazard == .active,
       stationAutoDefence?.firstEntryCourseObservation == nil
         || (!movingEntryAllowed && stationAutoDefence?.firstEntryCourseRefusalObservation == nil)
@@ -314,6 +317,7 @@ extension Game {
         courseObservation?["joinedIncoming"] = String(observations.joinedIncoming)
         courseObservation?["incomingCount"] = String(assessment.incoming.count)
         courseObservation?["movingEntryAllowed"] = String(movingEntryAllowed)
+        courseObservation?["entryBrakingAllowed"] = String(entryBrakingAllowed)
         courseObservation?["controllerPhase"] = String(describing: autoPilot.stationDefencePhase)
         courseObservation?["controllerFinal"] = String(autoPilot.finalApproach)
         courseObservation?["position"] =
@@ -372,7 +376,8 @@ extension Game {
         aim: nil, lateralVelocity: .init(0, 0, 0), hazard: hazard,
         interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
         handoverAllowed: observations.handoverKnown && interruptionAllowed,
-        movingEntryAllowed: movingEntryAllowed, joinedIncoming: observations.joinedIncoming)
+        movingEntryAllowed: movingEntryAllowed, entryBrakingAllowed: entryBrakingAllowed,
+        joinedIncoming: observations.joinedIncoming)
     }
     let goal = station.entrancePosition + station.entranceNormal * station.stationApproachDistance
     let route = goal.unit
@@ -419,14 +424,14 @@ extension Game {
       aim: aim, lateralVelocity: lateral * (workLimits.speed * 0.35 * pressure),
       hazard: hazard, interruptionAllowed: interruptionAllowed, clearanceRadius: clearanceRadius,
       handoverAllowed: observations.handoverKnown && interruptionAllowed,
-      movingEntryAllowed: movingEntryAllowed,
+      movingEntryAllowed: movingEntryAllowed, entryBrakingAllowed: entryBrakingAllowed,
       joinedIncoming: observations.joinedIncoming, transitGoal: transitGoal,
       protectFrontShield: protectFrontShield)
   }
 
   /// A current motion proposal, never native docking or attack authority.
   private mutating func stationAutoMovingEntryAllowed(
-    _ station: SpaceBody, observation: inout [String: String]?
+    _ station: SpaceBody, observation: inout [String: String]?, entryBrakingAllowed: inout Bool
   ) -> Bool {
     observation?["refusal"] = "motion.context"
     guard pendingNativeStationDock == nil, !station.containsPlayer,
@@ -497,9 +502,137 @@ extension Game {
     guard braking.isFinite, braking <= depth else { return false }
     let advance = normal * -(depth - min(0.5, depth * 0.5))
     var bodyBlocked = false
-    return nativeStationAutoEntryCourseIsClear(
+    let clear = nativeStationAutoEntryCourseIsClear(
       station, advance: advance, terminalSpeed: terminal, observation: &observation,
       bodyBlocked: &bodyBlocked)
+    if !clear, bodyBlocked, outward < 0, speed > 0, autoPilot.validatedMovingEntry {
+      entryBrakingAllowed = stationAutoEntryBrakingIsClear(
+        station, relativeVelocity: relative, speed: speed, observation: &observation)
+    }
+    return clear
+  }
+
+  /// A conservative enclosure of the entire stop plus the complete next physics step.
+  /// This uses the maintained relative-motion model; it never grants entry through a body.
+  private mutating func stationAutoEntryBrakingIsClear(
+    _ station: SpaceBody, relativeVelocity: Vector3, speed: Double,
+    observation: inout [String: String]?
+  ) -> Bool {
+    guard self.speed == 0,
+      nativeStationVelocity(station) == Vector3(0, 0, 0), plannedLegacyWorkMotion.isEmpty
+    else { return false }
+    let acceleration = workLimits.acceleration
+    let reserve = AutoTargetControl.stationEntryStepReserve
+    let horizon = speed / acceleration + reserve
+    let distance = speed * speed / (2 * acceleration) + speed * reserve
+    let radius = commander.playerMesh.vertices.map(\.length).max() ?? .infinity
+    let pose = commander.flightSimulation.pose
+    let worldVelocity = pose.orientation.apply(relativeVelocity)
+    let center = pose.position + worldVelocity.unit * (distance * 0.5)
+    let enclosureRadius = radius + distance * 0.5
+    observation?["brakingHorizon"] = String(horizon)
+    observation?["brakingDistance"] = String(distance)
+    guard horizon.isFinite, horizon > reserve, distance.isFinite, distance > 0,
+      center.finite, enclosureRadius.isFinite, radius > 0
+    else { return false }
+    var motionMargins: [ActorIdentity: Double] = [:]
+    var sphereRadii: [ActorIdentity: Double] = [:]
+    for body in bodies where body.energy > 0 || !body.energy.isFinite {
+      guard body.energy.isFinite, body.position.finite, body.orientation.validRotation,
+        body.rotation.isFinite, body.rotationRate.isFinite,
+        body.scriptNPC == nil, body.scriptShot == nil, body.blackjackRole == nil,
+        let physical = body.physical, physical.velocity.finite,
+        physical.velocity.length.isFinite, physical.angularVelocity.finite,
+        physical.angularVelocity.length.isFinite,
+        (body.rotation + abs(body.rotationRate) * horizon).isFinite, physical.ordnance == nil,
+        physical.identity.system == systemIdentity,
+        physical.identity.visit == commander.flightSimulation.visit,
+        !isNativeCrimboMember(physical.identity), motionMargins[physical.identity] == nil
+      else { return false }
+      let mesh = gameplayMesh(for: body)
+      let bodyRadius = mesh.vertices.map(\.length).max() ?? .infinity
+      guard bodyRadius.isFinite, bodyRadius > 0,
+        mesh.vertices.count >= 4, mesh.faces.count >= 4,
+        mesh.vertices.allSatisfy({ $0.finite }),
+        mesh.faces.allSatisfy({
+          $0.count >= 3 && $0.allSatisfy { mesh.vertices.indices.contains($0) }
+        })
+      else { return false }
+      sphereRadii[physical.identity] = bodyRadius
+      guard
+        let margin = stationAutoBrakingMotionAllowance(
+          body, physical: physical, horizon: horizon, playerDistance: distance),
+        margin.isFinite, margin >= 0
+      else { return false }
+      motionMargins[physical.identity] = margin
+    }
+    guard let current = workObstacles(excluding: nil, delta: horizon) else { return false }
+    var obstacles: [HullSweepObstacle] = []
+    for obstacle in current {
+      let margin = obstacle.identity.flatMap { motionMargins[$0] } ?? 0
+      if let identity = obstacle.identity, identity != station.physical?.identity {
+        guard let boundRadius = sphereRadii[identity] else { return false }
+        let coastEnd = obstacle.pose.position + obstacle.velocity * horizon
+        let bound = enclosureRadius + boundRadius + margin
+        guard coastEnd.finite, bound.isFinite else { return false }
+        let separation = distanceFromNativeSegment(
+          center, start: obstacle.pose.position, end: coastEnd)
+        guard separation.isFinite else { return false }
+        // This actual moving sphere encloses every orientation. Only a proved
+        // separated pair is pruned; intersecting/unproven pairs remain in the validator.
+        // Match the maintained sweep validator's numerical headroom.
+        let numerical =
+          1e-8
+          * max(
+            1,
+            enclosureRadius + boundRadius + center.length
+              + obstacle.pose.position.length + coastEnd.length)
+        guard numerical.isFinite else { return false }
+        if separation - numerical > bound { continue }
+      }
+      obstacles.append(
+        .init(
+          identity: obstacle.identity, hull: obstacle.hull, pose: obstacle.pose,
+          velocity: obstacle.velocity, angularVelocity: obstacle.angularVelocity,
+          clearanceOverride: margin))
+    }
+    let enclosed = ShipPose(position: center)
+    let motion = HullSceneMotion(
+      start: enclosed, end: enclosed, initialVelocity: .init(0, 0, 0),
+      acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0), duration: horizon,
+      playerRadius: enclosureRadius)
+    let result = HullSweepSafety.validateSceneMotion(
+      motion, obstacles: obstacles, budget: .standard)
+    observation?["brakingSweep"] =
+      result.failure.map {
+        "\($0)/\(result.obstacle.map { String($0.entity) } ?? "nil")"
+      } ?? "clear"
+    return result.safe
+  }
+
+  private func stationAutoBrakingMotionAllowance(
+    _ body: SpaceBody, physical: PhysicalActorState, horizon: Double, playerDistance: Double
+  ) -> Double? {
+    guard physical.npc != nil else { return 0 }
+    if physical.spawnIdentity != nil {
+      // steerGameplayActor uses this cap; the enclosing work box covers all orientations.
+      guard physical.canonicalSpin != true else { return nil }
+      let craft = ShipCatalogue.nativeShip(body.hull)?.game
+      return Self.stationAutoNPCMotionAllowance(
+        acceleration: max(1, (craft?.acceleration ?? 2) * 18), horizon: horizon)
+    }
+    // Legacy enemyAction contracts relative range. The player's finite stop travel
+    // bounds the remaining increase in its native radial/per-axis displacement.
+    let legacy =
+      body.hull.navalSpeed.map { $0 * 18 }
+      ?? ((body.position.length + playerDistance) * 0.25 + 60)
+    return max(physical.velocity.length, legacy) * horizon
+  }
+
+  /// Semi-implicit velocity-then-position integration adds at most h*T/2
+  /// to the continuous acceleration integral when every physics step is at most h.
+  static func stationAutoNPCMotionAllowance(acceleration: Double, horizon: Double) -> Double {
+    0.5 * acceleration * horizon * (horizon + AutoTargetControl.stationEntryStepReserve)
   }
 
   private func stationAutoRayTarget(_ mount: LaserMount) -> SpaceBody? {
