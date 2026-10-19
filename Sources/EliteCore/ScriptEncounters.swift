@@ -528,11 +528,18 @@ extension Game {
 
   /// Finish full record validation before any template-construction frame becomes active.
   private func validateMissionActorAdmissionEncounter(
-    mode: MissionActorAdmissionMode, pack: ScriptPack, state: ScriptInstance,
+    mode: MissionActorAdmissionMode, pack: borrowing ScriptPack, state: borrowing ScriptInstance,
     encounter: ScriptOwnedEncounter
   ) throws -> ScriptEncounterDefinition {
+    let ownerDefinition = state.definition
+    let ownerVersion = state.version
+    let ownerDigest = state.digest
     guard state.definition == pack.manifest.stateID, state.version == pack.manifest.version,
-      state.digest == pack.digest, scriptPack(for: state)?.digest == pack.digest,
+      state.digest == pack.digest,
+      scriptPacks.contains(where: {
+        $0.manifest.stateID == ownerDefinition && $0.manifest.version == ownerVersion
+          && $0.digest == ownerDigest
+      }),
       encounter.valid,
       let definition = pack.manifest.encounters?.first(where: { $0.id == encounter.id }),
       definition.valid, definition.galaxy == encounter.galaxy,
