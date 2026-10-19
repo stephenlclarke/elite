@@ -1174,6 +1174,70 @@ private func stationAutoAlignedActiveEntryScene(inwardSpeed: Double = 80) async 
   return game
 }
 
+// Controlled source-derived geometry from actual 717, not a replay or arrival receipt.
+@Test(arguments: ["near-miss", "obstructing", "unjoined", "unknown-source"])
+func stationAutoRetainedViperCourseUsesActualHull(condition: String) throws {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.launch()
+  game.speed = 0
+  let lane = Vector3(-42.03981364135889, 79.57797477317199, -928)
+  let admissionPhase = atan2(lane.y, lane.x)
+  var playerBasis = Basis3()
+  playerBasis.rotate(pitch: 0, roll: admissionPhase + 0.03, yaw: 0)
+  let start = Vector3(-0.03623884922199459, 0, -1110.3638355679848)
+  let end = Vector3(start.x, 0, -90.5)
+  NativeStationTestFixture.reframe(
+    &game, to: .init(position: start, orientation: playerBasis))
+  var admissionBasis = Basis3()
+  admissionBasis.rotate(pitch: 0, roll: admissionPhase, yaw: 0)
+  let allocated = game.commander.flightSimulation.allocateSpawn()
+  let sequence = try #require(allocated)
+  let context = try #require(game.gameplayContext())
+  let position = condition == "obstructing" ? Vector3(start.x, 0, lane.z) : lane
+  let request = SpawnRequest(
+    identity: .init(
+      system: context.system, visit: context.visit, sequence: sequence, member: 0,
+      producer: .security),
+    population: .police, hull: .viper, position: position, orientation: admissionBasis,
+    velocity: .init(0, 0, -180),
+    npc: .init(role: .police, origin: context.system, destination: context.system),
+    rock: nil, payload: nil, priority: .police)
+  let admitted = game.admitEncounterPlan(
+    .init(
+      system: context.system, visit: context.visit, revision: context.revision,
+      batches: [.init(requests: [request], atomic: true)], intents: []))
+  let actor = try #require(admitted.first?.actor)
+  let initial = try #require(game.bodies.first { $0.physical?.identity == actor })
+  let radius = game.commander.playerMesh.vertices.map(\.length).max() ?? .infinity
+  if condition == "near-miss" {
+    let initialClear = game.nativeStationCourseObstacleHullIsClear(
+      initial, from: start, to: end, radius: radius)
+    #expect(initialClear == false, "Admission-aligned wings genuinely obstruct the course")
+  }
+  // Real native police steering rebuilds its world-up basis; do not substitute a small sphere.
+  game.tick(delta: 0.1, controls: Controls())
+  let index = try #require(game.bodies.firstIndex { $0.physical?.identity == actor })
+  if condition == "unjoined" { game.bodies[index].physical = nil }
+  if condition == "unknown-source" { game.bodies[index].physical?.catalogueShipID = "missing" }
+  let body = game.bodies[index]
+  let model = game.modelPose(of: body)
+  let bodyRadius = game.gameplayMesh(for: body).vertices.map(\.length).max() ?? .infinity
+  let separation = hypot(model.position.x - start.x, model.position.y - start.y)
+  #expect(separation < radius + bodyRadius, "Retain the actual broad-phase overlap")
+  let clear = game.nativeStationCourseObstacleHullIsClear(
+    body, from: start, to: end, radius: radius)
+  if condition == "near-miss" {
+    #expect(abs(model.orientation.x.y) < 1e-8)
+    #expect(clear == true)
+  } else if condition == "obstructing" {
+    #expect(clear == false)
+  } else {
+    #expect(clear == nil)
+  }
+  #expect(!game.docked && game.pendingNativeStationDock == nil)
+}
+
 @Test(arguments: ["clear-port", "rim", "back-wall", "oversize-hull"])
 func stationAutoMainPortRetainsRealWallsAndRefusesNonfittingHulls(condition: String) throws {
   var game = Game(executive: false)
