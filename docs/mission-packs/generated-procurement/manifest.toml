@@ -60,7 +60,7 @@ function = "confirm"
 [trial]
 ship = "SH023"
 galaxy = 0
-system = 0
+system = 7
 credits = 100000
 cabins = 0
 flight = true

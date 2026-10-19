@@ -54,12 +54,9 @@ struct ScriptFreightFixture {
   ) async throws
     -> GameRuntime
   {
-    var game = Game(executive: false)
-    game.screen = .status
-    game.commander.system = 0
-    game.selectedSystem = 0
-    game.commander.credits = 100000
-    game.market = MarketItem.at(game.currentSystem)
+    var game = try ScriptProcurementFixture.freshG03FlightGame()
+    try #require(pack.manifest.trial?.galaxy == game.commander.galaxy)
+    try #require(pack.manifest.trial?.system == game.commander.system)
     game.scriptPacks = [pack]
     let cargo = game.commander.cargo
     try game.prepareG03FlightEquipment()

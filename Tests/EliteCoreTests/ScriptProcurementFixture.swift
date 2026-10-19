@@ -32,6 +32,21 @@ struct ScriptProcurementFixture {
   }
   func clean() { try? FileManager.default.removeItem(at: root) }
 
+  /// Fresh controlled scene initialization at the declared trial shop, never a flown journey.
+  static func freshG03FlightGame() throws -> Game {
+    let origin = try Universe.originalWorlds.world(key: "G01-S007")
+    var game = Game(executive: false)
+    game.screen = .status
+    game.commander.galaxy = origin.galaxy
+    game.commander.system = origin.system
+    game.systems = Universe.systemsIncludingPlugh(number: origin.galaxy)
+    game.selectedSystem = origin.system
+    game.market = MarketItem.at(game.currentSystem)
+    game.commander.credits = 100000
+    try #require(game.currentSystem.original == origin)
+    return game
+  }
+
   /// Policy/codec inputs are not native acceptance or docking evidence.
   func policyGame() throws -> Game {
     var game = Game(executive: false)
@@ -117,12 +132,9 @@ struct ScriptProcurementFixture {
   ) async throws
     -> GameRuntime
   {
-    var game = Game(executive: false)
-    game.screen = .status
-    game.commander.system = 0
-    game.selectedSystem = 0
-    game.commander.credits = 100000
-    game.market = MarketItem.at(game.currentSystem)
+    var game = try Self.freshG03FlightGame()
+    try #require(pack.manifest.trial?.galaxy == game.commander.galaxy)
+    try #require(pack.manifest.trial?.system == game.commander.system)
     game.scriptPacks = [pack]
     let cargo = game.commander.cargo
     try game.prepareG03FlightEquipment()
@@ -180,7 +192,7 @@ struct ScriptProcurementFixture {
       try #require(receipt.binding.snapshot.items == expectedItems)
       try #require(receipt.binding.request.location == purchaseLocation)
       try #require(
-        receipt.binding.request.offer.shop == "galaxy:0/system:0"
+        receipt.binding.request.offer.shop == "galaxy:0/system:7"
           && receipt.binding.request.offer.node == node
           && receipt.binding.request.offer.revision == 1)
       let prerequisites = required.map { [$0] } ?? []
