@@ -2323,9 +2323,7 @@ public actor GameRuntime {
       }
     }
     if localActive {
-      game.advanceNativeNPCTransit(from: transitSample, publish: scriptPublisher())
-      game.advanceNativeCommanderWakeEntry(from: transitSample, publish: scriptPublisher())
-      game.advanceNativeNPCTransit(from: nil, publish: scriptPublisher())
+      game.advanceNativeWormholeFrame(from: transitSample, publish: scriptPublisher())
       game.drainScriptEvents(publish: scriptPublisher())
     }
     if clockAdvanced {

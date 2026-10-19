@@ -7,11 +7,31 @@ private final class NativeWormholeAttempt {
 }
 
 extension Game {
+  /// Capture the complete attained scene before any source detaches. Admission/spool changes
+  /// run afterwards, so they cannot rewrite this physical frame while entries are consumed.
+  mutating func advanceNativeWormholeFrame(
+    from sample: NativeWormholeMotionSample?,
+    publish: ScriptPublisher?
+  ) {
+    let cohort = NativeWormholeAttainedCohort.capture(in: self, sample: sample)
+    advanceNativeNPCTransit(from: sample, publish: publish, cohort: cohort, entriesOnly: true)
+    advanceNativeCommanderWakeEntry(from: sample, publish: publish, cohort: cohort)
+    advanceNativeNPCTransit(from: nil, publish: publish, cohort: nil, entriesOnly: false)
+  }
+
   mutating func advanceNativeCommanderWakeEntry(
     from sample: NativeWormholeMotionSample?,
     publish: ScriptPublisher?
   ) {
-    guard let sample, let publish, let ledger = commander.scriptState.wormholeTransit,
+    let cohort = NativeWormholeAttainedCohort.capture(in: self, sample: sample)
+    advanceNativeCommanderWakeEntry(from: sample, publish: publish, cohort: cohort)
+  }
+
+  private mutating func advanceNativeCommanderWakeEntry(
+    from sample: NativeWormholeMotionSample?, publish: ScriptPublisher?,
+    cohort: NativeWormholeAttainedCohort?
+  ) {
+    guard let sample, let cohort, let publish, let ledger = commander.scriptState.wormholeTransit,
       !docked, !paused, screen != .gameOver
     else { return }
     var passages: [NativeCommanderWormholePassage] = []
@@ -19,8 +39,8 @@ extension Game {
       guard let hole = leg.opening, hole.route.origin.location == systemIdentity,
         let context = OriginalWorldJourneyContext.production(for: hole.route, in: self),
         let passage = try? NativeCommanderWormholePassage.prepare(
-          in: &self,
-          opening: hole, sample: sample, context: context)
+          in: self,
+          opening: hole, sample: sample, context: context, cohort: cohort)
       else { continue }
       passages.append(passage)
     }
@@ -140,6 +160,15 @@ extension Game {
     from sample: NativeWormholeMotionSample?,
     publish: ScriptPublisher?
   ) {
+    let cohort = NativeWormholeAttainedCohort.capture(in: self, sample: sample)
+    advanceNativeNPCTransit(from: sample, publish: publish, cohort: cohort, entriesOnly: true)
+    advanceNativeNPCTransit(from: nil, publish: publish, cohort: nil, entriesOnly: false)
+  }
+
+  private mutating func advanceNativeNPCTransit(
+    from sample: NativeWormholeMotionSample?, publish: ScriptPublisher?,
+    cohort: NativeWormholeAttainedCohort?, entriesOnly: Bool
+  ) {
     guard let publish, !paused, screen != .gameOver,
       let ledger = commander.scriptState.wormholeTransit, ledger.valid
     else { return }
@@ -147,6 +176,7 @@ extension Game {
       guard let leg = commander.scriptState.wormholeTransit?.legs[id],
         ![.arrived, .cancelled].contains(leg.phase)
       else { continue }
+      if entriesOnly && leg.phase != .open { continue }
       let now = commander.scriptState.calendarSeconds
       if let due = leg.dueAt, now < due { continue }
       if leg.phase == .spooling, let start = leg.spoolPhysicalTime, let drive = leg.driveTerms,
@@ -173,7 +203,10 @@ extension Game {
       }
       let attempt = NativeWormholeAttempt(self)
       do {
-        guard try attempt.game.advanceNativeNPCTransitLeg(id, sample: sample, context: context)
+        guard
+          try attempt.game.advanceNativeNPCTransitLeg(
+            id, sample: sample, context: context,
+            cohort: cohort)
         else {
           continue
         }
@@ -181,6 +214,7 @@ extension Game {
         guard attempt.game.commander.valid else { throw SaveError.invalidCommander }
         try publish(&attempt.game)
         self = attempt.game
+        cohort?.didPublishDeparture(id, in: self)
       } catch let refusal as NativeWormholeRefusal {
         if commander.scriptState.wormholeTransit?.legs[id]?.refusal != refusal.rawValue {
           let refused = NativeWormholeAttempt(self)
@@ -199,7 +233,8 @@ extension Game {
 
   private mutating func advanceNativeNPCTransitLeg(
     _ id: UUID,
-    sample: NativeWormholeMotionSample?, context: OriginalWorldJourneyContext?
+    sample: NativeWormholeMotionSample?, context: OriginalWorldJourneyContext?,
+    cohort: NativeWormholeAttainedCohort?
   ) throws -> Bool {
     guard var leg = commander.scriptState.wormholeTransit?.legs[id], leg.valid else {
       throw NativeWormholeRefusal.stale
@@ -242,7 +277,7 @@ extension Game {
       guard source.component == leg.driveComponent, source.terms == leg.driveTerms else {
         throw NativeWormholeRefusal.driveUnavailable
       }
-      return try enterNativeTransit(id, source: source, sample: sample)
+      return try enterNativeTransit(id, source: source, sample: sample, cohort: cohort)
     }
     guard now >= leg.nextAttemptAt, leg.attempts < 128 else { return false }
     leg.nextAttemptAt = min(1e12, now + 2)
@@ -337,10 +372,10 @@ extension Game {
 
   private mutating func enterNativeTransit(
     _ id: UUID, source: NativeNPCDriveSource,
-    sample: NativeWormholeMotionSample
+    sample: NativeWormholeMotionSample, cohort: NativeWormholeAttainedCohort?
   ) throws -> Bool {
     guard var leg = commander.scriptState.wormholeTransit?.legs[id], let opening = leg.opening,
-      leg.departure == nil, sample.system == systemIdentity,
+      leg.departure == nil, source.actor == opening.sourceActor, sample.system == systemIdentity,
       sample.visit == commander.flightSimulation.visit,
       let before = sample.bodies.first(where: { $0.physical?.identity == source.actor }),
       before.missionActorID == leg.actor,
@@ -356,7 +391,8 @@ extension Game {
         opening: opening, from: from, to: to,
         hullRadius: max(source.radius, beforeRadius))
     else { return false }
-    try proveNativeTransitSweep(source: source, before: before, sample: sample)
+    guard let cohort else { throw NativeWormholeRefusal.stale }
+    try cohort.proveNPC(source, in: self)
     // All entry guards have passed. The candidate contains the only reservoir debit and detachment.
     bodies[index].scriptNPC?.fuel = source.fuel - opening.route.distanceLightYears
     var retained = bodies[index]

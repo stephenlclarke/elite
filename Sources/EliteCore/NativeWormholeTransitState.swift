@@ -187,7 +187,7 @@ struct NativeWormholeLeg: Codable, Sendable, Equatable {
     }
     if let departure {
       guard let opening, let route, departure.hole == opening.id,
-        departure.nativeActor.system == route.origin.location,
+        departure.nativeActor == opening.sourceActor,
         departure.nativeActor.visit > 0, departure.nativeActor.entity > 0,
         departure.calendarSeconds.isFinite,
         (opening.openedAt...opening.expiresAt).contains(departure.calendarSeconds),
@@ -318,13 +318,14 @@ extension ScriptEngineState {
               return false
             }
           }
-          if let location = actor.transitLocation {
-            guard
-              history.contains(where: {
-                $0.arrival != nil && $0.route?.destination.location == location
-              })
-            else { return false }
+          let arrivals = history.filter { $0.arrival != nil }
+          let dates = arrivals.compactMap { $0.arrival?.calendarSeconds }
+          guard Set(dates).count == dates.count else { return false }
+          let latest = arrivals.max {
+            ($0.arrival?.calendarSeconds ?? -.infinity)
+              < ($1.arrival?.calendarSeconds ?? -.infinity)
           }
+          guard actor.transitLocation == latest?.route?.destination.location else { return false }
         }
       }
     }
