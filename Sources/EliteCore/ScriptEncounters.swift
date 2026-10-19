@@ -358,9 +358,10 @@ extension Game {
 
   /// Reads only actual installed retained ownership; there is no caller-supplied state/body path.
   func retainedMissionActorAdmissionSources() throws -> [MissionActorAdmissionSource] {
+    let instances = retainedMissionActorInstances
     var sources: [MissionActorAdmissionSource] = []
-    for id in commander.scriptState.instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
-      guard let instance = commander.scriptState.instances[id], let pack = scriptPack(for: instance)
+    for id in instances.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+      guard let instance = instances[id], let pack = scriptPack(for: instance)
       else { continue }
       guard instance.id == id else {
         throw MissionPackError("Retained actor instance key mismatch.")

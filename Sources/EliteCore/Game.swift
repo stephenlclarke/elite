@@ -461,6 +461,18 @@ public struct Game: Sendable {
     _read { yield commanderStorage[0] }
     _modify { yield &commanderStorage[0] }
   }
+  /// Snapshot installed instances without materializing the complete Commander value.
+  var retainedMissionActorInstances: [UUID: ScriptInstance] {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.retainedMissionActorInstances(from: storage.baseAddress!.pointee)
+    }
+  }
+
+  private static func retainedMissionActorInstances(
+    from commander: borrowing Commander
+  ) -> [UUID: ScriptInstance] {
+    commander.scriptState.instances
+  }
   public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false
