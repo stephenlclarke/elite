@@ -17,6 +17,7 @@ public struct ScriptNPCDefinition: Codable, Sendable, Equatable {
   public let roll: Double
   public let missiles: Int
   public let fuel: Double
+  public var drive: ScriptNPCDriveDefinition?
   public let ecm: Bool
   public let bounty: Int
   public let lasers: [ScriptNPCWeapon]?
@@ -34,6 +35,9 @@ public struct ScriptNPCDefinition: Codable, Sendable, Equatable {
       && Set((lasers ?? []).map(\.id)).count == (lasers?.count ?? 0)
       && (components?.count ?? 0) <= 32 && (components ?? []).allSatisfy(\.valid)
       && Set((components ?? []).map(\.id)).count == (components?.count ?? 0)
+      && (drive.map { drive in
+        drive.valid && (components ?? []).contains { $0.id == drive.component }
+      } ?? true)
   }
 }
 

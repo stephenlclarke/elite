@@ -283,6 +283,7 @@ public enum Display {
       frame.point(point.x, point.y, radius: radius, opacity: (0.5 + proximity * 0.45) * fade)
     }
     flightObjects(game, projection: projection, into: &frame)
+    drawNativeWormholes(game, into: &frame, projection: projection)
     let x = projection.center.x
     let y = projection.center.y
     let size = frame.responsive ? 1.5 : 1.0

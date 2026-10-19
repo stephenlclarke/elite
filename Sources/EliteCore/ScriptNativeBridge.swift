@@ -48,7 +48,7 @@ extension Game {
       for (alias, actor) in encounter.actors where actor.identity == actorID {
         guard match == nil, encounterID == encounter.id, alias == actor.alias,
           encounter.admitted, actor.presence == .present,
-          encounter.galaxy == galaxy, encounter.system == system,
+          actor.location(in: encounter) == .init(galaxy: galaxy, system: system),
           actor.body.id == bodyID, actor.body.missionActorID == actorID,
           actor.body.missionInstanceID == instanceID, actor.body.hull == body.hull,
           let definition = pack.manifest.encounters?.first(where: { $0.id == encounterID }),
@@ -66,7 +66,7 @@ extension Game {
     return .init(
       instanceID: instanceID, instanceRevision: instance.revision, packDigest: instance.digest,
       encounterID: match.encounter.id, encounterAdmitted: match.encounter.admitted,
-      system: .init(galaxy: match.encounter.galaxy, system: match.encounter.system),
+      system: match.actor.location(in: match.encounter),
       alias: match.actor.alias, actorID: actorID, presence: match.actor.presence.rawValue,
       missionActorID: body.missionActorID, missionInstanceID: body.missionInstanceID, body: body)
   }

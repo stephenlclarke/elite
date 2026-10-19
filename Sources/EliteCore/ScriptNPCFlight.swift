@@ -16,7 +16,8 @@ extension Game {
       let coordinates = fields["offset"]?.array, coordinates.count == 3,
       let x = coordinates[0].double, let y = coordinates[1].double, let z = coordinates[2].double,
       var encounter = state.ownedEncounters[encounterID], var actor = encounter.actors[alias],
-      actor.presence != .destroyed, var npc = actor.body.scriptNPC
+      ![.destroyed, .inTransit, .arrivalPending].contains(actor.presence),
+      var npc = actor.body.scriptNPC
     else { throw MissionPackError("A flight request requires a declared owned profiled NPC.") }
     let receipt = "intent-" + request
     if state.receipts.contains(receipt) { return nil }
@@ -62,18 +63,35 @@ extension Game {
       }, uniquingKeysWith: { first, _ in first })
     let station = snapshot.first { $0.id == 0 && $0.hull == .station }
     for index in bodies.indices {
+      observeNativeTransitSpool(bodies[index])
       guard bodies[index].energy > 0, var npc = bodies[index].scriptNPC else { continue }
       let definition = npc.fit.definition
       bodies[index].energy = min(
         definition.energy, bodies[index].energy + definition.recharge * delta)
       var desired = Vector3(0, 0, 0)
+      if npc.intent == nil, let goal = nativeTransitExitClearanceGoal(bodies[index]) {
+        let offset = goal - bodies[index].position
+        if offset.length > 1e-6 {
+          bodies[index].orientation = Self.steerScriptNPC(
+            bodies[index].orientation, toward: offset, profile: definition, delta: delta)
+          desired =
+            bodies[index].orientation.z
+            * min(
+              definition.speed,
+              sqrt(2 * definition.acceleration * offset.length))
+        }
+      }
       if var intent = npc.intent {
+        intent = nativeTransitSteeringIntent(bodies[index], intent: intent)
+        let transitGoal = nativeTransitSteeringGoal(bodies[index], intent: intent)
         var goal: Vector3?
         var targetVelocity = Vector3(0, 0, 0)
         if intent.mode == .hold {
           goal = bodies[index].position
         } else if intent.mode == .approach, let station {
-          goal = station.position + station.orientation.apply(intent.offset)
+          goal =
+            transitGoal
+            ?? (station.position + station.orientation.apply(intent.offset))
         } else if intent.player {
           goal = intent.offset
         } else if let identity = intent.target, let target = owned[identity], target.energy > 0 {
@@ -88,6 +106,11 @@ extension Game {
               bodies[index].orientation, toward: aim, profile: definition, delta: delta)
           }
           var speed = definition.speed * intent.speed
+          if transitGoal != nil && aim.length > 1e-6
+            && bodies[index].orientation.z.dot(aim.unit) < 0.98
+          {
+            speed = 0
+          }
           if [.hold, .approach, .follow].contains(intent.mode) {
             speed = min(
               speed, sqrt(2 * definition.acceleration * max(0, offset.length - intent.tolerance)))
@@ -96,6 +119,7 @@ extension Game {
           if intent.mode == .follow { desired = desired + targetVelocity }
           desired = desired.limited(to: definition.speed)
           if intent.status == .requested && [.hold, .approach, .follow].contains(intent.mode)
+            && transitGoal == nil
             && offset.length <= intent.tolerance && (npc.velocity - targetVelocity).length < 1
           {
             intent.status = .reached
@@ -112,6 +136,7 @@ extension Game {
       bodies[index].position = bodies[index].position + npc.velocity * delta
       bodies[index].scriptNPC = npc
     }
+    resolveNativeTransitMotion(before: snapshot, delta: delta)
   }
   private static func steerScriptNPC(
     _ basis: Basis3, toward vector: Vector3, profile: ScriptNPCDefinition, delta: Double

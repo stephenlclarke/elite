@@ -32,6 +32,7 @@ extension Game {
     else { return false }
     let distance = currentSystem.scriptCalendarDistance(to: destination)
     guard commander.scriptState.calendarSeconds <= 1e12 - distance * distance * 3600,
+      commander.scriptState.transitSeconds <= 1e12 - distance * distance * 3600,
       missionCalendarCanAdd(distance * distance * 3600)
     else {
       return false
@@ -49,6 +50,36 @@ extension Game {
     commander.scriptState.calendarLedger?.pendingJourney = nil
     commander.scriptState.calendarLedger?.legacyUntrackedJourney = false
   }
+  /// Physical wake entry supplies a sealed current passage, not a manufactured countdown.
+  mutating func completeWormholeCalendarJourney(_ passage: NativeCommanderWormholePassage)
+    -> ScriptCalendarJourney?
+  {
+    guard passage.matches(self) else { return nil }
+    ensureScriptCalendar(origin: .newCommander)
+    guard var ledger = commander.scriptState.calendarLedger, ledger.pendingJourney == nil,
+      ledger.operation < UInt64(Int64.max) - 1
+    else { return nil }
+    let route = passage.opening.route
+    let journey = ScriptCalendarJourney(
+      operation: ledger.operation + 1,
+      galaxy: route.origin.galaxy, origin: route.origin.system.id,
+      destination: route.destination.system.id, sourceDistance: route.distanceLightYears,
+      nativeFuelDebit: passage.fuelDebit)
+    let before = commander.scriptState.calendarSeconds
+    guard journey.valid, before <= 1e12 - journey.seconds,
+      commander.scriptState.transitSeconds <= 1e12 - journey.seconds,
+      missionCalendarCanAdd(journey.seconds)
+    else { return nil }
+    ledger.operation = journey.operation
+    commander.scriptState.calendarSeconds += journey.seconds
+    commander.scriptState.transitSeconds += journey.seconds
+    mirrorMissionCalendar(seconds: journey.seconds, operation: journey.operation)
+    ledger.lastAdjustment = .init(
+      operation: journey.operation, kind: .jump,
+      seconds: journey.seconds, before: before, after: commander.scriptState.calendarSeconds)
+    commander.scriptState.calendarLedger = ledger
+    return journey
+  }
   mutating func completeCalendarJourney() -> ScriptCalendarJourney? {
     guard var ledger = commander.scriptState.calendarLedger else { return nil }
     guard let journey = ledger.pendingJourney,
@@ -59,10 +90,14 @@ extension Game {
       return nil
     }
     let before = commander.scriptState.calendarSeconds
-    guard before <= 1e12 - journey.seconds, missionCalendarCanAdd(journey.seconds) else {
+    guard before <= 1e12 - journey.seconds,
+      commander.scriptState.transitSeconds <= 1e12 - journey.seconds,
+      missionCalendarCanAdd(journey.seconds)
+    else {
       return nil
     }
     commander.scriptState.calendarSeconds += journey.seconds
+    commander.scriptState.transitSeconds += journey.seconds
     mirrorMissionCalendar(seconds: journey.seconds, operation: journey.operation)
     ledger.lastAdjustment = .init(
       operation: journey.operation, kind: .jump,
