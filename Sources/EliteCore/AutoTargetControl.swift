@@ -211,14 +211,15 @@ public struct AutoTargetControl: Sendable {
     let guidance =
       defensiveSteering && stationDefencePhase != .returning && defence?.hasManeuver == true
       ? defence : nil
-    if let defensiveAim = guidance?.aim, defensiveAim.finite, defensiveAim.length > 0 {
+    let trackingResponse = guidance?.aim.map { $0.finite && $0.length > 0 } == true
+    if let defensiveAim = guidance?.aim, trackingResponse {
       aim = defensiveAim
     }
     let pitchAngle = atan2(aim.y, hypot(aim.x, aim.z))
     let yawAngle = atan2(aim.x, aim.z)
     facingError = station ? stationFacing : hypot(pitchAngle, yawAngle)
-    let pitch = max(-pitchLimit, min(pitchLimit, pitchAngle * 1.8))
-    let yaw = max(-yawLimit, min(yawLimit, yawAngle * 1.8))
+    var pitch = max(-pitchLimit, min(pitchLimit, pitchAngle * 1.8))
+    var yaw = max(-yawLimit, min(yawLimit, yawAngle * 1.8))
     guard station else {
       let motion = targetMotion(aim, delta: delta)
       status = facingError < aimTolerance ? "TRACKING TARGET" : "FACING TARGET"
@@ -227,12 +228,25 @@ public struct AutoTargetControl: Sendable {
         max(-yawLimit, min(yawLimit, yawAngle * 4 + motion.yaw)), nil
       )
     }
+    if trackingResponse {
+      // The same camera-corrected bearing tracker used for ordinary moving targets.
+      let motion = targetMotion(aim, delta: delta)
+      pitch = max(-pitchLimit, min(pitchLimit, pitchAngle * 4 + motion.pitch))
+      yaw = max(-yawLimit, min(yawLimit, yawAngle * 4 + motion.yaw))
+    } else {
+      resetTargetMotion()
+    }
     rollRate = max(-limits.rollRate, min(limits.rollRate, rollRate))
     let previousRate = rollRate
     alignStation(
       target, delta: delta, limits: limits, defence: guidance,
       canStage: canStage, clearance: clearance)
     return (pitch, yaw, (previousRate + rollRate) / 2)
+  }
+
+  mutating func resetTargetMotion() {
+    previousAim = nil
+    previousDelta = 0
   }
 
   private mutating func targetMotion(_ aim: Vector3, delta: Double) -> (pitch: Double, yaw: Double)
