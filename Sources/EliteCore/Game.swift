@@ -484,6 +484,37 @@ public struct Game: Sendable {
   ) -> ContractStationIdentity {
     .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
   }
+  var retainedMissionProjectiles: [UUID: ScriptProjectileRecord] {
+    commanderStorage.withUnsafeBufferPointer { storage in
+      Self.retainedMissionProjectiles(from: storage.baseAddress!.pointee)
+    }
+  }
+
+  private static func retainedMissionProjectiles(
+    from commander: borrowing Commander
+  ) -> [UUID: ScriptProjectileRecord] {
+    commander.scriptState.projectiles
+  }
+
+  func retainedMissionProjectileRestorationCandidates() throws -> [UUID] {
+    try commanderStorage.withUnsafeBufferPointer { storage in
+      try Self.retainedMissionProjectileRestorationCandidates(from: storage.baseAddress!.pointee)
+    }
+  }
+
+  private static func retainedMissionProjectileRestorationCandidates(
+    from commander: borrowing Commander
+  ) throws -> [UUID] {
+    var eligible: [UUID] = []
+    for (id, record) in commander.scriptState.projectiles
+    where record.galaxy == commander.galaxy && record.system == commander.system {
+      guard id == record.body.scriptShot?.identity, record.valid,
+        commander.scriptState.projectileArchiveValid(record)
+      else { throw NativeMissionProjectileAdmissionError.invalidRecord }
+      eligible.append(id)
+    }
+    return eligible
+  }
   public var systems = Universe.systemsIncludingPlugh()
   public var screen: Screen = .title
   public var paused = false

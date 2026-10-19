@@ -3,14 +3,7 @@ import Foundation
 extension Game {
   /// Pure and bounded: the Game boundary can run this before clocks or actor restoration.
   func validateRetainedMissionProjectileRestoration() throws {
-    var eligible: [UUID] = []
-    for (id, record) in commander.scriptState.projectiles
-    where record.galaxy == commander.galaxy && record.system == commander.system {
-      guard id == record.body.scriptShot?.identity, record.valid,
-        commander.scriptState.projectileArchiveValid(record)
-      else { throw NativeMissionProjectileAdmissionError.invalidRecord }
-      eligible.append(id)
-    }
+    var eligible = try retainedMissionProjectileRestorationCandidates()
     guard !eligible.isEmpty else { return }
     eligible.sort { $0.uuidString < $1.uuidString }
     // Native checks share one read-only context and inspect later hard failures even when an
@@ -21,13 +14,13 @@ extension Game {
   /// The native provider resolves the real anchor and owns every allocation and transform.
   mutating func restoreScriptShots(anchor _: SpaceBody) throws {
     try validateRetainedMissionProjectileRestoration()
-    for id in commander.scriptState.projectiles.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
-      guard let record = commander.scriptState.projectiles[id],
-        record.galaxy == commander.galaxy, record.system == commander.system
+    for id in retainedMissionProjectiles.keys.sorted(by: { $0.uuidString < $1.uuidString }) {
+      guard let record = retainedMissionProjectiles[id],
+        record.galaxy == contractStation.galaxy, record.system == contractStation.system
       else { continue }
       do {
         let receipt = try admitRetainedMissionProjectile(id)
-        guard var admitted = commander.scriptState.projectiles[id] else {
+        guard var admitted = retainedMissionProjectiles[id] else {
           throw NativeMissionProjectileAdmissionError.missingRecord
         }
         if admitted.body.id != receipt.bodyID || admitted.presence != .present {
