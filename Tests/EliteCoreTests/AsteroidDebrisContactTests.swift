@@ -99,3 +99,51 @@ struct AsteroidDebrisContactTests {
         sourceVelocity: a, targetVelocity: b, normal: .init(1, 0, 0)) == nil)
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test(arguments: [Vector3(0, 0, 0), .init(13, -7, -30)])
+  func pointedTargetCanSupplyTheFirstEdgeWitnessInEitherSourceRole(commonVelocity: Vector3) throws {
+    let broad = try PreparedHull(mesh: contactBox(5, 5, 1))
+    let pointed = try PreparedHull(
+      mesh: .init(
+        vertices: [
+          .init(0, 0, -2), .init(-1, -1, 1), .init(1, -1, 1), .init(0, 1, 1),
+        ], faces: [[0, 2, 1], [0, 3, 2], [0, 1, 3], [1, 2, 3]]))
+    let start = Vector3(0, 0, -10)
+    let a = contactMotion(
+      start, start + (Vector3(0, 0, 200) + commonVelocity) * 0.1,
+      radius: broad.radius)
+    let b = contactMotion(.init(0, 0, 0), commonVelocity * 0.1, radius: pointed.radius)
+    // Only the pointed vertex/edges reach the broad face near entry. Neither a
+    // broad-box edge nor a pointed face centroid can witness that first interval.
+    let forward = HullSweepSafety.firstNativeContact(
+      source: a, hull: broad,
+      target: b, targetHull: pointed)
+    guard case .contact(let entry) = forward else {
+      Issue.record("Target-owned native edge witness missing: \(String(describing: forward))")
+      return
+    }
+    #expect((0.0349...0.0351).contains(entry.upperTime))
+    #expect(entry.normal.z > 0.99)
+    let reversed = HullSweepSafety.firstNativeContact(
+      source: b, hull: pointed,
+      target: a, targetHull: broad)
+    guard case .contact(let opposite) = reversed else {
+      Issue.record("Source-owned native edge witness missing: \(String(describing: reversed))")
+      return
+    }
+    #expect((0.0349...0.0351).contains(opposite.upperTime))
+    #expect(opposite.normal.z < -0.99)
+    #expect(abs(entry.upperTime - opposite.upperTime) <= 0.1 / 4096)
+    let offset = Vector3(8, 0, 0)
+    let miss = contactMotion(offset, offset + commonVelocity * 0.1, radius: pointed.radius)
+    let separated = HullSweepSafety.firstNativeContact(
+      source: a, hull: broad,
+      target: miss, targetHull: pointed)
+    guard case .clear = separated else {
+      Issue.record(
+        "Disjoint pointed hull was not continuously clear: \(String(describing: separated))")
+      return
+    }
+  }
+}

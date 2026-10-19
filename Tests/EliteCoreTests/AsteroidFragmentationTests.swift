@@ -460,6 +460,15 @@ extension AsteroidFragmentationTests {
   }
 }
 
+private func nativeContactOutcome(_ result: AsteroidContactStepResult) -> String {
+  switch result {
+  case .refused(let reason): ".refused(\(reason))"
+  case .advanced(nil): ".advanced(nil)"
+  case .advanced(let receipt?):
+    ".advanced(source=\(receipt.source.entity), target=\(receipt.target.entity), incident=\(receipt.incident))"
+  }
+}
+
 private func moveNativeContactEndpoints(_ game: inout Game, delta: Double) {
   let pose = game.commander.flightSimulation.pose
   for index in game.bodies.indices {
@@ -493,7 +502,9 @@ extension AsteroidFragmentationTests {
     moveNativeContactEndpoints(&game, delta: 0.1)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let actualReceipt) = result, let receipt = actualReceipt else {
-      Issue.record("Actual native moving debris did not admit the player impact")
+      Issue.record(
+        "Actual native moving debris did not admit the player impact: \(nativeContactOutcome(result))"
+      )
       return
     }
     #expect(receipt.damage > 0 && receipt.target == game.commander.flightSimulation.player)
@@ -565,7 +576,8 @@ extension AsteroidFragmentationTests {
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let packet) = result, let receipt = packet, receipt.target == targetActor
     else {
-      Issue.record("Actual native moving debris did not admit the NPC impact")
+      Issue.record(
+        "Actual native moving debris did not admit the NPC impact: \(nativeContactOutcome(result))")
       return
     }
     let target = try #require(game.bodies.first { $0.physical?.identity == targetActor })
@@ -701,7 +713,7 @@ extension AsteroidFragmentationTests {
     moveNativeContactEndpoints(&game, delta: 0.1)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let receipt) = result, receipt?.target == oreActor else {
-      Issue.record("Native ore collision did not commit")
+      Issue.record("Native ore collision did not commit: \(nativeContactOutcome(result))")
       return
     }
     let rubble = try #require(game.bodies.first { $0.id == oreID })
@@ -741,7 +753,7 @@ extension AsteroidFragmentationTests {
     try #require(moved)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
     guard case .advanced(let receipt) = result, let receipt else {
-      Issue.record("Native fast crossing did not commit")
+      Issue.record("Native fast crossing did not commit: \(nativeContactOutcome(result))")
       return
     }
     #expect(receipt.point.z < end.position.z)
