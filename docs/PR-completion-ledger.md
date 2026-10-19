@@ -232,3 +232,9 @@ Bind Root-clean a16ced01/exact seven-method-nine-case plan to existing802/803 wi
 ## Approved startup-only Metal panel authoring
 
 Advance proposal31d7ae40 to approved bounded seven-path source implementation for G2. Preserve geometry/material/order/clip/stroke/interior pixels; only explicitly tested boundary AA may differ by at most one backing pixel. Require four focused actual GPU/parity methods PASS plus independent review, including Retina/flippedY/overlap/failure CPU fallback. No other scenes/exports/wire/LOD/physics/dependency scope. Compiler/GPU access requires concrete freeze and closure of the current priority MC1 batch; no runtime slot or gain claim is granted now. Scoped Markdown/whitespace checks only.
+
+## Actual803 partial pass and bounded lexical repair
+
+Record the world-job one-case PASS then Foundation regex SIGBUS with six methods UNKNOWN, exact proof/terminal/all-owned closure and no mission-journey acceptance. Grant804/805 only localID/NPC reference ASCII lexical replacements, explicit invalid newline/control/Unicode rejection, one2–3method lexical test file and all seven actor methods/nine cases (world-job checker changed, so requalify it). No model/stats/admission waiver or general validator/cache/probe/version scope; owner exact freeze/review/PASS required before integration. Scoped Markdown/whitespace checks only.
+
+Record Root's additional existing BundledScriptPackTests reservation for changed default-provider discovery/dedupe/order/rows, preserving courier content/per-provider/external-only/version-restore checks. Owner scope nine paths and seven affected methods/eight cases plus six new units; production digest08dfba91 is validated through the existing native CLI, no new digest tooling or broad CI. Source/units remain in development.
