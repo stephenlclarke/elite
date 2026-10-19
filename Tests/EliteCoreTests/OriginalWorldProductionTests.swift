@@ -153,18 +153,18 @@ struct OriginalWorldProductionTests {
     game.commander.credits = 1_000_000
     try game.commander.prepareEquipment(legacy: false)
     let below = try #require(
-      game.systems.first {
-        !$0.isPlugh && $0.technology == item.requiredTechnologyLevel - 1
-      })
+      Universe.originalWorlds.worlds.first { $0.technology == item.requiredTechnologyLevel - 1 })
     let at = try #require(
-      game.systems.first {
-        !$0.isPlugh && $0.technology == item.requiredTechnologyLevel
-      })
-    game.commander.system = below.id
+      Universe.originalWorlds.worlds.first { $0.technology == item.requiredTechnologyLevel })
+    game.commander.galaxy = below.galaxy
+    game.systems = Universe.systemsIncludingPlugh(number: below.galaxy)
+    game.commander.system = below.system
     #expect(!game.equipmentAvailable(item))
     #expect(game.equipmentPurchaseRequirement(item) == "Requires TL\(item.requiredTechnologyLevel)")
     #expect(throws: EquipmentRuntimeError.unavailable) { try game.quoteEquipmentPurchase(item) }
-    game.commander.system = at.id
+    game.commander.galaxy = at.galaxy
+    game.systems = Universe.systemsIncludingPlugh(number: at.galaxy)
+    game.commander.system = at.system
     #expect(game.equipmentAvailable(item))
     if name == TargetingTier.basic.equipmentName {
       let quote = try game.quoteEquipmentPurchase(item)
