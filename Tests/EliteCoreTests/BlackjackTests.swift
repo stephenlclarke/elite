@@ -50,10 +50,11 @@ private func afterRobbery() throws -> Game {
 @Test func blackjackUsesExactGalaxySystemsAndNoScoreGate() {
   let galaxy = Universe.galaxy(number: 1)
   for (id, name) in [
-    (241, "Telace"), (88, "Gerebied"), (233, "Tegete"), (127, "Ceinerxe"), (99, "Edater"),
-    (67, "Esdi"),
+    (241, "Torneden"), (88, "Kortar"), (233, "Sararden"), (127, "Darvan"), (99, "Kranenrik"),
+    (67, "Dradar"),
   ] {
-    #expect(galaxy[id].name == name.uppercased())
+    #expect(galaxy[id].name == name)
+    #expect(galaxy[id].original?.key == String(format: "G02-S%03d", id))
   }
   var game = Game(executive: false)
   game.commander.system = 241

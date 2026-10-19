@@ -24,13 +24,13 @@ All locations are in player Galaxy 2 (stored index 1); system IDs are zero-based
 
 | Saved stage | Trigger | Result |
 | --- | --- | --- |
-| 0 -> 1 | Dock at Telace 241 main station | Automatic enrolment; find Commander Bolts at Gerebied 88 |
-| 1 -> 2 | Unique Bolts destroyed at Gerebied, by any killer | Directly earn 20 kg gold once; report at any Galaxy 2 main station |
-| 2 -> 3 | Confirm station report | Proceed to Tegete 233 |
-| 3 -> 4 | Confirm Tegete main-station pickup with one free tonne | Load one marked mission firearm |
-| 4 -> 5 | Confirm Ceinerxe 127 main-station handoff | Consume the marked firearm; wanted level at least 64; find witness at Edater 99 |
-| 5 -> 6 | Unique witness destroyed at Edater, by any killer | Report at Esdi 67 |
-| 6 -> 99 | Confirm Esdi main-station debrief | Award exactly 9,500 CR and clear bounty once; terminal completion |
+| 0 -> 1 | Dock at Torneden 241 main station | Automatic enrolment; find Commander Bolts at Kortar 88 |
+| 1 -> 2 | Unique Bolts destroyed at Kortar, by any killer | Directly earn 20 kg gold once; report at any Galaxy 2 main station |
+| 2 -> 3 | Confirm station report | Proceed to Sararden 233 |
+| 3 -> 4 | Confirm Sararden main-station pickup with one free tonne | Load one marked mission firearm |
+| 4 -> 5 | Confirm Darvan 127 main-station handoff | Consume the marked firearm; wanted level at least 64; find witness at Kranenrik 99 |
+| 5 -> 6 | Unique witness destroyed at Kranenrik, by any killer | Report at Dradar 67 |
+| 6 -> 99 | Confirm Dradar main-station debrief | Award exactly 9,500 CR and clear bounty once; terminal completion |
 
 Initial contact enrols immediately, matching the source. Continue or Back closes its explanation. Later transfers require explicit Confirm; Back has no transfer effect. B reopens an eligible station contact. K shows contextual help. Station messages defer to an active BBC naval briefing. Saving/loading never confirms a handoff or pays a reward.
 
@@ -40,7 +40,7 @@ Gold uses native kilogram storage, so a hold full of tonne commodities does not 
 
 These deliberate repairs follow the research specification and differ from the recovered scripts:
 
-- The firearm is reserved mission cargo. Manual sales and auto-trade retain its one-tonne quantity; ordinary firearms in excess remain tradable. Ceinerxe consumes only that marked quantity. Escape-pod recovery preserves it, and invalid saves with missing custody are rejected. The source left the weapon behind after the robbery.
+- The firearm is reserved mission cargo. Manual sales and auto-trade retain its one-tonne quantity; ordinary firearms in excess remain tradable. Darvan consumes only that marked quantity. Escape-pod recovery preserves it, and invalid saves with missing custody are rejected. The source left the weapon behind after the robbery.
 - Wanted stages use `max(current, 64)` in Galaxy 2. The source repeatedly overwrote bounty with exactly 64, reducing unrelated offences. Final clearance still happens once, as in the source; later offences survive repeat visits.
 - Bolts and witness have persistent UUIDs, health, finite missiles, laser cooldown and station-relative position/orientation. Re-entry restores the same actor without healing or replenishing ammunition. A target outside the local bubble can reappear on the source-system lane with its saved identity and resources. Living range removal is not a kill.
 - The witness callback requires the active unique witness, correct galaxy/system and stage 5. The source callback was ungated and could reopen a finished campaign. Repeated deaths, arrivals, confirmations and reloads cannot repeat rewards.
@@ -62,3 +62,5 @@ Native regressions cover exact seeded system names, automatic enrolment, all sev
 ## Mission-pack implementation
 
 Campaign content and progression are maintained in `Sources/EliteCore/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.
+
+The current original-world catalogue binds the existing campaign to the same Galaxy 2 system IDs: G02-S241, S088, S233, S127, S099 and S067. Displayed names now match those authenticated worlds. Stages, encounter IDs, custody, handoff requirements, rewards and one-time receipts are unchanged. This is a binding repair for the existing campaign, without new mission content or compatibility aliases; runtime validation is pending.

@@ -16,8 +16,8 @@ public enum NavalMissionStage: Int, Codable, Sendable, CaseIterable {
     case .huntingConstrictor: "HUNT THE CONSTRICTOR"
     case .constrictorDestroyed: "REPORT TO THE NAVY"
     case .constrictorComplete: "CONSTRICTOR MISSION COMPLETE"
-    case .reportToCeerdi: "REPORT TO CEERDI (GALAXY 3)"
-    case .carryingPlans: "DELIVER PLANS TO BIRERA (GALAXY 3)"
+    case .reportToCeerdi: "REPORT TO NERITH (GALAXY 3)"
+    case .carryingPlans: "DELIVER PLANS TO VEYARA (GALAXY 3)"
     case .plansDelivered: "NAVAL MISSIONS COMPLETE"
     }
   }
