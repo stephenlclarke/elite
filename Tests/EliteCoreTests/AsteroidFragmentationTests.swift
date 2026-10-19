@@ -349,3 +349,113 @@ extension AsteroidFragmentationTests {
     #expect(throws: (any Error).self) { try JSONDecoder().decode(MiningLedger.self, from: encoded) }
   }
 }
+
+private func twoReservedFractureUnits() throws -> (MiningLedger, MiningRock, EncounterContext) {
+  let root = try fractureRock()
+  var ledger = MiningLedger()
+  _ = ledger.hit(
+    rock: root, incident: fractureIncident(1, rock: root),
+    damage: root.energy, motion: fractureMotion)
+  _ = ledger.hit(
+    rock: root, incident: fractureIncident(2, rock: root, mining: true),
+    damage: root.energy, motion: fractureMotion)
+  let (game, _, _) = try nativeFractureGame()
+  let context = try #require(game.gameplayContext())
+  return (ledger, root, context)
+}
+
+private func fractureBudgetContext(_ source: EncounterContext, budget: AdmissionBudget)
+  -> EncounterContext
+{
+  .init(
+    system: source.system, seed: source.seed, government: source.government,
+    visit: source.visit, revision: source.revision, physicalTime: source.physicalTime,
+    anchors: source.anchors, player: source.player, actors: source.actors,
+    protection: source.protection, budget: budget, perceptionRadius: source.perceptionRadius)
+}
+
+extension AsteroidFragmentationTests {
+  @Test func boundAndCollectedUnitsRequireTheirOwnMaterializationMarkers() throws {
+    var (ledger, root, context) = try twoReservedFractureUnits()
+    let requests = ledger.pendingSpawnRequests(
+      context: context,
+      fields: [.init(position: root.position, rocks: [root])])
+    try #require(requests.count == 2)
+    let actors = requests.enumerated().map { index, request in
+      ActorIdentity(
+        system: request.identity.system, visit: request.identity.visit,
+        entity: UInt64(index + 100))
+    }
+    ledger.acknowledge(
+      receipts: zip(requests, actors).map {
+        .init(request: $0.0.identity, actor: $0.1, refusal: nil)
+      })
+    let first = try #require(requests.first?.payload)
+    guard case .ore(_, let fragment) = first else { throw SaveError.invalidCommander }
+    try #require(ledger.valid)
+    var malformedBound = ledger
+    malformedBound.breakups[root.identity]?.materialized.remove(fragment)
+    let boundData = try JSONEncoder().encode(malformedBound)
+    #expect(!malformedBound.valid)
+    #expect(throws: (any Error).self) {
+      try JSONDecoder().decode(MiningLedger.self, from: boundData)
+    }
+    // A genuinely materialized child remains so after culling its current native actor.
+    ledger.cull(actor: actors[0])
+    let culled = try JSONDecoder().decode(MiningLedger.self, from: JSONEncoder().encode(ledger))
+    #expect(culled == ledger && culled.valid)
+    var cargo = Array(repeating: 0, count: 17)
+    let expectedAmount = try #require(ledger.pendingPayloads.first { $0.identity == first }).amount
+    let receipt = ledger.collect(
+      payload: first, into: &cargo, freeTonnes: 100,
+      hasScoops: true, approachAllowed: true, protection: .init())
+    try #require(receipt == .collected(expectedAmount))
+    try #require(ledger.valid)
+    // The sibling marker cannot stand in for the collected child's marker.
+    ledger.breakups[root.identity]?.materialized.remove(fragment)
+    let collectedData = try JSONEncoder().encode(ledger)
+    #expect(!ledger.valid)
+    #expect(throws: (any Error).self) {
+      try JSONDecoder().decode(MiningLedger.self, from: collectedData)
+    }
+  }
+
+  @Test func rubbleAndCargoUseSeparatePopulationQuotasAndOutstandingOffers() throws {
+    let (source, root, context) = try twoReservedFractureUnits()
+    let first = try #require(source.pendingPayloads.first?.identity)
+    var ledger = source
+    let converted = ledger.destroy(payload: first)
+    try #require(converted)
+    var fullCargo = AdmissionBudget()
+    fullCargo.active[.cargo] = PopulationClass.cargo.maximum
+    fullCargo.total = PopulationClass.cargo.maximum
+    let fields = [MiningField(position: root.position, rocks: [root])]
+    let cargoBlocked = ledger.pendingSpawnRequests(
+      context: fractureBudgetContext(context, budget: fullCargo), fields: fields)
+    #expect(cargoBlocked.count == 1 && cargoBlocked.first?.population == .asteroid)
+    #expect(cargoBlocked.first?.payload == first)
+    let duplicate = ledger.pendingSpawnRequests(
+      context: fractureBudgetContext(context, budget: fullCargo), fields: fields)
+    #expect(duplicate.isEmpty)
+    ledger.acknowledge(
+      receipts: cargoBlocked.map {
+        .init(request: $0.identity, actor: nil, refusal: .populationLimit)
+      })
+    var fullAsteroids = AdmissionBudget()
+    fullAsteroids.active[.asteroid] = PopulationClass.asteroid.maximum
+    fullAsteroids.total = PopulationClass.asteroid.maximum
+    let asteroidBlocked = ledger.pendingSpawnRequests(
+      context: fractureBudgetContext(context, budget: fullAsteroids), fields: fields)
+    #expect(asteroidBlocked.count == 1 && asteroidBlocked.first?.population == .cargo)
+    #expect(asteroidBlocked.first?.payload != first)
+    // One reserved offer consumes its own population slot, not the other population's slot.
+    var oneEach = AdmissionBudget()
+    oneEach.active[.cargo] = PopulationClass.cargo.maximum - 1
+    oneEach.active[.asteroid] = PopulationClass.asteroid.maximum - 1
+    oneEach.total = oneEach.active.values.reduce(0, +)
+    let onlyRubble = ledger.pendingSpawnRequests(
+      context: fractureBudgetContext(context, budget: oneEach), fields: fields)
+    #expect(onlyRubble.count == 1 && onlyRubble.first?.population == .asteroid)
+    #expect(ledger.valid)
+  }
+}

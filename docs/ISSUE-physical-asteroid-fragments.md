@@ -17,3 +17,7 @@ This first bounded phase covers canonical ring-rock birth mass, current-format c
 ## Required next phase
 
 Native swept debris impacts against player, ships and stations remain open. Existing GameplayRaycast and native ordnance consume the aggregate's solid mesh, but that is not a moving debris impact producer. See the exact follow-up seams in PR-physical-asteroid-fragments.md. No mission completion, station-destruction receipt, reward or narrative gate may substitute for real contact and resource damage.
+
+## Phase-one review corrections
+
+Independent source review found that removing a bound descendant's materialization marker could double count its mass in the parent, and that the pending-offer planner used the cargo quota even for asteroid rubble. Bound children and collected child identities must each retain their own materialization marker. Genuinely culled children remain materialized. Cargo and rubble must reserve their own population quotas as well as the shared ordinary budget, including outstanding offers.

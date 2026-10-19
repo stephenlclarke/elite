@@ -29,3 +29,9 @@ The separate sealed mission-impact planner's ordinary incident path still uses i
 ## Links and integration
 
 See ISSUE-physical-asteroid-fragments.md. Authored on isolated feat/physical-asteroid-fragments from a0eed392; no canonical edits, Game.swift, finance, Ship paths, beam or fatal-player branch changes. Integrate after the independent current repair candidate, with one final review and coordinated central validation.
+
+## Phase-one changed findings
+
+The follow-up to independent review requires materialization markers for every currently bound child and for each issued child no longer pending after collection. A sibling's marker cannot cover another child; genuinely culled materialized children remain valid. Focused malformed-current-save regressions remove the selected marker from bound and collected states, retain a legitimate culled roundtrip, and require decode refusal.
+
+Pending offers now reserve the requested population independently: cargo uses the cargo quota and rubble the asteroid quota, with both consuming the shared ordinary budget. Outstanding offers are counted in their own population. Focused cases fill cargo while allowing rubble, fill asteroids while allowing cargo, retain refused offers for retry, prevent duplicate offers and check mixed outstanding reservations. Author checks remain formatting, Markdown lint and whitespace only; no execution or runtime acceptance is claimed.

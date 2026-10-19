@@ -210,8 +210,15 @@ public struct MiningLedger: Equatable, Codable, Sendable {
             if case .ore(_, let fragment) = item.identity { return fragment }
             return nil
           })
+        let issuedFragments = Set((0..<breakup.issuedUnits).map { UInt16($0) })
+        let boundFragments = Set(
+          retainedFragments.filter {
+            bindings[.ore(identity, fragment: $0)] != nil
+          })
         return retained.count == breakup.issuedUnits - breakup.collectedUnits
           && Set(breakup.payloadTimes.keys) == retainedFragments
+          && breakup.materialized.isSuperset(of: issuedFragments.subtracting(retainedFragments))
+          && breakup.materialized.isSuperset(of: boundFragments)
           && breakup.rubble.allSatisfy { pending[.ore(identity, fragment: $0)] != nil }
       }),
       pending.count <= Self.maximumPending, offers.count <= Self.maximumPending,
@@ -438,13 +445,17 @@ public struct MiningLedger: Equatable, Codable, Sendable {
     let identities = Set(fields.flatMap(\.rocks).map(\.identity))
     var requests: [SpawnRequest] = []
     let reserved = Set(offers.values)
-    let capacity = max(
-      0,
-      min(
-        context.budget.ordinaryRemaining,
-        PopulationClass.cargo.maximum - context.budget.active[.cargo, default: 0]) - offers.count)
+    var remaining = max(0, context.budget.ordinaryRemaining - offers.count)
+    var offered: [PopulationClass: Int] = [:]
+    for payload in offers.values {
+      offered[isRubble(payload) ? .asteroid : .cargo, default: 0] += 1
+    }
     for payload in pendingPayloads {
-      guard requests.count < capacity, case .ore(let rock, _) = payload.identity,
+      let population: PopulationClass = isRubble(payload.identity) ? .asteroid : .cargo
+      guard remaining > 0,
+        context.budget.active[population, default: 0] + offered[population, default: 0]
+          < population.maximum,
+        case .ore(let rock, _) = payload.identity,
         rock.system == context.system, identities.contains(rock), bindings[payload.identity] == nil,
         !reserved.contains(payload.identity),
         !context.protection.protectedPayloads.contains(payload.identity),
@@ -471,10 +482,12 @@ public struct MiningLedger: Equatable, Codable, Sendable {
       }
       requests.append(
         SpawnRequest(
-          identity: identity, population: isRubble(payload.identity) ? .asteroid : .cargo,
+          identity: identity, population: population,
           hull: isRubble(payload.identity) ? .asteroid : .cargo,
           position: position, orientation: Basis3(), velocity: payload.velocity,
           npc: nil, rock: nil, payload: payload.identity, priority: .ordinary))
+      remaining -= 1
+      offered[population, default: 0] += 1
     }
     return requests
   }
