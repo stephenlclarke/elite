@@ -138,7 +138,7 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   private var ownedShipID: String?
   public var shipID: String {
-    get { ownedShipID ?? NewCommanderDefaults.shipID }
+    get { ownedShipID ?? "SH023" }
     set { ownedShipID = newValue }
   }
   public var originalMarkets = OriginalLiveMarkets()
@@ -314,7 +314,9 @@ public struct Commander: Sendable, Equatable, Codable {
     case finiteXYZzyCash
   }
 
-  public init() {}
+  public init() {
+    ownedShipID = NewCommanderDefaults.shipID
+  }
   public var availableCredits: Int { unlimitedCash ? Int.max : credits }
   public var capacity: Int {
     let standard = standardCargoCapacity
