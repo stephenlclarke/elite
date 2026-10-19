@@ -60,6 +60,36 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   public let sourceTextures: [ShipSourceTexture]?
   public let sourceFaceTextures: [ShipSourceFaceTexture]?
   public let resolvedTextures: [ShipResolvedTexture]?
+  public let textures: [OriginalShipTextureReference]?
+  public let faceTextures: [ShipSourceFaceTexture]?
+
+  public init(
+    vertices: [[Double]], faces: [[Int]], license: String, source: String,
+    details: [MeshDetail]? = nil, materials: [ShipMaterial]? = nil, faceMaterials: [Int]? = nil,
+    paletteName: String? = nil, appearanceSource: String? = nil, appearanceLicense: String? = nil,
+    appearanceBasis: String? = nil, sourceFaceColours: [[Double]]? = nil,
+    sourceTextures: [ShipSourceTexture]? = nil, sourceFaceTextures: [ShipSourceFaceTexture]? = nil,
+    resolvedTextures: [ShipResolvedTexture]? = nil,
+    textures: [OriginalShipTextureReference]? = nil, faceTextures: [ShipSourceFaceTexture]? = nil
+  ) {
+    self.vertices = vertices
+    self.faces = faces
+    self.license = license
+    self.source = source
+    self.details = details
+    self.materials = materials
+    self.faceMaterials = faceMaterials
+    self.paletteName = paletteName
+    self.appearanceSource = appearanceSource
+    self.appearanceLicense = appearanceLicense
+    self.appearanceBasis = appearanceBasis
+    self.sourceFaceColours = sourceFaceColours
+    self.sourceTextures = sourceTextures
+    self.sourceFaceTextures = sourceFaceTextures
+    self.resolvedTextures = resolvedTextures
+    self.textures = textures
+    self.faceTextures = faceTextures
+  }
   var valid: Bool {
     guard vertices.count >= 4, faces.count >= 4,
       vertices.allSatisfy({ $0.count == 3 && $0.allSatisfy(\.isFinite) }),
@@ -76,7 +106,7 @@ public struct ShipDesign: Codable, Sendable, Equatable {
       : assignments.count == faces.count
         && assignments.allSatisfy { palette.indices.contains($0) }
         && palette.allSatisfy { !$0.name.isEmpty && $0.colour & 255 == 255 }
-    guard indicesValid, materialsValid, sourceAppearanceValid,
+    guard indicesValid, materialsValid, sourceAppearanceValid, originalAppearanceValid,
       (details ?? []).allSatisfy({
         vertices.indices.contains($0.start) && vertices.indices.contains($0.end)
           && faces.indices.contains($0.face)
@@ -90,6 +120,7 @@ public struct ShipDesign: Codable, Sendable, Equatable {
 
   var rawMesh: Mesh {
     if resolvedTextures?.isEmpty == false { ShipTextureAssets.preload() }
+    if textures?.isEmpty == false { OriginalShipTextureAssets.preload() }
     return Mesh(
       vertices: vertices.map { Vector3($0[0], $0[1], $0[2]) }, faces: faces,
       details: details ?? [], materials: materials ?? [], faceMaterials: faceMaterials ?? [],

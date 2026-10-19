@@ -13,6 +13,28 @@ public struct ShipSourceFaceTexture: Codable, Sendable, Equatable {
 }
 
 extension ShipDesign {
+  var hasOriginalTextureFields: Bool { textures != nil || faceTextures != nil }
+
+  var originalAppearanceValid: Bool {
+    guard hasOriginalTextureFields else { return true }
+    guard (sourceTextures ?? []).isEmpty, (sourceFaceTextures ?? []).isEmpty,
+      (resolvedTextures ?? []).isEmpty, let references = textures, let mappings = faceTextures,
+      Set(references.map(\.asset)).count == references.count,
+      references.allSatisfy(OriginalShipTextureAssets.accepts)
+    else { return false }
+    if mappings.isEmpty { return references.isEmpty }
+    guard mappings.count == faces.count else { return false }
+    return zip(faces, mappings).allSatisfy { face, mapping in
+      if mapping.texture == -1 {
+        return mapping.uv.isEmpty
+          || (mapping.uv.count == face.count
+            && mapping.uv.allSatisfy { $0.count == 2 && $0.allSatisfy(\.isFinite) })
+      }
+      return references.indices.contains(mapping.texture) && mapping.uv.count == face.count
+        && mapping.uv.allSatisfy { $0.count == 2 && $0.allSatisfy(\.isFinite) }
+    }
+  }
+
   var sourceAppearanceValid: Bool {
     if let colours = sourceFaceColours,
       colours.count != faces.count
@@ -43,6 +65,14 @@ extension ShipDesign {
   }
 
   var resolvedFaceTextures: [ShipMeshTexture?] {
+    if hasOriginalTextureFields {
+      guard originalAppearanceValid, let references = textures, let mappings = faceTextures
+      else { return [] }
+      return mappings.map { mapping in
+        guard mapping.texture != -1 else { return nil }
+        return ShipMeshTexture(asset: references[mapping.texture].asset, uv: mapping.uv)
+      }
+    }
     guard let resolvedTextures, !resolvedTextures.isEmpty, let mappings = sourceFaceTextures else {
       return []
     }

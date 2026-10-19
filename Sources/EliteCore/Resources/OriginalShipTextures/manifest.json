@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "kind": "current-original-ship-textures",
+  "sourceManifestSHA256": "754a83700a9d3070901ae2ee8e9f5bebf054e356af629682b0c7ef735a4866da",
+  "assets": [
+    {
+      "id": "l337-patrol-diffuse",
+      "width": 1024,
+      "height": 1024,
+      "license": "MIT",
+      "authorship": "Original periodic geometric surface artwork; no imported pixels",
+      "pngFile": "l337-patrol-diffuse.png",
+      "rgbaFile": "l337-patrol-diffuse.rgba",
+      "pngSHA256": "d04ed3b61105cc788afc77705ebdd188e465eab84fffbba075c664673c5da4c2",
+      "rgbaSHA256": "9699517d12b4fbbb28746e00bed9ee65c19a098d14402b1d5160280c6f6bfc54",
+      "auxiliary": [
+        {
+          "role": "albedo",
+          "file": "l337-patrol-diffuse-albedo.png",
+          "sha256": "33b0d0c2e297505061f7f157958a8112803e7488be571c4a0f442e9ebf331999",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "normal",
+          "file": "l337-patrol-diffuse-normal.png",
+          "sha256": "d01397066bdada8bb3d88f221432cce84e606f429cbe6438feaedaa0b0db69e5",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "height",
+          "file": "l337-patrol-diffuse-height.png",
+          "sha256": "0688fbfbf0f456bcd7a79b2d9f42c72bd4d95f7edff8079716a6c50b903cb9ba",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "roughness",
+          "file": "l337-patrol-diffuse-roughness.png",
+          "sha256": "b1daaa213eb914e422f73eb8ffb09949d8af9661cb52270e77f5d43bb50c35a6",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        }
+      ]
+    },
+    {
+      "id": "l337-service-details",
+      "width": 1024,
+      "height": 1024,
+      "license": "MIT",
+      "authorship": "Original periodic geometric surface artwork; no imported pixels",
+      "pngFile": "l337-service-details.png",
+      "rgbaFile": "l337-service-details.rgba",
+      "pngSHA256": "4ab7deaff773a4edbc284d6dda111919953c0fee3c9cab5880e4aa8361a781b2",
+      "rgbaSHA256": "35edd84f6ce527195dd8a9bcc039521a6efc5aa2333452bbbc30217b8372103d",
+      "auxiliary": [
+        {
+          "role": "albedo",
+          "file": "l337-service-details-albedo.png",
+          "sha256": "748796031db4f7e42559400d5bf533c8f340f77750e4fa34e836a6b1e12d9574",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "normal",
+          "file": "l337-service-details-normal.png",
+          "sha256": "617e8cd627402b342c0a1f080949679eecf0c9a5e1ada7be58383b77cbd178de",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "height",
+          "file": "l337-service-details-height.png",
+          "sha256": "40bbebc0a9f1c2b789c14f1cf1dc7688df08c7df400185d02eb88a70552bcd74",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "roughness",
+          "file": "l337-service-details-roughness.png",
+          "sha256": "741fa8bf5165d02555bcdfb67c3ed907b8bd98a391056e98235617a182ce9960",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        }
+      ]
+    },
+    {
+      "id": "l337-strike-diffuse",
+      "width": 1024,
+      "height": 1024,
+      "license": "MIT",
+      "authorship": "Original periodic geometric surface artwork; no imported pixels",
+      "pngFile": "l337-strike-diffuse.png",
+      "rgbaFile": "l337-strike-diffuse.rgba",
+      "pngSHA256": "59b8ee461862bb5eaf747e56cbf8891c8e636b1ea7195c9aeed38329b1619cf6",
+      "rgbaSHA256": "e56f149228caf90237a652d720ae549768bde1056af3d903dc8a5c243ad26e97",
+      "auxiliary": [
+        {
+          "role": "albedo",
+          "file": "l337-strike-diffuse-albedo.png",
+          "sha256": "2f8e8fb2af9771eef1f999a745bf1d4a2db3ef5e3b60ace06bec74f484509ce4",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "normal",
+          "file": "l337-strike-diffuse-normal.png",
+          "sha256": "d4f1b16bdcf8738c87bce016de7ccf3010e32ffb23c95d4d5bb7668519d31732",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "height",
+          "file": "l337-strike-diffuse-height.png",
+          "sha256": "e0661109fecbe3133f59dab2cda9be466b0a2a2e72624a1f00f21def6c0e6fed",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        },
+        {
+          "role": "roughness",
+          "file": "l337-strike-diffuse-roughness.png",
+          "sha256": "85ed386ad32e0b2e1fe49a2e1fffed40504d3ca446a4f0fa930675bcb110ec25",
+          "rendererUsage": "preserved; not consumed by current renderer"
+        }
+      ]
+    }
+  ],
+  "rendering": "Exact authored diffuse RGBA; no premultiplication/resize. Auxiliary maps are not applied; do not double-light baked relief.",
+  "authoredIntegrationNotes": [
+    "Use consistent UV scale, orientation and repeat sampling so shared ports line up; per-face UV resets can reintroduce a spotted appearance.",
+    "All three sets share edge pixels, edge relief, base material and boundary channels. Each repeats on both axes and joins any other set in its authored orientation.",
+    "Diffuse maps include restrained baked relief for the existing renderer. Unlit albedo, normal, 16-bit height and roughness maps are separate proposals for lighting support; do not double-light baked relief.",
+    "Use filtered texture sampling and mipmaps; check distant surfaces on actual hull UVs in the game renderer during future integration.",
+    "These textures do not replace the separately restricted source hull geometry. Keep historical source records accurate."
+  ],
+  "sourceBindingAuthority": "Advisory source bindings are preserved in SOURCE-manifest.json; use hull-bindings.json from actual hull arrays."
+}

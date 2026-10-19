@@ -58,7 +58,10 @@ public enum ShipTextureAssets {
     return load(manifest: data, directory: folder)
   }()
 
-  public static func pixels(for asset: String) -> ShipTexturePixels? { catalogue.pixels[asset] }
+  public static func pixels(for asset: String) -> ShipTexturePixels? {
+    if asset.hasPrefix("l337-") { return OriginalShipTextureAssets.pixels(for: asset) }
+    return catalogue.pixels[asset]
+  }
 
   public static func preload() { _ = catalogue }
 

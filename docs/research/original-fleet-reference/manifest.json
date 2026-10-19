@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "records": 171,
+  "readinessSHA256": "876f1389e1b38eb59fac0ba174c5871445a4dcb7d4fa1be339e62d1f513c0bac",
+  "geometryRead": false,
+  "numericConversionApplied": false,
+  "csvTextSafety": "Spreadsheet-active display text is apostrophe-prefixed; authored_spec_json retains every exact original value.",
+  "files": [
+    {
+      "path": "fleet-reference.csv",
+      "bytes": 276558,
+      "sha256": "26f218690112daa9a5970c32da93b66ffc46ba5b8bc1cfbe946845737cf8618a"
+    },
+    {
+      "path": "fleet-reference.md",
+      "bytes": 270344,
+      "sha256": "e43add7c59f65b47e524be015621c1eef3862172e22e741a3b37786c8e489f63"
+    }
+  ]
+}
