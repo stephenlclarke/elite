@@ -1652,6 +1652,26 @@ extension HullSweepSafety {
             return (edge.0 + (edge.1 - edge.0) * hit.distance, normal)
           }
         }
+        // Distance uses both edge owners. A target vertex/edge can enter a broad
+        // source face before any source edge or target face centroid enters the target.
+        // Its response normal belongs to that actual source face.
+        for index in 0..<3 {
+          let edge = b.edge(at: index)
+          if let hit = sweepRay(
+            edge.0, direction: edge.1 - edge.0, triangle: a,
+            conditioned: true, maximumDistance: 1), !hit.boundary,
+            hit.distance + hit.uncertainty <= 1
+          {
+            var sourceNormal = (a.b - a.a).cross(a.c - a.a).unit
+            if sourceNormal.dot(other.position - pose.position) < 0 {
+              sourceNormal = sourceNormal * -1
+            }
+            guard sourceNormal.finite, sourceNormal.length > 0 else {
+              throw HullSweepFailure.unproven
+            }
+            return (edge.0 + (edge.1 - edge.0) * hit.distance, sourceNormal)
+          }
+        }
       }
     }
     // A face strictly inside the other closed hull also certifies an actual overlap,
@@ -1661,6 +1681,17 @@ extension HullSweepSafety {
       let point = other.systemPoint((triangle.a + triangle.b + triangle.c) * (1 / 3.0))
       if try contains(pose.shipPoint(point), hull: hull, work: &work) {
         var normal = other.orientation.apply(
+          (triangle.b - triangle.a).cross(triangle.c - triangle.a)
+        ).unit
+        if normal.dot(other.position - pose.position) < 0 { normal = normal * -1 }
+        return (point, normal)
+      }
+    }
+    for triangle in hull.triangles {
+      try work.triangle()
+      let point = pose.systemPoint((triangle.a + triangle.b + triangle.c) * (1 / 3.0))
+      if try contains(other.shipPoint(point), hull: target, work: &work) {
+        var normal = pose.orientation.apply(
           (triangle.b - triangle.a).cross(triangle.c - triangle.a)
         ).unit
         if normal.dot(other.position - pose.position) < 0 { normal = normal * -1 }

@@ -262,7 +262,8 @@ extension Game {
           target: trajectories[target].motion, targetHull: trajectories[target].hull)
         switch result {
         case .clear: continue
-        case .refused: return refuseDebrisStep(frame, reason: "SWEEP UNPROVEN")
+        case .refused(let failure):
+          return refuseDebrisStep(frame, reason: "SWEEP UNPROVEN: " + failure.message)
         case .contact(let contact):
           if selected == nil || contact.lowerTime < selected!.2.lowerTime {
             selected = (source, target, contact)
@@ -338,8 +339,12 @@ extension Game {
           source: trajectories[a].motion,
           hull: trajectories[a].hull, target: trajectories[b].motion,
           targetHull: trajectories[b].hull)
-        guard case .clear = result else {
-          return refuseDebrisStep(frame, reason: "REMAINING MOTION UNPROVEN")
+        switch result {
+        case .clear: break
+        case .contact:
+          return refuseDebrisStep(frame, reason: "REMAINING CONTACT")
+        case .refused(let failure):
+          return refuseDebrisStep(frame, reason: "REMAINING SWEEP UNPROVEN: " + failure.message)
         }
       }
     }
