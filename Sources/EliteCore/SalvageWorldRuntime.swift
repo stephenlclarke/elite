@@ -118,7 +118,7 @@ extension Game {
     let camera = commander.flightSimulation.pose.orientation
     let world = bodies[index].orientation.transformed(by: camera)
     let next = RelativeWorkController.rotated(world, omega: physical.angularVelocity, delta: delta)
-    bodies[index].orientation = next.relative(to: camera)
+    bodies[index].orientation = next.workFrameRelative(to: camera)
   }
 
   public var salvageHUDLines: [String] {

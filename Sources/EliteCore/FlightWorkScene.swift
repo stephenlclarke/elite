@@ -120,7 +120,7 @@ extension Game {
     approvedWorkMotion = nil
     commander.flightSimulation.pose = end
     rotateScriptNPCVelocities(from: start, to: end)
-    let change = end.orientation.transposed.composed(with: start.orientation)
+    let change = start.orientation.workFrameRelative(to: end.orientation)
     for index in bodies.indices {
       bodies[index].position = end.shipPoint(start.systemPoint(bodies[index].position))
       bodies[index].orientation = change.composed(with: bodies[index].orientation)
@@ -158,5 +158,26 @@ extension Game {
       faces: [
         [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [3, 7, 6, 2], [0, 4, 7, 3], [1, 2, 6, 5],
       ])
+  }
+}
+
+extension Basis3 {
+  /// Re-express an orientation in an admitted work frame without normalizing either basis.
+  /// A represented rotation is only approximately orthogonal: its transpose is not its inverse.
+  func workFrameRelative(to frame: Basis3) -> Basis3 {
+    let first = frame.y.cross(frame.z)
+    let second = frame.z.cross(frame.x)
+    let third = frame.x.cross(frame.y)
+    let inverseDeterminant = 1 / frame.x.dot(first)
+    func coordinates(_ vector: Vector3) -> Vector3 {
+      .init(
+        vector.dot(first) * inverseDeterminant, vector.dot(second) * inverseDeterminant,
+        vector.dot(third) * inverseDeterminant)
+    }
+    var result = Basis3()
+    result.x = coordinates(x)
+    result.y = coordinates(y)
+    result.z = coordinates(z)
+    return result
   }
 }
