@@ -224,3 +224,7 @@ Record actual801 zero completed/seven UNKNOWN stack failure after reaching NPC v
 ## MBA02 reconciliation folded into assigned MBA03
 
 Mark02 reconciliation complete/folded without a false native-admission prerequisite. Assign only defaultG03 pack/atomic finish hook, exact production clue pin/default load and pack/test/note files, six focused owner units plus clean review before integration. Record Root's new project H[0,1,2] declaration as immutable premium tiers, with3t/75CR/R480+95L+80H/default untimed terms; no fixture-derived safety authority. Combined Original/Wayfarer3-cap, stable offers and artwork remain separate open gaps, with aggregate cap required before future W01 default activation. No Game/Director/generation/cash-framework expansion, MBP job or03/playable completion claim. Scoped Markdown/whitespace checks only.
+
+## Encounter child review and pending accelerator proposal
+
+Bind Root-clean a16ced01/exact seven-method-nine-case plan to existing802/803 without duplicate audit/ACK or runtime claim. Record G2's concrete seven-path/four-unit startup-only Metal panel proposal and explicit pending one-backing-pixel edge-AA boundary; geometry/material/interior/order/clips and CPU fallback/wireframe remain exact. No graphics authoring/job until Root approves, actual gain unmeasured. Scoped Markdown/whitespace checks only.
