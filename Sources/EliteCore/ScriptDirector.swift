@@ -704,7 +704,7 @@ extension Game {
       try attempt.candidate.ensureScriptEncounter(
         id, pack: attempt.selected.pack, state: &attempt.next))
     // Later native commands must join bodies to their already staged private owner.
-    candidate.commander.scriptState.instances[attempt.next.id] = attempt.next
+    attempt.candidate.commander.scriptState.instances[attempt.next.id] = attempt.next
   }
 
   @inline(never)
