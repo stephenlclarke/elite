@@ -228,3 +228,7 @@ Mark02 reconciliation complete/folded without a false native-admission prerequis
 ## Encounter child review and pending accelerator proposal
 
 Bind Root-clean a16ced01/exact seven-method-nine-case plan to existing802/803 without duplicate audit/ACK or runtime claim. Record G2's concrete seven-path/four-unit startup-only Metal panel proposal and explicit pending one-backing-pixel edge-AA boundary; geometry/material/interior/order/clips and CPU fallback/wireframe remain exact. No graphics authoring/job until Root approves, actual gain unmeasured. Scoped Markdown/whitespace checks only.
+
+## Approved startup-only Metal panel authoring
+
+Advance proposal31d7ae40 to approved bounded seven-path source implementation for G2. Preserve geometry/material/order/clip/stroke/interior pixels; only explicitly tested boundary AA may differ by at most one backing pixel. Require four focused actual GPU/parity methods PASS plus independent review, including Retina/flippedY/overlap/failure CPU fallback. No other scenes/exports/wire/LOD/physics/dependency scope. Compiler/GPU access requires concrete freeze and closure of the current priority MC1 batch; no runtime slot or gain claim is granted now. Scoped Markdown/whitespace checks only.
