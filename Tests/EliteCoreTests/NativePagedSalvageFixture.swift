@@ -242,13 +242,16 @@ enum NativePagedSalvageFixture {
   ) throws {
     let actor = try #require(body.physical?.identity)
     game.workTargetFilter = .salvage
+    let wasHeld = game.flightTrigger.held
+    let wasSuspended = game.workFireSuspended
     game.key("tab")
     try #require(game.autoPilot.targetID == body.id && game.autoPilot.targetActor == actor)
     try #require(game.autoTargetBody?.physical?.identity == actor)
     try #require(game.workGuidance?.parent == actor)
     try #require(game.workGuidance?.mode == .hold(.salvage))
     try #require(game.workGuidance?.surface.section == section)
-    try #require(game.workFireSuspended)
+    try #require(game.workFireSuspended == (wasSuspended || wasHeld))
+    try #require(!game.flightTrigger.pressPending && game.selectedToolActivity == nil)
   }
 
   /// Release and press Return at real readiness inside the caller's existing frame budget.
