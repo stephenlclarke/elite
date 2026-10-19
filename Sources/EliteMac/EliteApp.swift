@@ -727,7 +727,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         }
       } else if event.hasPrefix("chart:") {
         let parts = event.split(separator: ":")
-        if let x = Int(parts[1]), let y = Int(parts[2]) {
+        if parts.count == 3, let x = Double(parts[1]), let y = Double(parts[2]),
+          x.isFinite, y.isFinite
+        {
           await runtime.selectSystem(x: x, y: y)
         }
       } else {

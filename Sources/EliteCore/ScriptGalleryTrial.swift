@@ -120,7 +120,7 @@ extension Game {
       trial.ensureScriptCalendar(origin: .newCommander)
       trial.systems = Universe.systemsIncludingPlugh(number: scene.galaxy)
       trial.selectedSystem = scene.system
-      trial.market = MarketItem.generate(economy: trial.currentSystem.economy, fluctuation: 0)
+      trial.market = MarketItem.at(trial.currentSystem)
       trial.energy = trial.commander.performance.energy
       trial.frontShield = trial.commander.shieldCapacity
       trial.rearShield = trial.commander.shieldCapacity

@@ -13,13 +13,13 @@ public enum Plugh {
   public static func system(galaxy: Int) -> StarSystem {
     let originals = Universe.galaxy(number: galaxy)
     let anchor = originals[rumourStation]
-    let offsets = [4, -4, 3, -3, 5, -5, 6, -6]
+    let offsets: [Double] = [4, -4, 3, -3, 5, -5, 6, -6]
     var position = (x: anchor.x, y: anchor.y)
     search: for dx in offsets {
-      for dy in [0, 2, -2, 4, -4] {
+      for dy in [0.0, 2.0, -2.0, 4.0, -4.0] {
         let x = anchor.x + dx
         let y = anchor.y + dy
-        if (0...255).contains(x), (0...255).contains(y),
+        if x.isFinite, y.isFinite,
           !originals.contains(where: { $0.x == x && $0.y == y })
         {
           position = (x, y)
@@ -30,7 +30,8 @@ public enum Plugh {
     return .init(
       id: systemID, name: name, x: position.x, y: position.y,
       economy: 0, government: 7, technology: 14, population: 64,
-      productivity: 56320, radius: 6200 + (galaxy & 7) * 137, seed: anchor.seed)
+      productivity: 56320, radius: 6200 + (galaxy & 7) * 137, seed: anchor.seed,
+      nativeGalaxy: galaxy)
   }
 }
 extension Universe {
@@ -46,14 +47,11 @@ extension Commander {
   mutating func discoverPlugh(in galaxy: Int) { plughDiscoveryMask |= 1 << galaxy }
 }
 extension MarketItem {
-  public static func at(_ system: StarSystem, fluctuation: Int) -> [MarketItem] {
-    let market = generate(economy: system.economy, fluctuation: fluctuation)
-    guard system.isPlugh else { return market }
-    return market.map { .init(price: Plugh.discount($0.price), quantity: 63) }
+  public static func at(_ system: StarSystem) -> [MarketItem] {
+    OriginalLiveMarkets.initial(galaxy: system.galaxy, system: system)
   }
   static func minimumPrices(at system: StarSystem) -> [Int] {
-    let prices = TradePlanner.minimumPrices[system.economy]
-    return system.isPlugh ? prices.map(Plugh.discount) : prices
+    at(system).map(\.bidPrice)
   }
 }
 extension Game {

@@ -1,20 +1,20 @@
 import Foundation
 
-public enum OriginalWorldSurface: String, Decodable, Sendable, Equatable {
+public enum OriginalWorldSurface: String, Codable, Sendable, Equatable {
   case mixed
   case pollutedIndustrial = "polluted-industrial"
   case greenAgricultural = "green-agricultural"
   case snowAndEvergreen = "snow-and-evergreen"
 }
 
-public enum OriginalWorldClimate: String, Decodable, Sendable, Equatable {
+public enum OriginalWorldClimate: String, Codable, Sendable, Equatable {
   case temperate
   case permanentWinter = "permanent-winter"
 }
 
 /// All 29 approved world fields, without legacy coordinates or inferred aliases.
 /// Catalogue loading validates the complete record before exposing it to callers.
-public struct OriginalWorldRecord: Decodable, Sendable, Equatable {
+public struct OriginalWorldRecord: Codable, Sendable, Equatable {
   public let key: String
   public let galaxy: Int
   public let system: Int

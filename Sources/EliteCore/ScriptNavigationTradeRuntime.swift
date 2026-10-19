@@ -211,7 +211,7 @@ extension Game {
       guard record.routeVerified, systemIdentity == record.destination.location,
         dock.actor.visit == record.journeys.last?.arrivalVisit,
         record.journeys.last?.journey.destination == record.destination.system.id,
-        commander.credits <= 4_294_967_295 - market[index].price
+        commander.credits <= 4_294_967_295 - market[index].bidPrice
       else {
         if commander.sellableCargo(index) > 0 { return nil }
         throw MissionPackError(
@@ -230,7 +230,8 @@ extension Game {
     let receipt = ScriptNavigationMarketReceipt(
       operation: UUID(), direction: buying ? .buy : .sell,
       calendarOperation: commander.scriptState.calendarLedger?.operation ?? 0, dock: dock,
-      price: before.market[index].price, stockBefore: before.market[index].quantity,
+      price: buying ? before.market[index].price : before.market[index].bidPrice,
+      stockBefore: before.market[index].quantity,
       stockAfter: market[index].quantity, cargoBefore: before.commander.cargo[index],
       cargoAfter: commander.cargo[index], creditsBefore: before.commander.credits,
       creditsAfter: commander.credits)

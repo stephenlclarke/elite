@@ -224,21 +224,10 @@ public enum SalvageLootProfiles {
     } else {
       contraband = false
     }
-    let economy = max(0, min(7, source.economy))
-    let start = Int(random.next() & 255)
+    _ = random.next()  // Preserve this existing manifest draw independently of market state.
     let pool = contraband ? illegal : legal
-    var market = MarketItem.generate(economy: economy, fluctuation: start)
-    var available = pool.filter { market[$0.rawValue].quantity > 0 }
-    // Unknown manifests have no authoritative station fluctuation. This project fallback
-    // finds stock in the same economy without dropping selected contraband rolls or
-    // consuming additional random draws; it does not describe the live station market.
-    if available.isEmpty {
-      for offset in 1..<256 {
-        market = MarketItem.generate(economy: economy, fluctuation: (start + offset) & 255)
-        available = pool.filter { market[$0.rawValue].quantity > 0 }
-        if !available.isEmpty { break }
-      }
-    }
+    let market = MarketItem.authoredManifest
+    let available = pool.filter { market[$0.rawValue].quantity > 0 }
     // An impossible pool produces the explicit unavailableCargo plan, never substitute loot.
     guard !available.isEmpty else { return nil }
     // Factories most often contain narcotics when their illegal roll has local stock.
@@ -256,7 +245,7 @@ public enum SalvageLootProfiles {
       Double(amount.quantity)
       * (amount.commodity.unit == "t" ? 1000 : amount.commodity.unit == "kg" ? 1 : 0.001)
     let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
-    let market = MarketItem.generate(economy: max(0, min(7, source.economy)), fluctuation: 0)
+    let market = MarketItem.authoredManifest
     let price = market[amount.commodity.rawValue].price
     let (value, overflow) = amount.quantity.multipliedReportingOverflow(by: price)
     return .init(

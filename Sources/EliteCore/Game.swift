@@ -141,6 +141,7 @@ public struct Commander: Sendable, Equatable, Codable {
     get { ownedShipID ?? "SH023" }
     set { ownedShipID = newValue }
   }
+  public var originalMarkets = OriginalLiveMarkets()
   public var name = "JAMESON"
   public var credits = 1000
   public var fuel = 70
@@ -278,6 +279,7 @@ public struct Commander: Sendable, Equatable, Codable {
     case savedMissionProgress
     case wantedAmnesty
     case ownedShipID
+    case originalMarkets
     case name
     case credits
     case fuel
@@ -332,6 +334,7 @@ public struct Commander: Sendable, Equatable, Codable {
     ShipCatalogue.ship(shipID)?.game != nil && equipmentStateValid && nativeStationStateValid
       && empCustodyStateValid && electricalStateValid && alienStorageStateValid
       && nativeSalvageOriginalSourcesValid && freightCargoValid && navigationTradeStateValid
+      && originalMarkets.valid
       && cargo.count == 17
       && cargo.allSatisfy { $0 >= 0 && $0 <= Int.max / 17 } && credits >= 0
       && credits <= 4_294_967_295
@@ -514,7 +517,11 @@ public struct Game: Sendable {
   public var selection = 0
   public var informationScroll = 0
   public var chartInformationScroll = 0
-  public var market = MarketItem.generate(economy: 5, fluctuation: 0)
+  /// Mutable station stock is commander-owned and survives departure, save and reload.
+  public var market: [MarketItem] {
+    get { commander.originalMarkets.items(galaxy: commander.galaxy, system: currentSystem) }
+    set { commander.originalMarkets.set(newValue, galaxy: commander.galaxy, system: currentSystem) }
+  }
   public var bodies: [SpaceBody] = []
   public var miningFields: [MiningField] = []
   public var salvageSites: [SalvageSite] = []
@@ -691,7 +698,6 @@ public struct Game: Sendable {
     systems = Universe.systemsIncludingPlugh(number: value.galaxy)
     do { try migrateMiningPresence(legacyMissing: true) } catch { return false }
     selectedSystem = value.system
-    market = MarketItem.at(currentSystem, fluctuation: 0)
     docked = true
     bodies = []
     missionNotice = nil
@@ -1037,7 +1043,7 @@ public struct Game: Sendable {
     let current = known.firstIndex { $0.id == selectedSystem } ?? 0
     manuallySelectSystem(known[(current + direction + known.count) % known.count].id)
   }
-  public mutating func selectSystem(x: Int, y: Int) {
+  public mutating func selectSystem(x: Double, y: Double) {
     let selected =
       knownSystems.min { left, right in
         let ld = pow(Double(left.x - x), 2) + pow(Double(left.y - y), 2)
@@ -1080,12 +1086,14 @@ public struct Game: Sendable {
         _ = reviewNativeCaptiveSale()
         return
       }
-      guard commander.sellableCargo(index) > 0 || practice != nil else {
+      guard commander.sellableCargo(index) > 0 || practice != nil,
+        market[index].quantity < Int.max / 17
+      else {
         notify(
           index == 10 && commander.markedFirearms > 0 ? "MISSION FIREARM RESERVED" : "NO CARGO")
         return
       }
-      commander.credits = min(4_294_967_295, commander.credits + item.price)
+      commander.credits = min(4_294_967_295, commander.credits + item.bidPrice)
       commander.cargo[index] -= 1
       market[index].quantity += 1
     }
@@ -1110,9 +1118,9 @@ public struct Game: Sendable {
     }
     let oldSelection = selection
     for index in commander.cargo.indices where commander.sellableCargo(index) > 0 {
-      let saleQuantity = commander.sellableCargo(index)
+      let saleQuantity = min(commander.sellableCargo(index), Int.max / 17 - market[index].quantity)
       let (revenue, overflow) = saleQuantity.multipliedReportingOverflow(
-        by: market[index].price)
+        by: market[index].bidPrice)
       commander.credits =
         overflow
         ? 4_294_967_295 : min(4_294_967_295, commander.credits + min(revenue, 4_294_967_295))
@@ -1169,7 +1177,7 @@ public struct Game: Sendable {
     let gross = exports.reduce(0.0) {
       $0 + Double($1.profit) * Double(min(commander.tradeCargoCapacity, market[$1.index].quantity))
     }
-    let risk = Double(7 - destination.government) * 0.15
+    let risk = destination.hostileFraction
     return gross / (1 + risk + currentSystem.distance(to: destination) * 0.05)
   }
   public mutating func launch() {
@@ -1448,7 +1456,6 @@ public struct Game: Sendable {
       commander.navigationPlan = nil
       notify("ROUTE CANCELLED - OFF ROUTE")
     }
-    market = MarketItem.at(currentSystem, fluctuation: randomByte())
     jumpCountdown = nil
     screen = .front
     screenHistory.removeAll()
@@ -2185,7 +2192,7 @@ public actor GameRuntime {
     game.viewportWidth = width
     game.viewportHeight = height
   }
-  public func selectSystem(x: Int, y: Int) { game.selectSystem(x: x, y: y) }
+  public func selectSystem(x: Double, y: Double) { game.selectSystem(x: x, y: y) }
   public func advance(delta: Double) -> Game {
     guard game.admitFlightWorkAdvance(controls: controls) else { return snapshot() }
     game.pendingNativeSalvageCollections.removeAll(keepingCapacity: true)
@@ -2495,18 +2502,6 @@ public actor GameRuntime {
     controls = Controls()
     scriptSaveURL = url
     game.scriptDurabilityAvailable = true
-  }
-}
-
-public enum TradePlanner {
-  /// Conservative selling prices account for every possible market fluctuation.
-  public static let minimumPrices: [[Int]] = (0..<8).map { economy in
-    var prices = Array(repeating: Int.max, count: Commodity.all.count)
-    for fluctuation in 0..<256 {
-      let market = MarketItem.generate(economy: economy, fluctuation: fluctuation)
-      for index in prices.indices { prices[index] = min(prices[index], market[index].price) }
-    }
-    return prices
   }
 }
 

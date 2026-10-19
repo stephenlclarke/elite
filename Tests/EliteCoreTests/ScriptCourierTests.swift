@@ -39,7 +39,7 @@ struct CourierFixture {
     game.commander.credits = 100000
     game.commander.system = system
     game.selectedSystem = system
-    game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+    game.market = MarketItem.at(game.currentSystem)
     return game
   }
   func offer(_ game: inout Game, row: Int = 0) throws -> (String, ScriptContractOffer) {

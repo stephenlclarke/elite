@@ -47,7 +47,7 @@ extension Game {
     // Initial scene selection precedes launch and every native visit/admission.
     trial.commander.system = system.id
     trial.selectedSystem = system.id
-    trial.market = MarketItem.generate(economy: trial.currentSystem.economy, fluctuation: 0)
+    trial.market = MarketItem.at(trial.currentSystem)
     trial.commander.credits = 100_000
     try trial.commander.prepareEquipment(legacy: false)
     for (name, slot) in [

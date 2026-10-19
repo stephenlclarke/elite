@@ -665,8 +665,10 @@ extension Game {
     let binding: ScriptNavigationTradeBinding?
     if let navigationBinding {
       binding = navigationBinding
+    } else if let record = attempt.next.savedNavigationTrade {
+      binding = ScriptNavigationTradeBinding.production(for: record)
     } else {
-      binding = ScriptNavigationTradeBinding.production(in: original)
+      binding = ScriptNavigationTradeBinding.selectedRoute(in: original)
     }
     try original.applyNavigationTradeCommand(
       command, event: attempt.selected.event, pack: attempt.selected.pack, state: &attempt.next,

@@ -7,22 +7,64 @@ struct ScriptNavigationTradeEndpoint: Codable, Sendable, Equatable {
   let galaxy: Int
   let system: StarSystem
   var valid: Bool {
-    PackValidation.identifier(worldID) && (0..<8).contains(galaxy)
-      && (0..<256).contains(system.id) && !system.name.isEmpty && system.name.count <= 64
-      && (0...255).contains(system.x) && (0...255).contains(system.y)
-      && (0...7).contains(system.economy) && (0...7).contains(system.government)
-      && (0...32).contains(system.technology)
+    guard (0..<8).contains(galaxy), (0..<256).contains(system.id),
+      !system.name.isEmpty, system.name.count <= 64, system.x.isFinite, system.y.isFinite,
+      (0...7).contains(system.economy), (0...7).contains(system.government),
+      (0...32).contains(system.technology)
+    else { return false }
+    if let original = system.original {
+      guard let canonical = try? Universe.originalWorld(galaxy: galaxy, system: system.id) else {
+        return false
+      }
+      return worldID == canonical.key && original == canonical
+        && system == Universe.nativeSystem(canonical)
+    }
+    // Explicit isolated fixture bindings retain their private identifier namespace. Production
+    // always requires complete original records above and never authorizes these test endpoints.
+    return PackValidation.identifier(worldID)
   }
   var location: SystemIdentity { .init(galaxy: galaxy, system: system.id) }
 }
 
 /// A single selected-route binding, not a mutable registry or saved authorization.
-/// The original catalogue has no installed native adapter yet, so production cannot resolve one.
+/// Native endpoint bindings are re-resolved against the installed original world authority.
 struct ScriptNavigationTradeBinding: Sendable, Equatable {
   let training: ScriptNavigationTradeEndpoint
   let destination: ScriptNavigationTradeEndpoint
-  static func production(in game: borrowing Game) -> Self? { nil }
-  static func production(for record: borrowing ScriptNavigationTradeState) -> Self? { nil }
+  static func production(in game: borrowing Game) -> Self? {
+    if let record = game.commander.scriptState.instances.values.compactMap(\.savedNavigationTrade)
+      .first(where: {
+        $0.stage == .awaitingBuy || $0.held || $0.stage == .sold || $0.stage == .lost
+      })
+    {
+      return production(for: record)
+    }
+    return selectedRoute(in: game)
+  }
+  static func selectedRoute(in game: borrowing Game) -> Self? {
+    guard let training = endpoint(galaxy: game.commander.galaxy, system: game.commander.system),
+      let destination = endpoint(galaxy: game.commander.galaxy, system: game.selectedSystem)
+    else { return nil }
+    let result = Self(training: training, destination: destination)
+    return result.valid && result.matches(game) ? result : nil
+  }
+  static func production(for record: borrowing ScriptNavigationTradeState) -> Self? {
+    guard
+      let training = endpoint(galaxy: record.training.galaxy, system: record.training.system.id),
+      let destination = endpoint(
+        galaxy: record.destination.galaxy, system: record.destination.system.id),
+      training == record.training, destination == record.destination
+    else { return nil }
+    let result = Self(training: training, destination: destination)
+    return result.valid ? result : nil
+  }
+  private static func endpoint(galaxy: Int, system: Int) -> ScriptNavigationTradeEndpoint? {
+    guard let world = try? Universe.originalWorld(galaxy: galaxy, system: system) else {
+      return nil
+    }
+    let native = Universe.nativeSystem(world)
+    return .init(worldID: world.key, galaxy: galaxy, system: native)
+  }
   var valid: Bool {
     training.valid && destination.valid && training.galaxy == destination.galaxy
       && training.worldID != destination.worldID && training.system.id != destination.system.id

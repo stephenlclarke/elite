@@ -45,11 +45,11 @@ struct ScriptNavigationTradeFixture: Sendable {
       "Escape Pod", at: .utility(.escapePod),
       provenance: .grant("navigation fixture safety equipment"))
     game.scriptPacks = [pack]
-    game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+    game.market = MarketItem.at(game.currentSystem)
     game.launch()
     try #require(!game.docked && game.commander.valid)
-    // Pick a real stocked legal tonne and reachable world whose highest possible price is lower.
-    // This checks a genuine loss independently of the actual arrival fluctuation.
+    // Pick a real stocked legal tonne and reachable world whose real bid is lower.
+    // This checks a genuine loss using the actual authored buy/sell spread.
     let choices = game.knownSystems.filter {
       $0.id != game.commander.system && game.currentSystem.distance(to: $0) > 0
         && game.currentSystem.distance(to: $0) <= min(6, game.commander.maximumJumpDistance)
@@ -57,10 +57,7 @@ struct ScriptNavigationTradeFixture: Sendable {
       Commodity.all.indices.compactMap { index -> (StarSystem, Int)? in
         guard Commodity.all[index].unit == "t", ![3, 6, 10, 16].contains(index),
           game.market[index].quantity > 0,
-          (0..<256).allSatisfy({
-            MarketItem.generate(economy: destination.economy, fluctuation: $0)[index].price
-              < game.market[index].price
-          })
+          MarketItem.at(destination)[index].bidPrice < game.market[index].price
         else { return nil }
         return (destination, index)
       }
@@ -68,10 +65,11 @@ struct ScriptNavigationTradeFixture: Sendable {
     let selected = try #require(choices.first)
     binding = .init(
       training: .init(
-        worldID: "fixture.navigation.training", galaxy: game.commander.galaxy,
+        worldID: try #require(game.currentSystem.original?.key), galaxy: game.commander.galaxy,
         system: game.currentSystem),
       destination: .init(
-        worldID: "fixture.navigation.destination", galaxy: game.commander.galaxy, system: selected.0
+        worldID: try #require(selected.0.original?.key), galaxy: game.commander.galaxy,
+        system: selected.0
       ))
     commodity = selected.1
     initial = game
@@ -100,8 +98,9 @@ struct ScriptNavigationTradeFixture: Sendable {
     try await runtime.navigationTradeCommand(binding: binding) { game in
       game.selectedSystem = binding.destination.system.id
       game.selection = selectedCommodity ?? commodity
-      let id = try game.acceptScriptMission(pack, drainAccepted: false, navigationBinding: binding)
-      game.drainScriptEvents(navigationBinding: binding)
+      try #require(ScriptNavigationTradeBinding.production(in: game) == binding)
+      let id = try game.acceptScriptMission(pack, drainAccepted: false)
+      game.drainScriptEvents()
       return id
     }
   }
@@ -121,7 +120,7 @@ struct ScriptNavigationTradeFixture: Sendable {
   {
     try await runtime.navigationTradeCommand(binding: binding) { game in
       game.emitScriptEvent("contact.requested", only: id, drain: false)
-      game.drainScriptEvents(navigationBinding: binding)
+      game.drainScriptEvents()
       let shown = game.showScriptDialogue(only: id)
       try #require(shown)
       if let choice {
@@ -134,7 +133,7 @@ struct ScriptNavigationTradeFixture: Sendable {
       let cause = game.commander.scriptState.pendingEvents.last {
         $0.instance == id && $0.kind == "dialogue.confirmed"
       }
-      game.drainScriptEvents(navigationBinding: binding)
+      game.drainScriptEvents()
       return cause
     }
   }

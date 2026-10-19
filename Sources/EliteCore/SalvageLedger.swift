@@ -1121,7 +1121,7 @@ public struct SalvageLedger: Equatable, Codable, Sendable {
       else { return false }
       let mass = nativeMass(amount)
       let half = max(1, pow(max(1, mass) / 100, 1.0 / 3) * 4)
-      let price = MarketItem.generate(economy: source.economy, fluctuation: 0)[
+      let price = MarketItem.authoredManifest[
         amount.commodity.rawValue
       ].price
       let (value, overflow) = amount.quantity.multipliedReportingOverflow(by: price)

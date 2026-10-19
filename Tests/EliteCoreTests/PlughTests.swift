@@ -274,13 +274,11 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
 @Test func plughFuelAndAllCommodityPricesMatchDisplaysAndCannotCreateInstantTradeProfit() throws {
   var game = plughGame()
   game.commander.credits = 1_000_000
+  let ordinary = MarketItem.at(Universe.galaxy(number: game.commander.galaxy)[Plugh.rumourStation])
   #expect(
-    (0..<256).contains { fluctuation in
-      let ordinary = MarketItem.generate(
-        economy: game.currentSystem.economy, fluctuation: fluctuation)
-      return game.market.indices.allSatisfy {
-        game.market[$0].price == Plugh.discount(ordinary[$0].price)
-      }
+    game.market.indices.allSatisfy {
+      game.market[$0].price == Plugh.discount(ordinary[$0].price)
+        && game.market[$0].bidPrice == Plugh.discount(ordinary[$0].bidPrice)
     })
   for index in Commodity.all.indices {
     game.selection = index
@@ -288,7 +286,9 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
     game.trade(buy: true)
     #expect(game.commander.credits == cash - game.market[index].price)
     game.trade(buy: false)
-    #expect(game.commander.credits == cash && game.market[index].quantity == 63)
+    #expect(
+      game.commander.credits == cash - game.market[index].price + game.market[index].bidPrice
+        && game.market[index].quantity == 63)
   }
   game.commander.fuel = 0
   game.selection = 0

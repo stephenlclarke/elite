@@ -122,7 +122,7 @@ struct ScriptProcurementFixture {
     game.commander.system = 0
     game.selectedSystem = 0
     game.commander.credits = 100000
-    game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+    game.market = MarketItem.at(game.currentSystem)
     game.scriptPacks = [pack]
     let cargo = game.commander.cargo
     try game.prepareG03FlightEquipment()
@@ -1290,7 +1290,7 @@ extension GameRuntime {
   func procurementMassLocked() -> Bool { game.massLocked }
   func procurementJumping() -> Bool { game.jumpCountdown != nil }
   func procurementCurrentSystem() -> Int { game.commander.system }
-  func procurementSystemCoordinate(_ id: Int) -> (Int, Int) {
+  func procurementSystemCoordinate(_ id: Int) -> (Double, Double) {
     (game.systems[id].x, game.systems[id].y)
   }
   /// Actual paid Fuel transaction at the repeated-trip caller's genuine turnaround dock.

@@ -35,7 +35,7 @@ public struct OriginalMarketInitialState: Decodable, Sendable, Equatable {
 }
 
 /// A single immutable seed store over the existing validated original world authority.
-/// Game transactions, cargo, fuel, legal rules and routes do not consult this staged adapter.
+/// OriginalLiveMarkets initializes commander-owned mutable stock from these authenticated quotes.
 public struct OriginalMarketCatalogue: Sendable {
   public let version: String
   public let allInitialStates: [OriginalMarketInitialState]
@@ -76,7 +76,9 @@ public struct OriginalMarketCatalogue: Sendable {
     return try initialState(world: world)
   }
 
-  public func initialQuote(worldKey: String, commodityIndex: Int) throws -> OriginalMarketInitialQuote {
+  public func initialQuote(worldKey: String, commodityIndex: Int) throws
+    -> OriginalMarketInitialQuote
+  {
     let state = try initialState(worldKey: worldKey)
     guard let quote = state.quotes.first(where: { $0.index == commodityIndex }) else {
       throw OriginalMarketCatalogueError.unknownCommodity(commodityIndex)
@@ -119,7 +121,8 @@ public struct OriginalMarketCatalogue: Sendable {
       (1...16_777_216).contains(manifest.bytes), manifest.worldCount == 2048,
       manifest.quoteCount == 34816
     else { throw OriginalMarketCatalogueError.invalidSchema("Pinned initial-market manifest") }
-    let data = try boundedData(directory.appendingPathComponent("markets.json"), maximum: 16_777_216)
+    let data = try boundedData(
+      directory.appendingPathComponent("markets.json"), maximum: 16_777_216)
     guard data.count == manifest.bytes, fingerprint(data) == manifest.sha256 else {
       throw OriginalMarketCatalogueError.fingerprintMismatch("markets.json")
     }
@@ -156,7 +159,8 @@ public struct OriginalMarketCatalogue: Sendable {
     _ state: OriginalMarketInitialState, worlds: OriginalWorldCatalogue
   ) throws {
     let world = try worlds.world(key: state.key)
-    guard state.galaxy == world.galaxy, state.system == world.system, state.quotes.count == 17 else {
+    guard state.galaxy == world.galaxy, state.system == world.system, state.quotes.count == 17
+    else {
       throw OriginalMarketCatalogueError.invalidSchema("Foreign/incomplete market world")
     }
     var indices = Set<Int>()
@@ -181,7 +185,9 @@ public struct OriginalMarketCatalogue: Sendable {
       quote.askTenthsCR >= 0, quote.bidTenthsCR >= 0,
       quote.bidTenthsCR <= quote.askTenthsCR,
       quote.stock >= 0, quote.targetStock >= 0, quote.epoch >= 0
-    else { throw OriginalMarketCatalogueError.invalidSchema("Initial quote identity/units/quantities") }
+    else {
+      throw OriginalMarketCatalogueError.invalidSchema("Initial quote identity/units/quantities")
+    }
   }
 
   private static func validateFields(_ data: Data) throws {
@@ -199,7 +205,9 @@ public struct OriginalMarketCatalogue: Sendable {
           quote["name"] is String, quote["unit"] is String, quote["worldVersion"] is String,
           ["system", "index", "askTenthsCR", "bidTenthsCR", "stock", "targetStock", "epoch"]
             .allSatisfy({ integral(quote[$0]) })
-        else { throw OriginalMarketCatalogueError.invalidSchema("Exact initial-quote fields/types") }
+        else {
+          throw OriginalMarketCatalogueError.invalidSchema("Exact initial-quote fields/types")
+        }
       }
     }
   }

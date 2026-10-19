@@ -1,6 +1,6 @@
 import Foundation
 
-/// Exact translated runtime bytes, independently of unresolved original-world authority.
+/// Exact translated runtime bytes, with endpoints resolved by the installed original world authority.
 enum ScriptNavigationTradeContent {
   static let sourceID = "l337.training/navigation-trade"
   static let version = "1.0.0"

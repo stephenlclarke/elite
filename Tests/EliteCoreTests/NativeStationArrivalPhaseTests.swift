@@ -15,7 +15,7 @@ import Testing
     })
   game.commander.system = origin.id
   game.selectedSystem = origin.id
-  game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+  game.market = MarketItem.at(game.currentSystem)
   game.screen = .status
   game.launch()
   let launched = !game.docked && !game.paused && game.screen.isFlight && game.commander.valid

@@ -41,7 +41,7 @@ extension Display {
   static func chartDataWindow(_ game: Game) -> ScrollWindow {
     let layout = ChartLayout(
       width: game.viewportWidth, height: game.viewportHeight, local: game.screen == .shortChart,
-      fuel: game.commander.fuel, docked: game.docked)
+      fuel: game.commander.fuel, docked: game.docked, galaxy: game.viewedGalaxy)
     let y = layout.detailsTop
     let bottom = layout.height - (layout.wide ? 48 : 126)
     let diameter = layout.wide ? 0.0 : min(140, bottom - y - 24)

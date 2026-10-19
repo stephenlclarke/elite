@@ -65,8 +65,8 @@ extension Game {
     switch field {
     case "galaxy": return Double(commander.galaxy)
     case "system": return Double(commander.system)
-    case "x": return Double(currentSystem.x)
-    case "y": return Double(currentSystem.y)
+    case "x": return currentSystem.x
+    case "y": return currentSystem.y
     case "kills": return Double(commander.kills)
     case "credits": return Double(commander.credits)
     case "legal": return Double(commander.legal)
