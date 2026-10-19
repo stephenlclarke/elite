@@ -44,3 +44,7 @@ Based on committed G1 snapshot1c49b369, preserving its newer738/739/740 evidence
 ## Superseding owner unit/review policy
 
 Child of4563da55 on the isolated current-G1-based documentation branch: correct its now-stale01-active/04-pending-integration labels. Both source packets are frozen but UNRUN and unreviewed, therefore in development/validation-review pending; the new01 patch/handoff hashes and commitNONE are recorded. G3 owns focused unit execution/fixes under Root's single MBA-only lease, G2 owns independent bugs/performance/style review, no new feature is active. MC1's457ee6a crash leaf has the same gate. AGENTS/ledger require owner-PASS/clean review before integration handoff while broad integration remains batched; preserve existing740/738 evidence and no M01 expansion. No author runtime job or extra investigation.
+
+## Latest assigned continuation and actual delivery
+
+Record Root's743 compile/744 five Director-unit passes alongside the unchanged native-crossing signal10 at EMP/save fixture81, proof5c0592e9...; MC1 owns only FlightWorkTools.swift causal continuation. Local742/source1c49 was actually delivered and Root-verified, while formal740 remains failed and no public/main/Brew claim follows. MBA04 G2 review is clean but licence69 yielded zero Swift tests;01 has two P1 loader/save-field findings, narrow ScriptPack/ScriptFreightVersionedSave fixes and G2 re-review pending. Existing owner-PASS-before-integration policy remains; no runtime jobs or new audit in this docs child.
