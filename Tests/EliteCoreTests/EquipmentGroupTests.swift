@@ -202,16 +202,32 @@ import Testing
   #expect(restored.commander.credits == 1234 && restored.commander.xyzzyCashGranted)
 }
 
-private func selectActualMainStationWithTab(_ game: inout Game) throws {
+private func selectActualMainStationWithTab(_ game: inout Game, stage: String) throws {
+  try #require(!game.docked, "\(stage): selection requires flight")
+  try #require(!game.paused, "\(stage): paused; \(game.message)")
+  try #require(game.screen.isFlight, "\(stage): screen \(game.screen)")
+  try #require(game.workTargetFilter == .ships, "\(stage): filter \(game.workTargetFilter)")
+  try #require(
+    game.commander.targetingTier == .military, "\(stage): military core must remain fitted")
   game.ensurePhysicalActors()
-  try #require(game.bodies.contains { $0.id == 0 && $0.hull == .station && $0.energy > 0 })
+  let station = try #require(
+    game.bodies.first { $0.id == 0 && $0.hull == .station && $0.energy > 0 },
+    "\(stage): actual main station must remain present")
+  let actor = try #require(station.physical?.identity, "\(stage): main station must be adopted")
+  try #require(actor == game.commander.flightSimulation.anchors?.station.identity)
+  try #require(game.modelPose(of: station).orientation.validRotation)
+  var selections: [Int?] = []
   // Each real candidate can be visited once before wrapping; no traffic is removed.
   let limit = game.bodies.count
   for _ in 0..<limit {
     game.key("tab")
+    selections.append(game.autoPilot.targetID)
     if game.autoPilot.targetID == 0 { break }
   }
-  try #require(game.autoPilot.targetID == 0 && game.dockingComputer)
+  try #require(
+    game.autoPilot.targetID == 0 && game.dockingComputer,
+    "\(stage): selections \(selections), screen \(game.screen), paused \(game.paused), message \(game.message)"
+  )
 }
 
 @Test func tabEngagesFullStationDockingWhenXYZzyAssistanceIsOffAndCIsRemoved() throws {
@@ -245,7 +261,7 @@ private func selectActualMainStationWithTab(_ game: inout Game) throws {
   game.screen = .rear
   game.key("c")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  try selectActualMainStationWithTab(&game)
+  try selectActualMainStationWithTab(&game, stage: "initial engagement after removed C")
   #expect(game.screen == .front && game.dockingComputer && game.autoPilot.targetID == 0)
   #expect(game.message == "AUTO DOCKING ENGAGED")
   game.tick(delta: 0.1)
@@ -253,14 +269,14 @@ private func selectActualMainStationWithTab(_ game: inout Game) throws {
   #expect(game.autoHUDLines.contains { $0.contains("AUTO:") })
   game.key("p")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  try selectActualMainStationWithTab(&game)
+  try selectActualMainStationWithTab(&game, stage: "reengagement after P")
   game.key("q")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
-  try selectActualMainStationWithTab(&game)
+  try selectActualMainStationWithTab(&game, stage: "reengagement after Q")
   game.key("5")
   #expect(!game.dockingComputer && game.autoPilot.targetID == nil)
   game.key("0")
-  try selectActualMainStationWithTab(&game)
+  try selectActualMainStationWithTab(&game, stage: "reengagement after chart return")
   for _ in 0..<2500 where !game.docked { game.tick(delta: 0.1) }
   #expect(game.docked && !game.dockingComputer && game.screen == .status)
 }
