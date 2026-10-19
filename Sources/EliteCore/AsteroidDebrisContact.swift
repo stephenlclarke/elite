@@ -100,6 +100,17 @@ private struct DebrisActorFrame {
   let rotation: Double
 }
 
+private struct DebrisBodyMotion {
+  let id: Int
+  let identity: ActorIdentity?
+  let position: Vector3
+  let orientation: Basis3
+  let rotation: Double
+  let velocity: Vector3?
+  let npcViewVelocity: Vector3?
+  let shotViewVelocity: Vector3?
+}
+
 /// Synchronous, acyclic, non-Sendable ownership of actual pre-movement facts.
 final class AsteroidContactFrame {
   fileprivate let system: SystemIdentity
@@ -109,6 +120,15 @@ final class AsteroidContactFrame {
   fileprivate let playerVelocity: Vector3
   fileprivate let actors: [DebrisActorFrame]
   fileprivate let celestials: [CelestialBody]
+  fileprivate let bodyMotion: [DebrisBodyMotion]
+  fileprivate let pilot: AutoTargetControl
+  fileprivate let guidance: FlightWorkGuidance?
+  fileprivate let braking: FlightWorkBraking?
+  fileprivate let approved: HullSceneMotion?
+  fileprivate let lastApplied: HullSceneMotion?
+  fileprivate let residual: Bool
+  fileprivate let recovery: RockIdentity?
+  fileprivate let speed: Double
   private var consumed = false
   fileprivate func take() -> Bool {
     guard !consumed else { return false }
@@ -123,6 +143,20 @@ final class AsteroidContactFrame {
     playerPose = game.commander.flightSimulation.pose
     playerVelocity = game.flightWorldVelocity
     celestials = game.celestials
+    pilot = game.autoPilot
+    guidance = game.workGuidance
+    braking = game.workBraking
+    approved = game.approvedWorkMotion
+    lastApplied = game.lastAppliedWorkMotion
+    residual = game.manualResidualFlight
+    recovery = game.workRecoveryRock
+    speed = game.speed
+    bodyMotion = game.bodies.map {
+      .init(
+        id: $0.id, identity: $0.physical?.identity, position: $0.position,
+        orientation: $0.orientation, rotation: $0.rotation, velocity: $0.physical?.velocity,
+        npcViewVelocity: $0.scriptNPC?.velocity, shotViewVelocity: $0.scriptShot?.velocity)
+    }
     var snapshots: [DebrisActorFrame] = []
     if let player = game.commander.flightSimulation.player {
       snapshots.append(
@@ -264,6 +298,11 @@ extension Game {
         normal: contact.normal)
     else { return refuseDebrisStep(frame, reason: "IMPULSE UNPROVEN") }
     // Do not advance a new post-impact path without proving its entire remaining interval.
+    let contactPlayerPose =
+      trajectories.first { $0.frame.bodyID == nil }
+      .map { debrisPose($0.motion, at: contact.upperTime) } ?? commander.flightSimulation.pose
+    let contactSourcePose = debrisPose(trajectories[source].motion, at: contact.upperTime)
+    let contactTargetPose = debrisPose(trajectories[target].motion, at: contact.upperTime)
     let remainder = delta - contact.lowerTime
     for index in [source, target] {
       let original = trajectories[index].motion
@@ -331,6 +370,10 @@ extension Game {
     guard law.record(trial, context: context).accepted else {
       return refuseDebrisStep(frame, reason: "INCIDENT REFUSED")
     }
+    mapDebrisEffectToContact(
+      player: contactPlayerPose,
+      sourceID: sourceID, source: contactSourcePose,
+      targetID: trajectories[target].frame.bodyID, target: contactTargetPose)
     let allocated = makeAttackOrigin(owner: trajectories[source].frame.identity)
     guard let origin = allocated else { return refuseDebrisStep(frame, reason: "INCIDENT REFUSED") }
     let targetActor = trajectories[target].frame
@@ -342,7 +385,9 @@ extension Game {
     // and destruction authorities. No weapon discharge or mission success is synthesized.
     let incident = applyCombatHit(hit, origin: origin, kind: .collision, damage: impulse.damage)
     guard let incident else {
+      let effectPose = commander.flightSimulation.pose
       commander.flightSimulation = simulation
+      commander.flightSimulation.pose = effectPose
       return refuseDebrisStep(frame, reason: "DAMAGE REFUSED")
     }
     commander.crimeLedger.finishEmission(origin.emissionID)
@@ -361,27 +406,72 @@ extension Game {
     -> AsteroidContactStepResult
   {
     let previous = commander.flightSimulation.pose
+    rotateScriptNPCVelocities(from: previous, to: frame.playerPose)
     commander.flightSimulation.pose = frame.playerPose
     for index in bodies.indices {
       let body = bodies[index]
-      if let actor = frame.actors.first(where: {
-        $0.bodyID == body.id
-          && $0.identity == body.physical?.identity
+      if let captured = frame.bodyMotion.first(where: {
+        $0.id == body.id && $0.identity == body.physical?.identity
       }) {
-        bodies[index].position = frame.playerPose.shipPoint(actor.pose.position)
-        bodies[index].orientation = actor.localOrientation
-        bodies[index].rotation = actor.rotation
-        bodies[index].physical?.velocity = actor.velocity
+        bodies[index].position = captured.position
+        bodies[index].orientation = captured.orientation
+        bodies[index].rotation = captured.rotation
+        if let velocity = captured.velocity { bodies[index].physical?.velocity = velocity }
+        if let velocity = captured.npcViewVelocity { bodies[index].scriptNPC?.velocity = velocity }
+        if let velocity = captured.shotViewVelocity {
+          bodies[index].scriptShot?.velocity = velocity
+        }
       } else {
         bodies[index].position = frame.playerPose.shipPoint(previous.systemPoint(body.position))
         let world = body.orientation.transformed(by: previous.orientation)
         bodies[index].orientation = world.relative(to: frame.playerPose.orientation)
       }
     }
+    autoPilot = frame.pilot
+    workGuidance = frame.guidance
+    workBraking = frame.braking
+    approvedWorkMotion = frame.approved
+    lastAppliedWorkMotion = frame.lastApplied
+    manualResidualFlight = frame.residual
+    workRecoveryRock = frame.recovery
+    speed = frame.speed
     celestials = frame.celestials
     paused = true
     notify("DEBRIS CONTACT DEFERRED: " + reason, voiced: false)
     return .refused(reason)
+  }
+
+  /// The normal native damage kernel sees the actually proved impact-time bank/axes.
+  /// End-of-step positions must not choose the opposite shield after a fast crossing.
+  private mutating func mapDebrisEffectToContact(
+    player: ShipPose, sourceID: Int, source: ShipPose, targetID: Int?, target: ShipPose
+  ) {
+    let previous = commander.flightSimulation.pose
+    rotateScriptNPCVelocities(from: previous, to: player)
+    for index in bodies.indices {
+      let body = bodies[index]
+      let pose =
+        body.id == sourceID
+        ? source
+        : body.id == targetID ? target : modelPose(of: body)
+      setDebrisBodyPose(at: index, pose: pose, player: player)
+    }
+    for index in celestials.indices {
+      celestials[index].position = player.shipPoint(
+        previous.systemPoint(celestials[index].position))
+    }
+    commander.flightSimulation.pose = player
+  }
+
+  private mutating func setDebrisBodyPose(at index: Int, pose: ShipPose, player: ShipPose) {
+    bodies[index].position = player.shipPoint(pose.position)
+    let relative = pose.orientation.relative(to: player.orientation)
+    let rotation = bodies[index].rotation
+    var spin = Basis3()
+    spin.rotate(pitch: bodies[index].hull == .station ? 0 : rotation * 0.4, roll: rotation, yaw: 0)
+    bodies[index].orientation.x = relative.apply(spin.inverse(.init(1, 0, 0)))
+    bodies[index].orientation.y = relative.apply(spin.inverse(.init(0, 1, 0)))
+    bodies[index].orientation.z = relative.apply(spin.inverse(.init(0, 0, 1)))
   }
 
   private mutating func commitDebrisMotion(
@@ -391,6 +481,7 @@ extension Game {
     let previous = commander.flightSimulation.pose
     let player = trajectories.first { $0.frame.bodyID == nil }
     let end = player?.motion.end ?? previous
+    rotateScriptNPCVelocities(from: previous, to: end)
     commander.flightSimulation.pose = end
     for index in bodies.indices {
       guard

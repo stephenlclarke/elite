@@ -520,7 +520,10 @@ extension AsteroidFragmentationTests {
     #expect(game.commander == committed && game.commander.flightSimulation.pose == pose)
   }
 
-  @Test func nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward() throws {
+  @Test(arguments: [0.0, -3000.0])
+  func nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity: Double)
+    throws
+  {
     var (game, rock, bodyID) = try nativeFractureGame()
     try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
     let sourceIndex = try #require(game.bodies.firstIndex { $0.id == bodyID })
@@ -536,7 +539,7 @@ extension AsteroidFragmentationTests {
         system: context.system, visit: context.visit,
         sequence: sequence, member: 0, producer: .ambient), population: .civilian, hull: .cobra,
       position: context.player.position + Vector3(0, 0, 1500), orientation: .init(),
-      velocity: .init(0, 0, 0), npc: npc, rock: nil, payload: nil, priority: .ordinary)
+      velocity: .init(0, 0, targetVelocity), npc: npc, rock: nil, payload: nil, priority: .ordinary)
     let receipts = game.admitEncounterPlan(
       .init(
         system: context.system, visit: context.visit,
@@ -548,14 +551,20 @@ extension AsteroidFragmentationTests {
     game.bodies[sourceIndex].physical?.velocity = .init(0, 0, 16000)
     game.persistOrePoses()
     let sourceKg = try #require(game.asteroidDebrisMassKg(game.bodies[sourceIndex]))
-    let incomingMomentum = Vector3(0, 0, 16000) * sourceKg
+    let targetMass = AsteroidImpactPolicy.massKg(hull: targetBefore.hull)
+    let incomingMomentum =
+      Vector3(0, 0, 16000) * sourceKg
+      + Vector3(0, 0, targetVelocity) * targetMass
+    let targetEndPoint = game.commander.flightSimulation.pose.systemPoint(
+      targetBefore.position + Vector3(0, 0, targetVelocity * 0.1))
     let cash = game.commander.credits
     let kills = game.commander.kills
     game.commander.flightSimulation.advancePhysicalTime(0.1)
     let frame = try #require(game.beginAsteroidContactStep())
     moveNativeContactEndpoints(&game, delta: 0.1)
     let result = game.completeAsteroidContactStep(frame, delta: 0.1)
-    guard case .advanced(let receipt) = result, receipt?.target == targetActor else {
+    guard case .advanced(let packet) = result, let receipt = packet, receipt.target == targetActor
+    else {
       Issue.record("Actual native moving debris did not admit the NPC impact")
       return
     }
@@ -572,6 +581,15 @@ extension AsteroidFragmentationTests {
       target.energy + (target.physical?.npc?.resources?.frontShield ?? 0)
       + (target.physical?.npc?.resources?.rearShield ?? 0)
     #expect(after < before)
+    if targetVelocity < 0 {
+      #expect(receipt.point.z > targetEndPoint.z)
+      #expect(
+        target.physical?.npc?.resources?.frontShield
+          == targetBefore.physical?.npc?.resources?.frontShield)
+      let rear = try #require(target.physical?.npc?.resources?.rearShield)
+      let originalRear = try #require(targetBefore.physical?.npc?.resources?.rearShield)
+      #expect(rear < originalRear)
+    }
     if target.energy <= 0 { #expect(target.physical?.deathIncidentID != nil) }
     #expect(game.commander.credits == cash && game.commander.kills == kills)
     #expect(source.energy > 0)
@@ -590,5 +608,143 @@ extension AsteroidFragmentationTests {
       return
     }
     #expect(game.commander == before && game.bodies == bodies)
+  }
+}
+
+extension AsteroidFragmentationTests {
+  @Test func refusedActualAcceleratingRotatingWorkMoveRestoresAllMotionForResume() throws {
+    var (game, rock, bodyID) = try nativeFractureGame()
+    try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
+    let velocity = Vector3(3, 4, 5)
+    let acceleration = Vector3(20, 0, 0)
+    let omega = Vector3(0, 0, 0.25)
+    game.workBraking = .init(velocity: velocity, angularVelocity: omega)
+    game.autoPilot.setApproachVelocity(.init(7, 8, 9))
+    game.manualResidualFlight = true
+    game.speed = 7
+    let start = game.commander.flightSimulation.pose
+    var end = start
+    end.position = start.position + velocity * 0.1 + acceleration * 0.005
+    end.orientation.rotate(pitch: 0, roll: 0.025, yaw: 0)
+    let motion = HullSceneMotion(
+      start: start, end: end, initialVelocity: velocity,
+      acceleration: acceleration, worldAngularVelocity: omega, duration: 0.1,
+      playerRadius: game.commander.playerMesh.vertices.map(\.length).max() ?? 80)
+    game.approvedWorkMotion = motion
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let commander = game.commander
+    let bodies = game.bodies
+    let pilotVelocity = game.autoPilot.velocity
+    let frame = try #require(game.beginAsteroidContactStep())
+    let moved = game.moveWorkFrame(delta: 0.1)
+    try #require(moved)
+    #expect(game.workBraking?.velocity == velocity + acceleration * 0.1)
+    #expect(game.autoPilot.velocity == .init(0, 0, 0) && game.approvedWorkMotion == nil)
+    let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+    // Force the actual post-movement snapshot refusal, before any impact/resource write.
+    game.bodies[index].position.x = .nan
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .refused = result else {
+      Issue.record("Invalid moved snapshot was admitted")
+      return
+    }
+    #expect(game.commander == commander && game.bodies == bodies)
+    #expect(game.workBraking?.velocity == velocity && game.workBraking?.angularVelocity == omega)
+    #expect(
+      game.autoPilot.velocity == pilotVelocity && game.speed == 7 && game.manualResidualFlight)
+    #expect(game.approvedWorkMotion == motion && game.lastAppliedWorkMotion == nil)
+    #expect(game.flightWorldVelocity == velocity)
+    game.paused = false
+    let resumed = game.moveWorkFrame(delta: 0.1)
+    #expect(resumed && game.commander.flightSimulation.pose == end)
+    #expect(game.workBraking?.velocity == velocity + acceleration * 0.1)
+  }
+
+  @Test func actualManualRotationRefusalPreservesWorldMomentum() throws {
+    var (game, rock, bodyID) = try nativeFractureGame()
+    try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
+    game.manualResidualFlight = true
+    game.speed = 0
+    game.autoPilot.setApproachVelocity(.init(12, 3, 7))
+    let velocity = game.flightWorldVelocity
+    let pose = game.commander.flightSimulation.pose
+    let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+    game.bodies[index].physical?.velocity = .init(.infinity, 0, 0)
+    var controls = Controls()
+    controls.pitch = 0.4
+    controls.roll = 0.2
+    controls.yaw = 0.3
+    game.tick(delta: 0.1, controls: controls)
+    #expect(game.paused && game.commander.flightSimulation.pose == pose)
+    #expect((game.flightWorldVelocity - velocity).length < 1e-10)
+    #expect(game.bodies.first { $0.id == bodyID }?.position.finite == true)
+  }
+
+  @Test func collisionDefersOreHullGrowthUntilActualSafeReadmission() throws {
+    var (game, rock, bodyID) = try nativeFractureGame()
+    try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
+    try nativeFractureHit(&game, bodyID: bodyID, damage: 100000, mining: true)
+    game.admitPendingOre()
+    let oreIndex = try #require(game.bodies.firstIndex { $0.physical?.payload != nil })
+    let payload = try #require(game.bodies[oreIndex].physical?.payload)
+    let oreID = game.bodies[oreIndex].id
+    let oreActor = try #require(game.bodies[oreIndex].physical?.identity)
+    let source = try #require(game.bodies.firstIndex { $0.id == bodyID })
+    game.bodies[source].rotation = 0
+    game.bodies[source].physical?.velocity = .init(0, 0, 16000)
+    game.bodies[oreIndex].position = .init(0, 0, 1500)
+    game.bodies[oreIndex].physical?.velocity = .init(0, 0, 0)
+    game.persistOrePoses()
+    let oldMesh = game.gameplayMesh(for: game.bodies[oreIndex])
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let frame = try #require(game.beginAsteroidContactStep())
+    moveNativeContactEndpoints(&game, delta: 0.1)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .advanced(let receipt) = result, receipt?.target == oreActor else {
+      Issue.record("Native ore collision did not commit")
+      return
+    }
+    let rubble = try #require(game.bodies.first { $0.id == oreID })
+    let mesh = game.gameplayMesh(for: rubble)
+    #expect(game.commander.miningLedger.isRubble(payload))
+    #expect(rubble.hull == .cargo && rubble.physical?.population == .cargo)
+    #expect(mesh.vertices == oldMesh.vertices && mesh.faces == oldMesh.faces)
+    game.commander.miningLedger.cull(actor: oreActor)
+    game.bodies.removeAll { $0.id == oreID }
+    game.admitPendingOre()
+    let admitted = try #require(game.bodies.first { $0.physical?.payload == payload })
+    #expect(admitted.physical?.identity != oreActor && admitted.hull == .asteroid)
+    #expect(admitted.physical?.population == .asteroid)
+  }
+
+  @Test func fastCrossingPlayerUsesProvedContactFrontBankRatherThanEndPoseRearBank() throws {
+    var (game, rock, bodyID) = try nativeFractureGame()
+    try nativeFractureHit(&game, bodyID: bodyID, damage: rock.energy + 1)
+    let index = try #require(game.bodies.firstIndex { $0.id == bodyID })
+    game.bodies[index].position = .init(0, 0, 1500)
+    game.bodies[index].rotation = 0
+    game.bodies[index].physical?.velocity = .init(0, 0, -10000)
+    let start = game.commander.flightSimulation.pose
+    var end = start
+    end.position = start.position + .init(0, 0, 1000)
+    game.workBraking = .init(velocity: .init(0, 0, 10000), angularVelocity: .init(0, 0, 0))
+    game.approvedWorkMotion = .init(
+      start: start, end: end, initialVelocity: .init(0, 0, 10000),
+      acceleration: .init(0, 0, 0), worldAngularVelocity: .init(0, 0, 0), duration: 0.1,
+      playerRadius: game.commander.playerMesh.vertices.map(\.length).max() ?? 80)
+    game.persistOrePoses()
+    let front = game.frontShield
+    let rear = game.rearShield
+    game.commander.flightSimulation.advancePhysicalTime(0.1)
+    let frame = try #require(game.beginAsteroidContactStep())
+    let moved = game.moveWorkFrame(delta: 0.1)
+    try #require(moved)
+    let result = game.completeAsteroidContactStep(frame, delta: 0.1)
+    guard case .advanced(let receipt) = result, let receipt else {
+      Issue.record("Native fast crossing did not commit")
+      return
+    }
+    #expect(receipt.point.z < end.position.z)
+    #expect(game.frontShield < front && game.rearShield == rear)
   }
 }

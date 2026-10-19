@@ -117,8 +117,12 @@ extension Game {
       } else if damage.isFinite, damage >= bodies[index].energy,
         commander.miningLedger.destroy(payload: payload, protection: gameplayContext()?.protection)
       {
-        bodies[index].hull = .asteroid
-        bodies[index].physical?.population = .asteroid
+        // A collision remainder was proved against this body's current mesh. Defer
+        // the larger hull/population transition until a later real native admission.
+        if incident.kind != .collision {
+          bodies[index].hull = .asteroid
+          bodies[index].physical?.population = .asteroid
+        }
         bodies[index].energy = 100
         commander.miningLedger.bindRubble(payload: payload, actor: physical.identity)
       } else if damage.isFinite, damage > 0 {
