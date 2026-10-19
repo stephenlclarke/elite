@@ -1517,3 +1517,156 @@ private func sweepFindEar(
   }
   return nil
 }
+
+/// A continuous proof covers every interval before this bracket. The upper endpoint
+/// contains a certified native triangle/closed-hull intersection, never just a sphere hit.
+struct NativeHullContact: Sendable {
+  let lowerTime: Double
+  let upperTime: Double
+  let point: Vector3
+  let normal: Vector3
+}
+
+enum NativeHullContactResult: Sendable {
+  case clear
+  case contact(NativeHullContact)
+  case refused(HullSweepFailure)
+}
+
+extension HullSweepSafety {
+  /// Both trajectories are the native step's rigid interpolation of actual endpoints.
+  /// Thin crossings cannot be reported clear merely because a sample missed them:
+  /// every clear interval needs the same continuous separation envelope as work motion.
+  static func firstNativeContact(
+    source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
+    targetHull: PreparedHull, budget: HullSweepBudget = .standard
+  ) -> NativeHullContactResult {
+    var work = SweepWork(budget: budget)
+    do {
+      try validateMotion(source, player: hull, budget: budget)
+      try validateMotion(target, player: targetHull, budget: budget)
+      guard source.duration == target.duration, source.requiredClearance == 0,
+        target.requiredClearance == 0
+      else { throw HullSweepFailure.invalidMotion }
+      try work.query()
+      let initial = try meshDistance(
+        hull, pose: source.start, obstacle: targetHull,
+        pose: target.start, work: &work)
+      guard initial > 1e-9 else { throw HullSweepFailure.unproven }
+      return try contactInterval(
+        source, hull: hull, target: target, targetHull: targetHull,
+        start: 0, end: source.duration, depth: 0, known: nil, work: &work)
+    } catch let failure as HullSweepFailure {
+      return .refused(failure)
+    } catch {
+      return .refused(.unproven)
+    }
+  }
+
+  private static func contactInterval(
+    _ source: HullSceneMotion, hull: PreparedHull, target: HullSceneMotion,
+    targetHull: PreparedHull, start: Double, end: Double, depth: Int,
+    known: NativeHullContact?, work: inout SweepWork
+  ) throws -> NativeHullContactResult {
+    let middle = (start + end) * 0.5
+    let a = shipPose(source, at: middle)
+    let b = shipPose(target, at: middle)
+    try work.query()
+    let separation: Double
+    do {
+      separation = try meshDistance(hull, pose: a, obstacle: targetHull, pose: b, work: &work)
+    } catch HullSweepFailure.insideHull {
+      // Containment is an overlap, but only the witness below authorizes an effect.
+      separation = 0
+    }
+    let half = (end - start) * 0.5
+    let relativeAcceleration = source.acceleration - target.acceleration
+    let speed =
+      (source.initialVelocity - target.initialVelocity
+      + relativeAcceleration * middle).length
+      + relativeAcceleration.length * half
+      + source.worldAngularVelocity.length * hull.radius
+      + target.worldAngularVelocity.length * targetHull.radius
+    let envelope = (speed.nextUp * half).nextUp
+    let numerical =
+      64 * Double.ulpOfOne
+      * max(1, hull.radius + targetHull.radius + a.position.length + b.position.length)
+    guard separation.isFinite, envelope.isFinite else { throw HullSweepFailure.invalidMotion }
+    if separation - envelope - numerical > 0 { return .clear }
+    var witness = known
+    if separation <= 1e-9,
+      let found = try nativeContactWitness(hull, pose: a, target: targetHull, pose: b, work: &work)
+    {
+      witness = .init(lowerTime: start, upperTime: middle, point: found.0, normal: found.1)
+    }
+    // A bounded time bracket is allowed only when it contains a proved intersection.
+    // Otherwise a tiny/thin/ill-conditioned crossing refuses movement; it is not a miss.
+    if depth >= work.budget.subdivisionDepth {
+      guard let witness else { throw HullSweepFailure.unproven }
+      return .contact(
+        .init(
+          lowerTime: start, upperTime: witness.upperTime,
+          point: witness.point, normal: witness.normal))
+    }
+    let leftWitness = witness.flatMap { $0.upperTime <= middle ? $0 : nil }
+    let left = try contactInterval(
+      source, hull: hull, target: target, targetHull: targetHull,
+      start: start, end: middle, depth: depth + 1, known: leftWitness, work: &work)
+    switch left {
+    case .clear:
+      let rightWitness = witness.flatMap { $0.upperTime > middle ? $0 : nil }
+      return try contactInterval(
+        source, hull: hull, target: target, targetHull: targetHull,
+        start: middle, end: end, depth: depth + 1, known: rightWitness, work: &work)
+    case .contact, .refused: return left
+    }
+  }
+
+  private static func nativeContactWitness(
+    _ hull: PreparedHull, pose: ShipPose, target: PreparedHull, pose other: ShipPose,
+    work: inout SweepWork
+  ) throws -> (Vector3, Vector3)? {
+    for sourceTriangle in hull.triangles {
+      let a = SweepTriangle(
+        a: pose.systemPoint(sourceTriangle.a), b: pose.systemPoint(sourceTriangle.b),
+        c: pose.systemPoint(sourceTriangle.c), conditioned: true,
+        unresolvedSupport: sourceTriangle.unresolvedSupport)
+      guard !a.unresolvedSupport else { throw HullSweepFailure.unproven }
+      for targetTriangle in target.triangles {
+        try work.triangle()
+        let b = SweepTriangle(
+          a: other.systemPoint(targetTriangle.a), b: other.systemPoint(targetTriangle.b),
+          c: other.systemPoint(targetTriangle.c), conditioned: true,
+          unresolvedSupport: targetTriangle.unresolvedSupport)
+        guard !b.unresolvedSupport else { throw HullSweepFailure.unproven }
+        var normal = (b.b - b.a).cross(b.c - b.a).unit
+        if normal.dot(other.position - pose.position) < 0 { normal = normal * -1 }
+        guard normal.finite, normal.length > 0 else { throw HullSweepFailure.unproven }
+        for index in 0..<3 {
+          let edge = a.edge(at: index)
+          if let hit = sweepRay(
+            edge.0, direction: edge.1 - edge.0, triangle: b,
+            conditioned: true, maximumDistance: 1), !hit.boundary,
+            hit.distance + hit.uncertainty <= 1
+          {
+            return (edge.0 + (edge.1 - edge.0) * hit.distance, normal)
+          }
+        }
+      }
+    }
+    // A face strictly inside the other closed hull also certifies an actual overlap,
+    // including aligned face/edge cases where ray barycentrics are intentionally uncertain.
+    for triangle in target.triangles {
+      try work.triangle()
+      let point = other.systemPoint((triangle.a + triangle.b + triangle.c) * (1 / 3.0))
+      if try contains(pose.shipPoint(point), hull: hull, work: &work) {
+        var normal = other.orientation.apply(
+          (triangle.b - triangle.a).cross(triangle.c - triangle.a)
+        ).unit
+        if normal.dot(other.position - pose.position) < 0 { normal = normal * -1 }
+        return (point, normal)
+      }
+    }
+    return nil
+  }
+}
