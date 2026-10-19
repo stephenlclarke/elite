@@ -1004,25 +1004,48 @@ func stationAutoAuthenticatedLauncherRemainsActiveWhenItsProjectileJoinIsLost(jo
 @Test func stationAutoUncoveredNativeBeamCannotHandOverToStationaryAlignment() async throws {
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(&game, position: .init(300, 0, -1000), sequence: 909)
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  // Author an actually aligned fixed mount, rather than seed pressure through the
+  // separate legacy emitter's target-centre ray. Subsequent turning remains native.
+  let forward = (game.bodies[index].position * -1).unit
+  var orientation = Basis3()
+  orientation.z = forward
+  orientation.x = Vector3(0, 1, 0).cross(forward).unit
+  orientation.y = forward.cross(orientation.x).unit
+  try #require(orientation.validRotation)
+  game.bodies[index].orientation = orientation
   let actor = try #require(game.bodies.first { $0.id == id }?.physical?.identity)
   let player = try #require(game.commander.flightSimulation.player)
   let destination = game.autoPilot.targetActor
   let shields = game.frontShield + game.rearShield
-  // The actual emitter and native ray establish damage and the current law window.
-  game.emitLegacyNPCBeam(bodyID: id, damage: LaserKind.pulse.damage)
+  let attackContext = try #require(game.gameplayContext())
+  let ray = try game.nearestMissionCollision(
+    from: game.bodies[index].position, direction: orientation.z.unit, range: 1500,
+    radius: 0, excludingBodyIDs: [id], includePlayer: true)
+  let contact = try #require(ray)
+  try #require(contact.hit.target == .player)
+  game.gameplayCombatTrace = .init()
+  game.emitGameplayNPCBeam(bodyID: id, target: player, context: attackContext)
   try #require(game.frontShield + game.rearShield < shields)
+  let incident = try #require(game.gameplayCombatTrace?.incidents.first)
+  try #require(
+    incident.origin.owner == actor && incident.victim == player && incident.kind == .laser
+      && incident.laser == .pulse && incident.mount == .front && incident.outcome == .hit)
   let context = try #require(game.gameplayContext())
   try #require(
     game.commander.crimeLedger.hasCurrentUnlawfulAttack(
       from: actor, against: player, context: context))
   let initialPosition = game.commander.flightSimulation.pose.position
-  for _ in 0..<8 {
+  for step in 0..<8 {
     let station = try #require(game.autoTargetBody)
+    let attacker = try #require(game.bodies.first { $0.id == id })
     let observation = game.stationAutoGuidance(target: station)
     let guidance = try #require(observation)
-    #expect(guidance.hazard == .active && !guidance.joinedIncoming && !guidance.handoverAllowed)
+    #expect(
+      guidance.hazard == .active && !guidance.joinedIncoming && !guidance.handoverAllowed,
+      "step=\(step) hostile=\(attacker.hostile) energy=\(attacker.energy) intention=\(String(describing: attacker.physical?.npc?.intention)) position=\(attacker.position)"
+    )
     let transit = try #require(guidance.transitGoal)
-    let attacker = try #require(game.bodies.first { $0.id == id })
     let away = station.position - attacker.position
     #expect(transit.finite && (transit - station.position).length > guidance.clearanceRadius)
     #expect((transit - station.position).dot(away) > 0)
