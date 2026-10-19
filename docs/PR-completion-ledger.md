@@ -152,3 +152,7 @@ Advance G2's exact one-local panelColour reuse from source proposal to authorize
 ## Actual787 failure and coherent projectile read repair
 
 Record actual787 zero completed/four UNKNOWN stack-failure result with exact proof/process/resource closure, retaining10 prior passed cases and no crash integration. Assign Root's bounded projectile validator plus adjacent restoration enumeration/fresh refetch borrowing fix to MC1 with788/789 validation after exact owner source/plan freeze. Routine compiler fixes stay owner-scoped, and Root review can overlap the build but precedes integration; no further preauthor/prebuild ACK or new diagnostic scope. G2 supporting compile remains after the MC1 batch. Scoped Markdown/whitespace checks only.
+
+## Reviewed colour leaf owner validation slot
+
+Record exact73174 four-path freeze, Root independent CLEAN review and one-case parity plan. Grant bounded790/791 matching build/one unit while MC1 source is still authoring, using registry CAS and preserving ready MC1 priority; MC1's788/789 follows actual whole-batch closure unless already active. Owner PASS/process closure remains required before prompt integration. No duplicate audit or standalone timing job. Scoped Markdown/whitespace checks only.
