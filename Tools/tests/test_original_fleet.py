@@ -107,6 +107,37 @@ class OriginalFleetTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "fresh/empty"):
             self.compile()
 
+    def test_zero_price_requires_never_policy_and_keeps_other_bounds(self):
+        for policy in ("never", "blueprintFabrication", "pendingFabrication", "xyzzyOnly", "unknown"):
+            for price in (-1, 0, 1, 100000000, 100000001, True):
+                with self.subTest(policy=policy, price=price):
+                    game = copy.deepcopy(self.ship["game"])
+                    game["price"] = price
+                    issues = COMPILER.game_issues(game, policy)
+                    expected = type(price) is not int or not (0 if policy == "never" else 1) <= price <= 100000000
+                    self.assertEqual(any("game.price:" in issue for issue in issues), expected)
+        game = copy.deepcopy(self.ship["game"])
+        game["price"] = 0
+        self.assertTrue(any("game.price:" in issue for issue in COMPILER.game_issues(game)))
+
+    def test_unpriced_never_staging_preserves_raw_zero_and_capability_conflicts(self):
+        self.ship["purchasePolicy"] = "never"
+        for key in ("price", "jump", "spool", "fuel", "missiles", "facings"):
+            self.ship["game"][key] = 0
+        source = self.source / "fleet-specs/SH001.toml"
+        write_toml(source, self.ship)
+        original = source.read_bytes()
+        manifest = self.compile()
+        entry = manifest["ships"][0]
+        issues = entry["gameValidityIssues"]
+        self.assertFalse(any("game.price:" in issue for issue in issues))
+        for key in ("jump", "spool", "fuel", "missiles", "facings"):
+            self.assertTrue(any("game." + key + ":" in issue for issue in issues))
+        self.assertEqual((self.output / entry["spec"]).read_bytes(), original)
+        joined = tomllib.loads((self.output / entry["joined"]).read_text())
+        self.assertEqual(joined["game"], self.ship["game"])
+        self.assertFalse(entry["runtimeReady"])
+
     def test_policy_zeros_and_unknown_fields_retained_without_fixes(self):
         self.ship["purchasePolicy"] = "plughQuestFabrication"
         self.ship["game"]["price"] = 0

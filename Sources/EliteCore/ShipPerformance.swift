@@ -22,12 +22,17 @@ public struct ShipPerformance: Codable, Sendable, Equatable {
   public let price: Int
   /// Optional on historical TOMLs: absent work-tool support is fail-closed.
   public var workTools: Set<ComponentUtility>?
-  public var valid: Bool {
+  public var valid: Bool { valid(minimumPrice: 1) }
+  /// Zero is unpriced only when authoritative catalogue policy forbids sale.
+  func valid(purchasePolicy: ShipCataloguePurchasePolicy) -> Bool {
+    valid(minimumPrice: purchasePolicy == .never ? 0 : 1)
+  }
+  private func valid(minimumPrice: Int) -> Bool {
     [speed, acceleration, energy, recharge, roll, pitch, yaw, shield, shieldRecharge, jump, spool]
       .allSatisfy { $0.isFinite && $0 > 0 && $0 <= 100000 }
       && (0...100000).contains(cargo) && (1...10000).contains(fuel)
       && (1...32).contains(missiles) && (1...15).contains(facings)
-      && (0...100000).contains(cargoExpansion) && (1...100_000_000).contains(price)
+      && (0...100000).contains(cargoExpansion) && (minimumPrice...100_000_000).contains(price)
       && (workTools?.isSubset(of: [.miningLaser, .salvageCutter]) ?? true)
   }
   public func supports(_ mount: LaserMount) -> Bool {

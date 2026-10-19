@@ -140,7 +140,7 @@ def validate_spec(spec: dict, identifier: str) -> None:
         raise ValueError(f"Flyable authored spec lacks game values: {identifier}")
 
 
-def game_issues(game: dict | None) -> list[str]:
+def game_issues(game: dict | None, purchase_policy: str | None = None) -> list[str]:
     if game is None:
         return []
     issues = []
@@ -149,6 +149,8 @@ def game_issues(game: dict | None) -> list[str]:
         if not finite_number(value) or not 0 < value <= 100000:
             issues.append(f"game.{key}: current ShipPerformance requires finite (0, 100000]")
     for key, (minimum, maximum) in INTEGER_GAME_RANGES.items():
+        if key == "price" and purchase_policy == "never":
+            minimum = 0
         value = game.get(key)
         if type(value) is not int or not minimum <= value <= maximum:
             issues.append(f"game.{key}: current ShipPerformance requires integer [{minimum}, {maximum}]")
@@ -265,7 +267,7 @@ def compile_record(identifier: str, spec: dict, raw: bytes, hull_path: Path | No
         "currentLoaderCompatible": False,
         "unsupportedSpecFields": sorted(spec.keys() - LOADER_ROOT_FIELDS),
         "gameFieldPaths": [f"game.{key}" for key in spec.get("game", {})],
-        "gameValidityIssues": game_issues(spec.get("game")),
+        "gameValidityIssues": game_issues(spec.get("game"), spec["purchasePolicy"]),
         "dependencies": ["catalogue-metadata", "unit-scale-authority"],
     }
     if spec.get("game") is not None:

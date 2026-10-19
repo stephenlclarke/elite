@@ -172,7 +172,8 @@ public enum ShipCatalogue {
       let ship = try TOMLDecoder().decode(CatalogueShip.self, from: Data(contentsOf: url))
       guard ship.id == url.deletingPathExtension().lastPathComponent,
         ship.id.range(of: "^SH[0-9]{3}$", options: .regularExpression) != nil,
-        !ship.name.isEmpty, ship.design.valid, ship.game?.valid ?? true,
+        !ship.name.isEmpty, ship.design.valid,
+        ship.game?.valid(purchasePolicy: ship.catalogue.purchasePolicy) ?? true,
         ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true,
         ship.catalogue.valid(
           shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat),

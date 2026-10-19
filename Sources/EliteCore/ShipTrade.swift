@@ -23,12 +23,17 @@ public struct ShipTradeQuote: Sendable {
 }
 extension Game {
   public var shipTradeQuote: ShipTradeQuote? {
-    guard let selected = showroomShip, let next = selected.game else { return nil }
+    guard let selected = showroomShip else { return nil }
+    return shipTradeQuote(for: selected)
+  }
+  func shipTradeQuote(for selected: CatalogueShip) -> ShipTradeQuote? {
+    guard let next = selected.game else { return nil }
     let purchase = next.price * 10
     let allowance = commander.performance.price * 10 * 3 / 4
     let net = purchase - allowance
     let balance = commander.unlimitedCash ? commander.credits : commander.credits - net
     var issues: [String] = []
+    if next.price <= 0 { issues.append("This hull is unpriced and not for sale.") }
     if !docked || !dockedAtMainStation { issues.append("Exchange requires a main station.") }
     if selected.id == commander.shipID { issues.append("You already own this hull.") }
     if balance < 0 { issues.append("Insufficient cash for this exchange.") }
