@@ -188,7 +188,9 @@ extension GameRuntime {
     if !configured.contains(player) {
       for index in game.bodies.indices {
         let body = game.bodies[index]
-        guard let physical = body.physical, var npc = physical.npc else { continue }
+        guard body.hull.isTargetShip else { continue }
+        let physical = try #require(body.physical)
+        var npc = try #require(physical.npc)
         // Native police keep their own station-security behavior.
         if npc.role == .police { continue }
         try #require(
