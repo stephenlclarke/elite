@@ -1775,9 +1775,13 @@ func stationAutoWeakFrontFacesAwayFromAttackerWhileItsCoverRouteKeepsMoving(atta
   let expected = baseline.steer(target: station, delta: 0.1, defence: guidance)
   #expect(expected.pitch.isFinite && expected.yaw.isFinite)
   for invalid in [Vector3(0, 0, 0), .init(.nan, 0, 0), .init(0, .infinity, 0)] {
-    guidance.aim = invalid
+    let invalidGuidance = StationAutoGuidance(
+      aim: invalid, lateralVelocity: guidance.lateralVelocity, hazard: guidance.hazard,
+      interruptionAllowed: guidance.interruptionAllowed, clearanceRadius: guidance.clearanceRadius,
+      handoverAllowed: guidance.handoverAllowed, joinedIncoming: guidance.joinedIncoming,
+      transitGoal: guidance.transitGoal, protectFrontShield: guidance.protectFrontShield)
     var control = AutoTargetControl()
-    let actual = control.steer(target: station, delta: 0.1, defence: guidance)
+    let actual = control.steer(target: station, delta: 0.1, defence: invalidGuidance)
     #expect(
       actual.pitch == expected.pitch && actual.yaw == expected.yaw && actual.roll == expected.roll)
     #expect(control.velocity == baseline.velocity)
