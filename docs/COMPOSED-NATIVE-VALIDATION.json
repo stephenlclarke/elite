@@ -149,5 +149,36 @@
       ],
       "proofSHA256": "050c972b38b97ff9e551da66faa76c34921e64b232a4b123a0ccc280bbdc0c7c"
     }
+  },
+  "freightAndCombatFollowup": {
+    "sourceCommit": "d38070f7c0c971bbaba5d537c5b7ce04f96d5937",
+    "originalFreight": {
+      "run": 573,
+      "methods": 1,
+      "cases": 1,
+      "passed": true,
+      "issues": 0,
+      "crashes": 0,
+      "proofSHA256": "3f4b5dc814b9f635b08f183a0f1d2ccd55df23db429bb5fe218f1f2976318e62"
+    },
+    "directScope": {
+      "run": 574,
+      "methods": 32,
+      "sourceCases": 67,
+      "passedMethods": 31,
+      "casesInPassingMethods": 55,
+      "failedMethods": 1,
+      "casesInFailedMethod": 12,
+      "issues": 8,
+      "crashes": 0,
+      "unknownMethods": 0,
+      "allSourceArgumentsMatched": true,
+      "proofSHA256": "c64999401c972c9bcf317a4147e732c3011fcabe48656f9fa46cce96cd4c43db",
+      "groupedOutcomeSHA256": "1549a4aeefb4a201b27ce74b45fd918fe40024bf0860960c82b11d22eb0ea318"
+    },
+    "remainingObservedFailure": "Unchanged historical docking method; eight partial/abandoned setup issues facts.live=false, no individual argument-end verdict inference.",
+    "runtimePolicy": "Coverage-enabled; default stack/concurrency; all diagnostic opt-ins off; no failed scope hidden by passing unrelated methods.",
+    "fullCIPass": false,
+    "coveragePercent": null
   }
 }

@@ -29,6 +29,16 @@ Run 565 refreshed all 171 ship input fingerprints through `make ships` and passe
 
 The subsequent full `make ci` retry (run 566) again stopped during coverage testing. Both repaired tests passed within that run, but 26 assertions were recorded across station automatic defence, procurement and target-colour fixtures, followed by an independently attributed SIGBUS in freight dialogue validation. The exception reported a stack-guard-region fault. The suite was incomplete, coverage export did not finish, and Thread Sanitizer, Address Sanitizer and leaks did not start. These are open failures; the focused passes above do not make full CI green.
 
+## Subsequent freight and combat qualification
+
+At source `d38070f7c0c971bbaba5d537c5b7ce04f96d5937`, the unchanged real freight deadline/expiry reproducer completed successfully in run 573: one method / one case, zero issues or crashes, 29.770 seconds for the command. This exercised inclusive confirmation, later expiry publication, writer refusal, restoration and real save/reload with default coverage, stack and concurrency settings. Run 569's earlier crash remains historical; it does not become a pass.
+
+Run 574 completed all 32 selected method outcomes. Thirty-one methods / 55 cases passed: the five originally failing Station AUTO methods (eight cases), native missile ECM control, eight old/new flight-input methods (19 cases), actual mining damage interruption, six pod-cue methods and ten direct freight methods (20 cases). The freight subset includes partial/all delivery, native hold refusal, custody forgery, abandonment, final-receipt authenticity, reload, fatal loss and escape. There were no crashes or unknown method outcomes. All exercised job-owned processes were closed, and tracked inputs, the player's commander and preferences were unchanged.
+
+One unchanged historical docking method, containing all 12 original arguments, failed with eight setup assertions at `ScriptProcurementFixture.swift:254`: `facts.live` was false for the partial and abandoned scenarios. All 12 source argument starts and ends were observed and matched; the event format does not expose individual argument-end verdicts, so this report claims no passing argument inside that failed method. The idle-trigger fix did not resolve this separate fixture failure. Its authentication assertions and setup remain unchanged pending the next scoped repair.
+
+The combat producer now sets the fresh-press stop only for a held trigger and preserves an existing stop. Private attempt owners separate freight preparation from final cold validation and publication. Decoder semantics, security limits, transaction checks and test stack settings remain unchanged. These focused results do not supply a current coverage percentage, sanitizer/leak result or full CI pass. Another full gate run is required after the remaining observed failure is qualified.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.
