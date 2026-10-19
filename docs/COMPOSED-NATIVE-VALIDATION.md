@@ -27,6 +27,8 @@ The weapon status now uses the shared logical font size. Gallery queries finish 
 
 Run 565 refreshed all 171 ship input fingerprints through `make ships` and passed `make ships-check`; independent decoding verified all 4104 frames. Image bytes and reference documents remained identical. The packaging verifier also passed its four resource-layout tests after a meaningful failing regression showed that copied OriginalWorlds files were incorrectly sought at the bundle root. These focused repairs require another full CI result; they do not establish sanitizer, leak, coverage or release acceptance.
 
+The subsequent full `make ci` retry (run 566) again stopped during coverage testing. Both repaired tests passed within that run, but 26 assertions were recorded across station automatic defence, procurement and target-colour fixtures, followed by an independently attributed SIGBUS in freight dialogue validation. The exception reported a stack-guard-region fault. The suite was incomplete, coverage export did not finish, and Thread Sanitizer, Address Sanitizer and leaks did not start. These are open failures; the focused passes above do not make full CI green.
+
 ## Timing and limits
 
 The six matching holding intervals from runs 552 and 555 had median wall durations of 36.514 and 36.376 seconds per 100 calls. This close observation establishes no clear net gain for scalar reuse. The later pair-certificate change passed the fresh original test; there is no isolated CPU measurement or measured pair-feature counter. Runtime durations include the exercised simulation, validation and observations.

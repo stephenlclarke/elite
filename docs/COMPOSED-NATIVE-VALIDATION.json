@@ -130,6 +130,24 @@
       "passed": true,
       "meaningfulRedLayoutFailures": 2,
       "proofSHA256": "2e9a991fb396379fa013ca262127e49dc60de6f2819a9ade904a71f30c6e2cb9"
+    },
+    "subsequentFullCI": {
+      "run": 566,
+      "sourceCommit": "bb50a4262cc647f8815de7c0e0d2e5aa3f271087",
+      "result": "FAILED during coverage tests",
+      "actualMakeExitCode": 2,
+      "observedIssueCount": 26,
+      "suiteComplete": false,
+      "originalGalleryReproducerPassed": true,
+      "originalTypographyTestPassed": true,
+      "crash": "SIGBUS with stack-guard-region exception in freight dialogue validation",
+      "coveragePercent": null,
+      "notStarted": [
+        "thread sanitizer",
+        "address sanitizer",
+        "leaks"
+      ],
+      "proofSHA256": "050c972b38b97ff9e551da66faa76c34921e64b232a4b123a0ccc280bbdc0c7c"
     }
   }
 }
