@@ -138,15 +138,15 @@ public struct Commander: Sendable, Equatable, Codable {
   }
   private var ownedShipID: String?
   public var shipID: String {
-    get { ownedShipID ?? "SH023" }
+    get { ownedShipID ?? NewCommanderDefaults.shipID }
     set { ownedShipID = newValue }
   }
   public var originalMarkets = OriginalLiveMarkets()
-  public var name = "JAMESON"
-  public var credits = 1000
-  public var fuel = 70
-  public var galaxy = 0
-  public var system = 7
+  public var name = NewCommanderDefaults.name
+  public var credits = NewCommanderDefaults.credits
+  public var fuel = NewCommanderDefaults.fuel
+  public var galaxy = NewCommanderDefaults.galaxy
+  public var system = NewCommanderDefaults.system
   public var cargo = Array(repeating: 0, count: 17)
   public var equipment: Set<String> = ["Pulse Laser"]
   public var missiles = 3
@@ -623,6 +623,9 @@ public struct Game: Sendable {
   private var legacySimulationSpawnClock: Double?
   private var randomState: UInt64 = 0x45_4c49_5445
   public init(executive: Bool = true) {
+    energy = commander.performance.energy
+    frontShield = commander.shieldCapacity
+    rearShield = commander.rearShieldCapacity
     if executive {
       commander.executive = true
       screen = .demo

@@ -13,26 +13,21 @@ extension Display {
     if game.screen == .title {
       var ship = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 280))
       ship.rotation = game.time * 0.6
-      draw(ship, game: game, into: &frame, projection: projection)
-      centeredLabel("E L I T E", y: 18, into: &frame)
+      draw(ship, game: game, into: &frame, projection: projection, mesh: L337Branding.titleMesh)
+      centeredLabel(NewCommanderDefaults.title, y: 18, into: &frame)
       for (index, text) in [
-        "RIGHT-ON COMMANDER VERSION", "PRESS SPACE COMMANDER",
+        "SPACE TRADING, EXPLORATION AND DISCOVERY", "PRESS SPACE COMMANDER",
         BuildIdentity.current.versionLine, BuildIdentity.repository,
         BuildIdentity.current.revisionLine,
       ].enumerated() {
         centeredLabel(text, y: height - 120 + Double(index) * GameTypography.row, into: &frame)
       }
     } else {
-      for (id, hull, position) in [
-        (0, Hull.cobra, Vector3(-70, 20, 450)),
-        (1, Hull.thargoid, Vector3(80, -15, 600)),
-      ] {
-        var ship = SpaceBody(id: id, hull: hull, position: position)
-        ship.rotation = game.time * 0.7
-        draw(ship, game: game, into: &frame, projection: projection)
-      }
+      var ship = SpaceBody(id: 0, hull: .thargoid, position: .init(0, 0, 280))
+      ship.rotation = game.time * 0.7
+      draw(ship, game: game, into: &frame, projection: projection, mesh: L337Branding.titleMesh)
       let lines = [
-        "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION",
+        "XYZZY PRESENTS", NewCommanderDefaults.title,
         "WELCOME COMMANDER " + game.commander.name, "THE GALAXY AWAITS",
         "FLY. TRADE. SURVIVE.", BuildIdentity.current.versionLine,
         BuildIdentity.repository, BuildIdentity.current.revisionLine,

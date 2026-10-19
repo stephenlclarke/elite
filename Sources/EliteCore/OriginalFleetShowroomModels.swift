@@ -23,7 +23,7 @@ public enum OriginalFleetShowroomModels {
     case invalidAsset
   }
 
-  static let manifestSHA256 = "89b7cac43da1b883ec6c1ccc08c0f13426e46d8895b1ad350b7e1609f23c2064"
+  static let manifestSHA256 = "6b1c2ab50305c0881c6994ddb01a26d0de7f4a861a75bbe56a06e6a886aab2b0"
   static let deliveryIndexSHA256 =
     "3fbc5198639819f4bafbbe538c2af688dfe6a6564c92807f9fe54825115dedff"
   static let maximumAssetBytes = 8 * 1024 * 1024

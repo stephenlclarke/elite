@@ -45,6 +45,18 @@ struct OriginalFleetShowroomModelsTests {
     if id == "SH004" { #expect(model.sourcePath.contains("native-lod")) }
   }
 
+  @Test func currentBrandingModelRetainsApprovedExactGeometryAndPalette() throws {
+    let model = try OriginalFleetShowroomModels.model(for: "SH123")
+    #expect(model.sourcePath == "branding-proposal/selected-ship.toml")
+    #expect(
+      model.sourceSHA256 == "2179227760376ed17b276153cb7cb20894f4f1bad5bf48e339b7dc874f70fe69")
+    #expect(model.nativeDesign.vertices.count == 49834 && model.nativeDesign.faces.count == 99648)
+    #expect(model.coordinateUnits == nil)
+    #expect(model.displayMesh.materials.contains { $0.colour == 0x5D95_72FF })
+    #expect(model.displayMesh.materials.contains { $0.emissive && $0.colour == 0xFFD5_5BFF })
+    #expect(OriginalFleetDefinitionData.staged.first { $0.id == "SH123" }?.runtimeReady == false)
+  }
+
   @Test func unknownIDAndAlteredAssetRefuse() throws {
     #expect(throws: OriginalFleetShowroomModels.Failure.unknownID) {
       try OriginalFleetShowroomModels.model(for: "SH999")
