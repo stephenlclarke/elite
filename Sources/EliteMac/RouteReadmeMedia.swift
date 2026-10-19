@@ -7,6 +7,16 @@ import UniformTypeIdentifiers
 func exportRouteReadmeMedia(at root: URL = URL(fileURLWithPath: ".")) throws {
   let directory = root.appendingPathComponent("docs/images")
   try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+  var game = try makeRouteReadmeMediaGame()
+  try writeRoutePNG(game, to: directory.appendingPathComponent("route-alternatives-galaxy.png"))
+  game.key("5")
+  guard game.navigationReturn == .shortChart else { throw SaveError.invalidCommander }
+  try writeRoutePNG(game, to: directory.appendingPathComponent("route-alternatives-local.png"))
+}
+
+/// Shared native planner scene for README exports and their pixel regression.
+@MainActor
+func makeRouteReadmeMediaGame() throws -> Game {
   var game = Game(executive: false)
   // Prepare a real current fit through the ordinary shop's paid predecessor chain.
   game.commander.credits = 1_000_000
@@ -47,10 +57,7 @@ func exportRouteReadmeMedia(at root: URL = URL(fileURLWithPath: ".")) throws {
   }
   // Use the real planner and input path, including its unchanged seven-LY tank limits.
   game.key("down")
-  try writeRoutePNG(game, to: directory.appendingPathComponent("route-alternatives-galaxy.png"))
-  game.key("5")
-  guard game.navigationReturn == .shortChart else { throw SaveError.invalidCommander }
-  try writeRoutePNG(game, to: directory.appendingPathComponent("route-alternatives-local.png"))
+  return game
 }
 
 @MainActor
