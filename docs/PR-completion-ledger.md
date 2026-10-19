@@ -168,3 +168,7 @@ Record Root/owner-reported actual MBA20 closure16 PASS/four FAIL/four issues/no 
 ## Actor-restoration lifetime repair and reviewed MBA fixture child
 
 Record actual789 zero completed/five UNKNOWN stack-failure result with source/proof/actual terminal/all-owned closure, retaining10 earlier passes. Assign only Root's actor-restoration lifetime helper/empty-guard repair with792/793 owner validation after child freeze, no additional preauthor/prebuild ACK or getter-patch expansion; review can overlap build but precedes integration. Record Root-clean c8a8284e four-owned-fixture correction, matching build reported PASS/four-case runtime pending and16 unaffected passes retained. Scoped Markdown/whitespace checks only.
+
+## Reviewed actor-phase execution and MBA receiver crash
+
+Record exact a09ea0cb clean independent review/five-method-six-case plan and active792 matching build under the existing grant;793 pending, ten earlier passes retained. Record MBA four-fixture rerun two PASS then SIGBUS/two UNKNOWN, with18 prior exact-source passes and no integration. Separately record the owner's subsequent save-validator absence-pattern correction and affected16-case plan as pending targeted review/results, retaining four unaffected mining/palette passes. No duplicate source/crash audit or prebuild ACK. Scoped Markdown/whitespace checks only.
