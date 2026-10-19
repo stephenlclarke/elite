@@ -8,9 +8,10 @@ struct NativeWormholeOwnerHistoryTests {
     let fixture = try NativeWormholeTransitFixture()
     defer { fixture.storage.clean() }
     let (game, instance, context) = try fixture.game()
+    let owner = try #require(game.commander.equipmentOwnerID)
     var state = game.commander.scriptState
     state.wormholeTransit =
-      hasLedger ? NativeWormholeTransitState(owner: game.commander.equipmentOwnerID) : nil
+      hasLedger ? NativeWormholeTransitState(owner: owner) : nil
     let original = try #require(
       state.instances[instance]?.ownedEncounters["opponents"]?.actors["lead"])
     try #require(original.presence == .present && original.transitLocation == nil)
