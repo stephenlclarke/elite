@@ -49,3 +49,7 @@ F01 source reconciliation identifies real startup/display gaps and dormant origi
 ## Bounded F01 implementation assignment
 
 Root now grants bounded F01 implementation after source reconciliation. Track startup/title and the actual single original SH025 prerequisite together without expanding into full-fleet, distribution rename or MC1 save repair; pending implementation must not become a completion claim.
+
+## Explicit single-Peregrine unit estimate
+
+SH025 has no authored physical dimensions/coordinate units. The bounded startup dependency requires an explicitly labelled project estimate rather than silently borrowing predecessor dimensions or display scale; real geometry/clearance/mount checks still gate flight acceptance.

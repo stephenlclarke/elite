@@ -68,3 +68,7 @@ Attach hash-verified G2 F01 source-reconciliation report on1d953549 and mark tha
 ## Bounded F01 implementation assignment
 
 Record Root grant to G2 for exact fresh Game/default factory/title/icon/native entry hunks, focused tests/notes, single SH025 native admission and current approved SH123 display asset pins. Preserve authored dimensions/explicit calibration, collision guards, saved Continue identity and truthful build labels. Additional generated path requires exact reservation. Owner authoring only, no executor/PASS/integration/playable result; three Markdown files checked, no source/build/GUI/media job.
+
+## Explicit single-Peregrine unit estimate
+
+Record Root-declared single-Peregrine120m maximum-extent project estimate under human missing-spec best-effort authority. Uniform original-mesh scaling preserves axes/proportions and derives XYZ/collision bounds; provenance is required in resource/notes/tests, fuel130/cargo92 remain exact. No implementation, runtime readiness or broader fleet authority is claimed. Changed Markdown/whitespace checks only.
