@@ -165,8 +165,10 @@ final class ShipPanelRenderer {
     let logical = CGRect(
       x: left - 0.125 - 1 / sx, y: top - 0.125 - 1 / sy,
       width: right - left + 0.25 + 2 / sx, height: bottom - top + 0.25 + 2 / sy
-    ).intersection(clip)
-    guard !logical.isNull, !logical.isEmpty else { return nil }
+    )
+    // Quartz clips each original panel separately. Compositing a whole run through
+    // a fractional clip can change accumulated coverage, so retain that CPU path.
+    guard !logical.isNull, !logical.isEmpty, clip.contains(logical) else { return nil }
     let device = logical.applying(transform).standardized
     let x0 = floor(device.minX)
     let y0 = floor(device.minY)

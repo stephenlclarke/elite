@@ -28,13 +28,14 @@ struct ShipPanelRendererTests {
       .panel(.init(vertices: points, colour: colour))
     }
     frame.worldGraphics = [
-      panel([.init(0, 8), .init(62, 8), .init(0, 62)], 0xFF00_00FF),
+      panel([.init(8, 8), .init(56, 8), .init(8, 56)], 0xFF00_00FF),
       panel([.init(18, 12), .init(55, 45), .init(18, 52)], 0x0000_FF01),
       .wire(.init(x0: 4, y0: 32, x1: 60, y1: 32, ink: .white)),
       panel([.init(20, 24), .init(44, 24), .init(32, 48)], Ink.gold.rawValue),
       panel([.init(42, 8), .init(58, 8), .init(58, 20), .init(42, 20)], Ink.cyan.rawValue),
       panel([.init(46, 10), .init(57, 10), .init(57, 19)], Ink.purple.rawValue),
       panel([.init(5, 55), .init(10, 55), .init(15, 55)], Ink.orange.rawValue),
+      panel([.init(0, 5), .init(8, 5), .init(0, 12)], Ink.leaf.rawValue),
     ]
     return frame
   }
@@ -79,6 +80,11 @@ struct ShipPanelRendererTests {
     #expect(
       ShipPanelRenderer.batch(graphics[...], transform: .init(scaleX: 100, y: 100), clip: clip)
         == nil)
+    let clipped = try #require(composition().worldGraphics.last)
+    #expect(
+      ShipPanelRenderer.batch(
+        [clipped][...], transform: transform,
+        clip: CGRect(x: 4, y: 4, width: 56, height: 56)) == nil)
     let oversized = Array(repeating: graphics[0], count: 120_001)
     #expect(ShipPanelRenderer.batch(oversized[...], transform: transform, clip: clip) == nil)
   }
@@ -107,7 +113,7 @@ struct ShipPanelRendererTests {
       let rect = CGRect(x: 0, y: 0, width: 64, height: 64)
       drawFrame(frame, context: reference, rect: rect)
       let execution = drawFrame(frame, context: actual, rect: rect, panelRenderer: renderer)
-      #expect(execution.metalPanels == 4 && execution.cpuPanels == 2)
+      #expect(execution.metalPanels == 4 && execution.cpuPanels == 3)
       #expect(execution.backendDescription.contains("mixed CPU"))
       let lhs = try bytes(reference)
       let rhs = try bytes(actual)
@@ -119,6 +125,7 @@ struct ShipPanelRendererTests {
         return hypot(p.x - a.x - t * dx, p.y - a.y - t * dy)
       }
       var illegalDifferences = 0
+      var illegalExamples: [String] = []
       var interior = 0
       for y in 0..<160 {
         for x in 0..<160 {
@@ -127,16 +134,23 @@ struct ShipPanelRendererTests {
             transform.inverted())
           let nearBoundary = edges.contains { distance(point, $0.0, $0.1) <= 0.125 + 1 / scale }
           let differs = (0..<4).contains { lhs[offset + $0] != rhs[offset + $0] }
-          if !nearBoundary {
-            interior += rhs[offset + 3] == 255 ? 1 : 0
-            if differs { illegalDifferences += 1 }
-          }
-          if point.x < 4 || point.x >= 60 || point.y < 4 || point.y >= 60 {
-            if differs { illegalDifferences += 1 }
+          if !nearBoundary { interior += rhs[offset + 3] == 255 ? 1 : 0 }
+          let outsideClip = point.x < 4 || point.x >= 60 || point.y < 4 || point.y >= 60
+          if differs && (!nearBoundary || outsideClip) {
+            illegalDifferences += 1
+            if illegalExamples.count < 6 {
+              illegalExamples.append(
+                "row=\(x),\(y) logical=\(point) CPU=\(Array(lhs[offset..<offset+4])) GPU=\(Array(rhs[offset..<offset+4]))"
+              )
+            }
           }
         }
       }
-      #expect(interior > 100 && illegalDifferences == 0)
+      #expect(
+        interior > 100 && illegalDifferences == 0,
+        Comment(
+          rawValue:
+            "scale=\(scale) flipped=\(flipped) illegal=\(illegalDifferences): \(illegalExamples)"))
       // These well-inside pixels exercise later panels over earlier panels, wires and CPU polygons.
       for point in [
         CGPoint(x: 12, y: 12), CGPoint(x: 32, y: 32), CGPoint(x: 54, y: 12), CGPoint(x: 44, y: 18),
@@ -162,7 +176,7 @@ struct ShipPanelRendererTests {
     let rect = CGRect(x: 0, y: 0, width: 64, height: 64)
     drawFrame(frame, context: reference, rect: rect)
     let execution = drawFrame(frame, context: pending, rect: rect, panelRenderer: unavailable)
-    #expect(execution.metalPanels == 0 && execution.cpuPanels == 6 && !unavailable.failed)
+    #expect(execution.metalPanels == 0 && execution.cpuPanels == 7 && !unavailable.failed)
     #expect(try bytes(pending) == bytes(reference))
     #expect(await unavailable.prepareGPU() == nil && unavailable.failed)
     let failed = try context(64)
@@ -186,7 +200,7 @@ struct ShipPanelRendererTests {
     let errorFallback = try context(64)
     let errorExecution = drawFrame(
       frame, context: errorFallback, rect: rect, panelRenderer: rejected)
-    #expect(errorExecution.metalPanels == 0 && errorExecution.cpuPanels == 6)
+    #expect(errorExecution.metalPanels == 0 && errorExecution.cpuPanels == 7)
     #expect(try bytes(errorFallback) == bytes(reference))
     var budget = ShipPanelBudget(runs: 0, pixels: 0)
     let untouched = try context(64)
