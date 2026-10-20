@@ -410,3 +410,7 @@ Update current register/maintained07 and09 rows: MBA07 sixteen-path native produ
 ## Current852/853 post-source allocation assignment
 
 Record851 successful compilation/zero-terminal runtime stack failure, context-result reservation before source validation, with exact proof/crash/actual whole closure. Current register and M01 owner now frozen514d852/853, same NativeMissionActorAdmission/notes scope and seven/nine plus unchanged847 storage1/1. Prefix validates source then directly returns the noninline post-source result allocation; later check/receipt/write ordering unchanged. No extra file/probe/runtime/audit beyond owner allocation, no failed-chain integration. Preserve all evidence hashes; scoped Markdown lint/diff checks only.
+
+## Standing approved-scope M01 executor handoff
+
+Record Root's once-only standing MC1 main CPU build/focused-runtime authority effective after current852/853 actual closure. Each existing finite lease still binds a unique frozen source/run/plan and actual source/preference/artifact/process closure, maintained default guards and honest retained evidence; routine in-scope failures no longer need per-run Root-to-G1 grant/ACK. No new framework, tests/probes/files/representation changes; new semantic/scope decisions stay with Root. Owner qualification stops for ONE final independent review, G1 sole integration/CI/publisher. G1 may request safe whole-batch lease handover for actual GUI unlock/delivery. Normal documentation checks only, hashes preserved.
