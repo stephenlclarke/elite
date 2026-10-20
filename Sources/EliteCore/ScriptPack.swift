@@ -57,6 +57,7 @@ public struct ScriptManifest: Codable, Sendable {
   var stationJourney: NativeStationPassengerJourneyDefinition? = nil
   var orbitalOutlook: NativeOrbitalOutlookJourneyDefinition? = nil
   var originalSurvey: NativeOriginalSurveyDefinition? = nil
+  var identifiedSalvage: NativeIdentifiedSalvageDefinition? = nil
   var originalRescue: NativeOriginalRescueDefinition? = nil
   var orbitalEvacuation: NativeOriginalEvacuationDefinition? = nil
   public let npcs: [ScriptNPCDefinition]?
@@ -112,6 +113,7 @@ public enum ScriptCapabilities {
     "finance-obligations-basic-v2", "procurement-contracts-basic-v2", "freight-contracts-basic-v2",
     ScriptFinanceInterest.capability,
     "native-station-passengers-v1", "native-orbital-outlook-v1", "native-consented-survey-v1",
+    "native-identified-salvage-v1",
     "native-original-rescue-v1",
     "native-orbital-evacuation-v1",
     "npc-wormhole-transit-v2",
@@ -156,7 +158,7 @@ public enum ScriptPackLibrary {
     let root = try TOMLTable(source: bytes)
     try keys(
       root,
-      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop stationJourney orbitalOutlook originalSurvey originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
+      "schemaVersion missionAPI id version minimumEngine capabilities dependencies priority source license environments module mission handlers dialogs encounters passengerParties trial equipment board pledge courier procurement freight coldChain repairLoop stationJourney orbitalOutlook originalSurvey identifiedSalvage originalRescue orbitalEvacuation npcs models modules worldJobs receiptRequirements answerRequirements books collections loans children providerContract"
     )
     try keys(
       root.table(forKey: "mission"),
@@ -202,6 +204,12 @@ public enum ScriptPackLibrary {
           declaration.table(forKey: "supply"),
           "batch stockUnits commodity issuerContact galaxy system receiverSystem")
       }
+    }
+    if root.contains(key: "identifiedSalvage") {
+      try keys(
+        root.table(forKey: "identifiedSalvage"),
+        "batch sourceGalaxy sourceSystem collectionGalaxy collectionSystem destinationGalaxy destinationSystem serials"
+      )
     }
     if root.contains(key: "originalSurvey") {
       try keys(
@@ -475,6 +483,7 @@ public enum ScriptPackLibrary {
     try validateOriginalEvacuationJourney(manifest)
     try validateOrbitalOutlookJourney(manifest)
     try validateOriginalSurvey(manifest)
+    try validateIdentifiedSalvage(manifest)
     try validateOriginalRescueJourney(manifest)
     try validateCollections(manifest)
     try validateFinance(manifest)

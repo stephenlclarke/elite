@@ -1108,3 +1108,11 @@ Integrate exact reviewed a162 rescue lookup correction after matching1100compile
 Public aa41ea3b requests review6303510185 and quality39510700458; dependency39510700535 passes. Actual G09endpoint1103 closes10starts/source/preferences/artifacts exact with10PASS/19cases,4FAIL/12cases and6issues/0unknown. Preserve failures and route causal correction; no G09 integration or repeat of passing cohorts.
 
 Refresh required ship fingerprints with maintained make ships1104 after aa41ships-check failure before native gates. All171 GIF bytes remain unchanged,4,104 frames decode and finalships-check passes; normal renderer prerequisite compiles15.19s. Preserve four-method rescue PASS/CLEAN review; publish generated manifest plus concise current outcomes. G09 causal child0e1a awaits matching qualification on its isolated branch.
+
+Current0a required review returned service error6303603110; quality39511230625 continues. G09coherent1106 closes11starts/source/preferences/artifacts exact with13PASS/28cases; only the three-case rehashed-save refusal function has two invalidCommander issues. Root/G3 own causal correction; preserve actual passing cohorts and keep G09 isolated.
+
+Record8435fixture-only correction1107build PASS but1108 sole method/three cases still FAIL with two caught invalidCommander issues, zero unknowns,10-start closure/source/preferences/artifacts exact. Preserve23methods45cases by unchanged dependencies; no G09 integration or diagnostic replay.
+
+G09 final97a reaches aggregate24methods/48cases PASS after1114sole three-case regression passes, with14-start closure and exact source/preferences/artifacts. Preserve prior failures and unchanged-dependency retention. One full review plus required maintained media freshness1115 run in parallel; no G09 integration before CLEAN review.
+
+Integrate final97a exact31-path G09 source, reviewed CLEAN after aggregate24methods48cases PASS, plus already-qualified1115manifest and README player steps. Preserve all prior failures and current0a required gate results. Publish one coherent new source/fresh-media head for normal required CI/review; package one signed local candidate from the qualified renderer product, without another compile/test/UI campaign.

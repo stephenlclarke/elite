@@ -356,7 +356,7 @@ Each release includes a matching `.sha256` checksum, build/signing `.json` manif
 
 For development builds, use the separate [Build and run](#build-and-run) instructions.
 
-The current signed local development candidate is **1.4.1087**, source `57dbe6db3ad69941acb42f5463060e236cb80034`, including consented orbital survey, orbital evacuation and native-person value storage. Timestamped Developer ID signing, strict signature/resource checks and actual bundled survey-pack validation pass. To begin, activate the game window and press **Space** or **Return**. Its bounded visible check verifies the fresh title and exact source identity; desktop Return input did not advance to the station, so board/mission usability remains unverified. Earlier1079 checks remain separate. It is a local Debug candidate to try, with manual travel, project-wide quality and public/notarized release gates still pending. See the [completion ledger](docs/COMPLETION-LEDGER.md).
+Signed local development candidates, their exact source identities and validation limits are recorded in the [completion ledger](docs/COMPLETION-LEDGER.md). Start a candidate by activating the game window and pressing **Space** or **Return**. Development features below are separate from the published 1.4.0 app; full project quality and public/notarized release gates remain pending.
 
 Version 1.4.0 adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls. Its signed, notarized app identifies binary source checkpoint `36fa5cfef1e781f68dcb1fdbf7dae1e1e1f76224`; the release tag also includes the later archive and documentation commit. See the [packaging verification](docs/MACOS-DISTRIBUTION.md).
 
@@ -385,6 +385,16 @@ The composed development source adds **RRS / Sealed documents** (Rescue Stations
 Launch from that RRS station and dock at the same system's **original main orbital station**. Open Station Contracts and explicitly Confirm the debrief: delivery pays **30 CR and RRS reputation +2**, once. There is no deadline, and intermediate docking in the same system is allowed. Leaving the system, changing galaxy, abandonment or actual destruction of the original main station fails the assignment with **0 CR and reputation -10**, once. Temporarily missing or unproved destination evidence keeps delivery unavailable rather than inventing an arrival.
 
 RRS stations provide this board, with no general market, refuelling, equipment shop or auto-trade service. The headquarters board is an explicit project extension. Mission Gallery shows the assignment and its retained outcome read-only; acceptance and debrief happen in Station Contracts. Other RRS scenarios remain queued. These controls describe source-composed development work awaiting focused runtime and full quality acceptance; they are not claimed for the published 1.4.0 app. See [implementation status](docs/MISSION-IMPLEMENTATION.md) and the [qualified evidence ledger](docs/WHOLE-APP-REMEDIATION.md).
+
+## PELL identified salvage return (development)
+
+This original project mission follows **Avenor → Renas → Avenor**. It is integrated in development source, with focused native tests and independent review; the complete manual UI journey is not yet verified.
+
+1. Save your commander, fit a targeting core, Salvage targeting module and Fuel Scoops, free two real hold tonnes, and provide enough fuel/range for the return route.
+2. Dock at Avenor's main station, open **Game > Station Contracts**, select **PELL / accept depot retrieval permission**, then choose Confirm with Left/Right and Return. Acceptance reserves two tonnes for the two original serials; it pays nothing.
+3. Travel to Renas. Use **F** to select the Salvage target filter and **Tab** to select the registered packages and engage collection guidance. Recover both original packages from the depot cradle; destroying the cradle or collecting unrelated cargo cannot substitute for them.
+4. Return in the same collecting ship and dock at the original Avenor depot. In Station Contracts, Confirm **PELL / return original depot property** to receive **880 CR once**. Pickup alone never pays.
+5. To abandon the assignment, return to that owner and Confirm **PELL / return held property and cancel**. Surviving held originals are returned unpaid; lost property is not replenished. Mission property cannot be sold, stored or jettisoned as ordinary cargo.
 
 ## Mission Gallery
 

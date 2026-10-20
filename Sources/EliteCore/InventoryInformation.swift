@@ -59,6 +59,26 @@ extension Game {
         .cyan)
     }
     append("Equipment - fitted and held", .yellow)
+    if let state = identifiedSalvageState,
+      let source = commander.scriptState.savedIdentifiedSalvageSource,
+      let mission = commander.scriptState.instances[state.permission.mission]
+    {
+      append("PELL depot-owned property; \(state.held.count)/2 originals held", .cyan)
+      for original in source.originals {
+        let tonnes = mission.payloads[original.serial.lowercased()] ?? 0
+        let disposition: String
+        switch original.custody {
+        case .cradle:
+          disposition =
+            tonnes > 0 ? "reserved empty slot; original at cradle" : "original at cradle"
+        case .held: disposition = "held protected property"
+        case .returned: disposition = "returned to depot"
+        case .lost: disposition = "genuinely lost"
+        }
+        append("\(original.serial): \(original.name) / \(disposition) / \(tonnes)t", .cyan)
+      }
+      append("Return to the actual Avenor depot; no sale, fitting or ordinary discard.", .cyan)
+    }
     if let history = commander.equipmentPurchaseHistory {
       append("Recorded purchases: \(history.paid.count)", .cyan)
     }

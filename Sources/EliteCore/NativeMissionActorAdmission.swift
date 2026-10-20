@@ -167,6 +167,9 @@ extension Game {
     var prepared: [SpaceBody] = []
     for index in source.actors.indices {
       let actorID = source.actors[index].actorID
+      if withReadOnlyCommander({ NativeIdentifiedSalvage.consumed(actorID, commander: $0) }) {
+        continue
+      }
       if withReadOnlyCommander({ NativeOriginalRescueJourney.consumed(actorID, commander: $0) }) {
         continue
       }

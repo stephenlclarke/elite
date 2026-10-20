@@ -17,8 +17,10 @@ public struct ContractBoardRow: Sendable {
   var repairLoop: WayfarerRepairLoopBoardRow? = nil
   var coldChain: WayfarerColdChainBoardRow? = nil
   var survey: NativeOriginalSurveyAction? = nil
+  var identifiedSalvage: NativeIdentifiedSalvageAction? = nil
   public var key: String {
-    survey?.key ?? repairLoop?.key ?? coldChain?.key ?? provider?.key ?? people?.key ?? finance?.key
+    identifiedSalvage?.key ?? survey?.key ?? repairLoop?.key ?? coldChain?.key ?? provider?.key
+      ?? people?.key ?? finance?.key
       ?? rrs?.key
       ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
   }
@@ -42,6 +44,7 @@ private enum ContractBoardReview: Sendable {
   case repairLoop(WayfarerRepairLoopBoardReview)
   case coldChain(WayfarerColdChainBoardReview)
   case survey(NativeOriginalSurveyReview)
+  case identifiedSalvage(NativeIdentifiedSalvageReview)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -159,6 +162,19 @@ public struct ContractBoardUI: Sendable {
       }
     }
   }
+  var identifiedSalvageQuote: NativeIdentifiedSalvageReview? {
+    get {
+      guard case .identifiedSalvage(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .identifiedSalvage(newValue)
+      } else if case .identifiedSalvage(_)? = review {
+        review = nil
+      }
+    }
+  }
   public init() {}
   var selected: ContractBoardRow? { rows.indices.contains(selection) ? rows[selection] : nil }
   var save: ContractScreenSave {
@@ -206,6 +222,7 @@ extension Game {
     candidate.contractBoard.repairLoopQuote = nil
     candidate.contractBoard.coldChainQuote = nil
     candidate.contractBoard.surveyQuote = nil
+    candidate.contractBoard.identifiedSalvageQuote = nil
     candidate.gallery.providerIntent = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
@@ -220,6 +237,7 @@ extension Game {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
     var rows =
       rrsCourierRows + financeRows + nativePeopleRows + providerContractRows + originalSurveyRows
+      + identifiedSalvageRows
       + wayfarerColdChainRows(failures: failures)
       + wayfarerRepairLoopRows(failures: failures)
     for pack in scriptPacks.sorted(by: {
@@ -255,7 +273,7 @@ extension Game {
       if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
         || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
         || contractBoard.coldChainQuote != nil || contractBoard.repairLoopQuote != nil
-        || contractBoard.surveyQuote != nil
+        || contractBoard.surveyQuote != nil || contractBoard.identifiedSalvageQuote != nil
       {
         contractBoard.action = .back
       }
@@ -263,6 +281,11 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let action = contractBoard.selected?.identifiedSalvage {
+      contractBoard.identifiedSalvageQuote = identifiedSalvageReview(action)
+      return
+    }
+    contractBoard.identifiedSalvageQuote = nil
     if let action = contractBoard.selected?.survey {
       contractBoard.surveyQuote = originalSurveyReview(action)
       return
@@ -356,10 +379,21 @@ extension Game {
       contractBoard.repairLoopQuote = nil
       contractBoard.coldChainQuote = nil
       contractBoard.surveyQuote = nil
+      contractBoard.identifiedSalvageQuote = nil
       gallery.providerIntent = nil
       return
     }
     do {
+      if let action = contractBoard.selected?.identifiedSalvage {
+        guard contractBoard.action == .accept, let quote = contractBoard.identifiedSalvageQuote,
+          quote.action == action
+        else { throw MissionPackError("Review the depot operation and choose Confirm or Back.") }
+        try confirmIdentifiedSalvage(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.identifiedSalvageQuote = nil
+        return
+      }
       if let action = contractBoard.selected?.survey {
         guard contractBoard.action == .accept, let quote = contractBoard.surveyQuote,
           quote.action == action
