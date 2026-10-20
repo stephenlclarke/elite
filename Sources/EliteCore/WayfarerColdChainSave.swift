@@ -234,7 +234,6 @@ enum WayfarerColdChainSave {
   /// A consumed one-shot remains authoritative only through its exact native queued event.
   /// Filesystem refusal keeps this event and the director's suspension, not a replacement timer.
   @inline(never)
-  @inline(never)
   private static func seedCustodianClaimsValid(_ state: borrowing ScriptInstance) -> Bool {
     guard let custody = state.savedWayfarerColdChain else { return false }
     guard custody.definition.isSeedTransfer else { return custody.seedTransfer == nil }
