@@ -178,24 +178,46 @@ struct SalvageWorldRuntimeTests {
     defer { try? FileManager.default.removeItem(at: folder) }
     let url = folder.appendingPathComponent("commander.json")
     try await runtime.save(to: url)
-    try await runtime.load(from: url, persistMigrations: false)
-    let restored = await runtime.snapshot()
+    let cold = GameRuntime()
+    try await cold.load(from: url, persistMigrations: false)
+    let restored = await cold.snapshot()
     let restoredWreck = try #require(
       restored.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
     #expect(restoredWreck.id == nativeBefore.id && restoredWreck.owner == nativeBefore.owner)
     #expect(restoredWreck.motion.energy == remaining && restoredWreck.motion == rebound.motion)
     #expect(restored.commander.salvageLedger == legacyBefore)
-    var relaunched = Game(executive: false)
-    relaunched.commander = restored.commander
+    let coldBody = try #require(
+      restored.bodies.first { $0.physical?.salvage?.wreck == site.identity })
+    let coldActor = try #require(coldBody.physical?.identity)
+    #expect(restoredWreck.binding == coldActor && coldBody.energy == remaining)
+    #expect(coldBody.rotationRate == 0)
+    #expect((restored.modelPose(of: coldBody).position - savedMotion.pose.position).length < 1e-8)
+    var relaunched = restored
+    // Ordinary docking parks the restored native binding before a fresh launch/admission.
+    relaunched.dock()
+    try #require(relaunched.docked)
+    let coldParked = try #require(
+      relaunched.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(coldParked.id == nativeBefore.id && coldParked.binding == nil)
+    #expect(coldParked.motion.energy == remaining && coldParked.destroyedAt == nil)
+    #expect(relaunched.commander.salvageLedger == legacyBefore)
     relaunched.launch()
-    relaunched.bodies = []
-    relaunched.commander.npcPersistence = .init()
+    try #require(!relaunched.docked)
     relocateWreckObserver(&relaunched, to: observer)
     relaunched.activateNearbySalvageSites()
     let reloaded = try #require(
       relaunched.bodies.first { $0.physical?.salvage?.wreck == site.identity })
     #expect(reloaded.energy == remaining && reloaded.rotationRate == 0)
     #expect((relaunched.modelPose(of: reloaded).position - savedMotion.pose.position).length < 1e-8)
+    let reloadedActor = try #require(reloaded.physical?.identity)
+    let readmitted = try #require(
+      relaunched.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(
+      reloadedActor != coldActor
+        && reloadedActor.visit == relaunched.commander.flightSimulation.visit)
+    #expect(readmitted.id == nativeBefore.id && readmitted.owner == nativeBefore.owner)
+    #expect(readmitted.binding == reloadedActor && readmitted.source == .generated(site))
+    #expect(relaunched.commander.salvageLedger == legacyBefore)
   }
 
   @Test func destroyingAnActualAbandonedSiteMarksTerminalWithoutLivingShipCrimeOrKillCredit()
