@@ -570,3 +570,7 @@ Record RootONEfull17CLEAN and approved PRnote/CLEANsentence, G2nativeownerPASS b
 ## Record verified W03 source and current validation entry fault
 
 Root confirms33304385all17committedpaths exactreceipt/zero mismatches, sourceintegrationonly/889appexcludesW03. Record6761dc07900buildPASS/901singlecoreUNKNOWN-crash0issues/noIPS/902samebinarydiagnosticactualvalidateLoaded182entryfaultthroughdrivepolicy/Commander.valid/fullclosure. MC1readonlyimplicatedinspection only/no newdiagnostic/probe/G1job. Existingfirst-match/nil reader change adds1existing9casecoverage method; baseline3/3retain/pending23methods37cases/target26/40, no fullPASSwaiver. UXselectsnextitembutnoneassigned. Scoped Markdownlint/whitespace/historyhash checks only.
+
+## Record active human-unlocked890 and next G13 assignment
+
+Root903/904actualwholeclosure handover grantsG1existing889briefvisible/manualsave/relaunchContinue; humanUnlockedandready, primarysaveprefs frozen, no rebuild/performance/W03claim. Source3476unchangedbinary remainsunqualified. Rootassigns G3soleMBA G13mutualrelief14path500CRnativepledge/Cedamar85/receiptclueonce/zeroreward/noGame-save-overlap, G2review AFTERownerPASS/G1integrator, authoringnotcompletion. ActualGUIpriority preserved; scopedMarkdown/whitespace only.
