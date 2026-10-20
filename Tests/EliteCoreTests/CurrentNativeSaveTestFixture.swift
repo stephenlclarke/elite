@@ -20,12 +20,25 @@ enum CurrentNativeSaveTestFixture {
   ) throws -> String {
     var actualFields = try #require(object(stored) as? [String: Any])
     var expectedFields = try #require(object(expected) as? [String: Any])
+    var differingFields: [String] = []
+    for key in Set(actualFields.keys).union(expectedFields.keys).sorted() {
+      if let actual = actualFields[key], let expected = expectedFields[key] {
+        if !NSDictionary(dictionary: [key: actual]).isEqual(
+          NSDictionary(dictionary: [key: expected]))
+        {
+          differingFields.append(key)
+        }
+      } else {
+        differingFields.append(key)
+      }
+    }
     actualFields.removeValue(forKey: "savedWantedCareers")
     expectedFields.removeValue(forKey: "savedWantedCareers")
     let otherFieldsMatch = NSDictionary(dictionary: actualFields).isEqual(
       NSDictionary(dictionary: expectedFields))
     let wantedMatches = stored.wantedCareers == expected.wantedCareers
-    return "wantedCareersMatch=\(wantedMatches); otherCommanderFieldsMatch=\(otherFieldsMatch)"
+    return
+      "wantedCareersMatch=\(wantedMatches); otherCommanderFieldsMatch=\(otherFieldsMatch); differingSerializedFields=\(differingFields.joined(separator: ","))"
   }
 
   /// Native station publication captures condition only; these fixtures have no destroyed source.

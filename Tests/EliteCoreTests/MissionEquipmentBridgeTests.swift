@@ -19,7 +19,15 @@ struct MissionEquipmentBridgeTests {
   @Test func originalPlansDeliveryGrantsActualNavalHardwareAndCannotDuplicateAfterReload()
     async throws
   {
-    var game = try equipmentPlansDelivery()
+    var game = Game(executive: true)
+    game.commander.credits = 1000
+    game.screen = .status
+    game.commander.galaxy = 2
+    game.commander.system = 36
+    game.systems = Universe.systemsIncludingPlugh(number: 2)
+    game.commander.kills = 1280
+    game.commander.missionStage = .carryingPlans
+    try game.commander.prepareEquipment(legacy: false)
     let entry = try #require(game.missionPacks.entries.first { $0.pack.id == "xyzzy.plans" })
     let delivered = game.dispatchMission(.dock, naval: true)
     #expect(delivered && game.commander.missionStage == .plansDelivered)
