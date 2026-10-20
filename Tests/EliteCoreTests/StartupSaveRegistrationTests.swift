@@ -28,7 +28,17 @@ struct StartupSaveRegistrationTests {
     let before = await delegate.runtime.snapshot()
     try await delegate.bindNewCommanderSaveIfNeeded(afterFailedRestore: false)
     let registered = await delegate.runtime.snapshot()
-    #expect(registered.commander == before.commander && registered.scriptDurabilityAvailable)
+    #expect(registered.commander.name == before.commander.name)
+    #expect(registered.commander.shipID == before.commander.shipID)
+    #expect(registered.commander.credits == before.commander.credits)
+    #expect(registered.commander.fuel == before.commander.fuel)
+    #expect(registered.commander.cargo == before.commander.cargo)
+    #expect(registered.commander.equipmentOwnerID != before.commander.equipmentOwnerID)
+    #expect(registered.commander.valid && registered.scriptDurabilityAvailable)
+    #expect(registered.nativeMainStationDockEvidenceIsCurrent)
+    #expect(
+      registered.commander.nativeStations?.currentMainDock?.station.system
+        == .init(galaxy: 0, system: 7))
     #expect(saves.activeURL == url && saves.startupURL == nil)
     #expect(!FileManager.default.fileExists(atPath: directory.path))
     #expect(preferences.persistentDomain(forName: identifier) == nil)
@@ -81,7 +91,16 @@ struct StartupSaveRegistrationTests {
     // This is also the safe fallback after Choose Save is cancelled or its load fails.
     try await delegate.bindNewCommanderSaveIfNeeded(afterFailedRestore: true)
     let registered = await delegate.runtime.snapshot()
-    #expect(registered.commander == initial.commander)
+    #expect(registered.commander.name == initial.commander.name)
+    #expect(registered.commander.shipID == initial.commander.shipID)
+    #expect(registered.commander.credits == initial.commander.credits)
+    #expect(registered.commander.fuel == initial.commander.fuel)
+    #expect(registered.commander.cargo == initial.commander.cargo)
+    #expect(registered.commander.equipmentOwnerID != initial.commander.equipmentOwnerID)
+    #expect(registered.commander.valid && registered.nativeMainStationDockEvidenceIsCurrent)
+    #expect(
+      registered.commander.nativeStations?.currentMainDock?.station.system
+        == .init(galaxy: 0, system: 7))
     #expect(saves.activeURL != selected && saves.activeURL != defaultURL)
     #expect(preferences.string(forKey: "lastCommanderSavePath") == selected.path)
     #expect(!FileManager.default.fileExists(atPath: saves.activeURL.path))

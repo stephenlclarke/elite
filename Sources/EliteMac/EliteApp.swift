@@ -571,6 +571,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
   }
   func bindNewCommanderSaveIfNeeded(afterFailedRestore: Bool) async throws {
     guard !(await runtime.hasCommanderSaveDestination()) else { return }
+    try await runtime.startNewCommander()
     let proposed = saves.newCommanderDestination(afterFailedRestore: afterFailedRestore)
     let accepted: URL
     do {
