@@ -131,11 +131,31 @@ private struct OwnedEquipmentObserverFixture {
   func clean() { try? FileManager.default.removeItem(at: folder) }
 }
 
+/// These event fixtures intentionally observe a stock Cobra exchange, independent of fresh defaults.
+private func ownedObserverStockCobraGame() throws -> Game {
+  var commander = Commander()
+  commander.shipID = "SH023"
+  commander.fuel = commander.fuelCapacity
+  commander.missiles = 4
+  try commander.prepareEquipment(legacy: false)
+  var game = Game(executive: false)
+  game.commander = commander
+  game.commander.mirrorFittedEquipment()
+  try game.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(game.commander.valid && game.commander.shipID == "SH023")
+  try #require(game.commander.fuel == 70 && game.commander.missiles == 4)
+  game.screen = .inventory
+  return game
+}
+
 @Test func scriptsObserveOnlyCommittedHullRefitAndActualAmmunitionEvents() throws {
   let fixture = try OwnedEquipmentObserverFixture()
   defer { fixture.clean() }
   let pack = fixture.pack
-  var game = try missionGearGame(missiles: 4)
+  var game = try ownedObserverStockCobraGame()
   game.scriptPacks = [pack]
   game.commander.credits = 10_000_000
   let id = try game.acceptScriptMission(pack)
@@ -410,7 +430,7 @@ func hullChangeEventAndOwnedFitShareTheirActualActorWriterCommitOrRollback(faili
 {
   let fixture = try OwnedEquipmentObserverFixture()
   defer { fixture.clean() }
-  var game = try missionGearGame(missiles: 4)
+  var game = try ownedObserverStockCobraGame()
   game.scriptPacks = [fixture.pack]
   game.commander.credits = 10_000_000
   let id = try game.acceptScriptMission(fixture.pack)

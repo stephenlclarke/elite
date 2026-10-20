@@ -108,8 +108,11 @@ private func priceAdmissionTOML(policy: ShipCataloguePurchasePolicy, price: Int)
   let positive = try #require(positiveShips.first)
   var game = Game(executive: false)
   game.commander.credits = 10_000_000
+  let destinationHull = try #require(positive.game)
+  game.commander.fuel = destinationHull.fuel
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
+  try #require(game.commander.valid)
   let before = game.commander
   let optionalPositiveQuote = game.shipTradeQuote(for: positive)
   let positiveQuote = try #require(optionalPositiveQuote)

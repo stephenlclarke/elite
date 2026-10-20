@@ -237,6 +237,9 @@ private struct ContractFixture {
   var game = fixture.game()
   game.scriptDurabilityAvailable = true
   game.commander.credits = 10_000_000
+  let destinationHull = try #require(ShipCatalogue.ship("SH013")?.game)
+  game.commander.fuel = destinationHull.fuel
+  try #require(game.commander.valid)
   let ordinaryCargo = game.commander.tradeCargoCapacity
   game.commander.cargo[0] = ordinaryCargo
   let key = try game.ensureContractBoard(fixture.pack)
@@ -274,6 +277,7 @@ private struct ContractFixture {
         ] : [])
     defer { fixture.clean() }
     var game = fixture.game()
+    game.commander.credits = 1000
     game.scriptDurabilityAvailable = true
     let key = try game.ensureContractBoard(fixture.pack)
     let offer = try #require(game.commander.contracts.boards[key]?.offers.first)

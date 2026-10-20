@@ -79,6 +79,7 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
 @Test func scriptedCourierUsesAtomicCustodyConfirmAndNeverReplaysReward() throws {
   let pack = try ScriptPackLibrary.read(scriptedCourier)
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.screen = .status
   game.scriptPacks = [pack]
   let id = try game.acceptScriptMission(pack)
@@ -106,6 +107,7 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
 @Test func scriptTransactionsRollbackAllEffectsOnFitErrorUnknownCommandsAndScriptFaults() throws {
   let pack = try ScriptPackLibrary.read(scriptedCourier)
   var full = Game(executive: false)
+  full.commander.credits = 1000
   full.scriptPacks = [pack]
   full.commander.cargo[0] = full.commander.capacity
   let original = full.commander
@@ -121,6 +123,7 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
     )
     defer { try? FileManager.default.removeItem(at: folder) }
     var game = Game(executive: false)
+    game.commander.credits = 1000
     game.scriptPacks = [bad]
     #expect(throws: MissionPackError.self) { try game.acceptScriptMission(bad) }
     #expect(game.commander.credits == 1000 && game.commander.scriptState.instances.isEmpty)
