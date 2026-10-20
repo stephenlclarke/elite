@@ -267,7 +267,7 @@ Record Root CLEAN0a3c9d4d and exact execution binding after owner HEAD/seven tes
 
 ## Two bounded MBA03 fixture corrections and separate route gap
 
-Record Root's Gallery per-provider row correction and pre-board ordinary source selection for exact package-1 restore coverage, preserving every acceptance/route/deadline/content/version/custody/save-byte oracle. Owner closes the whole original run before changed-source build and reruns affected methods only; frozen changed-hunk review remains required. Retain actual Avenor7 excessive-route-cost refusal as separate OPEN M05/M06 player gap; fixture selection does not fix it. Scoped Markdown/whitespace checks only.
+Record Root's Gallery per-provider row correction and pre-board ordinary source selection for exact package-1 restore coverage, preserving every acceptance/route/deadline/content/version/custody/save-byte oracle. Owner closes the whole original run before changed-source build and reruns affected methods only; frozen changed-hunk review remains required. Retain actual Avenor7 refusal evidence; the later source reconciliation resolves this specific availability assumption as designed, without changing route/deadline/quote. Scoped Markdown/whitespace checks only.
 
 ## Actual809 closure and immediate renderer allocation
 
@@ -293,8 +293,12 @@ Assign the M01 docking blocker/five MBA03 dependencies to G2 NEXT after renderer
 
 ## Accept pending MBA03 freeze; activate source-only MBA07
 
-Record exact958f FINAL-PENDING handoff, seven non-doc paths hash-exact reviewed/tested2bc and G1 docs-only CLEAN review. Two corrected existing tests PASS with whole group closure; eight-method/nine-case aggregate includes retained9ac evidence, no single13/14 pass. Five native flows remain docking-dependent/UNKNOWN and packet is not integrated or playable; Avenor route gap remains OPEN. Activate already approved MBA07 source reconciliation/proposal only, implementation still needs Root boundary approval. Scoped Markdown/whitespace checks, no duplicate product audit/runtime.
+Record exact958f FINAL-PENDING handoff, seven non-doc paths hash-exact reviewed/tested2bc and G1 docs-only CLEAN review. Two corrected existing tests PASS with whole group closure; eight-method/nine-case aggregate includes retained9ac evidence, no single13/14 pass. Five native flows remain docking-dependent/UNKNOWN and packet is not integrated or playable; Avenor availability classification is superseded by the later resolved-as-designed reconciliation; raw refusal stays retained. Activate already approved MBA07 source reconciliation/proposal only, implementation still needs Root boundary approval. Scoped Markdown/whitespace checks, no duplicate product audit/runtime.
 
 ## Material813 failure and current owned execution/reconciliation queue
 
 Record closed813bada36 zero PASS/seven UNKNOWN later validator stack failure and immediate G2814/815 reviewedede7 four-case allocation; no per-diagnostic ledger/review overhead or crash integration. Preserve MBA07 source-reconciled proposal pending actual consent/berth/non-EMP producer/save decisions; no speculative framework. Assign existing Avenor courier feasibility source/evidence reconciliation, distinguishing intended truthful no-headroom refusal from proven calculation/offer defect before any fix or gap reclassification. No new runtime probe/waiver; frozen03 stays pending.
+
+## Correct only Avenor unavailable-listing classification
+
+Record source/evidence conclusion and exact receipt: unchanged native calendar arithmetic, frozen-six/no-reroll generation, strict deadline-headroom refusal and truthful disabled UI establish intended unavailable legacy content. Reclassify the specific prior restore-fixture availability assumption as resolved as designed, preserving actual refusal/raw route costs and unrelated M01/navigation gaps. No product fix/new test/runtime/Slack/playable claim; MBA03 remains docking-dependent and MBA07 source-reconciled/pending actual producer/consent/berth/save decisions.
