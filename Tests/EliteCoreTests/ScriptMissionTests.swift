@@ -317,6 +317,8 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
   let (pack, folder) = try scriptPack(source: source)
   defer { try? FileManager.default.removeItem(at: folder) }
   var game = Game(executive: false)
+  // Fixed rollback budget for this transaction fixture, independent of starter cash.
+  game.commander.credits = 1000
   game.screen = .sell
   game.scriptPacks = [pack]
   let id = try game.acceptScriptMission(pack)

@@ -28,6 +28,7 @@ private let bundledNavigationTradeDigest =
 private let bundledSealedDispatchDigest =
   "93289d5daf873d0cf878b37fa55178e4ab91cf6fa1947f379a54c3bc04267ae7"
 
+private let bundledOriginalRescueDigest = NativeOriginalRescueJourney.digest
 private let bundledOrbitalOutlookDigest =
   "cf5076adbecad912603ddd146aeb2ead31621bf698ff4a4a7071a2b66b2cf798"
 
@@ -140,7 +141,7 @@ struct BundledScriptPackTests {
           bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
           bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
-          bundledOrbitalOutlookDigest,
+          bundledOrbitalOutlookDigest, bundledOriginalRescueDigest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -170,7 +171,7 @@ struct BundledScriptPackTests {
           bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
           bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
-          bundledOrbitalOutlookDigest,
+          bundledOrbitalOutlookDigest, bundledOriginalRescueDigest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -192,7 +193,7 @@ struct BundledScriptPackTests {
         bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
-        bundledOrbitalOutlookDigest,
+        bundledOrbitalOutlookDigest, bundledOriginalRescueDigest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -219,6 +220,7 @@ struct BundledScriptPackTests {
         bundledSeedTransferDigest, bundledMutualContributionDigest, bundledNavigationTradeDigest,
         bundledSealedDispatchDigest, bundledVerifiedWarrantDigest, bundledCorridorDefenceDigest,
         bundledConsentedFreightDigest, bundledCabinJourneyDigest, bundledOrbitalOutlookDigest,
+        bundledOriginalRescueDigest,
       ])
   }
 
@@ -364,7 +366,7 @@ struct BundledScriptPackTests {
         bundledRepairLoopDigest, bundledSeedTransferDigest, bundledMutualContributionDigest,
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
-        bundledOrbitalOutlookDigest,
+        bundledOrbitalOutlookDigest, bundledOriginalRescueDigest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)

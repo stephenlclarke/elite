@@ -47,9 +47,10 @@ public struct ShipAccommodation: Codable, Sendable, Equatable {
         guard cabinPeople.insert(person).inserted else { return false }
       }
       if case .nativePerson(let person) = berth.use {
-        guard let identity = person.station, identity.valid, fitted.contains(berth.id),
-          berth.lifeSupportWorking,
-          berth.humanoidCompatible, people[identity.id] == nil
+        guard let id = person.nativeID,
+          person.station?.valid == true || person.rescue?.valid == true,
+          fitted.contains(berth.id), berth.lifeSupportWorking,
+          berth.humanoidCompatible, people[id] == nil
         else { return false }
       }
       if case .occupied(let person) = berth.use {

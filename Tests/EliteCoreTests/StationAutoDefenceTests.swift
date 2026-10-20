@@ -1381,13 +1381,89 @@ func stationAutoFiniteBrakingPreservesOnlyAValidatedCourse(condition: String) {
   }
 }
 
+private func stationAutoStockCobraGame() throws -> Game {
+  // Controlled native unit boundary. Original mission routes and traffic are not edited.
+  var game = try ScriptProcurementFixture.freshG03FlightGame()
+  // The original finite-braking lane was authored for the stock SH023 hull and controls.
+  // Set the controlled fixture before paid preparation, physical actors or native launch.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try game.prepareG03FlightEquipment()
+  try ScriptProcurementFixture.requirePaidG03Preparation(game)
+  game.ensureMissionCalendar()
+  game.launch()
+  let station = try #require(game.commander.flightSimulation.anchors?.station)
+  NativePagedSalvageFixture.moveObserver(
+    &game, to: .init(position: station.position + .init(0, 0, -5000)))
+  let id = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: id, hull: .cobra, position: .init(0, 0, 1000), hostile: true))
+  game.ensurePhysicalActors()
+  for index in game.bodies.indices where game.bodies[index].id != id {
+    if game.bodies[index].physical?.npc != nil {
+      game.bodies[index].hostile = false
+      game.bodies[index].physical?.npc?.intention = .dock(station.identity)
+    }
+  }
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  let spawn = SpawnIdentity(
+    system: game.systemIdentity, visit: game.commander.flightSimulation.visit,
+    sequence: 900, member: 0, producer: .ambient)
+  game.bodies[index].missiles = 0
+  game.bodies[index].physical?.spawnIdentity = spawn
+  game.bodies[index].physical?.catalogueShipID = ShipCatalogue.nativeShip(.cobra)?.id
+  game.bodies[index].physical?.npc?.legal = .init(value: 16)
+  game.bodies[index].physical?.npc?.routeProvenance = .generated
+  for _ in 0..<32 {
+    game.key("tab")
+    if game.autoPilot.targetActor == station.identity { break }
+  }
+  try #require(game.stationAutoDockingActive && game.autoPilot.targetActor == station.identity)
+  return game
+}
+
+private func stationAutoStockCobraEntryBoundary() async throws -> Game {
+  var game = try stationAutoStockCobraGame()
+  let station = try #require(game.autoTargetBody)
+  let stationActor = try #require(station.physical?.identity)
+  // A controlled, initially resting unit at the genuine external staging point.
+  // Only ordinary native ticks establish its subsequent entry attitude and phase.
+  for index in game.bodies.indices where game.bodies[index].physical?.npc != nil {
+    game.bodies[index].hostile = false
+    game.bodies[index].physical?.npc?.legal = .init()
+    game.bodies[index].physical?.npc?.intention = .dock(stationActor)
+  }
+  let pose = game.commander.flightSimulation.pose
+  let goal = pose.systemPoint(
+    station.entrancePosition + station.entranceNormal * station.stationApproachDistance)
+  let forward = pose.orientation.apply(station.entranceNormal * -1).unit
+  let up = pose.orientation.apply(station.entranceUp).unit
+  var orientation = Basis3()
+  orientation.z = forward
+  orientation.x = up.cross(forward).unit
+  orientation.y = forward.cross(orientation.x).unit
+  NativePagedSalvageFixture.moveObserver(&game, to: .init(position: goal, orientation: orientation))
+  game.speed = 0
+  game.autoPilot.setApproachVelocity(.init(0, 0, 0))
+  let runtime = GameRuntime(game: game)
+  for _ in 0..<128 {
+    if game.autoPilot.finalApproach { break }
+    game = await runtime.advance(delta: 0.1)
+  }
+  try #require(game.stationAutoDockingActive && game.autoPilot.finalApproach && !game.docked)
+  return game
+}
+
 @Test(arguments: ["resume", "unsafe-stop"])
 func stationAutoRealPoliceDepartureBrakesThenReestablishesNativeEntry(condition: String)
   async throws
 {
   let storage = try NativeStationTestStorage()
   defer { storage.clean() }
-  var game = try await stationAutoEntryBoundary()
+  var game = try await stationAutoStockCobraEntryBoundary()
   let lane = Vector3(-42.03981364135889, 79.57797477317199, -928)
   let admissionPhase = atan2(lane.y, lane.x)
   let phaseRuntime = GameRuntime(game: game, saveURL: storage.url)

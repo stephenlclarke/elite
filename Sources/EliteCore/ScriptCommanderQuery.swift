@@ -34,6 +34,17 @@ extension Game {
         "status": orbitalOutlookScanStatus.map(ScriptValue.string) ?? .null,
       ])
     }
+    if let state = commander.nativePeople?.originalRescue {
+      fields["original_rescue"] = .object([
+        "mission": .string(state.mission.uuidString),
+        "original_people": .integer(2), "capsules_recovered": .integer(Int64(state.captures.count)),
+        "aboard": .integer(
+          Int64(commander.nativePeople?.held.filter { $0.person.rescue != nil }.count ?? 0)),
+        "transport_boarded": .bool(state.boarding != nil),
+        "original_record_aboard": .bool(NativeOriginalRescueJourney.recordCarried(state)),
+        "closed": .bool(state.terminalOperation != nil),
+      ])
+    }
     return .object(fields)
   }
   private var scriptCommanderLocationQuery: ScriptValue {

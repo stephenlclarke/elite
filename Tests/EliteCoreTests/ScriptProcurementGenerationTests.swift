@@ -252,6 +252,12 @@ func procurementV2FiltersOverDeadlineRoutesFromPaidExtendedReachBeforeDrawing(ro
   defer { fixture.clean() }
   // Controlled fresh shop initialization, not a travelled route or awarded fit.
   var game = try ScriptProcurementFixture.freshG03FlightGame()
+  // This controlled unit fixture exercises the stock Cobra, independently of the fresh starter.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.commander.credits = 1_000_000
   try game.commander.prepareEquipment(legacy: false)
   game.scriptPacks = [fixture.pack]
