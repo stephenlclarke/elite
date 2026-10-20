@@ -121,24 +121,40 @@ enum NativeOriginalEvacuation {
   }
 
   /// Player input requests passage. Only the native original person's policy creates its reply.
+  @inline(never)
   static func requestConsent(
     state: inout NativeOriginalEvacuationState, game: borrowing Game,
     destination requested: SystemIdentity
   ) throws {
+    let dockEvidenceIsCurrent = game.nativeMainStationDockEvidenceIsCurrent
+    let atSource = game.contractStation == source
+    let epoch = game.nativeStationRuntimeEpoch
+    try game.withReadOnlyCommander { commander in
+      try requestConsent(
+        state: &state, commander: commander, destination: requested,
+        dockEvidenceIsCurrent: dockEvidenceIsCurrent, atSource: atSource, epoch: epoch)
+    }
+  }
+
+  @inline(never)
+  private static func requestConsent(
+    state: inout NativeOriginalEvacuationState, commander: borrowing Commander,
+    destination requested: SystemIdentity, dockEvidenceIsCurrent: Bool, atSource: Bool, epoch: UUID
+  ) throws {
     guard state.boarding == nil, state.withdrawal == nil,
-      state.owner == game.commander.equipmentOwnerID,
+      state.owner == commander.equipmentOwnerID,
       state.definition.valid,
       state.offers.count < 64, state.replies.count <= 248,
-      game.nativeMainStationDockEvidenceIsCurrent, game.contractStation == source,
-      let dock = game.commander.nativeStations?.currentMainDock, state.source == dock.station,
-      let collector = game.commander.flightSimulation.player,
-      let carrier = game.commander.hullInstanceID,
-      let inventory = game.commander.equipmentInventory
+      dockEvidenceIsCurrent, atSource,
+      let dock = commander.nativeStations?.currentMainDock, state.source == dock.station,
+      let collector = commander.flightSimulation.player,
+      let carrier = commander.hullInstanceID,
+      let inventory = commander.equipmentInventory
     else { throw MissionPackError("Request passage from the actual Avenor passage office.") }
-    let slots = game.commander.accommodation.fittedBerths.filter {
+    let slots = commander.accommodation.fittedBerths.filter {
       !$0.use.used && $0.lifeSupportWorking && $0.humanoidCompatible
     }.sorted { $0.id.uuidString < $1.id.uuidString }
-    let reach = ScriptCourierReach(game.commander)
+    let reach = ScriptCourierReach(commander)
     let route =
       ScriptCourierGeneration.routes(origin: source, reach: reach).first {
         $0.last == requested.system && requested.galaxy == 0 && $0.count == 2
@@ -146,7 +162,8 @@ enum NativeOriginalEvacuation {
     if let previous = state.latestOffer {
       for person in state.people {
         let reply = try replyToPassageOffer(
-          person: person.identity, offer: previous, state: state, game: game)
+          person: person.identity, offer: previous, state: state, commander: commander,
+          dockEvidenceIsCurrent: dockEvidenceIsCurrent, atSource: atSource, epoch: epoch)
         if reply.kind == .withdraw { state.replies.append(reply) }
       }
     }
@@ -159,38 +176,55 @@ enum NativeOriginalEvacuation {
         "native-evacuation-offer-v1:\(state.owner):\(state.definition.batch):\(revision)"),
       revision: revision, dock: dock, collector: collector, carrier: carrier,
       inventoryRevision: inventory.revision, destination: requested, reach: reach, path: route,
-      berths: game.commander.passengerFit?.allowed == true ? Array(slots.prefix(4)) : [],
-      physicalTime: game.commander.flightSimulation.physicalTime,
-      epoch: game.nativeStationRuntimeEpoch)
+      berths: commander.passengerFit?.allowed == true ? Array(slots.prefix(4)) : [],
+      physicalTime: commander.flightSimulation.physicalTime,
+      epoch: epoch)
     state.offers.append(offer)
     for person in state.people {
       let reply = try replyToPassageOffer(
-        person: person.identity, offer: offer, state: state, game: game)
+        person: person.identity, offer: offer, state: state, commander: commander,
+        dockEvidenceIsCurrent: dockEvidenceIsCurrent, atSource: atSource, epoch: epoch)
       state.replies.append(reply)
     }
   }
 
+  @inline(never)
   static func replyToPassageOffer(
     person identity: NativeOriginalEvacuationIdentity, offer: NativeStationPassageOffer,
     state: NativeOriginalEvacuationState, game: borrowing Game
   ) throws -> NativeEvacuationPassageReply {
+    let dockEvidenceIsCurrent = game.nativeMainStationDockEvidenceIsCurrent
+    let atSource = game.contractStation == source
+    let epoch = game.nativeStationRuntimeEpoch
+    return try game.withReadOnlyCommander { commander in
+      try replyToPassageOffer(
+        person: identity, offer: offer, state: state, commander: commander,
+        dockEvidenceIsCurrent: dockEvidenceIsCurrent, atSource: atSource, epoch: epoch)
+    }
+  }
+
+  @inline(never)
+  private static func replyToPassageOffer(
+    person identity: NativeOriginalEvacuationIdentity, offer: NativeStationPassageOffer,
+    state: NativeOriginalEvacuationState, commander: borrowing Commander,
+    dockEvidenceIsCurrent: Bool, atSource: Bool, epoch: UUID
+  ) throws -> NativeEvacuationPassageReply {
     guard state.boarding == nil, state.withdrawal == nil,
-      state.owner == game.commander.equipmentOwnerID,
+      state.owner == commander.equipmentOwnerID,
       let person = state.people.first(where: { $0.identity == identity }),
       let request = person.currentRequest,
       person.custodian == state.source, person.identity.owner == state.owner,
-      game.nativeMainStationDockEvidenceIsCurrent, game.contractStation == source,
-      let dock = game.commander.nativeStations?.currentMainDock, state.source == dock.station,
-      let carrier = game.commander.hullInstanceID,
-      let inventory = game.commander.equipmentInventory
+      dockEvidenceIsCurrent, atSource,
+      let dock = commander.nativeStations?.currentMainDock, state.source == dock.station,
+      let carrier = commander.hullInstanceID,
+      let inventory = commander.equipmentInventory
     else { throw MissionPackError("A reply needs the actual living original station individual.") }
     guard let index = state.people.firstIndex(where: { $0.identity == identity }) else {
       throw SaveError.invalidCommander
     }
-    let epoch = game.nativeStationRuntimeEpoch
     let offered = offer.berths.indices.contains(index) ? offer.berths[index] : nil
     let berth = offered?.id
-    let observed = game.commander.accommodation.fittedBerths.first { $0.id == berth }
+    let observed = commander.accommodation.fittedBerths.first { $0.id == berth }
     let inventoryRevision = inventory.revision
     let kind: NativeStationPassageReplyKind
     if request.intent == .withdrawn || state.latestOffer?.id != offer.id || offer.dock != dock
@@ -211,8 +245,8 @@ enum NativeOriginalEvacuation {
       personRevision: request.revision,
       observedOfferRevision: state.latestOffer?.revision ?? 0, kind: kind, dock: dock,
       carrier: carrier, berth: berth, observedBerth: observed, inventoryRevision: inventoryRevision,
-      physicalTime: game.commander.flightSimulation.physicalTime,
-      epoch: game.nativeStationRuntimeEpoch)
+      physicalTime: commander.flightSimulation.physicalTime,
+      epoch: epoch)
   }
 }
 

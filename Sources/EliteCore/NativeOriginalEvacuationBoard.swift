@@ -254,17 +254,29 @@ extension Game {
     commander.savedNativePeopleCustody = custody
   }
 
+  @inline(never)
   private mutating func requestOriginalEvacuations(
     _ pack: ScriptPack, context: NativeMainStationArrivalContext
   ) throws {
-    guard let owner = commander.equipmentOwnerID, let definition = pack.manifest.orbitalEvacuation,
+    var source = try prepareOriginalEvacuationConsent(pack, context: context)
+    try NativeOriginalEvacuation.requestConsent(
+      state: &source, game: self, destination: .init(galaxy: 0, system: 185))
+    publishOriginalEvacuationConsent(source)
+  }
+
+  /// Retire original roster preparation before the native consent walk reserves its values.
+  @inline(never)
+  private mutating func prepareOriginalEvacuationConsent(
+    _ pack: ScriptPack, context: NativeMainStationArrivalContext
+  ) throws -> NativeOriginalEvacuationState {
+    guard let owner = withReadOnlyCommander({ $0.equipmentOwnerID }),
+      let definition = pack.manifest.orbitalEvacuation,
       definition.valid, context.receipt.station.world == owner,
       context.receipt.station.system == SystemIdentity(galaxy: 0, system: 7)
     else { throw SaveError.invalidCommander }
     ensureScriptCalendar(origin: .newCommander)
-    var custody = commander.nativePeople ?? .init(owner: owner)
-    var source =
-      custody.orbitalEvacuation
+    let source =
+      withReadOnlyCommander { $0.nativePeople?.orbitalEvacuation }
       ?? .init(
         owner: owner, definition: definition,
         version: pack.manifest.version, digest: pack.digest, source: context.receipt.station,
@@ -281,9 +293,17 @@ extension Game {
     guard source.definition == definition, source.digest == pack.digest, source.boarding == nil,
       source.withdrawal == nil
     else { throw SaveError.invalidCommander }
-    try NativeOriginalEvacuation.requestConsent(
-      state: &source, game: self, destination: .init(galaxy: 0, system: 185))
-    custody.orbitalEvacuation = source
+    return source
+  }
+
+  /// Copy the custody value only after the native consent walk has completed.
+  @inline(never)
+  private mutating func publishOriginalEvacuationConsent(
+    _ source: borrowing NativeOriginalEvacuationState
+  ) {
+    let owner = source.owner
+    var custody = withReadOnlyCommander { $0.nativePeople } ?? .init(owner: owner)
+    custody.orbitalEvacuation = copy source
     commander.savedNativePeopleCustody = custody
   }
 
