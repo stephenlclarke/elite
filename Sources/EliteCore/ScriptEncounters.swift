@@ -124,14 +124,20 @@ public struct ScriptOwnedActor: Codable, Sendable, Equatable {
     PackValidation.localID(alias) && body.missionActorID == identity
       && body.position.finite && body.position.length <= 1e9 && body.orientation.validRotation
       && body.energy.isFinite && (0...10_000_000).contains(body.energy)
-      && (body.scriptNPC?.valid ?? true)
-      && (body.scriptNPC.map {
-        body.energy <= $0.fit.definition.energy
-          && body.missiles <= $0.fit.definition.missiles
-      } ?? true)
+      && Self.npcValid(body)
       && body.rotation.isFinite && body.rotationRate.isFinite && (0...32).contains(body.missiles)
       && (-1..<1_000_000_000).contains(body.id)
       && (presence != .destroyed || body.energy == 0)
+  }
+
+  @inline(never)
+  private static func npcValid(_ body: borrowing SpaceBody) -> Bool {
+    if case .none = body.scriptNPC { return true }
+    guard body.scriptNPC!.valid,
+      body.energy <= body.scriptNPC!.fit.definition.energy,
+      body.missiles <= body.scriptNPC!.fit.definition.missiles
+    else { return false }
+    return true
   }
 }
 public struct ScriptOwnedEncounter: Codable, Sendable, Equatable {

@@ -235,6 +235,15 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
 
   @inline(never)
   private func instanceValid(_ instance: borrowing ScriptInstance, key: UUID) -> Bool {
+    guard instancePrefixValid(instance, key: key), ownedEncountersValid(for: instance) else {
+      return false
+    }
+    return instanceSuffixValid(instance)
+  }
+
+  // Optional contract/receipt storage must return before nested encounter/NPC validation starts.
+  @inline(never)
+  private func instancePrefixValid(_ instance: borrowing ScriptInstance, key: UUID) -> Bool {
     guard key == instance.id, instance.definition.split(separator: "/").count == 2,
       PackValidation.version(instance.version),
       instance.digest.range(of: "^[0-9a-f]{64}$", options: .regularExpression) != nil
@@ -300,8 +309,14 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       instance.acknowledgedEvents.allSatisfy({ $0 > 0 && $0 <= nextEvent }),
       instance.acknowledgedThrough.map({ $0 <= nextEvent }) ?? true,
       instance.receipts.count <= 4096, instance.receipts.allSatisfy(PackValidation.localID),
-      instance.ownedEncounters.count <= 64, ownedEncountersValid(for: instance),
-      instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128,
+      instance.ownedEncounters.count <= 64
+    else { return false }
+    return true
+  }
+
+  @inline(never)
+  private func instanceSuffixValid(_ instance: borrowing ScriptInstance) -> Bool {
+    guard instance.ownedEncounters.values.reduce(0, { $0 + $1.actors.count }) <= 128,
       instance.gearIssues.count <= 64
     else { return false }
     for issue in instance.gearIssues {
