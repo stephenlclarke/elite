@@ -141,6 +141,7 @@ struct CampaignGalleryFixture {
   func startContractCampaign(_ game: inout Game, nested: Bool = false) throws
     -> (root: UUID, child: UUID, provider: ScriptPack)
   {
+    let startingCredits = game.commander.credits
     let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
       .appendingPathComponent("docs/mission-packs/scripted-contracts")
@@ -185,7 +186,7 @@ struct CampaignGalleryFixture {
       : direct
     #expect(game.commander.valid)
     #expect(game.commander.scriptState.instances[root]?.contract?.offer.id == offer.id)
-    #expect(game.commander.credits == 1000 - offer.deposit)
+    #expect(game.commander.credits == startingCredits - offer.deposit)
     #expect(game.commander.contracts.boards[key]?.offers.first?.status == .accepted(root))
     return (root, selected, provider)
   }
@@ -809,6 +810,7 @@ func campaignGalleryDisplaysActualChildOutcomesAndKeepsSuspensionReason(outcome:
   let fixture = try CampaignGalleryFixture(retryFault: true)
   defer { fixture.clean() }
   var game = fixture.game()
+  game.commander.credits = 1000  // Exercise the authored working-capital fault below 2000.
   let (_, child) = try fixture.start(&game)
   game.emitScriptEvent("contact.requested", only: child)
   #expect(
