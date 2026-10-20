@@ -131,6 +131,10 @@ struct SalvageWorldRuntimeTests {
     var (game, site) = try salvageWorldGame()
     let body = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
     let firstActor = try #require(body.physical?.identity)
+    let legacyBefore = game.commander.salvageLedger
+    let nativeBefore = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    try #require(nativeBefore.source == .generated(site) && nativeBefore.binding == firstActor)
     #expect(body.physical?.population == .wreck && body.rotationRate == 0 && body.missiles == 0)
     let before = game.modelPose(of: body)
     try actualWreckHit(&game, id: body.id, damage: 17)
@@ -144,12 +148,21 @@ struct SalvageWorldRuntimeTests {
     #expect(
       (pose.orientation.x - rotation.x).length < 1e-10
         && (pose.orientation.y - rotation.y).length < 1e-10)
-    #expect(game.commander.salvageLedger.wreckMotion(for: site.identity)?.energy == remaining)
+    let observed = try #require(game.nativeSalvageWreckMotion[site.identity])
+    #expect(
+      observed.actor == firstActor && observed.time == game.commander.flightSimulation.physicalTime)
+    #expect(observed.motion.energy == remaining && observed.motion.pose == pose)
+    #expect(game.commander.salvageLedger == legacyBefore)
     let observer = game.commander.flightSimulation.pose.position
     relocateWreckObserver(&game, to: observer + .init(50000, 0, 0))
     game.tick(delta: 0.02)
     #expect(!game.bodies.contains { $0.physical?.identity == firstActor })
-    let savedMotion = try #require(game.commander.salvageLedger.wreckMotion(for: site.identity))
+    let parked = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(parked.id == nativeBefore.id && parked.owner == nativeBefore.owner)
+    #expect(parked.identity == site.identity && parked.binding == nil && parked.destroyedAt == nil)
+    let savedMotion = parked.motion
+    #expect(savedMotion.energy == remaining && game.commander.salvageLedger == legacyBefore)
     relocateWreckObserver(&game, to: observer)
     game.activateNearbySalvageSites()
     let returned = try #require(game.bodies.first { $0.physical?.salvage?.wreck == site.identity })
@@ -163,7 +176,11 @@ struct SalvageWorldRuntimeTests {
     try await runtime.save(to: url)
     try await runtime.load(from: url, persistMigrations: false)
     let restored = await runtime.snapshot()
-    #expect(restored.commander.salvageLedger.wreckMotion(for: site.identity)?.energy == remaining)
+    let restoredWreck = try #require(
+      restored.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(restoredWreck.id == nativeBefore.id && restoredWreck.owner == nativeBefore.owner)
+    #expect(restoredWreck.motion.energy == remaining && restoredWreck.motion == savedMotion)
+    #expect(restored.commander.salvageLedger == legacyBefore)
     var relaunched = Game(executive: false)
     relaunched.commander = restored.commander
     relaunched.launch()

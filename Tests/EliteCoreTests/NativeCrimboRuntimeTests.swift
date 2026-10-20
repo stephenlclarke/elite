@@ -415,12 +415,24 @@ extension NativeCrimboRuntimeTests {
     game.commander.fuel = 11
     game.commander.cargo[CommodityIdentity.food.rawValue] = 7
     if unsettledDeath {
-      var record = try #require(
-        JSONSerialization.jsonObject(
-          with: JSONEncoder().encode(game.commander.salvageLedger)) as? [String: Any])
-      record["revision"] = UInt64.max
-      game.commander.salvageLedger = try JSONDecoder().decode(
-        SalvageLedger.self, from: JSONSerialization.data(withJSONObject: record))
+      let current = try #require(game.commander.alienStorageState?.current.snapshot)
+      let native = try #require(
+        game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+      try #require(
+        native.source == .generated(site)
+          && native.binding == game.bodies[index].physical?.identity)
+      let saturated = AlienStorageSnapshot(
+        owner: current.owner, revision: current.revision, worldRevision: UInt64.max,
+        world: current.world, sources: current.sources, attachments: current.attachments,
+        upgrades: current.upgrades, receipts: current.receipts, commands: current.commands)
+      try saturated.validate()
+      try game.commander.replaceAlienStorage(with: saturated)
+      try #require(
+        game.commander.alienStorageStateValid
+          && game.commander.alienStorageState?.current.worldRevision == UInt64.max)
+      #expect(throws: AlienStorageError.arithmeticOverflow) {
+        try saturated.replacingNativeWorld(saturated.world)
+      }
       game.bodies[index].energy = 0
       game.resolveDestroyed()
       #expect(game.hasUnsettledWreckDeaths)
