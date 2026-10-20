@@ -937,9 +937,10 @@ public struct Game: Sendable {
           scriptStartupTime = nil
         }
         if screen == .gameOver {
-          self = Game(executive: commander.executive)
-          try? commander.prepareEquipment(legacy: false)
-          commander.mirrorFittedEquipment()
+          do { try restartBornBerthedCommander() } catch {
+            notify("NEW COMMANDER STATE UNAVAILABLE - RESTART REFUSED", voiced: false)
+            return
+          }
         }
         screen = .status
       }
