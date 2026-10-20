@@ -151,12 +151,26 @@ struct NativeStationIntegrationTests {
 enum NativeStationTestFixture {
   static func launched() throws -> Game {
     var game = Game(executive: false)
-    game.commander.system = 237
+    // Current G04-S149 declares both station kinds; G01-S237 declares only headquarters.
+    game.commander.galaxy = 3
+    game.commander.system = 149
+    game.systems = Universe.systemsIncludingPlugh(number: game.commander.galaxy)
+    let sources = NativeStationSource.bindings.filter { $0.system == game.systemIdentity }
+    guard sources.count == 2,
+      NativeStationGeometry.Kind.allCases.allSatisfy({ kind in
+        sources.filter { $0.kind == kind }.count == 1
+      })
+    else { throw NativeStationRuntimeError.invalidSource }
     game.screen = .status
     game.launch()
     guard !game.docked, game.commander.nativeStationStateValid,
-      game.bodies.filter({ $0.nativeStationIdentity != nil }).count == 2
+      let owner = game.commander.equipmentOwnerID
     else { throw NativeStationRuntimeError.invalidState }
+    let expected = Set(sources.map { $0.identity(world: owner) })
+    let actual = game.bodies.compactMap(\.nativeStationIdentity)
+    guard actual.count == expected.count, Set(actual) == expected else {
+      throw NativeStationRuntimeError.invalidState
+    }
     return game
   }
 
@@ -542,7 +556,7 @@ private func verifyOriginalMainArrival(
   let receipt = try #require(game.commander.nativeStations?.currentMainDock)
   #expect(receipt.station.system == game.systemIdentity && receipt.actor.entity == 1)
   #expect(
-    receipt.station.resource == Game.worldResourceIdentity("main-station-v1:main-orbital:0:237"))
+    receipt.station.resource == Game.worldResourceIdentity("main-station-v1:main-orbital:3:149"))
   #expect(game.commander.nativeStations?.ledger.currentDock == nil)
   #expect(game.commander.nativeStations?.ledger.records.count == 372)
   #expect(game.nativeMainStationDockEvidenceIsCurrent)

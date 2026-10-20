@@ -6,18 +6,32 @@ import Testing
 private func approachGame(
   position: Vector3, pitch: Double = 0, roll: Double = 0, yaw: Double = 0,
   spin: Double = 0.3, speed: Double = 0
-) -> Game {
+) throws -> Game {
   var game = Game(executive: false)
   game.commander.installTargetingComputer(.docking)
   game.launch()
+  try #require(!game.docked && game.screen == .front && game.commander.valid)
   #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .docking)
   game.commander.autoTarget = true
   game.speed = speed
-  var station = SpaceBody(id: 0, hull: .station, position: position)
-  station.orientation.rotate(pitch: pitch, roll: roll, yaw: yaw)
-  station.rotation = 1.4
-  station.rotationRate = spin
-  game.bodies = [station]
+  let anchor = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  var orientation = Basis3()
+  orientation.rotate(pitch: pitch, roll: roll, yaw: yaw)
+  // Move the observer, preserving the launched station's native anchor and physical identity.
+  let camera = anchor.orientation.composed(with: orientation.transposed)
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(position: anchor.position - camera.apply(position), orientation: camera))
+  game.bodies.removeAll { $0.id != 0 }
+  let index = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+  game.bodies[index].rotation = 1.4
+  game.bodies[index].rotationRate = spin
+  try #require(game.bodies[index].physical?.identity == anchor.identity)
+  #expect((game.bodies[index].position - position).length < 1e-8)
+  for axis in [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)] {
+    #expect((game.bodies[index].orientation.apply(axis) - orientation.apply(axis)).length < 1e-8)
+  }
   game.key("tab")
   return game
 }
@@ -37,8 +51,8 @@ private func approachGame(
   }
 }
 
-@Test func stationTransitFacesItsSafeWaypointThenStopsBeforeFacingTheDoor() {
-  var game = approachGame(position: .init(0, 0, 2400), yaw: .pi)
+@Test func stationTransitFacesItsSafeWaypointThenStopsBeforeFacingTheDoor() throws {
+  var game = try approachGame(position: .init(0, 0, 2400), yaw: .pi)
   var forwardTransitFrames = 0
   var stoppedAlignmentFrames = 0
   for _ in 0..<9000 where !game.autoPilot.finalApproach && !game.docked {
@@ -61,7 +75,7 @@ private func approachGame(
   #expect(game.autoPilot.facingError < 0.02)
 }
 
-@Test func stationApproachCompletesForwardAndCollisionFreeForBehindTiltedAndFastStarts() {
+@Test func stationApproachCompletesForwardAndCollisionFreeForBehindTiltedAndFastStarts() throws {
   let starts: [(Vector3, Double, Double, Double, Double, Double)] = [
     (.init(0, 0, 2400), 0, 0, 0, 0.3, 0),
     (.init(0, 0, -2400), 0, 0, 0, -0.3, 0),
@@ -71,7 +85,7 @@ private func approachGame(
     (.init(0, 0, 1090), 0, 0, 0, 0.3, 0),
   ]
   for (position, pitch, roll, yaw, spin, speed) in starts {
-    var game = approachGame(
+    var game = try approachGame(
       position: position, pitch: pitch, roll: roll, yaw: yaw, spin: spin, speed: speed)
     var collided = false
     var finalFrames = 0
@@ -113,8 +127,10 @@ private func approachGame(
   }
 }
 
-@Test func stationTurnBrakesExistingCruiseWithoutInstantVelocityChangesAndManualInputCancels() {
-  var game = approachGame(position: .init(0, 0, -2400), speed: 32)
+@Test func stationTurnBrakesExistingCruiseWithoutInstantVelocityChangesAndManualInputCancels()
+  throws
+{
+  var game = try approachGame(position: .init(0, 0, -2400), speed: 32)
   let initialSpeed = game.autoPilot.velocity.length
   game.tick(delta: 0.02)
   #expect(game.autoPilot.velocity.length > initialSpeed - 4.81)
@@ -152,8 +168,11 @@ private func approachGame(
   for shipID in ["SH023", "SH171"] {
     var game = Game(executive: false)
     game.commander.shipID = shipID
+    game.commander.fuel = game.commander.fuelCapacity
     game.commander.installTargetingComputer(.docking)
+    try #require(game.commander.valid)
     game.launch()
+    try #require(!game.docked && game.screen == .front)
     game.bodies.removeAll { $0.hull != .station }
     #expect(game.speed == 8)
     #expect(try #require(game.bodies.first).position == Vector3(0, 0, -500))
