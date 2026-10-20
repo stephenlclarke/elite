@@ -356,3 +356,9 @@ Record aggregate3methods7cases/rootCLEAN487 proof and bc515 integration: exact p
 ## Reserve derived stable offers and start coherent gate after833
 
 Confirm exact eight stable-offer paths/non-overlap/currentf679 base, Root's checked existing-retention floor/jobR+1/native-terminalR+2 policy at all five sites, legacy/adopted terms/pruningfloor/overflow constraints and explicit no-restock/schema/adapter scope. Record actual833 zero-terminal stack failure/whole closure; G1 authorized coherent main-toolchain one-positive-native-method gate follows, no failed actor import or broad/unaffected/performance reruns. Source freeze/lease/outcomes remain separate.
+
+## Current M01 focus and closed coherent837 artifact batch
+
+Replace the obsolete diagnostic-heavy M01 top paragraph with concise current deliverable/owner/blocker status; retain that entire earlier paragraph verbatim as history and preserve every prior evidence hash. Record actual834 build/835 single positive native freight PASS/836 one optimized product, same-product signed837 resources/pack verification, and actual837 key-window failure while desktop remains locked. All observed starts closed and source/product/preferences guards passed; preserve failure and signed artifact, registry released. No delivered-preview/Slack/M01/quality/release claim;819 remains last Root-delivered app. A same-binary minimal focus-qualified retry waits actual unlock and whole current CPU batch closure.
+
+Grant queued MC1838/839 on exacte794 frozen8methods10cases with Root-approved six-file read-only borrowing scope plus one new COW/default regression; owner units FIRST, ONE qualified review after PASS. Record Root-reported stable-offers875 owner7/7 PASS and G2 independent review assignment, no duplicate audit or premature integration. Documentation-only validation is scoped Markdown lint and diff check; no game test or build repetition.
