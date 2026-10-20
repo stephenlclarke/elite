@@ -480,3 +480,7 @@ Amend standing authority once for same two immutable save-preparation values exp
 ## Root870 exact cargo phase exception
 
 Record actual870 zero current methods/twelve UNKNOWN/fifteen incomplete cases at heavy cargo empty-case frame before semantic encoding, with exact proof/crash/actual closure and separate retained3/3. Root-approved same eligible filter/empty return remains thin and whole unchanged nonempty settlement body moves to noninline helper; one existing actual manifest/death/repeated-removal method added. Current nominal13/16 plus dependency-proven3/3 target16/19, no prior writer/encoding qualification claimed. Authority revision6 preserves v5 and permits only exact additional phase exception, no W02 changes/new G1 runtime/audit. Scoped Markdown lint/diff checks and historical hashes retained.
+
+## Root872 wreck empty-case exception and active873/874
+
+Record872 zero current methods/thirteen UNKNOWN/sixteen incomplete cases; cargo empty phase returned but wreck entry failed before encoding, no prior writer/encoding/nonempty-cargo qualification claim. Root-approved original first energy predicate existence guard skips only zero original iterations; entire nonempty salvage body unchanged/noninline with no side-effect/predicate/order change. Existing actual abandoned-wreck death/no-crime/tombstone regression added. Currentd813873/87414/17 plus retained3/3 target17/20. Authority revision7 preservesv6, exact bounded exception only; W02 unaffected/no G1 runtime/audit. Normal scoped Markdown lint/diff and prior-hash preservation only.
