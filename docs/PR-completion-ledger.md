@@ -554,3 +554,7 @@ Root-relayed native2881one-line attribute deletion composed bd9f5340/full17r2 af
 ## Record exact native-station asteroid oracle approval
 
 Root authorises one existing asteroid-refusal test hunk: targetrock absent/everyotherbody native station/entireledgerunchanged independently asserted, preserving rebind/motion/mass checks. No production/fixture/guard waiver. MC1matchingbuild→singleCrossing→singleAsteroid, remainingaffectedqualification required;893currentzero completed/UNKNOWN unchanged. G1docs-only, scoped Markdown/whitespace/historyhash checks.
+
+## Record isolated asteroid PASS and outstanding core crash
+
+Actualdd19/894matchingbuildPASS,895singleactualCrossingUNKNOWN/crash0issues/noIPS, separate896singlecorrectedAsteroidPASS1/1withstrongtarget/nativeRRS/ENTIREledger/mass/motion/rebind. Wholeclosures/samebinary/source/defaultoptions preserved. Baseline3/3+8961/1retain4/4, remaining21methods27cases pending/target25/31. MC1preauthorised897ONEsameartifactsinglecore diagnostic only/no whole22repeat/newbuild/probe/overallPASSwaiver. W03r2MBAcompileactive/unitsUNRUN. Scoped documentationlint/whitespace/hashpreservation only, no G1source/runtime work.
