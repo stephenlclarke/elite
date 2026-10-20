@@ -143,6 +143,7 @@ struct BundledScriptPackTests {
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
           NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
+          WayfarerRecordRecovery.digest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -174,6 +175,7 @@ struct BundledScriptPackTests {
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
           NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
+          WayfarerRecordRecovery.digest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -196,7 +198,7 @@ struct BundledScriptPackTests {
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
-        NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
+        NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -224,7 +226,7 @@ struct BundledScriptPackTests {
         bundledSealedDispatchDigest, bundledVerifiedWarrantDigest, bundledCorridorDefenceDigest,
         bundledConsentedFreightDigest, bundledCabinJourneyDigest, bundledOrbitalOutlookDigest,
         bundledOriginalRescueDigest, NativeOriginalEvacuation.digest, NativeOriginalSurvey.digest,
-        NativeIdentifiedSalvage.digest,
+        NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
       ])
   }
 
@@ -371,7 +373,7 @@ struct BundledScriptPackTests {
         bundledNavigationTradeDigest, bundledSealedDispatchDigest, bundledVerifiedWarrantDigest,
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
-        NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
+        NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)
@@ -416,5 +418,28 @@ struct BundledIdentifiedSalvagePackTests {
       ScriptBaseClueCatalog.sources.first {
         $0.sourceID == NativeIdentifiedSalvage.stateID
       }?.clueID == "identified-salvage-family-trace")
+  }
+}
+
+struct BundledWayfarerRecordRecoveryPackTests {
+  @Test func installedRecorderPackHasClosedAuthorityAndExactNativeGeometry() throws {
+    let pack = try ScriptPackLibrary.read(ScriptPackLibrary.bundledRecordRecoveryDirectory)
+    #expect(pack.digest == WayfarerRecordRecovery.digest)
+    #expect(pack.manifest.recordRecovery?.valid == true)
+    #expect(pack.manifest.identifiedSalvage == nil && pack.manifest.originalSurvey == nil)
+    #expect(pack.missingCapabilities.isEmpty)
+    #expect(pack.manifest.encounters?.first?.actors.count == 2)
+    for (reference, expected) in [
+      ("catalogue:SH058", WayfarerRecordRecovery.packageGeometry),
+      ("catalogue:SH141", WayfarerRecordRecovery.cradleGeometry),
+    ] {
+      let model = try #require(pack.models[reference])
+      let bytes = try ScriptPackLibrary.canonicalGeometry(model)
+      #expect(ScriptPackLibrary.hash(bytes) == expected)
+    }
+    #expect(
+      ScriptBaseClueCatalog.sources.first {
+        $0.sourceID == WayfarerRecordRecovery.stateID
+      }?.clueID == "exchange-service-record-recovery")
   }
 }

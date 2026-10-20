@@ -20,6 +20,16 @@ extension Game {
         "calendar_seconds": .number(receipt.calendarSeconds),
       ])
     }
+    if let state = recordRecoveryState {
+      fields["record_recovery"] = .object([
+        "identified": .bool(state.identification != nil),
+        "held": .integer(Int64(state.held.count)),
+        "captured": .integer(Int64(state.captures.count)),
+        "lost": .integer(Int64(state.losses.count)),
+        "owner": .string("Cedamar flight-record archive / SENN"),
+        "closed": .bool(state.reception != nil),
+      ])
+    }
     if let state = identifiedSalvageState {
       fields["identified_salvage"] = .object([
         "held": .integer(Int64(state.held.count)),
