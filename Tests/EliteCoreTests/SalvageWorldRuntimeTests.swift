@@ -170,6 +170,9 @@ struct SalvageWorldRuntimeTests {
     #expect((game.modelPose(of: returned).position - savedMotion.pose.position).length < 1e-8)
     #expect(
       (game.modelPose(of: returned).orientation.x - savedMotion.pose.orientation.x).length < 1e-10)
+    let rebound = try #require(
+      game.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
+    #expect(rebound.id == nativeBefore.id && rebound.binding == returned.physical?.identity)
     let runtime = GameRuntime(game: game)
     let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     defer { try? FileManager.default.removeItem(at: url) }
@@ -179,7 +182,7 @@ struct SalvageWorldRuntimeTests {
     let restoredWreck = try #require(
       restored.commander.alienStorageState?.current.salvage.native.wrecks[site.identity])
     #expect(restoredWreck.id == nativeBefore.id && restoredWreck.owner == nativeBefore.owner)
-    #expect(restoredWreck.motion.energy == remaining && restoredWreck.motion == savedMotion)
+    #expect(restoredWreck.motion.energy == remaining && restoredWreck.motion == rebound.motion)
     #expect(restored.commander.salvageLedger == legacyBefore)
     var relaunched = Game(executive: false)
     relaunched.commander = restored.commander
