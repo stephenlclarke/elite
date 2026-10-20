@@ -99,13 +99,14 @@ public struct ScriptContractBoard: Codable, Sendable, Equatable {
         : clock == .missionCalendar && courierGeneration?.valid == true
           && courierGeneration?.origin == station
           && seed == Game.pledgeBoardSeed(cacheKey, revision: revision)
-          && courierGeneration?.initialState == Game.pledgeProfileSeed(seed) && offers.count == 6
-          && offers.enumerated().allSatisfy { index, offer in
-            offer.courier?.row == index && offer.courier?.generation == courierGeneration
+          && courierGeneration?.initialState == Game.pledgeProfileSeed(seed)
+          && OriginalSealedDispatch.validBoard(self)
+          && offers.allSatisfy { offer in
+            offer.courier?.generation == courierGeneration
               && offer.id
                 == ScriptIdentity.uuid("contract-offer-v1:\(cacheKey):\(revision):\(offer.key)")
           }
-          && period == 3600 && group == provider + "/g02-courier")
+          && period == 3600)
       && offers.count <= 16 && Set(offers.map(\.id)).count == offers.count
       && Set(offers.map(\.key)).count == offers.count && offers.allSatisfy(\.valid)
   }
@@ -156,8 +157,7 @@ public struct ScriptContractJob: Codable, Sendable, Equatable {
         ? deadlinePolicy == nil && offer.courier == nil
         : clock == .missionCalendar && deadlinePolicy == .inclusiveConfirmation
           && offer.courier?.valid == true && offer.courier?.generation.origin == station
-          && group == provider + "/g02-courier"
-          && offer.courier!.calendarLowerBoundSeconds < offer.duration
+          && OriginalSealedDispatch.validJob(self)
           && Game.pledgeBoardSeed(boardKey, revision: boardRevision).map { seed in
             offer.courier?.generation.initialState == Game.pledgeProfileSeed(seed)
           } == true

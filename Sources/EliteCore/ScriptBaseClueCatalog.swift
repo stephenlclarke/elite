@@ -117,6 +117,11 @@ struct ScriptClueTrustCatalog: Sendable {
     ScriptNavigationTradeContent.cluePin,
     OriginalMutualContribution.cluePin,
     .init(
+      sourceID: "l337.contract/sealed-dispatch", definition: "l337.contract/sealed-dispatch",
+      version: "1.0.0",
+      digest: "93289d5daf873d0cf878b37fa55178e4ab91cf6fa1947f379a54c3bc04267ae7",
+      terminalEvents: ["dialogue.confirmed"]),
+    .init(
       sourceID: "l337.wayfarer-service/seed-transfer",
       definition: "l337.wayfarer-service/seed-transfer",
       version: "1.0.0", digest: "feadc6cc8bed2b59a608dc0667afd11a5d7c1e790e2466e3b8c44974f9f03d54",

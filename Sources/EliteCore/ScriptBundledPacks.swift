@@ -41,6 +41,11 @@ extension ScriptPackLibrary {
       "l337-navigation-trade")
   }
 
+  static var bundledSealedDispatchDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-sealed-dispatch")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -101,6 +106,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled navigation/trade pack: " + error.localizedDescription)
+    }
+    do {
+      let sealedDispatch = try read(bundledSealedDispatchDirectory)
+      if !library.packs.contains(where: { $0.digest == sealedDispatch.digest }) {
+        library.packs.append(sealedDispatch)
+      }
+    } catch {
+      library.errors.append("Bundled sealed-dispatch pack: " + error.localizedDescription)
     }
     return library
   }

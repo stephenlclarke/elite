@@ -147,7 +147,7 @@ public struct ScriptCourierGeneration: Codable, Sendable, Equatable {
   func plan(_ declaration: ScriptCourierDefinition) -> ScriptValue {
     let systems = Universe.systemsIncludingPlugh(number: origin.galaxy)
     return .array(
-      (0..<6).map { row in
+      OriginalSealedDispatch.rows(declaration).map { row in
         let terms = terms(declaration, row: row)
         return .object([
           "key": .string(terms.key), "difficulty": .integer(Int64(terms.difficulty)),

@@ -117,11 +117,12 @@ extension Game {
     }
     var offers = try raw.map { try makeContractOffer($0, namespace: "\(key):\(revision)") }
     if let declaration = pack.manifest.courier, let courierGeneration {
-      guard offers.count == 6 else {
-        throw MissionPackError("Courier provider requires six native rows.")
+      let rows = OriginalSealedDispatch.rows(declaration)
+      guard offers.count == rows.count else {
+        throw MissionPackError("Courier provider requires its declared native rows.")
       }
       for index in offers.indices {
-        offers[index].courier = courierGeneration.terms(declaration, row: index)
+        offers[index].courier = courierGeneration.terms(declaration, row: rows[index])
         guard offers[index].courier?.matches(offers[index]) == true else {
           throw MissionPackError("Authored courier row changed native terms or order.")
         }

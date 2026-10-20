@@ -6,8 +6,9 @@ public struct ScriptCourierDefinition: Codable, Sendable, Equatable {
   public let deliveryContact: String
   public let abandonContact: String
   var valid: Bool {
-    profile == "PROJECT-SPACE-G02-1" && generatorRevision == 1
-      && deliveryContact == "courier-delivery" && abandonContact == "courier-abandon"
+    OriginalSealedDispatch.matches(self)
+      || (profile == "PROJECT-SPACE-G02-1" && generatorRevision == 1
+        && deliveryContact == "courier-delivery" && abandonContact == "courier-abandon")
   }
 }
 
@@ -31,11 +32,17 @@ public struct ScriptCourierTerms: Codable, Sendable, Equatable {
   public var key: String { variant.rawValue + "-" + String(difficulty) }
   public var path: [Int] { generation.path(for: row) ?? [] }
   public var destination: Int { path.last ?? -1 }
-  public var duration: Double { difficulty == 3 ? 259200 : 172800 }
-  public var reward: Int { ([500, 750, 1000][difficulty - 1] + 300 * (path.count - 1)) * 10 }
+  public var duration: Double {
+    OriginalSealedDispatch.matches(declaration) ? 0 : (difficulty == 3 ? 259200 : 172800)
+  }
+  public var reward: Int {
+    if OriginalSealedDispatch.matches(declaration) { return (320 + 90 * (path.count - 1)) * 10 }
+    guard (1...3).contains(difficulty) else { return 0 }
+    return ([500, 750, 1000][difficulty - 1] + 300 * (path.count - 1)) * 10
+  }
   var validRow: Bool {
     declaration.valid && capabilities == Self.requiredCapabilities.sorted()
-      && (0..<6).contains(row) && (2...4).contains(path.count)
+      && OriginalSealedDispatch.rows(declaration).contains(row) && (2...4).contains(path.count)
       && calendarLowerBoundSeconds.isFinite
       && calendarLowerBoundSeconds == generation.calendarCost(path)
   }
@@ -118,8 +125,10 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
   }
   static let payloadKey = "courier-consignment"
   func valid(state: ScriptInstance, engine: ScriptEngineState) -> Bool {
-    guard let job = state.contract, let deadline = job.deadline, let terms = job.offer.courier,
-      terms.valid,
+    guard let job = state.contract, let terms = job.offer.courier,
+      terms.valid, OriginalSealedDispatch.validDeadline(job),
+      !OriginalSealedDispatch.matches(terms.declaration)
+        || state.definition == OriginalSealedDispatch.stateID,
       job.clock == .missionCalendar, job.deadlinePolicy == .inclusiveConfirmation,
       item == Self.itemIdentity(state.id), issue.valid, issue.clock == job.acceptedAt,
       issue.station == job.station, issue.sequence <= engine.nextEvent,
@@ -166,7 +175,7 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
     switch receipt.cause {
     case .delivered:
       return cause.docked && cause.mainStation && receipt.amount == terms.reward
-        && receipt.proof.clock <= deadline
+        && OriginalSealedDispatch.deliveryAllowed(job, at: receipt.proof.clock)
         && receipt.proof.station.galaxy == job.offer.destinationGalaxy
         && receipt.proof.station.system == job.offer.destinationSystem
         && receipt.proof.token.hasSuffix(":" + terms.declaration.deliveryContact)
@@ -174,7 +183,9 @@ public struct ScriptCourierCustody: Codable, Sendable, Equatable {
       return cause.docked && cause.mainStation && receipt.amount == 0
         && receipt.proof.station == job.station
         && receipt.proof.token.hasSuffix(":" + terms.declaration.abandonContact)
-    case .expired: return receipt.amount == 0 && receipt.proof.clock > deadline
+    case .expired:
+      return !OriginalSealedDispatch.matches(terms.declaration) && receipt.amount == 0
+        && job.deadline.map { receipt.proof.clock > $0 } == true
     case .escapePod, .shipDestroyed: return receipt.amount == 0 && terms.variant == .package
     }
   }
@@ -208,7 +219,9 @@ extension ScriptPackLibrary {
     guard courier.valid,
       ScriptCourierTerms.requiredCapabilities.isSubset(of: Set(manifest.capabilities)),
       manifest.board?.clock == .missionCalendar, manifest.board?.period == 3600,
-      manifest.board?.exclusiveGroup == "g02-courier", manifest.pledge == nil,
+      manifest.board?.exclusiveGroup == OriginalSealedDispatch.group(courier),
+      !OriginalSealedDispatch.matches(courier) || OriginalSealedDispatch.validManifest(manifest),
+      manifest.pledge == nil,
       manifest.mission.parentOnly != true, (manifest.children ?? []).isEmpty,
       manifest.dialogs?.contains(where: { $0.id == courier.deliveryContact }) == true,
       manifest.dialogs?.contains(where: { $0.id == courier.abandonContact }) == true

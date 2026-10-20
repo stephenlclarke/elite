@@ -3,12 +3,32 @@ import Foundation
 public struct ScriptCourierPreview: Sendable, Equatable {
   public let terms: ScriptCourierTerms
   public var summary: String {
-    String(
+    if OriginalSealedDispatch.matches(terms.declaration) {
+      return String(format: "1t | %.1f CR | H0 | Untimed", Double(terms.reward) / 10)
+    }
+    return String(
       format: "%dt | %.1f CR | %.0fh | PROJECT ESTIMATES", terms.variant.tonnes,
       Double(terms.reward) / 10, terms.duration / 3600)
   }
   public var review: [String] {
     let systems = Universe.systemsIncludingPlugh(number: terms.generation.origin.galaxy)
+    if OriginalSealedDispatch.matches(terms.declaration) {
+      return [
+        "Sealed dispatch - uniquely identified one-tonne record. H0.",
+        "Destination: Galaxy \(terms.generation.origin.galaxy + 1), \(systems[terms.destination].name) main orbital station.",
+        "Deliver to: Sealed Dispatch Receiving Officer.",
+        "Protected package: reserves 1t of real hold. No passenger berths.",
+        String(
+          format: "Frozen reward: %.1f CR for %d quoted legs.", Double(terms.reward) / 10,
+          terms.path.count - 1),
+        "Route: " + terms.path.map { systems[$0].name }.joined(separator: " -> "),
+        "Untimed. No delivery deadline or perishability allowance.",
+        "First hop uses current fuel; later station refuelling costs your money.",
+        "No deposit or failure fee. Failure or abandonment pays 0 CR.",
+        "Abandon explicitly with the origin Sealed Dispatch Officer. Back changes nothing.",
+        "Each offer issues one original consignment. Loss cannot restore that item.",
+      ]
+    }
     return [
       "Difficulty \(terms.difficulty) - \(terms.variant.title). PROJECT ESTIMATES.",
       "Destination: Galaxy \(terms.generation.origin.galaxy + 1), \(systems[terms.destination].name) main orbital station.",
@@ -72,7 +92,7 @@ extension Game {
     guard commander.valid, terms.valid, terms.generation.origin == contractStation else {
       throw MissionPackError("Courier acceptance requires its actual origin and valid native fit.")
     }
-    guard terms.calendarLowerBoundSeconds < terms.duration else {
+    guard OriginalSealedDispatch.hasHeadroom(terms) else {
       throw MissionPackError(
         "Frozen itinerary has no deadline headroom. This listing cannot be accepted.")
     }
@@ -163,7 +183,8 @@ extension Game {
         state.dialogue?.token == admission.proof.token, state.dialogue?.revision == state.revision,
         target == contractStation, state.courier?.terminal == nil,
         state.courier?.pendingLoss == nil, state.courier?.item == admission.item,
-        !delivering || admission.proof.clock <= admission.job.deadline!
+        !delivering
+          || OriginalSealedDispatch.deliveryAllowed(admission.job, at: admission.proof.clock)
       else {
         throw MissionPackError("Bring the matching held consignment to its actual named contact.")
       }
@@ -329,6 +350,14 @@ extension Game {
       status = terminal.cause.title
     } else {
       status = state.suspension == nil ? "Held" : "Held - mission content unavailable"
+    }
+    if OriginalSealedDispatch.matches(terms.declaration) {
+      return "\n\nSealed dispatch / H0 / Untimed."
+        + "\nConsignment \(custody.item.uuidString.prefix(8)): \(status)"
+        + "\nProtected hold: \(custody.terminal == nil ? 1 : 0)t. No passenger berths."
+        + String(format: "\nFixed reward: %.1f CR.", Double(terms.reward) / 10)
+        + "\nReceiving contact: Sealed Dispatch Receiving Officer."
+        + (custody.terminal.map { String(format: "\nPaid: %.1f CR.", Double($0.amount) / 10) } ?? "")
     }
     let remaining = max(
       0, (state.contract?.deadline ?? 0) - commander.scriptState.clock(.missionCalendar))
