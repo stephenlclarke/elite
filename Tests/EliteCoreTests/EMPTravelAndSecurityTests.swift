@@ -362,12 +362,54 @@ struct EMPTravelAndSecurityTests {
     let startedAt = game.commander.flightSimulation.physicalTime
     let emissionsBefore = game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count
     // One original 800-frame helper keeps both charges, real aiming and every native control unchanged.
-    let remainingFrames = try disableNativeEMPActor(actor, game: &game)
+    let remainingFrames = try disableNativeEMPActor(actor, game: &game) { scene in
+      try establishNativeCobraRetaliation(
+        actor, player: player, emissionsBefore: emissionsBefore, legalBefore: legal, game: &scene)
+    }
     try verifyFullStockCobraAfterPulses(
       &game, original: original, actor: actor, npc: npc, player: player,
       catalogueID: catalogueID, crew: crew, hardware: hardware, history: history, weapon: weapon,
       credits: credits, cargo: cargo, legal: legal, kills: kills, pulse: pulse,
       startedAt: startedAt, emissionsBefore: emissionsBefore, remainingFrames: remainingFrames)
+  }
+
+  // Establish a real pre-disable attack after the first unlawful EMP pulse, preserving its law.
+  @inline(never)
+  private func establishNativeCobraRetaliation(
+    _ actor: ActorIdentity, player: ActorIdentity, emissionsBefore: Int, legalBefore: Int,
+    game: inout Game
+  ) throws {
+    let body = try #require(game.bodies.first { $0.physical?.identity == actor })
+    try #require(game.commander.flightSimulation.player == player)
+    try #require(body.energy > 0 && !game.isEMPDisabled(body) && body.hostile)
+    try #require(body.position.length > 0 && body.position.length < 1500)
+    try #require(game.commander.legal > legalBefore)
+    try #require(
+      game.dischargeAudio.events.filter { $0.tool == .empPirateBlaster }.count == emissionsBefore + 1)
+    try #require(body.physical?.npc?.intention == .engage(player))
+    let remaining = try #require(body.physical?.npc?.resources?.electrical?.remaining)
+    try #require(remaining > 0)
+    let contact = try game.nearestMissionCollision(
+      from: body.position, direction: body.position.unit * -1,
+      range: body.position.length + 1, radius: 0,
+      excludingBodyIDs: [body.id], includePlayer: true)
+    try #require(contact?.hit.target == .player)
+    let emission = game.commander.flightSimulation.nextEmission
+    let shields = game.frontShield + game.rearShield
+    let energy = game.energy
+    let legal = game.commander.legal
+    // Same native beam and damage as one 0.1-second ordinary Cobra enemyAction step.
+    game.emitLegacyNPCBeam(bodyID: body.id, damage: 0.1 * 6 * 2, energyMultiplier: 2)
+    try #require(game.commander.flightSimulation.nextEmission == emission + 1)
+    try #require(game.frontShield + game.rearShield < shields || game.energy < energy)
+    try #require(game.commander.legal == legal)
+    let bytes = try JSONEncoder().encode(game.commander.crimeLedger)
+    let ledger = try JSONDecoder().decode(EMPTravelThreatLedger.self, from: bytes)
+    let windows = ledger.attacks.filter { $0.owner == actor }
+    try #require(windows.count == 1)
+    let window = try #require(windows.first)
+    try #require(window.victim == player)
+    try #require(window.lastAttack == game.commander.flightSimulation.physicalTime)
   }
 
   @inline(never)
