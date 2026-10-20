@@ -166,63 +166,21 @@ extension Game {
     registeredStationBodies: Set<Int>, playerRadius: Double
   ) -> AdmissionRefusal? {
     var budget = context.budget
-    for (request, template) in zip(requests, templates) {
-      let resourceCapacityMatches: Bool
-      if let resources = request.npc?.resources {
-        resourceCapacityMatches = resources.energyCapacity == template.maximumHullEnergy
-      } else {
-        resourceCapacityMatches =
-          template.canonicalBody.scriptNPC != nil
-          && template.maximumHullEnergy > 100000
-      }
-      guard request.priority == .mission, request.identity.producer == .mission,
-        request.population == .mission,
-        request.hull == template.canonicalBody.hull,
-        request.energy == template.canonicalBody.energy,
-        resourceCapacityMatches,
-        !original.bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
-      else { return .staleContext }
-      if let refusal = original.admissionCapacityRefusal(request, context: context, budget: budget)
+    for index in requests.indices {
+      if let refusal = Self.gameplayMissionActorRequestRefusal(
+        original: original, request: requests[index], template: templates[index],
+        context: context, budget: budget, playerRadius: playerRadius)
       {
         return refusal
       }
-      let radius = template.radius
-      guard
-        original.spawnParametersSafe(
-          request, context: context, measuredRadius: radius,
-          measuredMaximumEnergy: template.maximumHullEnergy),
-        (request.position - context.player.position).length > radius + playerRadius + 64
-      else { return .unsafePosition }
-      for actor in context.actors where actor.energy > 0 {
-        guard let body = original.bodies.first(where: { $0.physical?.identity == actor.identity })
-        else {
-          return .staleContext
-        }
-        if body.nativeStationIdentity != nil || registeredStationBodies.contains(body.id) {
-          guard
-            original.missionActorClearsNativeStation(
-              center: request.position, radius: radius, body: body)
-          else { return .unsafePosition }
-          continue
-        }
-        let otherRadius: Double
-        if let bounds = actor.salvage?.bounds {
-          otherRadius = bounds.radius + bounds.center.length
-        } else if body.scriptNPC != nil {
-          otherRadius = original.scriptNPCRadius(body)
-        } else if let rock = original.miningFields.flatMap(\.rocks).first(where: {
-          $0.identity == actor.rock
-        }) {
-          otherRadius = rock.radius
-        } else {
-          otherRadius = original.gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
-        }
-        guard otherRadius.isFinite, otherRadius > 0,
-          (request.position - actor.position).length >= radius + otherRadius + 64
-        else { return .unsafePosition }
+      if let refusal = Self.gameplayMissionActorSceneClearanceRefusal(
+        original: original, center: requests[index].position, radius: templates[index].radius,
+        context: context, registeredStationBodies: registeredStationBodies)
+      {
+        return refusal
       }
       budget.total += 1
-      budget.active[request.population, default: 0] += 1
+      budget.active[requests[index].population, default: 0] += 1
     }
     for index in requests.indices {
       for other in requests.indices where other > index {
@@ -232,6 +190,79 @@ extension Game {
           return .unsafePosition
         }
       }
+    }
+    return nil
+  }
+
+  /// Keep one request's condition and capacity temporaries out of cohort iteration.
+  @inline(never)
+  private static func gameplayMissionActorRequestRefusal(
+    original: borrowing Game, request: SpawnRequest,
+    template: borrowing MissionActorAdmissionTemplate, context: EncounterContext,
+    budget: AdmissionBudget, playerRadius: Double
+  ) -> AdmissionRefusal? {
+    let maximumHullEnergy = template.maximumHullEnergy
+    let resourceCapacityMatches: Bool
+    if let resources = request.npc?.resources {
+      resourceCapacityMatches = resources.energyCapacity == maximumHullEnergy
+    } else {
+      resourceCapacityMatches =
+        template.canonicalBody.scriptNPC != nil
+        && maximumHullEnergy > 100000
+    }
+    guard request.priority == .mission, request.identity.producer == .mission,
+      request.population == .mission,
+      request.hull == template.canonicalBody.hull,
+      request.energy == template.canonicalBody.energy,
+      resourceCapacityMatches,
+      !original.bodies.contains(where: { $0.physical?.spawnIdentity == request.identity })
+    else { return .staleContext }
+    if let refusal = original.admissionCapacityRefusal(request, context: context, budget: budget) {
+      return refusal
+    }
+    let radius = template.radius
+    guard
+      original.spawnParametersSafe(
+        request, context: context, measuredRadius: radius,
+        measuredMaximumEnergy: maximumHullEnergy),
+      (request.position - context.player.position).length > radius + playerRadius + 64
+    else { return .unsafePosition }
+    return nil
+  }
+
+  /// Scene-body and measured-radius storage is needed only after request preflight returns.
+  @inline(never)
+  private static func gameplayMissionActorSceneClearanceRefusal(
+    original: borrowing Game, center: Vector3, radius: Double, context: EncounterContext,
+    registeredStationBodies: Set<Int>
+  ) -> AdmissionRefusal? {
+    for actor in context.actors where actor.energy > 0 {
+      guard let body = original.bodies.first(where: { $0.physical?.identity == actor.identity })
+      else {
+        return .staleContext
+      }
+      if body.nativeStationIdentity != nil || registeredStationBodies.contains(body.id) {
+        guard
+          original.missionActorClearsNativeStation(
+            center: center, radius: radius, body: body)
+        else { return .unsafePosition }
+        continue
+      }
+      let otherRadius: Double
+      if let bounds = actor.salvage?.bounds {
+        otherRadius = bounds.radius + bounds.center.length
+      } else if body.scriptNPC != nil {
+        otherRadius = original.scriptNPCRadius(body)
+      } else if let rock = original.miningFields.flatMap(\.rocks).first(where: {
+        $0.identity == actor.rock
+      }) {
+        otherRadius = rock.radius
+      } else {
+        otherRadius = original.gameplayMesh(for: body).vertices.map(\.length).max() ?? 80
+      }
+      guard otherRadius.isFinite, otherRadius > 0,
+        (center - actor.position).length >= radius + otherRadius + 64
+      else { return .unsafePosition }
     }
     return nil
   }
