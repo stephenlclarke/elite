@@ -782,12 +782,15 @@ func pledgeClosedDeclarationAndGeneratedTermsRefuseUnsupportedAuthority(mode: St
     updated.clean()
   }
   var game = fixture.game(cash: 10_000_000)
+  let target = try #require(ShipCatalogue.ship("SH013")?.game)
+  game.commander.fuel = target.fuel
   let (key, offer) = try fixture.offer(&game)
   let id = try game.confirmContract(game.contractAcceptanceQuote(board: key, offer: offer.id))
   let ledger = try #require(game.commander.scriptState.pledgeLedger)
   let marker = game.commander.scriptState.instances[id]?.pledgeReceiptID
   game.key("6")
   game.showroom.selection = "SH013"
+  try #require(game.shipTradeQuote?.allowed == true)
   game.key("showroom-trade")
   game.key("right")
   game.key("return")

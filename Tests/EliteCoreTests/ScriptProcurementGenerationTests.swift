@@ -228,9 +228,10 @@ func procurementV2SelectsFromStableFeasibleCandidatesBeforeItsFrozenDraw(row: In
     return cost < plan.duration
   }
   try #require(!eligible.isEmpty)
-  // This actual basic-reach pool is entirely feasible in the original catalogue.
-  // The paid extended-reach case below separately requires a strict filtered subset.
-  #expect(eligible == routes)
+  // Current native routes include over-deadline paths even without paid extended reach.
+  // Independent filtering must remove them without reordering the surviving BFS candidates.
+  #expect(eligible.count < routes.count)
+  #expect(routes.filter { eligible.contains($0) } == eligible)
   let index = Int(floor(Double(plan.draws[row * 2]) / 4294967296.0 * Double(eligible.count)))
   #expect(plan.generatorRevision == 2 && plan.valid && plans == repeated)
   #expect(plan.routeIndex == index && plan.path == eligible[index])

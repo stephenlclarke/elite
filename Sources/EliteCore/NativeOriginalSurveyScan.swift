@@ -564,13 +564,16 @@ extension NativeOriginalSurvey {
     // cannot become a grant merely by changing the historical witness and rehashing its chunk.
     if let history = commander.savedEquipmentPurchaseHistory {
       for receipt in history.paid where receipt.binding.request.newItem == item {
-        return history.owner == expectedOwner && receipt.owner == expectedOwner
-          && receipt.node == node
-          && equipment.provenance == .paid(owner: expectedOwner, transaction: receipt.transaction)
+        guard history.owner == expectedOwner, receipt.owner == expectedOwner,
+          receipt.node == node
+        else { return false }
+        return equipment.provenance == .paid(owner: expectedOwner, transaction: receipt.transaction)
       }
       for entitlement in history.legacy where entitlement.source.id == item {
-        return history.owner == expectedOwner && entitlement.owner == expectedOwner
-          && entitlement.source.node == node && equipment.provenance == .legacyUnknown
+        guard history.owner == expectedOwner, entitlement.owner == expectedOwner,
+          entitlement.source.node == node
+        else { return false }
+        return equipment.provenance == .legacyUnknown
       }
     }
     switch equipment.provenance {
