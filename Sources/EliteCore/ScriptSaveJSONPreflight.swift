@@ -55,7 +55,8 @@ extension ScriptSaveJSONPreflight {
     try NativePeopleVersionedSave.validateStationPassengerFields(data, part: part, schema: schema)
     let supplierSchema = NativeStationPassengerJourneySave.lowerSchema(
       NativeOrbitalOutlookJourneySave.lowerSchema(
-        NativeOriginalRescueJourneySave.lowerSchema(schema)))
+        NativeOriginalRescueJourneySave.lowerSchema(
+          NativeOriginalEvacuationSave.lowerSchema(schema))))
     try OriginalConsentedFreightSupplySave.validateFields(data, part: part, schema: supplierSchema)
     let serviceSchema = OriginalConsentedFreightSupplySave.legacyServiceSchema(supplierSchema)
     try WayfarerRepairLoopSave.validateFields(data, part: part, schema: serviceSchema)

@@ -1,0 +1,46 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.contract"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "contracts-basic-v2", "local-flight-clocks-v2", "native-orbital-evacuation-v1"]
+priority = 564
+source = "Original G14 finite residential-wing evacuation for life-support overhaul: four registered living people, individual native replies, four actual compatible working cabins and real Avenor to Renas reception. 940 + 125L + 80H CR; L1 H0 pays 1065 CR. Zero extra cargo, deposit or deadline; no station destruction or countdown."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "orbital-evacuation"
+title = "Registered orbital evacuation"
+briefing = "Sera Venn, Tavi Noll, Eren Pell and Mara Quill are the original registered evacuation group temporarily housed at Avenor while their residential wing receives a life-support overhaul. Request their individual native replies, then board all four in four actual compatible working cabins. Bring those same living people to Renas reception for 1065 CR and the first family clue. No extra cargo, deposit, deadline or invented station casualty. Missing, withdrawn or substitute people cannot pay."
+destination = "Renas main orbital / actual native receiving care"
+reward = "1065 CR at full actual reception; L1 H0, untimed, zero deposit."
+milestones = ["Board all four original consenting people", "Receive the same four living people to real Renas care"]
+
+[orbitalEvacuation]
+batch = "avenor-orbital-evacuation-01"
+sourceGalaxy = 0
+sourceSystem = 7
+destinationGalaxy = 0
+destinationSystem = 185
+
+[[orbitalEvacuation.people]]
+id = "sera-venn"
+name = "Sera Venn"
+
+[[orbitalEvacuation.people]]
+id = "tavi-noll"
+name = "Tavi Noll"
+
+[[orbitalEvacuation.people]]
+id = "eren-pell"
+name = "Eren Pell"
+
+[[orbitalEvacuation.people]]
+id = "mara-quill"
+name = "Mara Quill"
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
