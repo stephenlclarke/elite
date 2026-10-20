@@ -562,7 +562,8 @@ extension Game {
     let currentInputs = currentMissionActorAdmissionSourceValues()
     return try Self.constructMissionActorAdmissionSource(
       original: self, mode: mode, authority: authority, pack: pack, state: state,
-      encounter: encounter, definition: definition, currentInputs: currentInputs)
+      encounter: encounter, definition: definition, instances: currentInputs.instances,
+      geometry: currentInputs.geometry)
   }
 
   /// Reserve template-construction values only after the actual Game facts have been read.
@@ -572,14 +573,11 @@ extension Game {
     authority: MissionActorAdmissionAuthority, pack: borrowing ScriptPack,
     state: borrowing ScriptInstance, encounter: borrowing ScriptOwnedEncounter,
     definition: borrowing ScriptEncounterDefinition,
-    currentInputs:
-      borrowing (
-        instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
-      )
+    instances: borrowing [UUID: ScriptInstance], geometry: borrowing [String: ShipDesign]
   ) throws -> MissionActorAdmissionSource {
     let legacy = encounter.legacyProvenance
     try Self.validateMissionActorAdmissionLegacy(
-      state: state, encounter: encounter, instances: currentInputs.instances, legacy: legacy)
+      state: state, encounter: encounter, instances: instances, legacy: legacy)
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
       let actor = try Self.validatedMissionActorAdmissionActor(
@@ -593,7 +591,7 @@ extension Game {
       }
       let template = try Self.missionActorAdmissionTemplate(
         actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
-        installedModels: pack.models, geometry: currentInputs.geometry,
+        installedModels: pack.models, geometry: geometry,
         legacy: legacy?.actors[spec.id])
       if mode == .prepared {
         try Self.validatePreparedMissionActorCondition(
@@ -604,7 +602,7 @@ extension Game {
     return .init(
       mode: mode, authority: authority, instance: state, pack: pack,
       encounter: encounter, definition: definition, actors: templates,
-      installedBaseEncounter: currentInputs.instances[state.id]?.ownedEncounters[encounter.id])
+      installedBaseEncounter: instances[state.id]?.ownedEncounters[encounter.id])
   }
 
   /// Finish full legacy comparison before any per-actor construction frame starts.
