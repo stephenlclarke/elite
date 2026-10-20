@@ -120,6 +120,12 @@ struct NativeIdentifiedSalvageSaveTests {
 
   @Test(arguments: ["stock", "capture", "receiving"])
   func rehashedSaveRefusesMissingForeignAndUnjoinedNativeEvidence(boundary: String) async throws {
+    func expectedSuccess<T>(_ stage: String, _ operation: () throws -> T) throws -> T {
+      do { return try operation() } catch {
+        Issue.record("Expected success at \(stage), boundary \(boundary): \(error)")
+        throw error
+      }
+    }
     let f = try NativeIdentifiedSalvageFixture()
     defer { f.files.clean() }
     let runtime = try await f.runtime()
@@ -136,7 +142,9 @@ struct NativeIdentifiedSalvageSaveTests {
     try await runtime.save(to: f.save)
     let pointerBytes = try Data(contentsOf: f.save)
     let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: pointerBytes)
-    let (pristine, world) = try ScriptSaveStore.read(pointerBytes, from: f.save)
+    let (pristine, world) = try expectedSuccess("unmodified cold read") {
+      try ScriptSaveStore.read(pointerBytes, from: f.save)
+    }
     #expect(world.consistent(with: pristine))
     let directory = try ScriptSaveStore.generationDirectory(pointer.generation, from: f.save)
     let file = directory.appendingPathComponent("missions.json")
@@ -147,15 +155,19 @@ struct NativeIdentifiedSalvageSaveTests {
     for capture in try await f.state(runtime).captures {
       let encoded = try JSONEncoder().encode(capture)
       let json = try JSONSerialization.jsonObject(with: encoded)
-      let equivalent = try JSONDecoder().decode(
-        NativeIdentifiedSalvageCapture.self,
-        from: JSONSerialization.data(withJSONObject: json))
+      let equivalent = try expectedSuccess("normalized capture witness decode") {
+        try JSONDecoder().decode(
+          NativeIdentifiedSalvageCapture.self,
+          from: JSONSerialization.data(withJSONObject: json))
+      }
       #expect(try NativeIdentifiedSalvage.captureAuthority(equivalent) == capture.authority)
     }
-    #expect(
+    let normalizedCold = try expectedSuccess("normalized records cold read") {
       try readIdentifiedRehash(
         normalized, pointer: pointer, file: file, save: f.save,
-        geometry: pristine.scriptState.geometry) == pristine)
+        geometry: pristine.scriptState.geometry)
+    }
+    #expect(normalizedCold == pristine)
     try original.write(to: file)
     let modes: [String]
     switch boundary {
@@ -203,9 +215,11 @@ struct NativeIdentifiedSalvageSaveTests {
           equipment[2]["provenance"] = try JSONSerialization.jsonObject(
             with: JSONEncoder().encode(EquipmentAcquisitionProvenance.grant("forged")))
           captures[0]["equipment"] = equipment
-          let forged = try JSONDecoder().decode(
-            NativeIdentifiedSalvageCapture.self,
-            from: JSONSerialization.data(withJSONObject: captures[0]))
+          let forged = try expectedSuccess("forged acquisition witness decode") {
+            try JSONDecoder().decode(
+              NativeIdentifiedSalvageCapture.self,
+              from: JSONSerialization.data(withJSONObject: captures[0]))
+          }
           captures[0]["authority"] = try NativeIdentifiedSalvage.captureAuthority(forged).uuidString
         }
         state["captures"] = captures
