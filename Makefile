@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: ci-capture-check help build run test coverage coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test ci-capture-check coverage-check threads address leaks readme-media ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -50,4 +50,6 @@ homebrew-cask:
 homebrew-cask-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/distribution -p 'test_*.py'
 	python3 Tools/distribution/homebrew_cask.py --check
-ci: flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check threads address leaks
+ci-capture-check:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_crash_artifacts.py'
+ci: ci-capture-check flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check threads address leaks
