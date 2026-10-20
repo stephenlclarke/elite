@@ -34,13 +34,19 @@ private func salvageWorldGame() throws -> (Game, SalvageSite) {
       Vector3(0, 0, 1), .init(0, 0, -1), .init(1, 0, 0), .init(-1, 0, 0), .init(0, 1, 0),
       .init(0, -1, 0),
     ]
-    guard
-      let observer = directions.map({ site.position + $0 * offset }).first(where: {
-        ($0 - anchors.planet.position).length > anchors.planet.radius * 2
-          && ($0 - anchors.sun.position).length > anchors.sun.radius * 4
-          && ($0 - anchors.station.position).length > 1200
-      })
-    else { continue }
+    let observers: [Vector3] = directions.map { direction -> Vector3 in
+      let displacement: Vector3 = direction * offset
+      return site.position + displacement
+    }
+    let observer: Vector3? = observers.first { position -> Bool in
+      let planetDistance: Double = (position - anchors.planet.position).length
+      guard planetDistance > anchors.planet.radius * 2 else { return false }
+      let sunDistance: Double = (position - anchors.sun.position).length
+      guard sunDistance > anchors.sun.radius * 4 else { return false }
+      let stationDistance: Double = (position - anchors.station.position).length
+      return stationDistance > 1200
+    }
+    guard let observer else { continue }
     relocateWreckObserver(&game, to: observer)
     game.activateNearbySalvageSites()
     guard game.bodies.contains(where: { $0.physical?.salvage?.wreck == site.identity }) else {
