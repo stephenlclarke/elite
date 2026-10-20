@@ -1,0 +1,15 @@
+# test(stations): pin authored RRS population in main-capacity fixture
+
+## Correction and independent source evidence
+
+Replace the historical 372-record premise with the current authored RRS population: 382 records, comprising 374 waystations and eight headquarters. Require per-galaxy waystation counts [45,49,51,44,46,52,42,45], the existing admission ceiling and the exact sorted source-key SHA256 `3d539657453551102a6f0f682bc9db8039fe231c2dde2cd83b4b3901aee1859b`. The key digest binds every original station kind/galaxy/system identity, including headquarters, so equal-count replacement or source identity drift cannot pass.
+
+The independent source-only derivation joins all 2048 retained independent signed-int32 chance values from docs/research/data/rescue-route-bindings.json to governmentID in the authenticated current OriginalWorlds/catalogue.json. It uses original headquarters IDs [237,98,5,149,35,213,66,7] and the retained original thresholds for governments 5/6/7. It does not call the native station generator or learn an expected value from runtime output. Historical oracle station-presence flags belong to older governments and are deliberately not used as current identities.
+
+The oracle SHA256 is `3166c79411db815afc32215d00f58e44a6958a279f4e1f3a617ab68a8ac9debb`; current catalogue SHA256 is `120543eedc02a705cce0e37d026125bf926ec22651cff9337ca5d943f2ffd99d`. The fixed author packet `/tmp/elite-g2-main-station-capacity/SOURCE-EXPECTATIONS.json` retains all 382 expected keys, per-galaxy counts and hashes. Its derivation is source arithmetic only, not a native probe or executable qualification.
+
+## Preservation and bounded qualification
+
+Exactly three paths change: the test file and paired notes. Only all2056CanonicalMainHistoriesAndResourcesRoundTripWithoutDroppingOwnerOrHistory changes; shared setup and all other methods remain byte-identical. Every existing assertion after the RRS premise remains unchanged, including all 2056 histories, observations, resources, identity sets, preserved prior ledger/poses/receipt/sequence, JSON round trips, saved owner/resource/history and cold reload comparisons. The new assertion block is a tight independent count and identity oracle, not a positive-only bound or equality between two aliases.
+
+Strict Swift formatting, scoped Markdown lint, whitespace and source-block conservation checks are author prerequisites. One existing method/one case needs matching G1 compilation/qualification and one distinct review before integration. No prior passing result is claimed for this changed method, and no unrelated passing cohort is repeated. No author build, test, probe, debugger or full CI ran. Full project CI, coverage, sanitizer, leak, player acceptance and release remain separate. No remote issue or PR exists. Companion: [ISSUE-main-station-capacity-fixture.md](ISSUE-main-station-capacity-fixture.md).
