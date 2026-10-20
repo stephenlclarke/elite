@@ -6,7 +6,8 @@ private enum ContractAcceptancePreflight: Sendable {
   case ready(PreparedContractAcceptance)
 }
 
-private struct PreparedContractAcceptance: Sendable {
+/// Immutable synchronous preparation storage keeps future admission payloads off the guard frame.
+private final class PreparedContractAcceptance: Sendable {
   let key: String
   let index: Int
   let pack: ScriptPack
@@ -17,6 +18,25 @@ private struct PreparedContractAcceptance: Sendable {
   let pledgeAdmission: ScriptPledgeAdmission?
   let courierAdmission: ScriptCourierAdmission?
   let freightAdmission: ScriptFreightIssueAdmission?
+
+  @inline(never)
+  init(
+    key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
+    offer: ScriptContractOffer, job: ScriptContractJob, instanceID: UUID,
+    pledgeAdmission: ScriptPledgeAdmission?, courierAdmission: ScriptCourierAdmission?,
+    freightAdmission: ScriptFreightIssueAdmission?
+  ) {
+    self.key = key
+    self.index = index
+    self.pack = pack
+    self.board = board
+    self.offer = offer
+    self.job = job
+    self.instanceID = instanceID
+    self.pledgeAdmission = pledgeAdmission
+    self.courierAdmission = courierAdmission
+    self.freightAdmission = freightAdmission
+  }
 }
 
 extension Game {
@@ -316,6 +336,18 @@ extension Game {
       try requireFreightResources(plan)
     }
     if let terms = offer.courier { try requireCourierResources(terms) }
+    return .ready(
+      try prepareValidatedContractAcceptance(
+        key: key, index: index, pack: pack, board: board, offer: offer, id: id,
+        confirmationToken: confirmationToken))
+  }
+
+  // These job/admission buffers are needed only after every resource guard has returned.
+  @inline(never)
+  private mutating func prepareValidatedContractAcceptance(
+    key: String, index: Int, pack: ScriptPack, board: ScriptContractBoard,
+    offer: ScriptContractOffer, id: UUID, confirmationToken: UUID
+  ) throws -> PreparedContractAcceptance {
     let acceptedAt = commander.scriptState.clock(board.clock)
     let deadline = offer.duration == 0 ? nil : acceptedAt + offer.duration
     let job = ScriptContractJob(
@@ -354,14 +386,12 @@ extension Game {
         item: ScriptCourierCustody.itemIdentity(instanceID),
         proof: courierProof(token: confirmationToken.uuidString, revision: 0), job: job)
     }
-    return .ready(
-      .init(
-        key: key, index: index, pack: pack, board: board, offer: offer, job: job,
-        instanceID: instanceID, pledgeAdmission: pledgeAdmission,
-        courierAdmission: courierAdmission,
-        freightAdmission: offer.freightPlan == nil
-          ? nil : try prepareFreightIssue(job: job, instance: instanceID)
-      ))
+    return .init(
+      key: key, index: index, pack: pack, board: board, offer: offer, job: job,
+      instanceID: instanceID, pledgeAdmission: pledgeAdmission,
+      courierAdmission: courierAdmission,
+      freightAdmission: offer.freightPlan == nil
+        ? nil : try prepareFreightIssue(job: job, instance: instanceID))
   }
   private mutating func performContractAcceptance(_ preparation: PreparedContractAcceptance)
     throws -> UUID
