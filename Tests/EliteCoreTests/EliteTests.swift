@@ -389,6 +389,12 @@ import Testing
 
 @Test func ecmEscapeEnemiesAndSimulationBounds() throws {
   var game = Game(executive: false)
+  // Preserve this controlled Cobra unit's original energy and speed boundaries.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.launch()
   try #require(!game.docked && game.commander.valid)
   game.speed = 0
@@ -413,6 +419,12 @@ import Testing
   game.tick(delta: 0.1)
   #expect(game.screen == .gameOver)
   game = Game(executive: false)
+  // Preserve this controlled Cobra unit's original energy and speed boundaries.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.launch()
   game.key("escape-pod")
   #expect(!game.docked)

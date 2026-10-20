@@ -200,6 +200,7 @@ private func scriptPack(_ edits: [(String, String)] = [], source: String? = nil)
 @Test func staleDialogueAndUndeclaredCapabilitiesCannotTransferProperty() throws {
   let pack = try ScriptPackLibrary.read(scriptedCourier)
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.scriptPacks = [pack]
   game.screen = .status
   let id = try game.acceptScriptMission(pack)

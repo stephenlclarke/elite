@@ -1,0 +1,9 @@
+# Native fixture assumptions block the remaining proven hosted 510 cases
+
+Actual hosted510 records60assertion reports across26methods and an unattributed signal10 without a final summary. After excluding the six already qualified methods, pending freight and held station method, source diagnosis accounts for18methods/36reports. This batch owns only groupsA-H:15observed methods/29reports, plus the sixth direct user of the changed private equipment helper. Reports are not parameter-case counts.
+
+The proven setup mismatches are native fuel after selecting a smaller hull, missing predeclared courier origin/fit witnesses, a missing1000-unit controlled budget, absent mining work-tool support on the fresh starter, excess fuel at an intended compatible hull exchange, fixed70-unit refill pricing, Cobra-only energy/speed assertions on the new starter, and expecting a fourth quotation to succeed after the shared three-service cap is full. These do not establish production defects.
+
+M01 assignment: G2 authors an isolated exact78e0290fe98b6774cb18b2341bd0ae3fab40c3ec batch across ten named test paths and these paired notes. Root owns coordination/review and the central completion ledger; G1 owns all builds/runtime/integration. Assignment was recorded before source changes at /tmp/elite-g2-510-native-fixture-batch/ASSIGNMENT.json. The authoritative source-only diagnosis is /tmp/elite-g2-510-remaining-failures/GROUPED-SOURCE-DIAGNOSIS.json, SHA256 ce6621a2dfad171e019f28e5fd94230b119e569663580cf611e0da0e89782650.
+
+The unknown docking groupI, station resume, production, generic CourierFixture, assistedGame, computerGame and G3/G14 are excluded. No new witness search, geometry, traffic exclusion, native build, runtime or broad campaign is authorized for the author. See [implementation and qualification plan](PR-hosted510-remaining-native-fixtures.md).
