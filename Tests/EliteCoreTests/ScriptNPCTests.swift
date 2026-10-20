@@ -220,9 +220,14 @@ private func setNPCIntent(_ game: inout Game, id: UUID, command: ScriptValue) th
     game.commander.scriptState.pendingEvents.filter { $0.kind == "actor.target.lost" }.count == 1)
 }
 
-private func measuredNPCContact(_ game: Game, from: Vector3) throws -> MissionCollisionContact? {
-  try game.nearestMissionCollision(
-    from: from, direction: .init(0, 0, 1), range: 3000, radius: 0, includePlayer: false)
+// This measures only the selected target's geometry; it does not prove full-scene occlusion.
+private func measuredNPCContact(_ game: Game, targetID: Int, from: Vector3) throws
+  -> MissionCollisionContact?
+{
+  let excluded = Set(game.bodies.filter { $0.id != targetID }.map(\.id))
+  return try game.nearestMissionCollision(
+    from: from, direction: .init(0, 0, 1), range: 3000, radius: 0,
+    excludingBodyIDs: excluded, includePlayer: false)
 }
 
 private func applyActualNPCLaser(
@@ -279,7 +284,7 @@ private func verifyMeasuredComponentRayContacts(_ game: inout Game, id: UUID) th
   game.scriptEventsDeferred = true
   game.ensurePhysicalActors()
   let kills = game.commander.kills
-  let measured = try measuredNPCContact(game, from: .init(0, 25, 0))
+  let measured = try measuredNPCContact(game, targetID: targetID, from: .init(0, 25, 0))
   let hit = try #require(measured)
   #expect(hit.hit.target == .body(targetID) && hit.victimPart == "turret")
   #expect(abs(hit.hit.distance - 1991) < 1e-8)
@@ -290,7 +295,7 @@ private func verifyMeasuredComponentRayContacts(_ game: inout Game, id: UUID) th
   try #require(damage > 0)
   // Use actual fitted player damage and a fresh sealed contact/origin for every impact.
   for _ in 0..<Int(ceil(40 / damage)) {
-    let queried = try measuredNPCContact(game, from: .init(0, 25, 0))
+    let queried = try measuredNPCContact(game, targetID: targetID, from: .init(0, 25, 0))
     let current = try #require(queried)
     let allocated = game.makeAttackOrigin(owner: player)
     let origin = try #require(allocated)
@@ -307,12 +312,12 @@ private func verifyMeasuredComponentRayContacts(_ game: inout Game, id: UUID) th
   #expect(
     game.commander.scriptState.pendingEvents.last?.values["component_id"]
       == .string(component.uuidString))
-  let destroyedPart = try measuredNPCContact(game, from: .init(0, 25, 0))
+  let destroyedPart = try measuredNPCContact(game, targetID: targetID, from: .init(0, 25, 0))
   #expect(destroyedPart == nil)
   // A ray through the bounding sphere but outside the measured hull must miss.
-  let missedHull = try measuredNPCContact(game, from: .init(50, 0, 0))
+  let missedHull = try measuredNPCContact(game, targetID: targetID, from: .init(50, 0, 0))
   #expect(missedHull == nil)
-  let measuredHull = try measuredNPCContact(game, from: .init(0, 0, 0))
+  let measuredHull = try measuredNPCContact(game, targetID: targetID, from: .init(0, 0, 0))
   let hull = try #require(measuredHull)
   #expect(hull.victimPart == nil && abs(hull.hit.distance - 1940) < 1e-8)
   return (targetID, kills)
