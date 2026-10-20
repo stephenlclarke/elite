@@ -10,7 +10,7 @@ import threading
 import time
 
 from crash_artifacts import (ArtifactBudget, collect_reports, report_snapshot,
-                             retain_test_images, sha as streaming_sha)
+                             retain_test_images, runtime_child_environment, sha as streaming_sha)
 
 assert os.environ.get('GITHUB_ACTIONS') == 'true', 'Hosted-only diagnostic; no local invocation.'
 root = Path(os.environ['GITHUB_WORKSPACE'])
@@ -121,9 +121,11 @@ def run(name, command):
     stop.clear()
     started = time.monotonic()
     log = evidence / (name + '.log')
+    child_environment = runtime_child_environment(os.environ)
     with log.open('xb') as output:
         process = subprocess.Popen(command, cwd=root, stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT, start_new_session=True)
+                                   stderr=subprocess.STDOUT, start_new_session=True,
+                                   env=child_environment)
         row = snapshot().get(process.pid)
         if row is not None:
             remember(process.pid, row)
@@ -169,7 +171,8 @@ def run(name, command):
             code = code or 125
         reader.join(timeout=10)
         remaining_after_cleanup = follow(process.pid)
-    record = {'command': command, 'parentPID': process.pid, 'makeExitCode': process.returncode,
+    record = {'command': command, 'runtimeBacktrace': child_environment['SWIFT_BACKTRACE'],
+              'parentPID': process.pid, 'makeExitCode': process.returncode,
               'exitCode': code, 'interrupted': interrupted,
               'durationSeconds': time.monotonic() - started, 'rawSHA256': sha(log),
               'naturalExitObservation': natural_exit,

@@ -1066,3 +1066,25 @@ Record Root's same-AsteroidDebrisContact G09 contact-step gate approval: closed 
 ## Qualified five-path collector source checkpoint
 
 Integrate exact final4a57 five-path batch after owner28-method PASS and CLEAN causal review of the full-review cross-root promotion finding. Preserve original27 tests, earlier fixture-clock failures and all source/evidence hashes; no G1 test/native replay. Update current ledger/README/pairedPR21 for bounded1088title-only reach, latest8a global failure and explicitly unattributed helper-original retention under unchanged strict attribution/parser/cap/confinement guards. One coherent new-source PRhead/review/CI follows, without engine fix/site claim, extra packaging/UI, workflow changes or bypass.
+
+Record coherent e1b7fd29 publication, one requiredquality39500039720 run and Dependency Review PASS. New-head required review returns serviceerror6301824753 with empty actual reviews/inline findings; factualreply6301844761 preserves its unsatisfied gate. No unchanged-head retry or extra local/native/UI campaign; hold outcome notes for the next natural source checkpoint.
+
+Record Root's single optional human1087startup observation request as pending, with no duplicate question/UI/probe or inference from elapsed time. A bounded input correction requires an actual reported failure and Root assignment; current CI watch continues independently.
+
+Record Root's current-G09-only order adjustment: complete frozen32-path/source-light/selection packet first, then G1 matching compile/focused owner qualification with causal G3 repairs, then one full independent review of the passing freeze. Both PASS and clean review remain integration gates; affected review fixes get relevant tests only. No unfrozen execution, extra campaign/CI or new process docs.
+
+Record the actual human reply that1087has not yet been tried. Normal-use startup stays unverified, with no failure/PASS inference, repeat question, UI/probe or input-fix task. Existing CI/G09 work continues.
+
+Record final e1 quality failure:549.88s compilation/863.509s make ci, zero assertions/terminal methods, signal10 and UNKNOWN fault site. Verify13 originals/image/dSYM UUID/source/natural closure; this time no report candidate exists during bounded discovery, with no cap refusal or raw body for offline diagnosis. Factual PRcomment6302257648 and disposition retain exact facts; no retry/probe or reconstruction of old evidence. Root routes only a G2 source/primary-document-supported direct-owned-process stack-capture proposal under unchanged suite/command/exit/limits, with no edit/run/framework/waiver. Preserve focused game/collector PASS and local1087; primary current qualification/M01 rows now match actual evidence.
+
+Record G2's delivered source-only direct-backtrace proposal as pending Root scope decision: fixed child-only runtime backtrace configuration at the existing launcher/raw log, conditional on unproved signed-helper eligibility. No implementation, debugger/re-signing, limit/gate change, probe or execution; G1 does not duplicate the investigation.
+
+Record Root-approved maximum-five-path direct-backtrace implementation, fixed child-only configuration at existing Popen and pure environment fixtures/paired notes. Only the exact approved SWIFT_BACKTRACE value may be recorded; full environment is excluded. Signed Apple helper eligibility stays unproved, with default argv/suite/exit/limits unchanged and no signing/debugger/framework/waiver or new run. Owner units then one review precede integration/next normalCI; preserve any actual refusal without blind repeated runs.
+
+Record clean f63a6474 direct-backtrace freeze,31 owner filesystem PASS/28 original methods unchanged, exact raw-log provenance and G1 preimage/hash verification without rerun. Full independent review remains pending; no actual helper eligibility/capture or native execution is claimed.
+
+## Qualified direct-backtrace source checkpoint
+
+Integrate exact f63a6474 five-path batch after all31 owner filesystem methods PASS and one full CLEAN review, retaining original28 unchanged and G1 exact preimage/hash/raw-outcome verification without rerun. Update pairedPR21/current ledger around supported fixed child-only runtime request, conditional helper eligibility and lateste1 global failure with no report body/site. Default argv/suite/session/exit/parser/limits remain; no debugger/signing/framework/waiver, new app or UI. Publish one coherent new-source review/CI, with actual warnings/results required before any capture/fix claim.
+
+Record G09 still unfrozen while G3 completes source/light checks, three test files, paired notes and selection. Accepted actual31of32 reserved paths leaves ScriptEncounters.swift unchanged; no premature compile and frozen-owner compile-first order remains.

@@ -14,6 +14,39 @@ from unittest.mock import patch
 import crash_artifacts as artifacts
 
 
+class RuntimeChildEnvironmentTests(unittest.TestCase):
+    def test_child_keeps_unrelated_values_without_mutating_parent(self):
+        parent = {'PATH': '/toolchain/bin', 'LLVM_PROFILE_FILE': '/profiles/%m.profraw',
+                  'DYLD_INSERT_LIBRARIES': '/runtime/libclang_rt.asan.dylib',
+                  'SECRET_FIXTURE_ONLY': 'must-never-be-logged'}
+        before = dict(parent)
+        child = artifacts.runtime_child_environment(parent)
+        self.assertEqual(parent, before)
+        self.assertIsNot(child, parent)
+        self.assertEqual({key: child[key] for key in parent}, before)
+        self.assertEqual(set(child) - set(parent), {'SWIFT_BACKTRACE'})
+        child['PATH'] = '/changed-child'
+        self.assertEqual(parent, before)
+
+    def test_conflicting_inherited_options_cannot_enable_interaction_or_file_output(self):
+        parent = {'SWIFT_BACKTRACE': 'enable=no,interactive=yes,output-to=/tmp/report',
+                  'UNRELATED': 'preserved'}
+        child = artifacts.runtime_child_environment(parent)
+        self.assertEqual(parent['SWIFT_BACKTRACE'],
+                         'enable=no,interactive=yes,output-to=/tmp/report')
+        self.assertEqual(child['UNRELATED'], 'preserved')
+        self.assertEqual(child['SWIFT_BACKTRACE'],
+                         artifacts.runtime_child_environment({})['SWIFT_BACKTRACE'])
+
+    def test_effective_options_are_noninteractive_crashed_thread_stderr_only(self):
+        setting = artifacts.runtime_child_environment({})['SWIFT_BACKTRACE']
+        options = dict(item.split('=', 1) for item in setting.split(','))
+        self.assertEqual(options, {'enable': 'yes', 'interactive': 'no', 'color': 'no',
+                                   'output-to': 'stderr', 'threads': 'crashed',
+                                   'registers': 'crashed', 'images': 'mentioned'})
+        self.assertEqual(len(setting.split(',')), len(options))
+
+
 class CrashArtifactTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
