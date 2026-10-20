@@ -320,3 +320,7 @@ Record actual817 failure/closure, ONE optimized818 product PASS, SAME signed819 
 ## Mark LIMITED819 Root-verified and delivered
 
 Attach exact Root delivery receipt after independent actual artifact/signature/resource/native/GPU/process closure verification.819 is LIMITED usable local startup-renderer delivery; historical797 flight/save journey remains distinct, unresolved actor/docking/native mission/final-quality gates explicit. Only Root notifies once; workers perform no new build/test/launch or announcement. MC1 current finite execution and queued docking continue.
+
+## Material821 closure and two-file mission repair scope
+
+Record matching820 PASS then821 zero terminals/seven UNKNOWN stack failure/whole closure. Immediately grant G2822/823 only three focused docking cases, owner units before final Root review. Reserve Root-approved exact GameplayAdmission thin-wrapper proposal alongside ScriptEncounters, no overlap/other actor file/cache/owner/guard semantics change. MC1 authors during docking execution and waits actual finite closure for its next grant; preserve failures/unaffected passes, no routine diagnostic bookkeeping.
