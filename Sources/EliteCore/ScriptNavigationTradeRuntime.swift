@@ -94,12 +94,17 @@ extension Game {
     case .received: next = "Training reception retained."
     case .cancelled: next = "Practice cancelled; actual funds and surviving cargo retained."
     }
-    return next + "\nBuy: " + (record.buy.map { Self.navigationTradeMoney($0.price) } ?? "pending")
-      + "; sale: " + (record.sale.map { Self.navigationTradeMoney($0.price) } ?? "pending")
-      + "; fuel used: " + String(record.fuelUnitsUsed) + " units; actual fuel spending: "
-      + Self.navigationTradeMoney(record.fuelPaid) + "; cash difference: "
-      + (record.cashDifference.map(Self.navigationTradeMoney) ?? "pending")
-      + ". No tutorial payment."
+    var summary: String = next
+    summary += "\nBuy: "
+    summary += record.buy.map { Self.navigationTradeMoney($0.price) } ?? "pending"
+    summary += "; sale: "
+    summary += record.sale.map { Self.navigationTradeMoney($0.price) } ?? "pending"
+    summary += "; fuel used: " + String(record.fuelUnitsUsed)
+    summary += " units; actual fuel spending: " + Self.navigationTradeMoney(record.fuelPaid)
+    summary += "; cash difference: "
+    summary += record.cashDifference.map(Self.navigationTradeMoney) ?? "pending"
+    summary += ". No tutorial payment."
+    return summary
   }
 
   func applyNavigationTradeCommand(

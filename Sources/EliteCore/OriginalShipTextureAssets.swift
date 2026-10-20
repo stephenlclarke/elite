@@ -84,12 +84,18 @@ public enum OriginalShipTextureAssets {
       else { return [:] }
       // A's bounded PNG decoder authenticated exact PNG/cache pixel agreement. Both byte
       // hashes are pinned by this manifest, so no second image decode is needed at runtime.
-      let texels = rgba.withUnsafeBytes { storage -> [UInt32] in
+      let texels: [UInt32] = rgba.withUnsafeBytes { storage -> [UInt32] in
         let bytes = storage.bindMemory(to: UInt8.self)
-        return stride(from: 0, to: bytes.count, by: 4).map {
-          UInt32(bytes[$0]) << 24 | UInt32(bytes[$0 + 1]) << 16
-            | UInt32(bytes[$0 + 2]) << 8 | UInt32(bytes[$0 + 3])
+        var packed: [UInt32] = []
+        packed.reserveCapacity(bytes.count / 4)
+        for offset in stride(from: 0, to: bytes.count, by: 4) {
+          let red: UInt32 = UInt32(bytes[offset]) << 24
+          let green: UInt32 = UInt32(bytes[offset + 1]) << 16
+          let blue: UInt32 = UInt32(bytes[offset + 2]) << 8
+          let alpha: UInt32 = UInt32(bytes[offset + 3])
+          packed.append(red | green | blue | alpha)
         }
+        return packed
       }
       guard texels.allSatisfy({ $0 & 255 == 255 }),
         let image = ShipTexturePixels(width: asset.width, height: asset.height, pixels: texels)

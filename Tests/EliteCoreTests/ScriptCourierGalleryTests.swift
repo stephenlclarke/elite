@@ -46,8 +46,13 @@ func courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds(variant: Sc
 {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
-  let id = try fixture.accept(&game, variant: variant)
+  let pinned = CourierNativeFixture.rows[variant == .data ? 0 : 1]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
+  let terms = try #require(offer.courier)
+  try #require(terms.variant == variant && terms.calendarLowerBoundSeconds < terms.duration)
+  let id = try game.confirmContract(game.contractAcceptanceQuote(board: key, offer: offer.id))
   try fixture.requestContact(&game, id: id)
   for (width, height) in [(512.0, 518.0), (1512.0, 982.0)] {
     let frame = Display.blackjackHandoff(game, width: width, height: height)
