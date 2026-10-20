@@ -240,21 +240,15 @@ extension Game {
 
   var gameplayMeshOverrides: [Int: Mesh] {
     var result: [Int: Mesh] = [:]
-    for index in bodies.indices {
-      if Self.needsGameplayMeshOverride(bodies[index]) {
-        result[bodies[index].id] = gameplayMesh(for: bodies[index])
+    for body in bodies {
+      if body.physical?.catalogueShipID != nil || body.physical?.rock != nil
+        || body.physical?.salvage?.lot != nil || body.nativeStationIdentity != nil
+        || body.physical?.ordnance?.profile == .alienSeeker
+      {
+        result[body.id] = gameplayMesh(for: body)
       }
     }
     return result
-  }
-
-  @inline(never)
-  private static func needsGameplayMeshOverride(_ body: borrowing SpaceBody) -> Bool {
-    if body.physical?.catalogueShipID != nil { return true }
-    if body.physical?.rock != nil { return true }
-    if body.physical?.salvage?.lot != nil { return true }
-    if body.nativeStationIdentity != nil { return true }
-    return body.physical?.ordnance?.profile == .alienSeeker
   }
 
   func gameplayMesh(for body: SpaceBody) -> Mesh {

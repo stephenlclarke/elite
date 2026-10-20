@@ -1,5 +1,5 @@
-# Keep station approach fixtures coherent with native authority
+# Preserve attained native docking geometry and coherent approach fixtures
 
-The selected launch hull needs fuel within its actual capacity. The six approach starts must also retain the real native station anchor and physical identity when observing it from the requested position and axes.
+The current native port nominally fits SH171, while coarse conservative sweep margins cannot prove its narrow clearance. Approach fixtures also need the actual main-station target and coherent native observer pose.
 
-Use the existing native fixture reframe path and verify the requested station-local pose. Preserve every clearance, translation, collision, docking and timing assertion. No production control, geometry or source-authority rule changes.
+Refine only a proven attained step with finite clearance-driven subdivision capped at64. Retain every native identity, motion, endpoint, disabled/work/inertia, aperture, whole-hull triangle and interval margin check. Keep the existing coarse fast path. Preserve all six approach starts and all clearance/collision/docking assertions.
