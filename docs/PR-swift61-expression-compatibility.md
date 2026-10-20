@@ -25,3 +25,9 @@ Author prerequisites are strict scoped Swift formatting, Markdown lint, whitespa
 ## Compatibility and remaining risk
 
 No public API, saved format, resource or test changes are included. Ordered String/Array appends replace compound concatenation; texture loops retain one preallocated result and the same byte-wise arithmetic. Native actor ownership and isolation remain unchanged. Actual older-toolchain compilation is pending, so the author packet does not claim the release blocker is cleared. Companion: [ISSUE-swift61-expression-compatibility.md](ISSUE-swift61-expression-compatibility.md).
+
+## Minimal selected-fixture correction after 1003
+
+Actual 1003 retained eight passing methods / nine cases and two pre-render fixture refusals. Only courierContactRendererUsesTypedActionsAndKeepsCompactWideBounds now uses the existing CourierNativeFixture rows 0/1 and game(using:) constructor to select their exact initial stock seven-LY hull and origins. Native board generation still produces the offer; pinned.verify checks its digest, epoch, seed, draws, offer UUID, path and independently calculated lower bound. The method requires the actual variant and lower-bound headroom, then confirms the actual quote. Data's unchanged witness costs 171049.27346400009 seconds; package's costs 35798.30051999994 seconds, both below the unchanged 172800-second deadline.
+
+This adds one selected test file to the authorized ten paths. Shared CourierFixture and CourierNativeFixture bytes and all rendering, contact, travel and stale-proof assertions are exact. No reroll, generated-term edit, deadline extension, accepted-quote fabrication, runtime equipment grant or production edit is included in this child correction. One delta source review and G1 matching build / only this method's two cases are pending; do not rerun the already passing eight methods or reinterpret local Swift 6.4 as older-compiler acceptance.
