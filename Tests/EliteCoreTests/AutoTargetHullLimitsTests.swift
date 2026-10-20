@@ -8,6 +8,10 @@ struct AutoTargetHullLimitsTests {
     for hull in [Hull.cobra, .station] {
       var game = Game(executive: false)
       game.commander.shipID = "SH043"
+      game.commander.fuel = game.commander.fuelCapacity
+      game.energy = game.commander.performance.energy
+      game.frontShield = game.commander.shieldCapacity
+      game.rearShield = game.commander.rearShieldCapacity
       game.commander.installTargetingComputer(.docking)
       game.commander.autoTarget = true
       try game.commander.prepareEquipment()
@@ -83,6 +87,8 @@ struct AutoTargetHullLimitsTests {
       aim: .init(600, 0, 0), lateralVelocity: .init(80, 0, 0),
       hazard: .active, interruptionAllowed: true, clearanceRadius: 400, handoverAllowed: true)
     _ = control.steer(target: station, delta: 0.1, limits: limits, defence: facts)
+    try #require(control.stationDefencePhase == .defending)
+    facts.hazard = .closing
     _ = control.steer(target: station, delta: 0.1, limits: limits, defence: facts)
     try #require(control.stationDefencePhase == .returning)
     station.position.z = 1600

@@ -38,7 +38,17 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   #expect(throws: MissionPackError.self) { try game.confirmPassengerBerth(next) }
 }
 @Test func nativeCabinShopCountsBothEquipmentAndPhysicalCargoAndComparison() throws {
-  var (game, _) = try passengerGame()
+  let pack = try ScriptPackLibrary.read(passengerPackURL)
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.screen = .status
+  game.scriptPacks = [pack]
+  game.commander.credits = 100000
+  try game.confirmPassengerBerth(game.passengerBerthQuote)
   game.selection = try #require(
     Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
   game.purchase()

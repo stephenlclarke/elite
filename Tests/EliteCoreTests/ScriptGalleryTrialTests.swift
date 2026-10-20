@@ -48,7 +48,8 @@ private func sortedWorld(_ game: Game) throws -> Data {
   defer { try? FileManager.default.removeItem(at: namespace) }
   let trial = await runtime.snapshot()
   #expect(
-    trial.isMissionTrial && trial.commander.name == "JAMESON" && trial.commander.credits == 90000)
+    trial.isMissionTrial && trial.commander.name == NewCommanderDefaults.name
+      && trial.commander.credits == 90000)
   #expect(
     trial.commander.accommodation.people.count == 1
       && trial.commander.accommodation.fitted.count == 1)
