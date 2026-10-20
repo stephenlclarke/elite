@@ -19,6 +19,20 @@ public struct ScriptPledgePreview: Sendable, Equatable {
     variant.displayAmount(amount)
   }
   public var terms: [String] {
+    if OriginalMutualContribution.matches(declaration) {
+      return [
+        "Mutual relief contribution", "Recipient: " + OriginalMutualContribution.recipient,
+        "Cedamar main orbital station / voluntary Donate 500.0 CR.",
+        String(format: "Real cash: %.1f CR.", Double(before.cash) / 10),
+        "Full donation: 500.0 CR. No partial contribution.",
+        "Cargo: 0t; passenger berths: 0; deposit: 0; reward: 0; no deadline or refund.",
+        "The named reserve records receipt of your actual donation.",
+        "Back changes nothing. Decline consumes this offer without a donation.",
+        "Later hourly offers allow another voluntary donation, charged in full again.",
+        "No faction, legal, equipment or trading privilege is granted.",
+        "The first completed contribution preserves this family's distinct journal clue once.",
+      ]
+    }
     let place = Universe.systemsIncludingPlugh(number: station.galaxy)[station.system].name
     let afterCash = variant == .credits ? before.cash - amount : before.cash
     let afterFood = variant == .food ? before.food - amount : before.food
@@ -91,6 +105,21 @@ extension Game {
       let pack = scriptPacks.first(where: { $0.digest == board.digest }),
       let declaration = pack.manifest.pledge
     else { return nil }
+    if pack.manifest.stateID == OriginalMutualContribution.stateID
+      || declaration.profile == OriginalMutualContribution.profile
+    {
+      guard OriginalMutualContribution.validManifest(pack.manifest),
+        board.station == OriginalMutualContribution.station,
+        nativeMainStationDockEvidenceIsCurrent,
+        let dock = commander.nativeStations?.currentMainDock,
+        dock.commanderOwner == commander.equipmentOwnerID,
+        dock.station.key == "main-orbital:0:85",
+        commander.scriptState.stationResources[dock.station.key]?.destroyed != true
+      else {
+        throw MissionPackError(
+          "Donate only at the actual Cedamar Orbital Relief Reserve main-station desk.")
+      }
+    }
     guard let offer = board.offers.first(where: { $0.id == id }), declaration.valid,
       declaration.provider == board.provider, declaration.provider == pack.manifest.id,
       board.station.system < 256, board.clock == .local, board.period == 3600,
@@ -152,6 +181,13 @@ extension Game {
       state.pledgeReceiptID == nil,
       admission.cause.valid, admission.cause.docked, admission.cause.mainStation
     else { throw MissionPackError("A pledge requires its exact native Donate confirmation.") }
+    if declaration.profile == OriginalMutualContribution.profile {
+      guard OriginalMutualContribution.validManifest(pack.manifest),
+        nativeMainStationDockEvidenceIsCurrent,
+        admission.cause.nativeMainDock == commander.nativeStations?.currentMainDock,
+        contractStation == OriginalMutualContribution.station
+      else { throw MissionPackError("The original relief reserve contact changed; review again.") }
+    }
     try requirePledgeResources(admission.preview)
     let before = admission.preview.before
     if admission.preview.variant == .credits {
@@ -216,6 +252,10 @@ extension Game {
   func pledgeGallerySummary(_ state: ScriptInstance?) -> String {
     guard let state, let receipt = commander.scriptState.pledgeLedger?.receipt(instance: state.id)
     else { return "" }
+    if OriginalMutualContribution.matches(receipt.declaration) {
+      return "\n\nContribution received: 500.0 CR.\n" + OriginalMutualContribution.recipient
+        + " / Cedamar main orbital station.\nNo reward, refund or trading privilege."
+    }
     let station = Universe.systemsIncludingPlugh(number: receipt.creditedAt.galaxy)[
       receipt.creditedAt.system
     ].name
@@ -228,6 +268,14 @@ extension Game {
 extension ScriptPackLibrary {
   static func validatePledge(_ manifest: ScriptManifest) throws {
     guard let pledge = manifest.pledge else { return }
+    if manifest.stateID == OriginalMutualContribution.stateID
+      || pledge.profile == OriginalMutualContribution.profile
+    {
+      guard OriginalMutualContribution.validManifest(manifest) else {
+        throw MissionPackError(
+          "The Original mutual contribution requires its exact reserve and one 500 CR credit row.")
+      }
+    }
     guard pledge.valid, pledge.provider == manifest.id,
       manifest.capabilities.contains("station-pledges-basic-v2"),
       manifest.capabilities.contains("story-v2"),

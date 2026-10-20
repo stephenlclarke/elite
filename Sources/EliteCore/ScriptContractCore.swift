@@ -159,14 +159,22 @@ extension Game {
     if pack.manifest.pledge != nil {
       var checking = self
       checking.commander.contracts.boards[key] = board
-      let expected = Set(
-        ["credits", "food"].flatMap { variant in
-          (1...3).map { variant + "-" + String($0) }
-        })
-      guard board.offers.count == 6, Set(board.offers.map(\.key)) == expected,
+      let originalRelief = pack.manifest.stateID == OriginalMutualContribution.stateID
+      let expected =
+        originalRelief
+        ? Set(["credits-1"])
+        : Set(
+          ["credits", "food"].flatMap { variant in
+            (1...3).map { variant + "-" + String($0) }
+          })
+      guard board.offers.count == (originalRelief ? 1 : 6),
+        Set(board.offers.map(\.key)) == expected,
         board.offers.allSatisfy({ (try? checking.pledgePreview(board: key, offer: $0.id)) != nil })
       else {
-        throw MissionPackError("A pledge provider must generate its six exact native offers.")
+        throw MissionPackError(
+          originalRelief
+            ? "The relief reserve requires its one exact 500 CR credit offer."
+            : "A pledge provider must generate its six exact native offers.")
       }
     }
     // No generation side effects escape until the complete snapshot can be saved by the caller.

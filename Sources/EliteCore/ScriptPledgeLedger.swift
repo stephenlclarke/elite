@@ -8,12 +8,19 @@ public struct ScriptPledgeDefinition: Codable, Sendable, Equatable {
   public let creditAmounts: [Int]
   public let foodTonnes: [Int]
   var valid: Bool {
-    PackValidation.localID(profile) && PackValidation.identifier(provider)
+    if profile == OriginalMutualContribution.profile {
+      return OriginalMutualContribution.matches(self)
+    }
+    return PackValidation.localID(profile) && PackValidation.identifier(provider)
       && (1...96).contains(title.count) && creditAmounts.count == 3 && foodTonnes.count == 3
       && creditAmounts.allSatisfy { (1...4_294_967_295).contains($0) }
       && foodTonnes.allSatisfy { (1...1_000_000).contains($0) }
   }
   func amount(difficulty: Int, variant: ScriptPledgeVariant) -> Int? {
+    if profile == OriginalMutualContribution.profile {
+      return valid && difficulty == 1 && variant == .credits
+        ? OriginalMutualContribution.amount : nil
+    }
     guard valid, (1...3).contains(difficulty) else { return nil }
     return (variant == .credits ? creditAmounts : foodTonnes)[difficulty - 1]
   }

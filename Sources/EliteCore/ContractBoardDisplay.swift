@@ -198,7 +198,10 @@ extension Display {
         let rrsSummary: String? =
           row.rrs == nil ? nil : "Protected packet / 0 tonnes / Confirm required"
         let pledgeSummary: String? = pledge.map {
-          "Pledge \($0.charge) / local standing +1 / once"
+          if OriginalMutualContribution.matches($0.declaration) {
+            return "Donate 500.0 CR / Cedamar relief reserve / no cash reward"
+          }
+          return "Pledge \($0.charge) / local standing +1 / once"
         }
         let offerSummary: String? = row.offer.map {
           String(

@@ -427,7 +427,9 @@ extension Game {
         notify(
           quote.pledge == nil
             ? "CONTRACT ACCEPTED - SEE MISSION GALLERY"
-            : "DONATION COMPLETE - LOCAL STANDING RECORDED")
+            : quote.pledge.map({ OriginalMutualContribution.matches($0.declaration) }) == true
+              ? "CEDAMAR ORBITAL RELIEF RESERVE RECEIVED 500.0 CR - NO CASH REWARD"
+              : "DONATION COMPLETE - LOCAL STANDING RECORDED")
       } else {
         try declineContract(board: row.board, offer: offer.id)
         notify("OFFER DECLINED")

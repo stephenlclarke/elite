@@ -31,6 +31,11 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent("l337-seed-transfer")
   }
 
+  static var bundledMutualContributionDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-mutual-contribution")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -75,6 +80,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled seed-transfer pack: " + error.localizedDescription)
+    }
+    do {
+      let contribution = try read(bundledMutualContributionDirectory)
+      if !library.packs.contains(where: { $0.digest == contribution.digest }) {
+        library.packs.append(contribution)
+      }
+    } catch {
+      library.errors.append("Bundled mutual contribution pack: " + error.localizedDescription)
     }
     return library
   }

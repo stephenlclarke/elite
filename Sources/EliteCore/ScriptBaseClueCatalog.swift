@@ -99,7 +99,9 @@ struct ScriptClueExecutionPin: Sendable, Equatable {
       && definition.split(separator: "/").allSatisfy { PackValidation.identifier(String($0)) }
       && PackValidation.version(version) && ScriptCompletionReceipt.validDigest(digest)
       && !terminalEvents.isEmpty && terminalEvents.isSubset(of: ScriptCapabilities.events)
-      && terminalEvents.isDisjoint(with: ["mission.accepted", "mission.abandoned"])
+      && terminalEvents.isDisjoint(with: ["mission.abandoned"])
+      && (!terminalEvents.contains("mission.accepted")
+        || OriginalMutualContribution.acceptedPin(self))
   }
   func matches(_ receipt: ScriptCompletionReceipt) -> Bool {
     receipt.definition == definition && receipt.version == version && receipt.digest == digest
@@ -113,6 +115,7 @@ struct ScriptClueTrustCatalog: Sendable {
   private let pins: [ScriptClueExecutionPin]
   static let production = ScriptClueTrustCatalog(approvedPins: [
     ScriptNavigationTradeContent.cluePin,
+    OriginalMutualContribution.cluePin,
     .init(
       sourceID: "l337.wayfarer-service/seed-transfer",
       definition: "l337.wayfarer-service/seed-transfer",

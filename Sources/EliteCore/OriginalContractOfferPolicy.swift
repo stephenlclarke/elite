@@ -58,6 +58,13 @@ enum OriginalContractOfferPolicy {
 
 extension Game {
   func contractRevision(_ definition: ScriptBoardDefinition, pack: ScriptPack) throws -> Int64 {
+    if pack.manifest.stateID == OriginalMutualContribution.stateID {
+      guard OriginalMutualContribution.validManifest(pack.manifest),
+        definition.id == pack.manifest.board?.id, definition.clock == .local,
+        definition.period == 3600
+      else { throw SaveError.invalidCommander }
+      return contractRevision(definition)
+    }
     if OriginalServiceReservationPolicy.isContractDefinition(pack.manifest.stateID) {
       return try OriginalContractOfferPolicy.revision(
         pack: pack, station: contractStation, commander: commander)
@@ -75,6 +82,12 @@ extension Game {
           && $0.manifest.version == board.version && $0.manifest.board?.id == board.id
       }), let definition = pack.manifest.board
     else { throw SaveError.invalidCommander }
+    if pack.manifest.stateID == OriginalMutualContribution.stateID {
+      guard OriginalMutualContribution.validManifest(pack.manifest),
+        board.clock == definition.clock, board.period == definition.period
+      else { throw SaveError.invalidCommander }
+      return contractRevision(definition)
+    }
     return try contractRevision(definition, pack: pack)
   }
 }

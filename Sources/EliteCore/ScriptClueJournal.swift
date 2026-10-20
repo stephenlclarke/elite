@@ -24,6 +24,9 @@ struct ScriptClueJournal: Codable, Sendable, Equatable {
           instance.completionReceipt == award.completion
         else { return false }
         return award.completion.valid(for: instance, engine: engine)
+          && (award.sourceID != OriginalMutualContribution.stateID
+            || OriginalMutualContribution.validCompletion(
+              award.completion, engine: engine, owner: owner))
       }
   }
 
@@ -63,6 +66,9 @@ extension Game {
     else { return }
     guard let owner = commander.equipmentOwnerID, receipt.cause != nil,
       receipt.valid(for: next, engine: commander.scriptState),
+      pin.sourceID != OriginalMutualContribution.stateID
+        || OriginalMutualContribution.validCompletion(
+          receipt, engine: commander.scriptState, owner: owner),
       pin.sourceID != ScriptNavigationTradeContent.sourceID
         || next.savedNavigationTrade?.stage == .received,
       let source = ScriptBaseClueCatalog.bySource[pin.sourceID]
