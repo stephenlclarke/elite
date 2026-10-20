@@ -5,10 +5,12 @@ enum WayfarerRepairLoopSave {
   static let alienVersion = 38
   static func contains(_ schema: Int?) -> Bool { schema == version || schema == alienVersion }
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
-    commander.scriptState.savedWayfarerRepairLoopStock != nil
-      || commander.scriptState.instances.values.contains { $0.savedWayfarerRepairLoop != nil }
-      || commander.equipmentInventory?.items.contains { $0.nativeRepairLoopCondition != nil }
-        == true
+    if commander.scriptState.savedWayfarerRepairLoopStock != nil { return true }
+    for state in commander.scriptState.instances.values {
+      if state.savedWayfarerRepairLoop != nil { return true }
+    }
+    guard let inventory = commander.equipmentInventory else { return false }
+    return inventory.items.contains { $0.nativeRepairLoopCondition != nil }
   }
   static func validateDeclaration(_ manifest: ScriptManifest) throws {
     guard let terms = manifest.repairLoop else {
@@ -163,11 +165,12 @@ enum WayfarerRepairLoopSave {
     switch unit.status {
     case .available: return false
     case .held:
-      return state.outcome == .active && state.completionReceipt == nil
-        && custody.returned == nil && custody.loss == nil && unit.returnedItem == nil
+      guard state.outcome == .active, state.completionReceipt == nil,
+        state.payloads == [WayfarerRepairLoopDefinition.payloadKey: 2],
+        state.milestones.isEmpty
+      else { return false }
+      return custody.returned == nil && custody.loss == nil && unit.returnedItem == nil
         && gear.status == .issued && gear.consumed.isEmpty
-        && state.payloads == [WayfarerRepairLoopDefinition.payloadKey: 2]
-        && state.milestones.isEmpty
     case .returned:
       guard state.outcome == .complete, let receipt = custody.returned,
         let service = custody.service, custody.loss == nil,
@@ -285,11 +288,13 @@ enum WayfarerRepairLoopSave {
     _ dock: NativeMainStationDockReceipt, commander: borrowing Commander
   ) -> Bool {
     guard let world = commander.nativeStations else { return false }
-    return dock.valid && dock.commanderOwner == commander.equipmentOwnerID
+    let owner = commander.equipmentOwnerID
+    let visit = commander.flightSimulation.visit
+    let calendar = commander.scriptState.calendarSeconds
+    return dock.valid && dock.commanderOwner == owner
       && world.mainStations.contains(dock.station) && world.ledger.world == dock.station.world
       && dock.sequence < world.nextMainDockSequence
-      && dock.actor.visit <= commander.flightSimulation.visit
-      && dock.calendarSeconds <= commander.scriptState.calendarSeconds
+      && dock.actor.visit <= visit && dock.calendarSeconds <= calendar
   }
 
   /// Only the closed native payloads are decoded here. Round-trip shape equality rejects
