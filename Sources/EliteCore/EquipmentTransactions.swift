@@ -24,7 +24,25 @@ extension Commander {
   }
 
   func fittedComponent(at slot: ComponentFittingSlot) -> ComponentInstance? {
-    fittedEquipment(at: slot)?.component
+    guard let inventory = equipmentInventory else { return nil }
+    for index in inventory.items.indices {
+      if Self.item(inventory.items[index], fits: slot) {
+        return Self.component(of: inventory.items[index])
+      }
+    }
+    return nil
+  }
+
+  @inline(never)
+  private static func item(_ item: borrowing OwnedEquipmentItem, fits slot: ComponentFittingSlot)
+    -> Bool
+  {
+    item.location?.slot == slot
+  }
+
+  @inline(never)
+  private static func component(of item: borrowing OwnedEquipmentItem) -> ComponentInstance? {
+    item.component
   }
 
   mutating func prepareEquipment(legacy: Bool = true) throws {
