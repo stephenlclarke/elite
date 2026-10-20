@@ -323,6 +323,17 @@ public enum EquipmentIssueTransactions {
     else { throw OwnedEquipmentError.unknownNode }
     var items = inventory.items
     for device in request.devices {
+      if let condition = device.nativeRepairLoopCondition {
+        guard case .failed(let unit) = condition,
+          request.source.resource == WayfarerRepairLoopDefinition.gearKey,
+          request.source.mission == WayfarerRepairLoopStockSource.instanceIdentity(unit: unit),
+          device.id
+            == OwnedGear.issuedIdentity(
+              mission: request.source.mission, resource: request.source.resource, index: 0),
+          device.index == 0, device.node == EquipmentRuntimeCatalog.node(for: "Fuel Scoops"),
+          case .held = request.fitting
+        else { throw EquipmentIssueError.invalidRequest }
+      }
       if let original = device.originalEquipmentName {
         guard original == Equipment.legacyDockingComputer,
           EquipmentRuntimeCatalog.node(for: original) == device.node
@@ -356,7 +367,7 @@ public enum EquipmentIssueTransactions {
           preferredSlot: device.preferredSlot,
           retainedLegacyState: device.originalEquipmentName.map {
             .init(conditionBasisPoints: 10000, modifications: [:], originalEquipmentName: $0)
-          }))
+          }, nativeRepairLoopCondition: device.nativeRepairLoopCondition))
     }
     var displacements: [EquipmentIssueDisplacement] = []
     if case .fitAll(let plans) = request.fitting {
@@ -417,7 +428,11 @@ public enum EquipmentIssueTransactions {
     let receiptOperation: EquipmentIssueOperation
     switch operation {
     case .releaseLoan:
-      guard obligation.loan else { throw EquipmentIssueError.invalidRequest }
+      guard obligation.loan,
+        !items.contains(where: {
+          obligation.items.contains($0.id) && $0.nativeRepairLoopCondition != nil
+        })
+      else { throw EquipmentIssueError.invalidRequest }
       receiptOperation = .released
     case .returnOriginals:
       if !obligation.returnRemaining,
@@ -506,7 +521,7 @@ public enum EquipmentIssueTransactions {
     displacements: inout [EquipmentIssueDisplacement]
   ) throws {
     let item = items[index]
-    guard item.retainedLegacyState?.pristine ?? true else {
+    guard item.nativeRepairLoopCondition == nil, item.retainedLegacyState?.pristine ?? true else {
       throw EquipmentIssueError.loanModificationRefused(item.id)
     }
     if [.targetingMining, .targetingSalvage].contains(destination.slot),

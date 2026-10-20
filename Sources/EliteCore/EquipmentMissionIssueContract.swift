@@ -57,15 +57,18 @@ public struct IssuedDeviceRequest: Equatable, Sendable {
   public let index: Int
   public let preferredSlot: ComponentFittingSlot?
   public let originalEquipmentName: String?
+  public let nativeRepairLoopCondition: NativeRepairLoopCondition?
   public init(
     id: UUID, node: EquipmentNodeID, index: Int, preferredSlot: ComponentFittingSlot?,
-    originalEquipmentName: String? = nil
+    originalEquipmentName: String? = nil,
+    nativeRepairLoopCondition: NativeRepairLoopCondition? = nil
   ) {
     self.id = id
     self.node = node
     self.index = index
     self.preferredSlot = preferredSlot
     self.originalEquipmentName = originalEquipmentName
+    self.nativeRepairLoopCondition = nativeRepairLoopCondition
   }
 }
 

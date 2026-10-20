@@ -60,6 +60,9 @@ extension Game {
     candidate: inout Commander
   ) throws -> (String, [String: ScriptValue])? {
     do {
+      guard pack.manifest.repairLoop == nil, state.savedWayfarerRepairLoop == nil,
+        state.definition != WayfarerRepairLoopDefinition.stateID
+      else { throw MissionPackError("Use the original native repair-loop transport and return.") }
       guard let fields = command.object, let op = fields["op"]?.string,
         let receipt = fields["id"]?.string, PackValidation.localID(receipt),
         let key = fields["gear"]?.string,

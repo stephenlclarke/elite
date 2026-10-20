@@ -74,6 +74,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedProviderContract: ScriptProviderContractState?
   var savedOwnedCargo: ScriptOwnedCargoState?
   var savedWayfarerColdChain: WayfarerColdChainCustody?
+  var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
   public var courier: ScriptCourierCustody?
   public var pledgeReceiptID: UUID?
@@ -104,6 +105,7 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
 }
 public struct ScriptEngineState: Codable, Sendable, Equatable {
   var savedWayfarerColdChainStock: WayfarerColdChainStockLedger?
+  var savedWayfarerRepairLoopStock: WayfarerRepairLoopStockLedger?
   var savedClueJournal: ScriptClueJournal?
   var financeLedger: ScriptFinanceLedger?
   var wormholeTransit: NativeWormholeTransitState?
@@ -208,7 +210,7 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       $0.choiceReceipts.values.map(\.sequence) + Array($0.conversationReceipts.keys)
     }
     let completionSequences = instances.values.compactMap { $0.completionReceipt?.sequence }
-    return WayfarerColdChainSave.engineValid(self)
+    return WayfarerRepairLoopSave.engineValid(self) && WayfarerColdChainSave.engineValid(self)
       && campaignsValid && Set(identities).count == identities.count && instances.count <= 128
       && Set(choiceSequences).count == choiceSequences.count
       && Set(completionSequences).count == completionSequences.count

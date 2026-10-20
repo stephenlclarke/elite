@@ -36,7 +36,9 @@ extension Game {
       String(commander.scriptState.instances.count),
       contractBoard.quote?.issues.joined(separator: "\n") ?? "",
     ]
-    fields += scriptPacks.filter { $0.manifest.board != nil || $0.manifest.coldChain != nil }.map(
+    fields += scriptPacks.filter {
+      $0.manifest.board != nil || $0.manifest.coldChain != nil || $0.manifest.repairLoop != nil
+    }.map(
       \.digest
     ).sorted()
     fields += rrsCourierPageFacts
@@ -45,6 +47,7 @@ extension Game {
     fields += providerContractPageFacts
     fields += freightPageFacts
     fields += wayfarerColdChainPageFacts
+    fields += wayfarerRepairLoopPageFacts
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []
@@ -76,7 +79,8 @@ extension Game {
     return .init(
       generation: contractBoard.presentationGeneration, detail: contractBoard.detail,
       review: contractBoard.detail
-        ? (contractBoard.coldChainQuote?.reviewToken ?? contractBoard.providerQuote?.reviewToken
+        ? (contractBoard.repairLoopQuote?.reviewToken ?? contractBoard.coldChainQuote?.reviewToken
+          ?? contractBoard.providerQuote?.reviewToken
           ?? contractBoard.peopleQuote?.reviewToken
           ?? contractBoard.financeQuote?.reviewToken
           ?? contractBoard.rrsQuote?.reviewToken
