@@ -1,4 +1,4 @@
-"""Retain only attributable, confined originals from a failed hosted quality run."""
+"""Retain confined failure evidence with explicit process-attribution boundaries."""
 from datetime import datetime
 import hashlib
 import json
@@ -313,10 +313,38 @@ def attributed_report(payload, history):
     return False
 
 
-def collect_reports(roots, baseline, history, evidence, budget, window=3.5, interval=0.5):
+def helper_diagnostic_context(name, history, observed_images, evidence):
+    """Scope candidate discovery to an owned retained cohort, never attribute a report."""
+    if not re.fullmatch(r'\.?swiftpm-testing-helper-\d{4}-\d{2}-\d{2}-\d{6}\.(ips|crash)',
+                        Path(name).name):
+        return []
+    contexts = []
+    for image in observed_images:
+        argv = image.get('arguments', [])
+        pid = image.get('pid')
+        if (image.get('status') != 'retained-image' or not image.get('retainedImage')
+                or not argv or Path(argv[0]).name != 'swiftpm-testing-helper'
+                or not isinstance(pid, int)):
+            continue
+        if not any(record.get('start') == image.get('start') and arguments(record) == argv
+                   for record in history.get(str(pid), history.get(pid, []))):
+            continue
+        try:
+            if not confined(Path(evidence) / image['retainedImage'], evidence).is_file():
+                continue
+        except (OSError, ValueError):
+            continue
+        contexts.append({key: image[key] for key in
+                         ('pid', 'start', 'helperExecutable', 'image', 'retainedImage')})
+    return contexts
+
+
+def collect_reports(roots, baseline, history, evidence, budget, window=3.5, interval=0.5,
+                    observed_images=()):
     """Drain report creation only; never rerun a command or alter its execution budget."""
     started = time.monotonic()
     records = {}
+    retained = {}
     snapshots = []
     while True:
         current = report_snapshot(roots)
@@ -326,8 +354,32 @@ def collect_reports(roots, baseline, history, evidence, budget, window=3.5, inte
             digest = item.get('sha256')
             if digest is not None and digest == baseline['candidates'].get(name, {}).get('sha256'):
                 continue
-            previous = records.get(name, {})
-            if previous.get('sha256') == digest and previous.get('matchedActualProcess'):
+            saved = retained.get((name, digest))
+            if saved is not None:
+                detail = dict(saved)
+                if not saved['matchedActualProcess'] and attributed_report(saved['identity'], history):
+                    try:
+                        original = confined(Path(evidence) / saved['retained'], evidence)
+                        destination = Path(evidence) / 'matched-crashes'
+                        destination.mkdir(exist_ok=True)
+                        target = destination / original.name
+                        if sha(original) != digest:
+                            raise ValueError('Retained report changed before attribution.')
+                        if target.exists():
+                            target = confined(target, evidence)
+                            if sha(target) != digest:
+                                raise ValueError('Matched report target differs from original.')
+                            original.unlink()
+                        else:
+                            original.replace(target)
+                        detail.update(matchedActualProcess=True, attribution='proved-pid-start-path',
+                                      reason='later exact observed PID/start/path attribution',
+                                      promotedFrom=saved['retained'],
+                                      retained=str(target.relative_to(evidence)))
+                        retained[(name, digest)] = detail
+                    except (OSError, ValueError) as error:
+                        detail['error'] = str(error)
+                records[name] = detail
                 continue
             detail = dict(item, matchedActualProcess=False)
             records[name] = detail
@@ -352,10 +404,16 @@ def collect_reports(roots, baseline, history, evidence, budget, window=3.5, inte
                     continue
                 identity = report_identity(raw.decode(errors='replace'), original.suffix)
                 detail['identity'] = {key: identity.get(key) for key in ('pid', 'procPath', 'procLaunch')}
-                if not attributed_report(identity, history):
+                matched = attributed_report(identity, history)
+                initial = baseline['candidates'].get(name)
+                changed = initial is None or initial.get('sha256') is not None
+                context = (helper_diagnostic_context(name, history, observed_images, evidence)
+                           if not matched and changed else [])
+                if not matched and not context:
                     detail['reason'] = 'unproved PID/start/path attribution; metadata only'
                     continue
-                destination = Path(evidence) / 'matched-crashes'
+                folder = 'matched-crashes' if matched else 'unattributed-helper-diagnostics'
+                destination = Path(evidence) / folder
                 destination.mkdir(exist_ok=True)
                 target = destination / (digest[:16] + '-' + original.name)
                 if not target.exists():
@@ -363,14 +421,26 @@ def collect_reports(roots, baseline, history, evidence, budget, window=3.5, inte
                     budget.used += len(raw)
                 if sha(target) != digest:
                     raise ValueError('Retained report differs from original bytes.')
-                detail.update(matchedActualProcess=True,
+                detail.update(matchedActualProcess=matched,
+                              attribution='proved-pid-start-path' if matched else 'unproved',
                               retained=str(target.relative_to(evidence)))
+                if not matched:
+                    detail.update(reason='helper-family discovery only; process attribution unproved',
+                                  observedContext=context)
+                retained[(name, digest)] = dict(detail)
             except (OSError, ValueError) as error:
                 detail['error'] = str(error)
         remaining = window - (time.monotonic() - started)
         if remaining <= 0:
             break
         time.sleep(min(interval, remaining))
+    for name, record in records.items():
+        versions = [{key: saved[key] for key in
+                     ('sha256', 'bytes', 'retained', 'matchedActualProcess')}
+                    for (source, digest), saved in retained.items()
+                    if source == name and saved.get('retained') != record.get('retained')]
+        if versions:
+            record['retainedVersions'] = versions
     return list(records.values()), {'baselineDirectories': baseline['directories'],
                                    'observations': snapshots, 'budgetSeconds': window,
                                    'elapsedSeconds': time.monotonic() - started,
