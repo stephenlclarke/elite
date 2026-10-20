@@ -1486,14 +1486,14 @@ func stationAutoRealPoliceDepartureRetainsClearEntryAndRefusesUnsafeStop(conditi
   try #require(guidance.movingEntryAllowed)
   try #require(!guidance.joinedIncoming)
   #expect(!guidance.entryBrakingAllowed)
-  let beforeEntry = game.flightWorldVelocity
+  let beforeClearEntryVelocity = game.flightWorldVelocity
   let beforePosition = game.commander.flightSimulation.pose.position
   game = await runtime.advance(delta: 0.1)
   #expect(game.autoPilot.stationDefencePhase == .returning)
   #expect(game.autoPilot.finalApproach && game.autoPilot.validatedMovingEntry)
-  #expect((game.commander.flightSimulation.pose.position - beforePosition).dot(beforeEntry) > 0)
+  #expect((game.commander.flightSimulation.pose.position - beforePosition).dot(beforeClearEntryVelocity) > 0)
   #expect(
-    (game.flightWorldVelocity - beforeEntry).length <= game.workLimits.acceleration * 0.1 + 1e-8)
+    (game.flightWorldVelocity - beforeClearEntryVelocity).length <= game.workLimits.acceleration * 0.1 + 1e-8)
   #expect(game.autoPilot.facingError < 0.02 && game.autoPilot.rateError < 0.02)
   let clearStation = try #require(game.autoTargetBody)
   let depth = -clearStation.entrancePosition.dot(clearStation.entranceNormal)
