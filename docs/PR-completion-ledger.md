@@ -1012,3 +1012,9 @@ New shared-storage layout completes the targeted scope without crash:1074passes4
 Integrate27 exact reviewed paths after final1077 passes4methods/8cases and reviewed retention of20methods/28cases from1074/1075; aggregate24/36 PASS, zero unknowns. Preserve all original failures and full/delta reviews, exact source/artifact/preferences/eleven-start closure. Reconcile current register and M01 to qualified integrated source, pending signed preview and unchanged failed public2c90 gates. G10 is queued for Root preflight; no unrelated cohort, newCI/release or manual-journey claim.
 
 Maintain G14's171 renderer references with one required1078refresh; all image bytes remain unchanged and4104frames decode. Update G10 assignment/index from exactfbce in its separate source isolate. Prepare the signed preview and bounded normal Avenor offer/detail check; leave pre-existing1052 unowned. No per-doc push/CI or extra diagnostic build.
+
+## Current signed local candidate and coherent PR scope
+
+Record1079 identity/signature/500-resource/actual pack-CLI PASS and1080visible title/source/native-menu reach only. Explicitly leave Avenor offer/details/four-cabin eligibility and full player journey unverified. Normal quit closes the owned new app; preserve primary/player data and unowned1052. Root announces a local candidate only, no Slack feature post. Refresh README/pairedPR21 scope for integrated G14/storage and next final-head CI/review, with G10 still separate source work and G2 only a bounded startup-source read.
+
+Record G2's source-only normal start/focus wiring review, with no source-proven defect and no UI PASS or further campaign. Record UX's G09 design/preflight-only ownership from2304; implementation stays not started while G10 remains the sole active MBA implementation. W05 stays next candidate.
