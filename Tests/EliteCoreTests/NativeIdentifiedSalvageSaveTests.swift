@@ -316,11 +316,13 @@ private func readIdentifiedRehash(
 private func identifiedRehashedBytes(_ bytes: Data, geometry: [String: ShipDesign]) throws -> Data {
   // Mutate the intended records without normalizing separately hash-addressed model bytes.
   var object = try #require(JSONSerialization.jsonObject(with: bytes) as? [String: Any])
-  object.removeValue(forKey: "geometry")
+  guard object.removeValue(forKey: "savedGeometry") != nil else {
+    return try JSONSerialization.data(withJSONObject: object)
+  }
   var preserved = try JSONSerialization.data(withJSONObject: object)
   try #require(preserved.last == 125 && !object.isEmpty)
   preserved.removeLast()
-  preserved.append(contentsOf: Data(",\"geometry\":".utf8))
+  preserved.append(contentsOf: Data(",\"savedGeometry\":".utf8))
   preserved.append(try JSONEncoder().encode(geometry))
   preserved.append(125)
   return preserved
