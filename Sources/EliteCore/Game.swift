@@ -46,7 +46,7 @@ public struct Commander: Sendable, Equatable, Codable {
   private var savedScriptState: ScriptEngineState?
   public var scriptState: ScriptEngineState {
     _read {
-      if savedScriptState != nil {
+      if case .some = savedScriptState {
         yield savedScriptState!
       } else {
         let empty = ScriptEngineState()
@@ -55,7 +55,7 @@ public struct Commander: Sendable, Equatable, Codable {
     }
     set { savedScriptState = newValue == ScriptEngineState() ? nil : newValue }
     _modify {
-      if savedScriptState == nil { savedScriptState = ScriptEngineState() }
+      if case .none = savedScriptState { savedScriptState = ScriptEngineState() }
       defer {
         if savedScriptState?.nextEvent == 0, savedScriptState == ScriptEngineState() {
           savedScriptState = nil

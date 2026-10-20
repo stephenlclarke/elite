@@ -197,6 +197,13 @@ struct GameCommanderStorageTests {
     let before = try #require(
       JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
     #expect(before["savedFlightSimulation"] == nil)
+    #expect(before["savedScriptState"] == nil)
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 0)
+    #expect(original.withReadOnlyCommander { $0.scriptState.instances.isEmpty })
+    var ownedDefaultScript = original.withReadOnlyCommander { $0.scriptState }
+    ownedDefaultScript.nextEvent = 99
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 0)
+    original.commander.scriptState.nextEvent = 0
 
     let defaults = original.withReadOnlyCommander { commander in
       (
@@ -216,10 +223,17 @@ struct GameCommanderStorageTests {
     let after = try #require(
       JSONSerialization.jsonObject(with: encoder.encode(original.commander)) as? [String: Any])
     #expect(after["savedFlightSimulation"] == nil)
+    #expect(after["savedScriptState"] == nil)
 
     let system = SystemIdentity(galaxy: 0, system: 7)
     original.commander.flightSimulation.enter(system, arriving: false)
+    original.commander.scriptState.nextEvent = 4
     let retained = original
+    var ownedScript = original.withReadOnlyCommander { $0.scriptState }
+    original.commander.scriptState.nextEvent = 7
+    #expect(retained.withReadOnlyCommander { $0.scriptState.nextEvent } == 4)
+    #expect(ownedScript.nextEvent == 4)
+    ownedScript.nextEvent = 88
     var ownedFlight = original.withReadOnlyCommander { $0.flightSimulation }
     original.commander.flightSimulation.advancePhysicalTime(3)
     original.commander.flightSimulation.pose.position.x += 25
@@ -231,6 +245,11 @@ struct GameCommanderStorageTests {
 
     ownedFlight.pose.position.x = -40
     var caller = retained
+    caller.commander.scriptState.nextEvent = 9
+    #expect(caller.withReadOnlyCommander { $0.scriptState.nextEvent } == 9)
+    #expect(original.withReadOnlyCommander { $0.scriptState.nextEvent } == 7)
+    #expect(retained.withReadOnlyCommander { $0.scriptState.nextEvent } == 4)
+    #expect(ownedScript.nextEvent == 88 && ownedDefaultScript.nextEvent == 99)
     caller.commander.flightSimulation.enter(.init(galaxy: 0, system: 8), arriving: true)
     #expect(caller.withReadOnlyCommander { $0.flightSimulation.visit } == 2)
     #expect(retained.withReadOnlyCommander { $0.flightSimulation.visit } == 1)
