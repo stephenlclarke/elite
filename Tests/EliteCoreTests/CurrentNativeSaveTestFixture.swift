@@ -13,6 +13,34 @@ enum CurrentNativeSaveTestFixture {
     try #require(object(world) as? NSDictionary)
   }
 
+  /// Failure-only facts distinguish the disk projection from strict world validation.
+  @inline(never)
+  private static func diskMismatchFacts(
+    _ stored: borrowing Commander, expected: borrowing Commander
+  ) throws -> String {
+    var actualFields = try #require(object(stored) as? [String: Any])
+    var expectedFields = try #require(object(expected) as? [String: Any])
+    var differingFields: [String] = []
+    for key in Set(actualFields.keys).union(expectedFields.keys).sorted() {
+      if let actual = actualFields[key], let expected = expectedFields[key] {
+        if !NSDictionary(dictionary: [key: actual]).isEqual(
+          NSDictionary(dictionary: [key: expected]))
+        {
+          differingFields.append(key)
+        }
+      } else {
+        differingFields.append(key)
+      }
+    }
+    actualFields.removeValue(forKey: "savedWantedCareers")
+    expectedFields.removeValue(forKey: "savedWantedCareers")
+    let otherFieldsMatch = NSDictionary(dictionary: actualFields).isEqual(
+      NSDictionary(dictionary: expectedFields))
+    let wantedMatches = stored.wantedCareers == expected.wantedCareers
+    return
+      "wantedCareersMatch=\(wantedMatches); otherCommanderFieldsMatch=\(otherFieldsMatch); differingSerializedFields=\(differingFields.joined(separator: ","))"
+  }
+
   /// Native station publication captures condition only; these fixtures have no destroyed source.
   private static func publicationExpectation(_ before: Game) throws -> Commander {
     var expected = before.commander
@@ -86,6 +114,9 @@ enum CurrentNativeSaveTestFixture {
         visit: original.commander.flightSimulation.visit,
         physicalTime: original.commander.flightSimulation.physicalTime,
         nextActor: original.commander.flightSimulation.nextActor, protection: context.protection)
+      var careers = expected.wantedCareers
+      careers.reconcile(expected.npcPersistence, system: original.systemIdentity)
+      if careers != expected.wantedCareers { expected.wantedCareers = careers }
     }
     var loadedWorld = world
     if !loadedWorld.screen.isFlight { loadedWorld.screen = .status }
@@ -153,6 +184,7 @@ enum CurrentNativeSaveTestFixture {
     if expectedDisk.npcPersistence.count > 0 {
       expectedDisk.npcPersistence.resetPhysicalBindings(system: original.systemIdentity)
     }
+    expectedDisk.resetWantedCareerBindings(system: original.systemIdentity)
     let (expectedLoaded, expectedLoadedWorld) = try loadExpectation(
       original: original, disk: expectedDisk, world: savedWorld)
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -177,7 +209,16 @@ enum CurrentNativeSaveTestFixture {
       try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
     }
     let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
-    try #require(stored == expectedDisk && world.valid && world.consistent(with: stored))
+    // Set encodings can reorder JSON arrays; installed modules must still match as typed values.
+    try #require(stored.equipment == expectedDisk.equipment)
+    try #require(stored.equipmentInventory == expectedDisk.equipmentInventory)
+    let diskMatches = stored == expectedDisk
+    if !diskMatches {
+      let detail = try diskMismatchFacts(stored, expected: expectedDisk)
+      try #require(diskMatches, Comment(rawValue: detail))
+    }
+    try #require(world.valid)
+    try #require(world.consistent(with: stored))
     #expect(try worldObject(world).isEqual(expectedWorld))
     let paths = Set(try FileManager.default.subpathsOfDirectory(atPath: directory.path))
     let files = try ScriptFinanceTestFixture.files(directory)
