@@ -602,3 +602,7 @@ Record26a65c89exactwriterphase/908buildPASS newd539955dbinary,909singlecoreUNKNO
 ## Record910 measured phase limits and semantic refusal-only approval
 
 Actual910closed6starts: preparecaller87120→37840B(-49280), publicationhelper49504/twoframes87344B/no netpublicationreductionclaim; currentfaultsemanticJSONencoder. RootexactScriptPersistence refusaldiagnostic+throw into noninlineNeverhelper, SAMEencoder/order/shortcircuit/both33554432byteguards/no schema-codec-storagechange. MC1matchingbuild/singlecore next/notqualified; existingwriter/sizecases aftercorePASS. G13MBAcompileprogressunchanged17paths/noPASSclaim, futureW03savemappinghunks preserved. ScopedMarkdownlint/whitespace/historyhashes only/G1nojob.
+
+## Record911/912 and explicit narrow ScriptInstance COW authority
+
+Actual0fbbc45a911buildPASS/new96d1binary/912singlecoreUNKNOWNsignal10/0issues/noIPS/all11ownedclosed, simplerphaseunqualified. RootsubsequentEXPLICITScriptMissionState/privateone-elementScriptInstanceCOW+onefocusedstorageunitfile exception supersedesearlierdeferralonly; samepublic4arginit/immutableID/allkeys-defaults-privateaccess/checkedSendable/equality/directunwrappedCodable/no schema-version-cache-actorchange. Ownerfreeze/build/singlecore/affectedcopy-Codable-writer-Alien-oversizeunits/ONEfullreviewafterPASS; no extradiagnostics. Prior28/42counts pre-COW/newselectionpendingfreeze. FlagpreservecanonicalW02/W03fields/futurehunkcomposition/no unqualifiedCoreimport intoG13. ScopedMarkdown/whitespace/historyhashes only/G1nojob.
