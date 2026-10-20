@@ -614,3 +614,7 @@ G13tested876review663 ownerSINGLE18methods36cases/matchingbuild/actualCLIproduct
 ## Integrate G13 qualified source and separate storage PASS from core failure
 
 Rootauthorised immediateG13integration after G2ONEfull17CLEAN/ownerSINGLE18/36PASS/Root12proof17sourceverification. Final3755qualification+CLEANnoteonly/all15nondoc-other16testedexact, canonical17basechecks then2f522768integration/authoritativereceipt, no duplicatebuild-tests-reviewACK/mainCPU/MC1import. Sourceonly/889appexcludesW03-G13/noSlack/release. M01new324COW913buildPASS/914singlecoreUNKNOWN; RootallowedONLYnewstorage9153/3PASS0issues/sameartifact/wholeclosed, separatebaseline3+new3/target31/45incomplete. Conditional916actualcorecapture permitted/no sourceedit/storage-onlyreview-integration; fullcoherentreview afterownerPASS. UXnextMBAhandoffonly/notassigned. ScopedMarkdown/whitespace/historyhashes only.
+
+## Record916 later-boundary evidence and exact receipt phase grant
+
+Actual916same324/913tracewholeclosed confirms initialfixture/saveRETURNED, laterstepNPCtransitpublicationfault in receiptvalidation120896Bobservedspan; testspan-41680B only/no testPASS/overallCOWqualification. RootexactNativeWormholeTransitState presence-gatedopening→departure→arrival noninlineguards thenunchangedphase switch, allguards-order-fuel-nativebodyreceipt checks preserved/no absentdeparturebodytempsduring spooling. MC1freeze-build-singlecore/no newdiagnostic-schema-refactor; baseline3+newstorage3 separate/31-45incomplete. ScopedMarkdownlint/whitespace/historyhashes only/G1nojob.
