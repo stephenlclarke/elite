@@ -15,3 +15,7 @@ Only three existing methods change: nativeStationRegistryRejectsDuplicateForeign
 Strict Swift formatting, scoped Markdown lint, whitespace and source-conservation checks are author prerequisites. No build, test, native probe or diagnostic campaign ran. Matching owner compilation and focused three-case qualification plus one independent coherent review remain pending; this packet is not integration ready. Station-service qualification and the local G02 preview remain ahead in G1's queue. Formal CI, coverage, sanitizer, leak and release gates remain separate. No remote issue or PR exists.
 
 Companion: [PR-native-station-budget-fixtures.md](PR-native-station-budget-fixtures.md).
+
+## Compiler-only follow-up - 20 October 2026
+
+Actual combined build977 failed before any tests ran: Swift Testing rewrote the key-path `allSatisfy` requirement into a throwing call without `try`. The same `.valid` predicate is now evaluated once into a typed Boolean with an explicit nonthrowing closure, then required unchanged. All budget, positive-control, malformed-element and exact refusal oracles remain. Original977 failure is preserved at `/tmp/elite-station-hull-budget-compile-977`; corrected matching build and the same19-method/34-case cohort remain pending, with no earlier PASS retention. The original component reviews remain; only this compiler delta needs a focused review.

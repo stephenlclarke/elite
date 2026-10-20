@@ -35,7 +35,8 @@ private struct StationStateFixture {
         system: .init(galaxy: (index / 2) / 256, system: (index / 2) % 256),
         definition: index.isMultiple(of: 2) ? "rescue_station" : "rrs_headquarters")
     }
-    try #require(records.allSatisfy(\.valid))
+    let allRecordsValid: Bool = records.allSatisfy { $0.valid }
+    try #require(allRecordsValid)
     try #require(Set(records.map(\.identity.slot)).count == count)
     return records
   }
