@@ -157,7 +157,7 @@ public struct WayfarerRepairLoopStageQuote: Sendable {
   public let returning: Bool
   public let inventoryRevision: UInt64
   public let instanceRevision: UInt64
-  public let dock: NativeMainStationDockReceipt
+  let dock: NativeMainStationDockReceipt
   public let epoch: UUID
 }
 
