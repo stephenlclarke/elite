@@ -5,6 +5,9 @@ import Testing
 
 private func workToolGame() throws -> Game {
   var game = Game(executive: false)
+  // Four naval mounts and both work tools require an explicitly supported work hull.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   game.commander.equipment = Equipment.maximumHardware
   game.commander.laserMounts = .init(front: .naval, left: .naval, right: .naval, rear: .naval)
   game.commander.xyzzyActive = true
@@ -12,6 +15,9 @@ private func workToolGame() throws -> Game {
     owner: UUID(), hull: UUID(), legacy: false,
     xyzzyGrant: true
   ) { UUID() }
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.launch()
   game.speed = 0
   game.bodies = []
