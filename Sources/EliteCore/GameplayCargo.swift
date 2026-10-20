@@ -16,6 +16,12 @@ extension Game {
         && bodies[$0].physical?.npc != nil && bodies[$0].physical?.npc?.role != .mission
     }
     guard !eligible.isEmpty else { return [] }
+    return registerEligibleDestroyedCargo(eligible)
+  }
+
+  // Reserve settlement/context value storage only when the original eligibility pass found work.
+  @inline(never)
+  private mutating func registerEligibleDestroyedCargo(_ eligible: [Int]) -> Set<Int> {
     for index in eligible where bodies[index].physical?.deathIncidentID == nil {
       let incident = commander.flightSimulation.allocateIncident()
       bodies[index].physical?.deathIncidentID = incident
