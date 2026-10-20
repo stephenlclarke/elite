@@ -348,3 +348,7 @@ Record exact2d0a four-path freeze/three methods-seven cases and actual829 zero-t
 ## Integrate fully qualified bounded G03 and queue coherent delivery
 
 Verify final6e five native passes plus retained8methods9cases as thirteen unique methods/fourteen cases aggregate, original hashes/closure/clean review provenance. Integrate only nine paths f6c91a04, seven non-doc paths exact958f, truthful note-status sync, existing cap/docking guards unchanged; no rebuild/retest/full audit/failed actor/old ledger import. Queue one mainSwift6.4 existing positive flow gate, then one optimized product reused for limited signing/minimal startup only after currentG2 and queuedMC1 priority; no performance/unaffected-flight rerun or app/Slack claim now. Assign existing stable-offer prerequisite SOURCE proposal to G3, exact boundary/save authority confirmation before implementation, preserve legacy hourly policy/proofs/stable executor.
+
+## Integrate independently reviewed protected-threat evasion
+
+Record aggregate3methods7cases/rootCLEAN487 proof and bc515 integration: exact product/test/issue hashes, only approved PR review-status metadata update, preserved two original method passes plus five affected cases and test inverse/source equivalence. No new audit/build/retest, actual hostile-flight/survival/app/release claim. MC1832/833 has next finite priority; coherent G1 positive native gate follows actual closure with only qualified canonical source.
