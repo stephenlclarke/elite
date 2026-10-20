@@ -214,10 +214,19 @@ extension GameRuntime {
   }
 }
 
-private func freshNativeResetScriptState() -> ScriptEngineState {
-  var state = ScriptEngineState()
-  state.calendarLedger = .init(origin: .newCommander)
-  return state
+/// A fresh main berth retains its own source resource while every old mission fact stays absent.
+private func freshNativeResetScriptState(owner: UUID)
+  -> (ScriptEngineState, NativeMainStationIdentity)
+{
+  let system = SystemIdentity(galaxy: 0, system: 7)
+  let resourceID = Game.worldResourceIdentity("main-station-v1:main-orbital:0:7")
+  let station = NativeMainStationIdentity(world: owner, system: system, resource: resourceID)
+  var resource = ScriptStationResource(identity: resourceID, galaxy: 0, system: 7)
+  resource.energy = Hull.station.navalEnergy ?? 100
+  var expected = ScriptEngineState()
+  expected.calendarLedger = .init(origin: .newCommander)
+  expected.stationResources[station.key] = resource
+  return (expected, station)
 }
 
 @Test func gameOverReturnReplacesBoundDurableSaveWithClearedNativeCommander() async throws {
@@ -230,11 +239,15 @@ private func freshNativeResetScriptState() -> ScriptEngineState {
   let beforeReset = await runtime.snapshot()
   await runtime.key("return")
   let reset = await runtime.snapshot()
-  let expected = freshNativeResetScriptState()
+  let freshOwner = try #require(reset.commander.equipmentOwnerID)
+  let (expected, expectedMain) = freshNativeResetScriptState(owner: freshOwner)
+  #expect(reset.commander.nativeStations?.mainStations == [expectedMain])
   #expect(reset.screen == .status && reset.docked && reset.requiresScriptDurability)
   #expect(reset.commander.scriptState == expected)
   #expect(reset.commander.scriptState.calendarLedger == expected.calendarLedger)
-  #expect(reset.commander.name == "JAMESON" && reset.commander.credits == 1000)
+  #expect(reset.commander.name == "Rowan Calder" && reset.commander.credits == 7200)
+  #expect(reset.commander.shipID == "SH025" && reset.commander.fuel == 130)
+  #expect(reset.commander.galaxy == 0 && reset.commander.system == 7)
   #expect(reset.commander.cargo.allSatisfy { $0 == 0 })
   #expect(reset.commander.equipmentOwnerID != beforeReset.commander.equipmentOwnerID)
   #expect(reset.commander.valid)
@@ -295,13 +308,17 @@ private func freshNativeResetScriptState() -> ScriptEngineState {
   #expect(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
   #expect(pointer.scope == "commander" && pointer.generation != priorPointer.generation)
   let (retried, _) = try ScriptSaveStore.read(retriedBytes, from: fixture.url)
-  let expected = freshNativeResetScriptState()
+  let freshOwner = try #require(reset.commander.equipmentOwnerID)
+  let (expected, expectedMain) = freshNativeResetScriptState(owner: freshOwner)
+  #expect(reset.commander.nativeStations?.mainStations == [expectedMain])
   #expect(reset.screen == .status && reset.docked && reset.requiresScriptDurability)
   #expect(retried == reset.commander && retried.valid && retried.scriptState == expected)
   #expect(
     retried.scriptState.instances.isEmpty
       && retried.scriptState.calendarLedger == expected.calendarLedger)
-  #expect(retried.name == "JAMESON" && retried.credits == 1000)
+  #expect(retried.name == "Rowan Calder" && retried.credits == 7200)
+  #expect(retried.shipID == "SH025" && retried.fuel == 130)
+  #expect(retried.galaxy == 0 && retried.system == 7)
   #expect(retried.cargo.allSatisfy { $0 == 0 })
   #expect(retried.equipmentOwnerID != before.commander.equipmentOwnerID)
   let restored = GameRuntime()

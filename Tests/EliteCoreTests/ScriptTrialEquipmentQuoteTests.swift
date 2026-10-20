@@ -138,22 +138,27 @@ func publishedTrialQuotesBindCanonicalEquipmentAcrossSaveLoadRestartAndReturn(
         (0..<3).map {
           ComponentFittingSlot.missilePylon($0)
         }))
-  #expect(published.commander.fuel == 70 && !published.commander.unlimitedMissiles)
+  let expectedShip = scenario.scene ? "SH023" : "SH025"
+  let expectedFuel = scenario.scene ? 70 : 130
+  let expectedCash = scenario.scene ? 100000 : 7200
+  let expectedAllowed = scenario.scene || scenario.pledge
+  #expect(published.commander.shipID == expectedShip && published.commander.credits == expectedCash)
+  #expect(published.commander.fuel == expectedFuel && !published.commander.unlimitedMissiles)
   let expectedIssues: [String]
   if scenario.scene {
     expectedIssues = []
   } else if scenario.pledge {
-    // Jameson's ordinary cash cannot fund the first full donation.
-    expectedIssues = ["The full pledge requires 500.0 CR; real cash is insufficient."]
+    // The approved fresh commander's 720.0 CR can fund the first full 500.0 CR donation.
+    expectedIssues = []
     let pledge = try #require(quote.pledge)
-    #expect(pledge.before.cash == 1000 && pledge.amount == 5000)
+    #expect(pledge.before.cash == 7200 && pledge.amount == 5000)
   } else {
     // Removing the scene changes the digest and this pinned courier's frozen itinerary.
     expectedIssues = ["Frozen itinerary has no deadline headroom. This listing cannot be accepted."]
     let courier = try #require(quote.courier)
     #expect(courier.terms.calendarLowerBoundSeconds >= courier.terms.duration)
   }
-  #expect(quote.allowed == scenario.scene)
+  #expect(quote.allowed == expectedAllowed)
   #expect(
     quote.issues == expectedIssues,
     Comment(rawValue: "Published trial quote issues: " + quote.issues.joined(separator: "; ")))
