@@ -241,21 +241,37 @@ func legacyUnadoptedTargetsUseStatusFallbackWithoutInventingWorkAuthority(tier: 
       $0.text == "Origin: Unknown"
     })
 }
-@Test func autoDockBrakesFromHighSpeedAndHandlesOffAxisAndAwayFacingStarts() {
+@Test func autoDockBrakesFromHighSpeedAndHandlesOffAxisAndAwayFacingStarts() throws {
   for (position, angle, speed) in [
     (Vector3(600, 400, 2400), 0.7, 32.0), (Vector3(0, 0, 2400), Double.pi, 24.0),
   ] {
     var game = computerGame(.docking)
-    var station = SpaceBody(id: 0, hull: .station, position: position)
-    station.orientation.rotate(pitch: angle * 0.3, roll: 0, yaw: angle)
-    game.bodies = [station]
+    let anchor = try #require(
+      game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+    var orientation = Basis3()
+    orientation.rotate(pitch: angle * 0.3, roll: 0, yaw: angle)
+    // The existing native approach fixture uses this inverse observer transform.
+    let camera = anchor.orientation.composed(with: orientation.transposed)
+    NativeStationTestFixture.reframe(
+      &game, to: .init(position: anchor.position - camera.apply(position), orientation: camera))
+    let station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+    try #require(station.physical?.identity == anchor.identity)
+    #expect((station.position - position).length < 1e-8)
+    for axis in [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)] {
+      #expect((station.orientation.apply(axis) - orientation.apply(axis)).length < 1e-8)
+    }
     game.speed = speed
-    game.key("tab")
+    for _ in 0..<(game.bodies.count * 2) {
+      game.key("tab")
+      if game.autoPilot.targetActor == anchor.identity { break }
+    }
+    try #require(game.autoPilot.targetID == 0 && game.autoPilot.targetActor == anchor.identity)
     var collision = false
     for _ in 0..<9000 where !game.docked {
       game.tick(delta: 0.02)
       collision = collision || game.message == "DOCKING COLLISION"
     }
     #expect(game.docked && !collision)
+    #expect(game.nativeMainStationDockEvidenceIsCurrent)
   }
 }
