@@ -291,7 +291,9 @@ extension Game {
       let boarding = source.boarding,
       let transfer = custody.transfers.first(where: { $0.operation == operation })
     else { return }
-    let members = transfer.members.filter { $0.station != nil }
+    let members = transfer.members.filter {
+      $0.station?.batch == NativeStationPassengerJourney.batch
+    }
     if members.isEmpty { return }
     guard source.terminalOperation == nil, members == source.references,
       var mission = commander.scriptState.instances[boarding.mission], mission.outcome == .active,

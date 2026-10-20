@@ -25,9 +25,11 @@ struct TargetPanelLayout {
       wanted = notice + " / "
     }
     statuses = ShowroomText.wrap(
-      wanted + (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail"), width: columns
+      wanted + (info.status ?? "Unknown") + "  I: " + (expanded ? "Hide" : "Detail")
+        + (game.orbitalOutlookScanStatus.map { " / " + $0 } ?? ""), width: columns
     )
     fields = info.fields.flatMap { ShowroomText.wrap($0.text, width: columns) }
+
     fieldY = y + row * Double(headings.count + statuses.count) + previewHeight + 8
     bottom = min(fieldY + row * Double(fields.count) + 8, cockpit.flightClip.maxY)
     let capacity = max(1, Int((bottom - fieldY - 4) / row))
@@ -63,9 +65,12 @@ extension Display {
       if let body = game.informationTargetBody, let notice = game.wantedNotice(for: body) {
         status = notice + (status.map { " / " + $0 } ?? "")
       }
+      if let outlook = game.orbitalOutlookScanStatus {
+        status = (status.map { $0 + " / " } ?? "") + outlook
+      }
       if let status {
         for (index, line) in ShowroomText.wrap(status, width: Int((width - 8) / (6 * font))).prefix(
-          3
+          game.orbitalOutlookScanStatus == nil ? 3 : 8
         ).enumerated() {
           frame.label(line, x, y + panel.row * Double(index + 1), scale: font, ink: cueInk)
         }

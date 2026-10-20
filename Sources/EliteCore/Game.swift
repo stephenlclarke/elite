@@ -618,7 +618,10 @@ public struct Game: Sendable {
   // Runtime-only destination ownership and acknowledgment; never encoded in Commander saves.
   var pendingNewSaveDestination: URL?
   var newCommanderSaveReceipt: CommanderFileReceipt?
-  var nativeStationRuntimeEpoch = UUID()
+  var nativeStationRuntimeEpoch = UUID() {
+    didSet { nativeOrbitalOutlookRuntime = .init() }
+  }
+  var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
   var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
   // Enabled only by G1 after supported native save/world/durability validation. Never saved.
@@ -2390,6 +2393,7 @@ public actor GameRuntime {
     game.nativeCrimboAttainedMotion = nil
     game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return snapshot() }
+    let outlookStart = game.orbitalOutlookSample()
     game.tick(
       delta: delta, controls: controls,
       nativeSalvagePublish: scriptPublisher(requireNativeSalvage: true))
@@ -2397,6 +2401,7 @@ public actor GameRuntime {
     let stationEntryAttempted = game.pendingNativeStationDock != nil
     commitPendingNativeStationEntry()
     if game.docked { game.stationAutoDefence = nil }
+    commitOrbitalOutlookScan(start: outlookStart)
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
     return snapshot()
   }

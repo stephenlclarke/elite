@@ -20,6 +20,20 @@ extension Game {
         "calendar_seconds": .number(receipt.calendarSeconds),
       ])
     }
+    if let source = commander.nativePeople?.outlookJourney {
+      fields["orbital_outlook"] = .object([
+        "people": .integer(Int64(source.references.count)),
+        "aboard": .integer(
+          Int64(
+            commander.nativePeople?.held.filter { source.references.contains($0.person) }.count ?? 0
+          )),
+        "mission": source.boarding.map { .string($0.mission.uuidString) } ?? .null,
+        "completed_views": .integer(Int64(source.readings.count)),
+        "next_view": source.readings.count < 3
+          ? .string(NativeOrbitalOutlookJourney.views[source.readings.count]) : .null,
+        "status": orbitalOutlookScanStatus.map(ScriptValue.string) ?? .null,
+      ])
+    }
     return .object(fields)
   }
   private var scriptCommanderLocationQuery: ScriptValue {

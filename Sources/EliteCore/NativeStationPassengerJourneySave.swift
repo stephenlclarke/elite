@@ -62,7 +62,7 @@ extension NativeStationPassengerJourney {
     }
     guard let state = optional else {
       guard missions.isEmpty, boards.isEmpty else { return false }
-      return custody.admissions.allSatisfy { $0.person.station == nil }
+      return custody.admissions.allSatisfy { $0.person.station?.batch != batch }
     }
     guard state.owner == custody.owner, state.owner == commander.equipmentOwnerID,
       state.definition.valid, state.version == "1.0.0", state.digest == digest,
@@ -144,7 +144,7 @@ extension NativeStationPassengerJourney {
     }
     guard let boarding = state.boarding else {
       guard state.terminalOperation == nil, missions.isEmpty, boards.isEmpty,
-        !custody.admissions.contains(where: { $0.person.station != nil })
+        !custody.admissions.contains(where: { $0.person.station?.batch == batch })
       else { return false }
       return true
     }
@@ -165,7 +165,8 @@ extension NativeStationPassengerJourney {
       board.version == state.version, board.digest == digest, board.station == source,
       board.revision == 0, board.seed == 0, board.clock == .local, board.period == 3600,
       board.group == stateID, board.offers.count == 1,
-      custody.admissions.filter({ $0.person.station != nil }).map(\.person) == state.references
+      custody.admissions.filter({ $0.person.station?.batch == batch }).map(\.person)
+        == state.references
     else { return false }
     var acceptedOffer = job.offer
     acceptedOffer.status = .accepted(boarding.mission)
@@ -185,7 +186,7 @@ extension NativeStationPassengerJourney {
     }
     if let operation = state.terminalOperation {
       guard let transfer = custody.transfers.first(where: { $0.operation == operation }),
-        transfer.members.filter({ $0.station != nil }) == state.references,
+        transfer.members.filter({ $0.station?.batch == batch }) == state.references,
         state.references.allSatisfy({ custody.transfer(for: $0)?.operation == operation }),
         let receipt = mission.completionReceipt,
         receipt.valid(for: mission, engine: commander.scriptState),
@@ -264,13 +265,21 @@ enum NativeStationPassengerJourneySave {
       }
     }
     for berth in commander.accommodation.ownedBerths {
-      if case .nativePerson = berth.use { return true }
+      if case .nativePerson(let person) = berth.use,
+        person.station?.batch == NativeStationPassengerJourney.batch
+      {
+        return true
+      }
     }
     for person in commander.nativePeople?.admissions ?? [] {
-      if person.person.station != nil || person.origin == .stationPassenger { return true }
+      if person.person.station?.batch == NativeStationPassengerJourney.batch { return true }
     }
     for receipt in commander.nativePeople?.transfers ?? [] {
-      if receipt.members.contains(where: { $0.station != nil }) { return true }
+      if receipt.members.contains(where: {
+        $0.station?.batch == NativeStationPassengerJourney.batch
+      }) {
+        return true
+      }
     }
     for board in commander.contracts.boards.values {
       if (board.provider == "l337.contract" && board.id == "cabin-journey")
@@ -376,12 +385,11 @@ extension NativeStationPassengerJourneySave {
     }
     func reference(_ raw: Any?) throws {
       guard let object = raw as? [String: Any], object.keys.contains("station") else { return }
-      guard allowed, hasLeaf, Set(object.keys) == ["station"] else {
-        throw SaveError.invalidCommander
-      }
       let bytes = try JSONSerialization.data(withJSONObject: object)
       let person = try JSONDecoder().decode(NativePersonReference.self, from: bytes)
-      guard person.station?.valid == true,
+      guard person.station?.valid == true else { throw SaveError.invalidCommander }
+      guard person.station?.batch == NativeStationPassengerJourney.batch else { return }
+      guard allowed, hasLeaf, Set(object.keys) == ["station"],
         (object as NSDictionary).isEqual(
           try JSONSerialization.jsonObject(with: JSONEncoder().encode(person)))
       else { throw SaveError.invalidCommander }
@@ -392,9 +400,6 @@ extension NativeStationPassengerJourneySave {
       }
       for admission in admissions {
         guard admission["stationJourney"] == nil else { throw SaveError.invalidCommander }
-        if admission["origin"] as? String == "stationPassenger" {
-          guard allowed, hasLeaf else { throw SaveError.invalidCommander }
-        }
         try reference(admission["person"])
       }
     }
@@ -412,12 +417,13 @@ extension NativeStationPassengerJourneySave {
     for berth in accommodation["ownedBerths"] as? [[String: Any]] ?? [] {
       guard berth["stationJourney"] == nil else { throw SaveError.invalidCommander }
       if let use = berth["use"] as? [String: Any], use.keys.contains("nativePerson") {
-        guard allowed, hasLeaf, Set(use.keys) == ["nativePerson"] else {
-          throw SaveError.invalidCommander
-        }
         let decoded = try JSONDecoder().decode(
           PassengerPlaceUse.self, from: JSONSerialization.data(withJSONObject: use))
-        guard case .nativePerson(let person) = decoded, person.station?.valid == true,
+        guard case .nativePerson(let person) = decoded, person.station?.valid == true else {
+          throw SaveError.invalidCommander
+        }
+        guard person.station?.batch == NativeStationPassengerJourney.batch else { continue }
+        guard allowed, hasLeaf, Set(use.keys) == ["nativePerson"],
           (use as NSDictionary).isEqual(
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(decoded)))
         else { throw SaveError.invalidCommander }
