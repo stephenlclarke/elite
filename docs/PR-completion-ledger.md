@@ -506,3 +506,7 @@ Replace stale top assignment/milestone/app/M01-owner paragraphs with actual878/8
 ## Correct879 attribution and record one debugger-first sequence
 
 Correct four TOTAL issues into two in the terminal failed method plus two in a destruction method that remains UNKNOWN; preserve all counts/failures. Record EXACT Root-approved one diagnostic-only existing877binary/source0ba LLDB capture before source mutation,600/640/default guards/owned closure/no fallback, never a qualification pass. Only after closure: two authorised existing native-oracle test corrections/freeze/matchingbuild/ONLY2methods2cases, no blind full repeat/new implementation. Authorityv11 preservesv10; G1 no runtime/diagnostic/audit. Scoped documentation lint/diff and prior hashes retained.
+
+## Record meaningful883 native wreck oracle result
+
+Refresh concise current status to882 matching build/883 actual two native wreck methods/cases PASS2/2,0issues including current versioned native tombstone round-trip. Retained7methods7cases and remaining17/23 UNKNOWN stay separate, no whole-chain24/30 qualification/integration. Preserve earlier top/status/history. Root880 setup failure launched no helper/trace and had no fallback; Root's separately authorised ONE corrected884 capture on aab2/882remaining17/23 is active diagnostic-only/default600640/no fallback, not a new assignment or PASS. No G1 runtime/audit/newtask; scope exactlyM01+W02, normal docs lint/diff/historicalhashes only.
