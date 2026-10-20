@@ -2721,8 +2721,11 @@ func stationAutoCoverSourceCannotBorrowAnotherAttackersActiveHazard(condition: S
     #expect(
       frame.commander.cargo == baseline.value.cargo && frame.commander.fuel == baseline.value.fuel)
     #expect(frame.commander.legal == 0 && !frame.commander.unlimitedMissiles)
-    #expect(frame.weaponsTargetID == weaponLock && frame.selectedFlightTool == tool)
-    if !frame.docked {
+    #expect(frame.selectedFlightTool == tool)
+    if frame.docked {
+      #expect(frame.weaponsTargetID == nil)
+    } else {
+      #expect(frame.weaponsTargetID == weaponLock)
       #expect(frame.stationAutoDockingActive && frame.autoPilot.targetActor == stationActor)
     }
     if frame.autoPilot.stationDefencePhase == .defending {
