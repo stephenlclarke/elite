@@ -352,8 +352,12 @@ extension Game {
     id: UUID, definition: String, version: String, digest: String, revision: UInt64,
     outcome: ScriptOutcome
   )? {
-    guard let owner = retainedMissionActorInstances[id] else { return nil }
-    return (owner.id, owner.definition, owner.version, owner.digest, owner.revision, owner.outcome)
+    withReadOnlyCommander { commander in
+      guard let owner = commander.scriptState.instances[id] else { return nil }
+      return (
+        owner.id, owner.definition, owner.version, owner.digest, owner.revision, owner.outcome
+      )
+    }
   }
 
   @inline(never)
@@ -429,7 +433,7 @@ extension Game {
       for key in instance.ownedEncounters.keys.sorted() {
         guard let encounter = instance.ownedEncounters[key], encounter.admitted,
           encounter.actors.values.contains(where: {
-            $0.location(in: encounter) == systemIdentity
+            $0.location(in: encounter) == missionActorAdmissionSystemIdentity
               && ![.inTransit, .arrivalPending].contains($0.presence)
           })
         else { continue }
@@ -451,12 +455,13 @@ extension Game {
     throws
     -> MissionActorAdmissionSource
   {
-    guard let leg = commander.scriptState.wormholeTransit?.legs[legID], leg.valid,
+    guard let leg = withReadOnlyCommander({ $0.scriptState.wormholeTransit?.legs[legID] }),
+      leg.valid,
       [.inTransit, .arrivalPending].contains(leg.phase), let departure = leg.departure,
-      let due = leg.dueAt, commander.scriptState.calendarSeconds >= due,
-      context.route == leg.route, context.matches(self, at: systemIdentity),
-      systemIdentity == context.route.destination.location, !docked,
-      let owner = commander.scriptState.instances[leg.instance],
+      let due = leg.dueAt, withReadOnlyCommander({ $0.scriptState.calendarSeconds }) >= due,
+      context.route == leg.route, context.matches(self, at: missionActorAdmissionSystemIdentity),
+      missionActorAdmissionSystemIdentity == context.route.destination.location, !docked,
+      let owner = withReadOnlyCommander({ $0.scriptState.instances[leg.instance] }),
       let pack = scriptPack(for: owner),
       let encounter = owner.ownedEncounters[leg.encounter],
       var actor = encounter.actors[leg.alias], actor.identity == leg.actor,
@@ -472,7 +477,7 @@ extension Game {
     guard let spec = definition.actors.first(where: { $0.id == leg.alias }) else {
       throw MissionPackError("The transit actor is no longer declared.")
     }
-    let pose = commander.flightSimulation.pose
+    let pose = withReadOnlyCommander { $0.flightSimulation.pose }
     actor.body.position = anchor.orientation.inverse(
       pose.shipPoint(context.route.exit.position) - anchor.position)
     actor.body.orientation = context.route.exit.orientation.relative(to: pose.orientation).relative(
@@ -484,7 +489,8 @@ extension Game {
     }
     let template = try Self.missionActorAdmissionTemplate(
       actor, specification: spec, npcDefinitions: pack.manifest.npcs ?? [],
-      installedModels: pack.models, geometry: commander.scriptState.geometry, legacy: nil)
+      installedModels: pack.models, geometry: withReadOnlyCommander { $0.scriptState.geometry },
+      legacy: nil)
     return .init(
       mode: .retained, authority: .transit(legID), instance: owner, pack: pack,
       encounter: encounter, definition: definition, actors: [template],
@@ -615,7 +621,7 @@ extension Game {
       let actor = try Self.validatedMissionActorAdmissionActor(
         spec, encounter: encounter, instanceID: state.id, packDigest: pack.digest, legacy: legacy)
       if mode == .retained {
-        if actor.location(in: encounter) != original.systemIdentity
+        if actor.location(in: encounter) != original.missionActorAdmissionSystemIdentity
           || [.inTransit, .arrivalPending].contains(actor.presence)
         {
           continue
@@ -1019,20 +1025,22 @@ public struct ScriptReferenceFrame: Codable, Sendable, Equatable {
 
 extension Game {
   var scriptAnchor: SpaceBody? {
-    Self.resolveScriptAnchor(bodies: bodies, frame: scriptReferenceFrame, commander: commander)
+    let system = missionActorAdmissionSystemIdentity
+    return Self.resolveScriptAnchor(
+      bodies: bodies, frame: scriptReferenceFrame, galaxy: system.galaxy, system: system.system)
   }
 
   // Borrow only the inputs used by anchor selection; do not materialize a Game or Commander.
   @inline(never)
   private static func resolveScriptAnchor(
     bodies: borrowing [SpaceBody], frame: borrowing ScriptReferenceFrame?,
-    commander: borrowing Commander
+    galaxy: Int, system: Int
   ) -> SpaceBody? {
-    if let index = bodies.firstIndex(where: { $0.id == 0 && $0.hull == .station }) {
+    for index in bodies.indices where bodies[index].id == 0 && bodies[index].hull == .station {
       return bodies[index].energy > 0 ? bodies[index] : nil
     }
-    guard let frame = copy frame, frame.galaxy == commander.galaxy,
-      frame.system == commander.system, frame.station.energy > 0
+    guard let frame = copy frame, frame.galaxy == galaxy,
+      frame.system == system, frame.station.energy > 0
     else { return nil }
     return frame.station
   }
@@ -1114,7 +1122,7 @@ extension Game {
     try Self.validateScriptEncounterAdmissionAuthority(
       self, id: id, pack: pack, state: state, definition: definition,
       worldJobID: worldJobID, worldJobPulse: worldJobPulse)
-    let previousGeometry = commander.scriptState.geometry
+    let previousGeometry = withReadOnlyCommander { $0.scriptState.geometry }
     return .init(definition: consume definition, previousGeometry: previousGeometry)
   }
 
@@ -1256,9 +1264,10 @@ extension Game {
   mutating func persistScriptActors(unloading: Bool = false) {
     guard !commander.scriptState.instances.isEmpty else { return }
     refreshScriptPersistenceStation()
+    let system = missionActorAdmissionSystemIdentity
     guard
       let anchor = Self.resolveScriptAnchor(
-        bodies: bodies, frame: scriptReferenceFrame, commander: commander)
+        bodies: bodies, frame: scriptReferenceFrame, galaxy: system.galaxy, system: system.system)
     else { return }
     persistScriptShots(anchor: anchor, unloading: unloading)
     captureScriptActors(anchor: anchor, unloading: unloading)
@@ -1353,7 +1362,7 @@ extension Game {
       case .pending, .unchanged: continue
       case .ready(let plan):
         let instanceID = source.instanceID
-        guard let current = commander.scriptState.instances[instanceID] else {
+        guard let current = withReadOnlyCommander({ $0.scriptState.instances[instanceID] }) else {
           throw MissionPackError("Retained actor owner disappeared before native preparation.")
         }
         let staged = try plan.retentionPatch.preparingInstance(current)

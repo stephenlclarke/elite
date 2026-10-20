@@ -104,7 +104,7 @@ extension Game {
   /// Read at the existing visit guard, then release the computed Commander receiver.
   @inline(never)
   private func currentMissionActorAdmissionVisit() -> UInt64 {
-    commander.flightSimulation.visit
+    withReadOnlyCommander { $0.flightSimulation.visit }
   }
 
   /// Invalid source/scene facts are refused before eligibility, temporary capacity or no-op.
@@ -118,11 +118,13 @@ extension Game {
     for index in source.actors.indices {
       try validateMissionActorAdmissionTemplate(source.actors[index], source: source)
     }
-    guard !docked, source.system == systemIdentity, let context = currentContext,
+    guard !docked, source.system == missionActorAdmissionSystemIdentity,
+      let context = currentContext,
       let anchor = scriptAnchor
     else { return .pending(.unavailableArrival) }
     guard anchor.position.finite, anchor.position.length.isFinite, anchor.orientation.validRotation,
-      context.system == systemIdentity, context.visit == currentMissionActorAdmissionVisit()
+      context.system == missionActorAdmissionSystemIdentity,
+      context.visit == currentMissionActorAdmissionVisit()
     else { throw NativeMissionActorAdmissionError.invalidScene }
     switch try selectMissionActorAdmissionCohort(source, context: context, anchor: anchor) {
     case .outsideLocalBubble: return .pending(.outsideLocalBubble)
@@ -193,7 +195,7 @@ extension Game {
       bodies.reduce(0) { $0 + $1.scriptNativeUnits }
       + selected.reduce(0) { $0 + $1.nativeUnits }
     guard units <= 1024 else { return .pending(.nativeUnits) }
-    let flight = commander.flightSimulation
+    let flight = withReadOnlyCommander { $0.flightSimulation }
     guard prepared.count <= 999_999_999 - nextBodyID,
       UInt64(prepared.count) < UInt64.max - flight.nextActor,
       flight.nextSpawn < UInt64.max - 1
@@ -295,7 +297,8 @@ extension Game {
     let context = gameplayContext()
     try validateMissionActorAdmissionScene(context: context)
     guard !docked, context == plan.context, scriptAnchor == plan.anchor,
-      commander.flightSimulation == plan.previousFlight, nextBodyID == plan.previousBodyID,
+      withReadOnlyCommander({ $0.flightSimulation == plan.previousFlight }),
+      nextBodyID == plan.previousBodyID,
       bodies == plan.previousBodies
     else { throw NativeMissionActorAdmissionError.stalePlan }
     let receipt = NativeMissionActorAdmissionReceipt(plan)
@@ -306,8 +309,8 @@ extension Game {
   }
 
   private func validateMissionActorAdmissionScene(context: EncounterContext?) throws {
-    let flight = commander.flightSimulation
-    let actualSystem = systemIdentity
+    let flight = withReadOnlyCommander { $0.flightSimulation }
+    let actualSystem = missionActorAdmissionSystemIdentity
     let bodyCursor = nextBodyID
     let identities = bodies.compactMap { $0.physical?.identity }
     let spawns = bodies.compactMap { $0.physical?.spawnIdentity }

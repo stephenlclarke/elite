@@ -476,72 +476,43 @@ public struct Game: Sendable {
       try read(storage.baseAddress!.pointee)
     }
   }
-  /// Snapshot installed instances without materializing the complete Commander value.
-  var retainedMissionActorInstances: [UUID: ScriptInstance] {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.retainedMissionActorInstances(from: storage.baseAddress!.pointee)
-    }
+  var missionActorAdmissionSystemIdentity: SystemIdentity {
+    withReadOnlyCommander { .init(galaxy: $0.galaxy, system: $0.system) }
   }
 
-  private static func retainedMissionActorInstances(
-    from commander: borrowing Commander
-  ) -> [UUID: ScriptInstance] {
-    commander.scriptState.instances
+  /// Snapshot installed instances through the same synchronous Commander borrow as native policy.
+  var retainedMissionActorInstances: [UUID: ScriptInstance] {
+    withReadOnlyCommander { $0.scriptState.instances }
   }
+
   func retainedMissionActorAdmissionSourceValues() -> (
     instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
   ) {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.retainedMissionActorAdmissionSourceValues(from: storage.baseAddress!.pointee)
+    withReadOnlyCommander { commander in
+      (
+        commander.scriptState.instances, commander.scriptState.geometry,
+        commander.galaxy, commander.system
+      )
     }
-  }
-
-  private static func retainedMissionActorAdmissionSourceValues(
-    from commander: borrowing Commander
-  ) -> (
-    instances: [UUID: ScriptInstance], geometry: [String: ShipDesign], galaxy: Int, system: Int
-  ) {
-    let state = commander.scriptState
-    return (state.instances, state.geometry, commander.galaxy, commander.system)
   }
 
   func retainedMissionActorAdmissionWorldJob(_ id: UUID) -> ScriptWorldJob? {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.retainedMissionActorAdmissionWorldJob(id, from: storage.baseAddress!.pointee)
-    }
+    withReadOnlyCommander { $0.scriptState.worldJobs[id] }
   }
 
-  private static func retainedMissionActorAdmissionWorldJob(
-    _ id: UUID, from commander: borrowing Commander
-  ) -> ScriptWorldJob? {
-    commander.scriptState.worldJobs[id]
-  }
   var contractStation: ContractStationIdentity {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.contractStation(from: storage.baseAddress!.pointee)
+    withReadOnlyCommander { commander in
+      .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
     }
   }
 
-  private static func contractStation(
-    from commander: borrowing Commander
-  ) -> ContractStationIdentity {
-    .init(galaxy: commander.galaxy, system: commander.system, stationClass: "main-orbital")
-  }
   var retainedMissionProjectiles: [UUID: ScriptProjectileRecord] {
-    commanderStorage.withUnsafeBufferPointer { storage in
-      Self.retainedMissionProjectiles(from: storage.baseAddress!.pointee)
-    }
-  }
-
-  private static func retainedMissionProjectiles(
-    from commander: borrowing Commander
-  ) -> [UUID: ScriptProjectileRecord] {
-    commander.scriptState.projectiles
+    withReadOnlyCommander { $0.scriptState.projectiles }
   }
 
   func retainedMissionProjectileRestorationCandidates() throws -> [UUID] {
-    try commanderStorage.withUnsafeBufferPointer { storage in
-      try Self.retainedMissionProjectileRestorationCandidates(from: storage.baseAddress!.pointee)
+    try withReadOnlyCommander { commander in
+      try Self.retainedMissionProjectileRestorationCandidates(from: commander)
     }
   }
 
