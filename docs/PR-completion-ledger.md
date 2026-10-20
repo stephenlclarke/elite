@@ -246,3 +246,9 @@ Bind Root-clean c93b7cd7 and exact ten-method/twelve-case plan to existing804/80
 ## Actual805 closure and accelerator validation handoff
 
 Record three lexical PASS then stack failure/seven actor UNKNOWN with exact805 process/resource closure; no mission integration or next crash runtime grant. Freeze G2 exact50ee seven-path accelerator/4-case plan, verify hashes and route independent review to Root concurrently. Grant806/807 matching build/four owner GPU/parity cases after actual805 release, actual GPU required/no skip acceptance, routine scoped fixes only after failure closure and reviewed before integration. No duplicate source audit, extra benchmark/GUI/test loop or gain claim. Scoped Markdown/whitespace checks only.
+
+## Qualified lexical leaf, MBA03 review and current renderer/crash queue
+
+Record only the three qualified lexical paths integrated as5ce88df5 from exact reviewed/testedc93, preserving actual805 three PASS and seven actor UNKNOWN. No helper/parent-chain import, new test batch or M01 cure. Record G1 independent nine-path MBA03 CLEAN review5ba plus test-only delta9ac CLEAN; owner matching13methods14cases still pending, so no integration/playable claim. Preserve all prior evidence hashes.
+
+Record Root CLEAN graphics334 and routinea6b8 reviews, closed failed806attempt01 and807 two CPU PASS/two GPU preparation failures, and the existing matching806attempt04/three-affected-case807 retry with unchanged packing PASS retained. No G1 duplicate audit/job, extra benchmark or GPU/gain claim. Bind Root-clean MC1 source40bce655 and exact seven-method/nine-case plan to the next finite runtime only AFTER actual G2 whole-batch closure; source authoring alone is permitted now. Scoped Markdown/whitespace checks only, full CI/public/release gates remain open.
