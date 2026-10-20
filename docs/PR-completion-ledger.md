@@ -594,3 +594,7 @@ Record actual907samebinarysinglecorefault/wholeclosure and SP-FP retainedspan me
 ## Record exact907 writer phase approval
 
 Rootapproves ONLYScriptTransactions identicalnativeprep then noninlineentireoriginalpublication suffix+final3writes, measured87120Bcaller lifetime/no newowner-state-schema-codec-order. MC1freeze→matchingbuild→SINGLEcore, existingaffectedwriterunits aftercorePASS; recoveredleafguarddeferred/no leafcampaign/newdiagnostic/G1job. Source remainsunqualified/unintegratedpendingactualownerPASS/fullreview. ScopedMarkdownlint/whitespace/priorhash checks only.
+
+## Record908/909 and one controlled writer-frame comparison
+
+Record26a65c89exactwriterphase/908buildPASS newd539955dbinary,909singlecoreUNKNOWN/signal10/0issues/noIPS/all10ownedclosed. RootONE910samebinaryactualcase diagnostic compares actualframes to907writer87120B; no sourcechange/rebuild/probe/fallback/recoveredleafguard whilecomparisonpending. Baseline3/3/currentpending25/39-target28/42 unchanged/notqualified. G13continuesin-development/no featurefreeze/integrationclaim. ScopedMarkdownlint/whitespace/historyhashes only, G1no competingjob.
