@@ -129,10 +129,17 @@ private func raycastBox(_ half: Vector3 = .init(10, 10, 10)) -> Mesh {
 
 @Test func gameplayRaycastCanHitTheActualPlayerHullAndCelestialSpheres() throws {
   let player = Commander().playerMesh
+  // SH025 has an open centre; aim at the retained native face230 material witness.
+  try #require(player.faces.indices.contains(230))
+  let face = player.faces[230].map { player.vertices[$0] }
+  try #require(face.count >= 3)
+  let surface = face.reduce(Vector3(0, 0, 0), +) * (1 / Double(face.count))
+  let normal = (face[1] - face[0]).cross(face[2] - face[0]).unit
+  try #require(normal.length > 0)
   let body = SpaceBody(id: 1, hull: .cobra, position: .init(0, 0, 500))
   let playerHit = try #require(
     GameplayRaycast.nearest(
-      origin: .init(0, 0, -200), direction: .init(0, 0, 1),
+      origin: surface + normal * 200, direction: normal * -1,
       maxDistance: 1000, bodies: [body], playerMesh: player, meshOverrides: [1: raycastBox()]))
   #expect(playerHit.target == .player && playerHit.distance > 0 && playerHit.distance < 400)
   let unobstructed = GameplayRaycast.nearest(

@@ -471,6 +471,39 @@ private struct CampaignFixture {
   #expect(saved == accepted.commander)
 }
 
+/// Derive fresh station bindings from the complete pre-load scene, never the loaded answer.
+@inline(never)
+private func campaignTerminalColdCommanderExpectation(_ original: borrowing Game) throws
+  -> Commander
+{
+  var expected = original.commander
+  let indices = original.bodies.indices.filter {
+    original.bodies[$0].nativeStationIdentity != nil
+  }
+  try #require(!indices.isEmpty)
+  var world = try #require(expected.nativeStations)
+  try #require(
+    world.sceneIsConsistent(
+      bodies: original.bodies, docked: original.docked, mainStation: original.dockedAtMainStation,
+      system: original.systemIdentity, flight: expected.flightSimulation))
+  try #require(original.nextBodyID > 0 && original.nextBodyID < 1_000_000_000 - indices.count)
+  var flight = expected.flightSimulation
+  let allocatedSpawn = flight.allocateSpawn()
+  _ = try #require(allocatedSpawn)
+  for (member, index) in indices.enumerated() {
+    let station = try #require(original.bodies[index].nativeStationIdentity)
+    try #require(original.bodies[index].physical != nil)
+    let allocatedActor = flight.allocateActor()
+    let actor = try #require(allocatedActor)
+    try world.ledger.rebind(
+      station, to: .init(actor: actor, bodyID: original.nextBodyID + member))
+  }
+  try #require(world.valid && flight.valid)
+  expected.nativeStations = world
+  expected.flightSimulation = flight
+  return expected
+}
+
 @Test(arguments: ["suspend", "preserve"])
 func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: String) async throws
 {
@@ -554,7 +587,8 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
   let runtime = GameRuntime(game: game)
   #expect(await runtime.snapshot().commander == game.commander)
   try await runtime.save(to: fixture.save)
-  let saved = await runtime.snapshot().commander
+  let savedGame = await runtime.snapshot()
+  let saved = savedGame.commander
   let savePreservedCommander = saved == game.commander
   let saveChanges = try fixture.commanderChangedPaths(game.commander, saved)
   #expect(
@@ -562,11 +596,12 @@ func terminalParentUsesDeclaredPolicyAndNeverDeletesActualChildProperty(policy: 
     Comment(rawValue: "Save changed: " + saveChanges.joined(separator: "; ")))
   let (written, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.save), from: fixture.save)
   #expect(written == expected.commander)
+  let expectedCold = try campaignTerminalColdCommanderExpectation(savedGame)
   let loaded = GameRuntime(game: fixture.game())
   try await loaded.load(from: fixture.save, persistMigrations: false)
   let reloaded = await loaded.snapshot().commander
-  let loadPreservedCommander = reloaded == saved
-  let loadChanges = try fixture.commanderChangedPaths(saved, reloaded)
+  let loadPreservedCommander = reloaded == expectedCold
+  let loadChanges = try fixture.commanderChangedPaths(expectedCold, reloaded)
   #expect(
     loadPreservedCommander,
     Comment(rawValue: "Reload changed: " + loadChanges.joined(separator: "; ")))
