@@ -1,17 +1,16 @@
 """Run the original make ci once and retain raw output and attributed crash originals."""
-import hashlib
-from datetime import datetime
 import json
 import os
 from pathlib import Path
 import re
-import shutil
 import signal
-import shlex
 import sys
 import subprocess
 import threading
 import time
+
+from crash_artifacts import (ArtifactBudget, collect_reports, report_snapshot,
+                             retain_test_images, sha as streaming_sha)
 
 assert os.environ.get('GITHUB_ACTIONS') == 'true', 'Hosted-only diagnostic; no local invocation.'
 root = Path(os.environ['GITHUB_WORKSPACE'])
@@ -19,11 +18,10 @@ evidence = root / 'reports/quality-runtime'
 evidence.mkdir(parents=True, exist_ok=False)
 originals = evidence / 'originals'
 originals.mkdir()
-sha = lambda path: hashlib.sha256(Path(path).read_bytes()).hexdigest()
+sha = streaming_sha
 write = lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n')
 known = {}
 process_history = {}
-native_directory = None
 ownership_lock = threading.RLock()
 monitor_errors = []
 stop = threading.Event()
@@ -31,7 +29,7 @@ current = {}
 records = []
 exit_code = 1
 crash_roots = [Path.home() / 'Library/Logs/DiagnosticReports', Path('/Library/Logs/DiagnosticReports')]
-baseline = {str(p): sha(p) for base in crash_roots if base.exists() for p in base.glob('*.ips')}
+baseline = report_snapshot(crash_roots)
 tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
 before = {p: sha(root / p) for p in tracked if p}
 head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().strip()
@@ -53,22 +51,6 @@ def snapshot():
     raw = subprocess.check_output(
         ['ps', '-axo', 'pid=,ppid=,pgid=,stat=,lstart=,command=']).decode()
     return parse_process_snapshot(raw)
-
-
-def crash_launch_time(value):
-    """Apple reports use a space before the UTC offset; accept explicit zoned formats only."""
-    if not isinstance(value, str):
-        return None
-    for pattern in ('%Y-%m-%d %H:%M:%S.%f %z', '%Y-%m-%d %H:%M:%S %z'):
-        try:
-            return datetime.strptime(value, pattern).timestamp()
-        except ValueError:
-            pass
-    try:
-        parsed = datetime.fromisoformat(value)
-        return parsed.timestamp() if parsed.tzinfo is not None else None
-    except ValueError:
-        return None
 
 
 def remember(pid, row):
@@ -229,66 +211,26 @@ except Exception as error:
     original_exit = records[-1]['makeExitCode'] if records else None
     exit_code = original_exit if original_exit else (exit_code or 1)
 finally:
-    native_process = None
-    crashes = {}
-    # CrashReporter can finish writing shortly after the crashing process exits. This is
-    # bounded artifact collection, not a rerun of the build or test.
-    for _ in range(7):
-        for base in crash_roots:
-            if not base.exists():
-                continue
-            for path in base.glob('*.ips'):
-                digest = sha(path)
-                if baseline.get(str(path)) == digest:
-                    continue
-                documents = []
-                raw = path.read_text(errors='replace')
-                decoder = json.JSONDecoder()
-                offset = 0
-                try:
-                    while offset < len(raw):
-                        while offset < len(raw) and raw[offset].isspace():
-                            offset += 1
-                        if offset == len(raw):
-                            break
-                        value, offset = decoder.raw_decode(raw, offset)
-                        documents.append(value)
-                except ValueError:
-                    documents = []
-                payload = next((value for value in documents if isinstance(value, dict)
-                                and isinstance(value.get('pid'), int)
-                                and isinstance(value.get('procPath'), str)), None)
-                matched = False
-                detail = {'name': path.name, 'sha256': digest, 'matchedActualProcess': False}
-                if payload is not None:
-                    pid = payload['pid']
-                    binary = os.path.realpath(payload['procPath'])
-                    launch = payload.get('procLaunch')
-                    detail.update({'crashedPID': pid, 'binary': binary, 'launch': launch})
-                    launch_time = crash_launch_time(launch)
-                    for record in process_history.get(pid, []):
-                        observed = datetime.strptime(record['start'], '%a %b %d %H:%M:%S %Y').timestamp()
-                        arguments = shlex.split(record['command'])
-                        observed_binary = os.path.realpath(arguments[0]) if arguments else None
-                        if (native_process is not None and native_process.get('pid') == pid
-                                and native_process.get('arguments')):
-                            observed_binary = os.path.realpath(native_process['arguments'][0])
-                        if (launch_time is not None and abs(launch_time - observed) < 1.1
-                                and observed_binary == binary):
-                            matched = True
-                            break
-                if matched:
-                    destination = evidence / 'matched-crashes'
-                    destination.mkdir(exist_ok=True)
-                    target = destination / (digest[:16] + '-' + path.name)
-                    shutil.copy2(path, target)
-                    detail.update({'matchedActualProcess': True,
-                                   'retained': str(target.relative_to(evidence))})
-                # Unmatched reports retain attribution metadata/hash only; no unrelated pixels,
-                # stacks or original application reports are uploaded.
-                crashes[str(path)] = detail
-        time.sleep(0.5)
-    write(evidence / 'crash-originals.json', list(crashes.values()))
+    crashes = []
+    audit = {'status': 'not-needed-successful-command',
+             'baselineDirectories': baseline['directories']}
+    images = []
+    if exit_code != 0:
+        budget = ArtifactBudget()
+        try:
+            # These are actual already-owned helper paths, not a guessed local replacement.
+            images = retain_test_images(process_history, root, evidence, head, budget)
+            crashes, audit = collect_reports(
+                crash_roots, baseline, process_history, evidence, budget)
+        except Exception as error:
+            # Artifact capture never replaces the original failing make status.
+            audit = {'status': 'capture-error', 'type': type(error).__name__,
+                     'detail': str(error), 'baselineDirectories': baseline['directories']}
+    write(evidence / 'native-images.json', {'source': head, 'failureOnly': True,
+                                           'originalMakeExitCode': records[-1]['makeExitCode'] if records else None,
+                                           'captureExitCode': exit_code, 'images': images})
+    write(evidence / 'report-discovery.json', audit)
+    write(evidence / 'crash-originals.json', crashes)
     write(evidence / 'observed-processes.json', process_history)
     after_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().strip()
     changed = [path for path, digest in before.items() if sha(root / path) != digest]

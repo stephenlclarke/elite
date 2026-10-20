@@ -127,7 +127,7 @@ Click **Pin baseline**, select another ship and use **Compare**. **Your ship** r
 
 ## Help and MacBook keys
 
-K, Command-K or Help > Player Key Guide opens help for the current activity; arrows change pages; Escape or K closes it. Help preserves the underlying search, list, selection or dialog. Command-P pauses/resumes; Escape resumes a paused game. Command-S saves the active file, Command-Shift-S chooses a save location, Command-O reloads the active file, Command-Shift-O opens another file, and Command-Q quits. Return/Space continues the displayed commander from the title or starts a new Commander Jameson after game over. Startup restores the last successfully saved commander in memory, waits at the title, and preserves the saved file; a first launch presents the automatic demo before the title. The title and opening credits display the app version, repository and full source commit SHA when bundled build metadata is available.
+K, Command-K or Help > Player Key Guide opens help for the current activity; arrows change pages; Escape or K closes it. Help preserves the underlying search, list, selection or dialog. Command-P pauses/resumes; Escape resumes a paused game. Command-S saves the active file, Command-Shift-S chooses a save location, Command-O reloads the active file, Command-Shift-O opens another file, and Command-Q quits. Return/Space continues the displayed commander from the title or starts a fresh commander after game over. Current development starts use Commander Rowan Calder at Avenor in an SH025 with 720 CR and full fuel; the published 1.4.0 normal start uses Commander Jameson in a Cobra Mk III with 100 CR. Startup restores the last successfully saved commander in memory, waits at the title, and preserves the saved file; a first development launch presents XYZZY opening credits and a rotating ship before the L337 title. The title and opening credits display the app version, repository and full source commit SHA when bundled build metadata is available.
 
 In the development source, destination registration creates no commander file and does not change the last-successful-save preference. A failed startup restore followed by Start New uses a distinct new destination, preserving the selected file or missing path. The first successful write remembers that location. Fitting changes after native launch and accepted RRS/contract actions save automatically; failed writing refuses the change. Use Command-S for other progress and Command-Shift-S to choose another destination. These startup changes await final quality/release acceptance; they are not claimed for the published 1.4.0 app.
 
@@ -135,7 +135,7 @@ Delete means the ordinary MacBook key marked Delete or backspace, which erases t
 
 ## XYZZY options
 
-Type XYZZY outside a search to become Commander Clarke in a fully fitted Cobra Mk III and open the secret menu. K gives its help, Escape returns to the game, and numbers select options here rather than game areas.
+Type XYZZY outside a search to refit a Cobra Mk III with maximum hardware and open the secret menu. Current development preserves your commander name and grants 1,000,000 CR on first activation; the published 1.4.0 XYZZY identity is Commander Clarke. K gives its help, Escape returns to the game, and numbers select options here rather than game areas.
 
 | Key | Option |
 | --- | --- |

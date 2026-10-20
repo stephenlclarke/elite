@@ -27,7 +27,7 @@
 <br clear="left" />
 <!-- markdownlint-enable MD033 -->
 
-A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, shaded ship panels by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. Normal games begin as Commander Jameson with a standard Cobra Mk III and 100 credits. Entering XYZZY switches to Commander Clarke in a fully fitted Cobra Mk III with maximum hardware, 1,000,000 starting credits and shaded panels; white and coloured wireframes remain selectable.
+A native Swift macOS space trading game presented by XYZZY as the Right-On Commander version. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. It uses keyboard flight controls, shaded ship panels by default, a colour cockpit scanner, procedural galaxies, and the original-style bitmap font requested for this remake. The published 1.4.0 app starts normal games as Commander Jameson with a standard Cobra Mk III and 100 credits; its XYZZY identity is Commander Clarke. Current development builds use the L337 title and start fresh games as Commander Rowan Calder at Avenor in an SH025 with 720 CR and full fuel. Restoring a save preserves its commander identity. In current source, entering XYZZY preserves that name, refits a Cobra Mk III with maximum hardware and grants 1,000,000 CR on first activation; shaded panels default on, with white and coloured wireframes selectable. These development changes are not claimed for the published download or Homebrew release.
 
 This development line targets the current model. Existing saves are disposable; backward compatibility with earlier saves, content formats, internal APIs and namespaces is not a delivery requirement. Current-format save/load and transaction correctness remain required.
 
@@ -51,11 +51,19 @@ cd elite
 make run
 ```
 
-The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. It starts with an automatic XYZZY demo, then a rotating Right-On Commander title screen. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch. Restoring the last saved commander waits at the title screen before continuing that commander; opening a save during play goes straight to status. The title and opening credits show the app version, repository and full source commit SHA. Finder/Run builds embed their build identity; a bare SwiftPM executable explicitly reports unavailable commit metadata.
+The Run action builds and opens `dist/Elite.app`. You can also open that app from Finder after building it. SwiftPM resolves the pinned TOMLDecoder dependency automatically. A fresh current development game opens with XYZZY credits and a rotating ship, then the L337 title screen. The published 1.4.0 app uses the Right-On Commander title. Rotating startup ships use shaded panels independently of your saved flight display preference. Press Space to enter the commander screen and 0 to launch. Restoring the last saved commander waits at the title screen before continuing that commander; opening a save during play goes straight to status. The title and opening credits show the app version, repository and full source commit SHA. Finder/Run builds embed their build identity; a bare SwiftPM executable explicitly reports unavailable commit metadata.
 
 ## Licence
 
 Original code and documentation: [MIT](LICENSE), copyright 2026 Stephen Clarke. Imported ship models retain their individual CC-BY-NC-SA-3.0, CC-BY-NC-SA-4.0, CC-BY-SA-3.0 or author-declared public-domain terms. Included NonCommercial artwork limits commercial use. BBC-derived blueprint and original game material are excluded from MIT; the BBC reference supplies no reuse licence, so this is not a claim that the complete game is cleared for redistribution. See [licensing and third-party notices](NOTICE.md) and [model attribution and fidelity](docs/SHIP-SHOWROOM.md). Full licence texts and original credits are included in the built app.
+
+## First flight in current development builds
+
+The normal 720 CR starter has no targeting core or Docking fitting. Fly and dock manually using the station compass, or buy the Basic → Advanced → Docking targeting-computer chain while docked with **3**; only then can **Tab** select a station and engage AUTO. Buying a higher model requires the preceding paid entitlements. See the [targeting-computer guide](docs/TARGETING-COMPUTERS.md).
+
+Passenger journeys require two actual fitted, working Passenger Berths with life support. Their base price is 1,000 CR each before shop discounts, so the starter balance cannot buy both immediately. A passenger request or reply does not itself board anyone. See [passenger equipment and controls](docs/CONTROLS.md#station-tasks-and-mission-dialogs).
+
+Current development also includes **Orbital outlook**: after separate consent and fitting two working cabins, take the same two people from Avenor to Renas, measure three ordered marker views, then return them for care and a one-time 870 CR payment. Select the requested marker with Tab; each view needs 12 uninterrupted measured flight seconds in valid front-view, range and aim conditions. Pause freezes progress; cold loading preserves completed views and resets an unfinished view. These additions are not claimed for the published 1.4.0 app.
 
 ## Controls
 
@@ -347,6 +355,8 @@ To update a manually installed copy, quit Elite and replace it in Applications w
 Each release includes a matching `.sha256` checksum, build/signing `.json` manifest and notarization report. The manifest identifies the binary's source commit and verification results. See [macOS distribution](docs/MACOS-DISTRIBUTION.md) for package verification and signing details.
 
 For development builds, use the separate [Build and run](#build-and-run) instructions.
+
+The latest locally verified development preview is **1.4.1017**, source `44db923834619831df2b2f205536a46d07151247`, including the integrated orbital-outlook journey. The actual station-board check verifies its briefing and native passage refusals on an unfitted starting ship. It is a signed local Debug preview; full manual travel, global quality gates and a new public/notarized release remain pending. See the [completion ledger](docs/COMPLETION-LEDGER.md).
 
 Version 1.4.0 adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls. Its signed, notarized app identifies binary source checkpoint `36fa5cfef1e781f68dcb1fdbf7dae1e1e1f76224`; the release tag also includes the later archive and documentation commit. See the [packaging verification](docs/MACOS-DISTRIBUTION.md).
 
