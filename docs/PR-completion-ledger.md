@@ -406,3 +406,7 @@ Record849 zero-terminal failure after successful source revalidation, fault now 
 ## Park dependent rescue proposal and assign independent scan/survey boundary
 
 Update current register/maintained07 and09 rows: MBA07 sixteen-path native producer proposal complete but implementation PARKED for MC1 and G1 save-boundary overlap; preserve real non-EMP finite-capsule/rescue-care design and open consent/berth/G08 joins. No isolated model or overlapping edits authorized. G3 now has existing MBA09 actual scan/survey prerequisite SOURCE proposal only, minimal native producer/consumer outside MC1 paths; MBA10 boundary is fallback only if09 blocked. M01 active850/851 unchanged, no implementation/runtime/audit/GUI poll. Scoped Markdown lint/diff checks only; all historical hashes retained.
+
+## Current852/853 post-source allocation assignment
+
+Record851 successful compilation/zero-terminal runtime stack failure, context-result reservation before source validation, with exact proof/crash/actual whole closure. Current register and M01 owner now frozen514d852/853, same NativeMissionActorAdmission/notes scope and seven/nine plus unchanged847 storage1/1. Prefix validates source then directly returns the noninline post-source result allocation; later check/receipt/write ordering unchanged. No extra file/probe/runtime/audit beyond owner allocation, no failed-chain integration. Preserve all evidence hashes; scoped Markdown lint/diff checks only.
