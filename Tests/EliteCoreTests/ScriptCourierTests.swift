@@ -352,7 +352,10 @@ func courierPriorInputsKeepTheirDrawsAndRefuseInfeasibleCurrentWorldRoutes(
 @Test func courierWrongContactStaleTokenAndForgedEventCannotConsumeCustody() throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[0]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let id = try fixture.accept(&game)
   try fixture.requestContact(&game, id: id)
   let shown = try #require(game.scriptPresentedDialogue)

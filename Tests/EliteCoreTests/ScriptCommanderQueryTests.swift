@@ -120,6 +120,7 @@ private struct CommanderQueryFixture {
   var game = Game(executive: false)
   game.screen = .status
   game.commander.credits = 10_000_000
+  game.commander.fuel = try #require(ShipCatalogue.ship("SH013")?.game?.fuel)
   game.commander.cargo[0] = 2
   game.commander.cargo[10] = 1
   game.commander.installLaser(.beam, on: .rear)

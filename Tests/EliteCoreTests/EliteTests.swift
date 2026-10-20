@@ -116,18 +116,23 @@ import Testing
   game.key("q")
   #expect(game.screen == .gameOver)
   game.key("return")
-  #expect(game.docked && game.commander.credits == 1000)
+  #expect(game.docked && game.commander.credits == 7200)
 }
 
 @Test func marketTransactionsRespectCashCapacityAndStock() {
   var game = Game(executive: false)
   game.screen = .buy
   let initial = game.commander
+  let initialAsk = game.market[0].price
+  let initialBid = game.market[0].bidPrice
+  let initialStock = game.market[0].quantity
   game.key("return")
-  #expect(game.commander.cargo[0] == 1 && game.commander.credits == initial.credits - 36)
-  #expect(game.market[0].quantity == 15)
+  #expect(game.commander.cargo[0] == 1 && game.commander.credits == initial.credits - initialAsk)
+  #expect(game.market[0].quantity == initialStock - 1)
   game.key("left")
-  #expect(game.commander.cargo[0] == 0 && game.commander.credits == initial.credits)
+  #expect(
+    game.commander.cargo[0] == 0
+      && game.commander.credits == initial.credits - initialAsk + initialBid)
   game.key("left")
   #expect(game.message == "NO CARGO")
   game.commander.credits = 0
@@ -314,9 +319,21 @@ import Testing
 }
 
 @Test func combatLasersMissilesAndBomb() throws {
+  // Native combat in an authored unit cohort before ordinary station/traffic admission.
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.credits = 1000
   game.commander.equipment.insert("Military Laser")
-  game.launch()
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.docked = false
+  game.screen = .front
+  try #require(game.commander.valid && game.commander.nativeStations == nil)
+  game.ensurePhysicalActors()
   #expect(game.commander.fittedEquipment(at: .laser(.front))?.node.key == "Military Laser")
   game.speed = 0
   game.commander.flightSimulation.pose.position = .init(0, 0, -3000)

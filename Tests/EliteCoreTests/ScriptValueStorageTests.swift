@@ -68,7 +68,11 @@ private struct ValueStorageFixture {
 {
   let fixture = try ValueStorageFixture()
   defer { fixture.clean() }
-  let (game, id) = try fixture.game()
+  var game = Game(executive: false)
+  game.commander.credits = 1000
+  game.screen = .status
+  game.scriptPacks = [fixture.pack]
+  let id = try game.acceptScriptMission(fixture.pack)
   let before = GameRuntime(game: game)
   try await before.save(to: fixture.save)
   let restored = GameRuntime(game: game)
