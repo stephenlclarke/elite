@@ -125,7 +125,7 @@ struct NativeIdentifiedSalvageState: Codable, Sendable, Equatable {
 
 enum NativeIdentifiedSalvage {
   static let stateID = "l337.contract/identified-salvage"
-  static let digest = "f0161e12e301aa32fbeeea0e762cd4139c8d158e4baa002db804a269dc6a6c7e"
+  static let digest = "ee65a469de1673c440e9b12effd8df2ff3bed96120d9e4b4c78a7c6bf8ab5e5c"
   static let batch = "avenor-pell-cradle-01"
   static let boardID = "identified-salvage"
   static let encounterID = "pell-wreck"
