@@ -1018,3 +1018,21 @@ Maintain G14's171 renderer references with one required1078refresh; all image by
 Record1079 identity/signature/500-resource/actual pack-CLI PASS and1080visible title/source/native-menu reach only. Explicitly leave Avenor offer/details/four-cabin eligibility and full player journey unverified. Normal quit closes the owned new app; preserve primary/player data and unowned1052. Root announces a local candidate only, no Slack feature post. Refresh README/pairedPR21 scope for integrated G14/storage and next final-head CI/review, with G10 still separate source work and G2 only a bounded startup-source read.
 
 Record G2's source-only normal start/focus wiring review, with no source-proven defect and no UI PASS or further campaign. Record UX's G09 design/preflight-only ownership from2304; implementation stays not started while G10 remains the sole active MBA implementation. W05 stays next candidate.
+
+Publish coherent5f64600d once to existing PR21. Dependency Review passes; requiredCI39488530671 runs once. Required review returns service error6300298031 without findings/clean result; factual reply6300353377 preserves the gate. Hold current-state documentation for the next natural code checkpoint, with no unchanged-head retry or extra CI push.
+
+G10 first24-path freeze4360 has four independent review findings assigned to G3 as one coherent correction; functional/CLI/coverage remain UNRUN. Do not compile the known-bad freeze or replay broad legacy cohorts. Preserve integrated G14/limited1079, G09 design-only ownership and the independent sole5f quality watch.
+
+Reconcile primary inventory rows as well as appended history: G14 is qualified source integratedfbce with limited signed1079/title-only1080 and unqualified manual/public delivery; G10 is active G3 review correction with all functional execution UNRUN; G09 is UX design/preflight only with implementation not started. No docs-only publication or CI.
+
+## Current5f failure, G10 compiler refusal and approved queue
+
+Record terminal hosted5f failure with actual synthetic merge895f, nine reports/six methods, unattributed signal10 and no final test summary. Preserve complete artifact/13 original hashes/image UUID/raw disposition and closed watch; coverage/sanitizer/leak gates were not reached. G2 owns only the reviewed next test-fixture correction proposal/implementation, six methods/nine cases, with runtime UNRUN and no inferred signal10 repair.
+
+Record G10 corrected bab16 CLEAN review and exact whole24-path staging520917c0, followed by compiler-only1081 exit1 with two borrowing diagnostics. Preserve6.875s inner/7.669s outer,55-start closure and exact source/preferences. G3 owns the causal compiler correction; all23methods/39cases, actual pack CLI/digest/native pose and coverage remain UNRUN. Reconcile current register and M01 without a docs-only push. G09 and W05 are approved queued designs only; copy exact draft/approval pairs at the next natural source checkpoint, with no implementation activation.
+
+Preserve compiler-only1082 failure after CLEAN3ea delta: two borrowed provenance RHS expressions in the new Scan helper, with all25 starts closed and exact source/preferences. G3 owns coherent causal fix/same-pattern review; functional23/39 and CLI remain UNRUN. Final5f factual quality comment6300795333 records failure without rerun or protection bypass.
+
+## Qualified release-fixture source checkpoint
+
+Integrate exactG2 eight-path final637b after matching shared1083build and separate1084six-method/nine-case PASS, retaining both CLEAN reviews and all original failed evidence. Preserve initial reader-key correction without raw mutation or runtime replay,1988-artifact/source/preferences proof and11-start closure. Keep the unattributed hosted signal10 open. Record G10 actualCLI/digest PASS and separate1085functional run pending on the same binary, without a second compile or early source integration. Copy approved G09/W05 design pairs unchanged and reconcile their primary rows/index as queued, implementation not started. No per-doc push/CI, UI campaign or release claim.

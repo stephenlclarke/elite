@@ -1,0 +1,145 @@
+{
+  "status": "Final Root approval; queued reservation only; not assigned or active",
+  "approvalDate": "2026-10-20",
+  "rootThread": "01a134a1-be40-77d0-9e11-64a775729232",
+  "ledgerID": "G09",
+  "milestone": "M08",
+  "familyID": "l337.contract/identified-salvage",
+  "draft": "/Users/sclarke/.codex/visualizations/2026/10/13/01a136c8-628e-7112-a1af-e1e3e59b1859/gameplay-design/G09-IDENTIFIED-SALVAGE-COMPLETE-JOURNEY-DRAFT-20261020.md",
+  "draftSHA256": "d7fa601e21d9f1572827e3d42e227b2661a0ffa00431d7c8294f219fe0ba1178",
+  "sourcePreflightCheckpoint": "2304d602a64820049af6e77acf709f7c46c55c20",
+  "approved": {
+    "issuerAndPropertyOwner": "Actual Avenor G0/S7 main-orbital recovery depot represented by PELL; not a simulated person or transfer of title to the player",
+    "batch": "avenor-pell-cradle-01",
+    "items": [
+      {
+        "serial": "PELL-01",
+        "tonnes": 1
+      },
+      {
+        "serial": "PELL-02",
+        "tonnes": 1
+      }
+    ],
+    "journey": "Avenor7 issuer -> actual Renas185 exterior recovery -> same actual Avenor7 owner receiver",
+    "routeLegs": 2,
+    "hazard": 0,
+    "rewardCR": 880,
+    "rewardNative": 8800,
+    "requiredFit": "Actual fitted targeting core, Salvage targeting module and Fuel Scoops; no cutter for already loose packages",
+    "capacity": "Two total held-plus-unfilled reserved tonnes; physical pickup fulfills its reserved slot without double counting",
+    "settlement": "Actual both-original owner reception commits reward and identified-salvage-family-trace once; actual partial/loss/return behavior as frozen in draft",
+    "geometry": [
+      {
+        "template": "pell-wreck-cradle",
+        "model": "catalogue:SH141",
+        "scale": 1,
+        "asset": "Sources/EliteCore/Resources/Ships/SH141.toml",
+        "assetSHA256": "4a11f2328446bc808104b0ced34e92bd7169a76ad4f139e203b0b021a47a029a",
+        "radiusNativeUnits": 60.13930557966478,
+        "collisionMassKg": 100000
+      },
+      {
+        "template": "pell-return-package",
+        "model": "catalogue:SH058",
+        "scale": 0.2,
+        "asset": "Sources/EliteCore/Resources/Ships/SH058.toml",
+        "assetSHA256": "18c2164967b0784d9fbb24ee7be27ffee43606a8ba150edf58c313977892fac3",
+        "radiusNativeUnits": 6.322963883093118,
+        "collisionMassKgEach": 1000
+      }
+    ],
+    "stationLocalExteriorPoses": {
+      "pell-cradle": [
+        0,
+        0,
+        24000
+      ],
+      "pell-01": [
+        -2000,
+        0,
+        24000
+      ],
+      "pell-02": [
+        2000,
+        0,
+        24000
+      ]
+    },
+    "posePolicy": "Identity local orientation and zero initial velocity; exterior access only; actual admission/collision/aperture/motion checks remain authoritative; no hollow-mesh or forced-fit claim",
+    "additionalPhysicsHunk": {
+      "path": "Sources/EliteCore/AsteroidDebrisContact.swift",
+      "boundary": "AsteroidContactFrame initializer body snapshot only: source/owner/alias/logical-native binding/model-scale validated G09 uses exact scriptNPCMesh; packages use existing cargo1000kg policy, cradle unchanged cobra100000kg; unrelated actors/debris flags/physics limits unchanged; no generic profiled actor change or caller mass grant"
+    }
+  },
+  "ownership": {
+    "prospectivePathCount": 32,
+    "paths": [
+      "Sources/EliteCore/NativeIdentifiedSalvage.swift",
+      "Sources/EliteCore/NativeIdentifiedSalvageBoard.swift",
+      "Sources/EliteCore/NativeIdentifiedSalvageRecovery.swift",
+      "Sources/EliteCore/NativeIdentifiedSalvageSave.swift",
+      "Sources/EliteCore/Game.swift",
+      "Sources/EliteCore/ScriptMissionState.swift",
+      "Sources/EliteCore/ContractBoard.swift",
+      "Sources/EliteCore/ContractBoardDisplay.swift",
+      "Sources/EliteCore/ScriptContractPageInput.swift",
+      "Sources/EliteCore/ScriptPack.swift",
+      "Sources/EliteCore/ScriptCommanderQuery.swift",
+      "Sources/EliteCore/ScriptPersistence.swift",
+      "Sources/EliteCore/ScriptSaveJSONPreflight.swift",
+      "Sources/EliteCore/ScriptBundledPacks.swift",
+      "Sources/EliteCore/ScriptBaseClueCatalog.swift",
+      "Sources/EliteCore/CargoScooping.swift",
+      "Sources/EliteCore/WorkTargetRuntime.swift",
+      "Sources/EliteCore/WorkTargetSelection.swift",
+      "Sources/EliteCore/FlightWorkGuidance.swift",
+      "Sources/EliteCore/TargetColourClassification.swift",
+      "Sources/EliteCore/NativeMissionActorAdmission.swift",
+      "Sources/EliteCore/ScriptEncounters.swift",
+      "Sources/EliteCore/InventoryInformation.swift",
+      "Tests/EliteCoreTests/BundledScriptPackTests.swift",
+      "Sources/EliteCore/AsteroidDebrisContact.swift",
+      "Tests/EliteCoreTests/NativeIdentifiedSalvageJourneyTests.swift",
+      "Tests/EliteCoreTests/NativeIdentifiedSalvageRecoveryTests.swift",
+      "Tests/EliteCoreTests/NativeIdentifiedSalvageSaveTests.swift",
+      "Sources/EliteCore/Resources/ScriptPacks/l337-identified-salvage/manifest.toml",
+      "Sources/EliteCore/Resources/ScriptPacks/l337-identified-salvage/scripts/main.lua",
+      "docs/ISSUE-native-identified-salvage.md",
+      "docs/PR-native-identified-salvage.md"
+    ],
+    "reservationOnly": true,
+    "integrator": "G1 only",
+    "additionalPaths": "Root must reserve exact additional path/hunk before editing"
+  },
+  "conditionalSaveReservation": {
+    "normal": 51,
+    "alien": 52,
+    "afterQualifiedIntegratedG10Normal": 49,
+    "afterQualifiedIntegratedG10Alien": 50,
+    "policy": "Independently genuine G09-only/composed Normal/Alien claims; no manufactured other-family claim; lower schemas remain strict; no current schema edits"
+  },
+  "activation": {
+    "requiresAll": [
+      "G10 owner-qualified, independently clean-reviewed and integrated",
+      "Root explicitly dispatches G09",
+      "Exact post-G10 source/ownership preflight is accepted"
+    ],
+    "currentImplementationPermission": false
+  },
+  "execution": {
+    "status": "UNRUN",
+    "implementationStarted": false,
+    "buildStarted": false,
+    "runtimeStarted": false,
+    "testsRun": false,
+    "qualificationClaimed": false
+  },
+  "qualificationBeforeIntegration": "Meaningful focused owner unit PASS and native pack CLI/digest; one independent complete-boundary bugs/performance/style CLEAN review; G1 sole integration",
+  "nextCandidate": {
+    "ledgerID": "W05",
+    "familyID": "l337.wayfarer-service/record-recovery",
+    "status": "Existing subsequent candidate only; not assigned or active"
+  },
+  "scopeLimit": "Approval record only; draft unchanged; no canonical/code/ledger edits or coder messaging"
+}

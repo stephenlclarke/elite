@@ -50,12 +50,13 @@ import Testing
 
 @Test func searchConsumesNavigationLettersNumbersAndGalaxyBracketsUntilExplicitlyFinished() {
   var game = Game(executive: false)
+  let initialName = game.commander.name
   game.screen = .status
   game.key("4")
   game.key("/")
   for character in "klnwu6[]xyzzy" { game.key(String(character)) }
   #expect(game.screen == .chart && game.acceptsTextInput && game.viewedGalaxy == 0)
-  #expect(game.mapSearch.query == "klnwu6[]xyzzy" && game.commander.name == "JAMESON")
+  #expect(game.mapSearch.query == "klnwu6[]xyzzy" && game.commander.name == initialName)
   game.key("help-open")
   game.key("escape")
   #expect(game.screen == .chart && game.mapSearch.active)

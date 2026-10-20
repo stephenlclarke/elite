@@ -306,7 +306,31 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   #expect(loaded.credits == cash && loaded.accommodation.fittedBerths.map(\.id) == [id])
 }
 @Test func nativeEquipmentPurchaseCannotOverspendCabinEquipmentCapacity() throws {
-  var (game, _) = try passengerGame()
+  let pack = try ScriptPackLibrary.read(passengerPackURL)
+  var game = Game(executive: false)
+  // The original10/11 hardware boundary plus one cabin uses the Cobra's12-unit profile.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.screen = .status
+  game.scriptPacks = [pack]
+  game.commander.credits = 100000
+  let drive = try #require(Equipment.all.first { $0.name == "Galactic Hyperdrive" })
+  let storage = try #require(Equipment.all.first { $0.name == FuelStorage.equipmentName })
+  // Declare a real low-technology shop before fitting, as the equipment transaction units do.
+  game.commander.system = try #require(
+    game.systems.first {
+      !$0.isPlugh && $0.technology < drive.requiredTechnologyLevel
+        && $0.technology >= storage.requiredTechnologyLevel
+    }?.id)
+  game.selectedSystem = game.commander.system
+  game.market = MarketItem.at(game.currentSystem)
+  try #require(!game.equipmentAvailable(drive) && game.equipmentAvailable(storage))
+  try game.confirmPassengerBerth(game.passengerBerthQuote)
+  let profile = try ShipAccommodationProfile(ship: game.commander.ship)
+  try #require(profile.equipmentUnits == 12 && game.commander.accommodation.fittedBerths.count == 1)
   for unit in 0..<4 {
     try game.commander.grantEquipment(
       FuelStorage.equipmentName, at: .fuelStorage(unit), provenance: .grant("fixture"))
@@ -323,7 +347,7 @@ private func passengerGame() throws -> (Game, ScriptPack) {
   let lowTechnology = game.commander
   game.purchase()
   #expect(game.commander.commonEquipmentUnits == 10 && game.commander == lowTechnology)
-  // Lave's low technology denies this item. Fit the last unit through a native fuel-storage purchase instead.
+  // The current origin's low technology denies this item. Fit the last unit through a native fuel-storage purchase instead.
   let removedFuel = try game.commander.removeFittedEquipment(FuelStorage.equipmentName)
   try #require(removedFuel)
   try game.commander.grantEquipment(
