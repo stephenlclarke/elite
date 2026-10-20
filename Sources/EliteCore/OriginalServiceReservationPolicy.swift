@@ -15,7 +15,7 @@ enum OriginalServiceReservationPolicy {
       return state.definition == WayfarerRepairLoopDefinition.stateID
     }
     if case .some = state.savedWayfarerColdChain {
-      return state.definition == WayfarerColdChainDefinition.stateID
+      return WayfarerColdChainDefinition.isNativeDefinition(state.definition)
     }
     return false
   }

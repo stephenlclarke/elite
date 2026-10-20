@@ -16,6 +16,9 @@ private let bundledColdChainDigest =
 private let bundledRepairLoopDigest =
   "c0b674ac2eca0221890412446f423c5f7ada4520b38669dbfbef5289049c199f"
 
+private let bundledSeedTransferDigest =
+  "feadc6cc8bed2b59a608dc0667afd11a5d7c1e790e2466e3b8c44974f9f03d54"
+
 private struct BundledScriptFixture {
   let root: URL
   var library: URL { root.appendingPathComponent("installed") }
@@ -113,7 +116,7 @@ struct BundledScriptPackTests {
       errors.isEmpty
         && discovered.scriptPacks.map(\.digest) == [
           bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
-          bundledRepairLoopDigest,
+          bundledRepairLoopDigest, bundledSeedTransferDigest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -140,7 +143,7 @@ struct BundledScriptPackTests {
       library.errors.isEmpty
         && library.packs.map(\.digest) == [
           bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
-          bundledRepairLoopDigest,
+          bundledRepairLoopDigest, bundledSeedTransferDigest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -159,7 +162,7 @@ struct BundledScriptPackTests {
     #expect(
       library.packs.map(\.digest) == [
         pack.digest, bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
-        bundledRepairLoopDigest,
+        bundledRepairLoopDigest, bundledSeedTransferDigest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -183,6 +186,7 @@ struct BundledScriptPackTests {
     #expect(
       after.scriptPacks.map(\.digest) == [
         bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest, bundledRepairLoopDigest,
+        bundledSeedTransferDigest,
       ])
   }
 
@@ -197,13 +201,19 @@ struct BundledScriptPackTests {
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
-    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 9)
+    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 10)
     let repairRows = contracts.contractBoard.rows.filter {
       $0.repairLoop?.digest == bundledRepairLoopDigest
     }
     #expect(
       repairRows.count == 1 && repairRows[0].repairLoop?.action == .unavailable
         && repairRows[0].reason != nil)
+    let seedRows = contracts.contractBoard.rows.filter {
+      $0.coldChain?.digest == bundledSeedTransferDigest
+    }
+    #expect(
+      seedRows.count == 1 && seedRows[0].coldChain?.action == .unavailable
+        && seedRows[0].reason != nil)
     let coldRows = contracts.contractBoard.rows.filter {
       $0.coldChain?.digest == bundledColdChainDigest
     }
@@ -234,12 +244,16 @@ struct BundledScriptPackTests {
     defer { try? FileManager.default.removeItem(at: namespace) }
     let trial = await runtime.snapshot()
     #expect(trial.isMissionTrial && trial.screen == .contracts)
-    #expect(trial.contractBoard.rows.count == 9 && trial.contractBoard.action == .back)
+    #expect(trial.contractBoard.rows.count == 10 && trial.contractBoard.action == .back)
     #expect(
       trial.contractBoard.rows.filter { $0.coldChain?.digest == bundledColdChainDigest }.count == 1)
     #expect(
       trial.contractBoard.rows.filter {
         $0.repairLoop?.digest == bundledRepairLoopDigest
+      }.count == 1)
+    #expect(
+      trial.contractBoard.rows.filter {
+        $0.coldChain?.digest == bundledSeedTransferDigest
       }.count == 1)
     let trialBondedRows = trial.contractBoard.rows.filter {
       $0.board.hasPrefix(bundledBondedDigest + "/")
@@ -300,7 +314,7 @@ struct BundledScriptPackTests {
     #expect(
       loaded.scriptPacks.map(\.digest) == [
         changed.digest, bundledCourierDigest, bundledBondedDigest, bundledColdChainDigest,
-        bundledRepairLoopDigest,
+        bundledRepairLoopDigest, bundledSeedTransferDigest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)
