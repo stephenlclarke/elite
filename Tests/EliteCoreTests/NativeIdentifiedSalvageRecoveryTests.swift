@@ -19,7 +19,8 @@ struct NativeIdentifiedSalvageRecoveryTests {
     try #require(game.commander.nativeStations?.stationInertia.isEmpty == true)
     try #require(game.bodies.count == 3)
     #expect(game.bodies.allSatisfy { game.asteroidDebrisMassKg($0) == nil })
-    let frame = try #require(game.beginAsteroidContactStep(delta: 0.05))
+    let contactFrame = game.beginAsteroidContactStep(delta: 0.05)
+    let frame = try #require(contactFrame)
     for body in game.bodies {
       let actor = try #require(body.physical?.identity)
       let snapshot = try #require(frame.identifiedSalvageSnapshot(actor))
@@ -75,7 +76,8 @@ struct NativeIdentifiedSalvageRecoveryTests {
     #expect(game.identifiedSalvageAlias(body) == nil)
     #expect(game.identifiedSalvageCollision(body) == nil)
     game.commander.nativeStations?.stationInertia = []
-    let frame = try #require(game.beginAsteroidContactStep(delta: 0.05))
+    let contactFrame = game.beginAsteroidContactStep(delta: 0.05)
+    let frame = try #require(contactFrame)
     let snapshot = try #require(frame.identifiedSalvageSnapshot(actor))
     #expect(snapshot.massKg == AsteroidImpactPolicy.massKg(hull: body.hull))
     #expect(snapshot.massKg == 100000)
