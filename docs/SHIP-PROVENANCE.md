@@ -2473,84 +2473,56 @@ dataset flight crew seats, not required staffing; D23; crew is separate from pas
 
 <a id="sh025"></a>
 
-## SH025 - Cobra Mk V
+## SH025 - Peregrine Mk V
 
-**Design:** Right-On Commander original geometry; MIT.
+**Design:** Original project-authored hull; no imported mesh, coordinates or bitmap inputs; MIT.
 
-Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement.
+F01-SH025-CALIBRATION-v1: project estimate, maximum bounding extent 120 metres for size-tier-2 multirole hull; not an authored measurement or predecessor dimension. Uniform scale 36.95309420575483 from approved original nativeDesign bounds, +Z forward/+Y up; retain proportions and openings. Hull SHA256 33f4113a86ba833d4a0178984ca3bb6c963bbdeabc8eb9c38059d5a17d665671; specification SHA256 8c608e9f1a9a325b3c275f64a9428832c4f6890b7465f966c907daa70b4db313. Actual docking clearance remains unqualified.
 
-**Appearances:** ED-LIVE; **evidence:** D06.
+**Appearances:** L337 original fleet; **evidence:** Approved current original content handoff.
 
-Original project interpretation: wedge family, individual sweep/components/envelope. Full authored geometry and recipe are embedded in the TOML. No gameplay statistic was inferred from the invented shape.
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
 
-### Common project refit
+### Peregrine Mk V original standard fit
 
-Adaptation; borrowed and estimated fields, not historical native specifications.
+Original authored mechanics; retained common one-commander accommodation and fitting estimate. F01-SH025-CALIBRATION-v1: project estimate, maximum bounding extent 120 metres for size-tier-2 multirole hull; not an authored measurement or predecessor dimension. Uniform scale 36.95309420575483 from approved original nativeDesign bounds, +Z forward/+Y up; retain proportions and openings. Hull SHA256 33f4113a86ba833d4a0178984ca3bb6c963bbdeabc8eb9c38059d5a17d665671; specification SHA256 8c608e9f1a9a325b3c275f64a9428832c4f6890b7465f966c907daa70b4db313. Actual docking clearance remains unqualified.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 35 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
-| Speed | 363.75 project units/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Hull energy | 384.0 project units | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Front shield | 256.0 project units | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Rear shield | 256.0 project units | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Energy recharge | 4 project units/s | estimated; Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted. |
-| Roll | 2.1227 rad/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Pitch | 0.796 rad/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Yaw | 0.5838 rad/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Acceleration | 160 project units/s2 | estimated; Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted. |
-| Front recharge | 2 project units/s | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Rear recharge | 2 project units/s | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Jump range | 7 LY | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Jump spool | 15 s | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Fuel capacity | 70 0.1 LY | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Laser facings | 1 bit mask | estimated; D23 cobramkv outfitting hull inputs, translated into O08-like project units; bit1 forward,2aft,4port,8starboard |
+| Cargo | 92 t | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Speed | 34.3 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Hull energy | 380 project units | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Front shield | 300 project units | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Rear shield | 300 project units | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Energy recharge | 4.22 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Roll | 0.79 rad/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Pitch | 0.7 rad/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Yaw | 0.65 rad/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Acceleration | 9.1 project units/s2 | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Front recharge | 1.8 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Rear recharge | 1.8 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Jump range | 9 LY | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Jump spool | 15 s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Fuel capacity | 130 0.1 LY | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Laser facings | 15 bit mask | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
 | Forward laser | Pulse Laser | user required / borrowed equipment; User baseline plus O08 weapon definition; NPC alien weapons remain separate |
-| Missile capacity | 5 pylons | estimated; Project pylon count chosen from number of positive-size D23 hardpoints, bounded1..16. Native missile rack ammunition is separate. This does not assert a native pylon layout. |
-| Initial missiles | 1 missiles | project choice; Initial hull acquisition only; repeat selection preserves spent stock |
-| Equipment capacity | 10 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
-| Docking computer | Yes | user required; Intrinsic baseline |
-| Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
-| Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
-| Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
-| initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 35 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
-| Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
-| Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
-| Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
-
-### ED Coriolis Cobra Mk V
-
-D23 0db9234b: community outfitting snapshot; equipped FSD/shield results not inferred.
-
-| Field | Source value | Status / basis |
-| --- | --- | --- |
-| Base speed | 291 m/s | source; D23 cobramkv |
-| Boost | 412 m/s | source; D23 cobramkv |
-| Pitch | 45.61 deg/s | source; D23 cobramkv |
-| Roll | 121.62 deg/s | source; D23 cobramkv |
-| Yaw | 33.45 deg/s | source; D23 cobramkv |
-| Hull mass | 150 t | source; D23 cobramkv |
-| Shield input | 160 ED raw | source; D23 cobramkv |
-| Armour input | 180 ED raw | source; D23 cobramkv |
-| Hull price | 1477085 CR | source; D23 cobramkv |
-| Retail loadout | 1989461 CR | source; |
-| Hardpoint sizes | 2, 2, 2, 1, 1, 0, 0, 0, 0 | source; |
-| Internal slots | 5, 4, 4, 4, 3, 3, 3, 2, 1, {'class': 1, 'name': 'PlanetaryApproachSuite', 'eligible': {'pas': 1}} | source; |
-
-### ED-D23-PINNED crew
-
-dataset flight crew seats, not required staffing; D23; crew is separate from passenger cabins.
-
-| Field | Source value | Status / basis |
-| --- | --- | --- |
-| Flight seats | 3 people | source; |
-| Maximum flight seats | 3 people | source; |
+| Missile capacity | 9 pylons | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Initial missiles | 1 missiles | project choice; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Equipment capacity | 10 project slots | estimated; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Docking computer | Yes | user required; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Hyperspace drive | Yes | user required; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Cargo expansion | 35 t | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Required crew | 1 people | project adoption of solo-operated ED profile; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Reserved crew quarters | 1 people | project allocation; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| initial_charter_passenger_berths | 0 | project choice; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Passengers aboard | 0 people | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Free passenger places | 0 people | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Hold used by cabins | 0 t | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Usable cargo after fit | 92 t | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Rear laser | Supported mount, empty | original authored; Original facings bitmask15; no extra laser ownership granted. |
+| Left laser | Supported mount, empty | original authored; Original facings bitmask15; no extra laser ownership granted. |
+| Right laser | Supported mount, empty | original authored; Original facings bitmask15; no extra laser ownership granted. |
 
 <a id="sh026"></a>
 

@@ -1704,7 +1704,7 @@
       "id": "SH025",
       "catalogue": {
         "schemaVersion": 2,
-        "family": "cobra",
+        "family": "peregrine",
         "objectKind": "ship",
         "origin": "human",
         "roleWeights": [
@@ -1742,7 +1742,7 @@
           "tradeLane",
           "deepSpace"
         ],
-        "basis": "project classification judgement; reviewed hull/spec context, no historical primary-role claim. Project general commerce/courier specialization from reviewed identity, family, performance and retained source context; apply requested25t minimum. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned.",
+        "basis": "Original L337 Peregrine Mk V, trader, blueprintFabrication; single-hull F01 activation. F01-SH025-CALIBRATION-v1: project estimate, maximum bounding extent 120 metres for size-tier-2 multirole hull; not an authored measurement or predecessor dimension. Uniform scale 36.95309420575483 from approved original nativeDesign bounds, +Z forward/+Y up; retain proportions and openings. Hull SHA256 33f4113a86ba833d4a0178984ca3bb6c963bbdeabc8eb9c38059d5a17d665671; specification SHA256 8c608e9f1a9a325b3c275f64a9428832c4f6890b7465f966c907daa70b4db313. Actual docking clearance remains unqualified.",
         "primaryRole": "trader",
         "placementStatus": "declared",
         "isCapital": false,
@@ -1753,10 +1753,10 @@
         "minimumBuildTechLevel": 10
       },
       "game": {
-        "cargo": 35,
-        "cargoExpansion": 0
+        "cargo": 92,
+        "cargoExpansion": 35
       },
-      "cargoBasis": "FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation.",
+      "cargoBasis": "Approved F01 original L337 Peregrine Mk V specification: 92t cargo and 35t optional cargo expansion, applied without predecessor scaling. Supersedes the earlier FR036-FR046 project balance proposal; originalGame and sourceFileSHA256 retain historical source facts.",
       "sourceFileSHA256": "7ee5d92c1bdbd2b052c0536682695bedc86c4c247eabb5131d2dff46ddab32ee",
       "sourceRoleEvidence": [],
       "originalGame": {
@@ -1764,7 +1764,8 @@
         "cargoExpansion": 0
       },
       "integrationNotes": [
-        "Current cargo 12t is below primary minimum 25t; rebalance before enabling this type."
+        "Historical pre-F01 proposal: Current cargo 12t is below primary minimum 25t; rebalance before enabling this type.",
+        "F01 activates original L337-PLAYER-SH025 with the approved Peregrine Mk V 92t hold and 35t cargo expansion; the historical 12t/0t values are not the current gameplay profile."
       ],
       "encounterCoverageStatus": "authoredOrNaturalPlacementPending_G1",
       "fabricationBasis": {

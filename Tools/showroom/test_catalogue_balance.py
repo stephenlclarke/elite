@@ -84,7 +84,16 @@ class CatalogueBalanceTests(unittest.TestCase):
             row = rows[ship["id"]]
             if "game" in ship:
                 self.assertGreaterEqual(ship["game"]["cargo"], row["originalGame"]["cargo"])
-                self.assertEqual(ship["game"]["cargoExpansion"], row["originalGame"]["cargoExpansion"])
+                if ship["id"] == "SH025":
+                    # F01 replaces the historical profile; keep its archive independently intact.
+                    self.assertEqual(ship["name"], "Peregrine Mk V")
+                    self.assertEqual(ship["catalogue"]["family"], "peregrine")
+                    self.assertEqual([profile["id"] for profile in ship["profiles"]], ["L337-PLAYER-SH025"])
+                    self.assertEqual(row["originalGame"], {"cargo": 12, "cargoExpansion": 0})
+                    self.assertEqual(row["game"], {"cargo": 92, "cargoExpansion": 35})
+                    self.assertEqual({key: ship["game"][key] for key in row["game"]}, row["game"])
+                else:
+                    self.assertEqual(ship["game"]["cargoExpansion"], row["originalGame"]["cargoExpansion"])
             # Overlay idempotence preserves unrelated authored fields.
             self.assertEqual(balance.apply_balance(ship, rows), ship)
 

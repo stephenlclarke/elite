@@ -1038,15 +1038,15 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Trade-in (CR) | 103500.0 |
 | Design | 2088 vertices; 1459 faces |
 
-## SH025 - Cobra Mk V
+## SH025 - Peregrine Mk V
 
-![Rotating Cobra Mk V](ships/SH025.gif)
+![Rotating Peregrine Mk V](ships/SH025.gif)
 
 **Class:** Ship | [Definition](../Sources/EliteCore/Resources/Ships/SH025.toml) | [Provenance](SHIP-PROVENANCE.md#sh025)
 
 | Game specification | Value |
 | --- | --- |
-| Project family | cobra |
+| Project family | peregrine |
 | Primary display type | Trader |
 | Functional AI role | trader |
 | Object kind / origin | ship / human |
@@ -1060,26 +1060,26 @@ Exchange at a main station: new hull price less 75% of your current hull price. 
 | Minimum displayed build Tech Level | 10 |
 | Collection milestone | blueprintAndFabrication |
 | Damage policy | destructible |
-| Cargo (t) | 35 |
-| Top speed | 33.3 |
-| Acceleration (speed/s) | 12.0 |
-| Energy capacity | 384.0 |
-| Energy recharge /s | 2.0 |
-| Roll (rad/s) | 1.1 |
-| Pitch (rad/s) | 0.8 |
-| Yaw (rad/s) | 0.6 |
-| Each shield | 510.0 |
-| Shield recharge /s | 1.0 |
-| Fuel tank (LY) | 7.0 |
-| Base jump (LY) | 7.0 |
+| Cargo (t) | 92 |
+| Top speed | 34.3 |
+| Acceleration (speed/s) | 9.1 |
+| Energy capacity | 380.0 |
+| Energy recharge /s | 4.2 |
+| Roll (rad/s) | 0.8 |
+| Pitch (rad/s) | 0.7 |
+| Yaw (rad/s) | 0.7 |
+| Each shield | 300.0 |
+| Shield recharge /s | 1.8 |
+| Fuel tank (LY) | 13.0 |
+| Base jump (LY) | 9.0 |
 | Jump charge (s) | 15.0 |
-| Missile pylons | 5 |
-| Laser mounts | Front |
-| Cargo bay upgrade (t) | 0 |
-| Hull price (CR) | 164,000 |
-| Power index | 1916.0 |
-| Trade-in (CR) | 123000.0 |
-| Design | 2296 vertices; 1579 faces |
+| Missile pylons | 9 |
+| Laser mounts | Front, Rear, Left, Right |
+| Cargo bay upgrade (t) | 35 |
+| Hull price (CR) | 274,000 |
+| Power index | 2203.0 |
+| Trade-in (CR) | 205500.0 |
+| Design | 2072 vertices; 3484 faces |
 
 ## SH026 - Constrictor
 
