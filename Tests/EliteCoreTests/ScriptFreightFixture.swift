@@ -270,7 +270,9 @@ extension GameRuntime {
   func freightFatalHit() throws {
     let id = game.nextBodyID
     game.nextBodyID += 1
-    game.bodies.append(.init(id: id, hull: .cobra, position: .init(0, 0, 500), hostile: true))
+    // The current native SH025 has an axial opening: require a real side-on surface ray.
+    // The contact below remains authoritative; no fabricated hit or fatal-loss receipt.
+    game.bodies.append(.init(id: id, hull: .cobra, position: .init(500, 0, 0), hostile: true))
     game.ensurePhysicalActors()
     let source = try #require(game.bodies.first { $0.id == id })
     let owner = try #require(source.physical?.identity)
