@@ -13,6 +13,21 @@ enum CurrentNativeSaveTestFixture {
     try #require(object(world) as? NSDictionary)
   }
 
+  /// Failure-only facts distinguish the disk projection from strict world validation.
+  @inline(never)
+  private static func diskMismatchFacts(
+    _ stored: borrowing Commander, expected: borrowing Commander
+  ) throws -> String {
+    var actualFields = try #require(object(stored) as? [String: Any])
+    var expectedFields = try #require(object(expected) as? [String: Any])
+    actualFields.removeValue(forKey: "savedWantedCareers")
+    expectedFields.removeValue(forKey: "savedWantedCareers")
+    let otherFieldsMatch = NSDictionary(dictionary: actualFields).isEqual(
+      NSDictionary(dictionary: expectedFields))
+    let wantedMatches = stored.wantedCareers == expected.wantedCareers
+    return "wantedCareersMatch=\(wantedMatches); otherCommanderFieldsMatch=\(otherFieldsMatch)"
+  }
+
   /// Native station publication captures condition only; these fixtures have no destroyed source.
   private static func publicationExpectation(_ before: Game) throws -> Commander {
     var expected = before.commander
@@ -177,7 +192,13 @@ enum CurrentNativeSaveTestFixture {
       try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
     }
     let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
-    try #require(stored == expectedDisk && world.valid && world.consistent(with: stored))
+    let diskMatches = stored == expectedDisk
+    if !diskMatches {
+      let detail = try diskMismatchFacts(stored, expected: expectedDisk)
+      try #require(diskMatches, Comment(rawValue: detail))
+    }
+    try #require(world.valid)
+    try #require(world.consistent(with: stored))
     #expect(try worldObject(world).isEqual(expectedWorld))
     let paths = Set(try FileManager.default.subpathsOfDirectory(atPath: directory.path))
     let files = try ScriptFinanceTestFixture.files(directory)
