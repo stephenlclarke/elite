@@ -285,9 +285,11 @@ extension CourierFixture {
 @Test func courierTerminalLoadRequiresExactSharedCompletionSequenceCauseAndRevision() throws {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
-  // The pinned epoch-zero data-3 listing has real headroom; data-1 is correctly disabled.
-  let (key, offer) = try fixture.usable(&game, row: 4)
+  let pinned = CourierNativeFixture.rows[4]
+  var game = try pinned.game(using: fixture)
+  // The existing origin-zero data-3 witness has independently frozen headroom.
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let terms = try #require(offer.courier)
   try #require(terms.row == 4 && terms.calendarLowerBoundSeconds < terms.duration)
   let id = try game.confirmContract(game.contractAcceptanceQuote(board: key, offer: offer.id))
@@ -325,8 +327,9 @@ extension CourierFixture {
     candidate.scriptState.instances[id] = corrupt
     #expect(!candidate.valid)
   }
-  var held = fixture.game()
-  let (heldKey, heldOffer) = try fixture.usable(&held, row: 4)
+  var held = try pinned.game(using: fixture)
+  let (heldKey, heldOffer) = try fixture.usable(&held, row: pinned.row)
+  try pinned.verify(try #require(held.commander.contracts.boards[heldKey]), heldOffer)
   let heldTerms = try #require(heldOffer.courier)
   try #require(heldTerms.row == 4 && heldTerms.calendarLowerBoundSeconds < heldTerms.duration)
   let heldID = try held.confirmContract(
@@ -340,8 +343,11 @@ extension CourierFixture {
 {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
+  let pinned = CourierNativeFixture.rows[1]
+  var game = try pinned.game(using: fixture)
   game.commander.credits = 100_000_000
+  let (key, offer) = try fixture.usable(&game, variant: .package, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let id = try fixture.accept(&game, variant: .package)
   let original = try #require(game.commander.scriptState.instances[id]?.courier)
   let frozen = game.commander.scriptState.instances[id]?.contract

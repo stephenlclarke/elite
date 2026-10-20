@@ -343,6 +343,8 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   }
   game.commander.fuel = 0
   game.selection = 0
+  let expectedRefill = Plugh.discount(
+    (game.commander.fuelCapacity - game.commander.fuel) * Equipment.base[0].price)
   let refill = game.refillCost
   let cash = game.commander.credits
   let frame = Display.equipmentScreen(game, width: 768, height: 768)
@@ -351,5 +353,5 @@ private func buyPlughPredecessor(_ parent: EquipmentNodeID, game: inout Game) th
   game.purchase()
   #expect(
     game.commander.credits == cash - refill && game.commander.fuel == game.commander.fuelCapacity)
-  #expect(refill == Plugh.discount(70 * Equipment.base[0].price))
+  #expect(refill == expectedRefill)
 }

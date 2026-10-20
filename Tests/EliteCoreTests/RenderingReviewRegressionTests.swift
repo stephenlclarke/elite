@@ -67,6 +67,9 @@ func nearPlaneShipKeepsVisibleGeometryWhenItsCenterIsBehind(style: ShipDisplaySt
 @Test func showroomPortableProjectionMatchesPaidCargoBayHullExchangeWithoutMutation() throws {
   var game = Game(executive: false)
   game.commander.credits = 10_000_000
+  // Carried fuel must fit the selected hull before the paid fitting and real exchange.
+  let target = try #require(ShipCatalogue.ship("SH013")?.game)
+  game.commander.fuel = target.fuel
   game.screen = .equipment
   let bay = try #require(Equipment.all.first { $0.name == "Large Cargo Bay" })
   let quote = try game.quoteEquipmentPurchase(bay)

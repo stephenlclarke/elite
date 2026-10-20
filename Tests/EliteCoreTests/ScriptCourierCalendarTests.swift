@@ -23,7 +23,10 @@ import Testing
   let fixture = try CourierFixture()
   defer { fixture.clean() }
   for late in [false, true] {
-    var game = fixture.game()
+    let pinned = CourierNativeFixture.rows[0]
+    var game = try pinned.game(using: fixture)
+    let (key, offer) = try fixture.usable(&game, row: pinned.row)
+    try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
     let id = try fixture.accept(&game)
     try fixture.travel(&game, id: id)
     let due = try #require(game.commander.scriptState.instances[id]?.contract?.deadline)
