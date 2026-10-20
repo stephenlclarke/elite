@@ -12,14 +12,21 @@ enum NativeOriginalSurveySave {
   }
 
   static func hasClaims(_ commander: borrowing Commander) -> Bool {
-    commander.scriptState.instances.values.contains {
-      $0.definition == NativeOriginalSurvey.stateID || $0.digest == NativeOriginalSurvey.digest
-        || $0.savedOriginalSurvey != nil
-    }
-      || commander.contracts.boards.values.contains {
-        $0.group == NativeOriginalSurvey.stateID || $0.digest == NativeOriginalSurvey.digest
-          || ($0.provider == "l337.contract" && $0.id == NativeOriginalSurvey.boardID)
+    for instance in commander.scriptState.instances.values {
+      if instance.definition == NativeOriginalSurvey.stateID
+        || instance.digest == NativeOriginalSurvey.digest || instance.savedOriginalSurvey != nil
+      {
+        return true
       }
+    }
+    for board in commander.contracts.boards.values {
+      if board.group == NativeOriginalSurvey.stateID || board.digest == NativeOriginalSurvey.digest
+        || (board.provider == "l337.contract" && board.id == NativeOriginalSurvey.boardID)
+      {
+        return true
+      }
+    }
+    return false
   }
 
   static func validateClaims(_ commander: borrowing Commander) -> Bool {
@@ -95,8 +102,8 @@ enum NativeOriginalSurveySave {
     else { return false }
     let expected = Set(0...source.readings.count)
     if instance.outcome == .active {
-      return source.terminalOperation == nil && source.terminalDock == nil
-        && instance.milestones == expected
+      guard source.terminalOperation == nil, source.terminalDock == nil else { return false }
+      return instance.milestones == expected
     }
     guard
       source.terminalOperation
@@ -113,11 +120,13 @@ enum NativeOriginalSurveySave {
     else { return false }
     switch instance.outcome {
     case .complete:
-      return NativeOriginalSurvey.returnReady(source, dock: dock)
-        && instance.milestones == Set(0...4)
-        && job.settlementAmount == NativeOriginalSurvey.reward
+      guard NativeOriginalSurvey.returnReady(source, dock: dock),
+        instance.milestones == Set(0...4)
+      else { return false }
+      return job.settlementAmount == NativeOriginalSurvey.reward
     case .abandoned:
-      return instance.milestones == expected && job.settlementAmount == 0
+      guard instance.milestones == expected else { return false }
+      return job.settlementAmount == 0
     case .active, .failed: return false
     }
   }
