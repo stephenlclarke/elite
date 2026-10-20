@@ -5,8 +5,8 @@ These are complete frozen design handoffs approved by Root on 20 October 2026. A
 | Family | Status and owner | Complete approved specification | Root approval |
 | --- | --- | --- | --- |
 | G08 | Qualified source integrated; limited signed1052 | [Complete journey](G08-NON-EMP-RESCUE-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](G08-ROOT-APPROVAL-20261020.json) |
-| G14 | In development — G3 / MBA after integrated G08 | [Complete journey](G14-FOUR-PERSON-EVACUATION-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](G14-ROOT-APPROVAL-20261020.json) |
-| G10 | Approved / queued — G3 after qualified integrated G14 | [Complete journey](G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md) | [Approval metadata](G10-ROOT-APPROVAL-20261020.json) |
+| G14 | Qualified source integrated at fbceccc2 —24methods/36cases; signed preview pending | [Complete journey](G14-FOUR-PERSON-EVACUATION-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](G14-ROOT-APPROVAL-20261020.json) |
+| G10 | In development — G3 from integrated fbceccc2 | [Complete journey](G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md) | [Approval metadata](G10-ROOT-APPROVAL-20261020.json) |
 
 The original filenames and document headers retain the word “draft”; the paired Root metadata records approval of those exact bytes. Approval JSON preserves original authoring paths as provenance. Use the relative specification files in this directory for the durable repository copies. The approval does not relax source authority, consent, cabin capacity, native physics, persistence, review or qualification requirements.
 
@@ -21,4 +21,4 @@ The original filenames and document headers retain the word “draft”; the pai
 
 The [M01 bounded closure map](M01-BOUNDED-CLOSURE-MAP-20261020.md), SHA256 `5ed7ff6a8f0407704364e2a86a9fed6ab97113f1492c6d7bbe39fcdb71954fc8`, preserves the previously approved ordinary ARLEN player-chain scope. Actual attempts1025/1038 remain in the ledger; another manual docking attempt is not currently assigned. Signed1052 verifies limited startup/native-menu/gallery entry only, without a verified G08 offer or full journey.
 
-G10 remains queued. Shared Game/ScriptMissionState hooks require post-G14 ownership preflight and an explicit Root reservation before editing. G09 then W05 are subsequent candidates, not assigned work. Copying these designs activates no pack or runtime behavior.
+G10 is assigned to G3 in `/Users/sclarke/.codex/worktrees/native-consented-survey/elite` from exact integrated base `fbceccc2374317c0bb7c45a8589ba371dbfc3bef`. Root-approved targeted hook revalidation is complete: the Game epoch/runtime and frame hooks do not overlap native-person COW, and ScriptMissionState COW/codec remains unchanged. The existing24-path scope is reserved and implementation has started; heavy qualification later routes through G1 while G1 retains the packaging/native lease. G09 then W05 are subsequent candidates, not assigned work. Copying these designs activates no pack or runtime behavior.
