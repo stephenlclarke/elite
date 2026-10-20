@@ -50,8 +50,13 @@ extension Basis3 {
 }
 extension Game {
   mutating func persistBlackjackTargets() {
-    guard withReadOnlyCommander({ $0.galaxy }) == 1 else { return }
+    guard withReadOnlyCommander(Self.blackjackCommanderGalaxy) == 1 else { return }
     persistBlackjackTargetsInGalaxyOne()
+  }
+
+  @inline(never)
+  private static func blackjackCommanderGalaxy(_ commander: borrowing Commander) -> Int {
+    commander.galaxy
   }
 
   @inline(never)
