@@ -52,11 +52,14 @@ extension ScriptSaveJSONPreflight {
   static func validateRepairLoopFields(
     _ data: Data, part: ScriptFreightVersionedSave.Part, schema: Int? = nil
   ) throws {
-    try NativePeopleVersionedSave.validateStationPassengerFields(data, part: part, schema: schema)
+    try NativeOriginalSurveySave.validateFields(data, part: part, schema: schema)
+    let predecessorSchema = NativeOriginalSurveySave.lowerSchema(schema)
+    try NativePeopleVersionedSave.validateStationPassengerFields(
+      data, part: part, schema: predecessorSchema)
     let supplierSchema = NativeStationPassengerJourneySave.lowerSchema(
       NativeOrbitalOutlookJourneySave.lowerSchema(
         NativeOriginalRescueJourneySave.lowerSchema(
-          NativeOriginalEvacuationSave.lowerSchema(schema))))
+          NativeOriginalEvacuationSave.lowerSchema(predecessorSchema))))
     try OriginalConsentedFreightSupplySave.validateFields(data, part: part, schema: supplierSchema)
     let serviceSchema = OriginalConsentedFreightSupplySave.legacyServiceSchema(supplierSchema)
     try WayfarerRepairLoopSave.validateFields(data, part: part, schema: serviceSchema)

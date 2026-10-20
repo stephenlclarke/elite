@@ -20,6 +20,15 @@ extension Game {
         "calendar_seconds": .number(receipt.calendarSeconds),
       ])
     }
+    if let source = originalSurveyState {
+      fields["consented_survey"] = .object([
+        "mission": source.permission.map { .string($0.mission.uuidString) } ?? .null,
+        "completed_readings": .integer(Int64(source.readings.count)),
+        "next_target": source.readings.count < 3
+          ? .string(NativeOriginalSurvey.targets[source.readings.count]) : .null,
+        "status": originalSurveyScanStatus.map(ScriptValue.string) ?? .null,
+      ])
+    }
     if let source = commander.nativePeople?.outlookJourney {
       fields["orbital_outlook"] = .object([
         "people": .integer(Int64(source.references.count)),

@@ -124,6 +124,11 @@ struct ScriptClueTrustCatalog: Sendable {
       version: "1.0.0", digest: NativeOriginalRescueJourney.digest,
       terminalEvents: ["mission.receipted"]),
     .init(
+      sourceID: NativeOriginalSurvey.stateID,
+      definition: NativeOriginalSurvey.stateID,
+      version: "1.0.0", digest: NativeOriginalSurvey.digest,
+      terminalEvents: ["mission.receipted"]),
+    .init(
       sourceID: NativeOrbitalOutlookJourney.stateID,
       definition: NativeOrbitalOutlookJourney.stateID,
       version: "1.0.0", digest: NativeOrbitalOutlookJourney.digest,

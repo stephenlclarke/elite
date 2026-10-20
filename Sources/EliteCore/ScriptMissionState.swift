@@ -73,6 +73,7 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   var savedWayfarerColdChain: WayfarerColdChainCustody?
   var savedWayfarerRepairLoop: WayfarerRepairLoopCustody?
   var savedNavigationTrade: ScriptNavigationTradeState?
+  var savedOriginalSurvey: NativeOriginalSurveyState?
   var courier: ScriptCourierCustody?
   var pledgeReceiptID: UUID?
   var receiptJoins: [String: [UUID]]?
@@ -190,6 +191,10 @@ public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
   var savedNavigationTrade: ScriptNavigationTradeState? {
     _read { yield storage[0].savedNavigationTrade }
     _modify { yield &storage[0].savedNavigationTrade }
+  }
+  var savedOriginalSurvey: NativeOriginalSurveyState? {
+    _read { yield storage[0].savedOriginalSurvey }
+    _modify { yield &storage[0].savedOriginalSurvey }
   }
 
   public var courier: ScriptCourierCustody? {
@@ -466,6 +471,15 @@ public struct ScriptEngineState: Codable, Sendable, Equatable {
       guard cargo.valid(state: instance, engine: self) else { return false }
     } else {
       guard instance.contract?.offer.freightPlan == nil else { return false }
+    }
+    if instance.definition == NativeOriginalSurvey.stateID {
+      guard let survey = instance.savedOriginalSurvey, survey.definition.valid,
+        survey.version == instance.version, survey.digest == instance.digest,
+        survey.permission?.mission == instance.id,
+        survey.readings.count <= 3, survey.authorities.count == survey.readings.count
+      else { return false }
+    } else if instance.savedOriginalSurvey != nil {
+      return false
     }
     if let trade = instance.savedNavigationTrade {
       guard trade.valid(instance: instance, engine: self) else { return false }

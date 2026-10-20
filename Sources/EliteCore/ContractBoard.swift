@@ -16,8 +16,10 @@ public struct ContractBoardRow: Sendable {
   var provider: ProviderContractRow? = nil
   var repairLoop: WayfarerRepairLoopBoardRow? = nil
   var coldChain: WayfarerColdChainBoardRow? = nil
+  var survey: NativeOriginalSurveyAction? = nil
   public var key: String {
-    repairLoop?.key ?? coldChain?.key ?? provider?.key ?? people?.key ?? finance?.key ?? rrs?.key
+    survey?.key ?? repairLoop?.key ?? coldChain?.key ?? provider?.key ?? people?.key ?? finance?.key
+      ?? rrs?.key
       ?? (board + "/" + (offer?.id.uuidString ?? "unavailable"))
   }
 }
@@ -39,6 +41,7 @@ private enum ContractBoardReview: Sendable {
   case provider(ProviderContractQuote)
   case repairLoop(WayfarerRepairLoopBoardReview)
   case coldChain(WayfarerColdChainBoardReview)
+  case survey(NativeOriginalSurveyReview)
 }
 
 public struct ContractBoardUI: Sendable {
@@ -143,6 +146,19 @@ public struct ContractBoardUI: Sendable {
   }
   var previous: Screen = .status
   var restoredSelection: String?
+  var surveyQuote: NativeOriginalSurveyReview? {
+    get {
+      guard case .survey(let quote)? = review else { return nil }
+      return quote
+    }
+    set {
+      if let newValue {
+        review = .survey(newValue)
+      } else if case .survey(_)? = review {
+        review = nil
+      }
+    }
+  }
   public init() {}
   var selected: ContractBoardRow? { rows.indices.contains(selection) ? rows[selection] : nil }
   var save: ContractScreenSave {
@@ -189,6 +205,7 @@ extension Game {
     candidate.contractBoard.providerQuote = nil
     candidate.contractBoard.repairLoopQuote = nil
     candidate.contractBoard.coldChainQuote = nil
+    candidate.contractBoard.surveyQuote = nil
     candidate.gallery.providerIntent = nil
     candidate.contractBoard.presentationGeneration = UUID()
     publishContractBoard(&candidate)
@@ -202,7 +219,7 @@ extension Game {
   ) {
     let selected = save?.selection ?? contractBoard.selected?.key ?? contractBoard.restoredSelection
     var rows =
-      rrsCourierRows + financeRows + nativePeopleRows + providerContractRows
+      rrsCourierRows + financeRows + nativePeopleRows + providerContractRows + originalSurveyRows
       + wayfarerColdChainRows(failures: failures)
       + wayfarerRepairLoopRows(failures: failures)
     for pack in scriptPacks.sorted(by: {
@@ -238,6 +255,7 @@ extension Game {
       if contractBoard.quote?.pledge != nil || contractBoard.financeQuote != nil
         || contractBoard.peopleQuote != nil || contractBoard.providerQuote != nil
         || contractBoard.coldChainQuote != nil || contractBoard.repairLoopQuote != nil
+        || contractBoard.surveyQuote != nil
       {
         contractBoard.action = .back
       }
@@ -245,6 +263,11 @@ extension Game {
   }
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if let action = contractBoard.selected?.survey {
+      contractBoard.surveyQuote = originalSurveyReview(action)
+      return
+    }
+    contractBoard.surveyQuote = nil
     if let row = contractBoard.selected?.repairLoop {
       contractBoard.repairLoopQuote = wayfarerRepairLoopReview(row)
       return
@@ -332,10 +355,21 @@ extension Game {
       contractBoard.providerQuote = nil
       contractBoard.repairLoopQuote = nil
       contractBoard.coldChainQuote = nil
+      contractBoard.surveyQuote = nil
       gallery.providerIntent = nil
       return
     }
     do {
+      if let action = contractBoard.selected?.survey {
+        guard contractBoard.action == .accept, let quote = contractBoard.surveyQuote,
+          quote.action == action
+        else { throw MissionPackError("Review the survey and choose Confirm or Back.") }
+        try confirmOriginalSurvey(quote)
+        refreshContractRows()
+        contractBoard.detail = false
+        contractBoard.surveyQuote = nil
+        return
+      }
       if let row = contractBoard.selected?.repairLoop {
         guard contractBoard.action == .accept, let quote = contractBoard.repairLoopQuote,
           quote.row == row
