@@ -591,7 +591,6 @@ extension Game {
     else { return false }
     let player = commander.playerMesh
     let geometry = MainStationGeometry.mesh
-    let port = MainStationGeometry.docking
     let endOrientation = modelPose(of: station).orientation
     var unspin = Basis3()
     unspin.rotate(pitch: 0, roll: -station.rotationRate * delta, yaw: 0)
@@ -602,31 +601,107 @@ extension Game {
     let margin =
       (nativeStationRadius(player) + nativeStationRadius(geometry)) * angularBound
       + translationMargin
+    if nativeMainStationSweepIntervalIsClear(
+      player, from: start, to: end, position: previous.position, endPosition: current.position,
+      fromOrientation: startOrientation, toOrientation: endOrientation,
+      margin: margin, delta: delta, requireAperture: requireAperture, observation: &observation)
+    {
+      return true
+    }
+    // Refinement proves the same attained native step, never an arbitrary predicted corridor.
+    guard delta > 0.02, flight.physicalTime >= delta, end == flight.pose,
+      stationAutoDockingActive, dockingComputer, speed == 0,
+      !playerEMPDisabled, !isEMPDisabled(station),
+      workGuidance == nil, workBraking == nil,
+      approvedWorkMotion == nil, lastAppliedWorkMotion == nil,
+      world.inertia(for: .main(identity)) == nil, previous.position == current.position,
+      start.position.finite, end.position.finite,
+      start.orientation.validRotation, end.orientation.validRotation,
+      endOrientation.validRotation,
+      [pitch, roll, yaw, station.rotationRate].allSatisfy(\.isFinite),
+      autoPilot.velocity.finite
+    else { return false }
+    var expected = start
+    expected.advanceView(
+      pitch: pitch * delta, roll: roll * delta, yaw: yaw * delta,
+      translation: .init(0, 0, 0))
+    let axes = [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)]
+    guard
+      axes.allSatisfy({
+        (expected.orientation.apply($0) - end.orientation.apply($0)).length < 1e-8
+      }),
+      (end.position - start.position - end.orientation.apply(autoPilot.velocity * delta)).length
+        < 1e-8
+    else { return false }
+    let count = Int(ceil(delta / 0.02))
+    guard (2...5).contains(count) else { return false }
+    let interval = delta / Double(count)
+    guard interval <= 0.02 else { return false }
+    let intervalMargin =
+      (nativeStationRadius(player) + nativeStationRadius(geometry))
+      * (abs(pitch) + abs(roll) + abs(yaw) + abs(station.rotationRate)) * interval
+    var priorShip = start
+    var priorStation = startOrientation
+    for index in 1...count {
+      let fraction = Double(index) / Double(count)
+      let elapsed = delta * fraction
+      var nextShip = start
+      nextShip.advanceView(
+        pitch: pitch * elapsed, roll: roll * elapsed, yaw: yaw * elapsed,
+        translation: .init(0, 0, 0))
+      nextShip.position = start.position + (end.position - start.position) * fraction
+      if index == count { nextShip = end }
+      var remainingSpin = Basis3()
+      remainingSpin.rotate(pitch: 0, roll: -station.rotationRate * (delta - elapsed), yaw: 0)
+      let nextStation = endOrientation.composed(with: remainingSpin)
+      guard
+        nativeMainStationSweepIntervalIsClear(
+          player, from: priorShip, to: nextShip,
+          position: previous.position, endPosition: current.position,
+          fromOrientation: priorStation, toOrientation: nextStation,
+          margin: intervalMargin, delta: interval, requireAperture: requireAperture,
+          observation: &observation)
+      else { return false }
+      priorShip = nextShip
+      priorStation = nextStation
+    }
+    return true
+  }
+
+  /// Each interval retains the original full-hull, aperture and triangle-structure proof.
+  private func nativeMainStationSweepIntervalIsClear(
+    _ player: Mesh, from start: ShipPose, to end: ShipPose,
+    position: Vector3, endPosition: Vector3,
+    fromOrientation: Basis3, toOrientation: Basis3,
+    margin: Double, delta: Double, requireAperture: Bool,
+    observation: inout [String: String]?
+  ) -> Bool {
     observation?["refusal"] = "main.margin"
     observation?["geometryMargin"] = String(margin)
     observation?["geometryDelta"] = String(delta)
     guard margin.isFinite else { return false }
+    let port = MainStationGeometry.docking
     if requireAperture {
       observation?["refusal"] = "main.aperture-shape"
       guard port.fits(player, margin: margin) else { return false }
       observation?["refusal"] = "main.aperture-start"
       guard
         nativeStationHullFits(
-          player, ship: start, station: previous.position, orientation: startOrientation,
+          player, ship: start, station: position, orientation: fromOrientation,
           port: port, margin: margin)
       else { return false }
       observation?["refusal"] = "main.aperture-end"
       guard
         nativeStationHullFits(
-          player, ship: end, station: current.position, orientation: endOrientation,
+          player, ship: end, station: endPosition, orientation: toOrientation,
           port: port, margin: margin)
       else { return false }
     }
     observation?["refusal"] = "main.structure"
     return nativeStructureHullSweepClear(
-      player, from: start, to: end, position: previous.position, endPosition: current.position,
-      fromOrientation: startOrientation, toOrientation: endOrientation,
-      margin: margin, mesh: geometry)
+      player, from: start, to: end, position: position, endPosition: endPosition,
+      fromOrientation: fromOrientation, toOrientation: toOrientation,
+      margin: margin, mesh: MainStationGeometry.mesh)
   }
 
   /// Reuse native source, aperture and corridor checks for a proposed approach.
