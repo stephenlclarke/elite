@@ -386,3 +386,7 @@ Record Root's exact bounded scriptState presence-check scope exception and844/84
 ## Current active assignment register
 
 Update only current ledger status/register to Root-approved MC1bb7d private COW script storage and active846/847 eight-method/ten-case qualification, with845 storage evidence historical; no pending-proposal or idle-runtime claim. MBA06 revision2 source169deb74 display-only integrity read is owner-active, retaining eight unaffected PASS cases and rerunning seven native flows. Both actual build processes are Root-confirmed live. Preserve historical outcomes unchanged and keep owner qualification/review/integration distinct. No new audit, validation run or runtime action; normal scoped Markdown lint/diff check only.
+
+## Batch847 partial qualification and MBA06 owner PASS
+
+Replace stale active-build labels with actual847 storage1/1 PASS/seven methods-nine cases unfinished and next owner-value proposal pending, preserving approved representation scope and all proof hashes. Record MBA06 final881 owner14methods15cases aggregate qualification, retained8+corrected7 rather than one15 run, actual native pack digest and final note-only delta. G2 now owns ONE independent review with no retests; source/cache frozen and integration waits CLEAN. Keep native/storage/expiry/artwork/milestone/release limits explicit. No extra audit, runtime or app/Slack claim; scoped Markdown lint/diff only.
