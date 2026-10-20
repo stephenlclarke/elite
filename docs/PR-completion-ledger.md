@@ -590,3 +590,7 @@ Root approves demonstratedOriginalContractOfferPolicy15thpath/twoexactclosedG13d
 ## Record907 production-frame evidence and G13 text scope17
 
 Record actual907samebinarysinglecorefault/wholeclosure and SP-FP retainedspan metadata: productionwriteCommander87120B, not sourceallocationproof/test-stackwaiver. MC1inspects implicatedlifetime for ONEproposal/no leafcampaign/newdiagnostic/G1job. Rootextends G13to17paths by exactG13-only pledgeSummary and donationsuccess text removing inheritedstandingclaim for realreserve/500CR/no reward, otherpledgesunchanged. Native+testdraft/noexecution/PASS; prior15receipt preserved/current17registerbound. Scoped Markdownlint/whitespace/historicalhashes only.
+
+## Record exact907 writer phase approval
+
+Rootapproves ONLYScriptTransactions identicalnativeprep then noninlineentireoriginalpublication suffix+final3writes, measured87120Bcaller lifetime/no newowner-state-schema-codec-order. MC1freeze→matchingbuild→SINGLEcore, existingaffectedwriterunits aftercorePASS; recoveredleafguarddeferred/no leafcampaign/newdiagnostic/G1job. Source remainsunqualified/unintegratedpendingactualownerPASS/fullreview. ScopedMarkdownlint/whitespace/priorhash checks only.
