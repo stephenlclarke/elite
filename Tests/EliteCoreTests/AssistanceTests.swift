@@ -74,17 +74,32 @@ private func assistedGame() -> Game {
   game.key("q")
   #expect(game.autoPilot.targetID == nil)
 }
-@Test func stationAutoCompletesRealDockingFromEitherSideWithEitherSpin() {
+@Test func stationAutoCompletesRealDockingFromEitherSideWithEitherSpin() throws {
   for z in [1800.0, -1800.0] {
     for rate in [-0.3, 0.3] {
       var game = assistedGame()
-      var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, z))
-      station.rotation = 1.4
-      station.rotationRate = rate
-      game.bodies = [station]
-      game.key("tab")
+      let anchor = try #require(
+        game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+      let index = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+      // Express the original relative start by moving the observer, retaining the real source.
+      NativeStationTestFixture.reframe(
+        &game,
+        to: .init(
+          position: anchor.position - anchor.orientation.apply(.init(0, 0, z)),
+          orientation: anchor.orientation))
+      game.bodies[index].rotation = 1.4
+      game.bodies[index].rotationRate = rate
+      try #require(game.bodies[index].physical?.identity == anchor.identity)
+      #expect((game.bodies[index].position - Vector3(0, 0, z)).length < 1e-8)
+      #expect(game.bodies[index].rotation == 1.4 && game.bodies[index].rotationRate == rate)
+      for _ in 0..<(game.bodies.count * 2) {
+        game.key("tab")
+        if game.autoPilot.targetActor == anchor.identity { break }
+      }
+      try #require(game.autoPilot.targetID == 0 && game.autoPilot.targetActor == anchor.identity)
       for _ in 0..<7000 where !game.docked { game.tick(delta: 0.02) }
       #expect(game.docked && game.screen == .status && game.bodies.isEmpty)
+      #expect(game.nativeMainStationDockEvidenceIsCurrent)
       #expect(
         !game.ecmControl.events.contains { $0.announcement == .gameplay("DOCKING COLLISION") })
     }
