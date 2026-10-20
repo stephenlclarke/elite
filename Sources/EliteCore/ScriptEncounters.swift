@@ -1,5 +1,10 @@
 import Foundation
 
+private typealias MissionActorAdmissionOwnerFacts = (
+  id: UUID, definition: String, version: String, digest: String, revision: UInt64,
+  outcome: ScriptOutcome
+)
+
 /// Immutable values for one admission validation; never a shared simulation owner.
 private final class MissionActorAdmissionOwnerSnapshot: Sendable {
   private let storedOwner: ScriptInstance
@@ -11,6 +16,17 @@ private final class MissionActorAdmissionOwnerSnapshot: Sendable {
 
   var pack: ScriptPack {
     _read { yield storedPack }
+  }
+
+  var authorityFacts: MissionActorAdmissionOwnerFacts {
+    (
+      storedOwner.id, storedOwner.definition, storedOwner.version, storedOwner.digest,
+      storedOwner.revision, storedOwner.outcome
+    )
+  }
+
+  func installedEncounter(_ id: String) -> ScriptOwnedEncounter? {
+    storedOwner.ownedEncounters[id]
   }
 
   init(
@@ -348,16 +364,21 @@ extension Game {
   }
 
   @inline(never)
-  private func currentMissionActorAdmissionOwner(_ id: UUID) -> (
-    id: UUID, definition: String, version: String, digest: String, revision: UInt64,
-    outcome: ScriptOutcome
-  )? {
+  private func currentMissionActorAdmissionOwner(_ id: UUID) -> MissionActorAdmissionOwnerFacts? {
     withReadOnlyScriptState { state in
       guard let owner = state.instances[id] else { return nil }
       return (
         owner.id, owner.definition, owner.version, owner.digest, owner.revision, owner.outcome
       )
     }
+  }
+
+  /// A normal command still reads actual installed retention; its full-owner temporary returns here.
+  @inline(never)
+  private func currentMissionActorAdmissionInstalledEncounter(
+    instanceID: UUID, encounterID: String
+  ) -> ScriptOwnedEncounter? {
+    withReadOnlyScriptState { $0.instances[instanceID]?.ownedEncounters[encounterID] }
   }
 
   @inline(never)
@@ -372,8 +393,11 @@ extension Game {
     let currentInputs = currentMissionActorAdmissionSourceValues()
     let snapshot = try validatedMissionActorAdmissionOwner(
       source, instances: currentInputs.instances)
+    // No mutation or suspension occurs between this actual-owner validation and its refresh.
+    // Reuse only this invocation-local snapshot; it is never stored in an admission plan.
     let refreshed = try Self.refreshMissionActorAdmissionSource(
       original: self, source: source, owner: snapshot.owner, pack: snapshot.pack,
+      installedOwner: snapshot,
       galaxy: currentInputs.galaxy, system: currentInputs.system)
     guard refreshed.profile == source.profile else {
       throw MissionPackError("Actor admission profile changed before publication.")
@@ -383,7 +407,8 @@ extension Game {
   @inline(never)
   private static func refreshMissionActorAdmissionSource(
     original: borrowing Game, source: borrowing MissionActorAdmissionSource,
-    owner: borrowing ScriptInstance, pack: borrowing ScriptPack, galaxy: Int, system: Int
+    owner: borrowing ScriptInstance, pack: borrowing ScriptPack,
+    installedOwner: MissionActorAdmissionOwnerSnapshot, galaxy: Int, system: Int
   ) throws -> MissionActorAdmissionSource {
     switch source.mode {
     case .retained:
@@ -396,16 +421,16 @@ extension Game {
       else { throw MissionPackError("Retained actor admission source changed before publication.") }
       return try original.sealMissionActorAdmissionSource(
         mode: .retained, authority: .retained, pack: pack, state: owner,
-        encounter: source.retention)
+        encounter: source.retention, installedOwner: installedOwner)
     case .prepared:
       switch source.authority {
       case .missionHandler:
         return try original.preparedMissionActorAdmissionSource(
-          pack: pack, state: owner, encounter: source.retention)
+          pack: pack, state: owner, encounter: source.retention, installedOwner: installedOwner)
       case .worldJob(let identity, let pulse):
         return try original.preparedMissionActorAdmissionSource(
           pack: pack, state: owner, encounter: source.retention,
-          worldJob: identity, pulse: pulse)
+          worldJob: identity, pulse: pulse, installedOwner: installedOwner)
       case .retained, .transit:
         throw MissionPackError("A prepared cohort cannot substitute retained admission authority.")
       }
@@ -501,25 +526,41 @@ extension Game {
   /// A world job supplies its actual UUID and pending pulse, never a Boolean authorization.
   private func preparedMissionActorAdmissionSource(
     pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounter: ScriptOwnedEncounter,
-    worldJob: UUID? = nil, pulse: UInt64? = nil
+    worldJob: UUID? = nil, pulse: UInt64? = nil,
+    installedOwner: MissionActorAdmissionOwnerSnapshot? = nil
   ) throws -> MissionActorAdmissionSource {
-    let currentInputs = currentMissionActorAdmissionSourceValues()
-    guard currentInputs.instances[state.id]?.ownedEncounters[encounter.id]?.admitted != true
+    let installedEncounter: ScriptOwnedEncounter?
+    if let installedOwner {
+      installedEncounter = installedOwner.installedEncounter(encounter.id)
+    } else {
+      installedEncounter = currentMissionActorAdmissionInstalledEncounter(
+        instanceID: state.id, encounterID: encounter.id)
+    }
+    guard installedEncounter?.admitted != true
     else {
       throw MissionPackError("An admitted retained cohort cannot become a fresh prepared source.")
     }
     let authority = try missionActorAdmissionAuthority(
       pack: pack, state: state, encounterID: encounter.id,
-      galaxy: encounter.galaxy, system: encounter.system, worldJob: worldJob, pulse: pulse)
+      galaxy: encounter.galaxy, system: encounter.system, worldJob: worldJob, pulse: pulse,
+      installedOwner: installedOwner)
     return try sealMissionActorAdmissionSource(
-      mode: .prepared, authority: authority, pack: pack, state: state, encounter: encounter)
+      mode: .prepared, authority: authority, pack: pack, state: state, encounter: encounter,
+      installedOwner: installedOwner)
   }
 
   private func missionActorAdmissionAuthority(
     pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounterID: String,
-    galaxy: Int, system: Int, worldJob: UUID?, pulse: UInt64?
+    galaxy: Int, system: Int, worldJob: UUID?, pulse: UInt64?,
+    installedOwner: MissionActorAdmissionOwnerSnapshot? = nil
   ) throws -> MissionActorAdmissionAuthority {
-    guard let stored = currentMissionActorAdmissionOwner(state.id), stored.id == state.id,
+    let storedFacts: MissionActorAdmissionOwnerFacts?
+    if let installedOwner {
+      storedFacts = installedOwner.authorityFacts
+    } else {
+      storedFacts = currentMissionActorAdmissionOwner(state.id)
+    }
+    guard let stored = storedFacts, stored.id == state.id,
       stored.definition == state.definition, stored.version == state.version,
       stored.digest == state.digest, stored.revision == state.revision
     else { throw MissionPackError("Prepared actors require the actual command candidate owner.") }
@@ -552,13 +593,14 @@ extension Game {
 
   private func sealMissionActorAdmissionSource(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
-    pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounter: ScriptOwnedEncounter
+    pack: borrowing ScriptPack, state: borrowing ScriptInstance, encounter: ScriptOwnedEncounter,
+    installedOwner: MissionActorAdmissionOwnerSnapshot? = nil
   ) throws -> MissionActorAdmissionSource {
     let definition = try validateMissionActorAdmissionEncounter(
       mode: mode, pack: pack, state: state, encounter: encounter)
     return try constructMissionActorAdmissionSource(
       mode: mode, authority: authority, pack: pack, state: state, encounter: encounter,
-      definition: definition)
+      definition: definition, installedOwner: installedOwner)
   }
 
   /// Finish full record validation before any template-construction frame becomes active.
@@ -592,11 +634,19 @@ extension Game {
   private func constructMissionActorAdmissionSource(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
     pack: borrowing ScriptPack, state: borrowing ScriptInstance,
-    encounter: borrowing ScriptOwnedEncounter, definition: borrowing ScriptEncounterDefinition
+    encounter: borrowing ScriptOwnedEncounter, definition: borrowing ScriptEncounterDefinition,
+    installedOwner: MissionActorAdmissionOwnerSnapshot? = nil
   ) throws -> MissionActorAdmissionSource {
     let currentInputs = currentMissionActorAdmissionSourceValues()
+    let installedEncounter: ScriptOwnedEncounter?
+    if let installedOwner {
+      installedEncounter = installedOwner.installedEncounter(encounter.id)
+    } else {
+      installedEncounter = currentMissionActorAdmissionInstalledEncounter(
+        instanceID: state.id, encounterID: encounter.id)
+    }
     try Self.validateMissionActorAdmissionLegacy(
-      state: state, encounter: encounter, instances: currentInputs.instances,
+      state: state, encounter: encounter, installedEncounter: installedEncounter,
       legacy: encounter.legacyProvenance)
     let templates = try Self.constructMissionActorAdmissionTemplates(
       original: self, mode: mode, pack: pack, state: state,
@@ -604,7 +654,7 @@ extension Game {
       geometry: currentInputs.geometry)
     return Self.finishMissionActorAdmissionSource(
       mode: mode, authority: authority, pack: pack, state: state, encounter: encounter,
-      definition: definition, templates: consume templates, instances: currentInputs.instances)
+      definition: definition, templates: consume templates, installedEncounter: installedEncounter)
   }
 
   /// Reserve template-construction values only after the actual Game facts have been read.
@@ -646,24 +696,23 @@ extension Game {
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
     pack: borrowing ScriptPack, state: borrowing ScriptInstance,
     encounter: borrowing ScriptOwnedEncounter, definition: borrowing ScriptEncounterDefinition,
-    templates: consuming [MissionActorAdmissionTemplate],
-    instances: borrowing [UUID: ScriptInstance]
+    templates: consuming [MissionActorAdmissionTemplate], installedEncounter: ScriptOwnedEncounter?
   ) -> MissionActorAdmissionSource {
     return .init(
       mode: mode, authority: authority, instance: state, pack: pack,
       encounter: copy encounter, definition: definition, actors: consume templates,
-      installedBaseEncounter: instances[state.id]?.ownedEncounters[encounter.id])
+      installedBaseEncounter: installedEncounter)
   }
 
   /// Finish full legacy comparison before any per-actor construction frame starts.
   @inline(never)
   private static func validateMissionActorAdmissionLegacy(
     state: borrowing ScriptInstance, encounter: borrowing ScriptOwnedEncounter,
-    instances: borrowing [UUID: ScriptInstance], legacy: borrowing LegacyMissionEncounterProvenance?
+    installedEncounter: ScriptOwnedEncounter?, legacy: borrowing LegacyMissionEncounterProvenance?
   ) throws {
     if let legacy = copy legacy {
       guard legacy.matches(owner: state, encounter: encounter),
-        instances[state.id]?.ownedEncounters[encounter.id] == copy encounter
+        installedEncounter == copy encounter
       else {
         throw MissionPackError("Historical actor provenance differs from its installed owner.")
       }
