@@ -161,7 +161,7 @@ func courierPinnedMultihopDeadlinesUseActualRuntimeTravelAndFlight(boundary: Cou
   let fixture = try CourierFixture()
   defer { fixture.clean() }
   let pinned = boundary.fixture
-  var game = fixture.game(system: pinned.origin)
+  var game = try pinned.game(using: fixture)
   let (key, offer) = try fixture.offer(&game, row: pinned.row)
   try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)

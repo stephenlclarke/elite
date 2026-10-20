@@ -8,6 +8,11 @@ func empFixture(catalogue: String = "SH023", hostile: Bool = false, police: Bool
   -> Game
 {
   var game = Game(executive: false)
+  // This controlled salvage-capable fixture needs a real work-tool hull, unlike fresh SH025.
+  game.commander.shipID = "SH023"
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   try game.commander.prepareEquipment(legacy: false)
   for (name, slot) in [
     (Equipment.empPirateBlaster, ComponentFittingSlot.utility(.empPirateBlaster)),
