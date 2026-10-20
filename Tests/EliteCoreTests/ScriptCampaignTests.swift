@@ -477,26 +477,30 @@ private func campaignTerminalColdCommanderExpectation(_ original: borrowing Game
   -> Commander
 {
   var expected = original.commander
-  let indices = original.bodies.indices.filter {
-    original.bodies[$0].nativeStationIdentity != nil
-  }
+  // Finish borrowed reads before closures and Testing autoclosures capture scene facts.
+  let bodies = original.bodies
+  let docked = original.docked
+  let mainStation = original.dockedAtMainStation
+  let system = original.systemIdentity
+  let nextBodyID = original.nextBodyID
+  let indices = bodies.indices.filter { bodies[$0].nativeStationIdentity != nil }
   try #require(!indices.isEmpty)
   var world = try #require(expected.nativeStations)
   try #require(
     world.sceneIsConsistent(
-      bodies: original.bodies, docked: original.docked, mainStation: original.dockedAtMainStation,
-      system: original.systemIdentity, flight: expected.flightSimulation))
-  try #require(original.nextBodyID > 0 && original.nextBodyID < 1_000_000_000 - indices.count)
+      bodies: bodies, docked: docked, mainStation: mainStation,
+      system: system, flight: expected.flightSimulation))
+  try #require(nextBodyID > 0 && nextBodyID < 1_000_000_000 - indices.count)
   var flight = expected.flightSimulation
   let allocatedSpawn = flight.allocateSpawn()
   _ = try #require(allocatedSpawn)
   for (member, index) in indices.enumerated() {
-    let station = try #require(original.bodies[index].nativeStationIdentity)
-    try #require(original.bodies[index].physical != nil)
+    let station = try #require(bodies[index].nativeStationIdentity)
+    try #require(bodies[index].physical != nil)
     let allocatedActor = flight.allocateActor()
     let actor = try #require(allocatedActor)
     try world.ledger.rebind(
-      station, to: .init(actor: actor, bodyID: original.nextBodyID + member))
+      station, to: .init(actor: actor, bodyID: nextBodyID + member))
   }
   try #require(world.valid && flight.valid)
   expected.nativeStations = world
