@@ -30,6 +30,19 @@ def digest(value):
 
 
 class RefinedDesignTests(unittest.TestCase):
+    def assert_original_peregrine(self, ship):
+        # Approved F01 replaces this one historical recipe and its predecessor profile.
+        self.assertEqual(ship["id"], "SH025")
+        self.assertEqual(ship["name"], "Peregrine Mk V")
+        self.assertEqual(ship["catalogue"]["family"], "peregrine")
+        self.assertEqual([profile["id"] for profile in ship["profiles"]], ["L337-PLAYER-SH025"])
+        self.assertEqual((ship["game"]["cargo"], ship["game"]["cargoExpansion"]), (92, 35))
+        self.assertNotIn("recipe", ship["design"])
+        self.assertEqual(
+            hashlib.sha256((files.SHIP_FOLDER / "SH025.toml").read_bytes()).hexdigest(),
+            "794c19f74e633c5837ad78705398cf74f349b1ca4854b22bb3257d23bcb4059a",
+        )
+
     def test_verified_untextured_revision_removes_obsolete_texture_facts(self):
         ship = copy.deepcopy(next(s for s in files.read_ships() if s["id"] == "SH022"))
         self.assertTrue(ship["design"]["sourceTextures"])
@@ -60,6 +73,10 @@ class RefinedDesignTests(unittest.TestCase):
         source_count = 0
         for ident, record in baseline.items():
             ship = ships[ident]
+            if ident == "SH025":
+                self.assert_original_peregrine(ship)
+                self.assertIsNone(record["sourceGeometry"])
+                continue
             preserved = copy.deepcopy({k: v for k, v in ship.items() if k != "design"})
             self.assertEqual(preserved.pop("catalogue"), balance[ident]["catalogue"], ident)
             # Reverse only the reviewed project balance delta, keeping the original
@@ -155,7 +172,10 @@ class RefinedDesignTests(unittest.TestCase):
         self,
     ):
         count = 0
-        for ship in files.read_ships():
+        ships = files.read_ships()
+        self.assertEqual(sum(ship["id"] == "SH025" for ship in ships), 1)
+        self.assert_original_peregrine(next(ship for ship in ships if ship["id"] == "SH025"))
+        for ship in ships:
             d = ship["design"]
             recipe = d.get("recipe", {})
             self.assertEqual(len(d["faceMaterials"]), len(d["faces"]), ship["id"])
@@ -194,7 +214,7 @@ class RefinedDesignTests(unittest.TestCase):
                         1e-4,
                         ship["id"],
                     )
-        self.assertEqual(count, 93)
+        self.assertEqual(count, 92)
 
 
 if __name__ == "__main__":

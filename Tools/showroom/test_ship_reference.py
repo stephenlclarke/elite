@@ -1,5 +1,6 @@
 """Dependency regressions for individual TOML media and complete runtime data."""
 import importlib.util
+import hashlib
 import tempfile
 from pathlib import Path
 import unittest
@@ -60,7 +61,18 @@ class ShipReferenceTests(unittest.TestCase):
         ships=reference.ship_files.read_ships()
         self.assertEqual(len(ships),171)
         self.assertEqual(sum('game' in s for s in ships),162)
-        self.assertEqual(sum('recipe' in s['design'] for s in ships),94)
+        self.assertEqual(sum(ship['id'] == 'SH025' for ship in ships), 1)
+        original = next(ship for ship in ships if ship['id'] == 'SH025')
+        self.assertEqual(original['name'], 'Peregrine Mk V')
+        self.assertEqual(original['catalogue']['family'], 'peregrine')
+        self.assertEqual([profile['id'] for profile in original['profiles']], ['L337-PLAYER-SH025'])
+        self.assertEqual((original['game']['cargo'], original['game']['cargoExpansion']), (92, 35))
+        self.assertNotIn('recipe', original['design'])
+        self.assertEqual(
+            hashlib.sha256((reference.ship_files.SHIP_FOLDER / 'SH025.toml').read_bytes()).hexdigest(),
+            '794c19f74e633c5837ad78705398cf74f349b1ca4854b22bb3257d23bcb4059a',
+        )
+        self.assertEqual(sum('recipe' in s['design'] for s in ships),93)
         originals=[]
         for ship in ships:
             design=ship['design'];vertices=design['vertices']
