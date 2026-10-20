@@ -107,9 +107,10 @@ private struct DurableFixture {
   try fixture.restoreWriter()
   #expect(try Data(contentsOf: fixture.url) == pointer)
   await runtime.key("return")
-  #expect(await runtime.snapshot().commander.credits == 1500)
+  let expectedCredits = before.commander.credits + 500
+  #expect(await runtime.snapshot().commander.credits == expectedCredits)
   let (saved, _) = try ScriptSaveStore.read(Data(contentsOf: fixture.url), from: fixture.url)
-  #expect(saved.credits == 1500 && saved.cargoTonnes == 0)
+  #expect(saved.credits == expectedCredits && saved.cargoTonnes == 0)
 }
 
 @Test func scriptPublicationPreservesActuallyLoadedLegacyMiningHistory() async throws {

@@ -72,8 +72,10 @@ import Testing
 {
   let fixture = try CourierFixture()
   defer { fixture.clean() }
-  var game = fixture.game()
-  let (key, offer) = try fixture.usable(&game)
+  let pinned = CourierNativeFixture.rows[0]
+  var game = try pinned.game(using: fixture)
+  let (key, offer) = try fixture.usable(&game, row: pinned.row)
+  try pinned.verify(try #require(game.commander.contracts.boards[key]), offer)
   let quote = game.contractAcceptanceQuote(board: key, offer: offer.id)
   game.commander.scriptState.calendarSeconds += 0.1
   game.commander.scriptState.missionCalendar?.seconds += 0.1

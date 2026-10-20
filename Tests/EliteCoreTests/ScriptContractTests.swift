@@ -460,7 +460,8 @@ private struct ContractFixture {
   #expect(cancelled.screen == .contracts)
   #expect(cancelled.commander.scriptState.instances[id]?.outcome == .abandoned)
   #expect(
-    cancelled.commander.cargoTonnes == 0 && cancelled.commander.credits == 1000 - offer.deposit)
+    cancelled.commander.cargoTonnes == 0
+      && cancelled.commander.credits == scene.commander.credits - offer.deposit)
   #expect(cancelled.commander.scriptState.instances[id]?.contract?.settlementAmount == 0)
   #expect(cancelled.commander.contracts.boards[key]?.offers.last == other)
   #expect(cancelled.contractBoard.rows.count == 1 && cancelled.contractBoard.rows[0].reason == nil)
