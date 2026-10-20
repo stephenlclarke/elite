@@ -117,6 +117,10 @@ struct ScriptClueTrustCatalog: Sendable {
     ScriptNavigationTradeContent.cluePin,
     OriginalMutualContribution.cluePin,
     .init(
+      sourceID: OriginalVerifiedWarrant.stateID, definition: OriginalVerifiedWarrant.stateID,
+      version: "1.0.0", digest: OriginalVerifiedWarrant.digest,
+      terminalEvents: ["dialogue.confirmed"]),
+    .init(
       sourceID: "l337.contract/sealed-dispatch", definition: "l337.contract/sealed-dispatch",
       version: "1.0.0",
       digest: "93289d5daf873d0cf878b37fa55178e4ab91cf6fa1947f379a54c3bc04267ae7",

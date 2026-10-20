@@ -46,6 +46,11 @@ extension ScriptPackLibrary {
       "l337-sealed-dispatch")
   }
 
+  static var bundledVerifiedWarrantDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-verified-warrant")
+  }
+
   static func defaultLibrary(directory: URL = userDirectory) -> (
     packs: [ScriptPack], errors: [String]
   ) {
@@ -114,6 +119,14 @@ extension ScriptPackLibrary {
       }
     } catch {
       library.errors.append("Bundled sealed-dispatch pack: " + error.localizedDescription)
+    }
+    do {
+      let warrant = try read(bundledVerifiedWarrantDirectory)
+      if !library.packs.contains(where: { $0.digest == warrant.digest }) {
+        library.packs.append(warrant)
+      }
+    } catch {
+      library.errors.append("Bundled verified warrant pack: " + error.localizedDescription)
     }
     return library
   }

@@ -87,6 +87,8 @@ public struct ScriptCompletionReceipt: Codable, Sendable, Equatable {
         .map(\.resource).sorted()
       && settlementAmount == state.contract?.settlementAmount
       && (choices ?? [:]) == state.choiceReceipts
+      && (definition != OriginalVerifiedWarrant.stateID
+        || OriginalVerifiedWarrant.validCompletion(self, state: state, engine: engine))
   }
 }
 

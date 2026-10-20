@@ -29,6 +29,10 @@ extension Game {
         return
       }
     }
+    if state.definition == OriginalVerifiedWarrant.stateID, event.kind == "mission.accepted" {
+      try OriginalVerifiedWarrant.requireAcceptance(
+        event, game: self, state: state, candidate: candidate)
+    }
     let fieldsByOp: [String: Set<String>] = [
       "credits": ["op", "id", "amount"], "payload.add": ["op", "id", "key", "amount"],
       "payload.remove": ["op", "id", "key", "amount"], "milestone.ensure": ["op", "index"],
@@ -129,6 +133,9 @@ extension Game {
     case "mission.finish":
       guard let outcome = ScriptOutcome(rawValue: try text("outcome")) else {
         throw MissionPackError("Complete every required objective before reporting.")
+      }
+      if state.definition == OriginalVerifiedWarrant.stateID {
+        try OriginalVerifiedWarrant.requireFinish(outcome, event: event, game: self, state: state)
       }
       try finishScriptMission(outcome, pack: pack, state: &state, candidate: &candidate)
     case "dialogue.offer":
