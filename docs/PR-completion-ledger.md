@@ -558,3 +558,7 @@ Root authorises one existing asteroid-refusal test hunk: targetrock absent/every
 ## Record isolated asteroid PASS and outstanding core crash
 
 Actualdd19/894matchingbuildPASS,895singleactualCrossingUNKNOWN/crash0issues/noIPS, separate896singlecorrectedAsteroidPASS1/1withstrongtarget/nativeRRS/ENTIREledger/mass/motion/rebind. Wholeclosures/samebinary/source/defaultoptions preserved. Baseline3/3+8961/1retain4/4, remaining21methods27cases pending/target25/31. MC1preauthorised897ONEsameartifactsinglecore diagnostic only/no whole22repeat/newbuild/probe/overallPASSwaiver. W03r2MBAcompileactive/unitsUNRUN. Scoped documentationlint/whitespace/hashpreservation only, no G1source/runtime work.
+
+## W03 owner PASS and whole-change review pending
+
+Record actualbd9matchingbuild550.904s/supervisor551.758s, nativeCLI actualproductionpinPASS and SINGLE20methods21casesPASS (70.332sevent/74.721swrapper/75.474ssupervisor), allclosed/sourceprefs/binaryunchanged/initialfailure preserved. Verify12ownerproofhashes, compose ONLYprovided PRqualificationnotes0fca3b5b preservingother16testedpaths; RootONEfull17reviewactive, no integrationuntilCLEAN/newtests/build/PASS-to-playableclaim. Record actual8996f52singlecoreUNKNOWN withownedmatchedSIGBUSIPS/wholeclosure, currentonlybaseline3/3retain/896historicalrequalifies/current22methods28casespending, no G1repair/diagnostic. Scoped docs lint/whitespace/historyhashes only.
