@@ -606,3 +606,7 @@ Actual910closed6starts: preparecaller87120→37840B(-49280), publicationhelper49
 ## Record911/912 and explicit narrow ScriptInstance COW authority
 
 Actual0fbbc45a911buildPASS/new96d1binary/912singlecoreUNKNOWNsignal10/0issues/noIPS/all11ownedclosed, simplerphaseunqualified. RootsubsequentEXPLICITScriptMissionState/privateone-elementScriptInstanceCOW+onefocusedstorageunitfile exception supersedesearlierdeferralonly; samepublic4arginit/immutableID/allkeys-defaults-privateaccess/checkedSendable/equality/directunwrappedCodable/no schema-version-cache-actorchange. Ownerfreeze/build/singlecore/affectedcopy-Codable-writer-Alien-oversizeunits/ONEfullreviewafterPASS; no extradiagnostics. Prior28/42counts pre-COW/newselectionpendingfreeze. FlagpreservecanonicalW02/W03fields/futurehunkcomposition/no unqualifiedCoreimport intoG13. ScopedMarkdown/whitespace/historyhashes only/G1nojob.
+
+## Prepare owner-qualified G13 isolated source for independent review
+
+G13tested876review663 ownerSINGLE18methods36cases/matchingbuild/actualCLIproductionpinPASS/wholeclosed/no failures-retries-timeouts. G1binds exact17reservedpaths/12proofhashes/onePRnotedelta, isolateda854fdb6 all17exact/other16testedunchanged, no duplicatebuild-tests-review/mainCPU. Rootindependentlyverified17source12proofs/18methodends0issues/actualrun47.926s, G2ONEfull17reviewactive. LedgerownerPASS/reviewpending/notcanonical/notusableapp; M01COWstillFIRST/unqualified. ScopedMarkdown/whitespace/hashpreservation only.
