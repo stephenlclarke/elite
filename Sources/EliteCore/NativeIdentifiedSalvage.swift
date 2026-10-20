@@ -136,8 +136,8 @@ enum NativeIdentifiedSalvage {
   static let objective = ContractStationIdentity(
     galaxy: 0, system: 185, stationClass: "main-orbital")
   static let reward = 8800
-  static let packageGeometry = "2e6488b91d870a59c582a2c29d483baee25993463ce0f992221810b58c4b6dfb"
-  static let cradleGeometry = "0fd6c3edd9bb3bd1f49d4d02d7c05c1629f61d120418d0ae851b65014cbbb0d9"
+  static let packageGeometry = "5362f0948c8a6f1b2acc770b100f746ff3f55799db7c0c53261f02943c6a680e"
+  static let cradleGeometry = "6bd163387c2fa30eaa34027add90ebb9eb377e87b46b996afd6979beaadfd813"
 
   static func sourceIdentity(_ owner: NativeMainStationIdentity) -> UUID {
     ScriptIdentity.uuid("identified-salvage-source-v1:\(owner.world):\(owner.resource):\(batch)")
