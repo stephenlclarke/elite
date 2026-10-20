@@ -316,3 +316,7 @@ Record shared-cap44df first eight-path implementation freeze as in development o
 ## Actual signed renderer preview checkpoint and next finite owners
 
 Record actual817 failure/closure, ONE optimized818 product PASS, SAME signed819 app and actual compact TITLE30 GPU/backend/timing evidence with cold fallback/coalescing/tail retained. New819 is ready for Root combined delivery verification; only Root notifies, no invented flight/save replay or M01/fullquality/public release claim. Keep raw packaging-layout mismatch and exact462-declared-resource/466-final-file verification without rebuild. Allocate MC1820/821 immediately after whole819 closure, then queue Root-approved exact four-path docking e546 owner build/three units; independent review follows owner PASS, no preunit duplicate audit.
+
+## Mark LIMITED819 Root-verified and delivered
+
+Attach exact Root delivery receipt after independent actual artifact/signature/resource/native/GPU/process closure verification.819 is LIMITED usable local startup-renderer delivery; historical797 flight/save journey remains distinct, unresolved actor/docking/native mission/final-quality gates explicit. Only Root notifies once; workers perform no new build/test/launch or announcement. MC1 current finite execution and queued docking continue.
