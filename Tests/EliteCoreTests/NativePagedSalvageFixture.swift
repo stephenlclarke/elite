@@ -111,6 +111,12 @@ enum NativePagedSalvageFixture {
   ) throws -> (Game, SalvageSite) {
     for system in 0..<256 {
       var game = Game(executive: false)
+      // Select an actual cutter-capable observer before fitting and native launch.
+      game.commander.shipID = "SH023"
+      game.commander.fuel = game.commander.fuelCapacity
+      game.energy = game.commander.performance.energy
+      game.frontShield = game.commander.shieldCapacity
+      game.rearShield = game.commander.rearShieldCapacity
       game.commander.system = system
       try game.commander.prepareEquipment(legacy: false)
       try game.commander.grantEquipment(
