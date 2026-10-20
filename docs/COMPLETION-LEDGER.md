@@ -4,9 +4,9 @@ Updated 20 October 2026. This is the current delivery guide, not a content-compl
 
 ## Player-facing milestone roadmap
 
-**Current assignment register:** **M01 FIRST:**ced8d538test-onlysalvageprojection matching925build→ONLYfailed926case pending; retained27methods33casesof31/45/equipment3/11pending. No broad/core rerun. **MBA T04:** initialed162build+actualCLI PASS/9methods10casesPASS;2newdeliverycases failedBEFOREacceptance duefixture-only3LYselector. Owner4b53test-onlyselectorfix usesactualnativejump/fuel/catalogue/noendpointinjection; matchingbuild→ONLY2failedcases pending, retain9/10/no SINGLE12PASSclaim. G1loaderf9fbunchanged/no mechanics-content-schema change. W03/G13sourceintegrated/889artifactexcludesboth/890toolaccessfailure-no repoll.
+**Current assignment register:** M01 bounded source is integrated at `c516bf0538a0c683744c5bc57864ccd48ccabc76`: owner aggregate31 methods/45 cases, independent36-path review CLEAN, combined seam review CLEAN and one6-method/6-case composition run PASS. T04 is integrated at `fc214b89ea21c37f2f5138c764be92cbd62bffdc`: aggregate11 methods/12 cases, not a single12-case run. G01 is the sole parallel MBA item: G3 owns13 native/content/test/doc paths and G2 owns the two central loader/clue paths; its independent review follows owner qualification. G1 now runs the required combined `make ci` checkpoint on a fixed committed head.
 
-**Next executable milestone: M01.** Dependable flight/mission/save completion remains in development; no unqualified MC1 chain is integrated. Already qualified renderer/docking/cap/G03/stable-offer/W01/W02 source does not close full milestones/artwork/playable release. M01 remains first; boundedW03/G13 source is integrated and Root assigned T04default-existingnavigation/trade delivery as soleparallelMBA item. Owner focused PASS then ONE independent bugs/performance/style review of the coherent diff precedes G1 integration. Reuse unaffected evidence; broad integration/system/performance gates remain batched, final mainCI/coverage/sanitizer/leak/PR/mainSonar/release required.
+**Next executable milestone: M01.** Full flight/mission/save delivery remains in development. Focused source qualification does not close the milestone or establish a current playable release. Required combined CI, final-head PR review/checks, committed-main SonarQube and release gates remain open. Integration receipts: `/tmp/elite-M01-qualified-canonical-integration/integration-receipt.json` and `/tmp/elite-T04-qualified-canonical-integration/integration-receipt.json`.
 
 **Local app checkpoint:** Signed889/source8bd47a32 remains independentlyverified ARTIFACT ONLY (468maintained/472signedresources/actual3packCLI), excludes integratedW03/G13. Following actualhuman Unlocked-and-ready and safe903904handover, ONE890desktopcall reportedlocked despitehumanreply. NOapp/process/visibleframes/manualsave/relaunchContinue executed. Primarysave/preferences/binary/all472resources unchanged;890wholeclosed/registryreleased/RootreturnedCPUtoMC1. This is automationaccessfailure, not evidencehumanfailedtounlock; no furtherpoll/question/Slack/readiness/releaseclaim.
 
@@ -16,7 +16,7 @@ All milestone statuses below are functional statuses. Prepared source/data, deli
 
 ### M01 - Dependable everyday flight, trade, missions and saving
 
-**Status:** in development;retained27methods33casesof31/45, ced8test-onlysalvageprojection925build/926singlecasepending andequipment3/11pending. MC1exactboundarycorrection/no productionfixture-orassertionwaiver/no core-broadrepeat. OwnerfullPASS→ONEcoherentreview→G1integration stillrequired. M01FIRST/T04parallel;889artifactnotcurrent/GUI890accessfailureunchanged.
+**Status:** in development. Reviewed bounded repair source is integrated at `c516bf0538a0c683744c5bc57864ccd48ccabc76`; focused owner/composition checks passed. Combined CI and current app delivery remain pending.
 
 **Player journey:** Continue the saved commander, launch, fly/jump, accept a reachable job, dock, receive the outcome and reopen the same saved game.
 

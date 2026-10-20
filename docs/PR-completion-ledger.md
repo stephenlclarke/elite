@@ -638,3 +638,7 @@ T04centralonefilef9fb62ba freeze sentRoot/G3; no execution. Core918ordinaryPASS1
 ## Current bounded M01/T04 retries
 
 M01test-onlyced8salvageprojection925build→926singlefailedcase,27/33retained/equipment3/11pending. T04initialbuild+nativeCLI PASS/9methods10casesretained;2newtests failedbeforeacceptance fromartificial3LYcap, exact4b53selector-onlyactualnativejump-fuel-catalogue correction/no endpointinjection; matchingbuild+ONLY2retry/no SINGLE12PASSclaim. Briefregister/receipts/scopedMarkdown-whitespace only.
+
+## Combined source checkpoint
+
+Record M01 and T04 qualified source integration, distinguish aggregate owner results from the single composition run, and update G01 ownership to G3 native paths/G2 central paths. Required combined `make ci` runs next on the committed candidate; no current app, merged main, SonarQube or release completion is asserted. Prior evidence hashes remain intact.
