@@ -1036,3 +1036,7 @@ Preserve compiler-only1082 failure after CLEAN3ea delta: two borrowed provenance
 ## Qualified release-fixture source checkpoint
 
 Integrate exactG2 eight-path final637b after matching shared1083build and separate1084six-method/nine-case PASS, retaining both CLEAN reviews and all original failed evidence. Preserve initial reader-key correction without raw mutation or runtime replay,1988-artifact/source/preferences proof and11-start closure. Keep the unattributed hosted signal10 open. Record G10 actualCLI/digest PASS and separate1085functional run pending on the same binary, without a second compile or early source integration. Copy approved G09/W05 design pairs unchanged and reconcile their primary rows/index as queued, implementation not started. No per-doc push/CI, UI campaign or release claim.
+
+## Qualified G10 source checkpoint
+
+Integrate exact24-path final992b onto qualifiedG2 4bc, retaining full/correction/compiler CLEAN reviews and matching shared553299cf source. Actual1085packCLI/digest and all23methods/39cases PASS, zero issues/unknowns,1988-artifact/source/preferences proof and12-start closure. Record current-binary938/1014lines(92.50%) focused coverage from only two actual owned-process profiles, with no warnings/rerun/mixing; no overall quality acceptance. Reconcile G10 primary row/register and README player steps, preserving signed1079's earlier feature boundary and all failed compiler history. Prepare renderer prerequisite/current signed candidate next from existing binary; no new compile, UI campaign, public push or release here.

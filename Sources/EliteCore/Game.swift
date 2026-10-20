@@ -681,9 +681,13 @@ public struct Game: Sendable {
   var pendingNewSaveDestination: URL?
   var newCommanderSaveReceipt: CommanderFileReceipt?
   var nativeStationRuntimeEpoch = UUID() {
-    didSet { nativeOrbitalOutlookRuntime = .init() }
+    didSet {
+      nativeOrbitalOutlookRuntime = .init()
+      nativeOriginalSurveyRuntime = nil
+    }
   }
   var nativeOrbitalOutlookRuntime = NativeOrbitalOutlookRuntime()
+  var nativeOriginalSurveyRuntime: NativeOriginalSurveyRuntime?
   var nativeCrimboMotionSample: NativeCrimboMotionSample?
   var nativeCrimboAttainedMotion: NativeCrimboAttainedMotion?
   // Enabled only by G1 after supported native save/world/durability validation. Never saved.
@@ -2456,6 +2460,7 @@ public actor GameRuntime {
     game.nativeCrimboMotionSample = nil
     guard let context = prepareAdvance(delta: delta) else { return snapshot() }
     let outlookStart = game.orbitalOutlookSample()
+    let surveyStart = game.originalSurveySample()
     game.tick(
       delta: delta, controls: controls,
       nativeSalvagePublish: scriptPublisher(requireNativeSalvage: true))
@@ -2464,6 +2469,7 @@ public actor GameRuntime {
     commitPendingNativeStationEntry()
     if game.docked { game.stationAutoDefence = nil }
     commitOrbitalOutlookScan(start: outlookStart)
+    commitOriginalSurveyScan(start: surveyStart)
     finishAdvance(delta: delta, context: context, stationEntryAttempted: stationEntryAttempted)
     return snapshot()
   }

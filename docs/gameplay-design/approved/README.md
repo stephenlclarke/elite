@@ -6,7 +6,7 @@ These are complete frozen design handoffs approved by Root on 20 October 2026. A
 | --- | --- | --- | --- |
 | G08 | Qualified source integrated; limited signed1052 | [Complete journey](G08-NON-EMP-RESCUE-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](G08-ROOT-APPROVAL-20261020.json) |
 | G14 | Qualified source integrated at fbceccc2 —24methods/36cases; signed local1079/title-only1080 | [Complete journey](G14-FOUR-PERSON-EVACUATION-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](G14-ROOT-APPROVAL-20261020.json) |
-| G10 | In development — G3 from integrated fbceccc2 | [Complete journey](G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md) | [Approval metadata](G10-ROOT-APPROVAL-20261020.json) |
+| G10 | Qualified source integrated —23methods/39cases; current local delivery pending | [Complete journey](G10-CONSENTED-SURVEY-COMPLETE-JOURNEY-APPROVED-HANDOFF-20261020.md) | [Approval metadata](G10-ROOT-APPROVAL-20261020.json) |
 | G09 | Approved queued after G10; implementation not started | [Complete journey](G09-IDENTIFIED-SALVAGE-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](G09-ROOT-APPROVAL-20261020.json) |
 | W05 | Approved queued after G09; implementation not started | [Complete journey](W05-CREW-RECORD-RECOVERY-COMPLETE-JOURNEY-DRAFT-20261020.md) | [Approval metadata](W05-ROOT-APPROVAL-20261020.json) |
 
@@ -30,3 +30,5 @@ The [M01 bounded closure map](M01-BOUNDED-CLOSURE-MAP-20261020.md), SHA256 `5ed7
 G10 is assigned to G3 in `/Users/sclarke/.codex/worktrees/native-consented-survey/elite` from exact integrated base `fbceccc2374317c0bb7c45a8589ba371dbfc3bef`. Root-approved targeted hook revalidation is complete: the Game epoch/runtime and frame hooks do not overlap native-person COW, and ScriptMissionState COW/codec remains unchanged. The existing24-path scope is reserved and implementation has started; heavy qualification later routes through G1 while G1 retains the packaging/native lease. G09 then W05 are approved queued designs, not active implementation. Copying these designs activates no pack or runtime behavior.
 
 G09 identified salvage and W05 crew-record recovery are Root-approved queued designs, in that order after active G10. Their exact draft/approval pairs are preserved here. Neither implementation is assigned or started; no runtime activation or schema reservation follows from design approval.
+
+G10 final992b source is qualified and integrated after matching1083build, actual pack CLI/digest and1085all23methods/39cases. New-helper focused coverage is92.50% with attributable current profiles. Signed1079 predates G10; no player UI/full journey or public release is established by source qualification. Root activates the next approved G09 preflight separately; W05 remains queued.

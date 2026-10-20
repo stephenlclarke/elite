@@ -29,7 +29,9 @@ extension Display {
   static func contractDetailRows(_ game: Game, width: Double) -> [String] {
     guard let row = game.contractBoard.selected else { return ["No contract selected."] }
     var rows: [String]
-    if row.repairLoop != nil {
+    if let action = row.survey {
+      rows = game.originalSurveyDetail(action)
+    } else if row.repairLoop != nil {
       rows = game.wayfarerRepairLoopDetail
     } else if row.coldChain != nil {
       rows = game.wayfarerColdChainDetail
@@ -116,7 +118,8 @@ extension Display {
           : active.first ?? "No active contract assignments."), layout.left, 62, scale: scale,
       ink: active.isEmpty ? .white : .green)
     var detailReason: String? {
-      if let reason = game.contractBoard.repairLoopQuote?.issues.first
+      if let reason = game.contractBoard.surveyQuote?.issues.first
+        ?? game.contractBoard.repairLoopQuote?.issues.first
         ?? game.contractBoard.coldChainQuote?.issues.first
         ?? game.contractBoard.providerQuote?.issues.first
       {
@@ -154,8 +157,10 @@ extension Display {
         let repairLoop = game.contractBoard.repairLoopQuote
         let coldChain = game.contractBoard.coldChainQuote
         let provider = game.contractBoard.providerQuote
+        let survey = game.contractBoard.surveyQuote
         let available =
           action == .back
+          || (survey != nil && action == .accept && survey?.allowed == true)
           || (repairLoop != nil && action == .accept && repairLoop?.allowed == true)
           || (coldChain != nil && action == .accept && coldChain?.allowed == true)
           || (provider != nil
@@ -171,7 +176,8 @@ extension Display {
             && (action != .accept || game.contractBoard.quote?.allowed == true))
         frame.label(
           (game.contractBoard.action == action ? "> " : "  ")
-            + (action == .accept && (provider != nil || coldChain != nil || repairLoop != nil)
+            + (action == .accept
+              && (survey != nil || provider != nil || coldChain != nil || repairLoop != nil)
               ? "Confirm"
               : action == .accept && people != nil
                 ? (people?.row.action ?? "Closed")

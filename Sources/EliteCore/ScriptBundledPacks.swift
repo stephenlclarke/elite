@@ -70,6 +70,10 @@ extension ScriptPackLibrary {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-custody-rescue")
   }
+  static var bundledOriginalSurveyDirectory: URL {
+    bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
+      "l337-consented-survey")
+  }
   static var bundledOrbitalOutlookDirectory: URL {
     bundledCourierDirectory.deletingLastPathComponent().appendingPathComponent(
       "l337-orbital-outlook")
@@ -202,6 +206,14 @@ extension ScriptPackLibrary {
         library.packs.append(evacuation)
       }
     } catch { library.errors.append("Bundled evacuation pack: " + error.localizedDescription) }
+    do {
+      let survey = try read(bundledOriginalSurveyDirectory)
+      if !library.packs.contains(where: { $0.digest == survey.digest }) {
+        library.packs.append(survey)
+      }
+    } catch {
+      library.errors.append("Bundled consented survey pack: " + error.localizedDescription)
+    }
     return library
   }
 }
