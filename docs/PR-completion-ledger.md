@@ -454,3 +454,7 @@ Update current W02 ownership/register/row to27 total paths, G2native12/G3UI12/G1
 ## Record859 history return and causal NPC validation continuation
 
 Current M01 register/status now actual859 nine methods/twelve cases unfinished after native history validation returned and the captured NPC/model/fit/actor/Encounter/Engine save-validation read chain stack-crashed. Preserve exact proof/crash and actual closure;847 storage1/1 remains separate if unaffected. Owner assesses whole directly implicated read-only chain under existing bounded category, exact new hunks/tests/reasons in next frozen plan; representation/semantic/mutating changes stay Root-only. No duplicate audit/diagnosis/runtime or GUI poll. W02 parallel source authoring unchanged. Scoped Markdown lint/diff and prior-hash preservation only.
+
+## W02 UI untested freeze received
+
+Record UI12 exact60f freeze/base/path/patch mechanical bindings and formatting PASS, authored UI/bundled cases UNRUN and production digest source-derived only/native CLI pending. Native12 author remains active; central3 composition waits both freezes, then concrete API reconciliation/combined freeze before one cached MBA qualification. No source review/build/runtime/integration or PASS claim. Normal scoped documentation lint/diff and prior-hash preservation only.
