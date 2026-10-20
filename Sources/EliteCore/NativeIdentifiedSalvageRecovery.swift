@@ -198,7 +198,7 @@ extension Game {
     guard var marker = mission.ownedEncounters[NativeIdentifiedSalvage.encounterID]?.actors[alias]
     else { return nil }
     marker.body = copy body
-    return [consume marker]
+    return [marker]
   }
 
   fileprivate func identifiedSalvageSeal(startTime: Double) -> NativeIdentifiedSalvagePending? {
