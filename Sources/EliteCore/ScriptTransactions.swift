@@ -173,6 +173,16 @@ extension GameRuntime {
       try CommanderSavePublication.write(
         data, to: url, exclusive: candidate.pendingNewSaveDestination == url)
     }
+    finishCommanderPublication(
+      &candidate, prepared: prepared, alienPublication: alienPublication, to: url)
+  }
+
+  // Reserve the deliberate final Game copy only after all encoding/publication work returns.
+  @inline(never)
+  private static func finishCommanderPublication(
+    _ candidate: inout Game, prepared: NativeSavePreparation,
+    alienPublication: AlienStoragePublication?, to url: URL
+  ) {
     candidate = prepared.game
     candidate.commander.publishAlienStorage(alienPublication)
     candidate.recordNewCommanderSavePublication(to: url)

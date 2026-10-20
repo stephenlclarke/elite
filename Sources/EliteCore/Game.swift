@@ -2486,11 +2486,13 @@ public actor GameRuntime {
 
   /// Immutable per-publication ownership, never serialized or reused as validation authority.
   final class NativeSavePreparation: Sendable {
-    let game: Game
-    let commander: Commander
+    private let gameValue: Game
+    private let commanderValue: Commander
+    var game: Game { _read { yield gameValue } }
+    var commander: Commander { _read { yield commanderValue } }
     init(game: consuming Game, commander: consuming Commander) {
-      self.game = consume game
-      self.commander = consume commander
+      gameValue = consume game
+      commanderValue = consume commander
     }
   }
 
