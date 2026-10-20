@@ -3,10 +3,21 @@ import Testing
 
 @testable import EliteCore
 
-private func navigationGame() -> Game {
+private func navigationGame(tier: NavigationTier? = .military) throws -> Game {
   var game = Game(executive: false)
+  try #require(game.commander.equipmentInventory == nil && game.commander.nativeStations == nil)
+  // These fixed seven-LY route and fuel witnesses use the actual stock SH023 fit.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  try #require(
+    game.commander.nativePerformance.jump == 7 && game.commander.fuel == 70
+      && game.commander.fuelCapacity == 70 && game.commander.maximumJumpDistance == 7
+      && game.commander.valid)
   game.screen = .chart
-  game.commander.installNavigationComputer(.military)
+  if let tier { game.commander.installNavigationComputer(tier) }
   game.commander.credits = 500_000
   return game
 }
@@ -23,9 +34,7 @@ private func longRoute(_ game: Game) -> [Int] {
   return []
 }
 @Test func navigationTiersUseSpecifiedPricesFuelBasedScopeAndOneInstalledUpgrade() throws {
-  var game = Game(executive: false)
-  game.screen = .chart
-  game.commander.credits = 500_000
+  var game = try navigationGame(tier: nil)
   let basicItem = try #require(
     Equipment.all.first { $0.name == NavigationTier.basic.equipmentName })
   game.commander.system = try #require(
@@ -84,8 +93,8 @@ private func longRoute(_ game: Game) -> [Int] {
   game.key("n")
   #expect(game.screen == .chart && game.message == "REFUELLING NEEDED BEFORE PLANNING")
 }
-@Test func routeAlternativesHaveLegalFuelAwareHopsStableEstimatesAndNoDuplicatePaths() {
-  var game = navigationGame()
+@Test func routeAlternativesHaveLegalFuelAwareHopsStableEstimatesAndNoDuplicatePaths() throws {
+  var game = try navigationGame()
   game.commander.cargo[0] = 10
   let path = longRoute(game)
   #expect(path.count > 3)
@@ -108,7 +117,7 @@ private func longRoute(_ game: Game) -> [Int] {
       from: game.commander.system, to: path.last!, fuel: 1, scoring: 0) == nil)
 }
 @Test func routesAdvanceOnlyOnDockingAndLaunchPreloadsEveryNextLegWithoutStartingJump() throws {
-  var game = navigationGame()
+  var game = try navigationGame()
   let path = longRoute(game)
   #expect(path.count > 3)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
@@ -127,8 +136,8 @@ private func longRoute(_ game: Game) -> [Int] {
   game.launch()
   #expect(game.jumpCountdown == nil)
 }
-@Test func autoTradePaysForFullFuelBeforeExportsAndLeavesNavigationRouteIntact() {
-  var game = navigationGame()
+@Test func autoTradePaysForFullFuelBeforeExportsAndLeavesNavigationRouteIntact() throws {
+  var game = try navigationGame()
   let path = longRoute(game)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
   game.commander.fuel = 0
@@ -161,7 +170,7 @@ private func longRoute(_ game: Game) -> [Int] {
 }
 @Test func navigationSaveLoadManualSelectionAndGalaxyChangesCannotLeaveStalePreloads() async throws
 {
-  var game = navigationGame()
+  var game = try navigationGame()
   let path = longRoute(game)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .military, originFuel: 70)
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -185,8 +194,8 @@ private func longRoute(_ game: Game) -> [Int] {
   game.galacticJump()
   #expect(game.commander.navigationPlan == nil)
 }
-@Test func routePlanningScreenFreezesFlightAndCanCommitOrCancelWithoutJumping() {
-  var game = navigationGame()
+@Test func routePlanningScreenFreezesFlightAndCanCommitOrCancelWithoutJumping() throws {
+  var game = try navigationGame()
   let path = longRoute(game)
   game.selectedSystem = path.last!
   game.docked = false
@@ -214,8 +223,8 @@ private func longRoute(_ game: Game) -> [Int] {
   #expect(game.mapSearch.query == "n" && game.screen == .chart)
 }
 
-@Test func activeRouteInspectionUsesFixedOriginScopeAfterHopsAndMapBrowsingPreservesIt() {
-  var game = navigationGame()
+@Test func activeRouteInspectionUsesFixedOriginScopeAfterHopsAndMapBrowsingPreservesIt() throws {
+  var game = try navigationGame()
   let path = longRoute(game)
   game.commander.navigationPlan = .init(galaxy: 0, path: path, tier: .basic, originFuel: 70)
   game.launch()
@@ -237,8 +246,8 @@ private func longRoute(_ game: Game) -> [Int] {
   game.mapClick(x: point.x, y: point.y)
   #expect(game.commander.navigationPlan?.path == path && game.selectedSystem == next)
 }
-@Test func infeasibleGraphAndInvalidSavedLegNeverProduceInventedHops() {
-  var game = navigationGame()
+@Test func infeasibleGraphAndInvalidSavedLegNeverProduceInventedHops() throws {
+  var game = try navigationGame()
   let invalid = NavigationPlan(galaxy: 0, path: [7, 0], tier: .military, originFuel: 70)
   game.commander.navigationPlan = invalid
   game.navigationDocked()
