@@ -14,4 +14,4 @@ The station board shows the full loop, original serial, fault, transport-only pe
 
 ## Boundaries
 
-G3 owns twelve board, pack, UI test and documentation paths. G2 owns eleven native authority and native test paths. G1 alone composes Game loss hooks and current normal/Alien save gates in three central paths. Qualified base is dcce0dafcce3d51b997ddd30414f5559b31d6e66; current W02 formats 37/38 are reserved. Artwork, other services, broad CI and release remain separate. No remote issue or PR exists. Companion: [PR-original-repair-loop.md](PR-original-repair-loop.md).
+G3 owns twelve board, pack, UI test and documentation paths. G2 owns twelve native authority and native test paths. G1 alone composes Game loss hooks and current normal/Alien save gates in three central paths. Qualified base is dcce0dafcce3d51b997ddd30414f5559b31d6e66; current W02 formats 37/38 are reserved. Artwork, other services, broad CI and release remain separate. No remote issue or PR exists. Companion: [PR-original-repair-loop.md](PR-original-repair-loop.md).
