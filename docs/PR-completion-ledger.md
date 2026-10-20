@@ -260,3 +260,7 @@ Record actual807attempt02 full-SH123 GPU/fallback PASS and parity failure with e
 ## Routine MC1 compiler child review bound to existing execution
 
 Record Root CLEAN d19f6b87 beyond40bce655, unchanged seven-method/nine-case source hashes and supplementary exact execution binding. Preserve failed compiler evidence and existing808attempt02/809 grant/default guards without extra ACK, review or scope. No build/runtime PASS, integration or M01 cure inferred. Scoped Markdown/whitespace checks only.
+
+## Consuming-initializer compiler child on existing focused plan
+
+Record Root CLEAN0a3c9d4d and exact execution binding after owner HEAD/seven test-source hash verification. Four final initializer copies preserve ownership/result semantics; existing808attempt03/809 and seven-method/nine-case scope continue with prior failed evidence intact. Build/runtime outcomes pending; scoped Markdown/whitespace checks only.
