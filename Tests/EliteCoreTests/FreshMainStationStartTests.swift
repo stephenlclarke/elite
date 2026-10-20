@@ -130,8 +130,18 @@ struct FreshMainStationStartTests {
     let cargo = try #require(accepted.commander.scriptState.instances[id]?.savedOwnedCargo)
     let source = try freshSupplySource(accepted)
     #expect(source.units.count == 16 && source.remaining.count == 8)
-    #expect(cargo.issued == Array(source.units.prefix(8)) && cargo.held.count == 8)
-    #expect(source.allocations[id] == cargo.issued && accepted.commander.cargo[8] == 8)
+    #expect(cargo.issued == Array(source.units.prefix(8)) && cargo.held == cargo.issued)
+    #expect(source.allocations[id] == cargo.issued)
+    #expect(accepted.commander.cargo == started.commander.cargo)
+    #expect(
+      accepted.commander.scriptState.instances[id]?.payloads
+        == [ScriptOwnedCargoState.payloadKey: 8])
+    let initialTonnes = try #require(started.commander.checkedCargoTonnes)
+    let acceptedTonnes = try #require(accepted.commander.checkedCargoTonnes)
+    #expect(acceptedTonnes == initialTonnes + 8)
+    let initialFree = started.commander.tradeCargoCapacity - initialTonnes
+    let acceptedFree = accepted.commander.tradeCargoCapacity - acceptedTonnes
+    #expect(acceptedFree == initialFree - 8)
     #expect(accepted.commander.credits == 7200 && accepted.commander.fuel == 130)
     #expect(accepted.commander.nativeStations?.currentMainDock == receipt)
     #expect(accepted.commander.scriptState.calendarSeconds == 0)
