@@ -195,8 +195,8 @@ struct MissionActorAdmissionSource: Sendable {
 
   fileprivate init(
     mode: MissionActorAdmissionMode, authority: MissionActorAdmissionAuthority,
-    instance: ScriptInstance, pack: ScriptPack, encounter: ScriptOwnedEncounter,
-    definition: ScriptEncounterDefinition, actors: [MissionActorAdmissionTemplate],
+    instance: borrowing ScriptInstance, pack: borrowing ScriptPack, encounter: ScriptOwnedEncounter,
+    definition: borrowing ScriptEncounterDefinition, actors: [MissionActorAdmissionTemplate],
     installedBaseEncounter: ScriptOwnedEncounter?,
     transitContext: OriginalWorldJourneyContext? = nil
   ) {
@@ -563,21 +563,23 @@ extension Game {
     try Self.validateMissionActorAdmissionLegacy(
       state: state, encounter: encounter, instances: currentInputs.instances,
       legacy: encounter.legacyProvenance)
-    return try Self.constructMissionActorAdmissionSource(
-      original: self, mode: mode, authority: authority, pack: pack, state: state,
-      encounter: encounter, definition: definition, instances: currentInputs.instances,
+    let templates = try Self.constructMissionActorAdmissionTemplates(
+      original: self, mode: mode, pack: pack, state: state,
+      encounter: encounter, definition: definition,
       geometry: currentInputs.geometry)
+    return Self.finishMissionActorAdmissionSource(
+      mode: mode, authority: authority, pack: pack, state: state, encounter: encounter,
+      definition: definition, templates: consume templates, instances: currentInputs.instances)
   }
 
   /// Reserve template-construction values only after the actual Game facts have been read.
   @inline(never)
-  private static func constructMissionActorAdmissionSource(
-    original: borrowing Game, mode: MissionActorAdmissionMode,
-    authority: MissionActorAdmissionAuthority, pack: borrowing ScriptPack,
+  private static func constructMissionActorAdmissionTemplates(
+    original: borrowing Game, mode: MissionActorAdmissionMode, pack: borrowing ScriptPack,
     state: borrowing ScriptInstance, encounter: borrowing ScriptOwnedEncounter,
     definition: borrowing ScriptEncounterDefinition,
-    instances: borrowing [UUID: ScriptInstance], geometry: borrowing [String: ShipDesign]
-  ) throws -> MissionActorAdmissionSource {
+    geometry: borrowing [String: ShipDesign]
+  ) throws -> [MissionActorAdmissionTemplate] {
     let legacy = encounter.legacyProvenance
     var templates: [MissionActorAdmissionTemplate] = []
     for spec in definition.actors.sorted(by: { $0.id < $1.id }) {
@@ -600,9 +602,7 @@ extension Game {
       }
       templates.append(template)
     }
-    return Self.finishMissionActorAdmissionSource(
-      mode: mode, authority: authority, pack: pack, state: state, encounter: encounter,
-      definition: definition, templates: consume templates, instances: instances)
+    return templates
   }
 
   /// Construct the owned result only after per-actor validation and template frames have returned.
@@ -615,8 +615,8 @@ extension Game {
     instances: borrowing [UUID: ScriptInstance]
   ) -> MissionActorAdmissionSource {
     return .init(
-      mode: mode, authority: authority, instance: copy state, pack: copy pack,
-      encounter: copy encounter, definition: copy definition, actors: consume templates,
+      mode: mode, authority: authority, instance: state, pack: pack,
+      encounter: copy encounter, definition: definition, actors: consume templates,
       installedBaseEncounter: instances[state.id]?.ownedEncounters[encounter.id])
   }
 
