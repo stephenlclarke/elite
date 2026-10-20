@@ -48,59 +48,242 @@ public struct ScriptDialogue: Codable, Sendable, Equatable {
   public var system: Int
   public var revision: UInt64
 }
-public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
-  public let id: UUID
-  public let definition: String
-  public let version: String
-  public let digest: String
-  public init(id: UUID, definition: String, version: String, digest: String) {
+private struct ScriptInstanceValue: Codable, Sendable, Equatable {
+  let id: UUID
+  let definition: String
+  let version: String
+  let digest: String
+  init(id: UUID, definition: String, version: String, digest: String) {
     self.id = id
     self.definition = definition
     self.version = version
     self.digest = digest
   }
-  public var data: ScriptValue = .object([:])
-  public var savedCollections: [String: ScriptCollection]?
-  public var savedCampaignChildren: [String: ScriptChildBinding]?
-  public var campaignParent: ScriptChildBinding?
-  public var savedCampaignReceiptScopes: [String: String]?
-  public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
-  public var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
+  var data: ScriptValue = .object([:])
+  var savedCollections: [String: ScriptCollection]?
+  var savedCampaignChildren: [String: ScriptChildBinding]?
+  var campaignParent: ScriptChildBinding?
+  var savedCampaignReceiptScopes: [String: String]?
+  var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]?
+  var savedChoiceReceipts: [String: ScriptChoiceReceipt]?
+
+  var completionReceipt: ScriptCompletionReceipt?
+  var savedProviderContract: ScriptProviderContractState?
+  var savedOwnedCargo: ScriptOwnedCargoState?
+  var savedNavigationTrade: ScriptNavigationTradeState?
+  var courier: ScriptCourierCustody?
+  var pledgeReceiptID: UUID?
+  var receiptJoins: [String: [UUID]]?
+  var outcome: ScriptOutcome = .active
+  var suspension: String?
+  var revision: UInt64 = 0
+  var acknowledgedEvents: Set<UInt64> = []
+  var acknowledgedThrough: UInt64?
+  var receipts: Set<String> = []
+  var milestones: Set<Int> = []
+  var payloads: [String: Int] = [:]
+  var timers: [String: ScriptTimer] = [:]
+  var dialogue: ScriptDialogue?
+  var journal: [String] = []
+  var contract: ScriptContractJob?
+  var savedGearIssues: [String: ScriptGearIssue]?
+
+  var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
+
+  var randomState: UInt64 = 0x45_4c49_5445
+}
+
+/// One copy-on-write value; Codable forwards the original instance object without an envelope.
+public struct ScriptInstance: Codable, Sendable, Equatable, Identifiable {
+  private var storage: [ScriptInstanceValue]
+
+  public init(id: UUID, definition: String, version: String, digest: String) {
+    storage = [.init(id: id, definition: definition, version: version, digest: digest)]
+  }
+
+  public init(from decoder: any Decoder) throws {
+    storage = [try ScriptInstanceValue(from: decoder)]
+  }
+
+  public func encode(to encoder: any Encoder) throws {
+    try storage[0].encode(to: encoder)
+  }
+
+  public var id: UUID {
+    _read { yield storage[0].id }
+  }
+
+  public var definition: String {
+    _read { yield storage[0].definition }
+  }
+
+  public var version: String {
+    _read { yield storage[0].version }
+  }
+
+  public var digest: String {
+    _read { yield storage[0].digest }
+  }
+
+  public var data: ScriptValue {
+    _read { yield storage[0].data }
+    _modify { yield &storage[0].data }
+  }
+
+  public var savedCollections: [String: ScriptCollection]? {
+    _read { yield storage[0].savedCollections }
+    _modify { yield &storage[0].savedCollections }
+  }
+
+  public var savedCampaignChildren: [String: ScriptChildBinding]? {
+    _read { yield storage[0].savedCampaignChildren }
+    _modify { yield &storage[0].savedCampaignChildren }
+  }
+
+  public var campaignParent: ScriptChildBinding? {
+    _read { yield storage[0].campaignParent }
+    _modify { yield &storage[0].campaignParent }
+  }
+
+  public var savedCampaignReceiptScopes: [String: String]? {
+    _read { yield storage[0].savedCampaignReceiptScopes }
+    _modify { yield &storage[0].savedCampaignReceiptScopes }
+  }
+
+  public var savedConversationReceipts: [UInt64: ScriptChoiceReceipt]? {
+    _read { yield storage[0].savedConversationReceipts }
+    _modify { yield &storage[0].savedConversationReceipts }
+  }
+
+  public var savedChoiceReceipts: [String: ScriptChoiceReceipt]? {
+    _read { yield storage[0].savedChoiceReceipts }
+    _modify { yield &storage[0].savedChoiceReceipts }
+  }
+
+  public var completionReceipt: ScriptCompletionReceipt? {
+    _read { yield storage[0].completionReceipt }
+    _modify { yield &storage[0].completionReceipt }
+  }
+
+  var savedProviderContract: ScriptProviderContractState? {
+    _read { yield storage[0].savedProviderContract }
+    _modify { yield &storage[0].savedProviderContract }
+  }
+
+  var savedOwnedCargo: ScriptOwnedCargoState? {
+    _read { yield storage[0].savedOwnedCargo }
+    _modify { yield &storage[0].savedOwnedCargo }
+  }
+
+  var savedNavigationTrade: ScriptNavigationTradeState? {
+    _read { yield storage[0].savedNavigationTrade }
+    _modify { yield &storage[0].savedNavigationTrade }
+  }
+
+  public var courier: ScriptCourierCustody? {
+    _read { yield storage[0].courier }
+    _modify { yield &storage[0].courier }
+  }
+
+  public var pledgeReceiptID: UUID? {
+    _read { yield storage[0].pledgeReceiptID }
+    _modify { yield &storage[0].pledgeReceiptID }
+  }
+
+  public var receiptJoins: [String: [UUID]]? {
+    _read { yield storage[0].receiptJoins }
+    _modify { yield &storage[0].receiptJoins }
+  }
+
+  public var outcome: ScriptOutcome {
+    _read { yield storage[0].outcome }
+    _modify { yield &storage[0].outcome }
+  }
+
+  public var suspension: String? {
+    _read { yield storage[0].suspension }
+    _modify { yield &storage[0].suspension }
+  }
+
+  public var revision: UInt64 {
+    _read { yield storage[0].revision }
+    _modify { yield &storage[0].revision }
+  }
+
+  public var acknowledgedEvents: Set<UInt64> {
+    _read { yield storage[0].acknowledgedEvents }
+    _modify { yield &storage[0].acknowledgedEvents }
+  }
+
+  public var acknowledgedThrough: UInt64? {
+    _read { yield storage[0].acknowledgedThrough }
+    _modify { yield &storage[0].acknowledgedThrough }
+  }
+
+  public var receipts: Set<String> {
+    _read { yield storage[0].receipts }
+    _modify { yield &storage[0].receipts }
+  }
+
+  public var milestones: Set<Int> {
+    _read { yield storage[0].milestones }
+    _modify { yield &storage[0].milestones }
+  }
+
+  public var payloads: [String: Int] {
+    _read { yield storage[0].payloads }
+    _modify { yield &storage[0].payloads }
+  }
+
+  public var timers: [String: ScriptTimer] {
+    _read { yield storage[0].timers }
+    _modify { yield &storage[0].timers }
+  }
+
+  public var dialogue: ScriptDialogue? {
+    _read { yield storage[0].dialogue }
+    _modify { yield &storage[0].dialogue }
+  }
+
+  public var journal: [String] {
+    _read { yield storage[0].journal }
+    _modify { yield &storage[0].journal }
+  }
+
+  public var contract: ScriptContractJob? {
+    _read { yield storage[0].contract }
+    _modify { yield &storage[0].contract }
+  }
+
+  private var savedGearIssues: [String: ScriptGearIssue]? {
+    _read { yield storage[0].savedGearIssues }
+    _modify { yield &storage[0].savedGearIssues }
+  }
+
+  private var savedOwnedEncounters: [String: ScriptOwnedEncounter]? {
+    _read { yield storage[0].savedOwnedEncounters }
+    _modify { yield &storage[0].savedOwnedEncounters }
+  }
+
+  public var randomState: UInt64 {
+    _read { yield storage[0].randomState }
+    _modify { yield &storage[0].randomState }
+  }
+
   public var choiceReceipts: [String: ScriptChoiceReceipt] {
     get { savedChoiceReceipts ?? [:] }
     set { savedChoiceReceipts = newValue.isEmpty ? nil : newValue }
   }
-  public var completionReceipt: ScriptCompletionReceipt?
-  var savedProviderContract: ScriptProviderContractState?
-  var savedOwnedCargo: ScriptOwnedCargoState?
-  var savedNavigationTrade: ScriptNavigationTradeState?
-  public var courier: ScriptCourierCustody?
-  public var pledgeReceiptID: UUID?
-  public var receiptJoins: [String: [UUID]]?
-  public var outcome: ScriptOutcome = .active
-  public var suspension: String?
-  public var revision: UInt64 = 0
-  public var acknowledgedEvents: Set<UInt64> = []
-  public var acknowledgedThrough: UInt64?
-  public var receipts: Set<String> = []
-  public var milestones: Set<Int> = []
-  public var payloads: [String: Int] = [:]
-  public var timers: [String: ScriptTimer] = [:]
-  public var dialogue: ScriptDialogue?
-  public var journal: [String] = []
-  public var contract: ScriptContractJob?
-  private var savedGearIssues: [String: ScriptGearIssue]?
   public var gearIssues: [String: ScriptGearIssue] {
     get { savedGearIssues ?? [:] }
     set { savedGearIssues = newValue }
   }
-  private var savedOwnedEncounters: [String: ScriptOwnedEncounter]?
   public var ownedEncounters: [String: ScriptOwnedEncounter] {
     get { savedOwnedEncounters ?? [:] }
     set { savedOwnedEncounters = newValue }
   }
-  public var randomState: UInt64 = 0x45_4c49_5445
 }
+
 public struct ScriptEngineState: Codable, Sendable, Equatable {
   var savedClueJournal: ScriptClueJournal?
   var financeLedger: ScriptFinanceLedger?
