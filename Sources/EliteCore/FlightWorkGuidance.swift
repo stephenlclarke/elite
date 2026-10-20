@@ -35,7 +35,7 @@ extension Game {
   static func currentFlightWorldVelocity(_ game: borrowing Game) -> Vector3 {
     if let velocity = guidedFlightWorldVelocity(game) { return velocity }
     if let velocity = brakingFlightWorldVelocity(game) { return velocity }
-    let orientation = unassistedFlightWorldOrientation(game.commander)
+    let orientation = game.withReadOnlyCommander { unassistedFlightWorldOrientation($0) }
     return orientation.apply(game.autoPilot.velocity + .init(0, 0, game.speed * 18))
   }
 
