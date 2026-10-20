@@ -290,3 +290,7 @@ Record actual811 strict parity failure/whole closure and immediate reviewedbf331
 ## G2 owns queued ordinary initial docking repair
 
 Assign the M01 docking blocker/five MBA03 dependencies to G2 NEXT after renderer completion/integration or explicit parking, one active deliverable at a time. Existing failure/source first, exact product path proposal/reservation before code, no new broad probe or physics/control workaround; preserve unattended defensive+fast docking. Keep hostile docking distinct unless same cause demonstrated.
+
+## Accept pending MBA03 freeze; activate source-only MBA07
+
+Record exact958f FINAL-PENDING handoff, seven non-doc paths hash-exact reviewed/tested2bc and G1 docs-only CLEAN review. Two corrected existing tests PASS with whole group closure; eight-method/nine-case aggregate includes retained9ac evidence, no single13/14 pass. Five native flows remain docking-dependent/UNKNOWN and packet is not integrated or playable; Avenor route gap remains OPEN. Activate already approved MBA07 source reconciliation/proposal only, implementation still needs Root boundary approval. Scoped Markdown/whitespace checks, no duplicate product audit/runtime.
