@@ -159,6 +159,15 @@ extension GameRuntime {
     }
     candidate.persistScriptActors()
     let prepared = try Self.prepareNativeSaveState(candidate)
+    try writePreparedCommander(
+      &candidate, prepared: prepared, to: url, navigationBinding: navigationBinding)
+  }
+
+  @inline(never)
+  private static func writePreparedCommander(
+    _ candidate: inout Game, prepared: NativeSavePreparation, to url: URL,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
     var alienPublication: AlienStoragePublication?
     if prepared.game.requiresScriptDurability {
       alienPublication = try ScriptSaveStore.write(
