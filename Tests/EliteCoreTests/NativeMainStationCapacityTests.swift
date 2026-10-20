@@ -134,7 +134,19 @@ struct NativeMainStationCapacityTests {
     let world = try #require(game.commander.nativeStations)
     let state = game.commander.scriptState
     #expect(world.valid && state.worldJobsValid)
-    #expect(NativeStationLedger.recordLimit == 372 && NativeStationSource.bindings.count == 372)
+    // Retained independent station chances joined to authenticated l337-world-1 governments.
+    let expectedWaystations = [45, 49, 51, 44, 46, 52, 42, 45]
+    #expect(NativeStationLedger.recordLimit == 382 && NativeStationSource.bindings.count == 382)
+    #expect(NativeStationLedger.recordLimit <= NativeStationLedger.maximumSourceRecords)
+    let waystationCounts = (0..<8).map { galaxy in
+      NativeStationSource.bindings.filter { $0.system.galaxy == galaxy && $0.kind == .waystation }
+        .count
+    }
+    #expect(waystationCounts == expectedWaystations)
+    let sourceKeys = NativeStationSource.bindings.map(\.key).sorted().joined(separator: "\n")
+    #expect(
+      ScriptPackLibrary.hash(Data(sourceKeys.utf8))
+        == "3d539657453551102a6f0f682bc9db8039fe231c2dde2cd83b4b3901aee1859b")
     #expect(world.mainStations.count == 2056 && world.mainObservations.count == 2056)
     #expect(state.stationResources.count == 2056)
     #expect(Set(world.mainStations.map(\.system)) == Set(systems))
