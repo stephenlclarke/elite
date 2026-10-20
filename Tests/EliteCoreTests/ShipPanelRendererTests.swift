@@ -102,6 +102,7 @@ struct ShipPanelRendererTests {
         drawing.translateBy(x: 9.25, y: flipped ? 6.5 + 64 * scale : 6.5)
         drawing.scaleBy(x: scale, y: flipped ? -scale : scale)
       }
+      // Bitmap rows run downward; Quartz device coordinates run upward.
       let transform = actual.ctm
       let rect = CGRect(x: 0, y: 0, width: 64, height: 64)
       drawFrame(frame, context: reference, rect: rect)
@@ -122,7 +123,8 @@ struct ShipPanelRendererTests {
       for y in 0..<160 {
         for x in 0..<160 {
           let offset = (y * 160 + x) * 4
-          let point = CGPoint(x: Double(x) + 0.5, y: Double(y) + 0.5).applying(transform.inverted())
+          let point = CGPoint(x: Double(x) + 0.5, y: 160 - Double(y) - 0.5).applying(
+            transform.inverted())
           let nearBoundary = edges.contains { distance(point, $0.0, $0.1) <= 0.125 + 1 / scale }
           let differs = (0..<4).contains { lhs[offset + $0] != rhs[offset + $0] }
           if !nearBoundary {
@@ -140,7 +142,7 @@ struct ShipPanelRendererTests {
         CGPoint(x: 12, y: 12), CGPoint(x: 32, y: 32), CGPoint(x: 54, y: 12), CGPoint(x: 44, y: 18),
       ] {
         let device = point.applying(transform)
-        let offset = (Int(device.y) * 160 + Int(device.x)) * 4
+        let offset = ((159 - Int(device.y)) * 160 + Int(device.x)) * 4
         #expect((0..<4).allSatisfy { lhs[offset + $0] == rhs[offset + $0] })
         #expect(rhs[offset + 3] == 255)
       }
