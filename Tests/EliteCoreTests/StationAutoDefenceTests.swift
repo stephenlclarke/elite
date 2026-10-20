@@ -802,8 +802,9 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
   async throws
 {
   var game = try await stationAutoEntryBoundary()
+  // Preserve the attacker's range while crossing SH025's real side surface.
   let first = try stationAutoAddNativeAttacker(
-    &game, position: .init(0, -20, 600), sequence: 906, facingPlayer: true)
+    &game, position: .init(600, -20, 0), sequence: 906, facingPlayer: true)
   let second = try stationAutoAddNativeAttacker(
     &game, position: .init(300, 0, 800), sequence: 907, facingPlayer: true)
   let playerActor = try #require(game.commander.flightSimulation.player)
@@ -854,6 +855,17 @@ private func stationAutoRequireNativePressureLane(_ game: borrowing Game, attack
   var game = try await stationAutoEntryBoundary()
   let id = try stationAutoAddNativeAttacker(
     &game, position: .init(0, 0, 180), sequence: 908, facingPlayer: true)
+  // The current player's central opening is empty space. Aim this mounted gun at
+  // the fixed SH025 face-230 centroid; AUTO's existing forward return ray still hits.
+  let index = try #require(game.bodies.firstIndex { $0.id == id })
+  let surface = Vector3(44.24939643279464, 0.281274635396137, -18.23227483247931)
+  let forward = (surface - game.bodies[index].position).unit
+  var orientation = Basis3()
+  orientation.z = forward
+  orientation.x = Vector3(0, 1, 0).cross(forward).unit
+  orientation.y = forward.cross(orientation.x).unit
+  try #require(orientation.validRotation)
+  game.bodies[index].orientation = orientation
   let shield = game.frontShield
   let attackContext = try #require(game.gameplayContext())
   let playerActor = try #require(game.commander.flightSimulation.player)
